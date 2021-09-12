@@ -18,17 +18,13 @@ namespace Artemis.Core
     {
         private SKRectI _bounds;
         private SKPath? _path;
-        private readonly string _typeDisplayName;
 
         internal RenderProfileElement(Profile profile) : base(profile)
         {
-            _typeDisplayName = this is Layer ? "layer" : "folder";
-            _displayCondition = new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active", Profile);
-
             Timeline = new Timeline();
             ExpandedPropertyGroups = new List<string>();
             LayerEffectsList = new List<BaseLayerEffect>();
-            LayerEffects = new(LayerEffectsList);
+            LayerEffects = new ReadOnlyCollection<BaseLayerEffect>(LayerEffectsList);
 
             LayerEffectStore.LayerEffectAdded += LayerEffectStoreOnLayerEffectAdded;
             LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;
@@ -64,7 +60,8 @@ namespace Artemis.Core
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
                 baseLayerEffect.Dispose();
 
-            DisplayCondition.Dispose();
+            if (DisplayCondition is IDisposable disposable)
+                disposable.Dispose();
 
             base.Dispose(disposing);
         }
@@ -97,11 +94,9 @@ namespace Artemis.Core
                 layerEffect.BaseProperties?.ApplyToEntity();
             }
 
-            // Conditions
+            // Condition
             DisplayCondition?.Save();
-            RenderElementEntity.NodeScript = DisplayCondition?.Entity;
-            // RenderElementEntity.DisplayCondition = DisplayCondition?.Entity;
-            // DisplayCondition?.Save();
+            RenderElementEntity.DisplayCondition = DisplayCondition?.Entity;
 
             // Timeline
             RenderElementEntity.Timeline = Timeline?.Entity;
@@ -110,11 +105,10 @@ namespace Artemis.Core
 
         internal void LoadNodeScript()
         {
-            DisplayCondition = RenderElementEntity.NodeScript != null
-                ? new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active", RenderElementEntity.NodeScript, Profile)
-                : new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active", Profile);
+            if (DisplayCondition is INodeScriptCondition scriptCondition)
+                scriptCondition.LoadNodeScript();
 
-            foreach (ILayerProperty layerProperty in GetAllLayerProperties()) 
+            foreach (ILayerProperty layerProperty in GetAllLayerProperties())
                 layerProperty.BaseDataBinding.LoadNodeScript();
         }
 
@@ -367,19 +361,18 @@ namespace Artemis.Core
             protected set => SetAndNotify(ref _displayConditionMet, value);
         }
 
-        private NodeScript<bool> _displayCondition;
         private bool _displayConditionMet;
-        private bool _toggledOnByEvent = false;
-
 
         /// <summary>
-        ///     Gets or sets the root display condition group
+        ///     Gets the display condition used to determine whether this element is active or not
         /// </summary>
-        public NodeScript<bool> DisplayCondition
+        public ICondition? DisplayCondition
         {
             get => _displayCondition;
-            set => SetAndNotify(ref _displayCondition, value);
+            private set => SetAndNotify(ref _displayCondition, value);
         }
+
+        private ICondition? _displayCondition;
 
         /// <summary>
         ///     Evaluates the display conditions on this element and applies any required changes to the <see cref="Timeline" />
@@ -392,63 +385,30 @@ namespace Artemis.Core
                 return;
             }
 
-            if (!DisplayCondition.HasNodes)
+            if (DisplayCondition == null)
             {
                 DisplayConditionMet = true;
                 return;
             }
 
-            if (Timeline.EventOverlapMode != TimeLineEventOverlapMode.Toggle)
-                _toggledOnByEvent = false;
+            DisplayCondition.Update();
+            DisplayCondition.ApplyToTimeline(DisplayCondition.IsMet, DisplayConditionMet, Timeline);
+            DisplayConditionMet = DisplayCondition.IsMet;
+        }
 
-            DisplayCondition.Run();
+        /// <summary>
+        ///     Replaces the current <see cref="DisplayCondition" /> with the provided <paramref name="condition" /> or
+        ///     <see langword="null" />
+        /// </summary>
+        /// <param name="condition">The condition to change the <see cref="DisplayCondition" /> to</param>
+        public void ChangeDisplayCondition(ICondition? condition)
+        {
+            if (condition == DisplayCondition)
+                return;
 
-            // TODO: Handle this nicely, right now when there's only an exit node we assume true
-            bool conditionMet = DisplayCondition.Nodes.Count() == 1 || DisplayCondition.Result;
-            if (Parent is RenderProfileElement parent && !parent.DisplayConditionMet)
-                conditionMet = false;
-
-            // if (!DisplayCondition.ContainsEvents)
-            {
-                // Regular conditions reset the timeline whenever their condition is met and was not met before that
-                if (conditionMet && !DisplayConditionMet && Timeline.IsFinished)
-                    Timeline.JumpToStart();
-                // If regular conditions are no longer met, jump to the end segment if stop mode requires it
-                if (!conditionMet && Timeline.StopMode == TimelineStopMode.SkipToEnd)
-                    Timeline.JumpToEndSegment();
-            }
-            // else if (conditionMet)
-            // {
-            //     if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Toggle)
-            //     {
-            //         _toggledOnByEvent = !_toggledOnByEvent;
-            //         if (_toggledOnByEvent)
-            //             Timeline.JumpToStart();
-            //     }
-            //     else
-            //     {
-            //         // Event conditions reset if the timeline finished
-            //         if (Timeline.IsFinished)
-            //         {
-            //             Timeline.JumpToStart();
-            //         }
-            //         // and otherwise apply their overlap mode
-            //         else
-            //         {
-            //             if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Restart)
-            //                 Timeline.JumpToStart();
-            //             else if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Copy)
-            //                 Timeline.AddExtraTimeline();
-            //             // The third option is ignore which is handled below:
-            //
-            //             // done
-            //         }
-            //     }
-            // }
-
-            DisplayConditionMet = Timeline.EventOverlapMode == TimeLineEventOverlapMode.Toggle
-                ? _toggledOnByEvent
-                : conditionMet;
+            ICondition? old = DisplayCondition;
+            DisplayCondition = condition;
+            old?.Dispose();
         }
 
         #endregion

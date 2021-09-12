@@ -121,7 +121,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             if (RenderProfileElement == null)
                 return;
 
-            _windowManager.ShowDialog(_nodeVmFactory.NodeScriptWindowViewModel(RenderProfileElement.DisplayCondition));
+            // _windowManager.ShowDialog(_nodeVmFactory.NodeScriptWindowViewModel(RenderProfileElement.DisplayCondition));
             _profileEditorService.SaveSelectedProfileElement();
         }
 
