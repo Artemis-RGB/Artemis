@@ -282,7 +282,7 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             Script.RemoveNode(this);
         }
 
-        private bool RemoveCanExecute() => !Node.IsExitNode;
+        private bool RemoveCanExecute() => !Node.IsExitNode && !Node.IsDefaultNode;
 
         #endregion
     }

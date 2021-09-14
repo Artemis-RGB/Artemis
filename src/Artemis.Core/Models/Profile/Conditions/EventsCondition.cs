@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
@@ -18,7 +19,7 @@ namespace Artemis.Core
             _eventsList = new List<EventCondition>();
 
             ProfileElement = profileElement;
-            Events = new List<EventCondition>(_eventsList);
+            Events = new ReadOnlyCollection<EventCondition>(_eventsList);
         }
 
         internal EventsCondition(EventsConditionEntity entity, ProfileElement profileElement)
@@ -27,7 +28,7 @@ namespace Artemis.Core
             _eventsList = new List<EventCondition>();
 
             ProfileElement = profileElement;
-            Events = new List<EventCondition>(_eventsList);
+            Events = new ReadOnlyCollection<EventCondition>(_eventsList);
 
             Load();
         }

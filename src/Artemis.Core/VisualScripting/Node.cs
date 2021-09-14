@@ -25,6 +25,7 @@ namespace Artemis.Core
         }
 
         private double _x;
+
         public double X
         {
             get => _x;
@@ -46,6 +47,7 @@ namespace Artemis.Core
         }
 
         public virtual bool IsExitNode => false;
+        public virtual bool IsDefaultNode => false;
 
         private readonly List<IPin> _pins = new();
         public IReadOnlyCollection<IPin> Pins => new ReadOnlyCollection<IPin>(_pins);

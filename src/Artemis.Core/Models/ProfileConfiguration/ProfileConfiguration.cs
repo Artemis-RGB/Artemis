@@ -9,7 +9,7 @@ namespace Artemis.Core
     /// <summary>
     ///     Represents the configuration of a profile, contained in a <see cref="ProfileCategory" />
     /// </summary>
-    public class ProfileConfiguration : CorePropertyChanged, IStorageModel, IDisposable
+    public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
     {
         private ProfileCategory _category;
         private bool _disposed;
@@ -275,6 +275,13 @@ namespace Artemis.Core
             if (!IsMissingModule)
                 Entity.ModuleId = Module?.Id;
         }
+
+        #endregion
+
+        #region Overrides of BreakableModel
+
+        /// <inheritdoc />
+        public override string BrokenDisplayName => "Profile Configuration";
 
         #endregion
     }

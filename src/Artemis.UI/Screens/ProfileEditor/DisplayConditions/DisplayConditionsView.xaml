@@ -37,10 +37,28 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />
+                        <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <RadioButton Grid.Column="0"
                                  Style="{StaticResource MaterialDesignTabRadioButton}"
-                                 IsChecked="{Binding IsEventCondition, Converter={StaticResource InverseBooleanConverter}}"
+                                 IsChecked="{Binding Path=DisplayConditionType, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static displayConditions:DisplayConditionType.None}}"
+                                 MinWidth="0"
+                                 Padding="10 0">
+                        <RadioButton.ToolTip>
+                            <ToolTip Placement="Center" VerticalOffset="-40">
+                                <TextBlock>
+                                    No condition, the element is always displayed
+                                </TextBlock>
+                            </ToolTip>
+                        </RadioButton.ToolTip>
+                        <TextBlock VerticalAlignment="Center" FontSize="12">
+                            <materialDesign:PackIcon Kind="Close" VerticalAlignment="Center" Margin="0 0 2 -3" />
+                            NONE
+                        </TextBlock>
+                    </RadioButton>
+                    <RadioButton Grid.Column="1"
+                                 Style="{StaticResource MaterialDesignTabRadioButton}"
+                                 IsChecked="{Binding Path=DisplayConditionType, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static displayConditions:DisplayConditionType.Static}}"
                                  MinWidth="0"
                                  Padding="10 0">
                         <RadioButton.ToolTip>
@@ -55,9 +73,9 @@
                             CONSTANT
                         </TextBlock>
                     </RadioButton>
-                    <RadioButton Grid.Column="1"
+                    <RadioButton Grid.Column="2"
                                  Style="{StaticResource MaterialDesignTabRadioButton}"
-                                 IsChecked="{Binding IsEventCondition}"
+                                 IsChecked="{Binding Path=DisplayConditionType, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static displayConditions:DisplayConditionType.Events}}"
                                  MinWidth="0"
                                  Padding="10 0">
                         <RadioButton.ToolTip>
@@ -78,200 +96,10 @@
 
         <Separator Grid.Row="1" Grid.Column="0" Style="{StaticResource MaterialDesignDarkSeparator}" Margin="-2 0" />
 
-        <Grid Grid.Row="2" Visibility="{Binding IsEventCondition, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <Grid Grid.Row="0" MouseUp="{s:Action ScriptGridMouseUp}" Cursor="Hand">
-                <controls:VisualScriptPresenter Script="{Binding RenderProfileElement.DisplayCondition}"
-                                                AutoFitScript="True"
-                                                Visibility="{Binding RenderProfileElement.DisplayCondition, Converter={StaticResource NullToVisibilityConverter}}" />
-                <Border Opacity="0">
-                    <Border.Background>
-                        <SolidColorBrush Color="{Binding Color, Source={StaticResource MaterialDesignCardBackground}}" Opacity="0.75" />
-                    </Border.Background>
-                    <Border.Style>
-                        <Style>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Grid}, Mode=FindAncestor}}" Value="True">
-                                    <DataTrigger.EnterActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </DataTrigger.EnterActions>
-                                    <DataTrigger.ExitActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </DataTrigger.ExitActions>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
-                    <Grid HorizontalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" VerticalAlignment="Center" Grid.Column="0">
-                            Click to edit script
-                        </TextBlock>
-                        <materialDesign:PackIcon Kind="OpenInNew" Margin="10 " Width="30" Height="30" Grid.Column="1" VerticalAlignment="Center" />
-                    </Grid>
-                </Border>
-            </Grid>
-            <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="22" />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" MinWidth="140" />
-                    <ColumnDefinition Width="*" MinWidth="170" />
-                </Grid.ColumnDefinitions>
-
-                <!-- Play mode -->
-                <TextBlock Grid.Column="0" Text="Play mode" VerticalAlignment="Center">
-                    <TextBlock.ToolTip>
-                        <ToolTip Placement="Center" VerticalOffset="-30">
-                            <TextBlock>
-                                Configure how the layer should act while the conditions above are met
-                            </TextBlock>
-                        </ToolTip>
-                    </TextBlock.ToolTip>
-                </TextBlock>
-                <materialDesign:ColorZone Grid.Row="1" Grid.Column="0" Mode="Standard" CornerRadius="3" Margin="0 0 2 0">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <RadioButton Grid.Column="0"
-                                     Style="{StaticResource MaterialDesignTabRadioButton}"
-                                     IsChecked="{Binding DisplayContinuously}"
-                                     MinWidth="0"
-                                     Padding="5 0">
-                            <RadioButton.ToolTip>
-                                <ToolTip Placement="Center" VerticalOffset="-40">
-                                    <TextBlock>
-                                        Continue repeating the main segment of the timeline while the condition is met
-                                    </TextBlock>
-                                </ToolTip>
-                            </RadioButton.ToolTip>
-                            <TextBlock VerticalAlignment="Center" FontSize="12">
-                                <materialDesign:PackIcon Kind="Repeat" VerticalAlignment="Center" Margin="-3 0 0 -3" />
-                                REPEAT
-                            </TextBlock>
-                        </RadioButton>
-                        <RadioButton Grid.Column="1"
-                                     Style="{StaticResource MaterialDesignTabRadioButton}"
-                                     IsChecked="{Binding DisplayContinuously, Converter={StaticResource InverseBooleanConverter}}"
-                                     MinWidth="0"
-                                     Padding="5 0">
-                            <RadioButton.ToolTip>
-                                <ToolTip Placement="Center" VerticalOffset="-40">
-                                    <TextBlock>
-                                        Only play the timeline once when the condition is met
-                                    </TextBlock>
-                                </ToolTip>
-                            </RadioButton.ToolTip>
-                            <TextBlock VerticalAlignment="Center" FontSize="12">
-                                <materialDesign:PackIcon Kind="StopwatchOutline" VerticalAlignment="Center" Margin="-3 0 0 -3" />
-                                ONCE
-                            </TextBlock>
-                        </RadioButton>
-                    </Grid>
-                </materialDesign:ColorZone>
-
-                <!-- Stop mode -->
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="Stop mode">
-                    <TextBlock.ToolTip>
-                        <ToolTip Placement="Center" VerticalOffset="-30">
-                            <TextBlock>
-                                Configure how the layer should act when the conditions above are no longer met
-                            </TextBlock>
-                        </ToolTip>
-                    </TextBlock.ToolTip>
-                </TextBlock>
-                <materialDesign:ColorZone Grid.Row="1" Grid.Column="1" Mode="Standard" CornerRadius="3" Margin="2 0 0 0" HorizontalAlignment="Stretch">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition MinWidth="100" />
-                        </Grid.ColumnDefinitions>
-                        <RadioButton Grid.Column="0"
-                                     Style="{StaticResource MaterialDesignTabRadioButton}"
-                                     IsChecked="{Binding AlwaysFinishTimeline}"
-                                     MinWidth="0"
-                                     Padding="5 0">
-                            <RadioButton.ToolTip>
-                                <ToolTip Placement="Center" VerticalOffset="-40">
-                                    <TextBlock>
-                                        When conditions are no longer met, finish the the current run of the main timeline
-                                    </TextBlock>
-                                </ToolTip>
-                            </RadioButton.ToolTip>
-                            <TextBlock VerticalAlignment="Center" FontSize="12">
-                                <materialDesign:PackIcon Kind="PlayOutline" VerticalAlignment="Center" Margin="-3 0 0 -3" />
-                                FINISH
-                            </TextBlock>
-                        </RadioButton>
-                        <RadioButton Grid.Column="1"
-                                     Style="{StaticResource MaterialDesignTabRadioButton}"
-                                     IsChecked="{Binding AlwaysFinishTimeline, Converter={StaticResource InverseBooleanConverter}}"
-                                     MinWidth="0"
-                                     Padding="5 0">
-                            <RadioButton.ToolTip>
-                                <ToolTip Placement="Center" VerticalOffset="-40">
-                                    <TextBlock>
-                                        When conditions are no longer met, skip to the end segment of the timeline
-                                    </TextBlock>
-                                </ToolTip>
-                            </RadioButton.ToolTip>
-                            <TextBlock VerticalAlignment="Center" FontSize="12">
-                                <materialDesign:PackIcon Kind="SkipNextOutline" VerticalAlignment="Center" Margin="-3 0 0 -3" />
-                                SKIP TO END
-                            </TextBlock>
-                        </RadioButton>
-                    </Grid>
-                </materialDesign:ColorZone>
-            </Grid>
-        </Grid>
-
-        <TabControl Grid.Row="2"
-                    Visibility="{Binding IsEventCondition, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
-                    ItemsSource="{Binding Items}"
-                    SelectedItem="{Binding ActiveItem}"
-                    Style="{StaticResource MaterialDesignTabControl}"
-                    Background="{DynamicResource MaterialDesignPaper}">
-            <TabControl.ItemTemplate>
-                <DataTemplate>
-                    <DockPanel LastChildFill="True" Margin="-15 0">
-                        <Button DockPanel.Dock="Right"
-                                Style="{StaticResource MaterialDesignIconForegroundButton}"
-                                Width="25"
-                                Height="25">
-                            <materialDesign:PackIcon Kind="Close" Width="15" Height="15" Foreground="{DynamicResource MaterialDesignBody}" />
-                        </Button>
-                        <Label Content="{Binding DisplayName}" DockPanel.Dock="Left" />
-                    </DockPanel>
-                </DataTemplate>
-            </TabControl.ItemTemplate>
-            <TabControl.ContentTemplate>
-                <DataTemplate>
-                    <ContentControl s:View.Model="{Binding IsAsync=True}"
-                                    VerticalContentAlignment="Stretch"
-                                    HorizontalContentAlignment="Stretch"
-                                    IsTabStop="False"
-                                    TextElement.Foreground="{DynamicResource MaterialDesignBody}" />
-                </DataTemplate>
-            </TabControl.ContentTemplate>
-        </TabControl>
+        <ContentControl Grid.Row="2"
+                        s:View.Model="{Binding ActiveItem}"
+                        VerticalContentAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        IsTabStop="False"/>
     </Grid>
 </UserControl>

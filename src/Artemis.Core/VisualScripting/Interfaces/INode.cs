@@ -10,6 +10,7 @@ namespace Artemis.Core
         string Name { get; }
         string Description { get; }
         bool IsExitNode { get; }
+        bool IsDefaultNode { get; }
 
         public double X { get; set; }
         public double Y { get; set; }

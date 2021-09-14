@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Windows.Input;
-using Artemis.Core;
+﻿using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
@@ -8,84 +6,31 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 {
-    public class DisplayConditionsViewModel : Conductor<DisplayConditionEventViewModel>.Collection.OneActive, IProfileEditorPanelViewModel
+    public class DisplayConditionsViewModel : Conductor<Screen>, IProfileEditorPanelViewModel
     {
-        private readonly INodeVmFactory _nodeVmFactory;
+        private readonly IConditionVmFactory _conditionVmFactory;
         private readonly IProfileEditorService _profileEditorService;
-        private readonly IWindowManager _windowManager;
-        private bool _isEventCondition;
-        private RenderProfileElement _renderProfileElement;
+        private DisplayConditionType _displayConditionType;
 
-        public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IWindowManager windowManager, INodeVmFactory nodeVmFactory)
+        public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IConditionVmFactory conditionVmFactory)
         {
             _profileEditorService = profileEditorService;
-            _windowManager = windowManager;
-            _nodeVmFactory = nodeVmFactory;
-
-            Items.Add(new DisplayConditionEventViewModel() { DisplayName = "Event 1"});
-            Items.Add(new DisplayConditionEventViewModel() { DisplayName = "Event 2"});
-            Items.Add(new DisplayConditionEventViewModel() { DisplayName = "Event 3"});
-            Items.Add(new DisplayConditionEventViewModel() { DisplayName = "Event 4"});
+            _conditionVmFactory = conditionVmFactory;
         }
 
-        public bool IsEventCondition
+        public DisplayConditionType DisplayConditionType
         {
-            get => _isEventCondition;
-            set => SetAndNotify(ref _isEventCondition, value);
-        }
-
-        public RenderProfileElement RenderProfileElement
-        {
-            get => _renderProfileElement;
+            get => _displayConditionType;
             set
             {
-                if (!SetAndNotify(ref _renderProfileElement, value)) return;
-                NotifyOfPropertyChange(nameof(DisplayContinuously));
-                NotifyOfPropertyChange(nameof(AlwaysFinishTimeline));
-                NotifyOfPropertyChange(nameof(EventOverlapMode));
+                if (!SetAndNotify(ref _displayConditionType, value)) return;
+                ChangeConditionType();
             }
         }
-
-        public bool DisplayContinuously
-        {
-            get => RenderProfileElement?.Timeline.PlayMode == TimelinePlayMode.Repeat;
-            set
-            {
-                TimelinePlayMode playMode = value ? TimelinePlayMode.Repeat : TimelinePlayMode.Once;
-                if (RenderProfileElement == null || RenderProfileElement?.Timeline.PlayMode == playMode) return;
-                RenderProfileElement.Timeline.PlayMode = playMode;
-                _profileEditorService.SaveSelectedProfileElement();
-            }
-        }
-
-        public bool AlwaysFinishTimeline
-        {
-            get => RenderProfileElement?.Timeline.StopMode == TimelineStopMode.Finish;
-            set
-            {
-                TimelineStopMode stopMode = value ? TimelineStopMode.Finish : TimelineStopMode.SkipToEnd;
-                if (RenderProfileElement == null || RenderProfileElement?.Timeline.StopMode == stopMode) return;
-                RenderProfileElement.Timeline.StopMode = stopMode;
-                _profileEditorService.SaveSelectedProfileElement();
-            }
-        }
-
-        public TimeLineEventOverlapMode EventOverlapMode
-        {
-            get => RenderProfileElement?.Timeline.EventOverlapMode ?? TimeLineEventOverlapMode.Restart;
-            set
-            {
-                if (RenderProfileElement == null || RenderProfileElement?.Timeline.EventOverlapMode == value) return;
-                RenderProfileElement.Timeline.EventOverlapMode = value;
-                _profileEditorService.SaveSelectedProfileElement();
-            }
-        }
-
-        public bool ConditionBehaviourEnabled => RenderProfileElement != null;
 
         protected override void OnInitialActivate()
         {
-            _profileEditorService.SelectedProfileElementChanged += SelectedProfileEditorServiceOnSelectedProfileElementChanged;
+            _profileEditorService.SelectedProfileElementChanged += ProfileEditorServiceOnSelectedProfileElementChanged;
             Update(_profileEditorService.SelectedProfileElement);
 
             base.OnInitialActivate();
@@ -93,55 +38,63 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         protected override void OnClose()
         {
-            _profileEditorService.SelectedProfileElementChanged -= SelectedProfileEditorServiceOnSelectedProfileElementChanged;
+            _profileEditorService.SelectedProfileElementChanged -= ProfileEditorServiceOnSelectedProfileElementChanged;
             base.OnClose();
+        }
+
+        private void ChangeConditionType()
+        {
+            if (_profileEditorService.SelectedProfileElement == null)
+                return;
+
+            if (DisplayConditionType == DisplayConditionType.Static)
+                _profileEditorService.SelectedProfileElement.ChangeDisplayCondition(new StaticCondition(_profileEditorService.SelectedProfileElement));
+            else if (DisplayConditionType == DisplayConditionType.Events)
+                _profileEditorService.SelectedProfileElement.ChangeDisplayCondition(new EventsCondition(_profileEditorService.SelectedProfileElement));
+            else
+                _profileEditorService.SelectedProfileElement.ChangeDisplayCondition(null);
+
+            _profileEditorService.SaveSelectedProfileElement();
+            Update(_profileEditorService.SelectedProfileElement);
         }
 
         private void Update(RenderProfileElement renderProfileElement)
         {
-            if (RenderProfileElement != null) 
-                RenderProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
-
-            RenderProfileElement = renderProfileElement;
-
-            NotifyOfPropertyChange(nameof(DisplayContinuously));
-            NotifyOfPropertyChange(nameof(AlwaysFinishTimeline));
-            NotifyOfPropertyChange(nameof(ConditionBehaviourEnabled));
-
-            if (RenderProfileElement != null)
-                RenderProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
-        }
-
-        #region Event handlers
-
-        public void ScriptGridMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton != MouseButton.Left)
+            if (renderProfileElement == null)
+            {
+                ActiveItem = null;
                 return;
-            if (RenderProfileElement == null)
-                return;
+            }
 
-            // _windowManager.ShowDialog(_nodeVmFactory.NodeScriptWindowViewModel(RenderProfileElement.DisplayCondition));
-            _profileEditorService.SaveSelectedProfileElement();
+            if (renderProfileElement.DisplayCondition is StaticCondition staticCondition)
+            {
+                ActiveItem = _conditionVmFactory.StaticConditionViewModel(staticCondition);
+                _displayConditionType = DisplayConditionType.Static;
+            }
+            else if (renderProfileElement.DisplayCondition is EventsCondition eventsCondition)
+            {
+                ActiveItem = _conditionVmFactory.EventsConditionViewModel(eventsCondition);
+                _displayConditionType = DisplayConditionType.Events;
+            }
+            else
+            {
+                ActiveItem = null;
+                _displayConditionType = DisplayConditionType.None;
+            }
+
+            NotifyOfPropertyChange(nameof(DisplayConditionType));
         }
 
-        public void EventTriggerModeSelected()
-        {
-            _profileEditorService.SaveSelectedProfileElement();
-        }
-
-        private void SelectedProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
+        private void ProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
         {
             Update(e.RenderProfileElement);
         }
+    }
 
-        private void TimelineOnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            NotifyOfPropertyChange(nameof(DisplayContinuously));
-            NotifyOfPropertyChange(nameof(AlwaysFinishTimeline));
-            NotifyOfPropertyChange(nameof(EventOverlapMode));
-        }
-
-        #endregion
+    public enum DisplayConditionType
+    {
+        None,
+        Static,
+        Events
     }
 }

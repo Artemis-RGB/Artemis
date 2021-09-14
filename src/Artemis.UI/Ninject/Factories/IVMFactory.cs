@@ -3,6 +3,8 @@ using Artemis.Core.Modules;
 using Artemis.Core.ScriptingProviders;
 using Artemis.UI.Screens.Header;
 using Artemis.UI.Screens.Plugins;
+using Artemis.UI.Screens.ProfileEditor.DisplayConditions.Event;
+using Artemis.UI.Screens.ProfileEditor.DisplayConditions.Static;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects;
@@ -90,6 +92,13 @@ namespace Artemis.UI.Ninject.Factories
         EffectsViewModel EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel);
         TimelineViewModel TimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IObservableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
         TimelineSegmentViewModel TimelineSegmentViewModel(SegmentViewModelType segment, IObservableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
+    }
+
+    public interface IConditionVmFactory : IVmFactory
+    {
+        StaticConditionViewModel StaticConditionViewModel(StaticCondition staticCondition);
+        EventsConditionViewModel EventsConditionViewModel(EventsCondition eventsCondition);
+        EventConditionViewModel EventConditionViewModel(EventCondition eventCondition);
     }
 
     public interface IPrerequisitesVmFactory : IVmFactory

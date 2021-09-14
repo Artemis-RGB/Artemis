@@ -221,8 +221,8 @@ namespace Artemis.Core.Services
                         try
                         {
                             // Make sure the profile is active or inactive according to the parameters above
-                            if (shouldBeActive && profileConfiguration.Profile == null)
-                                ActivateProfile(profileConfiguration);
+                            if (shouldBeActive && profileConfiguration.Profile == null && profileConfiguration.BrokenState != "Failed to activate profile")
+                                profileConfiguration.TryOrBreak(() => ActivateProfile(profileConfiguration), "Failed to activate profile");
                             else if (!shouldBeActive && profileConfiguration.Profile != null)
                                 DeactivateProfile(profileConfiguration);
 
@@ -597,9 +597,9 @@ namespace Artemis.Core.Services
 
             profile.Save();
 
-            foreach (RenderProfileElement renderProfileElement in profile.GetAllRenderElements()) 
+            foreach (RenderProfileElement renderProfileElement in profile.GetAllRenderElements())
                 renderProfileElement.Save();
-            
+
             _logger.Debug("Adapt profile - Saving " + profile);
             profile.RedoStack.Clear();
             profile.UndoStack.Push(memento);
