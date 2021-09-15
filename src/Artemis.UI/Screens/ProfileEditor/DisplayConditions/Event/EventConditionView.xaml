@@ -4,78 +4,163 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.DisplayConditions.Event"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:controls="clr-namespace:Artemis.VisualScripting.Editor.Controls;assembly=Artemis.VisualScripting"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:shared="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+             xmlns:controls1="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type local:EventConditionViewModel}}">
+    <UserControl.Resources>
+        <converters:ComparisonConverter x:Key="ComparisonConverter" />
+    </UserControl.Resources>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="22" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <shared:DataModelPicker Grid.Row="0"
-                                Grid.Column="0"
-                                Margin="0 5"
-                                ButtonBrush="DarkGoldenrod"
-                                DataModelPath="{Binding EventCondition.EventPath}"
-                                DataModelPathSelected="{s:Action DataModelPathSelected}"
-                                FilterTypes="{Binding FilterTypes}"
-                                Modules="{Binding Modules}" />
-        <Button Grid.Row="0"
-                Grid.Column="1"
-                Margin="0 5"
-                Command="{s:Action AddEvent}"
-                s:View.ActionTarget="{Binding Parent}"
-                Content="ADD EVENT" />
+        <Grid Grid.Row="0" VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" MouseUp="{s:Action ScriptGridMouseUp}" Cursor="Hand">
-            <controls:VisualScriptPresenter Script="{Binding EventCondition.Script}" AutoFitScript="True" />
-            <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                <Border.Background>
-                    <SolidColorBrush Color="{Binding Color, Source={StaticResource MaterialDesignPaper}}" Opacity="0.75" />
-                </Border.Background>
-                <Border.Style>
-                    <Style>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Grid}, Mode=FindAncestor}}" Value="True">
-                                <DataTrigger.EnterActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </DataTrigger.EnterActions>
-                                <DataTrigger.ExitActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </DataTrigger.ExitActions>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-                <Grid HorizontalAlignment="Center">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" VerticalAlignment="Center" Grid.Column="0">
-                        Click to edit script
-                    </TextBlock>
-                    <materialDesign:PackIcon Kind="OpenInNew" Margin="10 " Width="30" Height="30" Grid.Column="1" VerticalAlignment="Center" />
-                </Grid>
-            </Border>
+            <controls1:DataModelPicker Grid.Row="0"
+                                       Margin="0 0 0 5"
+                                       ButtonBrush="DarkGoldenrod"
+                                       DataModelPath="{Binding EventCondition.EventPath}"
+                                       DataModelPathSelected="{s:Action DataModelPathSelected}"
+                                       FilterTypes="{Binding FilterTypes}"
+                                       ShowFullPath="True"
+                                       Modules="{Binding Modules}" />
+
+            <Grid Grid.Row="1" MouseUp="{s:Action ScriptGridMouseUp}" Cursor="Hand">
+                <controls:VisualScriptPresenter Script="{Binding EventCondition.Script}" AutoFitScript="True" />
+                <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <Border.Background>
+                        <SolidColorBrush Color="{Binding Color, Source={StaticResource MaterialDesignCardBackground}}" Opacity="0.75" />
+                    </Border.Background>
+                    <Border.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Grid}, Mode=FindAncestor}}" Value="True">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" VerticalAlignment="Center">
+                                Click to edit script
+                            </TextBlock>
+                            <materialDesign:PackIcon Kind="OpenInNew" Margin="10 " Width="30" Height="30" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextWrapping="Wrap" TextAlignment="Center">
+                            Scripts with nothing connected to their end-node are always true.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </Grid>
         </Grid>
-    </Grid>
 
+        <!-- Trigger mode -->
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Trigger mode" VerticalAlignment="Center">
+            <TextBlock.ToolTip>
+                <ToolTip Placement="Center" VerticalOffset="-30">
+                    <TextBlock>
+                        Configure how the layer should act when the event(s) trigger
+                    </TextBlock>
+                </ToolTip>
+            </TextBlock.ToolTip>
+        </TextBlock>
+
+        <materialDesign:ColorZone Grid.Row="2" Grid.Column="0" Mode="Standard" CornerRadius="3">
+            <Grid HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <RadioButton Grid.Column="0"
+                             Style="{StaticResource MaterialDesignTabRadioButton}"
+                             IsChecked="{Binding Path=EventOverlapMode, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static core:TimeLineEventOverlapMode.Restart}}">
+                    <TextBlock VerticalAlignment="Center" FontSize="12">
+                        <materialDesign:PackIcon Kind="Repeat" VerticalAlignment="Center" Margin="-3 0 0 -3" />
+                        RESTART
+                    </TextBlock>
+                    <RadioButton.ToolTip>
+                        <ToolTip Placement="Center" VerticalOffset="-40">
+                            <TextBlock>
+                                Stop the current run and restart the timeline
+                            </TextBlock>
+                        </ToolTip>
+                    </RadioButton.ToolTip>
+                </RadioButton>
+                <RadioButton Grid.Column="1"
+                             Style="{StaticResource MaterialDesignTabRadioButton}"
+                             IsChecked="{Binding Path=EventOverlapMode, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static core:TimeLineEventOverlapMode.Toggle}}">
+                    <TextBlock VerticalAlignment="Center" FontSize="12">
+                        <materialDesign:PackIcon Kind="TrafficLight" VerticalAlignment="Center" Margin="-3 0 0 -3" />
+                        TOGGLE
+                    </TextBlock>
+                    <RadioButton.ToolTip>
+                        <ToolTip Placement="Center" VerticalOffset="-40">
+                            <TextBlock>
+                                Repeat the timeline until the event fires again
+                            </TextBlock>
+                        </ToolTip>
+                    </RadioButton.ToolTip>
+                </RadioButton>
+                <RadioButton Grid.Column="2"
+                             Style="{StaticResource MaterialDesignTabRadioButton}"
+                             IsChecked="{Binding Path=EventOverlapMode, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static core:TimeLineEventOverlapMode.Ignore}}">
+                    <TextBlock VerticalAlignment="Center" FontSize="12">
+                        <materialDesign:PackIcon Kind="EarHearingOff" VerticalAlignment="Center" Margin="-3 0 0 -3" />
+                        IGNORE
+                    </TextBlock>
+                    <RadioButton.ToolTip>
+                        <ToolTip Placement="Center" VerticalOffset="-40">
+                            <TextBlock>
+                                Ignore subsequent event fires until the timeline finishes
+                            </TextBlock>
+                        </ToolTip>
+                    </RadioButton.ToolTip>
+                </RadioButton>
+                <RadioButton Grid.Column="3"
+                             Style="{StaticResource MaterialDesignTabRadioButton}"
+                             IsChecked="{Binding Path=EventOverlapMode, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static core:TimeLineEventOverlapMode.Copy}}">
+                    <TextBlock VerticalAlignment="Center" FontSize="12">
+                        <materialDesign:PackIcon Kind="ContentCopy" VerticalAlignment="Center" Margin="-3 0 0 -3" />
+                        COPY
+                    </TextBlock>
+                    <RadioButton.ToolTip>
+                        <ToolTip Placement="Center" VerticalOffset="-40">
+                            <TextBlock>
+                                Play another copy of the timeline on top of the current run
+                            </TextBlock>
+                        </ToolTip>
+                    </RadioButton.ToolTip>
+                </RadioButton>
+            </Grid>
+        </materialDesign:ColorZone>
+    </Grid>
 </UserControl>

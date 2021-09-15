@@ -1,35 +1,35 @@
 ﻿using System;
 using System.Linq;
 using Artemis.Core.Internal;
+using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 
 namespace Artemis.Core
 {
-    public class EventCondition : CorePropertyChanged, IDisposable, IStorageModel
+    public class EventCondition : CorePropertyChanged, INodeScriptCondition
     {
         private readonly string _displayName;
-        private readonly object? _context;
-        private DateTime _lastProcessedTrigger;
+        private readonly EventConditionEntity _entity;
+        private EventDefaultNode _eventNode;
+        private TimeLineEventOverlapMode _eventOverlapMode;
         private DataModelPath? _eventPath;
+        private DateTime _lastProcessedTrigger;
 
-        internal EventCondition(string displayName, object? context)
+        public EventCondition(ProfileElement profileElement)
         {
-            _displayName = displayName;
-            _context = context;
+            _entity = new EventConditionEntity();
+            _displayName = profileElement.GetType().Name;
 
-            Entity = new EventConditionEntity();
-            Script = new NodeScript<bool>($"Activate {displayName}", $"Whether or not the event should activate the {displayName}", context);
-            UpdateEventNode();
+            ProfileElement = profileElement;
+            Script = new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", profileElement.Profile);
         }
 
-        internal EventCondition(EventConditionEntity entity, string displayName, object? context)
+        internal EventCondition(EventConditionEntity entity, ProfileElement profileElement)
         {
-            _displayName = displayName;
-            _context = context;
+            _entity = entity;
+            _displayName = profileElement.GetType().Name;
 
-            Entity = entity;
-            Script = null!;
-
+            ProfileElement = profileElement;
             Load();
         }
 
@@ -47,22 +47,104 @@ namespace Artemis.Core
             get => _eventPath;
         }
 
-        internal EventConditionEntity Entity { get; }
 
-        internal bool Evaluate()
+        /// <summary>
+        ///     Gets or sets how the condition behaves when events trigger before the timeline finishes
+        /// </summary>
+        public TimeLineEventOverlapMode EventOverlapMode
+        {
+            get => _eventOverlapMode;
+            set => SetAndNotify(ref _eventOverlapMode, value);
+        }
+
+        /// <summary>
+        ///     Updates the event node, applying the selected event
+        /// </summary>
+        public void UpdateEventNode()
+        {
+            if (EventPath?.GetValue() is not IDataModelEvent dataModelEvent)
+                return;
+
+            if (Script.Nodes.FirstOrDefault(n => n is EventDefaultNode) is EventDefaultNode existing)
+            {
+                existing.UpdateDataModelEvent(dataModelEvent);
+                _eventNode = existing;
+            }
+            else
+            {
+                _eventNode = new EventDefaultNode();
+                _eventNode.UpdateDataModelEvent(dataModelEvent);
+            }
+
+            if (_eventNode.Pins.Any() && !Script.Nodes.Contains(_eventNode))
+                Script.AddNode(_eventNode);
+            else
+                Script.RemoveNode(_eventNode);
+        }
+
+        private bool Evaluate()
         {
             if (EventPath?.GetValue() is not IDataModelEvent dataModelEvent || dataModelEvent.LastTrigger <= _lastProcessedTrigger)
                 return false;
 
-            // TODO: Place dataModelEvent.LastEventArgumentsUntyped; in the start node
-            Script.Run();
-
             _lastProcessedTrigger = dataModelEvent.LastTrigger;
+            if (!Script.ExitNodeConnected)
+                return true;
 
+            Script.Run();
             return Script.Result;
         }
 
-        #region IDisposable
+        /// <inheritdoc />
+        public IConditionEntity Entity => _entity;
+
+        /// <inheritdoc />
+        public ProfileElement ProfileElement { get; }
+
+        /// <inheritdoc />
+        public bool IsMet { get; private set; }
+
+        /// <inheritdoc />
+        public void Update()
+        {
+            if (EventOverlapMode == TimeLineEventOverlapMode.Toggle)
+            {
+                if (Evaluate())
+                    IsMet = !IsMet;
+            }
+            else
+            {
+                IsMet = Evaluate();
+            }
+        }
+
+        /// <inheritdoc />
+        public void ApplyToTimeline(bool isMet, bool wasMet, Timeline timeline)
+        {
+            if (!isMet)
+            {
+                if (EventOverlapMode == TimeLineEventOverlapMode.Toggle)
+                    timeline.JumpToEnd();
+                return;
+            }
+
+            // Event overlap mode doesn't apply in this case
+            if (timeline.IsFinished)
+            {
+                timeline.JumpToStart();
+                return;
+            }
+
+            // If the timeline was already running, look at the event overlap mode
+            if (EventOverlapMode == TimeLineEventOverlapMode.Restart)
+                timeline.JumpToStart();
+            else if (EventOverlapMode == TimeLineEventOverlapMode.Copy)
+                timeline.AddExtraTimeline();
+            else if (EventOverlapMode == TimeLineEventOverlapMode.Toggle && !wasMet)
+                timeline.JumpToStart();
+
+            // The remaining overlap mode is 'ignore' which requires no further action
+        }
 
         /// <inheritdoc />
         public void Dispose()
@@ -71,49 +153,32 @@ namespace Artemis.Core
             EventPath?.Dispose();
         }
 
-        #endregion
-
-        internal void LoadNodeScript()
-        {
-            Script.Load();
-            UpdateEventNode();
-        }
-
-        /// <summary>
-        /// Updates the event node, applying the selected event
-        /// </summary>
-        public void UpdateEventNode()
-        {
-            if (EventPath?.GetValue() is not IDataModelEvent dataModelEvent)
-                return;
-
-            if (Script.Nodes.FirstOrDefault(n => n is EventStartNode) is EventStartNode existing)
-                existing.UpdateDataModelEvent(dataModelEvent);
-            else
-            {
-                EventStartNode node = new();
-                node.UpdateDataModelEvent(dataModelEvent);
-                Script.AddNode(node);
-            }
-        }
-
-        #region Implementation of IStorageModel
+        #region Storage
 
         /// <inheritdoc />
         public void Load()
         {
-            EventPath = new DataModelPath(null, Entity.EventPath);
-            Script = new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", Entity.Script, _context);
-            UpdateEventNode();
+            EventOverlapMode = (TimeLineEventOverlapMode) _entity.EventOverlapMode;
+            Script = new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", _entity.Script, ProfileElement.Profile);
+            EventPath = new DataModelPath(_entity.EventPath);
         }
 
         /// <inheritdoc />
         public void Save()
         {
-            EventPath?.Save();
-            Entity.EventPath = EventPath?.Entity;
+            _entity.EventOverlapMode = (int) EventOverlapMode;
             Script.Save();
-            Entity.Script = Script.Entity;
+            _entity.Script = Script.Entity;
+            EventPath?.Save();
+            _entity.EventPath = EventPath?.Entity;
+        }
+
+        /// <inheritdoc />
+        public void LoadNodeScript()
+        {
+            Script.Load();
+            UpdateEventNode();
+            Script.LoadConnections();
         }
 
         #endregion

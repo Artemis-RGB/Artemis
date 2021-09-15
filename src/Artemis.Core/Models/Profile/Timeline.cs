@@ -13,7 +13,7 @@ namespace Artemis.Core
     public class Timeline : CorePropertyChanged, IStorageModel
     {
         private const int MaxExtraTimelines = 15;
-        private readonly object _lock = new ();
+        private readonly object _lock = new();
 
         /// <summary>
         ///     Creates a new instance of the <see cref="Timeline" /> class
@@ -24,7 +24,7 @@ namespace Artemis.Core
             MainSegmentLength = TimeSpan.FromSeconds(5);
 
             _extraTimelines = new List<Timeline>();
-            ExtraTimelines = new(_extraTimelines);
+            ExtraTimelines = new ReadOnlyCollection<Timeline>(_extraTimelines);
 
             Save();
         }
@@ -33,7 +33,7 @@ namespace Artemis.Core
         {
             Entity = entity;
             _extraTimelines = new List<Timeline>();
-            ExtraTimelines = new(_extraTimelines);
+            ExtraTimelines = new ReadOnlyCollection<Timeline>(_extraTimelines);
 
             Load();
         }
@@ -47,7 +47,7 @@ namespace Artemis.Core
             EndSegmentLength = Parent.EndSegmentLength;
 
             _extraTimelines = new List<Timeline>();
-            ExtraTimelines = new(_extraTimelines);
+            ExtraTimelines = new ReadOnlyCollection<Timeline>(_extraTimelines);
         }
 
         /// <inheritdoc />
@@ -139,17 +139,7 @@ namespace Artemis.Core
             get => _stopMode;
             set => SetAndNotify(ref _stopMode, value);
         }
-
-        /// <summary>
-        ///     Gets or sets the mode in which the render element responds to display condition events being fired before the
-        ///     timeline finished
-        /// </summary>
-        public TimeLineEventOverlapMode EventOverlapMode
-        {
-            get => _eventOverlapMode;
-            set => SetAndNotify(ref _eventOverlapMode, value);
-        }
-
+        
         /// <summary>
         ///     Gets a list of extra copies of the timeline applied to this timeline
         /// </summary>
@@ -326,7 +316,7 @@ namespace Artemis.Core
 
                 IsOverridden = false;
                 _lastOverridePosition = Position;
-                
+
                 if (stickToMainSegment && Position > MainSegmentEndPosition)
                 {
                     // If the main segment has no length, simply stick to the start of the segment
@@ -445,7 +435,8 @@ namespace Artemis.Core
             EndSegmentLength = Entity.EndSegmentLength;
             PlayMode = (TimelinePlayMode) Entity.PlayMode;
             StopMode = (TimelineStopMode) Entity.StopMode;
-            EventOverlapMode = (TimeLineEventOverlapMode) Entity.EventOverlapMode;
+
+            JumpToEnd();
         }
 
         /// <inheritdoc />
@@ -456,7 +447,6 @@ namespace Artemis.Core
             Entity.EndSegmentLength = EndSegmentLength;
             Entity.PlayMode = (int) PlayMode;
             Entity.StopMode = (int) StopMode;
-            Entity.EventOverlapMode = (int) EventOverlapMode;
         }
 
         #endregion

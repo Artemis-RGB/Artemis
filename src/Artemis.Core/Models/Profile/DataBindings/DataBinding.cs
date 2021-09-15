@@ -12,13 +12,14 @@ namespace Artemis.Core
         private readonly List<IDataBindingProperty> _properties = new();
         private bool _disposed;
         private bool _isEnabled;
+        private DataBindingNodeScript<TLayerProperty> _script;
 
         internal DataBinding(LayerProperty<TLayerProperty> layerProperty)
         {
             LayerProperty = layerProperty;
 
             Entity = new DataBindingEntity();
-            Script = new DataBindingNodeScript<TLayerProperty>(GetScriptName(), "The value to put into the data binding", this, LayerProperty.ProfileElement.Profile);
+            _script = new DataBindingNodeScript<TLayerProperty>(GetScriptName(), "The value to put into the data binding", this, LayerProperty.ProfileElement.Profile);
 
             Save();
         }
@@ -28,7 +29,7 @@ namespace Artemis.Core
             LayerProperty = layerProperty;
 
             Entity = entity;
-            Script = new DataBindingNodeScript<TLayerProperty>(GetScriptName(), "The value to put into the data binding", this, LayerProperty.ProfileElement.Profile);
+            _script = new DataBindingNodeScript<TLayerProperty>(GetScriptName(), "The value to put into the data binding", this, LayerProperty.ProfileElement.Profile);
 
             // Load will add children so be initialized before that
             Load();
@@ -42,7 +43,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the script used to populate the data binding
         /// </summary>
-        public DataBindingNodeScript<TLayerProperty> Script { get; private set; }
+        public INodeScript Script => _script;
 
         /// <summary>
         ///     Gets the data binding entity this data binding uses for persistent storage
@@ -183,7 +184,7 @@ namespace Artemis.Core
             if (!IsEnabled)
                 return;
 
-            Script.DataBindingExitNode.ApplyToDataBinding();
+            _script.DataBindingExitNode.ApplyToDataBinding();
         }
 
         /// <inheritdoc />
@@ -220,8 +221,8 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void LoadNodeScript()
         {
-            Script.Dispose();
-            Script = Entity.NodeScript != null
+            _script.Dispose();
+            _script = Entity.NodeScript != null
                 ? new DataBindingNodeScript<TLayerProperty>(GetScriptName(), "The value to put into the data binding", this, Entity.NodeScript, LayerProperty.ProfileElement.Profile)
                 : new DataBindingNodeScript<TLayerProperty>(GetScriptName(), "The value to put into the data binding", this, LayerProperty.ProfileElement.Profile);
         }
@@ -232,9 +233,9 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DataBinding");
 
-            Script.Save();
+            _script.Save();
             Entity.IsEnabled = IsEnabled;
-            Entity.NodeScript = Script.Entity.Nodes.Any() ? Script.Entity : null;
+            Entity.NodeScript = _script.Entity.Nodes.Any() ? _script.Entity : null;
         }
 
         #endregion

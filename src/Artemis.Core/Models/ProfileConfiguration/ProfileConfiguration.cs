@@ -171,7 +171,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("ProfileConfiguration");
 
-            if (!ActivationCondition.HasNodes)
+            if (!ActivationCondition.ExitNodeConnected)
                 ActivationConditionMet = true;
             else
             {

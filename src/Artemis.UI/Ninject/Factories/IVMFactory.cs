@@ -97,7 +97,6 @@ namespace Artemis.UI.Ninject.Factories
     public interface IConditionVmFactory : IVmFactory
     {
         StaticConditionViewModel StaticConditionViewModel(StaticCondition staticCondition);
-        EventsConditionViewModel EventsConditionViewModel(EventsCondition eventsCondition);
         EventConditionViewModel EventConditionViewModel(EventCondition eventCondition);
     }
 

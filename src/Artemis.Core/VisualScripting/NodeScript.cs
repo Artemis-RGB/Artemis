@@ -25,12 +25,12 @@ namespace Artemis.Core
 
         public string Name { get; }
         public string Description { get; }
-        public bool HasNodes => _nodes.Count > 1;
 
         private readonly List<INode> _nodes = new();
         public IEnumerable<INode> Nodes => new ReadOnlyCollection<INode>(_nodes);
 
         protected INode ExitNode { get; set; }
+        public abstract bool ExitNodeConnected { get; }
         public abstract Type ResultType { get; }
 
         public object? Context { get; set; }
@@ -149,7 +149,7 @@ namespace Artemis.Core
             {
                 IPinCollection? collection = node.PinCollections.FirstOrDefault(c => c.Name == entityNodePinCollection.Name &&
                                                                                      c.Type.Name == entityNodePinCollection.Type &&
-                                                                                     (int)c.Direction == entityNodePinCollection.Direction);
+                                                                                     (int) c.Direction == entityNodePinCollection.Direction);
                 if (collection == null)
                     continue;
 
@@ -231,7 +231,7 @@ namespace Artemis.Core
                     {
                         Name = nodePinCollection.Name,
                         Type = nodePinCollection.Type.Name,
-                        Direction = (int)nodePinCollection.Direction,
+                        Direction = (int) nodePinCollection.Direction,
                         Amount = nodePinCollection.Count()
                     });
                 }
@@ -301,8 +301,9 @@ namespace Artemis.Core
     {
         #region Properties & Fields
 
-        public T Result => ((ExitNode<T>)ExitNode).Value;
+        public T Result => ((ExitNode<T>) ExitNode).Value;
 
+        public override bool ExitNodeConnected => ((ExitNode<T>) ExitNode).Input.ConnectedTo.Any();
         public override Type ResultType => typeof(T);
 
         #endregion

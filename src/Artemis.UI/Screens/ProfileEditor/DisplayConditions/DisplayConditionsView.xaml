@@ -81,13 +81,13 @@
                         <RadioButton.ToolTip>
                             <ToolTip Placement="Center" VerticalOffset="-40">
                                 <TextBlock>
-                                    A condition that checks whenever one or more events fire and acts in a configurable way
+                                    A condition triggers on a selectable event
                                 </TextBlock>
                             </ToolTip>
                         </RadioButton.ToolTip>
                         <TextBlock VerticalAlignment="Center" FontSize="12">
                             <materialDesign:PackIcon Kind="LightningBolt" VerticalAlignment="Center" Margin="0 0 2 -3" />
-                            EVENTS
+                            EVENT
                         </TextBlock>
                     </RadioButton>
                 </Grid>

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Artemis.Storage.Entities.Profile.Abstract;
+﻿using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 
 namespace Artemis.Core
@@ -8,19 +6,21 @@ namespace Artemis.Core
     public class StaticCondition : CorePropertyChanged, INodeScriptCondition
     {
         private readonly StaticConditionEntity _entity;
+        private readonly string _displayName;
 
         public StaticCondition(ProfileElement profileElement)
         {
             _entity = new StaticConditionEntity();
-            
+            _displayName = profileElement.GetType().Name;
+
             ProfileElement = profileElement;
-            string typeDisplayName = profileElement.GetType().Name.ToLower();
-            Script = new NodeScript<bool>($"Activate {typeDisplayName}", $"Whether or not this {typeDisplayName} should be active", profileElement.Profile);
+            Script = new NodeScript<bool>($"Activate {_displayName}", $"Whether or not this {_displayName} should be active", profileElement.Profile);
         }
 
         internal StaticCondition(StaticConditionEntity entity, ProfileElement profileElement)
         {
             _entity = entity;
+            _displayName = profileElement.GetType().Name;
 
             ProfileElement = profileElement;
             Script = null!;
@@ -45,7 +45,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void Update()
         {
-            if (!Script.HasNodes)
+            if (!Script.ExitNodeConnected)
             {
                 IsMet = true;
                 return;
@@ -64,23 +64,18 @@ namespace Artemis.Core
                 timeline.JumpToEndSegment();
         }
 
-        #region IDisposable
-
         /// <inheritdoc />
         public void Dispose()
         {
             Script.Dispose();
         }
 
-        #endregion
-
         #region Storage
 
         /// <inheritdoc />
         public void Load()
         {
-            string typeDisplayName = ProfileElement.GetType().Name.ToLower();
-            Script = new NodeScript<bool>($"Activate {typeDisplayName}", $"Whether or not this {typeDisplayName} should be active", _entity.Script,  ProfileElement.Profile);
+            Script = new NodeScript<bool>($"Activate {_displayName}", $"Whether or not this {_displayName} should be active", _entity.Script, ProfileElement.Profile);
         }
 
         /// <inheritdoc />

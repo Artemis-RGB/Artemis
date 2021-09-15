@@ -50,7 +50,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             if (DisplayConditionType == DisplayConditionType.Static)
                 _profileEditorService.SelectedProfileElement.ChangeDisplayCondition(new StaticCondition(_profileEditorService.SelectedProfileElement));
             else if (DisplayConditionType == DisplayConditionType.Events)
-                _profileEditorService.SelectedProfileElement.ChangeDisplayCondition(new EventsCondition(_profileEditorService.SelectedProfileElement));
+                _profileEditorService.SelectedProfileElement.ChangeDisplayCondition(new EventCondition(_profileEditorService.SelectedProfileElement));
             else
                 _profileEditorService.SelectedProfileElement.ChangeDisplayCondition(null);
 
@@ -71,9 +71,9 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 ActiveItem = _conditionVmFactory.StaticConditionViewModel(staticCondition);
                 _displayConditionType = DisplayConditionType.Static;
             }
-            else if (renderProfileElement.DisplayCondition is EventsCondition eventsCondition)
+            else if (renderProfileElement.DisplayCondition is EventCondition eventsCondition)
             {
-                ActiveItem = _conditionVmFactory.EventsConditionViewModel(eventsCondition);
+                ActiveItem = _conditionVmFactory.EventConditionViewModel(eventsCondition);
                 _displayConditionType = DisplayConditionType.Events;
             }
             else

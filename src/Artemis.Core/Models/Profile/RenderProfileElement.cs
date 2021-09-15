@@ -7,6 +7,7 @@ using Artemis.Core.LayerEffects.Placeholder;
 using Artemis.Core.Properties;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
+using Artemis.Storage.Entities.Profile.Conditions;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -72,6 +73,13 @@ namespace Artemis.Core
                 ? new Timeline(RenderElementEntity.Timeline)
                 : new Timeline();
 
+            DisplayCondition = RenderElementEntity.DisplayCondition switch
+            {
+                StaticConditionEntity staticConditionEntity => new StaticCondition(staticConditionEntity, this),
+                EventConditionEntity eventConditionEntity => new EventCondition(eventConditionEntity, this),
+                _ => DisplayCondition
+            };
+
             ActivateEffects();
         }
 
@@ -130,10 +138,10 @@ namespace Artemis.Core
         /// </summary>
         public void UpdateTimeline(double deltaTime)
         {
+            // TODO: Move to conditions
+
             // The play mode dictates whether to stick to the main segment unless the display conditions contains events
-            bool stickToMainSegment = (Timeline.PlayMode == TimelinePlayMode.Repeat || Timeline.EventOverlapMode == TimeLineEventOverlapMode.Toggle) && DisplayConditionMet;
-            // if (DisplayCondition != null && DisplayCondition.ContainsEvents && Timeline.EventOverlapMode != TimeLineEventOverlapMode.Toggle)
-            // stickToMainSegment = false;
+            bool stickToMainSegment = Timeline.PlayMode == TimelinePlayMode.Repeat && DisplayConditionMet;
 
             Timeline.Update(TimeSpan.FromSeconds(deltaTime), stickToMainSegment);
         }

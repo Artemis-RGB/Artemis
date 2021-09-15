@@ -75,11 +75,9 @@ namespace Artemis.Core
         /// <summary>
         ///     Creates a new instance of the <see cref="DataModelPath" /> class based on a <see cref="DataModelPathEntity" />
         /// </summary>
-        /// <param name="target"></param>
         /// <param name="entity"></param>
-        public DataModelPath(DataModel? target, DataModelPathEntity entity)
+        public DataModelPath(DataModelPathEntity entity)
         {
-            Target = target;
             Path = entity.Path;
             Entity = entity;
 

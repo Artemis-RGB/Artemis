@@ -31,7 +31,7 @@ namespace Artemis.VisualScripting.Nodes
             if (Storage is not DataModelPathEntity pathEntity)
                 return;
 
-            DataModelPath = new DataModelPath(null, pathEntity);
+            DataModelPath = new DataModelPath(pathEntity);
             DataModelPath.PathValidated += DataModelPathOnPathValidated;
         }
 
