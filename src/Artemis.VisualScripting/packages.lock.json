@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    ".NETCoreApp,Version=v5.0": {
+    "net5.0-windows7.0": {
       "JetBrains.Annotations": {
         "type": "Direct",
         "requested": "[2021.1.0, )",

@@ -537,7 +537,7 @@ namespace Artemis.VisualScripting.Editor.Controls
                 // Connect to the first matching input or output pin
                 List<IPin> pins = node.Pins.ToList();
                 pins.AddRange(node.PinCollections.SelectMany(c => c));
-                pins = pins.Where(p => p.Type == typeof(object) || p.Type == SourcePin.Pin.Type).OrderBy(p => p.Type != typeof(object)).ToList();
+                pins = pins.Where(p => p.Type == typeof(object) || p.Type.IsAssignableFrom(SourcePin.Pin.Type)).OrderBy(p => p.Type != typeof(object)).ToList();
 
                 IPin preferredPin = SourcePin.Pin.Direction == PinDirection.Input
                     ? pins.FirstOrDefault(p => p.Direction == PinDirection.Output)

@@ -124,10 +124,10 @@ namespace Artemis.UI.Services
             _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(bool), new SKColor(0xFFCD3232));
             _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(string), new SKColor(0xFFFFD700));
             _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(int), new SKColor(0xFF32CD32));
-            _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(double), new SKColor(0xFF1E90FF));
             _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(float), new SKColor(0xFFFF7C00));
             _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(SKColor), new SKColor(0xFFAD3EED));
             _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(IList), new SKColor(0xFFED3E61));
+            _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(Enum), new SKColor(0xFF1E90FF));
 
             foreach (Type nodeType in typeof(SumIntegersNode).Assembly.GetTypes().Where(t => typeof(INode).IsAssignableFrom(t) && t.IsPublic && !t.IsAbstract && !t.IsInterface))
                 _nodeService.RegisterNodeType(Constants.CorePlugin, nodeType);

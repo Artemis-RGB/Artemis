@@ -190,6 +190,7 @@ namespace Artemis.VisualScripting.Editor.Controls
         }
 
         private bool IsTypeCompatible(Type type) => (Pin.Pin.Type == type)
+                                                 || (Pin.Pin.Type == typeof(Enum) && type.IsEnum)
                                                  || ((Pin.Pin.Direction == PinDirection.Input) && (Pin.Pin.Type == typeof(object)))
                                                  || ((Pin.Pin.Direction == PinDirection.Output) && (type == typeof(object)));
         

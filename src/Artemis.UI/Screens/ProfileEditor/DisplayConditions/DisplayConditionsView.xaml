@@ -52,7 +52,7 @@
                             </ToolTip>
                         </RadioButton.ToolTip>
                         <TextBlock VerticalAlignment="Center" FontSize="12">
-                            <materialDesign:PackIcon Kind="Close" VerticalAlignment="Center" Margin="0 0 2 -3" />
+                            <materialDesign:PackIcon Kind="No" VerticalAlignment="Center" Margin="0 0 2 -3" />
                             NONE
                         </TextBlock>
                     </RadioButton>

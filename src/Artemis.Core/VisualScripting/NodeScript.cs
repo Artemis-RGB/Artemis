@@ -189,6 +189,18 @@ namespace Artemis.Core
                 if (sourcePin.Direction == targetPin.Direction)
                     continue;
 
+                // Clear existing connections on input pins, we don't want none of that now
+                if (targetPin.Direction == PinDirection.Input)
+                {
+                    while (targetPin.ConnectedTo.Any())
+                        targetPin.DisconnectFrom(targetPin.ConnectedTo[0]);
+                }
+                if (sourcePin.Direction == PinDirection.Input)
+                {
+                    while (sourcePin.ConnectedTo.Any()) 
+                        sourcePin.DisconnectFrom(sourcePin.ConnectedTo[0]);
+                }
+
                 // Only connect the nodes if they aren't already connected (LoadConnections may be called twice or more)
                 if (!targetPin.ConnectedTo.Contains(sourcePin))
                     targetPin.ConnectTo(sourcePin);

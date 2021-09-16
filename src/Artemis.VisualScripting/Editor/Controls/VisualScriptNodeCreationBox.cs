@@ -114,8 +114,8 @@ namespace Artemis.VisualScripting.Editor.Controls
                 return nameContains;
 
             if (SourcePin.Pin.Direction == PinDirection.Input)
-                return nameContains && (nodeData.OutputType == typeof(object) || nodeData.OutputType == SourcePin.Pin.Type);
-            return nameContains && (nodeData.InputType == typeof(object) || nodeData.InputType == SourcePin.Pin.Type);
+                return nodeData.OutputType != null && nameContains && (nodeData.OutputType == typeof(object) || nodeData.OutputType.IsAssignableTo(SourcePin.Pin.Type));
+            return nodeData.InputType != null && nameContains && (nodeData.InputType == typeof(object) || nodeData.InputType.IsAssignableFrom(SourcePin.Pin.Type));
         }
 
         private void ItemsSourceChanged()

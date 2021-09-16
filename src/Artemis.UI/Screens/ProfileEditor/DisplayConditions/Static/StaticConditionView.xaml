@@ -49,17 +49,10 @@
                         </Style.Triggers>
                     </Style>
                 </Border.Style>
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" VerticalAlignment="Center">
-                            Click to edit script
-                        </TextBlock>
-                        <materialDesign:PackIcon Kind="OpenInNew" Margin="10 " Width="30" Height="30" VerticalAlignment="Center" />
-                    </StackPanel>
-                    <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextWrapping="Wrap" TextAlignment="Center">
-                        Scripts with nothing connected to their end-node are always true.
-                    </TextBlock>
-                </StackPanel>
+                <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" VerticalAlignment="Center" TextAlignment="Center">
+                    Click to edit script
+                    <materialDesign:PackIcon Kind="OpenInNew" Margin="0 0 0 -6 " Width="30" Height="30" VerticalAlignment="Center" />
+                </TextBlock>
             </Border>
         </Grid>
         <Grid Grid.Row="1">

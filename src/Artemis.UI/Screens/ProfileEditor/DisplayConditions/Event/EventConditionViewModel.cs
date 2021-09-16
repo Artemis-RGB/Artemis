@@ -12,9 +12,10 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions.Event
 {
     public class EventConditionViewModel : Screen
     {
+        private readonly INodeVmFactory _nodeVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IWindowManager _windowManager;
-        private readonly INodeVmFactory _nodeVmFactory;
+        private NodeScript<bool> _oldScript;
 
         public EventConditionViewModel(EventCondition eventCondition, IProfileEditorService profileEditorService, IWindowManager windowManager, INodeVmFactory nodeVmFactory)
         {
@@ -22,6 +23,10 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions.Event
             _windowManager = windowManager;
             _nodeVmFactory = nodeVmFactory;
             EventCondition = eventCondition;
+
+            FilterTypes = new BindableCollection<Type> {typeof(IDataModelEvent)};
+            if (_profileEditorService.SelectedProfileConfiguration?.Module != null)
+                Modules = new BindableCollection<Module> {_profileEditorService.SelectedProfileConfiguration.Module};
         }
 
         public EventCondition EventCondition { get; }
@@ -38,6 +43,42 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions.Event
                 _profileEditorService.SaveSelectedProfileElement();
             }
         }
+
+        public bool TriggerConditionally
+        {
+            get => EventCondition.Script != null;
+            set
+            {
+                if (EventCondition.Script != null)
+                {
+                    _oldScript = EventCondition.Script;
+                    EventCondition.Script = null;
+                }
+                else
+                {
+                    if (_oldScript != null)
+                    {
+                        EventCondition.Script = _oldScript;
+                        _oldScript = null;
+                    }
+                    else
+                    {
+                        EventCondition.CreateEmptyNodeScript();
+                    }
+                }
+            }
+        }
+
+        #region Overrides of Screen
+
+        /// <inheritdoc />
+        protected override void OnClose()
+        {
+            _oldScript?.Dispose();
+            base.OnClose();
+        }
+
+        #endregion
 
         public void DataModelPathSelected(object sender, DataModelSelectedEventArgs e)
         {
