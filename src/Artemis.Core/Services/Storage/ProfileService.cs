@@ -327,7 +327,17 @@ namespace Artemis.Core.Services
             if (profileConfiguration.Profile != null)
                 return profileConfiguration.Profile;
 
-            ProfileEntity profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
+            ProfileEntity profileEntity;
+            try
+            {
+                profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
+            }
+            catch (Exception e)
+            {
+                profileConfiguration.SetBrokenState("Failed to activate profile", e);
+                throw;
+            }
+            
             if (profileEntity == null)
                 throw new ArtemisCoreException($"Cannot find profile named: {profileConfiguration.Name} ID: {profileConfiguration.Entity.ProfileId}");
 

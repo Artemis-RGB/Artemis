@@ -19,6 +19,7 @@
     <!-- Above is a dumb hack to get the context menu to cover the entire item -->
     <UserControl.Resources>
         <converters:ValuesAdditionConverter x:Key="ValuesAddition" />
+        <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
     <UserControl.ContextMenu>
         <ContextMenu>
@@ -183,7 +184,13 @@
             </Border.Style>
         </Border>
 
-        <Button Grid.Column="2" ToolTip="View properties" Width="20" Height="20" Command="{s:Action ViewProperties}" HorizontalAlignment="Right">
+        <Button Grid.Column="2"
+                ToolTip="View properties"
+                Width="20"
+                Height="20"
+                Command="{s:Action ViewProperties}"
+                HorizontalAlignment="Right"
+                Visibility="{Binding ProfileConfiguration.BrokenState, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
             <Button.Style>
                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignIconForegroundButton}">
                     <Setter Property="Visibility" Value="Collapsed" />
@@ -196,7 +203,13 @@
             </Button.Style>
             <materialDesign:PackIcon Kind="Cog" Width="16" Height="16" />
         </Button>
-        <ToggleButton Grid.Column="3" ToolTip="Suspend profile" Width="18" Height="18" Margin="2 0 0 0" IsChecked="{Binding IsSuspended}">
+        <ToggleButton Grid.Column="3"
+                      ToolTip="Suspend profile"
+                      Width="18"
+                      Height="18"
+                      Margin="2 0 0 0"
+                      IsChecked="{Binding IsSuspended}"
+                      Visibility="{Binding ProfileConfiguration.BrokenState, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
             <ToggleButton.Style>
                 <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MaterialDesignFlatToggleButton}">
                     <Setter Property="Visibility" Value="Collapsed" />
@@ -209,5 +222,14 @@
             </ToggleButton.Style>
             <materialDesign:PackIcon Kind="Pause" Height="14" Width="14" />
         </ToggleButton>
+
+        <materialDesign:PackIcon Grid.Column="3" 
+                                 Margin="-2"
+                                 Kind="AlertCircle" 
+                                 Height="22" 
+                                 Width="22" 
+                                 Foreground="#E74C4C" 
+                                 ToolTip="{Binding ProfileConfiguration.BrokenState}"
+                                 Visibility="{Binding ProfileConfiguration.BrokenState, Converter={StaticResource NullToVisibilityConverter}}" />
     </Grid>
 </UserControl>

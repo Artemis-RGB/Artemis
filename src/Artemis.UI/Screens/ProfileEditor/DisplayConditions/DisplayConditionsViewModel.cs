@@ -11,6 +11,8 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         private readonly IConditionVmFactory _conditionVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private DisplayConditionType _displayConditionType;
+        private StaticCondition _staticCondition;
+        private EventCondition _eventCondition;
 
         public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IConditionVmFactory conditionVmFactory)
         {
@@ -47,12 +49,19 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             if (_profileEditorService.SelectedProfileElement == null)
                 return;
 
+            // Keep the old condition around in case the user changes their mind
+            if (_profileEditorService.SelectedProfileElement.DisplayCondition is StaticCondition staticCondition)
+                _staticCondition = staticCondition;
+            else if (_profileEditorService.SelectedProfileElement.DisplayCondition is EventCondition eventCondition)
+                _eventCondition = eventCondition;
+
+            // If we have the old condition around put it back
             if (DisplayConditionType == DisplayConditionType.Static)
-                _profileEditorService.SelectedProfileElement.ChangeDisplayCondition(new StaticCondition(_profileEditorService.SelectedProfileElement));
+                _profileEditorService.SelectedProfileElement.DisplayCondition = _staticCondition ?? new StaticCondition(_profileEditorService.SelectedProfileElement);
             else if (DisplayConditionType == DisplayConditionType.Events)
-                _profileEditorService.SelectedProfileElement.ChangeDisplayCondition(new EventCondition(_profileEditorService.SelectedProfileElement));
+                _profileEditorService.SelectedProfileElement.DisplayCondition = _eventCondition ?? new EventCondition(_profileEditorService.SelectedProfileElement);
             else
-                _profileEditorService.SelectedProfileElement.ChangeDisplayCondition(null);
+                _profileEditorService.SelectedProfileElement.DisplayCondition = null;
 
             _profileEditorService.SaveSelectedProfileElement();
             Update(_profileEditorService.SelectedProfileElement);
@@ -87,6 +96,11 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         private void ProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
         {
+            if (_staticCondition != null && e.PreviousRenderProfileElement?.DisplayCondition != _staticCondition)
+                _staticCondition.Dispose();
+            if (_eventCondition != null && e.PreviousRenderProfileElement?.DisplayCondition != _eventCondition)
+                _eventCondition.Dispose();
+
             Update(e.RenderProfileElement);
         }
     }

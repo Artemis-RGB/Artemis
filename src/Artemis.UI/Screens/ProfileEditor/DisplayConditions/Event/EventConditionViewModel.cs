@@ -84,6 +84,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions.Event
         {
             EventCondition.UpdateEventNode();
             DisplayName = EventCondition.EventPath?.Segments.LastOrDefault()?.GetPropertyDescription()?.Name ?? "Invalid event";
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void ScriptGridMouseUp(object sender, MouseButtonEventArgs e)

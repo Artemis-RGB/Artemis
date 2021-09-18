@@ -377,7 +377,7 @@ namespace Artemis.Core
         public ICondition? DisplayCondition
         {
             get => _displayCondition;
-            private set => SetAndNotify(ref _displayCondition, value);
+            set => SetAndNotify(ref _displayCondition, value);
         }
 
         private ICondition? _displayCondition;
@@ -402,21 +402,6 @@ namespace Artemis.Core
             DisplayCondition.Update();
             DisplayCondition.ApplyToTimeline(DisplayCondition.IsMet, DisplayConditionMet, Timeline);
             DisplayConditionMet = DisplayCondition.IsMet;
-        }
-
-        /// <summary>
-        ///     Replaces the current <see cref="DisplayCondition" /> with the provided <paramref name="condition" /> or
-        ///     <see langword="null" />
-        /// </summary>
-        /// <param name="condition">The condition to change the <see cref="DisplayCondition" /> to</param>
-        public void ChangeDisplayCondition(ICondition? condition)
-        {
-            if (condition == DisplayCondition)
-                return;
-
-            ICondition? old = DisplayCondition;
-            DisplayCondition = condition;
-            old?.Dispose();
         }
 
         #endregion

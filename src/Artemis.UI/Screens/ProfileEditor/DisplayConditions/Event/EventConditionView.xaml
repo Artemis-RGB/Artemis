@@ -50,7 +50,7 @@
                       IsChecked="{Binding TriggerConditionally}"
                       Content="Conditional trigger"
                       VerticalAlignment="Center"
-                      ToolTip="When enabled, the layer will only trigger if the script evaluates to true"
+                      ToolTip="When enabled, the element will only trigger if the script evaluates to true"
                       Style="{StaticResource MaterialDesignDarkCheckBox}" />
 
             <Grid Grid.Row="1"
@@ -60,7 +60,7 @@
                   Cursor="Hand"
                   Visibility="{Binding EventCondition.Script, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Normal, Mode=OneWay}">
                 <controls:VisualScriptPresenter Script="{Binding EventCondition.Script}" AutoFitScript="True" />
-                <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="0">
                     <Border.Background>
                         <SolidColorBrush Color="{Binding Color, Source={StaticResource MaterialDesignCardBackground}}" Opacity="0.75" />
                     </Border.Background>
@@ -105,7 +105,7 @@
                         <materialDesign:PackIcon Kind="No" Margin="0 0 0 -6" Width="30" Height="30" VerticalAlignment="Center" />
                     </TextBlock>
                     <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextWrapping="Wrap" TextAlignment="Center">
-                        When enabled, the layer will only trigger if the script evaluates to true
+                        This element will trigger any time the event fires.
                     </TextBlock>
                 </StackPanel>
             </Grid>

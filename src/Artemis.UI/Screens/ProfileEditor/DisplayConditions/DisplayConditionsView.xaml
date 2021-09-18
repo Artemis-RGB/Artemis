@@ -15,7 +15,6 @@
     d:DesignHeight="450" d:DesignWidth="800"
     d:DataContext="{d:DesignInstance {x:Type displayConditions:DisplayConditionsViewModel}}">
     <UserControl.Resources>
-        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         <converters:ComparisonConverter x:Key="ComparisonConverter" />
         <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
@@ -100,6 +99,20 @@
                         s:View.Model="{Binding ActiveItem}"
                         VerticalContentAlignment="Stretch"
                         HorizontalContentAlignment="Stretch"
-                        IsTabStop="False"/>
+                        IsTabStop="False"
+                        Visibility="{Binding ActiveItem, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+        <StackPanel Grid.Row="2"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding ActiveItem, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" TextWrapping="Wrap" TextAlignment="Center" Margin="0 10">
+                Display conditions disabled
+                <materialDesign:PackIcon Kind="No" Margin="0 0 0 -6" Width="30" Height="30" VerticalAlignment="Center" />
+            </TextBlock>
+            <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextWrapping="Wrap" TextAlignment="Center">
+                This element will always display.
+            </TextBlock>
+        </StackPanel>
     </Grid>
 </UserControl>
