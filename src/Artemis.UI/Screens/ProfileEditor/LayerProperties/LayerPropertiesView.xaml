@@ -462,7 +462,7 @@
                         The profile is currently running in normal mode and the timeline cannot be edited.
                     </TextBlock>
                     <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center">
-                        Press <Run Text="F5" FontWeight="Bold"/> to switch between editor mode and normal mode. Auto-switching can be disabled in the options menu.
+                        Press <Run Text="F5" FontWeight="Bold"/> to switch between editor mode and normal mode. Auto-switching can be disabled in the run menu.
                     </TextBlock>
                 </StackPanel>
             </Border>
