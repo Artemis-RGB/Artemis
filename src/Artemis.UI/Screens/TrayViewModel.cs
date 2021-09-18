@@ -4,16 +4,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Events;
-using Artemis.UI.Screens.Settings.Tabs.General;
 using Artemis.UI.Screens.Splash;
 using Artemis.UI.Services;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Utilities;
 using Hardcodet.Wpf.TaskbarNotification;
-using MaterialDesignThemes.Wpf;
 using Ninject;
 using Stylet;
 
@@ -21,11 +17,10 @@ namespace Artemis.UI.Screens
 {
     public class TrayViewModel : Screen, IMainWindowProvider
     {
-        private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
         private readonly IDebugService _debugService;
         private readonly IEventAggregator _eventAggregator;
         private readonly IKernel _kernel;
-        private readonly ThemeWatcher _themeWatcher;
+        private readonly IThemeService _themeService;
         private readonly IWindowManager _windowManager;
         private ImageSource _icon;
         private bool _openingMainWindow;
@@ -40,24 +35,20 @@ namespace Artemis.UI.Screens
             IEventAggregator eventAggregator,
             ICoreService coreService,
             IDebugService debugService,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            IThemeService themeService)
         {
             _kernel = kernel;
             _windowManager = windowManager;
             _eventAggregator = eventAggregator;
             _debugService = debugService;
+            _themeService = themeService;
 
             Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
             Core.Utilities.RestartRequested += UtilitiesOnShutdownRequested;
 
-            _themeWatcher = new ThemeWatcher();
-            _colorScheme = settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
-            _colorScheme.SettingChanged += ColorSchemeOnSettingChanged;
-            _themeWatcher.SystemThemeChanged += _themeWatcher_SystemThemeChanged;
-            _themeWatcher.AppsThemeChanged += _themeWatcher_AppsThemeChanged;
-
-            ApplyColorSchemeSetting();
-            ApplyTrayIconTheme(_themeWatcher.GetSystemTheme());
+            _themeService.SystemThemeChanged += ThemeServiceOnSystemThemeChanged;
+            ApplyTrayIconTheme(_themeService.GetSystemTheme());
 
             windowService.ConfigureMainWindowProvider(this);
             bool autoRunning = Bootstrapper.StartupArguments.Contains("--autorun");
@@ -191,58 +182,19 @@ namespace Artemis.UI.Screens
 
         #region Theme
 
-        private void ApplyColorSchemeSetting()
-        {
-            if (_colorScheme.Value == ApplicationColorScheme.Automatic)
-                ApplyUITheme(_themeWatcher.GetAppsTheme());
-            else
-                ChangeMaterialColors(_colorScheme.Value);
-        }
-
-        private void ApplyUITheme(ThemeWatcher.WindowsTheme theme)
-        {
-            if (_colorScheme.Value != ApplicationColorScheme.Automatic)
-                return;
-            if (theme == ThemeWatcher.WindowsTheme.Dark)
-                ChangeMaterialColors(ApplicationColorScheme.Dark);
-            else
-                ChangeMaterialColors(ApplicationColorScheme.Light);
-        }
-
-        private void ApplyTrayIconTheme(ThemeWatcher.WindowsTheme theme)
+        private void ApplyTrayIconTheme(IThemeService.WindowsTheme theme)
         {
             Execute.PostToUIThread(() =>
             {
-                Icon = theme == ThemeWatcher.WindowsTheme.Dark
+                Icon = theme == IThemeService.WindowsTheme.Dark
                     ? new BitmapImage(new Uri("pack://application:,,,/Artemis.UI;component/Resources/Images/Logo/bow-white.ico"))
                     : new BitmapImage(new Uri("pack://application:,,,/Artemis.UI;component/Resources/Images/Logo/bow-black.ico"));
             });
         }
 
-        private void ChangeMaterialColors(ApplicationColorScheme colorScheme)
-        {
-            PaletteHelper paletteHelper = new();
-            ITheme theme = paletteHelper.GetTheme();
-            theme.SetBaseTheme(colorScheme == ApplicationColorScheme.Dark ? Theme.Dark : Theme.Light);
-            paletteHelper.SetTheme(theme);
-
-            MaterialDesignExtensions.Themes.PaletteHelper extensionsPaletteHelper = new();
-            extensionsPaletteHelper.SetLightDark(colorScheme == ApplicationColorScheme.Dark);
-        }
-
-        private void _themeWatcher_AppsThemeChanged(object sender, WindowsThemeEventArgs e)
-        {
-            ApplyUITheme(e.Theme);
-        }
-
-        private void _themeWatcher_SystemThemeChanged(object sender, WindowsThemeEventArgs e)
+        private void ThemeServiceOnSystemThemeChanged(object sender, WindowsThemeEventArgs e)
         {
             ApplyTrayIconTheme(e.Theme);
-        }
-
-        private void ColorSchemeOnSettingChanged(object sender, EventArgs e)
-        {
-            ApplyColorSchemeSetting();
         }
 
         #endregion

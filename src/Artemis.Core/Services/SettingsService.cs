@@ -16,6 +16,12 @@ namespace Artemis.Core.Services
         {
             return _pluginSettings.GetSetting(name, defaultValue);
         }
+
+        /// <inheritdoc />
+        public void SaveAllSettings()
+        {
+            _pluginSettings.SaveAllSettings();
+        }
     }
 
     /// <summary>
@@ -32,5 +38,10 @@ namespace Artemis.Core.Services
         /// <param name="defaultValue">The default value to use if the setting does not exist yet</param>
         /// <returns></returns>
         PluginSetting<T> GetSetting<T>(string name, T? defaultValue = default);
+
+        /// <summary>
+        ///     Saves all settings, obviously
+        /// </summary>
+        void SaveAllSettings();
     }
 }

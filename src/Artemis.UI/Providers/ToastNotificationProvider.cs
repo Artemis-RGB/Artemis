@@ -4,8 +4,8 @@ using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Windows.UI.Notifications;
+using Artemis.UI.Services;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Utilities;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Stylet;
@@ -14,11 +14,11 @@ namespace Artemis.UI.Providers
 {
     public class ToastNotificationProvider : INotificationProvider
     {
-        private ThemeWatcher _themeWatcher;
+        private readonly IThemeService _themeService;
 
-        public ToastNotificationProvider()
+        public ToastNotificationProvider(IThemeService themeService)
         {
-            _themeWatcher = new ThemeWatcher();
+            _themeService = themeService;
         }
 
         public static PngBitmapEncoder GetEncoderForIcon(PackIconKind icon, Color color)
@@ -71,7 +71,7 @@ namespace Artemis.UI.Providers
             Execute.OnUIThreadSync(() =>
             {
                 using FileStream stream = File.OpenWrite(imagePath);
-                GetEncoderForIcon(icon, _themeWatcher.GetSystemTheme() == ThemeWatcher.WindowsTheme.Dark ? Colors.White : Colors.Black).Save(stream);
+                GetEncoderForIcon(icon, _themeService.GetSystemTheme() == IThemeService.WindowsTheme.Dark ? Colors.White : Colors.Black).Save(stream);
             });
 
             new ToastContentBuilder()
@@ -88,14 +88,10 @@ namespace Artemis.UI.Providers
 
         #endregion
 
-        #region IDisposable
-
         /// <inheritdoc />
         public void Dispose()
         {
             ToastNotificationManagerCompat.Uninstall();
         }
-
-        #endregion
     }
 }
