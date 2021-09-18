@@ -30,8 +30,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
         private readonly IUpdateService _updateService;
         private readonly IWindowManager _windowManager;
         private bool _canOfferUpdatesIfFound = true;
-        private List<Tuple<string, double>> _renderScales;
-        private List<Tuple<string, int>> _targetFrameRates;
 
         public GeneralSettingsTabViewModel(
             IKernel kernel,
@@ -41,9 +39,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             ISettingsService settingsService,
             IUpdateService updateService,
             IPluginManagementService pluginManagementService,
-            IMessageService messageService,
             IRegistrationService registrationService,
-            ICoreService coreService
+            IMessageService messageService
         )
         {
             DisplayName = "GENERAL";
@@ -54,38 +51,34 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             _debugService = debugService;
             _settingsService = settingsService;
             _updateService = updateService;
-            _messageService = messageService;
             _registrationService = registrationService;
+            _messageService = messageService;
 
             LogLevels = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(LogEventLevel)));
             ColorSchemes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(ApplicationColorScheme)));
-            RenderScales = new List<Tuple<string, double>>
+            RenderScales = new BindableCollection<Tuple<string, double>>
             {
                 new("25%", 0.25),
                 new("50%", 0.5),
-                new("100%", 1),
+                new("100%", 1)
+            };
+            TargetFrameRates = new BindableCollection<Tuple<string, int>>
+            {
+                new("10 FPS", 10),
+                new("20 FPS", 20),
+                new("30 FPS", 30),
+                new("45 FPS", 45),
+                new("60 FPS (lol)", 60),
+                new("144 FPS (omegalol)", 144)
             };
 
-            TargetFrameRates = new List<Tuple<string, int>>();
-            for (int i = 10; i <= 30; i += 5)
-                TargetFrameRates.Add(new Tuple<string, int>(i + " FPS", i));
-            if (coreService.StartupArguments.Contains("--pcmr"))
-            {
-                TargetFrameRates.Add(new Tuple<string, int>("60 FPS (lol)", 60));
-                TargetFrameRates.Add(new Tuple<string, int>("144 FPS (omegalol)", 144));
-            }
-
             List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
-
             LayerBrushDescriptors = new BindableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
             _defaultLayerBrushDescriptor = _settingsService.GetSetting("ProfileEditor.DefaultLayerBrushDescriptor", new LayerBrushReference
             {
                 LayerBrushProviderId = "Artemis.Plugins.LayerBrushes.Color.ColorBrushProvider-92a9d6ba",
                 BrushType = "SolidBrush"
             });
-
-            WebServerPortSetting = _settingsService.GetSetting("WebServer.Port", 9696);
-            WebServerPortSetting.AutoSave = true;
         }
 
         public BindableCollection<LayerBrushDescriptor> LayerBrushDescriptors { get; }
@@ -93,148 +86,87 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
         public LayerBrushDescriptor SelectedLayerBrushDescriptor
         {
             get => LayerBrushDescriptors.FirstOrDefault(d => d.MatchesLayerBrushReference(_defaultLayerBrushDescriptor.Value));
-            set
-            {
-                _defaultLayerBrushDescriptor.Value = new LayerBrushReference(value);
-                _defaultLayerBrushDescriptor.Save();
-            }
+            set => _defaultLayerBrushDescriptor.Value = new LayerBrushReference(value);
         }
 
         public BindableCollection<ValueDescription> LogLevels { get; }
         public BindableCollection<ValueDescription> ColorSchemes { get; }
-
-        public List<Tuple<string, int>> TargetFrameRates
-        {
-            get => _targetFrameRates;
-            set => SetAndNotify(ref _targetFrameRates, value);
-        }
-
-        public List<Tuple<string, double>> RenderScales
-        {
-            get => _renderScales;
-            set => SetAndNotify(ref _renderScales, value);
-        }
-
-        public bool StartWithWindows
-        {
-            get => _settingsService.GetSetting("UI.AutoRun", false).Value;
-            set
-            {
-                _settingsService.GetSetting("UI.AutoRun", false).Value = value;
-                _settingsService.GetSetting("UI.AutoRun", false).Save();
-                NotifyOfPropertyChange(nameof(StartWithWindows));
-                Task.Run(() => ApplyAutorun(false));
-            }
-        }
-
-        public int AutoRunDelay
-        {
-            get => _settingsService.GetSetting("UI.AutoRunDelay", 15).Value;
-            set
-            {
-                _settingsService.GetSetting("UI.AutoRunDelay", 15).Value = value;
-                _settingsService.GetSetting("UI.AutoRunDelay", 15).Save();
-                NotifyOfPropertyChange(nameof(AutoRunDelay));
-                Task.Run(() => ApplyAutorun(true));
-            }
-        }
-
-        public bool StartMinimized
-        {
-            get => !_settingsService.GetSetting("UI.ShowOnStartup", true).Value;
-            set
-            {
-                _settingsService.GetSetting("UI.ShowOnStartup", true).Value = !value;
-                _settingsService.GetSetting("UI.ShowOnStartup", true).Save();
-                NotifyOfPropertyChange(nameof(StartMinimized));
-            }
-        }
-
-        public bool CheckForUpdates
-        {
-            get => _settingsService.GetSetting("UI.CheckForUpdates", true).Value;
-            set
-            {
-                _settingsService.GetSetting("UI.CheckForUpdates", true).Value = value;
-                _settingsService.GetSetting("UI.CheckForUpdates", true).Save();
-                NotifyOfPropertyChange(nameof(CheckForUpdates));
-            }
-        }
-
-        public bool ShowDataModelValues
-        {
-            get => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false).Value;
-            set
-            {
-                _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false).Value = value;
-                _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false).Save();
-            }
-        }
+        public BindableCollection<Tuple<string, double>> RenderScales { get; }
+        public BindableCollection<Tuple<string, int>> TargetFrameRates { get; }
 
         public Tuple<string, double> SelectedRenderScale
         {
-            get => RenderScales.FirstOrDefault(s => Math.Abs(s.Item2 - RenderScale) < 0.01);
-            set => RenderScale = value.Item2;
+            get => RenderScales.FirstOrDefault(s => Math.Abs(s.Item2 - CoreRenderScale.Value) < 0.01);
+            set => CoreRenderScale.Value = value.Item2;
         }
 
         public Tuple<string, int> SelectedTargetFrameRate
         {
-            get => TargetFrameRates.FirstOrDefault(t => Math.Abs(t.Item2 - TargetFrameRate) < 0.01);
-            set => TargetFrameRate = value.Item2;
+            get => TargetFrameRates.FirstOrDefault(s => s.Item2 == CoreTargetFrameRate.Value);
+            set => CoreTargetFrameRate.Value = value.Item2;
         }
 
-        public LogEventLevel SelectedLogLevel
+        public PluginSetting<bool> UIAutoRun => _settingsService.GetSetting("UI.AutoRun", false);
+        public PluginSetting<int> UIAutoRunDelay => _settingsService.GetSetting("UI.AutoRunDelay", 15);
+        public PluginSetting<bool> UIShowOnStartup => _settingsService.GetSetting("UI.ShowOnStartup", true);
+        public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.CheckForUpdates", true);
+        public PluginSetting<ApplicationColorScheme> UIColorScheme => _settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
+        public PluginSetting<bool> ProfileEditorShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
+        public PluginSetting<LogEventLevel> CoreLoggingLevel => _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information);
+        public PluginSetting<string> CorePreferredGraphicsContext => _settingsService.GetSetting("Core.PreferredGraphicsContext", "Vulkan");
+        public PluginSetting<double> CoreRenderScale => _settingsService.GetSetting("Core.RenderScale", 0.25);
+        public PluginSetting<int> CoreTargetFrameRate => _settingsService.GetSetting("Core.TargetFrameRate", 30);
+        public PluginSetting<int> WebServerPort => _settingsService.GetSetting("WebServer.Port", 9696);
+
+        private void UIAutoRunOnSettingChanged(object sender, EventArgs e)
         {
-            get => _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information).Value;
-            set
+            Task.Run(() => ApplyAutorun(false));
+        }
+
+        private void UIAutoRunDelayOnSettingChanged(object sender, EventArgs e)
+        {
+            Task.Run(() => ApplyAutorun(true));
+        }
+
+        private void CorePreferredGraphicsContextOnSettingChanged(object sender, EventArgs e)
+        {
+            _registrationService.ApplyPreferredGraphicsContext();
+        }
+
+
+        private void ApplyAutorun(bool recreate)
+        {
+            if (!UIAutoRun.Value)
+                UIShowOnStartup.Value = true;
+
+            // Remove the old auto-run method of placing a shortcut in shell:startup
+            string autoRunFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Artemis.lnk");
+            if (File.Exists(autoRunFile))
+                File.Delete(autoRunFile);
+
+            if (Constants.BuildInfo.IsLocalBuild)
+                return;
+
+            // Create or remove the task if necessary
+            try
             {
-                _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information).Value = value;
-                _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information).Save();
+                bool taskCreated = false;
+                if (!recreate)
+                    taskCreated = SettingsUtilities.IsAutoRunTaskCreated();
+
+                if (UIAutoRun.Value && !taskCreated)
+                    SettingsUtilities.CreateAutoRunTask(TimeSpan.FromSeconds(UIAutoRunDelay.Value));
+                else if (!UIAutoRun.Value && taskCreated)
+                    SettingsUtilities.RemoveAutoRunTask();
+            }
+            catch (Exception e)
+            {
+                Execute.PostToUIThread(() => _dialogService.ShowExceptionDialog("An exception occured while trying to apply the auto run setting", e));
+                throw;
             }
         }
 
-        public ApplicationColorScheme SelectedColorScheme
-        {
-            get => _settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic).Value;
-            set
-            {
-                _settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic).Value = value;
-                _settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic).Save();
-            }
-        }
-
-        public string PreferredGraphicsContext
-        {
-            get => _settingsService.GetSetting("Core.PreferredGraphicsContext", "Vulkan").Value;
-            set
-            {
-                _settingsService.GetSetting("Core.PreferredGraphicsContext", "Vulkan").Value = value;
-                _settingsService.GetSetting("Core.PreferredGraphicsContext", "Vulkan").Save();
-                _registrationService.ApplyPreferredGraphicsContext();
-            }
-        }
-
-        public double RenderScale
-        {
-            get => _settingsService.GetSetting("Core.RenderScale", 0.25).Value;
-            set
-            {
-                _settingsService.GetSetting("Core.RenderScale", 0.25).Value = value;
-                _settingsService.GetSetting("Core.RenderScale", 0.25).Save();
-            }
-        }
-
-        public int TargetFrameRate
-        {
-            get => _settingsService.GetSetting("Core.TargetFrameRate", 25).Value;
-            set
-            {
-                _settingsService.GetSetting("Core.TargetFrameRate", 25).Value = value;
-                _settingsService.GetSetting("Core.TargetFrameRate", 25).Save();
-            }
-        }
-
-        public PluginSetting<int> WebServerPortSetting { get; }
+        #region View methods
 
         public bool CanOfferUpdatesIfFound
         {
@@ -298,44 +230,32 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             }
         }
 
+        #endregion
+
+        #region Overrides of Screen
+
         protected override void OnInitialActivate()
         {
             Task.Run(() => ApplyAutorun(false));
+
+            UIAutoRun.SettingChanged += UIAutoRunOnSettingChanged;
+            UIAutoRunDelay.SettingChanged += UIAutoRunDelayOnSettingChanged;
+            CorePreferredGraphicsContext.SettingChanged += CorePreferredGraphicsContextOnSettingChanged;
             base.OnInitialActivate();
         }
 
-        private void ApplyAutorun(bool recreate)
+        protected override void OnClose()
         {
-            if (!StartWithWindows)
-                StartMinimized = false;
+            UIAutoRun.SettingChanged -= UIAutoRunOnSettingChanged;
+            UIAutoRunDelay.SettingChanged -= UIAutoRunDelayOnSettingChanged;
+            CorePreferredGraphicsContext.SettingChanged -= CorePreferredGraphicsContextOnSettingChanged;
 
-            // Remove the old auto-run method of placing a shortcut in shell:startup
-            string autoRunFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Artemis.lnk");
-            if (File.Exists(autoRunFile))
-                File.Delete(autoRunFile);
-
-            if (Constants.BuildInfo.IsLocalBuild)
-                return;
-
-            // Create or remove the task if necessary
-            try
-            {
-                bool taskCreated = false;
-                if (!recreate) taskCreated = SettingsUtilities.IsAutoRunTaskCreated();
-
-                if (StartWithWindows && !taskCreated)
-                    SettingsUtilities.CreateAutoRunTask(TimeSpan.FromSeconds(AutoRunDelay));
-                else if (!StartWithWindows && taskCreated)
-                    SettingsUtilities.RemoveAutoRunTask();
-            }
-            catch (Exception e)
-            {
-                Execute.PostToUIThread(() => _dialogService.ShowExceptionDialog("An exception occured while trying to apply the auto run setting", e));
-                throw;
-            }
+            _settingsService.SaveAllSettings();
+            base.OnClose();
         }
-    }
 
+        #endregion
+    }
 
     public enum ApplicationColorScheme
     {
