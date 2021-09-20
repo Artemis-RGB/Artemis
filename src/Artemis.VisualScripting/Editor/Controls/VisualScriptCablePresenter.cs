@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -7,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Artemis.Core;
 using Artemis.UI.Shared;
 using Artemis.VisualScripting.Editor.Controls.Wrapper;
 
@@ -75,7 +73,7 @@ namespace Artemis.VisualScripting.Editor.Controls
         {
             _path = GetTemplateChild(PART_PATH) as Path ?? throw new NullReferenceException($"The Path '{PART_PATH}' is missing.");
             _valueBorder = GetTemplateChild("PART_ValueDisplay") as Border ?? throw new NullReferenceException("The Border 'PART_ValueDisplay' is missing.");
-           
+
             _path.MouseEnter += (_, _) => UpdateValueVisibility();
             _path.MouseLeave += (_, _) => UpdateValueVisibility();
             _valueBorder.MouseEnter += (_, _) => UpdateValueVisibility();
@@ -95,13 +93,15 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         private void OnPathMouseDown(object sender, MouseButtonEventArgs args)
         {
-            if ((args.ChangedButton == MouseButton.Left) && (args.LeftButton == MouseButtonState.Pressed) && (args.ClickCount == 2))
+            if (args.ChangedButton == MouseButton.Left && args.LeftButton == MouseButtonState.Pressed && args.ClickCount == 2)
             {
                 //TODO DarthAffe 17.06.2021: Should we add rerouting?
                 //AddRerouteNode();
             }
             else if (args.ChangedButton == MouseButton.Middle)
+            {
                 Cable.Disconnect();
+            }
         }
 
         private static void CableChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
@@ -167,8 +167,8 @@ namespace Artemis.VisualScripting.Editor.Controls
                 return;
 
             ValuePosition = new Point(
-                Cable.From.AbsolutePosition.X + ((Cable.To.AbsolutePosition.X - Cable.From.AbsolutePosition.X) / 2),
-                Cable.From.AbsolutePosition.Y + ((Cable.To.AbsolutePosition.Y - Cable.From.AbsolutePosition.Y) / 2)
+                Cable.From.AbsolutePosition.X + (Cable.To.AbsolutePosition.X - Cable.From.AbsolutePosition.X) / 2,
+                Cable.From.AbsolutePosition.Y + (Cable.To.AbsolutePosition.Y - Cable.From.AbsolutePosition.Y) / 2
             );
         }
 

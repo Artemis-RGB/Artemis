@@ -3,9 +3,10 @@ using System.ComponentModel;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
+using Artemis.VisualScripting.Nodes.CustomViewModels;
 using Stylet;
 
-namespace Artemis.VisualScripting.Nodes.CustomViewModels
+namespace Artemis.VisualScripting.Nodes.DataModel.CustomViewModels
 {
     public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
     {
@@ -22,7 +23,7 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
 
         public PluginSetting<bool> ShowFullPaths { get; }
         public PluginSetting<bool> ShowDataModelValues { get; }
-        public BindableCollection<Type> FilterTypes { get; } = new() { typeof(DataModelEvent) };
+        public BindableCollection<Type> FilterTypes { get; } = new() { typeof(IDataModelEvent) };
 
         public BindableCollection<Module> Modules
         {

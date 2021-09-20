@@ -22,5 +22,6 @@ namespace Artemis.Core
 
         void ConnectTo(IPin pin);
         void DisconnectFrom(IPin pin);
+        void DisconnectAll();
     }
 }

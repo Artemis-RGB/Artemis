@@ -130,12 +130,33 @@ namespace Artemis.Core
             return pin;
         }
 
+        protected InputPinCollection CreateInputPinCollection(Type type, string name = "", int initialCount = 1)
+        {
+            InputPinCollection pin = new(this, type, name, initialCount);
+            _pinCollections.Add(pin);
+            OnPropertyChanged(nameof(PinCollections));
+            return pin;
+        }
+
         protected OutputPinCollection<T> CreateOutputPinCollection<T>(string name = "", int initialCount = 1)
         {
             OutputPinCollection<T> pin = new(this, name, initialCount);
             _pinCollections.Add(pin);
             OnPropertyChanged(nameof(PinCollections));
             return pin;
+        }
+
+        protected bool RemovePinCollection(PinCollection pinCollection)
+        {
+            bool isRemoved = _pinCollections.Remove(pinCollection);
+            if (isRemoved)
+            {
+                foreach (IPin pin in pinCollection) 
+                    pin.DisconnectAll();
+                OnPropertyChanged(nameof(PinCollections));
+            }
+
+            return isRemoved;
         }
 
         public virtual void Initialize(INodeScript script)

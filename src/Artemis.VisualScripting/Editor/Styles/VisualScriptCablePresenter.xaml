@@ -7,6 +7,7 @@
                     xmlns:skiaSharp="clr-namespace:SkiaSharp;assembly=SkiaSharp"
                     xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared">
     <converters:CenterTranslateConverter x:Key="CenterTranslateConverter" />
+    <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 
     <ControlTemplate x:Key="TemplateVisualScriptCablePresenter"
                      TargetType="{x:Type controls:VisualScriptCablePresenter}">
@@ -74,14 +75,16 @@
                             </Border>
                         </StackPanel>
                     </DataTemplate>
-
-                    <!-- <DataTemplate DataType=""> -->
-                    <!--     <TextBlock></TextBlock> -->
-                    <!-- </DataTemplate> -->
                 </Border.Resources>
 
-                <ContentControl Content="{Binding Cable.From.Pin.PinValue, RelativeSource={RelativeSource TemplatedParent}}" />
-                <!-- <TextBlock Text="{Binding Cable.From.Pin.PinValue, TargetNullValue=-, RelativeSource={RelativeSource TemplatedParent}}" /> -->
+                <Grid>
+                    <ContentControl Content="{Binding Cable.From.Pin.PinValue, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Visibility="{Binding Cable.From.Pin.PinValue, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToVisibilityConverter}}" />
+                    <TextBlock Text="null"
+                               FontStyle="Italic"
+                               Visibility="{Binding Cable.From.Pin.PinValue, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
+                </Grid>
+
             </Border>
         </Canvas>
 

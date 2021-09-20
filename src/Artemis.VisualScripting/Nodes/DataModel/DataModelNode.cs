@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Linq;
 using Artemis.Core;
 using Artemis.Storage.Entities.Profile;
-using Artemis.VisualScripting.Nodes.CustomViewModels;
+using Artemis.VisualScripting.Nodes.DataModel.CustomViewModels;
 using Stylet;
 
-namespace Artemis.VisualScripting.Nodes
+namespace Artemis.VisualScripting.Nodes.DataModel
 {
     [Node("Data Model-Value", "Outputs a selectable data model value.", "External")]
     public class DataModelNode : Node<DataModelNodeCustomViewModel>, IDisposable

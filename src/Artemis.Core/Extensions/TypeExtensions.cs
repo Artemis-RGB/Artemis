@@ -130,8 +130,11 @@ namespace Artemis.Core
         ///     at all
         /// </summary>
         /// <returns></returns>
-        public static int ScoreCastability(this Type to, Type from)
+        public static int ScoreCastability(this Type to, Type? from)
         {
+            if (from == null)
+                return 0;
+
             if (to == from)
                 return 5;
             if (to.TypeIsNumber() && from.TypeIsNumber())
