@@ -457,6 +457,7 @@ namespace Artemis.Core
         {
             // Other properties are computed
             DeviceEntity.Id = Identifier;
+            DeviceEntity.DeviceProvider = DeviceProvider.Plugin.Guid.ToString();
 
             DeviceEntity.InputIdentifiers.Clear();
             foreach (ArtemisDeviceInputIdentifier identifier in InputIdentifiers)

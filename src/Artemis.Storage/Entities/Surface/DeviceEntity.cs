@@ -12,6 +12,7 @@ namespace Artemis.Storage.Entities.Surface
         }
 
         public string Id { get; set; }
+        public string DeviceProvider { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
         public float Rotation { get; set; }
