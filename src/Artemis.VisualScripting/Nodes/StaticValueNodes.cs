@@ -4,7 +4,7 @@ using Artemis.VisualScripting.Nodes.CustomViewModels;
 namespace Artemis.VisualScripting.Nodes
 {
     [Node("Integer-Value", "Outputs an configurable integer value.", "Static", OutputType = typeof(int))]
-    public class StaticIntegerValueNode : Node<StaticIntegerValueNodeCustomViewModel>
+    public class StaticIntegerValueNode : Node<int, StaticIntegerValueNodeCustomViewModel>
     {
         #region Properties & Fields
 
@@ -26,16 +26,14 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
-            Output.Value = Storage as int? ?? 0;
+            Output.Value = Storage;
         }
-
-        public override void Initialize(INodeScript script) => Storage ??= 0;
 
         #endregion
     }
 
     [Node("Double-Value", "Outputs a configurable double value.", "Static", OutputType = typeof(double))]
-    public class StaticDoubleValueNode : Node<StaticDoubleValueNodeCustomViewModel>
+    public class StaticDoubleValueNode : Node<double, StaticDoubleValueNodeCustomViewModel>
     {
         #region Properties & Fields
 
@@ -60,13 +58,11 @@ namespace Artemis.VisualScripting.Nodes
             Output.Value = Storage as double? ?? 0.0;
         }
 
-        public override void Initialize(INodeScript script) => Storage ??= 0.0;
-
         #endregion
     }
 
     [Node("Float-Value", "Outputs a configurable float value.", "Static", OutputType = typeof(float))]
-    public class StaticFloatValueNode : Node<StaticFloatValueNodeCustomViewModel>
+    public class StaticFloatValueNode : Node<float, StaticFloatValueNodeCustomViewModel>
     {
         #region Properties & Fields
 
@@ -88,19 +84,14 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
-            if (Storage is double doubleValue)
-                Storage = (float) doubleValue;
-
-            Output.Value = Storage as float? ?? 0.0f;
+            Output.Value = Storage;
         }
-
-        public override void Initialize(INodeScript script) => Storage ??= 0.0f;
 
         #endregion
     }
 
     [Node("String-Value", "Outputs a configurable string value.", "Static", OutputType = typeof(string))]
-    public class StaticStringValueNode : Node<StaticStringValueNodeCustomViewModel>
+    public class StaticStringValueNode : Node<string, StaticStringValueNodeCustomViewModel>
     {
         #region Properties & Fields
 
@@ -122,7 +113,7 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
-            Output.Value = Storage as string;
+            Output.Value = Storage;
         }
         
         #endregion

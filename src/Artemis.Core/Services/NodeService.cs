@@ -76,7 +76,8 @@ namespace Artemis.Core.Services
                 node.Y = entity.Y;
                 try
                 {
-                    node.Storage = CoreJson.DeserializeObject(entity.Storage, true);
+                    if (node is Node nodeImplementation)
+                        nodeImplementation.DeserializeStorage(entity.Storage);
                 }
                 catch
                 {

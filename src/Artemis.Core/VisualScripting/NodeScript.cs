@@ -9,6 +9,9 @@ using Artemis.Storage.Entities.Profile.Nodes;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents a node script
+    /// </summary>
     public abstract class NodeScript : CorePropertyChanged, INodeScript, IStorageModel
     {
         private void NodeTypeStoreOnNodeTypeChanged(object? sender, NodeTypeStoreEvent e)
@@ -16,23 +19,41 @@ namespace Artemis.Core
             Load();
         }
 
+        /// <inheritdoc />
         public event EventHandler<SingleValueEventArgs<INode>>? NodeAdded;
+
+        /// <inheritdoc />
         public event EventHandler<SingleValueEventArgs<INode>>? NodeRemoved;
 
         #region Properties & Fields
 
         internal NodeScriptEntity Entity { get; }
 
+        /// <inheritdoc />
         public string Name { get; }
+
+        /// <inheritdoc />
         public string Description { get; }
 
         private readonly List<INode> _nodes = new();
+
+        /// <inheritdoc />
         public IEnumerable<INode> Nodes => new ReadOnlyCollection<INode>(_nodes);
 
+        /// <summary>
+        ///     Gets or sets the exit node of the script
+        /// </summary>
         protected INode ExitNode { get; set; }
+
+        /// <summary>
+        ///     Gets a boolean indicating whether the exit node is connected to any other nodes
+        /// </summary>
         public abstract bool ExitNodeConnected { get; }
+
+        /// <inheritdoc />
         public abstract Type ResultType { get; }
 
+        /// <inheritdoc />
         public object? Context { get; set; }
 
         #endregion
@@ -65,6 +86,7 @@ namespace Artemis.Core
 
         #region Methods
 
+        /// <inheritdoc />
         public void Run()
         {
             foreach (INode node in Nodes)
@@ -73,6 +95,7 @@ namespace Artemis.Core
             ExitNode.Evaluate();
         }
 
+        /// <inheritdoc />
         public void AddNode(INode node)
         {
             _nodes.Add(node);
@@ -80,6 +103,7 @@ namespace Artemis.Core
             NodeAdded?.Invoke(this, new SingleValueEventArgs<INode>(node));
         }
 
+        /// <inheritdoc />
         public void RemoveNode(INode node)
         {
             _nodes.Remove(node);
@@ -90,6 +114,7 @@ namespace Artemis.Core
             NodeRemoved?.Invoke(this, new SingleValueEventArgs<INode>(node));
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             NodeTypeStore.NodeTypeAdded -= NodeTypeStoreOnNodeTypeChanged;
@@ -147,9 +172,7 @@ namespace Artemis.Core
             // Restore pin collections
             foreach (NodePinCollectionEntity entityNodePinCollection in nodeEntity.PinCollections)
             {
-                IPinCollection? collection = node.PinCollections.FirstOrDefault(c => c.Name == entityNodePinCollection.Name &&
-                                                                                     c.Type.Name == entityNodePinCollection.Type &&
-                                                                                     (int) c.Direction == entityNodePinCollection.Direction);
+                IPinCollection? collection = node.PinCollections.ElementAtOrDefault(entityNodePinCollection.Id);
                 if (collection == null)
                     continue;
 
@@ -161,12 +184,12 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Loads missing connections between the nodes of this node script from the <see cref="Entity"/>
+        ///     Loads missing connections between the nodes of this node script from the <see cref="Entity" />
         /// </summary>
         public void LoadConnections()
         {
             List<INode> nodes = Nodes.ToList();
-            foreach (NodeConnectionEntity nodeConnectionEntity in Entity.Connections)
+            foreach (NodeConnectionEntity nodeConnectionEntity in Entity.Connections.OrderBy(p => p.SourcePinCollectionId))
             {
                 INode? source = nodes.ElementAtOrDefault(nodeConnectionEntity.SourceNode);
                 if (source == null)
@@ -191,15 +214,12 @@ namespace Artemis.Core
 
                 // Clear existing connections on input pins, we don't want none of that now
                 if (targetPin.Direction == PinDirection.Input)
-                {
                     while (targetPin.ConnectedTo.Any())
                         targetPin.DisconnectFrom(targetPin.ConnectedTo[0]);
-                }
+
                 if (sourcePin.Direction == PinDirection.Input)
-                {
-                    while (sourcePin.ConnectedTo.Any()) 
+                    while (sourcePin.ConnectedTo.Any())
                         sourcePin.DisconnectFrom(sourcePin.ConnectedTo[0]);
-                }
 
                 // Only connect the nodes if they aren't already connected (LoadConnections may be called twice or more)
                 if (!targetPin.ConnectedTo.Contains(sourcePin))
@@ -231,21 +251,24 @@ namespace Artemis.Core
                     Type = node.GetType().Name,
                     X = node.X,
                     Y = node.Y,
-                    Storage = CoreJson.SerializeObject(node.Storage, true),
                     Name = node.Name,
                     Description = node.Description,
                     IsExitNode = node.IsExitNode
                 };
 
+                if (node is Node nodeImplementation)
+                    nodeEntity.Storage = nodeImplementation.SerializeStorage();
+
+                int collectionId = 0;
                 foreach (IPinCollection nodePinCollection in node.PinCollections)
                 {
                     nodeEntity.PinCollections.Add(new NodePinCollectionEntity
                     {
-                        Name = nodePinCollection.Name,
-                        Type = nodePinCollection.Type.Name,
+                        Id = collectionId,
                         Direction = (int) nodePinCollection.Direction,
                         Amount = nodePinCollection.Count()
                     });
+                    collectionId++;
                 }
 
                 Entity.Nodes.Add(nodeEntity);
@@ -309,13 +332,21 @@ namespace Artemis.Core
         #endregion
     }
 
+    /// <summary>
+    ///     Represents a node script with a result value of type <paramref name="T" />
+    /// </summary>
+    /// <typeparam name="T">The type of result value</typeparam>
     public class NodeScript<T> : NodeScript, INodeScript<T>
     {
         #region Properties & Fields
 
+        /// <inheritdoc />
         public T Result => ((ExitNode<T>) ExitNode).Value;
 
+        /// <inheritdoc />
         public override bool ExitNodeConnected => ((ExitNode<T>) ExitNode).Input.ConnectedTo.Any();
+
+        /// <inheritdoc />
         public override Type ResultType => typeof(T);
 
         #endregion

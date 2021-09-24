@@ -12,7 +12,7 @@
                   materialDesign:ComboBoxAssist.ClassicMode="True"
                   VerticalAlignment="Center"
                   HorizontalAlignment="Stretch"
-                  SelectedValue="{Binding Input}"
+                  SelectedValue="{Binding Node.Storage}"
                   ItemsSource="{Binding EnumValues}"
                   SelectedValuePath="Value"
                   DisplayMemberPath="Description">

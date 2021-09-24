@@ -12,6 +12,7 @@ namespace Artemis.Core
         public override PinDirection Direction => PinDirection.Input;
 
         private T _value;
+
         public T Value
         {
             get
@@ -37,7 +38,8 @@ namespace Artemis.Core
         [JsonConstructor]
         internal InputPin(INode node, string name)
             : base(node, name)
-        { }
+        {
+        }
 
         #endregion
 
@@ -62,6 +64,7 @@ namespace Artemis.Core
         public override PinDirection Direction => PinDirection.Input;
 
         private object _value;
+
         public object Value
         {
             get
@@ -98,7 +101,17 @@ namespace Artemis.Core
 
         private void Evaluate()
         {
-            Value = ConnectedTo.Count > 0 ? ConnectedTo[0].PinValue : Type.GetDefault();
+            if (Type.IsValueType)
+            {
+                if (ConnectedTo.Count > 0 && ConnectedTo[0].PinValue != null)
+                    Value = ConnectedTo[0].PinValue;
+                else
+                    Value = Type.GetDefault()!;
+            }
+            else
+            {
+                Value = ConnectedTo[0].PinValue;
+            }
         }
 
         #endregion

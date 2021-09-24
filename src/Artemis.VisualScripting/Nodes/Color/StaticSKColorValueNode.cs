@@ -5,7 +5,7 @@ using SkiaSharp;
 namespace Artemis.VisualScripting.Nodes.Color
 {
     [Node("Color-Value", "Outputs a configurable color value.", "Static", InputType = typeof(SKColor), OutputType = typeof(SKColor))]
-    public class StaticSKColorValueNode : Node<StaticSKColorValueNodeCustomViewModel>
+    public class StaticSKColorValueNode : Node<SKColor, StaticSKColorValueNodeCustomViewModel>
     {
         #region Constructors
 
@@ -27,17 +27,9 @@ namespace Artemis.VisualScripting.Nodes.Color
 
         public override void Evaluate()
         {
-            Output.Value = Storage as SKColor? ?? SKColor.Empty;
+            Output.Value = Storage;
         }
-
-        public override void Initialize(INodeScript script)
-        {
-            if (Storage is string && SKColor.TryParse(Storage.ToString(), out SKColor parsed))
-                Storage = parsed;
-            else
-                Storage = SKColor.Empty;
-        }
-
+        
         #endregion
     }
 }

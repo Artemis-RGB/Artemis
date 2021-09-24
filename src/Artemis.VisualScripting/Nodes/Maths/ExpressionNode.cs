@@ -9,12 +9,13 @@ using NoStringEvaluating.Models.Values;
 namespace Artemis.VisualScripting.Nodes.Maths
 {
     [Node("Math Expression", "Outputs the result of a math expression.", "Math", OutputType = typeof(int))]
-    public class MathExpressionNode : Node<MathExpressionNodeCustomViewModel>
+    public class MathExpressionNode : Node<string, MathExpressionNodeCustomViewModel>
     {
         private readonly INoStringEvaluator _evaluator;
         private readonly PinsVariablesContainer _variables;
 
         #region Constructors
+
         public MathExpressionNode(INoStringEvaluator evaluator)
             : base("Math Expression", "Outputs the result of a math expression.")
         {
@@ -24,7 +25,7 @@ namespace Artemis.VisualScripting.Nodes.Maths
             Values.PinAdded += (_, _) => SetPinNames();
             Values.PinRemoved += (_, _) => SetPinNames();
             _variables = new PinsVariablesContainer(Values);
-            
+
             SetPinNames();
         }
 
@@ -41,8 +42,8 @@ namespace Artemis.VisualScripting.Nodes.Maths
 
         public override void Evaluate()
         {
-            if (Storage is string formula) 
-                Output.Value = (float) _evaluator.CalcNumber(formula, _variables);
+            if (Storage != null)
+                Output.Value = (float) _evaluator.CalcNumber(Storage, _variables);
         }
 
         private void SetPinNames()

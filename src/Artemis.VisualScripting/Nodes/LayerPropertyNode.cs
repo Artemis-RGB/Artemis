@@ -7,7 +7,7 @@ using Artemis.VisualScripting.Nodes.CustomViewModels;
 namespace Artemis.VisualScripting.Nodes
 {
     [Node("Layer/Folder Property", "Outputs the property of a selected layer or folder", "External")]
-    public class LayerPropertyNode : Node<LayerPropertyNodeCustomViewModel>
+    public class LayerPropertyNode : Node<LayerPropertyNodeEntity, LayerPropertyNodeCustomViewModel>
     {
         private readonly object _layerPropertyLock = new();
 
@@ -44,7 +44,7 @@ namespace Artemis.VisualScripting.Nodes
         {
             Script = script;
 
-            if (script.Context is Profile profile) 
+            if (script.Context is Profile profile)
                 profile.ChildRemoved += ProfileOnChildRemoved;
 
             LoadLayerProperty();
@@ -54,15 +54,13 @@ namespace Artemis.VisualScripting.Nodes
         {
             lock (_layerPropertyLock)
             {
-                if (Script.Context is not Profile profile)
+                if (Script.Context is not Profile profile || Storage == null)
                     return;
-                if (Storage is not LayerPropertyNodeEntity entity)
-                    return;
-
-                RenderProfileElement element = profile.GetAllRenderElements().FirstOrDefault(l => l.EntityId == entity.ElementId);
+                
+                RenderProfileElement element = profile.GetAllRenderElements().FirstOrDefault(l => l.EntityId == Storage.ElementId);
 
                 ProfileElement = element;
-                LayerProperty = element?.GetAllLayerProperties().FirstOrDefault(p => p.Path == entity.PropertyPath);
+                LayerProperty = element?.GetAllLayerProperties().FirstOrDefault(p => p.Path == Storage.PropertyPath);
                 CreatePins();
             }
         }

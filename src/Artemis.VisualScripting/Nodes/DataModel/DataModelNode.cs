@@ -7,7 +7,7 @@ using Stylet;
 namespace Artemis.VisualScripting.Nodes.DataModel
 {
     [Node("Data Model-Value", "Outputs a selectable data model value.", "External")]
-    public class DataModelNode : Node<DataModelNodeCustomViewModel>, IDisposable
+    public class DataModelNode : Node<DataModelPathEntity, DataModelNodeCustomViewModel>, IDisposable
     {
         private DataModelPath _dataModelPath;
 
@@ -28,10 +28,10 @@ namespace Artemis.VisualScripting.Nodes.DataModel
         {
             Script = script;
 
-            if (Storage is not DataModelPathEntity pathEntity)
+            if (Storage == null)
                 return;
 
-            DataModelPath = new DataModelPath(pathEntity);
+            DataModelPath = new DataModelPath(Storage);
             DataModelPath.PathValidated += DataModelPathOnPathValidated;
 
             UpdateOutputPin(false);

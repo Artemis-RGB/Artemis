@@ -15,9 +15,7 @@ namespace Artemis.VisualScripting.Nodes.Easing.CustomViewModels
         public EasingTypeNodeCustomViewModel(EasingTypeNode node) : base(node)
         {
             _node = node;
-            EasingViewModels = new BindableCollection<NodeEasingViewModel>(Enum.GetValues(typeof(Easings.Functions))
-                .Cast<Easings.Functions>()
-                .Select(e => new NodeEasingViewModel(e)));
+            EasingViewModels = new BindableCollection<NodeEasingViewModel>(Enum.GetValues(typeof(Easings.Functions)).Cast<Easings.Functions>().Select(e => new NodeEasingViewModel(e)));
         }
 
         public BindableCollection<NodeEasingViewModel> EasingViewModels { get; }
@@ -35,7 +33,7 @@ namespace Artemis.VisualScripting.Nodes.Easing.CustomViewModels
         public override void OnActivate()
         {
             _node.PropertyChanged += NodeOnPropertyChanged;
-            SelectedEasingViewModel = EasingViewModels.FirstOrDefault(vm => vm.EasingFunction == _node.EasingFunction);
+            SelectedEasingViewModel = GetNodeEasingViewModel();
         }
 
         public override void OnDeactivate()
@@ -45,11 +43,16 @@ namespace Artemis.VisualScripting.Nodes.Easing.CustomViewModels
 
         private void NodeOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(Node.Storage))
+            if (e.PropertyName == nameof(_node.Storage))
             {
-                _selectedEasingViewModel = EasingViewModels.FirstOrDefault(vm => vm.EasingFunction == _node.EasingFunction);
+                _selectedEasingViewModel = GetNodeEasingViewModel();
                 NotifyOfPropertyChange(nameof(SelectedEasingViewModel));
             }
+        }
+
+        private NodeEasingViewModel GetNodeEasingViewModel()
+        {
+            return EasingViewModels.FirstOrDefault(vm => vm.EasingFunction == _node.Storage);
         }
     }
 }

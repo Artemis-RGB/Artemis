@@ -12,5 +12,5 @@
     </UserControl.Resources>
     <shared:ColorPicker VerticalAlignment="Center"
                         HorizontalAlignment="Stretch"
-                        Color="{Binding Input, Converter={StaticResource SKColorToColorConverter}}" />
+                        Color="{Binding Node.Storage, Converter={StaticResource SKColorToColorConverter}}" />
 </UserControl>

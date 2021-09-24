@@ -155,10 +155,10 @@ namespace Artemis.VisualScripting.Editor.Controls
         {
             CustomViewModel?.OnDeactivate();
 
-            if (Node?.Node is CustomViewModelNode customViewModelNode)
+            if (Node?.Node is Node customViewModelNode)
             {
                 CustomViewModel = customViewModelNode.GetCustomViewModel();
-                CustomViewModel.OnActivate();
+                CustomViewModel?.OnActivate();
             }
             else
                 CustomViewModel = null;
