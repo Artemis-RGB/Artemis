@@ -93,6 +93,13 @@ namespace Artemis.Core
             }
         }
 
+        /// <summary>
+        ///     Returns the index of the provided element inside the read only collection
+        /// </summary>
+        /// <typeparam name="T">The type of element to find</typeparam>
+        /// <param name="self">The collection to search in</param>
+        /// <param name="elementToFind">The element to find</param>
+        /// <returns>If found, the index of the element to find; otherwise -1</returns>
         public static int IndexOf<T>(this IReadOnlyCollection<T> self, T elementToFind)
         {
             int i = 0;
@@ -102,6 +109,7 @@ namespace Artemis.Core
                     return i;
                 i++;
             }
+
             return -1;
         }
     }

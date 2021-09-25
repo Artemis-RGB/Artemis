@@ -65,7 +65,7 @@ namespace Artemis.Core
     }
 
     /// <summary>
-    ///     Represents a node script with a result value of type <paramref name="T" />
+    ///     Represents a node script with a result value of type <typeparamref name="T" />
     /// </summary>
     /// <typeparam name="T">The type of result value</typeparam>
     public interface INodeScript<out T> : INodeScript
@@ -73,6 +73,6 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the result of the script
         /// </summary>
-        T Result { get; }
+        T? Result { get; }
     }
 }

@@ -9,7 +9,7 @@
 
         public InputPin<T> Input { get; }
 
-        public T Value { get; private set; }
+        public T? Value { get; private set; }
 
         public override bool IsExitNode => true;
         

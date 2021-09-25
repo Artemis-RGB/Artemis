@@ -5,12 +5,35 @@ using Artemis.Core.Events;
 
 namespace Artemis.Core
 {
+    /// <inheritdoc cref="IPin" />
     public abstract class Pin : CorePropertyChanged, IPin
     {
+        #region Constructors
+
+        /// <summary>
+        ///     Creates a new instance of the <see cref="Pin" /> class on the provided node with the provided name
+        /// </summary>
+        /// <param name="node">The node the pin belongs to</param>
+        /// <param name="name">The name of the pin</param>
+        protected Pin(INode node, string name = "")
+        {
+            Node = node;
+            _name = name;
+        }
+
+        #endregion
+
+        /// <inheritdoc />
+        public event EventHandler<SingleValueEventArgs<IPin>>? PinConnected;
+        /// <inheritdoc />
+        public event EventHandler<SingleValueEventArgs<IPin>>? PinDisconnected;
+
         #region Properties & Fields
 
+        /// <inheritdoc />
         public INode Node { get; }
 
+        /// <inheritdoc />
         public string Name
         {
             get => _name;
@@ -19,6 +42,7 @@ namespace Artemis.Core
 
         private bool _isEvaluated;
 
+        /// <inheritdoc />
         public bool IsEvaluated
         {
             get => _isEvaluated;
@@ -27,36 +51,30 @@ namespace Artemis.Core
 
         private readonly List<IPin> _connectedTo = new();
         private string _name;
+
+        /// <inheritdoc />
         public IReadOnlyList<IPin> ConnectedTo => new ReadOnlyCollection<IPin>(_connectedTo);
 
+        /// <inheritdoc />
         public abstract PinDirection Direction { get; }
+
+        /// <inheritdoc />
         public abstract Type Type { get; }
-        public abstract object PinValue { get; }
 
-        #endregion
-
-        #region Events
-
-        public event EventHandler<SingleValueEventArgs<IPin>> PinConnected;
-        public event EventHandler<SingleValueEventArgs<IPin>> PinDisconnected;
-
-        #endregion
-
-        #region Constructors
-
-        protected Pin(INode node, string name = "")
-        {
-            this.Node = node;
-            this.Name = name;
-
-            if (Node != null)
-                Node.Resetting += OnNodeResetting;
-        }
+        /// <inheritdoc />
+        public abstract object? PinValue { get; }
 
         #endregion
 
         #region Methods
 
+        /// <inheritdoc />
+        public void Reset()
+        {
+            IsEvaluated = false;
+        }
+
+        /// <inheritdoc />
         public void ConnectTo(IPin pin)
         {
             _connectedTo.Add(pin);
@@ -65,6 +83,7 @@ namespace Artemis.Core
             PinConnected?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
         }
 
+        /// <inheritdoc />
         public void DisconnectFrom(IPin pin)
         {
             _connectedTo.Remove(pin);
@@ -73,6 +92,7 @@ namespace Artemis.Core
             PinDisconnected?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
         }
 
+        /// <inheritdoc />
         public void DisconnectAll()
         {
             List<IPin> connectedPins = new(_connectedTo);
@@ -82,11 +102,6 @@ namespace Artemis.Core
 
             foreach (IPin pin in connectedPins)
                 PinDisconnected?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
-        }
-
-        private void OnNodeResetting(object sender, EventArgs e)
-        {
-            IsEvaluated = false;
         }
 
         #endregion

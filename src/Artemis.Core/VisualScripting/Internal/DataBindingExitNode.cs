@@ -27,7 +27,7 @@ namespace Artemis.Core.Internal
             foreach (var (property, inputPin) in _propertyPins)
             {
                 if (inputPin.ConnectedTo.Any())
-                    _propertyValues[property] = inputPin.Value;
+                    _propertyValues[property] = inputPin.Value!;
                 else 
                     _propertyValues.Remove(property);
             }
@@ -55,7 +55,7 @@ namespace Artemis.Core.Internal
             foreach (IDataBindingProperty property in DataBinding.Properties)
                 _propertyPins.Add(property, CreateInputPin(property.ValueType, property.DisplayName));
         }
-
+        
         #region Event handlers
 
         private void DataBindingOnDataBindingPropertyRegistered(object? sender, DataBindingEventArgs e)

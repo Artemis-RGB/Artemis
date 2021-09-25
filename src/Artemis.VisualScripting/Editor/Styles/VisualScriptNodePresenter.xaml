@@ -24,7 +24,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border Padding="{TemplateBinding Padding}" 
+                    <Border Padding="{TemplateBinding Padding}"
                             Background="{TemplateBinding Background}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             BorderBrush="{TemplateBinding BorderBrush}">
@@ -103,19 +103,18 @@
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate DataType="{x:Type wrapper:VisualScriptPinCollection}">
-                    <StackPanel Margin="0,4" Orientation="Vertical">
+                    <StackPanel Margin="0,2" Orientation="Vertical">
                         <TextBlock Text="{Binding PinCollection.Name}" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type controls:VisualScriptNodePresenter}}}" />
-                        <ItemsControl Margin="0,4"
-                                      Style="{StaticResource StylePinListInput}" 
+                        <ItemsControl Margin="0,5"
+                                      Style="{StaticResource StylePinListInput}"
                                       ItemsSource="{Binding Pins}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="{x:Type core:Pin}">
-                                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                                        <controls:VisualScriptPinPresenter Margin="0,5,-3,3"
-                                                                           Pin="{Binding .}" />
+                                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0 8 0 0">
+                                        <controls:VisualScriptPinPresenter Pin="{Binding .}" Margin="0 0 2 0" />
                                         <Button Style="{StaticResource StyleButtonPinsModify}"
                                                 Command="{Binding DataContext.RemovePinCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                                CommandParameter="{Binding .}"/>
+                                                CommandParameter="{Binding .}" />
                                     </StackPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
@@ -139,14 +138,14 @@
                     <StackPanel Margin="0,4" Orientation="Vertical">
                         <TextBlock Text="{Binding PinCollection.Name}" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type controls:VisualScriptNodePresenter}}}" />
                         <ItemsControl Margin="0,4"
-                                      Style="{StaticResource StylePinListOutput}" 
+                                      Style="{StaticResource StylePinListOutput}"
                                       ItemsSource="{Binding Pins}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="{x:Type core:Pin}">
                                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                                         <Button Style="{StaticResource StyleButtonPinsModify}"
                                                 Command="{Binding DataContext.RemovePinCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                                CommandParameter="{Binding .}"/>
+                                                CommandParameter="{Binding .}" />
                                         <controls:VisualScriptPinPresenter Margin="-3,5,0,3"
                                                                            Pin="{Binding .}" />
                                     </StackPanel>
@@ -182,9 +181,9 @@
                             <!-- Placeholder -->
                         </Border>
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center"
-                               FontFamily="{TemplateBinding FontFamily}"
-                               FontSize="14" FontWeight="Bold"
-                               Text="{Binding Node.Node.Name, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                   FontFamily="{TemplateBinding FontFamily}"
+                                   FontSize="14" FontWeight="Bold"
+                                   Text="{Binding Node.Node.Name, RelativeSource={RelativeSource TemplatedParent}}" />
                     </DockPanel>
                 </Border>
 
@@ -199,24 +198,24 @@
 
                         <Border x:Name="BrdInputPins" Grid.Column="0">
                             <StackPanel Orientation="Vertical">
-                                <ItemsControl Style="{StaticResource StylePinListInput}" 
+                                <ItemsControl Style="{StaticResource StylePinListInput}"
                                               ItemsSource="{Binding Node.InputPins, RelativeSource={RelativeSource TemplatedParent}}" />
 
-                                <ItemsControl Style="{StaticResource StylePinCollectionListInput}" 
+                                <ItemsControl Style="{StaticResource StylePinCollectionListInput}"
                                               ItemsSource="{Binding Node.InputPinCollections, RelativeSource={RelativeSource TemplatedParent}}" />
                             </StackPanel>
                         </Border>
 
                         <Border x:Name="BrdCustomView" Grid.Column="1">
-                            <ContentControl s:View.Model="{TemplateBinding CustomViewModel}"/>
+                            <ContentControl s:View.Model="{TemplateBinding CustomViewModel}" />
                         </Border>
 
                         <Border x:Name="BrdOutputPins" Grid.Column="2">
                             <StackPanel Orientation="Vertical">
-                                <ItemsControl Style="{StaticResource StylePinListOutput}" 
+                                <ItemsControl Style="{StaticResource StylePinListOutput}"
                                               ItemsSource="{Binding Node.OutputPins, RelativeSource={RelativeSource TemplatedParent}}" />
 
-                                <ItemsControl Style="{StaticResource StylePinCollectionListOutput}" 
+                                <ItemsControl Style="{StaticResource StylePinCollectionListOutput}"
                                               ItemsSource="{Binding Node.OutputPinCollections, RelativeSource={RelativeSource TemplatedParent}}" />
                             </StackPanel>
                         </Border>
@@ -226,12 +225,12 @@
         </Border>
     </ControlTemplate>
 
-    <Style x:Key="StyleVisualScriptNodePresenter" 
+    <Style x:Key="StyleVisualScriptNodePresenter"
            TargetType="{x:Type controls:VisualScriptNodePresenter}">
 
         <Setter Property="Padding" Value="8,10" />
 
-        <Setter Property="Foreground" Value="#FFFFFFFF"/>
+        <Setter Property="Foreground" Value="#FFFFFFFF" />
 
         <Setter Property="Background" Value="#80101010" />
         <Setter Property="TitleBrush" Value="#FF444444" />

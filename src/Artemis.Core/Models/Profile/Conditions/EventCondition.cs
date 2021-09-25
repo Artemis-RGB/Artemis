@@ -6,6 +6,9 @@ using Artemis.Storage.Entities.Profile.Conditions;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents a condition that is based on a <see cref="DataModelEvent" />
+    /// </summary>
     public class EventCondition : CorePropertyChanged, INodeScriptCondition
     {
         private readonly string _displayName;
@@ -78,7 +81,7 @@ namespace Artemis.Core
             }
             else
             {
-                _eventNode = new EventDefaultNode() {X = -300};
+                _eventNode = new EventDefaultNode {X = -300};
                 _eventNode.UpdateDataModelEvent(dataModelEvent);
             }
 

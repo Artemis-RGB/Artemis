@@ -63,7 +63,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             }
         }
 
-        private void DataBindingOnDataBindingToggled(object? sender, DataBindingEventArgs e)
+        private void DataBindingOnDataBindingToggled(object sender, DataBindingEventArgs e)
         {
             OnPropertyChanged(nameof(DataBindingEnabled));
         }

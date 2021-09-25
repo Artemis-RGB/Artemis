@@ -60,12 +60,19 @@ namespace Artemis.Core
 
         #region Constructors
 
-        public NodeScript(string name, string description, object? context = null)
+        /// <summary>
+        /// Creates a new instance of the <see cref="NodeScript"/> class with a name, description and optional context
+        /// </summary>
+        /// <param name="name">The name of the node script</param>
+        /// <param name="description">The description of the node script</param>
+        /// <param name="context">The context of the node script, usually a <see cref="Profile" /> or <see cref="ProfileConfiguration" /></param>
+        protected NodeScript(string name, string description, object? context = null)
         {
             Name = name;
             Description = description;
             Context = context;
             Entity = new NodeScriptEntity();
+            ExitNode = null!;
 
             NodeTypeStore.NodeTypeAdded += NodeTypeStoreOnNodeTypeChanged;
             NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeChanged;
@@ -77,6 +84,7 @@ namespace Artemis.Core
             Description = description;
             Entity = entity;
             Context = context;
+            ExitNode = null!;
 
             NodeTypeStore.NodeTypeAdded += NodeTypeStoreOnNodeTypeChanged;
             NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeChanged;
@@ -176,6 +184,8 @@ namespace Artemis.Core
                 if (collection == null)
                     continue;
 
+                while (collection.Count() > entityNodePinCollection.Amount)
+                    collection.Remove(collection.Last());
                 while (collection.Count() < entityNodePinCollection.Amount)
                     collection.AddPin();
             }
@@ -333,7 +343,7 @@ namespace Artemis.Core
     }
 
     /// <summary>
-    ///     Represents a node script with a result value of type <paramref name="T" />
+    ///     Represents a node script with a result value of type <typeparamref name="T" />
     /// </summary>
     /// <typeparam name="T">The type of result value</typeparam>
     public class NodeScript<T> : NodeScript, INodeScript<T>
@@ -341,7 +351,7 @@ namespace Artemis.Core
         #region Properties & Fields
 
         /// <inheritdoc />
-        public T Result => ((ExitNode<T>) ExitNode).Value;
+        public T? Result => ((ExitNode<T>) ExitNode).Value;
 
         /// <inheritdoc />
         public override bool ExitNodeConnected => ((ExitNode<T>) ExitNode).Input.ConnectedTo.Any();
@@ -362,6 +372,7 @@ namespace Artemis.Core
             Load();
         }
 
+        /// <inheritdoc />
         public NodeScript(string name, string description, object? context = null)
             : base(name, description, context)
         {

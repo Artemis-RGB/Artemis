@@ -277,7 +277,7 @@ namespace Artemis.VisualScripting.Editor.Controls
                 FitScript();
         }
 
-        private void OnVisualScriptNodeCollectionChanged(object? sender, EventArgs e)
+        private void OnVisualScriptNodeCollectionChanged(object sender, EventArgs e)
         {
             if (AutoFitScript)
                 FitScript();

@@ -3,11 +3,17 @@ using Artemis.Storage.Entities.Profile.Conditions;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents a condition that is based on a data model value
+    /// </summary>
     public class StaticCondition : CorePropertyChanged, INodeScriptCondition
     {
-        private readonly StaticConditionEntity _entity;
         private readonly string _displayName;
+        private readonly StaticConditionEntity _entity;
 
+        /// <summary>
+        ///     Creates a new instance of the <see cref="StaticCondition" /> class
+        /// </summary>
         public StaticCondition(ProfileElement profileElement)
         {
             _entity = new StaticConditionEntity();

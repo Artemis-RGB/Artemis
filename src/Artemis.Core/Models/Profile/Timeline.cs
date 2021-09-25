@@ -82,7 +82,6 @@ namespace Artemis.Core
 
         private TimeSpan _position;
         private TimeSpan _lastDelta;
-        private TimeLineEventOverlapMode _eventOverlapMode;
         private TimelinePlayMode _playMode;
         private TimelineStopMode _stopMode;
         private readonly List<Timeline> _extraTimelines;

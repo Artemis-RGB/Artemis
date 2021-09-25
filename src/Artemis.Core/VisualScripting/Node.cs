@@ -239,10 +239,14 @@ namespace Artemis.Core
         /// <inheritdoc />
         public abstract void Evaluate();
 
-
         /// <inheritdoc />
         public virtual void Reset()
         {
+            foreach (IPin pin in _pins) 
+                pin.Reset();
+            foreach (IPinCollection pinCollection in _pinCollections) 
+                pinCollection.Reset();
+
             Resetting?.Invoke(this, EventArgs.Empty);
         }
 

@@ -44,9 +44,12 @@ namespace Artemis.Core.ScriptingProviders
     /// </summary>
     public abstract class ScriptingProvider : PluginFeature
     {
+        /// <summary>
+        ///     The base constructor of the <see cref="ScriptingProvider" /> class
+        /// </summary>
         protected ScriptingProvider()
         {
-            Scripts = new(InternalScripts);
+            Scripts = new ReadOnlyCollection<Script>(InternalScripts);
         }
 
         /// <summary>

@@ -110,7 +110,7 @@ namespace Artemis.VisualScripting.Nodes
                 CreateOutputPin(dataBindingRegistration.ValueType, dataBindingRegistration.DisplayName);
         }
 
-        private void ProfileOnChildRemoved(object? sender, EventArgs e)
+        private void ProfileOnChildRemoved(object sender, EventArgs e)
         {
             if (Script.Context is not Profile profile)
                 return;

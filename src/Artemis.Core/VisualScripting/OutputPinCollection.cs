@@ -2,11 +2,17 @@
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents a collection of output pins containing values of type <typeparamref name="T" />
+    /// </summary>
+    /// <typeparam name="T">The type of value the pins in this collection hold</typeparam>
     public sealed class OutputPinCollection<T> : PinCollection
     {
         #region Properties & Fields
 
+        /// <inheritdoc />
         public override PinDirection Direction => PinDirection.Output;
+        /// <inheritdoc />
         public override Type Type => typeof(T);
 
         #endregion
@@ -21,6 +27,7 @@ namespace Artemis.Core
 
         #region Methods
 
+        /// <inheritdoc />
         protected override IPin CreatePin() => new OutputPin<T>(Node, string.Empty);
 
         #endregion

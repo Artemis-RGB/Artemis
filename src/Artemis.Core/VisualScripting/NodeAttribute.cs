@@ -2,36 +2,67 @@
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents an attribute that can be used to provide metadata on a node
+    /// </summary>
     public class NodeAttribute : Attribute
     {
         #region Properties & Fields
 
+        /// <summary>
+        ///     Gets the name of the node
+        /// </summary>
         public string Name { get; }
-        public string Description { get; set; }
-        public string Category { get; set; }
-        public Type InputType { get; set; }
-        public Type OutputType { get; set; }
+
+        /// <summary>
+        ///     Gets the description of the node
+        /// </summary>
+        public string Description { get; } = string.Empty;
+
+        /// <summary>
+        ///     Gets the category of the node
+        /// </summary>
+        public string Category { get; } = string.Empty;
+
+        /// <summary>
+        ///     Gets  the primary input type of the node
+        /// </summary>
+        public Type? InputType { get; init; }
+
+        /// <summary>
+        ///     Gets the primary output type of the node
+        /// </summary>
+        public Type? OutputType { get; init; }
 
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        ///     Creates a new instance of the <see cref="NodeAttribute" /> class
+        /// </summary>
         public NodeAttribute(string name)
         {
-            this.Name = name;
+            Name = name;
         }
 
+        /// <summary>
+        ///     Creates a new instance of the <see cref="NodeAttribute" /> class
+        /// </summary>
         public NodeAttribute(string name, string description)
         {
-            this.Name = name;
-            this.Description = description;
+            Name = name;
+            Description = description;
         }
 
+        /// <summary>
+        ///     Creates a new instance of the <see cref="NodeAttribute" /> class
+        /// </summary>
         public NodeAttribute(string name, string description, string category)
         {
-            this.Name = name;
-            this.Description = description;
-            this.Category = category;
+            Name = name;
+            Description = description;
+            Category = category;
         }
 
         #endregion

@@ -3,42 +3,18 @@ using Newtonsoft.Json;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents an input pin containing a value of type <typeparamref name="T" /> on a <see cref="INode" />
+    /// </summary>
     public sealed class InputPin<T> : Pin
     {
-        #region Properties & Fields
-
-        public override Type Type { get; } = typeof(T);
-        public override object PinValue => Value;
-        public override PinDirection Direction => PinDirection.Input;
-
-        private T _value;
-
-        public T Value
-        {
-            get
-            {
-                if (!IsEvaluated)
-                    Evaluate();
-
-                return _value;
-            }
-
-            private set
-            {
-                _value = value;
-                IsEvaluated = true;
-                OnPropertyChanged(nameof(PinValue));
-            }
-        }
-
-        #endregion
-
         #region Constructors
 
         [JsonConstructor]
         internal InputPin(INode node, string name)
             : base(node, name)
         {
+            Value = default;
         }
 
         #endregion
@@ -47,25 +23,29 @@ namespace Artemis.Core
 
         private void Evaluate()
         {
-            if (ConnectedTo.Count > 0)
-                if (ConnectedTo[0].PinValue is T value)
-                    Value = value;
+            if (ConnectedTo.Count > 0 && ConnectedTo[0].PinValue is T value)
+                Value = value;
         }
 
         #endregion
-    }
 
-    public sealed class InputPin : Pin
-    {
         #region Properties & Fields
 
-        public override Type Type { get; }
-        public override object PinValue => Value;
+        /// <inheritdoc />
+        public override Type Type { get; } = typeof(T);
+
+        /// <inheritdoc />
+        public override object? PinValue => Value;
+
+        /// <inheritdoc />
         public override PinDirection Direction => PinDirection.Input;
 
-        private object _value;
+        private T? _value;
 
-        public object Value
+        /// <summary>
+        ///     Gets or sets the value of the input pin
+        /// </summary>
+        public T? Value
         {
             get
             {
@@ -77,8 +57,6 @@ namespace Artemis.Core
 
             private set
             {
-                if (!Type.IsInstanceOfType(value)) throw new ArgumentException($"Value of type '{value?.GetType().Name ?? "null"}' can't be assigned to a pin of type {Type.Name}.");
-
                 _value = value;
                 IsEvaluated = true;
                 OnPropertyChanged(nameof(PinValue));
@@ -86,13 +64,20 @@ namespace Artemis.Core
         }
 
         #endregion
+    }
 
+    /// <summary>
+    ///     Represents an input pin on a <see cref="INode" />
+    /// </summary>
+    public sealed class InputPin : Pin
+    {
         #region Constructors
 
         internal InputPin(INode node, Type type, string name)
             : base(node, name)
         {
-            this.Type = type;
+            Type = type;
+            _value = type.GetDefault();
         }
 
         #endregion
@@ -111,6 +96,55 @@ namespace Artemis.Core
             else
             {
                 Value = ConnectedTo[0].PinValue;
+            }
+        }
+
+        #endregion
+
+        #region Properties & Fields
+
+        /// <inheritdoc />
+        public override Type Type { get; }
+
+        /// <inheritdoc />
+        public override object? PinValue => Value;
+
+        /// <inheritdoc />
+        public override PinDirection Direction => PinDirection.Input;
+
+        private object? _value;
+
+        /// <summary>
+        ///     Gets or sets the value of the input pin
+        /// </summary>
+        public object? Value
+        {
+            get
+            {
+                if (!IsEvaluated)
+                    Evaluate();
+
+                return _value;
+            }
+
+            private set
+            {
+                if (Type.IsValueType && value == null)
+                {
+                    // We can't take null for value types so set it to the default value for that type
+                    _value = Type.GetDefault();
+                }
+                else if (value != null)
+                {
+                    // If a value was given make sure it matches
+                    if (!Type.IsInstanceOfType(value))
+                        throw new ArgumentException($"Value of type '{value.GetType().Name}' can't be assigned to a pin of type {Type.Name}.");
+                }
+
+                // Otherwise we're good and we can put a null here if it happens to be that
+                _value = value;
+                IsEvaluated = true;
+                OnPropertyChanged(nameof(PinValue));
             }
         }
 
