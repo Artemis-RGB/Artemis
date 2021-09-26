@@ -47,7 +47,7 @@
     <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />
     <PackageReference Include="MaterialDesignThemes" Version="4.1.0" />
     <PackageReference Include="Ninject" Version="3.3.4" />
-    <PackageReference Include="NoStringEvaluating" Version="2.2.1" />
+    <PackageReference Include="NoStringEvaluating" Version="2.2.2" />
     <PackageReference Include="SkiaSharp" Version="2.80.3" />
     <PackageReference Include="Stylet" Version="1.3.6" />
   </ItemGroup>

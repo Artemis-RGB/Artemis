@@ -39,10 +39,6 @@ namespace Artemis.VisualScripting.Ninject
             // Evaluator
             Bind<INoStringEvaluator>().To<NoStringEvaluator>().InSingletonScope();
 
-            // Options
-            NoStringEvaluatorOptions opt = new NoStringEvaluatorOptions().SetWordQuotationMark("!");
-            opt.UpdateConstants();
-
             // If needed
             InjectUserDefinedFunctions();
         }

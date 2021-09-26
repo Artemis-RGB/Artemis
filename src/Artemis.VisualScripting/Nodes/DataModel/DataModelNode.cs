@@ -2,7 +2,6 @@
 using Artemis.Core;
 using Artemis.Storage.Entities.Profile;
 using Artemis.VisualScripting.Nodes.DataModel.CustomViewModels;
-using Stylet;
 
 namespace Artemis.VisualScripting.Nodes.DataModel
 {
@@ -52,40 +51,32 @@ namespace Artemis.VisualScripting.Nodes.DataModel
 
         public void UpdateOutputPin(bool loadConnections)
         {
-            Execute.OnUIThread(() =>
+            if (Output != null && Output.Type == DataModelPath?.GetPropertyType())
+                return;
+
+            if (Output != null)
             {
-                if (Output != null && Output.Type == DataModelPath?.GetPropertyType())
-                    return;
+                RemovePin(Output);
+                Output = null;
+            }
 
-                if (Output != null)
-                {
-                    RemovePin(Output);
-                    Output = null;
-                }
+            Type type = DataModelPath?.GetPropertyType();
+            if (type != null)
+                Output = CreateOutputPin(type);
 
-                Type type = DataModelPath?.GetPropertyType();
-                if (type != null)
-                    Output = CreateOutputPin(type);
-
-                if (loadConnections && Script is NodeScript nodeScript) 
-                    nodeScript.LoadConnections();
-            });
+            if (loadConnections && Script is NodeScript nodeScript)
+                nodeScript.LoadConnections();
         }
 
         private void DataModelPathOnPathValidated(object sender, EventArgs e)
         {
             UpdateOutputPin(true);
-           
         }
-
-        #region IDisposable
 
         /// <inheritdoc />
         public void Dispose()
         {
             DataModelPath?.Dispose();
         }
-
-        #endregion
     }
 }

@@ -29,9 +29,9 @@
       },
       "NoStringEvaluating": {
         "type": "Direct",
-        "requested": "[2.2.1, )",
-        "resolved": "2.2.1",
-        "contentHash": "dYvWeDdSXrfWreWu17XUNCZD1QAbeMuyOLwVxNBBy+mbs1O/QjsYr1uQPCJWqYRF2Rd5nQBLFbFWybz4Ndh68g==",
+        "requested": "[2.2.2, )",
+        "resolved": "2.2.2",
+        "contentHash": "hJHivPDA1Vxn0CCgOtHKZ3fmldxQuz7VL1J4lEaPTXCf+Vwcx1FDf05mGMh6olYMSxoKimGX8YK2sEoqeH3pnA==",
         "dependencies": {
           "Microsoft.Extensions.ObjectPool": "5.0.9"
         }
