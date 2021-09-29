@@ -552,7 +552,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
             if (_creationBoxParent.ContextMenu != null)
                 _creationBoxParent.ContextMenu.IsOpen = false;
-
+            
             Script.AddNode(node);
         }
 

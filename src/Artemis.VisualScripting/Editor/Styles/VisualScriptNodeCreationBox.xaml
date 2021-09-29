@@ -2,46 +2,50 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:Artemis.VisualScripting.Editor.Controls"
                     xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
-                    xmlns:behaviors="clr-namespace:Artemis.VisualScripting.Behaviors">
+                    xmlns:behaviors="clr-namespace:Artemis.VisualScripting.Behaviors"
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
-    <DataTemplate x:Key="TemplateNodeItem"
-                  DataType="{x:Type core:NodeData}">
-        <TextBlock Margin="8 0 0 0"
-                   Text="{Binding Name}"
-                   ToolTip="{Binding Description}" 
-                   behaviors:HighlightTermBehavior.TermToBeHighlighted="{Binding Text, ElementName=PART_SearchBox}"
-                   behaviors:HighlightTermBehavior.Text="{Binding Name}"
-                   behaviors:HighlightTermBehavior.HighlightForeground="{StaticResource Primary600Foreground}"
-                   behaviors:HighlightTermBehavior.HighlightBackground="{StaticResource Primary600}"/>
+    <DataTemplate x:Key="TemplateNodeItem" DataType="{x:Type core:NodeData}">
+        <StackPanel>
+            <TextBlock behaviors:HighlightTermBehavior.TermToBeHighlighted="{Binding SearchInput, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=controls:VisualScriptNodeCreationBox}}"
+                       behaviors:HighlightTermBehavior.Text="{Binding Name}"
+                       behaviors:HighlightTermBehavior.HighlightForeground="{StaticResource Primary600Foreground}"
+                       behaviors:HighlightTermBehavior.HighlightBackground="{StaticResource Primary600}" />
+            <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}"
+                       behaviors:HighlightTermBehavior.TermToBeHighlighted="{Binding SearchInput, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=controls:VisualScriptNodeCreationBox}}"
+                       behaviors:HighlightTermBehavior.Text="{Binding Description}"
+                       behaviors:HighlightTermBehavior.HighlightForeground="{StaticResource Primary600Foreground}"
+                       behaviors:HighlightTermBehavior.HighlightBackground="{StaticResource Primary600}" />
+        </StackPanel>
     </DataTemplate>
 
-    <ControlTemplate x:Key="TemplateVisualScriptNodeCreationBox"
-                     TargetType="{x:Type controls:VisualScriptNodeCreationBox}">
-        <Border Background="{TemplateBinding Background}"
-                BorderBrush="{TemplateBinding BorderBrush}"
-                BorderThickness="{TemplateBinding BorderThickness}">
-            <Grid>
+    <ControlTemplate x:Key="TemplateVisualScriptNodeCreationBox" TargetType="{x:Type controls:VisualScriptNodeCreationBox}">
+        <materialDesign:Card Margin="5" Opacity="0.9">
+            <Grid Margin="8">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Border Padding="2"
-                        BorderThickness="1"
-                        BorderBrush="#A0FFFFFF">
-                    <TextBox x:Name="PART_SearchBox"
-                             Background="Transparent"
-                             Foreground="#FFFFFFFF"
-                             CaretBrush="#FFFFFFFF"
-                             BorderThickness="0" />
-                </Border>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="25" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <materialDesign:PackIcon Grid.Column="0" Kind="Search" Width="20" Height="20" VerticalAlignment="Center" Foreground="{Binding ElementName=PART_SearchBox, Path=BorderBrush}" />
+                    <TextBox Grid.Column="1" x:Name="PART_SearchBox" 
+                             Text="{Binding SearchInput, UpdateSourceTrigger=PropertyChanged, Delay=300, RelativeSource={RelativeSource TemplatedParent}}"
+                             materialDesign:HintAssist.Hint="Type to search..."
+                             materialDesign:TextFieldAssist.HasClearButton="True"/>
+                </Grid>
 
-                <ListBox x:Name="PART_Content"
-                         Grid.Row="1"
-                         Background="Transparent"
-                         Foreground="#FFFFFFFF"
-                         BorderThickness="0"
-                         ItemTemplate="{StaticResource TemplateNodeItem}">
+                <Separator Grid.Row="1" Style="{StaticResource MaterialDesignLightSeparator}" />
+
+                <ListBox x:Name="PART_Content" Grid.Row="2" BorderThickness="0" ItemTemplate="{StaticResource TemplateNodeItem}"
+                         VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+                         VirtualizingPanel.IsContainerVirtualizable="True"
+                         VirtualizingPanel.ScrollUnit="Pixel">
                     <ListBox.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.ContainerStyle>
@@ -57,7 +61,7 @@
                                                     </Expander.HeaderTemplate>
                                                     <Expander.Style>
                                                         <Style TargetType="Expander">
-                                                            <Setter Property="Foreground" Value="AliceBlue"></Setter>
+                                                            <Setter Property="Foreground" Value="AliceBlue" />
                                                         </Style>
                                                     </Expander.Style>
                                                     <ItemsPresenter />
@@ -70,14 +74,11 @@
                         </GroupStyle>
                     </ListBox.GroupStyle>
                 </ListBox>
-
-
             </Grid>
-        </Border>
+        </materialDesign:Card>
     </ControlTemplate>
 
-    <Style x:Key="StyleVisualScriptNodeCreationBox"
-           TargetType="{x:Type controls:VisualScriptNodeCreationBox}">
+    <Style x:Key="StyleVisualScriptNodeCreationBox" TargetType="{x:Type controls:VisualScriptNodeCreationBox}">
         <Setter Property="Background" Value="#DD333333" />
         <Setter Property="BorderBrush" Value="#FF222222" />
         <Setter Property="BorderThickness" Value="2" />

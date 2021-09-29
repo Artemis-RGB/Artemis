@@ -8,7 +8,7 @@ using NoStringEvaluating.Models.Values;
 
 namespace Artemis.VisualScripting.Nodes.Maths
 {
-    [Node("Math Expression", "Outputs the result of a math expression.", "Math", InputType = typeof(float), OutputType = typeof(float))]
+    [Node("Math Expression", "Outputs the result of a math expression.", "Mathematics", InputType = typeof(float), OutputType = typeof(float))]
     public class MathExpressionNode : Node<string, MathExpressionNodeCustomViewModel>
     {
         private readonly INoStringEvaluator _evaluator;
@@ -42,7 +42,6 @@ namespace Artemis.VisualScripting.Nodes.Maths
 
         public override void Evaluate()
         {
-            var test = _evaluator.ToString();
             if (Storage != null)
                 Output.Value = (float) _evaluator.CalcNumber(Storage, _variables);
         }

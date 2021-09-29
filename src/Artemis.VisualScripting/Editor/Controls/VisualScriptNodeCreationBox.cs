@@ -51,7 +51,6 @@ namespace Artemis.VisualScripting.Editor.Controls
             set => SetValue(SourcePinProperty, value);
         }
 
-
         public static readonly DependencyProperty CreateNodeCommandProperty = DependencyProperty.Register(
             "CreateNodeCommand", typeof(ICommand), typeof(VisualScriptNodeCreationBox), new PropertyMetadata(default(ICommand)));
 
@@ -59,6 +58,15 @@ namespace Artemis.VisualScripting.Editor.Controls
         {
             get => (ICommand) GetValue(CreateNodeCommandProperty);
             set => SetValue(CreateNodeCommandProperty, value);
+        }
+
+        public static readonly DependencyProperty SearchInputProperty = DependencyProperty.Register(
+            "SearchInput", typeof(string), typeof(VisualScriptNodeCreationBox), new PropertyMetadata(default(string), OnSearchInputChanged));
+
+        public string SearchInput
+        {
+            get => (string)GetValue(SearchInputProperty);
+            set => SetValue(SearchInputProperty, value);
         }
 
         #endregion
@@ -70,7 +78,6 @@ namespace Artemis.VisualScripting.Editor.Controls
             _searchBox = GetTemplateChild(PART_SEARCHBOX) as TextBox ?? throw new NullReferenceException($"The Element '{PART_SEARCHBOX}' is missing.");
             _contentList = GetTemplateChild(PART_CONTENT) as ListBox ?? throw new NullReferenceException($"The Element '{PART_CONTENT}' is missing.");
 
-            _searchBox.TextChanged += OnSearchBoxTextChanged;
             _contentList.IsSynchronizedWithCurrentItem = false;
             _contentList.SelectionChanged += OnContentListSelectionChanged;
             _contentList.SelectionMode = SelectionMode.Single;
@@ -90,32 +97,29 @@ namespace Artemis.VisualScripting.Editor.Controls
             _searchBox.SelectionStart = 0;
             _searchBox.SelectionLength = _searchBox.Text.Length;
         }
-
-        private void OnSearchBoxTextChanged(object sender, TextChangedEventArgs args)
-        {
-            _contentView?.Refresh();
-        }
-
+        
         private void OnContentListSelectionChanged(object sender, SelectionChangedEventArgs args)
         {
             if ((args == null) || (_contentList?.SelectedItem == null)) return;
 
             CreateNodeCommand?.Execute(_contentList.SelectedItem);
+            _contentList.SelectedItem = null;
         }
 
         private bool Filter(object o)
         {
-            if (_searchBox == null) return false;
             if (o is not NodeData nodeData) return false;
+            if (string.IsNullOrWhiteSpace(SearchInput)) return true;
 
-            bool nameContains = nodeData.Name.Contains(_searchBox.Text, StringComparison.OrdinalIgnoreCase);
+            bool searchContains = nodeData.Name.Contains(SearchInput, StringComparison.OrdinalIgnoreCase) ||
+                                  nodeData.Description.Contains(SearchInput, StringComparison.OrdinalIgnoreCase);
 
             if (SourcePin == null || SourcePin.Pin.Type == typeof(object))
-                return nameContains;
+                return searchContains;
 
             if (SourcePin.Pin.Direction == PinDirection.Input)
-                return nodeData.OutputType != null && nameContains && (nodeData.OutputType == typeof(object) || nodeData.OutputType.IsAssignableTo(SourcePin.Pin.Type));
-            return nodeData.InputType != null && nameContains && (nodeData.InputType == typeof(object) || nodeData.InputType.IsAssignableFrom(SourcePin.Pin.Type));
+                return nodeData.OutputType != null && searchContains && (nodeData.OutputType == typeof(object) || nodeData.OutputType.IsAssignableTo(SourcePin.Pin.Type));
+            return nodeData.InputType != null && searchContains && (nodeData.InputType == typeof(object) || nodeData.InputType.IsAssignableFrom(SourcePin.Pin.Type));
         }
 
         private void ItemsSourceChanged()
@@ -149,6 +153,8 @@ namespace Artemis.VisualScripting.Editor.Controls
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs args) => (d as VisualScriptNodeCreationBox)?.ItemsSourceChanged();
 
         private static void OnSourcePinChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => (d as VisualScriptNodeCreationBox)?._contentView.Refresh();
+
+        private static void OnSearchInputChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => (d as VisualScriptNodeCreationBox)?._contentView.Refresh();
 
         #endregion
     }

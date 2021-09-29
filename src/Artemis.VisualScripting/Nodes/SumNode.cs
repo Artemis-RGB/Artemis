@@ -66,36 +66,4 @@ namespace Artemis.VisualScripting.Nodes
 
         #endregion
     }
-
-    [Node("Sum (Double)", "Sums the connected double values.", "Mathematics", InputType = typeof(double), OutputType = typeof(double))]
-    public class SumDoublesNode : Node
-    {
-        #region Properties & Fields
-
-        public InputPinCollection<double> Values { get; }
-
-        public OutputPin<double> Sum { get; }
-
-        #endregion
-
-        #region Constructors
-
-        public SumDoublesNode()
-            : base("Sum", "Sums the connected double values.")
-        {
-            Values = CreateInputPinCollection<double>("Values", 2);
-            Sum = CreateOutputPin<double>("Sum");
-        }
-
-        #endregion
-
-        #region Methods
-
-        public override void Evaluate()
-        {
-            Sum.Value = Values.Values.Sum();
-        }
-
-        #endregion
-    }
 }

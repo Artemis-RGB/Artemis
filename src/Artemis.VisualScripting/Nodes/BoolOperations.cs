@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Linq;
 using Artemis.Core;
 
 namespace Artemis.VisualScripting.Nodes
@@ -31,6 +33,12 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
+            if (Input2.Value != null && Input1.Value != null && Input1.Value.IsNumber() && Input2.Value.IsNumber())
+            {
+                Result.Value = Convert.ToSingle(Input1.Value) > Convert.ToSingle(Input2.Value);
+                return;
+            }
+
             try
             {
                 Result.Value = Comparer.DefaultInvariant.Compare(Input1.Value, Input2.Value) == 1;
@@ -72,6 +80,12 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
+            if (Input2.Value != null && Input1.Value != null && Input1.Value.IsNumber() && Input2.Value.IsNumber())
+            {
+                Result.Value = Convert.ToSingle(Input1.Value) < Convert.ToSingle(Input2.Value);
+                return;
+            }
+
             try
             {
                 Result.Value = Comparer.DefaultInvariant.Compare(Input1.Value, Input2.Value) == -1;
@@ -152,6 +166,99 @@ namespace Artemis.VisualScripting.Nodes
         public override void Evaluate()
         {
             Output.Value = !Input.Value;
+        }
+
+        #endregion
+    }
+
+    [Node("And", "Checks if all inputs are true.", "Operators", InputType = typeof(bool), OutputType = typeof(bool))]
+    public class AndNode : Node
+    {
+        #region Properties & Fields
+
+        public InputPinCollection<bool> Input { get; set; }
+        public OutputPin<bool> Result { get; }
+
+        #endregion
+
+        #region Constructors
+
+        public AndNode()
+            : base("And", "Checks if all inputs are true.")
+        {
+            Input = CreateInputPinCollection<bool>();
+            Result = CreateOutputPin<bool>();
+        }
+
+        #endregion
+
+        #region Methods
+
+        public override void Evaluate()
+        {
+            Result.Value = Input.Values.All(v => v);
+        }
+
+        #endregion
+    }
+
+    [Node("Or", "Checks if any inputs are true.", "Operators", InputType = typeof(bool), OutputType = typeof(bool))]
+    public class OrNode : Node
+    {
+        #region Properties & Fields
+
+        public InputPinCollection<bool> Input { get; set; }
+        public OutputPin<bool> Result { get; }
+
+        #endregion
+
+        #region Constructors
+
+        public OrNode()
+            : base("Or", "Checks if any inputs are true.")
+        {
+            Input = CreateInputPinCollection<bool>();
+            Result = CreateOutputPin<bool>();
+        }
+
+        #endregion
+
+        #region Methods
+
+        public override void Evaluate()
+        {
+            Result.Value = Input.Values.Any(v => v);
+        }
+
+        #endregion
+    }
+
+    [Node("Exclusive Or", "Checks if one of the inputs is true.", "Operators", InputType = typeof(bool), OutputType = typeof(bool))]
+    public class XorNode : Node
+    {
+        #region Properties & Fields
+
+        public InputPinCollection<bool> Input { get; set; }
+        public OutputPin<bool> Result { get; }
+
+        #endregion
+
+        #region Constructors
+
+        public XorNode()
+            : base("Exclusive Or", "Checks if one of the inputs is true.")
+        {
+            Input = CreateInputPinCollection<bool>();
+            Result = CreateOutputPin<bool>();
+        }
+
+        #endregion
+
+        #region Methods
+
+        public override void Evaluate()
+        {
+            Result.Value = Input.Values.Count(v => v) == 1;
         }
 
         #endregion

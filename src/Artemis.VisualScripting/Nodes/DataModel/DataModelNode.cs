@@ -5,7 +5,7 @@ using Artemis.VisualScripting.Nodes.DataModel.CustomViewModels;
 
 namespace Artemis.VisualScripting.Nodes.DataModel
 {
-    [Node("Data Model-Value", "Outputs a selectable data model value.", "External")]
+    [Node("Data Model-Value", "Outputs a selectable data model value.", "Data Model")]
     public class DataModelNode : Node<DataModelPathEntity, DataModelNodeCustomViewModel>, IDisposable
     {
         private DataModelPath _dataModelPath;
@@ -44,14 +44,29 @@ namespace Artemis.VisualScripting.Nodes.DataModel
                     UpdateOutputPin(false);
 
                 object pathValue = DataModelPath.GetValue();
-                if (pathValue != null)
-                    Output.Value = pathValue;
+
+                if (pathValue == null)
+                {
+                    if (!Output.Type.IsValueType)
+                        Output.Value = null;
+                }
+                else
+                {
+                    if (pathValue is double doublePathValue)
+                        Output.Value = (float) doublePathValue;
+                    else
+                        Output.Value = pathValue;
+                }
             }
         }
 
         public void UpdateOutputPin(bool loadConnections)
         {
-            if (Output != null && Output.Type == DataModelPath?.GetPropertyType())
+            Type type = DataModelPath?.GetPropertyType();
+            if (type == typeof(double))
+                type = typeof(float);
+
+            if (Output != null && Output.Type == type)
                 return;
 
             if (Output != null)
@@ -60,8 +75,7 @@ namespace Artemis.VisualScripting.Nodes.DataModel
                 Output = null;
             }
 
-            Type type = DataModelPath?.GetPropertyType();
-            if (type != null)
+            if (type != null) 
                 Output = CreateOutputPin(type);
 
             if (loadConnections && Script is NodeScript nodeScript)

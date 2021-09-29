@@ -79,53 +79,7 @@ namespace Artemis.VisualScripting.Nodes
 
         #endregion
     }
-
-    [Node("To Double", "Converts the input to a double.", "Conversion", InputType = typeof(object), OutputType = typeof(double))]
-    public class ConvertToDoubleNode : Node
-    {
-        #region Properties & Fields
-
-        public InputPin<object> Input { get; }
-
-        public OutputPin<double> Double { get; }
-
-        #endregion
-
-        #region Constructors
-
-        public ConvertToDoubleNode()
-            : base("To Double", "Converts the input to a double.")
-        {
-            Input = CreateInputPin<object>();
-            Double = CreateOutputPin<double>();
-        }
-
-        #endregion
-
-        #region Methods
-
-        public override void Evaluate()
-        {
-            Double.Value = Input.Value switch
-            {
-                int input => input,
-                double input => input,
-                float input => input,
-                _ => TryParse(Input.Value)
-            };
-        }
-
-        private double TryParse(object input)
-        {
-            if (!double.TryParse(input?.ToString(), out double value))
-                value = 0.0;
-
-            return value;
-        }
-
-        #endregion
-    }
-
+    
     [Node("To Float", "Converts the input to a float.", "Conversion", InputType = typeof(object), OutputType = typeof(float))]
     public class ConvertToFloatNode : Node
     {

@@ -8,7 +8,7 @@ using Artemis.VisualScripting.Nodes.DataModel.CustomViewModels;
 
 namespace Artemis.VisualScripting.Nodes.DataModel
 {
-    [Node("Data Model-Event", "Responds to a data model event trigger", "External", OutputType = typeof(bool))]
+    [Node("Data Model-Event", "Responds to a data model event trigger", "Data Model", OutputType = typeof(bool))]
     public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCustomViewModel>, IDisposable
     {
         private DataModelPath _dataModelPath;

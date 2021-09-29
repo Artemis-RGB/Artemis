@@ -97,8 +97,11 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void Run()
         {
-            foreach (INode node in Nodes)
-                node.Reset();
+            lock (_nodes)
+            {
+                foreach (INode node in _nodes)
+                    node.Reset();
+            }
 
             ExitNode.Evaluate();
         }
@@ -106,7 +109,10 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void AddNode(INode node)
         {
-            _nodes.Add(node);
+            lock (_nodes)
+            {
+                _nodes.Add(node);
+            }
 
             NodeAdded?.Invoke(this, new SingleValueEventArgs<INode>(node));
         }
@@ -114,7 +120,10 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void RemoveNode(INode node)
         {
-            _nodes.Remove(node);
+            lock (_nodes)
+            {
+                _nodes.Remove(node);
+            }
 
             if (node is IDisposable disposable)
                 disposable.Dispose();
@@ -128,10 +137,13 @@ namespace Artemis.Core
             NodeTypeStore.NodeTypeAdded -= NodeTypeStoreOnNodeTypeChanged;
             NodeTypeStore.NodeTypeRemoved -= NodeTypeStoreOnNodeTypeChanged;
 
-            foreach (INode node in _nodes)
+            lock (_nodes)
             {
-                if (node is IDisposable disposable)
-                    disposable.Dispose();
+                foreach (INode node in _nodes)
+                {
+                    if (node is IDisposable disposable)
+                        disposable.Dispose();
+                }
             }
         }
 
@@ -142,9 +154,12 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void Load()
         {
-            List<INode> removeNodes = _nodes.Where(n => !n.IsExitNode).ToList();
-            foreach (INode removeNode in removeNodes)
-                RemoveNode(removeNode);
+            lock (_nodes)
+            {
+                List<INode> removeNodes = _nodes.Where(n => !n.IsExitNode).ToList();
+                foreach (INode removeNode in removeNodes)
+                    RemoveNode(removeNode);
+            }
 
             // Create nodes
             foreach (NodeEntity entityNode in Entity.Nodes)
