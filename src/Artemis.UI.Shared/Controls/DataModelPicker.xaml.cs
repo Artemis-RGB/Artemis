@@ -7,10 +7,10 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.UI.Shared.Services;
-using Stylet;
 
 namespace Artemis.UI.Shared.Controls
 {
@@ -282,9 +282,18 @@ namespace Artemis.UI.Shared.Controls
                 return;
 
             if (e.OldValue is DataModelPath oldPath)
+            {
+                oldPath.PathInvalidated -= dataModelPicker.PathValidationChanged;
+                oldPath.PathValidated -= dataModelPicker.PathValidationChanged;
                 oldPath.Dispose();
+            }
 
             dataModelPicker.UpdateValueDisplay();
+            if (e.NewValue is DataModelPath newPath)
+            {
+                newPath.PathInvalidated += dataModelPicker.PathValidationChanged;
+                newPath.PathValidated += dataModelPicker.PathValidationChanged;
+            }
         }
 
         private static void ShowFullPathPropertyCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -316,6 +325,11 @@ namespace Artemis.UI.Shared.Controls
         {
             if (d is not DataModelPicker dataModelPicker)
                 return;
+        }
+
+        private void PathValidationChanged(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(UpdateValueDisplay, DispatcherPriority.DataBind);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

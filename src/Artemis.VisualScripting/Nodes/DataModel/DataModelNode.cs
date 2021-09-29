@@ -2,6 +2,7 @@
 using Artemis.Core;
 using Artemis.Storage.Entities.Profile;
 using Artemis.VisualScripting.Nodes.DataModel.CustomViewModels;
+using Stylet;
 
 namespace Artemis.VisualScripting.Nodes.DataModel
 {
@@ -84,7 +85,7 @@ namespace Artemis.VisualScripting.Nodes.DataModel
 
         private void DataModelPathOnPathValidated(object sender, EventArgs e)
         {
-            UpdateOutputPin(true);
+            Execute.OnUIThread(() => UpdateOutputPin(true));
         }
 
         /// <inheritdoc />
