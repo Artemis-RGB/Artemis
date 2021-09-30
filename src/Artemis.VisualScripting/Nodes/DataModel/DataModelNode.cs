@@ -53,8 +53,8 @@ namespace Artemis.VisualScripting.Nodes.DataModel
                 }
                 else
                 {
-                    if (pathValue is double doublePathValue)
-                        Output.Value = (float) doublePathValue;
+                    if (Output.Type == typeof(Numeric))
+                        Output.Value = new Numeric(pathValue);
                     else
                         Output.Value = pathValue;
                 }
@@ -64,8 +64,8 @@ namespace Artemis.VisualScripting.Nodes.DataModel
         public void UpdateOutputPin(bool loadConnections)
         {
             Type type = DataModelPath?.GetPropertyType();
-            if (type == typeof(double))
-                type = typeof(float);
+            if (Numeric.IsTypeCompatible(type))
+                type = typeof(Numeric);
 
             if (Output != null && Output.Type == type)
                 return;
@@ -76,7 +76,7 @@ namespace Artemis.VisualScripting.Nodes.DataModel
                 Output = null;
             }
 
-            if (type != null) 
+            if (type != null)
                 Output = CreateOutputPin(type);
 
             if (loadConnections && Script is NodeScript nodeScript)

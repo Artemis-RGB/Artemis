@@ -34,24 +34,24 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [Node("To Integer", "Converts the input to an integer.", "Conversion", InputType = typeof(object), OutputType = typeof(int))]
-    public class ConvertToIntegerNode : Node
+    [Node("To Numeric", "Converts the input to a numeric.", "Conversion", InputType = typeof(object), OutputType = typeof(Numeric))]
+    public class ConvertToNumericNode : Node
     {
         #region Properties & Fields
 
         public InputPin<object> Input { get; }
 
-        public OutputPin<int> Integer { get; }
+        public OutputPin<Numeric> Output { get; }
 
         #endregion
 
         #region Constructors
 
-        public ConvertToIntegerNode()
-            : base("To Integer", "Converts the input to an integer.")
+        public ConvertToNumericNode()
+            : base("To Numeric", "Converts the input to a numeric.")
         {
             Input = CreateInputPin<object>();
-            Integer = CreateOutputPin<int>();
+            Output = CreateOutputPin<Numeric>();
         }
 
         #endregion
@@ -60,66 +60,19 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
-            Integer.Value = Input.Value switch
+            Output.Value = Input.Value switch
             {
-                int input => input,
-                double input => (int) input,
-                float input => (int) input,
+                int input => new Numeric(input),
+                double input => new Numeric(input),
+                float input => new Numeric(input),
+                byte input => new Numeric(input),
                 _ => TryParse(Input.Value)
             };
         }
 
-        private int TryParse(object input)
+        private Numeric TryParse(object input)
         {
-            if (!int.TryParse(input?.ToString(), out int value))
-                value = 0;
-
-            return value;
-        }
-
-        #endregion
-    }
-    
-    [Node("To Float", "Converts the input to a float.", "Conversion", InputType = typeof(object), OutputType = typeof(float))]
-    public class ConvertToFloatNode : Node
-    {
-        #region Properties & Fields
-
-        public InputPin<object> Input { get; }
-
-        public OutputPin<float> Float { get; }
-
-        #endregion
-
-        #region Constructors
-
-        public ConvertToFloatNode()
-            : base("To Float", "Converts the input to a float.")
-        {
-            Input = CreateInputPin<object>();
-            Float = CreateOutputPin<float>();
-        }
-
-        #endregion
-
-        #region Methods
-
-        public override void Evaluate()
-        {
-            Float.Value = Input.Value switch
-            {
-                int input => input,
-                double input => (float) input,
-                float input => input,
-                _ => TryParse(Input.Value)
-            };
-        }
-
-        private float TryParse(object input)
-        {
-            if (!float.TryParse(input?.ToString(), out float value))
-                value = 0.0f;
-
+            Numeric.TryParse(input?.ToString(), out Numeric value);
             return value;
         }
 

@@ -1,26 +1,17 @@
-﻿using System.Linq;
-using Artemis.Core;
+﻿using Artemis.Core;
 
 namespace Artemis.VisualScripting.Nodes
 {
-    [Node("Sum (Integer)", "Sums the connected integer values.", "Mathematics", InputType = typeof(int), OutputType = typeof(int))]
-    public class SumIntegersNode : Node
+    [Node("Sum", "Sums the connected numeric values.", "Mathematics", InputType = typeof(Numeric), OutputType = typeof(Numeric))]
+    public class SumNumericsNode : Node
     {
-        #region Properties & Fields
-
-        public InputPinCollection<int> Values { get; }
-
-        public OutputPin<int> Sum { get; }
-
-        #endregion
-
         #region Constructors
 
-        public SumIntegersNode()
-            : base("Sum", "Sums the connected integer values.")
+        public SumNumericsNode()
+            : base("Sum", "Sums the connected numeric values.")
         {
-            Values = CreateInputPinCollection<int>("Values", 2);
-            Sum = CreateOutputPin<int>("Sum");
+            Values = CreateInputPinCollection<Numeric>("Values", 2);
+            Sum = CreateOutputPin<Numeric>("Sum");
         }
 
         #endregion
@@ -33,36 +24,12 @@ namespace Artemis.VisualScripting.Nodes
         }
 
         #endregion
-    }
 
-    [Node("Sum (Float)", "Sums the connected float values.", "Mathematics", InputType = typeof(float), OutputType = typeof(float))]
-    public class SumFloatsNode : Node
-    {
         #region Properties & Fields
 
-        public InputPinCollection<float> Values { get; }
+        public InputPinCollection<Numeric> Values { get; }
 
-        public OutputPin<float> Sum { get; }
-
-        #endregion
-
-        #region Constructors
-
-        public SumFloatsNode()
-            : base("Sum", "Sums the connected float values.")
-        {
-            Values = CreateInputPinCollection<float>("Values", 2);
-            Sum = CreateOutputPin<float>("Sum");
-        }
-
-        #endregion
-
-        #region Methods
-
-        public override void Evaluate()
-        {
-            Sum.Value = Values.Values.Sum();
-        }
+        public OutputPin<Numeric> Sum { get; }
 
         #endregion
     }

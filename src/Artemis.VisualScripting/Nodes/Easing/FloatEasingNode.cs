@@ -3,8 +3,8 @@ using Artemis.Core;
 
 namespace Artemis.VisualScripting.Nodes.Easing
 {
-    [Node("Float Easing", "Outputs an eased float value", "Easing", InputType = typeof(float), OutputType = typeof(float))]
-    public class FloatEasingNode : Node
+    [Node("Numeric Easing", "Outputs an eased numeric value", "Easing", InputType = typeof(Numeric), OutputType = typeof(Numeric))]
+    public class NumericEasingNode : Node
     {
         private DateTime _lastEvaluate = DateTime.MinValue;
         private float _progress;
@@ -12,20 +12,20 @@ namespace Artemis.VisualScripting.Nodes.Easing
         private float _sourceValue;
         private float _targetValue;
 
-        public FloatEasingNode() : base("Float Easing", "Outputs an eased float value")
+        public NumericEasingNode() : base("Numeric Easing", "Outputs an eased numeric value")
         {
-            Input = CreateInputPin<float>();
-            EasingTime = CreateInputPin<float>("delay");
+            Input = CreateInputPin<Numeric>();
+            EasingTime = CreateInputPin<Numeric>("delay");
             EasingFunction = CreateInputPin<Easings.Functions>("function");
 
-            Output = CreateOutputPin<float>();
+            Output = CreateOutputPin<Numeric>();
         }
 
-        public InputPin<float> Input { get; set; }
-        public InputPin<float> EasingTime { get; set; }
+        public InputPin<Numeric> Input { get; set; }
+        public InputPin<Numeric> EasingTime { get; set; }
         public InputPin<Easings.Functions> EasingFunction { get; set; }
 
-        public OutputPin<float> Output { get; set; }
+        public OutputPin<Numeric> Output { get; set; }
 
         public override void Evaluate()
         {
@@ -43,12 +43,12 @@ namespace Artemis.VisualScripting.Nodes.Easing
             if (_progress < 1f)
             {
                 Update();
-                Output.Value = _currentValue;
+                Output.Value = new Numeric(_currentValue);
             }
             // Stop updating past 1 and use the target value
             else
             {
-                Output.Value = _targetValue;
+                Output.Value = new Numeric(_targetValue);
             }
 
             _lastEvaluate = now;

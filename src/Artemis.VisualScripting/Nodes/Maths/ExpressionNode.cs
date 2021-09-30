@@ -8,7 +8,7 @@ using NoStringEvaluating.Models.Values;
 
 namespace Artemis.VisualScripting.Nodes.Maths
 {
-    [Node("Math Expression", "Outputs the result of a math expression.", "Mathematics", InputType = typeof(float), OutputType = typeof(float))]
+    [Node("Math Expression", "Outputs the result of a math expression.", "Mathematics", InputType = typeof(Numeric), OutputType = typeof(Numeric))]
     public class MathExpressionNode : Node<string, MathExpressionNodeCustomViewModel>
     {
         private readonly INoStringEvaluator _evaluator;
@@ -20,8 +20,8 @@ namespace Artemis.VisualScripting.Nodes.Maths
             : base("Math Expression", "Outputs the result of a math expression.")
         {
             _evaluator = evaluator;
-            Output = CreateOutputPin<float>();
-            Values = CreateInputPinCollection<float>("Values", 2);
+            Output = CreateOutputPin<Numeric>();
+            Values = CreateInputPinCollection<Numeric>("Values", 2);
             Values.PinAdded += (_, _) => SetPinNames();
             Values.PinRemoved += (_, _) => SetPinNames();
             _variables = new PinsVariablesContainer(Values);
@@ -33,8 +33,8 @@ namespace Artemis.VisualScripting.Nodes.Maths
 
         #region Properties & Fields
 
-        public OutputPin<float> Output { get; }
-        public InputPinCollection<float> Values { get; }
+        public OutputPin<Numeric> Output { get; }
+        public InputPinCollection<Numeric> Values { get; }
 
         #endregion
 
@@ -43,7 +43,7 @@ namespace Artemis.VisualScripting.Nodes.Maths
         public override void Evaluate()
         {
             if (Storage != null)
-                Output.Value = (float) _evaluator.CalcNumber(Storage, _variables);
+                Output.Value = new Numeric(_evaluator.CalcNumber(Storage, _variables));
         }
 
         private void SetPinNames()
@@ -76,9 +76,9 @@ namespace Artemis.VisualScripting.Nodes.Maths
 
     public class PinsVariablesContainer : IVariablesContainer
     {
-        private readonly InputPinCollection<float> _values;
+        private readonly InputPinCollection<Numeric> _values;
 
-        public PinsVariablesContainer(InputPinCollection<float> values)
+        public PinsVariablesContainer(InputPinCollection<Numeric> values)
         {
             _values = values;
         }
@@ -95,17 +95,23 @@ namespace Artemis.VisualScripting.Nodes.Maths
         public EvaluatorValue GetValue(string name)
         {
             IPin pin = _values.FirstOrDefault(v => v.Name == name);
-            return pin == null ? new EvaluatorValue(0) : new EvaluatorValue((double) pin.PinValue);
+            if (pin?.PinValue is Numeric numeric)
+                return new EvaluatorValue(numeric);
+            return new EvaluatorValue(0);
         }
 
         /// <inheritdoc />
         public bool TryGetValue(string name, out EvaluatorValue value)
         {
             IPin pin = _values.FirstOrDefault(v => v.Name == name);
-            double unboxed = (float) pin.PinValue;
-            value = pin == null ? new EvaluatorValue(0) : new EvaluatorValue(unboxed);
+            if (pin?.PinValue is Numeric numeric)
+            {
+                value = new EvaluatorValue(numeric);
+                return true;
+            }
 
-            return pin != null;
+            value = new EvaluatorValue(0);
+            return false;
         }
 
         #endregion

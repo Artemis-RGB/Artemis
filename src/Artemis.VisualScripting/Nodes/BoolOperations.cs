@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using Artemis.Core;
+using Artemis.VisualScripting.Nodes.CustomViewModels;
 
 namespace Artemis.VisualScripting.Nodes
 {
@@ -33,6 +34,12 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
+            if (Input1.Value is Numeric numeric1 && Input2.Value is Numeric numeric2)
+            {
+                Result.Value = numeric1 > numeric2;
+                return;
+            }
+
             if (Input2.Value != null && Input1.Value != null && Input1.Value.IsNumber() && Input2.Value.IsNumber())
             {
                 Result.Value = Convert.ToSingle(Input1.Value) > Convert.ToSingle(Input2.Value);
@@ -80,6 +87,12 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
+            if (Input1.Value is Numeric numeric1 && Input2.Value is Numeric numeric2)
+            {
+                Result.Value = numeric1 < numeric2;
+                return;
+            }
+
             if (Input2.Value != null && Input1.Value != null && Input1.Value.IsNumber() && Input2.Value.IsNumber())
             {
                 Result.Value = Convert.ToSingle(Input1.Value) < Convert.ToSingle(Input2.Value);
@@ -259,6 +272,29 @@ namespace Artemis.VisualScripting.Nodes
         public override void Evaluate()
         {
             Result.Value = Input.Values.Count(v => v) == 1;
+        }
+
+        #endregion
+    }
+
+    [Node("Enum Equals", "Determines the equality between an input and a selected enum value", "Operators", InputType = typeof(Enum), OutputType = typeof(bool))]
+    public class EnumEqualsNode : Node<Enum, EnumEqualsNodeCustomViewModel>
+    {
+        public EnumEqualsNode() : base("Enum Equals", "Determines the equality between an input and a selected enum value")
+        {
+            InputPin = CreateInputPin<Enum>();
+            OutputPin = CreateOutputPin<bool>();
+        }
+
+        public InputPin<Enum> InputPin { get; }
+        public OutputPin<bool> OutputPin { get; }
+
+        #region Overrides of Node
+
+        /// <inheritdoc />
+        public override void Evaluate()
+        {
+            OutputPin.Value = InputPin.Value != null && InputPin.Value.Equals(Storage);
         }
 
         #endregion

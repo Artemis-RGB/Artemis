@@ -3,50 +3,21 @@ using Artemis.VisualScripting.Nodes.CustomViewModels;
 
 namespace Artemis.VisualScripting.Nodes
 {
-    [Node("Integer-Value", "Outputs a configurable static integer value.", "Static", OutputType = typeof(int))]
-    public class StaticIntegerValueNode : Node<int, StaticIntegerValueNodeCustomViewModel>
+    [Node("Numeric-Value", "Outputs a configurable static numeric value.", "Static", OutputType = typeof(Numeric))]
+    public class StaticNumericValueNode : Node<Numeric, StaticNumericValueNodeCustomViewModel>
     {
         #region Properties & Fields
 
-        public OutputPin<int> Output { get; }
+        public OutputPin<Numeric> Output { get; }
 
         #endregion
 
         #region Constructors
 
-        public StaticIntegerValueNode()
-            : base("Integer", "Outputs an configurable integer value.")
+        public StaticNumericValueNode()
+            : base("Numeric", "Outputs a configurable numeric value.")
         {
-            Output = CreateOutputPin<int>();
-        }
-
-        #endregion
-
-        #region Methods
-
-        public override void Evaluate()
-        {
-            Output.Value = Storage;
-        }
-
-        #endregion
-    }
-
-    [Node("Float-Value", "Outputs a configurable static float value.", "Static", OutputType = typeof(float))]
-    public class StaticFloatValueNode : Node<float, StaticFloatValueNodeCustomViewModel>
-    {
-        #region Properties & Fields
-
-        public OutputPin<float> Output { get; }
-
-        #endregion
-
-        #region Constructors
-
-        public StaticFloatValueNode()
-            : base("Float", "Outputs a configurable float value.")
-        {
-            Output = CreateOutputPin<float>();
+            Output = CreateOutputPin<Numeric>();
         }
 
         #endregion

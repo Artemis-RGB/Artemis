@@ -65,7 +65,7 @@
     <Page Update="Nodes\DataModel\CustomViews\DataModelEventNodeCustomView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-    <Page Update="Nodes\CustomViews\StaticFloatValueNodeCustomView.xaml">
+    <Page Update="Nodes\CustomViews\StaticNumericValueNodeCustomView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="ResourceDictionaries\DataModelConditions.xaml">

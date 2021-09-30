@@ -132,7 +132,7 @@ namespace Artemis.UI.Services
             _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(IList), new SKColor(0xFFED3E61));
             _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(Enum), new SKColor(0xFF1E90FF));
 
-            foreach (Type nodeType in typeof(SumIntegersNode).Assembly.GetTypes().Where(t => typeof(INode).IsAssignableFrom(t) && t.IsPublic && !t.IsAbstract && !t.IsInterface))
+            foreach (Type nodeType in typeof(SumNumericsNode).Assembly.GetTypes().Where(t => typeof(INode).IsAssignableFrom(t) && t.IsPublic && !t.IsAbstract && !t.IsInterface))
                 _nodeService.RegisterNodeType(Constants.CorePlugin, nodeType);
         }
 
