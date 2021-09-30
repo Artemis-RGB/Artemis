@@ -512,7 +512,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             if (SelectedProfileElement == null)
                 return;
 
-            double frameTime = 1000.0 / SettingsService.GetSetting("Core.TargetFrameRate", 25).Value;
+            double frameTime = 1000.0 / SettingsService.GetSetting("Core.TargetFrameRate", 30).Value;
             double newTime = Math.Max(0, Math.Round((ProfileEditorService.CurrentTime.TotalMilliseconds - frameTime) / frameTime) * frameTime);
             ProfileEditorService.CurrentTime = TimeSpan.FromMilliseconds(newTime);
         }
@@ -522,7 +522,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             if (SelectedProfileElement == null)
                 return;
 
-            double frameTime = 1000.0 / SettingsService.GetSetting("Core.TargetFrameRate", 25).Value;
+            double frameTime = 1000.0 / SettingsService.GetSetting("Core.TargetFrameRate", 30).Value;
             double newTime = Math.Round((ProfileEditorService.CurrentTime.TotalMilliseconds + frameTime) / frameTime) * frameTime;
             newTime = Math.Min(newTime, SelectedProfileElement.Timeline.EndSegmentEndPosition.TotalMilliseconds);
             ProfileEditorService.CurrentTime = TimeSpan.FromMilliseconds(newTime);

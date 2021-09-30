@@ -59,7 +59,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
                 Hint = "Toggle hotkey";
         }
 
-        public void TextBoxKeyUp(object sender, KeyEventArgs e)
+        public void TextBoxKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key >= Key.LeftShift && e.Key <= Key.RightAlt)
                 return;

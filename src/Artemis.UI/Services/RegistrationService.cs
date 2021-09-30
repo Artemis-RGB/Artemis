@@ -30,6 +30,7 @@ namespace Artemis.UI.Services
         private readonly IRgbService _rgbService;
         private readonly INodeService _nodeService;
         private readonly ISettingsService _settingsService;
+        private readonly IThemeService _themeService;
         private bool _registeredBuiltInDataModelDisplays;
         private bool _registeredBuiltInDataModelInputs;
         private bool _registeredBuiltInPropertyEditors;
@@ -45,7 +46,8 @@ namespace Artemis.UI.Services
             IWebServerService webServerService,
             IRgbService rgbService,
             INodeService nodeService,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            IThemeService themeService)
         {
             _logger = logger;
             _coreService = coreService;
@@ -58,6 +60,7 @@ namespace Artemis.UI.Services
             _rgbService = rgbService;
             _nodeService = nodeService;
             _settingsService = settingsService;
+            _themeService = themeService;
 
             LoadPluginModules();
             pluginManagementService.PluginEnabling += PluginServiceOnPluginEnabling;
@@ -111,7 +114,7 @@ namespace Artemis.UI.Services
         public void RegisterProviders()
         {
             _inputService.AddInputProvider(new NativeWindowInputProvider(_logger, _inputService));
-            _messageService.SetNotificationProvider(new ToastNotificationProvider());
+            _messageService.SetNotificationProvider(new ToastNotificationProvider(_themeService));
         }
 
         public void RegisterControllers()

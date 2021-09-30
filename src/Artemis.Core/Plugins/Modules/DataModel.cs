@@ -261,7 +261,12 @@ namespace Artemis.Core.Modules
         internal T? GetDynamicChildValue<T>(string key)
         {
             if (TryGetDynamicChild(key, out DynamicChild? dynamicChild) && dynamicChild.BaseValue != null)
-                return (T) dynamicChild.BaseValue;
+            {
+                if (dynamicChild.BaseValue is T value)
+                    return value;
+                return default;
+            }
+
             return default;
         }
 

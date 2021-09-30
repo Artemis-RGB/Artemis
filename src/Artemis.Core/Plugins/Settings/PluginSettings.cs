@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
-using Newtonsoft.Json;
 
 namespace Artemis.Core
 {
@@ -12,15 +11,15 @@ namespace Artemis.Core
     public class PluginSettings
     {
         private readonly IPluginRepository _pluginRepository;
-        private readonly Dictionary<string, object> _settingEntities;
+        private readonly Dictionary<string, IPluginSetting> _settingEntities;
 
         internal PluginSettings(Plugin plugin, IPluginRepository pluginRepository)
         {
             Plugin = plugin;
             Plugin.Settings = this;
-            
+
             _pluginRepository = pluginRepository;
-            _settingEntities = new Dictionary<string, object>();
+            _settingEntities = new Dictionary<string, IPluginSetting>();
         }
 
         /// <summary>
@@ -49,14 +48,14 @@ namespace Artemis.Core
                 {
                     settingEntity = new PluginSettingEntity
                     {
-                        Name = name, 
-                        PluginGuid = Plugin.Guid, 
+                        Name = name,
+                        PluginGuid = Plugin.Guid,
                         Value = CoreJson.SerializeObject(defaultValue)
                     };
                     _pluginRepository.AddSetting(settingEntity);
                 }
 
-                PluginSetting<T> pluginSetting = new(Plugin, _pluginRepository, settingEntity);
+                PluginSetting<T> pluginSetting = new(_pluginRepository, settingEntity);
 
                 // This overrides null with the default value, I'm not sure if that's desirable because you
                 // might expect something to go null and you might not
@@ -66,6 +65,15 @@ namespace Artemis.Core
                 _settingEntities.Add(name, pluginSetting);
                 return pluginSetting;
             }
+        }
+
+        /// <summary>
+        ///     Saves all currently loaded settings
+        /// </summary>
+        public void SaveAllSettings()
+        {
+            foreach (var (_, pluginSetting) in _settingEntities)
+                pluginSetting.Save();
         }
 
         internal void ClearSettings()

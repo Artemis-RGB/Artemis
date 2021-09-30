@@ -240,7 +240,7 @@ namespace Artemis.Core.Modules
         /// <returns></returns>
         public virtual DataModelPropertyAttribute GetDataModelDescription()
         {
-            return new DataModelPropertyAttribute {Name = Plugin.Info.Name, Description = Plugin.Info.Description};
+            return new() {Name = Info.Name, Description = Info.Description};
         }
 
         /// <summary>

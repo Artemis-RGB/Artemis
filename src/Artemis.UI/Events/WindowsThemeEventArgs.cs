@@ -1,15 +1,16 @@
 ﻿using System;
+using Artemis.UI.Services;
 using Artemis.UI.Utilities;
 
 namespace Artemis.UI.Events
 {
     public class WindowsThemeEventArgs : EventArgs
     {
-        public WindowsThemeEventArgs(ThemeWatcher.WindowsTheme theme)
+        public WindowsThemeEventArgs(IThemeService.WindowsTheme theme)
         {
             Theme = theme;
         }
 
-        public ThemeWatcher.WindowsTheme Theme { get; set; }
+        public IThemeService.WindowsTheme Theme { get; set; }
     }
 }

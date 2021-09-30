@@ -16,5 +16,5 @@
              VerticalAlignment="Center"
              materialDesign:TextFieldAssist.HasClearButton="True"
              materialDesign:HintAssist.Hint="{Binding Hint}"
-             KeyUp="{s:Action TextBoxKeyUp}"/>
+             KeyDown="{s:Action TextBoxKeyDown}"/>
 </UserControl>
