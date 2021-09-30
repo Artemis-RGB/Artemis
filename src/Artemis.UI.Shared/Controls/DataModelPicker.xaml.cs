@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -90,7 +89,7 @@ namespace Artemis.UI.Shared.Controls
         public DataModelPicker()
         {
             SelectPropertyCommand = new DelegateCommand(ExecuteSelectPropertyCommand);
-            Unloaded += (_, _) => DataModelViewModel?.Dispose();
+            Unloaded += OnUnloaded;
             InitializeComponent();
             GetDataModel();
             UpdateValueDisplay();
@@ -204,11 +203,6 @@ namespace Artemis.UI.Shared.Controls
         protected virtual void OnDataModelPathSelected(DataModelSelectedEventArgs e)
         {
             DataModelPathSelected?.Invoke(this, e);
-        }
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private void GetDataModel()
@@ -332,6 +326,18 @@ namespace Artemis.UI.Shared.Controls
             Dispatcher.Invoke(UpdateValueDisplay, DispatcherPriority.DataBind);
         }
 
+        private void OnUnloaded(object o, RoutedEventArgs routedEventArgs)
+        {
+            if (DataModelPath != null)
+            {
+                DataModelPath.PathInvalidated -= PathValidationChanged;
+                DataModelPath.PathValidated -= PathValidationChanged;
+            }
+
+            DataModelViewModel?.Dispose();
+        }
+
+        /// <inheritdoc />
         public event PropertyChangedEventHandler? PropertyChanged;
     }
 }

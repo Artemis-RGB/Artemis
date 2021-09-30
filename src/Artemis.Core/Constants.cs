@@ -62,13 +62,13 @@ namespace Artemis.Core
 
         internal static JsonSerializerSettings JsonConvertSettings = new()
         {
-            Converters = new List<JsonConverter> {new SKColorConverter(), new ForgivingIntConverter()}
+            Converters = new List<JsonConverter> {new SKColorConverter(), new NumericJsonConverter(), new ForgivingIntConverter()}
         };
 
         internal static JsonSerializerSettings JsonConvertTypedSettings = new()
         {
             TypeNameHandling = TypeNameHandling.All,
-            Converters = new List<JsonConverter> {new SKColorConverter(), new ForgivingIntConverter()}
+            Converters = new List<JsonConverter> {new SKColorConverter(), new NumericJsonConverter(), new ForgivingIntConverter()}
         };
 
         /// <summary>
