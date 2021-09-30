@@ -10,6 +10,7 @@ using Artemis.Core.DeviceProviders;
 using Artemis.Core.Ninject;
 using Artemis.Storage.Entities.General;
 using Artemis.Storage.Entities.Plugins;
+using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
 using McMaster.NETCore.Plugins;
 using Ninject;
@@ -28,15 +29,17 @@ namespace Artemis.Core.Services
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
         private readonly IPluginRepository _pluginRepository;
+        private readonly IDeviceRepository _deviceRepository;
         private readonly IQueuedActionRepository _queuedActionRepository;
         private readonly List<Plugin> _plugins;
         private bool _isElevated;
 
-        public PluginManagementService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository, IQueuedActionRepository queuedActionRepository)
+        public PluginManagementService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository, IDeviceRepository deviceRepository, IQueuedActionRepository queuedActionRepository)
         {
             _kernel = kernel;
             _logger = logger;
             _pluginRepository = pluginRepository;
+            _deviceRepository = deviceRepository;
             _queuedActionRepository = queuedActionRepository;
             _plugins = new List<Plugin>();
 
@@ -572,7 +575,11 @@ namespace Artemis.Core.Services
         {
             if (plugin.IsEnabled)
                 throw new ArtemisCoreException("Cannot remove the settings of an enabled plugin");
+            
             _pluginRepository.RemoveSettings(plugin.Guid);
+            foreach (DeviceEntity deviceEntity in _deviceRepository.GetAll().Where(e => e.DeviceProvider == plugin.Guid.ToString())) 
+                _deviceRepository.Remove(deviceEntity);
+
             plugin.Settings?.ClearSettings();
         }
 

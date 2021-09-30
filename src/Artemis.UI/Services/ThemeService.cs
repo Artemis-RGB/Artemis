@@ -2,32 +2,56 @@
 using System.Globalization;
 using System.Management;
 using System.Security.Principal;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Settings.Tabs.General;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Win32;
+using Serilog;
 
 namespace Artemis.UI.Services
 {
     public class ThemeService : IThemeService
     {
+        private readonly ILogger _logger;
         private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
         private const string RegistryKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
 
         private const string AppsThemeRegistryValueName = "AppsUseLightTheme";
         private const string SystemThemeRegistryValueName = "SystemUsesLightTheme";
 
-        public ThemeService(ISettingsService settingsService)
+        public ThemeService(ISettingsService settingsService, ILogger logger)
         {
-            WatchTheme();
-
+            _logger = logger;
             _colorScheme = settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
             _colorScheme.SettingChanged += ColorSchemeOnSettingChanged;
 
-            ApplyColorSchemeSetting();
             AppsThemeChanged += OnAppsThemeChanged;
+
+            Task.Run(Initialize);
+        }
+
+        private void Initialize()
+        {
+            try
+            {
+                WatchTheme();
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "WatchTheme failed");
+            }
+
+            try
+            {
+                ApplyColorSchemeSetting();
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "ApplyColorSchemeSetting failed");
+            }
         }
 
         public IThemeService.WindowsTheme GetAppsTheme()
@@ -123,7 +147,7 @@ namespace Artemis.UI.Services
             object registryValueObject = key?.GetValue(themeKeyName);
             if (registryValueObject == null) return IThemeService.WindowsTheme.Light;
 
-            int registryValue = (int) registryValueObject;
+            int registryValue = (int)registryValueObject;
 
             return registryValue > 0 ? IThemeService.WindowsTheme.Light : IThemeService.WindowsTheme.Dark;
         }
@@ -158,19 +182,5 @@ namespace Artemis.UI.Services
         }
 
         #endregion
-    }
-
-    public interface IThemeService : IArtemisUIService
-    {
-        WindowsTheme GetAppsTheme();
-        WindowsTheme GetSystemTheme();
-        event EventHandler<WindowsThemeEventArgs> AppsThemeChanged;
-        event EventHandler<WindowsThemeEventArgs> SystemThemeChanged;
-
-        enum WindowsTheme
-        {
-            Light,
-            Dark
-        }
     }
 }
