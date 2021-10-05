@@ -16,14 +16,14 @@ namespace Artemis.VisualScripting.Nodes.Easing
         public SKColorEasingNode() : base("Color Easing", "Outputs an eased color value")
         {
             Input = CreateInputPin<SKColor>();
-            EasingTime = CreateInputPin<float>("delay");
+            EasingTime = CreateInputPin<Numeric>("delay");
             EasingFunction = CreateInputPin<Easings.Functions>("function");
 
             Output = CreateOutputPin<SKColor>();
         }
 
         public InputPin<SKColor> Input { get; set; }
-        public InputPin<float> EasingTime { get; set; }
+        public InputPin<Numeric> EasingTime { get; set; }
         public InputPin<Easings.Functions> EasingFunction { get; set; }
 
         public OutputPin<SKColor> Output { get; set; }

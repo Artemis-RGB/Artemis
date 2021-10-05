@@ -57,6 +57,7 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
 
             visualScriptPin.DisconnectAll();
             Pins.Remove(visualScriptPin);
+            Node.Script.OnScriptUpdated();
         }
 
         private void OnPinCollectionPinAdded(object sender, SingleValueEventArgs<IPin> args)
@@ -66,6 +67,7 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             VisualScriptPin visualScriptPin = new(Node, args.Value);
             _pinMapping.Add(args.Value, visualScriptPin);
             Pins.Add(visualScriptPin);
+            Node.Script.OnScriptUpdated();
         }
 
         public void AddPin() => PinCollection.AddPin();

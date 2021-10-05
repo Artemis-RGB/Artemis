@@ -65,7 +65,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public string SearchInput
         {
-            get => (string)GetValue(SearchInputProperty);
+            get => (string) GetValue(SearchInputProperty);
             set => SetValue(SearchInputProperty, value);
         }
 
@@ -97,7 +97,7 @@ namespace Artemis.VisualScripting.Editor.Controls
             _searchBox.SelectionStart = 0;
             _searchBox.SelectionLength = _searchBox.Text.Length;
         }
-        
+
         private void OnContentListSelectionChanged(object sender, SelectionChangedEventArgs args)
         {
             if ((args == null) || (_contentList?.SelectedItem == null)) return;
@@ -109,10 +109,15 @@ namespace Artemis.VisualScripting.Editor.Controls
         private bool Filter(object o)
         {
             if (o is not NodeData nodeData) return false;
-            if (string.IsNullOrWhiteSpace(SearchInput)) return true;
 
-            bool searchContains = nodeData.Name.Contains(SearchInput, StringComparison.OrdinalIgnoreCase) ||
-                                  nodeData.Description.Contains(SearchInput, StringComparison.OrdinalIgnoreCase);
+            bool searchContains;
+            if (string.IsNullOrWhiteSpace(SearchInput))
+                searchContains = true;
+            else
+            {
+                searchContains = nodeData.Name.Contains(SearchInput, StringComparison.OrdinalIgnoreCase) ||
+                                 nodeData.Description.Contains(SearchInput, StringComparison.OrdinalIgnoreCase);
+            }
 
             if (SourcePin == null || SourcePin.Pin.Type == typeof(object))
                 return searchContains;

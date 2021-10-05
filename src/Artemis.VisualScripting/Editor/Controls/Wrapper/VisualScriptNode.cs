@@ -280,6 +280,7 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
         {
             DisconnectAllPins();
             Script.RemoveNode(this);
+            Script.OnScriptUpdated();
         }
 
         private bool RemoveCanExecute() => !Node.IsExitNode && !Node.IsDefaultNode;

@@ -21,6 +21,7 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
         #region Properties & Fields
 
         private bool _isConnectionUpdated = false;
+        private bool _disconnectingAll = false;
 
         private VisualScriptPin _isConnectingPin;
         private VisualScriptCable _isConnectingCable;
@@ -32,6 +33,8 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
         internal ObservableCollection<VisualScriptCable> InternalConnections { get; } = new();
 
         private Point _absolutePosition;
+        
+
         public Point AbsolutePosition
         {
             get => _absolutePosition;
@@ -106,17 +109,22 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
 
             Node?.OnPinConnected(new PinConnectedEventArgs(this, cable));
 
+            if (_isConnectingPin == null)
+                Node?.Script.OnScriptUpdated();
+
             _isConnectionUpdated = false;
         }
 
         public void DisconnectAll()
         {
             _isConnectionUpdated = true;
+            _disconnectingAll = true;
 
             List<VisualScriptCable> cables = InternalConnections.ToList();
             foreach (VisualScriptCable cable in cables)
                 cable.Disconnect();
 
+            _disconnectingAll = false;
             _isConnectionUpdated = false;
         }
 
@@ -128,6 +136,9 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             Pin.DisconnectFrom(cable.GetConnectedPin(Pin));
 
             Node?.OnPinDisconnected(new PinDisconnectedEventArgs(this, cable));
+
+            if (!_disconnectingAll && _isConnectingPin == null)
+                Node?.Script.OnScriptUpdated();
 
             _isConnectionUpdated = false;
         }

@@ -9,12 +9,12 @@ namespace Artemis.VisualScripting.Nodes.Color
         public RotateHueSKColorNode() : base("Rotate Color Hue", "Rotates the hue of a color by a specified amount in degrees")
         {
             Input = CreateInputPin<SKColor>("Color");
-            Amount = CreateInputPin<float>("Amount");
+            Amount = CreateInputPin<Numeric>("Amount");
             Output = CreateOutputPin<SKColor>();
         }
 
         public InputPin<SKColor> Input { get; }
-        public InputPin<float> Amount { get; }
+        public InputPin<Numeric> Amount { get; }
         public OutputPin<SKColor> Output { get; set; }
 
         public override void Evaluate()

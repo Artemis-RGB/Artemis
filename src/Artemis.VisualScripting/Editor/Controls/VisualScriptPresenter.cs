@@ -171,6 +171,12 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         #endregion
 
+        #region Events
+
+        public event EventHandler ScriptUpdated;
+
+        #endregion
+
         #region Constructors
 
         public VisualScriptPresenter()
@@ -236,6 +242,7 @@ namespace Artemis.VisualScripting.Editor.Controls
         {
             if (VisualScript != null)
             {
+                VisualScript.ScriptUpdated -= OnVisualScriptScriptUpdated;
                 VisualScript.PropertyChanged -= OnVisualScriptPropertyChanged;
                 VisualScript.NodeMoved -= OnVisualScriptNodeMoved;
                 VisualScript.NodeCollectionChanged -= OnVisualScriptNodeCollectionChanged;
@@ -245,6 +252,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
             if (VisualScript != null)
             {
+                VisualScript.ScriptUpdated += OnVisualScriptScriptUpdated;
                 VisualScript.PropertyChanged += OnVisualScriptPropertyChanged;
                 VisualScript.NodeMoved += OnVisualScriptNodeMoved;
                 VisualScript.NodeCollectionChanged += OnVisualScriptNodeCollectionChanged;
@@ -262,6 +270,11 @@ namespace Artemis.VisualScripting.Editor.Controls
                 FitScript();
             else
                 CenterAt(new Vector(0, 0));
+        }
+
+        private void OnVisualScriptScriptUpdated(object sender, EventArgs e)
+        {
+            ScriptUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnVisualScriptPropertyChanged(object sender, PropertyChangedEventArgs args)
@@ -528,7 +541,6 @@ namespace Artemis.VisualScripting.Editor.Controls
             if (nodeData == null) return;
 
             INode node = nodeData.CreateNode(Script, null);
-            node.Initialize(Script);
             node.X = _lastRightClickLocation.X - VisualScript.LocationOffset;
             node.Y = _lastRightClickLocation.Y - VisualScript.LocationOffset;
 
@@ -554,6 +566,7 @@ namespace Artemis.VisualScripting.Editor.Controls
                 _creationBoxParent.ContextMenu.IsOpen = false;
             
             Script.AddNode(node);
+            VisualScript.OnScriptUpdated();
         }
 
         private void CenterAt(Vector vector)

@@ -1,4 +1,6 @@
-﻿namespace Artemis.Core
+﻿using System;
+
+namespace Artemis.Core
 {
     /// <summary>
     ///     Represents a custom view model for a <see cref="INode" />
@@ -19,5 +21,10 @@
         ///     Called whenever the custom view model is closed
         /// </summary>
         void OnDeactivate();
+
+        /// <summary>
+        ///     Occurs whenever the node was modified by the view model
+        /// </summary>
+        event EventHandler NodeModified;
     }
 }

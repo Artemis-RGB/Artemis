@@ -54,6 +54,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public VisualScriptNodePresenter()
         {
+            Loaded += OnLoaded;
             Unloaded += OnUnloaded;
         }
 
@@ -170,10 +171,26 @@ namespace Artemis.VisualScripting.Editor.Controls
                 presenter.GetCustomViewModel();
         }
 
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (CustomViewModel != null)
+                CustomViewModel.NodeModified += CustomViewModelOnNodeModified;
+        }
+
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
-            CustomViewModel?.OnDeactivate();
+            if (CustomViewModel != null)
+            {
+                CustomViewModel.NodeModified -= CustomViewModelOnNodeModified;
+                CustomViewModel.OnDeactivate();
+            }
+
             CustomViewModel = null;
+        }
+
+        private void CustomViewModelOnNodeModified(object? sender, EventArgs e)
+        {
+            Node.Script.OnScriptUpdated();
         }
 
         #endregion

@@ -10,12 +10,12 @@ namespace Artemis.VisualScripting.Nodes.Color
         public DesaturateSKColorNode() : base("Desaturate Color", "Desaturates a color by a specified amount in percent")
         {
             Input = CreateInputPin<SKColor>("Color");
-            Percentage = CreateInputPin<float>("%");
+            Percentage = CreateInputPin<Numeric>("%");
             Output = CreateOutputPin<SKColor>();
         }
 
         public InputPin<SKColor> Input { get; }
-        public InputPin<float> Percentage { get; }
+        public InputPin<Numeric> Percentage { get; }
         public OutputPin<SKColor> Output { get; set; }
 
         public override void Evaluate()

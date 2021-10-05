@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
@@ -66,6 +67,7 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
 
         public event EventHandler NodeMoved;
         public event EventHandler NodeCollectionChanged;
+        public event EventHandler ScriptUpdated;
 
         #endregion
 
@@ -201,6 +203,8 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
         {
             foreach (VisualScriptNode node in _selectedNodes)
                 node.SnapNodeToGrid();
+
+            OnScriptUpdated();
         }
 
         private void OnNodeDragMoving(object sender, VisualScriptNodeDragMovingEventArgs args)
@@ -285,5 +289,10 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
         }
 
         #endregion
+
+        public void OnScriptUpdated()
+        { 
+            ScriptUpdated?.Invoke(this, EventArgs.Empty);
+        }
     }
 }
