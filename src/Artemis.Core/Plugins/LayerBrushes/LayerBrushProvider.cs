@@ -17,7 +17,7 @@ namespace Artemis.Core.LayerBrushes
         protected LayerBrushProvider()
         {
             _layerBrushDescriptors = new List<LayerBrushDescriptor>();
-            LayerBrushDescriptors = new(_layerBrushDescriptors);
+            LayerBrushDescriptors = new ReadOnlyCollection<LayerBrushDescriptor>(_layerBrushDescriptors);
             Disabled += OnDisabled;
         }
 

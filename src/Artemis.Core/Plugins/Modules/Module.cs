@@ -117,7 +117,7 @@ namespace Artemis.Core.Modules
         protected Module()
         {
             DefaultProfilePaths = new ReadOnlyCollection<(DefaultCategoryName, string)>(_defaultProfilePaths);
-            HiddenProperties = new(HiddenPropertiesList);
+            HiddenProperties = new ReadOnlyCollection<PropertyInfo>(HiddenPropertiesList);
         }
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace Artemis.Core.Modules
         /// <returns></returns>
         public virtual DataModelPropertyAttribute GetDataModelDescription()
         {
-            return new() {Name = Info.Name, Description = Info.Description};
+            return new DataModelPropertyAttribute {Name = Info.Name, Description = Info.Description};
         }
 
         /// <summary>

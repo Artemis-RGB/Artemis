@@ -44,7 +44,7 @@ namespace Artemis.Core
                 _baseValue = default!;
 
             _keyframes = new List<LayerPropertyKeyframe<T>>();
-            Keyframes = new(_keyframes);
+            Keyframes = new ReadOnlyCollection<LayerPropertyKeyframe<T>>(_keyframes);
         }
 
         /// <summary>

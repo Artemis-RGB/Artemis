@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:reactiveUi="http://reactiveui.net"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Artemis.UI.Avalonia.Screens.Root.Views.RootView">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240" MinWidth="175" MaxWidth="400" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <ExperimentalAcrylicBorder Grid.Column="0">
+            <ExperimentalAcrylicBorder.Material>
+                <ExperimentalAcrylicMaterial
+                    BackgroundSource="Digger"
+                    TintColor="Black"
+                    TintOpacity="1"
+                    MaterialOpacity="0.65" />
+            </ExperimentalAcrylicBorder.Material>
+            <ContentControl Content="{Binding SidebarViewModel}"/>
+        </ExperimentalAcrylicBorder>
+        <Border Grid.Column="1" Background="Black">
+            <reactiveUi:RoutedViewHost Router="{Binding Router}" Margin="0 20 0 0" Padding="15" />
+        </Border>
+
+    </Grid>
+</UserControl>

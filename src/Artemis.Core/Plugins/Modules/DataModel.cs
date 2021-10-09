@@ -27,8 +27,8 @@ namespace Artemis.Core.Modules
             Module = null!;
             DataModelDescription = null!;
 
-            ActivePaths = new(_activePaths);
-            DynamicChildren = new(_dynamicChildren);
+            ActivePaths = new ReadOnlyCollection<DataModelPath>(_activePaths);
+            DynamicChildren = new ReadOnlyDictionary<string, DynamicChild>(_dynamicChildren);
         }
 
         /// <summary>

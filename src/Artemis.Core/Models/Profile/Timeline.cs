@@ -24,7 +24,7 @@ namespace Artemis.Core
             MainSegmentLength = TimeSpan.FromSeconds(5);
 
             _extraTimelines = new List<Timeline>();
-            ExtraTimelines = new(_extraTimelines);
+            ExtraTimelines = new ReadOnlyCollection<Timeline>(_extraTimelines);
 
             Save();
         }
@@ -33,7 +33,7 @@ namespace Artemis.Core
         {
             Entity = entity;
             _extraTimelines = new List<Timeline>();
-            ExtraTimelines = new(_extraTimelines);
+            ExtraTimelines = new ReadOnlyCollection<Timeline>(_extraTimelines);
 
             Load();
         }
@@ -47,7 +47,7 @@ namespace Artemis.Core
             EndSegmentLength = Parent.EndSegmentLength;
 
             _extraTimelines = new List<Timeline>();
-            ExtraTimelines = new(_extraTimelines);
+            ExtraTimelines = new ReadOnlyCollection<Timeline>(_extraTimelines);
         }
 
         /// <inheritdoc />

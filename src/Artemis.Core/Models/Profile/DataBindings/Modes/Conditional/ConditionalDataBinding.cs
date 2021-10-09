@@ -18,7 +18,7 @@ namespace Artemis.Core
         {
             DataBinding = dataBinding;
             Entity = entity;
-            Conditions = new(_conditions);
+            Conditions = new ReadOnlyCollection<DataBindingCondition<TLayerProperty, TProperty>>(_conditions);
             Load();
         }
 

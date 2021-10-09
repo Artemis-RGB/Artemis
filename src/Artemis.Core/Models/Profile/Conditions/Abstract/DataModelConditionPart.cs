@@ -15,7 +15,7 @@ namespace Artemis.Core
 
         protected DataModelConditionPart()
         {
-            Children = new(_children);
+            Children = new ReadOnlyCollection<DataModelConditionPart>(_children);
         }
 
         /// <summary>

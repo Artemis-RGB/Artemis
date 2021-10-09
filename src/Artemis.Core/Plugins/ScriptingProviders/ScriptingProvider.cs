@@ -46,7 +46,7 @@ namespace Artemis.Core.ScriptingProviders
     {
         protected ScriptingProvider()
         {
-            Scripts = new(InternalScripts);
+            Scripts = new ReadOnlyCollection<Script>(InternalScripts);
         }
 
         /// <summary>

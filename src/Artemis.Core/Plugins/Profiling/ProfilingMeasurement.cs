@@ -70,7 +70,7 @@ namespace Artemis.Core
         /// </summary>
         public TimeSpan GetLast()
         {
-            return new(_last);
+            return new TimeSpan(_last);
         }
 
         /// <summary>

@@ -24,7 +24,7 @@ namespace Artemis.Core
         {
             _profile = profile;
             ChildrenList = new List<ProfileElement>();
-            Children = new(ChildrenList);
+            Children = new ReadOnlyCollection<ProfileElement>(ChildrenList);
         }
 
         /// <summary>

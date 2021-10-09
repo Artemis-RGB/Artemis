@@ -24,7 +24,7 @@ namespace Artemis.Core
             Timeline = new Timeline();
             ExpandedPropertyGroups = new List<string>();
             LayerEffectsList = new List<BaseLayerEffect>();
-            LayerEffects = new(LayerEffectsList);
+            LayerEffects = new ReadOnlyCollection<BaseLayerEffect>(LayerEffectsList);
 
             LayerEffectStore.LayerEffectAdded += LayerEffectStoreOnLayerEffectAdded;
             LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;

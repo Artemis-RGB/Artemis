@@ -31,8 +31,8 @@ namespace Artemis.Core
             _features = new List<PluginFeatureInfo>();
             _profilers = new List<Profiler>();
 
-            Features = new(_features);
-            Profilers = new(_profilers);
+            Features = new ReadOnlyCollection<PluginFeatureInfo>(_features);
+            Profilers = new ReadOnlyCollection<Profiler>(_profilers);
         }
 
         /// <summary>

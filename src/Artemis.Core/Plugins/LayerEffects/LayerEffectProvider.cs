@@ -18,7 +18,7 @@ namespace Artemis.Core.LayerEffects
         protected LayerEffectProvider()
         {
             _layerEffectDescriptors = new List<LayerEffectDescriptor>();
-            LayerEffectDescriptors = new(_layerEffectDescriptors);
+            LayerEffectDescriptors = new ReadOnlyCollection<LayerEffectDescriptor>(_layerEffectDescriptors);
             Disabled += OnDisabled;
         }
 

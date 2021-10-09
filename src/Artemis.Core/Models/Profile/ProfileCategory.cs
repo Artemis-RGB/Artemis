@@ -24,14 +24,14 @@ namespace Artemis.Core
         {
             _name = name;
             Entity = new ProfileCategoryEntity();
-            ProfileConfigurations = new(_profileConfigurations);
+            ProfileConfigurations = new ReadOnlyCollection<ProfileConfiguration>(_profileConfigurations);
         }
 
         internal ProfileCategory(ProfileCategoryEntity entity)
         {
             _name = null!;
             Entity = entity;
-            ProfileConfigurations = new(_profileConfigurations);
+            ProfileConfigurations = new ReadOnlyCollection<ProfileConfiguration>(_profileConfigurations);
 
             Load();
         }

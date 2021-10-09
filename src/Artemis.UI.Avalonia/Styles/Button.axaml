@@ -1,0 +1,55 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+	<!-- Preview -->
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel>
+                <TextBlock Margin="0 5 0 0">Button.icon-button</TextBlock>
+                <Button Classes="icon-button">
+                    <avalonia:MaterialIcon Kind="Cog"></avalonia:MaterialIcon>
+                </Button>
+
+                <TextBlock Margin="0 5 0 0">Button.icon-button icon-button-small</TextBlock>
+                <Button Classes="icon-button icon-button-small">
+                    <avalonia:MaterialIcon Kind="Cog"></avalonia:MaterialIcon>
+                </Button>
+
+                <TextBlock Margin="0 5 0 0">ToggleButton.icon-button</TextBlock>
+                <ToggleButton Classes="icon-button">
+                    <avalonia:MaterialIcon Kind="Cog"></avalonia:MaterialIcon>
+                </ToggleButton>
+
+                <TextBlock Margin="0 5 0 0">HyperlinkButton.icon-button</TextBlock>
+                <controls:HyperlinkButton Classes="icon-button">
+                    <avalonia:MaterialIcon Kind="Web" />
+                </controls:HyperlinkButton>
+
+                <TextBlock Margin="0 5 0 0">HyperlinkButton.icon-button icon-button-small</TextBlock>
+                <controls:HyperlinkButton Classes="icon-button icon-button-small">
+                    <avalonia:MaterialIcon Kind="Web" />
+                </controls:HyperlinkButton>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Styles -->
+    <Style Selector=":is(Button).icon-button">
+        <Setter Property="BorderBrush" Value="Transparent"></Setter>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Padding" Value="5.5"/>
+    </Style>
+
+    <Style Selector=":is(Button).icon-button-small">
+        <Setter Property="Padding" Value="2"/>
+    </Style>
+    <Style Selector=":is(Button).icon-button-small avalonia|MaterialIcon">
+        <Setter Property="Width" Value="14"></Setter>
+        <Setter Property="Height" Value="14"></Setter>
+    </Style>
+
+    <Style Selector="controls|HyperlinkButton.icon-button">
+        <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}" />
+    </Style>
+</Styles>

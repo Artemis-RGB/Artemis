@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    ".NETCoreApp,Version=v5.0": {
+    "net5.0-windows7.0": {
       "Humanizer.Core": {
         "type": "Direct",
         "requested": "[2.11.10, )",

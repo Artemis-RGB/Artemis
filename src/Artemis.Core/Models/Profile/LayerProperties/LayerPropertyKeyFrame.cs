@@ -66,7 +66,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public KeyframeEntity GetKeyframeEntity()
         {
-            return new()
+            return new KeyframeEntity
             {
                 Value = CoreJson.SerializeObject(Value),
                 Position = Position,

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon />
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="0.10.7" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="0.10.7.2" />
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.7.1" />
+    <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.7.1" />
+    <PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.10.7.1" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
+   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Material.Icons.Avalonia">
+      <HintPath>..\..\..\..\Users\Robert\.nuget\packages\material.icons.avalonia\1.0.2\lib\netstandard2.0\Material.Icons.Avalonia.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

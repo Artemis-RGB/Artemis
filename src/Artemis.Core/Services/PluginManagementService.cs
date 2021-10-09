@@ -435,7 +435,7 @@ namespace Artemis.Core.Services
                 }
                 catch (Exception e)
                 {
-                    _logger.Warning(new ArtemisPluginException(plugin, "Failed to instantiate feature", e), "Failed to instantiate feature", plugin);
+                    _logger.Warning(new ArtemisPluginException(plugin, "Failed to instantiate feature", e), "Failed to instantiate feature from plugin {plugin}", plugin);
                     featureInfo.LoadException = e;
                 }
             }

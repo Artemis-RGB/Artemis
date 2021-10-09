@@ -17,7 +17,7 @@ namespace Artemis.Core
         {
             DataBinding = dataBinding;
             Entity = entity;
-            Modifiers = new(_modifiers);
+            Modifiers = new ReadOnlyCollection<DataBindingModifier<TLayerProperty, TProperty>>(_modifiers);
             Load();
         }
 
