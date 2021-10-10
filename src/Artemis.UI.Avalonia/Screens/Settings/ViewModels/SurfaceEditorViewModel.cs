@@ -1,8 +1,10 @@
-﻿namespace Artemis.UI.Avalonia.Screens.Settings.ViewModels
+﻿using ReactiveUI;
+
+namespace Artemis.UI.Avalonia.Screens.Settings.ViewModels
 {
     public class SettingsViewModel : MainScreenViewModel
     {
-        public SettingsViewModel()
+        public SettingsViewModel(IScreen hostScreens) : base(hostScreens, "settings")
         {
             DisplayName = "Settings";
         }

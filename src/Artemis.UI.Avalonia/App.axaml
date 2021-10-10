@@ -11,8 +11,13 @@
 
     <Application.Styles>
 		<!-- Third party styles -->
-        <sty:FluentAvaloniaTheme CustomAccentColor="#4db6ac"/>
-        <StyleInclude Source="avares://Material.Icons.Avalonia/App.xaml"></StyleInclude>
+        <sty:FluentAvaloniaTheme RequestedTheme="Dark" CustomAccentColor="#4db6ac"/>
+        <StyleInclude Source="avares://Material.Icons.Avalonia/App.xaml"/>
+
+		<!-- Grab the window styling from Avalonia -->
+        <StyleInclude Source="avares://Avalonia.Themes.Fluent/Controls/Window.xaml" />
+        <StyleInclude Source="avares://Avalonia.Themes.Fluent/Controls/TitleBar.xaml" />
+        <StyleInclude Source="avares://Avalonia.Themes.Fluent/Controls/CaptionButtons.xaml" />
 
 		<!-- Global styles -->
         <StyleInclude Source="/Styles/Button.axaml"></StyleInclude>

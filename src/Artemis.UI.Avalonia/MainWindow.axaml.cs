@@ -3,7 +3,7 @@ using Avalonia;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Avalonia.Screens.Main.Views
+namespace Artemis.UI.Avalonia
 {
     public partial class MainWindow : ReactiveWindow<RootViewModel>
     {

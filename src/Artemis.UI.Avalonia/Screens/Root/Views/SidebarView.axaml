@@ -4,7 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
+             xmlns:shared="clr-namespace:Artemis.UI.Avalonia.Shared.Controls;assembly=Artemis.UI.Avalonia.Shared"
+             mc:Ignorable="d" d:DesignWidth="240" d:DesignHeight="450"
              x:Class="Artemis.UI.Avalonia.Screens.Root.Views.SidebarView">
     <Grid>
         <Grid.RowDefinitions>
@@ -16,40 +18,41 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" ClipToBounds="True">
+        <Grid Grid.Row="0" IsHitTestVisible="False">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <!-- <shared:DeviceVisualizer Grid.Column="0" -->
-            <!-- 						 Grid.ColumnSpan="2" -->
-            <!-- 						 Device="{Binding HeaderDevice}" -->
-            <!-- 						 ShowColors="True" -->
-            <!-- 						 RenderTransformOrigin="0.5 0.5" -->
-            <!-- 						 VerticalAlignment="Center" -->
-            <!-- 						 HorizontalAlignment="Center" -->
-            <!-- 						 RenderOptions.BitmapScalingMode="HighQuality"> -->
-            <!-- 	<shared:DeviceVisualizer.RenderTransform> -->
-            <!-- 		<TransformGroup> -->
-            <!-- 			<RotateTransform Angle="20" /> -->
-            <!-- 			<ScaleTransform ScaleX="2" ScaleY="2" /> -->
-            <!-- 		</TransformGroup> -->
-            <!-- 	</shared:DeviceVisualizer.RenderTransform> -->
-            <!-- </shared:DeviceVisualizer> -->
-            <Rectangle Grid.Column="0" Grid.ColumnSpan="2" Height="60" VerticalAlignment="Bottom">
-                <Rectangle.Fill>
-                    <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
-                        <GradientStop Color="Black" Offset="0" />
-                        <GradientStop Color="#00000000" Offset="1" />
+            <Border Grid.Column="0"
+                    Grid.ColumnSpan="2">
+				<shared:DeviceVisualizer Device="{Binding HeaderDevice}"
+                                         ShowColors="True"
+                                         VerticalAlignment="Center"
+                                         HorizontalAlignment="Center">
+					<shared:DeviceVisualizer.RenderTransform>
+						<TransformGroup>
+							<RotateTransform Angle="20" />
+							<ScaleTransform ScaleX="2" ScaleY="2" />
+						</TransformGroup>
+					</shared:DeviceVisualizer.RenderTransform>
+				</shared:DeviceVisualizer>
+				<Border.OpacityMask>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,60">
+                        <GradientStop Color="White" Offset="0"></GradientStop>
+                        <GradientStop Color="Transparent" Offset="1"></GradientStop>
                     </LinearGradientBrush>
-                </Rectangle.Fill>
-            </Rectangle>
+				</Border.OpacityMask>
+			</Border>
 
-            <Image Grid.Column="0" Source="{SvgImage /Assets/Images/Logo/bow.svg}" Height="35" Width="35" Margin="10" />
+            <Image Grid.Column="0" >
+                <Image.Source>
+                    <svg:SvgImage Source="/Assets/Images/Logo/bow.svg" />
+                </Image.Source>
+            </Image>
             <TextBlock Grid.Column="1"
+                       FontSize="24"
                        VerticalAlignment="Center"
-
                        Foreground="{DynamicResource MaterialDesignDarkForeground}">
                 Artemis 2
             </TextBlock>

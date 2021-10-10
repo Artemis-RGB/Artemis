@@ -1,8 +1,10 @@
-﻿namespace Artemis.UI.Avalonia.Screens.Home.ViewModels
+﻿using ReactiveUI;
+
+namespace Artemis.UI.Avalonia.Screens.Home.ViewModels
 {
     public class HomeViewModel : MainScreenViewModel
     {
-        public HomeViewModel()
+        public HomeViewModel(IScreen hostScreens) : base(hostScreens, "home")
         {
             DisplayName = "Home";
         }

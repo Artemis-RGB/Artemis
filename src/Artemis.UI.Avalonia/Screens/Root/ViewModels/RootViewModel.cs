@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive;
 using Artemis.Core.Services;
 using ReactiveUI;
 
@@ -10,18 +11,20 @@ namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
 
         public RootViewModel(ICoreService coreService, SidebarViewModel sidebarViewModel)
         {
+            Router = new RoutingState();
             SidebarViewModel = sidebarViewModel;
+            SidebarViewModel.Router = Router;
+
             _coreService = coreService;
             _coreService.Initialize();
-            Console.WriteLine("test");
         }
 
         public SidebarViewModel SidebarViewModel { get; }
-        
+
         /// <inheritdoc />
         public ViewModelActivator Activator { get; } = new();
 
         /// <inheritdoc />
-        public RoutingState Router { get; } = new();
+        public RoutingState Router { get; }
     }
 }

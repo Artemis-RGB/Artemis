@@ -1,8 +1,10 @@
-﻿namespace Artemis.UI.Avalonia.Screens.Workshop.ViewModels
+﻿using ReactiveUI;
+
+namespace Artemis.UI.Avalonia.Screens.Workshop.ViewModels
 {
     public class WorkshopViewModel : MainScreenViewModel
     {
-        public WorkshopViewModel()
+        public WorkshopViewModel(IScreen hostScreens) : base(hostScreens, "workshop")
         {
             DisplayName = "Workshop";
         }

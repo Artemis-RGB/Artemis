@@ -10,6 +10,7 @@ using Artemis.UI.Avalonia.Screens.Workshop.ViewModels;
 using Material.Icons;
 using Ninject;
 using ReactiveUI;
+using RGB.NET.Core;
 
 namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
 {
@@ -17,13 +18,18 @@ namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
     {
         private readonly IKernel _kernel;
         private readonly IProfileService _profileService;
+        private readonly IRgbService _rgbService;
         private readonly ISidebarVmFactory _sidebarVmFactory;
-        private SidebarScreenViewModel _selectedSidebarScreen;
+        private ArtemisDevice? _headerDevice;
 
-        public SidebarViewModel(IKernel kernel, IProfileService profileService, ISidebarVmFactory sidebarVmFactory)
+        private SidebarScreenViewModel _selectedSidebarScreen;
+        private RoutingState _router;
+
+        public SidebarViewModel(IKernel kernel, IProfileService profileService, IRgbService rgbService, ISidebarVmFactory sidebarVmFactory)
         {
             _kernel = kernel;
             _profileService = profileService;
+            _rgbService = rgbService;
             _sidebarVmFactory = sidebarVmFactory;
 
             SidebarScreens = new ObservableCollection<SidebarScreenViewModel>
@@ -33,17 +39,43 @@ namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
                 new SidebarScreenViewModel<SurfaceEditorViewModel>(MaterialIconKind.Devices, "Surface Editor"),
                 new SidebarScreenViewModel<SettingsViewModel>(MaterialIconKind.Cog, "Settings")
             };
-            SelectedSidebarScreen = SidebarScreens.First();
+            _selectedSidebarScreen = SidebarScreens.First();
+
             UpdateProfileCategories();
+            UpdateHeaderDevice();
         }
 
         public ObservableCollection<SidebarScreenViewModel> SidebarScreens { get; }
         public ObservableCollection<SidebarCategoryViewModel> SidebarCategories { get; } = new();
-        
+
+        public ArtemisDevice? HeaderDevice
+        {
+            get => _headerDevice;
+            set => this.RaiseAndSetIfChanged(ref _headerDevice, value);
+        }
+
         public SidebarScreenViewModel SelectedSidebarScreen
         {
             get => _selectedSidebarScreen;
-            set => this.RaiseAndSetIfChanged(ref _selectedSidebarScreen, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _selectedSidebarScreen, value);
+                // if (!SelectedSidebarScreen.IsActive(Router.CurrentViewModel))
+                //     Router.Navigate.Execute(SelectedSidebarScreen.CreateInstance(_kernel)).Subscribe();
+            }
+        }
+
+        public RoutingState Router
+        {
+            get => _router;
+            set => this.RaiseAndSetIfChanged(ref _router, value);
+        }
+
+        public SidebarCategoryViewModel AddProfileCategoryViewModel(ProfileCategory profileCategory)
+        {
+            SidebarCategoryViewModel viewModel = _sidebarVmFactory.SidebarCategoryViewModel(profileCategory);
+            SidebarCategories.Add(viewModel);
+            return viewModel;
         }
 
         private void UpdateProfileCategories()
@@ -53,11 +85,9 @@ namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
                 AddProfileCategoryViewModel(profileCategory);
         }
 
-        public SidebarCategoryViewModel AddProfileCategoryViewModel(ProfileCategory profileCategory)
+        private void UpdateHeaderDevice()
         {
-            SidebarCategoryViewModel viewModel = _sidebarVmFactory.SidebarCategoryViewModel(profileCategory);
-            SidebarCategories.Add(viewModel);
-            return viewModel;
+            HeaderDevice = _rgbService.Devices.FirstOrDefault(d => d.DeviceType == RGBDeviceType.Keyboard && d.Layout is {IsValid: true});
         }
     }
 }

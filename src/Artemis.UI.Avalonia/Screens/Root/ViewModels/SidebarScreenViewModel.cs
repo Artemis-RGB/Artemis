@@ -1,5 +1,8 @@
-﻿using Material.Icons;
+﻿using System;
+using System.Reactive.Linq;
+using Material.Icons;
 using Ninject;
+using ReactiveUI;
 
 namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
 {
@@ -27,5 +30,10 @@ namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
         public string DisplayName { get; }
 
         public abstract MainScreenViewModel CreateInstance(IKernel kernel);
+
+        public bool IsActive(IObservable<IRoutableViewModel?> routerCurrentViewModel)
+        {
+            return false;
+        }
     }
 }

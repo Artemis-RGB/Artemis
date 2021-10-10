@@ -3,6 +3,7 @@ using Artemis.UI.Avalonia.Ninject.Factories;
 using Artemis.UI.Avalonia.Screens;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
+using Ninject.Planning.Bindings.Resolvers;
 
 namespace Artemis.UI.Avalonia.Ninject
 {
@@ -13,6 +14,7 @@ namespace Artemis.UI.Avalonia.Ninject
             if (Kernel == null)
                 throw new ArgumentNullException("Kernel shouldn't be null here.");
 
+            Kernel.Components.Add<IMissingBindingResolver, SelfBindingResolver>();
 
             Kernel.Bind(x =>
             {
