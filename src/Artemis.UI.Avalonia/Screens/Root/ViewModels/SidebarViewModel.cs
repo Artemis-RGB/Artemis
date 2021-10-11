@@ -1,5 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Avalonia.Ninject.Factories;
@@ -14,20 +16,19 @@ using RGB.NET.Core;
 
 namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
 {
-    public class SidebarViewModel : ViewModelBase
+    public class SidebarViewModel : ActivatableViewModelBase
     {
-        private readonly IKernel _kernel;
+        private readonly IScreen _hostScreen;
         private readonly IProfileService _profileService;
         private readonly IRgbService _rgbService;
         private readonly ISidebarVmFactory _sidebarVmFactory;
         private ArtemisDevice? _headerDevice;
 
-        private SidebarScreenViewModel _selectedSidebarScreen;
-        private RoutingState _router;
+        private SidebarScreenViewModel? _selectedSidebarScreen;
 
-        public SidebarViewModel(IKernel kernel, IProfileService profileService, IRgbService rgbService, ISidebarVmFactory sidebarVmFactory)
+        public SidebarViewModel(IScreen hostScreen, IKernel kernel, IProfileService profileService, IRgbService rgbService, ISidebarVmFactory sidebarVmFactory)
         {
-            _kernel = kernel;
+            _hostScreen = hostScreen;
             _profileService = profileService;
             _rgbService = rgbService;
             _sidebarVmFactory = sidebarVmFactory;
@@ -43,6 +44,17 @@ namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
 
             UpdateProfileCategories();
             UpdateHeaderDevice();
+
+            this.WhenActivated(disposables =>
+            {
+                this.WhenAnyObservable(vm => vm._hostScreen.Router.CurrentViewModel)
+                    .WhereNotNull()
+                    .Subscribe(c => SelectedSidebarScreen = SidebarScreens.FirstOrDefault(s => s.ScreenType == c.GetType()))
+                    .DisposeWith(disposables);
+                this.WhenAnyValue(vm => vm.SelectedSidebarScreen)
+                    .WhereNotNull()
+                    .Subscribe(s => _hostScreen.Router.Navigate.Execute(s.CreateInstance(kernel, _hostScreen)));
+            });
         }
 
         public ObservableCollection<SidebarScreenViewModel> SidebarScreens { get; }
@@ -54,21 +66,10 @@ namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
             set => this.RaiseAndSetIfChanged(ref _headerDevice, value);
         }
 
-        public SidebarScreenViewModel SelectedSidebarScreen
+        public SidebarScreenViewModel? SelectedSidebarScreen
         {
             get => _selectedSidebarScreen;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _selectedSidebarScreen, value);
-                // if (!SelectedSidebarScreen.IsActive(Router.CurrentViewModel))
-                //     Router.Navigate.Execute(SelectedSidebarScreen.CreateInstance(_kernel)).Subscribe();
-            }
-        }
-
-        public RoutingState Router
-        {
-            get => _router;
-            set => this.RaiseAndSetIfChanged(ref _router, value);
+            set => this.RaiseAndSetIfChanged(ref _selectedSidebarScreen, value);
         }
 
         public SidebarCategoryViewModel AddProfileCategoryViewModel(ProfileCategory profileCategory)

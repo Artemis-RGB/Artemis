@@ -2,7 +2,7 @@
 
 namespace Artemis.UI.Avalonia.Screens
 {
-    public abstract class MainScreenViewModel : ViewModelBase, IRoutableViewModel
+    public abstract class MainScreenViewModel : ActivatableViewModelBase, IRoutableViewModel
     {
         protected MainScreenViewModel(IScreen hostScreen, string urlPathSegment)
         {

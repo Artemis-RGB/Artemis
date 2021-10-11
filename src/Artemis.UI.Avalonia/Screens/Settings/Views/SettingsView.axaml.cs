@@ -1,12 +1,12 @@
-﻿using Artemis.UI.Avalonia.Screens.Root.ViewModels;
+using Artemis.UI.Avalonia.Screens.Settings.ViewModels;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Avalonia.Screens.Root.Views
+namespace Artemis.UI.Avalonia.Screens.Settings.Views
 {
-    public class SidebarView : ReactiveUserControl<SidebarViewModel>
+    public class SettingsView : ReactiveUserControl<SettingsViewModel>
     {
-        public SidebarView()
+        public SettingsView()
         {
             InitializeComponent();
         }

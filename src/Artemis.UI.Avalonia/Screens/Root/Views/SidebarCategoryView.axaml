@@ -8,10 +8,10 @@
              x:Class="Artemis.UI.Avalonia.Screens.Root.Views.SidebarCategoryView">
     <UserControl.Styles>
         <Style Selector=":is(Button).category-button">
-            <Setter Property="IsVisible" Value="False"></Setter>
+            <Setter Property="IsVisible" Value="False" />
         </Style>
         <Style Selector="Grid#ContainerGrid:pointerover :is(Button).category-button">
-            <Setter Property="IsVisible" Value="True"></Setter>
+            <Setter Property="IsVisible" Value="True" />
         </Style>
 
         <Style Selector="avalonia|MaterialIcon.chevron-collapsed">

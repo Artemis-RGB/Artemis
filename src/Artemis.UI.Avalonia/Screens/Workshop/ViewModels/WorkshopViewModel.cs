@@ -4,7 +4,7 @@ namespace Artemis.UI.Avalonia.Screens.Workshop.ViewModels
 {
     public class WorkshopViewModel : MainScreenViewModel
     {
-        public WorkshopViewModel(IScreen hostScreens) : base(hostScreens, "workshop")
+        public WorkshopViewModel(IScreen hostScreen) : base(hostScreen, "workshop")
         {
             DisplayName = "Workshop";
         }

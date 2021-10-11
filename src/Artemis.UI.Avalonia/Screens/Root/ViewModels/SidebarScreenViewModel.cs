@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Reactive.Linq;
 using Material.Icons;
 using Ninject;
+using Ninject.Parameters;
 using ReactiveUI;
 
 namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
@@ -12,9 +12,11 @@ namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
         {
         }
 
-        public override MainScreenViewModel CreateInstance(IKernel kernel)
+        public override Type ScreenType => typeof(T);
+
+        public override MainScreenViewModel CreateInstance(IKernel kernel, IScreen screen)
         {
-            return kernel.Get<T>();
+            return kernel.Get<T>(new ConstructorArgument("hostScreen", screen));
         }
     }
 
@@ -29,7 +31,8 @@ namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
         public MaterialIconKind Icon { get; }
         public string DisplayName { get; }
 
-        public abstract MainScreenViewModel CreateInstance(IKernel kernel);
+        public abstract Type ScreenType { get; }
+        public abstract MainScreenViewModel CreateInstance(IKernel kernel, IScreen screen);
 
         public bool IsActive(IObservable<IRoutableViewModel?> routerCurrentViewModel)
         {

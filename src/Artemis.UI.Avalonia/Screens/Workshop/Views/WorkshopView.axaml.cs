@@ -1,12 +1,12 @@
-﻿using Artemis.UI.Avalonia.Screens.Root.ViewModels;
+using Artemis.UI.Avalonia.Screens.Workshop.ViewModels;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Avalonia.Screens.Root.Views
+namespace Artemis.UI.Avalonia.Screens.Workshop.Views
 {
-    public class SidebarView : ReactiveUserControl<SidebarViewModel>
+    public class WorkshopView : ReactiveUserControl<WorkshopViewModel>
     {
-        public SidebarView()
+        public WorkshopView()
         {
             InitializeComponent();
         }

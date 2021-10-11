@@ -8,7 +8,6 @@ namespace Artemis.UI.Avalonia.Converters
 {
     public class ValuesAdditionConverter : IMultiValueConverter
     {
-
         /// <inheritdoc />
         public object Convert(IList<object> values, Type targetType, object parameter, CultureInfo culture)
         {

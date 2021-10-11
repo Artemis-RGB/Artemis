@@ -1,6 +1,5 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:views="clr-namespace:Artemis.UI.Avalonia.Screens.Root.Views">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <Border Padding="20">
             <ListBox Classes="sidebar-listbox">
@@ -14,7 +13,7 @@
 
     <!-- Add Styles Here -->
     <Style Selector="ListBox.sidebar-listbox ListBoxItem">
-        <Setter Property="Margin" Value="0 2.5"></Setter>
-        <Setter Property="MinHeight" Value="35"></Setter>
+        <Setter Property="Margin" Value="0 2.5" />
+        <Setter Property="MinHeight" Value="35" />
     </Style>
 </Styles>

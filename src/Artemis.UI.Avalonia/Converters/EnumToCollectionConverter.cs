@@ -8,19 +8,8 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Avalonia.Converters
 {
-
     public class EnumToCollectionConverter : MarkupExtension, IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return GetAllValuesAndDescriptions(value.GetType());
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
-
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             return this;
@@ -43,6 +32,16 @@ namespace Artemis.UI.Avalonia.Converters
                 throw new ArgumentException($"{nameof(t)} must be an enum type");
 
             return Enum.GetValues(t).Cast<Enum>().Select(e => new Tuple<object, object>(e, Description(e))).ToList();
+        }
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return GetAllValuesAndDescriptions(value.GetType());
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
         }
     }
 }

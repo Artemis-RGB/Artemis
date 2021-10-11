@@ -2,7 +2,7 @@
 
 namespace Artemis.UI.Avalonia
 {
-    public class ViewModelBase : ReactiveObject
+    public abstract class ViewModelBase : ReactiveObject
     {
         private string? _displayName;
 
@@ -11,5 +11,10 @@ namespace Artemis.UI.Avalonia
             get => _displayName;
             set => this.RaiseAndSetIfChanged(ref _displayName, value);
         }
+    }
+
+    public abstract class ActivatableViewModelBase : ViewModelBase, IActivatableViewModel
+    {
+        public ViewModelActivator Activator { get; } = new();
     }
 }

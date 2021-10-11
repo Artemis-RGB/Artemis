@@ -26,26 +26,26 @@
 
             <Border Grid.Column="0"
                     Grid.ColumnSpan="2">
-				<shared:DeviceVisualizer Device="{Binding HeaderDevice}"
+                <shared:DeviceVisualizer Device="{Binding HeaderDevice}"
                                          ShowColors="True"
                                          VerticalAlignment="Center"
                                          HorizontalAlignment="Center">
-					<shared:DeviceVisualizer.RenderTransform>
-						<TransformGroup>
-							<RotateTransform Angle="20" />
-							<ScaleTransform ScaleX="2" ScaleY="2" />
-						</TransformGroup>
-					</shared:DeviceVisualizer.RenderTransform>
-				</shared:DeviceVisualizer>
-				<Border.OpacityMask>
+                    <shared:DeviceVisualizer.RenderTransform>
+                        <TransformGroup>
+                            <RotateTransform Angle="20" />
+                            <ScaleTransform ScaleX="2" ScaleY="2" />
+                        </TransformGroup>
+                    </shared:DeviceVisualizer.RenderTransform>
+                </shared:DeviceVisualizer>
+                <Border.OpacityMask>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,60">
-                        <GradientStop Color="White" Offset="0"></GradientStop>
-                        <GradientStop Color="Transparent" Offset="1"></GradientStop>
+                        <GradientStop Color="White" Offset="0" />
+                        <GradientStop Color="Transparent" Offset="1" />
                     </LinearGradientBrush>
-				</Border.OpacityMask>
-			</Border>
+                </Border.OpacityMask>
+            </Border>
 
-            <Image Grid.Column="0" >
+            <Image Grid.Column="0">
                 <Image.Source>
                     <svg:SvgImage Source="/Assets/Images/Logo/bow.svg" />
                 </Image.Source>

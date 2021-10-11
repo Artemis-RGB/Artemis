@@ -2,25 +2,23 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:Artemis.UI.Avalonia"
              xmlns:sty="using:FluentAvalonia.Styling"
-             xmlns:ui="using:FluentAvalonia.UI.Controls"
-             xmlns:uip="using:FluentAvalonia.UI.Controls.Primitives"
              x:Class="Artemis.UI.Avalonia.App">
     <Application.DataTemplates>
-        <local:ViewLocator/>
+        <local:ViewLocator />
     </Application.DataTemplates>
 
     <Application.Styles>
-		<!-- Third party styles -->
-        <sty:FluentAvaloniaTheme RequestedTheme="Dark" CustomAccentColor="#4db6ac"/>
-        <StyleInclude Source="avares://Material.Icons.Avalonia/App.xaml"/>
+        <!-- Third party styles -->
+        <sty:FluentAvaloniaTheme RequestedTheme="Dark" CustomAccentColor="#4db6ac" />
+        <StyleInclude Source="avares://Material.Icons.Avalonia/App.xaml" />
 
-		<!-- Grab the window styling from Avalonia -->
+        <!-- Grab the window styling from Avalonia -->
         <StyleInclude Source="avares://Avalonia.Themes.Fluent/Controls/Window.xaml" />
         <StyleInclude Source="avares://Avalonia.Themes.Fluent/Controls/TitleBar.xaml" />
         <StyleInclude Source="avares://Avalonia.Themes.Fluent/Controls/CaptionButtons.xaml" />
 
-		<!-- Global styles -->
-        <StyleInclude Source="/Styles/Button.axaml"></StyleInclude>
-        <StyleInclude Source="/Styles/Sidebar.axaml"></StyleInclude>
+        <!-- Global styles -->
+        <StyleInclude Source="/Styles/Button.axaml" />
+        <StyleInclude Source="/Styles/Sidebar.axaml" />
     </Application.Styles>
 </Application>

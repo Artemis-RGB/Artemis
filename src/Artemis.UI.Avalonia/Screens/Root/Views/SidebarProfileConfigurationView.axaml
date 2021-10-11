@@ -73,12 +73,11 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <controls:ProfileConfigurationIcon Grid.Column="0"
-                                         x:Name="ProfileIcon"
-                                         VerticalAlignment="Center"
-                                         ConfigurationIcon="{Binding ProfileConfiguration.Icon}"
-                                         Width="20"
-                                         Height="20">
-        </controls:ProfileConfigurationIcon>
+                                           x:Name="ProfileIcon"
+                                           VerticalAlignment="Center"
+                                           ConfigurationIcon="{Binding ProfileConfiguration.Icon}"
+                                           Width="20"
+                                           Height="20" />
 
         <TextBlock Grid.Column="1"
                    x:Name="ProfileName"
@@ -111,12 +110,12 @@
                 Grid.Column="2"
                 ToolTip.Tip="View properties"
                 HorizontalAlignment="Right">
-            <avalonia:MaterialIcon Kind="Cog"/>
+            <avalonia:MaterialIcon Kind="Cog" />
         </Button>
         <ToggleButton Classes="icon-button icon-button-small"
-                      Grid.Column="3" 
-                      ToolTip.Tip="Suspend profile" 
-                      Margin="2 0 0 0" 
+                      Grid.Column="3"
+                      ToolTip.Tip="Suspend profile"
+                      Margin="2 0 0 0"
                       IsChecked="{Binding IsSuspended}">
             <avalonia:MaterialIcon Kind="Pause" />
         </ToggleButton>

@@ -14,7 +14,6 @@ namespace Artemis.UI.Avalonia.Converters
         /// <inheritdoc />
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            
             return new SolidColorBrush(!(value is RGBColor color)
                 ? new Color(0, 0, 0, 0)
                 : new Color((byte) color.A, (byte) color.R, (byte) color.G, (byte) color.B));

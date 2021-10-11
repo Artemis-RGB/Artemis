@@ -23,6 +23,11 @@
         </ExperimentalAcrylicBorder>
 
         <Border Grid.Column="1" Background="#101010" IsHitTestVisible="False" />
-        <reactiveUi:RoutedViewHost Grid.Column="1" Router="{Binding Router}" Margin="0 20 0 0" Padding="15" />
+
+        <reactiveUi:RoutedViewHost Grid.Column="1" Margin="0 20 0 0" Padding="15" Router="{Binding Router}">
+            <reactiveUi:RoutedViewHost.PageTransition>
+                <CrossFade Duration="0.1" />
+            </reactiveUi:RoutedViewHost.PageTransition>
+        </reactiveUi:RoutedViewHost>
     </Grid>
 </UserControl>

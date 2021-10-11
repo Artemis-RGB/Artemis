@@ -5,7 +5,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Avalonia
 {
-    public partial class MainWindow : ReactiveWindow<RootViewModel>
+    public class MainWindow : ReactiveWindow<RootViewModel>
     {
         public MainWindow()
         {
