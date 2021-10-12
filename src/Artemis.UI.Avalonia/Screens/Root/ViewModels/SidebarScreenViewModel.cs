@@ -33,10 +33,5 @@ namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
 
         public abstract Type ScreenType { get; }
         public abstract MainScreenViewModel CreateInstance(IKernel kernel, IScreen screen);
-
-        public bool IsActive(IObservable<IRoutableViewModel?> routerCurrentViewModel)
-        {
-            return false;
-        }
     }
 }

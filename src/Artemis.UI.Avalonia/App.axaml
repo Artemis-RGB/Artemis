@@ -18,6 +18,7 @@
         <StyleInclude Source="avares://Avalonia.Themes.Fluent/Controls/CaptionButtons.xaml" />
 
         <!-- Global styles -->
+        <StyleInclude Source="/Styles/Border.axaml" />
         <StyleInclude Source="/Styles/Button.axaml" />
         <StyleInclude Source="/Styles/Sidebar.axaml" />
     </Application.Styles>

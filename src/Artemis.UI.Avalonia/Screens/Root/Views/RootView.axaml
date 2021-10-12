@@ -5,29 +5,22 @@
              xmlns:reactiveUi="http://reactiveui.net"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Avalonia.Screens.Root.Views.RootView">
-
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="240" MinWidth="175" MaxWidth="400" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <ExperimentalAcrylicBorder Grid.Column="0">
-            <ExperimentalAcrylicBorder.Material>
-                <ExperimentalAcrylicMaterial
-                    BackgroundSource="Digger"
-                    TintColor="Black"
-                    TintOpacity="1"
-                    MaterialOpacity="0.65" />
-            </ExperimentalAcrylicBorder.Material>
-            <ContentControl Content="{Binding SidebarViewModel}" />
-        </ExperimentalAcrylicBorder>
 
-        <Border Grid.Column="1" Background="#101010" IsHitTestVisible="False" />
+        <ContentControl Grid.Column="0" Content="{Binding SidebarViewModel}" />
 
-        <reactiveUi:RoutedViewHost Grid.Column="1" Margin="0 20 0 0" Padding="15" Router="{Binding Router}">
-            <reactiveUi:RoutedViewHost.PageTransition>
-                <CrossFade Duration="0.1" />
-            </reactiveUi:RoutedViewHost.PageTransition>
-        </reactiveUi:RoutedViewHost>
+        <Border Classes="router-container" Grid.Column="1">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" >
+                <reactiveUi:RoutedViewHost Router="{Binding Router}">
+                    <reactiveUi:RoutedViewHost.PageTransition>
+                        <CrossFade Duration="0.1" />
+                    </reactiveUi:RoutedViewHost.PageTransition>
+                </reactiveUi:RoutedViewHost>
+            </ScrollViewer>
+        </Border>
     </Grid>
 </UserControl>
