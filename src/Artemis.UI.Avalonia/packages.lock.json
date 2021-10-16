@@ -76,6 +76,17 @@
           "Avalonia.Diagnostics": "0.10.7"
         }
       },
+      "Flurl.Http": {
+        "type": "Direct",
+        "requested": "[3.2.0, )",
+        "resolved": "3.2.0",
+        "contentHash": "5S8YiJm5CyRFO418GG9PDrsgmGEaZJtZLUqk3xqBKrfx7W9eKtOSpeji/GwAL+tSgNTALKBPvBKTaT4S83Oo+w==",
+        "dependencies": {
+          "Flurl": "3.0.2",
+          "Newtonsoft.Json": "12.0.2",
+          "System.Text.Encoding.CodePages": "4.5.1"
+        }
+      },
       "Live.Avalonia": {
         "type": "Direct",
         "requested": "[1.3.1, )",
@@ -240,6 +251,11 @@
         "type": "Transitive",
         "resolved": "1.2.0",
         "contentHash": "CPxuWF8EPvM0rwAtMTR5G+7EuLoGNXsEfqyx06upN9JyVALZ73KgbGn3SLFwGosifiUAXrvNHtXlUwGGytdECg=="
+      },
+      "Flurl": {
+        "type": "Transitive",
+        "resolved": "3.0.2",
+        "contentHash": "1/6mqdzGCTdAekbWkVZBTylCV+8g3JUSTXRBngRVR274S+RsAYNRF79GbDoDsPfMKu8VPc9HkQWdBEAncK1PQQ=="
       },
       "HarfBuzzSharp": {
         "type": "Transitive",

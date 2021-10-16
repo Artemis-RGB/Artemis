@@ -1,0 +1,39 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel>
+                <TextBlock Classes="h1">This is heading 1</TextBlock>
+                <TextBlock Classes="h2">This is heading 2</TextBlock>
+                <TextBlock Classes="h3">This is heading 3</TextBlock>
+                <TextBlock Classes="h4">This is heading 4</TextBlock>
+                <TextBlock Classes="h5">This is heading 5</TextBlock>
+                <TextBlock Classes="h6">This is heading 6</TextBlock>
+                <TextBlock Classes="subtitle">This is a subtitle</TextBlock>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="TextBlock.h1">
+        <Setter Property="FontSize" Value="64" />
+    </Style>
+    <Style Selector="TextBlock.h2">
+        <Setter Property="FontSize" Value="48" />
+    </Style>
+    <Style Selector="TextBlock.h3">
+        <Setter Property="FontSize" Value="32" />
+    </Style>
+    <Style Selector="TextBlock.h4">
+        <Setter Property="FontSize" Value="24" />
+    </Style>
+    <Style Selector="TextBlock.h5">
+        <Setter Property="FontSize" Value="16" />
+    </Style>
+    <Style Selector="TextBlock.h6">
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+    <Style Selector="TextBlock.subtitle">
+		<Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
+    </Style>
+</Styles>

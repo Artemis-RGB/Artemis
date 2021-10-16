@@ -1,24 +1,38 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
-        <Border Classes="router-container">
-            <Border Classes="card" Margin="40">
+        <StackPanel>
+            <Border Classes="card" Margin="20">
                 <TextBlock>I'm in a panel yo!</TextBlock>
             </Border>
-        </Border>
+            <Border Classes="card" Margin="20">
+                <StackPanel>
+                    <TextBlock>I'm in a panel yo!</TextBlock>
+                    <Separator Classes="card-separator" />
+                    <TextBlock>I'm in a panel yo!</TextBlock>
+                </StackPanel>
+            </Border>
+        </StackPanel>
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
-	<Style Selector="Border.router-container">
-		<Setter Property="Margin" Value="0 40 0 0"/>
-		<Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiary}" />
-		<Setter Property="CornerRadius" Value="6 0 0 0" />
-		<Setter Property="ClipToBounds" Value="True" />
-	</Style>
+    <Style Selector="Border.router-container">
+        <Setter Property="Margin" Value="0 40 0 0" />
+        <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiary}" />
+        <Setter Property="CornerRadius" Value="8 0 0 0" />
+        <Setter Property="ClipToBounds" Value="True" />
+    </Style>
 
     <Style Selector="Border.card">
-        <Setter Property="Padding" Value="{DynamicResource FlyoutContentThemePadding}" />
+        <Setter Property="Padding" Value="25" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
-        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+        <Setter Property="CornerRadius" Value="10" />
+    </Style>
+
+	<Style Selector="Separator.card-separator">
+		<Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+        <Setter Property="Margin" Value="-12 15" />
+		<Setter Property="Height" Value="1" />
+        
     </Style>
 </Styles>
