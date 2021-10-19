@@ -5,9 +5,9 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
+		<Folder Include="Controls\" />
 		<Folder Include="Models\" />
 		<AvaloniaResource Include="Assets\**" />
-		<Folder Include="Utilities\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="Assets\Images\home-banner.png" />

@@ -17,6 +17,7 @@ using FluentValidation;
 using MaterialDesignThemes.Wpf;
 using Ookii.Dialogs.Wpf;
 using Stylet;
+using EnumUtilities = Artemis.UI.Shared.EnumUtilities;
 
 namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
 {

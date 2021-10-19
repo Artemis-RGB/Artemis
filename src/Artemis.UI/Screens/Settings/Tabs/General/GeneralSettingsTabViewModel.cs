@@ -54,8 +54,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             _registrationService = registrationService;
             _messageService = messageService;
 
-            LogLevels = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(LogEventLevel)));
-            ColorSchemes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(ApplicationColorScheme)));
             RenderScales = new BindableCollection<Tuple<string, double>>
             {
                 new("25%", 0.25),

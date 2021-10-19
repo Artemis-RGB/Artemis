@@ -2,6 +2,7 @@
 using Artemis.UI.Shared;
 using RGB.NET.Core;
 using Stylet;
+using EnumUtilities = Artemis.UI.Shared.EnumUtilities;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints
 {

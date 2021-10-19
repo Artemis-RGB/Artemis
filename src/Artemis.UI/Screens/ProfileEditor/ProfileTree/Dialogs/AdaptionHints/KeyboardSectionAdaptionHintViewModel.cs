@@ -1,6 +1,7 @@
 ﻿using Artemis.Core;
 using Artemis.UI.Shared;
 using Stylet;
+using EnumUtilities = Artemis.UI.Shared.EnumUtilities;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints
 {

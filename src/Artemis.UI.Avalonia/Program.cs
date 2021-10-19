@@ -1,13 +1,10 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
-using Ninject;
 
 namespace Artemis.UI.Avalonia
 {
     internal class Program
     {
-        private static StandardKernel _kernel;
-
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
         // yet and stuff might break.

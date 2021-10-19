@@ -1,6 +1,7 @@
 ﻿using System;
 using Artemis.UI.Avalonia.Ninject.Factories;
 using Artemis.UI.Avalonia.Screens;
+using Artemis.UI.Avalonia.Services.Interfaces;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
 using Ninject.Planning.Bindings.Resolvers;
@@ -39,6 +40,16 @@ namespace Artemis.UI.Avalonia.Ninject
                     .SelectAllInterfaces()
                     .InheritedFrom<IVmFactory>()
                     .BindToFactory();
+            });
+
+            // Bind all UI services as singletons
+            Kernel.Bind(x =>
+            {
+                x.FromThisAssembly()
+                    .SelectAllClasses()
+                    .InheritedFrom<IArtemisUIService>()
+                    .BindAllInterfaces()
+                    .Configure(c => c.InSingletonScope());
             });
         }
     }

@@ -29,7 +29,6 @@ namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
         }
 
         public MaterialIconKind Icon { get; }
-        public string DisplayName { get; }
 
         public abstract Type ScreenType { get; }
         public abstract MainScreenViewModel CreateInstance(IKernel kernel, IScreen screen);

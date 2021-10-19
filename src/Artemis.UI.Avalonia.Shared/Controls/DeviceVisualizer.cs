@@ -142,7 +142,7 @@ namespace Artemis.UI.Avalonia.Shared.Controls
         ///     Gets or sets the <see cref="ArtemisDevice" /> to display
         /// </summary>
         public static readonly StyledProperty<ArtemisDevice?> DeviceProperty =
-            AvaloniaProperty.Register<ProfileConfigurationIcon, ArtemisDevice?>(nameof(Device));
+            AvaloniaProperty.Register<DeviceVisualizer, ArtemisDevice?>(nameof(Device));
 
         /// <summary>
         ///     Gets or sets the <see cref="ArtemisDevice" /> to display
@@ -157,7 +157,7 @@ namespace Artemis.UI.Avalonia.Shared.Controls
         ///     Gets or sets boolean indicating  whether or not to show per-LED colors
         /// </summary>
         public static readonly StyledProperty<bool> ShowColorsProperty =
-            AvaloniaProperty.Register<ProfileConfigurationIcon, bool>(nameof(ShowColors));
+            AvaloniaProperty.Register<DeviceVisualizer, bool>(nameof(ShowColors));
 
         /// <summary>
         ///     Gets or sets a boolean indicating whether or not to show per-LED colors
@@ -172,7 +172,7 @@ namespace Artemis.UI.Avalonia.Shared.Controls
         ///     Gets or sets a list of LEDs to highlight
         /// </summary>
         public static readonly StyledProperty<ObservableCollection<ArtemisLed>?> HighlightedLedsProperty =
-            AvaloniaProperty.Register<ProfileConfigurationIcon, ObservableCollection<ArtemisLed>?>(nameof(HighlightedLeds));
+            AvaloniaProperty.Register<DeviceVisualizer, ObservableCollection<ArtemisLed>?>(nameof(HighlightedLeds));
 
         /// <summary>
         ///     Gets or sets a list of LEDs to highlight

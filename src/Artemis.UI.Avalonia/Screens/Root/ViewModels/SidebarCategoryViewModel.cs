@@ -11,8 +11,7 @@ namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
     {
         private readonly IProfileService _profileService;
         private readonly ISidebarVmFactory _vmFactory;
-        private SidebarProfileConfigurationViewModel _selectedProfileConfiguration;
-        public ProfileCategory ProfileCategory { get; }
+        private SidebarProfileConfigurationViewModel? _selectedProfileConfiguration;
 
         public SidebarCategoryViewModel(ProfileCategory profileCategory, IProfileService profileService, ISidebarVmFactory vmFactory)
         {
@@ -25,9 +24,11 @@ namespace Artemis.UI.Avalonia.Screens.Root.ViewModels
                 CreateProfileViewModels();
         }
 
+        public ProfileCategory ProfileCategory { get; }
+
         public ObservableCollection<SidebarProfileConfigurationViewModel> ProfileConfigurations { get; } = new();
 
-        public SidebarProfileConfigurationViewModel SelectedProfileConfiguration
+        public SidebarProfileConfigurationViewModel? SelectedProfileConfiguration
         {
             get => _selectedProfileConfiguration;
             set => this.RaiseAndSetIfChanged(ref _selectedProfileConfiguration, value);

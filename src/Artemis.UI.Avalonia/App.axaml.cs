@@ -4,8 +4,10 @@ using Artemis.UI.Avalonia.Screens.Root.ViewModels;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using FluentAvalonia.Styling;
 using Ninject;
+using ReactiveUI;
 using Splat.Ninject;
 
 namespace Artemis.UI.Avalonia
@@ -17,6 +19,8 @@ namespace Artemis.UI.Avalonia
         public override void Initialize()
         {
             InitializeNinject();
+            RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
+
             AvaloniaXamlLoader.Load(this);
         }
 
