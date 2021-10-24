@@ -20,11 +20,13 @@ namespace Artemis.UI.Avalonia.Screens.Settings.ViewModels
     {
         private readonly PluginSetting<LayerBrushReference> _defaultLayerBrushDescriptor;
         private readonly ISettingsService _settingsService;
+        private readonly IDebugService _debugService;
 
-        public GeneralTabViewModel(ISettingsService settingsService, IPluginManagementService pluginManagementService, IDebugService debuggerService)
+        public GeneralTabViewModel(ISettingsService settingsService, IPluginManagementService pluginManagementService, IDebugService debugService)
         {
             DisplayName = "General";
             _settingsService = settingsService;
+            _debugService = debugService;
 
             List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
             LayerBrushDescriptors = new ObservableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
@@ -137,7 +139,9 @@ namespace Artemis.UI.Avalonia.Screens.Settings.ViewModels
 
         private void ExecuteShowDebugger()
         {
+            _debugService.ShowDebugger();
         }
+
 
         private void ExecuteShowDataFolder()
         {

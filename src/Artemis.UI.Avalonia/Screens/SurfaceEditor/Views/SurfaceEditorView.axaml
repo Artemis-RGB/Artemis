@@ -2,7 +2,50 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Artemis.UI.Avalonia.Shared.Controls;assembly=Artemis.UI.Avalonia.Shared"
+             xmlns:paz="using:Avalonia.Controls.PanAndZoom"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Avalonia.Screens.SurfaceEditor.Views.SurfaceEditorView">
-    Surface editor c:
+
+    <paz:ZoomBorder Name="ZoomBorder"
+                    Stretch="None"
+                    ZoomSpeed="1.2"
+                    ClipToBounds="True"
+                    Focusable="True"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch" 
+                    ZoomChanged="ZoomBorder_OnZoomChanged">
+        <paz:ZoomBorder.Background>
+            <VisualBrush TileMode="Tile" Stretch="Uniform" SourceRect="0,0,25,25">
+                <VisualBrush.Visual>
+                    <Grid Width="25" Height="25" RowDefinitions="*,*" ColumnDefinitions="*,*">
+                        <Rectangle Grid.Row="0" Grid.Column="0" Fill="Black" Opacity="0.15" />
+                        <Rectangle Grid.Row="0" Grid.Column="1" />
+                        <Rectangle Grid.Row="1" Grid.Column="0" />
+                        <Rectangle Grid.Row="1" Grid.Column="1" Fill="Black" Opacity="0.15" />
+                    </Grid>
+                </VisualBrush.Visual>
+            </VisualBrush>
+        </paz:ZoomBorder.Background>
+        <ItemsControl Items="{Binding Devices}">
+            <ItemsControl.Styles>
+                <Style Selector="ContentPresenter">
+                    <Setter Property="Canvas.Left" Value="{Binding X}" />
+                    <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                </Style>
+            </ItemsControl.Styles>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <controls:DeviceVisualizer
+                        Device="{Binding}" ShowColors="True" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </paz:ZoomBorder>
+
 </UserControl>

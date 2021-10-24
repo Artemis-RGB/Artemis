@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Artemis.UI.Avalonia.Services.Interfaces
+﻿namespace Artemis.UI.Avalonia.Services.Interfaces
 {
     public interface IDebugService : IArtemisUIService
     {
         void ShowDebugger();
+        void ClearDebugger();
     }
 }

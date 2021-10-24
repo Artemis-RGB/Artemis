@@ -362,7 +362,7 @@ namespace Artemis.Core.Services
             {
                 // Load the enabled state and if not found, default to true
                 PluginFeatureEntity featureEntity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName) ??
-                                                    new PluginFeatureEntity {IsEnabled = plugin.Info.AutoEnableFeatures, Type = featureType.FullName!};
+                                                    new PluginFeatureEntity {IsEnabled = true, Type = featureType.FullName!};
                 plugin.AddFeature(new PluginFeatureInfo(plugin, featureType, featureEntity, (PluginFeatureAttribute?) Attribute.GetCustomAttribute(featureType, typeof(PluginFeatureAttribute))));
             }
 

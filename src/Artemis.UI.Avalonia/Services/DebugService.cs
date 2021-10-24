@@ -1,30 +1,38 @@
 ﻿using Artemis.UI.Avalonia.Screens.Debug;
 using Artemis.UI.Avalonia.Services.Interfaces;
-using Ninject;
+using Artemis.UI.Avalonia.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Avalonia.Services
 {
     public class DebugService : IDebugService
     {
-        private readonly IKernel _kernel;
-        private DebugWindow? _debugWindow;
+        private readonly IWindowService _windowService;
+        private DebugViewModel? _debugViewModel;
 
-        public DebugService(IKernel kernel)
+        public DebugService(IWindowService windowService)
         {
-            _kernel = kernel;
+            _windowService = windowService;
         }
 
-        private void CreateDebugger()
+        public void ClearDebugger()
         {
+            _debugViewModel = null;
         }
 
         private void BringDebuggerToForeground()
         {
+            if (_debugViewModel != null) 
+                _debugViewModel.IsActive = true;
+        }
+
+        private void CreateDebugger()
+        {
+            _debugViewModel = _windowService.ShowWindow<DebugViewModel>();
         }
 
         public void ShowDebugger()
         {
-            if (_debugWindow != null)
+            if (_debugViewModel != null)
                 BringDebuggerToForeground();
             else
                 CreateDebugger();

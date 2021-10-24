@@ -12,7 +12,10 @@ using Avalonia.Input;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using Avalonia.Rendering;
 using Avalonia.Threading;
+using Avalonia.Visuals.Media.Imaging;
 
 namespace Artemis.UI.Avalonia.Shared.Controls
 {
@@ -21,10 +24,11 @@ namespace Artemis.UI.Avalonia.Shared.Controls
     /// </summary>
     public class DeviceVisualizer : Control
     {
-        private readonly DispatcherTimer _timer;
+        private const double UpdateFrameRate = 25.0;
         private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
+        private readonly DispatcherTimer _timer;
 
-        private Bitmap? _deviceImage;
+        private RenderTargetBitmap? _deviceImage;
         private List<DeviceVisualizerLed>? _dimmedLeds;
         private List<DeviceVisualizerLed>? _highlightedLeds;
         private ArtemisDevice? _oldDevice;
@@ -32,8 +36,7 @@ namespace Artemis.UI.Avalonia.Shared.Controls
         /// <inheritdoc />
         public DeviceVisualizer()
         {
-            // Run an update timer at 25 fps
-            _timer = new DispatcherTimer(DispatcherPriority.Render) {Interval = TimeSpan.FromMilliseconds(40)};
+            _timer = new DispatcherTimer(DispatcherPriority.Render) {Interval = TimeSpan.FromMilliseconds(1000.0 / UpdateFrameRate)};
             _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
 
             PointerReleased += OnPointerReleased;
@@ -45,33 +48,48 @@ namespace Artemis.UI.Avalonia.Shared.Controls
             if (Device == null)
                 return;
 
+            List<DrawingContext.PushedState> pushes = new(4);
+
             // Determine the scale required to fit the desired size of the control
             Rect measureSize = MeasureDevice();
             double scale = Math.Min(Bounds.Width / measureSize.Width, Bounds.Height / measureSize.Height);
 
             // Scale the visualization in the desired bounding box
             if (Bounds.Width > 0 && Bounds.Height > 0)
-                drawingContext.PushPostTransform(Matrix.CreateScale(scale, scale));
+                pushes.Add(drawingContext.PushPostTransform(Matrix.CreateScale(scale, scale)));
 
             // Apply device rotation
-            drawingContext.PushPostTransform(Matrix.CreateTranslation(0 - measureSize.Left, 0 - measureSize.Top));
-            drawingContext.PushPostTransform(Matrix.CreateRotation(Device.Rotation));
+            pushes.Add(drawingContext.PushPostTransform(Matrix.CreateTranslation(0 - measureSize.Left, 0 - measureSize.Top)));
+            pushes.Add(drawingContext.PushPostTransform(Matrix.CreateRotation(Device.Rotation)));
 
             // Apply device scale
-            drawingContext.PushPostTransform(Matrix.CreateScale(Device.Scale, Device.Scale));
+            pushes.Add(drawingContext.PushPostTransform(Matrix.CreateScale(Device.Scale, Device.Scale)));
 
             // Render device and LED images 
             if (_deviceImage != null)
-                drawingContext.DrawImage(_deviceImage, new Rect(0, 0, Device.RgbDevice.Size.Width, Device.RgbDevice.Size.Height));
+                drawingContext.DrawImage(_deviceImage, new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height));
 
             foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                deviceVisualizerLed.RenderImage(drawingContext);
+                deviceVisualizerLed.RenderGeometry(drawingContext);
+
+            for (int index = pushes.Count - 1; index >= 0; index--)
+            {
+                DrawingContext.PushedState pushedState = pushes[index];
+                pushedState.Dispose();
+            }
         }
 
         /// <summary>
         ///     Occurs when a LED of the device has been clicked
         /// </summary>
         public event EventHandler<LedClickedEventArgs>? LedClicked;
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            _deviceImage?.Dispose();
+            _deviceImage = null;
+            base.OnDetachedFromVisualTree(e);
+        }
 
         /// <summary>
         ///     Invokes the <see cref="LedClicked" /> event
@@ -142,7 +160,13 @@ namespace Artemis.UI.Avalonia.Shared.Controls
         ///     Gets or sets the <see cref="ArtemisDevice" /> to display
         /// </summary>
         public static readonly StyledProperty<ArtemisDevice?> DeviceProperty =
-            AvaloniaProperty.Register<DeviceVisualizer, ArtemisDevice?>(nameof(Device));
+            AvaloniaProperty.Register<DeviceVisualizer, ArtemisDevice?>(nameof(Device), notifying: DeviceUpdated);
+
+        private static void DeviceUpdated(IAvaloniaObject sender, bool before)
+        {
+            if (!before)
+                ((DeviceVisualizer) sender).SetupForDevice();
+        }
 
         /// <summary>
         ///     Gets or sets the <see cref="ArtemisDevice" /> to display
@@ -225,13 +249,31 @@ namespace Artemis.UI.Avalonia.Shared.Controls
             Device.DeviceUpdated += DeviceUpdated;
             UpdateTransform();
 
-            // Load the device main image
-            if (Device.Layout?.Image != null && File.Exists(Device.Layout.Image.LocalPath))
-                _deviceImage = new Bitmap(Device.Layout.Image.AbsolutePath);
-
             // Create all the LEDs
             foreach (ArtemisLed artemisLed in Device.Leds)
                 _deviceVisualizerLeds.Add(new DeviceVisualizerLed(artemisLed));
+
+            // Load the device main image
+            if (Device.Layout?.Image != null && File.Exists(Device.Layout.Image.LocalPath))
+            {
+                try
+                {
+                    // Create a bitmap that'll be used to render the device and LED images just once
+                    RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) Device.RgbDevice.Size.Width * 4, (int) Device.RgbDevice.Size.Height * 4));
+
+                    using IDrawingContextImpl context = renderTargetBitmap.CreateDrawingContext(new ImmediateRenderer(this));
+                    using Bitmap bitmap = new(Device.Layout.Image.LocalPath);
+                    context.DrawBitmap(bitmap.PlatformImpl, 1, new Rect(bitmap.Size), new Rect(renderTargetBitmap.Size), BitmapInterpolationMode.HighQuality);
+                    foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
+                        deviceVisualizerLed.DrawBitmap(context);
+
+                    _deviceImage = renderTargetBitmap;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
 
             InvalidateMeasure();
         }

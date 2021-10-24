@@ -1,6 +1,7 @@
 using Artemis.Core.Ninject;
 using Artemis.UI.Avalonia.Ninject;
 using Artemis.UI.Avalonia.Screens.Root.ViewModels;
+using Artemis.UI.Avalonia.Shared.Ninject;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -43,6 +44,7 @@ namespace Artemis.UI.Avalonia
             _kernel = new StandardKernel();
             _kernel.Load<CoreModule>();
             _kernel.Load<UIModule>();
+            _kernel.Load<SharedUIModule>();
 
             _kernel.UseNinjectDependencyResolver();
         }
