@@ -18,8 +18,6 @@ namespace Artemis.UI.Avalonia.Shared.Controls
         private readonly SolidColorBrush _penBrush;
         private readonly SolidColorBrush _fillBrush;
         private readonly Pen _pen;
-        private const byte Dimmed = 100;
-        private const byte NonDimmed = 255;
 
         public DeviceVisualizerLed(ArtemisLed led)
         {
@@ -64,13 +62,22 @@ namespace Artemis.UI.Avalonia.Shared.Controls
             }
         }
 
-        public void RenderGeometry(DrawingContext drawingContext)
+        public void RenderGeometry(DrawingContext drawingContext, bool dimmed)
         {
             byte r = Led.RgbLed.Color.GetR();
             byte g = Led.RgbLed.Color.GetG();
             byte b = Led.RgbLed.Color.GetB();
-            _fillBrush.Color = new Color(100, r, g, b);
-            _penBrush.Color = new Color(255, r, g, b);
+
+            if (dimmed)
+            {
+                _fillBrush.Color = new Color(50, r, g, b);
+                _penBrush.Color = new Color(100, r, g, b);
+            }
+            else
+            {
+                _fillBrush.Color = new Color(100, r, g, b);
+                _penBrush.Color = new Color(255, r, g, b);
+            }
 
             // Render the LED geometry
             drawingContext.DrawGeometry(_fillBrush, _pen, DisplayGeometry);

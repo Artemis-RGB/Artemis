@@ -28,6 +28,7 @@ namespace Artemis.UI.Avalonia.Shared.Controls
         private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
         private readonly DispatcherTimer _timer;
 
+        private Rect _deviceBounds;
         private RenderTargetBitmap? _deviceImage;
         private List<DeviceVisualizerLed>? _dimmedLeds;
         private List<DeviceVisualizerLed>? _highlightedLeds;
@@ -48,35 +49,30 @@ namespace Artemis.UI.Avalonia.Shared.Controls
             if (Device == null)
                 return;
 
-            List<DrawingContext.PushedState> pushes = new(4);
-
             // Determine the scale required to fit the desired size of the control
-            Rect measureSize = MeasureDevice();
-            double scale = Math.Min(Bounds.Width / measureSize.Width, Bounds.Height / measureSize.Height);
+            double scale = Math.Min(Bounds.Width / _deviceBounds.Width, Bounds.Height / _deviceBounds.Height);
 
             // Scale the visualization in the desired bounding box
+
+            DrawingContext.PushedState? boundsPush = null;
             if (Bounds.Width > 0 && Bounds.Height > 0)
-                pushes.Add(drawingContext.PushPostTransform(Matrix.CreateScale(scale, scale)));
+                boundsPush = drawingContext.PushPostTransform(Matrix.CreateScale(scale, scale));
 
             // Apply device rotation
-            pushes.Add(drawingContext.PushPostTransform(Matrix.CreateTranslation(0 - measureSize.Left, 0 - measureSize.Top)));
-            pushes.Add(drawingContext.PushPostTransform(Matrix.CreateRotation(Device.Rotation)));
+            using DrawingContext.PushedState translationPush = drawingContext.PushPostTransform(Matrix.CreateTranslation(0 - _deviceBounds.Left, 0 - _deviceBounds.Top));
+            using DrawingContext.PushedState rotationPush = drawingContext.PushPostTransform(Matrix.CreateRotation(Device.Rotation));
 
             // Apply device scale
-            pushes.Add(drawingContext.PushPostTransform(Matrix.CreateScale(Device.Scale, Device.Scale)));
+            using DrawingContext.PushedState scalePush = drawingContext.PushPostTransform(Matrix.CreateScale(Device.Scale, Device.Scale));
 
             // Render device and LED images 
             if (_deviceImage != null)
                 drawingContext.DrawImage(_deviceImage, new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height));
 
             foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                deviceVisualizerLed.RenderGeometry(drawingContext);
+                deviceVisualizerLed.RenderGeometry(drawingContext, false);
 
-            for (int index = pushes.Count - 1; index >= 0; index--)
-            {
-                DrawingContext.PushedState pushedState = pushes[index];
-                pushedState.Dispose();
-            }
+            boundsPush?.Dispose();
         }
 
         /// <summary>
@@ -244,6 +240,7 @@ namespace Artemis.UI.Avalonia.Shared.Controls
             }
 
             _oldDevice = Device;
+            _deviceBounds = MeasureDevice();
 
             Device.RgbDevice.PropertyChanged += DevicePropertyChanged;
             Device.DeviceUpdated += DeviceUpdated;

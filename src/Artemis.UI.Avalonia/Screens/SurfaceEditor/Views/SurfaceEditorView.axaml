@@ -27,25 +27,32 @@
                 </VisualBrush.Visual>
             </VisualBrush>
         </paz:ZoomBorder.Background>
-        <ItemsControl Items="{Binding Devices}">
-            <ItemsControl.Styles>
-                <Style Selector="ContentPresenter">
-                    <Setter Property="Canvas.Left" Value="{Binding X}" />
-                    <Setter Property="Canvas.Top" Value="{Binding Y}" />
-                </Style>
-            </ItemsControl.Styles>
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <controls:DeviceVisualizer
-                        Device="{Binding}" ShowColors="True" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <Grid Background="Transparent">
+            <ItemsControl Items="{Binding Devices}">
+                <ItemsControl.Styles>
+                    <Style Selector="ContentPresenter">
+                        <Setter Property="Canvas.Left" Value="{Binding X}" />
+                        <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                    </Style>
+                </ItemsControl.Styles>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <controls:DeviceVisualizer Device="{Binding}" ShowColors="True" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <controls:SelectionRectangle Name="SelectionRectangle" 
+                                         InputElement="{Binding #ZoomBorder}"
+                                         SelectionUpdated="{Binding UpdateSelection}"
+                                         SelectionFinished="{Binding ApplySelection}"/>
+        </Grid>
+       
     </paz:ZoomBorder>
 
 </UserControl>

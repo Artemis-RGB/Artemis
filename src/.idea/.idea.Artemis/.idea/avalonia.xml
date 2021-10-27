@@ -4,8 +4,11 @@
     <option name="projectPerEditor">
       <map>
         <entry key="Artemis.UI.Avalonia/App.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
+        <entry key="Artemis.UI.Avalonia/Screens/Home/Views/HomeView.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
         <entry key="Artemis.UI.Avalonia/Screens/Main/Sidebar/Views/SidebarView.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
         <entry key="Artemis.UI.Avalonia/Screens/Main/Views/MainWindow.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
+        <entry key="Artemis.UI.Avalonia/Screens/Root/Views/RootView.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
+        <entry key="Artemis.UI.Avalonia/Screens/Root/Views/SidebarCategoryView.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
         <entry key="Artemis.UI.Avalonia/Screens/Sidebar/SidebarView.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
         <entry key="Artemis.UI.Avalonia/Screens/Sidebar/Views/SidebarCategoryView.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
         <entry key="Artemis.UI.Avalonia/Screens/Sidebar/Views/SidebarProfileConfigurationView.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />

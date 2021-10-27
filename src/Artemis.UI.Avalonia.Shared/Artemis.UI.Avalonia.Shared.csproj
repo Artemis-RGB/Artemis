@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net5.0</TargetFramework>
@@ -7,11 +7,12 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.8" />
+    <PackageReference Include="Avalonia" Version="0.10.10" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="0.10.8.3" />
-    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.8" />
-    <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.8" />
-    <PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.10.8" />
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.10" />
+    <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.10" />
+    <PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.10.10" />
+    <PackageReference Include="FluentAvaloniaUI" Version="1.1.5" />
     <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
    </ItemGroup>
   <ItemGroup>
