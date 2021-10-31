@@ -11,6 +11,8 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="Assets\Images\home-banner.png" />
+	  <None Remove="Screens\SurfaceEditor\Views\ListDeviceView.xaml" />
+	  <None Remove="Screens\SurfaceEditor\Views\SurfaceDeviceView.xaml" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Avalonia" Version="0.10.10" />
@@ -61,6 +63,16 @@
 		<Content Include="Assets\Images\Logo\bow-black.ico" />
 		<Content Include="Assets\Images\Logo\bow-white.ico" />
 		<Content Include="Assets\Images\Logo\bow.ico" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Page Include="Screens\SurfaceEditor\Views\ListDeviceView.xaml">
+	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	  <Page Include="Screens\SurfaceEditor\Views\SurfaceDeviceView.xaml">
+	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
 	</ItemGroup>
 	<ItemGroup>
 		<Reference Include="RGB.NET.Core">

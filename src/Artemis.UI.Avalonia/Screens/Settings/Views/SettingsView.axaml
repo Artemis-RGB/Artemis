@@ -12,7 +12,9 @@
         </TabControl.ItemTemplate>
         <TabControl.ContentTemplate>
             <DataTemplate>
-                <ContentControl Content="{Binding}" />
+                <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto">
+                    <ContentControl Content="{Binding}" />
+				</ScrollViewer>
             </DataTemplate>
         </TabControl.ContentTemplate>
     </TabControl>

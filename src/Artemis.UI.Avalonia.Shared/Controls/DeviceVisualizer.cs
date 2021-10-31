@@ -52,27 +52,31 @@ namespace Artemis.UI.Avalonia.Shared.Controls
             // Determine the scale required to fit the desired size of the control
             double scale = Math.Min(Bounds.Width / _deviceBounds.Width, Bounds.Height / _deviceBounds.Height);
 
-            // Scale the visualization in the desired bounding box
-
             DrawingContext.PushedState? boundsPush = null;
-            if (Bounds.Width > 0 && Bounds.Height > 0)
-                boundsPush = drawingContext.PushPostTransform(Matrix.CreateScale(scale, scale));
+            try
+            {
+                // Scale the visualization in the desired bounding box
+                if (Bounds.Width > 0 && Bounds.Height > 0)
+                    boundsPush = drawingContext.PushPostTransform(Matrix.CreateScale(scale, scale));
 
-            // Apply device rotation
-            using DrawingContext.PushedState translationPush = drawingContext.PushPostTransform(Matrix.CreateTranslation(0 - _deviceBounds.Left, 0 - _deviceBounds.Top));
-            using DrawingContext.PushedState rotationPush = drawingContext.PushPostTransform(Matrix.CreateRotation(Device.Rotation));
+                // Apply device rotation
+                using DrawingContext.PushedState translationPush = drawingContext.PushPostTransform(Matrix.CreateTranslation(0 - _deviceBounds.Left, 0 - _deviceBounds.Top));
+                using DrawingContext.PushedState rotationPush = drawingContext.PushPostTransform(Matrix.CreateRotation(Device.Rotation));
 
-            // Apply device scale
-            using DrawingContext.PushedState scalePush = drawingContext.PushPostTransform(Matrix.CreateScale(Device.Scale, Device.Scale));
+                // Apply device scale
+                using DrawingContext.PushedState scalePush = drawingContext.PushPostTransform(Matrix.CreateScale(Device.Scale, Device.Scale));
 
-            // Render device and LED images 
-            if (_deviceImage != null)
-                drawingContext.DrawImage(_deviceImage, new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height));
+                // Render device and LED images 
+                if (_deviceImage != null)
+                    drawingContext.DrawImage(_deviceImage, new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height));
 
-            foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                deviceVisualizerLed.RenderGeometry(drawingContext, false);
-
-            boundsPush?.Dispose();
+                foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
+                    deviceVisualizerLed.RenderGeometry(drawingContext, false);
+            }
+            finally
+            {
+                boundsPush?.Dispose();
+            }
         }
 
         /// <summary>
@@ -274,6 +278,16 @@ namespace Artemis.UI.Avalonia.Shared.Controls
 
             InvalidateMeasure();
         }
+
+        #region Overrides of Layoutable
+
+        /// <inheritdoc />
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            return new Size(Math.Min(availableSize.Width, _deviceBounds.Width), Math.Min(availableSize.Height, _deviceBounds.Height));
+        }
+
+        #endregion
 
         #endregion
     }

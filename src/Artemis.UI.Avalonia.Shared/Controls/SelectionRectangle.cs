@@ -54,6 +54,7 @@ namespace Artemis.UI.Avalonia.Shared.Controls
         public SelectionRectangle()
         {
             AffectsRender<TextBlock>(BackgroundProperty, BorderBrushProperty, BorderThicknessProperty);
+            IsHitTestVisible = false;
         }
 
         /// <summary>
@@ -108,6 +109,9 @@ namespace Artemis.UI.Avalonia.Shared.Controls
 
         private void ParentOnPointerPressed(object? sender, PointerPressedEventArgs e)
         {
+            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+                return;
+
             e.Pointer.Capture(this);
 
             _startPosition = e.GetPosition(Parent);
@@ -131,6 +135,9 @@ namespace Artemis.UI.Avalonia.Shared.Controls
 
         private void ParentOnPointerReleased(object? sender, PointerReleasedEventArgs e)
         {
+            if (!ReferenceEquals(e.Pointer.Captured, this))
+                return;
+
             e.Pointer.Capture(null);
 
             if (_displayRect != null)

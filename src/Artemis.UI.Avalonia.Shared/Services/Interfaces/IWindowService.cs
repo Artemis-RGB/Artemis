@@ -1,4 +1,6 @@
-﻿namespace Artemis.UI.Avalonia.Shared.Services.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace Artemis.UI.Avalonia.Shared.Services.Interfaces
 {
     public interface IWindowService : IArtemisSharedUIService
     {
@@ -11,10 +13,11 @@
         void ShowWindow(object viewModel);
 
         /// <summary>
-        ///     Given a ViewModel, show its corresponding View as a Dialog
+        /// Given a ViewModel, show its corresponding View as a Dialog
         /// </summary>
+        /// <typeparam name="T">The return type</typeparam>
         /// <param name="viewModel">ViewModel to show the View for</param>
-        /// <returns>DialogResult of the View</returns>
-        bool? ShowDialog(object viewModel);
+        /// <returns>A task containing the return value of type <typeparamref name="T"/></returns>
+        Task<T> ShowDialog<T>(object viewModel);
     }
 }
