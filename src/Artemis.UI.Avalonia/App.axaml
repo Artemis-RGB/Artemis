@@ -22,5 +22,9 @@
         <StyleInclude Source="/Styles/Button.axaml" />
         <StyleInclude Source="/Styles/TextBlock.axaml" />
         <StyleInclude Source="/Styles/Sidebar.axaml" />
+
+		<!-- Shared styles -->
+		<!-- TODO: Make a single file-->
+        <StyleInclude Source="avares://Artemis.UI.Avalonia.Shared/Styles/InfoBar.axaml" />
     </Application.Styles>
 </Application>

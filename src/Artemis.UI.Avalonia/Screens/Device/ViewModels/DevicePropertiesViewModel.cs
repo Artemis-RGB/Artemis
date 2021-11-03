@@ -1,4 +1,5 @@
-﻿using Artemis.Core;
+﻿using System.Collections.ObjectModel;
+using Artemis.Core;
 
 namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
 {
@@ -10,5 +11,6 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
         }
 
         public ArtemisDevice Device { get; }
+        public ObservableCollection<ArtemisLed> SelectedLeds { get; } = new();
     }
 }

@@ -105,7 +105,7 @@ namespace Artemis.UI.Avalonia.Screens.SurfaceEditor.ViewModels
 
         private async Task ExecuteViewProperties(ArtemisDevice device)
         {
-            await _windowService.ShowDialog<bool>(_deviceVmFactory.DevicePropertiesViewModel(device));
+            await _windowService.ShowDialogAsync<bool>(_deviceVmFactory.DevicePropertiesViewModel(device));
         }
 
         private bool Fits(float x, float y)

@@ -1,0 +1,19 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+            <controls:InfoBar Classes="notification-info-bar" Title="Test title" Message="Test message" IsOpen="True"/>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="controls|InfoBar.notification-info-bar">
+        <Setter Property="MaxWidth" Value="600" />
+        <Setter Property="Margin" Value="15"/>
+        <Setter Property="Background" Value="#75000000"/>
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+    </Style>
+</Styles>

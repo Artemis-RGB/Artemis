@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.UI.Avalonia.Shared.Exceptions;
+using Artemis.UI.Avalonia.Shared.Services.Builders;
 using Artemis.UI.Avalonia.Shared.Services.Interfaces;
 using Avalonia;
 using Avalonia.Controls;
@@ -19,9 +20,6 @@ namespace Artemis.UI.Avalonia.Shared.Services
             _kernel = kernel;
         }
 
-        #region Implementation of IWindowService
-
-        /// <inheritdoc />
         public T ShowWindow<T>()
         {
             T viewModel = _kernel.Get<T>()!;
@@ -29,7 +27,6 @@ namespace Artemis.UI.Avalonia.Shared.Services
             return viewModel;
         }
 
-        /// <inheritdoc />
         public void ShowWindow(object viewModel)
         {
             string name = viewModel.GetType().FullName!.Split('`')[0].Replace("ViewModel", "View");
@@ -45,8 +42,7 @@ namespace Artemis.UI.Avalonia.Shared.Services
             window.Show();
         }
 
-        /// <inheritdoc />
-        public async Task<T> ShowDialog<T>(object viewModel)
+        public async Task<T> ShowDialogAsync<T>(object viewModel)
         {
             if (Application.Current.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime classic)
                 throw new ArtemisSharedUIException($"Can't show a dialog when application lifetime is not IClassicDesktopStyleApplicationLifetime.");
@@ -65,6 +61,28 @@ namespace Artemis.UI.Avalonia.Shared.Services
             return await window.ShowDialog<T>(parent);
         }
 
-        #endregion
+        public ContentDialogBuilder CreateContentDialog()
+        {
+            return new ContentDialogBuilder(_kernel, GetCurrentWindow());
+        }
+
+        public OpenFileDialogBuilder CreateOpenFileDialog()
+        {
+            return new OpenFileDialogBuilder(GetCurrentWindow());
+        }
+
+        public SaveFileDialogBuilder CreateSaveFileDialog()
+        {
+            return new SaveFileDialogBuilder(GetCurrentWindow());
+        }
+
+        public Window GetCurrentWindow()
+        {
+            if (Application.Current.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime classic)
+                throw new ArtemisSharedUIException("Can't show a dialog when application lifetime is not IClassicDesktopStyleApplicationLifetime.");
+
+            Window parent = classic.Windows.FirstOrDefault(w => w.IsActive) ?? classic.MainWindow;
+            return parent;
+        }
     }
 }
