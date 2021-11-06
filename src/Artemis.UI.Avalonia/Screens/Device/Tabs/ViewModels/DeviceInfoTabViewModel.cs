@@ -3,7 +3,7 @@ using Artemis.Core;
 using Avalonia;
 using RGB.NET.Core;
 
-namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
+namespace Artemis.UI.Avalonia.Screens.Device.Tabs.ViewModels
 {
     public class DeviceInfoTabViewModel : ActivatableViewModelBase
     {

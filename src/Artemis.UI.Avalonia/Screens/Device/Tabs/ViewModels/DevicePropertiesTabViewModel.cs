@@ -9,7 +9,7 @@ using Artemis.UI.Avalonia.Shared.Services.Interfaces;
 using ReactiveUI;
 using SkiaSharp;
 
-namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
+namespace Artemis.UI.Avalonia.Screens.Device.Tabs.ViewModels
 {
     public class DevicePropertiesTabViewModel : ActivatableViewModelBase
     {

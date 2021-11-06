@@ -7,7 +7,7 @@ using Artemis.Core;
 using DynamicData.Binding;
 using ReactiveUI;
 
-namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
+namespace Artemis.UI.Avalonia.Screens.Device.Tabs.ViewModels
 {
     public class DeviceLedsTabViewModel : ActivatableViewModelBase
     {

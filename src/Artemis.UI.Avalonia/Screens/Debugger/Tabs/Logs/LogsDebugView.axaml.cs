@@ -1,12 +1,11 @@
-using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Avalonia.Screens.Device.Views
+namespace Artemis.UI.Avalonia.Screens.Debugger.Tabs.Logs
 {
-    public partial class InputMappingsTabView : UserControl
+    public class LogsDebugView : ReactiveUserControl<LogsDebugViewModel>
     {
-        public InputMappingsTabView()
+        public LogsDebugView()
         {
             InitializeComponent();
         }

@@ -4,10 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             xmlns:viewModels="clr-namespace:Artemis.UI.Avalonia.Screens.Device.ViewModels"
              xmlns:converters="clr-namespace:Artemis.UI.Avalonia.Shared.Converters;assembly=Artemis.UI.Avalonia.Shared"
+             xmlns:viewModels="clr-namespace:Artemis.UI.Avalonia.Screens.Device.Tabs.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="1200"
-             x:Class="Artemis.UI.Avalonia.Screens.Device.Views.DevicePropertiesTabView">
+             x:Class="Artemis.UI.Avalonia.Screens.Device.Tabs.Views.DevicePropertiesTabView">
     <UserControl.Resources>
         <converters:SKColorToColorConverter x:Key="SKColorToColorConverter" />
     </UserControl.Resources>

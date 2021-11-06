@@ -1,12 +1,11 @@
-using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Avalonia.Screens.Device.Views
+namespace Artemis.UI.Avalonia.Screens.Debugger.Tabs.Render
 {
-    public partial class DeviceInfoTabView : UserControl
+    public class RenderDebugView : ReactiveUserControl<RenderDebugViewModel>
     {
-        public DeviceInfoTabView()
+        public RenderDebugView()
         {
             InitializeComponent();
         }

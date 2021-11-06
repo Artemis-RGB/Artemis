@@ -1,4 +1,4 @@
-﻿using Artemis.UI.Avalonia.Screens.Debug;
+﻿using Artemis.UI.Avalonia.Screens.Debugger;
 using Artemis.UI.Avalonia.Services.Interfaces;
 using Artemis.UI.Avalonia.Shared.Services.Interfaces;
 

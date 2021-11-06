@@ -1,12 +1,11 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Artemis.UI.Avalonia.Screens.Device.Views
+namespace Artemis.UI.Avalonia.Screens.Device.Tabs.Views
 {
-    public partial class DeviceLedsTabView : UserControl
+    public partial class InputMappingsTabView : UserControl
     {
-        public DeviceLedsTabView()
+        public InputMappingsTabView()
         {
             InitializeComponent();
         }

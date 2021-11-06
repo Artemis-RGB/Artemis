@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:Artemis.UI.Avalonia.Shared.Controls;assembly=Artemis.UI.Avalonia.Shared"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
-        x:Class="Artemis.UI.Avalonia.Screens.Device.Views.DevicePropertiesView"
+        x:Class="Artemis.UI.Avalonia.Screens.Device.DevicePropertiesView"
         Title="Artemis | Device Properties"
         Width="1250"
         Height="900"

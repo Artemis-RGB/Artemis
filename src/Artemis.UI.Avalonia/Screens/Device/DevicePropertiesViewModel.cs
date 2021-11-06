@@ -4,7 +4,7 @@ using Artemis.UI.Avalonia.Ninject.Factories;
 using RGB.NET.Core;
 using ArtemisLed = Artemis.Core.ArtemisLed;
 
-namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
+namespace Artemis.UI.Avalonia.Screens.Device
 {
     public class DevicePropertiesViewModel : ActivatableViewModelBase
     {

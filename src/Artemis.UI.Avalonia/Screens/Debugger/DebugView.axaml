@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+        x:Class="Artemis.UI.Avalonia.Screens.Debugger.DebugView"
+        Title="Artemis | Debugger"
+        Width="1200"
+        Height="800"
+        ExtendClientAreaToDecorationsHint="True">
+
+    <Grid RowDefinitions="Auto,*" ColumnDefinitions="Auto,*">
+        <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=Title}"
+                   IsHitTestVisible="False"
+                   Margin="10" />
+
+        <Border Grid.Row="1" Grid.Column="0">
+            <TextBlock>Test</TextBlock>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1">
+            <TextBlock>Test</TextBlock>
+        </Border>
+    </Grid>
+
+</Window>

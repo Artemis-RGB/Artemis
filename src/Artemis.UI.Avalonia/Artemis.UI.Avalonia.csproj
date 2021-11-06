@@ -35,6 +35,18 @@
 		<Compile Update="MainWindow.axaml.cs">
 			<DependentUpon>%(Filename)</DependentUpon>
 		</Compile>
+		<Compile Update="Screens\Device\Tabs\Views\DeviceInfoTabView.axaml.cs">
+		  <DependentUpon>%(Filename)</DependentUpon>
+		</Compile>
+		<Compile Update="Screens\Device\Tabs\Views\DeviceLedsTabView.axaml.cs">
+		  <DependentUpon>%(Filename)</DependentUpon>
+		</Compile>
+		<Compile Update="Screens\Device\Tabs\Views\DevicePropertiesTabView.axaml.cs">
+		  <DependentUpon>%(Filename)</DependentUpon>
+		</Compile>
+		<Compile Update="Screens\Device\Tabs\Views\InputMappingsTabView.axaml.cs">
+		  <DependentUpon>%(Filename)</DependentUpon>
+		</Compile>
 		<Compile Update="Screens\Root\Views\SidebarCategoryView.axaml.cs">
 			<DependentUpon>%(Filename)</DependentUpon>
 		</Compile>

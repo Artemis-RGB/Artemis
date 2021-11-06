@@ -1,12 +1,9 @@
-using System.Threading.Tasks;
-using Artemis.UI.Avalonia.Screens.Device.ViewModels;
-using Avalonia;
-using Avalonia.Controls;
+using Artemis.UI.Avalonia.Screens.Device.Tabs.ViewModels;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Avalonia.Screens.Device.Views
+namespace Artemis.UI.Avalonia.Screens.Device.Tabs.Views
 {
     public partial class DevicePropertiesTabView : ReactiveUserControl<DevicePropertiesTabViewModel>
     {

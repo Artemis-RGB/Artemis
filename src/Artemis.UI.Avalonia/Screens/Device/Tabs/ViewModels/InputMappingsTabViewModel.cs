@@ -8,7 +8,7 @@ using Artemis.UI.Avalonia.Exceptions;
 using ReactiveUI;
 using RGB.NET.Core;
 
-namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
+namespace Artemis.UI.Avalonia.Screens.Device.Tabs.ViewModels
 {
     public class InputMappingsTabViewModel : ActivatableViewModelBase
     {

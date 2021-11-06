@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using Artemis.Core;
-using Artemis.UI.Avalonia.Screens.Device.ViewModels;
+using Artemis.UI.Avalonia.Screens.Device;
+using Artemis.UI.Avalonia.Screens.Device.Tabs.ViewModels;
 using Artemis.UI.Avalonia.Screens.Root.ViewModels;
 using Artemis.UI.Avalonia.Screens.SurfaceEditor.ViewModels;
 using ReactiveUI;
