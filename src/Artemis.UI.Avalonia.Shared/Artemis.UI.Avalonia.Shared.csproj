@@ -26,4 +26,9 @@
       <HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Services\WindowService\ExceptionDialogView.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

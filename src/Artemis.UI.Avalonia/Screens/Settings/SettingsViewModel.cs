@@ -1,7 +1,8 @@
 ﻿using System.Collections.ObjectModel;
+using Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels;
 using ReactiveUI;
 
-namespace Artemis.UI.Avalonia.Screens.Settings.ViewModels
+namespace Artemis.UI.Avalonia.Screens.Settings
 {
     public class SettingsViewModel : MainScreenViewModel
     {

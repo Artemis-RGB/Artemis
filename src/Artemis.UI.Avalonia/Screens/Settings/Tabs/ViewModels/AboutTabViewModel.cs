@@ -6,7 +6,7 @@ using Avalonia.Media.Imaging;
 using Flurl.Http;
 using ReactiveUI;
 
-namespace Artemis.UI.Avalonia.Screens.Settings.ViewModels
+namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels
 {
     public class AboutTabViewModel : ActivatableViewModelBase
     {

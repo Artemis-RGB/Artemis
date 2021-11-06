@@ -14,7 +14,7 @@ using Artemis.UI.Avalonia.Services.Interfaces;
 using ReactiveUI;
 using Serilog.Events;
 
-namespace Artemis.UI.Avalonia.Screens.Settings.ViewModels
+namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels
 {
     public class GeneralTabViewModel : ActivatableViewModelBase
     {

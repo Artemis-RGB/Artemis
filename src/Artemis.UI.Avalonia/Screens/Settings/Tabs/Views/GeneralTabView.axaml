@@ -7,7 +7,7 @@
              xmlns:layerBrushes="clr-namespace:Artemis.Core.LayerBrushes;assembly=Artemis.Core"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="2400"
-             x:Class="Artemis.UI.Avalonia.Screens.Settings.Views.GeneralTabView">
+             x:Class="Artemis.UI.Avalonia.Screens.Settings.Tabs.Views.GeneralTabView">
 
     <StackPanel Margin="15" MaxWidth="1000">
         <!-- General settings -->

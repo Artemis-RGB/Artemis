@@ -6,7 +6,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Avalonia.Ninject.Factories;
 using Artemis.UI.Avalonia.Screens.Home.ViewModels;
-using Artemis.UI.Avalonia.Screens.Settings.ViewModels;
+using Artemis.UI.Avalonia.Screens.Settings;
 using Artemis.UI.Avalonia.Screens.SurfaceEditor.ViewModels;
 using Artemis.UI.Avalonia.Screens.Workshop.ViewModels;
 using Material.Icons;

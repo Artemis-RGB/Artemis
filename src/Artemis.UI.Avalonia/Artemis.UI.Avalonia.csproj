@@ -11,6 +11,9 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="Assets\Images\home-banner.png" />
+	  <None Remove="Screens\Settings\Tabs\Plugins\Views\PluginFeatureView.xaml" />
+	  <None Remove="Screens\Settings\Tabs\Plugins\Views\PluginSettingsView.xaml" />
+	  <None Remove="Screens\Settings\Tabs\Plugins\Views\PluginSettingsWindowView.xaml" />
 	  <None Remove="Screens\SurfaceEditor\Views\ListDeviceView.xaml" />
 	  <None Remove="Screens\SurfaceEditor\Views\SurfaceDeviceView.xaml" />
 	</ItemGroup>
@@ -59,6 +62,9 @@
 		<Compile Update="Screens\Root\Views\SidebarView.axaml.cs">
 			<DependentUpon>%(Filename)</DependentUpon>
 		</Compile>
+		<Compile Update="Screens\Settings\Tabs\Plugins\Views\PluginsTabView.axaml.cs">
+		  <DependentUpon>%(Filename)</DependentUpon>
+		</Compile>
 		<Compile Update="Screens\Sidebar\Views\SidebarView.axaml.cs">
 			<DependentUpon>SidebarView.axaml</DependentUpon>
 			<SubType>Code</SubType>
@@ -77,6 +83,18 @@
 		<Content Include="Assets\Images\Logo\bow.ico" />
 	</ItemGroup>
 	<ItemGroup>
+	  <Page Include="Screens\Settings\Tabs\Plugins\Views\PluginFeatureView.xaml">
+	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	  <Page Include="Screens\Settings\Tabs\Plugins\Views\PluginSettingsView.xaml">
+	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	  <Page Include="Screens\Settings\Tabs\Plugins\Views\PluginSettingsWindowView.xaml">
+	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
 	  <Page Include="Screens\SurfaceEditor\Views\ListDeviceView.xaml">
 	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 	    <Generator>MSBuild:Compile</Generator>

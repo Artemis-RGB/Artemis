@@ -14,6 +14,7 @@ namespace Artemis.UI.Avalonia.Shared.Services
     internal class WindowService : IWindowService
     {
         private readonly IKernel _kernel;
+        private bool _exceptionDialogOpen;
 
         public WindowService(IKernel kernel)
         {
@@ -40,6 +41,23 @@ namespace Artemis.UI.Avalonia.Shared.Services
             Window window = (Window) Activator.CreateInstance(type)!;
             window.DataContext = viewModel;
             window.Show();
+        }
+
+        /// <inheritdoc />
+        public void ShowExceptionDialog(string title, Exception exception)
+        {
+            if (_exceptionDialogOpen)
+                return;
+
+            try
+            {
+                _exceptionDialogOpen = true;
+                ShowDialogAsync<object>(new ExceptionDialogViewModel(title, exception)).GetAwaiter().GetResult();
+            }
+            finally
+            {
+                _exceptionDialogOpen = false;
+            }
         }
 
         public async Task<T> ShowDialogAsync<T>(object viewModel)

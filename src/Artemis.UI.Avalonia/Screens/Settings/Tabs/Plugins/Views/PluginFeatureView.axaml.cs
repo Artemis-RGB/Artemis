@@ -1,14 +1,12 @@
-using Artemis.UI.Avalonia.Screens.Settings.ViewModels;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Avalonia.Screens.Settings.Views
+namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.Plugins.Views
 {
-    public partial class AboutTabView : ReactiveUserControl<AboutTabViewModel>
+    public partial class PluginFeatureView : UserControl
     {
-        public AboutTabView()
+        public PluginFeatureView()
         {
             InitializeComponent();
         }

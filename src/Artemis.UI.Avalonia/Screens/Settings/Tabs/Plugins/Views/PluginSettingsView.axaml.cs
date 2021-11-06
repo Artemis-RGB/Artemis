@@ -2,11 +2,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Artemis.UI.Avalonia.Screens.Settings.Views
+namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.Plugins.Views
 {
-    public partial class DevicesTabView : UserControl
+    public partial class PluginSettingsView : UserControl
     {
-        public DevicesTabView()
+        public PluginSettingsView()
         {
             InitializeComponent();
         }
