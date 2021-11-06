@@ -17,21 +17,27 @@
     <!-- Add Styles Here -->
     <Style Selector="TextBlock.h1">
         <Setter Property="FontSize" Value="64" />
+        <Setter Property="Margin" Value="0 0 0 10" />
     </Style>
     <Style Selector="TextBlock.h2">
         <Setter Property="FontSize" Value="48" />
+        <Setter Property="Margin" Value="0 0 0 10" />
     </Style>
     <Style Selector="TextBlock.h3">
         <Setter Property="FontSize" Value="32" />
+        <Setter Property="Margin" Value="0 0 0 10" />
     </Style>
     <Style Selector="TextBlock.h4">
         <Setter Property="FontSize" Value="24" />
+        <Setter Property="Margin" Value="0 0 0 10" />
     </Style>
     <Style Selector="TextBlock.h5">
         <Setter Property="FontSize" Value="18" />
+        <Setter Property="Margin" Value="0 0 0 5" />
     </Style>
     <Style Selector="TextBlock.h6">
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="Margin" Value="0 0 0 2" />
     </Style>
     <Style Selector="TextBlock.subtitle">
 		<Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />

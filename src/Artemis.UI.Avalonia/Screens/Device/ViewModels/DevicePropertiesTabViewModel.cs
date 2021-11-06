@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Avalonia.Shared.Services.Builders;
 using Artemis.UI.Avalonia.Shared.Services.Interfaces;
-using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using SkiaSharp;
 
@@ -18,9 +18,9 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
         private readonly float _initialBlueScale;
         private readonly float _initialGreenScale;
         private readonly float _initialRedScale;
+        private readonly INotificationService _notificationService;
         private readonly IRgbService _rgbService;
         private readonly IWindowService _windowService;
-        private readonly INotificationService _notificationService;
         private float _blueScale;
         private SKColor _currentColor;
         private bool _displayOnDevices;
@@ -31,6 +31,12 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
         private int _x;
         private int _y;
 
+#pragma warning disable CS8618 // Design-time constructor
+        public DevicePropertiesTabViewModel()
+        {
+        }
+#pragma warning restore CS8618
+
         public DevicePropertiesTabViewModel(ArtemisDevice device, ICoreService coreService, IRgbService rgbService, IWindowService windowService, INotificationService notificationService)
         {
             _coreService = coreService;
@@ -40,7 +46,7 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
             _categories = new List<DeviceCategory>(device.Categories);
 
             Device = device;
-            DisplayName = "PROPERTIES";
+            DisplayName = "Properties";
 
             X = (int) Device.X;
             Y = (int) Device.Y;
@@ -55,6 +61,11 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
             _initialRedScale = Device.RedScale;
             _initialGreenScale = Device.GreenScale;
             _initialBlueScale = Device.BlueScale;
+
+            this.WhenAnyValue(x => x.RedScale, x => x.GreenScale, x => x.BlueScale).Subscribe(_ => ApplyScaling());
+
+            Device.PropertyChanged += DeviceOnPropertyChanged;
+            _coreService.FrameRendering += OnFrameRendering;
         }
 
         public ArtemisDevice Device { get; }
@@ -223,16 +234,16 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
             Device.BlueScale = _initialBlueScale;
         }
 
-        protected void OnActivate()
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
         {
-            _coreService.FrameRendering += OnFrameRendering;
-            Device.PropertyChanged += DeviceOnPropertyChanged;
-        }
+            if (disposing)
+            {
+                _coreService.FrameRendering -= OnFrameRendering;
+                Device.PropertyChanged -= DeviceOnPropertyChanged;
+            }
 
-        protected void OnDeactivate()
-        {
-            _coreService.FrameRendering -= OnFrameRendering;
-            Device.PropertyChanged -= DeviceOnPropertyChanged;
+            base.Dispose(disposing);
         }
 
         private bool GetCategory(DeviceCategory category)
@@ -250,21 +261,19 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
             this.RaisePropertyChanged($"Has{category}Category");
         }
 
-        private void DeviceOnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(Device.CustomLayoutPath) || e.PropertyName == nameof(Device.DisableDefaultLayout)) Task.Run(() => _rgbService.ApplyBestDeviceLayout(Device));
-        }
-
-        private void OnFrameRendering(object sender, FrameRenderingEventArgs e)
+        private void OnFrameRendering(object? sender, FrameRenderingEventArgs e)
         {
             if (!_displayOnDevices)
                 return;
 
-            using SKPaint overlayPaint = new()
-            {
-                Color = CurrentColor
-            };
+            using SKPaint overlayPaint = new() {Color = CurrentColor};
             e.Canvas.DrawRect(0, 0, e.Canvas.LocalClipBounds.Width, e.Canvas.LocalClipBounds.Height, overlayPaint);
+        }
+
+        private void DeviceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Device.CustomLayoutPath) || e.PropertyName == nameof(Device.DisableDefaultLayout))
+                Task.Run(() => _rgbService.ApplyBestDeviceLayout(Device));
         }
     }
 }

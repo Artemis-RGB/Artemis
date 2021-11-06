@@ -10,7 +10,7 @@ namespace Artemis.UI.Avalonia.Shared.Services.Builders
     {
         private readonly InfoBar _infoBar;
         private readonly Window _parent;
-        private TimeSpan _timeout = TimeSpan.FromSeconds(3);
+        private TimeSpan _timeout = TimeSpan.FromSeconds(5);
 
         public NotificationBuilder(Window parent)
         {

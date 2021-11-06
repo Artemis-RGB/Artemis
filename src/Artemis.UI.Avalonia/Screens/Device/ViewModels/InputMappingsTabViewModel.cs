@@ -14,17 +14,20 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
     {
         private readonly IRgbService _rgbService;
         private readonly IInputService _inputService;
+        private readonly ObservableCollection<ArtemisLed> _selectedLeds;
         private ArtemisLed _selectedLed;
 
-        public InputMappingsTabViewModel(ArtemisDevice device, IRgbService rgbService, IInputService inputService)
+        public InputMappingsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds, IRgbService rgbService, IInputService inputService)
         {
             if (device.DeviceType != RGBDeviceType.Keyboard)
                 throw new ArtemisUIException("The input mappings tab only supports keyboards");
+
             _rgbService = rgbService;
             _inputService = inputService;
+            _selectedLeds = selectedLeds;
 
             Device = device;
-            DisplayName = "INPUT MAPPINGS";
+            DisplayName = "Input Mappings";
             InputMappings = new ObservableCollection<(ArtemisLed, ArtemisLed)>();
         }
 

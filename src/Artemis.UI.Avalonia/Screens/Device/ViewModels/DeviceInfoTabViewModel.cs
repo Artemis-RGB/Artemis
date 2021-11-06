@@ -10,7 +10,7 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
         public DeviceInfoTabViewModel(ArtemisDevice device)
         {
             Device = device;
-            DisplayName = "INFO";
+            DisplayName = "Info";
 
             DefaultLayoutPath = Device.DeviceProvider.LoadLayout(Device).FilePath;
         }

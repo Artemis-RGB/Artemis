@@ -11,17 +11,17 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
 {
     public class DeviceLedsTabViewModel : ActivatableViewModelBase
     {
-        private readonly DevicePropertiesViewModel _devicePropertiesViewModel;
+        private readonly ObservableCollection<ArtemisLed> _selectedLeds;
 
-        public DeviceLedsTabViewModel(ArtemisDevice device, DevicePropertiesViewModel devicePropertiesViewModel)
+        public DeviceLedsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds)
         {
-            _devicePropertiesViewModel = devicePropertiesViewModel;
+            _selectedLeds = selectedLeds;
 
             Device = device;
-            DisplayName = "LEDS";
-            LedViewModels = new ObservableCollection<DeviceLedsTabLedViewModel>(Device.Leds.Select(l => new DeviceLedsTabLedViewModel(l, _devicePropertiesViewModel.SelectedLeds)));
+            DisplayName = "LEDs";
+            LedViewModels = new ObservableCollection<DeviceLedsTabLedViewModel>(Device.Leds.Select(l => new DeviceLedsTabLedViewModel(l, _selectedLeds)));
 
-            this.WhenActivated(disposables => _devicePropertiesViewModel.SelectedLeds.ToObservableChangeSet().Subscribe(_ => UpdateSelectedLeds()).DisposeWith(disposables));
+            this.WhenActivated(disposables => _selectedLeds.ToObservableChangeSet().Subscribe(_ => UpdateSelectedLeds()).DisposeWith(disposables));
         }
 
         public ArtemisDevice Device { get; }

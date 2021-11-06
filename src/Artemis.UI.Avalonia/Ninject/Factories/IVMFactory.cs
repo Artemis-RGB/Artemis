@@ -1,4 +1,5 @@
-﻿using Artemis.Core;
+﻿using System.Collections.ObjectModel;
+using Artemis.Core;
 using Artemis.UI.Avalonia.Screens.Device.ViewModels;
 using Artemis.UI.Avalonia.Screens.Root.ViewModels;
 using Artemis.UI.Avalonia.Screens.SurfaceEditor.ViewModels;
@@ -13,6 +14,10 @@ namespace Artemis.UI.Avalonia.Ninject.Factories
     public interface IDeviceVmFactory : IVmFactory
     {
         DevicePropertiesViewModel DevicePropertiesViewModel(ArtemisDevice device);
+        DevicePropertiesTabViewModel DevicePropertiesTabViewModel(ArtemisDevice device);
+        DeviceInfoTabViewModel DeviceInfoTabViewModel(ArtemisDevice device);
+        DeviceLedsTabViewModel DeviceLedsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds);
+        InputMappingsTabViewModel InputMappingsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds);
     }
 
     public interface ISidebarVmFactory : IVmFactory

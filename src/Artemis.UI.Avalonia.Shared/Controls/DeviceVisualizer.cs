@@ -51,20 +51,20 @@ namespace Artemis.UI.Avalonia.Shared.Controls
 
             // Determine the scale required to fit the desired size of the control
             double scale = Math.Min(Bounds.Width / _deviceBounds.Width, Bounds.Height / _deviceBounds.Height);
-
+            
             DrawingContext.PushedState? boundsPush = null;
             try
             {
                 // Scale the visualization in the desired bounding box
                 if (Bounds.Width > 0 && Bounds.Height > 0)
-                    boundsPush = drawingContext.PushPostTransform(Matrix.CreateScale(scale, scale));
+                    boundsPush = drawingContext.PushPreTransform(Matrix.CreateScale(scale, scale));
 
                 // Apply device rotation
-                using DrawingContext.PushedState translationPush = drawingContext.PushPostTransform(Matrix.CreateTranslation(0 - _deviceBounds.Left, 0 - _deviceBounds.Top));
-                using DrawingContext.PushedState rotationPush = drawingContext.PushPostTransform(Matrix.CreateRotation(Device.Rotation));
+                using DrawingContext.PushedState translationPush = drawingContext.PushPreTransform(Matrix.CreateTranslation(0 - _deviceBounds.Left, 0 - _deviceBounds.Top));
+                using DrawingContext.PushedState rotationPush = drawingContext.PushPreTransform(Matrix.CreateRotation(Matrix.ToRadians(Device.Rotation)));
 
                 // Apply device scale
-                using DrawingContext.PushedState scalePush = drawingContext.PushPostTransform(Matrix.CreateScale(Device.Scale, Device.Scale));
+                using DrawingContext.PushedState scalePush = drawingContext.PushPreTransform(Matrix.CreateScale(Device.Scale, Device.Scale));
 
                 // Render device and LED images 
                 if (_deviceImage != null)
