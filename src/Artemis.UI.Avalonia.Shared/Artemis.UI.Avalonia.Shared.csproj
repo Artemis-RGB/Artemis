@@ -6,8 +6,12 @@
     <ApplicationIcon />
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Repos\Artemis\src\Artemis.UI.Avalonia.Shared\Artemis.UI.Avalonia.Shared.xml</DocumentationFile>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.10" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="0.10.8.3" />
     <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.10" />
     <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.10" />

@@ -4,6 +4,9 @@
 		<TargetFramework>net5.0</TargetFramework>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <DocumentationFile></DocumentationFile>
+	</PropertyGroup>
 	<ItemGroup>
 		<Folder Include="Models\" />
 		<AvaloniaResource Include="Assets\**" />
@@ -11,9 +14,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="Assets\Images\home-banner.png" />
-	  <None Remove="Screens\Settings\Tabs\Plugins\Views\PluginFeatureView.xaml" />
-	  <None Remove="Screens\Settings\Tabs\Plugins\Views\PluginSettingsView.xaml" />
-	  <None Remove="Screens\Settings\Tabs\Plugins\Views\PluginSettingsWindowView.xaml" />
 	  <None Remove="Screens\SurfaceEditor\Views\ListDeviceView.xaml" />
 	  <None Remove="Screens\SurfaceEditor\Views\SurfaceDeviceView.xaml" />
 	</ItemGroup>
@@ -50,6 +50,15 @@
 		<Compile Update="Screens\Device\Tabs\Views\InputMappingsTabView.axaml.cs">
 		  <DependentUpon>%(Filename)</DependentUpon>
 		</Compile>
+		<Compile Update="Screens\Plugins\Views\PluginFeatureView.axaml.cs">
+		  <DependentUpon>%(Filename)</DependentUpon>
+		</Compile>
+		<Compile Update="Screens\Plugins\Views\PluginSettingsView.axaml.cs">
+		  <DependentUpon>%(Filename)</DependentUpon>
+		</Compile>
+		<Compile Update="Screens\Plugins\Views\PluginSettingsWindowView.axaml.cs">
+		  <DependentUpon>%(Filename)</DependentUpon>
+		</Compile>
 		<Compile Update="Screens\Root\Views\SidebarCategoryView.axaml.cs">
 			<DependentUpon>%(Filename)</DependentUpon>
 		</Compile>
@@ -62,7 +71,7 @@
 		<Compile Update="Screens\Root\Views\SidebarView.axaml.cs">
 			<DependentUpon>%(Filename)</DependentUpon>
 		</Compile>
-		<Compile Update="Screens\Settings\Tabs\Plugins\Views\PluginsTabView.axaml.cs">
+		<Compile Update="Screens\Settings\Tabs\Views\PluginsTabView.axaml.cs">
 		  <DependentUpon>%(Filename)</DependentUpon>
 		</Compile>
 		<Compile Update="Screens\Sidebar\Views\SidebarView.axaml.cs">
@@ -83,18 +92,6 @@
 		<Content Include="Assets\Images\Logo\bow.ico" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Page Include="Screens\Settings\Tabs\Plugins\Views\PluginFeatureView.xaml">
-	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	  <Page Include="Screens\Settings\Tabs\Plugins\Views\PluginSettingsView.xaml">
-	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	  <Page Include="Screens\Settings\Tabs\Plugins\Views\PluginSettingsWindowView.xaml">
-	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
 	  <Page Include="Screens\SurfaceEditor\Views\ListDeviceView.xaml">
 	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 	    <Generator>MSBuild:Compile</Generator>

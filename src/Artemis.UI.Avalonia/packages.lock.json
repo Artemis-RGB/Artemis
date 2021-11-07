@@ -1695,6 +1695,7 @@
         "dependencies": {
           "Artemis.Core": "1.0.0",
           "Avalonia": "0.10.10",
+          "Avalonia.ReactiveUI": "0.10.10",
           "Avalonia.Svg.Skia": "0.10.8.3",
           "Avalonia.Xaml.Behaviors": "0.10.10",
           "Avalonia.Xaml.Interactions": "0.10.10",

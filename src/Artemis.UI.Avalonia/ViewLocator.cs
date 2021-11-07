@@ -1,4 +1,5 @@
 using System;
+using Artemis.UI.Avalonia.Shared;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 
