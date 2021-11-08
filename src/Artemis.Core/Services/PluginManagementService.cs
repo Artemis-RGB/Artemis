@@ -48,7 +48,7 @@ namespace Artemis.Core.Services
 
         private void CopyBuiltInPlugin(ZipArchive zipArchive, string targetDirectory)
         {
-            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins", targetDirectory));
+            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.PluginsFolder, targetDirectory));
             bool createLockFile = File.Exists(Path.Combine(pluginDirectory.FullName, "artemis.lock"));
 
             // Remove the old directory if it exists
@@ -68,7 +68,7 @@ namespace Artemis.Core.Services
         public void CopyBuiltInPlugins()
         {
             OnCopyingBuildInPlugins();
-            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins"));
+            DirectoryInfo pluginDirectory = new(Constants.PluginsFolder);
 
             if (Directory.Exists(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.Modules.Overlay-29e3ff97")))
                 Directory.Delete(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.Modules.Overlay-29e3ff97"), true);
@@ -221,7 +221,7 @@ namespace Artemis.Core.Services
             UnloadPlugins();
 
             // Load the plugin assemblies into the plugin context
-            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins"));
+            DirectoryInfo pluginDirectory = new(Constants.PluginsFolder);
             foreach (DirectoryInfo subDirectory in pluginDirectory.EnumerateDirectories())
             {
                 try
@@ -506,7 +506,7 @@ namespace Artemis.Core.Services
 
         public Plugin ImportPlugin(string fileName)
         {
-            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins"));
+            DirectoryInfo pluginDirectory = new(Constants.PluginsFolder);
 
             // Find the metadata file in the zip
             using ZipArchive archive = ZipFile.OpenRead(fileName);

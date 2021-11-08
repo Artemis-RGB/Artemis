@@ -69,7 +69,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
         {
             try
             {
-                Utilities.OpenFolder(Path.Combine(Constants.DataFolder, "logs"));
+                Utilities.OpenFolder(Constants.LogsFolder);
             }
             catch (Exception e)
             {

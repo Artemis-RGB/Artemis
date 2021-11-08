@@ -79,7 +79,7 @@ namespace Artemis.Core.Ninject
 
         private bool HasAccessToProtectedService(IRequest r)
         {
-            return r.ParentRequest != null && !r.ParentRequest.Service.Assembly.Location.StartsWith(Path.Combine(Constants.DataFolder, "plugins"));
+            return r.ParentRequest != null && !r.ParentRequest.Service.Assembly.Location.StartsWith(Constants.PluginsFolder);
         }
     }
 }

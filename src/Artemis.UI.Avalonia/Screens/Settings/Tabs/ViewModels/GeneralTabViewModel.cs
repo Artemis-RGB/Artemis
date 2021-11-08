@@ -118,7 +118,7 @@ namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels
 
         private void ExecuteShowLogs()
         {
-            OpenFolder(Path.Combine(Constants.DataFolder, "Logs"));
+            OpenFolder(Constants.LogsFolder);
         }
 
         #endregion

@@ -19,8 +19,8 @@ namespace Artemis.Core
         public static void PrepareFirstLaunch()
         {
             CreateAccessibleDirectory(Constants.DataFolder);
-            CreateAccessibleDirectory(Path.Combine(Constants.DataFolder, "plugins"));
-            CreateAccessibleDirectory(Path.Combine(Constants.DataFolder, "user layouts"));
+            CreateAccessibleDirectory(Constants.PluginsFolder);
+            CreateAccessibleDirectory(Constants.LayoutsFolder);
         }
 
         /// <summary>
@@ -107,8 +107,12 @@ namespace Artemis.Core
         {
             if (OperatingSystem.IsWindows())
                 Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", path);
+            else if (OperatingSystem.IsMacOS())
+                Process.Start("open", path);
+            else if (OperatingSystem.IsLinux())
+                Process.Start("xdg-open", path);
             else
-                throw new PlatformNotSupportedException("Can't open folders yet on non-Windows systems Q.Q");
+                throw new PlatformNotSupportedException("Can't open folders on this platform");
         }
 
         /// <summary>

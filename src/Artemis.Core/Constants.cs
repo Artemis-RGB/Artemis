@@ -28,6 +28,21 @@ namespace Artemis.Core
         ///     The full path to the Artemis data folder
         /// </summary>
         public static readonly string DataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Artemis");
+
+        /// <summary>
+        ///     The full path to the Artemis logs folder
+        /// </summary>
+        public static readonly string LogsFolder = Path.Combine(DataFolder, "Logs");
+
+        /// <summary>
+        ///     The full path to the Artemis plugins folder
+        /// </summary>
+        public static readonly string PluginsFolder = Path.Combine(DataFolder, "Plugins");
+
+        /// <summary>
+        ///     The full path to the Artemis user layouts folder
+        /// </summary>
+        public static readonly string LayoutsFolder = Path.Combine(DataFolder, "User Layouts");
         
         /// <summary>
         ///     The plugin info used by core components of Artemis
