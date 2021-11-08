@@ -1,76 +1,79 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Shared.Services;
-using MaterialDesignThemes.Wpf;
-using Stylet;
+using Artemis.UI.Avalonia.Ninject.Factories;
+using Artemis.UI.Avalonia.Shared;
+using Artemis.UI.Avalonia.Shared.Services.Interfaces;
+using DynamicData;
+using ReactiveUI;
 
-namespace Artemis.UI.Screens.Plugins
+namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 {
-    public class PluginPrerequisitesUninstallDialogViewModel : DialogViewModelBase
+    public class PluginPrerequisitesUninstallDialogViewModel : DialogViewModelBase<bool>
     {
-        private readonly IDialogService _dialogService;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly List<IPrerequisitesSubject> _subjects;
-        private PluginPrerequisiteViewModel _activePrerequisite;
+        private readonly IWindowService _windowService;
         private bool _canUninstall;
         private bool _isFinished;
-        private CancellationTokenSource _tokenSource;
+        private PluginPrerequisiteViewModel? _activePrerequisite;
+        private CancellationTokenSource? _tokenSource;
 
-        public PluginPrerequisitesUninstallDialogViewModel(List<IPrerequisitesSubject> subjects, string cancelLabel, IPrerequisitesVmFactory prerequisitesVmFactory,
-            IDialogService dialogService, IPluginManagementService pluginManagementService)
+        public PluginPrerequisitesUninstallDialogViewModel(List<IPrerequisitesSubject> subjects, string cancelLabel, IPrerequisitesVmFactory prerequisitesVmFactory, IWindowService windowService,
+            IPluginManagementService pluginManagementService)
         {
             _subjects = subjects;
-            _dialogService = dialogService;
+            _windowService = windowService;
             _pluginManagementService = pluginManagementService;
 
             CancelLabel = cancelLabel;
-            Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>();
-            foreach (IPrerequisitesSubject prerequisitesSubject in subjects)
-                Prerequisites.AddRange(prerequisitesSubject.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, true)));
+            Prerequisites = new ObservableCollection<PluginPrerequisiteViewModel>();
+            foreach (PluginPrerequisite prerequisite in subjects.SelectMany(prerequisitesSubject => prerequisitesSubject.Prerequisites))
+                Prerequisites.Add(prerequisitesVmFactory.PluginPrerequisiteViewModel(prerequisite, true));
 
-            foreach (PluginPrerequisiteViewModel pluginPrerequisiteViewModel in Prerequisites)
-                pluginPrerequisiteViewModel.ConductWith(this);
+            // Could be slow so take it off of the UI thread
+            Task.Run(() => CanUninstall = Prerequisites.Any(p => p.PluginPrerequisite.IsMet()));
         }
 
         public string CancelLabel { get; }
-        public BindableCollection<PluginPrerequisiteViewModel> Prerequisites { get; }
+        public ObservableCollection<PluginPrerequisiteViewModel> Prerequisites { get; }
 
-        public PluginPrerequisiteViewModel ActivePrerequisite
+        public PluginPrerequisiteViewModel? ActivePrerequisite
         {
             get => _activePrerequisite;
-            set => SetAndNotify(ref _activePrerequisite, value);
+            set => this.RaiseAndSetIfChanged(ref _activePrerequisite, value);
         }
 
         public bool CanUninstall
         {
             get => _canUninstall;
-            set => SetAndNotify(ref _canUninstall, value);
+            set => this.RaiseAndSetIfChanged(ref _canUninstall, value);
         }
 
         public bool IsFinished
         {
             get => _isFinished;
-            set => SetAndNotify(ref _isFinished, value);
+            set => this.RaiseAndSetIfChanged(ref _isFinished, value);
         }
-
-        #region Overrides of DialogViewModelBase
 
         /// <inheritdoc />
-        public override void OnDialogClosed(object sender, DialogClosingEventArgs e)
+        protected override void Dispose(bool disposing)
         {
-            _tokenSource?.Cancel();
-            base.OnDialogClosed(sender, e);
+            if (disposing)
+            {
+                _tokenSource?.Cancel();
+                _tokenSource?.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
 
-        #endregion
-
-        public async void Uninstall()
+        public async Task Uninstall()
         {
             CanUninstall = false;
 
@@ -78,20 +81,28 @@ namespace Artemis.UI.Screens.Plugins
             foreach (IPrerequisitesSubject prerequisitesSubject in _subjects)
             {
                 if (prerequisitesSubject is PluginInfo pluginInfo)
+                {
                     _pluginManagementService.DisablePlugin(pluginInfo.Plugin, true);
+                }
             }
 
             // Disable all subjects that are features if still required
             foreach (IPrerequisitesSubject prerequisitesSubject in _subjects)
             {
-                if (prerequisitesSubject is not PluginFeatureInfo featureInfo) 
+                if (prerequisitesSubject is not PluginFeatureInfo featureInfo)
+                {
                     continue;
+                }
 
                 // Disable the parent plugin if the feature is AlwaysEnabled
                 if (featureInfo.AlwaysEnabled)
+                {
                     _pluginManagementService.DisablePlugin(featureInfo.Plugin, true);
-                else if (featureInfo.Instance != null) 
+                }
+                else if (featureInfo.Instance != null)
+                {
                     _pluginManagementService.DisablePluginFeature(featureInfo.Instance, true);
+                }
             }
 
             _tokenSource = new CancellationTokenSource();
@@ -102,14 +113,18 @@ namespace Artemis.UI.Screens.Plugins
                 {
                     pluginPrerequisiteViewModel.IsMet = pluginPrerequisiteViewModel.PluginPrerequisite.IsMet();
                     if (!pluginPrerequisiteViewModel.IsMet)
+                    {
                         continue;
+                    }
 
                     ActivePrerequisite = pluginPrerequisiteViewModel;
                     await ActivePrerequisite.Uninstall(_tokenSource.Token);
 
                     // Wait after the task finished for the user to process what happened
                     if (pluginPrerequisiteViewModel != Prerequisites.Last())
+                    {
                         await Task.Delay(1000);
+                    }
                 }
 
                 if (Prerequisites.All(p => !p.IsMet))
@@ -120,14 +135,12 @@ namespace Artemis.UI.Screens.Plugins
 
                 // This shouldn't be happening and the experience isn't very nice for the user (too lazy to make a nice UI for such an edge case)
                 // but at least give some feedback
-                Session?.Close(false);
-                await _dialogService.ShowConfirmDialog(
-                    "Plugin prerequisites",
-                    "The plugin was not able to fully remove all prerequisites. \r\nPlease try again or contact the plugin creator.",
-                    "Confirm",
-                    ""
-                );
-                await Show(_dialogService, _subjects);
+                Close.Execute(false);
+                await _windowService.CreateContentDialog()
+                    .WithTitle("Plugin prerequisites")
+                    .WithContent("The plugin was not able to fully remove all prerequisites. \r\nPlease try again or contact the plugin creator.")
+                    .ShowAsync();
+                await Show(_windowService, _subjects);
             }
             catch (OperationCanceledException)
             {
@@ -143,30 +156,12 @@ namespace Artemis.UI.Screens.Plugins
 
         public void Accept()
         {
-            Session?.Close(true);
+            Close.Execute(true);
         }
 
-        public static Task<object> Show(IDialogService dialogService, List<IPrerequisitesSubject> subjects, string cancelLabel = "CANCEL")
+        public static async Task<object> Show(IWindowService windowService, List<IPrerequisitesSubject> subjects, string cancelLabel = "Cancel")
         {
-            return dialogService.ShowDialog<PluginPrerequisitesUninstallDialogViewModel>(new Dictionary<string, object>
-            {
-                {"subjects", subjects},
-                {"cancelLabel", cancelLabel},
-            });
+            return await windowService.ShowDialogAsync<PluginPrerequisitesUninstallDialogViewModel, bool>(("subjects", subjects), ("cancelLabel", cancelLabel));
         }
-
-        #region Overrides of Screen
-
-        /// <inheritdoc />
-        protected override void OnInitialActivate()
-        {
-            CanUninstall = false;
-            // Could be slow so take it off of the UI thread
-            Task.Run(() => CanUninstall = Prerequisites.Any(p => p.PluginPrerequisite.IsMet()));
-
-            base.OnInitialActivate();
-        }
-
-        #endregion
     }
 }

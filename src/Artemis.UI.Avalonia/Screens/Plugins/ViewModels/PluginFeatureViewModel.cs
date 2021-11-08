@@ -6,11 +6,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Avalonia.Shared;
 using Artemis.UI.Avalonia.Shared.Services.Builders;
 using Artemis.UI.Avalonia.Shared.Services.Interfaces;
 using ReactiveUI;
 
-namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.Plugins.ViewModels
+namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 {
     public class PluginFeatureViewModel : ActivatableViewModelBase
     {

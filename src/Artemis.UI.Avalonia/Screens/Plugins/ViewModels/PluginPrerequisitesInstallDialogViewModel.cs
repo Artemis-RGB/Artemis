@@ -5,10 +5,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.UI.Avalonia.Ninject.Factories;
 using Artemis.UI.Avalonia.Shared;
+using Artemis.UI.Avalonia.Shared.Services.Interfaces;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Plugins
+namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 {
     public class PluginPrerequisitesInstallDialogViewModel : DialogViewModelBase<bool>
     {
@@ -20,14 +22,14 @@ namespace Artemis.UI.Screens.Plugins
         private bool _showProgress;
         private CancellationTokenSource? _tokenSource;
 
-        public PluginPrerequisitesInstallDialogViewModel(List<IPrerequisitesSubject> subjects, IPrerequisitesVmFactory prerequisitesVmFactory, IDialogService dialogService)
+        public PluginPrerequisitesInstallDialogViewModel(List<IPrerequisitesSubject> subjects, IPrerequisitesVmFactory prerequisitesVmFactory)
         {
             Prerequisites = new ObservableCollection<PluginPrerequisiteViewModel>();
-            foreach (IPrerequisitesSubject prerequisitesSubject in subjects)
-                Prerequisites.AddRange(prerequisitesSubject.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, false)));
+            foreach (PluginPrerequisite prerequisite in subjects.SelectMany(prerequisitesSubject => prerequisitesSubject.Prerequisites))
+                Prerequisites.Add(prerequisitesVmFactory.PluginPrerequisiteViewModel(prerequisite, false));
 
-            foreach (PluginPrerequisiteViewModel pluginPrerequisiteViewModel in Prerequisites)
-                pluginPrerequisiteViewModel.ConductWith(this);
+            CanInstall = false;
+            Task.Run(() => CanInstall = Prerequisites.Any(p => !p.PluginPrerequisite.IsMet()));
         }
 
         public ObservableCollection<PluginPrerequisiteViewModel> Prerequisites { get; }
@@ -68,7 +70,7 @@ namespace Artemis.UI.Screens.Plugins
             set => this.RaiseAndSetIfChanged(ref _canInstall, value);
         }
 
-        public async void Install()
+        public async Task Install()
         {
             CanInstall = false;
             ShowFailed = false;
@@ -116,13 +118,12 @@ namespace Artemis.UI.Screens.Plugins
 
         public void Accept()
         {
-            Result = true;
-            Close.Execute();
+            Close.Execute(true);
         }
 
-        public static Task<object> Show(IDialogService dialogService, List<IPrerequisitesSubject> subjects)
+        public static async Task<bool> Show(IWindowService windowService, List<IPrerequisitesSubject> subjects)
         {
-            return dialogService.ShowDialog<PluginPrerequisitesInstallDialogViewModel>(new Dictionary<string, object> {{"subjects", subjects}});
+            return await windowService.ShowDialogAsync<PluginPrerequisitesInstallDialogViewModel, bool>(("subjects", subjects));
         }
 
         /// <inheritdoc />
@@ -136,18 +137,5 @@ namespace Artemis.UI.Screens.Plugins
 
             base.Dispose(disposing);
         }
-
-        #region Overrides of Screen
-
-        /// <inheritdoc />
-        protected override void OnInitialActivate()
-        {
-            CanInstall = false;
-            Task.Run(() => CanInstall = Prerequisites.Any(p => !p.PluginPrerequisite.IsMet()));
-
-            base.OnInitialActivate();
-        }
-
-        #endregion
     }
 }

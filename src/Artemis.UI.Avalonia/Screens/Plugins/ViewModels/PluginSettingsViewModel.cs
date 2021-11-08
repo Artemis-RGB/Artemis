@@ -1,28 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Avalonia.Screens.Settings.Tabs.Plugins.ViewModels;
-using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Screens.Plugins;
-using Artemis.UI.Shared.Services;
+using Artemis.UI.Avalonia.Shared;
 using Ninject;
-using Stylet;
+using ReactiveUI;
 
-namespace Artemis.UI.Screens.Settings.Tabs.Plugins
+namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 {
-    public class PluginSettingsViewModel : Conductor<PluginFeatureViewModel>.Collection.AllActive
+    public class PluginSettingsViewModel : ActivatableViewModelBase
     {
         private readonly ICoreService _coreService;
-        private readonly IDialogService _dialogService;
-        private readonly IMessageService _messageService;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly ISettingsVmFactory _settingsVmFactory;
-        private readonly IWindowManager _windowManager;
         private bool _canInstallPrerequisites;
         private bool _canRemovePrerequisites;
         private bool _enabling;
@@ -32,31 +27,27 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         public PluginSettingsViewModel(Plugin plugin,
             ISettingsVmFactory settingsVmFactory,
             ICoreService coreService,
-            IWindowManager windowManager,
-            IDialogService dialogService,
-            IPluginManagementService pluginManagementService,
-            IMessageService messageService)
+            IPluginManagementService pluginManagementService)
         {
             Plugin = plugin;
 
             _settingsVmFactory = settingsVmFactory;
             _coreService = coreService;
-            _windowManager = windowManager;
-            _dialogService = dialogService;
             _pluginManagementService = pluginManagementService;
-            _messageService = messageService;
         }
+
+        public ObservableCollection<PluginFeatureViewModel> PluginFeatures { get; }
 
         public Plugin Plugin
         {
             get => _plugin;
-            set => SetAndNotify(ref _plugin, value);
+            set => this.RaiseAndSetIfChanged(ref _plugin, value);
         }
 
         public bool Enabling
         {
             get => _enabling;
-            set => SetAndNotify(ref _enabling, value);
+            set => this.RaiseAndSetIfChanged(ref _enabling, value);
         }
         
         public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
@@ -73,7 +64,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             get => _isSettingsPopupOpen;
             set
             {
-                if (!SetAndNotify(ref _isSettingsPopupOpen, value)) return;
+                if (!this.RaiseAndSetIfChanged(ref _isSettingsPopupOpen, value)) return;
                 CheckPrerequisites();
             }
         }
@@ -81,13 +72,13 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         public bool CanInstallPrerequisites
         {
             get => _canInstallPrerequisites;
-            set => SetAndNotify(ref _canInstallPrerequisites, value);
+            set => this.RaiseAndSetIfChanged(ref _canInstallPrerequisites, value);
         }
 
         public bool CanRemovePrerequisites
         {
             get => _canRemovePrerequisites;
-            set => SetAndNotify(ref _canRemovePrerequisites, value);
+            set => this.RaiseAndSetIfChanged(ref _canRemovePrerequisites, value);
         }
 
         public void OpenSettings()

@@ -6,14 +6,14 @@ using ReactiveUI;
 namespace Artemis.UI.Avalonia.Shared
 {
     /// <summary>
-    ///     Represents the base class for Artemis view models
+    /// Represents the base class for Artemis view models
     /// </summary>
     public abstract class ViewModelBase : ReactiveObject
     {
         private string? _displayName;
 
         /// <summary>
-        ///     Gets or sets the display name of the view model
+        /// Gets or sets the display name of the view model
         /// </summary>
         public string? DisplayName
         {
@@ -23,7 +23,7 @@ namespace Artemis.UI.Avalonia.Shared
     }
 
     /// <summary>
-    ///     Represents the base class for Artemis view models that are interested in the activated event
+    /// Represents the base class for Artemis view models that are interested in the activated event
     /// </summary>
     public abstract class ActivatableViewModelBase : ViewModelBase, IActivatableViewModel, IDisposable
     {
@@ -34,17 +34,14 @@ namespace Artemis.UI.Avalonia.Shared
         }
 
         /// <summary>
-        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// Releases the unmanaged resources used by the object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">
-        ///     <see langword="true" /> to release both managed and unmanaged resources;
-        ///     <see langword="false" /> to release only unmanaged resources.
+        /// <see langword="true" /> to release both managed and unmanaged resources;
+        /// <see langword="false" /> to release only unmanaged resources.
         /// </param>
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-            }
         }
 
         /// <inheritdoc />
@@ -59,11 +56,10 @@ namespace Artemis.UI.Avalonia.Shared
     }
 
     /// <summary>
-    ///     Represents the base class for Artemis view models used to drive dialogs
+    /// Represents the base class for Artemis view models used to drive dialogs
     /// </summary>
     public abstract class DialogViewModelBase<TResult> : ActivatableViewModelBase
     {
-
         /// <inheritdoc />
         protected DialogViewModelBase()
         {
@@ -71,9 +67,8 @@ namespace Artemis.UI.Avalonia.Shared
             Cancel = ReactiveCommand.Create(() => { });
         }
 
-
         /// <summary>
-        ///     Closes the dialog with a given result
+        /// Closes the dialog with a given result
         /// </summary>
         public ReactiveCommand<TResult, TResult> Close { get; }
 

@@ -2,6 +2,7 @@
 using Artemis.Core;
 using Artemis.UI.Avalonia.Screens.Device;
 using Artemis.UI.Avalonia.Screens.Device.Tabs.ViewModels;
+using Artemis.UI.Avalonia.Screens.Plugins.ViewModels;
 using Artemis.UI.Avalonia.Screens.Root.ViewModels;
 using Artemis.UI.Avalonia.Screens.SurfaceEditor.ViewModels;
 using ReactiveUI;
@@ -32,5 +33,10 @@ namespace Artemis.UI.Avalonia.Ninject.Factories
     {
         SurfaceDeviceViewModel SurfaceDeviceViewModel(ArtemisDevice device);
         ListDeviceViewModel ListDeviceViewModel(ArtemisDevice device);
+    }
+
+    public interface IPrerequisitesVmFactory : IVmFactory
+    {
+        PluginPrerequisiteViewModel PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall);
     }
 }

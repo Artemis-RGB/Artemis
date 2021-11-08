@@ -4,6 +4,7 @@ using Artemis.UI.Avalonia.Shared.Utilities;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
+using ReactiveUI;
 using Button = Avalonia.Controls.Button;
 
 namespace Artemis.UI.Avalonia.Shared.Services.Builders
@@ -106,7 +107,7 @@ namespace Artemis.UI.Avalonia.Shared.Services.Builders
         public IControl Build()
         {
             return _action != null 
-                ? new Button {Content = _text, Command = new DelegateCommand(_ => _action())} 
+                ? new Button {Content = _text, Command = ReactiveCommand.Create(() => _action)} 
                 : new Button {Content = _text};
         }
     }

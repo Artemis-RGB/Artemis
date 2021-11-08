@@ -76,15 +76,11 @@ namespace Artemis.UI.Avalonia.Shared.Services.Builders
             return this;
         }
 
-        public ContentDialogBuilder WithViewModel<T>(params (string name, object value)[] parameters)
+        public ContentDialogBuilder WithViewModel<T>(ref T viewModel, params (string name, object value)[] parameters)
         {
-            if (parameters.Length != 0)
-            {
-                IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.name, kv.value)).Cast<IParameter>().ToArray();
-                _contentDialog.Content = _kernel.Get<T>(paramsArray);
-            }
-            else
-                _contentDialog.Content = _kernel.Get<T>();
+            IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.name, kv.value)).Cast<IParameter>().ToArray();
+            viewModel = _kernel.Get<T>(paramsArray);
+            _contentDialog.Content = _kernel.Get<T>();
 
             return this;
         }

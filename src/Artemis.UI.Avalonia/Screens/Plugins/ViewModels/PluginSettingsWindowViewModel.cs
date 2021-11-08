@@ -1,8 +1,7 @@
 ﻿using System;
 using Artemis.Core;
-using Stylet;
 
-namespace Artemis.UI.Screens.Settings.Tabs.Plugins
+namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 {
     public class PluginSettingsWindowViewModel : Conductor<PluginConfigurationViewModel>
     {

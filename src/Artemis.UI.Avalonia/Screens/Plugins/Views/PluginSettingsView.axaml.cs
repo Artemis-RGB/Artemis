@@ -1,8 +1,7 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.Plugins.Views
+namespace Artemis.UI.Avalonia.Screens.Plugins.Views
 {
     public partial class PluginSettingsView : UserControl
     {

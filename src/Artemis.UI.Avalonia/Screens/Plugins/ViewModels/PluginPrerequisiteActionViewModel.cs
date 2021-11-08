@@ -1,10 +1,7 @@
-﻿using System;
-using System.ComponentModel;
-using Artemis.Core;
-using Artemis.UI.Avalonia;
+﻿using Artemis.Core;
 using Artemis.UI.Avalonia.Shared;
 
-namespace Artemis.UI.Screens.Plugins
+namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 {
     public class PluginPrerequisiteActionViewModel : ViewModelBase
     {
