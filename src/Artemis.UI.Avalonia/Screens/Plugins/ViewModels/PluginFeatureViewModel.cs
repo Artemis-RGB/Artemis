@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -70,7 +69,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
         {
             try
             {
-                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Path.Combine(Constants.DataFolder, "Logs"));
+                Utilities.OpenFolder(Path.Combine(Constants.DataFolder, "logs"));
             }
             catch (Exception e)
             {
@@ -80,21 +79,21 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 
         public void ViewLoadException()
         {
-            if (LoadException != null) 
+            if (LoadException != null)
                 _windowService.ShowExceptionDialog("Feature failed to enable", LoadException);
         }
 
         public async Task InstallPrerequisites()
         {
-            if (FeatureInfo.Prerequisites.Any()) 
-                await PluginPrerequisitesInstallDialogViewModel.Show(_dialogService, new List<IPrerequisitesSubject> {FeatureInfo});
+            if (FeatureInfo.Prerequisites.Any())
+                await PluginPrerequisitesInstallDialogViewModel.Show(_windowService, new List<IPrerequisitesSubject> {FeatureInfo});
         }
 
         public async Task RemovePrerequisites()
         {
             if (FeatureInfo.Prerequisites.Any(p => p.UninstallActions.Any()))
             {
-                await PluginPrerequisitesUninstallDialogViewModel.Show(_dialogService, new List<IPrerequisitesSubject> {FeatureInfo});
+                await PluginPrerequisitesUninstallDialogViewModel.Show(_windowService, new List<IPrerequisitesSubject> {FeatureInfo});
                 this.RaisePropertyChanged(nameof(IsEnabled));
             }
         }
@@ -142,7 +141,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
                 {
                     if (FeatureInfo.Plugin.Info.RequiresAdmin && !_coreService.IsElevated)
                     {
-                        bool confirmed = await _dialogService.ShowConfirmDialog("Enable feature", "The plugin of this feature requires admin rights, are you sure you want to enable it?");
+                        bool confirmed = await _windowService.ShowConfirmContentDialog("Enable feature", "The plugin of this feature requires admin rights, are you sure you want to enable it?");
                         if (!confirmed)
                         {
                             this.RaisePropertyChanged(nameof(IsEnabled));
@@ -153,7 +152,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
                     // Check if all prerequisites are met async
                     if (!FeatureInfo.ArePrerequisitesMet())
                     {
-                        await PluginPrerequisitesInstallDialogViewModel.Show(_dialogService, new List<IPrerequisitesSubject> {FeatureInfo});
+                        await PluginPrerequisitesInstallDialogViewModel.Show(_windowService, new List<IPrerequisitesSubject> {FeatureInfo});
                         if (!FeatureInfo.ArePrerequisitesMet())
                         {
                             this.RaisePropertyChanged(nameof(IsEnabled));
@@ -185,20 +184,14 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 
         private void OnFeatureEnabling(object? sender, PluginFeatureEventArgs e)
         {
-            if (e.PluginFeature != FeatureInfo.Instance)
-            {
-                return;
-            }
+            if (e.PluginFeature != FeatureInfo.Instance) return;
 
             Enabling = true;
         }
 
         private void OnFeatureEnableStopped(object? sender, PluginFeatureEventArgs e)
         {
-            if (e.PluginFeature != FeatureInfo.Instance)
-            {
-                return;
-            }
+            if (e.PluginFeature != FeatureInfo.Instance) return;
 
             Enabling = false;
 

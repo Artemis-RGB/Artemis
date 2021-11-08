@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels;
+using Artemis.UI.Avalonia.Shared;
 using ReactiveUI;
 
 namespace Artemis.UI.Avalonia.Screens.Settings

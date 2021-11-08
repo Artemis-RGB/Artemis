@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.UI.Avalonia.Shared;
 using Material.Icons;
 using Ninject;
 using Ninject.Parameters;

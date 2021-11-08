@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.UI.Avalonia.Shared;
 using Avalonia;
 using RGB.NET.Core;
 

@@ -11,6 +11,7 @@ using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
 using Artemis.UI.Avalonia.Services.Interfaces;
+using Artemis.UI.Avalonia.Shared;
 using ReactiveUI;
 using Serilog.Events;
 

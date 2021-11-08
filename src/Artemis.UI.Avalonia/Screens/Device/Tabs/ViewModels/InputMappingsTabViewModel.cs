@@ -5,6 +5,7 @@ using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Avalonia.Exceptions;
+using Artemis.UI.Avalonia.Shared;
 using ReactiveUI;
 using RGB.NET.Core;
 

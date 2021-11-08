@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Artemis.UI.Avalonia.Shared.Utilities;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;

@@ -90,6 +90,28 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        ///     Occurs when the core has requested an application shutdown
+        /// </summary>
+        public static event EventHandler? ShutdownRequested;
+
+        /// <summary>
+        ///     Occurs when the core has requested an application restart
+        /// </summary>
+        public static event EventHandler<RestartEventArgs>? RestartRequested;
+
+        /// <summary>
+        ///     Opens the provided folder in the user's file explorer
+        /// </summary>
+        /// <param name="path">The full path of the folder to open</param>
+        public static void OpenFolder(string path)
+        {
+            if (OperatingSystem.IsWindows())
+                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", path);
+            else
+                throw new PlatformNotSupportedException("Can't open folders yet on non-Windows systems Q.Q");
+        }
+
+        /// <summary>
         ///     Gets the current application location
         /// </summary>
         /// <returns></returns>
@@ -101,6 +123,11 @@ namespace Artemis.Core
         private static void OnRestartRequested(RestartEventArgs e)
         {
             RestartRequested?.Invoke(null, e);
+        }
+
+        private static void OnShutdownRequested()
+        {
+            ShutdownRequested?.Invoke(null, EventArgs.Empty);
         }
 
         #region Scaling
@@ -118,30 +145,11 @@ namespace Artemis.Core
                 return SKRectI.Create(roundX, roundY, roundWidth, roundHeight);
 
             return SKRectI.Create(
-                roundX - (roundX % RenderScaleMultiplier),
-                roundY - (roundY % RenderScaleMultiplier),
-                roundWidth - (roundWidth % RenderScaleMultiplier),
-                roundHeight - (roundHeight % RenderScaleMultiplier)
+                roundX - roundX % RenderScaleMultiplier,
+                roundY - roundY % RenderScaleMultiplier,
+                roundWidth - roundWidth % RenderScaleMultiplier,
+                roundHeight - roundHeight % RenderScaleMultiplier
             );
-        }
-
-        #endregion
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs when the core has requested an application shutdown
-        /// </summary>
-        public static event EventHandler? ShutdownRequested;
-
-        /// <summary>
-        ///     Occurs when the core has requested an application restart
-        /// </summary>
-        public static event EventHandler<RestartEventArgs>? RestartRequested;
-
-        private static void OnShutdownRequested()
-        {
-            ShutdownRequested?.Invoke(null, EventArgs.Empty);
         }
 
         #endregion

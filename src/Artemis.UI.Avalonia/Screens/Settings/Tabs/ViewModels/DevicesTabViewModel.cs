@@ -1,4 +1,6 @@
-﻿namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels
+﻿using Artemis.UI.Avalonia.Shared;
+
+namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels
 {
     public class DevicesTabViewModel : ActivatableViewModelBase
     {

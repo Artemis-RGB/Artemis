@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Reactive.Disposables;
 using System.Reflection;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.UI.Avalonia.Shared;
 using Avalonia.Media.Imaging;
 using Flurl.Http;
 using ReactiveUI;
@@ -19,7 +21,7 @@ namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels
         public AboutTabViewModel()
         {
             DisplayName = "About";
-            this.WhenActivated((Action<IDisposable> _) => Task.Run(Activate));
+            this.WhenActivated((CompositeDisposable _) => Task.Run(Activate));
         }
 
         public string? Version

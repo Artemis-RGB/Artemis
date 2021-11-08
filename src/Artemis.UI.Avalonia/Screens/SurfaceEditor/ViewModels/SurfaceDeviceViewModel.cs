@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Avalonia.Ninject.Factories;
+using Artemis.UI.Avalonia.Shared;
 using Artemis.UI.Avalonia.Shared.Services.Interfaces;
 using Avalonia.Input;
 using ReactiveUI;
@@ -105,7 +106,7 @@ namespace Artemis.UI.Avalonia.Screens.SurfaceEditor.ViewModels
 
         private async Task ExecuteViewProperties(ArtemisDevice device)
         {
-            await _windowService.ShowDialogAsync<bool>(_deviceVmFactory.DevicePropertiesViewModel(device));
+            await _windowService.ShowDialogAsync(_deviceVmFactory.DevicePropertiesViewModel(device));
         }
 
         private bool Fits(float x, float y)

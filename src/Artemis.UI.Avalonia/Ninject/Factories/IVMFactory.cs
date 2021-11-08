@@ -22,6 +22,13 @@ namespace Artemis.UI.Avalonia.Ninject.Factories
         InputMappingsTabViewModel InputMappingsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds);
     }
 
+    public interface ISettingsVmFactory : IVmFactory
+    {
+        PluginSettingsViewModel CreatePluginSettingsViewModel(Plugin plugin);
+        PluginFeatureViewModel CreatePluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo, bool showShield);
+        // DeviceSettingsViewModel CreateDeviceSettingsViewModel(ArtemisDevice device);
+    }
+
     public interface ISidebarVmFactory : IVmFactory
     {
         SidebarViewModel SidebarViewModel(IScreen hostScreen);

@@ -9,6 +9,7 @@ using Artemis.UI.Avalonia.Screens.Home.ViewModels;
 using Artemis.UI.Avalonia.Screens.Settings;
 using Artemis.UI.Avalonia.Screens.SurfaceEditor.ViewModels;
 using Artemis.UI.Avalonia.Screens.Workshop.ViewModels;
+using Artemis.UI.Avalonia.Shared;
 using Material.Icons;
 using Ninject;
 using ReactiveUI;

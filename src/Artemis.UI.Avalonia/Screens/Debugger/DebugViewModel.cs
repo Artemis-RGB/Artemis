@@ -5,6 +5,7 @@ using Artemis.UI.Avalonia.Screens.Debugger.Tabs.Logs;
 using Artemis.UI.Avalonia.Screens.Debugger.Tabs.Performance;
 using Artemis.UI.Avalonia.Screens.Debugger.Tabs.Render;
 using Artemis.UI.Avalonia.Services.Interfaces;
+using Artemis.UI.Avalonia.Shared;
 using FluentAvalonia.UI.Controls;
 using Ninject;
 using Ninject.Parameters;

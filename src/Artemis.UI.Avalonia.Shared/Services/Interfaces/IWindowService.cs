@@ -44,6 +44,16 @@ namespace Artemis.UI.Avalonia.Shared.Services.Interfaces
         Task<TResult> ShowDialogAsync<TViewModel, TResult>(params (string name, object value)[] parameters) where TViewModel : DialogViewModelBase<TResult>;
 
         /// <summary>
+        /// Shows a content dialog asking the user to confirm an action
+        /// </summary>
+        /// <param name="title">The title of the dialog</param>
+        /// <param name="message">The message of the dialog</param>
+        /// <param name="confirm">The text of the confirm button</param>
+        /// <param name="cancel">The text of the cancel button, if <see langword="null"/> the cancel button will not be shown</param>
+        /// <returns>A task containing the result of the dialog, <see langword="true"/> if confirmed; otherwise <see langword="false"/></returns>
+        Task<bool> ShowConfirmContentDialog(string title, string message, string confirm = "Confirm", string? cancel = "Cancel");
+
+        /// <summary>
         /// Creates an open file dialog, use the fluent API to configure it
         /// </summary>
         /// <returns>The builder that can be used to configure the dialog</returns>
@@ -56,8 +66,6 @@ namespace Artemis.UI.Avalonia.Shared.Services.Interfaces
         SaveFileDialogBuilder CreateSaveFileDialog();
 
         ContentDialogBuilder CreateContentDialog();
-
-        ConfirmDialogBuilder CreateConfirmDialog();
 
         Window GetCurrentWindow();
     }

@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Timers;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Avalonia.Shared;
 using ReactiveUI;
 using SkiaSharp;
 

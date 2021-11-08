@@ -7,6 +7,7 @@ using Artemis.UI.Avalonia.Shared.Services.Interfaces;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using FluentAvalonia.UI.Controls;
 using Ninject;
 using Ninject.Parameters;
 
@@ -55,6 +56,18 @@ namespace Artemis.UI.Avalonia.Shared.Services
             IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.name, kv.value)).Cast<IParameter>().ToArray();
             TViewModel viewModel = _kernel.Get<TViewModel>(paramsArray)!;
             return await ShowDialogAsync(viewModel);
+        }
+
+        public async Task<bool> ShowConfirmContentDialog(string title, string message, string confirm = "Confirm", string? cancel = "Cancel")
+        {
+            ContentDialogResult contentDialogResult = await CreateContentDialog()
+                .WithTitle(title)
+                .WithContent(message)
+                .HavingPrimaryButton(b => b.WithText(confirm))
+                .WithCloseButtonText(cancel)
+                .ShowAsync();
+
+            return contentDialogResult == ContentDialogResult.Primary;
         }
 
         public async Task<TResult> ShowDialogAsync<TResult>(DialogViewModelBase<TResult> viewModel)

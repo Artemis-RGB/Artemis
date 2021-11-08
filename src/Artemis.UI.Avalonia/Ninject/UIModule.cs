@@ -2,6 +2,7 @@
 using Artemis.UI.Avalonia.Ninject.Factories;
 using Artemis.UI.Avalonia.Screens;
 using Artemis.UI.Avalonia.Services.Interfaces;
+using Artemis.UI.Avalonia.Shared;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
 using Ninject.Planning.Bindings.Resolvers;

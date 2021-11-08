@@ -3,6 +3,7 @@ using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Avalonia.Ninject.Factories;
+using Artemis.UI.Avalonia.Shared;
 using ReactiveUI;
 
 namespace Artemis.UI.Avalonia.Screens.Root.ViewModels

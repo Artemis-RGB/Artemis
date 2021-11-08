@@ -1,7 +1,7 @@
 ﻿using System;
 using Artemis.Core;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Avalonia.Shared
 {
     /// <inheritdoc />
     public class PluginConfigurationDialog<T> : PluginConfigurationDialog where T : PluginConfigurationViewModel

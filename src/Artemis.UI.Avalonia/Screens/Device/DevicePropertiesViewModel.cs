@@ -1,12 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using Artemis.Core;
 using Artemis.UI.Avalonia.Ninject.Factories;
+using Artemis.UI.Avalonia.Shared;
 using RGB.NET.Core;
 using ArtemisLed = Artemis.Core.ArtemisLed;
 
 namespace Artemis.UI.Avalonia.Screens.Device
 {
-    public class DevicePropertiesViewModel : ActivatableViewModelBase
+    public class DevicePropertiesViewModel : DialogViewModelBase<object>
     {
         public DevicePropertiesViewModel(ArtemisDevice device, IDeviceVmFactory deviceVmFactory)
         {

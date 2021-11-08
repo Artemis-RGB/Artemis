@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Reactive.Disposables;
 using Artemis.Core;
+using Artemis.UI.Avalonia.Shared;
 using DynamicData.Binding;
 using ReactiveUI;
 

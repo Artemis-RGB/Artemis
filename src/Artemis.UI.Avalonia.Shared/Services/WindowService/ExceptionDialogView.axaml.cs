@@ -1,4 +1,6 @@
+using Avalonia;
 using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Avalonia.Shared.Services
 {

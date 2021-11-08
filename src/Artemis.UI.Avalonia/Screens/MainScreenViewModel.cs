@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Artemis.UI.Avalonia.Shared;
+using ReactiveUI;
 
 namespace Artemis.UI.Avalonia.Screens
 {

@@ -9,7 +9,6 @@ using Artemis.Core.Services;
 using Artemis.UI.Avalonia.Ninject.Factories;
 using Artemis.UI.Avalonia.Shared;
 using Artemis.UI.Avalonia.Shared.Services.Interfaces;
-using DynamicData;
 using ReactiveUI;
 
 namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
@@ -19,9 +18,9 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
         private readonly IPluginManagementService _pluginManagementService;
         private readonly List<IPrerequisitesSubject> _subjects;
         private readonly IWindowService _windowService;
+        private PluginPrerequisiteViewModel? _activePrerequisite;
         private bool _canUninstall;
         private bool _isFinished;
-        private PluginPrerequisiteViewModel? _activePrerequisite;
         private CancellationTokenSource? _tokenSource;
 
         public PluginPrerequisitesUninstallDialogViewModel(List<IPrerequisitesSubject> subjects, string cancelLabel, IPrerequisitesVmFactory prerequisitesVmFactory, IWindowService windowService,
@@ -61,18 +60,6 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
             set => this.RaiseAndSetIfChanged(ref _isFinished, value);
         }
 
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _tokenSource?.Cancel();
-                _tokenSource?.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-
         public async Task Uninstall()
         {
             CanUninstall = false;
@@ -80,29 +67,18 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
             // Disable all subjects that are plugins, this will disable their features too
             foreach (IPrerequisitesSubject prerequisitesSubject in _subjects)
             {
-                if (prerequisitesSubject is PluginInfo pluginInfo)
-                {
-                    _pluginManagementService.DisablePlugin(pluginInfo.Plugin, true);
-                }
+                if (prerequisitesSubject is PluginInfo pluginInfo) _pluginManagementService.DisablePlugin(pluginInfo.Plugin, true);
             }
 
             // Disable all subjects that are features if still required
             foreach (IPrerequisitesSubject prerequisitesSubject in _subjects)
             {
-                if (prerequisitesSubject is not PluginFeatureInfo featureInfo)
-                {
-                    continue;
-                }
+                if (prerequisitesSubject is not PluginFeatureInfo featureInfo) continue;
 
                 // Disable the parent plugin if the feature is AlwaysEnabled
                 if (featureInfo.AlwaysEnabled)
-                {
                     _pluginManagementService.DisablePlugin(featureInfo.Plugin, true);
-                }
-                else if (featureInfo.Instance != null)
-                {
-                    _pluginManagementService.DisablePluginFeature(featureInfo.Instance, true);
-                }
+                else if (featureInfo.Instance != null) _pluginManagementService.DisablePluginFeature(featureInfo.Instance, true);
             }
 
             _tokenSource = new CancellationTokenSource();
@@ -112,19 +88,13 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
                 foreach (PluginPrerequisiteViewModel pluginPrerequisiteViewModel in Prerequisites)
                 {
                     pluginPrerequisiteViewModel.IsMet = pluginPrerequisiteViewModel.PluginPrerequisite.IsMet();
-                    if (!pluginPrerequisiteViewModel.IsMet)
-                    {
-                        continue;
-                    }
+                    if (!pluginPrerequisiteViewModel.IsMet) continue;
 
                     ActivePrerequisite = pluginPrerequisiteViewModel;
                     await ActivePrerequisite.Uninstall(_tokenSource.Token);
 
                     // Wait after the task finished for the user to process what happened
-                    if (pluginPrerequisiteViewModel != Prerequisites.Last())
-                    {
-                        await Task.Delay(1000);
-                    }
+                    if (pluginPrerequisiteViewModel != Prerequisites.Last()) await Task.Delay(1000);
                 }
 
                 if (Prerequisites.All(p => !p.IsMet))
@@ -162,6 +132,18 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
         public static async Task<object> Show(IWindowService windowService, List<IPrerequisitesSubject> subjects, string cancelLabel = "Cancel")
         {
             return await windowService.ShowDialogAsync<PluginPrerequisitesUninstallDialogViewModel, bool>(("subjects", subjects), ("cancelLabel", cancelLabel));
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _tokenSource?.Cancel();
+                _tokenSource?.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
     }
 }

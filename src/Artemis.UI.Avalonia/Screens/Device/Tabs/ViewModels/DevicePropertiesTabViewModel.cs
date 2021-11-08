@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Avalonia.Shared;
 using Artemis.UI.Avalonia.Shared.Services.Builders;
 using Artemis.UI.Avalonia.Shared.Services.Interfaces;
 using ReactiveUI;

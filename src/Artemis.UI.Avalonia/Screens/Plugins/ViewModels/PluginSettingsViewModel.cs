@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Avalonia.Exceptions;
+using Artemis.UI.Avalonia.Ninject.Factories;
 using Artemis.UI.Avalonia.Shared;
+using Artemis.UI.Avalonia.Shared.Services.Interfaces;
 using Ninject;
 using ReactiveUI;
 
@@ -16,8 +18,10 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
     public class PluginSettingsViewModel : ActivatableViewModelBase
     {
         private readonly ICoreService _coreService;
+        private readonly INotificationService _notificationService;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly ISettingsVmFactory _settingsVmFactory;
+        private readonly IWindowService _windowService;
         private bool _canInstallPrerequisites;
         private bool _canRemovePrerequisites;
         private bool _enabling;
@@ -27,13 +31,24 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
         public PluginSettingsViewModel(Plugin plugin,
             ISettingsVmFactory settingsVmFactory,
             ICoreService coreService,
+            IWindowService windowService,
+            INotificationService notificationService,
             IPluginManagementService pluginManagementService)
         {
-            Plugin = plugin;
+            _plugin = plugin;
 
             _settingsVmFactory = settingsVmFactory;
             _coreService = coreService;
+            _windowService = windowService;
+            _notificationService = notificationService;
             _pluginManagementService = pluginManagementService;
+
+            PluginFeatures = new ObservableCollection<PluginFeatureViewModel>();
+            foreach (PluginFeatureInfo pluginFeatureInfo in Plugin.Features)
+                PluginFeatures.Add(_settingsVmFactory.CreatePluginFeatureViewModel(pluginFeatureInfo, false));
+
+            _pluginManagementService.PluginDisabled += PluginManagementServiceOnPluginToggled;
+            _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginToggled;
         }
 
         public ObservableCollection<PluginFeatureViewModel> PluginFeatures { get; }
@@ -49,7 +64,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
             get => _enabling;
             set => this.RaiseAndSetIfChanged(ref _enabling, value);
         }
-        
+
         public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
         public bool CanOpenSettings => IsEnabled && Plugin.ConfigurationDialog != null;
 
@@ -83,18 +98,20 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 
         public void OpenSettings()
         {
-            PluginConfigurationDialog configurationViewModel = (PluginConfigurationDialog) Plugin.ConfigurationDialog;
-            if (configurationViewModel == null)
+            if (Plugin.ConfigurationDialog == null)
                 return;
 
             try
             {
-                PluginConfigurationViewModel viewModel = (PluginConfigurationViewModel) Plugin.Kernel.Get(configurationViewModel.Type);
-                _windowManager.ShowWindow(new PluginSettingsWindowViewModel(viewModel));
+                PluginConfigurationViewModel? viewModel = Plugin.Kernel!.Get(Plugin.ConfigurationDialog.Type) as PluginConfigurationViewModel;
+                if (viewModel == null)
+                    throw new ArtemisUIException($"The type of a plugin configuration dialog must inherit {nameof(PluginConfigurationViewModel)}");
+
+                _windowService.ShowWindow(new PluginSettingsWindowViewModel(viewModel));
             }
             catch (Exception e)
             {
-                _dialogService.ShowExceptionDialog("An exception occured while trying to show the plugin's settings window", e);
+                _windowService.ShowExceptionDialog("An exception occured while trying to show the plugin's settings window", e);
                 throw;
             }
         }
@@ -103,11 +120,11 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
         {
             try
             {
-                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Plugin.Directory.FullName);
+                Utilities.OpenFolder(Plugin.Directory.FullName);
             }
             catch (Exception e)
             {
-                _dialogService.ShowExceptionDialog("Welp, we couldn't open the device's plugin folder for you", e);
+                _windowService.ShowExceptionDialog("Welp, we couldn't open the device's plugin folder for you", e);
             }
         }
 
@@ -116,16 +133,16 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
             bool wasEnabled = IsEnabled;
 
             _pluginManagementService.UnloadPlugin(Plugin);
-            Items.Clear();
+            PluginFeatures.Clear();
 
             Plugin = _pluginManagementService.LoadPlugin(Plugin.Directory);
             foreach (PluginFeatureInfo pluginFeatureInfo in Plugin.Features)
-                Items.Add(_settingsVmFactory.CreatePluginFeatureViewModel(pluginFeatureInfo, false));
+                PluginFeatures.Add(_settingsVmFactory.CreatePluginFeatureViewModel(pluginFeatureInfo, false));
 
             if (wasEnabled)
                 await UpdateEnabled(true);
 
-            _messageService.ShowMessage("Reloaded plugin.");
+            _notificationService.CreateNotification().WithTitle("Reloaded plugin.").Show();
         }
 
         public async Task InstallPrerequisites()
@@ -134,7 +151,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
             subjects.AddRange(Plugin.Features.Where(f => f.AlwaysEnabled));
 
             if (subjects.Any(s => s.Prerequisites.Any()))
-                await PluginPrerequisitesInstallDialogViewModel.Show(_dialogService, subjects);
+                await PluginPrerequisitesInstallDialogViewModel.Show(_windowService, subjects);
         }
 
         public async Task RemovePrerequisites(bool forPluginRemoval = false)
@@ -144,15 +161,15 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 
             if (subjects.Any(s => s.Prerequisites.Any(p => p.UninstallActions.Any())))
             {
-                await PluginPrerequisitesUninstallDialogViewModel.Show(_dialogService, subjects, forPluginRemoval ? "SKIP, REMOVE PLUGIN" : "CANCEL");
-                NotifyOfPropertyChange(nameof(IsEnabled));
-                NotifyOfPropertyChange(nameof(CanOpenSettings));
+                await PluginPrerequisitesUninstallDialogViewModel.Show(_windowService, subjects, forPluginRemoval ? "Skip, remove plugin" : "Cancel");
+                this.RaisePropertyChanged(nameof(IsEnabled));
+                this.RaisePropertyChanged(nameof(CanOpenSettings));
             }
         }
 
         public async Task RemoveSettings()
         {
-            bool confirmed = await _dialogService.ShowConfirmDialog("Clear plugin settings", "Are you sure you want to clear the settings of this plugin?");
+            bool confirmed = await _windowService.ShowConfirmContentDialog("Clear plugin settings", "Are you sure you want to clear the settings of this plugin?");
             if (!confirmed)
                 return;
 
@@ -166,12 +183,12 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
             if (wasEnabled)
                 await UpdateEnabled(true);
 
-            _messageService.ShowMessage("Cleared plugin settings.");
+            _notificationService.CreateNotification().WithTitle("Cleared plugin settings.").Show();
         }
 
         public async Task Remove()
         {
-            bool confirmed = await _dialogService.ShowConfirmDialog("Remove plugin", "Are you sure you want to remove this plugin?");
+            bool confirmed = await _windowService.ShowConfirmContentDialog("Remove plugin", "Are you sure you want to remove this plugin?");
             if (!confirmed)
                 return;
 
@@ -184,45 +201,55 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
             try
             {
                 _pluginManagementService.RemovePlugin(Plugin, false);
-                ((PluginSettingsTabViewModel) Parent).GetPluginInstances();
             }
             catch (Exception e)
             {
-                _dialogService.ShowExceptionDialog("Failed to remove plugin", e);
+                _windowService.ShowExceptionDialog("Failed to remove plugin", e);
                 throw;
             }
 
-            _messageService.ShowMessage("Removed plugin.");
+            _notificationService.CreateNotification().WithTitle("Removed plugin.").Show();
         }
 
         public void ShowLogsFolder()
         {
             try
             {
-                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Path.Combine(Constants.DataFolder, "Logs"));
+                Utilities.OpenFolder(Path.Combine(Constants.DataFolder, "logs"));
             }
             catch (Exception e)
             {
-                _dialogService.ShowExceptionDialog("Welp, we couldn\'t open the logs folder for you", e);
+                _windowService.ShowExceptionDialog("Welp, we couldn\'t open the logs folder for you", e);
             }
         }
 
         public void OpenUri(Uri uri)
         {
-            Core.Utilities.OpenUrl(uri.ToString());
+            Utilities.OpenUrl(uri.ToString());
         }
 
-        private void PluginManagementServiceOnPluginToggled(object sender, PluginEventArgs e)
+        protected override void Dispose(bool disposing)
         {
-            NotifyOfPropertyChange(nameof(IsEnabled));
-            NotifyOfPropertyChange(nameof(CanOpenSettings));
+            if (disposing)
+            {
+                _pluginManagementService.PluginDisabled -= PluginManagementServiceOnPluginToggled;
+                _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginToggled;
+            }
+
+            base.Dispose(disposing);
+        }
+
+        private void PluginManagementServiceOnPluginToggled(object? sender, PluginEventArgs e)
+        {
+            this.RaisePropertyChanged(nameof(IsEnabled));
+            this.RaisePropertyChanged(nameof(CanOpenSettings));
         }
 
         private async Task UpdateEnabled(bool enable)
         {
             if (IsEnabled == enable)
             {
-                NotifyOfPropertyChange(nameof(IsEnabled));
+                this.RaisePropertyChanged(nameof(IsEnabled));
                 return;
             }
 
@@ -232,7 +259,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 
                 if (Plugin.Info.RequiresAdmin && !_coreService.IsElevated)
                 {
-                    bool confirmed = await _dialogService.ShowConfirmDialog("Enable plugin", "This plugin requires admin rights, are you sure you want to enable it?");
+                    bool confirmed = await _windowService.ShowConfirmContentDialog("Enable plugin", "This plugin requires admin rights, are you sure you want to enable it?");
                     if (!confirmed)
                     {
                         CancelEnable();
@@ -246,7 +273,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 
                 if (subjects.Any(s => !s.ArePrerequisitesMet()))
                 {
-                    await PluginPrerequisitesInstallDialogViewModel.Show(_dialogService, subjects);
+                    await PluginPrerequisitesInstallDialogViewModel.Show(_windowService, subjects);
                     if (!subjects.All(s => s.ArePrerequisitesMet()))
                     {
                         CancelEnable();
@@ -262,7 +289,10 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
                     }
                     catch (Exception e)
                     {
-                        _messageService.ShowMessage($"Failed to enable plugin {Plugin.Info.Name}\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
+                        _notificationService.CreateNotification()
+                            .WithMessage($"Failed to enable plugin {Plugin.Info.Name}\r\n{e.Message}")
+                            .HavingButton(b => b.WithText("View logs").WithAction(ShowLogsFolder))
+                            .Show();
                     }
                     finally
                     {
@@ -271,17 +301,19 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
                 });
             }
             else
+            {
                 _pluginManagementService.DisablePlugin(Plugin, true);
+            }
 
-            NotifyOfPropertyChange(nameof(IsEnabled));
-            NotifyOfPropertyChange(nameof(CanOpenSettings));
+            this.RaisePropertyChanged(nameof(IsEnabled));
+            this.RaisePropertyChanged(nameof(CanOpenSettings));
         }
 
         private void CancelEnable()
         {
             Enabling = false;
-            NotifyOfPropertyChange(nameof(IsEnabled));
-            NotifyOfPropertyChange(nameof(CanOpenSettings));
+            this.RaisePropertyChanged(nameof(IsEnabled));
+            this.RaisePropertyChanged(nameof(CanOpenSettings));
         }
 
         private void CheckPrerequisites()
@@ -291,26 +323,5 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
             CanRemovePrerequisites = Plugin.Info.Prerequisites.Any(p => p.UninstallActions.Any()) ||
                                      Plugin.Features.Where(f => f.AlwaysEnabled).Any(f => f.Prerequisites.Any(p => p.UninstallActions.Any()));
         }
-
-        #region Overrides of Screen
-
-        protected override void OnInitialActivate()
-        {
-            foreach (PluginFeatureInfo pluginFeatureInfo in Plugin.Features)
-                Items.Add(_settingsVmFactory.CreatePluginFeatureViewModel(pluginFeatureInfo, false));
-
-            _pluginManagementService.PluginDisabled += PluginManagementServiceOnPluginToggled;
-            _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginToggled;
-            base.OnInitialActivate();
-        }
-
-        protected override void OnClose()
-        {
-            _pluginManagementService.PluginDisabled -= PluginManagementServiceOnPluginToggled;
-            _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginToggled;
-            base.OnClose();
-        }
-
-        #endregion
     }
 }

@@ -5,22 +5,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Avalonia.Shared;
-using DynamicData;
 using ReactiveUI;
 
 namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 {
     public class PluginPrerequisiteViewModel : ActivatableViewModelBase
     {
-        private readonly bool _uninstall;
-        private readonly ObservableAsPropertyHelper<bool> _busy;
         private readonly ObservableAsPropertyHelper<int> _activeStepNumber;
-
-        private bool _installing;
-        private bool _uninstalling;
-        private bool _isMet;
+        private readonly ObservableAsPropertyHelper<bool> _busy;
+        private readonly bool _uninstall;
 
         private PluginPrerequisiteActionViewModel? _activeAction;
+
+        private bool _installing;
+        private bool _isMet;
+        private bool _uninstalling;
 
         public PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall)
         {
@@ -45,7 +44,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
         public PluginPrerequisiteActionViewModel? ActiveAction
         {
             get => _activeAction;
-            set => this.RaiseAndSetIfChanged(ref _activeAction , value);
+            set => this.RaiseAndSetIfChanged(ref _activeAction, value);
         }
 
         public PluginPrerequisite PluginPrerequisite { get; }
@@ -106,6 +105,14 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
             }
         }
 
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) PluginPrerequisite.PropertyChanged -= PluginPrerequisiteOnPropertyChanged;
+
+            base.Dispose(disposing);
+        }
+
         private void PluginPrerequisiteOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(PluginPrerequisite.CurrentAction))
@@ -120,21 +127,5 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 
             ActiveAction = activeAction;
         }
-
-        #region IDisposable
-
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                PluginPrerequisite.PropertyChanged -= PluginPrerequisiteOnPropertyChanged;
-            }
-
-            base.Dispose(disposing);
-        }
-
-        #endregion
-
     }
 }

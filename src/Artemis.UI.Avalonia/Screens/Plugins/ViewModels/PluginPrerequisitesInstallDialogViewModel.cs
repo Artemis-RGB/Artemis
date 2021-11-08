@@ -14,7 +14,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 {
     public class PluginPrerequisitesInstallDialogViewModel : DialogViewModelBase<bool>
     {
-        private PluginPrerequisiteViewModel _activePrerequisite;
+        private PluginPrerequisiteViewModel? _activePrerequisite;
         private bool _canInstall;
         private bool _showFailed;
         private bool _showInstall = true;
@@ -34,7 +34,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 
         public ObservableCollection<PluginPrerequisiteViewModel> Prerequisites { get; }
 
-        public PluginPrerequisiteViewModel ActivePrerequisite
+        public PluginPrerequisiteViewModel? ActivePrerequisite
         {
             get => _activePrerequisite;
             set => this.RaiseAndSetIfChanged(ref _activePrerequisite, value);
