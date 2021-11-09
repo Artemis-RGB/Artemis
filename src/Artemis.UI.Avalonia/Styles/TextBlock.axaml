@@ -39,6 +39,9 @@
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Margin" Value="0 0 0 2" />
     </Style>
+    <Style Selector="TextBlock.no-margin">
+        <Setter Property="Margin" Value="0" />
+    </Style>
     <Style Selector="TextBlock.subtitle">
 		<Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
     </Style>

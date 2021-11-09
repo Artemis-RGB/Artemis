@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -49,7 +51,11 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 
             _pluginManagementService.PluginDisabled += PluginManagementServiceOnPluginToggled;
             _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginToggled;
+
+            OpenSettings = ReactiveCommand.Create(ExecuteOpenSettings, this.WhenAnyValue(x => x.IsEnabled).Select(isEnabled => isEnabled && Plugin.ConfigurationDialog != null));
         }
+
+        public ReactiveCommand<Unit, Unit> OpenSettings { get; }
 
         public ObservableCollection<PluginFeatureViewModel> PluginFeatures { get; }
 
@@ -66,8 +72,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
         }
 
         public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
-        public bool CanOpenSettings => IsEnabled && Plugin.ConfigurationDialog != null;
-
+        
         public bool IsEnabled
         {
             get => Plugin.IsEnabled;
@@ -96,7 +101,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
             set => this.RaiseAndSetIfChanged(ref _canRemovePrerequisites, value);
         }
 
-        public void OpenSettings()
+        private void ExecuteOpenSettings()
         {
             if (Plugin.ConfigurationDialog == null)
                 return;
@@ -163,7 +168,6 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
             {
                 await PluginPrerequisitesUninstallDialogViewModel.Show(_windowService, subjects, forPluginRemoval ? "Skip, remove plugin" : "Cancel");
                 this.RaisePropertyChanged(nameof(IsEnabled));
-                this.RaisePropertyChanged(nameof(CanOpenSettings));
             }
         }
 
@@ -242,7 +246,6 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
         private void PluginManagementServiceOnPluginToggled(object? sender, PluginEventArgs e)
         {
             this.RaisePropertyChanged(nameof(IsEnabled));
-            this.RaisePropertyChanged(nameof(CanOpenSettings));
         }
 
         private async Task UpdateEnabled(bool enable)
@@ -306,14 +309,12 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
             }
 
             this.RaisePropertyChanged(nameof(IsEnabled));
-            this.RaisePropertyChanged(nameof(CanOpenSettings));
         }
 
         private void CancelEnable()
         {
             Enabling = false;
             this.RaisePropertyChanged(nameof(IsEnabled));
-            this.RaisePropertyChanged(nameof(CanOpenSettings));
         }
 
         private void CheckPrerequisites()
