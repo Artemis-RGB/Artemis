@@ -4,6 +4,18 @@
         <name>Artemis.UI.Avalonia.Shared</name>
     </assembly>
     <members>
+        <member name="F:Artemis.UI.Avalonia.Shared.Controls.ArtemisIcon.IconProperty">
+            <summary>
+                Gets or sets the currently displayed icon as either a <see cref="T:Material.Icons.MaterialIconKind" /> or an <see cref="T:System.Uri" /> pointing
+                to an SVG
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Avalonia.Shared.Controls.ArtemisIcon.Icon">
+            <summary>
+                Gets or sets the currently displayed icon as either a <see cref="T:Material.Icons.MaterialIconKind" /> or an <see cref="T:System.Uri" /> pointing
+                to an SVG
+            </summary>
+        </member>
         <member name="T:Artemis.UI.Avalonia.Shared.Controls.DeviceVisualizer">
             <summary>
                 Visualizes an <see cref="T:Artemis.Core.ArtemisDevice" /> with optional per-LED colors

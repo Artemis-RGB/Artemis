@@ -40,29 +40,35 @@ namespace Artemis.UI.Avalonia.Shared.Controls
             PropertyChanged += OnPropertyChanged;
         }
 
-        
 
         private void Update()
         {
             if (ConfigurationIcon == null)
                 return;
 
-            if (ConfigurationIcon.IconType == ProfileConfigurationIconType.SvgImage && ConfigurationIcon.FileIcon != null)
+            try
             {
-                SvgSource source = new();
-                source.Load(ConfigurationIcon.FileIcon);
-                Content = new SvgImage {Source = source};
+                if (ConfigurationIcon.IconType == ProfileConfigurationIconType.SvgImage && ConfigurationIcon.FileIcon != null)
+                {
+                    SvgSource source = new();
+                    source.Load(ConfigurationIcon.FileIcon);
+                    Content = new SvgImage {Source = source};
+                }
+                else if (ConfigurationIcon.IconType == ProfileConfigurationIconType.MaterialIcon && ConfigurationIcon.MaterialIcon != null)
+                {
+                    Content = Enum.TryParse(ConfigurationIcon.MaterialIcon, true, out MaterialIconKind parsedIcon)
+                        ? new MaterialIcon {Kind = parsedIcon!}
+                        : new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
+                }
+                else if (ConfigurationIcon.IconType == ProfileConfigurationIconType.BitmapImage && ConfigurationIcon.FileIcon != null)
+                    Content = new Image {Source = new Bitmap(ConfigurationIcon.FileIcon)};
+                else
+                    Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
             }
-            else if (ConfigurationIcon.IconType == ProfileConfigurationIconType.MaterialIcon && ConfigurationIcon.MaterialIcon != null)
+            catch
             {
-                Content = Enum.TryParse(typeof(MaterialIconKind), ConfigurationIcon.MaterialIcon, true, out object? parsedIcon)
-                    ? new MaterialIcon {Kind = (MaterialIconKind) parsedIcon!}
-                    : new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
-            }
-            else if (ConfigurationIcon.IconType == ProfileConfigurationIconType.BitmapImage && ConfigurationIcon.FileIcon != null)
-                Content = new Image {Source = new Bitmap(ConfigurationIcon.FileIcon)};
-            else
                 Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
+            }
         }
 
         private void InitializeComponent()
@@ -76,6 +82,11 @@ namespace Artemis.UI.Avalonia.Shared.Controls
         {
             if (ConfigurationIcon != null)
                 ConfigurationIcon.PropertyChanged -= IconOnPropertyChanged;
+
+            if (Content is SvgImage svgImage)
+                svgImage.Source?.Dispose();
+            else if (Content is Image image)
+                ((Bitmap) image.Source).Dispose();
         }
 
         private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
