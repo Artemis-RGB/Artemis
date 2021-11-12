@@ -19,12 +19,12 @@ namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels
 {
     public class PluginsTabViewModel : ActivatableViewModelBase
     {
-        private readonly IPluginManagementService _pluginManagementService;
         private readonly INotificationService _notificationService;
-        private readonly IWindowService _windowService;
+        private readonly IPluginManagementService _pluginManagementService;
         private readonly ISettingsVmFactory _settingsVmFactory;
-        private string? _searchPluginInput;
+        private readonly IWindowService _windowService;
         private List<PluginSettingsViewModel>? _instances;
+        private string? _searchPluginInput;
 
         public PluginsTabViewModel(IPluginManagementService pluginManagementService, INotificationService notificationService, IWindowService windowService, ISettingsVmFactory settingsVmFactory)
         {
@@ -36,7 +36,7 @@ namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels
             DisplayName = "Plugins";
             Plugins = new ObservableCollection<PluginSettingsViewModel>();
 
-            this.WhenAnyValue(x => x.SearchPluginInput).Throttle(TimeSpan.FromMilliseconds(300)).Subscribe(SearchPlugins);
+            this.WhenAnyValue(x => x.SearchPluginInput).Throttle(TimeSpan.FromMilliseconds(100)).Subscribe(SearchPlugins);
             this.WhenActivated((CompositeDisposable _) => GetPluginInstances());
         }
 
@@ -48,7 +48,10 @@ namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels
             set => this.RaiseAndSetIfChanged(ref _searchPluginInput, value);
         }
 
-        public void OpenUrl(string url) => Utilities.OpenUrl(url);
+        public void OpenUrl(string url)
+        {
+            Utilities.OpenUrl(url);
+        }
 
         public async Task ImportPlugin()
         {
@@ -66,7 +69,7 @@ namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels
 
                 // Enable it via the VM to enable the prerequisite dialog
                 PluginSettingsViewModel pluginViewModel = Plugins.FirstOrDefault(i => i.Plugin == plugin);
-                if (pluginViewModel is { IsEnabled: false })
+                if (pluginViewModel is {IsEnabled: false})
                     pluginViewModel.IsEnabled = true;
 
                 _notificationService.CreateNotification()

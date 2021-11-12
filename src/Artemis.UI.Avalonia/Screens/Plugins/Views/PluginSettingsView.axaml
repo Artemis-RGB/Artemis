@@ -7,7 +7,7 @@
              xmlns:shared="clr-namespace:Artemis.UI.Avalonia.Shared.Controls;assembly=Artemis.UI.Avalonia.Shared"
              mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="450"
              x:Class="Artemis.UI.Avalonia.Screens.Plugins.Views.PluginSettingsView">
-    <Border Classes="card" Width="900" Padding="15" Margin="0 5">
+    <Border Classes="card"  Padding="15" Margin="0 5">
         <Grid RowDefinitions="*,Auto" ColumnDefinitions="4*,5*">
             <Grid Grid.Row="0" RowDefinitions="Auto,Auto,*" ColumnDefinitions="80,*">
 				<shared:ArtemisIcon Icon="{Binding Plugin.Info.ResolvedIcon}"
@@ -72,13 +72,13 @@
                         </controls:SplitButton.Flyout>
                     </controls:SplitButton>
 
-                    <controls:HyperlinkButton Classes="icon-button"
+                    <controls:HyperlinkButton Classes="icon-button icon-button-large"
                                               Margin="5 0"
                                               IsVisible="{Binding Plugin.Info.Website, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                               NavigateUri="{Binding Plugin.Info.Website}">
                         <avalonia:MaterialIcon Kind="Web" />
                     </controls:HyperlinkButton>
-                    <controls:HyperlinkButton Classes="icon-button"
+                    <controls:HyperlinkButton Classes="icon-button icon-button-large"
                                               Margin="5 0"
                                               IsVisible="{Binding Plugin.Info.Repository, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                               NavigateUri="{Binding Plugin.Info.Repository}">

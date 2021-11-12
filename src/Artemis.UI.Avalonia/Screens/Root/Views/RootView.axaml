@@ -13,14 +13,12 @@
 
         <ContentControl Grid.Column="0" Content="{Binding SidebarViewModel}" />
 
-        <Border Classes="router-container" Grid.Column="1" Margin="0 40 0 0">
-            <!-- <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" > -->
-                <reactiveUi:RoutedViewHost Router="{Binding Router}">
-                    <reactiveUi:RoutedViewHost.PageTransition>
-                        <CrossFade Duration="0.1" />
-                    </reactiveUi:RoutedViewHost.PageTransition>
-                </reactiveUi:RoutedViewHost>
-            <!-- </ScrollViewer> -->
+        <Border Classes="router-container" Grid.Column="1" Margin="0 10 0 0">
+            <reactiveUi:RoutedViewHost Router="{Binding Router}">
+                <reactiveUi:RoutedViewHost.PageTransition>
+                    <CrossFade Duration="0.1" />
+                </reactiveUi:RoutedViewHost.PageTransition>
+            </reactiveUi:RoutedViewHost>
         </Border>
     </Grid>
 </UserControl>
