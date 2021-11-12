@@ -42,6 +42,8 @@ namespace Artemis.UI.Avalonia
         private void InitializeNinject()
         {
             _kernel = new StandardKernel();
+            _kernel.Settings.InjectNonPublic = true;
+
             _kernel.Load<CoreModule>();
             _kernel.Load<UIModule>();
             _kernel.Load<SharedUIModule>();

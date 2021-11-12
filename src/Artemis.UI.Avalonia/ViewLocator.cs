@@ -11,8 +11,9 @@ namespace Artemis.UI.Avalonia
 
         public IControl Build(object data)
         {
-            string name = data.GetType().FullName!.Split('`')[0].Replace("ViewModel", "View");
-            Type? type = Type.GetType(name);
+            Type dataType = data.GetType();
+            string name = dataType.FullName!.Split('`')[0].Replace("ViewModel", "View");
+            Type? type = dataType.Assembly.GetType(name);
 
             if (type != null)
                 return (Control) Activator.CreateInstance(type)!;

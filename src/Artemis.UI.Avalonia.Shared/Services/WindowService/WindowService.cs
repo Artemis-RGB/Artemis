@@ -33,6 +33,8 @@ namespace Artemis.UI.Avalonia.Shared.Services
 
         public void ShowWindow(object viewModel)
         {
+            Window parent = GetCurrentWindow();
+
             string name = viewModel.GetType().FullName!.Split('`')[0].Replace("ViewModel", "View");
             Type? type = viewModel.GetType().Assembly.GetType(name);
 
@@ -48,7 +50,7 @@ namespace Artemis.UI.Avalonia.Shared.Services
 
             Window window = (Window) Activator.CreateInstance(type)!;
             window.DataContext = viewModel;
-            window.Show();
+            window.Show(parent);
         }
 
         public async Task<TResult> ShowDialogAsync<TViewModel, TResult>(params (string name, object value)[] parameters) where TViewModel : DialogViewModelBase<TResult>
@@ -72,10 +74,7 @@ namespace Artemis.UI.Avalonia.Shared.Services
 
         public async Task<TResult> ShowDialogAsync<TResult>(DialogViewModelBase<TResult> viewModel)
         {
-            if (Application.Current.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime classic)
-            {
-                throw new ArtemisSharedUIException("Can't show a dialog when application lifetime is not IClassicDesktopStyleApplicationLifetime.");
-            }
+            Window parent = GetCurrentWindow();
 
             string name = viewModel.GetType().FullName!.Split('`')[0].Replace("ViewModel", "View");
             Type? type = viewModel.GetType().Assembly.GetType(name);
@@ -92,7 +91,6 @@ namespace Artemis.UI.Avalonia.Shared.Services
 
             Window window = (Window) Activator.CreateInstance(type)!;
             window.DataContext = viewModel;
-            Window parent = classic.Windows.FirstOrDefault(w => w.IsActive) ?? classic.MainWindow;
             return await window.ShowDialog<TResult>(parent);
         }
 

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Artemis.Core.Services;
+﻿using Artemis.Core.Services;
 using Artemis.Storage;
 using Artemis.Storage.Migrations.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;

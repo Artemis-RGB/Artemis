@@ -16,6 +16,7 @@ using McMaster.NETCore.Plugins;
 using Ninject;
 using Ninject.Extensions.ChildKernel;
 using Ninject.Parameters;
+using Ninject.Planning.Bindings.Resolvers;
 using RGB.NET.Core;
 using Serilog;
 
@@ -410,6 +411,9 @@ namespace Artemis.Core.Services
 
             // Create the Ninject child kernel and load the module
             plugin.Kernel = new ChildKernel(_kernel, new PluginModule(plugin));
+            // The kernel used by Core is unforgiving about missing bindings, no need to be so hard on plugin devs
+            plugin.Kernel.Components.Add<IMissingBindingResolver, SelfBindingResolver>();
+
             OnPluginEnabling(new PluginEventArgs(plugin));
 
             plugin.SetEnabled(true);

@@ -1,6 +1,5 @@
-﻿using System.Reactive;
+﻿using System;
 using Artemis.Core;
-using ReactiveUI;
 
 namespace Artemis.UI.Avalonia.Shared
 {
@@ -16,7 +15,6 @@ namespace Artemis.UI.Avalonia.Shared
         protected PluginConfigurationViewModel(Plugin plugin)
         {
             Plugin = plugin;
-            Close = ReactiveCommand.Create(() => { });
         }
 
         /// <summary>
@@ -25,8 +23,16 @@ namespace Artemis.UI.Avalonia.Shared
         public Plugin Plugin { get; }
 
         /// <summary>
-        ///     A command that closes the window
+        ///     Closes the window hosting the view model
         /// </summary>
-        public ReactiveCommand<Unit, Unit> Close { get; }
+        public void Close()
+        {
+            CloseRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        ///     Occurs when the the window hosting the view model should close
+        /// </summary>
+        public event EventHandler? CloseRequested;
     }
 }

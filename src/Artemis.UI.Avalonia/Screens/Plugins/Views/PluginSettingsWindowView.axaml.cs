@@ -1,7 +1,7 @@
 using System;
+using System.Reactive.Disposables;
 using Artemis.UI.Avalonia.Screens.Plugins.ViewModels;
 using Avalonia;
-using Avalonia.Controls.Mixins;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
@@ -17,7 +17,22 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.Views
             this.AttachDevTools();
 #endif
 
-            this.WhenActivated(disposables => { ViewModel!.ConfigurationViewModel.Close.Subscribe(_ => Close()).DisposeWith(disposables); });
+            this.WhenActivated(disposables =>
+                {
+                    ViewModel!.ConfigurationViewModel.CloseRequested += ConfigurationViewModelOnCloseRequested;
+                    Disposable.Create(HandleDeactivation).DisposeWith(disposables);
+                }
+            );
+        }
+
+        private void HandleDeactivation()
+        {
+            ViewModel!.ConfigurationViewModel.CloseRequested -= ConfigurationViewModelOnCloseRequested;
+        }
+
+        private void ConfigurationViewModelOnCloseRequested(object? sender, EventArgs e)
+        {
+            Close();
         }
 
         private void InitializeComponent()

@@ -282,9 +282,14 @@
                 Gets the plugin this configuration view model is associated with
             </summary>
         </member>
-        <member name="P:Artemis.UI.Avalonia.Shared.PluginConfigurationViewModel.Close">
+        <member name="M:Artemis.UI.Avalonia.Shared.PluginConfigurationViewModel.Close">
             <summary>
-                A command that closes the window
+                Closes the window hosting the view model
+            </summary>
+        </member>
+        <member name="E:Artemis.UI.Avalonia.Shared.PluginConfigurationViewModel.CloseRequested">
+            <summary>
+                Occurs when the the window hosting the view model should close
             </summary>
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.Services.Builders.FileDialogFilterBuilder">

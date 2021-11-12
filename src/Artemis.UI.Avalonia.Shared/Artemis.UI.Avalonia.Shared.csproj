@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ApplicationIcon />
     <StartupObject />
+    <OutputPath>bin\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>C:\Repos\Artemis\src\Artemis.UI.Avalonia.Shared\Artemis.UI.Avalonia.Shared.xml</DocumentationFile>
