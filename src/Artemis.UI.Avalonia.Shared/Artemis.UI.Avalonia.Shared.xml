@@ -455,17 +455,17 @@
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.ViewModelBase">
             <summary>
-            Represents the base class for Artemis view models
+                Represents the base class for Artemis view models
             </summary>
         </member>
         <member name="P:Artemis.UI.Avalonia.Shared.ViewModelBase.DisplayName">
             <summary>
-            Gets or sets the display name of the view model
+                Gets or sets the display name of the view model
             </summary>
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.ActivatableViewModelBase">
             <summary>
-            Represents the base class for Artemis view models that are interested in the activated event
+                Represents the base class for Artemis view models that are interested in the activated event
             </summary>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.ActivatableViewModelBase.#ctor">
@@ -473,11 +473,11 @@
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.ActivatableViewModelBase.Dispose(System.Boolean)">
             <summary>
-            Releases the unmanaged resources used by the object and optionally releases the managed resources.
+                Releases the unmanaged resources used by the object and optionally releases the managed resources.
             </summary>
             <param name="disposing">
-            <see langword="true" /> to release both managed and unmanaged resources;
-            <see langword="false" /> to release only unmanaged resources.
+                <see langword="true" /> to release both managed and unmanaged resources;
+                <see langword="false" /> to release only unmanaged resources.
             </param>
         </member>
         <member name="P:Artemis.UI.Avalonia.Shared.ActivatableViewModelBase.Activator">
@@ -488,20 +488,18 @@
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.DialogViewModelBase`1">
             <summary>
-            Represents the base class for Artemis view models used to drive dialogs
+                Represents the base class for Artemis view models used to drive dialogs
             </summary>
         </member>
-        <member name="M:Artemis.UI.Avalonia.Shared.DialogViewModelBase`1.#ctor">
-            <inheritdoc />
-        </member>
-        <member name="P:Artemis.UI.Avalonia.Shared.DialogViewModelBase`1.Close">
+        <member name="M:Artemis.UI.Avalonia.Shared.DialogViewModelBase`1.Close(`0)">
             <summary>
-            Closes the dialog with a given result
+                Closes the dialog with the given <paramref name="result" />
             </summary>
+            <param name="result">The result of the dialog</param>
         </member>
-        <member name="P:Artemis.UI.Avalonia.Shared.DialogViewModelBase`1.Cancel">
+        <member name="M:Artemis.UI.Avalonia.Shared.DialogViewModelBase`1.Cancel">
             <summary>
-            Closes the dialog without a result
+                Closes the dialog without a result
             </summary>
         </member>
     </members>

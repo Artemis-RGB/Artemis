@@ -118,7 +118,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 
         public void Accept()
         {
-            Close.Execute(true);
+            Close(true);
         }
 
         public static async Task<bool> Show(IWindowService windowService, List<IPrerequisitesSubject> subjects)

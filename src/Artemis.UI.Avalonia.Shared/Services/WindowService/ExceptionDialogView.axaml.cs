@@ -4,7 +4,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Avalonia.Shared.Services
 {
-    public partial class ExceptionDialogView : ReactiveWindow<ExceptionDialogViewModel>
+    internal class ExceptionDialogView : ReactiveWindow<ExceptionDialogViewModel>
     {
         public ExceptionDialogView()
         {

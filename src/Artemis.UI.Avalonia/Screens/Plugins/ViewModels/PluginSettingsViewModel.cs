@@ -12,6 +12,7 @@ using Artemis.UI.Avalonia.Exceptions;
 using Artemis.UI.Avalonia.Ninject.Factories;
 using Artemis.UI.Avalonia.Shared;
 using Artemis.UI.Avalonia.Shared.Services.Interfaces;
+using Avalonia.Threading;
 using Ninject;
 using ReactiveUI;
 
@@ -53,9 +54,13 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
             _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginToggled;
 
             OpenSettings = ReactiveCommand.Create(ExecuteOpenSettings, this.WhenAnyValue(x => x.IsEnabled).Select(isEnabled => isEnabled && Plugin.ConfigurationDialog != null));
+            InstallPrerequisites = ReactiveCommand.CreateFromTask(ExecuteInstallPrerequisites, this.WhenAnyValue(x => x.CanInstallPrerequisites));
+            RemovePrerequisites = ReactiveCommand.CreateFromTask<bool>(ExecuteRemovePrerequisites, this.WhenAnyValue(x => x.CanRemovePrerequisites));
         }
 
         public ReactiveCommand<Unit, Unit> OpenSettings { get; }
+        public ReactiveCommand<Unit, Unit> InstallPrerequisites { get; }
+        public ReactiveCommand<bool, Unit> RemovePrerequisites { get; }
 
         public ObservableCollection<PluginFeatureViewModel> PluginFeatures { get; }
 
@@ -72,7 +77,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
         }
 
         public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
-        
+
         public bool IsEnabled
         {
             get => Plugin.IsEnabled;
@@ -137,7 +142,8 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
         {
             bool wasEnabled = IsEnabled;
 
-            _pluginManagementService.UnloadPlugin(Plugin);
+            await Task.Run(() => _pluginManagementService.UnloadPlugin(Plugin));
+
             PluginFeatures.Clear();
 
             Plugin = _pluginManagementService.LoadPlugin(Plugin.Directory);
@@ -150,7 +156,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
             _notificationService.CreateNotification().WithTitle("Reloaded plugin.").Show();
         }
 
-        public async Task InstallPrerequisites()
+        public async Task ExecuteInstallPrerequisites()
         {
             List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
             subjects.AddRange(Plugin.Features.Where(f => f.AlwaysEnabled));
@@ -159,7 +165,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
                 await PluginPrerequisitesInstallDialogViewModel.Show(_windowService, subjects);
         }
 
-        public async Task RemovePrerequisites(bool forPluginRemoval = false)
+        public async Task ExecuteRemovePrerequisites(bool forPluginRemoval = false)
         {
             List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
             subjects.AddRange(!forPluginRemoval ? Plugin.Features.Where(f => f.AlwaysEnabled) : Plugin.Features);
@@ -200,7 +206,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
             List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
             subjects.AddRange(Plugin.Features);
             if (subjects.Any(s => s.Prerequisites.Any(p => p.UninstallActions.Any())))
-                await RemovePrerequisites(true);
+                await ExecuteRemovePrerequisites(true);
 
             try
             {
@@ -284,7 +290,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
                     }
                 }
 
-                await Task.Run(() =>
+                await Task.Run(async () =>
                 {
                     try
                     {
@@ -292,10 +298,10 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
                     }
                     catch (Exception e)
                     {
-                        _notificationService.CreateNotification()
+                        await Dispatcher.UIThread.InvokeAsync(() => _notificationService.CreateNotification()
                             .WithMessage($"Failed to enable plugin {Plugin.Info.Name}\r\n{e.Message}")
                             .HavingButton(b => b.WithText("View logs").WithAction(ShowLogsFolder))
-                            .Show();
+                            .Show());
                     }
                     finally
                     {

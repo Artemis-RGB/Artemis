@@ -13,9 +13,6 @@
         <Setter Property="Opacity" Value="0" />
         <Setter Property="MaxWidth" Value="600" />
         <Setter Property="Margin" Value="15"/>
-        <Setter Property="Background" Value="#25a3a3a3"/>
-        <Setter Property="VerticalAlignment" Value="Bottom" />
-        <Setter Property="HorizontalAlignment" Value="Right" />
         <Setter Property="Transitions">
             <Transitions>
                 <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
@@ -24,5 +21,8 @@
     </Style>
     <Style Selector="controls|InfoBar.notification-info-bar[IsOpen=True]">
         <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="controls|InfoBar.notification-info-bar:informational /template/ Border#ContentRoot">
+        <Setter Property="Background" Value="#ff3c3c3c" />
     </Style>
 </Styles>

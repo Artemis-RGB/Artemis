@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Layout;
 using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
@@ -17,7 +18,12 @@ namespace Artemis.UI.Avalonia.Shared.Services.Builders
         public NotificationBuilder(Window parent)
         {
             _parent = parent;
-            _infoBar = new InfoBar {Classes = Classes.Parse("notification-info-bar")};
+            _infoBar = new InfoBar
+            {
+                Classes = Classes.Parse("notification-info-bar"),
+                VerticalAlignment = VerticalAlignment.Bottom,
+                HorizontalAlignment = HorizontalAlignment.Right
+            };
         }
 
         public NotificationBuilder WithTitle(string? title)
@@ -38,6 +44,17 @@ namespace Artemis.UI.Avalonia.Shared.Services.Builders
             return this;
         }
 
+        public NotificationBuilder WithVerticalPosition(VerticalAlignment position)
+        {
+            _infoBar.VerticalAlignment = position;
+            return this;
+        }
+
+        public NotificationBuilder WithHorizontalPosition(HorizontalAlignment position)
+        {
+            _infoBar.HorizontalAlignment = position;
+            return this;
+        }
 
         /// <summary>
         ///     Add a filter to the dialog
@@ -105,8 +122,8 @@ namespace Artemis.UI.Avalonia.Shared.Services.Builders
 
         public IControl Build()
         {
-            return _action != null 
-                ? new Button {Content = _text, Command = ReactiveCommand.Create(() => _action)} 
+            return _action != null
+                ? new Button {Content = _text, Command = ReactiveCommand.Create(() => _action)}
                 : new Button {Content = _text};
         }
     }

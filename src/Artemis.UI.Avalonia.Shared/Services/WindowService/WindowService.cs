@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Artemis.UI.Avalonia.Shared.Exceptions;
 using Artemis.UI.Avalonia.Shared.Services.Builders;
@@ -7,9 +8,11 @@ using Artemis.UI.Avalonia.Shared.Services.Interfaces;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
 using Ninject;
 using Ninject.Parameters;
+using ReactiveUI;
 
 namespace Artemis.UI.Avalonia.Shared.Services
 {
@@ -91,25 +94,30 @@ namespace Artemis.UI.Avalonia.Shared.Services
 
             Window window = (Window) Activator.CreateInstance(type)!;
             window.DataContext = viewModel;
+            viewModel.CloseRequested += (_, args) => window.Close(args.Result);
+            viewModel.CancelRequested += (_, _) => window.Close();
+
             return await window.ShowDialog<TResult>(parent);
         }
 
         public void ShowExceptionDialog(string title, Exception exception)
         {
             if (_exceptionDialogOpen)
-            {
                 return;
-            }
 
-            try
+            _exceptionDialogOpen = true;
+            // Fire and forget the dialog
+            Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                _exceptionDialogOpen = true;
-                ShowDialogAsync(new ExceptionDialogViewModel(title, exception)).GetAwaiter().GetResult();
-            }
-            finally
-            {
-                _exceptionDialogOpen = false;
-            }
+                try
+                {
+                    await ShowDialogAsync(new ExceptionDialogViewModel(title, exception, _kernel.Get<INotificationService>()));
+                }
+                finally
+                {
+                    _exceptionDialogOpen = false;
+                }
+            });
         }
 
         public ContentDialogBuilder CreateContentDialog()

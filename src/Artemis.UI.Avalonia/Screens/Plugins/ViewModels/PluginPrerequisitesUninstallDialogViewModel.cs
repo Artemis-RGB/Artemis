@@ -105,7 +105,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 
                 // This shouldn't be happening and the experience isn't very nice for the user (too lazy to make a nice UI for such an edge case)
                 // but at least give some feedback
-                Close.Execute(false);
+                Close(false);
                 await _windowService.CreateContentDialog()
                     .WithTitle("Plugin prerequisites")
                     .WithContent("The plugin was not able to fully remove all prerequisites. \r\nPlease try again or contact the plugin creator.")
@@ -126,7 +126,7 @@ namespace Artemis.UI.Avalonia.Screens.Plugins.ViewModels
 
         public void Accept()
         {
-            Close.Execute(true);
+            Close(true);
         }
 
         public static async Task<object> Show(IWindowService windowService, List<IPrerequisitesSubject> subjects, string cancelLabel = "Cancel")

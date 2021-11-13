@@ -27,12 +27,10 @@
                             Icon="{Binding FeatureInfo.ResolvedIcon}"
                             Width="20"
                             Height="20"
-                            
                             IsVisible="{Binding LoadException, Converter={x:Static ObjectConverters.IsNull}}" />
 
         <Button Grid.Column="0"
-                Margin="-8"
-
+                Classes="AppBarButton icon-button"
                 IsVisible="{Binding LoadException, Converter={x:Static ObjectConverters.IsNotNull}}"
                 Foreground="#E74C4C"
                 ToolTip.Tip="An exception occurred while enabling this feature, click to view"
