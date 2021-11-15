@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Reactive;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Avalonia.Ninject.Factories;
@@ -19,6 +20,7 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
         private readonly IDeviceVmFactory _deviceVmFactory;
         private readonly IRgbService _rgbService;
         private readonly IWindowService _windowService;
+        private bool _togglingDevice;
 
         public DeviceSettingsViewModel(ArtemisDevice device, DevicesTabViewModel devicesTabViewModel, IDeviceService deviceService, IWindowService windowService, IDeviceVmFactory deviceVmFactory,
             IRgbService rgbService)
@@ -33,6 +35,8 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
             Type = Device.DeviceType.ToString().Humanize();
             Name = Device.RgbDevice.DeviceInfo.Model;
             Manufacturer = Device.RgbDevice.DeviceInfo.Manufacturer;
+
+            DetectInput = ReactiveCommand.CreateFromTask(ExecuteDetectInput, this.WhenAnyValue(vm => vm.CanDetectInput));
         }
 
         public ArtemisDevice Device { get; }
@@ -42,11 +46,18 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
         public string Manufacturer { get; }
 
         public bool CanDetectInput => Device.DeviceType is RGBDeviceType.Keyboard or RGBDeviceType.Mouse;
+        public ReactiveCommand<Unit, Unit> DetectInput { get; }
 
         public bool IsDeviceEnabled
         {
             get => Device.IsEnabled;
             set => Dispatcher.UIThread.InvokeAsync(async () => await UpdateIsDeviceEnabled(value));
+        }
+
+        public bool TogglingDevice
+        {
+            get => _togglingDevice;
+            set => this.RaiseAndSetIfChanged(ref _togglingDevice, value);
         }
 
         public void IdentifyDevice()
@@ -59,13 +70,15 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
             Utilities.OpenFolder(Device.DeviceProvider.Plugin.Directory.FullName);
         }
 
-        public async Task DetectInput()
+        private async Task ExecuteDetectInput()
         {
             if (!CanDetectInput)
                 return;
 
             await _windowService.CreateContentDialog()
+                .WithTitle($"{Device.RgbDevice.DeviceInfo.DeviceName} - Detect input")
                 .WithViewModel<DeviceDetectInputViewModel>(out var viewModel, ("device", Device))
+                .WithCloseButtonText("Cancel")
                 .ShowAsync();
 
             if (viewModel.MadeChanges)
@@ -79,16 +92,28 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
 
         private async Task UpdateIsDeviceEnabled(bool value)
         {
-            if (!value)
-                value = !await _devicesTabViewModel.ShowDeviceDisableDialog();
+            if (TogglingDevice)
+                return;
 
-            if (value)
-                _rgbService.EnableDevice(Device);
-            else
-                _rgbService.DisableDevice(Device);
+            try
+            {
+                TogglingDevice = true;
 
-            this.RaisePropertyChanged(nameof(IsDeviceEnabled));
-            SaveDevice();
+                if (!value)
+                    value = !await _devicesTabViewModel.ShowDeviceDisableDialog();
+
+                if (value)
+                    _rgbService.EnableDevice(Device);
+                else
+                    _rgbService.DisableDevice(Device);
+
+                this.RaisePropertyChanged(nameof(IsDeviceEnabled));
+                SaveDevice();
+            }
+            finally
+            {
+                TogglingDevice = false;
+            }
         }
 
         private void SaveDevice()

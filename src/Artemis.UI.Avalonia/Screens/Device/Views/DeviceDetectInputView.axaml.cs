@@ -1,10 +1,10 @@
-using Avalonia;
-using Avalonia.Controls;
+using Artemis.UI.Avalonia.Screens.Device.ViewModels;
 using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Avalonia.Screens.Device.Views
 {
-    public partial class DeviceDetectInputView : UserControl
+    public class DeviceDetectInputView : ReactiveUserControl<DeviceDetectInputViewModel>
     {
         public DeviceDetectInputView()
         {

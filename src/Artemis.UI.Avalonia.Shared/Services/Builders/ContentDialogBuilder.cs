@@ -22,7 +22,7 @@ namespace Artemis.UI.Avalonia.Shared.Services.Builders
             _parent = parent;
             _contentDialog = new ContentDialog
             {
-                CloseButtonText = "CLose"
+                CloseButtonText = "Close"
             };
         }
 
@@ -76,11 +76,11 @@ namespace Artemis.UI.Avalonia.Shared.Services.Builders
             return this;
         }
 
-        public ContentDialogBuilder WithViewModel<T>(out T viewModel, params (string name, object value)[] parameters)
+        public ContentDialogBuilder WithViewModel<T>(out T viewModel, params (string name, object value)[] parameters) where T : ViewModelBase
         {
             IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.name, kv.value)).Cast<IParameter>().ToArray();
             viewModel = _kernel.Get<T>(paramsArray);
-            _contentDialog.Content = _kernel.Get<T>();
+            _contentDialog.Content = viewModel;
 
             return this;
         }

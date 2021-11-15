@@ -263,7 +263,7 @@ namespace Artemis.UI.Avalonia.Shared.Controls
             ArtemisDevice? device = Device;
             Task.Run(() =>
             {
-                if (device.Layout?.Image == null || !File.Exists(device.Layout.Image.LocalPath)) 
+                if (device.Layout?.Image == null || !File.Exists(device.Layout.Image.LocalPath))
                     return;
 
                 try
@@ -291,6 +291,9 @@ namespace Artemis.UI.Avalonia.Shared.Controls
         /// <inheritdoc />
         protected override Size MeasureOverride(Size availableSize)
         {
+            if (_deviceBounds.Width <= 0 || _deviceBounds.Height <= 0)
+                return new Size(0, 0);
+
             double availableWidth = double.IsInfinity(availableSize.Width) ? _deviceBounds.Width : availableSize.Width;
             double availableHeight = double.IsInfinity(availableSize.Height) ? _deviceBounds.Height : availableSize.Height;
             double bestRatio = Math.Min(availableWidth / _deviceBounds.Width, availableHeight / _deviceBounds.Height);

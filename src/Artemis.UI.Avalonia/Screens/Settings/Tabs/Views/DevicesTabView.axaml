@@ -13,7 +13,7 @@
             Disabling a device will cause it to stop updating. Some SDKs will even go back to using manufacturer lighting (Artemis restart may be required).
         </TextBlock>
 
-        <ItemsControl Items="{Binding Devices}">
+        <ItemsControl Items="{Binding Devices}" Margin="-5 0">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel />
