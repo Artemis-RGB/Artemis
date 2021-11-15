@@ -3,8 +3,12 @@
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
     <Design.PreviewWith>
         <Border Padding="20">
-            <!-- Add Controls for Previewer Here -->
-            <controls:InfoBar Classes="notification-info-bar" Title="Test title" Message="Test message" IsOpen="True"/>
+			<StackPanel >
+                <controls:InfoBar Classes="notification-info-bar" Title="Test title" Message="Test message" IsOpen="True" Severity="Informational"/>
+                <controls:InfoBar Classes="notification-info-bar" Title="Test title" Message="Test message" IsOpen="True" Severity="Success"/>
+                <controls:InfoBar Classes="notification-info-bar" Title="Test title" Message="Test message" IsOpen="True" Severity="Warning"/>
+                <controls:InfoBar Classes="notification-info-bar" Title="Test title" Message="Test message" IsOpen="True" Severity="Error"/>
+            </StackPanel>
         </Border>
     </Design.PreviewWith>
 

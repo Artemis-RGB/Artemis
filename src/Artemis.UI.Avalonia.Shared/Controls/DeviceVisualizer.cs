@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Avalonia.Shared.Events;
 using Avalonia;
@@ -51,7 +52,7 @@ namespace Artemis.UI.Avalonia.Shared.Controls
 
             // Determine the scale required to fit the desired size of the control
             double scale = Math.Min(Bounds.Width / _deviceBounds.Width, Bounds.Height / _deviceBounds.Height);
-            
+
             DrawingContext.PushedState? boundsPush = null;
             try
             {
@@ -69,6 +70,9 @@ namespace Artemis.UI.Avalonia.Shared.Controls
                 // Render device and LED images 
                 if (_deviceImage != null)
                     drawingContext.DrawImage(_deviceImage, new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height));
+
+                if (!ShowColors)
+                    return;
 
                 foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
                     deviceVisualizerLed.RenderGeometry(drawingContext, false);
@@ -229,6 +233,7 @@ namespace Artemis.UI.Avalonia.Shared.Controls
 
         private void SetupForDevice()
         {
+            _deviceImage?.Dispose();
             _deviceImage = null;
             _deviceVisualizerLeds.Clear();
             _highlightedLeds = new List<DeviceVisualizerLed>();
@@ -254,40 +259,44 @@ namespace Artemis.UI.Avalonia.Shared.Controls
             foreach (ArtemisLed artemisLed in Device.Leds)
                 _deviceVisualizerLeds.Add(new DeviceVisualizerLed(artemisLed));
 
-            // Load the device main image
-            if (Device.Layout?.Image != null && File.Exists(Device.Layout.Image.LocalPath))
+            // Load the device main image on a background thread
+            ArtemisDevice? device = Device;
+            Task.Run(() =>
             {
-                try
+                if (device.Layout?.Image != null && File.Exists(device.Layout.Image.LocalPath))
                 {
-                    // Create a bitmap that'll be used to render the device and LED images just once
-                    RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) Device.RgbDevice.Size.Width * 4, (int) Device.RgbDevice.Size.Height * 4));
+                    try
+                    {
+                        // Create a bitmap that'll be used to render the device and LED images just once
+                        RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) device.RgbDevice.Size.Width * 4, (int) device.RgbDevice.Size.Height * 4));
 
-                    using IDrawingContextImpl context = renderTargetBitmap.CreateDrawingContext(new ImmediateRenderer(this));
-                    using Bitmap bitmap = new(Device.Layout.Image.LocalPath);
-                    context.DrawBitmap(bitmap.PlatformImpl, 1, new Rect(bitmap.Size), new Rect(renderTargetBitmap.Size), BitmapInterpolationMode.HighQuality);
-                    foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                        deviceVisualizerLed.DrawBitmap(context);
+                        using IDrawingContextImpl context = renderTargetBitmap.CreateDrawingContext(new ImmediateRenderer(this));
+                        using Bitmap bitmap = new(device.Layout.Image.LocalPath);
+                        context.DrawBitmap(bitmap.PlatformImpl, 1, new Rect(bitmap.Size), new Rect(renderTargetBitmap.Size), BitmapInterpolationMode.HighQuality);
+                        foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
+                            deviceVisualizerLed.DrawBitmap(context);
 
-                    _deviceImage = renderTargetBitmap;
+                        _deviceImage = renderTargetBitmap;
+
+                        Dispatcher.UIThread.Post(InvalidateMeasure);
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
-                catch
-                {
-                    // ignored
-                }
-            }
-
-            InvalidateMeasure();
+            });
         }
-
-        #region Overrides of Layoutable
 
         /// <inheritdoc />
         protected override Size MeasureOverride(Size availableSize)
         {
-            return new Size(Math.Min(availableSize.Width, _deviceBounds.Width), Math.Min(availableSize.Height, _deviceBounds.Height));
-        }
+            double availableWidth = double.IsInfinity(availableSize.Width) ? _deviceBounds.Width : availableSize.Width;
+            double availableHeight = double.IsInfinity(availableSize.Height) ? _deviceBounds.Height : availableSize.Height;
+            double bestRatio = Math.Min(availableWidth / _deviceBounds.Width, availableHeight / _deviceBounds.Height);
 
-        #endregion
+            return new Size(_deviceBounds.Width * bestRatio, _deviceBounds.Height * bestRatio);
+        }
 
         #endregion
     }

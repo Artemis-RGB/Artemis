@@ -4,5 +4,22 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Avalonia.Screens.Settings.Tabs.Views.DevicesTabView">
-  Welcome to Avalonia!
+    <StackPanel MaxWidth="1050">
+        <TextBlock Classes="h4">Device management</TextBlock>
+        <TextBlock>
+            Below you view and manage the devices that were detected by Artemis.
+        </TextBlock>
+        <TextBlock>
+            Disabling a device will cause it to stop updating. Some SDKs will even go back to using manufacturer lighting (Artemis restart may be required).
+        </TextBlock>
+
+        <ItemsControl Items="{Binding Devices}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </StackPanel>
+
 </UserControl>

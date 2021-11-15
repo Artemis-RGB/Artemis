@@ -76,7 +76,7 @@ namespace Artemis.UI.Avalonia.Shared.Services.Builders
             return this;
         }
 
-        public ContentDialogBuilder WithViewModel<T>(ref T viewModel, params (string name, object value)[] parameters)
+        public ContentDialogBuilder WithViewModel<T>(out T viewModel, params (string name, object value)[] parameters)
         {
             IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.name, kv.value)).Cast<IParameter>().ToArray();
             viewModel = _kernel.Get<T>(paramsArray);

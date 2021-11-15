@@ -13,6 +13,7 @@ using Artemis.UI.Avalonia.Screens.Plugins.ViewModels;
 using Artemis.UI.Avalonia.Shared;
 using Artemis.UI.Avalonia.Shared.Services.Builders;
 using Artemis.UI.Avalonia.Shared.Services.Interfaces;
+using Avalonia.Threading;
 using ReactiveUI;
 
 namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels
@@ -82,12 +83,16 @@ namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels
 
         public void GetPluginInstances()
         {
-            _instances = _pluginManagementService.GetAllPlugins()
-                .Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p))
-                .OrderBy(i => i.Plugin.Info.Name)
-                .ToList();
+            Plugins.Clear();
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                _instances = _pluginManagementService.GetAllPlugins()
+                    .Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p))
+                    .OrderBy(i => i.Plugin.Info.Name)
+                    .ToList();
 
-            SearchPlugins(SearchPluginInput);
+                SearchPlugins(SearchPluginInput);
+            }, DispatcherPriority.Background);
         }
 
         private void SearchPlugins(string? searchPluginInput)

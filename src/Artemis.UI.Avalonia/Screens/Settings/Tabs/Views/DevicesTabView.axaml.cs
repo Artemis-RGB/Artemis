@@ -1,9 +1,10 @@
-using Avalonia.Controls;
+using Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels;
 using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.Views
 {
-    public partial class DevicesTabView : UserControl
+    public class DevicesTabView : ReactiveUserControl<DevicesTabViewModel>
     {
         public DevicesTabView()
         {
