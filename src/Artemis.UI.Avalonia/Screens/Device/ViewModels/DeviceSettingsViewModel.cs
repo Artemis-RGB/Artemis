@@ -5,6 +5,7 @@ using Artemis.UI.Avalonia.Ninject.Factories;
 using Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels;
 using Artemis.UI.Avalonia.Shared;
 using Artemis.UI.Avalonia.Shared.Services.Interfaces;
+using Avalonia.Threading;
 using Humanizer;
 using ReactiveUI;
 using RGB.NET.Core;
@@ -45,7 +46,7 @@ namespace Artemis.UI.Avalonia.Screens.Device.ViewModels
         public bool IsDeviceEnabled
         {
             get => Device.IsEnabled;
-            set => Task.Run(() => UpdateIsDeviceEnabled(value));
+            set => Dispatcher.UIThread.InvokeAsync(async () => await UpdateIsDeviceEnabled(value));
         }
 
         public void IdentifyDevice()

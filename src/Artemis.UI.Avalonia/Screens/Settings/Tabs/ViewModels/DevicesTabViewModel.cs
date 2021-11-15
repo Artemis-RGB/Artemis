@@ -74,11 +74,19 @@ namespace Artemis.UI.Avalonia.Screens.Settings.Tabs.ViewModels
 
         private void AddDevice(ArtemisDevice device)
         {
+            // If the device was only enabled, don't add it
+            if (Devices.Any(d => d.Device == device))
+                return;
+
             Devices.Add(_deviceVmFactory.DeviceSettingsViewModel(device, this));
         }
 
         private void RemoveDevice(ArtemisDevice device)
         {
+            // If the device was only disabled don't remove it
+            if (_rgbService.Devices.Contains(device))
+                return;
+
             DeviceSettingsViewModel? viewModel = Devices.FirstOrDefault(i => i.Device == device);
             if (viewModel != null)
                 Devices.Remove(viewModel);

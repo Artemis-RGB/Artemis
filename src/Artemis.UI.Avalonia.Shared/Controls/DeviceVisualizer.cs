@@ -92,6 +92,13 @@ namespace Artemis.UI.Avalonia.Shared.Controls
         {
             _deviceImage?.Dispose();
             _deviceImage = null;
+
+            if (Device != null)
+            {
+                Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
+                Device.DeviceUpdated -= DeviceUpdated;
+            }
+
             base.OnDetachedFromVisualTree(e);
         }
 
@@ -107,12 +114,6 @@ namespace Artemis.UI.Avalonia.Shared.Controls
         private void Update()
         {
             InvalidateVisual();
-        }
-
-        private void UpdateTransform()
-        {
-            InvalidateVisual();
-            InvalidateMeasure();
         }
 
         private Rect MeasureDevice()
@@ -150,12 +151,12 @@ namespace Artemis.UI.Avalonia.Shared.Controls
 
         private void DevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            Dispatcher.UIThread.Post(SetupForDevice);
+            Dispatcher.UIThread.Post(SetupForDevice, DispatcherPriority.Background);
         }
 
         private void DeviceUpdated(object? sender, EventArgs e)
         {
-            Dispatcher.UIThread.Post(SetupForDevice);
+            Dispatcher.UIThread.Post(SetupForDevice, DispatcherPriority.Background);
         }
 
         #region Properties
@@ -239,21 +240,20 @@ namespace Artemis.UI.Avalonia.Shared.Controls
             _highlightedLeds = new List<DeviceVisualizerLed>();
             _dimmedLeds = new List<DeviceVisualizerLed>();
 
-            if (Device == null)
-                return;
-
             if (_oldDevice != null)
             {
-                Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
-                Device.DeviceUpdated -= DeviceUpdated;
+                _oldDevice.RgbDevice.PropertyChanged -= DevicePropertyChanged;
+                _oldDevice.DeviceUpdated -= DeviceUpdated;
             }
 
             _oldDevice = Device;
+            if (Device == null)
+                return;
+
             _deviceBounds = MeasureDevice();
 
             Device.RgbDevice.PropertyChanged += DevicePropertyChanged;
             Device.DeviceUpdated += DeviceUpdated;
-            UpdateTransform();
 
             // Create all the LEDs
             foreach (ArtemisLed artemisLed in Device.Leds)
@@ -263,27 +263,27 @@ namespace Artemis.UI.Avalonia.Shared.Controls
             ArtemisDevice? device = Device;
             Task.Run(() =>
             {
-                if (device.Layout?.Image != null && File.Exists(device.Layout.Image.LocalPath))
+                if (device.Layout?.Image == null || !File.Exists(device.Layout.Image.LocalPath)) 
+                    return;
+
+                try
                 {
-                    try
-                    {
-                        // Create a bitmap that'll be used to render the device and LED images just once
-                        RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) device.RgbDevice.Size.Width * 4, (int) device.RgbDevice.Size.Height * 4));
+                    // Create a bitmap that'll be used to render the device and LED images just once
+                    RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) device.RgbDevice.Size.Width * 4, (int) device.RgbDevice.Size.Height * 4));
 
-                        using IDrawingContextImpl context = renderTargetBitmap.CreateDrawingContext(new ImmediateRenderer(this));
-                        using Bitmap bitmap = new(device.Layout.Image.LocalPath);
-                        context.DrawBitmap(bitmap.PlatformImpl, 1, new Rect(bitmap.Size), new Rect(renderTargetBitmap.Size), BitmapInterpolationMode.HighQuality);
-                        foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                            deviceVisualizerLed.DrawBitmap(context);
+                    using IDrawingContextImpl context = renderTargetBitmap.CreateDrawingContext(new ImmediateRenderer(this));
+                    using Bitmap bitmap = new(device.Layout.Image.LocalPath);
+                    context.DrawBitmap(bitmap.PlatformImpl, 1, new Rect(bitmap.Size), new Rect(renderTargetBitmap.Size), BitmapInterpolationMode.HighQuality);
+                    foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
+                        deviceVisualizerLed.DrawBitmap(context);
 
-                        _deviceImage = renderTargetBitmap;
+                    _deviceImage = renderTargetBitmap;
 
-                        Dispatcher.UIThread.Post(InvalidateMeasure);
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
+                    Dispatcher.UIThread.Post(InvalidateMeasure);
+                }
+                catch
+                {
+                    // ignored
                 }
             });
         }

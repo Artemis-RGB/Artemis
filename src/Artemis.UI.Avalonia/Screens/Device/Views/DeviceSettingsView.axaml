@@ -11,9 +11,9 @@
         <Grid RowDefinitions="140,*,Auto">
             <Rectangle Grid.Row="0">
                 <Rectangle.Fill>
-                    <VisualBrush TileMode="Tile" Stretch="Uniform" DestinationRect="0,0,25,25">
+                    <VisualBrush TileMode="Tile" Stretch="Uniform" DestinationRect="0,0,15,15">
                         <VisualBrush.Visual>
-                            <Grid Width="25" Height="25" RowDefinitions="*,*" ColumnDefinitions="*,*">
+                            <Grid Width="15" Height="15" RowDefinitions="*,*" ColumnDefinitions="*,*">
                                 <Rectangle Grid.Row="0" Grid.Column="0" Fill="Black" Opacity="0.15" />
                                 <Rectangle Grid.Row="0" Grid.Column="1" />
                                 <Rectangle Grid.Row="1" Grid.Column="0" />
