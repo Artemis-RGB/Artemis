@@ -43,7 +43,7 @@
                  Margin="10 2"
                  Items="{Binding SidebarScreens}"
                  SelectedItem="{Binding SelectedSidebarScreen}" />
-        <Separator Grid.Row="2" Margin="8" Height="1" Background="White" />
+        <Separator Grid.Row="2" Margin="8" Height="1" Background="#FF6c6c6c" />
 
         <!-- Categories -->
         <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
