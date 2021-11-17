@@ -5,7 +5,7 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Avalonia.Screens.Device.Tabs.Views.DeviceInfoTabView">
-    <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,*">
+    <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,*" Margin="-5">
         <!-- First row -->
         <Border Classes="card" Grid.Column="0" Grid.Row="0" Margin="5">
             <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Top">
