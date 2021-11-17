@@ -1,6 +1,6 @@
-﻿using Artemis.Core;
+﻿using System;
+using Artemis.Core;
 using Artemis.Core.Events;
-using Artemis.UI.Shared;
 using Stylet;
 
 namespace Artemis.VisualScripting.Nodes.CustomViewModels
@@ -14,7 +14,7 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
             _node = node;
         }
 
-        public BindableCollection<ValueDescription> EnumValues { get; } = new();
+        public BindableCollection<(Enum, string)> EnumValues { get; } = new();
 
         public override void OnActivate()
         {
