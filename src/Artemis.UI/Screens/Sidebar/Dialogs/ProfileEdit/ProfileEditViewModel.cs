@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using FluentValidation;
@@ -23,7 +19,6 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
 {
     public class ProfileEditViewModel : DialogViewModelBase
     {
-        private readonly DataModelConditionGroup _dataModelConditionGroup;
         private readonly List<Module> _modules;
         private readonly IProfileService _profileService;
         private bool _changedImage;
@@ -38,14 +33,12 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
             IProfileService profileService,
             IPluginManagementService pluginManagementService,
             ISidebarVmFactory sidebarVmFactory,
-            IDataModelConditionsVmFactory dataModelConditionsVmFactory,
             IModelValidator<ProfileEditViewModel> validator) : base(validator)
         {
             ProfileConfiguration = profileConfiguration;
             IsNew = isNew;
 
             _profileService = profileService;
-            _dataModelConditionGroup = ProfileConfiguration.ActivationCondition ?? new DataModelConditionGroup(null);
             _modules = ProfileConfiguration.Module != null ? new List<Module> {ProfileConfiguration.Module} : new List<Module>();
 
             IconTypes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(ProfileConfigurationIconType)));
@@ -55,10 +48,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
                 pluginManagementService.GetFeaturesOfType<Module>().Where(m => !m.IsAlwaysAvailable).Select(m => new ProfileModuleViewModel(m))
             );
             Initializing = true;
-           
-            ActivationConditionViewModel = dataModelConditionsVmFactory.DataModelConditionGroupViewModel(_dataModelConditionGroup, ConditionGroupType.General, _modules);
-            ActivationConditionViewModel.ConductWith(this);
-            ActivationConditionViewModel.IsRootGroup = true;
+            
             ModuleActivationRequirementsViewModel = new ModuleActivationRequirementsViewModel(sidebarVmFactory);
             ModuleActivationRequirementsViewModel.ConductWith(this);
             ModuleActivationRequirementsViewModel.SetModule(ProfileConfiguration.Module);
@@ -85,8 +75,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
                 Initializing = false;
             });
         }
-
-        public DataModelConditionGroupViewModel ActivationConditionViewModel { get; }
+        
         public ModuleActivationRequirementsViewModel ModuleActivationRequirementsViewModel { get; }
         public ProfileConfigurationHotkeyViewModel EnableHotkeyViewModel { get; }
         public ProfileConfigurationHotkeyViewModel DisableHotkeyViewModel { get; }
@@ -161,7 +150,6 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
                 if (value != null)
                     _modules.Add(value.Module);
 
-                ActivationConditionViewModel.UpdateModules();
                 ModuleActivationRequirementsViewModel.SetModule(value?.Module);
             }
         }
@@ -184,9 +172,6 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
             ProfileConfiguration.Icon.FileIcon = SelectedImage;
 
             ProfileConfiguration.Module = SelectedModule?.Module;
-
-            if (_dataModelConditionGroup.Children.Any())
-                ProfileConfiguration.ActivationCondition = _dataModelConditionGroup;
 
             if (_changedImage)
             {

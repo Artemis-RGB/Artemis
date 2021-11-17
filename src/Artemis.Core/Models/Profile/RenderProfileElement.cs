@@ -7,6 +7,7 @@ using Artemis.Core.LayerEffects.Placeholder;
 using Artemis.Core.Properties;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
+using Artemis.Storage.Entities.Profile.Conditions;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -60,20 +61,24 @@ namespace Artemis.Core
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
                 baseLayerEffect.Dispose();
 
-            DisplayCondition?.Dispose();
+            if (DisplayCondition is IDisposable disposable)
+                disposable.Dispose();
 
             base.Dispose(disposing);
         }
 
         internal void LoadRenderElement()
         {
-            DisplayCondition = RenderElementEntity.DisplayCondition != null
-                ? new DataModelConditionGroup(null, RenderElementEntity.DisplayCondition)
-                : new DataModelConditionGroup(null);
-
             Timeline = RenderElementEntity.Timeline != null
                 ? new Timeline(RenderElementEntity.Timeline)
                 : new Timeline();
+
+            DisplayCondition = RenderElementEntity.DisplayCondition switch
+            {
+                StaticConditionEntity staticConditionEntity => new StaticCondition(staticConditionEntity, this),
+                EventConditionEntity eventConditionEntity => new EventCondition(eventConditionEntity, this),
+                _ => DisplayCondition
+            };
 
             ActivateEffects();
         }
@@ -97,13 +102,22 @@ namespace Artemis.Core
                 layerEffect.BaseProperties?.ApplyToEntity();
             }
 
-            // Conditions
-            RenderElementEntity.DisplayCondition = DisplayCondition?.Entity;
+            // Condition
             DisplayCondition?.Save();
+            RenderElementEntity.DisplayCondition = DisplayCondition?.Entity;
 
             // Timeline
             RenderElementEntity.Timeline = Timeline?.Entity;
             Timeline?.Save();
+        }
+
+        internal void LoadNodeScript()
+        {
+            if (DisplayCondition is INodeScriptCondition scriptCondition)
+                scriptCondition.LoadNodeScript();
+
+            foreach (ILayerProperty layerProperty in GetAllLayerProperties())
+                layerProperty.BaseDataBinding.LoadNodeScript();
         }
 
         internal void OnLayerEffectsUpdated()
@@ -124,10 +138,10 @@ namespace Artemis.Core
         /// </summary>
         public void UpdateTimeline(double deltaTime)
         {
+            // TODO: Move to conditions
+
             // The play mode dictates whether to stick to the main segment unless the display conditions contains events
-            bool stickToMainSegment = (Timeline.PlayMode == TimelinePlayMode.Repeat || Timeline.EventOverlapMode == TimeLineEventOverlapMode.Toggle) && DisplayConditionMet;
-            if (DisplayCondition != null && DisplayCondition.ContainsEvents && Timeline.EventOverlapMode != TimeLineEventOverlapMode.Toggle)
-                stickToMainSegment = false;
+            bool stickToMainSegment = Timeline.PlayMode == TimelinePlayMode.Repeat && DisplayConditionMet;
 
             Timeline.Update(TimeSpan.FromSeconds(deltaTime), stickToMainSegment);
         }
@@ -355,18 +369,18 @@ namespace Artemis.Core
             protected set => SetAndNotify(ref _displayConditionMet, value);
         }
 
-        private DataModelConditionGroup? _displayCondition;
         private bool _displayConditionMet;
-        private bool _toggledOnByEvent = false;
 
         /// <summary>
-        ///     Gets or sets the root display condition group
+        ///     Gets the display condition used to determine whether this element is active or not
         /// </summary>
-        public DataModelConditionGroup? DisplayCondition
+        public ICondition? DisplayCondition
         {
             get => _displayCondition;
             set => SetAndNotify(ref _displayCondition, value);
         }
+
+        private ICondition? _displayCondition;
 
         /// <summary>
         ///     Evaluates the display conditions on this element and applies any required changes to the <see cref="Timeline" />
@@ -385,54 +399,9 @@ namespace Artemis.Core
                 return;
             }
 
-            if (Timeline.EventOverlapMode != TimeLineEventOverlapMode.Toggle)
-                _toggledOnByEvent = false;
-
-            bool conditionMet = DisplayCondition.Evaluate();
-            if (Parent is RenderProfileElement parent && !parent.DisplayConditionMet)
-                conditionMet = false;
-
-            if (!DisplayCondition.ContainsEvents)
-            {
-                // Regular conditions reset the timeline whenever their condition is met and was not met before that
-                if (conditionMet && !DisplayConditionMet && Timeline.IsFinished)
-                    Timeline.JumpToStart();
-                // If regular conditions are no longer met, jump to the end segment if stop mode requires it
-                if (!conditionMet && Timeline.StopMode == TimelineStopMode.SkipToEnd)
-                    Timeline.JumpToEndSegment();
-            }
-            else if (conditionMet)
-            {
-                if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Toggle)
-                {
-                    _toggledOnByEvent = !_toggledOnByEvent;
-                    if (_toggledOnByEvent)
-                        Timeline.JumpToStart();
-                }
-                else
-                {
-                    // Event conditions reset if the timeline finished
-                    if (Timeline.IsFinished)
-                    {
-                        Timeline.JumpToStart();
-                    }
-                    // and otherwise apply their overlap mode
-                    else
-                    {
-                        if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Restart)
-                            Timeline.JumpToStart();
-                        else if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Copy)
-                            Timeline.AddExtraTimeline();
-                        // The third option is ignore which is handled below:
-
-                        // done
-                    }
-                }
-            }
-
-            DisplayConditionMet = Timeline.EventOverlapMode == TimeLineEventOverlapMode.Toggle
-                ? _toggledOnByEvent
-                : conditionMet;
+            DisplayCondition.Update();
+            DisplayCondition.ApplyToTimeline(DisplayCondition.IsMet, DisplayConditionMet, Timeline);
+            DisplayConditionMet = DisplayCondition.IsMet;
         }
 
         #endregion

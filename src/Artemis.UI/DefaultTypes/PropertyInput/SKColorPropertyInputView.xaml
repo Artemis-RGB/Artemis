@@ -17,10 +17,10 @@
         <artemis:ColorPicker Width="132"
                              Margin="0 -2 0 3"
                              Padding="0 -1"
-                             Color="{Binding InputValue, Converter={StaticResource SKColorToColorConverter}}" 
+                             Color="{Binding InputValue, Converter={StaticResource SKColorToColorConverter}}"
                              IsEnabled="{Binding IsEnabled}"
                              DragStarted="{s:Action InputDragStarted}"
-                             DragEnded="{s:Action InputDragEnded}"/>
+                             DragEnded="{s:Action InputDragEnded}" />
         <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" VerticalAlignment="Center" />
     </StackPanel>
 </UserControl>

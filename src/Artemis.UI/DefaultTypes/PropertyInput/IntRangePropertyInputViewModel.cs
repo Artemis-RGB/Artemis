@@ -9,15 +9,10 @@ namespace Artemis.UI.DefaultTypes.PropertyInput
 {
     public class IntRangePropertyInputViewModel : PropertyInputViewModel<IntRange>
     {
-        private readonly DataBindingRegistration<IntRange, int> _startRegistration;
-        private readonly DataBindingRegistration<IntRange, int> _endRegistration;
-
         public IntRangePropertyInputViewModel(LayerProperty<IntRange> layerProperty,
             IProfileEditorService profileEditorService,
             IModelValidator<IntRangePropertyInputViewModel> validator) : base(layerProperty, profileEditorService, validator)
         {
-            _startRegistration = layerProperty.GetDataBindingRegistration<int>("Start");
-            _endRegistration = layerProperty.GetDataBindingRegistration<int>("End");
         }
 
         public int Start
@@ -48,19 +43,11 @@ namespace Artemis.UI.DefaultTypes.PropertyInput
             }
         }
 
-        public bool IsStartEnabled => _startRegistration.DataBinding == null;
-        public bool IsEndEnabled => _endRegistration.DataBinding == null;
 
         protected override void OnInputValueChanged()
         {
             NotifyOfPropertyChange(nameof(Start));
             NotifyOfPropertyChange(nameof(End));
-        }
-
-        protected override void OnDataBindingsChanged()
-        {
-            NotifyOfPropertyChange(nameof(IsStartEnabled));
-            NotifyOfPropertyChange(nameof(IsEndEnabled));
         }
     }
 

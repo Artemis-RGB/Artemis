@@ -9,7 +9,7 @@ namespace Artemis.Core
     /// <summary>
     ///     Represents the configuration of a profile, contained in a <see cref="ProfileCategory" />
     /// </summary>
-    public class ProfileConfiguration : CorePropertyChanged, IStorageModel, IDisposable
+    public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
     {
         private ProfileCategory _category;
         private bool _disposed;
@@ -28,6 +28,7 @@ namespace Artemis.Core
 
             Entity = new ProfileConfigurationEntity();
             Icon = new ProfileConfigurationIcon(Entity) {MaterialIcon = icon};
+            ActivationCondition = new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", this);
         }
 
         internal ProfileConfiguration(ProfileCategory category, ProfileConfigurationEntity entity)
@@ -38,6 +39,8 @@ namespace Artemis.Core
 
             Entity = entity;
             Icon = new ProfileConfigurationIcon(Entity);
+            ActivationCondition = new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", this);
+
             Load();
         }
 
@@ -130,7 +133,7 @@ namespace Artemis.Core
         ///     Gets the data model condition that must evaluate to <see langword="true" /> for this profile to be activated
         ///     alongside any activation requirements of the <see cref="Module" />, if set
         /// </summary>
-        public DataModelConditionGroup? ActivationCondition { get; set; }
+        public NodeScript<bool> ActivationCondition { get; set; }
 
         /// <summary>
         ///     Gets or sets the module this profile uses
@@ -168,7 +171,13 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("ProfileConfiguration");
 
-            ActivationConditionMet = ActivationCondition == null || ActivationCondition.Evaluate();
+            if (!ActivationCondition.ExitNodeConnected)
+                ActivationConditionMet = true;
+            else
+            {
+                ActivationCondition.Run();
+                ActivationConditionMet = ActivationCondition.Result;
+            }
         }
 
         /// <summary>
@@ -210,7 +219,7 @@ namespace Artemis.Core
         public void Dispose()
         {
             _disposed = true;
-            ActivationCondition?.Dispose();
+            ActivationCondition.Dispose();
         }
 
         #endregion
@@ -231,7 +240,10 @@ namespace Artemis.Core
 
             Icon.Load();
 
-            ActivationCondition = Entity.ActivationCondition != null ? new DataModelConditionGroup(null, Entity.ActivationCondition) : null;
+            ActivationCondition.Dispose();
+            ActivationCondition = Entity.ActivationCondition != null 
+                ? new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", Entity.ActivationCondition, this) 
+                : new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", this);
 
             EnableHotkey = Entity.EnableHotkey != null ? new ProfileConfigurationHotkey(Entity.EnableHotkey) : null;
             DisableHotkey = Entity.DisableHotkey != null ? new ProfileConfigurationHotkey(Entity.DisableHotkey) : null;
@@ -263,6 +275,13 @@ namespace Artemis.Core
             if (!IsMissingModule)
                 Entity.ModuleId = Module?.Id;
         }
+
+        #endregion
+
+        #region Overrides of BreakableModel
+
+        /// <inheritdoc />
+        public override string BrokenDisplayName => "Profile Configuration";
 
         #endregion
     }

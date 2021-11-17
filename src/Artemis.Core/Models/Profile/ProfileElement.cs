@@ -91,6 +91,13 @@ namespace Artemis.Core
         /// </summary>
         public bool Disposed { get; protected set; }
 
+        #region Overrides of BreakableModel
+
+        /// <inheritdoc />
+        public override string BrokenDisplayName => Name ?? GetType().Name;
+
+        #endregion
+
         /// <summary>
         ///     Updates the element
         /// </summary>
@@ -113,13 +120,6 @@ namespace Artemis.Core
             return $"{nameof(EntityId)}: {EntityId}, {nameof(Order)}: {Order}, {nameof(Name)}: {Name}";
         }
 
-        #region Overrides of BreakableModel
-
-        /// <inheritdoc />
-        public override string BrokenDisplayName => Name ?? GetType().Name;
-
-        #endregion
-
         #region Hierarchy
 
         /// <summary>
@@ -139,7 +139,9 @@ namespace Artemis.Core
 
                 // Add to the end of the list
                 if (order == null)
+                {
                     ChildrenList.Add(child);
+                }
                 // Insert at the given index
                 else
                 {
@@ -181,6 +183,27 @@ namespace Artemis.Core
         {
             for (int index = 0; index < ChildrenList.Count; index++)
                 ChildrenList[index].Order = index;
+        }
+
+        /// <summary>
+        ///     Returns a flattened list of all child render elements
+        /// </summary>
+        /// <returns></returns>
+        public List<RenderProfileElement> GetAllRenderElements()
+        {
+            if (Disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
+            List<RenderProfileElement> elements = new();
+            foreach (RenderProfileElement childElement in Children.Where(c => c is RenderProfileElement).Cast<RenderProfileElement>())
+            {
+                // Add all folders in this element
+                elements.Add(childElement);
+                // Add all folders in folders inside this element
+                elements.AddRange(childElement.GetAllRenderElements());
+            }
+
+            return elements;
         }
 
         /// <summary>
@@ -233,27 +256,6 @@ namespace Artemis.Core
         internal abstract void Save();
 
         #endregion
-        
-        #region IDisposable
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        ///     Disposes the profile element
-        /// </summary>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-            }
-        }
-
-        #endregion
 
         #region Events
 
@@ -281,6 +283,27 @@ namespace Artemis.Core
         protected virtual void OnChildRemoved()
         {
             ChildRemoved?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+        
+        #region IDisposable
+        
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        ///     Disposes the profile element
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+            }
         }
 
         #endregion

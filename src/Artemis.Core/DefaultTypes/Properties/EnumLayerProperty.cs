@@ -8,7 +8,6 @@ namespace Artemis.Core
         internal EnumLayerProperty()
         {
             KeyframesSupported = false;
-            DataBindingsSupported = false;
         }
 
         /// <summary>

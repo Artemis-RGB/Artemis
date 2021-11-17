@@ -32,11 +32,12 @@ namespace Artemis.UI.Screens
         private readonly IWindowManager _windowManager;
         private readonly PluginSetting<WindowSize> _windowSize;
 
+        private static bool _registeredBuiltInTypes;
         private bool _lostFocus;
         private ISnackbarMessageQueue _mainMessageQueue;
         private MaterialWindow _window;
         private string _windowTitle;
-
+        
         public RootViewModel(
             IKernel kernel,
             IEventAggregator eventAggregator,
@@ -169,9 +170,14 @@ namespace Artemis.UI.Screens
             SidebarViewModel.SelectedScreenChanged += SidebarViewModelOnSelectedScreenChanged;
             ActiveItem = SidebarViewModel.SelectedScreen;
 
-            _builtInRegistrationService.RegisterBuiltInDataModelDisplays();
-            _builtInRegistrationService.RegisterBuiltInDataModelInputs();
-            _builtInRegistrationService.RegisterBuiltInPropertyEditors();
+            if (!_registeredBuiltInTypes)
+            {
+                _builtInRegistrationService.RegisterBuiltInDataModelDisplays();
+                _builtInRegistrationService.RegisterBuiltInDataModelInputs();
+                _builtInRegistrationService.RegisterBuiltInPropertyEditors();
+                _builtInRegistrationService.RegisterBuiltInNodeTypes();
+                _registeredBuiltInTypes = true;
+            }
 
             _window = (MaterialWindow) View;
 

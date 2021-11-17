@@ -1,4 +1,5 @@
-﻿using Artemis.UI.Shared.Services;
+﻿using Artemis.UI.Shared.Controls;
+using Artemis.UI.Shared.Services;
 using Ninject;
 
 namespace Artemis.UI.Shared
@@ -23,9 +24,9 @@ namespace Artemis.UI.Shared
             if (Initialized)
                 return;
 
-            IColorPickerService colorPickerService = kernel.Get<IColorPickerService>();
-            GradientPicker.ColorPickerService = colorPickerService;
-            ColorPicker.ColorPickerService = colorPickerService;
+            GradientPicker.ColorPickerService = kernel.Get<IColorPickerService>();
+            ColorPicker.ColorPickerService = kernel.Get<IColorPickerService>();
+            DataModelPicker.DataModelUIService = kernel.Get<IDataModelUIService>();
 
             Initialized = true;
         }

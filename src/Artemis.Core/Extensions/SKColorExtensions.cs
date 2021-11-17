@@ -57,6 +57,19 @@ namespace Artemis.Core
             );
         }
 
+        /// <summary>
+        ///     Darkens the color by the specified amount
+        /// </summary>
+        /// <param name="c">The color to darken</param>
+        /// <param name="amount">The brightness of the new color</param>
+        /// <returns>The darkened color</returns>
+        public static SKColor Darken(this SKColor c, float amount)
+        {
+            c.ToHsl(out float h, out float s, out float l);
+            l *= 1f - amount;
+            return SKColor.FromHsl(h, s, l);
+        }
+
         private static byte ClampToByte(float value)
         {
             return (byte) Math.Clamp(value, 0, 255);

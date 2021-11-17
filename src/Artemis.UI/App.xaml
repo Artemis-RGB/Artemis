@@ -34,16 +34,19 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignExtensions;component/Themes/MaterialDesignLightTheme.xaml" />
 
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Scrollbar.xaml" />
-                
+
                 <!-- Shared UI -->
                 <ResourceDictionary Source="pack://application:,,,/Artemis.UI.Shared;component/Resources/ArtemisShared.xaml" />
+
+                <!-- Visual Scripting -->
+                <ResourceDictionary Source="pack://application:,,,/Artemis.VisualScripting;component/Editor/EditorStyles.xaml" />
 
                 <ResourceDictionary Source="ResourceDictionaries/SideNavigation.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Some general convertes etc. -->
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-            
+
             <FontFamily x:Key="RobotoMono">pack://application:,,,/Resources/Fonts/#Roboto Mono</FontFamily>
 
             <!-- Disable tab stop/focusable on all content controls -->

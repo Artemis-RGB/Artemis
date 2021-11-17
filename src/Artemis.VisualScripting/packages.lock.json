@@ -1,12 +1,40 @@
 {
   "version": 1,
   "dependencies": {
-    ".NETCoreApp,Version=v5.0": {
+    "net5.0-windows7.0": {
       "JetBrains.Annotations": {
         "type": "Direct",
         "requested": "[2021.1.0, )",
         "resolved": "2021.1.0",
         "contentHash": "n9JSw5Z+F+6gp9vSv4aLH6p/bx3GAYA6FZVq1wJq/TJySv/kPgFKLGFeS7A8Xa5X4/GWorh5gd43yjamUgnBNA=="
+      },
+      "MaterialDesignThemes": {
+        "type": "Direct",
+        "requested": "[4.1.0, )",
+        "resolved": "4.1.0",
+        "contentHash": "WqrO9AbtdE4pLPtDk/C5BZRnkgWFwVGyUHWj7tRJrgnKl089DEobVXBCLeqp2mkgBeFHj4Xe3AfWyhmlnO6AZA==",
+        "dependencies": {
+          "MaterialDesignColors": "2.0.1"
+        }
+      },
+      "Ninject": {
+        "type": "Direct",
+        "requested": "[3.3.4, )",
+        "resolved": "3.3.4",
+        "contentHash": "CmbWW97FfJuh4LEOVZM/spqXl4KAulRUjqeMwRd5J9rDMQArmIYaDMU3pyzXXHT062tbF0OPIMwI7tSOtprPfg==",
+        "dependencies": {
+          "System.Reflection.Emit.ILGeneration": "4.3.0",
+          "System.Reflection.Emit.Lightweight": "4.3.0"
+        }
+      },
+      "NoStringEvaluating": {
+        "type": "Direct",
+        "requested": "[2.2.2, )",
+        "resolved": "2.2.2",
+        "contentHash": "hJHivPDA1Vxn0CCgOtHKZ3fmldxQuz7VL1J4lEaPTXCf+Vwcx1FDf05mGMh6olYMSxoKimGX8YK2sEoqeH3pnA==",
+        "dependencies": {
+          "Microsoft.Extensions.ObjectPool": "5.0.9"
+        }
       },
       "SkiaSharp": {
         "type": "Direct",
@@ -80,14 +108,6 @@
           "MaterialDesignThemes": "3.2.0"
         }
       },
-      "MaterialDesignThemes": {
-        "type": "Transitive",
-        "resolved": "4.1.0",
-        "contentHash": "WqrO9AbtdE4pLPtDk/C5BZRnkgWFwVGyUHWj7tRJrgnKl089DEobVXBCLeqp2mkgBeFHj4Xe3AfWyhmlnO6AZA==",
-        "dependencies": {
-          "MaterialDesignColors": "2.0.1"
-        }
-      },
       "McMaster.NETCore.Plugins": {
         "type": "Transitive",
         "resolved": "1.4.0",
@@ -106,6 +126,11 @@
         "type": "Transitive",
         "resolved": "5.0.0",
         "contentHash": "umBECCoMC+sOUgm083yFr8SxTobUOcPFH4AXigdO2xJiszCHAnmeDl4qPphJt+oaJ/XIfV1wOjIts2nRnki61Q=="
+      },
+      "Microsoft.Extensions.ObjectPool": {
+        "type": "Transitive",
+        "resolved": "5.0.9",
+        "contentHash": "grj0e6Me0EQsgaurV0fxP0xd8sz8eZVK+Jb816DPzNADHaqXaXJD3xZX9SFjyDl3ykAYvD0y77o5vRd9Hzsk9g=="
       },
       "Microsoft.NETCore.Platforms": {
         "type": "Transitive",
@@ -195,15 +220,6 @@
         "type": "Transitive",
         "resolved": "13.0.1",
         "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
-      },
-      "Ninject": {
-        "type": "Transitive",
-        "resolved": "3.3.4",
-        "contentHash": "CmbWW97FfJuh4LEOVZM/spqXl4KAulRUjqeMwRd5J9rDMQArmIYaDMU3pyzXXHT062tbF0OPIMwI7tSOtprPfg==",
-        "dependencies": {
-          "System.Reflection.Emit.ILGeneration": "4.3.0",
-          "System.Reflection.Emit.Lightweight": "4.3.0"
-        }
       },
       "Ninject.Extensions.ChildKernel": {
         "type": "Transitive",

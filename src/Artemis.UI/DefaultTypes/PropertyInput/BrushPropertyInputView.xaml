@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:dataTemplateSelectors="clr-namespace:Artemis.UI.DataTemplateSelectors"
-             xmlns:layerBrush="clr-namespace:Artemis.Core.LayerBrushes;assembly=Artemis.Core"
              xmlns:propertyInput="clr-namespace:Artemis.UI.DefaultTypes.PropertyInput"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"

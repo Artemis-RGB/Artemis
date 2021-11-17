@@ -289,13 +289,6 @@
                         </TextBlock>
                     </StackPanel>
                     <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" LineHeight="25" Margin="10 0 0 0">
-                        - Ben.Demystifier
-                        <Hyperlink Style="{StaticResource ArtemisHyperlink}"
-                                   RequestNavigate="{s:Action OpenHyperlink}"
-                                   NavigateUri="https://github.com/benaadams/Ben.Demystifier">
-                            https://github.com/benaadams/Ben.Demystifier
-                        </Hyperlink>
-                        <LineBreak />
                         - EmbedIO
                         <Hyperlink Style="{StaticResource ArtemisHyperlink}"
                                    RequestNavigate="{s:Action OpenHyperlink}"
@@ -378,6 +371,13 @@
                                    RequestNavigate="{s:Action OpenHyperlink}"
                                    NavigateUri="http://www.ninject.org/">
                             http://www.ninject.org/
+                        </Hyperlink>
+                        <LineBreak />
+                        - NoStringEvaluating
+                        <Hyperlink Style="{StaticResource ArtemisHyperlink}"
+                                   RequestNavigate="{s:Action OpenHyperlink}"
+                                   NavigateUri="https://github.com/KovtunV/NoStringEvaluating">
+                            https://github.com/KovtunV/NoStringEvaluating
                         </Hyperlink>
                         <LineBreak />
                         - Ookii.Dialogs.Wpf

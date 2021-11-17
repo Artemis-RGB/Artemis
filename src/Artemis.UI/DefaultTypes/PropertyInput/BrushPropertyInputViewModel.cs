@@ -13,8 +13,8 @@ namespace Artemis.UI.DefaultTypes.PropertyInput
 {
     public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushReference>
     {
-        private readonly IPluginManagementService _pluginManagementService;
         private readonly IDialogService _dialogService;
+        private readonly IPluginManagementService _pluginManagementService;
         private BindableCollection<LayerBrushDescriptor> _descriptors;
 
         public BrushPropertyInputViewModel(LayerProperty<LayerBrushReference> layerProperty, IProfileEditorService profileEditorService, IPluginManagementService pluginManagementService,
@@ -51,13 +51,11 @@ namespace Artemis.UI.DefaultTypes.PropertyInput
             {
                 layer.ChangeLayerBrush(SelectedDescriptor);
                 if (layer.LayerBrush?.Presets != null && layer.LayerBrush.Presets.Any())
-                {
                     Execute.PostToUIThread(async () =>
                     {
                         await Task.Delay(400);
                         await _dialogService.ShowDialogAt<LayerBrushPresetViewModel>("LayerProperties", new Dictionary<string, object> {{"layerBrush", layer.LayerBrush}});
                     });
-                }
             }
         }
 

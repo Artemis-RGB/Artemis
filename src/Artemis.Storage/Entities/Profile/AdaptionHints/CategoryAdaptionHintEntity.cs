@@ -8,6 +8,4 @@
         public int Skip { get; set; }
         public int Amount { get; set; }
     }
-
-
 }

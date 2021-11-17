@@ -10,22 +10,17 @@ namespace Artemis.UI.Shared
     /// </summary>
     public class DataModelListPropertyViewModel : DataModelPropertyViewModel
     {
-        private readonly ListPredicateWrapperDataModel _listPredicateWrapper;
         private int _index;
         private Type? _listType;
 
         internal DataModelListPropertyViewModel(Type listType, DataModelDisplayViewModel displayViewModel, string? name) : base(null, null, null)
         {
-            _listPredicateWrapper = ListPredicateWrapperDataModel.Create(listType, name);
-            DataModel = _listPredicateWrapper;
             ListType = listType;
             DisplayViewModel = displayViewModel;
         }
 
         internal DataModelListPropertyViewModel(Type listType, string? name) : base(null, null, null)
         {
-            _listPredicateWrapper = ListPredicateWrapperDataModel.Create(listType, name);
-            DataModel = _listPredicateWrapper;
             ListType = listType;
         }
 
@@ -59,8 +54,6 @@ namespace Artemis.UI.Shared
             // Display value gets updated by parent, don't do anything if it is null
             if (DisplayValue == null)
                 return;
-
-            _listPredicateWrapper.UntypedValue = DisplayValue;
 
             if (DisplayViewModel == null)
                 DisplayViewModel = dataModelUIService.GetDataModelDisplayViewModel(DisplayValue.GetType(), PropertyDescription, true);

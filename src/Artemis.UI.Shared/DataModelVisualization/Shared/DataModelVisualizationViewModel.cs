@@ -247,7 +247,7 @@ namespace Artemis.UI.Shared
             object? value = Parent == null || Parent.IsRootViewModel ? DataModel : DataModelPath?.GetValue();
             if (value is DataModel dataModel)
             {
-                foreach (var (key, dynamicChild) in dataModel.DynamicChildren)
+                foreach (string key in dataModel.DynamicChildren.Keys.ToList())
                 {
                     string childPath = AppendToPath(key);
                     if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))

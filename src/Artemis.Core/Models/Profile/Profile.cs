@@ -206,12 +206,10 @@ namespace Artemis.Core
                 }
             }
 
+            List<RenderProfileElement> renderElements = GetAllRenderElements();
+
             if (ProfileEntity.LastSelectedProfileElement != Guid.Empty)
-            {
-                LastSelectedProfileElement = GetAllFolders().FirstOrDefault(f => f.EntityId == ProfileEntity.LastSelectedProfileElement);
-                if (LastSelectedProfileElement == null)
-                    LastSelectedProfileElement = GetAllLayers().FirstOrDefault(f => f.EntityId == ProfileEntity.LastSelectedProfileElement);
-            }
+                LastSelectedProfileElement = renderElements.FirstOrDefault(f => f.EntityId == ProfileEntity.LastSelectedProfileElement);
             else
                 LastSelectedProfileElement = null;
 
@@ -219,6 +217,10 @@ namespace Artemis.Core
                 scriptConfiguration.Script?.Dispose();
             ScriptConfigurations.Clear();
             ScriptConfigurations.AddRange(ProfileEntity.ScriptConfigurations.Select(e => new ScriptConfiguration(e)));
+
+            // Load node scripts last since they may rely on the profile structure being in place
+            foreach (RenderProfileElement renderProfileElement in renderElements) 
+                renderProfileElement.LoadNodeScript();
         }
 
         internal override void Save()
@@ -253,10 +255,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override IEnumerable<IBreakableModel> GetBrokenHierarchy()
         {
-            foreach (IBreakableModel breakableModel in GetAllFolders().SelectMany(folders => folders.GetBrokenHierarchy()))
-                yield return breakableModel;
-            foreach (IBreakableModel breakableModel in GetAllLayers().SelectMany(layer => layer.GetBrokenHierarchy()))
-                yield return breakableModel;
+            return GetAllRenderElements().SelectMany(folders => folders.GetBrokenHierarchy());
         }
 
         #endregion

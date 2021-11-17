@@ -30,6 +30,7 @@ namespace Artemis.Core
             Path = null!;
             Entity = null!;
             PropertyDescription = null!;
+            DataBinding = null!;
 
             CurrentValue = default!;
             DefaultValue = default!;
@@ -58,91 +59,8 @@ namespace Artemis.Core
         {
             _disposed = true;
 
-            foreach (IDataBinding dataBinding in _dataBindings)
-                dataBinding.Dispose();
-
+            DataBinding.Dispose();
             Disposed?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="Updated" /> event
-        /// </summary>
-        protected virtual void OnUpdated()
-        {
-            Updated?.Invoke(this, new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="CurrentValueSet" /> event
-        /// </summary>
-        protected virtual void OnCurrentValueSet()
-        {
-            CurrentValueSet?.Invoke(this, new LayerPropertyEventArgs(this));
-            LayerPropertyGroup.OnLayerPropertyOnCurrentValueSet(new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="VisibilityChanged" /> event
-        /// </summary>
-        protected virtual void OnVisibilityChanged()
-        {
-            VisibilityChanged?.Invoke(this, new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="KeyframesToggled" /> event
-        /// </summary>
-        protected virtual void OnKeyframesToggled()
-        {
-            KeyframesToggled?.Invoke(this, new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="KeyframeAdded" /> event
-        /// </summary>
-        protected virtual void OnKeyframeAdded()
-        {
-            KeyframeAdded?.Invoke(this, new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="KeyframeRemoved" /> event
-        /// </summary>
-        protected virtual void OnKeyframeRemoved()
-        {
-            KeyframeRemoved?.Invoke(this, new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="DataBindingPropertyRegistered" /> event
-        /// </summary>
-        protected virtual void OnDataBindingPropertyRegistered()
-        {
-            DataBindingPropertyRegistered?.Invoke(this, new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="DataBindingDisabled" /> event
-        /// </summary>
-        protected virtual void OnDataBindingPropertiesCleared()
-        {
-            DataBindingPropertiesCleared?.Invoke(this, new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="DataBindingEnabled" /> event
-        /// </summary>
-        protected virtual void OnDataBindingEnabled(LayerPropertyEventArgs e)
-        {
-            DataBindingEnabled?.Invoke(this, e);
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="DataBindingDisabled" /> event
-        /// </summary>
-        protected virtual void OnDataBindingDisabled(LayerPropertyEventArgs e)
-        {
-            DataBindingDisabled?.Invoke(this, e);
         }
 
         /// <inheritdoc />
@@ -163,7 +81,16 @@ namespace Artemis.Core
             CurrentValue = BaseValue;
 
             UpdateKeyframes(timeline);
-            UpdateDataBindings(timeline);
+            UpdateDataBinding();
+
+            // UpdateDataBinding called OnUpdated()
+        }
+
+        /// <inheritdoc />
+        public void UpdateDataBinding()
+        {
+            DataBinding.Update();
+            DataBinding.Apply();
 
             OnUpdated();
         }
@@ -175,46 +102,11 @@ namespace Artemis.Core
             GC.SuppressFinalize(this);
         }
 
-        /// <inheritdoc />
-        public event EventHandler? Disposed;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? Updated;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? CurrentValueSet;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? VisibilityChanged;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? KeyframesToggled;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? KeyframeAdded;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? KeyframeRemoved;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertyRegistered;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertiesCleared;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingEnabled;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingDisabled;
-
         #region Hierarchy
 
         private bool _isHidden;
 
-        /// <summary>
-        ///     Gets or sets whether the property is hidden in the UI
-        /// </summary>
+        /// <inheritdoc />
         public bool IsHidden
         {
             get => _isHidden;
@@ -481,137 +373,19 @@ namespace Artemis.Core
 
         #region Data bindings
 
-        // ReSharper disable InconsistentNaming
-        internal readonly List<IDataBindingRegistration> _dataBindingRegistrations = new();
-
-        internal readonly List<IDataBinding> _dataBindings = new();
-        // ReSharper restore InconsistentNaming
-
         /// <summary>
-        ///     Gets whether data bindings are supported on this type of property
+        ///     Gets the data binding of this property
         /// </summary>
-        public bool DataBindingsSupported { get; protected internal set; } = true;
+        public DataBinding<T> DataBinding { get; private set; }
 
-        /// <summary>
-        ///     Gets whether the layer has any active data bindings
-        /// </summary>
-        public bool HasDataBinding => GetAllDataBindingRegistrations().Any(r => r.GetDataBinding() != null);
+        /// <inheritdoc />
+        public bool DataBindingsSupported => DataBinding.Properties.Any();
 
-        /// <summary>
-        ///     Gets a data binding registration by the display name used to register it
-        ///     <para>Note: The expression must exactly match the one used to register the data binding</para>
-        /// </summary>
-        public DataBindingRegistration<T, TProperty>? GetDataBindingRegistration<TProperty>(string identifier)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("LayerProperty");
+        /// <inheritdoc />
+        public IDataBinding BaseDataBinding => DataBinding;
 
-            IDataBindingRegistration? match = _dataBindingRegistrations.FirstOrDefault(r => r is DataBindingRegistration<T, TProperty> registration &&
-                                                                                            registration.DisplayName == identifier);
-            return (DataBindingRegistration<T, TProperty>?) match;
-        }
-
-        /// <summary>
-        ///     Gets a list containing all data binding registrations of this layer property
-        /// </summary>
-        /// <returns>A list containing all data binding registrations of this layer property</returns>
-        public List<IDataBindingRegistration> GetAllDataBindingRegistrations()
-        {
-            return _dataBindingRegistrations;
-        }
-
-        /// <summary>
-        ///     Registers a data binding property so that is available to the data binding system
-        /// </summary>
-        /// <typeparam name="TProperty">The type of the layer property</typeparam>
-        /// <param name="getter">The function to call to get the value of the property</param>
-        /// <param name="setter">The action to call to set the value of the property</param>
-        /// <param name="converter">The converter to use while applying the data binding</param>
-        /// <param name="displayName">The display name of the data binding property</param>
-        public DataBindingRegistration<T, TProperty> RegisterDataBindingProperty<TProperty>(Func<TProperty> getter, Action<TProperty> setter, DataBindingConverter<T, TProperty> converter,
-            string displayName)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("LayerProperty");
-            if (_dataBindingRegistrations.Any(d => d.DisplayName == displayName))
-                throw new ArtemisCoreException($"A databinding property named '{displayName}' is already registered.");
-
-            DataBindingRegistration<T, TProperty> registration = new(this, converter, getter, setter, displayName);
-            _dataBindingRegistrations.Add(registration);
-
-            // If not yet initialized, load the data binding related to the registration if available 
-            if (_isInitialized)
-            {
-                IDataBinding? dataBinding = registration.CreateDataBinding();
-                if (dataBinding != null)
-                    _dataBindings.Add(dataBinding);
-            }
-
-            OnDataBindingPropertyRegistered();
-            return registration;
-        }
-
-        /// <summary>
-        ///     Removes all data binding properties so they are no longer available to the data binding system
-        /// </summary>
-        public void ClearDataBindingProperties()
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("LayerProperty");
-
-            foreach (IDataBindingRegistration dataBindingRegistration in _dataBindingRegistrations)
-                dataBindingRegistration.ClearDataBinding();
-            _dataBindingRegistrations.Clear();
-
-            OnDataBindingPropertiesCleared();
-        }
-
-        /// <summary>
-        ///     Enables a data binding for the provided <paramref name="dataBindingRegistration" />
-        /// </summary>
-        /// <returns>The newly created data binding</returns>
-        public DataBinding<T, TProperty> EnableDataBinding<TProperty>(DataBindingRegistration<T, TProperty> dataBindingRegistration)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("LayerProperty");
-
-            if (dataBindingRegistration.LayerProperty != this)
-                throw new ArtemisCoreException("Cannot enable a data binding using a data binding registration of a different layer property");
-            if (dataBindingRegistration.DataBinding != null)
-                throw new ArtemisCoreException("Provided data binding registration already has an enabled data binding");
-
-            DataBinding<T, TProperty> dataBinding = new(dataBindingRegistration);
-            _dataBindings.Add(dataBinding);
-
-            OnDataBindingEnabled(new LayerPropertyEventArgs(dataBinding.LayerProperty));
-            return dataBinding;
-        }
-
-        /// <summary>
-        ///     Disables the provided data binding
-        /// </summary>
-        /// <param name="dataBinding">The data binding to remove</param>
-        public void DisableDataBinding<TProperty>(DataBinding<T, TProperty> dataBinding)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("LayerProperty");
-
-            _dataBindings.Remove(dataBinding);
-
-            if (dataBinding.Registration != null)
-                dataBinding.Registration.DataBinding = null;
-            dataBinding.Dispose();
-            OnDataBindingDisabled(new LayerPropertyEventArgs(dataBinding.LayerProperty));
-        }
-
-        private void UpdateDataBindings(Timeline timeline)
-        {
-            foreach (IDataBinding dataBinding in _dataBindings)
-            {
-                dataBinding.Update(timeline);
-                dataBinding.Apply();
-            }
-        }
+        /// <inheritdoc />
+        public bool HasDataBinding => DataBinding.IsEnabled;
 
         #endregion
 
@@ -695,6 +469,7 @@ namespace Artemis.Core
             Entity = entity ?? throw new ArgumentNullException(nameof(entity));
             PropertyDescription = description ?? throw new ArgumentNullException(nameof(description));
             IsLoadedFromStorage = fromStorage;
+            DataBinding = Entity.DataBinding != null ? new DataBinding<T>(this, Entity.DataBinding) : new DataBinding<T>(this);
 
             if (PropertyDescription.DisableKeyframes)
                 KeyframesSupported = false;
@@ -738,13 +513,7 @@ namespace Artemis.Core
                 // ignored for now
             }
 
-            _dataBindings.Clear();
-            foreach (IDataBindingRegistration dataBindingRegistration in _dataBindingRegistrations)
-            {
-                IDataBinding? dataBinding = dataBindingRegistration.CreateDataBinding();
-                if (dataBinding != null)
-                    _dataBindings.Add(dataBinding);
-            }
+            DataBinding.Load();
         }
 
         /// <summary>
@@ -763,9 +532,8 @@ namespace Artemis.Core
             Entity.KeyframeEntities.Clear();
             Entity.KeyframeEntities.AddRange(Keyframes.Select(k => k.GetKeyframeEntity()));
 
-            Entity.DataBindingEntities.Clear();
-            foreach (IDataBinding dataBinding in _dataBindings)
-                dataBinding.Save();
+            DataBinding.Save();
+            Entity.DataBinding = DataBinding.Entity;
         }
 
         /// <summary>
@@ -773,6 +541,80 @@ namespace Artemis.Core
         /// </summary>
         protected virtual void OnInitialize()
         {
+        }
+
+        #endregion
+
+        #region Events
+
+        /// <inheritdoc />
+        public event EventHandler? Disposed;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? Updated;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? CurrentValueSet;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? VisibilityChanged;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? KeyframesToggled;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? KeyframeAdded;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? KeyframeRemoved;
+
+        /// <summary>
+        ///     Invokes the <see cref="Updated" /> event
+        /// </summary>
+        protected virtual void OnUpdated()
+        {
+            Updated?.Invoke(this, new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="CurrentValueSet" /> event
+        /// </summary>
+        protected virtual void OnCurrentValueSet()
+        {
+            CurrentValueSet?.Invoke(this, new LayerPropertyEventArgs(this));
+            LayerPropertyGroup.OnLayerPropertyOnCurrentValueSet(new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="VisibilityChanged" /> event
+        /// </summary>
+        protected virtual void OnVisibilityChanged()
+        {
+            VisibilityChanged?.Invoke(this, new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="KeyframesToggled" /> event
+        /// </summary>
+        protected virtual void OnKeyframesToggled()
+        {
+            KeyframesToggled?.Invoke(this, new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="KeyframeAdded" /> event
+        /// </summary>
+        protected virtual void OnKeyframeAdded()
+        {
+            KeyframeAdded?.Invoke(this, new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="KeyframeRemoved" /> event
+        /// </summary>
+        protected virtual void OnKeyframeRemoved()
+        {
+            KeyframeRemoved?.Invoke(this, new LayerPropertyEventArgs(this));
         }
 
         #endregion

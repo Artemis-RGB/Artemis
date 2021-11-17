@@ -8,16 +8,15 @@ namespace Artemis.Storage.Entities.Profile
         public PropertyEntity()
         {
             KeyframeEntities = new List<KeyframeEntity>();
-            DataBindingEntities = new List<DataBindingEntity>();
         }
 
         public string FeatureId { get; set; }
         public string Path { get; set; }
+        public DataBindingEntity DataBinding { get; set; }
 
         public string Value { get; set; }
         public bool KeyframesEnabled { get; set; }
 
         public List<KeyframeEntity> KeyframeEntities { get; set; }
-        public List<DataBindingEntity> DataBindingEntities { get; set; }
     }
 }

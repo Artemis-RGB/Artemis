@@ -12,14 +12,9 @@ namespace Artemis.UI.DefaultTypes.PropertyInput
 {
     public class SKSizePropertyInputViewModel : PropertyInputViewModel<SKSize>
     {
-        private readonly DataBindingRegistration<SKSize, float> _heightRegistration;
-        private readonly DataBindingRegistration<SKSize, float> _widthRegistration;
-
         public SKSizePropertyInputViewModel(LayerProperty<SKSize> layerProperty, IProfileEditorService profileEditorService,
             IModelValidator<SKSizePropertyInputViewModel> validator) : base(layerProperty, profileEditorService, validator)
         {
-            _widthRegistration = layerProperty.GetDataBindingRegistration<float>("Width");
-            _heightRegistration = layerProperty.GetDataBindingRegistration<float>("Height");
         }
 
         // Since SKSize is immutable we need to create properties that replace the SKSize entirely
@@ -35,19 +30,11 @@ namespace Artemis.UI.DefaultTypes.PropertyInput
             set => InputValue = new SKSize(Width, value);
         }
 
-        public bool IsWidthEnabled => _widthRegistration.DataBinding == null;
-        public bool IsHeightEnabled => _heightRegistration.DataBinding == null;
 
         protected override void OnInputValueChanged()
         {
             NotifyOfPropertyChange(nameof(Width));
             NotifyOfPropertyChange(nameof(Height));
-        }
-
-        protected override void OnDataBindingsChanged()
-        {
-            NotifyOfPropertyChange(nameof(IsWidthEnabled));
-            NotifyOfPropertyChange(nameof(IsHeightEnabled));
         }
     }
 

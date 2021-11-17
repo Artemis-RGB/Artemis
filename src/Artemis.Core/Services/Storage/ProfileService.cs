@@ -30,9 +30,6 @@ namespace Artemis.Core.Services
 
         public ProfileService(ILogger logger,
             IRgbService rgbService,
-            // TODO: Move these two
-            IConditionOperatorService conditionOperatorService,
-            IDataBindingService dataBindingService,
             IProfileCategoryRepository profileCategoryRepository,
             IPluginManagementService pluginManagementService,
             IInputService inputService,
@@ -224,8 +221,8 @@ namespace Artemis.Core.Services
                         try
                         {
                             // Make sure the profile is active or inactive according to the parameters above
-                            if (shouldBeActive && profileConfiguration.Profile == null)
-                                ActivateProfile(profileConfiguration);
+                            if (shouldBeActive && profileConfiguration.Profile == null && profileConfiguration.BrokenState != "Failed to activate profile")
+                                profileConfiguration.TryOrBreak(() => ActivateProfile(profileConfiguration), "Failed to activate profile");
                             else if (!shouldBeActive && profileConfiguration.Profile != null)
                                 DeactivateProfile(profileConfiguration);
 
@@ -330,7 +327,17 @@ namespace Artemis.Core.Services
             if (profileConfiguration.Profile != null)
                 return profileConfiguration.Profile;
 
-            ProfileEntity profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
+            ProfileEntity profileEntity;
+            try
+            {
+                profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
+            }
+            catch (Exception e)
+            {
+                profileConfiguration.SetBrokenState("Failed to activate profile", e);
+                throw;
+            }
+            
             if (profileEntity == null)
                 throw new ArtemisCoreException($"Cannot find profile named: {profileConfiguration.Name} ID: {profileConfiguration.Entity.ProfileId}");
 
@@ -441,10 +448,8 @@ namespace Artemis.Core.Services
             profile.Save();
             if (includeChildren)
             {
-                foreach (Folder folder in profile.GetAllFolders())
-                    folder.Save();
-                foreach (Layer layer in profile.GetAllLayers())
-                    layer.Save();
+                foreach (RenderProfileElement child in profile.GetAllRenderElements())
+                    child.Save();
             }
 
             // If there are no changes, don't bother saving
@@ -602,10 +607,8 @@ namespace Artemis.Core.Services
 
             profile.Save();
 
-            foreach (Folder folder in profile.GetAllFolders())
-                folder.Save();
-            foreach (Layer layer in profile.GetAllLayers())
-                layer.Save();
+            foreach (RenderProfileElement renderProfileElement in profile.GetAllRenderElements())
+                renderProfileElement.Save();
 
             _logger.Debug("Adapt profile - Saving " + profile);
             profile.RedoStack.Clear();

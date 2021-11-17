@@ -22,8 +22,7 @@ namespace Artemis.UI.Stylet
         {
             base.Dispose();
             ScreenExtensions.TryDispose(_rootViewModel);
-            if (Kernel != null)
-                Kernel.Dispose();
+            Kernel?.Dispose();
         }
 
         protected override void ConfigureBootstrapper()

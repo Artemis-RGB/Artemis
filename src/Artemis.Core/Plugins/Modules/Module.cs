@@ -114,16 +114,19 @@ namespace Artemis.Core.Modules
         private readonly List<(DefaultCategoryName, string)> _defaultProfilePaths = new();
         private readonly List<(DefaultCategoryName, string)> _pendingDefaultProfilePaths = new();
 
+        /// <summary>
+        ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
+        /// </summary>
+        protected internal readonly List<PropertyInfo> HiddenPropertiesList = new();
+
+        /// <summary>
+        ///     The base constructor of the <see cref="Module" /> class.
+        /// </summary>
         protected Module()
         {
             DefaultProfilePaths = new ReadOnlyCollection<(DefaultCategoryName, string)>(_defaultProfilePaths);
             HiddenProperties = new ReadOnlyCollection<PropertyInfo>(HiddenPropertiesList);
         }
-
-        /// <summary>
-        ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
-        /// </summary>
-        protected internal readonly List<PropertyInfo> HiddenPropertiesList = new();
 
         /// <summary>
         ///     Gets a read only collection of default profile paths

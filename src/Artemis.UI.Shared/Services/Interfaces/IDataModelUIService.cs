@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Artemis.Core;
 using Artemis.Core.Modules;
-using Artemis.UI.Shared.Input;
 
 namespace Artemis.UI.Shared.Services
 {
@@ -103,27 +102,5 @@ namespace Artemis.UI.Shared.Services
         /// <param name="updateCallback">A function to call whenever the input was updated (submitted or not)</param>
         /// <returns>The most appropriate input view model for the provided <paramref name="propertyType" /></returns>
         DataModelInputViewModel? GetDataModelInputViewModel(Type propertyType, DataModelPropertyAttribute? description, object? initialValue, Action<object?, bool> updateCallback);
-
-        /// <summary>
-        ///     Creates a view model that allows selecting a value from the data model
-        /// </summary>
-        /// <param name="module">An extra non-always active module to include</param>
-        /// <returns></returns>
-        DataModelDynamicViewModel GetDynamicSelectionViewModel(Module? module);
-
-        /// <summary>
-        ///     Creates a view model that allows selecting a value from the data model
-        /// </summary>
-        /// <param name="modules">A list of extra extra non-always active modules to include</param>
-        /// <returns>A view model that allows selecting a value from the data model</returns>
-        DataModelDynamicViewModel GetDynamicSelectionViewModel(List<Module> modules);
-
-        /// <summary>
-        ///     Creates a view model that allows entering a value matching the target data model type
-        /// </summary>
-        /// <param name="targetType">The type of data model property to allow input for</param>
-        /// <param name="targetDescription">The description of the target data model property</param>
-        /// <returns>A view model that allows entering a value matching the target data model type</returns>
-        DataModelStaticViewModel GetStaticInputViewModel(Type targetType, DataModelPropertyAttribute targetDescription);
     }
 }

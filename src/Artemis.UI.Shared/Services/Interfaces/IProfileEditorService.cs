@@ -37,9 +37,9 @@ namespace Artemis.UI.Shared.Services
         RenderProfileElement? SelectedProfileElement { get; }
 
         /// <summary>
-        ///     Gets the currently selected data binding property
+        ///     Gets the currently selected data binding
         /// </summary>
-        ILayerProperty? SelectedDataBinding { get; }
+        IDataBinding? SelectedDataBinding { get; }
 
         /// <summary>
         ///     Gets or sets the current time
@@ -89,10 +89,10 @@ namespace Artemis.UI.Shared.Services
         void SaveSelectedProfileElement();
 
         /// <summary>
-        ///     Changes the selected data binding property
+        ///     Changes the selected data binding
         /// </summary>
-        /// <param name="layerProperty">The data binding property to select</param>
-        void ChangeSelectedDataBinding(ILayerProperty? layerProperty);
+        /// <param name="dataBinding">The data binding to select</param>
+        void ChangeSelectedDataBinding(IDataBinding? dataBinding);
 
         /// <summary>
         ///     Updates the profile preview, forcing UI-elements to re-render
@@ -114,7 +114,7 @@ namespace Artemis.UI.Shared.Services
         /// <summary>
         ///     Registers a new property input view model used in the profile editor for the generic type defined in
         ///     <see cref="PropertyInputViewModel{T}" />
-        ///     <para>Note: Registration will remove itself on plugin disable so you don't have to</para>
+        ///     <para>Note: DataBindingProperty will remove itself on plugin disable so you don't have to</para>
         /// </summary>
         /// <param name="plugin"></param>
         /// <returns></returns>
@@ -123,7 +123,7 @@ namespace Artemis.UI.Shared.Services
         /// <summary>
         ///     Registers a new property input view model used in the profile editor for the generic type defined in
         ///     <see cref="PropertyInputViewModel{T}" />
-        ///     <para>Note: Registration will remove itself on plugin disable so you don't have to</para>
+        ///     <para>Note: DataBindingProperty will remove itself on plugin disable so you don't have to</para>
         /// </summary>
         /// <param name="viewModelType"></param>
         /// <param name="plugin"></param>

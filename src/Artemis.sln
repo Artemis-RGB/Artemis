@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.Avalonia", "Arte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.UI.Avalonia.Shared", "Artemis.UI.Avalonia.Shared\Artemis.UI.Avalonia.Shared.csproj", "{05A5AB0F-A303-4404-9623-4DB1C9AA1DA0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.VisualScripting", "Artemis.VisualScripting\Artemis.VisualScripting.csproj", "{CF125C61-FD85-47EE-AF64-38B8F90DD50C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{05A5AB0F-A303-4404-9623-4DB1C9AA1DA0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{05A5AB0F-A303-4404-9623-4DB1C9AA1DA0}.Release|x64.ActiveCfg = Release|Any CPU
 		{05A5AB0F-A303-4404-9623-4DB1C9AA1DA0}.Release|x64.Build.0 = Release|Any CPU
+		{CF125C61-FD85-47EE-AF64-38B8F90DD50C}.Debug|x64.ActiveCfg = Debug|x64
+		{CF125C61-FD85-47EE-AF64-38B8F90DD50C}.Debug|x64.Build.0 = Debug|x64
+		{CF125C61-FD85-47EE-AF64-38B8F90DD50C}.Release|x64.ActiveCfg = Release|x64
+		{CF125C61-FD85-47EE-AF64-38B8F90DD50C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

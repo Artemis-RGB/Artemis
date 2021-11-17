@@ -18,7 +18,7 @@
                                Min="{Binding LayerProperty.PropertyDescription.MinInputValue}"
                                DragStarted="{s:Action InputDragStarted}"
                                DragEnded="{s:Action InputDragEnded}"
-                               IsEnabled="{Binding IsHeightEnabled}" />
+                               IsEnabled="{Binding IsEnabled}" />
         <TextBlock Margin="5 0" VerticalAlignment="Bottom">,</TextBlock>
         <shared:DraggableFloat ToolTip="Width"
                                Value="{Binding Width}"
@@ -27,7 +27,7 @@
                                Min="{Binding LayerProperty.PropertyDescription.MinInputValue}"
                                DragStarted="{s:Action InputDragStarted}"
                                DragEnded="{s:Action InputDragEnded}"
-                               IsEnabled="{Binding IsWidthEnabled}" />
+                               IsEnabled="{Binding IsEnabled}" />
         <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" VerticalAlignment="Center" />
     </StackPanel>
 </UserControl>

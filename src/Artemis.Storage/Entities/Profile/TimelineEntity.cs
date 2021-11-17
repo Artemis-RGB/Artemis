@@ -10,6 +10,5 @@ namespace Artemis.Storage.Entities.Profile
 
         public int PlayMode { get; set; }
         public int StopMode { get; set; }
-        public int EventOverlapMode { get; set; }
     }
 }

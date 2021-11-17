@@ -30,7 +30,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         private bool _canSelectEditTool;
         private BindableCollection<ArtemisDevice> _devices;
         private BindableCollection<ArtemisLed> _highlightedLeds;
-        private DateTime _lastUpdate;
         private PanZoomViewModel _panZoomViewModel;
         private Layer _previousSelectedLayer;
         private int _previousTool;
@@ -138,7 +137,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
             ApplyActiveProfile();
 
-            _lastUpdate = DateTime.Now;
             _coreService.FrameRendered += OnFrameRendered;
 
             _rgbService.DeviceAdded += RgbServiceOnDevicesModified;
@@ -232,7 +230,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             if (CanSelectEditTool == false && ActiveToolIndex == 1)
                 ActivateToolByIndex(2);
         }
-        
+
         #region Buttons
 
         private void ActivateToolByIndex(int value)
@@ -313,23 +311,32 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
         private void OnFrameRendered(object sender, FrameRenderedEventArgs e)
         {
-            TimeSpan delta = DateTime.Now - _lastUpdate;
-            _lastUpdate = DateTime.Now;
-
-            if (SuspendedEditing || !_settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", true).Value || _profileEditorService.SelectedProfile == null)
+            if (SuspendedEditing || _profileEditorService.Playing || _profileEditorService.SelectedProfile == null)
                 return;
 
-            foreach (IDataBindingRegistration dataBindingRegistration in _profileEditorService.SelectedProfile.GetAllFolders()
-                .SelectMany(f => f.GetAllLayerProperties(), (f, p) => p)
-                .SelectMany(p => p.GetAllDataBindingRegistrations()))
-                dataBindingRegistration.GetDataBinding()?.UpdateWithDelta(delta);
-            foreach (IDataBindingRegistration dataBindingRegistration in _profileEditorService.SelectedProfile.GetAllLayers()
-                .SelectMany(f => f.GetAllLayerProperties(), (f, p) => p)
-                .SelectMany(p => p.GetAllDataBindingRegistrations()))
-                dataBindingRegistration.GetDataBinding()?.UpdateWithDelta(delta);
+            bool hasEnabledDataBindings = false;
 
-            // TODO: Only update when there are data bindings
-            if (!_profileEditorService.Playing)
+            // Always update the currently selected data binding
+            if (_profileEditorService.SelectedDataBinding != null && _profileEditorService.SelectedDataBinding.IsEnabled)
+            {
+                hasEnabledDataBindings = true;
+                _profileEditorService.SelectedDataBinding.BaseLayerProperty.UpdateDataBinding();
+            }
+
+            // Update all other data bindings if the user enabled this
+            if (_settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", true).Value)
+            {
+                foreach (ILayerProperty layerProperty in _profileEditorService.SelectedProfile.GetAllRenderElements().SelectMany(f => f.GetAllLayerProperties(), (_, p) => p))
+                {
+                    if (layerProperty.BaseDataBinding != _profileEditorService.SelectedDataBinding && layerProperty.BaseDataBinding.IsEnabled)
+                    {
+                        hasEnabledDataBindings = true;
+                        layerProperty.UpdateDataBinding();
+                    }
+                }
+            }
+
+            if (hasEnabledDataBindings)
                 _profileEditorService.UpdateProfilePreview();
         }
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Artemis.Core
 {
     /// <summary>
-    ///     Represents a data model event that can trigger <see cref="DataModelConditionEvent" />s.
+    ///     Represents an event that is part of a data model
     /// </summary>
     public interface IDataModelEvent
     {

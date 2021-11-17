@@ -157,6 +157,12 @@ namespace Artemis.UI.Screens.Sidebar
 
         public void SelectProfileConfiguration(ProfileConfiguration profileConfiguration)
         {
+            if (profileConfiguration?.BrokenStateException != null)
+            {
+                _dialogService.ShowExceptionDialog("The profile failed to load", profileConfiguration.BrokenStateException);
+                return;
+            }
+
             foreach (SidebarCategoryViewModel sidebarCategoryViewModel in Items)
                 sidebarCategoryViewModel.SelectedProfileConfiguration = sidebarCategoryViewModel.Items.FirstOrDefault(i => i.ProfileConfiguration == profileConfiguration);
 

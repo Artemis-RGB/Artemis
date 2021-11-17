@@ -7,7 +7,12 @@ namespace Artemis.Core
     {
         internal IntLayerProperty()
         {
-            RegisterDataBindingProperty(() => CurrentValue, value => CurrentValue = value, new IntDataBindingConverter(), "Value");
+        }
+
+        /// <inheritdoc />
+        protected override void OnInitialize()
+        {
+            DataBinding.RegisterDataBindingProperty(() => CurrentValue, value => CurrentValue = value, "Value");
         }
 
         /// <summary>
