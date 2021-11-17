@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Plugins.Views.PluginFeatureView">
+    <Grid ColumnDefinitions="30,*,Auto">
+        <Grid.ContextFlyout>
+            <MenuFlyout>
+                <MenuItem Header="Install prerequisites" Command="{Binding InstallPrerequisites}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="CheckAll" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Remove prerequisites" Command="{Binding RemovePrerequisites}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Delete" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuFlyout>
+        </Grid.ContextFlyout>
+
+        <!-- Icon column -->
+        <controls:ArtemisIcon Grid.Column="0"
+                            Icon="{Binding FeatureInfo.ResolvedIcon}"
+                            Width="20"
+                            Height="20"
+                            IsVisible="{Binding LoadException, Converter={x:Static ObjectConverters.IsNull}}" />
+
+        <Button Grid.Column="0"
+                Classes="AppBarButton icon-button"
+                IsVisible="{Binding LoadException, Converter={x:Static ObjectConverters.IsNotNull}}"
+                Foreground="#E74C4C"
+                ToolTip.Tip="An exception occurred while enabling this feature, click to view"
+                Command="{Binding ViewLoadException}">
+            <avalonia:MaterialIcon Kind="AlertCircle" />
+        </Button>
+
+        <!-- Display name column -->
+        <TextBlock Grid.Column="1"
+                   Text="{Binding FeatureInfo.Name}"
+                   TextWrapping="Wrap"
+                   VerticalAlignment="Center"
+                   ToolTip.Tip="{Binding FeatureInfo.Description}" />
+
+        <!-- Enable toggle column -->
+        <StackPanel Grid.Column="2"
+                    HorizontalAlignment="Right"
+                    IsVisible="{Binding !Enabling}"
+                    Orientation="Horizontal"
+                    ToolTip.Tip="This feature cannot be disabled without disabling the whole plugin">
+            <avalonia:MaterialIcon Kind="ShieldHalfFull"
+                                   ToolTip.Tip="Plugin requires admin rights"
+                                   VerticalAlignment="Center"
+                                   Margin="0 0 5 0"
+                                   IsVisible="{Binding ShowShield}" />
+
+            <CheckBox IsChecked="{Binding IsEnabled}" IsEnabled="{Binding CanToggleEnabled}">
+                Feature enabled
+            </CheckBox>
+
+        </StackPanel>
+        <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="7" IsVisible="{Binding Enabling}">
+            <ProgressBar Value="0" IsIndeterminate="True" />
+        </StackPanel>
+
+    </Grid>
+</UserControl>

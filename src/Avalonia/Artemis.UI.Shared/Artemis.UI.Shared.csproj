@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon />
+    <StartupObject />
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Repos\Artemis\src\Artemis.UI.Avalonia.Shared\Artemis.UI.Avalonia.Shared.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="0.10.10" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="0.10.8.3" />
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.10" />
+    <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.10" />
+    <PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.10.10" />
+    <PackageReference Include="FluentAvaloniaUI" Version="1.1.5" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
+   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Artemis.Core\Artemis.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Material.Icons.Avalonia">
+      <HintPath>..\..\..\..\Users\Robert\.nuget\packages\material.icons.avalonia\1.0.2\lib\netstandard2.0\Material.Icons.Avalonia.dll</HintPath>
+    </Reference>
+    <Reference Include="RGB.NET.Core">
+      <HintPath>..\..\..\..\RGB.NET\bin\net5.0\RGB.NET.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Services\WindowService\ExceptionDialogView.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>

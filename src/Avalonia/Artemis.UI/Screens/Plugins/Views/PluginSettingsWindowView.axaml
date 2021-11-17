@@ -1,0 +1,17 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Artemis.UI.Screens.Plugins.Views.PluginSettingsWindowView"
+        Title="{Binding DisplayName}"
+        ExtendClientAreaToDecorationsHint="True"
+        Width="800" 
+        Height="800"
+        WindowStartupLocation="CenterOwner">
+	<Grid>
+		<TextBlock Margin="10" IsHitTestVisible="False" Text="{Binding DisplayName}"></TextBlock>
+        <ContentControl Margin="0 32 0 0" Content="{Binding ConfigurationViewModel}"></ContentControl>
+	</Grid>
+
+</Window>

@@ -1,0 +1,136 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.Root.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Root.Views.SidebarCategoryView">
+    <UserControl.Styles>
+        <Style Selector=":is(Button).category-button">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="Grid#ContainerGrid:pointerover :is(Button).category-button">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+
+        <Style Selector="avalonia|MaterialIcon.chevron-collapsed">
+            <Setter Property="RenderTransform" Value="rotate(180deg)" />
+        </Style>
+        <Style Selector="TextBlock.fadable.suspended">
+            <Setter Property="Opacity" Value="0.33" />
+        </Style>
+        <Style Selector="Border.fadable">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+        <Style Selector="Border.fadable.suspended">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+    </UserControl.Styles>
+    <Grid x:Name="ContainerGrid" Margin="0 8 0 0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <avalonia:MaterialIcon Classes.chevron-collapsed="{Binding ShowItems}"
+                                   Kind="ChevronUp"
+                                   Grid.Column="0"
+                                   Margin="5 0"
+                                   PointerPressed="Title_OnPointerPressed"
+                                   Background="Transparent">
+                <avalonia:MaterialIcon.Transitions>
+                    <Transitions>
+                        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" />
+                    </Transitions>
+                </avalonia:MaterialIcon.Transitions>
+            </avalonia:MaterialIcon>
+
+            <TextBlock Classes="fadable"
+                       Classes.suspended="{Binding IsSuspended}"
+                       Grid.Column="1"
+                       Padding="0 5"
+                       FontWeight="SemiBold"
+                       FontSize="13"
+                       VerticalAlignment="Center"
+                       Text="{Binding ProfileCategory.Name, FallbackValue='Profile name'}"
+                       PointerPressed="Title_OnPointerPressed"
+                       Background="Transparent">
+                <TextBlock.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
+                    </Transitions>
+                </TextBlock.Transitions>
+            </TextBlock>
+
+            <Border Classes="fadable"
+                    Classes.suspended="{Binding IsSuspended}"
+                    Grid.Column="1"
+                    BorderBrush="White"
+                    BorderThickness="0.5"
+                    Height="1">
+                <Border.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
+                    </Transitions>
+                </Border.Transitions>
+            </Border>
+
+            <Button Classes="category-button icon-button icon-button-small"
+                    Grid.Column="2"
+                    ToolTip.Tip="Edit category"
+                    HorizontalAlignment="Right">
+                <avalonia:MaterialIcon Kind="Cog" />
+            </Button>
+            <ToggleButton Classes="category-button icon-button icon-button-small"
+                          Grid.Column="3"
+                          ToolTip.Tip="Suspend profile"
+                          Margin="2 0 0 0"
+                          IsChecked="{Binding IsSuspended}">
+                <avalonia:MaterialIcon Kind="Pause" />
+            </ToggleButton>
+
+        </Grid>
+
+        <Border Grid.Row="1">
+            <Border.Resources>
+                <DataTemplate x:Key="ProfileDragTemplate" DataType="{x:Type local:SidebarProfileConfigurationViewModel}">
+                    <Border Background="{DynamicResource MaterialDesignDivider}" Padding="10" CornerRadius="4">
+                        <StackPanel Orientation="Horizontal">
+                            <!-- <shared:ProfileConfigurationIcon ConfigurationIcon="{Binding ProfileConfiguration.Icon}" -->
+                            <!--                                                       Width="20" -->
+                            <!--                                                       Height="20" -->
+                            <!--                                                       Margin="0 0 10 0" -->
+                            <!--                                                       Foreground="{DynamicResource MaterialDesignBody}" /> -->
+                            <TextBlock Text="{Binding ProfileConfiguration.Name}" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBody}" />
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </Border.Resources>
+            <ListBox Classes="sidebar-listbox"
+                     Items="{Binding ProfileConfigurations}"
+                     SelectedItem="{Binding SelectedProfileConfiguration}"
+                     MinHeight="10"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Paste">
+                            <MenuItem.Icon>
+                                <avalonia:MaterialIcon Kind="ContentPaste" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+            </ListBox>
+        </Border>
+    </Grid>
+</UserControl>

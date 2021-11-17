@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:reactiveUi="http://reactiveui.net"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Root.Views.RootView">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240" MinWidth="175" MaxWidth="400" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <ContentControl Grid.Column="0" Content="{Binding SidebarViewModel}" />
+
+        <Border Classes="router-container" Grid.Column="1" Margin="0 40 0 0">
+            <reactiveUi:RoutedViewHost Router="{Binding Router}">
+                <reactiveUi:RoutedViewHost.PageTransition>
+                    <CrossFade Duration="0.1" />
+                </reactiveUi:RoutedViewHost.PageTransition>
+            </reactiveUi:RoutedViewHost>
+        </Border>
+    </Grid>
+</UserControl>

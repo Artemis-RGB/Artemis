@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.SurfaceEditor.Views.SurfaceDeviceView">
+    <Grid>
+        <Grid.Styles>
+            <Style Selector="Border.selection-border">
+                <Setter Property="Opacity" Value="0" />
+                <Setter Property="Transitions">
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
+                    </Transitions>
+                </Setter>
+            </Style>
+            <Style Selector="Border.selection-border-selected">
+                <Setter Property="Opacity" Value="1" />
+            </Style>
+        </Grid.Styles>
+
+        <controls:DeviceVisualizer Device="{Binding Device}" ShowColors="True"/>
+        <Border x:Name="SurfaceDeviceBorder"
+                Classes="selection-border"
+                Classes.selection-border-selected="{Binding Highlighted}"
+                BorderThickness="1">
+            <Border.BorderBrush>
+				<SolidColorBrush Color="{DynamicResource SystemAccentColor}"></SolidColorBrush>
+			</Border.BorderBrush>
+            <Border.Background>
+                <SolidColorBrush Color="{DynamicResource SystemAccentColor}" Opacity="0.2"></SolidColorBrush>
+			</Border.Background>
+        </Border>
+    </Grid>
+
+</UserControl>
