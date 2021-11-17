@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Avalonia.Shared;
+using Artemis.UI.Avalonia.Shared.Services.Interfaces;
 using Avalonia;
 using RGB.NET.Core;
 
@@ -8,8 +9,12 @@ namespace Artemis.UI.Avalonia.Screens.Device.Tabs.ViewModels
 {
     public class DeviceInfoTabViewModel : ActivatableViewModelBase
     {
-        public DeviceInfoTabViewModel(ArtemisDevice device)
+        private readonly INotificationService _notificationService;
+
+        public DeviceInfoTabViewModel(ArtemisDevice device, INotificationService notificationService)
         {
+            _notificationService = notificationService;
+
             Device = device;
             DisplayName = "Info";
 
@@ -24,7 +29,7 @@ namespace Artemis.UI.Avalonia.Screens.Device.Tabs.ViewModels
         public async Task CopyToClipboard(string content)
         {
             await Application.Current.Clipboard.SetTextAsync(content);
-            // ((DeviceDialogViewModel) Parent).DeviceMessageQueue.Enqueue("Copied path to clipboard.");
+            _notificationService.CreateNotification().WithMessage("Copied path to clipboard.").Show();
         }
     }
 }
