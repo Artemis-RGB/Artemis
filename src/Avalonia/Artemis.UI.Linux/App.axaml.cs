@@ -1,50 +1,26 @@
-using Artemis.Core.Ninject;
-using Artemis.UI.Ninject;
-using Artemis.UI.Screens.Root.ViewModels;
-using Artemis.UI.Shared.Ninject;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using Ninject;
 using ReactiveUI;
-using Splat.Ninject;
 
 namespace Artemis.UI.Linux
 {
     public class App : Application
     {
-        private StandardKernel _kernel = null!;
-
         public override void Initialize()
         {
-            InitializeNinject();
+            ArtemisBootstrapper.Bootstrap();
             RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
-
             AvaloniaXamlLoader.Load(this);
         }
 
         public override void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-                desktop.MainWindow = new MainWindow
-                {
-                    DataContext = _kernel.Get<RootViewModel>()
-                };
+                ArtemisBootstrapper.ConfigureApplicationLifetime(desktop);
 
             base.OnFrameworkInitializationCompleted();
-        }
-
-        private void InitializeNinject()
-        {
-            _kernel = new StandardKernel();
-            _kernel.Settings.InjectNonPublic = true;
-
-            _kernel.Load<CoreModule>();
-            _kernel.Load<UIModule>();
-            _kernel.Load<SharedUIModule>();
-
-            _kernel.UseNinjectDependencyResolver();
         }
     }
 }

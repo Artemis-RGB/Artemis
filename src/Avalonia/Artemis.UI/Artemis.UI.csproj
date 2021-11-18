@@ -9,6 +9,10 @@
 		<AvaloniaResource Include="Assets\**" />
 	</ItemGroup>
 	<ItemGroup>
+	  <None Remove="Artemis.UI.Avalonia.csproj.DotSettings" />
+	  <None Remove="Artemis.UI.csproj.DotSettings" />
+	</ItemGroup>
+	<ItemGroup>
 		<PackageReference Include="Avalonia" Version="0.10.10" />
 		<PackageReference Include="Avalonia.Controls.PanAndZoom" Version="4.2.0" />
 		<PackageReference Include="Avalonia.Desktop" Version="0.10.10" />
