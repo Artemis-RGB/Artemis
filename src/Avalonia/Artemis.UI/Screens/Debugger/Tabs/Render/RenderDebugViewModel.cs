@@ -1,9 +1,15 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Reactive.Disposables;
+using System.Reflection.Metadata.Ecma335;
 using System.Timers;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using ReactiveUI;
 using SkiaSharp;
 
@@ -12,11 +18,9 @@ namespace Artemis.UI.Screens.Debugger.Tabs.Render
     public class RenderDebugViewModel : ActivatableViewModelBase, IRoutableViewModel
     {
         private readonly ICoreService _coreService;
-        private readonly Timer _fpsTimer;
         private double _currentFps;
 
-        private SKImage? _currentFrame;
-        private int _frames;
+        private Bitmap? _currentFrame;
         private string? _frameTargetPath;
         private string _renderer;
         private int _renderHeight;
@@ -25,10 +29,7 @@ namespace Artemis.UI.Screens.Debugger.Tabs.Render
         public RenderDebugViewModel(DebugViewModel hostScreen, ICoreService coreService)
         {
             HostScreen = hostScreen;
-
             _coreService = coreService;
-            _fpsTimer = new Timer(1000);
-            _fpsTimer.Start();
 
             this.WhenActivated(disposables =>
             {
@@ -37,7 +38,7 @@ namespace Artemis.UI.Screens.Debugger.Tabs.Render
             });
         }
 
-        public SKImage? CurrentFrame
+        public Bitmap? CurrentFrame
         {
             get => _currentFrame;
             set => this.RaiseAndSetIfChanged(ref _currentFrame, value);
@@ -69,21 +70,18 @@ namespace Artemis.UI.Screens.Debugger.Tabs.Render
 
         private void HandleActivation()
         {
+            Renderer = Constants.ManagedGraphicsContext != null ? Constants.ManagedGraphicsContext.GetType().Name : "Software";
             _coreService.FrameRendered += CoreServiceOnFrameRendered;
-            _fpsTimer.Elapsed += FpsTimerOnElapsed;
         }
 
         private void HandleDeactivation()
         {
             _coreService.FrameRendered -= CoreServiceOnFrameRendered;
-            _fpsTimer.Elapsed -= FpsTimerOnElapsed;
-            _fpsTimer.Dispose();
         }
 
         private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
         {
-            _frames++;
-
+            CurrentFps = _coreService.FrameRate;
             using SKImage skImage = e.Texture.Surface.Snapshot();
             SKImageInfo bitmapInfo = e.Texture.ImageInfo;
 
@@ -102,16 +100,14 @@ namespace Artemis.UI.Screens.Debugger.Tabs.Render
 
             RenderHeight = bitmapInfo.Height;
             RenderWidth = bitmapInfo.Width;
-
-            CurrentFrame = e.Texture.Surface.Snapshot();
+            
+            // TODO: This performs well enough but look into something else
+            using (SKData data = skImage.Encode(SKEncodedImageFormat.Png, 100))
+            {
+                CurrentFrame = new Bitmap(data.AsStream());
+            }
         }
 
-        private void FpsTimerOnElapsed(object sender, ElapsedEventArgs e)
-        {
-            CurrentFps = _frames;
-            Renderer = Constants.ManagedGraphicsContext != null ? Constants.ManagedGraphicsContext.GetType().Name : "Software";
-            _frames = 0;
-        }
 
         public string UrlPathSegment => "render";
         public IScreen HostScreen { get; }

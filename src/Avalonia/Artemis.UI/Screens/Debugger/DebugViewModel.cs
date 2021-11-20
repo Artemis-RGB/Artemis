@@ -4,6 +4,7 @@ using Artemis.UI.Screens.Debugger.Tabs.DataModel;
 using Artemis.UI.Screens.Debugger.Tabs.Logs;
 using Artemis.UI.Screens.Debugger.Tabs.Performance;
 using Artemis.UI.Screens.Debugger.Tabs.Render;
+using Artemis.UI.Screens.Debugger.Tabs.Settings;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using FluentAvalonia.UI.Controls;
@@ -50,19 +51,22 @@ namespace Artemis.UI.Screens.Debugger
         {
             // Kind of a lame way to do this but it's so static idc
             ConstructorArgument hostScreen = new("hostScreen", this);
-            switch ((string) item.Content)
+            switch (item.Tag as string)
             {
                 case "Rendering":
                     Router.Navigate.Execute(_kernel.Get<RenderDebugViewModel>(hostScreen));
                     break;
-                case "Logs":
-                    Router.Navigate.Execute(_kernel.Get<LogsDebugViewModel>(hostScreen));
-                    break;
-                case "Data Model":
+                case "DataModel":
                     Router.Navigate.Execute(_kernel.Get<DataModelDebugViewModel>(hostScreen));
                     break;
                 case "Performance":
                     Router.Navigate.Execute(_kernel.Get<PerformanceDebugViewModel>(hostScreen));
+                    break;
+                case "Logging":
+                    Router.Navigate.Execute(_kernel.Get<LogsDebugViewModel>(hostScreen));
+                    break;
+                case "Settings":
+                    Router.Navigate.Execute(_kernel.Get<DebugSettingsViewModel>(hostScreen));
                     break;
             }
         }

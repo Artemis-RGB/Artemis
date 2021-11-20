@@ -32,5 +32,15 @@ namespace Artemis.Core
 
             return Enum.GetValues(t).Cast<Enum>().Select(e => (e, e.Humanize())).ToList();
         }
+
+        /// <summary>
+        ///     Humanizes the given enum value using the Humanizer library
+        /// </summary>
+        /// <param name="value">The enum value to humanize</param>
+        /// <returns>A humanized string describing the given value</returns>
+        public static string HumanizeValue(Enum value)
+        {
+            return value.Humanize();
+        }
     }
 }

@@ -19,6 +19,11 @@ namespace Artemis.Core.Services
         TimeSpan FrameTime { get; }
 
         /// <summary>
+        ///     The amount of frames rendered each second
+        /// </summary>
+        public int FrameRate { get; }
+
+        /// <summary>
         ///     Gets or sets whether profiles are rendered each frame by calling their Render method
         /// </summary>
         bool ProfileRenderingDisabled { get; set; }

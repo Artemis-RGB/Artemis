@@ -579,9 +579,9 @@ namespace Artemis.Core.Services
         {
             if (plugin.IsEnabled)
                 throw new ArtemisCoreException("Cannot remove the settings of an enabled plugin");
-            
+
             _pluginRepository.RemoveSettings(plugin.Guid);
-            foreach (DeviceEntity deviceEntity in _deviceRepository.GetAll().Where(e => e.DeviceProvider == plugin.Guid.ToString())) 
+            foreach (DeviceEntity deviceEntity in _deviceRepository.GetAll().Where(e => e.DeviceProvider == plugin.Guid.ToString()))
                 _deviceRepository.Remove(deviceEntity);
 
             plugin.Settings?.ClearSettings();
@@ -602,7 +602,10 @@ namespace Artemis.Core.Services
                 if (!saveState)
                 {
                     OnPluginFeatureEnableFailed(new PluginFeatureEventArgs(pluginFeature));
-                    throw new ArtemisCoreException("Cannot enable a feature that requires elevation without saving it's state.");
+                    if (isAutoEnable)
+                        _logger.Warning("Skipped auto-enabling plugin feature {feature} - {plugin} because it requires elevation but state isn't being saved", pluginFeature, pluginFeature.Plugin);
+                    else
+                        throw new ArtemisCoreException("Cannot enable a feature that requires elevation without saving it's state.");
                 }
 
                 pluginFeature.Entity.IsEnabled = true;

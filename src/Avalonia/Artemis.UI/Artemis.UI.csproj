@@ -46,4 +46,9 @@
 		<Resource Include="Assets\Images\Logo\bow.ico" />
 		<Resource Include="Assets\Images\Logo\bow.svg" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Screens\Debugger\Tabs\Settings\DebugSettingsView.axaml.cs">
+	    <DependentUpon>DebugSettingsView.axaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
 </Project>

@@ -174,6 +174,468 @@
         <member name="M:Artemis.UI.Shared.Converters.SKColorToColorConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
             <inheritdoc />
         </member>
+        <member name="T:Artemis.UI.Shared.Converters.TypeToStringConverter">
+            <summary>
+                Converts <see cref="T:System.Type" /> into <see cref="T:System.String" />.
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Converters.TypeToStringConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.Converters.TypeToStringConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <inheritdoc />
+        </member>
+        <member name="T:Artemis.UI.Shared.DataModelVisualization.DataModelDisplayViewModel`1">
+            <summary>
+                Represents a <see cref="T:Artemis.Core.Modules.DataModel" /> display view model
+            </summary>
+            <typeparam name="T">The type of the data model</typeparam>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.DataModelDisplayViewModel`1.DisplayValue">
+            <summary>
+                Gets or sets value that the view model must display
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.DataModelDisplayViewModel`1.UpdateValue(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.DataModelDisplayViewModel`1.OnDisplayValueUpdated">
+            <summary>
+                Occurs when the display value is updated
+            </summary>
+        </member>
+        <member name="T:Artemis.UI.Shared.DataModelVisualization.DataModelDisplayViewModel">
+            <summary>
+                For internal use only, implement <see cref="T:Artemis.UI.Shared.DataModelVisualization.DataModelDisplayViewModel`1" /> instead.
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.DataModelDisplayViewModel.PropertyDescription">
+            <summary>
+                Gets the property description of this value
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.DataModelDisplayViewModel.InternalGuard">
+            <summary>
+                Prevents this type being implemented directly, implement <see cref="T:Artemis.UI.Shared.DataModelVisualization.DataModelDisplayViewModel`1" /> instead.
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.DataModelDisplayViewModel.UpdateValue(System.Object)">
+            <summary>
+                Updates the display value
+            </summary>
+            <param name="model">The value to set</param>
+        </member>
+        <member name="T:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel`1">
+            <summary>
+                Represents a <see cref="T:Artemis.Core.Modules.DataModel" /> input view model
+            </summary>
+            <typeparam name="T">The type of the data model</typeparam>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel`1.#ctor(Artemis.Core.Modules.DataModelPropertyAttribute,`0)">
+            <summary>
+                Creates a new instance of the <see cref="T:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel`1" /> class
+            </summary>
+            <param name="targetDescription">The description of the property this input VM is representing</param>
+            <param name="initialValue">The initial value to set the input value to</param>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel`1.InputValue">
+            <summary>
+                Gets or sets the value shown in the input
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel`1.TargetDescription">
+            <summary>
+                Gets the description of the property this input VM is representing
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel`1.Submit">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel`1.Cancel">
+            <inheritdoc />
+        </member>
+        <member name="T:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel">
+            <summary>
+                For internal use only, implement <see cref="T:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel`1" /> instead.
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel.InternalGuard">
+            <summary>
+                Prevents this type being implemented directly, implement <see cref="T:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel`1" /> instead.
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel.CompatibleConversionTypes">
+            <summary>
+                Gets the types this input view model can support through type conversion. This list is defined when registering the
+                view model.
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel.Submit">
+            <summary>
+                Submits the input value and removes this view model.
+                <para>This is called automatically when the user presses enter or clicks outside the view</para>
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel.Cancel">
+            <summary>
+                Discards changes to the input value and removes this view model.
+                <para>This is called automatically when the user presses escape</para>
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel.OnSubmit">
+            <summary>
+                Called before the current value is submitted
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.DataModelInputViewModel.OnCancel">
+            <summary>
+                Called before the current value is discarded
+            </summary>
+        </member>
+        <member name="T:Artemis.UI.Shared.DataModelVisualization.DataModelVisualizationRegistration">
+            <summary>
+                Represents a layer brush registered through
+                <see cref="M:Artemis.UI.Shared.Services.IDataModelUIService.RegisterDataModelInput``1(Artemis.Core.Plugin,System.Collections.Generic.IReadOnlyCollection{System.Type})" /> or
+                <see cref="M:Artemis.UI.Shared.Services.IDataModelUIService.RegisterDataModelDisplay``1(Artemis.Core.Plugin)" />
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.DataModelVisualizationRegistration.RegistrationType">
+            <summary>
+                Gets the type of registration, either a display or an input
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.DataModelVisualizationRegistration.Plugin">
+            <summary>
+                Gets the plugin that registered the visualization
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.DataModelVisualizationRegistration.SupportedType">
+            <summary>
+                Gets the type supported by the visualization
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.DataModelVisualizationRegistration.ViewModelType">
+            <summary>
+                Gets the view model type of the visualization
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.DataModelVisualizationRegistration.CompatibleConversionTypes">
+            <summary>
+                Gets a read only collection of types this visualization can convert to and from
+            </summary>
+        </member>
+        <member name="T:Artemis.UI.Shared.DataModelVisualization.RegistrationType">
+            <summary>
+                Represents a type of data model visualization registration
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.DataModelVisualization.RegistrationType.Display">
+            <summary>
+                A visualization used for displaying values
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.DataModelVisualization.RegistrationType.Input">
+            <summary>
+                A visualization used for inputting values
+            </summary>
+        </member>
+        <member name="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelEventViewModel">
+            <summary>
+                Represents a view model that visualizes an event data model property
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelEventViewModel.DisplayValueType">
+            <summary>
+                Gets the type of event arguments this event triggers and that must be displayed as children
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelEventViewModel.Update(Artemis.UI.Shared.Services.IDataModelUIService,Artemis.UI.Shared.DataModelVisualization.Shared.DataModelUpdateConfiguration)">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelEventViewModel.GetCurrentValue">
+            <summary>
+            Always returns <see langword="null"/> for data model events
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelEventViewModel.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel">
+            <summary>
+                Represents a view model that wraps a regular <see cref="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertiesViewModel" /> but contained in
+                a <see cref="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListViewModel" />
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.Index">
+            <summary>
+                Gets the index of the element within the list
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.ListType">
+            <summary>
+                Gets the type of elements contained in the list
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.DisplayValue">
+            <summary>
+                Gets the value of the property that is being visualized
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.DisplayViewModel">
+            <summary>
+                Gets the view model that handles displaying the property
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.DisplayPath">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.Update(Artemis.UI.Shared.Services.IDataModelUIService,Artemis.UI.Shared.DataModelVisualization.Shared.DataModelUpdateConfiguration)">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.GetCurrentValue">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertyViewModel">
+            <summary>
+                Represents a view model that visualizes a single data model property contained in a
+                <see cref="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListViewModel" />
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertyViewModel.Index">
+            <summary>
+                Gets the index of the element within the list
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertyViewModel.ListType">
+            <summary>
+                Gets the type of elements contained in the list
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertyViewModel.GetCurrentValue">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertyViewModel.Update(Artemis.UI.Shared.Services.IDataModelUIService,Artemis.UI.Shared.DataModelVisualization.Shared.DataModelUpdateConfiguration)">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertyViewModel.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListViewModel">
+            <summary>
+                Represents a view model that visualizes a list data model property
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListViewModel.List">
+            <summary>
+                Gets the instance of the list that is being visualized
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListViewModel.ListCount">
+            <summary>
+                Gets amount of elements in the list that is being visualized
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListViewModel.DisplayValueType">
+            <summary>
+                Gets the type of elements this list contains and that must be displayed as children
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListViewModel.CountDisplay">
+            <summary>
+                Gets a human readable display count
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListViewModel.ListChildren">
+            <summary>
+                Gets a list of child view models that visualize the elements in the list
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListViewModel.Update(Artemis.UI.Shared.Services.IDataModelUIService,Artemis.UI.Shared.DataModelVisualization.Shared.DataModelUpdateConfiguration)">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListViewModel.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertiesViewModel">
+            <summary>
+                Represents a view model that visualizes a class (POCO) data model property containing child properties
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertiesViewModel.DisplayValueType">
+            <summary>
+                Gets the type of the property that is being visualized
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertiesViewModel.DisplayValue">
+            <summary>
+                Gets the value of the property that is being visualized
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertiesViewModel.Update(Artemis.UI.Shared.Services.IDataModelUIService,Artemis.UI.Shared.DataModelVisualization.Shared.DataModelUpdateConfiguration)">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertiesViewModel.GetCurrentValue">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertiesViewModel.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertyViewModel">
+            <summary>
+                Represents a view model that visualizes a single data model property contained in a
+                <see cref="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertiesViewModel" />
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertyViewModel.DisplayValue">
+            <summary>
+                Gets the value of the property that is being visualized
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertyViewModel.DisplayValueType">
+            <summary>
+                Gets the type of the property that is being visualized
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertyViewModel.DisplayViewModel">
+            <summary>
+            Gets the view model used to display the display value
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertyViewModel.Update(Artemis.UI.Shared.Services.IDataModelUIService,Artemis.UI.Shared.DataModelVisualization.Shared.DataModelUpdateConfiguration)">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertyViewModel.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelUpdateConfiguration">
+            <summary>
+                Represents a configuration to use while updating a <see cref="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel" />
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelUpdateConfiguration.#ctor(System.Boolean)">
+            <summary>
+                Creates a new instance of the <see cref="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelUpdateConfiguration" /> class
+            </summary>
+            <param name="createEventChildren">A boolean indicating whether or not event children should be created</param>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelUpdateConfiguration.CreateEventChildren">
+            <summary>
+                Gets a boolean indicating whether or not event children should be created
+            </summary>
+        </member>
+        <member name="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel">
+            <summary>
+                Represents a base class for a view model that visualizes a part of the data model
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.IsRootViewModel">
+            <summary>
+                Gets a boolean indicating whether this view model is at the root of the data model
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.DataModelPath">
+            <summary>
+                Gets the data model path to the property this view model is visualizing
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.Path">
+            <summary>
+                Gets a string representation of the path backing this model
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.Depth">
+            <summary>
+                Gets the property depth of the view model
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.DataModel">
+            <summary>
+                Gets the data model backing this view model
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.PropertyDescription">
+            <summary>
+                Gets the property description of the property this view model is visualizing
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.Parent">
+            <summary>
+                Gets the parent of this view model
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.Children">
+            <summary>
+                Gets or sets an observable collection containing the children of this view model
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.IsMatchingFilteredTypes">
+            <summary>
+                Gets a boolean indicating whether the property being visualized matches the types last provided to
+                <see cref="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.ApplyTypeFilter(System.Boolean,System.Type[])" />
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.IsVisualizationExpanded">
+            <summary>
+                Gets or sets a boolean indicating whether the visualization is expanded, exposing the <see cref="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.Children" />
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.DisplayPath">
+            <summary>
+                Gets a user-friendly representation of the <see cref="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.DataModelPath" />
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.Update(Artemis.UI.Shared.Services.IDataModelUIService,Artemis.UI.Shared.DataModelVisualization.Shared.DataModelUpdateConfiguration)">
+            <summary>
+                Updates the datamodel and if in an parent, any children
+            </summary>
+            <param name="dataModelUIService">The data model UI service used during update</param>
+            <param name="configuration">The configuration to apply while updating</param>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.GetCurrentValue">
+            <summary>
+                Gets the current value of the property being visualized
+            </summary>
+            <returns>The current value of the property being visualized</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.ApplyTypeFilter(System.Boolean,System.Type[])">
+            <summary>
+                Determines whether the provided types match the type of the property being visualized and sets the result in
+                <see cref="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.IsMatchingFilteredTypes" />
+            </summary>
+            <param name="looseMatch">Whether the type may be a loose match, meaning it can be cast or converted</param>
+            <param name="filteredTypes">The types to filter</param>
+        </member>
+        <member name="E:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.UpdateRequested">
+            <summary>
+                Occurs when an update to the property this view model visualizes is requested
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.OnUpdateRequested">
+            <summary>
+                Invokes the <see cref="E:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.UpdateRequested" /> event
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.Dispose(System.Boolean)">
+            <summary>
+                Releases the unmanaged resources used by the object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">
+                <see langword="true" /> to release both managed and unmanaged resources;
+                <see langword="false" /> to release only unmanaged resources.
+            </param>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:Artemis.UI.Shared.DefaultTypes.DataModel.Display.DefaultDataModelDisplayViewModel">
+            <summary>
+                Represents the default data model display view model that is used when no display viewmodel specific for the type
+                is registered
+            </summary>
+        </member>
         <member name="T:Artemis.UI.Shared.Events.DataModelInputDynamicEventArgs">
             <summary>
                 Provides data about selection events raised by <see cref="!:DataModelDynamicViewModel" />
@@ -239,7 +701,7 @@
                 If applicable, the previous active profile element before the event was raised
             </summary>
         </member>
-        <member name="T:Artemis.UI.Shared.Exceptions.ArtemisSharedUIException">
+        <member name="T:Artemis.UI.Shared.ArtemisSharedUIException">
             <summary>
                 Represents errors that occur within the Artemis Shared UI library
             </summary>
@@ -452,6 +914,104 @@
             Creates a save file dialog, use the fluent API to configure it
             </summary>
             <returns>The builder that can be used to configure the dialog</returns>
+        </member>
+        <member name="T:Artemis.UI.Shared.Services.IDataModelUIService">
+            <summary>
+                A service for UI related data model tasks
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.Services.IDataModelUIService.RegisteredDataModelEditors">
+            <summary>
+                Gets a read-only list of all registered data model editors
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.Services.IDataModelUIService.RegisteredDataModelDisplays">
+            <summary>
+                Gets a read-only list of all registered data model displays
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.IDataModelUIService.GetMainDataModelVisualization">
+            <summary>
+                Creates a data model visualization view model for the main data model
+            </summary>
+            <returns>
+                A data model visualization view model containing all data model expansions and modules that expand the main
+                data model
+            </returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.IDataModelUIService.GetPluginDataModelVisualization(System.Collections.Generic.List{Artemis.Core.Modules.Module},System.Boolean)">
+            <summary>
+                Creates a data model visualization view model for the data model of the provided plugin feature
+            </summary>
+            <param name="modules">The modules to create the data model visualization view model for</param>
+            <param name="includeMainDataModel">
+                Whether or not also to include the main data model (and therefore any modules marked
+                as <see cref="P:Artemis.Core.Modules.Module.IsAlwaysAvailable" />)
+            </param>
+            <returns>A data model visualization view model containing the data model of the provided feature</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.IDataModelUIService.UpdateModules(Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertiesViewModel)">
+            <summary>
+                Updates the children of the provided main data model visualization, removing disabled children and adding newly
+                enabled children
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.IDataModelUIService.RegisterDataModelInput``1(Artemis.Core.Plugin,System.Collections.Generic.IReadOnlyCollection{System.Type})">
+            <summary>
+                Registers a new data model editor
+            </summary>
+            <typeparam name="T">The type of the editor</typeparam>
+            <param name="plugin">The plugin this editor belongs to</param>
+            <param name="compatibleConversionTypes">A collection of extra types this editor supports</param>
+            <returns>A registration that can be used to remove the editor</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.IDataModelUIService.RegisterDataModelDisplay``1(Artemis.Core.Plugin)">
+            <summary>
+                Registers a new data model display
+            </summary>
+            <typeparam name="T">The type of the display</typeparam>
+            <param name="plugin">The plugin this display belongs to</param>
+            <returns>A registration that can be used to remove the display</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.IDataModelUIService.RemoveDataModelInput(Artemis.UI.Shared.DataModelVisualization.DataModelVisualizationRegistration)">
+            <summary>
+                Removes a data model editor
+            </summary>
+            <param name="registration">
+                The registration of the editor as returned by <see cref="M:Artemis.UI.Shared.Services.IDataModelUIService.RegisterDataModelInput``1(Artemis.Core.Plugin,System.Collections.Generic.IReadOnlyCollection{System.Type})" />
+            </param>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.IDataModelUIService.RemoveDataModelDisplay(Artemis.UI.Shared.DataModelVisualization.DataModelVisualizationRegistration)">
+            <summary>
+                Removes a data model display
+            </summary>
+            <param name="registration">
+                The registration of the display as returned by <see cref="M:Artemis.UI.Shared.Services.IDataModelUIService.RegisterDataModelDisplay``1(Artemis.Core.Plugin)" />
+            </param>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.IDataModelUIService.GetDataModelDisplayViewModel(System.Type,Artemis.Core.Modules.DataModelPropertyAttribute,System.Boolean)">
+            <summary>
+                Creates the most appropriate display view model for the provided <paramref name="propertyType" /> that can display
+                a value
+            </summary>
+            <param name="propertyType">The type of data model property to find a display view model for</param>
+            <param name="description">The description of the data model property</param>
+            <param name="fallBackToDefault">
+                If <see langword="true"></see>, a simple .ToString() display view model will be
+                returned if nothing else is found
+            </param>
+            <returns>The most appropriate display view model for the provided <paramref name="propertyType"></paramref></returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.IDataModelUIService.GetDataModelInputViewModel(System.Type,Artemis.Core.Modules.DataModelPropertyAttribute,System.Object,System.Action{System.Object,System.Boolean})">
+            <summary>
+                Creates the most appropriate input view model for the provided <paramref name="propertyType" /> that allows
+                inputting a value
+            </summary>
+            <param name="propertyType">The type of data model property to find a display view model for</param>
+            <param name="description">The description of the data model property</param>
+            <param name="initialValue">The initial value to show in the input</param>
+            <param name="updateCallback">A function to call whenever the input was updated (submitted or not)</param>
+            <returns>The most appropriate input view model for the provided <paramref name="propertyType" /></returns>
         </member>
         <member name="T:Artemis.UI.Shared.ViewModelBase">
             <summary>

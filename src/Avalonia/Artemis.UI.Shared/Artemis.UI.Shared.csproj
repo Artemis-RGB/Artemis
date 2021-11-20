@@ -11,6 +11,11 @@
     <DocumentationFile>C:\Repos\Artemis\src\Artemis.UI.Avalonia.Shared\Artemis.UI.Avalonia.Shared.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Artemis.UI.Avalonia.Shared.csproj.DotSettings" />
+    <None Remove="Artemis.UI.Shared.csproj.DotSettings" />
+    <None Remove="DefaultTypes\DataModel\Display\DefaultDataModelDisplayView.xaml" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.10" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="0.10.8.3" />
@@ -20,6 +25,12 @@
     <PackageReference Include="FluentAvaloniaUI" Version="1.1.5" />
     <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
    </ItemGroup>
+  <ItemGroup>
+    <Page Include="DefaultTypes\DataModel\Display\DefaultDataModelDisplayView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Artemis.Core\Artemis.Core.csproj" />
   </ItemGroup>
