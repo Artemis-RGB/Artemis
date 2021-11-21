@@ -7,10 +7,10 @@
         xmlns:reactiveUi="http://reactiveui.net"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
         x:Class="Artemis.UI.Screens.Debugger.DebugView"
+        Icon="/Assets/Images/Logo/bow.ico"
         Title="Artemis | Debugger"
         Width="1200"
-        Height="800"
-        ExtendClientAreaToDecorationsHint="True">
+        Height="800">
 
     <Window.Styles>
         <Style Selector="StackPanel.sidebar-stackpanel avalonia|MaterialIcon">
@@ -24,7 +24,7 @@
                              SelectedItem="{Binding SelectedItem}"
                              IsPaneToggleButtonVisible="False"
                              PaneDisplayMode="Left"
-                             Margin="0 30 0 0">
+                             Margin="0 10 0 0">
         <controls:NavigationView.MenuItems>
             <controls:NavigationViewItem Tag="Rendering">
                 <controls:NavigationViewItem.Content>
