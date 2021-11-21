@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Settings.Tabs.DevicesTabView">
+    <StackPanel MaxWidth="1050">
+        <TextBlock Classes="h4">Device management</TextBlock>
+        <TextBlock>
+            Below you view and manage the devices that were detected by Artemis.
+        </TextBlock>
+        <TextBlock>
+            Disabling a device will cause it to stop updating. Some SDKs will even go back to using manufacturer lighting (Artemis restart may be required).
+        </TextBlock>
+
+        <ItemsControl Items="{Binding Devices}" Margin="-5 0">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </StackPanel>
+
+</UserControl>

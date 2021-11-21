@@ -1,13 +1,12 @@
-using Artemis.UI.Screens.Root;
 using Avalonia;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI
+namespace Artemis.UI.Screens.Device
 {
-    public class MainWindow : ReactiveWindow<RootViewModel>
+    public partial class DevicePropertiesView : ReactiveWindow<DevicePropertiesViewModel>
     {
-        public MainWindow()
+        public DevicePropertiesView()
         {
             InitializeComponent();
 #if DEBUG

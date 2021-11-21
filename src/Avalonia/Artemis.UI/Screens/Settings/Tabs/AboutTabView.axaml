@@ -1,0 +1,270 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="1400"
+             x:Class="Artemis.UI.Screens.Settings.Tabs.AboutTabView">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="15" MaxWidth="800">
+            <Grid RowDefinitions="*,*" ColumnDefinitions="Auto,*,Auto">
+                <Image Grid.Column="0" Grid.RowSpan="2" Width="140" Height="140" VerticalAlignment="Center">
+                    <Image.Source>
+                        <svg:SvgImage Source="/Assets/Images/Logo/bow.svg" />
+                    </Image.Source>
+                </Image>
+                <TextBlock Grid.Row="0" Grid.Column="1" FontSize="36" VerticalAlignment="Bottom">
+                    Artemis 2
+                </TextBlock>
+
+                <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
+                    <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View website" NavigateUri="https://artemis-rgb.com">
+                        <avalonia:MaterialIcon Kind="Web" />
+                    </controls:HyperlinkButton>
+                    <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View GitHub repository" NavigateUri="https://github.com/Artemis-RGB/Artemis">
+                        <avalonia:MaterialIcon Kind="Github" />
+                    </controls:HyperlinkButton>
+                    <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View Wiki" NavigateUri="https://wiki.artemis-rgb.com">
+                        <avalonia:MaterialIcon Kind="BookOpenOutline" />
+                    </controls:HyperlinkButton>
+                </StackPanel>
+
+                <TextBlock Grid.Row="1"
+                           Grid.Column="1"
+                           VerticalAlignment="Top"
+                           Foreground="{DynamicResource MaterialDesignBodyLight}"
+                           Text="{Binding Version}" />
+
+                <controls:HyperlinkButton Grid.Row="1"
+                                          Grid.Column="2"
+                                          VerticalAlignment="Top"
+                                          NavigateUri="https://github.com/Artemis-RGB/Artemis/blob/master/LICENSE">
+                    PolyForm Noncommercial License 1.0.0
+                </controls:HyperlinkButton>
+            </Grid>
+
+            <Border Classes="card" Margin="0 20 0 10">
+                <StackPanel>
+                    <Grid RowDefinitions="*,*,*" ColumnDefinitions="Auto,*">
+                        <Ellipse Grid.Row="0"
+                                 Grid.Column="0"
+                                 Grid.RowSpan="3"
+                                 VerticalAlignment="Top"
+                                 Height="75"
+                                 Width="75"
+                                 Margin="0 0 15 0"
+                                 IsVisible="{Binding RobertProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                            <Ellipse.Fill>
+								<ImageBrush Source="{Binding RobertProfileImage}" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
+                            Robert Beekman
+                        </TextBlock>
+                        <TextBlock Classes="subtitle" Grid.Column="1" Grid.Row="1" Padding="0">
+                            Project owner, main contributor
+                        </TextBlock>
+                        <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" Margin="-6">
+                            <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View GitHub profile" NavigateUri="https://github.com/RobertBeekman/">
+                                <avalonia:MaterialIcon Kind="Github" Width="20" Height="20" />
+                            </controls:HyperlinkButton>
+                        </StackPanel>
+                    </Grid>
+
+                    <Separator Classes="card-separator" />
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Ellipse Grid.Row="0"
+                                 Grid.Column="0"
+                                 Grid.RowSpan="3"
+                                 VerticalAlignment="Top"
+                                 Height="75"
+                                 Width="75"
+                                 Margin="0 0 15 0"
+                                 IsVisible="{Binding DarthAffeProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                            <Ellipse.Fill>
+                                <ImageBrush Source="{Binding DarthAffeProfileImage}" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
+                            Darth Affe
+                        </TextBlock>
+                        <TextBlock Classes="subtitle" Grid.Column="1" Grid.Row="1" Padding="0">
+                            RGB.NET, main contributor
+                        </TextBlock>
+                        <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" Margin="-6">
+                            <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View GitHub profile" NavigateUri="https://github.com/DarthAffe/">
+                                <avalonia:MaterialIcon Kind="Github" Width="20" Height="20" />
+                            </controls:HyperlinkButton>
+                        </StackPanel>
+                    </Grid>
+
+                    <Separator Classes="card-separator" />
+
+                    <Grid RowDefinitions="*,*,*" ColumnDefinitions="Auto,*">
+                        <Ellipse Grid.Row="0"
+                                 Grid.Column="0"
+                                 Grid.RowSpan="3"
+                                 VerticalAlignment="Top"
+                                 Height="75"
+                                 Width="75"
+                                 Margin="0 0 15 0"
+                                 IsVisible="{Binding DrMeteorProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                            <Ellipse.Fill>
+                                <ImageBrush Source="{Binding DrMeteorProfileImage}" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
+                            Diogo 'DrMeteor' Trindade
+                        </TextBlock>
+                        <TextBlock Classes="subtitle" Grid.Column="1" Grid.Row="1" Padding="0">
+                            Main contributor
+                        </TextBlock>
+                        <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" Margin="-6">
+                            <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View GitHub profile" NavigateUri="https://github.com/diogotr7/">
+                                <avalonia:MaterialIcon Kind="Github" Width="20" Height="20" />
+                            </controls:HyperlinkButton>
+                        </StackPanel>
+                    </Grid>
+
+                    <Separator Classes="card-separator" />
+
+                    <Grid RowDefinitions="*,*,*" ColumnDefinitions="Auto,*">
+                        <Ellipse Grid.Row="0"
+                                 Grid.Column="0"
+                                 Grid.RowSpan="3"
+                                 VerticalAlignment="Top"
+                                 Height="75"
+                                 Width="75"
+                                 Margin="0 0 15 0"
+                                 IsVisible="{Binding KaiProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                            <Ellipse.Fill>
+                                <ImageBrush Source="{Binding KaiProfileImage}"  />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
+                            Kai Werling
+                        </TextBlock>
+                        <TextBlock Classes="subtitle" Grid.Column="1" Grid.Row="1" Padding="0">
+                            Graphics design
+                        </TextBlock>
+                        <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" Margin="-6">
+                            <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View website" NavigateUri="https://kwer.online/">
+                                <avalonia:MaterialIcon Kind="Web" Width="20" Height="20" />
+                            </controls:HyperlinkButton>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border Classes="card" Margin="0 10">
+                <StackPanel>
+                    <StackPanel Margin="0 0 0 12" Orientation="Horizontal">
+                        <avalonia:MaterialIcon Kind="UserHeart" Height="35" Width="35" Margin="0 0 10 0" />
+                        <TextBlock Classes="h4">
+                            Special Thanks
+                        </TextBlock>
+                    </StackPanel>
+
+                    <TextBlock>
+                        - The various people creating PRs to Artemis.Plugins and the main repository
+                    </TextBlock>
+                    <TextBlock>
+                        - All the people on Discord providing feedback and testing
+                    </TextBlock>
+                </StackPanel>
+
+            </Border>
+
+            <Border Classes="card" Margin="0 10">
+                <StackPanel>
+                    <StackPanel Margin="0 0 0 12" Orientation="Horizontal">
+                        <avalonia:MaterialIcon Kind="Dependency" Height="35" Width="35" Margin="0 0 10 0" />
+                        <TextBlock Classes="h4">
+                            External Libraries
+                        </TextBlock>
+                    </StackPanel>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Grid.Styles>
+                            <Style Selector="TextBlock.library-name">
+                                <Setter Property="Margin" Value="0 7 15 6"/>
+                                <Setter Property="FontWeight" Value="600"/>
+                            </Style>
+                        </Grid.Styles>
+						
+                        <StackPanel Grid.Row="0" Grid.Column="0">
+							<TextBlock Classes="library-name">Avalonia</TextBlock>
+							<TextBlock Classes="library-name">FluentAvalonia</TextBlock>
+							<TextBlock Classes="library-name">EmbedIO</TextBlock>
+							<TextBlock Classes="library-name">Furl.Http</TextBlock>
+							<TextBlock Classes="library-name">Humanizer</TextBlock>
+							<TextBlock Classes="library-name">LiteDB</TextBlock>
+							<TextBlock Classes="library-name">McMaster.NETCore.Plugins</TextBlock>
+							<TextBlock Classes="library-name">Newtonsoft.Json</TextBlock>
+							<TextBlock Classes="library-name">Ninject</TextBlock>
+							<TextBlock Classes="library-name">RGB.NET</TextBlock>
+							<TextBlock Classes="library-name">Serilog</TextBlock>
+							<TextBlock Classes="library-name">SkiaSharp</TextBlock>
+							<TextBlock Classes="library-name">Unclassified.NetRevisionTask</TextBlock>
+						</StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <controls:HyperlinkButton NavigateUri="https://avaloniaui.net/">
+								https://avaloniaui.net/
+							</controls:HyperlinkButton>
+                            <controls:HyperlinkButton NavigateUri="https://github.com/amwx/FluentAvalonia">
+								https://github.com/amwx/FluentAvalonia
+							</controls:HyperlinkButton>
+                            <controls:HyperlinkButton NavigateUri="https://unosquare.github.io/embedio/">
+                                https://unosquare.github.io/embedio/
+                            </controls:HyperlinkButton>
+                            <controls:HyperlinkButton NavigateUri="https://flurl.dev/">
+								https://flurl.dev/
+							</controls:HyperlinkButton>
+                            <controls:HyperlinkButton NavigateUri="https://github.com/Humanizr/Humanizer">
+								https://github.com/Humanizr/Humanizer
+							</controls:HyperlinkButton>
+                            <controls:HyperlinkButton NavigateUri="https://www.litedb.org/">
+								https://www.litedb.org/
+							</controls:HyperlinkButton>
+                            <controls:HyperlinkButton NavigateUri="https://github.com/natemcmaster/DotNetCorePlugins">
+								https://github.com/natemcmaster/DotNetCorePlugins
+							</controls:HyperlinkButton>
+                            <controls:HyperlinkButton NavigateUri="https://www.newtonsoft.com/json">
+								https://www.newtonsoft.com/json
+							</controls:HyperlinkButton>
+                            <controls:HyperlinkButton NavigateUri="http://www.ninject.org/">
+								http://www.ninject.org/
+							</controls:HyperlinkButton>
+                            <controls:HyperlinkButton NavigateUri="https://github.com/DarthAffe/RGB.NET">
+								https://github.com/DarthAffe/RGB.NET
+							</controls:HyperlinkButton>
+                            <controls:HyperlinkButton NavigateUri="https://serilog.net/">
+								https://serilog.net/
+							</controls:HyperlinkButton>
+                            <controls:HyperlinkButton NavigateUri="https://github.com/mono/SkiaSharp">
+								https://github.com/mono/SkiaSharp
+							</controls:HyperlinkButton>
+                            <controls:HyperlinkButton NavigateUri="https://unclassified.software/en/apps/netrevisiontask">
+								https://unclassified.software/en/apps/netrevisiontask
+							</controls:HyperlinkButton>
+                        </StackPanel>
+
+					</Grid>
+                </StackPanel>
+
+
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

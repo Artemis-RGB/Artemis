@@ -1,18 +1,13 @@
-using Artemis.UI.Screens.Root;
-using Avalonia;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI
+namespace Artemis.UI.Screens.Root
 {
-    public class MainWindow : ReactiveWindow<RootViewModel>
+    public class RootView : ReactiveUserControl<RootViewModel>
     {
-        public MainWindow()
+        public RootView()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         private void InitializeComponent()

@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using Artemis.UI.Screens.Settings.Tabs.ViewModels;
+using Artemis.UI.Screens.Settings.Tabs;
 using Artemis.UI.Shared;
 using ReactiveUI;
 

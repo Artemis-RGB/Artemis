@@ -1,18 +1,13 @@
-using Artemis.UI.Screens.Root;
-using Avalonia;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI
+namespace Artemis.UI.Screens.ProfileEditor
 {
-    public class MainWindow : ReactiveWindow<RootViewModel>
+    public class ProfileEditorView : ReactiveUserControl<ProfileEditorViewModel>
     {
-        public MainWindow()
+        public ProfileEditorView()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         private void InitializeComponent()

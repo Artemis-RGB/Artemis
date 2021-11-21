@@ -1,0 +1,123 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Root.Sidebar.SidebarProfileConfigurationView">
+    <UserControl.Resources>
+        <converters:ValuesAdditionConverter x:Key="ValuesAddition" />
+    </UserControl.Resources>
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="View properties">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Cog" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Suspend">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Pause" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Suspend all">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Pause" />
+                </MenuItem.Icon>
+                <MenuItem Header="Above" CommandParameter="suspend" />
+                <MenuItem Header="Below" CommandParameter="suspend" />
+            </MenuItem>
+            <MenuItem Header="Resume all">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Play" />
+                </MenuItem.Icon>
+                <MenuItem Header="Above" CommandParameter="resume" />
+                <MenuItem Header="Below" CommandParameter="resume" />
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="Export">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Export" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Duplicate">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="ContentDuplicate" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Copy">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="ContentCopy" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Paste">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="ContentPaste" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="Delete">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Trash" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+    </UserControl.ContextMenu>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <controls:ProfileConfigurationIcon Grid.Column="0"
+                                           x:Name="ProfileIcon"
+                                           VerticalAlignment="Center"
+                                           ConfigurationIcon="{Binding ProfileConfiguration.Icon}"
+                                           Width="20"
+                                           Height="20" />
+
+        <TextBlock Grid.Column="1"
+                   x:Name="ProfileName"
+                   FontSize="12"
+                   Margin="10 0 0 0"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Left"
+                   Text="{Binding ProfileConfiguration.Name}"
+                   TextTrimming="CharacterEllipsis" />
+
+        <Border Grid.Column="0"
+                Grid.ColumnSpan="2"
+                BorderThickness="1"
+                BorderBrush="{DynamicResource MaterialDesignBody}"
+                Height="1"
+                Opacity="0"
+                HorizontalAlignment="Left">
+            <!-- Ensure the line covers the profile and the text but not the full two columns -->
+            <Border.Width>
+                <MultiBinding Converter="{StaticResource ValuesAddition}">
+                    <Binding Path="ActualWidth" ElementName="ProfileIcon" />
+                    <Binding Path="Width" ElementName="ProfileName" />
+                    <Binding Path="Margin.Left" ElementName="ProfileName" />
+                </MultiBinding>
+            </Border.Width>
+
+        </Border>
+
+        <Button Classes="icon-button icon-button-small"
+                Grid.Column="2"
+                ToolTip.Tip="View properties"
+                HorizontalAlignment="Right">
+            <avalonia:MaterialIcon Kind="Cog" />
+        </Button>
+        <ToggleButton Classes="icon-button icon-button-small"
+                      Grid.Column="3"
+                      ToolTip.Tip="Suspend profile"
+                      Margin="2 0 0 0"
+                      IsChecked="{Binding IsSuspended}">
+            <avalonia:MaterialIcon Kind="Pause" />
+        </ToggleButton>
+    </Grid>
+</UserControl>

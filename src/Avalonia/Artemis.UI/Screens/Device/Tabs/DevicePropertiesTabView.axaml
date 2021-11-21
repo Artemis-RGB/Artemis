@@ -1,0 +1,197 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             xmlns:tabs="clr-namespace:Artemis.UI.Screens.Device.Tabs"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="1200"
+             x:Class="Artemis.UI.Screens.Device.Tabs.DevicePropertiesTabView">
+    <UserControl.Resources>
+        <converters:SKColorToColorConverter x:Key="SKColorToColorConverter" />
+    </UserControl.Resources>
+    <Design.DataContext>
+        <tabs:DevicePropertiesTabViewModel />
+    </Design.DataContext>
+
+    <!-- Body -->
+    <Grid RowDefinitions="*,Auto">
+        <StackPanel Grid.Row="0">
+            <!-- Layout -->
+            <TextBlock Classes="h4">
+                Categories
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap">
+                Artemis uses categories to determine where the layers of imported profiles are applied to.
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap">
+                You can hover over a category for a more detailed description.
+            </TextBlock>
+            <StackPanel Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding HasDeskCategory}"
+                          ToolTip.Tip="A device acting as desk ornamentation such as a LED strip"
+                          Content="Desk" />
+                <CheckBox IsChecked="{Binding HasMonitorCategory}"
+                          ToolTip.Tip="A device attached to the monitor such as ambilight LEDs"
+                          Content="Monitor" />
+                <CheckBox ToolTip.Tip="A device inside your computer case"
+                          IsChecked="{Binding HasCaseCategory}"
+                          Content="Case" />
+                <CheckBox IsChecked="{Binding HasRoomCategory}"
+                          ToolTip.Tip="A device elsewhere in the room"
+                          Content="Room" />
+                <CheckBox IsChecked="{Binding HasPeripheralsCategory}"
+                          ToolTip.Tip="A peripheral such as a mouse or keyboard"
+                          Content="Peripheral" />
+            </StackPanel>
+
+            <Grid Margin="0 25" ColumnDefinitions="*,40,*">
+                <Grid Grid.Column="0" ColumnDefinitions="*,Auto,Auto" RowDefinitions="*,*,*,*,*">
+                    <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Classes="h4">
+                        Surface properties
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">X-coordinate</TextBlock>
+                    <NumericUpDown Grid.Row="1"
+                                   Grid.Column="1"
+                                   Margin="10 0"
+                                   VerticalAlignment="Center"
+                                   Value="{Binding X}" />
+                    <TextBlock Grid.Row="1" Grid.Column="2" VerticalAlignment="Center">mm</TextBlock>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Y-coordinate</TextBlock>
+                    <NumericUpDown Grid.Row="2"
+                                   Grid.Column="1"
+                                   Margin="10 0"
+                                   VerticalAlignment="Center"
+                                   Value="{Binding Y}" />
+                    <TextBlock Grid.Row="2" Grid.Column="2" VerticalAlignment="Center">mm</TextBlock>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Scale</TextBlock>
+                    <NumericUpDown Grid.Row="3"
+                                   Grid.Column="1"
+                                   Margin="10 0"
+                                   VerticalAlignment="Center"
+                                   Value="{Binding Scale}" />
+                    <TextBlock Grid.Row="3" Grid.Column="2" VerticalAlignment="Center">times</TextBlock>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center">Rotation</TextBlock>
+                    <NumericUpDown Grid.Row="4"
+                                   Grid.Column="1"
+                                   Margin="10 0"
+                                   VerticalAlignment="Center"
+                                   Value="{Binding Rotation}" />
+                    <TextBlock Grid.Row="4" Grid.Column="2" VerticalAlignment="Center">deg</TextBlock>
+
+                </Grid>
+
+                <Rectangle Grid.Column="1" VerticalAlignment="Stretch" Width="1" Fill="{DynamicResource ButtonBorderBrush}" Margin="0 0 0 5" />
+
+                <StackPanel Grid.Column="2">
+                    <TextBlock Classes="h4">
+                        Color calibration
+                    </TextBlock>
+
+                    <TextBlock TextWrapping="Wrap">
+                        Use the sliders below to adjust the colors of your device so that it matches your other devices.
+                    </TextBlock>
+
+                    <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="*,*,*,*">
+                        <Label Grid.Row="0" Grid.Column="0" Content="R" VerticalAlignment="Center" />
+                        <Slider Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="200" Value="{Binding RedScale}" Margin="10 0" VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Row="0"
+                                       Grid.Column="2"
+                                       VerticalAlignment="Center"
+                                       Width="65"
+                                       Value="{Binding RedScale}"
+                                       ShowButtonSpinner="False"
+                                       FormatString="{}{0:0.0}"
+                                       Minimum="0"
+                                       Maximum="200"
+                                       ClipValueToMinMax="True" />
+
+                        <Label Grid.Row="1" Grid.Column="0" Content="G" VerticalAlignment="Center" />
+                        <Slider Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="200" Value="{Binding GreenScale}" Margin="10 0" VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Row="1"
+                                       Grid.Column="2"
+                                       VerticalAlignment="Center"
+                                       Width="65"
+                                       Value="{Binding GreenScale}"
+                                       ShowButtonSpinner="False"
+                                       FormatString="{}{0:0.0}"
+                                       Minimum="0"
+                                       Maximum="200"
+                                       ClipValueToMinMax="True" />
+
+                        <Label Grid.Row="2" Grid.Column="0" Content="B" VerticalAlignment="Center" />
+                        <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="200" Value="{Binding BlueScale}" Margin="10 0" Ticks="100" VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Row="2"
+                                       Grid.Column="2"
+                                       VerticalAlignment="Center"
+                                       Width="65"
+                                       Value="{Binding BlueScale}"
+                                       ShowButtonSpinner="False"
+                                       FormatString="{}{0:0.0}"
+                                       Minimum="0"
+                                       Maximum="200"
+                                       ClipValueToMinMax="True" />
+
+                        <CheckBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding DisplayOnDevices}" Content="Show preview" VerticalAlignment="Center" />
+                        <controls:ColorPickerButton Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Color="{Binding CurrentColor, Converter={StaticResource SKColorToColorConverter}}" />
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <!-- Layout -->
+            <TextBlock Classes="h4">
+                Layout
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap">
+                The device layout is used to determine the position of LEDs and to create the visual representation of the device you see on the left side of this window.
+            </TextBlock>
+
+            <CheckBox Margin="0 0 0 5" IsChecked="{Binding Device.DisableDefaultLayout}">
+                <CheckBox.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Don't load default layout</TextBlock>
+                        <avalonia:MaterialIcon Kind="HelpCircle"
+                                               Margin="5 0"
+                                               ToolTip.Tip="With this enabled Artemis will not load a layout for this device unless you specifically provide one." />
+                    </StackPanel>
+                </CheckBox.Content>
+            </CheckBox>
+
+            <Grid>
+                <TextBox Text="{Binding Device.CustomLayoutPath}"
+                         Watermark="Custom layout path"
+                         UseFloatingWatermark="True"
+                         IsReadOnly="True"
+                         PointerReleased="InputElement_OnPointerReleased"
+                         Padding="10 5 36 6"/>
+                <Button Classes="AppBarButton" HorizontalAlignment="Right" Command="{Binding ClearCustomLayout}" Padding="6" Margin="5 0">
+                    <avalonia:MaterialIcon Kind="CloseCircle" />
+                </Button>
+            </Grid>
+
+            <controls:HyperlinkButton NavigateUri="https://wiki.artemis-rgb.com/en/guides/developer/layouts" Margin="0 20" HorizontalAlignment="Right">
+                Learn more about layouts on the wiki
+            </controls:HyperlinkButton>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
+            <Button Grid.Column="0"
+                    Classes="AppBarButton"
+                    Command="{Binding SelectPhysicalLayout}"
+                    ToolTip.Tip="Restart device setup, allowing you to select a new physical and logical layout">
+                Restart setup
+            </Button>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Classes="AppBarButton" IsCancel="True" Command="{Binding Reset}" Margin="0 0 5 0">Reset</Button>
+                <Button IsDefault="True" Command="{Binding Apply}">Apply</Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

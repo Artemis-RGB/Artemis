@@ -1,7 +1,7 @@
 ﻿using Artemis.Core.Ninject;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject;
-using Artemis.UI.Screens.Root.ViewModels;
+using Artemis.UI.Screens.Root;
 using Artemis.UI.Shared.Ninject;
 using Avalonia.Controls.ApplicationLifetimes;
 using Ninject;

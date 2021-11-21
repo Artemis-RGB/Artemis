@@ -1,18 +1,13 @@
-using Artemis.UI.Screens.Root;
-using Avalonia;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI
+namespace Artemis.UI.Screens.Plugins
 {
-    public class MainWindow : ReactiveWindow<RootViewModel>
+    public partial class PluginSettingsView : ReactiveUserControl<PluginSettingsViewModel>
     {
-        public MainWindow()
+        public PluginSettingsView()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         private void InitializeComponent()

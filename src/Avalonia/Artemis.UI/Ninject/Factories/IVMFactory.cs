@@ -1,11 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using Artemis.Core;
-using Artemis.UI.Screens.Device.Tabs.ViewModels;
-using Artemis.UI.Screens.Device.ViewModels;
-using Artemis.UI.Screens.Plugins.ViewModels;
-using Artemis.UI.Screens.Root.ViewModels;
-using Artemis.UI.Screens.Settings.Tabs.ViewModels;
-using Artemis.UI.Screens.SurfaceEditor.ViewModels;
+using Artemis.UI.Screens.Device;
+using Artemis.UI.Screens.Device.Tabs;
+using Artemis.UI.Screens.Plugins;
+using Artemis.UI.Screens.Root.Sidebar;
+using Artemis.UI.Screens.Settings.Tabs;
+using Artemis.UI.Screens.SurfaceEditor;
 using ReactiveUI;
 
 namespace Artemis.UI.Ninject.Factories

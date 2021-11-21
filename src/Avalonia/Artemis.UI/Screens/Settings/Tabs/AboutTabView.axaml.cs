@@ -1,18 +1,13 @@
-using Artemis.UI.Screens.Root;
-using Avalonia;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI
+namespace Artemis.UI.Screens.Settings.Tabs
 {
-    public class MainWindow : ReactiveWindow<RootViewModel>
+    public partial class AboutTabView : ReactiveUserControl<AboutTabViewModel>
     {
-        public MainWindow()
+        public AboutTabView()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         private void InitializeComponent()
