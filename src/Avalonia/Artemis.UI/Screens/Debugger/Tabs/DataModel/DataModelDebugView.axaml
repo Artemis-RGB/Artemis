@@ -10,6 +10,14 @@
 		<converters:TypeToStringConverter x:Key="TypeToStringConverter" />
     </UserControl.Resources>
     <StackPanel>
+        <TextBlock Classes="h3">Data Model</TextBlock>
+        <TextBlock TextWrapping="Wrap">
+            On this page you can view the contents of the Artemis data model.
+        </TextBlock>
+        <TextBlock TextWrapping="Wrap" Classes="subtitle" Margin="0 10">
+            Please note that having this window open can have a performance impact on your system.
+        </TextBlock>
+
         <TreeView Items="{Binding MainDataModel.Children}">
             <TreeView.Styles>
                 <Style Selector="TreeViewItem">

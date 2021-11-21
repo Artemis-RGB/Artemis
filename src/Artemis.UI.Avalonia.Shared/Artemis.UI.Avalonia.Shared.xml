@@ -636,26 +636,6 @@
                 is registered
             </summary>
         </member>
-        <member name="T:Artemis.UI.Shared.Events.DataModelInputDynamicEventArgs">
-            <summary>
-                Provides data about selection events raised by <see cref="!:DataModelDynamicViewModel" />
-            </summary>
-        </member>
-        <member name="P:Artemis.UI.Shared.Events.DataModelInputDynamicEventArgs.DataModelPath">
-            <summary>
-                Gets the data model path that was selected
-            </summary>
-        </member>
-        <member name="T:Artemis.UI.Shared.Events.DataModelInputStaticEventArgs">
-            <summary>
-                Provides data about submit events raised by <see cref="!:DataModelStaticViewModel" />
-            </summary>
-        </member>
-        <member name="P:Artemis.UI.Shared.Events.DataModelInputStaticEventArgs.Value">
-            <summary>
-                The value that was submitted
-            </summary>
-        </member>
         <member name="T:Artemis.UI.Shared.Events.LedClickedEventArgs">
             <summary>
                 Provides data on LED click events raised by the device visualizer

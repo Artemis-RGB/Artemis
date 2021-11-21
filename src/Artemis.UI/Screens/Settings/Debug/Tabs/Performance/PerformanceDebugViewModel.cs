@@ -22,8 +22,8 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs.Performance
 
         private void UpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            foreach (PerformanceDebugPluginViewModel viewModel in Items)
-                viewModel.Update();
+                foreach (PerformanceDebugPluginViewModel viewModel in Items)
+                    viewModel.Update();
         }
 
         private void FeatureToggled(object sender, PluginFeatureEventArgs e)

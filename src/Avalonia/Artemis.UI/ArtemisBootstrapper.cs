@@ -13,7 +13,7 @@ namespace Artemis.UI
     {
         private static StandardKernel? _kernel;
 
-        public static void Bootstrap()
+        public static StandardKernel Bootstrap()
         {
             if (_kernel != null)
                 throw new ArtemisUIException("UI already bootstrapped");
@@ -26,6 +26,8 @@ namespace Artemis.UI
             _kernel.Load<SharedUIModule>();
 
             _kernel.UseNinjectDependencyResolver();
+
+            return _kernel;
         }
 
         public static void ConfigureApplicationLifetime(IClassicDesktopStyleApplicationLifetime applicationLifetime)

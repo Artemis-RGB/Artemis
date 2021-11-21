@@ -4,25 +4,28 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Security.Principal;
 using System.Threading;
-using System.Windows;
 using Artemis.Core;
-using Artemis.UI.Utilities;
+using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Windows.Utilities;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Threading;
 using Ninject;
-using Ookii.Dialogs.Wpf;
-using Stylet;
 
-namespace Artemis.UI
+namespace Artemis.UI.Windows
 {
     public class ApplicationStateManager
     {
+        private readonly IWindowService _windowService;
+
         // ReSharper disable once NotAccessedField.Local - Kept in scope to ensure it does not get released
-        private Mutex _artemisMutex;
+        private Mutex? _artemisMutex;
 
         public ApplicationStateManager(IKernel kernel, string[] startupArguments)
         {
+            _windowService = kernel.Get<IWindowService>();
             StartupArguments = startupArguments;
             IsElevated = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
 
@@ -30,7 +33,14 @@ namespace Artemis.UI
             Core.Utilities.RestartRequested += UtilitiesOnRestartRequested;
 
             // On Windows shutdown dispose the kernel just so device providers get a chance to clean up
-            Application.Current.SessionEnding += (_, _) => kernel.Dispose();
+            if (Application.Current.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
+            {
+                controlledApplicationLifetime.Exit += (_, _) =>
+                {
+                    RunForcedShutdownIfEnabled();
+                    kernel.Dispose();
+                };
+            }
         }
 
         public string[] StartupArguments { get; }
@@ -47,35 +57,14 @@ namespace Artemis.UI
 
         public void DisplayException(Exception e)
         {
-            using TaskDialog dialog = new();
-            AssemblyInformationalVersionAttribute versionAttribute = typeof(ApplicationStateManager).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-            dialog.WindowTitle = $"Artemis {versionAttribute?.InformationalVersion} build {Constants.BuildInfo.BuildNumberDisplay}";
-            dialog.MainInstruction = "Unfortunately Artemis ran into an unhandled exception and cannot continue.";
-            dialog.Content = e.Message;
-            dialog.ExpandedInformation = e.StackTrace.Trim();
-
-            dialog.CollapsedControlText = "Show stack trace";
-            dialog.ExpandedControlText = "Hide stack trace";
-
-            dialog.Footer = "If this keeps happening check out the <a href=\"https://wiki.artemis-rgb.com\">wiki</a> or hit us up on <a href=\"https://discord.gg/S3MVaC9\">Discord</a>.";
-            dialog.FooterIcon = TaskDialogIcon.Error;
-            dialog.EnableHyperlinks = true;
-            dialog.HyperlinkClicked += OpenHyperlink;
-
-            TaskDialogButton copyButton = new("Copy stack trace");
-            TaskDialogButton closeButton = new("Close") {Default = true};
-            dialog.Buttons.Add(copyButton);
-            dialog.Buttons.Add(closeButton);
-            dialog.ButtonClicked += (_, args) =>
+            try
             {
-                if (args.Item == copyButton)
-                {
-                    Clipboard.SetText(e.ToString());
-                    args.Cancel = true;
-                }
-            };
-
-            dialog.ShowDialog(Application.Current.MainWindow);
+                _windowService.ShowExceptionDialog("An unhandled exception occured", e);
+            }
+            catch
+            {
+                // ignored, we tried
+            }
         }
 
         private bool RemoteFocus()
@@ -123,7 +112,7 @@ namespace Artemis.UI
             }
         }
 
-        private void UtilitiesOnRestartRequested(object sender, RestartEventArgs e)
+        private void UtilitiesOnRestartRequested(object? sender, RestartEventArgs e)
         {
             List<string> argsList = new();
             argsList.AddRange(StartupArguments);
@@ -166,35 +155,32 @@ namespace Artemis.UI
             }
 
             // Lets try a graceful shutdown, PowerShell will kill if needed
-            Execute.OnUIThread(() => Application.Current.Shutdown());
+            if (Application.Current.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
+                Dispatcher.UIThread.Post(() => controlledApplicationLifetime.Shutdown());
         }
 
-        private void UtilitiesOnShutdownRequested(object sender, EventArgs e)
+        private void UtilitiesOnShutdownRequested(object? sender, EventArgs e)
         {
             // Use PowerShell to kill the process after 8 sec just in case
-            if (!StartupArguments.Contains("--disable-forced-shutdown"))
-            {
-                ProcessStartInfo info = new()
-                {
-                    Arguments = "-Command \"& {Start-Sleep -s 8; (Get-Process -Id " + Process.GetCurrentProcess().Id + ").kill()}",
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    CreateNoWindow = true,
-                    FileName = "PowerShell.exe"
-                };
-                Process.Start(info);
-            }
+            RunForcedShutdownIfEnabled();
 
-            Execute.OnUIThread(() => Application.Current.Shutdown());
+            if (Application.Current.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
+                Dispatcher.UIThread.Post(() => controlledApplicationLifetime.Shutdown());
         }
 
-        private void OpenHyperlink(object sender, HyperlinkClickedEventArgs e)
+        private void RunForcedShutdownIfEnabled()
         {
-            ProcessStartInfo processInfo = new()
+            if (StartupArguments.Contains("--disable-forced-shutdown"))
+                return;
+
+            ProcessStartInfo info = new()
             {
-                FileName = e.Href,
-                UseShellExecute = true
+                Arguments = "-Command \"& {Start-Sleep -s 8; (Get-Process -Id " + Process.GetCurrentProcess().Id + ").kill()}",
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+                FileName = "PowerShell.exe"
             };
-            Process.Start(processInfo);
+            Process.Start(info);
         }
     }
 }

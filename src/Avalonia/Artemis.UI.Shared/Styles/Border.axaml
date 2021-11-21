@@ -28,6 +28,12 @@
         <Setter Property="CornerRadius" Value="10" />
     </Style>
 
+    <Style Selector="Border.card-condensed">
+        <Setter Property="Padding" Value="15" />
+        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+        <Setter Property="CornerRadius" Value="10" />
+    </Style>
+
     <Style Selector="Separator.card-separator">
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
         <Setter Property="Margin" Value="-12 15" />
