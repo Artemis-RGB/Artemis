@@ -1,5 +1,4 @@
 using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using ReactiveUI;
@@ -10,17 +9,14 @@ namespace Artemis.UI.Linux
     {
         public override void Initialize()
         {
-            ArtemisBootstrapper.Bootstrap();
+            ArtemisBootstrapper.Bootstrap(this);
             RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
             AvaloniaXamlLoader.Load(this);
         }
 
         public override void OnFrameworkInitializationCompleted()
         {
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-                ArtemisBootstrapper.ConfigureApplicationLifetime(desktop);
-
-            base.OnFrameworkInitializationCompleted();
+            ArtemisBootstrapper.Initialized();
         }
     }
 }

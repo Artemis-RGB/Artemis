@@ -88,20 +88,6 @@ namespace Artemis.UI.Shared.Controls
         /// </summary>
         public event EventHandler<LedClickedEventArgs>? LedClicked;
 
-        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
-        {
-            _deviceImage?.Dispose();
-            _deviceImage = null;
-
-            if (Device != null)
-            {
-                Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
-                Device.DeviceUpdated -= DeviceUpdated;
-            }
-
-            base.OnDetachedFromVisualTree(e);
-        }
-
         /// <summary>
         ///     Invokes the <see cref="LedClicked" /> event
         /// </summary>
@@ -215,6 +201,21 @@ namespace Artemis.UI.Shared.Controls
         #endregion
 
         #region Lifetime management
+
+        /// <inheritdoc />
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            _deviceImage?.Dispose();
+            _deviceImage = null;
+
+            if (Device != null)
+            {
+                Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
+                Device.DeviceUpdated -= DeviceUpdated;
+            }
+
+            base.OnDetachedFromVisualTree(e);
+        }
 
         /// <inheritdoc />
         protected override void OnAttachedToLogicalTree(LogicalTreeAttachmentEventArgs e)

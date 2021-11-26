@@ -19,7 +19,7 @@ namespace Artemis.UI.Screens.Splash
         {
             _coreService = coreService;
             _pluginManagementService = pluginManagementService;
-            Status = "Initializing Core";
+                Status = "Initializing Core";
         }
 
         public string Status

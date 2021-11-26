@@ -33,7 +33,7 @@ namespace Artemis.UI.Shared.Services
 
         public void ShowWindow(object viewModel)
         {
-            Window parent = GetCurrentWindow();
+            Window? parent = GetCurrentWindow();
 
             string name = viewModel.GetType().FullName!.Split('`')[0].Replace("ViewModel", "View");
             Type? type = viewModel.GetType().Assembly.GetType(name);
@@ -50,7 +50,10 @@ namespace Artemis.UI.Shared.Services
 
             Window window = (Window) Activator.CreateInstance(type)!;
             window.DataContext = viewModel;
-            window.Show(parent);
+            if (parent != null)
+                window.Show(parent);
+            else
+                window.Show();
         }
 
         public async Task<TResult> ShowDialogAsync<TViewModel, TResult>(params (string name, object value)[] parameters) where TViewModel : DialogViewModelBase<TResult>
@@ -132,14 +135,14 @@ namespace Artemis.UI.Shared.Services
             return new SaveFileDialogBuilder(GetCurrentWindow());
         }
 
-        public Window GetCurrentWindow()
+        public Window? GetCurrentWindow()
         {
             if (Application.Current.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime classic)
             {
                 throw new ArtemisSharedUIException("Can't show a dialog when application lifetime is not IClassicDesktopStyleApplicationLifetime.");
             }
 
-            Window parent = classic.Windows.FirstOrDefault(w => w.IsActive) ?? classic.MainWindow;
+            Window? parent = classic.Windows.FirstOrDefault(w => w.IsActive) ?? classic.MainWindow;
             return parent;
         }
     }

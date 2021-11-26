@@ -3,6 +3,8 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
+using Avalonia.Platform;
+using Avalonia.Shared.PlatformSupport;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
 using Ninject.Planning.Bindings.Resolvers;
@@ -17,6 +19,7 @@ namespace Artemis.UI.Ninject
                 throw new ArgumentNullException("Kernel shouldn't be null here.");
 
             Kernel.Components.Add<IMissingBindingResolver, SelfBindingResolver>();
+            Kernel.Bind<IAssetLoader>().ToConstant(new AssetLoader());
 
             Kernel.Bind(x =>
             {

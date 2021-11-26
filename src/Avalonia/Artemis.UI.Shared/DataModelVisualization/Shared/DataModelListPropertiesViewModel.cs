@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Interfaces;
 using ReactiveUI;
 
 namespace Artemis.UI.Shared.DataModelVisualization.Shared

@@ -65,8 +65,16 @@ namespace Artemis.UI.Shared.Services.Interfaces
         /// <returns>The builder that can be used to configure the dialog</returns>
         SaveFileDialogBuilder CreateSaveFileDialog();
 
+        /// <summary>
+        /// Creates a content dialog, use the fluent API to configure it
+        /// </summary>
+        /// <returns>The builder that can be used to configure the dialog</returns>
         ContentDialogBuilder CreateContentDialog();
 
+        /// <summary>
+        /// Gets the current window of the application
+        /// </summary>
+        /// <returns>The current window of the application</returns>
         Window GetCurrentWindow();
     }
 }

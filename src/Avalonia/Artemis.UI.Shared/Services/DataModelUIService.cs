@@ -8,6 +8,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Shared.DataModelVisualization;
 using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Artemis.UI.Shared.DefaultTypes.DataModel.Display;
+using Artemis.UI.Shared.Services.Interfaces;
 using Ninject;
 using Ninject.Parameters;
 
