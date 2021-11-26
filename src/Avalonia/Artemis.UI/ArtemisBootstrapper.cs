@@ -34,7 +34,7 @@ namespace Artemis.UI
             return _kernel;
         }
 
-        public static void Initialized()
+        public static void Initialize()
         {
             if (_application == null || _kernel == null)
                 throw new ArtemisUIException("UI not yet bootstrapped");

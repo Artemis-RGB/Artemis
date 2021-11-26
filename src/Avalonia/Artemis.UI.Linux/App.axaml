@@ -8,6 +8,5 @@
 
     <Application.Styles>
         <StyleInclude Source="avares://Artemis.UI/Styles/Artemis.axaml" />
-        <StyleInclude Source="avares://Artemis.UI.Shared/Styles/Artemis.axaml" />
     </Application.Styles>
 </Application>

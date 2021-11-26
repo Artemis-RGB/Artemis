@@ -23,7 +23,7 @@ namespace Artemis.UI.Windows
 
         public override void OnFrameworkInitializationCompleted()
         {
-            ArtemisBootstrapper.Initialized();
+            ArtemisBootstrapper.Initialize();
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 _applicationStateManager = new ApplicationStateManager(_kernel!, desktop.Args);
         }

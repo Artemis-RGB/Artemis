@@ -16,7 +16,7 @@ namespace Artemis.UI.MacOS
 
         public override void OnFrameworkInitializationCompleted()
         {
-            ArtemisBootstrapper.Initialized();
+            ArtemisBootstrapper.Initialize();
         }
     }
 }
