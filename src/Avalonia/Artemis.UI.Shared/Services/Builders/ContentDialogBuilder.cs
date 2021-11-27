@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using FluentAvalonia.UI.Controls;
 using Ninject;
 using Ninject.Parameters;
+using ReactiveUI;
 
 namespace Artemis.UI.Shared.Services.Builders
 {
@@ -14,6 +15,7 @@ namespace Artemis.UI.Shared.Services.Builders
         private readonly ContentDialog _contentDialog;
         private readonly IKernel _kernel;
         private readonly Window _parent;
+        private ContentDialogViewModelBase? _viewModel;
 
         internal ContentDialogBuilder(IKernel kernel, Window parent)
         {
@@ -53,6 +55,13 @@ namespace Artemis.UI.Shared.Services.Builders
             _contentDialog.PrimaryButtonCommand = builder.Command;
             _contentDialog.PrimaryButtonCommandParameter = builder.CommandParameter;
 
+            // I feel like this isn't my responsibility...
+            if (builder.Command != null)
+            {
+                _contentDialog.IsPrimaryButtonEnabled = builder.Command.CanExecute(builder.CommandParameter);
+                builder.Command.CanExecuteChanged += (_, _) => _contentDialog.IsPrimaryButtonEnabled = builder.Command.CanExecute(builder.CommandParameter);
+            }
+
             return this;
         }
 
@@ -66,6 +75,13 @@ namespace Artemis.UI.Shared.Services.Builders
             _contentDialog.SecondaryButtonCommand = builder.Command;
             _contentDialog.SecondaryButtonCommandParameter = builder.CommandParameter;
 
+            // I feel like this isn't my responsibility...
+            if (builder.Command != null)
+            {
+                _contentDialog.IsSecondaryButtonEnabled = builder.Command.CanExecute(builder.CommandParameter);
+                builder.Command.CanExecuteChanged += (_, _) => _contentDialog.IsSecondaryButtonEnabled = builder.Command.CanExecute(builder.CommandParameter);
+            }
+
             return this;
         }
 
@@ -75,24 +91,32 @@ namespace Artemis.UI.Shared.Services.Builders
             return this;
         }
 
-        public ContentDialogBuilder WithViewModel<T>(out T viewModel, params (string name, object value)[] parameters) where T : ViewModelBase
+        public ContentDialogBuilder WithViewModel<T>(out T viewModel, params (string name, object? value)[] parameters) where T : ContentDialogViewModelBase
         {
             IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.name, kv.value)).Cast<IParameter>().ToArray();
             viewModel = _kernel.Get<T>(paramsArray);
+            viewModel.ContentDialog = _contentDialog;
             _contentDialog.Content = viewModel;
 
+            _viewModel = viewModel;
             return this;
         }
 
         public async Task<ContentDialogResult> ShowAsync()
         {
             if (_parent.Content is not Panel panel)
-                return ContentDialogResult.None;
+                throw new ArtemisSharedUIException($"The parent window {_parent.GetType().FullName} should contain a panel at its root");
 
             try
             {
                 panel.Children.Add(_contentDialog);
-                return await _contentDialog.ShowAsync();
+                ContentDialogResult result = await _contentDialog.ShowAsync();
+                
+                // Take the dialog away from the VM in case it's going to try to hide it again or whatever...
+                if (_viewModel != null) 
+                    _viewModel.ContentDialog = null;
+
+                return result;
             }
             finally
             {

@@ -25,9 +25,9 @@
       },
       "LiteDB": {
         "type": "Direct",
-        "requested": "[5.0.10, )",
-        "resolved": "5.0.10",
-        "contentHash": "x70WuqMDuP75dajqSLvO+AnI/BbwS6da+ukTO7rueV7VoXoQ5CRA9FV4r7cOS4OUr2NS1Up7LDIutjCxQycRvg=="
+        "requested": "[5.0.11, )",
+        "resolved": "5.0.11",
+        "contentHash": "6cL4bOmVCUB0gIK+6qIr68HeqjjHZicPDGQjvJ87mIOvkFsEsJWkIps3yoKNeLpHhJQur++yoQ9Q8gxsdos0xQ=="
       },
       "McMaster.NETCore.Plugins": {
         "type": "Direct",
@@ -1225,7 +1225,7 @@
       "artemis.storage": {
         "type": "Project",
         "dependencies": {
-          "LiteDB": "5.0.10",
+          "LiteDB": "5.0.11",
           "Serilog": "2.10.0"
         }
       }

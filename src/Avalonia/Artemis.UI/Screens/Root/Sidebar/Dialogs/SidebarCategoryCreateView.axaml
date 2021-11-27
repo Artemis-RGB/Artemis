@@ -3,12 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Settings.SettingsView">
-    <TabControl Margin="12" Items="{Binding SettingTabs}">
-        <TabControl.ItemTemplate>
-            <DataTemplate>
-                <TextBlock Text="{Binding DisplayName}" />
-            </DataTemplate>
-        </TabControl.ItemTemplate>
-    </TabControl>
+             x:Class="Artemis.UI.Screens.Root.Sidebar.Dialogs.SidebarCategoryCreateView">
+    <StackPanel>
+        <StackPanel.KeyBindings>
+            <KeyBinding Gesture="Enter" Command="{Binding Confirm}" />
+        </StackPanel.KeyBindings>
+        <TextBox Text="{Binding CategoryName}" Watermark="Category name"/>
+    </StackPanel>
 </UserControl>

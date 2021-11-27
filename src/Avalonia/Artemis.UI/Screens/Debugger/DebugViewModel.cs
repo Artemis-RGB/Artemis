@@ -18,7 +18,6 @@ namespace Artemis.UI.Screens.Debugger
     {
         private readonly IKernel _kernel;
         private readonly IDebugService _debugService;
-        private bool _isActive;
         private NavigationViewItem? _selectedItem;
 
         public DebugViewModel(IKernel kernel, IDebugService debugService)
@@ -35,11 +34,6 @@ namespace Artemis.UI.Screens.Debugger
             });
         }
 
-        public bool IsActive
-        {
-            get => _isActive;
-            set => this.RaiseAndSetIfChanged(ref _isActive, value);
-        }
 
         public NavigationViewItem? SelectedItem
         {
@@ -77,5 +71,17 @@ namespace Artemis.UI.Screens.Debugger
         }
 
         public RoutingState Router { get; } = new();
+
+        public void Activate()
+        {
+            OnActivationRequested();
+        }
+
+        public event EventHandler? ActivationRequested;
+
+        protected virtual void OnActivationRequested()
+        {
+            ActivationRequested?.Invoke(this, EventArgs.Empty);
+        }
     }
 }

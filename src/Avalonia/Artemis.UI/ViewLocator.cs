@@ -1,7 +1,7 @@
 using System;
-using Artemis.UI.Shared;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using ReactiveUI;
 
 namespace Artemis.UI
 {
@@ -22,7 +22,7 @@ namespace Artemis.UI
 
         public bool Match(object data)
         {
-            return data is ViewModelBase;
+            return data is ReactiveObject;
         }
     }
 }

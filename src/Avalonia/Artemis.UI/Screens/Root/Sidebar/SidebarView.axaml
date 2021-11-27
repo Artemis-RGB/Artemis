@@ -48,7 +48,10 @@
         <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <ItemsControl Margin="10 2" Items="{Binding SidebarCategories}" />
-                <Button Content="ADD NEW CATEGORY" Margin="10 10 10 0" />
+                <Button Content="Add new category"
+                        Margin="10"
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding AddCategory}" />
             </StackPanel>
         </ScrollViewer>
 

@@ -4,22 +4,30 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Settings.Tabs.DevicesTabView">
-    <StackPanel MaxWidth="1050">
-        <TextBlock Classes="h4">Device management</TextBlock>
-        <TextBlock>
-            Below you view and manage the devices that were detected by Artemis.
-        </TextBlock>
-        <TextBlock>
-            Disabling a device will cause it to stop updating. Some SDKs will even go back to using manufacturer lighting (Artemis restart may be required).
-        </TextBlock>
+    <Grid MaxWidth="1050">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <TextBlock Classes="h4">Device management</TextBlock>
+            <TextBlock>
+                Below you view and manage the devices that were detected by Artemis.
+            </TextBlock>
+            <TextBlock>
+                Disabling a device will cause it to stop updating. Some SDKs will even go back to using manufacturer lighting (Artemis restart may be required).
+            </TextBlock>
+		</StackPanel>
 
-        <ItemsControl Items="{Binding Devices}" Margin="-5 0">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
-    </StackPanel>
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <ItemsControl Items="{Binding Devices}" Margin="-5 0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
 
 </UserControl>

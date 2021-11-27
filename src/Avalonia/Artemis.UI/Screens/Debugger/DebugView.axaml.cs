@@ -1,5 +1,6 @@
 using System;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Artemis.UI.Shared.Events;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -12,19 +13,20 @@ namespace Artemis.UI.Screens.Debugger
 {
     public class DebugView : ReactiveWindow<DebugViewModel>
     {
-        private readonly NavigationView _navigation;
-
         public DebugView()
         {
-            Activated += OnActivated;
-            Deactivated += OnDeactivated;
             InitializeComponent();
+            NavigationView navigation = this.Get<NavigationView>("Navigation");
 
-            _navigation = this.Get<NavigationView>("Navigation");
             this.WhenActivated(d =>
             {
-                ViewModel!.WhenAnyValue(vm => vm!.IsActive).Subscribe(_ => Activate()).DisposeWith(d);
-                ViewModel!.SelectedItem = (NavigationViewItem) _navigation.MenuItems.ElementAt(0);
+                Observable.FromEventPattern(x => ViewModel!.ActivationRequested += x, x => ViewModel!.ActivationRequested -= x).Subscribe(_ =>
+                {
+                    WindowState = WindowState.Normal;
+                    Activate();
+                    
+                }).DisposeWith(d);
+                ViewModel!.SelectedItem = (NavigationViewItem) navigation.MenuItems.ElementAt(0);
             });
         }
 
@@ -33,21 +35,8 @@ namespace Artemis.UI.Screens.Debugger
             AvaloniaXamlLoader.Load(this);
         }
 
-        private void OnDeactivated(object? sender, EventArgs e)
-        {
-            if (ViewModel != null)
-                ViewModel.IsActive = false;
-        }
-
-        private void OnActivated(object? sender, EventArgs e)
-        {
-            if (ViewModel != null)
-                ViewModel.IsActive = true;
-        }
-
         private void DeviceVisualizer_OnLedClicked(object? sender, LedClickedEventArgs e)
         {
-            
         }
     }
 }

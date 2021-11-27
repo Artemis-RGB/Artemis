@@ -21,8 +21,8 @@ namespace Artemis.UI.Services
 
         private void BringDebuggerToForeground()
         {
-            if (_debugViewModel != null) 
-                _debugViewModel.IsActive = true;
+            if (_debugViewModel != null)
+                _debugViewModel.Activate();
         }
 
         private void CreateDebugger()

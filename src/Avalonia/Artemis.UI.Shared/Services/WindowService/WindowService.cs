@@ -142,7 +142,7 @@ namespace Artemis.UI.Shared.Services
                 throw new ArtemisSharedUIException("Can't show a dialog when application lifetime is not IClassicDesktopStyleApplicationLifetime.");
             }
 
-            Window? parent = classic.Windows.FirstOrDefault(w => w.IsActive) ?? classic.MainWindow;
+            Window? parent = classic.Windows.FirstOrDefault(w => w.IsActive && w.ShowInTaskbar) ?? classic.MainWindow;
             return parent;
         }
     }

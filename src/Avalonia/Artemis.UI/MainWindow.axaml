@@ -6,5 +6,8 @@
         x:Class="Artemis.UI.MainWindow"
         Icon="/Assets/Images/Logo/bow.ico"
         Title="Artemis 2.0">
-    <ContentControl Content="{Binding}" />
+	<!-- Use a panel here so the main window can host ContentDialogs -->
+    <Panel>
+		<ContentControl Content="{Binding}" />
+	</Panel>
 </Window>

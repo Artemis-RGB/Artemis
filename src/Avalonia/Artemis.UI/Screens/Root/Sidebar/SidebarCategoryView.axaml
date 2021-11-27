@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Root.Sidebar"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Root.Sidebar.SidebarCategoryView">
     <UserControl.Styles>
@@ -27,19 +28,8 @@
             <Setter Property="Opacity" Value="1" />
         </Style>
     </UserControl.Styles>
-    <Grid x:Name="ContainerGrid" Margin="0 8 0 0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Background="Transparent">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+    <Grid x:Name="ContainerGrid" Margin="0 8 0 0" RowDefinitions="Auto,*">
+        <Grid Grid.Row="0" Background="Transparent" ColumnDefinitions="Auto,Auto,*,Auto,Auto">
 
             <avalonia:MaterialIcon Classes.chevron-collapsed="{Binding ShowItems}"
                                    Kind="ChevronUp"
@@ -87,7 +77,8 @@
             <Button Classes="category-button icon-button icon-button-small"
                     Grid.Column="2"
                     ToolTip.Tip="Edit category"
-                    HorizontalAlignment="Right">
+                    HorizontalAlignment="Right"
+                    Command="{Binding EditCategory}">
                 <avalonia:MaterialIcon Kind="Cog" />
             </Button>
             <ToggleButton Classes="category-button icon-button icon-button-small"
@@ -105,12 +96,11 @@
                 <DataTemplate x:Key="ProfileDragTemplate" DataType="{x:Type local:SidebarProfileConfigurationViewModel}">
                     <Border Background="{DynamicResource MaterialDesignDivider}" Padding="10" CornerRadius="4">
                         <StackPanel Orientation="Horizontal">
-                            <!-- <shared:ProfileConfigurationIcon ConfigurationIcon="{Binding ProfileConfiguration.Icon}" -->
-                            <!--                                                       Width="20" -->
-                            <!--                                                       Height="20" -->
-                            <!--                                                       Margin="0 0 10 0" -->
-                            <!--                                                       Foreground="{DynamicResource MaterialDesignBody}" /> -->
-                            <TextBlock Text="{Binding ProfileConfiguration.Name}" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBody}" />
+                            <controls:ProfileConfigurationIcon ConfigurationIcon="{Binding ProfileConfiguration.Icon}"
+                                                               Width="20"
+                                                               Height="20"
+                                                               Margin="0 0 10 0" />
+                            <TextBlock Text="{Binding ProfileConfiguration.Name}" VerticalAlignment="Center" />
                         </StackPanel>
                     </Border>
                 </DataTemplate>

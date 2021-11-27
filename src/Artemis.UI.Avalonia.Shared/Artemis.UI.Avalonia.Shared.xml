@@ -689,6 +689,17 @@
                 Represents errors that occur within the Artemis Shared UI library
             </summary>
         </member>
+        <member name="T:Artemis.UI.Shared.Extensions.ControlExtensions">
+            <summary>
+                Provides extension methods for Avalonia's <see cref="T:Avalonia.Controls.Control" /> type
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Extensions.ControlExtensions.ClearAllDataValidationErrors(Avalonia.Controls.Control)">
+            <summary>
+                Clears all data validation errors on the given control and any of it's logical siblings
+            </summary>
+            <param name="target">The target control</param>
+        </member>
         <member name="T:Artemis.UI.Shared.Ninject.SharedUIModule">
             <summary>
                 The main <see cref="T:Ninject.Modules.NinjectModule" /> of the Artemis Shared UI toolkit that binds all services
@@ -1068,6 +1079,41 @@
         <member name="E:Artemis.UI.Shared.Services.MainWindowService.IMainWindowService.MainWindowClosed">
             <summary>
                 Occurs when the main window has been closed
+            </summary>
+        </member>
+        <member name="T:Artemis.UI.Shared.ContentDialogViewModelBase">
+            <summary>
+                Represents the base class for Artemis view models
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.ContentDialogViewModelBase.ContentDialog">
+            <summary>
+            Gets the content dialog that hosts the view model
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.ContentDialogViewModelBase.Activator">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.ContentDialogViewModelBase.Dispose(System.Boolean)">
+            <summary>
+                Releases the unmanaged resources used by the object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">
+                <see langword="true" /> to release both managed and unmanaged resources;
+                <see langword="false" /> to release only unmanaged resources.
+            </param>
+        </member>
+        <member name="M:Artemis.UI.Shared.ContentDialogViewModelBase.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:Artemis.UI.Shared.ViewModelValidationBase">
+            <summary>
+                Represents the base class for Artemis view models
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.ViewModelValidationBase.DisplayName">
+            <summary>
+                Gets or sets the display name of the view model
             </summary>
         </member>
         <member name="T:Artemis.UI.Shared.ViewModelBase">

@@ -12,7 +12,7 @@ using RGB.NET.Core;
 
 namespace Artemis.UI.Screens.Device
 {
-    public class DeviceDetectInputViewModel : ActivatableViewModelBase
+    public class DeviceDetectInputViewModel : ContentDialogViewModelBase
     {
         private readonly IInputService _inputService;
         private readonly INotificationService _notificationService;

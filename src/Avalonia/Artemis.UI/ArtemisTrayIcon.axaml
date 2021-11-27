@@ -3,7 +3,7 @@
     <NativeMenu x:Key="TrayIconMenu">
         <NativeMenuItem Header="Home" Command="{Binding OpenScreen}" CommandParameter="Home" />
         <NativeMenuItem Header="Workshop" Command="{Binding OpenScreen}" CommandParameter="Workshop" />
-        <NativeMenuItem Header="Surface Editor" Command="{Binding OpenScreen}" CommandParameter="SurfaceEditor" />
+        <NativeMenuItem Header="Surface Editor" Command="{Binding OpenScreen}" CommandParameter="Surface Editor" />
         <NativeMenuItem Header="Settings" Command="{Binding OpenScreen}" CommandParameter="Settings" />
         <NativeMenuItemSeparator />
         <NativeMenuItem Header="Debugger" Command="{Binding OpenDebugger}" />

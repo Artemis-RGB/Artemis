@@ -18,12 +18,13 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.10" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
-    <PackageReference Include="Avalonia.Svg.Skia" Version="0.10.8.3" />
-    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.10" />
-    <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.10" />
-    <PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.10.10" />
-    <PackageReference Include="FluentAvaloniaUI" Version="1.1.5" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="0.10.10" />
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.10.4" />
+    <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.10.4" />
+    <PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.10.10.4" />
+    <PackageReference Include="FluentAvaloniaUI" Version="1.1.6" />
     <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
+    <PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />
    </ItemGroup>
   <ItemGroup>
     <Page Include="DefaultTypes\DataModel\Display\DefaultDataModelDisplayView.xaml">
