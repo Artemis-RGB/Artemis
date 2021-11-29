@@ -25,9 +25,14 @@ namespace Artemis.Core
         public static readonly string ExecutablePath = Utilities.GetCurrentLocation();
 
         /// <summary>
+        ///     The base path for Artemis application data folder
+        /// </summary>
+        public static readonly string BaseFolder = Environment.GetFolderPath(OperatingSystem.IsWindows() ? Environment.SpecialFolder.ApplicationData : Environment.SpecialFolder.LocalApplicationData);
+
+        /// <summary>
         ///     The full path to the Artemis data folder
         /// </summary>
-        public static readonly string DataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Artemis");
+        public static readonly string DataFolder = Path.Combine(BaseFolder, "Artemis");
 
         /// <summary>
         ///     The full path to the Artemis logs folder
