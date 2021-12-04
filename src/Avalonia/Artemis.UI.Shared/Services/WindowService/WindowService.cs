@@ -56,7 +56,7 @@ namespace Artemis.UI.Shared.Services
                 window.Show();
         }
 
-        public async Task<TResult> ShowDialogAsync<TViewModel, TResult>(params (string name, object value)[] parameters) where TViewModel : DialogViewModelBase<TResult>
+        public async Task<TResult> ShowDialogAsync<TViewModel, TResult>(params (string name, object? value)[] parameters) where TViewModel : DialogViewModelBase<TResult>
         {
             IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.name, kv.value)).Cast<IParameter>().ToArray();
             TViewModel viewModel = _kernel.Get<TViewModel>(paramsArray)!;

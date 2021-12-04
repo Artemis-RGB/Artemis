@@ -8,13 +8,13 @@ using ReactiveUI.Validation.Extensions;
 
 namespace Artemis.UI.Screens.Root.Sidebar.Dialogs
 {
-    public class SidebarCategoryCreateViewModel : ContentDialogViewModelBase
+    public class SidebarCategoryEditViewModel : ContentDialogViewModelBase
     {
         private readonly IProfileService _profileService;
         private readonly ProfileCategory? _category;
         private string? _categoryName;
 
-        public SidebarCategoryCreateViewModel(IProfileService profileService, ProfileCategory? category)
+        public SidebarCategoryEditViewModel(IProfileService profileService, ProfileCategory? category)
         {
             _profileService = profileService;
             _category = category;

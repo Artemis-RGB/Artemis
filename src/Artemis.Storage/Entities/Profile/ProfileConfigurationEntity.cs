@@ -8,6 +8,7 @@ namespace Artemis.Storage.Entities.Profile
     {
         public string Name { get; set; }
         public string MaterialIcon { get; set; }
+        public string IconOriginalFileName { get; set; }
         public Guid FileIconId { get; set; }
         public int IconType { get; set; }
         public int Order { get; set; }

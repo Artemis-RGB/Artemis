@@ -5,9 +5,9 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Root.Sidebar.Dialogs
 {
-    public class SidebarCategoryCreateView : ReactiveUserControl<SidebarCategoryCreateViewModel>
+    public class SidebarCategoryEditView : ReactiveUserControl<SidebarCategoryEditViewModel>
     {
-        public SidebarCategoryCreateView()
+        public SidebarCategoryEditView()
         {
             InitializeComponent();
             this.WhenActivated(_ => this.ClearAllDataValidationErrors());

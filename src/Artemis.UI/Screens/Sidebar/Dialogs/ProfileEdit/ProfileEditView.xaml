@@ -10,7 +10,7 @@
              xmlns:profileEdit="clr-namespace:Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit"
              xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="280"
+             d:DesignHeight="450" d:DesignWidth="600"
              d:DataContext="{d:DesignInstance {x:Type profileEdit:ProfileEditViewModel}}"
              Width="800">
     <UserControl.Resources>

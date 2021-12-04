@@ -1,0 +1,225 @@
+﻿using System;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Artemis.Core;
+using Artemis.Core.Modules;
+using Artemis.Core.Services;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services.Interfaces;
+using Avalonia.Media.Imaging;
+using Avalonia.Svg.Skia;
+using Avalonia.Threading;
+using Castle.Core.Resource;
+using Material.Icons;
+using Newtonsoft.Json;
+using ReactiveUI;
+
+namespace Artemis.UI.Screens.Root.Sidebar.Dialogs
+{
+    public class ProfileConfigurationEditViewModel : DialogViewModelBase<bool>
+    {
+        private readonly ProfileCategory _profileCategory;
+        private readonly IProfileService _profileService;
+        private readonly IWindowService _windowService;
+        private ProfileConfigurationIconType _iconType;
+        private ObservableCollection<ProfileIconViewModel>? _materialIcons;
+        private ProfileConfiguration _profileConfiguration;
+        private string _profileName;
+        private Bitmap? _selectedBitmapSource;
+        private ProfileIconViewModel? _selectedMaterialIcon;
+        private ProfileModuleViewModel? _selectedModule;
+        private string? _selectedIconPath;
+        private SvgImage? _selectedSvgSource;
+
+        public ProfileConfigurationEditViewModel(ProfileCategory profileCategory, ProfileConfiguration? profileConfiguration, IWindowService windowService,
+            IProfileService profileService, IPluginManagementService pluginManagementService)
+        {
+            _profileCategory = profileCategory;
+            _windowService = windowService;
+            _profileService = profileService;
+            _profileConfiguration = profileConfiguration ?? profileService.CreateProfileConfiguration(profileCategory, "New profile", Enum.GetValues<MaterialIconKind>().First().ToString());
+            _profileName = _profileConfiguration.Name;
+            _iconType = _profileConfiguration.Icon.IconType;
+
+            IsNew = profileConfiguration == null;
+            DisplayName = IsNew ? "Artemis | Add profile" : "Artemis | Edit profile";
+            Modules = new ObservableCollection<ProfileModuleViewModel>(
+                pluginManagementService.GetFeaturesOfType<Module>().Where(m => !m.IsAlwaysAvailable).Select(m => new ProfileModuleViewModel(m))
+            );
+
+            Dispatcher.UIThread.Post(LoadIcon, DispatcherPriority.Background);
+        }
+
+        public bool IsNew { get; }
+
+        public ProfileConfiguration ProfileConfiguration
+        {
+            get => _profileConfiguration;
+            set => this.RaiseAndSetIfChanged(ref _profileConfiguration, value);
+        }
+
+        public string ProfileName
+        {
+            get => _profileName;
+            set => this.RaiseAndSetIfChanged(ref _profileName, value);
+        }
+
+        public ObservableCollection<ProfileModuleViewModel> Modules { get; }
+
+        public ProfileModuleViewModel? SelectedModule
+        {
+            get => _selectedModule;
+            set => this.RaiseAndSetIfChanged(ref _selectedModule, value);
+        }
+
+        public async Task Import()
+        {
+            string[]? result = await _windowService.CreateOpenFileDialog()
+                .HavingFilter(f => f.WithExtension("json").WithName("Artemis profile"))
+                .ShowAsync();
+
+            if (result == null)
+                return;
+
+            string json = await File.ReadAllTextAsync(result[0]);
+            ProfileConfigurationExportModel? profileConfigurationExportModel = null;
+            try
+            {
+                profileConfigurationExportModel = JsonConvert.DeserializeObject<ProfileConfigurationExportModel>(json, IProfileService.ExportSettings);
+            }
+            catch (JsonException e)
+            {
+                _windowService.ShowExceptionDialog("Import profile failed", e);
+            }
+
+            if (profileConfigurationExportModel == null)
+            {
+                await _windowService.ShowConfirmContentDialog("Import profile", "Failed to import this profile, make sure it is a valid Artemis profile.", "Confirm", null);
+                return;
+            }
+
+            _profileService.ImportProfile(_profileCategory, profileConfigurationExportModel);
+            Close(true);
+        }
+
+        public async Task Confirm()
+        {
+            ProfileConfiguration.Name = ProfileName;
+            ProfileConfiguration.Module = SelectedModule?.Module;
+            await SaveIcon();
+
+            _profileService.SaveProfileConfigurationIcon(ProfileConfiguration);
+            _profileService.SaveProfileCategory(_profileCategory);
+            Close(true);
+        }
+
+        public void Cancel()
+        {
+            if (IsNew)
+                _profileService.RemoveProfileConfiguration(_profileConfiguration);
+            Close(false);
+        }
+
+        #region Icon
+
+        public ProfileConfigurationIconType IconType
+        {
+            get => _iconType;
+            set => this.RaiseAndSetIfChanged(ref _iconType, value);
+        }
+
+        public ObservableCollection<ProfileIconViewModel>? MaterialIcons
+        {
+            get => _materialIcons;
+            set => this.RaiseAndSetIfChanged(ref _materialIcons, value);
+        }
+
+        public ProfileIconViewModel? SelectedMaterialIcon
+        {
+            get => _selectedMaterialIcon;
+            set => this.RaiseAndSetIfChanged(ref _selectedMaterialIcon, value);
+        }
+
+        public Bitmap? SelectedBitmapSource
+        {
+            get => _selectedBitmapSource;
+            set => this.RaiseAndSetIfChanged(ref _selectedBitmapSource, value);
+        }
+
+        public SvgImage? SelectedSvgSource
+        {
+            get => _selectedSvgSource;
+            set => this.RaiseAndSetIfChanged(ref _selectedSvgSource, value);
+        }
+
+        private void LoadIcon()
+        {
+            // Preselect the icon based on streams if needed
+            if (_profileConfiguration.Icon.IconType == ProfileConfigurationIconType.BitmapImage)
+            {
+                SelectedBitmapSource = new Bitmap(_profileConfiguration.Icon.GetIconStream());
+            }
+            else if (_profileConfiguration.Icon.IconType == ProfileConfigurationIconType.SvgImage)
+            {
+                SvgSource newSource = new();
+                newSource.Load(_profileConfiguration.Icon.GetIconStream());
+                SelectedSvgSource = new SvgImage {Source = newSource};
+            }
+
+            // Prepare the contents of the dropdown box, it should be virtualized so no need to wait with this
+            MaterialIcons = new ObservableCollection<ProfileIconViewModel>(Enum.GetValues<MaterialIconKind>()
+                .Select(kind => new ProfileIconViewModel(kind))
+                .DistinctBy(vm => vm.DisplayName)
+                .OrderBy(vm => vm.DisplayName));
+
+            // Preselect the icon or fall back to a random one
+            SelectedMaterialIcon = !IsNew && Enum.TryParse(_profileConfiguration.Icon.IconName, out MaterialIconKind enumValue)
+                ? MaterialIcons.FirstOrDefault(m => m.Icon == enumValue)
+                : MaterialIcons.ElementAt(new Random().Next(0, MaterialIcons.Count - 1));
+        }
+
+        private async Task SaveIcon()
+        {
+            if (IconType == ProfileConfigurationIconType.MaterialIcon && SelectedMaterialIcon != null)
+                ProfileConfiguration.Icon.SetIconByName(SelectedMaterialIcon.Icon.ToString());
+            else if (_selectedIconPath != null)
+            {
+                await using FileStream fileStream = File.OpenRead(_selectedIconPath);
+                ProfileConfiguration.Icon.SetIconByStream(Path.GetFileName(_selectedIconPath), fileStream);
+            }
+        }
+
+        public async Task BrowseBitmapFile()
+        {
+            string[]? result = await _windowService.CreateOpenFileDialog()
+                .HavingFilter(f => f.WithExtension("png").WithExtension("jpg").WithExtension("bmp").WithName("Bitmap image"))
+                .ShowAsync();
+
+            if (result == null)
+                return;
+
+            SelectedBitmapSource = new Bitmap(result[0]);
+            _selectedIconPath = result[0];
+        }
+
+        public async Task BrowseSvgFile()
+        {
+            string[]? result = await _windowService.CreateOpenFileDialog()
+                .HavingFilter(f => f.WithExtension("svg").WithName("SVG image"))
+                .ShowAsync();
+
+            if (result == null)
+                return;
+
+            SvgSource newSource = new();
+            newSource.Load(result[0]);
+
+            SelectedSvgSource = new SvgImage {Source = newSource};
+            _selectedIconPath = result[0];
+        }
+
+        #endregion
+    }
+}

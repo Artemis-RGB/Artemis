@@ -1,0 +1,150 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+        xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+        xmlns:local="clr-namespace:Artemis.UI.Screens.Root.Sidebar.Dialogs"
+        xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="850"
+        x:Class="Artemis.UI.Screens.Root.Sidebar.Dialogs.ProfileConfigurationEditView"
+        Title="{Binding DisplayName}"
+        Icon="/Assets/Images/Logo/bow.ico"
+        Width="800"
+        Height="850">
+    <Window.Resources>
+        <converters:EnumToBooleanConverter x:Key="EnumBoolConverter" />
+    </Window.Resources>
+    <Grid Margin="16" RowDefinitions="*,Auto">
+        <ScrollViewer>
+            <StackPanel>
+                <StackPanel.Styles>
+                    <Style Selector="TextBlock.label">
+                        <Setter Property="Margin" Value="0 10 0 5" />
+                    </Style>
+                </StackPanel.Styles>
+
+                <Grid>
+                    <TextBlock Classes="h4" IsVisible="{Binding IsNew}">Add a new profile</TextBlock>
+                    <TextBlock Classes="h4" IsVisible="{Binding !IsNew}" Text="{Binding ProfileConfiguration.Name}" />
+                </Grid>
+
+                <TextBlock Classes="h5">General</TextBlock>
+
+                <Border Classes="card" Margin="0 0 0 15">
+                    <StackPanel>
+                        <TextBlock Classes="label">Profile name</TextBlock>
+                        <TextBox Text="{Binding ProfileName}" />
+                        <TextBlock Classes="label">Module</TextBlock>
+                        <ComboBox SelectedItem="{Binding SelectedModule}" IsEnabled="{Binding Modules.Count}" Items="{Binding Modules}" HorizontalAlignment="Stretch">
+                            <ComboBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel />
+                                </ItemsPanelTemplate>
+                            </ComboBox.ItemsPanel>
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="{x:Type local:ProfileModuleViewModel}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <controls:ArtemisIcon Icon="{Binding Icon}" Width="16" Height="16" Margin="0 0 5 0" />
+                                        <TextBlock Text="{Binding Name}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Grid>
+                            <TextBlock Classes="subtitle" IsVisible="{Binding Modules.Count}">Optional and binds the profile to the selected module, making module data available</TextBlock>
+                            <TextBlock Classes="subtitle" IsVisible="{Binding !Modules.Count}">No available modules were found</TextBlock>
+                        </Grid>
+
+                        <TextBlock Classes="label">Icon type</TextBlock>
+                        <WrapPanel Orientation="Horizontal">
+                            <RadioButton Content="Material Icon"
+                                         IsChecked="{Binding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.MaterialIcon}}" />
+                            <RadioButton Content="Bitmap image"
+                                         IsChecked="{Binding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.BitmapImage}}" />
+                            <RadioButton Content="SVG image"
+                                         IsChecked="{Binding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.SvgImage}}" />
+                        </WrapPanel>
+
+                        <TextBlock Classes="label">Icon</TextBlock>
+                        <StackPanel Orientation="Horizontal"
+                                    IsVisible="{Binding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.BitmapImage}}">
+                            <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="98" Height="98">
+                                <Image Source="{Binding SelectedBitmapSource}" Margin="10"/>
+                            </Border>
+                            <Button Command="{Binding BrowseBitmapFile}"
+                                VerticalAlignment="Bottom"
+                                    Margin="10 0"
+                                    IsVisible="{Binding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.BitmapImage}}">
+                                Browse bitmap file
+                            </Button>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal"
+                                    IsVisible="{Binding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.SvgImage}}">
+                            <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="98" Height="98">
+								<Image Margin="10" Source="{Binding SelectedSvgSource}">
+									
+                                </Image>
+                            </Border>
+                            <Button Command="{Binding BrowseSvgFile}"
+                                    VerticalAlignment="Bottom"
+                                    Margin="10 0"
+                                    IsVisible="{Binding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.SvgImage}}">
+                                Browse SVG file
+                            </Button>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal"
+                                    IsVisible="{Binding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.MaterialIcon}}">
+                            <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="98" Height="98">
+                                <avalonia:MaterialIcon Kind="{Binding SelectedMaterialIcon.Icon}" Width="65" Height="65" />
+                            </Border>
+                            <ComboBox Items="{Binding MaterialIcons}"
+                                      SelectedItem="{Binding SelectedMaterialIcon}"
+                                      VirtualizationMode="Simple"
+                                      VerticalAlignment="Bottom"
+                                      IsTextSearchEnabled="True"
+                                      Margin="10 0"
+                                      Width="250"
+                                      IsVisible="{Binding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.MaterialIcon}}">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate DataType="local:ProfileIconViewModel">
+                                        <StackPanel Orientation="Horizontal">
+                                            <avalonia:MaterialIcon Kind="{Binding Icon}" Margin="0 0 5 0" />
+                                            <TextBlock Text="{Binding DisplayName}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Classes="h5">Keybindings</TextBlock>
+                <TextBlock Classes="subtitle">You may set up hotkeys to activate/deactivate the profile</TextBlock>
+                <Border Classes="card" Margin="0 5 0 15">
+                    <TextBlock>TODO</TextBlock>
+                </Border>
+
+                <TextBlock Classes="h5">Activation conditions</TextBlock>
+                <TextBlock Classes="subtitle">If you only want this profile to be active under certain conditions, configure those conditions below</TextBlock>
+                <Border Classes="card" Margin="0 5 0 15">
+                    <TextBlock>TODO</TextBlock>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto">
+            <Button Grid.Column="0" Command="{Binding Import}">Import profile</Button>
+            <Button Grid.Column="1" Margin="10" Classes="accent" Command="{Binding Confirm}">Confirm</Button>
+            <Button Grid.Column="2" Command="{Binding Cancel}">Cancel</Button>
+        </Grid>
+    </Grid>
+
+</Window>

@@ -41,7 +41,7 @@ namespace Artemis.UI.Shared.Services.Interfaces
         /// <typeparam name="TViewModel">The view model type</typeparam>
         /// <typeparam name="TResult">The return type</typeparam>
         /// <returns>A task containing the return value of type <typeparamref name="TResult" /></returns>
-        Task<TResult> ShowDialogAsync<TViewModel, TResult>(params (string name, object value)[] parameters) where TViewModel : DialogViewModelBase<TResult>;
+        Task<TResult> ShowDialogAsync<TViewModel, TResult>(params (string name, object? value)[] parameters) where TViewModel : DialogViewModelBase<TResult>;
 
         /// <summary>
         /// Shows a content dialog asking the user to confirm an action

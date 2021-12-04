@@ -70,7 +70,7 @@ namespace Artemis.Storage.Repositories
             if (stream == null && _profileIcons.Exists(profileConfigurationEntity.FileIconId))
                 _profileIcons.Delete(profileConfigurationEntity.FileIconId);
 
-            _profileIcons.Upload(profileConfigurationEntity.FileIconId, "image", stream);
+            _profileIcons.Upload(profileConfigurationEntity.FileIconId, profileConfigurationEntity.IconOriginalFileName, stream);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.IO;
 using Artemis.Core;
 using Avalonia;
 using Avalonia.Controls;
@@ -48,20 +49,29 @@ namespace Artemis.UI.Shared.Controls
 
             try
             {
-                if (ConfigurationIcon.IconType == ProfileConfigurationIconType.SvgImage && ConfigurationIcon.FileIcon != null)
+                if (ConfigurationIcon.IconType == ProfileConfigurationIconType.MaterialIcon)
                 {
-                    SvgSource source = new();
-                    source.Load(ConfigurationIcon.FileIcon);
-                    Content = new SvgImage {Source = source};
-                }
-                else if (ConfigurationIcon.IconType == ProfileConfigurationIconType.MaterialIcon && ConfigurationIcon.MaterialIcon != null)
-                {
-                    Content = Enum.TryParse(ConfigurationIcon.MaterialIcon, true, out MaterialIconKind parsedIcon)
+                    Content = Enum.TryParse(ConfigurationIcon.IconName, true, out MaterialIconKind parsedIcon)
                         ? new MaterialIcon {Kind = parsedIcon!}
                         : new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
+                    return;
                 }
-                else if (ConfigurationIcon.IconType == ProfileConfigurationIconType.BitmapImage && ConfigurationIcon.FileIcon != null)
-                    Content = new Image {Source = new Bitmap(ConfigurationIcon.FileIcon)};
+
+                Stream? stream = ConfigurationIcon.GetIconStream();
+                if (stream == null)
+                {
+                    Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
+                    return;
+                }
+
+                if (ConfigurationIcon.IconType == ProfileConfigurationIconType.SvgImage)
+                {
+                    SvgSource source = new();
+                    source.Load(stream);
+                    Content = new Image {Source = new SvgImage {Source = source}};
+                }
+                else if (ConfigurationIcon.IconType == ProfileConfigurationIconType.BitmapImage)
+                    Content = new Image {Source = new Bitmap(ConfigurationIcon.GetIconStream())};
                 else
                     Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
             }
@@ -83,10 +93,8 @@ namespace Artemis.UI.Shared.Controls
             if (ConfigurationIcon != null)
                 ConfigurationIcon.PropertyChanged -= IconOnPropertyChanged;
 
-            if (Content is SvgImage svgImage)
-                svgImage.Source?.Dispose();
-            else if (Content is Image image)
-                ((Bitmap) image.Source).Dispose();
+            if (Content is Image image && image.Source is IDisposable disposable) 
+                disposable.Dispose();
         }
 
         private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)

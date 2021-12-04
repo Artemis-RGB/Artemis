@@ -166,6 +166,17 @@
         <member name="M:Artemis.UI.Shared.Converters.ColorToSKColorConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
             <inheritdoc />
         </member>
+        <member name="T:Artemis.UI.Shared.Converters.EnumToBooleanConverter">
+            <summary>
+                Converts an enum into a boolean.
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Converters.EnumToBooleanConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.Converters.EnumToBooleanConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <inheritdoc />
+        </member>
         <member name="T:Artemis.UI.Shared.Converters.SKColorToColorConverter">
             <summary>
                 Converts <see cref="T:SkiaSharp.SKColor" /> into <see cref="T:Avalonia.Media.Color" />.

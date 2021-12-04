@@ -9,20 +9,7 @@
              x:Class="Artemis.UI.Screens.Device.DeviceSettingsView">
     <Border Classes="card" Padding="0" Width="200" ClipToBounds="True" Margin="5">
         <Grid RowDefinitions="140,*,Auto">
-            <Rectangle Grid.Row="0">
-                <Rectangle.Fill>
-                    <VisualBrush TileMode="Tile" Stretch="Uniform" DestinationRect="0,0,15,15">
-                        <VisualBrush.Visual>
-                            <Grid Width="15" Height="15" RowDefinitions="*,*" ColumnDefinitions="*,*">
-                                <Rectangle Grid.Row="0" Grid.Column="0" Fill="Black" Opacity="0.15" />
-                                <Rectangle Grid.Row="0" Grid.Column="1" />
-                                <Rectangle Grid.Row="1" Grid.Column="0" />
-                                <Rectangle Grid.Row="1" Grid.Column="1" Fill="Black" Opacity="0.15" />
-                            </Grid>
-                        </VisualBrush.Visual>
-                    </VisualBrush>
-                </Rectangle.Fill>
-            </Rectangle>
+            <Rectangle Grid.Row="0" Fill="{DynamicResource CheckerboardBrush}"/>
             <controls1:DeviceVisualizer VerticalAlignment="Center"
                                      HorizontalAlignment="Center"
                                      Margin="5"

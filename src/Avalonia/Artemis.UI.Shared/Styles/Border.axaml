@@ -15,6 +15,10 @@
         </StackPanel>
     </Design.PreviewWith>
 
+    <Styles.Resources>
+        <CornerRadius x:Key="CardCornerRadius">8</CornerRadius>
+    </Styles.Resources>
+
     <!-- Add Styles Here -->
     <Style Selector="Border.router-container">
         <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiary}" />
@@ -25,13 +29,13 @@
     <Style Selector="Border.card">
         <Setter Property="Padding" Value="25" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
-        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="CornerRadius" Value="{DynamicResource CardCornerRadius}" />
     </Style>
 
     <Style Selector="Border.card-condensed">
         <Setter Property="Padding" Value="15" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
-        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="CornerRadius" Value="{DynamicResource CardCornerRadius}" />
     </Style>
 
     <Style Selector="Separator.card-separator">

@@ -90,8 +90,9 @@ namespace Artemis.UI.Screens.Root.Sidebar
         {
             await _windowService.CreateContentDialog()
                 .WithTitle("Add new category")
-                .WithViewModel<SidebarCategoryCreateViewModel>(out var vm, ("category", null))
+                .WithViewModel<SidebarCategoryEditViewModel>(out var vm, ("category", null))
                 .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Confirm))
+                .WithCloseButtonText("Cancel") 
                 .WithDefaultButton(ContentDialogButton.Primary)
                 .ShowAsync();
 

@@ -22,7 +22,7 @@
                         <Setter Property="ContentTemplate">
                             <Setter.Value>
                                 <DataTemplate>
-                                    <materialDesign:PackIcon Kind="{Binding ConfigurationIcon.MaterialIcon, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                    <materialDesign:PackIcon Kind="{Binding ConfigurationIcon.IconName, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                                              Width="Auto"
                                                              Height="Auto" />
                                 </DataTemplate>

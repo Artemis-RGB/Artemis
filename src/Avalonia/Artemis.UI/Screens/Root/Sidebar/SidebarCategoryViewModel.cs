@@ -74,13 +74,19 @@ namespace Artemis.UI.Screens.Root.Sidebar
         {
             await _windowService.CreateContentDialog()
                 .WithTitle("Edit category")
-                .WithViewModel<SidebarCategoryCreateViewModel>(out var vm, ("category", ProfileCategory))
+                .WithViewModel<SidebarCategoryEditViewModel>(out var vm, ("category", ProfileCategory))
                 .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Confirm))
                 .HavingSecondaryButton(b => b.WithText("Delete").WithCommand(vm.Delete))
+                .WithCloseButtonText("Cancel")
                 .WithDefaultButton(ContentDialogButton.Primary)
                 .ShowAsync();
 
             _sidebarViewModel.UpdateProfileCategories();
+        }
+
+        public async Task AddProfile()
+        {
+            await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, bool>(("profileCategory", ProfileCategory), ("profileConfiguration", null));
         }
 
         private void CreateProfileViewModels()

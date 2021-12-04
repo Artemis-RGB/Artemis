@@ -304,10 +304,13 @@ namespace Artemis.Core.Services
         {
             if (profileConfiguration.Icon.IconType == ProfileConfigurationIconType.MaterialIcon)
                 return;
-            if (profileConfiguration.Icon.FileIcon != null)
-                return;
+            
+            // This can happen if the icon was saved before the original file name was stored (pre-Avalonia)
+            profileConfiguration.Entity.IconOriginalFileName ??= profileConfiguration.Icon.IconType == ProfileConfigurationIconType.BitmapImage ? "icon.png" : "icon.svg";
 
-            profileConfiguration.Icon.FileIcon = _profileCategoryRepository.GetProfileIconStream(profileConfiguration.Entity.FileIconId);
+            using Stream? stream = _profileCategoryRepository.GetProfileIconStream(profileConfiguration.Entity.FileIconId);
+            if (stream != null)
+                profileConfiguration.Icon.SetIconByStream(profileConfiguration.Entity.IconOriginalFileName, stream);
         }
 
         public void SaveProfileConfigurationIcon(ProfileConfiguration profileConfiguration)
@@ -315,10 +318,11 @@ namespace Artemis.Core.Services
             if (profileConfiguration.Icon.IconType == ProfileConfigurationIconType.MaterialIcon)
                 return;
 
-            if (profileConfiguration.Icon.FileIcon != null)
+            using Stream? stream = profileConfiguration.Icon.GetIconStream();
+            if (stream != null && profileConfiguration.Icon.OriginalFileName != null)
             {
-                profileConfiguration.Icon.FileIcon.Position = 0;
-                _profileCategoryRepository.SaveProfileIconStream(profileConfiguration.Entity, profileConfiguration.Icon.FileIcon);
+                profileConfiguration.Entity.IconOriginalFileName = profileConfiguration.Icon.OriginalFileName;
+                _profileCategoryRepository.SaveProfileIconStream(profileConfiguration.Entity, stream);
             }
         }
 
@@ -532,7 +536,7 @@ namespace Artemis.Core.Services
             {
                 ProfileConfigurationEntity = profileConfiguration.Entity,
                 ProfileEntity = profile.ProfileEntity,
-                ProfileImage = profileConfiguration.Icon.FileIcon
+                ProfileImage = profileConfiguration.Icon.GetIconStream()
             };
         }
 
@@ -579,12 +583,8 @@ namespace Artemis.Core.Services
                 profileConfiguration = new ProfileConfiguration(category, profileEntity.Name, "Import");
             }
 
-            if (exportModel.ProfileImage != null)
-            {
-                profileConfiguration.Icon.FileIcon = new MemoryStream();
-                exportModel.ProfileImage.Position = 0;
-                exportModel.ProfileImage.CopyTo(profileConfiguration.Icon.FileIcon);
-            }
+            if (exportModel.ProfileImage != null && exportModel.ProfileConfigurationEntity?.IconOriginalFileName != null)
+                profileConfiguration.Icon.SetIconByStream(exportModel.ProfileConfigurationEntity.IconOriginalFileName, exportModel.ProfileImage);
 
             profileConfiguration.Entity.ProfileId = profileEntity.Id;
             category.AddProfileConfiguration(profileConfiguration, 0);

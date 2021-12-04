@@ -28,6 +28,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
         private ProfileConfigurationIconType _selectedIconType;
         private Stream _selectedImage;
         private ProfileModuleViewModel _selectedModule;
+        private string _selectedIconPath;
 
         public ProfileEditViewModel(ProfileConfiguration profileConfiguration, bool isNew,
             IProfileService profileService,
@@ -48,7 +49,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
                 pluginManagementService.GetFeaturesOfType<Module>().Where(m => !m.IsAlwaysAvailable).Select(m => new ProfileModuleViewModel(m))
             );
             Initializing = true;
-            
+
             ModuleActivationRequirementsViewModel = new ModuleActivationRequirementsViewModel(sidebarVmFactory);
             ModuleActivationRequirementsViewModel.ConductWith(this);
             ModuleActivationRequirementsViewModel.SetModule(ProfileConfiguration.Module);
@@ -60,7 +61,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
             _profileName = ProfileConfiguration.Name;
             _selectedModule = Modules.FirstOrDefault(m => m.Module == ProfileConfiguration.Module);
             _selectedIconType = ProfileConfiguration.Icon.IconType;
-            _selectedImage = ProfileConfiguration.Icon.FileIcon;
+            _selectedImage = ProfileConfiguration.Icon.GetIconStream();
 
             Task.Run(() =>
             {
@@ -71,11 +72,11 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
                 if (IsNew)
                     SelectedIcon = Icons[new Random().Next(0, Icons.Count - 1)];
                 else
-                    SelectedIcon = Icons.FirstOrDefault(i => i.Icon.ToString() == ProfileConfiguration.Icon.MaterialIcon);
+                    SelectedIcon = Icons.FirstOrDefault(i => i.Icon.ToString() == ProfileConfiguration.Icon.IconName);
                 Initializing = false;
             });
         }
-        
+
         public ModuleActivationRequirementsViewModel ModuleActivationRequirementsViewModel { get; }
         public ProfileConfigurationHotkeyViewModel EnableHotkeyViewModel { get; }
         public ProfileConfigurationHotkeyViewModel DisableHotkeyViewModel { get; }
@@ -167,18 +168,18 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
                 return;
 
             ProfileConfiguration.Name = ProfileName;
-            ProfileConfiguration.Icon.IconType = SelectedIconType;
-            ProfileConfiguration.Icon.MaterialIcon = SelectedIcon?.Icon.ToString();
-            ProfileConfiguration.Icon.FileIcon = SelectedImage;
+            if (SelectedIconType == ProfileConfigurationIconType.MaterialIcon)
+                ProfileConfiguration.Icon.SetIconByName(SelectedIcon?.Icon.ToString());
+            else if (_selectedIconPath != null)
+            {
+                await using FileStream fileStream = File.OpenRead(_selectedIconPath);
+                ProfileConfiguration.Icon.SetIconByStream(Path.GetFileName(_selectedIconPath), fileStream);
+            }
 
             ProfileConfiguration.Module = SelectedModule?.Module;
 
             if (_changedImage)
-            {
-                ProfileConfiguration.Icon.FileIcon = SelectedImage;
                 _profileService.SaveProfileConfigurationIcon(ProfileConfiguration);
-            }
-
             _profileService.SaveProfileCategory(ProfileConfiguration.Category);
 
             Session.Close(nameof(Accept));
@@ -199,6 +200,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
 
             // TODO: Scale down to 100x100-ish
             SelectedImage = File.OpenRead(dialog.FileName);
+            _selectedIconPath = dialog.FileName;
         }
 
         public void SelectSvgFile()
@@ -214,6 +216,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
 
             _changedImage = true;
             SelectedImage = File.OpenRead(dialog.FileName);
+            _selectedIconPath = dialog.FileName;
         }
 
         #region Overrides of Screen

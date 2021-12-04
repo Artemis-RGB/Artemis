@@ -6,7 +6,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/ArtemisTrayIcon.axaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <SolidColorBrush x:Key="Warning">Yellow</SolidColorBrush>
         </ResourceDictionary>
     </Styles.Resources>
     <!-- Third party styles -->

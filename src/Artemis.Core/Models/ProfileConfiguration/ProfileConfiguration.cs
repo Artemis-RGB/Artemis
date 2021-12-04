@@ -27,7 +27,8 @@ namespace Artemis.Core
             _category = category;
 
             Entity = new ProfileConfigurationEntity();
-            Icon = new ProfileConfigurationIcon(Entity) {MaterialIcon = icon};
+            Icon = new ProfileConfigurationIcon(Entity);
+            Icon.SetIconByName(icon);
             ActivationCondition = new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", this);
         }
 
