@@ -106,7 +106,8 @@
 
         </Border>
 
-        <Button Classes="icon-button icon-button-small"
+        <Button Command="{Binding EditProfile}"
+                Classes="icon-button icon-button-small"
                 Grid.Column="2"
                 ToolTip.Tip="View properties"
                 HorizontalAlignment="Right">

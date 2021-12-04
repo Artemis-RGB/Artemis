@@ -36,7 +36,7 @@ namespace Artemis.UI.Ninject.Factories
     {
         SidebarViewModel? SidebarViewModel(IScreen hostScreen);
         SidebarCategoryViewModel SidebarCategoryViewModel(SidebarViewModel sidebarViewModel, ProfileCategory profileCategory);
-        SidebarProfileConfigurationViewModel SidebarProfileConfigurationViewModel(ProfileConfiguration profileConfiguration);
+        SidebarProfileConfigurationViewModel SidebarProfileConfigurationViewModel(SidebarViewModel sidebarViewModel, ProfileConfiguration profileConfiguration);
     }
 
     public interface SurfaceVmFactory : IVmFactory

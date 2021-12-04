@@ -76,6 +76,9 @@ namespace Artemis.UI.Screens.Root.Sidebar.Dialogs
 
         public async Task Import()
         {
+            if (!IsNew)
+                return;
+
             string[]? result = await _windowService.CreateOpenFileDialog()
                 .HavingFilter(f => f.WithExtension("json").WithName("Artemis profile"))
                 .ShowAsync();
@@ -100,7 +103,22 @@ namespace Artemis.UI.Screens.Root.Sidebar.Dialogs
                 return;
             }
 
+            // Remove the temporary profile configuration
+            _profileService.RemoveProfileConfiguration(_profileConfiguration);
+            // Import the new profile configuration
             _profileService.ImportProfile(_profileCategory, profileConfigurationExportModel);
+
+            Close(true);
+        }
+
+        public async Task Delete()
+        {
+            if (IsNew)
+                return;
+            if (!await _windowService.ShowConfirmContentDialog("Delete profile", "Are you sure you want to permanently delete this profile?"))
+                return;
+            
+            _profileService.RemoveProfileConfiguration(_profileConfiguration);
             Close(true);
         }
 
@@ -169,15 +187,16 @@ namespace Artemis.UI.Screens.Root.Sidebar.Dialogs
             }
 
             // Prepare the contents of the dropdown box, it should be virtualized so no need to wait with this
-            MaterialIcons = new ObservableCollection<ProfileIconViewModel>(Enum.GetValues<MaterialIconKind>()
+            ObservableCollection<ProfileIconViewModel> icons = new(Enum.GetValues<MaterialIconKind>()
                 .Select(kind => new ProfileIconViewModel(kind))
                 .DistinctBy(vm => vm.DisplayName)
                 .OrderBy(vm => vm.DisplayName));
 
             // Preselect the icon or fall back to a random one
             SelectedMaterialIcon = !IsNew && Enum.TryParse(_profileConfiguration.Icon.IconName, out MaterialIconKind enumValue)
-                ? MaterialIcons.FirstOrDefault(m => m.Icon == enumValue)
-                : MaterialIcons.ElementAt(new Random().Next(0, MaterialIcons.Count - 1));
+                ? icons.FirstOrDefault(m => m.Icon == enumValue)
+                : icons.ElementAt(new Random().Next(0, icons.Count - 1));
+            MaterialIcons = icons;
         }
 
         private async Task SaveIcon()

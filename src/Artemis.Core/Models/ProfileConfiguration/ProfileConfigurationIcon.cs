@@ -8,13 +8,10 @@ namespace Artemis.Core
     /// <summary>
     ///     Represents the icon of a <see cref="ProfileConfiguration" />
     /// </summary>
-    public class ProfileConfigurationIcon : CorePropertyChanged, IStorageModel
+    public class ProfileConfigurationIcon : IStorageModel
     {
         private readonly ProfileConfigurationEntity _entity;
-        private string? _iconName;
         private Stream? _iconStream;
-        private ProfileConfigurationIconType _iconType;
-        private string? _originalFileName;
 
         internal ProfileConfigurationIcon(ProfileConfigurationEntity entity)
         {
@@ -24,29 +21,17 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the type of icon this profile configuration uses
         /// </summary>
-        public ProfileConfigurationIconType IconType
-        {
-            get => _iconType;
-            private set => SetAndNotify(ref _iconType, value);
-        }
+        public ProfileConfigurationIconType IconType { get; private set; }
 
         /// <summary>
         ///     Gets the name of the icon if <see cref="IconType" /> is <see cref="ProfileConfigurationIconType.MaterialIcon" />
         /// </summary>
-        public string? IconName
-        {
-            get => _iconName;
-            private set => SetAndNotify(ref _iconName, value);
-        }
+        public string? IconName { get; private set; }
 
         /// <summary>
         ///     Gets the original file name of the icon (if applicable)
         /// </summary>
-        public string? OriginalFileName
-        {
-            get => _originalFileName;
-            private set => SetAndNotify(ref _originalFileName, value);
-        }
+        public string? OriginalFileName { get; private set; }
 
         /// <summary>
         ///     Updates the <see cref="IconName" /> to the provided value and changes the <see cref="IconType" /> is
@@ -55,11 +40,14 @@ namespace Artemis.Core
         /// <param name="iconName">The name of the icon</param>
         public void SetIconByName(string iconName)
         {
-            IconName = iconName ?? throw new ArgumentNullException(nameof(iconName));
+            if (iconName == null) throw new ArgumentNullException(nameof(iconName));
+
+            _iconStream?.Dispose();
+            IconName = iconName;
             OriginalFileName = null;
             IconType = ProfileConfigurationIconType.MaterialIcon;
 
-            _iconStream?.Dispose();
+            OnIconUpdated();
         }
 
         /// <summary>
@@ -81,6 +69,7 @@ namespace Artemis.Core
             IconName = null;
             OriginalFileName = originalFileName;
             IconType = OriginalFileName.EndsWith(".svg") ? ProfileConfigurationIconType.SvgImage : ProfileConfigurationIconType.BitmapImage;
+            OnIconUpdated();
         }
 
         /// <summary>
@@ -100,14 +89,30 @@ namespace Artemis.Core
             return stream;
         }
 
+        /// <summary>
+        ///     Occurs when the icon was updated
+        /// </summary>
+        public event EventHandler? IconUpdated;
+
+        /// <summary>
+        ///     Invokes the <see cref="IconUpdated" /> event
+        /// </summary>
+        protected virtual void OnIconUpdated()
+        {
+            IconUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
         #region Implementation of IStorageModel
 
         /// <inheritdoc />
         public void Load()
         {
             IconType = (ProfileConfigurationIconType) _entity.IconType;
-            if (IconType == ProfileConfigurationIconType.MaterialIcon)
-                IconName = _entity.MaterialIcon;
+            if (IconType != ProfileConfigurationIconType.MaterialIcon) 
+                return;
+
+            IconName = _entity.MaterialIcon;
+            OnIconUpdated();
         }
 
         /// <inheritdoc />

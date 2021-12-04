@@ -72,10 +72,10 @@
                         <StackPanel Orientation="Horizontal"
                                     IsVisible="{Binding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.BitmapImage}}">
                             <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="98" Height="98">
-                                <Image Source="{Binding SelectedBitmapSource}" Margin="10"/>
+                                <Image Source="{Binding SelectedBitmapSource}" Margin="10" />
                             </Border>
                             <Button Command="{Binding BrowseBitmapFile}"
-                                VerticalAlignment="Bottom"
+                                    VerticalAlignment="Bottom"
                                     Margin="10 0"
                                     IsVisible="{Binding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.BitmapImage}}">
                                 Browse bitmap file
@@ -84,9 +84,7 @@
                         <StackPanel Orientation="Horizontal"
                                     IsVisible="{Binding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.SvgImage}}">
                             <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="98" Height="98">
-								<Image Margin="10" Source="{Binding SelectedSvgSource}">
-									
-                                </Image>
+                                <Image Margin="10" Source="{Binding SelectedSvgSource}" />
                             </Border>
                             <Button Command="{Binding BrowseSvgFile}"
                                     VerticalAlignment="Bottom"
@@ -140,9 +138,10 @@
             </StackPanel>
         </ScrollViewer>
 
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto">
-            <Button Grid.Column="0" Command="{Binding Import}">Import profile</Button>
-            <Button Grid.Column="1" Margin="10" Classes="accent" Command="{Binding Confirm}">Confirm</Button>
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,Auto" HorizontalAlignment="Right">
+            <Button Grid.Column="0" Classes="accent" Command="{Binding Confirm}">Confirm</Button>
+            <Button Grid.Column="1" Margin="5" Command="{Binding Import}" IsVisible="{Binding IsNew}">Import profile</Button>
+            <Button Grid.Column="1" Margin="5" Command="{Binding Delete}" IsVisible="{Binding !IsNew}">Delete profile</Button>
             <Button Grid.Column="2" Command="{Binding Cancel}">Cancel</Button>
         </Grid>
     </Grid>

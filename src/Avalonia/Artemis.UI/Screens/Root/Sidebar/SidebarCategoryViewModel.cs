@@ -86,14 +86,16 @@ namespace Artemis.UI.Screens.Root.Sidebar
 
         public async Task AddProfile()
         {
-            await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, bool>(("profileCategory", ProfileCategory), ("profileConfiguration", null));
+            bool result = await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, bool>(("profileCategory", ProfileCategory), ("profileConfiguration", null));
+            if (result)
+                _sidebarViewModel.UpdateProfileCategories();
         }
 
         private void CreateProfileViewModels()
         {
             ProfileConfigurations.Clear();
             foreach (ProfileConfiguration profileConfiguration in ProfileCategory.ProfileConfigurations.OrderBy(p => p.Order))
-                ProfileConfigurations.Add(_vmFactory.SidebarProfileConfigurationViewModel(profileConfiguration));
+                ProfileConfigurations.Add(_vmFactory.SidebarProfileConfigurationViewModel(_sidebarViewModel, profileConfiguration));
 
             SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(i => i.ProfileConfiguration.IsBeingEdited);
         }
