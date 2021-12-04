@@ -1,4 +1,5 @@
 ﻿using Artemis.Core.Ninject;
+using Artemis.Core;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject;
 using Artemis.UI.Screens.Root;
@@ -20,6 +21,8 @@ namespace Artemis.UI
         {
             if (_application != null || _kernel != null)
                 throw new ArtemisUIException("UI already bootstrapped");
+
+            Utilities.PrepareFirstLaunch();
            
             _application = application;
             _kernel = new StandardKernel();
