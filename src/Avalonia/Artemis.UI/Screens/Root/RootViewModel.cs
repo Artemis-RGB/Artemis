@@ -4,11 +4,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Screens.Home;
 using Artemis.UI.Screens.Root.Sidebar;
-using Artemis.UI.Screens.Settings;
-using Artemis.UI.Screens.SurfaceEditor;
-using Artemis.UI.Screens.Workshop;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.Interfaces;
@@ -18,21 +14,19 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform;
 using Avalonia.Threading;
-using Ninject;
-using Ninject.Parameters;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Root
 {
     public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvider
     {
-        private readonly IClassicDesktopStyleApplicationLifetime _lifeTime;
-        private readonly ICoreService _coreService;
-        private readonly ISettingsService _settingsService;
-        private readonly IWindowService _windowService;
-        private readonly IDebugService _debugService;
         private readonly IAssetLoader _assetLoader;
+        private readonly ICoreService _coreService;
+        private readonly IDebugService _debugService;
+        private readonly IClassicDesktopStyleApplicationLifetime _lifeTime;
+        private readonly ISettingsService _settingsService;
         private readonly ISidebarVmFactory _sidebarVmFactory;
+        private readonly IWindowService _windowService;
         private SidebarViewModel? _sidebarViewModel;
         private TrayIcon? _trayIcon;
         private TrayIcons? _trayIcons;
@@ -58,7 +52,6 @@ namespace Artemis.UI.Screens.Root
 
             coreService.StartupArguments = _lifeTime.Args.ToList();
             mainWindowService.ConfigureMainWindowProvider(this);
-            registrationService.RegisterProviders();
 
             DisplayAccordingToSettings();
             Task.Run(coreService.Initialize);
@@ -69,9 +62,6 @@ namespace Artemis.UI.Screens.Root
             get => _sidebarViewModel;
             set => this.RaiseAndSetIfChanged(ref _sidebarViewModel, value);
         }
-
-        /// <inheritdoc />
-        public RoutingState Router { get; }
 
         private void CurrentMainWindowOnClosed(object? sender, EventArgs e)
         {
@@ -113,7 +103,7 @@ namespace Artemis.UI.Screens.Root
         {
             _trayIcon = new TrayIcon
             {
-                Icon = new WindowIcon(_assetLoader.Open(new Uri("avares://Artemis.UI/Assets/Images/Logo/bow.ico"))), 
+                Icon = new WindowIcon(_assetLoader.Open(new Uri("avares://Artemis.UI/Assets/Images/Logo/bow.ico"))),
                 Command = ReactiveCommand.Create(OpenMainWindow)
             };
             _trayIcon.Menu = (NativeMenu?) Application.Current.FindResource("TrayIconMenu");
@@ -129,6 +119,9 @@ namespace Artemis.UI.Screens.Root
             _trayIcon = null;
             _trayIcons = null;
         }
+
+        /// <inheritdoc />
+        public RoutingState Router { get; }
 
         #region Tray commands
 

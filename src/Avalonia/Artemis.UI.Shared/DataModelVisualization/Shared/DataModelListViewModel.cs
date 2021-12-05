@@ -98,22 +98,15 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                     ListChildren.Add(child);
                 }
                 else
-                {
                     child = ListChildren[index];
-                }
 
-                if (child is DataModelListPropertiesViewModel dataModelListClassViewModel)
-                {
-                    dataModelListClassViewModel.DisplayValue = item;
-                    dataModelListClassViewModel.Index = index;
-                }
-                else if (child is DataModelListPropertyViewModel dataModelListPropertyViewModel)
+                if (child is DataModelListItemViewModel dataModelListPropertyViewModel)
                 {
                     dataModelListPropertyViewModel.DisplayValue = item;
                     dataModelListPropertyViewModel.Index = index;
+                    dataModelListPropertyViewModel.Update(dataModelUIService, configuration);
                 }
 
-                child.Update(dataModelUIService, configuration);
                 index++;
             }
 
@@ -135,16 +128,10 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         {
             // If a display VM was found, prefer to use that in any case
             DataModelDisplayViewModel? typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(listType, PropertyDescription);
-            if (typeViewModel != null)
-                return new DataModelListPropertyViewModel(listType, typeViewModel, name);
-            // For primitives, create a property view model, it may be null that is fine
-            if (listType.IsPrimitive || listType.IsEnum || listType == typeof(string))
-                return new DataModelListPropertyViewModel(listType, name);
-            // For other value types create a child view model
-            if (listType.IsClass || listType.IsStruct())
-                return new DataModelListPropertiesViewModel(listType, name);
 
-            return null;
+            return typeViewModel != null
+                ? new DataModelListItemViewModel(listType, typeViewModel, name)
+                : new DataModelListItemViewModel(listType, name);
         }
     }
 }

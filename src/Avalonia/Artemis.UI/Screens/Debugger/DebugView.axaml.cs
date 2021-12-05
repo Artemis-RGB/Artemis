@@ -2,6 +2,7 @@ using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.UI.Shared.Events;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
@@ -16,6 +17,10 @@ namespace Artemis.UI.Screens.Debugger
         public DebugView()
         {
             InitializeComponent();
+#if DEBUG
+            this.AttachDevTools();
+#endif
+
             NavigationView navigation = this.Get<NavigationView>("Navigation");
 
             this.WhenActivated(d =>

@@ -5,7 +5,6 @@
         void RegisterBuiltInDataModelDisplays();
         void RegisterBuiltInDataModelInputs();
         void RegisterBuiltInPropertyEditors();
-        void RegisterProviders();
         void RegisterControllers();
         void ApplyPreferredGraphicsContext();
     }

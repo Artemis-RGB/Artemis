@@ -13,7 +13,9 @@
 
     <!-- Add Styles Here -->
     <Style Selector="ListBox.sidebar-listbox ListBoxItem">
-        <Setter Property="Margin" Value="0 2.5" />
         <Setter Property="MinHeight" Value="35" />
+    </Style>
+    <Style Selector="ListBox.sidebar-listbox ContentPresenter">
+        <Setter Property="Margin" Value="0" />
     </Style>
 </Styles>

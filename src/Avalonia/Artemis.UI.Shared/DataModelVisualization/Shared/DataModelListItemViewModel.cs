@@ -9,20 +9,31 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
     ///     Represents a view model that visualizes a single data model property contained in a
     ///     <see cref="DataModelListViewModel" />
     /// </summary>
-    public class DataModelListPropertyViewModel : DataModelPropertyViewModel
+    public class DataModelListItemViewModel : DataModelVisualizationViewModel
     {
         private int _index;
         private Type? _listType;
+        private object? _displayValue;
+        private DataModelDisplayViewModel? _displayViewModel;
 
-        internal DataModelListPropertyViewModel(Type listType, DataModelDisplayViewModel displayViewModel, string? name) : base(null, null, null)
+        internal DataModelListItemViewModel(Type listType, DataModelDisplayViewModel displayViewModel, string? name) : base(null, null, null)
         {
             ListType = listType;
             DisplayViewModel = displayViewModel;
         }
 
-        internal DataModelListPropertyViewModel(Type listType, string? name) : base(null, null, null)
+        internal DataModelListItemViewModel(Type listType, string? name) : base(null, null, null)
         {
             ListType = listType;
+        }
+
+        /// <summary>
+        /// Gets the view model used to display the display value
+        /// </summary>
+        public DataModelDisplayViewModel? DisplayViewModel
+        {
+            get => _displayViewModel;
+            internal set => this.RaiseAndSetIfChanged(ref _displayViewModel, value);
         }
 
         /// <summary>
@@ -41,6 +52,15 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         {
             get => _listType;
             private set => this.RaiseAndSetIfChanged(ref _listType, value);
+        }
+
+        /// <summary>
+        ///     Gets the value of the property that is being visualized
+        /// </summary>
+        public object? DisplayValue
+        {
+            get => _displayValue;
+            internal set => this.RaiseAndSetIfChanged(ref _displayValue, value);
         }
 
         /// <inheritdoc />
@@ -66,7 +86,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"[List item {Index}] {DisplayPath ?? Path} - {DisplayValue}";
+            return $"[List item {Index}]";
         }
     }
 }

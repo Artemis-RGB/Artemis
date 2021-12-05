@@ -7,23 +7,25 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Debugger.Tabs.DataModel.DataModelDebugView">
     <UserControl.Resources>
-		<converters:TypeToStringConverter x:Key="TypeToStringConverter" />
+        <converters:TypeToStringConverter x:Key="TypeToStringConverter" />
     </UserControl.Resources>
-    <StackPanel>
-        <TextBlock Classes="h3">Data Model</TextBlock>
-        <TextBlock TextWrapping="Wrap">
-            On this page you can view the contents of the Artemis data model.
-        </TextBlock>
-        <TextBlock TextWrapping="Wrap" Classes="subtitle" Margin="0 10">
-            Please note that having this window open can have a performance impact on your system.
-        </TextBlock>
+    <Grid RowDefinitions="Auto,*">
+        <StackPanel Grid.Row="0">
+            <TextBlock Classes="h3">Data Model</TextBlock>
+            <TextBlock TextWrapping="Wrap">
+                On this page you can view the contents of the Artemis data model.
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap" Classes="subtitle" Margin="0 10">
+                Please note that having this window open can have a performance impact on your system.
+            </TextBlock>
+        </StackPanel>
 
-        <TreeView Items="{Binding MainDataModel.Children}">
-            <TreeView.Styles>
-                <Style Selector="TreeViewItem">
-                    <Setter Property="IsExpanded" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
-                </Style>
-            </TreeView.Styles>
+		<TreeView Grid.Row="1" Items="{Binding MainDataModel.Children}">
+			<TreeView.Styles>
+				<Style Selector="TreeViewItem">
+					<Setter Property="IsExpanded" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
+				</Style>
+			</TreeView.Styles>
 			<TreeView.DataTemplates>
 				<TreeDataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}" ItemsSource="{Binding Children}">
 					<Grid ColumnDefinitions="Auto,Auto,*">
@@ -35,9 +37,9 @@
 
 						<TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
 						<TextBlock Grid.Column="2"
-                                   Text="{Binding DisplayValue}"
-                                   FontFamily="Consolas"
-                                   HorizontalAlignment="Right" />
+								   Text="{Binding DisplayValue}"
+								   FontFamily="Consolas"
+								   HorizontalAlignment="Right" />
 					</Grid>
 
 				</TreeDataTemplate>
@@ -50,9 +52,9 @@
 						</StackPanel>
 						<TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
 						<TextBlock Grid.Column="2"
-                                   Text="{Binding CountDisplay, Mode=OneWay}"
-                                   FontFamily="Consolas"
-                                   HorizontalAlignment="Right" />
+								   Text="{Binding CountDisplay, Mode=OneWay}"
+								   FontFamily="Consolas"
+								   HorizontalAlignment="Right" />
 					</Grid>
 				</TreeDataTemplate>
 				<TreeDataTemplate DataType="{x:Type dataModel:DataModelPropertyViewModel}">
@@ -70,22 +72,20 @@
 						<ContentControl Grid.Column="2" Content="{Binding DisplayViewModel}" FontFamily="Consolas" />
 					</Grid>
 				</TreeDataTemplate>
-				<TreeDataTemplate DataType="{x:Type dataModel:DataModelListPropertyViewModel}">
+				<TreeDataTemplate DataType="{x:Type dataModel:DataModelListItemViewModel}">
 					<Grid ColumnDefinitions="Auto,Auto,*">
-
 						<!-- Value description -->
 						<StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0 0 5 0">
 							<TextBlock FontWeight="Bold">[</TextBlock>
-							<TextBlock FontWeight="Bold" Text="{Binding ListType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" />
+							<TextBlock FontWeight="Bold" Text="{Binding ListType, Converter={StaticResource TypeToStringConverter}}" />
 							<TextBlock FontWeight="Bold">]</TextBlock>
 						</StackPanel>
-						<StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0 0 5 0">
-							<TextBlock>List item [</TextBlock>
-							<TextBlock Text="{Binding Index, Mode=OneWay}" />
-							<TextBlock>]</TextBlock>
-						</StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0 0 5 0">
+                            <TextBlock>List item #</TextBlock>
+                            <TextBlock Text="{Binding Index, Mode=OneWay}" />
+                        </StackPanel>
 
-						<!-- Value display -->
+                        <!-- Value display -->
 						<ContentControl Grid.Column="2" Content="{Binding DisplayViewModel}" FontFamily="Consolas" />
 					</Grid>
 				</TreeDataTemplate>
@@ -99,20 +99,13 @@
 						</StackPanel>
 						<TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
 						<TextBlock Grid.Column="2"
-                                   Text="{Binding CountDisplay, Mode=OneWay}"
-                                   FontFamily="Consolas"
-                                   HorizontalAlignment="Right" />
+								   Text="{Binding CountDisplay, Mode=OneWay}"
+								   FontFamily="Consolas"
+								   HorizontalAlignment="Right" />
 					</Grid>
 				</TreeDataTemplate>
+            </TreeView.DataTemplates>
+		</TreeView>
+    </Grid>
 
-				<TreeDataTemplate DataType="{x:Type dataModel:DataModelListPropertiesViewModel}" ItemsSource="{Binding DisplayViewModel.Children}">
-					<StackPanel Orientation="Horizontal">
-						<TextBlock>List item [</TextBlock>
-						<TextBlock Text="{Binding Index, Mode=OneWay}" />
-						<TextBlock>]</TextBlock>
-					</StackPanel>
-				</TreeDataTemplate>
-			</TreeView.DataTemplates>
-        </TreeView>
-    </StackPanel>
 </UserControl>

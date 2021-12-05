@@ -374,67 +374,39 @@
         <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelEventViewModel.ToString">
             <inheritdoc />
         </member>
-        <member name="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel">
-            <summary>
-                Represents a view model that wraps a regular <see cref="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelPropertiesViewModel" /> but contained in
-                a <see cref="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListViewModel" />
-            </summary>
-        </member>
-        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.Index">
-            <summary>
-                Gets the index of the element within the list
-            </summary>
-        </member>
-        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.ListType">
-            <summary>
-                Gets the type of elements contained in the list
-            </summary>
-        </member>
-        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.DisplayValue">
-            <summary>
-                Gets the value of the property that is being visualized
-            </summary>
-        </member>
-        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.DisplayViewModel">
-            <summary>
-                Gets the view model that handles displaying the property
-            </summary>
-        </member>
-        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.DisplayPath">
-            <inheritdoc />
-        </member>
-        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.Update(Artemis.UI.Shared.Services.Interfaces.IDataModelUIService,Artemis.UI.Shared.DataModelVisualization.Shared.DataModelUpdateConfiguration)">
-            <inheritdoc />
-        </member>
-        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.GetCurrentValue">
-            <inheritdoc />
-        </member>
-        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertiesViewModel.ToString">
-            <inheritdoc />
-        </member>
-        <member name="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertyViewModel">
+        <member name="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListItemViewModel">
             <summary>
                 Represents a view model that visualizes a single data model property contained in a
                 <see cref="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListViewModel" />
             </summary>
         </member>
-        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertyViewModel.Index">
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListItemViewModel.DisplayViewModel">
+            <summary>
+            Gets the view model used to display the display value
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListItemViewModel.Index">
             <summary>
                 Gets the index of the element within the list
             </summary>
         </member>
-        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertyViewModel.ListType">
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListItemViewModel.ListType">
             <summary>
                 Gets the type of elements contained in the list
             </summary>
         </member>
-        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertyViewModel.GetCurrentValue">
+        <member name="P:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListItemViewModel.DisplayValue">
+            <summary>
+                Gets the value of the property that is being visualized
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListItemViewModel.GetCurrentValue">
             <inheritdoc />
         </member>
-        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertyViewModel.Update(Artemis.UI.Shared.Services.Interfaces.IDataModelUIService,Artemis.UI.Shared.DataModelVisualization.Shared.DataModelUpdateConfiguration)">
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListItemViewModel.Update(Artemis.UI.Shared.Services.Interfaces.IDataModelUIService,Artemis.UI.Shared.DataModelVisualization.Shared.DataModelUpdateConfiguration)">
             <inheritdoc />
         </member>
-        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListPropertyViewModel.ToString">
+        <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListItemViewModel.ToString">
             <inheritdoc />
         </member>
         <member name="T:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelListViewModel">

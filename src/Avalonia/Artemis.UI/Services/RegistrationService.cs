@@ -1,5 +1,4 @@
 ﻿using Artemis.Core.Services;
-using Artemis.UI.Providers;
 using Artemis.UI.Services.Interfaces;
 
 namespace Artemis.UI.Services
@@ -22,11 +21,6 @@ namespace Artemis.UI.Services
 
         public void RegisterBuiltInPropertyEditors()
         {
-        }
-
-        public void RegisterProviders()
-        {
-            _inputService.AddInputProvider(new AvaloniaInputProvider());
         }
 
         public void RegisterControllers()

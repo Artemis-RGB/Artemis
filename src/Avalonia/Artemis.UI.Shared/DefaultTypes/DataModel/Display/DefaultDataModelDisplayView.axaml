@@ -13,17 +13,8 @@
                    Margin="0 0 5 0" />
 
         <!-- Value -->
-        <TextBlock Grid.Column="1"
-                   Text="{Binding DisplayValue, Mode=OneWay}"
-                   HorizontalAlignment="Right"
-                   IsVisible="{Binding ShowToString}"/>
-        <TextBlock Grid.Column="1"
-                   Text="null"
-                   FontFamily="Consolas"
-                   HorizontalAlignment="Right"
-                   Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}"
-                   IsVisible="{Binding ShowNull}"/>
-
+        <TextBlock Grid.Column="1" Text="{Binding Display, Mode=OneWay}" HorizontalAlignment="Right"/>
+       
         <!-- Affix -->
         <TextBlock Grid.Column="2"
                    Text="{Binding PropertyDescription.Affix}"

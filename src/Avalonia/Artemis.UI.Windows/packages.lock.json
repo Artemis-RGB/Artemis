@@ -53,6 +53,33 @@
           "System.Reactive": "5.0.0"
         }
       },
+      "Avalonia.Win32": {
+        "type": "Direct",
+        "requested": "[0.10.10, )",
+        "resolved": "0.10.10",
+        "contentHash": "6AS6yIB+OS8+g96mj+ShJihjxqhVH6v7jfdqLwjQfGAsqqqN7zBNsFdvoVVCnutuVx0g/9FhCnBTIZyZDlwqkA==",
+        "dependencies": {
+          "Avalonia": "0.10.10",
+          "Avalonia.Angle.Windows.Natives": "2.1.0.2020091801",
+          "System.Drawing.Common": "4.5.0",
+          "System.Numerics.Vectors": "4.5.0"
+        }
+      },
+      "Microsoft.Win32": {
+        "type": "Direct",
+        "requested": "[2.0.1, )",
+        "resolved": "2.0.1",
+        "contentHash": "V1I3Mvj0g6YFoVywl0uoPh7fJ4y7xTewBGrW9FN70dr9LruFnC4rJ/bJ2wxIvZyeVrsj2JaqxvkuSw9fhk9UKA=="
+      },
+      "RawInput.Sharp": {
+        "type": "Direct",
+        "requested": "[0.0.4, )",
+        "resolved": "0.0.4",
+        "contentHash": "JAHC4oBBzvwvehjiWTUW0UAjptprQuX+21d/7LrsMAjBSrT9GB6q6JiEm0bQi69uTkBPohHNF7O8Wgcz3oVXkA==",
+        "dependencies": {
+          "NETStandard.Library": "1.6.1"
+        }
+      },
       "Avalonia.Angle.Windows.Natives": {
         "type": "Transitive",
         "resolved": "2.1.0.2020091801",
@@ -120,17 +147,6 @@
           "Avalonia.Skia": "0.10.10",
           "SkiaSharp": "2.80.2",
           "Svg.Skia": "0.5.10"
-        }
-      },
-      "Avalonia.Win32": {
-        "type": "Transitive",
-        "resolved": "0.10.10",
-        "contentHash": "6AS6yIB+OS8+g96mj+ShJihjxqhVH6v7jfdqLwjQfGAsqqqN7zBNsFdvoVVCnutuVx0g/9FhCnBTIZyZDlwqkA==",
-        "dependencies": {
-          "Avalonia": "0.10.10",
-          "Avalonia.Angle.Windows.Natives": "2.1.0.2020091801",
-          "System.Drawing.Common": "4.5.0",
-          "System.Numerics.Vectors": "4.5.0"
         }
       },
       "Avalonia.X11": {

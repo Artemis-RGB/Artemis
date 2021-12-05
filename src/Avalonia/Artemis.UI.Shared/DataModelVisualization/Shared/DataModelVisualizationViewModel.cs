@@ -215,7 +215,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                 foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(t => t.MetadataToken))
                 {
                     string childPath = AppendToPath(propertyInfo.Name);
-                    if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))
+                    if (Children.Any(c => c?.Path != null && c.Path.Equals(childPath)))
                         continue;
                     if (propertyInfo.GetCustomAttribute<DataModelIgnoreAttribute>() != null)
                         continue;

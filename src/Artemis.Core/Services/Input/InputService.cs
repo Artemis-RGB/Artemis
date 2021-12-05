@@ -25,7 +25,11 @@ namespace Artemis.Core.Services
         public void Dispose()
         {
             while (_inputProviders.Any())
-                RemoveInputProvider(_inputProviders.First());
+            {
+                InputProvider provider = _inputProviders.First();
+                RemoveInputProvider(provider);
+                provider.Dispose();
+            }
         }
 
         #endregion
