@@ -44,6 +44,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Controls\HotkeyBox.axaml.cs">
+      <DependentUpon>HotkeyBox.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Services\WindowService\ExceptionDialogView.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>

@@ -96,6 +96,36 @@
         <member name="M:Artemis.UI.Shared.Controls.EnumComboBox.OnDetachedFromLogicalTree(Avalonia.LogicalTree.LogicalTreeAttachmentEventArgs)">
             <inheritdoc />
         </member>
+        <member name="T:Artemis.UI.Shared.Controls.HotkeyBox">
+            <summary>
+            Represents a control that can be used to display or edit <see cref="T:Artemis.Core.Hotkey"/> instances.
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Controls.HotkeyBox.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:Artemis.UI.Shared.Controls.HotkeyBox"/> class
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.Controls.HotkeyBox.HotkeyProperty">
+            <summary>
+                Gets or sets the currently displayed icon as either a <see cref="T:Material.Icons.MaterialIconKind" /> or an <see cref="T:System.Uri" />
+                pointing
+                to an SVG
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.Controls.HotkeyBox.Hotkey">
+            <summary>
+                Gets or sets the currently displayed icon as either a <see cref="T:Material.Icons.MaterialIconKind" /> or an <see cref="T:System.Uri" />
+                pointing
+                to an SVG
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Controls.NoInputTextBox.OnKeyDown(Avalonia.Input.KeyEventArgs)">
+            <inheritdoc />
+        </member>
+        <member name="M:Artemis.UI.Shared.Controls.NoInputTextBox.OnKeyUp(Avalonia.Input.KeyEventArgs)">
+            <inheritdoc />
+        </member>
         <member name="F:Artemis.UI.Shared.Controls.ProfileConfigurationIcon.ConfigurationIconProperty">
             <summary>
                 Gets or sets the <see cref="T:Artemis.Core.ProfileConfigurationIcon" /> to display

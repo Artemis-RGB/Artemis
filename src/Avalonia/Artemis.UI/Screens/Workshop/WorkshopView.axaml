@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:builders="clr-namespace:Artemis.UI.Shared.Services.Builders;assembly=Artemis.UI.Shared"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.WorkshopView">
 	<StackPanel Margin="12">
@@ -22,6 +23,8 @@
                 <Button Margin="0 5" Command="{Binding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Success}">
                     Notification test (success)
                 </Button>
+
+				<controls:HotkeyBox Watermark="Some hotkey" Width="250" HorizontalAlignment="Left"></controls:HotkeyBox>
 			</StackPanel>
         </Border>
     </StackPanel>

@@ -104,12 +104,12 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the hotkey used to enable or toggle the profile
         /// </summary>
-        public ProfileConfigurationHotkey? EnableHotkey { get; set; }
+        public Hotkey? EnableHotkey { get; set; }
 
         /// <summary>
         ///     Gets or sets the hotkey used to disable the profile
         /// </summary>
-        public ProfileConfigurationHotkey? DisableHotkey { get; set; }
+        public Hotkey? DisableHotkey { get; set; }
 
         /// <summary>
         ///     Gets the ID of the profile of this profile configuration
@@ -246,8 +246,8 @@ namespace Artemis.Core
                 ? new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", Entity.ActivationCondition, this) 
                 : new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", this);
 
-            EnableHotkey = Entity.EnableHotkey != null ? new ProfileConfigurationHotkey(Entity.EnableHotkey) : null;
-            DisableHotkey = Entity.DisableHotkey != null ? new ProfileConfigurationHotkey(Entity.DisableHotkey) : null;
+            EnableHotkey = Entity.EnableHotkey != null ? new Hotkey(Entity.EnableHotkey) : null;
+            DisableHotkey = Entity.DisableHotkey != null ? new Hotkey(Entity.DisableHotkey) : null;
         }
 
         /// <inheritdoc />

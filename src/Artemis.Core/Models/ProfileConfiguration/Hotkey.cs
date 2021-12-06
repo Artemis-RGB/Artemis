@@ -6,18 +6,18 @@ namespace Artemis.Core
     /// <summary>
     ///     Represents a key or combination of keys that changes the suspension status of a <see cref="ProfileConfiguration"/>
     /// </summary>
-    public class ProfileConfigurationHotkey : CorePropertyChanged, IStorageModel
+    public class Hotkey : CorePropertyChanged, IStorageModel
     {
 
         /// <summary>
-        ///     Creates a new instance of <see cref="ProfileConfigurationHotkey" />
+        ///     Creates a new instance of <see cref="Hotkey" />
         /// </summary>
-        public ProfileConfigurationHotkey()
+        public Hotkey()
         {
             Entity = new ProfileConfigurationHotkeyEntity();
         }
 
-        internal ProfileConfigurationHotkey(ProfileConfigurationHotkeyEntity entity)
+        internal Hotkey(ProfileConfigurationHotkeyEntity entity)
         {
             Entity = entity;
             Load();

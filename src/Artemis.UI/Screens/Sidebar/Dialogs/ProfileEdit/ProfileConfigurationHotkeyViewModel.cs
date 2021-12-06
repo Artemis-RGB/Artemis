@@ -22,7 +22,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
             UpdateHotkeyDisplay();
         }
 
-        public ProfileConfigurationHotkey Hotkey => _isDisableHotkey ? _profileConfiguration.DisableHotkey : _profileConfiguration.EnableHotkey;
+        public Hotkey Hotkey => _isDisableHotkey ? _profileConfiguration.DisableHotkey : _profileConfiguration.EnableHotkey;
 
         public string Hint
         {
@@ -66,13 +66,13 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
 
             if (_isDisableHotkey)
             {
-                _profileConfiguration.DisableHotkey ??= new ProfileConfigurationHotkey();
+                _profileConfiguration.DisableHotkey ??= new Hotkey();
                 _profileConfiguration.DisableHotkey.Key = (KeyboardKey?) e.Key;
                 _profileConfiguration.DisableHotkey.Modifiers = (KeyboardModifierKey?) Keyboard.Modifiers;
             }
             else
             {
-                _profileConfiguration.EnableHotkey ??= new ProfileConfigurationHotkey();
+                _profileConfiguration.EnableHotkey ??= new Hotkey();
                 _profileConfiguration.EnableHotkey.Key = (KeyboardKey?) e.Key;
                 _profileConfiguration.EnableHotkey.Modifiers = (KeyboardModifierKey?) Keyboard.Modifiers;
             }
