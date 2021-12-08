@@ -9,5 +9,7 @@
         Width="800" 
         Height="800"
         WindowStartupLocation="CenterOwner">
-    <ContentControl Content="{Binding ConfigurationViewModel}"></ContentControl>
+	<Panel>
+        <ContentControl Content="{Binding ConfigurationViewModel}"></ContentControl>
+	</Panel>
 </Window>
