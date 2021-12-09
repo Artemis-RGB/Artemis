@@ -11,12 +11,11 @@ using Artemis.UI.Shared.Services.Interfaces;
 using Avalonia.Media.Imaging;
 using Avalonia.Svg.Skia;
 using Avalonia.Threading;
-using Castle.Core.Resource;
 using Material.Icons;
 using Newtonsoft.Json;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Root.Sidebar.Dialogs
+namespace Artemis.UI.Screens.Sidebar.Dialogs
 {
     public class ProfileConfigurationEditViewModel : DialogViewModelBase<bool>
     {
@@ -24,6 +23,7 @@ namespace Artemis.UI.Screens.Root.Sidebar.Dialogs
         private readonly IProfileService _profileService;
         private readonly IWindowService _windowService;
         private ProfileConfigurationIconType _iconType;
+        private ProfileConfigurationHotkeyMode _hotkeyMode;
         private ObservableCollection<ProfileIconViewModel>? _materialIcons;
         private ProfileConfiguration _profileConfiguration;
         private string _profileName;
@@ -32,6 +32,8 @@ namespace Artemis.UI.Screens.Root.Sidebar.Dialogs
         private ProfileModuleViewModel? _selectedModule;
         private string? _selectedIconPath;
         private SvgImage? _selectedSvgSource;
+        private Hotkey? _enableHotkey;
+        private Hotkey? _disableHotkey;
 
         public ProfileConfigurationEditViewModel(ProfileCategory profileCategory, ProfileConfiguration? profileConfiguration, IWindowService windowService,
             IProfileService profileService, IPluginManagementService pluginManagementService)
@@ -42,6 +44,11 @@ namespace Artemis.UI.Screens.Root.Sidebar.Dialogs
             _profileConfiguration = profileConfiguration ?? profileService.CreateProfileConfiguration(profileCategory, "New profile", Enum.GetValues<MaterialIconKind>().First().ToString());
             _profileName = _profileConfiguration.Name;
             _iconType = _profileConfiguration.Icon.IconType;
+            _hotkeyMode = _profileConfiguration.HotkeyMode;
+            if (_profileConfiguration.EnableHotkey != null)
+                _enableHotkey = new Hotkey() {Key = _profileConfiguration.EnableHotkey.Key, Modifiers = profileConfiguration.EnableHotkey.Modifiers};
+            if (_profileConfiguration.DisableHotkey != null)
+                _disableHotkey = new Hotkey() {Key = _profileConfiguration.DisableHotkey.Key, Modifiers = profileConfiguration.DisableHotkey.Modifiers};
 
             IsNew = profileConfiguration == null;
             DisplayName = IsNew ? "Artemis | Add profile" : "Artemis | Edit profile";
@@ -64,6 +71,24 @@ namespace Artemis.UI.Screens.Root.Sidebar.Dialogs
         {
             get => _profileName;
             set => this.RaiseAndSetIfChanged(ref _profileName, value);
+        }
+
+        public ProfileConfigurationHotkeyMode HotkeyMode
+        {
+            get => _hotkeyMode;
+            set => this.RaiseAndSetIfChanged(ref _hotkeyMode, value);
+        }
+
+        public Hotkey? EnableHotkey
+        {
+            get => _enableHotkey;
+            set => this.RaiseAndSetIfChanged(ref _enableHotkey, value);
+        }
+
+        public Hotkey? DisableHotkey
+        {
+            get => _disableHotkey;
+            set => this.RaiseAndSetIfChanged(ref _disableHotkey, value);
         }
 
         public ObservableCollection<ProfileModuleViewModel> Modules { get; }
@@ -126,6 +151,10 @@ namespace Artemis.UI.Screens.Root.Sidebar.Dialogs
         {
             ProfileConfiguration.Name = ProfileName;
             ProfileConfiguration.Module = SelectedModule?.Module;
+            ProfileConfiguration.HotkeyMode = HotkeyMode;
+            ProfileConfiguration.EnableHotkey = EnableHotkey;
+            ProfileConfiguration.DisableHotkey = DisableHotkey;
+
             await SaveIcon();
 
             _profileService.SaveProfileConfigurationIcon(ProfileConfiguration);

@@ -4,5 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileEditorView">
-  Welcome to Avalonia!
+	<StackPanel Orientation="Horizontal">
+		<TextBlock Classes="h4 subtitle" Text="Wow, you're editing "/>
+        <TextBlock Classes="h4" Text="{Binding Profile.Name}"/>
+        <TextBlock Classes="h4 subtitle" Text=". That's amazing! keep it up man, you can do it!!!!11!11"/>
+	</StackPanel>
+
 </UserControl>

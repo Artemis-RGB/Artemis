@@ -1,5 +1,4 @@
 using Artemis.Core.Services;
-using Artemis.UI.Windows.Providers;
 using Artemis.UI.Windows.Providers.Input;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -17,15 +16,17 @@ namespace Artemis.UI.Windows
             _kernel = ArtemisBootstrapper.Bootstrap(this);
             RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
             AvaloniaXamlLoader.Load(this);
-
-            RegisterProviders(_kernel);
         }
 
         public override void OnFrameworkInitializationCompleted()
         {
             ArtemisBootstrapper.Initialize();
+
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
                 _applicationStateManager = new ApplicationStateManager(_kernel!, desktop.Args);
+                RegisterProviders(_kernel!);
+            }
         }
 
         private void RegisterProviders(StandardKernel standardKernel)

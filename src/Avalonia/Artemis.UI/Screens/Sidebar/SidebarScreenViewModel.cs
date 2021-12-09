@@ -5,7 +5,7 @@ using Ninject;
 using Ninject.Parameters;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Root.Sidebar
+namespace Artemis.UI.Screens.Sidebar
 {
     public class SidebarScreenViewModel<T> : SidebarScreenViewModel where T : MainScreenViewModel
     {

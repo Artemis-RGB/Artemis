@@ -2,7 +2,7 @@
 using Artemis.UI.Shared;
 using Material.Icons;
 
-namespace Artemis.UI.Screens.Root.Sidebar.Dialogs
+namespace Artemis.UI.Screens.Sidebar.Dialogs
 {
     public class ProfileModuleViewModel : ViewModelBase
     {

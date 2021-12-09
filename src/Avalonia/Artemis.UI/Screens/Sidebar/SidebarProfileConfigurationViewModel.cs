@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Screens.Root.Sidebar.Dialogs;
+using Artemis.UI.Screens.Sidebar.Dialogs;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.Interfaces;
 
-namespace Artemis.UI.Screens.Root.Sidebar
+namespace Artemis.UI.Screens.Sidebar
 {
     public class SidebarProfileConfigurationViewModel : ViewModelBase
     {

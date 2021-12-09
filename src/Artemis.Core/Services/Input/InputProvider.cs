@@ -95,6 +95,7 @@ namespace Artemis.Core.Services
             MouseMoveDataReceived?.Invoke(this, new InputProviderMouseMoveEventArgs(device, cursorX, cursorY, deltaX, deltaY));
         }
 
+        // TODO: Remove this as the core should handle this in GetDeviceByIdentifier
         /// <summary>
         ///     Invokes the <see cref="IdentifierReceived" /> event which the <see cref="IInputService" /> listens to as long as
         ///     this provider is registered

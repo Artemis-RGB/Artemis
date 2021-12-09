@@ -3,9 +3,11 @@ using Artemis.Core;
 using Artemis.UI.Screens.Device;
 using Artemis.UI.Screens.Device.Tabs;
 using Artemis.UI.Screens.Plugins;
-using Artemis.UI.Screens.Root.Sidebar;
+using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.Settings.Tabs;
+using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Screens.SurfaceEditor;
+using Artemis.UI.Services;
 using ReactiveUI;
 
 namespace Artemis.UI.Ninject.Factories
@@ -48,5 +50,10 @@ namespace Artemis.UI.Ninject.Factories
     public interface IPrerequisitesVmFactory : IVmFactory
     {
         PluginPrerequisiteViewModel PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall);
+    }
+
+    public interface IProfileEditorVmFactory : IVmFactory
+    {
+        ProfileEditorViewModel ProfileEditorViewModel(IScreen hostScreen);
     }
 }

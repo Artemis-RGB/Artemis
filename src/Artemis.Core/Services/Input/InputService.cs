@@ -98,6 +98,7 @@ namespace Artemis.Core.Services
             BustIdentifierCache();
         }
 
+        // TODO: Move the OnIdentifierReceived logic into here and get rid of OnIdentifierReceived, this and OnIdentifierReceived are always called in combination with each other
         public ArtemisDevice? GetDeviceByIdentifier(InputProvider provider, object identifier, InputDeviceType type)
         {
             if (provider == null) throw new ArgumentNullException(nameof(provider));

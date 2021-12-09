@@ -4,6 +4,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -91,7 +92,7 @@ namespace Artemis.UI.Shared.Controls
         ///     to an SVG
         /// </summary>
         public static readonly StyledProperty<Hotkey?> HotkeyProperty =
-            AvaloniaProperty.Register<HotkeyBox, Hotkey?>(nameof(Hotkey), notifying: HotkeyChanging);
+            AvaloniaProperty.Register<HotkeyBox, Hotkey?>(nameof(Hotkey), defaultBindingMode: BindingMode.TwoWay, notifying: HotkeyChanging);
 
         public static readonly StyledProperty<string?> WatermarkProperty =
             AvaloniaProperty.Register<HotkeyBox, string?>(nameof(Watermark));

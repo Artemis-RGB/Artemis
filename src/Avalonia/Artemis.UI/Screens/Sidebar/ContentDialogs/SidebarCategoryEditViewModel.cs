@@ -6,7 +6,7 @@ using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
 
-namespace Artemis.UI.Screens.Root.Sidebar.Dialogs
+namespace Artemis.UI.Screens.Sidebar.ContentDialogs
 {
     public class SidebarCategoryEditViewModel : ContentDialogViewModelBase
     {

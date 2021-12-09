@@ -1,18 +1,21 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Screens.Root.Sidebar.Dialogs;
+using Artemis.UI.Screens.Sidebar.ContentDialogs;
+using Artemis.UI.Screens.Sidebar.Dialogs;
+using Artemis.UI.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.Interfaces;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
-
-namespace Artemis.UI.Screens.Root.Sidebar
+namespace Artemis.UI.Screens.Sidebar
 {
-    public class SidebarCategoryViewModel : ViewModelBase
+    public class SidebarCategoryViewModel : ActivatableViewModelBase
     {
         private readonly SidebarViewModel _sidebarViewModel;
         private readonly IProfileService _profileService;
@@ -20,7 +23,7 @@ namespace Artemis.UI.Screens.Root.Sidebar
         private readonly ISidebarVmFactory _vmFactory;
         private SidebarProfileConfigurationViewModel? _selectedProfileConfiguration;
 
-        public SidebarCategoryViewModel(SidebarViewModel sidebarViewModel, ProfileCategory profileCategory, IProfileService profileService, IWindowService windowService, ISidebarVmFactory vmFactory)
+        public SidebarCategoryViewModel(SidebarViewModel sidebarViewModel, ProfileCategory profileCategory, IProfileService profileService, IWindowService windowService, IProfileEditorService profileEditorService, ISidebarVmFactory vmFactory)
         {
             _sidebarViewModel = sidebarViewModel;
             _profileService = profileService;
@@ -31,6 +34,16 @@ namespace Artemis.UI.Screens.Root.Sidebar
 
             if (ShowItems)
                 CreateProfileViewModels();
+
+            this.WhenActivated(disposables =>
+            {
+                profileEditorService.CurrentProfileConfiguration
+                    .Subscribe(p => SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(c => ReferenceEquals(c.ProfileConfiguration, p)))
+                    .DisposeWith(disposables);
+                this.WhenAnyValue(vm => vm.SelectedProfileConfiguration)
+                    .WhereNotNull()
+                    .Subscribe(s => profileEditorService.ChangeCurrentProfileConfiguration(s.ProfileConfiguration));
+            });
         }
 
         public ProfileCategory ProfileCategory { get; }

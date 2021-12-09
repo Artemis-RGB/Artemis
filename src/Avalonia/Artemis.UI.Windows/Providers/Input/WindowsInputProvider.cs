@@ -185,7 +185,7 @@ namespace Artemis.UI.Windows.Providers.Input
             if (identifier != null)
                 try
                 {
-                    device = _inputService.GetDeviceByIdentifier(this, identifier, InputDeviceType.Keyboard);
+                    device = _inputService.GetDeviceByIdentifier(this, identifier, InputDeviceType.Mouse);
                 }
                 catch (Exception e)
                 {

@@ -4,15 +4,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
         xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
-        xmlns:local="clr-namespace:Artemis.UI.Screens.Root.Sidebar.Dialogs"
         xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
         xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
+        xmlns:local="clr-namespace:Artemis.UI.Screens.Sidebar.Dialogs"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="850"
-        x:Class="Artemis.UI.Screens.Root.Sidebar.Dialogs.ProfileConfigurationEditView"
+        x:Class="Artemis.UI.Screens.Sidebar.Dialogs.ProfileConfigurationEditView"
         Title="{Binding DisplayName}"
         Icon="/Assets/Images/Logo/bow.ico"
         Width="800"
+        MinWidth="420"
         Height="850">
     <Window.Resources>
         <converters:EnumToBooleanConverter x:Key="EnumBoolConverter" />
@@ -24,6 +25,14 @@
                     <Style Selector="TextBlock.label">
                         <Setter Property="Margin" Value="0 10 0 5" />
                     </Style>
+                    <Style Selector="TextBlock.section-header">
+                        <Setter Property="Margin" Value="0 0 5 0" />
+                    </Style>
+                    <Style Selector="TextBlock.section-subtitle">
+                        <Setter Property="VerticalAlignment" Value="Bottom" />
+                        <Setter Property="Margin" Value="0 0 0 1" />
+                        <Setter Property="TextWrapping" Value="Wrap" />
+                    </Style>
                 </StackPanel.Styles>
 
                 <Grid>
@@ -31,12 +40,10 @@
                     <TextBlock Classes="h4" IsVisible="{Binding !IsNew}" Text="{Binding ProfileConfiguration.Name}" />
                 </Grid>
 
-                <TextBlock Classes="h5">General</TextBlock>
-
                 <Border Classes="card" Margin="0 0 0 15">
                     <StackPanel>
                         <TextBlock Classes="label">Profile name</TextBlock>
-                        <TextBox Text="{Binding ProfileName}" />
+                        <TextBox Watermark="Name" Text="{Binding ProfileName}" />
                         <TextBlock Classes="label">Module</TextBlock>
                         <ComboBox SelectedItem="{Binding SelectedModule}" IsEnabled="{Binding Modules.Count}" Items="{Binding Modules}" HorizontalAlignment="Stretch">
                             <ComboBox.ItemsPanel>
@@ -71,7 +78,7 @@
                         <TextBlock Classes="label">Icon</TextBlock>
                         <StackPanel Orientation="Horizontal"
                                     IsVisible="{Binding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.BitmapImage}}">
-                            <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="98" Height="98">
+                            <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="78" Height="78">
                                 <Image Source="{Binding SelectedBitmapSource}" Margin="10" />
                             </Border>
                             <Button Command="{Binding BrowseBitmapFile}"
@@ -83,7 +90,7 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal"
                                     IsVisible="{Binding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.SvgImage}}">
-                            <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="98" Height="98">
+                            <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="78" Height="78">
                                 <Image Margin="10" Source="{Binding SelectedSvgSource}" />
                             </Border>
                             <Button Command="{Binding BrowseSvgFile}"
@@ -95,8 +102,8 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal"
                                     IsVisible="{Binding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.MaterialIcon}}">
-                            <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="98" Height="98">
-                                <avalonia:MaterialIcon Kind="{Binding SelectedMaterialIcon.Icon}" Width="65" Height="65" />
+                            <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="78" Height="78">
+                                <avalonia:MaterialIcon Kind="{Binding SelectedMaterialIcon.Icon}" Width="45" Height="45" />
                             </Border>
                             <ComboBox Items="{Binding MaterialIcons}"
                                       SelectedItem="{Binding SelectedMaterialIcon}"
@@ -124,16 +131,44 @@
                     </StackPanel>
                 </Border>
 
-                <TextBlock Classes="h5">Keybindings</TextBlock>
-                <TextBlock Classes="subtitle">You may set up hotkeys to activate/deactivate the profile</TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Classes="h5 section-header">Keybindings</TextBlock>
+                    <TextBlock Classes="subtitle section-subtitle">You may set up hotkeys to activate/deactivate the profile</TextBlock>
+				</StackPanel>
                 <Border Classes="card" Margin="0 5 0 15">
-                    <TextBlock>TODO</TextBlock>
+					<StackPanel>
+						<TextBlock>Hotkey mode</TextBlock>
+						<WrapPanel Orientation="Horizontal">
+							<RadioButton Content="None"
+                                         IsChecked="{Binding HotkeyMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationHotkeyMode.None}}" />
+							<RadioButton Content="Toggle"
+                                         IsChecked="{Binding HotkeyMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationHotkeyMode.Toggle}}" />
+							<RadioButton Content="Separate enable/disable"
+                                         IsChecked="{Binding HotkeyMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationHotkeyMode.EnableDisable}}" />
+						</WrapPanel>
+
+						<controls:HotkeyBox Watermark="Toggle hotkey"
+                                            Hotkey="{Binding EnableHotkey}"
+                                            IsVisible="{Binding HotkeyMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationHotkeyMode.Toggle}}"
+                                            HorizontalAlignment="Left"
+                                            Width="200"
+                                            Margin="0 5 0 0"/>
+						<StackPanel Orientation="Horizontal"
+                                    IsVisible="{Binding HotkeyMode, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationHotkeyMode.EnableDisable}}"
+                                    HorizontalAlignment="Left"
+                                    Margin="0 5 0 0">
+							<controls:HotkeyBox Watermark="Enable hotkey" Hotkey="{Binding EnableHotkey}" Margin="0 0 4 0" Width="200"/>
+							<controls:HotkeyBox Watermark="Disable hotkey" Hotkey="{Binding DisableHotkey}" Margin="4 0 0 0" Width="200"/>
+						</StackPanel>
+					</StackPanel>
                 </Border>
 
-                <TextBlock Classes="h5">Activation conditions</TextBlock>
-                <TextBlock Classes="subtitle">If you only want this profile to be active under certain conditions, configure those conditions below</TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Classes="h5 section-header">Activation conditions</TextBlock>
+                    <TextBlock Classes="subtitle section-subtitle">Set up certain conditions under which the profile should be active</TextBlock>
+                </StackPanel>
                 <Border Classes="card" Margin="0 5 0 15">
-                    <TextBlock>TODO</TextBlock>
+					<TextBlock TextWrapping="Wrap">Here you'll find the node editor layer at some point, use your imagination for now.</TextBlock>
                 </Border>
             </StackPanel>
         </ScrollViewer>

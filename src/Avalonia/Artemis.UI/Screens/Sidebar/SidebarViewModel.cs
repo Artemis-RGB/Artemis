@@ -2,15 +2,18 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Home;
-using Artemis.UI.Screens.Root.Sidebar.Dialogs;
+using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.Settings;
+using Artemis.UI.Screens.Sidebar.ContentDialogs;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
+using Artemis.UI.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.Interfaces;
 using FluentAvalonia.UI.Controls;
@@ -19,7 +22,7 @@ using Ninject;
 using ReactiveUI;
 using RGB.NET.Core;
 
-namespace Artemis.UI.Screens.Root.Sidebar
+namespace Artemis.UI.Screens.Sidebar
 {
     public class SidebarViewModel : ActivatableViewModelBase
     {
@@ -28,17 +31,21 @@ namespace Artemis.UI.Screens.Root.Sidebar
         private readonly IRgbService _rgbService;
         private readonly ISidebarVmFactory _sidebarVmFactory;
         private readonly IWindowService _windowService;
+        private readonly IProfileEditorService _profileEditorService;
         private ArtemisDevice? _headerDevice;
 
         private SidebarScreenViewModel? _selectedSidebarScreen;
 
-        public SidebarViewModel(IScreen hostScreen, IKernel kernel, IProfileService profileService, IRgbService rgbService, ISidebarVmFactory sidebarVmFactory, IWindowService windowService)
+
+        public SidebarViewModel(IScreen hostScreen, IKernel kernel, IProfileService profileService, IRgbService rgbService, IWindowService windowService,
+            IProfileEditorService profileEditorService, ISidebarVmFactory sidebarVmFactory, IProfileEditorVmFactory profileEditorVmFactory)
         {
             _hostScreen = hostScreen;
             _profileService = profileService;
             _rgbService = rgbService;
-            _sidebarVmFactory = sidebarVmFactory;
             _windowService = windowService;
+            _profileEditorService = profileEditorService;
+            _sidebarVmFactory = sidebarVmFactory;
 
             SidebarScreens = new ObservableCollection<SidebarScreenViewModel>
             {
@@ -58,9 +65,23 @@ namespace Artemis.UI.Screens.Root.Sidebar
                     .WhereNotNull()
                     .Subscribe(c => SelectedSidebarScreen = SidebarScreens.FirstOrDefault(s => s.ScreenType == c.GetType()))
                     .DisposeWith(disposables);
+
                 this.WhenAnyValue(vm => vm.SelectedSidebarScreen)
                     .WhereNotNull()
-                    .Subscribe(s => _hostScreen.Router.Navigate.Execute(s.CreateInstance(kernel, _hostScreen)));
+                    .Subscribe(s =>
+                    {
+                        _hostScreen.Router.Navigate.Execute(s.CreateInstance(kernel, _hostScreen));
+                        profileEditorService.ChangeCurrentProfileConfiguration(null);
+                    });
+
+                this.WhenAnyObservable(vm => vm._profileEditorService.CurrentProfileConfiguration)
+                    .WhereNotNull()
+                    .Subscribe(_ =>
+                    {
+                        if (_hostScreen.Router.GetCurrentViewModel() is not ProfileEditorViewModel)
+                            _hostScreen.Router.Navigate.Execute(profileEditorVmFactory.ProfileEditorViewModel(_hostScreen));
+                    })
+                    .DisposeWith(disposables);
             });
         }
 
@@ -92,7 +113,7 @@ namespace Artemis.UI.Screens.Root.Sidebar
                 .WithTitle("Add new category")
                 .WithViewModel<SidebarCategoryEditViewModel>(out var vm, ("category", null))
                 .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Confirm))
-                .WithCloseButtonText("Cancel") 
+                .WithCloseButtonText("Cancel")
                 .WithDefaultButton(ContentDialogButton.Primary)
                 .ShowAsync();
 

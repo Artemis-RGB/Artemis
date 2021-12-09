@@ -1,11 +1,11 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Artemis.UI.Screens.Root.Sidebar
+namespace Artemis.UI.Screens.Sidebar
 {
-    public class SidebarProfileConfigurationView : UserControl
+    public partial class SidebarScreenView : UserControl
     {
-        public SidebarProfileConfigurationView()
+        public SidebarScreenView()
         {
             InitializeComponent();
         }

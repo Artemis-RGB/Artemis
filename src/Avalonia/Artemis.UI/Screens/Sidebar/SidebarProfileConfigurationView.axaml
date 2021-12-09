@@ -6,7 +6,7 @@
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Root.Sidebar.SidebarProfileConfigurationView">
+             x:Class="Artemis.UI.Screens.Sidebar.SidebarProfileConfigurationView">
     <UserControl.Resources>
         <converters:ValuesAdditionConverter x:Key="ValuesAddition" />
     </UserControl.Resources>

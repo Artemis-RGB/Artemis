@@ -3,10 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             xmlns:local="clr-namespace:Artemis.UI.Screens.Root.Sidebar"
              xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.Sidebar"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Root.Sidebar.SidebarCategoryView">
+             x:Class="Artemis.UI.Screens.Sidebar.SidebarCategoryView">
     <UserControl.Styles>
         <Style Selector=":is(Button).category-button">
             <Setter Property="IsVisible" Value="False" />

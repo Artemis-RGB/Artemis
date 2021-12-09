@@ -51,10 +51,10 @@
 	  <Compile Update="Screens\Debugger\Tabs\Settings\DebugSettingsView.axaml.cs">
 	    <DependentUpon>DebugSettingsView.axaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Screens\Root\Sidebar\ContentDialogs\SidebarCategoryEditView.axaml.cs">
+	  <Compile Update="Screens\Sidebar\ContentDialogs\SidebarCategoryEditView.axaml.cs">
 	    <DependentUpon>SidebarCategoryEditView.axaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Screens\Root\Sidebar\Dialogs\ProfileConfigurationEditView.axaml.cs">
+	  <Compile Update="Screens\Sidebar\Dialogs\ProfileConfigurationEditView.axaml.cs">
 	    <DependentUpon>ProfileConfigurationEditView.axaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
