@@ -1,3 +1,5 @@
+using Artemis.Core.Services;
+using Artemis.UI.Linux.Providers.Input;
 using Avalonia;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
@@ -17,6 +19,8 @@ namespace Artemis.UI.Linux
             _kernel = ArtemisBootstrapper.Bootstrap(this);
             RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
             AvaloniaXamlLoader.Load(this);
+
+            RegisterProviders();
         }
 
         public override void OnFrameworkInitializationCompleted()
@@ -24,6 +28,12 @@ namespace Artemis.UI.Linux
             ArtemisBootstrapper.Initialize();
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 _applicationStateManager = new ApplicationStateManager(_kernel!, desktop.Args);
+        }
+        
+        private void RegisterProviders()
+        {
+            IInputService inputService = _kernel.Get<IInputService>();
+            inputService.AddInputProvider(_kernel.Get<LinuxInputProvider>());
         }
     }
 }
