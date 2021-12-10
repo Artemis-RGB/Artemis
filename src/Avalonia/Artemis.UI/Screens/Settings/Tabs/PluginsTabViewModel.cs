@@ -16,7 +16,7 @@ using Artemis.UI.Shared.Services.Interfaces;
 using Avalonia.Threading;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Settings.Tabs
+namespace Artemis.UI.Screens.Settings
 {
     public class PluginsTabViewModel : ActivatableViewModelBase
     {

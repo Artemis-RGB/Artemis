@@ -11,6 +11,16 @@
                 </Grid>
             </VisualBrush.Visual>
         </VisualBrush>
+		<VisualBrush x:Key="LargeCheckerboardBrush" TileMode="Tile" Stretch="Uniform" SourceRect="0,0,25,25">
+            <VisualBrush.Visual>
+                <Grid Width="25" Height="25" RowDefinitions="*,*" ColumnDefinitions="*,*">
+                    <Rectangle Grid.Row="0" Grid.Column="0" Fill="Black" Opacity="0.15" />
+                    <Rectangle Grid.Row="0" Grid.Column="1" />
+                    <Rectangle Grid.Row="1" Grid.Column="0" />
+                    <Rectangle Grid.Row="1" Grid.Column="1" Fill="Black" Opacity="0.15" />
+                </Grid>
+            </VisualBrush.Visual>
+        </VisualBrush>
     </Styles.Resources>
     <StyleInclude Source="/Styles/Border.axaml" />
     <StyleInclude Source="/Styles/Button.axaml" />

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Device.Tabs.DeviceInfoTabView">
+             x:Class="Artemis.UI.Screens.Device.DeviceInfoTabView">
     <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,*" Margin="-5">
         <!-- First row -->
         <Border Classes="card" Grid.Column="0" Grid.Row="0" Margin="5">

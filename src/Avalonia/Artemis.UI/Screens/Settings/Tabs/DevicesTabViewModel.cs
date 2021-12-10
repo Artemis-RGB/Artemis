@@ -14,7 +14,7 @@ using Avalonia.Threading;
 using DynamicData;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Settings.Tabs
+namespace Artemis.UI.Screens.Settings
 {
     public class DevicesTabViewModel : ActivatableViewModelBase
     {

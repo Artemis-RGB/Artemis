@@ -1,7 +1,7 @@
 ﻿using Artemis.UI.Shared;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Debugger.Tabs.Logs
+namespace Artemis.UI.Screens.Debugger.Logs
 {
     public class LogsDebugViewModel : ActivatableViewModelBase, IRoutableViewModel
     {

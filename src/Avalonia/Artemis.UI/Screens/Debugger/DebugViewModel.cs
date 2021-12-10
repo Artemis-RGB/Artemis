@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Reactive.Disposables;
-using Artemis.UI.Screens.Debugger.Tabs.DataModel;
-using Artemis.UI.Screens.Debugger.Tabs.Logs;
-using Artemis.UI.Screens.Debugger.Tabs.Performance;
-using Artemis.UI.Screens.Debugger.Tabs.Render;
-using Artemis.UI.Screens.Debugger.Tabs.Settings;
+using Artemis.UI.Screens.Debugger.DataModel;
+using Artemis.UI.Screens.Debugger.Logs;
+using Artemis.UI.Screens.Debugger.Performance;
+using Artemis.UI.Screens.Debugger.Render;
+using Artemis.UI.Screens.Debugger.Settings;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using FluentAvalonia.UI.Controls;

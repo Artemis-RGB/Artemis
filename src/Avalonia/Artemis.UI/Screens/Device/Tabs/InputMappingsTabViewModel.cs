@@ -9,7 +9,7 @@ using Artemis.UI.Shared;
 using ReactiveUI;
 using RGB.NET.Core;
 
-namespace Artemis.UI.Screens.Device.Tabs
+namespace Artemis.UI.Screens.Device
 {
     public class InputMappingsTabViewModel : ActivatableViewModelBase
     {

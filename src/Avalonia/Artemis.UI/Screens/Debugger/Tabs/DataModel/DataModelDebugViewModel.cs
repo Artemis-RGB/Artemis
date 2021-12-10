@@ -10,12 +10,11 @@ using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.DataModelVisualization.Shared;
-using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Interfaces;
 using DynamicData;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Debugger.Tabs.DataModel
+namespace Artemis.UI.Screens.Debugger.DataModel
 {
     public class DataModelDebugViewModel : ActivatableViewModelBase, IRoutableViewModel
     {

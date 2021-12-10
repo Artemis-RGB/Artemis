@@ -3,7 +3,7 @@ using System.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared;
 
-namespace Artemis.UI.Screens.Debugger.Tabs.Performance
+namespace Artemis.UI.Screens.Debugger.Performance
 {
     public class PerformanceDebugPluginViewModel : ViewModelBase
     {

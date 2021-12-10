@@ -3,7 +3,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Sidebar.ContentDialogs
+namespace Artemis.UI.Screens.Sidebar
 {
     public class SidebarCategoryEditView : ReactiveUserControl<SidebarCategoryEditViewModel>
     {

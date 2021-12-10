@@ -10,7 +10,6 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Home;
 using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.Settings;
-using Artemis.UI.Screens.Sidebar.ContentDialogs;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
 using Artemis.UI.Services;

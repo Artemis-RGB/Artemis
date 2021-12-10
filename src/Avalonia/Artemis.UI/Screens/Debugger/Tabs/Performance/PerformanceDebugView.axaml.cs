@@ -1,7 +1,7 @@
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Debugger.Tabs.Performance
+namespace Artemis.UI.Screens.Debugger.Performance
 {
     public class PerformanceDebugView : ReactiveUserControl<PerformanceDebugViewModel>
     {

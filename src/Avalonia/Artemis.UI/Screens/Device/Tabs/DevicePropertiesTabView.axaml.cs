@@ -2,7 +2,7 @@ using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Device.Tabs
+namespace Artemis.UI.Screens.Device
 {
     public partial class DevicePropertiesTabView : ReactiveUserControl<DevicePropertiesTabViewModel>
     {

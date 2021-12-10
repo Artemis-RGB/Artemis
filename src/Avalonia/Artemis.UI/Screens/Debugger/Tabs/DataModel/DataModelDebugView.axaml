@@ -5,7 +5,7 @@
              xmlns:dataModel="clr-namespace:Artemis.UI.Shared.DataModelVisualization.Shared;assembly=Artemis.UI.Shared"
              xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Debugger.Tabs.DataModel.DataModelDebugView">
+             x:Class="Artemis.UI.Screens.Debugger.DataModel.DataModelDebugView">
     <UserControl.Resources>
         <converters:TypeToStringConverter x:Key="TypeToStringConverter" />
     </UserControl.Resources>

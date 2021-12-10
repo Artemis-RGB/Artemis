@@ -6,123 +6,124 @@
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="900"
              x:Class="Artemis.UI.Screens.Home.HomeView">
-    <Grid RowDefinitions="200,*">
-        <Image Grid.Row="0"
-               Grid.RowSpan="2"
-               VerticalAlignment="Top"
-               Source="/Assets/Images/home-banner.png"
-               Height="200"
-               Stretch="UniformToFill" />
+	<Border Classes="router-container">
+		<Grid RowDefinitions="200,*">
+			<Image Grid.Row="0"
+				   Grid.RowSpan="2"
+				   VerticalAlignment="Top"
+				   Source="/Assets/Images/home-banner.png"
+				   Height="200"
+				   Stretch="UniformToFill" />
 
-        <!-- TODO: Replace with a shadow when available -->
-        <TextBlock Grid.Row="0"
-                   TextWrapping="Wrap"
-                   Foreground="Black"
-                   FontSize="32"
-                   Margin="32"
-                   Text=" Welcome to Artemis, the unified RGB platform." />
-        <TextBlock Grid.Row="0"
-                   TextWrapping="Wrap"
-                   FontSize="32"
-                   Margin="30"
-                   Text=" Welcome to Artemis, the unified RGB platform." />
+			<!-- TODO: Replace with a shadow when available -->
+			<TextBlock Grid.Row="0"
+					   TextWrapping="Wrap"
+					   Foreground="Black"
+					   FontSize="32"
+					   Margin="32"
+					   Text=" Welcome to Artemis, the unified RGB platform." />
+			<TextBlock Grid.Row="0"
+					   TextWrapping="Wrap"
+					   FontSize="32"
+					   Margin="30"
+					   Text=" Welcome to Artemis, the unified RGB platform." />
 
-        <Grid Grid.Row="1" MaxWidth="840" Margin="30" VerticalAlignment="Bottom" ColumnDefinitions="*,*" RowDefinitions="*,*">
-            <Border Classes="card" Margin="8" Grid.ColumnSpan="2" ClipToBounds="True">
-                <Grid VerticalAlignment="Stretch" RowDefinitions="Auto,Auto" ColumnDefinitions="150,*">
-                    <avalonia:MaterialIcon Kind="Plug" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <StackPanel Grid.Row="0" Grid.Column="1">
-                        <TextBlock Classes="h3">Plugins</TextBlock>
-                        <TextBlock TextWrapping="Wrap" VerticalAlignment="Top">
-                            Artemis is built up using plugins. This means devices, brushes, effects and modules (for supporting games) can all be added via plugins.
-                        </TextBlock>
-                        <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Margin="0 15">
-                            Under Settings > Plugins you can find your currently installed plugins, these default plugins are created by Artemis developers. We're also keeping track of a list of third-party plugins on our wiki.
-                        </TextBlock>
-                    </StackPanel>
-                    <controls:HyperlinkButton Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/plugins" HorizontalAlignment="Right">
-						<controls:HyperlinkButton.ContextMenu>
-							<ContextMenu>
-								<MenuItem Header="Test"></MenuItem>
-							</ContextMenu>
-						</controls:HyperlinkButton.ContextMenu>
-						<StackPanel Orientation="Horizontal">
-                            <avalonia:MaterialIcon Kind="OpenInBrowser" />
-                            <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Get more plugins</TextBlock>
-                        </StackPanel>
-                    </controls:HyperlinkButton>
-                </Grid>
-            </Border>
+			<Grid Grid.Row="1" MaxWidth="840" Margin="30" VerticalAlignment="Bottom" ColumnDefinitions="*,*" RowDefinitions="*,*">
+				<Border Classes="card" Margin="8" Grid.ColumnSpan="2" ClipToBounds="True">
+					<Grid VerticalAlignment="Stretch" RowDefinitions="Auto,Auto" ColumnDefinitions="150,*">
+						<avalonia:MaterialIcon Kind="Plug" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+						<StackPanel Grid.Row="0" Grid.Column="1">
+							<TextBlock Classes="h3">Plugins</TextBlock>
+							<TextBlock TextWrapping="Wrap" VerticalAlignment="Top">
+								Artemis is built up using plugins. This means devices, brushes, effects and modules (for supporting games) can all be added via plugins.
+							</TextBlock>
+							<TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Margin="0 15">
+								Under Settings > Plugins you can find your currently installed plugins, these default plugins are created by Artemis developers. We're also keeping track of a list of third-party plugins on our wiki.
+							</TextBlock>
+						</StackPanel>
+						<controls:HyperlinkButton Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/plugins" HorizontalAlignment="Right">
+							<controls:HyperlinkButton.ContextMenu>
+								<ContextMenu>
+									<MenuItem Header="Test"></MenuItem>
+								</ContextMenu>
+							</controls:HyperlinkButton.ContextMenu>
+							<StackPanel Orientation="Horizontal">
+								<avalonia:MaterialIcon Kind="OpenInBrowser" />
+								<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Get more plugins</TextBlock>
+							</StackPanel>
+						</controls:HyperlinkButton>
+					</Grid>
+				</Border>
 
-            <Border Classes="card" Margin="8" Grid.Row="1" Grid.Column="0" ClipToBounds="True">
-                <Grid VerticalAlignment="Stretch" RowDefinitions="150,95" ColumnDefinitions="150,*">
-                    <avalonia:MaterialIcon Kind="Discord" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    <StackPanel Grid.Row="0" Grid.Column="1">
-                        <TextBlock Classes="h3">Have a chat</TextBlock>
-                        <TextBlock TextWrapping="Wrap" VerticalAlignment="Top">
-                            If you need help, have some feedback or have any other questions feel free to contact us through any of the following channels.
-                        </TextBlock>
-                    </StackPanel>
+				<Border Classes="card" Margin="8" Grid.Row="1" Grid.Column="0" ClipToBounds="True">
+					<Grid VerticalAlignment="Stretch" RowDefinitions="150,95" ColumnDefinitions="150,*">
+						<avalonia:MaterialIcon Kind="Discord" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" />
+						<StackPanel Grid.Row="0" Grid.Column="1">
+							<TextBlock Classes="h3">Have a chat</TextBlock>
+							<TextBlock TextWrapping="Wrap" VerticalAlignment="Top">
+								If you need help, have some feedback or have any other questions feel free to contact us through any of the following channels.
+							</TextBlock>
+						</StackPanel>
 
-                    <DockPanel Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">
-                        <Grid Margin="8" RowDefinitions="*,*">
-                            <controls:HyperlinkButton Grid.Row="0" NavigateUri="https://github.com/Artemis-RGB/Artemis">
-                                <StackPanel Orientation="Horizontal">
-                                    <avalonia:MaterialIcon Kind="Gift" />
-                                    <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">GitHub</TextBlock>
-                                </StackPanel>
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton Grid.Row="0" HorizontalAlignment="Right" NavigateUri="https://artemis-rgb.com">
-                                <StackPanel Orientation="Horizontal">
-                                    <avalonia:MaterialIcon Kind="Web" />
-                                    <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Website</TextBlock>
-                                </StackPanel>
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton Grid.Row="1" NavigateUri="https://discordapp.com/invite/S3MVaC9">
-                                <StackPanel Orientation="Horizontal">
-                                    <avalonia:MaterialIcon Kind="Discord" />
-                                    <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Discord</TextBlock>
-                                </StackPanel>
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton Grid.Row="1" HorizontalAlignment="Right" NavigateUri="mailto:spoinky.nl@gmail.com">
-                                <StackPanel Orientation="Horizontal">
-                                    <avalonia:MaterialIcon Kind="Email" />
-                                    <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">E-mail</TextBlock>
-                                </StackPanel>
-                            </controls:HyperlinkButton>
-                        </Grid>
-                    </DockPanel>
-                </Grid>
-            </Border>
-            <Border Classes="card" Margin="8" Grid.Row="1" Grid.Column="1" ClipToBounds="True">
-                <Grid VerticalAlignment="Stretch" RowDefinitions="150,95" ColumnDefinitions="150,*">
-                    <avalonia:MaterialIcon Kind="Github" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    <StackPanel Grid.Row="0" Grid.Column="1">
-                        <TextBlock Classes="h3">Open Source</TextBlock>
-                        <TextBlock TextWrapping="Wrap" VerticalAlignment="Top">
-                            This project is open source. If you like it and want to say thanks you could hit the GitHub Star button, I like numbers.
-                        </TextBlock>
-                    </StackPanel>
+						<DockPanel Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">
+							<Grid Margin="8" RowDefinitions="*,*">
+								<controls:HyperlinkButton Grid.Row="0" NavigateUri="https://github.com/Artemis-RGB/Artemis">
+									<StackPanel Orientation="Horizontal">
+										<avalonia:MaterialIcon Kind="Gift" />
+										<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">GitHub</TextBlock>
+									</StackPanel>
+								</controls:HyperlinkButton>
+								<controls:HyperlinkButton Grid.Row="0" HorizontalAlignment="Right" NavigateUri="https://artemis-rgb.com">
+									<StackPanel Orientation="Horizontal">
+										<avalonia:MaterialIcon Kind="Web" />
+										<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Website</TextBlock>
+									</StackPanel>
+								</controls:HyperlinkButton>
+								<controls:HyperlinkButton Grid.Row="1" NavigateUri="https://discordapp.com/invite/S3MVaC9">
+									<StackPanel Orientation="Horizontal">
+										<avalonia:MaterialIcon Kind="Discord" />
+										<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Discord</TextBlock>
+									</StackPanel>
+								</controls:HyperlinkButton>
+								<controls:HyperlinkButton Grid.Row="1" HorizontalAlignment="Right" NavigateUri="mailto:spoinky.nl@gmail.com">
+									<StackPanel Orientation="Horizontal">
+										<avalonia:MaterialIcon Kind="Email" />
+										<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">E-mail</TextBlock>
+									</StackPanel>
+								</controls:HyperlinkButton>
+							</Grid>
+						</DockPanel>
+					</Grid>
+				</Border>
+				<Border Classes="card" Margin="8" Grid.Row="1" Grid.Column="1" ClipToBounds="True">
+					<Grid VerticalAlignment="Stretch" RowDefinitions="150,95" ColumnDefinitions="150,*">
+						<avalonia:MaterialIcon Kind="Github" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" />
+						<StackPanel Grid.Row="0" Grid.Column="1">
+							<TextBlock Classes="h3">Open Source</TextBlock>
+							<TextBlock TextWrapping="Wrap" VerticalAlignment="Top">
+								This project is open source. If you like it and want to say thanks you could hit the GitHub Star button, I like numbers.
+							</TextBlock>
+						</StackPanel>
 
-                    <controls:HyperlinkButton Grid.Row="1"
-                                              Grid.Column="0"
-                                              HorizontalAlignment="Center"
-                                              NavigateUri="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=VQBAEJYUFLU4J">
-                        <StackPanel Orientation="Horizontal">
-                            <avalonia:MaterialIcon Kind="Gift" />
-                            <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Donate</TextBlock>
-                        </StackPanel>
-                    </controls:HyperlinkButton>
-                    <TextBlock Grid.Row="1"
-                               Grid.Column="1"
-                               Foreground="{DynamicResource MaterialDesignBodyLight}"
-                               TextWrapping="Wrap"
-                               VerticalAlignment="Center">
-                        Feel like making a donation? It would be gratefully received. Click the button to donate via PayPal.
-                    </TextBlock>
-                </Grid>
-            </Border>
-
-        </Grid>
-    </Grid>
+						<controls:HyperlinkButton Grid.Row="1"
+												  Grid.Column="0"
+												  HorizontalAlignment="Center"
+												  NavigateUri="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=VQBAEJYUFLU4J">
+							<StackPanel Orientation="Horizontal">
+								<avalonia:MaterialIcon Kind="Gift" />
+								<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Donate</TextBlock>
+							</StackPanel>
+						</controls:HyperlinkButton>
+						<TextBlock Grid.Row="1"
+								   Grid.Column="1"
+								   Foreground="{DynamicResource MaterialDesignBodyLight}"
+								   TextWrapping="Wrap"
+								   VerticalAlignment="Center">
+							Feel like making a donation? It would be gratefully received. Click the button to donate via PayPal.
+						</TextBlock>
+					</Grid>
+				</Border>
+            </Grid>
+		</Grid>
+	</Border>
 </UserControl>

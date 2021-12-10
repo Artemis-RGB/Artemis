@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Sidebar.Dialogs
+namespace Artemis.UI.Screens.Sidebar
 {
     public partial class ProfileConfigurationEditView : ReactiveWindow<ProfileConfigurationEditViewModel>
     {

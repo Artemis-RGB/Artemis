@@ -11,7 +11,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.Interfaces;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Plugins.Dialogs
+namespace Artemis.UI.Screens.Plugins
 {
     public class PluginPrerequisitesUninstallDialogViewModel : DialogViewModelBase<bool>
     {

@@ -11,10 +11,10 @@ namespace Artemis.UI.Screens.SurfaceEditor
 {
     public class SurfaceEditorView : ReactiveUserControl<SurfaceEditorViewModel>
     {
-        private readonly SelectionRectangle _selectionRectangle;
         private readonly Grid _containerGrid;
-        private readonly ZoomBorder _zoomBorder;
+        private readonly SelectionRectangle _selectionRectangle;
         private readonly Border _surfaceBounds;
+        private readonly ZoomBorder _zoomBorder;
 
         public SurfaceEditorView()
         {
@@ -25,8 +25,14 @@ namespace Artemis.UI.Screens.SurfaceEditor
             _selectionRectangle = this.Find<SelectionRectangle>("SelectionRectangle");
             _surfaceBounds = this.Find<Border>("SurfaceBounds");
 
+            _zoomBorder.PropertyChanged += ZoomBorderOnPropertyChanged;
+            UpdateZoomBorderBackground();
+        }
 
-            ((VisualBrush) _zoomBorder.Background).DestinationRect = new RelativeRect(_zoomBorder.OffsetX * -1, _zoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
+        private void ZoomBorderOnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+        {
+            if (e.Property.Name == nameof(_zoomBorder.Background))
+                UpdateZoomBorderBackground();
         }
 
         private void InitializeComponent()
@@ -36,7 +42,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         private void ZoomBorder_OnZoomChanged(object sender, ZoomChangedEventArgs e)
         {
-            ((VisualBrush) _zoomBorder.Background).DestinationRect = new RelativeRect(_zoomBorder.OffsetX * -1, _zoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
+            UpdateZoomBorderBackground();
             _selectionRectangle.BorderThickness = 1 / _zoomBorder.ZoomX;
             _surfaceBounds.BorderThickness = new Thickness(2 / _zoomBorder.ZoomX);
         }
@@ -53,7 +59,9 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 ViewModel?.StartMouseDrag(e.GetPosition(_containerGrid));
             }
             else
+            {
                 ViewModel?.ClearSelection();
+            }
         }
 
         private void ZoomBorder_OnPointerMoved(object? sender, PointerEventArgs e)
@@ -61,7 +69,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
                 return;
 
-            if (ReferenceEquals(e.Pointer.Captured, sender)) 
+            if (ReferenceEquals(e.Pointer.Captured, sender))
                 ViewModel?.UpdateMouseDrag(e.GetPosition(_containerGrid));
         }
 
@@ -75,6 +83,12 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 ViewModel?.StopMouseDrag(e.GetPosition(_containerGrid));
                 e.Pointer.Capture(null);
             }
+        }
+
+        private void UpdateZoomBorderBackground()
+        {
+            if (_zoomBorder.Background is VisualBrush visualBrush)
+                visualBrush.DestinationRect = new RelativeRect(_zoomBorder.OffsetX * -1, _zoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
         }
     }
 }

@@ -15,7 +15,7 @@ using Material.Icons;
 using Newtonsoft.Json;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Sidebar.Dialogs
+namespace Artemis.UI.Screens.Sidebar
 {
     public class ProfileConfigurationEditViewModel : DialogViewModelBase<bool>
     {

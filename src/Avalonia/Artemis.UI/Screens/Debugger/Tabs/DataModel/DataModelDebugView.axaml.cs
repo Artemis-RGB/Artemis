@@ -1,7 +1,7 @@
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Debugger.Tabs.DataModel
+namespace Artemis.UI.Screens.Debugger.DataModel
 {
     public class DataModelDebugView : ReactiveUserControl<DataModelDebugViewModel>
     {

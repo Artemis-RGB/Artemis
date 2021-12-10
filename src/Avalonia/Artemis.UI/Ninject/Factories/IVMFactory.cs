@@ -1,10 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using Artemis.Core;
 using Artemis.UI.Screens.Device;
-using Artemis.UI.Screens.Device.Tabs;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor;
-using Artemis.UI.Screens.Settings.Tabs;
+using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Services;

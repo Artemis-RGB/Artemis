@@ -1,7 +1,7 @@
 ﻿using Artemis.UI.Shared;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Debugger.Tabs.Settings
+namespace Artemis.UI.Screens.Debugger.Settings
 {
     public class DebugSettingsViewModel : ActivatableViewModelBase, IRoutableViewModel
     {

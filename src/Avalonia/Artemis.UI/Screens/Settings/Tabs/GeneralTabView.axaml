@@ -6,7 +6,7 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="2400"
-             x:Class="Artemis.UI.Screens.Settings.Tabs.GeneralTabView">
+             x:Class="Artemis.UI.Screens.Settings.GeneralTabView">
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 		<StackPanel Margin="15" MaxWidth="1000">

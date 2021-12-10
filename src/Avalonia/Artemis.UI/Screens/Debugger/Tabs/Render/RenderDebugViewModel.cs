@@ -1,19 +1,13 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Reactive.Disposables;
-using System.Reflection.Metadata.Ecma335;
-using System.Timers;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
-using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Media.Imaging;
-using Avalonia.Platform;
 using ReactiveUI;
 using SkiaSharp;
 
-namespace Artemis.UI.Screens.Debugger.Tabs.Render
+namespace Artemis.UI.Screens.Debugger.Render
 {
     public class RenderDebugViewModel : ActivatableViewModelBase, IRoutableViewModel
     {

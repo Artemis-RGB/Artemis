@@ -5,14 +5,14 @@
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
-             xmlns:tabs="clr-namespace:Artemis.UI.Screens.Device.Tabs"
+             xmlns:device="clr-namespace:Artemis.UI.Screens.Device"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="1200"
-             x:Class="Artemis.UI.Screens.Device.Tabs.DevicePropertiesTabView">
+             x:Class="Artemis.UI.Screens.Device.DevicePropertiesTabView">
     <UserControl.Resources>
         <converters:SKColorToColorConverter x:Key="SKColorToColorConverter" />
     </UserControl.Resources>
     <Design.DataContext>
-        <tabs:DevicePropertiesTabViewModel />
+        <device:DevicePropertiesTabViewModel />
     </Design.DataContext>
 
     <!-- Body -->

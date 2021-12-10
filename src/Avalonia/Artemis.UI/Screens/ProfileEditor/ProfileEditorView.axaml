@@ -2,12 +2,265 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileEditorView">
-	<StackPanel Orientation="Horizontal">
-		<TextBlock Classes="h4 subtitle" Text="Wow, you're editing "/>
-        <TextBlock Classes="h4" Text="{Binding Profile.Name}"/>
-        <TextBlock Classes="h4 subtitle" Text=". That's amazing! keep it up man, you can do it!!!!11!11"/>
-	</StackPanel>
+    <UserControl.Styles>
+        <Style Selector="GridSplitter.editor-grid-splitter-vertical">
+            <Setter Property="MinWidth" Value="4" />
+            <Setter Property="Margin" Value="1 1 1 5" />
+        </Style>
+        <Style Selector="GridSplitter.editor-grid-splitter-horizontal">
+            <Setter Property="MinHeight" Value="4" />
+            <Setter Property="Margin" Value="5 1" />
+        </Style>
+        <Style Selector=":is(Button).editor-sidebar-button">
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Margin" Value="4" />
+        </Style>
+        <Style Selector=":is(Button).editor-sidebar-button avalonia|MaterialIcon">
+            <Setter Property="Width" Value="18" />
+            <Setter Property="Height" Value="18" />
+        </Style>
+    </UserControl.Styles>
+    <Grid ColumnDefinitions="4*,Auto,*" RowDefinitions="Auto,*" Margin="0 0 4 4">
+        <Menu Grid.Row="0" Grid.ColumnSpan="3" VerticalAlignment="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="New">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Plus" />
+                    </MenuItem.Icon>
+                    <MenuItem Header="Folder" Command="{Binding AddFolder}">
+                        <MenuItem.Icon>
+                            <avalonia:MaterialIcon Kind="Folder" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Layer" Command="{Binding AddLayer}">
+                        <MenuItem.Icon>
+                            <avalonia:MaterialIcon Kind="Layers" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="View Properties" Command="{Binding ViewProperties}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Settings" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_View Scripts" Command="{Binding ViewScripts}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="BookEdit" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Adapt Profile" Command="{Binding AdaptProfile}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Magic" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Suspend Profile">
+                    <MenuItem.Icon>
+                        <CheckBox BorderThickness="0"
+                                  IsHitTestVisible="False"
+                                  IsChecked="{Binding ProfileConfiguration.IsSuspended}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Export Profile" Command="{Binding ExportProfile}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Export" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Duplicate Profile" Command="{Binding DuplicateProfile}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="ContentDuplicate" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Delete Profile" Command="{Binding DeleteProfile}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Trash" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Edit" SubmenuOpened="MenuItem_OnSubmenuOpened">
+                <MenuItem Header="_Duplicate"
+                          Command="{Binding Duplicate}"
+                          HotKey="Ctrl+D"
+                          IsEnabled="{Binding HasSelectedElement}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="ContentDuplicate" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Copy"
+                          Command="{Binding Copy}"
+                          HotKey="Ctrl+C"
+                          IsEnabled="{Binding HasSelectedElement}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="ContentCopy" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Paste"
+                          Command="{Binding Paste}"
+                          HotKey="Ctrl+V">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIconExt Kind="ContentPaste" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Run">
+                <MenuItem Header="_Switch run mode"
+                          Command="{Binding ToggleSuspend}"
+                          HotKey="F5">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="SwapHorizontal" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Run Profile on Focus Loss"
+                          ToolTip.Tip="If enabled, run mode is set to normal on focus loss"
+                          HotKey="Shift+F5">
+                    <MenuItem.Icon>
+                        <CheckBox BorderThickness="0"
+                                  IsHitTestVisible="False"
+                                  IsChecked="{Binding StopOnFocusLoss.Value}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Options">
+                <MenuItem Header="Focus Selected Layer"
+                          ToolTip.Tip="If enabled, displays only the layer you currently have selected"
+                          IsEnabled="False">
+                    <MenuItem.Icon>
+                        <CheckBox BorderThickness="0"
+                                  IsHitTestVisible="False"
+                                  IsChecked="{Binding FocusSelectedLayer.Value}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Display Data Model Values">
+                    <MenuItem.Icon>
+                        <CheckBox BorderThickness="0"
+                                  IsHitTestVisible="False"
+                                  IsChecked="{Binding ShowDataModelValues.Value}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Display Full Condition Paths">
+                    <MenuItem.Icon>
+                        <CheckBox BorderThickness="0"
+                                  IsHitTestVisible="False"
+                                  IsChecked="{Binding ShowFullPaths.Value}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Always Display Cable Values" ToolTip.Tip="If enabled, cable values are always shown instead of only on hover">
+                    <MenuItem.Icon>
+                        <CheckBox BorderThickness="0"
+                                  IsHitTestVisible="False"
+                                  IsChecked="{Binding AlwaysShowValues.Value}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Apply All Data Bindings During Edit" ToolTip.Tip="If enabled, updates all data bindings instead of only the one you are editing">
+                    <MenuItem.Icon>
+                        <CheckBox BorderThickness="0"
+                                  IsHitTestVisible="False"
+                                  IsChecked="{Binding AlwaysApplyDataBindings.Value}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="Artemis Wiki" Command="{Binding OpenUrl}" CommandParameter="https://wiki.artemis-rgb.com/">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="BookEdit" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Editor" Command="{Binding OpenUrl}" CommandParameter="https://wiki.artemis-rgb.com/en/guides/user/profiles">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Edit" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Layers" Command="{Binding OpenUrl}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/layers">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Layers" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Display Conditions" Command="{Binding OpenUrl}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/conditions">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="NotEqual" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Timeline" Command="{Binding OpenUrl}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/timeline">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Stopwatch" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Data Bindings" Command="{Binding OpenUrl}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/data-bindings">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="VectorLink" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Scripting" Command="{Binding OpenUrl}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/scripting">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="CodeJson" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Report a Bug" Command="{Binding OpenUrl}" CommandParameter="https://github.com/Artemis-RGB/Artemis/issues">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Github" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Get Help on Discord" Command="{Binding OpenUrl}" CommandParameter="https://discord.gg/S3MVaC9">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Discord" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
 
+        <Grid Grid.Row="1" Grid.Column="0" RowDefinitions="3*,Auto,*">
+            <Border Grid.Row="0" Classes="card" Padding="0" Margin="4 0 4 4" ClipToBounds="True">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0" Background="{DynamicResource CardStrokeColorDefaultSolidBrush}">
+
+                        <StackPanel Orientation="Vertical">
+                            <ToggleButton Classes="icon-button editor-sidebar-button">
+                                <avalonia:MaterialIcon Kind="HandLeft" />
+                            </ToggleButton>
+                            <ToggleButton Classes="icon-button editor-sidebar-button">
+                                <avalonia:MaterialIcon Kind="TransitConnectionVariant" />
+                            </ToggleButton>
+                            <ToggleButton Classes="icon-button editor-sidebar-button">
+                                <avalonia:MaterialIcon Kind="SelectionDrag" />
+                            </ToggleButton>
+                            <ToggleButton Classes="icon-button editor-sidebar-button">
+                                <avalonia:MaterialIcon Kind="SelectOff" />
+                            </ToggleButton>
+                        </StackPanel>
+                    </Border>
+                    <ContentControl Grid.Column="1" Content="{Binding VisualEditorViewModel}" />
+                </Grid>
+
+            </Border>
+
+            <GridSplitter Grid.Row="1" Classes="editor-grid-splitter-horizontal" />
+
+            <Border Grid.Row="2" Classes="card card-condensed" Margin="4">
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Properties/timeline</TextBlock>
+            </Border>
+        </Grid>
+
+        <GridSplitter Grid.Row="1" Grid.Column="1" Classes="editor-grid-splitter-vertical" />
+
+        <Grid Grid.Row="1" Grid.Column="2" RowDefinitions="*,Auto,*">
+            <Border Grid.Row="0" Classes="card card-condensed" Margin="4 0 4 4">
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Profile elements</TextBlock>
+            </Border>
+
+            <GridSplitter Grid.Row="1" Classes="editor-grid-splitter-horizontal" />
+
+            <Border Grid.Row="2" Classes="card card-condensed" Margin="4">
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Conditions</TextBlock>
+            </Border>
+        </Grid>
+    </Grid>
 </UserControl>

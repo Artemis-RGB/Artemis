@@ -14,7 +14,7 @@ using Artemis.UI.Shared;
 using ReactiveUI;
 using Serilog.Events;
 
-namespace Artemis.UI.Screens.Settings.Tabs
+namespace Artemis.UI.Screens.Settings
 {
     public class GeneralTabViewModel : ActivatableViewModelBase
     {

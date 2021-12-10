@@ -22,6 +22,7 @@
     <!-- Add Styles Here -->
     <Style Selector="Border.router-container">
         <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiary}" />
+        <Setter Property="Margin" Value="0 10 0 0"></Setter>
         <Setter Property="CornerRadius" Value="8 0 0 0" />
         <Setter Property="ClipToBounds" Value="True" />
     </Style>
@@ -33,7 +34,7 @@
     </Style>
 
     <Style Selector="Border.card-condensed">
-        <Setter Property="Padding" Value="15" />
+        <Setter Property="Padding" Value="10" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
         <Setter Property="CornerRadius" Value="{DynamicResource CardCornerRadius}" />
     </Style>

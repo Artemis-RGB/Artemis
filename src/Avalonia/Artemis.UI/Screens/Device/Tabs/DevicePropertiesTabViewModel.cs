@@ -10,7 +10,7 @@ using Artemis.UI.Shared.Services.Interfaces;
 using ReactiveUI;
 using SkiaSharp;
 
-namespace Artemis.UI.Screens.Device.Tabs
+namespace Artemis.UI.Screens.Device
 {
     public class DevicePropertiesTabViewModel : ActivatableViewModelBase
     {

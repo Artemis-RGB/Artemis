@@ -2,7 +2,7 @@
 using Artemis.UI.Shared;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Debugger.Tabs.Performance
+namespace Artemis.UI.Screens.Debugger.Performance
 {
     public class PerformanceDebugMeasurementViewModel : ViewModelBase
     {

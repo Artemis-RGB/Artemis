@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Debugger.Tabs.Performance.PerformanceDebugPluginView">
+             x:Class="Artemis.UI.Screens.Debugger.Performance.PerformanceDebugPluginView">
 	<Border Classes="card-condensed" Margin="0 5">
         <StackPanel>
             <Grid ColumnDefinitions="40,*">

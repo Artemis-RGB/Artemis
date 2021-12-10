@@ -1,3 +1,4 @@
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
@@ -13,6 +14,11 @@ namespace Artemis.UI.Screens.ProfileEditor
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        private void MenuItem_OnSubmenuOpened(object? sender, RoutedEventArgs e)
+        {
+            
         }
     }
 }

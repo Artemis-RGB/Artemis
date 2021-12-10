@@ -28,6 +28,14 @@ namespace Artemis.UI.Shared
         public void Close()
         {
             CloseRequested?.Invoke(this, EventArgs.Empty);
+            OnCloseRequested();
+        }
+
+        /// <summary>
+        ///     Called when the the window hosting the view model should close
+        /// </summary>
+        public virtual void OnCloseRequested()
+        {
         }
 
         /// <summary>
