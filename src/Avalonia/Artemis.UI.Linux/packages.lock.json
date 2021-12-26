@@ -219,8 +219,8 @@
       },
       "FluentAvaloniaUI": {
         "type": "Transitive",
-        "resolved": "1.1.6",
-        "contentHash": "EJukyiTmEVhaYlHdntFMyQKI4+u772rSClKYQqJRfkTb1NoJXLqiIVqMjx8ZQ0pxnfih+6CZ7+x82lfrGHIPUw==",
+        "resolved": "1.1.7",
+        "contentHash": "Hco3+M09A7rDknaYu5CcyGhUOqGj5mebrFzjZVGjW5YBYiMiV+x0vl2Fn6oIfXxhKgg1i70tTwQCtW/1GWFJeA==",
         "dependencies": {
           "Avalonia": "0.10.10",
           "Avalonia.Desktop": "0.10.10",
@@ -689,16 +689,16 @@
       },
       "Splat": {
         "type": "Transitive",
-        "resolved": "13.1.63",
-        "contentHash": "7iW45RA7AbSlQPCgdokmysva5PGd6iBUhuNkC0XD73LF9dxfTkKeo3wZkohU7nvspDhJ7PJsYHvDtxIt5bMQ8Q=="
+        "resolved": "14.1.1",
+        "contentHash": "bKQtKu57w+iJ1T+WDyDdNq+LBNVdmNu2i0vGNyUdtmg4TEIEFiX2GfPusNEAW2QOfxyDE7i4+xTxbOKZr/4jhg=="
       },
       "Splat.Ninject": {
         "type": "Transitive",
-        "resolved": "13.1.63",
-        "contentHash": "rTF0HSa6p8nxrXj2hwVgkutcTDJUXY34sY+zYK4ky65b7a0ROL8kdiYyxVVLE4Lq31N5Rcd4bBbqlPkgwZguww==",
+        "resolved": "14.1.1",
+        "contentHash": "lmhjY5yRKL6SgkwY0kEtnHI8JERYhRwFiOk+NgvOUtGYzVm/RRm1OrgrN+kPKzmuvsUrodx6FYTHrSkHL2I8Yg==",
         "dependencies": {
           "Ninject": "3.3.4",
-          "Splat": "13.1.63"
+          "Splat": "14.1.1"
         }
       },
       "Svg.Custom": {
@@ -1692,12 +1692,12 @@
           "Avalonia.Diagnostics": "0.10.10",
           "Avalonia.ReactiveUI": "0.10.10",
           "Avalonia.Svg.Skia": "0.10.10",
-          "FluentAvaloniaUI": "1.1.6",
+          "FluentAvaloniaUI": "1.1.7",
           "Flurl.Http": "3.2.0",
           "Live.Avalonia": "1.3.1",
           "Material.Icons.Avalonia": "1.0.2",
           "ReactiveUI.Validation": "2.2.1",
-          "Splat.Ninject": "13.1.63"
+          "Splat.Ninject": "14.1.1"
         }
       },
       "artemis.ui.shared": {
@@ -1710,7 +1710,7 @@
           "Avalonia.Xaml.Behaviors": "0.10.10.4",
           "Avalonia.Xaml.Interactions": "0.10.10.4",
           "Avalonia.Xaml.Interactivity": "0.10.10.4",
-          "FluentAvaloniaUI": "1.1.6",
+          "FluentAvaloniaUI": "1.1.7",
           "Material.Icons.Avalonia": "1.0.2",
           "ReactiveUI.Validation": "2.2.1"
         }

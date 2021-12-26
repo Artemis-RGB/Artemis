@@ -4,7 +4,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Device
 {
-    public partial class DevicePropertiesView : ReactiveWindow<DevicePropertiesViewModel>
+    public partial class DevicePropertiesView : ReactiveCoreWindow<DevicePropertiesViewModel>
     {
         public DevicePropertiesView()
         {

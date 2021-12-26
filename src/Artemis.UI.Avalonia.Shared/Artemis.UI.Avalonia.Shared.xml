@@ -756,6 +756,11 @@
                 Closes the window hosting the view model
             </summary>
         </member>
+        <member name="M:Artemis.UI.Shared.PluginConfigurationViewModel.OnCloseRequested">
+            <summary>
+                Called when the the window hosting the view model should close
+            </summary>
+        </member>
         <member name="E:Artemis.UI.Shared.PluginConfigurationViewModel.CloseRequested">
             <summary>
                 Occurs when the the window hosting the view model should close

@@ -1,13 +1,22 @@
-<Window xmlns="https://github.com/avaloniaui"
+<controls:CoreWindow xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Artemis.UI.MainWindow"
         Icon="/Assets/Images/Logo/bow.ico"
         Title="Artemis 2.0">
-	<!-- Use a panel here so the main window can host ContentDialogs -->
+	<controls:CoreWindow.Resources>
+        <ResourceDictionary>
+            <Panel x:Key="RootWindowTitlebar" Height="31" HorizontalAlignment="Stretch" Background="Red">
+				<TextBlock>Test</TextBlock>
+            </Panel>
+		</ResourceDictionary>
+
+	</controls:CoreWindow.Resources>
+    <!-- Use a panel here so the main window can host ContentDialogs -->
     <Panel>
 		<ContentControl Content="{Binding}" />
 	</Panel>
-</Window>
+</controls:CoreWindow>

@@ -253,7 +253,7 @@
 
         <Grid Grid.Row="1" Grid.Column="2" RowDefinitions="*,Auto,*">
             <Border Grid.Row="0" Classes="card card-condensed" Margin="4 0 4 4">
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Profile elements</TextBlock>
+                <ContentControl Content="{Binding ProfileTreeViewModel}" />
             </Border>
 
             <GridSplitter Grid.Row="1" Classes="editor-grid-splitter-horizontal" />

@@ -8,7 +8,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Plugins
 {
-    public class PluginSettingsWindowView : ReactiveWindow<PluginSettingsWindowViewModel>
+    public class PluginSettingsWindowView : ReactiveCoreWindow<PluginSettingsWindowViewModel>
     {
         public PluginSettingsWindowView()
         {

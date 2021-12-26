@@ -12,7 +12,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Debugger
 {
-    public class DebugView : ReactiveWindow<DebugViewModel>
+    public class DebugView : ReactiveCoreWindow<DebugViewModel>
     {
         public DebugView()
         {

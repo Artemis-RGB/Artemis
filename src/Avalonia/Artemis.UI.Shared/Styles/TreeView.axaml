@@ -1,0 +1,99 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+   <Design.PreviewWith>
+        <Border Padding="30" MinWidth="350" Height="600">
+            <TreeView Classes="no-right-margin">
+                <TreeViewItem>
+                    <TreeViewItem.Header>
+                        <Border BorderThickness="2" BorderBrush="Red">
+                            <TextBlock>Test</TextBlock>
+						</Border>
+
+					</TreeViewItem.Header>
+                </TreeViewItem>
+                <TreeViewItem Header="Item 2" IsExpanded="True">
+                    <TreeViewItem>
+                        <TreeViewItem.Header>
+                            <Border BorderThickness="2" BorderBrush="Red">
+                                <TextBlock>Test</TextBlock>
+                            </Border>
+                        </TreeViewItem.Header>
+                    </TreeViewItem>
+                    <TreeViewItem Header="SubItem2" />
+                    <TreeViewItem Header="SubItem3" IsExpanded="True">
+						<TreeViewItem>
+                            <TreeViewItem.Header>
+                                <Border BorderThickness="2" BorderBrush="Red">
+                                    <TextBlock>Test</TextBlock>
+                                </Border>
+                            </TreeViewItem.Header>
+                        </TreeViewItem>
+                        <TreeViewItem Header="SubItem Item2" />
+                        <TreeViewItem Header="SubItem Item3" />
+                    </TreeViewItem>
+                </TreeViewItem>
+                <TreeViewItem Header="Item3" />
+                <TreeViewItem Header="Item4" />
+            </TreeView>
+        </Border>
+    </Design.PreviewWith>
+
+	<Style Selector="TreeView.no-right-margin TreeViewItem">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<StackPanel>
+					<Border Name="PART_LayoutRoot"
+                            Classes="TreeViewItemLayoutRoot"
+                            Focusable="True"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            MinHeight="{TemplateBinding MinHeight}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            TemplatedControl.IsTemplateFocusTarget="True"
+                            Margin="2 2 0 2">
+						<Panel>
+							<Border Name="SelectionIndicator"
+                                   Width="3"
+                                   Height="16"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   CornerRadius="2" />
+ 
+							<Grid Name="PART_Header"
+								  ColumnDefinitions="Auto, *"
+								  Margin="{TemplateBinding Level, Mode=OneWay, Converter={StaticResource TreeViewItemLeftMarginConverter}}">
+								<Panel Name="PART_ExpandCollapseChevronContainer"
+                                       Margin="{StaticResource TreeViewItemExpandCollapseChevronMargin}">
+									<ToggleButton Name="PART_ExpandCollapseChevron"
+                                                  Classes="ExpandCollapseChevron"
+                                                  Focusable="False"
+                                                  IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}" />
+								</Panel>
+								<ContentPresenter Name="PART_HeaderPresenter"
+                                                  Grid.Column="1"
+                                                  Focusable="False"
+                                                  Content="{TemplateBinding Header}"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                                  Margin="{TemplateBinding Padding}" />
+							</Grid>
+						</Panel>
+					</Border>
+					<ItemsPresenter Name="PART_ItemsPresenter"
+                                    IsVisible="{TemplateBinding IsExpanded}"
+                                    Items="{TemplateBinding Items}"
+                                    ItemsPanel="{TemplateBinding ItemsPanel}"
+                                    Margin="2 2 0 2"/>
+				</StackPanel>
+			</ControlTemplate>
+		</Setter>
+	</Style>
+
+	<!-- <Style Selector="TreeView.no-right-margin TreeViewItem /template/ Border#TreeViewItemLayoutRoot"> -->
+	<!-- 	<Setter Property="Margin" Value="2 2 0 2"/> -->
+	<!-- </Style> -->
+ <!--    <Style Selector="TreeView.no-right-margin TreeViewItem /template/ StackPanel ItemsPresenter#PART_ItemsPresenter"> -->
+ <!--        <Setter Property="Margin" Value="2 2 0 2"/> -->
+ <!--    </Style> -->
+</Styles>

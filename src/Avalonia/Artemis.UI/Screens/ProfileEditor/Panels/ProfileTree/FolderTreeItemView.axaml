@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.FolderTreeItemView">
+    <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+        <Button Grid.Column="0"
+                ToolTip.Tip="{Binding BrokenState}"
+                IsVisible="{Binding BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
+                Classes="icon-button icon-button-small"
+                Foreground="White"
+                Background="#E74C4C"
+                BorderBrush="#E74C4C"
+                Command="{Binding ShowBrokenStateExceptions}">
+            <avalonia:MaterialIcon Kind="AlertCircle" />
+        </Button>
+        <avalonia:MaterialIcon Grid.Column="1"
+                               Kind="Folder"
+                               Margin="5 0"
+                               IsVisible="{Binding !IsExpanded, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" />
+        <avalonia:MaterialIcon Grid.Column="1"
+                               Kind="FolderOpen"
+                               Margin="5 0"
+                               IsVisible="{Binding IsExpanded, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" />
+        <TextBlock Grid.Column="2" Text="{Binding Folder.Name}" VerticalAlignment="Center" />
+        <ToggleButton Grid.Column="3"
+                      Classes="icon-button icon-button-small"
+                      ToolTip.Tip="Toggle suspended state"
+                      IsChecked="{Binding !Folder.Suspended}"
+                      VerticalAlignment="Center">
+            <avalonia:MaterialIcon Kind="Pause" />
+        </ToggleButton>
+    </Grid>
+</UserControl>

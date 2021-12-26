@@ -3,6 +3,7 @@ using Artemis.Core;
 using Artemis.UI.Screens.Device;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor;
+using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Screens.SurfaceEditor;
@@ -54,5 +55,7 @@ namespace Artemis.UI.Ninject.Factories
     public interface IProfileEditorVmFactory : IVmFactory
     {
         ProfileEditorViewModel ProfileEditorViewModel(IScreen hostScreen);
+        FolderTreeItemViewModel FolderTreeItemViewModel(Folder folder);
+        LayerTreeItemViewModel LayerTreeItemViewModel(Layer layer);
     }
 }

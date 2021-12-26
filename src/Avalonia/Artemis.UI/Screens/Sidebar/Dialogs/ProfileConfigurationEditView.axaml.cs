@@ -4,7 +4,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar
 {
-    public partial class ProfileConfigurationEditView : ReactiveWindow<ProfileConfigurationEditViewModel>
+    public partial class ProfileConfigurationEditView : ReactiveCoreWindow<ProfileConfigurationEditViewModel>
     {
         public ProfileConfigurationEditView()
         {

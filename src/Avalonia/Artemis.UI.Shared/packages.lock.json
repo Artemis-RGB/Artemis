@@ -72,9 +72,9 @@
       },
       "FluentAvaloniaUI": {
         "type": "Direct",
-        "requested": "[1.1.6, )",
-        "resolved": "1.1.6",
-        "contentHash": "EJukyiTmEVhaYlHdntFMyQKI4+u772rSClKYQqJRfkTb1NoJXLqiIVqMjx8ZQ0pxnfih+6CZ7+x82lfrGHIPUw==",
+        "requested": "[1.1.7, )",
+        "resolved": "1.1.7",
+        "contentHash": "Hco3+M09A7rDknaYu5CcyGhUOqGj5mebrFzjZVGjW5YBYiMiV+x0vl2Fn6oIfXxhKgg1i70tTwQCtW/1GWFJeA==",
         "dependencies": {
           "Avalonia": "0.10.10",
           "Avalonia.Desktop": "0.10.10",

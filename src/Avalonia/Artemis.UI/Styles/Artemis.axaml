@@ -10,6 +10,7 @@
     </Styles.Resources>
     <!-- Third party styles -->
     <styling:FluentAvaloniaTheme RequestedTheme="Dark" />
+    <!-- <FluentTheme Mode="Dark"></FluentTheme> -->
     <StyleInclude Source="avares://Material.Icons.Avalonia/App.xaml" />
     <StyleInclude Source="avares://Artemis.UI.Shared/Styles/Artemis.axaml" />
 </Styles>
