@@ -20,9 +20,9 @@ namespace Artemis.UI
 
         private void SetupTitlebar()
         {
-            object? titleBar = this.FindResource("RootWindowTitlebar");
-            if (titleBar != null)
-                SetTitleBar((IControl) titleBar);
+            //object? titleBar = this.FindResource("RootWindowTitlebar");
+            //if (titleBar != null)
+             //   SetTitleBar((IControl) titleBar);
         }
 
         private void InitializeComponent()

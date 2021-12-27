@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28729.10
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI", "Artemis.UI\Artemis.UI.csproj", "{46B74153-77CF-4489-BDF9-D53FDB1F7ACB}"
 EndProject
@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.Core", "Artemis.Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.Shared", "Artemis.UI.Shared\Artemis.UI.Shared.csproj", "{ADB357E6-151D-4D0D-87CB-68FD0BC29812}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.Console", "Artemis.ConsoleUI\Artemis.UI.Console.csproj", "{ACCC50FD-611A-41C4-B58F-DDC80B47D0CF}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI", "Avalonia\Artemis.UI\Artemis.UI.csproj", "{035CBB38-7B9E-4375-A39C-E9A5B01F23A5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.Shared", "Avalonia\Artemis.UI.Shared\Artemis.UI.Shared.csproj", "{05A5AB0F-A303-4404-9623-4DB1C9AA1DA0}"
@@ -21,11 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.VisualScripting", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avalonia", "Avalonia", "{960CAAC5-AA73-49F5-BF2F-DF2C789DF042}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.UI.Windows", "Avalonia\Artemis.UI.Windows\Artemis.UI.Windows.csproj", "{DE45A288-9320-461F-BE2A-26DFE3817216}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.Windows", "Avalonia\Artemis.UI.Windows\Artemis.UI.Windows.csproj", "{DE45A288-9320-461F-BE2A-26DFE3817216}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.UI.Linux", "Avalonia\Artemis.UI.Linux\Artemis.UI.Linux.csproj", "{9012C8E2-3BEC-42F5-8270-7352A5922B04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.Linux", "Avalonia\Artemis.UI.Linux\Artemis.UI.Linux.csproj", "{9012C8E2-3BEC-42F5-8270-7352A5922B04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.UI.MacOS", "Avalonia\Artemis.UI.MacOS\Artemis.UI.MacOS.csproj", "{2F5F16DC-FACF-4559-9882-37C2949814C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.MacOS", "Avalonia\Artemis.UI.MacOS\Artemis.UI.MacOS.csproj", "{2F5F16DC-FACF-4559-9882-37C2949814C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,12 +57,6 @@ Global
 		{ADB357E6-151D-4D0D-87CB-68FD0BC29812}.Release|Any CPU.ActiveCfg = Release|x64
 		{ADB357E6-151D-4D0D-87CB-68FD0BC29812}.Release|x64.ActiveCfg = Release|x64
 		{ADB357E6-151D-4D0D-87CB-68FD0BC29812}.Release|x64.Build.0 = Release|x64
-		{ACCC50FD-611A-41C4-B58F-DDC80B47D0CF}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{ACCC50FD-611A-41C4-B58F-DDC80B47D0CF}.Debug|x64.ActiveCfg = Debug|x64
-		{ACCC50FD-611A-41C4-B58F-DDC80B47D0CF}.Debug|x64.Build.0 = Debug|x64
-		{ACCC50FD-611A-41C4-B58F-DDC80B47D0CF}.Release|Any CPU.ActiveCfg = Release|x64
-		{ACCC50FD-611A-41C4-B58F-DDC80B47D0CF}.Release|x64.ActiveCfg = Release|x64
-		{ACCC50FD-611A-41C4-B58F-DDC80B47D0CF}.Release|x64.Build.0 = Release|x64
 		{035CBB38-7B9E-4375-A39C-E9A5B01F23A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{035CBB38-7B9E-4375-A39C-E9A5B01F23A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{035CBB38-7B9E-4375-A39C-E9A5B01F23A5}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -116,11 +108,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{46B74153-77CF-4489-BDF9-D53FDB1F7ACB} = {EE9A3079-7BFE-4E7B-A3D4-D3501C9A874A}
-		{ADB357E6-151D-4D0D-87CB-68FD0BC29812} = {EE9A3079-7BFE-4E7B-A3D4-D3501C9A874A}
 		{035CBB38-7B9E-4375-A39C-E9A5B01F23A5} = {960CAAC5-AA73-49F5-BF2F-DF2C789DF042}
 		{05A5AB0F-A303-4404-9623-4DB1C9AA1DA0} = {960CAAC5-AA73-49F5-BF2F-DF2C789DF042}
-		{CF125C61-FD85-47EE-AF64-38B8F90DD50C} = {EE9A3079-7BFE-4E7B-A3D4-D3501C9A874A}
 		{DE45A288-9320-461F-BE2A-26DFE3817216} = {960CAAC5-AA73-49F5-BF2F-DF2C789DF042}
 		{9012C8E2-3BEC-42F5-8270-7352A5922B04} = {960CAAC5-AA73-49F5-BF2F-DF2C789DF042}
 		{2F5F16DC-FACF-4559-9882-37C2949814C7} = {960CAAC5-AA73-49F5-BF2F-DF2C789DF042}

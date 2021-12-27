@@ -73,6 +73,30 @@
           "Ninject.Extensions.Factory": "3.3.2"
         }
       },
+      "RGB.NET.Core": {
+        "type": "Direct",
+        "requested": "[1.0.0-prerelease1, )",
+        "resolved": "1.0.0-prerelease1",
+        "contentHash": "aaCPk++kr1TaV/qWYeol5975IN3XifDuuQ9wrCD+nw1cy05BMdGVhuQ72ITb0YRBedssd/btkM51ZABsBd8CEQ=="
+      },
+      "RGB.NET.Layout": {
+        "type": "Direct",
+        "requested": "[1.0.0-prerelease1, )",
+        "resolved": "1.0.0-prerelease1",
+        "contentHash": "nbaHbcY59tzFSeTDbImhrcR1ZyJpoC0x6WawXdtGXO7x3F91ajM7kM5SJwi/5jHdD61vGV0ARuznmR8ErAWegQ==",
+        "dependencies": {
+          "RGB.NET.Core": "1.0.0-prerelease1"
+        }
+      },
+      "RGB.NET.Presets": {
+        "type": "Direct",
+        "requested": "[1.0.0-prerelease1, )",
+        "resolved": "1.0.0-prerelease1",
+        "contentHash": "XU8XeI0fQF26fd0pQHgoe9RaROuvENmZlX/1QyyaN9P3j0LtYmy6ycWZbsXp8byLT0UcGbS+odMiQQAnK+kxgg==",
+        "dependencies": {
+          "RGB.NET.Core": "1.0.0-prerelease1"
+        }
+      },
       "Serilog": {
         "type": "Direct",
         "requested": "[2.10.0, )",

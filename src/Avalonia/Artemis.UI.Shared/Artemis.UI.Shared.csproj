@@ -16,15 +16,16 @@
     <None Remove="DefaultTypes\DataModel\Display\DefaultDataModelDisplayView.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.10" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
-    <PackageReference Include="Avalonia.Svg.Skia" Version="0.10.10" />
-    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.10.4" />
-    <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.10.4" />
-    <PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.10.10.4" />
-    <PackageReference Include="FluentAvaloniaUI" Version="1.1.7" />
+    <PackageReference Include="Avalonia" Version="0.10.11" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.11" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="0.10.11" />
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.11.5" />
+    <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.11.5" />
+    <PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.10.11.5" />
+    <PackageReference Include="FluentAvaloniaUI" Version="1.1.8" />
     <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
     <PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />
+    <PackageReference Include="RGB.NET.Core" Version="1.0.0-prerelease1" />
    </ItemGroup>
   <ItemGroup>
     <Page Include="DefaultTypes\DataModel\Display\DefaultDataModelDisplayView.xaml">
@@ -38,9 +39,6 @@
   <ItemGroup>
     <Reference Include="Material.Icons.Avalonia">
       <HintPath>..\..\..\..\Users\Robert\.nuget\packages\material.icons.avalonia\1.0.2\lib\netstandard2.0\Material.Icons.Avalonia.dll</HintPath>
-    </Reference>
-    <Reference Include="RGB.NET.Core">
-      <HintPath>..\..\..\..\RGB.NET\bin\net5.0\RGB.NET.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
