@@ -39,6 +39,7 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
     <PackageReference Include="Ninject" Version="3.3.4" />
     <PackageReference Include="Ninject.Extensions.Conventions" Version="3.3.0" />
+    <PackageReference Include="RGB.NET.Core" Version="1.0.0-prerelease1" />
     <PackageReference Include="SharpVectors.Reloaded" Version="1.7.5" />
     <PackageReference Include="SkiaSharp" Version="2.80.3" />
     <PackageReference Include="SkiaSharp.Views.WPF" Version="2.80.3" />
@@ -68,11 +69,6 @@
     <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj">
       <Private>false</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="RGB.NET.Core">
-      <HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Core.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Fonts\RobotoMono-Regular.ttf" />
