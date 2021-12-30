@@ -55,7 +55,7 @@ namespace Artemis.UI.Ninject.Factories
     public interface IProfileEditorVmFactory : IVmFactory
     {
         ProfileEditorViewModel ProfileEditorViewModel(IScreen hostScreen);
-        FolderTreeItemViewModel FolderTreeItemViewModel(Folder folder);
-        LayerTreeItemViewModel LayerTreeItemViewModel(Layer layer);
+        FolderTreeItemViewModel FolderTreeItemViewModel(TreeItemViewModel? parent, Folder folder);
+        LayerTreeItemViewModel LayerTreeItemViewModel(TreeItemViewModel? parent, Layer layer);
     }
 }

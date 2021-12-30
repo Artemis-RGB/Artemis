@@ -10,8 +10,11 @@
                 <Button Classes="icon-button">
                     <avalonia:MaterialIcon Kind="Cog" />
                 </Button>
+                <Button Classes="icon-button" IsEnabled="False">
+                    <avalonia:MaterialIcon Kind="Cog" />
+                </Button>
 
-                <TextBlock Margin="0 5 0 0">Button.icon-button icon-button-small</TextBlock>
+				<TextBlock Margin="0 5 0 0">Button.icon-button icon-button-small</TextBlock>
                 <Button Classes="icon-button icon-button-small">
                     <avalonia:MaterialIcon Kind="Cog" />
                 </Button>
@@ -40,9 +43,18 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Padding" Value="5.5" />
     </Style>
+    <Style Selector=":is(Button).icon-button:pointerover /template/ Border#BorderElement">
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style> 
+    <Style Selector=":is(Button).icon-button:disabled /template/ Border#BorderElement">
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector=":is(Button).icon-button[IsEnabled=False] /template/ Border#BorderElement">
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
 
-    <Style Selector=":is(Button).icon-button-small">
-        <Setter Property="Padding" Value="2" />
+	<Style Selector=":is(Button).icon-button-small">
+        <Setter Property="Padding" Value="4" />
     </Style>
     <Style Selector=":is(Button).icon-button-small avalonia|MaterialIcon">
         <Setter Property="Width" Value="14" />

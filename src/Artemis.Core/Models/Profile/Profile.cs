@@ -198,7 +198,7 @@ namespace Artemis.Core
                 FolderEntity? rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == EntityId);
                 if (rootFolder == null)
                 {
-                    Folder _ = new(this, "Root folder");
+                    Folder _ = new(this, "Root folder", 0);
                 }
                 else
                 {

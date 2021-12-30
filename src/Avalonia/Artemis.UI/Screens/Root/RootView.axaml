@@ -11,7 +11,7 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <ContentControl Grid.Column="0" Content="{Binding SidebarViewModel}" />
+        <ContentControl x:Name="SidebarContentControl" Grid.Column="0" Content="{Binding SidebarViewModel}" />
         <reactiveUi:RoutedViewHost Grid.Column="1" Router="{Binding Router}">
             <reactiveUi:RoutedViewHost.PageTransition>
                 <CrossFade Duration="0.1" />

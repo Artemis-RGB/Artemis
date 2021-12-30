@@ -22,7 +22,8 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="parent">The parent of the folder</param>
         /// <param name="name">The name of the folder</param>
-        public Folder(ProfileElement parent, string name) : base(parent.Profile)
+        /// <param name="order">The order where to place the child (0-based), defaults to the end of the collection</param>
+        public Folder(ProfileElement parent, string name, int order) : base(parent.Profile)
         {
             FolderEntity = new FolderEntity();
             EntityId = Guid.NewGuid();
@@ -31,7 +32,7 @@ namespace Artemis.Core
             Profile = Parent.Profile;
             Name = name;
 
-            Parent.AddChild(this);
+            Parent.AddChild(this, order);
         }
 
         /// <summary>

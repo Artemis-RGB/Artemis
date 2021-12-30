@@ -1,6 +1,8 @@
 using Artemis.UI.Screens.Root;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using FluentAvalonia.Core.ApplicationModel;
@@ -20,9 +22,13 @@ namespace Artemis.UI
 
         private void SetupTitlebar()
         {
-            //object? titleBar = this.FindResource("RootWindowTitlebar");
-            //if (titleBar != null)
-             //   SetTitleBar((IControl) titleBar);
+            ICoreApplicationView coreAppTitleBar = this;
+            if (coreAppTitleBar.TitleBar != null)
+            {
+                coreAppTitleBar.TitleBar.ExtendViewIntoTitleBar = true;
+                SetTitleBar(this.Get<Border>("TitleBar"));
+            }
+  
         }
 
         private void InitializeComponent()

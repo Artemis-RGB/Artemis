@@ -22,8 +22,7 @@ namespace Artemis.UI.Services
             CurrentProfileConfiguration = Observable.Defer(() => Observable.Return(_currentProfileConfiguration)).Concat(_changeCurrentProfileConfiguration);
             CurrentProfileElement = Observable.Defer(() => Observable.Return(_currentProfileElement)).Concat(_changeCurrentProfileElement);
         }
-
-
+        
         public IObservable<ProfileConfiguration?> CurrentProfileConfiguration { get; }
         public IObservable<RenderProfileElement?> CurrentProfileElement { get; }
 

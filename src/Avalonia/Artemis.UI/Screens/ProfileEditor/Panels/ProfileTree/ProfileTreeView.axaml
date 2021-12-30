@@ -2,14 +2,30 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:profileTree="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.ProfileTreeView">
-    <TreeView Items="{Binding TreeItems}" Classes="no-right-margin">
-		<TreeView.ItemTemplate>
-            <TreeDataTemplate ItemsSource="{Binding Children}">
-                <ContentControl Content="{Binding}"/>
-            </TreeDataTemplate>
-        </TreeView.ItemTemplate>
-    </TreeView>
+    <Grid RowDefinitions="*,Auto">
+        <TreeView Classes="no-right-margin" Items="{Binding TreeItems}" SelectedItem="{Binding SelectedTreeItem}">
+            <TreeView.Styles>
+                <Style Selector="TreeViewItem">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                </Style>
+            </TreeView.Styles>
+            <TreeView.ItemTemplate>
+                <TreeDataTemplate ItemsSource="{Binding Children}">
+                    <ContentControl Content="{Binding}" />
+                </TreeDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Classes="icon-button" ToolTip.Tip="Add new folder to root" Command="{Binding AddFolder}">
+                <avalonia:MaterialIcon Kind="FolderAdd" />
+            </Button>
+            <Button Classes="icon-button" ToolTip.Tip="Add new layer to root" Command="{Binding AddLayer}" Margin="2 0 0 0">
+                <avalonia:MaterialIcon Kind="LayersPlus" />
+            </Button>
+        </StackPanel>
+    </Grid>
+
 </UserControl>

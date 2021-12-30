@@ -16,5 +16,7 @@ namespace Artemis.UI.Screens
 
         /// <inheritdoc />
         public IScreen HostScreen { get; }
+
+        public ViewModelBase? TitleBarViewModel { get; protected set; }
     }
 }

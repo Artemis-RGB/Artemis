@@ -17,6 +17,7 @@
     <PackageReference Include="Avalonia.Win32" Version="0.10.11" />
     <PackageReference Include="Microsoft.Win32" Version="2.0.1" />
     <PackageReference Include="RawInput.Sharp" Version="0.0.4" />
+    <PackageReference Include="ReactiveUI" Version="17.1.9" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Artemis.Core\Artemis.Core.csproj" />

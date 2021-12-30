@@ -123,7 +123,7 @@ namespace Artemis.UI.Shared.Services.Builders
         public IControl Build()
         {
             return _action != null
-                ? new Button {Content = _text, Command = ReactiveCommand.Create(() => _action)}
+                ? new Button {Content = _text, Command = ReactiveCommand.Create(() => _action())}
                 : new Button {Content = _text};
         }
     }

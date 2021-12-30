@@ -4,11 +4,11 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 {
     public class LayerTreeItemViewModel : TreeItemViewModel
     {
-        public Layer Layer { get; }
-
-        public LayerTreeItemViewModel(Layer layer)
+        public LayerTreeItemViewModel(TreeItemViewModel? parent, Layer layer) : base(parent, layer)
         {
             Layer = layer;
         }
+
+        public Layer Layer { get; }
     }
 }

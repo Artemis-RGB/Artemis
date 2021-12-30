@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Security.Principal;
 using System.Threading;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Windows.Utilities;
 using Avalonia;
@@ -28,10 +29,10 @@ namespace Artemis.UI.Windows
             _windowService = kernel.Get<IWindowService>();
             StartupArguments = startupArguments;
             IsElevated = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
-
+            
             Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
             Core.Utilities.RestartRequested += UtilitiesOnRestartRequested;
-
+            
             // On Windows shutdown dispose the kernel just so device providers get a chance to clean up
             if (Application.Current.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
             {
@@ -41,6 +42,9 @@ namespace Artemis.UI.Windows
                     kernel.Dispose();
                 };
             }
+
+            // Inform the Core about elevation status
+            kernel.Get<ICoreService>().IsElevated = IsElevated;
         }
 
         public string[] StartupArguments { get; }

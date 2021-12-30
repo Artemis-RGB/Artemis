@@ -80,6 +80,20 @@
           "NETStandard.Library": "1.6.1"
         }
       },
+      "ReactiveUI": {
+        "type": "Direct",
+        "requested": "[17.1.9, )",
+        "resolved": "17.1.9",
+        "contentHash": "bxH6uzEi1b6cfGoBBvCXWrdT18+Rleggi0R/vOaCYc+zvlSleJW6wlUtcWjrKzgQHD8EN3c02A4JBTt9oGSWWQ==",
+        "dependencies": {
+          "DynamicData": "7.4.3",
+          "Splat": "14.1.1",
+          "System.ComponentModel": "4.3.0",
+          "System.Diagnostics.Contracts": "4.3.0",
+          "System.Dynamic.Runtime": "4.3.0",
+          "System.Runtime.Serialization.Primitives": "4.3.0"
+        }
+      },
       "Avalonia.Angle.Windows.Natives": {
         "type": "Transitive",
         "resolved": "2.1.0.2020091801",
@@ -207,8 +221,8 @@
       },
       "DynamicData": {
         "type": "Transitive",
-        "resolved": "7.3.1",
-        "contentHash": "E9oTvWlAgzct0MuWt6k+0s+nSDA3LkFVvDwkMUTklIZZnva314KZAEF2vG4XX9I98ia+EpMqjte67jWEBJlsRw==",
+        "resolved": "7.4.3",
+        "contentHash": "7eGyREbtzyaRutMa+iToi2e41JboEVK9c1ZBcTvJOfEoTRIZX3hChIsxIvV0ErzMXtGHAIS2O0I8jLDUIds5wg==",
         "dependencies": {
           "System.Reactive": "5.0.0"
         }
@@ -536,15 +550,6 @@
         "dependencies": {
           "Castle.Core": "4.2.0",
           "Ninject": "3.3.3"
-        }
-      },
-      "ReactiveUI": {
-        "type": "Transitive",
-        "resolved": "16.2.6",
-        "contentHash": "jf1RvD8HxHuA6CGQtheGHUCHzRrhpvo0z593Npsz7g8KJWXfGR45Dc9bILJHoymBxhdDD1L1WjUfh0fcucIPPg==",
-        "dependencies": {
-          "DynamicData": "7.3.1",
-          "Splat": "13.1.1"
         }
       },
       "ReactiveUI.Validation": {
@@ -932,6 +937,14 @@
           "System.IO": "4.3.0",
           "System.Runtime": "4.3.0",
           "System.Text.Encoding": "4.3.0"
+        }
+      },
+      "System.Diagnostics.Contracts": {
+        "type": "Transitive",
+        "resolved": "4.3.0",
+        "contentHash": "eelRRbnm+OloiQvp9CXS0ixjNQldjjkHO4iIkR5XH2VIP8sUB/SIpa1TdUW6/+HDcQ+MlhP3pNa1u5SbzYuWGA==",
+        "dependencies": {
+          "System.Runtime": "4.3.0"
         }
       },
       "System.Diagnostics.Debug": {
@@ -1414,6 +1427,15 @@
           "System.Runtime.Extensions": "4.3.0"
         }
       },
+      "System.Runtime.Serialization.Primitives": {
+        "type": "Transitive",
+        "resolved": "4.3.0",
+        "contentHash": "Wz+0KOukJGAlXjtKr+5Xpuxf8+c8739RI1C+A2BoQZT+wMCCoMDDdO8/4IRHfaVINqL78GO8dW8G2lW/e45Mcw==",
+        "dependencies": {
+          "System.Resources.ResourceManager": "4.3.0",
+          "System.Runtime": "4.3.0"
+        }
+      },
       "System.Security.AccessControl": {
         "type": "Transitive",
         "resolved": "5.0.0",
@@ -1773,6 +1795,7 @@
           "Material.Icons.Avalonia": "1.0.2",
           "RGB.NET.Core": "1.0.0-prerelease1",
           "RGB.NET.Layout": "1.0.0-prerelease1",
+          "ReactiveUI": "17.1.9",
           "ReactiveUI.Validation": "2.2.1",
           "Splat.Ninject": "14.1.17"
         }
@@ -1790,6 +1813,7 @@
           "FluentAvaloniaUI": "1.1.8",
           "Material.Icons.Avalonia": "1.0.2",
           "RGB.NET.Core": "1.0.0-prerelease1",
+          "ReactiveUI": "17.1.9",
           "ReactiveUI.Validation": "2.2.1"
         }
       }

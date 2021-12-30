@@ -29,7 +29,8 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="parent">The parent of the layer</param>
         /// <param name="name">The name of the layer</param>
-        public Layer(ProfileElement parent, string name) : base(parent.Profile)
+        /// <param name="order">The order where to place the child (0-based), defaults to the end of the collection</param>
+        public Layer(ProfileElement parent, string name, int order) : base(parent.Profile)
         {
             LayerEntity = new LayerEntity();
             EntityId = Guid.NewGuid();
@@ -47,7 +48,7 @@ namespace Artemis.Core
 
             Adapter = new LayerAdapter(this);
             Initialize();
-            Parent.AddChild(this, 0);
+            Parent.AddChild(this, order);
         }
 
         /// <summary>

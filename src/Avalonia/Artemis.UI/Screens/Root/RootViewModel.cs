@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -21,6 +22,7 @@ namespace Artemis.UI.Screens.Root
     public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvider
     {
         private readonly IAssetLoader _assetLoader;
+        private readonly DefaultTitleBarViewModel _defaultTitleBarViewModel;
         private readonly ICoreService _coreService;
         private readonly IDebugService _debugService;
         private readonly IClassicDesktopStyleApplicationLifetime _lifeTime;
@@ -30,6 +32,7 @@ namespace Artemis.UI.Screens.Root
         private SidebarViewModel? _sidebarViewModel;
         private TrayIcon? _trayIcon;
         private TrayIcons? _trayIcons;
+        private ViewModelBase? _titleBarViewModel;
 
         public RootViewModel(ICoreService coreService,
             ISettingsService settingsService,
@@ -38,6 +41,7 @@ namespace Artemis.UI.Screens.Root
             IMainWindowService mainWindowService,
             IDebugService debugService,
             IAssetLoader assetLoader,
+            DefaultTitleBarViewModel defaultTitleBarViewModel,
             ISidebarVmFactory sidebarVmFactory)
         {
             Router = new RoutingState();
@@ -47,6 +51,7 @@ namespace Artemis.UI.Screens.Root
             _windowService = windowService;
             _debugService = debugService;
             _assetLoader = assetLoader;
+            _defaultTitleBarViewModel = defaultTitleBarViewModel;
             _sidebarVmFactory = sidebarVmFactory;
             _lifeTime = (IClassicDesktopStyleApplicationLifetime) Application.Current.ApplicationLifetime;
 
@@ -54,13 +59,29 @@ namespace Artemis.UI.Screens.Root
             mainWindowService.ConfigureMainWindowProvider(this);
 
             DisplayAccordingToSettings();
+            Router.CurrentViewModel.Subscribe(UpdateTitleBarViewModel);
             Task.Run(coreService.Initialize);
         }
+
+        private void UpdateTitleBarViewModel(IRoutableViewModel? viewModel)
+        {
+            if (viewModel is MainScreenViewModel mainScreenViewModel && mainScreenViewModel.TitleBarViewModel != null)
+                TitleBarViewModel = mainScreenViewModel.TitleBarViewModel;
+            else
+                TitleBarViewModel = _defaultTitleBarViewModel;
+        }
+
 
         public SidebarViewModel? SidebarViewModel
         {
             get => _sidebarViewModel;
             set => this.RaiseAndSetIfChanged(ref _sidebarViewModel, value);
+        }
+
+        public ViewModelBase? TitleBarViewModel
+        {
+            get => _titleBarViewModel;
+            set => this.RaiseAndSetIfChanged(ref _titleBarViewModel, value);
         }
 
         private void CurrentMainWindowOnClosed(object? sender, EventArgs e)

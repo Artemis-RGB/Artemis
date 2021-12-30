@@ -44,6 +44,9 @@ namespace Artemis.Core
         /// <param name="extraArgs">A list of extra arguments to pass to Artemis when restarting</param>
         public static void Restart(bool elevate, TimeSpan delay, params string[] extraArgs)
         {
+            if (!OperatingSystem.IsWindows() && elevate)
+                throw new ArtemisCoreException("Elevation on non-Windows platforms is not supported.");
+
             OnRestartRequested(new RestartEventArgs(elevate, delay, extraArgs.ToList()));
         }
 

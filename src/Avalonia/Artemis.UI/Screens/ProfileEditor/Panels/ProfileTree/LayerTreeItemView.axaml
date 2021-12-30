@@ -10,9 +10,7 @@
                 ToolTip.Tip="{Binding BrokenState}"
                 IsVisible="{Binding BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
                 Classes="icon-button icon-button-small"
-                Foreground="White"
-                Background="#E74C4C"
-                BorderBrush="#E74C4C"
+                Foreground="#E74C4C"
                 Command="{Binding ShowBrokenStateExceptions}">
             <avalonia:MaterialIcon Kind="AlertCircle" />
         </Button>
@@ -22,7 +20,8 @@
                       Classes="icon-button icon-button-small"
                       ToolTip.Tip="Toggle suspended state"
                       IsChecked="{Binding Layer.Suspended}"
-                      VerticalAlignment="Center">
+                      VerticalAlignment="Center"
+                      Margin="4 0">
             <avalonia:MaterialIcon Kind="Pause" />
         </ToggleButton>
     </Grid>

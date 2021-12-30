@@ -29,7 +29,8 @@
                       Classes="icon-button icon-button-small"
                       ToolTip.Tip="Toggle suspended state"
                       IsChecked="{Binding !Folder.Suspended}"
-                      VerticalAlignment="Center">
+                      VerticalAlignment="Center"
+                      Margin="4 0">
             <avalonia:MaterialIcon Kind="Pause" />
         </ToggleButton>
     </Grid>

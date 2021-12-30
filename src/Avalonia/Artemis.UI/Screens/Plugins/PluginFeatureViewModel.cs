@@ -7,6 +7,8 @@ using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.Interfaces;
+using Avalonia;
+using Avalonia.Threading;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Plugins
@@ -56,7 +58,7 @@ namespace Artemis.UI.Screens.Plugins
         public bool IsEnabled
         {
             get => FeatureInfo.Instance != null && FeatureInfo.Instance.IsEnabled;
-            set => Task.Run(() => UpdateEnabled(value));
+            set => Dispatcher.UIThread.InvokeAsync(() => UpdateEnabled(value));
         }
 
         public bool CanToggleEnabled => FeatureInfo.Plugin.IsEnabled && !FeatureInfo.AlwaysEnabled;
@@ -159,7 +161,7 @@ namespace Artemis.UI.Screens.Plugins
                         }
                     }
 
-                    await Task.Run(() => _pluginManagementService.EnablePluginFeature(FeatureInfo.Instance!, true));
+                    await Dispatcher.UIThread.InvokeAsync(() => _pluginManagementService.EnablePluginFeature(FeatureInfo.Instance!, true));
                 }
                 catch (Exception e)
                 {
