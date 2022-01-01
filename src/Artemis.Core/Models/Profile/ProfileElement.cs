@@ -156,7 +156,7 @@ namespace Artemis.Core
                 StreamlineOrder();
             }
 
-            OnChildAdded();
+            OnChildAdded(child);
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace Artemis.Core
                 child.Parent = null;
             }
 
-            OnChildRemoved();
+            OnChildRemoved(child);
         }
 
         private void StreamlineOrder()
@@ -262,27 +262,27 @@ namespace Artemis.Core
         /// <summary>
         ///     Occurs when a child was added to the <see cref="Children" /> list
         /// </summary>
-        public event EventHandler? ChildAdded;
+        public event EventHandler<ProfileElementEventArgs>? ChildAdded;
 
         /// <summary>
         ///     Occurs when a child was removed from the <see cref="Children" /> list
         /// </summary>
-        public event EventHandler? ChildRemoved;
+        public event EventHandler<ProfileElementEventArgs>? ChildRemoved;
 
         /// <summary>
         ///     Invokes the <see cref="ChildAdded" /> event
         /// </summary>
-        protected virtual void OnChildAdded()
+        protected virtual void OnChildAdded(ProfileElement child)
         {
-            ChildAdded?.Invoke(this, EventArgs.Empty);
+            ChildAdded?.Invoke(this, new ProfileElementEventArgs(child));
         }
 
         /// <summary>
         ///     Invokes the <see cref="ChildRemoved" /> event
         /// </summary>
-        protected virtual void OnChildRemoved()
+        protected virtual void OnChildRemoved(ProfileElement child)
         {
-            ChildRemoved?.Invoke(this, EventArgs.Empty);
+            ChildRemoved?.Invoke(this, new ProfileElementEventArgs(child));
         }
 
         #endregion

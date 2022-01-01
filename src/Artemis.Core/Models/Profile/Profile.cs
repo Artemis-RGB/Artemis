@@ -197,13 +197,9 @@ namespace Artemis.Core
                 // Populate the profile starting at the root, the rest is populated recursively
                 FolderEntity? rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == EntityId);
                 if (rootFolder == null)
-                {
-                    Folder _ = new(this, "Root folder", 0);
-                }
+                    AddChild(new Folder(this, "Root folder"));
                 else
-                {
                     AddChild(new Folder(this, this, rootFolder));
-                }
             }
 
             List<RenderProfileElement> renderElements = GetAllRenderElements();

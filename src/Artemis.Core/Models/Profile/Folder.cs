@@ -22,17 +22,13 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="parent">The parent of the folder</param>
         /// <param name="name">The name of the folder</param>
-        /// <param name="order">The order where to place the child (0-based), defaults to the end of the collection</param>
-        public Folder(ProfileElement parent, string name, int order) : base(parent.Profile)
+        public Folder(ProfileElement parent, string name) : base(parent, parent.Profile)
         {
             FolderEntity = new FolderEntity();
             EntityId = Guid.NewGuid();
 
-            Parent = parent ?? throw new ArgumentNullException(nameof(parent));
             Profile = Parent.Profile;
             Name = name;
-
-            Parent.AddChild(this, order);
         }
 
         /// <summary>
@@ -41,13 +37,12 @@ namespace Artemis.Core
         /// <param name="profile">The profile the folder belongs to</param>
         /// <param name="parent">The parent of the folder</param>
         /// <param name="folderEntity">The entity of the folder</param>
-        public Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity) : base(parent.Profile)
+        public Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity) : base(parent, parent.Profile)
         {
             FolderEntity = folderEntity;
             EntityId = folderEntity.Id;
 
             Profile = profile;
-            Parent = parent;
             Name = folderEntity.Name;
             IsExpanded = folderEntity.IsExpanded;
             Suspended = folderEntity.Suspended;

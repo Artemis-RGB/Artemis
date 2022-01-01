@@ -1,0 +1,96 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using Artemis.Core;
+using ReactiveUI;
+
+namespace Artemis.UI.Services.ProfileEditor
+{
+    public class ProfileEditorHistory
+    {
+        private readonly Subject<bool> _canRedo = new();
+        private readonly Subject<bool> _canUndo = new();
+        private readonly Stack<IProfileEditorCommand> _redoCommands = new();
+        private readonly Stack<IProfileEditorCommand> _undoCommands = new();
+
+        public ProfileEditorHistory(ProfileConfiguration profileConfiguration)
+        {
+            ProfileConfiguration = profileConfiguration;
+
+            Execute = ReactiveCommand.Create<IProfileEditorCommand>(ExecuteEditorCommand);
+            Undo = ReactiveCommand.Create(ExecuteUndo, CanUndo);
+            Redo = ReactiveCommand.Create(ExecuteRedo, CanRedo);
+        }
+
+        public ProfileConfiguration ProfileConfiguration { get; }
+        public IObservable<bool> CanUndo => _canUndo.AsObservable().DistinctUntilChanged();
+        public IObservable<bool> CanRedo => _canRedo.AsObservable().DistinctUntilChanged();
+
+        public ReactiveCommand<IProfileEditorCommand, Unit> Execute { get; }
+        public ReactiveCommand<Unit, Unit> Undo { get; }
+        public ReactiveCommand<Unit, Unit> Redo { get; }
+
+        public void Clear()
+        {
+            ClearRedo();
+            ClearUndo();
+            UpdateSubjects();
+        }
+
+        public void ExecuteEditorCommand(IProfileEditorCommand command)
+        {
+            command.Execute();
+
+            _undoCommands.Push(command);
+            ClearRedo();
+            UpdateSubjects();
+        }
+
+        private void ClearRedo()
+        {
+            foreach (IProfileEditorCommand profileEditorCommand in _redoCommands)
+                if (profileEditorCommand is IDisposable disposable)
+                    disposable.Dispose();
+
+            _redoCommands.Clear();
+        }
+
+        private void ClearUndo()
+        {
+            foreach (IProfileEditorCommand profileEditorCommand in _undoCommands)
+                if (profileEditorCommand is IDisposable disposable)
+                    disposable.Dispose();
+
+            _undoCommands.Clear();
+        }
+
+        private void ExecuteUndo()
+        {
+            if (!_undoCommands.TryPop(out IProfileEditorCommand? command))
+                return;
+
+            command.Undo();
+            _redoCommands.Push(command);
+            UpdateSubjects();
+        }
+
+        private void ExecuteRedo()
+        {
+            if (!_redoCommands.TryPop(out IProfileEditorCommand? command))
+                return;
+
+            command.Execute();
+            _undoCommands.Push(command);
+            UpdateSubjects();
+        }
+
+        private void UpdateSubjects()
+        {
+            _canUndo.OnNext(_undoCommands.Any());
+            _canRedo.OnNext(_redoCommands.Any());
+        }
+    }
+}

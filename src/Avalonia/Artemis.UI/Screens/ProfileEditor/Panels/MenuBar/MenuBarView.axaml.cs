@@ -2,10 +2,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Panels.MenuBar
 {
-    public partial class MenuBarView : UserControl
+    public partial class MenuBarView : ReactiveUserControl<MenuBarViewModel>
     {
         public MenuBarView()
         {

@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
-using Artemis.Core.ScriptingProviders;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
 using RGB.NET.Core;
@@ -29,13 +28,11 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="parent">The parent of the layer</param>
         /// <param name="name">The name of the layer</param>
-        /// <param name="order">The order where to place the child (0-based), defaults to the end of the collection</param>
-        public Layer(ProfileElement parent, string name, int order) : base(parent.Profile)
+        public Layer(ProfileElement parent, string name) : base(parent, parent.Profile)
         {
             LayerEntity = new LayerEntity();
             EntityId = Guid.NewGuid();
 
-            Parent = parent ?? throw new ArgumentNullException(nameof(parent));
             Profile = Parent.Profile;
             Name = name;
             Suspended = false;
@@ -48,7 +45,6 @@ namespace Artemis.Core
 
             Adapter = new LayerAdapter(this);
             Initialize();
-            Parent.AddChild(this, order);
         }
 
         /// <summary>
@@ -57,7 +53,7 @@ namespace Artemis.Core
         /// <param name="profile">The profile the layer belongs to</param>
         /// <param name="parent">The parent of the layer</param>
         /// <param name="layerEntity">The entity of the layer</param>
-        public Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity) : base(parent.Profile)
+        public Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity) : base(parent, parent.Profile)
         {
             LayerEntity = layerEntity;
             EntityId = layerEntity.Id;
@@ -148,10 +144,8 @@ namespace Artemis.Core
             if (LayerBrush?.BaseProperties != null)
                 result.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties());
             foreach (BaseLayerEffect layerEffect in LayerEffects)
-            {
                 if (layerEffect.BaseProperties != null)
                     result.AddRange(layerEffect.BaseProperties.GetAllLayerProperties());
-            }
 
             return result;
         }
@@ -171,6 +165,19 @@ namespace Artemis.Core
         ///     Occurs when the layer brush of this layer has been updated
         /// </summary>
         public event EventHandler? LayerBrushUpdated;
+
+        #region Overrides of BreakableModel
+
+        /// <inheritdoc />
+        public override IEnumerable<IBreakableModel> GetBrokenHierarchy()
+        {
+            if (LayerBrush?.BrokenState != null)
+                yield return LayerBrush;
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.BrokenState != null))
+                yield return baseLayerEffect;
+        }
+
+        #endregion
 
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
@@ -386,6 +393,18 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
+        public override void Activate()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public override void Deactivate()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
         public override void Disable()
         {
             if (!Enabled)
@@ -512,7 +531,9 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Layer");
 
             if (!Leds.Any())
+            {
                 Path = new SKPath();
+            }
             else
             {
                 SKPath path = new() {FillType = SKPathFillType.Winding};
@@ -758,19 +779,6 @@ namespace Artemis.Core
             brush.Dispose();
 
             OnLayerBrushUpdated();
-        }
-
-        #endregion
-
-        #region Overrides of BreakableModel
-
-        /// <inheritdoc />
-        public override IEnumerable<IBreakableModel> GetBrokenHierarchy()
-        {
-            if (LayerBrush?.BrokenState != null)
-                yield return LayerBrush;
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.BrokenState != null))
-                yield return baseLayerEffect;
         }
 
         #endregion

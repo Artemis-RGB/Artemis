@@ -1,11 +1,12 @@
 ﻿using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 {
     public class FolderTreeItemViewModel : TreeItemViewModel
     {
-        public FolderTreeItemViewModel(TreeItemViewModel? parent, Folder folder, IProfileEditorVmFactory profileEditorVmFactory) : base(parent, folder)
+        public FolderTreeItemViewModel(TreeItemViewModel? parent, Folder folder, IProfileEditorVmFactory profileEditorVmFactory, IWindowService windowService) : base(parent, folder, windowService)
         {
             Folder = folder;
 

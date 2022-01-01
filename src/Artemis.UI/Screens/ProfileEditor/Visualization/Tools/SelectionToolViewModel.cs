@@ -90,6 +90,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
         private void CreateLayer(Folder folder, List<ArtemisLed> selectedLeds)
         {
             Layer newLayer = new(folder, "New layer");
+            folder.AddChild(newLayer);
 
             LayerBrushDescriptor brush = _layerBrushService.GetDefaultLayerBrush();
             if (brush != null)

@@ -137,7 +137,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             if (!SupportsChildren)
                 throw new ArtemisUIException("Cannot add a folder to a profile element of type " + ProfileElement.GetType().Name);
 
-            Folder _ = new(ProfileElement, "New folder", 0);
+            Folder folder = new(ProfileElement, "New folder");
+            ProfileElement.AddChild(folder, 0);
             _profileEditorService.SaveSelectedProfileConfiguration();
         }
 
@@ -146,8 +147,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             if (!SupportsChildren)
                 throw new ArtemisUIException("Cannot add a layer to a profile element of type " + ProfileElement.GetType().Name);
 
-            Layer layer = new(ProfileElement, "New layer", 0);
-
+            Layer layer = new(ProfileElement, "New layer");
+            ProfileElement.AddChild(layer, 0);
             // Could be null if the default brush got disabled
             LayerBrushDescriptor brush = _layerBrushService.GetDefaultLayerBrush();
             if (brush != null)

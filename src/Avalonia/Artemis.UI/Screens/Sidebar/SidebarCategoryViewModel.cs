@@ -7,6 +7,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Services;
+using Artemis.UI.Services.ProfileEditor;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.Interfaces;
 using FluentAvalonia.UI.Controls;
@@ -35,7 +36,7 @@ namespace Artemis.UI.Screens.Sidebar
 
             this.WhenActivated(disposables =>
             {
-                profileEditorService.CurrentProfileConfiguration
+                profileEditorService.ProfileConfiguration
                     .Subscribe(p => SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(c => ReferenceEquals(c.ProfileConfiguration, p)))
                     .DisposeWith(disposables);
                 this.WhenAnyValue(vm => vm.SelectedProfileConfiguration)

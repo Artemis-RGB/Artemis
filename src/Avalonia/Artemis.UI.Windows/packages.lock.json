@@ -82,16 +82,12 @@
       },
       "ReactiveUI": {
         "type": "Direct",
-        "requested": "[17.1.9, )",
-        "resolved": "17.1.9",
-        "contentHash": "bxH6uzEi1b6cfGoBBvCXWrdT18+Rleggi0R/vOaCYc+zvlSleJW6wlUtcWjrKzgQHD8EN3c02A4JBTt9oGSWWQ==",
+        "requested": "[16.3.10, )",
+        "resolved": "16.3.10",
+        "contentHash": "NH9bg8BROqRrTp6YLpPDsJrfNDzRWNmP63fQ68CBAM+i7YHi6wcPeOkxyKpoemUxKEY4QECuicaTblJnxgbWmA==",
         "dependencies": {
           "DynamicData": "7.4.3",
-          "Splat": "14.1.1",
-          "System.ComponentModel": "4.3.0",
-          "System.Diagnostics.Contracts": "4.3.0",
-          "System.Dynamic.Runtime": "4.3.0",
-          "System.Runtime.Serialization.Primitives": "4.3.0"
+          "Splat": "13.1.42"
         }
       },
       "Avalonia.Angle.Windows.Natives": {
@@ -939,14 +935,6 @@
           "System.Text.Encoding": "4.3.0"
         }
       },
-      "System.Diagnostics.Contracts": {
-        "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "eelRRbnm+OloiQvp9CXS0ixjNQldjjkHO4iIkR5XH2VIP8sUB/SIpa1TdUW6/+HDcQ+MlhP3pNa1u5SbzYuWGA==",
-        "dependencies": {
-          "System.Runtime": "4.3.0"
-        }
-      },
       "System.Diagnostics.Debug": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -1427,15 +1415,6 @@
           "System.Runtime.Extensions": "4.3.0"
         }
       },
-      "System.Runtime.Serialization.Primitives": {
-        "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "Wz+0KOukJGAlXjtKr+5Xpuxf8+c8739RI1C+A2BoQZT+wMCCoMDDdO8/4IRHfaVINqL78GO8dW8G2lW/e45Mcw==",
-        "dependencies": {
-          "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0"
-        }
-      },
       "System.Security.AccessControl": {
         "type": "Transitive",
         "resolved": "5.0.0",
@@ -1795,7 +1774,7 @@
           "Material.Icons.Avalonia": "1.0.2",
           "RGB.NET.Core": "1.0.0-prerelease1",
           "RGB.NET.Layout": "1.0.0-prerelease1",
-          "ReactiveUI": "17.1.9",
+          "ReactiveUI": "16.3.10",
           "ReactiveUI.Validation": "2.2.1",
           "Splat.Ninject": "14.1.17"
         }
@@ -1813,7 +1792,7 @@
           "FluentAvaloniaUI": "1.1.8",
           "Material.Icons.Avalonia": "1.0.2",
           "RGB.NET.Core": "1.0.0-prerelease1",
-          "ReactiveUI": "17.1.9",
+          "ReactiveUI": "16.3.10",
           "ReactiveUI.Validation": "2.2.1"
         }
       }

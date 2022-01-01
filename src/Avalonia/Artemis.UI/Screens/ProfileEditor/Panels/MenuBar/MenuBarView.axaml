@@ -64,10 +64,27 @@
 			</MenuItem>
 		</MenuItem>
 		<MenuItem Header="_Edit" SubmenuOpened="MenuItem_OnSubmenuOpened">
+            <MenuItem Header="_Undo"
+                      Command="{Binding History.Undo}"
+                      HotKey="Ctrl+Z"
+                      InputGesture="Ctrl+Z">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Undo" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="_Redo"
+                      Command="{Binding History.Redo}"
+                      HotKey="Ctrl+Y"
+                      InputGesture="Ctrl+Y">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Redo" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
 			<MenuItem Header="_Duplicate"
-					  Command="{Binding Duplicate}"
-					  HotKey="Ctrl+D"
-					  IsEnabled="{Binding HasSelectedElement}">
+                      Command="{Binding Duplicate}"
+                      HotKey="Ctrl+D"
+                      IsEnabled="{Binding HasSelectedElement}">
 				<MenuItem.Icon>
 					<avalonia:MaterialIcon Kind="ContentDuplicate" />
 				</MenuItem.Icon>

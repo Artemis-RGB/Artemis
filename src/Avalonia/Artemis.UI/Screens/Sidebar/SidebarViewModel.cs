@@ -13,6 +13,7 @@ using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
 using Artemis.UI.Services;
+using Artemis.UI.Services.ProfileEditor;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.Interfaces;
 using FluentAvalonia.UI.Controls;
@@ -73,7 +74,7 @@ namespace Artemis.UI.Screens.Sidebar
                         profileEditorService.ChangeCurrentProfileConfiguration(null);
                     });
 
-                this.WhenAnyObservable(vm => vm._profileEditorService.CurrentProfileConfiguration)
+                this.WhenAnyObservable(vm => vm._profileEditorService.ProfileConfiguration)
                     .WhereNotNull()
                     .Subscribe(_ =>
                     {

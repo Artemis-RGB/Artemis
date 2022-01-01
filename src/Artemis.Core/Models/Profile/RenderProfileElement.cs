@@ -20,12 +20,13 @@ namespace Artemis.Core
         private SKRectI _bounds;
         private SKPath? _path;
 
-        internal RenderProfileElement(Profile profile) : base(profile)
+        internal RenderProfileElement(ProfileElement parent, Profile profile) : base(profile)
         {
             Timeline = new Timeline();
             ExpandedPropertyGroups = new List<string>();
             LayerEffectsList = new List<BaseLayerEffect>();
             LayerEffects = new ReadOnlyCollection<BaseLayerEffect>(LayerEffectsList);
+            Parent = parent ?? throw new ArgumentNullException(nameof(parent));
 
             LayerEffectStore.LayerEffectAdded += LayerEffectStoreOnLayerEffectAdded;
             LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;
@@ -51,6 +52,16 @@ namespace Artemis.Core
         ///     Occurs when a layer effect has been added or removed to this render element
         /// </summary>
         public event EventHandler? LayerEffectsUpdated;
+
+        /// <summary>
+        ///     Activates the render profile element, loading required brushes, effects or anything else needed for rendering
+        /// </summary>
+        public abstract void Activate();
+
+        /// <summary>
+        ///     Deactivates the render profile element, disposing required brushes, effects or anything else needed for rendering
+        /// </summary>
+        public abstract void Deactivate();
 
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
@@ -155,9 +166,9 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the parent of this element
         /// </summary>
-        public new ProfileElement? Parent
+        public new ProfileElement Parent
         {
-            get => base.Parent;
+            get => base.Parent!;
             internal set
             {
                 base.Parent = value;

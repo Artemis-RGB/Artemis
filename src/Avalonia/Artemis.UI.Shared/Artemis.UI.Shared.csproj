@@ -24,7 +24,7 @@
     <PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.10.11.5" />
     <PackageReference Include="FluentAvaloniaUI" Version="1.1.8" />
     <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
-    <PackageReference Include="ReactiveUI" Version="17.1.9" />
+    <PackageReference Include="ReactiveUI" Version="16.3.10" />
     <PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />
     <PackageReference Include="RGB.NET.Core" Version="1.0.0-prerelease1" />
    </ItemGroup>

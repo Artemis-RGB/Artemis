@@ -7,8 +7,8 @@
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.LayerTreeItemView">
     <Grid ColumnDefinitions="Auto,Auto,*,Auto">
         <Button Grid.Column="0"
-                ToolTip.Tip="{Binding BrokenState}"
-                IsVisible="{Binding BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
+                ToolTip.Tip="{Binding ProfileElement.BrokenState}"
+                IsVisible="{Binding ProfileElement.BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
                 Classes="icon-button icon-button-small"
                 Foreground="#E74C4C"
                 Command="{Binding ShowBrokenStateExceptions}">

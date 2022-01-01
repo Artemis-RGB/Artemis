@@ -7,8 +7,8 @@
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.FolderTreeItemView">
     <Grid ColumnDefinitions="Auto,Auto,*,Auto">
         <Button Grid.Column="0"
-                ToolTip.Tip="{Binding BrokenState}"
-                IsVisible="{Binding BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
+                ToolTip.Tip="{Binding ProfileElement.BrokenState}"
+                IsVisible="{Binding ProfileElement.BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
                 Classes="icon-button icon-button-small"
                 Foreground="White"
                 Background="#E74C4C"
@@ -28,7 +28,7 @@
         <ToggleButton Grid.Column="3"
                       Classes="icon-button icon-button-small"
                       ToolTip.Tip="Toggle suspended state"
-                      IsChecked="{Binding !Folder.Suspended}"
+                      IsChecked="{Binding Folder.Suspended}"
                       VerticalAlignment="Center"
                       Margin="4 0">
             <avalonia:MaterialIcon Kind="Pause" />

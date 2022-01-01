@@ -1,13 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reactive.Disposables;
+using Artemis.UI.Services.ProfileEditor;
 using Artemis.UI.Shared;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Panels.MenuBar
 {
-    public class MenuBarViewModel : ViewModelBase
+    public class MenuBarViewModel : ActivatableViewModelBase
     {
+        private ProfileEditorHistory? _history;
+
+        public MenuBarViewModel(IProfileEditorService profileEditorService)
+        {
+            this.WhenActivated(d => profileEditorService.History.Subscribe(history => History = history).DisposeWith(d));
+        }
+
+        public ProfileEditorHistory? History
+        {
+            get => _history;
+            set => this.RaiseAndSetIfChanged(ref _history, value);
+        }
     }
 }

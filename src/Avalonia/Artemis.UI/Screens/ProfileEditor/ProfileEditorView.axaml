@@ -6,6 +6,10 @@
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileEditorView">
+    <UserControl.KeyBindings>
+        <KeyBinding Command="{Binding History.Undo}" Gesture="Ctrl+Z"></KeyBinding>
+        <KeyBinding Command="{Binding History.Redo}" Gesture="Ctrl+Y"></KeyBinding>
+    </UserControl.KeyBindings>
     <UserControl.Styles>
         <Style Selector="GridSplitter.editor-grid-splitter-vertical">
             <Setter Property="MinWidth" Value="4" />

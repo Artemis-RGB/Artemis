@@ -14,7 +14,7 @@
 		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
 		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.11" />
 		<PackageReference Include="Avalonia.ReactiveUI" Version="0.10.11" />
-		<PackageReference Include="ReactiveUI" Version="17.1.9" />
+		<PackageReference Include="ReactiveUI" Version="16.3.10" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Artemis.Core\Artemis.Core.csproj" />
