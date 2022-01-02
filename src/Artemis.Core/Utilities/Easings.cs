@@ -23,7 +23,6 @@ namespace Artemis.Core
             switch (function)
             {
                 default:
-                case Functions.Step: return Step(p);
                 case Functions.Linear: return Linear(p);
                 case Functions.QuadraticEaseOut: return QuadraticEaseOut(p);
                 case Functions.QuadraticEaseIn: return QuadraticEaseIn(p);
@@ -55,15 +54,8 @@ namespace Artemis.Core
                 case Functions.BounceEaseIn: return BounceEaseIn(p);
                 case Functions.BounceEaseOut: return BounceEaseOut(p);
                 case Functions.BounceEaseInOut: return BounceEaseInOut(p);
+                case Functions.Step: return Step (p);
             }
-        }
-
-        /// <summary>
-        ///     An snappy animation that moves instantly to the next destination on the next keyframe
-        /// </summary>
-        public static double Step(double p)
-        {
-            return Math.Floor (p);
         }
 
         /// <summary>
@@ -368,11 +360,17 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        ///     An snappy animation that moves instantly to the next destination on the next keyframe
+        /// </summary>
+        public static double Step (double p) {
+            return Math.Floor (p);
+        }
+
+        /// <summary>
         ///     Easing Functions enumeration
         /// </summary>
         public enum Functions
         {
-            Step,
             Linear,
             QuadraticEaseIn,
             QuadraticEaseOut,
@@ -403,7 +401,8 @@ namespace Artemis.Core
             BackEaseInOut,
             BounceEaseIn,
             BounceEaseOut,
-            BounceEaseInOut
+            BounceEaseInOut,
+            Step
         }
     }
 }
