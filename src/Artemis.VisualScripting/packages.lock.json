@@ -246,6 +246,27 @@
           "Ninject": "3.3.3"
         }
       },
+      "RGB.NET.Core": {
+        "type": "Transitive",
+        "resolved": "1.0.0-prerelease1",
+        "contentHash": "aaCPk++kr1TaV/qWYeol5975IN3XifDuuQ9wrCD+nw1cy05BMdGVhuQ72ITb0YRBedssd/btkM51ZABsBd8CEQ=="
+      },
+      "RGB.NET.Layout": {
+        "type": "Transitive",
+        "resolved": "1.0.0-prerelease1",
+        "contentHash": "nbaHbcY59tzFSeTDbImhrcR1ZyJpoC0x6WawXdtGXO7x3F91ajM7kM5SJwi/5jHdD61vGV0ARuznmR8ErAWegQ==",
+        "dependencies": {
+          "RGB.NET.Core": "1.0.0-prerelease1"
+        }
+      },
+      "RGB.NET.Presets": {
+        "type": "Transitive",
+        "resolved": "1.0.0-prerelease1",
+        "contentHash": "XU8XeI0fQF26fd0pQHgoe9RaROuvENmZlX/1QyyaN9P3j0LtYmy6ycWZbsXp8byLT0UcGbS+odMiQQAnK+kxgg==",
+        "dependencies": {
+          "RGB.NET.Core": "1.0.0-prerelease1"
+        }
+      },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -1309,6 +1330,9 @@
           "Ninject": "3.3.4",
           "Ninject.Extensions.ChildKernel": "3.3.0",
           "Ninject.Extensions.Conventions": "3.3.0",
+          "RGB.NET.Core": "1.0.0-prerelease1",
+          "RGB.NET.Layout": "1.0.0-prerelease1",
+          "RGB.NET.Presets": "1.0.0-prerelease1",
           "Serilog": "2.10.0",
           "Serilog.Sinks.Console": "4.0.0",
           "Serilog.Sinks.Debug": "2.0.0",
@@ -1338,6 +1362,7 @@
           "Microsoft.Xaml.Behaviors.Wpf": "1.1.31",
           "Ninject": "3.3.4",
           "Ninject.Extensions.Conventions": "3.3.0",
+          "RGB.NET.Core": "1.0.0-prerelease1",
           "SharpVectors.Reloaded": "1.7.5",
           "SkiaSharp": "2.80.3",
           "SkiaSharp.Views.WPF": "2.80.3",

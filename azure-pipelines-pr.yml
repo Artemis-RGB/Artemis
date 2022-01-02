@@ -10,11 +10,6 @@ pr:
 
 resources:
   repositories:
-  - repository: RGBNET
-    type: github
-    endpoint: github.com_SpoinkyNL
-    name: DarthAffe/RGB.NET
-    ref: Development
   - repository: Plugins
     type: github
     endpoint: github.com_SpoinkyNL
@@ -26,7 +21,6 @@ pool:
 
 variables:
   artemisSolution: '**/Artemis.sln'
-  rgbSolution: '**/RGB.NET.sln'
   pluginProjects: '**/Artemis.Plugins.*.csproj'
   BuildId: $(Build.BuildId)
   BuildNumber: $(Build.BuildNumber)
@@ -34,19 +28,10 @@ variables:
   SourceVersion: $(Build.SourceVersion)
   
 steps:
-- checkout: RGBNET
-  path: s/RGB.NET
 - checkout: self
   path: s/Artemis
 - checkout: Plugins
   path: s/Artemis.Plugins
-
-- task: DotNetCoreCLI@2
-  displayName: 'RGB.NET - Build'
-  inputs:
-    command: 'build'
-    projects: '$(rgbSolution)'
-    arguments: '--configuration Release'
 
 - task: DotNetCoreCLI@2
   displayName: 'Artemis - Publish'
