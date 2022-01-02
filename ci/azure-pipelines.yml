@@ -13,14 +13,13 @@ resources:
     type: github
     endpoint: github.com_SpoinkyNL
     name: Artemis-RGB/Artemis.Plugins
-    ref: csproj-update-wpf
+    ref: master
 
 pool:
   vmImage: 'windows-latest'
 
 variables:
   artemisSolution: '**/Artemis.sln'
-  rgbSolution: '**/RGB.NET.sln'
   pluginProjects: '**/Artemis.Plugins.*.csproj'
   BuildId: $(Build.BuildId)
   BuildNumber: $(Build.BuildNumber)
