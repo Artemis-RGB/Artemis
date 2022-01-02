@@ -35,6 +35,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             _settingsService = settingsService;
             _deviceVmFactory = deviceVmFactory;
             _windowService = windowService;
+            _cursor = Cursor.Default;
 
             Device = device;
 

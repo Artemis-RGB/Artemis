@@ -39,14 +39,10 @@ namespace Artemis.UI.Shared.Services
             Type? type = viewModel.GetType().Assembly.GetType(name);
 
             if (type == null)
-            {
                 throw new ArtemisSharedUIException($"Failed to find a window named {name}.");
-            }
 
             if (!type.IsAssignableTo(typeof(Window)))
-            {
                 throw new ArtemisSharedUIException($"Type {name} is not a window.");
-            }
 
             Window window = (Window) Activator.CreateInstance(type)!;
             window.DataContext = viewModel;
@@ -77,20 +73,16 @@ namespace Artemis.UI.Shared.Services
 
         public async Task<TResult> ShowDialogAsync<TResult>(DialogViewModelBase<TResult> viewModel)
         {
-            Window parent = GetCurrentWindow();
+            Window? parent = GetCurrentWindow();
 
             string name = viewModel.GetType().FullName!.Split('`')[0].Replace("ViewModel", "View");
             Type? type = viewModel.GetType().Assembly.GetType(name);
 
             if (type == null)
-            {
                 throw new ArtemisSharedUIException($"Failed to find a window named {name}.");
-            }
 
             if (!type.IsAssignableTo(typeof(Window)))
-            {
                 throw new ArtemisSharedUIException($"Type {name} is not a window.");
-            }
 
             Window window = (Window) Activator.CreateInstance(type)!;
             window.DataContext = viewModel;
@@ -122,25 +114,32 @@ namespace Artemis.UI.Shared.Services
 
         public ContentDialogBuilder CreateContentDialog()
         {
-            return new ContentDialogBuilder(_kernel, GetCurrentWindow());
+            Window? currentWindow = GetCurrentWindow();
+            if (currentWindow == null)
+                throw new ArtemisSharedUIException("Can't show a content dialog without any windows being shown.");
+            return new ContentDialogBuilder(_kernel, currentWindow);
         }
 
         public OpenFileDialogBuilder CreateOpenFileDialog()
         {
-            return new OpenFileDialogBuilder(GetCurrentWindow());
+            Window? currentWindow = GetCurrentWindow();
+            if (currentWindow == null)
+                throw new ArtemisSharedUIException("Can't show an open file dialog without any windows being shown.");
+            return new OpenFileDialogBuilder(currentWindow);
         }
 
         public SaveFileDialogBuilder CreateSaveFileDialog()
         {
-            return new SaveFileDialogBuilder(GetCurrentWindow());
+            Window? currentWindow = GetCurrentWindow();
+            if (currentWindow == null)
+                throw new ArtemisSharedUIException("Can't show a save file dialog without any windows being shown.");
+            return new SaveFileDialogBuilder(currentWindow);
         }
 
         public Window? GetCurrentWindow()
         {
-            if (Application.Current.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime classic)
-            {
-                throw new ArtemisSharedUIException("Can't show a dialog when application lifetime is not IClassicDesktopStyleApplicationLifetime.");
-            }
+            if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime classic)
+                throw new ArtemisSharedUIException("Find an open window when application lifetime is not IClassicDesktopStyleApplicationLifetime.");
 
             Window? parent = classic.Windows.FirstOrDefault(w => w.IsActive && w.ShowInTaskbar) ?? classic.MainWindow;
             return parent;

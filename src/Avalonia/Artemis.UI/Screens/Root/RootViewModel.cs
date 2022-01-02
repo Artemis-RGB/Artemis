@@ -53,7 +53,7 @@ namespace Artemis.UI.Screens.Root
             _assetLoader = assetLoader;
             _defaultTitleBarViewModel = defaultTitleBarViewModel;
             _sidebarVmFactory = sidebarVmFactory;
-            _lifeTime = (IClassicDesktopStyleApplicationLifetime) Application.Current.ApplicationLifetime;
+            _lifeTime = (IClassicDesktopStyleApplicationLifetime) Application.Current!.ApplicationLifetime!;
 
             coreService.StartupArguments = _lifeTime.Args.ToList();
             mainWindowService.ConfigureMainWindowProvider(this);
@@ -127,15 +127,15 @@ namespace Artemis.UI.Screens.Root
                 Icon = new WindowIcon(_assetLoader.Open(new Uri("avares://Artemis.UI/Assets/Images/Logo/bow.ico"))),
                 Command = ReactiveCommand.Create(OpenMainWindow)
             };
-            _trayIcon.Menu = (NativeMenu?) Application.Current.FindResource("TrayIconMenu");
+            _trayIcon.Menu = (NativeMenu?) Application.Current!.FindResource("TrayIconMenu");
             _trayIcons = new TrayIcons {_trayIcon};
-            TrayIcon.SetIcons(Application.Current, _trayIcons);
+            TrayIcon.SetIcons(Application.Current!, _trayIcons);
         }
 
         private void HideTrayIcon()
         {
             _trayIcon?.Dispose();
-            TrayIcon.SetIcons(Application.Current, null!);
+            TrayIcon.SetIcons(Application.Current!, null!);
 
             _trayIcon = null;
             _trayIcons = null;

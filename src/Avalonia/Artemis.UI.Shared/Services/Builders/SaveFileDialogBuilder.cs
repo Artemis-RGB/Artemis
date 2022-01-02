@@ -12,6 +12,10 @@ namespace Artemis.UI.Shared.Services.Builders
         private readonly Window _parent;
         private readonly SaveFileDialog _saveFileDialog;
 
+        /// <summary>
+        ///     Creates a new instance of the <see cref="SaveFileDialogBuilder" /> class.
+        /// </summary>
+        /// <param name="parent">The parent window that will host the notification.</param>
         public SaveFileDialogBuilder(Window parent)
         {
             _parent = parent;
@@ -67,7 +71,7 @@ namespace Artemis.UI.Shared.Services.Builders
         }
 
         /// <summary>
-        ///     Shows the save file dialog.
+        ///     Asynchronously shows the save file dialog.
         /// </summary>
         /// <returns>
         ///     A task that on completion contains the full path of the save location, or null if the

@@ -113,13 +113,13 @@ namespace Artemis.UI.Windows.Providers.Input
             if (key == KeyboardKey.LeftCtrl && keyboardData.Keyboard.ScanCode == 56)
                 return;
 
-            string identifier = data.Device?.DevicePath;
+            string? identifier = data.Device?.DevicePath;
 
             // Let the core know there is an identifier so it can store new identifications if applicable
             if (identifier != null)
                 OnIdentifierReceived(identifier, InputDeviceType.Keyboard);
 
-            ArtemisDevice device = null;
+            ArtemisDevice? device = null;
             if (identifier != null)
                 try
                 {
@@ -180,9 +180,10 @@ namespace Artemis.UI.Windows.Providers.Input
                     return;
             }
 
-            ArtemisDevice device = null;
-            string identifier = data.Device?.DevicePath;
+            ArtemisDevice? device = null;
+            string? identifier = data.Device?.DevicePath;
             if (identifier != null)
+            {
                 try
                 {
                     device = _inputService.GetDeviceByIdentifier(this, identifier, InputDeviceType.Mouse);
@@ -191,6 +192,7 @@ namespace Artemis.UI.Windows.Providers.Input
                 {
                     _logger.Warning(e, "Failed to retrieve input device by its identifier");
                 }
+            }
 
             // Debug.WriteLine($"Buttons: {mouseData.Mouse.Buttons}, Data: {mouseData.Mouse.ButtonData}, Flags: {mouseData.Mouse.Flags}, XY: {mouseData.Mouse.LastX},{mouseData.Mouse.LastY}");
 

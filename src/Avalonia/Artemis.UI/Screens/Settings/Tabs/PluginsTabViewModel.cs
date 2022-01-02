@@ -69,7 +69,7 @@ namespace Artemis.UI.Screens.Settings
                 SearchPluginInput = plugin.Info.Name;
 
                 // Enable it via the VM to enable the prerequisite dialog
-                PluginSettingsViewModel pluginViewModel = Plugins.FirstOrDefault(i => i.Plugin == plugin);
+                PluginSettingsViewModel? pluginViewModel = Plugins.FirstOrDefault(i => i.Plugin == plugin);
                 if (pluginViewModel is {IsEnabled: false})
                     pluginViewModel.IsEnabled = true;
 

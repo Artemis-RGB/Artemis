@@ -22,18 +22,18 @@ namespace Artemis.UI.Screens.Sidebar
         private readonly ProfileCategory _profileCategory;
         private readonly IProfileService _profileService;
         private readonly IWindowService _windowService;
-        private ProfileConfigurationIconType _iconType;
+        private Hotkey? _disableHotkey;
+        private Hotkey? _enableHotkey;
         private ProfileConfigurationHotkeyMode _hotkeyMode;
+        private ProfileConfigurationIconType _iconType;
         private ObservableCollection<ProfileIconViewModel>? _materialIcons;
         private ProfileConfiguration _profileConfiguration;
         private string _profileName;
         private Bitmap? _selectedBitmapSource;
+        private string? _selectedIconPath;
         private ProfileIconViewModel? _selectedMaterialIcon;
         private ProfileModuleViewModel? _selectedModule;
-        private string? _selectedIconPath;
         private SvgImage? _selectedSvgSource;
-        private Hotkey? _enableHotkey;
-        private Hotkey? _disableHotkey;
 
         public ProfileConfigurationEditViewModel(ProfileCategory profileCategory, ProfileConfiguration? profileConfiguration, IWindowService windowService,
             IProfileService profileService, IPluginManagementService pluginManagementService)
@@ -46,9 +46,9 @@ namespace Artemis.UI.Screens.Sidebar
             _iconType = _profileConfiguration.Icon.IconType;
             _hotkeyMode = _profileConfiguration.HotkeyMode;
             if (_profileConfiguration.EnableHotkey != null)
-                _enableHotkey = new Hotkey() {Key = _profileConfiguration.EnableHotkey.Key, Modifiers = profileConfiguration.EnableHotkey.Modifiers};
+                _enableHotkey = new Hotkey {Key = _profileConfiguration.EnableHotkey.Key, Modifiers = _profileConfiguration.EnableHotkey.Modifiers};
             if (_profileConfiguration.DisableHotkey != null)
-                _disableHotkey = new Hotkey() {Key = _profileConfiguration.DisableHotkey.Key, Modifiers = profileConfiguration.DisableHotkey.Modifiers};
+                _disableHotkey = new Hotkey {Key = _profileConfiguration.DisableHotkey.Key, Modifiers = _profileConfiguration.DisableHotkey.Modifiers};
 
             IsNew = profileConfiguration == null;
             DisplayName = IsNew ? "Artemis | Add profile" : "Artemis | Edit profile";
@@ -142,7 +142,7 @@ namespace Artemis.UI.Screens.Sidebar
                 return;
             if (!await _windowService.ShowConfirmContentDialog("Delete profile", "Are you sure you want to permanently delete this profile?"))
                 return;
-            
+
             _profileService.RemoveProfileConfiguration(_profileConfiguration);
             Close(true);
         }
@@ -210,9 +210,13 @@ namespace Artemis.UI.Screens.Sidebar
             }
             else if (_profileConfiguration.Icon.IconType == ProfileConfigurationIconType.SvgImage)
             {
-                SvgSource newSource = new();
-                newSource.Load(_profileConfiguration.Icon.GetIconStream());
-                SelectedSvgSource = new SvgImage {Source = newSource};
+                Stream? iconStream = _profileConfiguration.Icon.GetIconStream();
+                if (iconStream != null)
+                {
+                    SvgSource newSource = new();
+                    newSource.Load(iconStream);
+                    SelectedSvgSource = new SvgImage {Source = newSource};
+                }
             }
 
             // Prepare the contents of the dropdown box, it should be virtualized so no need to wait with this
@@ -231,7 +235,9 @@ namespace Artemis.UI.Screens.Sidebar
         private async Task SaveIcon()
         {
             if (IconType == ProfileConfigurationIconType.MaterialIcon && SelectedMaterialIcon != null)
+            {
                 ProfileConfiguration.Icon.SetIconByName(SelectedMaterialIcon.Icon.ToString());
+            }
             else if (_selectedIconPath != null)
             {
                 await using FileStream fileStream = File.OpenRead(_selectedIconPath);

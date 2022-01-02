@@ -1,9 +1,10 @@
 ﻿using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.Interfaces;
+using Avalonia.Controls;
 
 namespace Artemis.UI.Shared.Services
 {
-    public class NotificationService : INotificationService
+    internal class NotificationService : INotificationService
     {
         private readonly IWindowService _windowService;
 
@@ -14,7 +15,11 @@ namespace Artemis.UI.Shared.Services
 
         public NotificationBuilder CreateNotification()
         {
-            return new NotificationBuilder(_windowService.GetCurrentWindow());
+            Window? currentWindow = _windowService.GetCurrentWindow();
+            if (currentWindow == null)
+                throw new ArtemisSharedUIException("Can't show an in-app notification without any windows being shown.");
+
+            return new NotificationBuilder(currentWindow);
         }
     }
 }

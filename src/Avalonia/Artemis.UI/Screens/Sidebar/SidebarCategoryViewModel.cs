@@ -6,23 +6,24 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Services;
 using Artemis.UI.Services.ProfileEditor;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.Interfaces;
-using FluentAvalonia.UI.Controls;
 using ReactiveUI;
+
 namespace Artemis.UI.Screens.Sidebar
 {
     public class SidebarCategoryViewModel : ActivatableViewModelBase
     {
-        private readonly SidebarViewModel _sidebarViewModel;
         private readonly IProfileService _profileService;
-        private readonly IWindowService _windowService;
+        private readonly SidebarViewModel _sidebarViewModel;
         private readonly ISidebarVmFactory _vmFactory;
+        private readonly IWindowService _windowService;
         private SidebarProfileConfigurationViewModel? _selectedProfileConfiguration;
 
-        public SidebarCategoryViewModel(SidebarViewModel sidebarViewModel, ProfileCategory profileCategory, IProfileService profileService, IWindowService windowService, IProfileEditorService profileEditorService, ISidebarVmFactory vmFactory)
+        public SidebarCategoryViewModel(SidebarViewModel sidebarViewModel, ProfileCategory profileCategory, IProfileService profileService, IWindowService windowService,
+            IProfileEditorService profileEditorService, ISidebarVmFactory vmFactory)
         {
             _sidebarViewModel = sidebarViewModel;
             _profileService = profileService;
@@ -86,7 +87,7 @@ namespace Artemis.UI.Screens.Sidebar
         {
             await _windowService.CreateContentDialog()
                 .WithTitle("Edit category")
-                .WithViewModel<SidebarCategoryEditViewModel>(out var vm, ("category", ProfileCategory))
+                .WithViewModel(out SidebarCategoryEditViewModel vm, ("category", ProfileCategory))
                 .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Confirm))
                 .HavingSecondaryButton(b => b.WithText("Delete").WithCommand(vm.Delete))
                 .WithCloseButtonText("Cancel")

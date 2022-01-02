@@ -13,7 +13,7 @@ namespace Artemis.UI.Shared.Converters
     public class SKColorToColorConverter : IValueConverter
     {
         /// <inheritdoc />
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             Color result = new(0, 0, 0, 0);
             if (value is SKColor skColor)
@@ -25,7 +25,7 @@ namespace Artemis.UI.Shared.Converters
         }
 
         /// <inheritdoc />
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is Color avaloniaColor)
                 return new SKColor(avaloniaColor.R, avaloniaColor.G, avaloniaColor.B, avaloniaColor.A);

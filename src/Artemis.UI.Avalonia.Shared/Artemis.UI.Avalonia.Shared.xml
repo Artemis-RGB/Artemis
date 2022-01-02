@@ -129,15 +129,33 @@
         <member name="F:Artemis.UI.Shared.Controls.HotkeyBox.HotkeyProperty">
             <summary>
                 Gets or sets the currently displayed icon as either a <see cref="T:Material.Icons.MaterialIconKind" /> or an <see cref="T:System.Uri" />
-                pointing
-                to an SVG
+                pointing to an SVG
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.Controls.HotkeyBox.WatermarkProperty">
+            <summary>
+            Gets or sets the watermark of the hotkey box when it is empty.
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.Controls.HotkeyBox.UseFloatingWatermarkProperty">
+            <summary>
+            Gets or sets a boolean indicating whether the watermark should float above the hotkey box when it is not empty.
             </summary>
         </member>
         <member name="P:Artemis.UI.Shared.Controls.HotkeyBox.Hotkey">
             <summary>
                 Gets or sets the currently displayed icon as either a <see cref="T:Material.Icons.MaterialIconKind" /> or an <see cref="T:System.Uri" />
-                pointing
-                to an SVG
+                pointing to an SVG
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.Controls.HotkeyBox.Watermark">
+            <summary>
+            Gets or sets the watermark of the hotkey box when it is empty.
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.Controls.HotkeyBox.UseFloatingWatermark">
+            <summary>
+            Gets or sets a boolean indicating whether the watermark should float above the hotkey box when it is not empty.
             </summary>
         </member>
         <member name="M:Artemis.UI.Shared.Controls.NoInputTextBox.OnKeyDown(Avalonia.Input.KeyEventArgs)">
@@ -704,6 +722,16 @@
         <member name="M:Artemis.UI.Shared.DataModelVisualization.Shared.DataModelVisualizationViewModel.Dispose">
             <inheritdoc />
         </member>
+        <member name="T:Artemis.UI.Shared.DefaultTypes.DataModel.Display.DefaultDataModelDisplayView">
+            <summary>
+                Represents a default data model display view.
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.DefaultTypes.DataModel.Display.DefaultDataModelDisplayView.#ctor">
+            <summary>
+                Creates a new instance of the <see cref="T:Artemis.UI.Shared.DefaultTypes.DataModel.Display.DefaultDataModelDisplayView" /> class.
+            </summary>
+        </member>
         <member name="T:Artemis.UI.Shared.DefaultTypes.DataModel.Display.DefaultDataModelDisplayViewModel">
             <summary>
                 Represents the default data model display view model that is used when no display viewmodel specific for the type
@@ -824,6 +852,127 @@
                 Occurs when the the window hosting the view model should close
             </summary>
         </member>
+        <member name="T:Artemis.UI.Shared.Services.Builders.ContentDialogBuilder">
+            <summary>
+                Represents a builder that can be used to create Fluent UI dialogs.
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.ContentDialogBuilder.WithTitle(System.String)">
+            <summary>
+                Changes the title of the dialog.
+            </summary>
+            <param name="title">The new title.</param>
+            <returns>The builder that can be used to further build the dialog.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.ContentDialogBuilder.WithContent(System.String)">
+            <summary>
+                Changes the content of the dialog.
+            </summary>
+            <param name="content">The new content.</param>
+            <returns>The builder that can be used to further build the dialog.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.ContentDialogBuilder.WithDefaultButton(Artemis.UI.Shared.Services.Builders.ContentDialogButton)">
+            <summary>
+                Changes the default button of the dialog that is pressed on enter.
+            </summary>
+            <param name="defaultButton">The default button.</param>
+            <returns>The builder that can be used to further build the dialog.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.ContentDialogBuilder.HavingPrimaryButton(System.Action{Artemis.UI.Shared.Services.Builders.ContentDialogButtonBuilder})">
+            <summary>
+                Changes the primary button of the dialog.
+            </summary>
+            <param name="configure">An action to configure the button.</param>
+            <returns>The builder that can be used to further build the dialog.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.ContentDialogBuilder.HavingSecondaryButton(System.Action{Artemis.UI.Shared.Services.Builders.ContentDialogButtonBuilder})">
+            <summary>
+                Changes the secondary button of the dialog.
+            </summary>
+            <param name="configure">An action to configure the button.</param>
+            <returns>The builder that can be used to further build the dialog.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.ContentDialogBuilder.WithCloseButtonText(System.String)">
+            <summary>
+                Changes the text of the close button of the dialog.
+            </summary>
+            <param name="text">The new text.</param>
+            <returns>The builder that can be used to further build the dialog.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.ContentDialogBuilder.WithViewModel``1(``0@,System.ValueTuple{System.String,System.Object}[])">
+            <summary>
+            Changes the view model of the content dialog, hosting it inside the dialog.
+            </summary>
+            <typeparam name="T">The type of the view model to host.</typeparam>
+            <param name="viewModel">The resulting view model.</param>
+            <param name="parameters">Optional parameters to pass to the constructor of the view model, case and order sensitive.</param>
+            <returns>The builder that can be used to further build the dialog.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.ContentDialogBuilder.ShowAsync">
+            <summary>
+            Asynchronously shows the content dialog.
+            </summary>
+            <returns>A task containing the result of the content dialog.</returns>
+            <exception cref="T:Artemis.UI.Shared.ArtemisSharedUIException">Thrown when the parent window does not contain a panel at its root.</exception>
+        </member>
+        <member name="T:Artemis.UI.Shared.Services.Builders.ContentDialogButton">
+            <summary>
+            Represents a content dialog button.
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.Services.Builders.ContentDialogButton.None">
+            <summary>
+            No button.
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.Services.Builders.ContentDialogButton.Primary">
+            <summary>
+            The primary button.
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.Services.Builders.ContentDialogButton.Secondary">
+            <summary>
+            The secondary button.
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.Services.Builders.ContentDialogButton.Close">
+            <summary>
+            The close button.
+            </summary>
+        </member>
+        <member name="T:Artemis.UI.Shared.Services.Builders.ContentDialogButtonBuilder">
+            <summary>
+                Represents a builder that can be used to create buttons inside content dialogs.
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.ContentDialogButtonBuilder.WithText(System.String)">
+            <summary>
+                Changes text message of the button.
+            </summary>
+            <param name="text">The new text.</param>
+            <returns>The notification builder that can be used to further build the button.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.ContentDialogButtonBuilder.WithAction(System.Action)">
+            <summary>
+                Changes action that is called when the button is clicked.
+            </summary>
+            <param name="action">The action to call when the button is clicked.</param>
+            <returns>The builder that can be used to further build the button.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.ContentDialogButtonBuilder.WithCommand(System.Windows.Input.ICommand)">
+            <summary>
+                Changes command that is called when the button is clicked.
+            </summary>
+            <param name="command">The command to call when the button is clicked.</param>
+            <returns>The builder that can be used to further build the button.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.ContentDialogButtonBuilder.WithCommandParameter(System.Object)">
+            <summary>
+                Changes parameter of the command that is called when the button is clicked.
+            </summary>
+            <param name="commandParameter">The parameter of the command to call when the button is clicked.</param>
+            <returns>The builder that can be used to further build the button.</returns>
+        </member>
         <member name="T:Artemis.UI.Shared.Services.Builders.FileDialogFilterBuilder">
             <summary>
                 Represents a builder that can create a <see cref="T:Avalonia.Controls.FileDialogFilter" />.
@@ -894,7 +1043,7 @@
         </member>
         <member name="M:Artemis.UI.Shared.Services.Builders.NotificationBuilder.HavingButton(System.Action{Artemis.UI.Shared.Services.Builders.NotificationButtonBuilder})">
             <summary>
-                Changes the action button of the dialog.
+                Changes the action button of the notification.
             </summary>
             <param name="configure">An action to configure the button.</param>
             <returns>The notification builder that can be used to further build the notification.</returns>
@@ -921,19 +1070,57 @@
                 Changes action that is called when the button is clicked.
             </summary>
             <param name="action">The action to call when the button is clicked.</param>
-            <returns>The notification builder that can be used to further build the button.</returns>
+            <returns>The builder that can be used to further build the button.</returns>
         </member>
         <member name="M:Artemis.UI.Shared.Services.Builders.NotificationButtonBuilder.WithCommand(System.Windows.Input.ICommand)">
             <summary>
                 Changes command that is called when the button is clicked.
             </summary>
             <param name="command">The command to call when the button is clicked.</param>
-            <returns>The notification builder that can be used to further build the button.</returns>
+            <returns>The builder that can be used to further build the button.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.NotificationButtonBuilder.WithCommandParameter(System.Object)">
+            <summary>
+                Changes parameter of the command that is called when the button is clicked.
+            </summary>
+            <param name="commandParameter">The parameter of the command to call when the button is clicked.</param>
+            <returns>The builder that can be used to further build the button.</returns>
+        </member>
+        <member name="T:Artemis.UI.Shared.Services.Builders.NotificationSeverity">
+            <summary>
+                Represents a severity of a notification.
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.Services.Builders.NotificationSeverity.Informational">
+            <summary>
+                A severity for informational messages.
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.Services.Builders.NotificationSeverity.Success">
+            <summary>
+                A severity for success messages.
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.Services.Builders.NotificationSeverity.Warning">
+            <summary>
+                A severity for warning messages.
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.Services.Builders.NotificationSeverity.Error">
+            <summary>
+                A severity for error messages.
+            </summary>
         </member>
         <member name="T:Artemis.UI.Shared.Services.Builders.OpenFileDialogBuilder">
             <summary>
                 Represents a builder that can create a <see cref="T:Avalonia.Controls.OpenFileDialog" />.
             </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.OpenFileDialogBuilder.#ctor(Avalonia.Controls.Window)">
+            <summary>
+            Creates a new instance of the <see cref="T:Artemis.UI.Shared.Services.Builders.OpenFileDialogBuilder"/> class.
+            </summary>
+            <param name="parent">The parent window that will host the dialog.</param>
         </member>
         <member name="M:Artemis.UI.Shared.Services.Builders.OpenFileDialogBuilder.WithAllowMultiple">
             <summary>
@@ -962,7 +1149,7 @@
         </member>
         <member name="M:Artemis.UI.Shared.Services.Builders.OpenFileDialogBuilder.ShowAsync">
             <summary>
-                Shows the file dialog
+                Asynchronously shows the file dialog.
             </summary>
             <returns>
                 A task that on completion returns an array containing the full path to the selected
@@ -973,6 +1160,12 @@
             <summary>
                 Represents a builder that can create a <see cref="T:Avalonia.Controls.SaveFileDialog" />.
             </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.SaveFileDialogBuilder.#ctor(Avalonia.Controls.Window)">
+            <summary>
+                Creates a new instance of the <see cref="T:Artemis.UI.Shared.Services.Builders.SaveFileDialogBuilder" /> class.
+            </summary>
+            <param name="parent">The parent window that will host the notification.</param>
         </member>
         <member name="M:Artemis.UI.Shared.Services.Builders.SaveFileDialogBuilder.WithTitle(System.String)">
             <summary>
@@ -1001,7 +1194,7 @@
         </member>
         <member name="M:Artemis.UI.Shared.Services.Builders.SaveFileDialogBuilder.ShowAsync">
             <summary>
-                Shows the save file dialog.
+                Asynchronously shows the save file dialog.
             </summary>
             <returns>
                 A task that on completion contains the full path of the save location, or null if the
@@ -1111,29 +1304,46 @@
             <param name="updateCallback">A function to call whenever the input was updated (submitted or not)</param>
             <returns>The most appropriate input view model for the provided <paramref name="propertyType" /></returns>
         </member>
+        <member name="T:Artemis.UI.Shared.Services.Interfaces.INotificationService">
+            <summary>
+                A service that can be used to create notifications in either the application or on the desktop.
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Interfaces.INotificationService.CreateNotification">
+            <summary>
+                Creates an in-app notification using a builder.
+            </summary>
+            <returns>A builder used to configure and show the notification.</returns>
+        </member>
+        <member name="T:Artemis.UI.Shared.Services.Interfaces.IWindowService">
+            <summary>
+                A service that can be used to show windows and dialogs.
+            </summary>
+        </member>
         <member name="M:Artemis.UI.Shared.Services.Interfaces.IWindowService.ShowWindow``1(System.ValueTuple{System.String,System.Object}[])">
             <summary>
-            Creates a view model instance of type <typeparamref name="TViewModel" /> and shows its corresponding View as a window
+                Creates a view model instance of type <typeparamref name="TViewModel" /> and shows its corresponding View as a
+                window
             </summary>
             <typeparam name="TViewModel">The type of view model to create</typeparam>
             <returns>The created view model</returns>
         </member>
         <member name="M:Artemis.UI.Shared.Services.Interfaces.IWindowService.ShowWindow(System.Object)">
             <summary>
-            Given a ViewModel, show its corresponding View as a window
+                Given a ViewModel, show its corresponding View as a window
             </summary>
             <param name="viewModel">ViewModel to show the View for</param>
         </member>
         <member name="M:Artemis.UI.Shared.Services.Interfaces.IWindowService.ShowExceptionDialog(System.String,System.Exception)">
             <summary>
-            Shows a dialog displaying the given exception
+                Shows a dialog displaying the given exception
             </summary>
             <param name="title">The title of the dialog</param>
             <param name="exception">The exception to display</param>
         </member>
         <member name="M:Artemis.UI.Shared.Services.Interfaces.IWindowService.ShowDialogAsync``1(Artemis.UI.Shared.DialogViewModelBase{``0})">
             <summary>
-            Given an existing ViewModel, show its corresponding View as a Dialog
+                Given an existing ViewModel, show its corresponding View as a Dialog
             </summary>
             <typeparam name="TResult">The return type</typeparam>
             <param name="viewModel">ViewModel to show the View for</param>
@@ -1141,7 +1351,8 @@
         </member>
         <member name="M:Artemis.UI.Shared.Services.Interfaces.IWindowService.ShowDialogAsync``2(System.ValueTuple{System.String,System.Object}[])">
             <summary>
-            Creates a view model instance of type <typeparamref name="TViewModel"/> and shows its corresponding View as a Dialog
+                Creates a view model instance of type <typeparamref name="TViewModel" /> and shows its corresponding View as a
+                Dialog
             </summary>
             <typeparam name="TViewModel">The view model type</typeparam>
             <typeparam name="TResult">The return type</typeparam>
@@ -1149,35 +1360,38 @@
         </member>
         <member name="M:Artemis.UI.Shared.Services.Interfaces.IWindowService.ShowConfirmContentDialog(System.String,System.String,System.String,System.String)">
             <summary>
-            Shows a content dialog asking the user to confirm an action
+                Shows a content dialog asking the user to confirm an action
             </summary>
             <param name="title">The title of the dialog</param>
             <param name="message">The message of the dialog</param>
             <param name="confirm">The text of the confirm button</param>
-            <param name="cancel">The text of the cancel button, if <see langword="null"/> the cancel button will not be shown</param>
-            <returns>A task containing the result of the dialog, <see langword="true"/> if confirmed; otherwise <see langword="false"/></returns>
+            <param name="cancel">The text of the cancel button, if <see langword="null" /> the cancel button will not be shown</param>
+            <returns>
+                A task containing the result of the dialog, <see langword="true" /> if confirmed; otherwise
+                <see langword="false" />
+            </returns>
         </member>
         <member name="M:Artemis.UI.Shared.Services.Interfaces.IWindowService.CreateOpenFileDialog">
             <summary>
-            Creates an open file dialog, use the fluent API to configure it
+                Creates an open file dialog, use the fluent API to configure it
             </summary>
             <returns>The builder that can be used to configure the dialog</returns>
         </member>
         <member name="M:Artemis.UI.Shared.Services.Interfaces.IWindowService.CreateSaveFileDialog">
             <summary>
-            Creates a save file dialog, use the fluent API to configure it
+                Creates a save file dialog, use the fluent API to configure it
             </summary>
             <returns>The builder that can be used to configure the dialog</returns>
         </member>
         <member name="M:Artemis.UI.Shared.Services.Interfaces.IWindowService.CreateContentDialog">
             <summary>
-            Creates a content dialog, use the fluent API to configure it
+                Creates a content dialog, use the fluent API to configure it
             </summary>
             <returns>The builder that can be used to configure the dialog</returns>
         </member>
         <member name="M:Artemis.UI.Shared.Services.Interfaces.IWindowService.GetCurrentWindow">
             <summary>
-            Gets the current window of the application
+                Gets the current window of the application
             </summary>
             <returns>The current window of the application</returns>
         </member>
@@ -1210,6 +1424,11 @@
         <member name="E:Artemis.UI.Shared.Services.MainWindowService.IMainWindowProvider.MainWindowClosed">
             <summary>
                 Occurs when the main window has been closed
+            </summary>
+        </member>
+        <member name="T:Artemis.UI.Shared.Services.MainWindowService.IMainWindowService">
+            <summary>
+                A service that can be used to manage the state of the main window.
             </summary>
         </member>
         <member name="P:Artemis.UI.Shared.Services.MainWindowService.IMainWindowService.IsMainWindowOpen">

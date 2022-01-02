@@ -88,22 +88,26 @@ namespace Artemis.UI.Shared.Controls
 
         /// <summary>
         ///     Gets or sets the currently displayed icon as either a <see cref="MaterialIconKind" /> or an <see cref="Uri" />
-        ///     pointing
-        ///     to an SVG
+        ///     pointing to an SVG
         /// </summary>
         public static readonly StyledProperty<Hotkey?> HotkeyProperty =
             AvaloniaProperty.Register<HotkeyBox, Hotkey?>(nameof(Hotkey), defaultBindingMode: BindingMode.TwoWay, notifying: HotkeyChanging);
 
+        /// <summary>
+        /// Gets or sets the watermark of the hotkey box when it is empty.
+        /// </summary>
         public static readonly StyledProperty<string?> WatermarkProperty =
             AvaloniaProperty.Register<HotkeyBox, string?>(nameof(Watermark));
 
+        /// <summary>
+        /// Gets or sets a boolean indicating whether the watermark should float above the hotkey box when it is not empty.
+        /// </summary>
         public static readonly StyledProperty<bool> UseFloatingWatermarkProperty =
             AvaloniaProperty.Register<HotkeyBox, bool>(nameof(UseFloatingWatermark));
 
         /// <summary>
         ///     Gets or sets the currently displayed icon as either a <see cref="MaterialIconKind" /> or an <see cref="Uri" />
-        ///     pointing
-        ///     to an SVG
+        ///     pointing to an SVG
         /// </summary>
         public Hotkey? Hotkey
         {
@@ -111,12 +115,18 @@ namespace Artemis.UI.Shared.Controls
             set => SetValue(HotkeyProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets the watermark of the hotkey box when it is empty.
+        /// </summary>
         public string? Watermark
         {
             get => GetValue(WatermarkProperty);
             set => SetValue(WatermarkProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets a boolean indicating whether the watermark should float above the hotkey box when it is not empty.
+        /// </summary>
         public bool UseFloatingWatermark
         {
             get => GetValue(UseFloatingWatermarkProperty);

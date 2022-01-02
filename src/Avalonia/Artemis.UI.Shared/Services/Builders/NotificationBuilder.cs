@@ -101,7 +101,7 @@ namespace Artemis.UI.Shared.Services.Builders
         }
 
         /// <summary>
-        ///     Changes the action button of the dialog.
+        ///     Changes the action button of the notification.
         /// </summary>
         /// <param name="configure">An action to configure the button.</param>
         /// <returns>The notification builder that can be used to further build the notification.</returns>
@@ -154,6 +154,7 @@ namespace Artemis.UI.Shared.Services.Builders
         private Action? _action;
         private ICommand? _command;
         private string _text = "Text";
+        private object? _commandParameter;
 
         /// <summary>
         ///     Changes text message of the button.
@@ -170,7 +171,7 @@ namespace Artemis.UI.Shared.Services.Builders
         ///     Changes action that is called when the button is clicked.
         /// </summary>
         /// <param name="action">The action to call when the button is clicked.</param>
-        /// <returns>The notification builder that can be used to further build the button.</returns>
+        /// <returns>The builder that can be used to further build the button.</returns>
         public NotificationButtonBuilder WithAction(Action action)
         {
             _command = null;
@@ -182,11 +183,22 @@ namespace Artemis.UI.Shared.Services.Builders
         ///     Changes command that is called when the button is clicked.
         /// </summary>
         /// <param name="command">The command to call when the button is clicked.</param>
-        /// <returns>The notification builder that can be used to further build the button.</returns>
+        /// <returns>The builder that can be used to further build the button.</returns>
         public NotificationButtonBuilder WithCommand(ICommand command)
         {
             _action = null;
             _command = command;
+            return this;
+        }
+
+        /// <summary>
+        ///     Changes parameter of the command that is called when the button is clicked.
+        /// </summary>
+        /// <param name="commandParameter">The parameter of the command to call when the button is clicked.</param>
+        /// <returns>The builder that can be used to further build the button.</returns>
+        public NotificationButtonBuilder WithCommandParameter(object? commandParameter)
+        {
+            _commandParameter = commandParameter;
             return this;
         }
 
@@ -195,16 +207,34 @@ namespace Artemis.UI.Shared.Services.Builders
             if (_action != null)
                 return new Button {Content = _text, Command = ReactiveCommand.Create(() => _action())};
             if (_command != null)
-                return new Button {Content = _text, Command = _command};
+                return new Button {Content = _text, Command = _command, CommandParameter = _commandParameter};
             return new Button {Content = _text};
         }
     }
 
+    /// <summary>
+    ///     Represents a severity of a notification.
+    /// </summary>
     public enum NotificationSeverity
     {
+        /// <summary>
+        ///     A severity for informational messages.
+        /// </summary>
         Informational,
+
+        /// <summary>
+        ///     A severity for success messages.
+        /// </summary>
         Success,
+
+        /// <summary>
+        ///     A severity for warning messages.
+        /// </summary>
         Warning,
+
+        /// <summary>
+        ///     A severity for error messages.
+        /// </summary>
         Error
     }
 }

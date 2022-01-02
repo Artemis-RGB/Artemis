@@ -16,7 +16,7 @@ namespace Artemis.UI.Screens.Debugger.Render
 
         private Bitmap? _currentFrame;
         private string? _frameTargetPath;
-        private string _renderer;
+        private string? _renderer;
         private int _renderHeight;
         private int _renderWidth;
 
@@ -56,7 +56,7 @@ namespace Artemis.UI.Screens.Debugger.Render
             set => this.RaiseAndSetIfChanged(ref _renderHeight, value);
         }
 
-        public string Renderer
+        public string? Renderer
         {
             get => _renderer;
             set => this.RaiseAndSetIfChanged(ref _renderer, value);

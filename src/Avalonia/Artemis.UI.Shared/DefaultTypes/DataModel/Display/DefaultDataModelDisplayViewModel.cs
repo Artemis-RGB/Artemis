@@ -22,6 +22,7 @@ namespace Artemis.UI.Shared.DefaultTypes.DataModel.Display
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 PreserveReferencesHandling = PreserveReferencesHandling.None
             };
+            _display = "null";
         }
 
         public string Display

@@ -12,7 +12,7 @@ namespace Artemis.UI.Converters
     public class ColorToSolidColorBrushConverter : IValueConverter
     {
         /// <inheritdoc />
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             return new SolidColorBrush(!(value is RGBColor color)
                 ? new Color(0, 0, 0, 0)
@@ -20,7 +20,7 @@ namespace Artemis.UI.Converters
         }
 
         /// <inheritdoc />
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             return !(value is SolidColorBrush brush)
                 ? RGBColor.Transparent

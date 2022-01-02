@@ -11,13 +11,13 @@ namespace Artemis.UI.Shared.Converters
     public class EnumToBooleanConverter : IValueConverter
     {
         /// <inheritdoc />
-        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             return Equals(value, parameter);
         }
 
         /// <inheritdoc />
-        public object ConvertBack(object? value, Type targetType, object parameter, CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             return value?.Equals(true) == true ? parameter : BindingOperations.DoNothing;
         }

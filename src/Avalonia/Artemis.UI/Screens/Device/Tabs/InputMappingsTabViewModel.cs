@@ -16,7 +16,7 @@ namespace Artemis.UI.Screens.Device
         private readonly IRgbService _rgbService;
         private readonly IInputService _inputService;
         private readonly ObservableCollection<ArtemisLed> _selectedLeds;
-        private ArtemisLed _selectedLed;
+        private ArtemisLed? _selectedLed;
 
         public InputMappingsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds, IRgbService rgbService, IInputService inputService)
         {
@@ -34,7 +34,7 @@ namespace Artemis.UI.Screens.Device
 
         public ArtemisDevice Device { get; }
 
-        public ArtemisLed SelectedLed
+        public ArtemisLed? SelectedLed
         {
             get => _selectedLed;
             set => this.RaiseAndSetIfChanged(ref _selectedLed, value);
@@ -57,7 +57,7 @@ namespace Artemis.UI.Screens.Device
             bool foundLedId = InputKeyUtilities.KeyboardKeyLedIdMap.TryGetValue(e.Key, out LedId ledId);
             if (!foundLedId)
                 return;
-            ArtemisLed artemisLed = Device.GetLed(ledId, false);
+            ArtemisLed? artemisLed = Device.GetLed(ledId, false);
             if (artemisLed == null)
                 return;
 

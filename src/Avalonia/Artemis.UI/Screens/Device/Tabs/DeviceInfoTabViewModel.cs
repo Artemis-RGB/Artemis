@@ -28,6 +28,9 @@ namespace Artemis.UI.Screens.Device
 
         public async Task CopyToClipboard(string content)
         {
+            if (Application.Current?.Clipboard == null)
+                return;
+
             await Application.Current.Clipboard.SetTextAsync(content);
             _notificationService.CreateNotification().WithMessage("Copied path to clipboard.").Show();
         }

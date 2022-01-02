@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -12,11 +11,10 @@ using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
-using Artemis.UI.Services;
 using Artemis.UI.Services.ProfileEditor;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.Interfaces;
-using FluentAvalonia.UI.Controls;
 using Material.Icons;
 using Ninject;
 using ReactiveUI;
@@ -27,11 +25,11 @@ namespace Artemis.UI.Screens.Sidebar
     public class SidebarViewModel : ActivatableViewModelBase
     {
         private readonly IScreen _hostScreen;
+        private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileService _profileService;
         private readonly IRgbService _rgbService;
         private readonly ISidebarVmFactory _sidebarVmFactory;
         private readonly IWindowService _windowService;
-        private readonly IProfileEditorService _profileEditorService;
         private ArtemisDevice? _headerDevice;
 
         private SidebarScreenViewModel? _selectedSidebarScreen;
@@ -111,7 +109,7 @@ namespace Artemis.UI.Screens.Sidebar
         {
             await _windowService.CreateContentDialog()
                 .WithTitle("Add new category")
-                .WithViewModel<SidebarCategoryEditViewModel>(out var vm, ("category", null))
+                .WithViewModel(out SidebarCategoryEditViewModel vm, ("category", null))
                 .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Confirm))
                 .WithCloseButtonText("Cancel")
                 .WithDefaultButton(ContentDialogButton.Primary)

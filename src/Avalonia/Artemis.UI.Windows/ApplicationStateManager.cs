@@ -34,7 +34,7 @@ namespace Artemis.UI.Windows
             Core.Utilities.RestartRequested += UtilitiesOnRestartRequested;
             
             // On Windows shutdown dispose the kernel just so device providers get a chance to clean up
-            if (Application.Current.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
+            if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
             {
                 controlledApplicationLifetime.Exit += (_, _) =>
                 {
@@ -159,7 +159,7 @@ namespace Artemis.UI.Windows
             }
 
             // Lets try a graceful shutdown, PowerShell will kill if needed
-            if (Application.Current.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
+            if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
                 Dispatcher.UIThread.Post(() => controlledApplicationLifetime.Shutdown());
         }
 
@@ -168,7 +168,7 @@ namespace Artemis.UI.Windows
             // Use PowerShell to kill the process after 8 sec just in case
             RunForcedShutdownIfEnabled();
 
-            if (Application.Current.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
+            if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
                 Dispatcher.UIThread.Post(() => controlledApplicationLifetime.Shutdown());
         }
 

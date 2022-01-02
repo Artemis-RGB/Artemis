@@ -24,6 +24,9 @@ namespace Artemis.UI.Shared.Services
 
         public async Task CopyException()
         {
+            if (Application.Current?.Clipboard == null)
+                return;
+
             await Application.Current.Clipboard.SetTextAsync(Exception.ToString());
             _notificationService.CreateNotification()
                 .WithMessage("Copied stack trace to clipboard.")

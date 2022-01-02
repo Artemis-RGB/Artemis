@@ -91,7 +91,7 @@ namespace Artemis.UI.Windows.Utilities
                 }
 
                 PROCESS_INFORMATION pi = new();
-                if (!CreateProcessWithTokenW(hPrimaryToken, 0, fileName, $"\"{fileName}\" {arguments}", 0, IntPtr.Zero, Path.GetDirectoryName(fileName), ref si, out pi))
+                if (!CreateProcessWithTokenW(hPrimaryToken, 0, fileName, $"\"{fileName}\" {arguments}", 0, IntPtr.Zero, Path.GetDirectoryName(fileName)!, ref si, out pi))
                 {
                     // Get the last error and display it.
                     int error = Marshal.GetLastWin32Error();
@@ -203,7 +203,7 @@ namespace Artemis.UI.Windows.Utilities
         private static extern bool OpenProcessToken(IntPtr h, int acc, ref IntPtr phtok);
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        private static extern bool LookupPrivilegeValue(string host, string name, ref LUID pluid);
+        private static extern bool LookupPrivilegeValue(string? host, string name, ref LUID pluid);
 
         [DllImport("advapi32.dll", ExactSpelling = true, SetLastError = true)]
         private static extern bool AdjustTokenPrivileges(IntPtr htok, bool disall, ref TOKEN_PRIVILEGES newst, int len, IntPtr prev, IntPtr relen);

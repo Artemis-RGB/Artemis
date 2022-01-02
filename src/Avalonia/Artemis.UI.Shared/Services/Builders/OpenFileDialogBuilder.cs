@@ -12,6 +12,10 @@ namespace Artemis.UI.Shared.Services.Builders
         private readonly OpenFileDialog _openFileDialog;
         private readonly Window _parent;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="OpenFileDialogBuilder"/> class.
+        /// </summary>
+        /// <param name="parent">The parent window that will host the dialog.</param>
         public OpenFileDialogBuilder(Window parent)
         {
             _parent = parent;
@@ -67,7 +71,7 @@ namespace Artemis.UI.Shared.Services.Builders
         }
 
         /// <summary>
-        ///     Shows the file dialog
+        ///     Asynchronously shows the file dialog.
         /// </summary>
         /// <returns>
         ///     A task that on completion returns an array containing the full path to the selected
