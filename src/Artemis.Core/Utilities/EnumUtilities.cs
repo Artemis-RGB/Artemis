@@ -13,7 +13,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Creates a list containing a tuple for each value in the enum type
         /// </summary>
-        /// <param name="t">The enum type to create value descriptions for</param>
+        /// <typeparam name="T">The enum type to create value descriptions for</typeparam>
         /// <returns>A list containing a value-description tuple for each value in the enum type</returns>
         public static List<(T, string)> GetAllValuesAndDescriptions<T>() where T : struct, Enum
         {

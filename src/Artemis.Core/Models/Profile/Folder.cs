@@ -257,6 +257,18 @@ namespace Artemis.Core
         public event EventHandler? RenderPropertiesUpdated;
 
         /// <inheritdoc />
+        public override void Activate()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public override void Deactivate()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
             Disposed = true;

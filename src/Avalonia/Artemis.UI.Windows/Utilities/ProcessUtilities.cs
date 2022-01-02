@@ -7,7 +7,7 @@ namespace Artemis.UI.Windows.Utilities
 {
     public static class ProcessUtilities
     {
-        public static Process RunAsDesktopUser(string fileName, string arguments, bool hideWindow)
+        public static Process? RunAsDesktopUser(string fileName, string arguments, bool hideWindow)
         {
             if (string.IsNullOrWhiteSpace(fileName))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(fileName));

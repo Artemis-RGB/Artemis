@@ -12,8 +12,14 @@ using Material.Icons.Avalonia;
 
 namespace Artemis.UI.Shared.Controls
 {
+    /// <summary>
+    ///     Represents a control that can display the icon of a specific <see cref="ProfileConfiguration"/>.
+    /// </summary>
     public class ProfileConfigurationIcon : UserControl
     {
+        /// <summary>
+        ///     Creates a new instance of the <see cref="ProfileConfigurationIcon" /> class.
+        /// </summary>
         public ProfileConfigurationIcon()
         {
             InitializeComponent();

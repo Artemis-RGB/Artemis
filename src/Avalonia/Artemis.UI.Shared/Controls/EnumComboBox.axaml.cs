@@ -10,13 +10,28 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Shared.Controls
 {
-    public partial class EnumComboBox : UserControl
+    /// <summary>
+    ///     Represents a combobox that can display the values of an enum.
+    /// </summary>
+    public class EnumComboBox : UserControl
     {
         /// <summary>
         ///     Gets or sets the currently selected value
         /// </summary>
-        public static readonly StyledProperty<object?> ValueProperty = 
+        public static readonly StyledProperty<object?> ValueProperty =
             AvaloniaProperty.Register<EnumComboBox, object?>(nameof(Value), defaultBindingMode: BindingMode.TwoWay, notifying: ValueChanged);
+
+        private readonly ObservableCollection<(Enum, string)> _currentValues = new();
+
+        private ComboBox? _enumComboBox;
+
+        /// <summary>
+        ///     Creates a new instance of the <see cref="EnumComboBox" /> class.
+        /// </summary>
+        public EnumComboBox()
+        {
+            InitializeComponent();
+        }
 
         /// <summary>
         ///     Gets or sets the currently selected value
@@ -27,9 +42,6 @@ namespace Artemis.UI.Shared.Controls
             set => SetValue(ValueProperty, value);
         }
 
-        private ComboBox? _enumComboBox;
-        private readonly ObservableCollection<(Enum, string)> _currentValues = new();
-
         private static void ValueChanged(IAvaloniaObject sender, bool before)
         {
             if (sender is EnumComboBox enumCombo && !before)
@@ -37,11 +49,6 @@ namespace Artemis.UI.Shared.Controls
                 enumCombo.UpdateValues();
                 enumCombo.UpdateSelection();
             }
-        }
-
-        public EnumComboBox()
-        {
-            InitializeComponent();
         }
 
         private void InitializeComponent()
@@ -54,7 +61,7 @@ namespace Artemis.UI.Shared.Controls
             if (_enumComboBox == null)
                 return;
 
-            var (enumValue, _) = _currentValues[_enumComboBox.SelectedIndex];
+            (Enum enumValue, _) = _currentValues[_enumComboBox.SelectedIndex];
             if (!Equals(Value, enumValue))
                 Value = enumValue;
         }

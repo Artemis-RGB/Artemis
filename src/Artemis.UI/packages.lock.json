@@ -128,6 +128,15 @@
         "resolved": "1.0.0-prerelease1",
         "contentHash": "aaCPk++kr1TaV/qWYeol5975IN3XifDuuQ9wrCD+nw1cy05BMdGVhuQ72ITb0YRBedssd/btkM51ZABsBd8CEQ=="
       },
+      "RGB.NET.Layout": {
+        "type": "Direct",
+        "requested": "[1.0.0-prerelease1, )",
+        "resolved": "1.0.0-prerelease1",
+        "contentHash": "nbaHbcY59tzFSeTDbImhrcR1ZyJpoC0x6WawXdtGXO7x3F91ajM7kM5SJwi/5jHdD61vGV0ARuznmR8ErAWegQ==",
+        "dependencies": {
+          "RGB.NET.Core": "1.0.0-prerelease1"
+        }
+      },
       "Serilog": {
         "type": "Direct",
         "requested": "[2.10.0, )",
@@ -399,14 +408,6 @@
         "contentHash": "hJHivPDA1Vxn0CCgOtHKZ3fmldxQuz7VL1J4lEaPTXCf+Vwcx1FDf05mGMh6olYMSxoKimGX8YK2sEoqeH3pnA==",
         "dependencies": {
           "Microsoft.Extensions.ObjectPool": "5.0.9"
-        }
-      },
-      "RGB.NET.Layout": {
-        "type": "Transitive",
-        "resolved": "1.0.0-prerelease1",
-        "contentHash": "nbaHbcY59tzFSeTDbImhrcR1ZyJpoC0x6WawXdtGXO7x3F91ajM7kM5SJwi/5jHdD61vGV0ARuznmR8ErAWegQ==",
-        "dependencies": {
-          "RGB.NET.Core": "1.0.0-prerelease1"
         }
       },
       "RGB.NET.Presets": {

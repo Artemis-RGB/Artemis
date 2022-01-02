@@ -45,7 +45,7 @@ namespace Artemis.Core
         {
             if (_list.Count > 0)
             {
-                T value = _list.First.Value;
+                T value = _list.First!.Value;
                 _list.RemoveFirst();
                 return value;
             }
@@ -61,7 +61,7 @@ namespace Artemis.Core
         {
             if (_list.Count > 0)
             {
-                T value = _list.First.Value;
+                T value = _list.First!.Value;
                 return value;
             }
             else
@@ -92,7 +92,7 @@ namespace Artemis.Core
             bool result = false;
             if (this.Count > 0)
             {
-                result = Peek().Equals(value);
+                result = Peek()!.Equals(value);
             }
             return result;
         }

@@ -10,34 +10,25 @@ using Material.Icons.Avalonia;
 
 namespace Artemis.UI.Shared.Controls
 {
-    public partial class ArtemisIcon : UserControl
+    /// <summary>
+    ///     Represents a control that can display an arbitrary kind of icon.
+    /// </summary>
+    public class ArtemisIcon : UserControl
     {
-        #region Properties
-
         /// <summary>
-        ///     Gets or sets the currently displayed icon as either a <see cref="MaterialIconKind" /> or an <see cref="Uri" /> pointing
-        ///     to an SVG
+        ///     Creates a new instance of the <see cref="ArtemisIcon" /> class.
         /// </summary>
-        public static readonly StyledProperty<object?> IconProperty =
-            AvaloniaProperty.Register<ArtemisIcon, object?>(nameof(Icon), notifying: IconChanging);
-
-       
-        /// <summary>
-        ///     Gets or sets the currently displayed icon as either a <see cref="MaterialIconKind" /> or an <see cref="Uri" /> pointing
-        ///     to an SVG
-        /// </summary>
-        public object? Icon
+        public ArtemisIcon()
         {
-            get => GetValue(IconProperty);
-            set => SetValue(IconProperty, value);
+            InitializeComponent();
+            DetachedFromLogicalTree += OnDetachedFromLogicalTree;
+            LayoutUpdated += OnLayoutUpdated;
         }
-
-        #endregion
 
         private static void IconChanging(IAvaloniaObject sender, bool before)
         {
             if (before)
-                ((ArtemisIcon)sender).Update();
+                ((ArtemisIcon) sender).Update();
         }
 
         private void Update()
@@ -46,37 +37,35 @@ namespace Artemis.UI.Shared.Controls
             {
                 // First look for an enum value instead of a string
                 if (Icon is MaterialIconKind materialIcon)
-                    Content = new MaterialIcon { Kind = materialIcon, Width = Bounds.Width, Height = Bounds.Height };
+                {
+                    Content = new MaterialIcon {Kind = materialIcon, Width = Bounds.Width, Height = Bounds.Height};
+                }
                 // If it's a string there are several options
                 else if (Icon is string iconString)
                 {
                     // An enum defined as a string
                     if (Enum.TryParse(iconString, true, out MaterialIconKind parsedIcon))
-                        Content = new MaterialIcon { Kind = parsedIcon, Width = Bounds.Width, Height = Bounds.Height };
+                    {
+                        Content = new MaterialIcon {Kind = parsedIcon, Width = Bounds.Width, Height = Bounds.Height};
+                    }
                     // An URI pointing to an SVG
                     else if (iconString.EndsWith(".svg"))
                     {
                         SvgSource source = new();
                         source.Load(iconString);
-                        Content = new SvgImage { Source = source };
+                        Content = new SvgImage {Source = source};
                     }
                     // An URI pointing to a different kind of image
                     else
-                        Content = new Image { Source = new Bitmap(iconString), Width = Bounds.Width, Height = Bounds.Height };
+                    {
+                        Content = new Image {Source = new Bitmap(iconString), Width = Bounds.Width, Height = Bounds.Height};
+                    }
                 }
             }
             catch
             {
-                Content = new MaterialIcon { Kind = MaterialIconKind.QuestionMark, Width = Bounds.Width, Height = Bounds.Height };
+                Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark, Width = Bounds.Width, Height = Bounds.Height};
             }
-        }
-
-
-        public ArtemisIcon()
-        {
-            InitializeComponent();
-            DetachedFromLogicalTree += OnDetachedFromLogicalTree; 
-            LayoutUpdated += OnLayoutUpdated;
         }
 
         private void OnLayoutUpdated(object? sender, EventArgs e)
@@ -100,5 +89,27 @@ namespace Artemis.UI.Shared.Controls
         {
             AvaloniaXamlLoader.Load(this);
         }
+
+        #region Properties
+
+        /// <summary>
+        ///     Gets or sets the currently displayed icon as either a <see cref="MaterialIconKind" /> or an <see cref="Uri" />
+        ///     pointing to an SVG
+        /// </summary>
+        public static readonly StyledProperty<object?> IconProperty =
+            AvaloniaProperty.Register<ArtemisIcon, object?>(nameof(Icon), notifying: IconChanging);
+
+
+        /// <summary>
+        ///     Gets or sets the currently displayed icon as either a <see cref="MaterialIconKind" /> or an <see cref="Uri" />
+        ///     pointing to an SVG
+        /// </summary>
+        public object? Icon
+        {
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
+        }
+
+        #endregion
     }
 }

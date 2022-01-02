@@ -31,7 +31,7 @@ namespace Artemis.UI.Linux
             Core.Utilities.RestartRequested += UtilitiesOnRestartRequested;
 
             // On OS shutdown dispose the kernel just so device providers get a chance to clean up
-            if (Application.Current.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
+            if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
             {
                 controlledApplicationLifetime.Exit += (_, _) =>
                 {
@@ -118,7 +118,7 @@ namespace Artemis.UI.Linux
 
             //TODO: start new instance with correct arguments
 
-            if (Application.Current.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
+            if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
                 Dispatcher.UIThread.Post(() => controlledApplicationLifetime.Shutdown());
         }
 
@@ -126,7 +126,7 @@ namespace Artemis.UI.Linux
         {
             RunForcedShutdownIfEnabled();
 
-            if (Application.Current.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
+            if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
                 Dispatcher.UIThread.Post(() => controlledApplicationLifetime.Shutdown());
         }
 

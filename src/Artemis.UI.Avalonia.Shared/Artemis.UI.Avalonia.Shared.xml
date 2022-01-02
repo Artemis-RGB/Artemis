@@ -4,16 +4,26 @@
         <name>Artemis.UI.Shared</name>
     </assembly>
     <members>
+        <member name="T:Artemis.UI.Shared.Controls.ArtemisIcon">
+            <summary>
+                Represents a control that can display an arbitrary kind of icon.
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Controls.ArtemisIcon.#ctor">
+            <summary>
+                Creates a new instance of the <see cref="T:Artemis.UI.Shared.Controls.ArtemisIcon" /> class.
+            </summary>
+        </member>
         <member name="F:Artemis.UI.Shared.Controls.ArtemisIcon.IconProperty">
             <summary>
-                Gets or sets the currently displayed icon as either a <see cref="T:Material.Icons.MaterialIconKind" /> or an <see cref="T:System.Uri" /> pointing
-                to an SVG
+                Gets or sets the currently displayed icon as either a <see cref="T:Material.Icons.MaterialIconKind" /> or an <see cref="T:System.Uri" />
+                pointing to an SVG
             </summary>
         </member>
         <member name="P:Artemis.UI.Shared.Controls.ArtemisIcon.Icon">
             <summary>
-                Gets or sets the currently displayed icon as either a <see cref="T:Material.Icons.MaterialIconKind" /> or an <see cref="T:System.Uri" /> pointing
-                to an SVG
+                Gets or sets the currently displayed icon as either a <see cref="T:Material.Icons.MaterialIconKind" /> or an <see cref="T:System.Uri" />
+                pointing to an SVG
             </summary>
         </member>
         <member name="T:Artemis.UI.Shared.Controls.DeviceVisualizer">
@@ -80,9 +90,19 @@
         <member name="M:Artemis.UI.Shared.Controls.DeviceVisualizer.MeasureOverride(Avalonia.Size)">
             <inheritdoc />
         </member>
+        <member name="T:Artemis.UI.Shared.Controls.EnumComboBox">
+            <summary>
+                Represents a combobox that can display the values of an enum.
+            </summary>
+        </member>
         <member name="F:Artemis.UI.Shared.Controls.EnumComboBox.ValueProperty">
             <summary>
                 Gets or sets the currently selected value
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Controls.EnumComboBox.#ctor">
+            <summary>
+                Creates a new instance of the <see cref="T:Artemis.UI.Shared.Controls.EnumComboBox" /> class.
             </summary>
         </member>
         <member name="P:Artemis.UI.Shared.Controls.EnumComboBox.Value">
@@ -126,6 +146,16 @@
         <member name="M:Artemis.UI.Shared.Controls.NoInputTextBox.OnKeyUp(Avalonia.Input.KeyEventArgs)">
             <inheritdoc />
         </member>
+        <member name="T:Artemis.UI.Shared.Controls.ProfileConfigurationIcon">
+            <summary>
+                Represents a control that can display the icon of a specific <see cref="T:Artemis.Core.ProfileConfiguration"/>.
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Controls.ProfileConfigurationIcon.#ctor">
+            <summary>
+                Creates a new instance of the <see cref="T:Artemis.UI.Shared.Controls.ProfileConfigurationIcon" /> class.
+            </summary>
+        </member>
         <member name="F:Artemis.UI.Shared.Controls.ProfileConfigurationIcon.ConfigurationIconProperty">
             <summary>
                 Gets or sets the <see cref="T:Artemis.Core.ProfileConfigurationIcon" /> to display
@@ -158,7 +188,17 @@
         </member>
         <member name="F:Artemis.UI.Shared.Controls.SelectionRectangle.InputElementProperty">
             <summary>
-                Defines the <see cref="M:Artemis.UI.Shared.Controls.SelectionRectangle.get_InputElement" /> property.
+                Defines the <see cref="P:Artemis.UI.Shared.Controls.SelectionRectangle.InputElement" /> property.
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionUpdatedProperty">
+            <summary>
+                Defines the <see cref="P:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionUpdated" /> property.
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionFinishedProperty">
+            <summary>
+                Defines the <see cref="P:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionFinished" /> property.
             </summary>
         </member>
         <member name="M:Artemis.UI.Shared.Controls.SelectionRectangle.#ctor">
@@ -178,6 +218,24 @@
             <summary>
                 Gets or sets the width of the control's border
             </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.Controls.SelectionRectangle.InputElement">
+            <summary>
+            Gets or sets the element that captures input for the selection rectangle.
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionUpdated">
+            <summary>
+            Gets or sets the command to execute when the selection has been updated.
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionFinished">
+            <summary>
+            Gets or sets the command to execute when the selection has finished.
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Controls.SelectionRectangle.Render(Avalonia.Media.DrawingContext)">
+            <inheritdoc />
         </member>
         <member name="M:Artemis.UI.Shared.Controls.SelectionRectangle.OnAttachedToVisualTree(Avalonia.VisualTreeAttachmentEventArgs)">
             <inheritdoc />
@@ -781,10 +839,96 @@
                 Adds the provided extension to the filter
             </summary>
         </member>
+        <member name="T:Artemis.UI.Shared.Services.Builders.NotificationBuilder">
+            <summary>
+                Represents a builder that can be used to create notifications.
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.NotificationBuilder.#ctor(Avalonia.Controls.Window)">
+            <summary>
+                Creates a new instance of the <see cref="T:Artemis.UI.Shared.Services.Builders.NotificationBuilder" /> class.
+            </summary>
+            <param name="parent">The parent window that will host the notification.</param>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.NotificationBuilder.WithTitle(System.String)">
+            <summary>
+                Changes the title of the notification.
+            </summary>
+            <param name="title">The new title.</param>
+            <returns>The notification builder that can be used to further build the notification.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.NotificationBuilder.WithMessage(System.String)">
+            <summary>
+                Changes the message of the notification.
+            </summary>
+            <param name="content">The new message.</param>
+            <returns>The notification builder that can be used to further build the notification.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.NotificationBuilder.WithTimeout(System.TimeSpan)">
+            <summary>
+                Changes the timeout of the notification after which it disappears automatically.
+            </summary>
+            <param name="timeout">The timeout of the notification after which it disappears automatically.</param>
+            <returns>The notification builder that can be used to further build the notification.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.NotificationBuilder.WithVerticalPosition(Avalonia.Layout.VerticalAlignment)">
+            <summary>
+                Changes the vertical position of the notification inside the parent window.
+            </summary>
+            <param name="position">The vertical position of the notification inside the parent window.</param>
+            <returns>The notification builder that can be used to further build the notification.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.NotificationBuilder.WithHorizontalPosition(Avalonia.Layout.HorizontalAlignment)">
+            <summary>
+                Changes the horizontal position of the notification inside the parent window.
+            </summary>
+            <param name="position">The horizontal position of the notification inside the parent window.</param>
+            <returns>The notification builder that can be used to further build the notification.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.NotificationBuilder.WithSeverity(Artemis.UI.Shared.Services.Builders.NotificationSeverity)">
+            <summary>
+                Changes the severity (color) of the notification.
+            </summary>
+            <param name="severity">The severity (color) of the notification.</param>
+            <returns>The notification builder that can be used to further build the notification.</returns>
+        </member>
         <member name="M:Artemis.UI.Shared.Services.Builders.NotificationBuilder.HavingButton(System.Action{Artemis.UI.Shared.Services.Builders.NotificationButtonBuilder})">
             <summary>
-                Add a filter to the dialog
+                Changes the action button of the dialog.
             </summary>
+            <param name="configure">An action to configure the button.</param>
+            <returns>The notification builder that can be used to further build the notification.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.NotificationBuilder.Show">
+            <summary>
+                Shows the notification.
+            </summary>
+        </member>
+        <member name="T:Artemis.UI.Shared.Services.Builders.NotificationButtonBuilder">
+            <summary>
+                Represents a builder that can be used to create buttons inside notifications.
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.NotificationButtonBuilder.WithText(System.String)">
+            <summary>
+                Changes text message of the button.
+            </summary>
+            <param name="text">The new text.</param>
+            <returns>The notification builder that can be used to further build the button.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.NotificationButtonBuilder.WithAction(System.Action)">
+            <summary>
+                Changes action that is called when the button is clicked.
+            </summary>
+            <param name="action">The action to call when the button is clicked.</param>
+            <returns>The notification builder that can be used to further build the button.</returns>
+        </member>
+        <member name="M:Artemis.UI.Shared.Services.Builders.NotificationButtonBuilder.WithCommand(System.Windows.Input.ICommand)">
+            <summary>
+                Changes command that is called when the button is clicked.
+            </summary>
+            <param name="command">The command to call when the button is clicked.</param>
+            <returns>The notification builder that can be used to further build the button.</returns>
         </member>
         <member name="T:Artemis.UI.Shared.Services.Builders.OpenFileDialogBuilder">
             <summary>

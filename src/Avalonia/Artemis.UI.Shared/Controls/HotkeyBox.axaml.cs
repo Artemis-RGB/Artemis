@@ -54,7 +54,7 @@ namespace Artemis.UI.Shared.Controls
         private void DisplayTextBoxOnKeyUp(object? sender, KeyEventArgs e)
         {
             if (e.KeyModifiers == KeyModifiers.None)
-                FocusManager.Instance.Focus(null);
+                FocusManager.Instance?.Focus(null);
 
             e.Handled = true;
         }
@@ -79,7 +79,7 @@ namespace Artemis.UI.Shared.Controls
         private void Button_OnClick(object? sender, RoutedEventArgs e)
         {
             Hotkey = null;
-            FocusManager.Instance.Focus(null);
+            FocusManager.Instance?.Focus(null);
 
             UpdateDisplayTextBox();
         }

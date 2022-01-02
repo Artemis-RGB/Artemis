@@ -6,6 +6,7 @@
     <ApplicationIcon />
     <StartupObject />
     <OutputPath>bin\</OutputPath>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>C:\Repos\Artemis\src\Artemis.UI.Avalonia.Shared\Artemis.UI.Avalonia.Shared.xml</DocumentationFile>

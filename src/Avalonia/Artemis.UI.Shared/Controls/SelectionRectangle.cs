@@ -19,14 +19,14 @@ namespace Artemis.UI.Shared.Controls
         /// </summary>
         public static readonly StyledProperty<IBrush> BackgroundProperty =
             AvaloniaProperty.Register<SelectionRectangle, IBrush>(nameof(Background),
-                new SolidColorBrush(AvaloniaLocator.Current.GetService<FluentAvaloniaTheme>().CustomAccentColor ?? Colors.Transparent, 0.25));
+                new SolidColorBrush(AvaloniaLocator.Current.GetService<FluentAvaloniaTheme>()?.CustomAccentColor ?? Colors.Transparent, 0.25));
 
         /// <summary>
         ///     Defines the <see cref="BorderBrush" /> property.
         /// </summary>
         public static readonly StyledProperty<IBrush> BorderBrushProperty =
             AvaloniaProperty.Register<SelectionRectangle, IBrush>(nameof(BorderBrush),
-                new SolidColorBrush(AvaloniaLocator.Current.GetService<FluentAvaloniaTheme>().CustomAccentColor ?? Colors.Transparent));
+                new SolidColorBrush(AvaloniaLocator.Current.GetService<FluentAvaloniaTheme>()?.CustomAccentColor ?? Colors.Transparent));
 
         /// <summary>
         ///     Defines the <see cref="BorderBrush" /> property.
@@ -35,14 +35,20 @@ namespace Artemis.UI.Shared.Controls
             AvaloniaProperty.Register<SelectionRectangle, double>(nameof(BorderThickness), 1);
 
         /// <summary>
-        ///     Defines the <see cref="get_InputElement" /> property.
+        ///     Defines the <see cref="InputElement" /> property.
         /// </summary>
         public static readonly StyledProperty<IControl?> InputElementProperty =
             AvaloniaProperty.Register<SelectionRectangle, IControl?>(nameof(InputElement), notifying: OnInputElementChanged);
 
+        /// <summary>
+        ///     Defines the <see cref="SelectionUpdated" /> property.
+        /// </summary>
         public static readonly StyledProperty<ICommand?> SelectionUpdatedProperty
             = AvaloniaProperty.Register<SelectionRectangle, ICommand?>(nameof(SelectionUpdated));
 
+        /// <summary>
+        ///     Defines the <see cref="SelectionFinished" /> property.
+        /// </summary>
         public static readonly StyledProperty<ICommand?> SelectionFinishedProperty
             = AvaloniaProperty.Register<SelectionRectangle, ICommand?>(nameof(SelectionUpdated));
 
@@ -84,18 +90,27 @@ namespace Artemis.UI.Shared.Controls
             set => SetValue(BorderThicknessProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets the element that captures input for the selection rectangle.
+        /// </summary>
         public IControl? InputElement
         {
             get => GetValue(InputElementProperty);
             set => SetValue(InputElementProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets the command to execute when the selection has been updated.
+        /// </summary>
         public ICommand? SelectionUpdated
         {
             get => GetValue(SelectionUpdatedProperty);
             set => SetValue(SelectionUpdatedProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets the command to execute when the selection has finished.
+        /// </summary>
         public ICommand? SelectionFinished
         {
             get => GetValue(SelectionFinishedProperty);
@@ -168,6 +183,7 @@ namespace Artemis.UI.Shared.Controls
 
         #region Overrides of Visual
 
+        /// <inheritdoc />
         public override void Render(DrawingContext drawingContext)
         {
             if (_displayRect != null)

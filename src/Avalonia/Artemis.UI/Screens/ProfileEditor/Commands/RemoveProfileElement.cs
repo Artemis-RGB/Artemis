@@ -46,14 +46,14 @@ namespace Artemis.UI.Screens.ProfileEditor.Commands
         {
             _isRemoved = true;
             _target.RemoveChild(_subject);
-            _target.Deactivate();
+            _subject.Deactivate();
         }
 
         /// <inheritdoc />
         public void Undo()
         {
             _isRemoved = false;
-            _target.Activate();
+            _subject.Activate();
             _target.AddChild(_subject, _index);
 
         }
