@@ -2,122 +2,54 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Screens.ProfileEditor.Commands;
 using Artemis.UI.Services.ProfileEditor;
-using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services.Interfaces;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 {
-    public class ProfileTreeViewModel : ActivatableViewModelBase
+    public class ProfileTreeViewModel : TreeItemViewModel
     {
-        private readonly IProfileEditorService _profileEditorService;
-        private readonly IProfileEditorVmFactory _profileEditorVmFactory;
-        private ReactiveCommand<Unit, Unit>? _addFolder;
-        private ReactiveCommand<Unit, Unit>? _addLayer;
-        private TreeItemViewModel? _selectedTreeItem;
+        private TreeItemViewModel? _selectedChild;
 
-        public ProfileTreeViewModel(IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
+        public ProfileTreeViewModel(IWindowService windowService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
+            : base(null, null, windowService, profileEditorService, profileEditorVmFactory)
         {
-            _profileEditorService = profileEditorService;
-            _profileEditorVmFactory = profileEditorVmFactory;
-
             this.WhenActivated(d =>
             {
                 profileEditorService.ProfileConfiguration.WhereNotNull().Subscribe(configuration =>
                 {
-                    Folder rootFolder = configuration.Profile!.GetRootFolder();
-                    CreateTreeItems(rootFolder);
-                    Observable.FromEventPattern<ProfileElementEventArgs>(x => rootFolder.ChildAdded += x, x => rootFolder.ChildAdded -= x).Subscribe(c => AddTreeItemIfMissing(c.EventArgs.ProfileElement));
-                    Observable.FromEventPattern<ProfileElementEventArgs>(x => rootFolder.ChildRemoved += x, x => rootFolder.ChildRemoved -= x).Subscribe(c => RemoveTreeItemsIfFound(c.EventArgs.ProfileElement));
-
-                    AddLayer = ReactiveCommand.Create(() => AddLayerToRoot(configuration.Profile), profileEditorService.ProfileConfiguration.Select(p => p != null));
-                    AddFolder = ReactiveCommand.Create(() => AddFolderToRoot(configuration.Profile), profileEditorService.ProfileConfiguration.Select(p => p != null));
+                    ProfileElement = configuration.Profile!.GetRootFolder();
+                    SubscribeToProfileElement(d);
+                    CreateTreeItems();
                 }).DisposeWith(d);
 
                 profileEditorService.ProfileElement.WhereNotNull().Subscribe(SelectCurrentProfileElement).DisposeWith(d);
             });
-            this.WhenAnyValue(vm => vm.SelectedTreeItem).Subscribe(model => profileEditorService.ChangeCurrentProfileElement(model?.ProfileElement));
-        }
 
-        public ReactiveCommand<Unit, Unit>? AddLayer
-        {
-            get => _addLayer;
-            set => this.RaiseAndSetIfChanged(ref _addLayer, value);
-        }
-
-        public ReactiveCommand<Unit, Unit>? AddFolder
-        {
-            get => _addFolder;
-            set => this.RaiseAndSetIfChanged(ref _addFolder, value);
-        }
-
-        public ObservableCollection<TreeItemViewModel> TreeItems { get; } = new();
-
-        public TreeItemViewModel? SelectedTreeItem
-        {
-            get => _selectedTreeItem;
-            set => this.RaiseAndSetIfChanged(ref _selectedTreeItem, value);
-        }
-
-        private void RemoveTreeItemsIfFound(ProfileElement profileElement)
-        {
-            List<TreeItemViewModel> toRemove = TreeItems.Where(t => t.ProfileElement == profileElement).ToList();
-            foreach (TreeItemViewModel treeItemViewModel in toRemove)
-                TreeItems.Remove(treeItemViewModel);
-        }
-
-        private void AddTreeItemIfMissing(ProfileElement profileElement)
-        {
-            if (TreeItems.Any(t => t.ProfileElement == profileElement))
-                return;
-
-            if (profileElement is Folder folder)
-                TreeItems.Insert(folder.Parent.Children.IndexOf(folder), _profileEditorVmFactory.FolderTreeItemViewModel(null, folder));
-            else if (profileElement is Layer layer)
-                TreeItems.Insert(layer.Parent.Children.IndexOf(layer), _profileEditorVmFactory.LayerTreeItemViewModel(null, layer));
-        }
-
-        private void AddFolderToRoot(Profile profile)
-        {
-            Folder rootFolder = profile.GetRootFolder();
-            Folder folder = new(rootFolder, "New folder");
-            _profileEditorService.ExecuteCommand(new AddProfileElement(folder, rootFolder, 0));
-        }
-
-        private void AddLayerToRoot(Profile profile)
-        {
-            Folder rootFolder = profile.GetRootFolder();
-            Layer layer = new(rootFolder, "New layer");
-            _profileEditorService.ExecuteCommand(new AddProfileElement(layer, rootFolder, 0));
-        }
-
-        private void CreateTreeItems(Folder rootFolder)
-        {
-            if (TreeItems.Any())
-                TreeItems.Clear();
-
-            foreach (ProfileElement profileElement in rootFolder.Children)
+            this.WhenAnyValue(vm => vm.SelectedChild).Subscribe(model =>
             {
-                if (profileElement is Folder folder)
-                    TreeItems.Add(_profileEditorVmFactory.FolderTreeItemViewModel(null, folder));
-                else if (profileElement is Layer layer)
-                    TreeItems.Add(_profileEditorVmFactory.LayerTreeItemViewModel(null, layer));
-            }
+                if (model?.ProfileElement is RenderProfileElement renderProfileElement)
+                    profileEditorService.ChangeCurrentProfileElement(renderProfileElement);
+            });
+        }
+
+        public TreeItemViewModel? SelectedChild
+        {
+            get => _selectedChild;
+            set => this.RaiseAndSetIfChanged(ref _selectedChild, value);
         }
 
         private void SelectCurrentProfileElement(RenderProfileElement element)
         {
-            if (SelectedTreeItem?.ProfileElement == element)
+            if (SelectedChild?.ProfileElement == element)
                 return;
 
             // Find the tree item belonging to the selected element
-            List<TreeItemViewModel> treeItems = GetAllTreeItems(TreeItems);
+            List<TreeItemViewModel> treeItems = GetAllTreeItems(Children);
             TreeItemViewModel? selected = treeItems.FirstOrDefault(e => e.ProfileElement == element);
 
             // Walk up the tree, expanding parents
@@ -128,7 +60,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
                 currentParent = currentParent.Parent;
             }
 
-            SelectedTreeItem = selected;
+            SelectedChild = selected;
         }
 
         private List<TreeItemViewModel> GetAllTreeItems(ObservableCollection<TreeItemViewModel> treeItems)

@@ -6,12 +6,19 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.ProfileTreeView">
     <Grid RowDefinitions="*,Auto">
-        <TreeView Classes="no-right-margin" Items="{Binding TreeItems}" SelectedItem="{Binding SelectedTreeItem}">
+        <TreeView Classes="no-right-margin" Items="{Binding Children}" SelectedItem="{Binding SelectedChild}">
             <TreeView.Styles>
                 <Style Selector="TreeViewItem">
-                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                 </Style>
             </TreeView.Styles>
+            <TreeView.KeyBindings>
+                <KeyBinding Gesture="F2" Command="{Binding RenameElement}" CommandParameter="{Binding SelectedTreeItem}" />
+                <KeyBinding Gesture="Delete" Command="{Binding DeleteElement}" CommandParameter="{Binding SelectedTreeItem}" />
+                <KeyBinding Gesture="Ctrl+D" Command="{Binding DuplicateElement}" CommandParameter="{Binding SelectedTreeItem}" />
+                <KeyBinding Gesture="Ctrl+C" Command="{Binding CopyElement}" CommandParameter="{Binding SelectedTreeItem}" />
+                <KeyBinding Gesture="Ctrl+V" Command="{Binding PasteElement}" CommandParameter="{Binding SelectedTreeItem}" />
+            </TreeView.KeyBindings>
             <TreeView.ItemTemplate>
                 <TreeDataTemplate ItemsSource="{Binding Children}">
                     <ContentControl Content="{Binding}" />

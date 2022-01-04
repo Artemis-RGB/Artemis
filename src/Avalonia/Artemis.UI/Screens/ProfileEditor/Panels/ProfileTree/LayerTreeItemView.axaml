@@ -14,7 +14,7 @@
                 Command="{Binding ShowBrokenStateExceptions}">
             <avalonia:MaterialIcon Kind="AlertCircle" />
         </Button>
-        <avalonia:MaterialIcon Grid.Column="1" Kind="{Binding Layer.LayerBrush.Descriptor.Icon}" Margin="5 0"/>
+        <avalonia:MaterialIcon Grid.Column="1" Kind="{Binding Layer.LayerBrush.Descriptor.Icon}" Margin="5 0" />
         <TextBlock Grid.Column="2" Text="{Binding Layer.Name}" VerticalAlignment="Center" />
         <ToggleButton Grid.Column="3"
                       Classes="icon-button icon-button-small"

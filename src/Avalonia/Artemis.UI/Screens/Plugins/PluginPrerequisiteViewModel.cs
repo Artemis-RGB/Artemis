@@ -31,7 +31,7 @@ namespace Artemis.UI.Screens.Plugins
                 : PluginPrerequisite.UninstallActions.Select(a => new PluginPrerequisiteActionViewModel(a)));
 
             this.WhenAnyValue(x => x.Installing, x => x.Uninstalling, (i, u) => i || u).ToProperty(this, x => x.Busy, out _busy);
-            this.WhenAnyValue(x => x.ActiveAction, a => Actions.IndexOf(a)).ToProperty(this, x => x.ActiveStepNumber, out _activeStepNumber);
+            this.WhenAnyValue(x => x.ActiveAction, a => Actions.IndexOf(a!)).ToProperty(this, x => x.ActiveStepNumber, out _activeStepNumber);
 
             PluginPrerequisite.PropertyChanged += PluginPrerequisiteOnPropertyChanged;
 

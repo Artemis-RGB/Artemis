@@ -1,9 +1,10 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 {
-    public partial class FolderTreeItemView : UserControl
+    public class FolderTreeItemView : ReactiveUserControl<FolderTreeItemViewModel>
     {
         public FolderTreeItemView()
         {

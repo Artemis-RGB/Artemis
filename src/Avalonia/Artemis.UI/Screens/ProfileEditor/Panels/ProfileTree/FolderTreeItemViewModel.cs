@@ -1,22 +1,16 @@
 ﻿using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 {
     public class FolderTreeItemViewModel : TreeItemViewModel
     {
-        public FolderTreeItemViewModel(TreeItemViewModel? parent, Folder folder, IProfileEditorVmFactory profileEditorVmFactory, IWindowService windowService) : base(parent, folder, windowService)
+        public FolderTreeItemViewModel(TreeItemViewModel? parent, Folder folder, IWindowService windowService, IProfileEditorService profileEditorService,
+            IProfileEditorVmFactory profileEditorVmFactory) : base(parent, folder, windowService, profileEditorService, profileEditorVmFactory)
         {
             Folder = folder;
-
-            foreach (ProfileElement profileElement in folder.Children)
-            {
-                if (profileElement is Folder childFolder)
-                    Children.Add(profileEditorVmFactory.FolderTreeItemViewModel(this, childFolder));
-                else if (profileElement is Layer layer)
-                    Children.Add(profileEditorVmFactory.LayerTreeItemViewModel(this, layer));
-            }
         }
 
         public Folder Folder { get; }
