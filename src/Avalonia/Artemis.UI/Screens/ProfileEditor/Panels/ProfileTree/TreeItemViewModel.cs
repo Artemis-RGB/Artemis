@@ -20,13 +20,16 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
     {
         private readonly IProfileEditorVmFactory _profileEditorVmFactory;
         private readonly IWindowService _windowService;
+        private readonly IProfileEditorService _profileEditorService;
         private bool _isExpanded;
         private ProfileElement? _profileElement;
+        private RenderProfileElement? _currentProfileElement;
 
         protected TreeItemViewModel(TreeItemViewModel? parent, ProfileElement? profileElement, IWindowService windowService, IProfileEditorService profileEditorService,
             IProfileEditorVmFactory profileEditorVmFactory)
         {
             _windowService = windowService;
+            _profileEditorService = profileEditorService;
             _profileEditorVmFactory = profileEditorVmFactory;
 
             Parent = parent;
@@ -50,6 +53,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 
             this.WhenActivated(d =>
             {
+                _profileEditorService.ProfileElement.Subscribe(element => _currentProfileElement = element).DisposeWith(d);
                 SubscribeToProfileElement(d);
                 CreateTreeItems();
             });
@@ -105,6 +109,10 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             List<TreeItemViewModel> toRemove = Children.Where(t => t.ProfileElement == profileElement).ToList();
             foreach (TreeItemViewModel treeItemViewModel in toRemove)
                 Children.Remove(treeItemViewModel);
+
+            // Deselect the current profile element if removed
+            if (_currentProfileElement == profileElement)
+                _profileEditorService.ChangeCurrentProfileElement(null);
         }
 
         protected void AddTreeItemIfMissing(ProfileElement profileElement)
@@ -116,6 +124,10 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
                 Children.Insert(folder.Parent.Children.IndexOf(folder), _profileEditorVmFactory.FolderTreeItemViewModel(this, folder));
             else if (profileElement is Layer layer)
                 Children.Insert(layer.Parent.Children.IndexOf(layer), _profileEditorVmFactory.LayerTreeItemViewModel(this, layer));
+
+            // Select the newly added element
+            if (profileElement is RenderProfileElement renderProfileElement)
+                _profileEditorService.ChangeCurrentProfileElement(renderProfileElement);
         }
 
         protected void CreateTreeItems()
@@ -127,10 +139,12 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
                 return;
 
             foreach (ProfileElement profileElement in ProfileElement.Children)
+            {
                 if (profileElement is Folder folder)
                     Children.Add(_profileEditorVmFactory.FolderTreeItemViewModel(this, folder));
                 else if (profileElement is Layer layer)
                     Children.Add(_profileEditorVmFactory.LayerTreeItemViewModel(this, layer));
+            }
         }
     }
 }

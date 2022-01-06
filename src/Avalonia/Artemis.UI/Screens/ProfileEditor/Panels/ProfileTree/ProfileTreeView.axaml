@@ -21,7 +21,49 @@
             </TreeView.KeyBindings>
             <TreeView.ItemTemplate>
                 <TreeDataTemplate ItemsSource="{Binding Children}">
-                    <ContentControl Content="{Binding}" />
+                    <ContentControl Content="{Binding}">
+                        <ContentControl.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Add new folder" Command="{Binding AddFolder}">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="CreateNewFolder" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Add new layer" Command="{Binding AddLayer}">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="LayersPlus" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="Duplicate" Command="{Binding DuplicateElement}" InputGesture="Ctrl+D" IsEnabled="False">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="ContentDuplicate" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Copy" Command="{Binding CopyElement}" InputGesture="Ctrl+C" IsEnabled="False">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="ContentCopy" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Paste" Command="{Binding PasteElement}" InputGesture="Ctrl+V">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="ContentPaste" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="Rename" Command="{Binding RenameElement}" InputGesture="F2" IsEnabled="False">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="RenameBox" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Delete" Command="{Binding DeleteElement}" InputGesture="Delete" IsEnabled="False">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="TrashCan" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </MenuFlyout>
+                        </ContentControl.ContextFlyout>
+                    </ContentControl>
                 </TreeDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>

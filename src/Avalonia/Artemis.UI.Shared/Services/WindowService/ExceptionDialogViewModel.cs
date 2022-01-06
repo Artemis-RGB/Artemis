@@ -31,7 +31,7 @@ namespace Artemis.UI.Shared.Services
             _notificationService.CreateNotification()
                 .WithMessage("Copied stack trace to clipboard.")
                 .WithSeverity(NotificationSeverity.Success)
-                .WithHorizontalPosition(HorizontalAlignment.Center)
+                .WithHorizontalPosition(HorizontalAlignment.Left)
                 .Show();
         }
     }

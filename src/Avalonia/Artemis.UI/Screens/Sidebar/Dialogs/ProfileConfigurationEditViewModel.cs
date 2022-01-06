@@ -143,7 +143,16 @@ namespace Artemis.UI.Screens.Sidebar
             if (!await _windowService.ShowConfirmContentDialog("Delete profile", "Are you sure you want to permanently delete this profile?"))
                 return;
 
-            _profileService.RemoveProfileConfiguration(_profileConfiguration);
+            try
+            {
+                _profileService.RemoveProfileConfiguration(_profileConfiguration);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
             Close(true);
         }
 

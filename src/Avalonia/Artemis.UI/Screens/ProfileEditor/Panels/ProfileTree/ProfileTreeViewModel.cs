@@ -22,12 +22,18 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             {
                 profileEditorService.ProfileConfiguration.WhereNotNull().Subscribe(configuration =>
                 {
-                    ProfileElement = configuration.Profile!.GetRootFolder();
+                    if (configuration.Profile == null)
+                    {
+                        windowService.ShowConfirmContentDialog("Failed to load profile", "It appears that this profile is corrupt and cannot be loaded. Please check your logs.", "Confirm", null);
+                        return;
+                    }
+
+                    ProfileElement = configuration.Profile.GetRootFolder();
                     SubscribeToProfileElement(d);
                     CreateTreeItems();
                 }).DisposeWith(d);
 
-                profileEditorService.ProfileElement.WhereNotNull().Subscribe(SelectCurrentProfileElement).DisposeWith(d);
+                profileEditorService.ProfileElement.Subscribe(SelectCurrentProfileElement).DisposeWith(d);
             });
 
             this.WhenAnyValue(vm => vm.SelectedChild).Subscribe(model =>
@@ -43,7 +49,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             set => this.RaiseAndSetIfChanged(ref _selectedChild, value);
         }
 
-        private void SelectCurrentProfileElement(RenderProfileElement element)
+        private void SelectCurrentProfileElement(RenderProfileElement? element)
         {
             if (SelectedChild?.ProfileElement == element)
                 return;

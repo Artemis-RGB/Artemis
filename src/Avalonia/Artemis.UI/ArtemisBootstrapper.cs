@@ -1,13 +1,17 @@
-﻿using Artemis.Core.Ninject;
+﻿using System;
+using System.Reactive;
+using Artemis.Core.Ninject;
 using Artemis.Core;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject;
 using Artemis.UI.Screens.Root;
 using Artemis.UI.Shared.Ninject;
+using Artemis.UI.Shared.Services.Interfaces;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Ninject;
+using ReactiveUI;
 using Splat.Ninject;
 
 namespace Artemis.UI
@@ -23,7 +27,7 @@ namespace Artemis.UI
                 throw new ArtemisUIException("UI already bootstrapped");
 
             Utilities.PrepareFirstLaunch();
-           
+
             _application = application;
             _kernel = new StandardKernel();
             _kernel.Settings.InjectNonPublic = true;
@@ -42,7 +46,7 @@ namespace Artemis.UI
             if (_application == null || _kernel == null)
                 throw new ArtemisUIException("UI not yet bootstrapped");
             if (_application.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
-                return; 
+                return;
 
             // Don't shut down when the last window closes, we might still be active in the tray
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
@@ -50,6 +54,13 @@ namespace Artemis.UI
             RootViewModel rootViewModel = _kernel.Get<RootViewModel>();
             // Apply the root view model to the data context of the application so that tray icon commands work
             _application.DataContext = rootViewModel;
+
+            RxApp.DefaultExceptionHandler = Observer.Create<Exception>(DisplayUnhandledException);
+        }
+
+        private static void DisplayUnhandledException(Exception exception)
+        {
+            _kernel?.Get<IWindowService>().ShowExceptionDialog("Exception", exception);
         }
     }
 }

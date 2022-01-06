@@ -6,31 +6,34 @@
         x:Class="Artemis.UI.Shared.Services.ExceptionDialogView"
         Title="{Binding Title}"
         ExtendClientAreaToDecorationsHint="True"
-        Width="800" 
+        Width="800"
         Height="800"
         WindowStartupLocation="CenterOwner">
     <Grid>
-        <TextBlock Margin="10" IsHitTestVisible="False" Text="{Binding Title}" />
-        <Grid Margin="0 32 0 0" ColumnDefinitions="*,Auto" RowDefinitions="*,Auto">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Margin="10" Grid.Row="1" IsHitTestVisible="False" Text="{Binding Title}" />
 
-            <Border Classes="card" Grid.Row="0" Grid.ColumnSpan="2" Margin="10">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="0 5">
-                    <Grid RowDefinitions="Auto,Auto,*">
-                        <TextBlock Grid.Row="0" Classes="h3">Awww :(</TextBlock>
-                        <TextBlock Grid.Row="1">
-                            It looks like Artemis ran into an unhandled exception. If this keeps happening feel free to hit us up on Discord.
-                        </TextBlock>
+        <StackPanel Grid.Row="2" Margin="20">
+            <TextBlock Classes="h3">Awww :(</TextBlock>
+            <TextBlock>
+                It looks like Artemis ran into an unhandled exception. If this keeps happening feel free to hit us up on Discord.
+            </TextBlock>
+        </StackPanel>
 
-                        <TextBox Grid.Row="2" Text="{Binding Exception, Mode=OneTime}"
-                                 Margin="0 10"
-                                 AcceptsReturn="True"
-                                 IsReadOnly="True"
-                                 FontFamily="Consolas"
-                                 FontSize="12"
-                                 BorderThickness="0" />
-                    </Grid>
-                </ScrollViewer>
-            </Border>
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" RowDefinitions="*,Auto">
+            <ScrollViewer Grid.Row="0" Grid.ColumnSpan="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="20 0">
+                <TextBox Text="{Binding Exception, Mode=OneTime}"
+                         AcceptsReturn="True"
+                         IsReadOnly="True"
+                         FontFamily="Consolas"
+                         FontSize="12"
+                         BorderThickness="0" />
+            </ScrollViewer>
 
             <TextBlock Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" Margin="15" VerticalAlignment="Center">
                 When reporting errors please don't take a screenshot of the error, instead copy the text, thanks!
