@@ -145,8 +145,8 @@
         <PackageReference Include="Ninject.Extensions.Conventions" Version="3.3.0" />
         <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.1.0" />
         <PackageReference Include="RawInput.Sharp" Version="0.0.4" />
-        <PackageReference Include="RGB.NET.Core" Version="1.0.0-prerelease1" />
-        <PackageReference Include="RGB.NET.Layout" Version="1.0.0-prerelease1" />
+        <PackageReference Include="RGB.NET.Core" Version="1.0.0-prerelease7" />
+        <PackageReference Include="RGB.NET.Layout" Version="1.0.0-prerelease7" />
         <PackageReference Include="Serilog" Version="2.10.0" />
         <PackageReference Include="SkiaSharp.Views.WPF" Version="2.80.3" />
         <PackageReference Include="SkiaSharp.Vulkan.SharpVk" Version="2.80.3" />
