@@ -213,7 +213,8 @@ namespace Artemis.UI.Screens.Settings.Device
                 Device.RgbDevice.DeviceInfo.Manufacturer,
                 Device.DeviceType.ToString()
             );
-            string filePath = Path.Combine(directory, Device.GetLayoutFileName());
+            
+            string filePath = Path.Combine(directory, Device.DeviceProvider.GetDeviceLayoutName(Device));
             Core.Utilities.CreateAccessibleDirectory(directory);
 
             // XML
