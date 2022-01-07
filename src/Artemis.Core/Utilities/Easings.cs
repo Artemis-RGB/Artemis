@@ -54,6 +54,7 @@ namespace Artemis.Core
                 case Functions.BounceEaseIn: return BounceEaseIn(p);
                 case Functions.BounceEaseOut: return BounceEaseOut(p);
                 case Functions.BounceEaseInOut: return BounceEaseInOut(p);
+                case Functions.Step: return Step (p);
             }
         }
 
@@ -359,6 +360,13 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        ///     An snappy animation that moves instantly to the next destination on the next keyframe
+        /// </summary>
+        public static double Step (double p) {
+            return Math.Floor (p);
+        }
+
+        /// <summary>
         ///     Easing Functions enumeration
         /// </summary>
         public enum Functions
@@ -393,7 +401,8 @@ namespace Artemis.Core
             BackEaseInOut,
             BounceEaseIn,
             BounceEaseOut,
-            BounceEaseInOut
+            BounceEaseInOut,
+            Step
         }
     }
 }

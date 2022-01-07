@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Ninject;
 using RGB.NET.Core;
 using Serilog;
@@ -75,7 +76,7 @@ namespace Artemis.Core.DeviceProviders
                 layoutDir,
                 device.RgbDevice.DeviceInfo.Manufacturer,
                 device.DeviceType.ToString(),
-                device.GetLayoutFileName()
+                GetDeviceLayoutName(device)
             );
             return new ArtemisLayout(filePath, LayoutSource.Plugin);
         }
@@ -92,7 +93,7 @@ namespace Artemis.Core.DeviceProviders
                 layoutDir,
                 device.RgbDevice.DeviceInfo.Manufacturer,
                 device.DeviceType.ToString(),
-                device.GetLayoutFileName()
+                GetDeviceLayoutName(device)
             );
             return new ArtemisLayout(filePath, LayoutSource.User);
         }
@@ -107,6 +108,21 @@ namespace Artemis.Core.DeviceProviders
         public virtual string GetLogicalLayout(IKeyboard keyboard)
         {
             throw new NotImplementedException("Device provider does not support detecting logical layouts (don't call base.GetLogicalLayout())");
+        }
+
+        /// <summary>
+        /// Called when determining which file name to use when loading the layout of the specified <paramref name="device"></paramref>.
+        /// </summary>
+        /// <param name="device">The device to determine the layout file name for.</param>
+        /// <returns>A file name, including an extension</returns>
+        public virtual string GetDeviceLayoutName(ArtemisDevice device)
+        {
+            // Take out invalid file name chars, may not be perfect but neither are you
+            string fileName = Path.GetInvalidFileNameChars().Aggregate(device.RgbDevice.DeviceInfo.Model, (current, c) => current.Replace(c, '-'));
+            if (device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard)
+                fileName = $"{fileName}-{device.PhysicalLayout.ToString().ToUpper()}";
+
+            return fileName + ".xml";
         }
     }
 }

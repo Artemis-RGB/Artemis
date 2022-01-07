@@ -349,24 +349,7 @@ namespace Artemis.Core
                 return mappedLed;
             return artemisLed;
         }
-
-        /// <summary>
-        ///     Generates the default layout file name of the device
-        /// </summary>
-        /// <param name="includeExtension">If true, the .xml extension is added to the file name</param>
-        /// <returns>The resulting file name e.g. CORSAIR GLAIVE.xml or K95 RGB-ISO.xml</returns>
-        public string GetLayoutFileName(bool includeExtension = true)
-        {
-            // Take out invalid file name chars, may not be perfect but neither are you
-            string fileName = System.IO.Path.GetInvalidFileNameChars().Aggregate(RgbDevice.DeviceInfo.Model, (current, c) => current.Replace(c, '-'));
-            if (RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard)
-                fileName = $"{fileName}-{PhysicalLayout.ToString().ToUpper()}";
-            if (includeExtension)
-                fileName = $"{fileName}.xml";
-
-            return fileName;
-        }
-
+        
         /// <summary>
         ///     Occurs when the underlying RGB.NET device was updated
         /// </summary>
