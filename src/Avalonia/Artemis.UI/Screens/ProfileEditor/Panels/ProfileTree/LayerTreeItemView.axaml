@@ -11,10 +11,11 @@
                 IsVisible="{Binding ProfileElement.BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
                 Classes="icon-button icon-button-small"
                 Foreground="#E74C4C"
+                Margin="0 0 5 0"
                 Command="{Binding ShowBrokenStateExceptions}">
             <avalonia:MaterialIcon Kind="AlertCircle" />
         </Button>
-        <avalonia:MaterialIcon Grid.Column="1" Kind="{Binding Layer.LayerBrush.Descriptor.Icon}" Margin="5 0" />
+        <avalonia:MaterialIcon Grid.Column="1" Kind="{Binding Layer.LayerBrush.Descriptor.Icon}" Margin="0 0 5 0" />
         <TextBlock Grid.Column="2" Text="{Binding Layer.Name}" VerticalAlignment="Center" />
         <ToggleButton Grid.Column="3"
                       Classes="icon-button icon-button-small"

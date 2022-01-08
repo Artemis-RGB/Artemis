@@ -26,10 +26,10 @@
                 Classes.selection-border-selected="{Binding Highlighted}"
                 BorderThickness="1">
             <Border.BorderBrush>
-				<SolidColorBrush Color="{DynamicResource SystemAccentColor}"></SolidColorBrush>
+				<SolidColorBrush Color="{DynamicResource SystemAccentColorLight2}"></SolidColorBrush>
 			</Border.BorderBrush>
             <Border.Background>
-                <SolidColorBrush Color="{DynamicResource SystemAccentColor}" Opacity="0.2"></SolidColorBrush>
+                <SolidColorBrush Color="{DynamicResource SystemAccentColorLight2}" Opacity="0.2"></SolidColorBrush>
 			</Border.Background>
         </Border>
     </Grid>

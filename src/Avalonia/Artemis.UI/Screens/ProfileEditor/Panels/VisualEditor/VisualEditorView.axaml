@@ -7,35 +7,50 @@
              xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.VisualEditor.VisualEditorView">
-    <paz:ZoomBorder Name="ZoomBorder"
-                    Stretch="None"
-                    ZoomSpeed="1.2"
-                    ClipToBounds="True"
-                    Focusable="True"
-                    VerticalAlignment="Stretch"
-                    HorizontalAlignment="Stretch"
-                    Background="{DynamicResource LargeCheckerboardBrush}"
-                    ZoomChanged="ZoomBorder_OnZoomChanged">
-        <Grid Name="ContainerGrid"
-              Background="Transparent">
-            <ItemsControl Items="{Binding Devices}" ClipToBounds="False">
-                <ItemsControl.Styles>
-                    <Style Selector="ContentPresenter">
-                        <Setter Property="Canvas.Left" Value="{Binding X}" />
-                        <Setter Property="Canvas.Top" Value="{Binding Y}" />
-                    </Style>
-                </ItemsControl.Styles>
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="core:ArtemisDevice">
-                        <controls:DeviceVisualizer Device="{Binding}" ShowColors="True" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </Grid>
-    </paz:ZoomBorder>
+    <Grid>
+        <paz:ZoomBorder Name="ZoomBorder"
+                        Stretch="None"
+                        ClipToBounds="True"
+                        Focusable="True"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        Background="{DynamicResource LargeCheckerboardBrush}"
+                        ZoomChanged="ZoomBorder_OnZoomChanged">
+            <Grid Name="ContainerGrid"
+                  Background="Transparent">
+                <Grid.Transitions>
+                    <Transitions>
+                        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+                    </Transitions>
+                </Grid.Transitions>
+                <ItemsControl Items="{Binding Devices}" ClipToBounds="False">
+                    <ItemsControl.Styles>
+                        <Style Selector="ContentPresenter">
+                            <Setter Property="Canvas.Left" Value="{Binding X}" />
+                            <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                        </Style>
+                    </ItemsControl.Styles>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="core:ArtemisDevice">
+                            <controls:DeviceVisualizer Device="{Binding}" ShowColors="True" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </paz:ZoomBorder>
+        <Border CornerRadius="0 0 8 0" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <Border.Background>
+                <SolidColorBrush Color="{DynamicResource CardStrokeColorDefaultSolid}" Opacity="0.65"></SolidColorBrush>
+            </Border.Background>
+            <StackPanel Orientation="Horizontal" Margin="8">
+                <controls:ProfileConfigurationIcon ConfigurationIcon="{Binding ProfileConfiguration.Icon}" Margin="0 0 5 0"></controls:ProfileConfigurationIcon>
+                <TextBlock  Text="{Binding ProfileConfiguration.Name}"/>
+            </StackPanel>
+        </Border>
+    </Grid>
 </UserControl>

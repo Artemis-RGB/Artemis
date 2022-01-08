@@ -201,7 +201,12 @@
         </member>
         <member name="F:Artemis.UI.Shared.Controls.SelectionRectangle.BorderThicknessProperty">
             <summary>
-                Defines the <see cref="P:Artemis.UI.Shared.Controls.SelectionRectangle.BorderBrush" /> property.
+                Defines the <see cref="P:Artemis.UI.Shared.Controls.SelectionRectangle.BorderThickness" /> property.
+            </summary>
+        </member>
+        <member name="F:Artemis.UI.Shared.Controls.SelectionRectangle.BorderRadiusProperty">
+            <summary>
+                Defines the <see cref="P:Artemis.UI.Shared.Controls.SelectionRectangle.BorderRadius" /> property.
             </summary>
         </member>
         <member name="F:Artemis.UI.Shared.Controls.SelectionRectangle.InputElementProperty">
@@ -225,6 +230,11 @@
         <member name="P:Artemis.UI.Shared.Controls.SelectionRectangle.BorderThickness">
             <summary>
                 Gets or sets the width of the control's border
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.Controls.SelectionRectangle.BorderRadius">
+            <summary>
+                Gets or sets the radius of the control's border
             </summary>
         </member>
         <member name="P:Artemis.UI.Shared.Controls.SelectionRectangle.InputElement">

@@ -26,10 +26,16 @@ namespace Artemis.UI.Shared.Controls
             AvaloniaProperty.Register<SelectionRectangle, IBrush>(nameof(BorderBrush), new SolidColorBrush(Colors.CadetBlue));
 
         /// <summary>
-        ///     Defines the <see cref="BorderBrush" /> property.
+        ///     Defines the <see cref="BorderThickness" /> property.
         /// </summary>
         public static readonly StyledProperty<double> BorderThicknessProperty =
             AvaloniaProperty.Register<SelectionRectangle, double>(nameof(BorderThickness), 1);
+
+        /// <summary>
+        ///     Defines the <see cref="BorderRadius" /> property.
+        /// </summary>
+        public static readonly StyledProperty<double> BorderRadiusProperty =
+            AvaloniaProperty.Register<SelectionRectangle, double>(nameof(BorderRadius), 0);
 
         /// <summary>
         ///     Defines the <see cref="InputElement" /> property.
@@ -73,6 +79,15 @@ namespace Artemis.UI.Shared.Controls
         {
             get => GetValue(BorderThicknessProperty);
             set => SetValue(BorderThicknessProperty, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets the radius of the control's border
+        /// </summary>
+        public double BorderRadius
+        {
+            get => GetValue(BorderRadiusProperty);
+            set => SetValue(BorderRadiusProperty, value);
         }
 
         /// <summary>
@@ -181,7 +196,7 @@ namespace Artemis.UI.Shared.Controls
         public override void Render(DrawingContext drawingContext)
         {
             if (_displayRect != null)
-                drawingContext.DrawRectangle(Background, new Pen(BorderBrush, BorderThickness), _displayRect.Value, 4, 4);
+                drawingContext.DrawRectangle(Background, new Pen(BorderBrush, BorderThickness), _displayRect.Value, BorderRadius, BorderRadius);
         }
 
         /// <inheritdoc />

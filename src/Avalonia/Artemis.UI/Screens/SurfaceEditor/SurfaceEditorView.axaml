@@ -11,7 +11,6 @@
     <Border Classes="router-container">
         <paz:ZoomBorder Name="ZoomBorder"
                         Stretch="None"
-                        ZoomSpeed="1.2"
                         ClipToBounds="True"
                         Focusable="True"
                         VerticalAlignment="Stretch"
@@ -22,6 +21,11 @@
                         PointerMoved="ZoomBorder_OnPointerMoved"
                         PointerReleased="ZoomBorder_OnPointerReleased">
             <Grid Name="ContainerGrid" Background="Transparent">
+                <Grid.Transitions>
+                    <Transitions>
+                        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+                    </Transitions>
+                </Grid.Transitions>
                 <ItemsControl Items="{Binding SurfaceDeviceViewModels}" ClipToBounds="False">
                     <ItemsControl.Styles>
                         <Style Selector="ContentPresenter">
@@ -89,9 +93,10 @@
                 <controls:SelectionRectangle Name="SelectionRectangle"
                                              InputElement="{Binding #ZoomBorder}"
                                              SelectionUpdated="SelectionRectangle_OnSelectionUpdated"
-                                             BorderBrush="{DynamicResource SystemAccentColor}">
+                                             BorderBrush="{DynamicResource SystemAccentColor}"
+                                             BorderRadius="8">
                     <controls:SelectionRectangle.Background>
-                        <SolidColorBrush Color="{DynamicResource SystemAccentColor}" Opacity="0.2"></SolidColorBrush>
+                        <SolidColorBrush Color="{DynamicResource SystemAccentColorLight1}" Opacity="0.2"></SolidColorBrush>
                     </controls:SelectionRectangle.Background>
                 </controls:SelectionRectangle>
 
@@ -101,7 +106,7 @@
                         Width="{Binding MaxTextureSize}"
                         Height="{Binding MaxTextureSize}"
                         BorderThickness="2"
-                        BorderBrush="{DynamicResource SystemAccentColorDark3}"
+                        BorderBrush="{DynamicResource SystemAccentColorLight3}"
                         CornerRadius="8" />
             </Grid>
         </paz:ZoomBorder>
