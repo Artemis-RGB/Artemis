@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    ".NETCoreApp,Version=v5.0": {
+    "net6.0": {
       "Avalonia": {
         "type": "Direct",
         "requested": "[0.10.11, )",

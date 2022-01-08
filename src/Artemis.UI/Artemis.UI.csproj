@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net5.0-windows10.0.17763.0</TargetFramework>
+        <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
         <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <AssemblyTitle>Artemis</AssemblyTitle>
@@ -10,7 +10,7 @@
         <Description>Provides advanced unified lighting across many different brands RGB peripherals</Description>
         <Copyright>Copyright © Robert Beekman - 2021</Copyright>
         <FileVersion>2.0.0.0</FileVersion>
-        <OutputPath>bin\net5.0-windows\</OutputPath>
+        <OutputPath>bin\net6.0-windows\</OutputPath>
         <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
         <UseWPF>true</UseWPF>
         <Platforms>x64</Platforms>
