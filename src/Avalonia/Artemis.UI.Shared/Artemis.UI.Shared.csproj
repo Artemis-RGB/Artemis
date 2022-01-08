@@ -39,12 +39,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Artemis.Core\Artemis.Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Material.Icons.Avalonia">
-      <HintPath>..\..\..\..\Users\Robert\.nuget\packages\material.icons.avalonia\1.0.2\lib\netstandard2.0\Material.Icons.Avalonia.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
+	<ItemGroup>
     <Compile Update="Controls\HotkeyBox.axaml.cs">
       <DependentUpon>HotkeyBox.axaml</DependentUpon>
     </Compile>
