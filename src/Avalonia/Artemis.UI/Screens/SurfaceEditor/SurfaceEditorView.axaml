@@ -88,7 +88,12 @@
 
                 <controls:SelectionRectangle Name="SelectionRectangle"
                                              InputElement="{Binding #ZoomBorder}"
-                                             SelectionUpdated="{Binding UpdateSelection}" />
+                                             SelectionUpdated="SelectionRectangle_OnSelectionUpdated"
+                                             BorderBrush="{DynamicResource SystemAccentColor}">
+                    <controls:SelectionRectangle.Background>
+                        <SolidColorBrush Color="{DynamicResource SystemAccentColor}" Opacity="0.2"></SolidColorBrush>
+                    </controls:SelectionRectangle.Background>
+                </controls:SelectionRectangle>
 
                 <Border Name="SurfaceBounds"
                         VerticalAlignment="Top"

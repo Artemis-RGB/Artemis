@@ -16,7 +16,6 @@ namespace Artemis.UI.Screens.SurfaceEditor
 {
     public class SurfaceEditorViewModel : MainScreenViewModel
     {
-        private readonly IInputService _inputService;
         private readonly IRgbService _rgbService;
         private readonly ISettingsService _settingsService;
         private bool _saving;
@@ -24,22 +23,18 @@ namespace Artemis.UI.Screens.SurfaceEditor
         public SurfaceEditorViewModel(IScreen hostScreen,
             IRgbService rgbService,
             SurfaceVmFactory surfaceVmFactory,
-            IInputService inputService,
             ISettingsService settingsService) : base(hostScreen, "surface-editor")
         {
             _rgbService = rgbService;
-            _inputService = inputService;
             _settingsService = settingsService;
             DisplayName = "Surface Editor";
-            SurfaceDeviceViewModels = new ObservableCollection<SurfaceDeviceViewModel>(rgbService.Devices.Select(surfaceVmFactory.SurfaceDeviceViewModel));
-            ListDeviceViewModels = new ObservableCollection<ListDeviceViewModel>(rgbService.Devices.Select(surfaceVmFactory.ListDeviceViewModel));
+            SurfaceDeviceViewModels = new ObservableCollection<SurfaceDeviceViewModel>(rgbService.Devices.OrderBy(d => d.ZIndex).Select(surfaceVmFactory.SurfaceDeviceViewModel));
+            ListDeviceViewModels = new ObservableCollection<ListDeviceViewModel>(rgbService.Devices.OrderBy(d => d.ZIndex).Select(surfaceVmFactory.ListDeviceViewModel));
 
             BringToFront = ReactiveCommand.Create<ArtemisDevice>(ExecuteBringToFront);
             BringForward = ReactiveCommand.Create<ArtemisDevice>(ExecuteBringForward);
             SendToBack = ReactiveCommand.Create<ArtemisDevice>(ExecuteSendToBack);
             SendBackward = ReactiveCommand.Create<ArtemisDevice>(ExecuteSendBackward);
-
-            UpdateSelection = ReactiveCommand.Create<Rect>(ExecuteUpdateSelection);
         }
 
         public ObservableCollection<SurfaceDeviceViewModel> SurfaceDeviceViewModels { get; }
@@ -49,8 +44,6 @@ namespace Artemis.UI.Screens.SurfaceEditor
         public ReactiveCommand<ArtemisDevice, Unit> BringForward { get; }
         public ReactiveCommand<ArtemisDevice, Unit> SendToBack { get; }
         public ReactiveCommand<ArtemisDevice, Unit> SendBackward { get; }
-
-        public ReactiveCommand<Rect, Unit> UpdateSelection { get; }
 
         public double MaxTextureSize => 4096 / _settingsService.GetSetting("Core.RenderScale", 0.25).Value;
 
@@ -62,6 +55,15 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         public void StartMouseDrag(Point mousePosition)
         {
+            SurfaceDeviceViewModel? startedOn = GetViewModelAtPoint(mousePosition);
+            if (startedOn != null && startedOn.SelectionStatus != SelectionStatus.Selected)
+            {
+                startedOn.SelectionStatus = SelectionStatus.Selected;
+                foreach (SurfaceDeviceViewModel device in SurfaceDeviceViewModels.Where(vm => vm != startedOn))
+                    device.SelectionStatus = SelectionStatus.None;
+
+            }
+
             foreach (SurfaceDeviceViewModel surfaceDeviceViewModel in SurfaceDeviceViewModels)
                 surfaceDeviceViewModel.StartMouseDrag(mousePosition);
         }
@@ -80,7 +82,6 @@ namespace Artemis.UI.Screens.SurfaceEditor
             if (_saving)
                 return;
 
-            // TODO: Figure out why the UI still locks up here
             Task.Run(() =>
             {
                 try
@@ -95,14 +96,35 @@ namespace Artemis.UI.Screens.SurfaceEditor
             });
         }
 
-        private void ExecuteUpdateSelection(Rect rect)
+        public void SelectFirstDeviceAtPoint(Point point, bool expand)
+        {
+            SurfaceDeviceViewModel? toSelect = GetViewModelAtPoint(point);
+            if (toSelect != null)
+                toSelect.SelectionStatus = SelectionStatus.Selected;
+
+            if (!expand)
+            {
+                foreach (SurfaceDeviceViewModel device in SurfaceDeviceViewModels.Where(vm => vm != toSelect))
+                    device.SelectionStatus = SelectionStatus.None;
+            }
+
+            ApplySurfaceSelection();
+        }
+
+        private SurfaceDeviceViewModel? GetViewModelAtPoint(Point point)
+        {
+            SKPoint hitTestPoint = point.ToSKPoint();
+            return SurfaceDeviceViewModels.OrderByDescending(vm => vm.Device.ZIndex).FirstOrDefault(d => d.Device.Rectangle.Contains(hitTestPoint));
+        }
+
+        public void UpdateSelection(Rect rect, bool expand)
         {
             SKRect hitTestRect = rect.ToSKRect();
             foreach (SurfaceDeviceViewModel device in SurfaceDeviceViewModels)
             {
                 if (device.Device.Rectangle.IntersectsWith(hitTestRect))
                     device.SelectionStatus = SelectionStatus.Selected;
-                else if (!_inputService.IsKeyDown(KeyboardKey.LeftShift) && !_inputService.IsKeyDown(KeyboardKey.RightShift))
+                else if (!expand)
                     device.SelectionStatus = SelectionStatus.None;
             }
 

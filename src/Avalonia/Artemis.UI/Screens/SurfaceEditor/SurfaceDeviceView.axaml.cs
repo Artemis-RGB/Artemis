@@ -11,13 +11,6 @@ namespace Artemis.UI.Screens.SurfaceEditor
             InitializeComponent();
         }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
-
-        #region Overrides of InputElement
-
         /// <inheritdoc />
         protected override void OnPointerEnter(PointerEventArgs e)
         {
@@ -42,15 +35,9 @@ namespace Artemis.UI.Screens.SurfaceEditor
             base.OnPointerLeave(e);
         }
 
-        /// <inheritdoc />
-        protected override void OnPointerPressed(PointerPressedEventArgs e)
+        private void InitializeComponent()
         {
-            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed && ViewModel != null) 
-                ViewModel.SelectionStatus = SelectionStatus.Selected;
-
-            base.OnPointerPressed(e);
+            AvaloniaXamlLoader.Load(this);
         }
-
-        #endregion
     }
 }

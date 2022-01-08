@@ -38,10 +38,12 @@
       },
       "SkiaSharp": {
         "type": "Direct",
-        "requested": "[2.80.3, )",
-        "resolved": "2.80.3",
-        "contentHash": "qX6tGNP3+MXNYe2pKm0PCRiJ/cx+LTeLaggwZifB7sUMXhECfKKKHJq45VqZKt37xQegnCCdf1jHXwmHeJQs5Q==",
+        "requested": "[2.88.0-preview.178, )",
+        "resolved": "2.88.0-preview.178",
+        "contentHash": "arzd/44ykiBPqGWUuQqNTuJ49rhsXOg4Zw1p2Mm3B/5PZzV1wcTH4V+J+4ra8RS0KbIoy4KWeNF+zHAifNsiRg==",
         "dependencies": {
+          "SkiaSharp.NativeAssets.Win32": "2.88.0-preview.178",
+          "SkiaSharp.NativeAssets.macOS": "2.88.0-preview.178",
           "System.Memory": "4.5.3"
         }
       },
@@ -248,23 +250,23 @@
       },
       "RGB.NET.Core": {
         "type": "Transitive",
-        "resolved": "1.0.0-prerelease1",
-        "contentHash": "aaCPk++kr1TaV/qWYeol5975IN3XifDuuQ9wrCD+nw1cy05BMdGVhuQ72ITb0YRBedssd/btkM51ZABsBd8CEQ=="
+        "resolved": "1.0.0-prerelease7",
+        "contentHash": "IIja5sC4QZ5pbSNckRCG7TlY4U6j/dRbrl4e2FZqsTGgsevaVB3IqonUQLFY1GGst4xNSl2oh0A23coXQxXGbQ=="
       },
       "RGB.NET.Layout": {
         "type": "Transitive",
-        "resolved": "1.0.0-prerelease1",
-        "contentHash": "nbaHbcY59tzFSeTDbImhrcR1ZyJpoC0x6WawXdtGXO7x3F91ajM7kM5SJwi/5jHdD61vGV0ARuznmR8ErAWegQ==",
+        "resolved": "1.0.0-prerelease7",
+        "contentHash": "S0kfWVa8EfMOAl2WPHsq98dwaO+SNz9TWr1AtMkdo8aZuYIVhaJ1c+mSAMMnH1V+mSbxDWPHWkNzi9ITszJucA==",
         "dependencies": {
-          "RGB.NET.Core": "1.0.0-prerelease1"
+          "RGB.NET.Core": "1.0.0-prerelease7"
         }
       },
       "RGB.NET.Presets": {
         "type": "Transitive",
-        "resolved": "1.0.0-prerelease1",
-        "contentHash": "XU8XeI0fQF26fd0pQHgoe9RaROuvENmZlX/1QyyaN9P3j0LtYmy6ycWZbsXp8byLT0UcGbS+odMiQQAnK+kxgg==",
+        "resolved": "1.0.0-prerelease7",
+        "contentHash": "NgShvOPQM0miOsdqMKjkNunngJUZMwr8KR8ME2/Ksir7wgIQfgJj1YwZy8aIj+ar7fDo6VZJZenAshs/Ul+04A==",
         "dependencies": {
-          "RGB.NET.Core": "1.0.0-prerelease1"
+          "RGB.NET.Core": "1.0.0-prerelease7"
         }
       },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl": {
@@ -407,6 +409,16 @@
         "type": "Transitive",
         "resolved": "1.7.5",
         "contentHash": "v9U5sSMGFE2zCMbh42BYHkaRYkmwwhsKMGcNRdHAKqD1ryOf4mhqnJR0o07hwg5KIEmCI9bDdrgYSmiZWlL+eA=="
+      },
+      "SkiaSharp.NativeAssets.macOS": {
+        "type": "Transitive",
+        "resolved": "2.88.0-preview.178",
+        "contentHash": "+Hs3ku4buimzBHuc8FoyjOcE6eU5r98zcG7WH/s+doYQ1bFIjk+dKfqthgZ2o0NRAv8D3esq9rWrZTj12q+m1w=="
+      },
+      "SkiaSharp.NativeAssets.Win32": {
+        "type": "Transitive",
+        "resolved": "2.88.0-preview.178",
+        "contentHash": "9og9GCkdZc/NYrmbsRzohmIBRlS1oFegJiBMsoG93qYjhh2o6q5QBYxd61zw5Mgeytl3qj4YM+6BNIF4tcF+6w=="
       },
       "SkiaSharp.Views.Desktop.Common": {
         "type": "Transitive",
@@ -1330,14 +1342,14 @@
           "Ninject": "3.3.4",
           "Ninject.Extensions.ChildKernel": "3.3.0",
           "Ninject.Extensions.Conventions": "3.3.0",
-          "RGB.NET.Core": "1.0.0-prerelease1",
-          "RGB.NET.Layout": "1.0.0-prerelease1",
-          "RGB.NET.Presets": "1.0.0-prerelease1",
+          "RGB.NET.Core": "1.0.0-prerelease7",
+          "RGB.NET.Layout": "1.0.0-prerelease7",
+          "RGB.NET.Presets": "1.0.0-prerelease7",
           "Serilog": "2.10.0",
           "Serilog.Sinks.Console": "4.0.0",
           "Serilog.Sinks.Debug": "2.0.0",
           "Serilog.Sinks.File": "5.0.0",
-          "SkiaSharp": "2.80.3",
+          "SkiaSharp": "2.88.0-preview.178",
           "System.Buffers": "4.5.1",
           "System.IO.FileSystem.AccessControl": "5.0.0",
           "System.Numerics.Vectors": "4.5.0",
@@ -1362,9 +1374,9 @@
           "Microsoft.Xaml.Behaviors.Wpf": "1.1.31",
           "Ninject": "3.3.4",
           "Ninject.Extensions.Conventions": "3.3.0",
-          "RGB.NET.Core": "1.0.0-prerelease1",
+          "RGB.NET.Core": "1.0.0-prerelease7",
           "SharpVectors.Reloaded": "1.7.5",
-          "SkiaSharp": "2.80.3",
+          "SkiaSharp": "2.88.0-preview.178",
           "SkiaSharp.Views.WPF": "2.80.3",
           "Stylet": "1.3.6",
           "System.Buffers": "4.5.1",

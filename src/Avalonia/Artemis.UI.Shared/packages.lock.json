@@ -112,9 +112,20 @@
       },
       "RGB.NET.Core": {
         "type": "Direct",
-        "requested": "[1.0.0-prerelease1, )",
-        "resolved": "1.0.0-prerelease1",
-        "contentHash": "aaCPk++kr1TaV/qWYeol5975IN3XifDuuQ9wrCD+nw1cy05BMdGVhuQ72ITb0YRBedssd/btkM51ZABsBd8CEQ=="
+        "requested": "[1.0.0-prerelease7, )",
+        "resolved": "1.0.0-prerelease7",
+        "contentHash": "IIja5sC4QZ5pbSNckRCG7TlY4U6j/dRbrl4e2FZqsTGgsevaVB3IqonUQLFY1GGst4xNSl2oh0A23coXQxXGbQ=="
+      },
+      "SkiaSharp": {
+        "type": "Direct",
+        "requested": "[2.88.0-preview.178, )",
+        "resolved": "2.88.0-preview.178",
+        "contentHash": "arzd/44ykiBPqGWUuQqNTuJ49rhsXOg4Zw1p2Mm3B/5PZzV1wcTH4V+J+4ra8RS0KbIoy4KWeNF+zHAifNsiRg==",
+        "dependencies": {
+          "SkiaSharp.NativeAssets.Win32": "2.88.0-preview.178",
+          "SkiaSharp.NativeAssets.macOS": "2.88.0-preview.178",
+          "System.Memory": "4.5.3"
+        }
       },
       "Avalonia.Angle.Windows.Natives": {
         "type": "Transitive",
@@ -522,18 +533,18 @@
       },
       "RGB.NET.Layout": {
         "type": "Transitive",
-        "resolved": "1.0.0-prerelease1",
-        "contentHash": "nbaHbcY59tzFSeTDbImhrcR1ZyJpoC0x6WawXdtGXO7x3F91ajM7kM5SJwi/5jHdD61vGV0ARuznmR8ErAWegQ==",
+        "resolved": "1.0.0-prerelease7",
+        "contentHash": "S0kfWVa8EfMOAl2WPHsq98dwaO+SNz9TWr1AtMkdo8aZuYIVhaJ1c+mSAMMnH1V+mSbxDWPHWkNzi9ITszJucA==",
         "dependencies": {
-          "RGB.NET.Core": "1.0.0-prerelease1"
+          "RGB.NET.Core": "1.0.0-prerelease7"
         }
       },
       "RGB.NET.Presets": {
         "type": "Transitive",
-        "resolved": "1.0.0-prerelease1",
-        "contentHash": "XU8XeI0fQF26fd0pQHgoe9RaROuvENmZlX/1QyyaN9P3j0LtYmy6ycWZbsXp8byLT0UcGbS+odMiQQAnK+kxgg==",
+        "resolved": "1.0.0-prerelease7",
+        "contentHash": "NgShvOPQM0miOsdqMKjkNunngJUZMwr8KR8ME2/Ksir7wgIQfgJj1YwZy8aIj+ar7fDo6VZJZenAshs/Ul+04A==",
         "dependencies": {
-          "RGB.NET.Core": "1.0.0-prerelease1"
+          "RGB.NET.Core": "1.0.0-prerelease7"
         }
       },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl": {
@@ -676,16 +687,6 @@
         "type": "Transitive",
         "resolved": "0.5.11",
         "contentHash": "a04YHHKRK1xY8ccSgpa6HOmOw9Kuivo2b2qejp9CK00ykdCBK3Mmc+ekBx954+zPQBksN6aLhvn1SEL7QG2s8Q=="
-      },
-      "SkiaSharp": {
-        "type": "Transitive",
-        "resolved": "2.88.0-preview.178",
-        "contentHash": "arzd/44ykiBPqGWUuQqNTuJ49rhsXOg4Zw1p2Mm3B/5PZzV1wcTH4V+J+4ra8RS0KbIoy4KWeNF+zHAifNsiRg==",
-        "dependencies": {
-          "SkiaSharp.NativeAssets.Win32": "2.88.0-preview.178",
-          "SkiaSharp.NativeAssets.macOS": "2.88.0-preview.178",
-          "System.Memory": "4.5.3"
-        }
       },
       "SkiaSharp.HarfBuzz": {
         "type": "Transitive",
@@ -1685,14 +1686,14 @@
           "Ninject": "3.3.4",
           "Ninject.Extensions.ChildKernel": "3.3.0",
           "Ninject.Extensions.Conventions": "3.3.0",
-          "RGB.NET.Core": "1.0.0-prerelease1",
-          "RGB.NET.Layout": "1.0.0-prerelease1",
-          "RGB.NET.Presets": "1.0.0-prerelease1",
+          "RGB.NET.Core": "1.0.0-prerelease7",
+          "RGB.NET.Layout": "1.0.0-prerelease7",
+          "RGB.NET.Presets": "1.0.0-prerelease7",
           "Serilog": "2.10.0",
           "Serilog.Sinks.Console": "4.0.0",
           "Serilog.Sinks.Debug": "2.0.0",
           "Serilog.Sinks.File": "5.0.0",
-          "SkiaSharp": "2.80.3",
+          "SkiaSharp": "2.88.0-preview.178",
           "System.Buffers": "4.5.1",
           "System.IO.FileSystem.AccessControl": "5.0.0",
           "System.Numerics.Vectors": "4.5.0",

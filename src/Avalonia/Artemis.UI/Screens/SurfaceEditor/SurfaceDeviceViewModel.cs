@@ -99,7 +99,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 Device.Y = roundedY;
             }
         }
-
+        
         private void ExecuteIdentifyDevice(ArtemisDevice device)
         {
             _deviceService.IdentifyDevice(device);

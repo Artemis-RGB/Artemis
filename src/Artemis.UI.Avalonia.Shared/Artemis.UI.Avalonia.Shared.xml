@@ -209,16 +209,6 @@
                 Defines the <see cref="P:Artemis.UI.Shared.Controls.SelectionRectangle.InputElement" /> property.
             </summary>
         </member>
-        <member name="F:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionUpdatedProperty">
-            <summary>
-                Defines the <see cref="P:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionUpdated" /> property.
-            </summary>
-        </member>
-        <member name="F:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionFinishedProperty">
-            <summary>
-                Defines the <see cref="P:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionFinished" /> property.
-            </summary>
-        </member>
         <member name="M:Artemis.UI.Shared.Controls.SelectionRectangle.#ctor">
             <inheritdoc />
         </member>
@@ -239,18 +229,30 @@
         </member>
         <member name="P:Artemis.UI.Shared.Controls.SelectionRectangle.InputElement">
             <summary>
-            Gets or sets the element that captures input for the selection rectangle.
+                Gets or sets the element that captures input for the selection rectangle.
             </summary>
         </member>
-        <member name="P:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionUpdated">
+        <member name="E:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionUpdated">
             <summary>
-            Gets or sets the command to execute when the selection has been updated.
+                Occurs when the selection rect is being updated, indicating the user is dragging.
             </summary>
         </member>
-        <member name="P:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionFinished">
+        <member name="E:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionFinished">
             <summary>
-            Gets or sets the command to execute when the selection has finished.
+                Occurs when the selection has finished, indicating the user stopped dragging.
             </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Controls.SelectionRectangle.OnSelectionUpdated(Artemis.UI.Shared.Events.SelectionRectangleEventArgs)">
+            <summary>
+                Invokes the <see cref="E:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionUpdated" /> event
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:Artemis.UI.Shared.Controls.SelectionRectangle.OnSelectionFinished(Artemis.UI.Shared.Events.SelectionRectangleEventArgs)">
+            <summary>
+                Invokes the <see cref="E:Artemis.UI.Shared.Controls.SelectionRectangle.SelectionFinished" /> event
+            </summary>
+            <param name="e"></param>
         </member>
         <member name="M:Artemis.UI.Shared.Controls.SelectionRectangle.Render(Avalonia.Media.DrawingContext)">
             <inheritdoc />
@@ -781,6 +783,26 @@
         <member name="P:Artemis.UI.Shared.Events.RenderProfileElementEventArgs.PreviousRenderProfileElement">
             <summary>
                 If applicable, the previous active profile element before the event was raised
+            </summary>
+        </member>
+        <member name="T:Artemis.UI.Shared.Events.SelectionRectangleEventArgs">
+            <summary>
+                Provides data on selection events raised by the <see cref="T:Artemis.UI.Shared.Controls.SelectionRectangle" />.
+            </summary>
+        </member>
+        <member name="M:Artemis.UI.Shared.Events.SelectionRectangleEventArgs.#ctor(Avalonia.Rect,Avalonia.Input.KeyModifiers)">
+            <summary>
+                Creates a new instance of the <see cref="T:Artemis.UI.Shared.Events.SelectionRectangleEventArgs" /> class.
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.Events.SelectionRectangleEventArgs.Rectangle">
+            <summary>
+                Gets the rectangle that was selected when the event occurred.
+            </summary>
+        </member>
+        <member name="P:Artemis.UI.Shared.Events.SelectionRectangleEventArgs.KeyModifiers">
+            <summary>
+                Gets the key modifiers that where pressed when the event occurred.
             </summary>
         </member>
         <member name="T:Artemis.UI.Shared.ArtemisSharedUIException">

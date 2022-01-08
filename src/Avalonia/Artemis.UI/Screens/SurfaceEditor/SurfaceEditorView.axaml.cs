@@ -1,4 +1,6 @@
+using System.Reactive;
 using Artemis.UI.Shared.Controls;
+using Artemis.UI.Shared.Events;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
@@ -15,6 +17,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         private readonly SelectionRectangle _selectionRectangle;
         private readonly Border _surfaceBounds;
         private readonly ZoomBorder _zoomBorder;
+        private bool _dragging;
 
         public SurfaceEditorView()
         {
@@ -52,15 +55,12 @@ namespace Artemis.UI.Screens.SurfaceEditor
             if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
                 return;
 
+            _dragging = false;
+
             if (e.Source is Border {Name: "SurfaceDeviceBorder"})
             {
                 e.Pointer.Capture(_zoomBorder);
                 e.Handled = true;
-                ViewModel?.StartMouseDrag(e.GetPosition(_containerGrid));
-            }
-            else
-            {
-                ViewModel?.ClearSelection();
             }
         }
 
@@ -70,7 +70,13 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 return;
 
             if (ReferenceEquals(e.Pointer.Captured, sender))
+            {
+                if (!_dragging)
+                    ViewModel?.StartMouseDrag(e.GetPosition(_containerGrid));
                 ViewModel?.UpdateMouseDrag(e.GetPosition(_containerGrid));
+            }
+
+            _dragging = true;
         }
 
         private void ZoomBorder_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
@@ -78,11 +84,23 @@ namespace Artemis.UI.Screens.SurfaceEditor
             if (e.InitialPressMouseButton != MouseButton.Left)
                 return;
 
+            // If the mouse didn't move, apply selection
+            if (!_dragging)
+            {
+                ViewModel?.SelectFirstDeviceAtPoint(e.GetPosition(_containerGrid), e.KeyModifiers.HasFlag(KeyModifiers.Shift));
+                return;
+            }
+
             if (ReferenceEquals(e.Pointer.Captured, sender))
             {
                 ViewModel?.StopMouseDrag(e.GetPosition(_containerGrid));
                 e.Pointer.Capture(null);
             }
+        }
+
+        private void SelectionRectangle_OnSelectionUpdated(object? sender, SelectionRectangleEventArgs e)
+        {
+            ViewModel?.UpdateSelection(e.Rectangle, e.KeyModifiers.HasFlag(KeyModifiers.Shift));
         }
 
         private void UpdateZoomBorderBackground()
