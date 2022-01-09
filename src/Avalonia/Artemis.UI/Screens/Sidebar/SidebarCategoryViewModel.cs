@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Services.ProfileEditor;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services.ProfileEditor;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar

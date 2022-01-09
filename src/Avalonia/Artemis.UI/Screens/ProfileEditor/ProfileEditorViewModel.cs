@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Reactive.Disposables;
 using Artemis.Core;
-using Artemis.UI.Screens.ProfileEditor.Panels.MenuBar;
+using Artemis.UI.Screens.ProfileEditor.MenuBar;
+using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.VisualEditor;
-using Artemis.UI.Services.ProfileEditor;
+using Artemis.UI.Shared.Services.ProfileEditor;
 using Ninject;
 using ReactiveUI;
 
@@ -12,8 +13,8 @@ namespace Artemis.UI.Screens.ProfileEditor
 {
     public class ProfileEditorViewModel : MainScreenViewModel
     {
-        private ProfileConfiguration? _profileConfiguration;
-        private ProfileEditorHistory? _history;
+        private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
+        private ObservableAsPropertyHelper<ProfileEditorHistory?>? _history;
 
         /// <inheritdoc />
         public ProfileEditorViewModel(IScreen hostScreen,
@@ -22,37 +23,30 @@ namespace Artemis.UI.Screens.ProfileEditor
             VisualEditorViewModel visualEditorViewModel,
             ProfileTreeViewModel profileTreeViewModel,
             ProfileEditorTitleBarViewModel profileEditorTitleBarViewModel,
-            MenuBarViewModel menuBarViewModel)
+            MenuBarViewModel menuBarViewModel, 
+            ProfileElementPropertiesViewModel profileElementPropertiesViewModel)
             : base(hostScreen, "profile-editor")
         {
             VisualEditorViewModel = visualEditorViewModel;
             ProfileTreeViewModel = profileTreeViewModel;
+            ProfileElementPropertiesViewModel = profileElementPropertiesViewModel;
 
             if (OperatingSystem.IsWindows())
                 TitleBarViewModel = profileEditorTitleBarViewModel;
             else
                 MenuBarViewModel = menuBarViewModel;
 
-
-            this.WhenActivated(d => profileEditorService.ProfileConfiguration.WhereNotNull().Subscribe(p => ProfileConfiguration = p).DisposeWith(d));
-            this.WhenActivated(d => profileEditorService.History.Subscribe(history => History = history).DisposeWith(d));
+            this.WhenActivated(d => _profileConfiguration = profileEditorService.ProfileConfiguration.ToProperty(this, vm => vm.ProfileConfiguration).DisposeWith(d));
+            this.WhenActivated(d => _history = profileEditorService.History.ToProperty(this, vm => vm.History).DisposeWith(d));
         }
 
         public VisualEditorViewModel VisualEditorViewModel { get; }
         public ProfileTreeViewModel ProfileTreeViewModel { get; }
         public MenuBarViewModel? MenuBarViewModel { get; }
+        public ProfileElementPropertiesViewModel ProfileElementPropertiesViewModel { get; }
 
-        public ProfileConfiguration? ProfileConfiguration
-        {
-            get => _profileConfiguration;
-            set => this.RaiseAndSetIfChanged(ref _profileConfiguration, value);
-        }
-
-        public ProfileEditorHistory? History
-        {
-            get => _history;
-            set => this.RaiseAndSetIfChanged(ref _history, value);
-        }
+        public ProfileConfiguration? ProfileConfiguration => _profileConfiguration?.Value;
+        public ProfileEditorHistory? History => _history?.Value;
 
         public void OpenUrl(string url)
         {

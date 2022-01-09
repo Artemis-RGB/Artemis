@@ -3,8 +3,8 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Services.ProfileEditor;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services.ProfileEditor;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.UI.Shared.Services.MainWindowService
+namespace Artemis.UI.Shared.Services.MainWindow
 {
     /// <summary>
     ///     Represents a class that provides the main window, so that <see cref="IMainWindowService" /> can control the state of

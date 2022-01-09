@@ -7,7 +7,7 @@ using System.Reactive.Subjects;
 using Artemis.Core;
 using ReactiveUI;
 
-namespace Artemis.UI.Services.ProfileEditor
+namespace Artemis.UI.Shared.Services.ProfileEditor
 {
     public class ProfileEditorHistory
     {

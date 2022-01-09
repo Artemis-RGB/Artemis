@@ -1,7 +1,7 @@
 ﻿using System;
 using Artemis.UI.Shared.Services.Interfaces;
 
-namespace Artemis.UI.Shared.Services.MainWindowService
+namespace Artemis.UI.Shared.Services.MainWindow
 {
     /// <summary>
     ///     A service that can be used to manage the state of the main window.

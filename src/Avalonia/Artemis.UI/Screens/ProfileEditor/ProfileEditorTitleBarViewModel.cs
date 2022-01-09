@@ -1,4 +1,4 @@
-﻿using Artemis.UI.Screens.ProfileEditor.Panels.MenuBar;
+﻿using Artemis.UI.Screens.ProfileEditor.MenuBar;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 

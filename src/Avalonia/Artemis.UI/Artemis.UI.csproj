@@ -51,6 +51,12 @@
 	  <Compile Update="Screens\Debugger\Tabs\Settings\DebugSettingsView.axaml.cs">
 	    <DependentUpon>DebugSettingsView.axaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Screens\ProfileEditor\Panels\ProfileElementProperties\ProfileElementPropertiesView.axaml.cs">
+	    <DependentUpon>ProfileElementPropertiesView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Screens\ProfileEditor\Panels\ProfileElementProperties\Windows\BrushConfigurationWindowView.axaml.cs">
+	    <DependentUpon>BrushConfigurationWindowView.axaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Screens\Sidebar\ContentDialogs\SidebarCategoryEditView.axaml.cs">
 	    <DependentUpon>SidebarCategoryEditView.axaml</DependentUpon>
 	  </Compile>

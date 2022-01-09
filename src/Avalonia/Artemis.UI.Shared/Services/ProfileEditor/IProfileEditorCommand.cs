@@ -1,4 +1,4 @@
-﻿namespace Artemis.UI.Services.ProfileEditor
+﻿namespace Artemis.UI.Shared.Services.ProfileEditor
 {
     /// <summary>
     ///     Represents a command that can be executed and if needed, undone

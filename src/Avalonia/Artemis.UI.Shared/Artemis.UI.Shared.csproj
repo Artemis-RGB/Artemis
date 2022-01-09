@@ -9,7 +9,7 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Repos\Artemis\src\Artemis.UI.Avalonia.Shared\Artemis.UI.Avalonia.Shared.xml</DocumentationFile>
+    <DocumentationFile>bin\Artemis.UI.Avalonia.Shared.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Artemis.UI.Avalonia.Shared.csproj.DotSettings" />
@@ -43,7 +43,7 @@
     <Compile Update="Controls\HotkeyBox.axaml.cs">
       <DependentUpon>HotkeyBox.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Services\WindowService\ExceptionDialogView.axaml.cs">
+    <Compile Update="Services\Window\ExceptionDialogView.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
   </ItemGroup>

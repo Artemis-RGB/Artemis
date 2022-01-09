@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.UI.Shared.Services.MainWindowService
+namespace Artemis.UI.Shared.Services.MainWindow
 {
     internal class MainWindowService : IMainWindowService
     {

@@ -3,11 +3,14 @@ using Artemis.Core;
 using Artemis.UI.Screens.Device;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor;
+using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties;
+using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Tree;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Services;
+using DynamicData.Binding;
 using ReactiveUI;
 
 namespace Artemis.UI.Ninject.Factories
@@ -57,5 +60,19 @@ namespace Artemis.UI.Ninject.Factories
         ProfileEditorViewModel ProfileEditorViewModel(IScreen hostScreen);
         FolderTreeItemViewModel FolderTreeItemViewModel(TreeItemViewModel? parent, Folder folder);
         LayerTreeItemViewModel LayerTreeItemViewModel(TreeItemViewModel? parent, Layer layer);
+    }
+
+    public interface ILayerPropertyVmFactory : IVmFactory
+    {
+        ProfileElementPropertyViewModel ProfileElementPropertyViewModel(ILayerProperty layerProperty);
+        ProfileElementPropertyGroupViewModel ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup);
+
+        TreeGroupViewModel TreeGroupViewModel(ProfileElementPropertyGroupViewModel profileElementPropertyGroupViewModel);
+        // TimelineGroupViewModel TimelineGroupViewModel(ProfileElementPropertiesViewModel profileElementPropertiesViewModel);
+
+        // TreeViewModel TreeViewModel(ProfileElementPropertiesViewModel profileElementPropertiesViewModel, IObservableCollection<ProfileElementPropertyGroupViewModel> profileElementPropertyGroups);
+        // EffectsViewModel EffectsViewModel(ProfileElementPropertiesViewModel profileElementPropertiesViewModel);
+        // TimelineViewModel TimelineViewModel(ProfileElementPropertiesViewModel profileElementPropertiesViewModel, IObservableCollection<ProfileElementPropertyGroupViewModel> profileElementPropertyGroups);
+        // TimelineSegmentViewModel TimelineSegmentViewModel(SegmentViewModelType segment, IObservableCollection<ProfileElementPropertyGroupViewModel> profileElementPropertyGroups);
     }
 }

@@ -9,7 +9,7 @@ using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.Interfaces;
-using Artemis.UI.Shared.Services.MainWindowService;
+using Artemis.UI.Shared.Services.MainWindow;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;

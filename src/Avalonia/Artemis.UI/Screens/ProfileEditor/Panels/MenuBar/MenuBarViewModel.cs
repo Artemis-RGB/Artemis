@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Reactive.Disposables;
-using Artemis.UI.Services.ProfileEditor;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services.ProfileEditor;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.ProfileEditor.Panels.MenuBar
+namespace Artemis.UI.Screens.ProfileEditor.MenuBar
 {
     public class MenuBarViewModel : ActivatableViewModelBase
     {
