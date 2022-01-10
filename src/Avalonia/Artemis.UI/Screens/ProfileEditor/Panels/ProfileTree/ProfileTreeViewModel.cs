@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
@@ -41,8 +42,10 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
                 if (model?.ProfileElement is RenderProfileElement renderProfileElement)
                     profileEditorService.ChangeCurrentProfileElement(renderProfileElement);
             });
-        }
 
+         
+        }
+        
         public TreeItemViewModel? SelectedChild
         {
             get => _selectedChild;

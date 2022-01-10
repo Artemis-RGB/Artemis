@@ -14,5 +14,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         }
 
         public Folder Folder { get; }
+
+        
     }
 }

@@ -1,0 +1,28 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="50">
+            <StackPanel Spacing="5">
+                <TextBox />
+                <TextBox Classes="condensed" />
+                <TextBox Text="Hello Down there" />
+                <TextBox Classes="condensed" Text="Hello Down there" />
+                <TextBox Watermark="Watermark" />
+                <TextBox Classes="condensed" Watermark="Watermark" />
+                <TextBox Text="Test" IsEnabled="False" />
+                <TextBox Classes="condensed" Text="Test" IsEnabled="False" />
+                <TextBox Text="Test Clear" Classes="clearButton" />
+                <TextBox Classes="condensed clearButton" Text="Test Clear" />
+                <TextBox Text="Test Password" Classes="revealPasswordButton" PasswordChar="*" />
+                <TextBox Classes="condensed revealPasswordButton" Text="Test Password" PasswordChar="*" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="TextBox.condensed">
+        <Setter Property="Padding" Value="4 2" />
+        <Setter Property="FontSize" Value="14"></Setter>
+        <Setter Property="MinHeight" Value="25" />
+    </Style>
+</Styles>

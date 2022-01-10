@@ -25,6 +25,7 @@
     <StyleInclude Source="/Styles/Border.axaml" />
     <StyleInclude Source="/Styles/Button.axaml" />
     <StyleInclude Source="/Styles/TextBlock.axaml" />
+    <StyleInclude Source="/Styles/TextBox.axaml" />
     <StyleInclude Source="/Styles/Sidebar.axaml" />
     <StyleInclude Source="/Styles/InfoBar.axaml" />
     <StyleInclude Source="/Styles/TreeView.axaml" />

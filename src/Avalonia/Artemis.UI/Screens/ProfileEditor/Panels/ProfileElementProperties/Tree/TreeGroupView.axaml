@@ -14,19 +14,33 @@
         <converters:PropertyTreeMarginConverter x:Key="PropertyTreeMarginConverter" />
         <sharedConverters:EnumToBooleanConverter x:Key="EnumBoolConverter" />
     </UserControl.Resources>
+	<UserControl.Styles>
+		<Style Selector="avalonia|MaterialIcon.chevron-collapsed">
+            <Setter Property="RenderTransform" Value="rotate(180deg)" />
+        </Style>
+	</UserControl.Styles>
     <StackPanel>
         <Border Name="Bd"
                 BorderBrush="{DynamicResource MaterialDesignDivider}"
                 BorderThickness="0,0,0,1"
                 Height="25">
             <Grid Margin="{Binding Converter={StaticResource PropertyTreeMarginConverter}}" ColumnDefinitions="19,*">
-                <ToggleButton x:Name="Expander"
-                              Foreground="{DynamicResource MaterialDesignBody}"
-                              IsChecked="{Binding Path=LayerPropertyGroupViewModel.IsExpanded}"
-                              IsVisible="{Binding LayerPropertyGroupViewModel.HasChildren}"
-                              ClickMode="Press" />
+               
+                <avalonia:MaterialIcon Classes.chevron-collapsed="{Binding !ProfileElementPropertyGroupViewModel.IsExpanded}"
+                                       IsVisible="{Binding ProfileElementPropertyGroupViewModel.HasChildren}"
+                                       Kind="ChevronUp"
+                                       Grid.Column="0"
+                                       Margin="5 0"
+                                       PointerPressed="InputElement_OnPointerPressed"
+                                       Background="Transparent">
+                    <avalonia:MaterialIcon.Transitions>
+                        <Transitions>
+                            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" />
+                        </Transitions>
+                    </avalonia:MaterialIcon.Transitions>
+                </avalonia:MaterialIcon>
 
-                <StackPanel Grid.Column="1">
+				<StackPanel Grid.Column="1">
                     <!-- Type: None -->
                     <TextBlock Text="{Binding LayerPropertyGroup.GroupDescription.Name}"
                                ToolTip.Tip="{Binding LayerPropertyGroup.GroupDescription.Description}"
@@ -164,11 +178,11 @@
         </Border>
 
         <!-- 
-        Do not bind directly to the LayerPropertyGroupViewModel.Children collection
+        Do not bind directly to the ProfileElementPropertyGroupViewModel.Children collection
         Instead use a reference provided by the VM that is null when collapsed, virtualization for noobs 
         -->
         <ItemsControl Items="{Binding Children}"
-                      IsVisible="{Binding LayerPropertyGroupViewModel.IsExpanded}"
+                      IsVisible="{Binding ProfileElementPropertyGroupViewModel.IsExpanded}"
                       HorizontalAlignment="Stretch">
             <ItemsControl.DataTemplates>
                 <DataTemplate DataType="profileElementProperties:ProfileElementPropertyGroupViewModel">

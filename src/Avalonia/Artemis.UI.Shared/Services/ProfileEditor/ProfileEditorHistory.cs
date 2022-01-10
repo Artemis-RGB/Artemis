@@ -30,8 +30,8 @@ namespace Artemis.UI.Shared.Services.ProfileEditor
         public IObservable<bool> CanRedo => _canRedo.AsObservable().DistinctUntilChanged();
 
         public ReactiveCommand<IProfileEditorCommand, Unit> Execute { get; }
-        public ReactiveCommand<Unit, Unit> Undo { get; }
-        public ReactiveCommand<Unit, Unit> Redo { get; }
+        public ReactiveCommand<Unit, IProfileEditorCommand?> Undo { get; }
+        public ReactiveCommand<Unit, IProfileEditorCommand?> Redo { get; }
 
         public void Clear()
         {
@@ -67,24 +67,28 @@ namespace Artemis.UI.Shared.Services.ProfileEditor
             _undoCommands.Clear();
         }
 
-        private void ExecuteUndo()
+        private IProfileEditorCommand? ExecuteUndo()
         {
             if (!_undoCommands.TryPop(out IProfileEditorCommand? command))
-                return;
+                return null;
 
             command.Undo();
             _redoCommands.Push(command);
             UpdateSubjects();
+
+            return command;
         }
 
-        private void ExecuteRedo()
+        private IProfileEditorCommand? ExecuteRedo()
         {
             if (!_redoCommands.TryPop(out IProfileEditorCommand? command))
-                return;
+                return null;
 
             command.Execute();
             _undoCommands.Push(command);
             UpdateSubjects();
+
+            return command;
         }
 
         private void UpdateSubjects()

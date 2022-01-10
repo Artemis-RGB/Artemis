@@ -22,8 +22,8 @@ internal class ProfileEditorService : IProfileEditorService
     {
         _profileService = profileService;
         _windowService = windowService;
-        ProfileConfiguration = _profileConfigurationSubject.AsObservable().DistinctUntilChanged();
-        ProfileElement = _profileElementSubject.AsObservable().DistinctUntilChanged();
+        ProfileConfiguration = _profileConfigurationSubject.AsObservable();
+        ProfileElement = _profileElementSubject.AsObservable();
         History = Observable.Defer(() => Observable.Return(GetHistory(_profileConfigurationSubject.Value))).Concat(ProfileConfiguration.Select(GetHistory));
     }
 

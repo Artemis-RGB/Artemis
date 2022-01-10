@@ -1,3 +1,4 @@
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
@@ -13,6 +14,12 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Tree
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (ViewModel != null)
+                ViewModel.ProfileElementPropertyGroupViewModel.IsExpanded = !ViewModel.ProfileElementPropertyGroupViewModel.IsExpanded;
         }
     }
 }

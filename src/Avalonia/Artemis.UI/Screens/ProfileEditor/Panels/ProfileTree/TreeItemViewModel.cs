@@ -24,6 +24,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         private bool _isExpanded;
         private ProfileElement? _profileElement;
         private RenderProfileElement? _currentProfileElement;
+        private bool _renaming;
+        private string? _renameValue;
 
         protected TreeItemViewModel(TreeItemViewModel? parent, ProfileElement? profileElement, IWindowService windowService, IProfileEditorService profileEditorService,
             IProfileEditorVmFactory profileEditorVmFactory)
@@ -51,6 +53,12 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
                     profileEditorService.ExecuteCommand(new AddProfileElement(new Folder(ProfileElement, "New folder"), ProfileElement, 0));
             });
 
+            Rename = ReactiveCommand.Create(() =>
+            {
+                Renaming = true;
+                RenameValue = ProfileElement?.Name;
+            });
+
             this.WhenActivated(d =>
             {
                 _profileEditorService.ProfileElement.Subscribe(element => _currentProfileElement = element).DisposeWith(d);
@@ -71,11 +79,24 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             set => this.RaiseAndSetIfChanged(ref _isExpanded, value);
         }
 
+        public bool Renaming
+        {
+            get => _renaming;
+            set => this.RaiseAndSetIfChanged(ref _renaming, value);
+        }
+
         public TreeItemViewModel? Parent { get; set; }
         public ObservableCollection<TreeItemViewModel> Children { get; } = new();
 
         public ReactiveCommand<Unit, Unit> AddLayer { get; }
         public ReactiveCommand<Unit, Unit> AddFolder { get; }
+        public ReactiveCommand<Unit, Unit> Rename { get; }
+
+        public string? RenameValue
+        {
+            get => _renameValue;
+            set => this.RaiseAndSetIfChanged(ref _renameValue, value);
+        }
 
         public async Task ShowBrokenStateExceptions()
         {
@@ -91,6 +112,23 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
                     if (!await _windowService.ShowConfirmContentDialog("Broken state", "Do you want to view the next exception?"))
                         return;
             }
+        }
+
+        public void SubmitRename()
+        {
+            if (ProfileElement == null)
+            {
+                Renaming = false;
+                return;
+            }
+
+            _profileEditorService.ExecuteCommand(new RenameProfileElement(ProfileElement, RenameValue));
+            Renaming = false;
+        }
+
+        public void CancelRename()
+        {
+            Renaming = false;
         }
 
         protected void SubscribeToProfileElement(CompositeDisposable d)
