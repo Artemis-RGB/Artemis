@@ -1,20 +1,44 @@
 ﻿using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Shared.Services.ProfileEditor;
+using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Timeline;
+using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Tree;
+using Artemis.UI.Shared;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileElementProperties;
 
-public class ProfileElementPropertyViewModel
+public class ProfileElementPropertyViewModel : ViewModelBase
 {
-    private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
-    private readonly IProfileEditorService _profileEditorService;
+    private bool _isExpanded;
+    private bool _isHighlighted;
+    private bool _isVisible;
 
-    public ProfileElementPropertyViewModel(ILayerProperty layerProperty, IProfileEditorService profileEditorService, ILayerPropertyVmFactory layerPropertyVmFactory)
+    public ProfileElementPropertyViewModel(ILayerProperty layerProperty, IPropertyVmFactory propertyVmFactory)
     {
         LayerProperty = layerProperty;
-        _profileEditorService = profileEditorService;
-        _layerPropertyVmFactory = layerPropertyVmFactory;
+        TreePropertyViewModel = propertyVmFactory.TreePropertyViewModel(LayerProperty, this);
+        TimelinePropertyViewModel = propertyVmFactory.TimelinePropertyViewModel(LayerProperty, this);
     }
 
     public ILayerProperty LayerProperty { get; }
+    public ITreePropertyViewModel TreePropertyViewModel { get; }
+    public ITimelinePropertyViewModel TimelinePropertyViewModel { get; }
+
+    public bool IsVisible
+    {
+        get => _isVisible;
+        set => this.RaiseAndSetIfChanged(ref _isVisible, value);
+    }
+
+    public bool IsHighlighted
+    {
+        get => _isHighlighted;
+        set => this.RaiseAndSetIfChanged(ref _isHighlighted, value);
+    }
+
+    public bool IsExpanded
+    {
+        get => _isExpanded;
+        set => this.RaiseAndSetIfChanged(ref _isExpanded, value);
+    }
 }

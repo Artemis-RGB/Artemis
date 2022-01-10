@@ -4,6 +4,7 @@ using Artemis.UI.Screens.Device;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties;
+using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Tree;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.Settings;
@@ -74,5 +75,11 @@ namespace Artemis.UI.Ninject.Factories
         // EffectsViewModel EffectsViewModel(ProfileElementPropertiesViewModel profileElementPropertiesViewModel);
         // TimelineViewModel TimelineViewModel(ProfileElementPropertiesViewModel profileElementPropertiesViewModel, IObservableCollection<ProfileElementPropertyGroupViewModel> profileElementPropertyGroups);
         // TimelineSegmentViewModel TimelineSegmentViewModel(SegmentViewModelType segment, IObservableCollection<ProfileElementPropertyGroupViewModel> profileElementPropertyGroups);
+    }
+
+    public interface IPropertyVmFactory
+    {
+        ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, ProfileElementPropertyViewModel profileElementPropertyViewModel);
+        ITimelinePropertyViewModel TimelinePropertyViewModel(ILayerProperty layerProperty, ProfileElementPropertyViewModel profileElementPropertyViewModel);
     }
 }

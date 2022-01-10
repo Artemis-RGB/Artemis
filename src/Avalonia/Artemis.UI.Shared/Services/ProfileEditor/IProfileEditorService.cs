@@ -11,6 +11,7 @@ namespace Artemis.UI.Shared.Services.ProfileEditor
         IObservable<RenderProfileElement?> ProfileElement { get; }
         IObservable<ProfileEditorHistory?> History { get; }
         IObservable<TimeSpan> Time { get; }
+        IObservable<double> PixelsPerSecond { get; }
 
         void ChangeCurrentProfileConfiguration(ProfileConfiguration? profileConfiguration);
         void ChangeCurrentProfileElement(RenderProfileElement? renderProfileElement);

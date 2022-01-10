@@ -15,6 +15,7 @@ internal class ProfileEditorService : IProfileEditorService
     private readonly Dictionary<ProfileConfiguration, ProfileEditorHistory> _profileEditorHistories = new();
     private readonly BehaviorSubject<RenderProfileElement?> _profileElementSubject = new(null);
     private readonly BehaviorSubject<TimeSpan> _timeSubject = new(TimeSpan.Zero);
+    private readonly BehaviorSubject<double> _pixelsPerSecondSubject = new(300);
     private readonly IProfileService _profileService;
     private readonly IWindowService _windowService;
 
@@ -22,9 +23,12 @@ internal class ProfileEditorService : IProfileEditorService
     {
         _profileService = profileService;
         _windowService = windowService;
+
         ProfileConfiguration = _profileConfigurationSubject.AsObservable();
         ProfileElement = _profileElementSubject.AsObservable();
         History = Observable.Defer(() => Observable.Return(GetHistory(_profileConfigurationSubject.Value))).Concat(ProfileConfiguration.Select(GetHistory));
+        Time = _timeSubject.AsObservable();
+        PixelsPerSecond = _pixelsPerSecondSubject.AsObservable();
     }
 
     private ProfileEditorHistory? GetHistory(ProfileConfiguration? profileConfiguration)
@@ -43,6 +47,7 @@ internal class ProfileEditorService : IProfileEditorService
     public IObservable<RenderProfileElement?> ProfileElement { get; }
     public IObservable<ProfileEditorHistory?> History { get; }
     public IObservable<TimeSpan> Time { get; }
+    public IObservable<double> PixelsPerSecond { get; }
 
     public void ChangeCurrentProfileConfiguration(ProfileConfiguration? profileConfiguration)
     {
@@ -57,6 +62,11 @@ internal class ProfileEditorService : IProfileEditorService
     public void ChangeTime(TimeSpan time)
     {
         _timeSubject.OnNext(time);
+    }
+
+    public void ChangePixelsPerSecond(double pixelsPerSecond)
+    {
+        _pixelsPerSecondSubject.OnNext(pixelsPerSecond);
     }
 
     public void ExecuteCommand(IProfileEditorCommand command)

@@ -115,8 +115,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
     public interface ITimelinePropertyViewModel : IScreen
     {
-        List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels();
-        void WipeKeyframes(TimeSpan? start, TimeSpan? end);
-        void ShiftKeyframes(TimeSpan? start, TimeSpan? end, TimeSpan amount);
+            List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels();
+            void WipeKeyframes(TimeSpan? start, TimeSpan? end);
+            void ShiftKeyframes(TimeSpan? start, TimeSpan? end, TimeSpan amount);
     }
 }

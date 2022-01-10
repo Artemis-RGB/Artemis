@@ -249,6 +249,7 @@ namespace Artemis.Core
                 if (_keyframesEnabled == value) return;
                 _keyframesEnabled = value;
                 OnKeyframesToggled();
+                OnPropertyChanged(nameof(KeyframesEnabled));
             }
         }
 

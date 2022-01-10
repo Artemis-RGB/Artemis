@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -24,8 +22,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Tree;
 
 public class TreeGroupViewModel : ActivatableViewModelBase
 {
-    private readonly IWindowService _windowService;
     private readonly IProfileEditorService _profileEditorService;
+    private readonly IWindowService _windowService;
     private BrushConfigurationWindowViewModel? _brushConfigurationWindowViewModel;
     private EffectConfigurationWindowViewModel? _effectConfigurationWindowViewModel;
 
@@ -41,12 +39,14 @@ public class TreeGroupViewModel : ActivatableViewModelBase
             ProfileElementPropertyGroupViewModel.WhenAnyValue(vm => vm.IsExpanded).Subscribe(_ => this.RaisePropertyChanged(nameof(Children))).DisposeWith(d);
             Disposable.Create(CloseViewModels).DisposeWith(d);
         });
+
+        // TODO: Update ProfileElementPropertyGroupViewModel visibility on change (can remove the sub on line 41 as well then)
     }
 
 
     public ProfileElementPropertyGroupViewModel ProfileElementPropertyGroupViewModel { get; }
     public LayerPropertyGroup LayerPropertyGroup => ProfileElementPropertyGroupViewModel.LayerPropertyGroup;
-    public ObservableCollection<ActivatableViewModelBase>? Children => ProfileElementPropertyGroupViewModel.IsExpanded ? ProfileElementPropertyGroupViewModel.Children : null;
+    public ObservableCollection<ViewModelBase>? Children => ProfileElementPropertyGroupViewModel.IsExpanded ? ProfileElementPropertyGroupViewModel.Children : null;
 
     public LayerPropertyGroupType GroupType { get; private set; }
 
@@ -96,7 +96,7 @@ public class TreeGroupViewModel : ActivatableViewModelBase
             // Find the BaseLayerEffect parameter, it is required by the base constructor so its there for sure
             ParameterInfo effectParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerEffect).IsAssignableFrom(p.ParameterType));
             ConstructorArgument argument = new(effectParameter.Name!, layerEffect);
-            EffectConfigurationViewModel viewModel = (EffectConfigurationViewModel)layerEffect.Descriptor.Provider.Plugin.Kernel!.Get(configurationViewModel.Type, argument);
+            EffectConfigurationViewModel viewModel = (EffectConfigurationViewModel) layerEffect.Descriptor.Provider.Plugin.Kernel!.Get(configurationViewModel.Type, argument);
 
             _effectConfigurationWindowViewModel = new EffectConfigurationWindowViewModel(viewModel, configurationViewModel);
             await _windowService.ShowDialogAsync(_effectConfigurationWindowViewModel);
@@ -138,7 +138,7 @@ public class TreeGroupViewModel : ActivatableViewModelBase
         _effectConfigurationWindowViewModel?.Close(null);
         _brushConfigurationWindowViewModel?.Close(null);
     }
-    
+
     private void DetermineGroupType()
     {
         if (LayerPropertyGroup is LayerGeneralProperties)

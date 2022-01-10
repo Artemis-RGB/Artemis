@@ -1,11 +1,13 @@
 ﻿using System;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Ninject.InstanceProviders;
 using Artemis.UI.Screens;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Avalonia.Platform;
 using Avalonia.Shared.PlatformSupport;
 using Ninject.Extensions.Conventions;
+using Ninject.Extensions.Factory;
 using Ninject.Modules;
 using Ninject.Planning.Bindings.Resolvers;
 
@@ -45,6 +47,8 @@ namespace Artemis.UI.Ninject
                     .InheritedFrom<IVmFactory>()
                     .BindToFactory();
             });
+
+            Kernel.Bind<IPropertyVmFactory>().ToFactory(() => new LayerPropertyViewModelInstanceProvider());
 
             // Bind all UI services as singletons
             Kernel.Bind(x =>

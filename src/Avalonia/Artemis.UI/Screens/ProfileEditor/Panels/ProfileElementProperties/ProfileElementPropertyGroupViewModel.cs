@@ -1,28 +1,63 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reflection;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Tree;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services.PropertyInput;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileElementProperties;
 
 public class ProfileElementPropertyGroupViewModel : ViewModelBase
 {
+    private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
+    private readonly IPropertyInputService _propertyInputService;
     private bool _isVisible;
     private bool _isExpanded;
+    private bool _hasChildren;
 
-    public ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory)
+    public ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory, IPropertyInputService propertyInputService)
     {
-        Children = new ObservableCollection<ActivatableViewModelBase>();
+        _layerPropertyVmFactory = layerPropertyVmFactory;
+        _propertyInputService = propertyInputService;
+        Children = new ObservableCollection<ViewModelBase>();
         LayerPropertyGroup = layerPropertyGroup;
         TreeGroupViewModel = layerPropertyVmFactory.TreeGroupViewModel(this);
 
-        IsVisible = !LayerPropertyGroup.IsHidden;
-        // TODO: Update visiblity on change, can't do it atm because not sure how to unsubscribe from the event
+        PopulateChildren();
     }
 
-    public ObservableCollection<ActivatableViewModelBase> Children { get; }
+    private void PopulateChildren()
+    {
+        // Get all properties and property groups and create VMs for them
+        // The group has methods for getting this without reflection but then we lose the order of the properties as they are defined on the group
+        foreach (PropertyInfo propertyInfo in LayerPropertyGroup.GetType().GetProperties())
+        {
+            if (Attribute.IsDefined(propertyInfo, typeof(LayerPropertyIgnoreAttribute)))
+                continue;
+
+            if (typeof(ILayerProperty).IsAssignableFrom(propertyInfo.PropertyType))
+            {
+                ILayerProperty? value = (ILayerProperty?) propertyInfo.GetValue(LayerPropertyGroup);
+                // Ensure a supported input VM was found, otherwise don't add it
+                if (value != null && _propertyInputService.CanCreatePropertyInputViewModel(value))
+                    Children.Add(_layerPropertyVmFactory.ProfileElementPropertyViewModel(value));
+            }
+            else if (typeof(LayerPropertyGroup).IsAssignableFrom(propertyInfo.PropertyType))
+            {
+                LayerPropertyGroup? value = (LayerPropertyGroup?) propertyInfo.GetValue(LayerPropertyGroup);
+                if (value != null)
+                    Children.Add(_layerPropertyVmFactory.ProfileElementPropertyGroupViewModel(value));
+            }
+        }
+
+        HasChildren = Children.Any(i => i is ProfileElementPropertyViewModel {IsVisible: true} || i is ProfileElementPropertyGroupViewModel {IsVisible: true});
+    }
+
+    public ObservableCollection<ViewModelBase> Children { get; }
     public LayerPropertyGroup LayerPropertyGroup { get; }
     public TreeGroupViewModel TreeGroupViewModel { get; }
 
@@ -36,5 +71,11 @@ public class ProfileElementPropertyGroupViewModel : ViewModelBase
     {
         get => _isExpanded;
         set => this.RaiseAndSetIfChanged(ref _isExpanded, value);
+    }
+
+    public bool HasChildren
+    {
+        get => _hasChildren;
+        set => this.RaiseAndSetIfChanged(ref _hasChildren, value);
     }
 }
