@@ -14,10 +14,10 @@
             </TreeView.Styles>
             <TreeView.KeyBindings>
                 <KeyBinding Gesture="F2" Command="{Binding SelectedChild.Rename}" />
-                <KeyBinding Gesture="Delete" Command="{Binding Delete}" CommandParameter="{Binding SelectedTreeItem}" />
-                <KeyBinding Gesture="Ctrl+D" Command="{Binding Duplicate}" CommandParameter="{Binding SelectedTreeItem}" />
-                <KeyBinding Gesture="Ctrl+C" Command="{Binding Copy}" CommandParameter="{Binding SelectedTreeItem}" />
-                <KeyBinding Gesture="Ctrl+V" Command="{Binding Paste}" CommandParameter="{Binding SelectedTreeItem}" />
+                <KeyBinding Gesture="Delete" Command="{Binding SelectedChild.Delete}" />
+                <KeyBinding Gesture="Ctrl+D" Command="{Binding SelectedChild.Duplicate}" />
+                <KeyBinding Gesture="Ctrl+C" Command="{Binding SelectedChild.Copy}" />
+                <KeyBinding Gesture="Ctrl+V" Command="{Binding SelectedChild.Paste}" />
             </TreeView.KeyBindings>
             <TreeView.ItemTemplate>
                 <TreeDataTemplate ItemsSource="{Binding Children}">
@@ -35,12 +35,12 @@
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <Separator />
-                                <MenuItem Header="Duplicate" Command="{Binding Duplicate}" InputGesture="Ctrl+D" IsEnabled="False">
+                                <MenuItem Header="Duplicate" Command="{Binding Duplicate}" InputGesture="Ctrl+D">
                                     <MenuItem.Icon>
                                         <avalonia:MaterialIcon Kind="ContentDuplicate" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Copy" Command="{Binding Copy}" InputGesture="Ctrl+C" IsEnabled="False">
+                                <MenuItem Header="Copy" Command="{Binding Copy}" InputGesture="Ctrl+C">
                                     <MenuItem.Icon>
                                         <avalonia:MaterialIcon Kind="ContentCopy" />
                                     </MenuItem.Icon>
@@ -56,7 +56,7 @@
                                         <avalonia:MaterialIcon Kind="RenameBox" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Delete" Command="{Binding Delete}" InputGesture="Delete" IsEnabled="False">
+                                <MenuItem Header="Delete" Command="{Binding Delete}" InputGesture="Delete">
                                     <MenuItem.Icon>
                                         <avalonia:MaterialIcon Kind="TrashCan" />
                                     </MenuItem.Icon>

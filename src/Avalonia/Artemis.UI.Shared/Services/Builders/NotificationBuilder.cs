@@ -209,10 +209,10 @@ public class NotificationButtonBuilder
     internal IControl Build()
     {
         if (_action != null)
-            return new Button {Content = _text, Command = ReactiveCommand.Create(() => _action())};
+            return new Button {Content = _text, Command = ReactiveCommand.Create(() => _action()), Classes = new Classes("AppBarButton")};
         if (_command != null)
-            return new Button {Content = _text, Command = _command, CommandParameter = _commandParameter};
-        return new Button {Content = _text};
+            return new Button {Content = _text, Command = _command, CommandParameter = _commandParameter, Classes = new Classes("AppBarButton")};
+        return new Button {Content = _text, Classes = new Classes("AppBarButton")};
     }
 }
 

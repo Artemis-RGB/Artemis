@@ -59,6 +59,12 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
                 RenameValue = ProfileElement?.Name;
             });
 
+            Delete = ReactiveCommand.Create(() =>
+            {
+                if (ProfileElement is RenderProfileElement renderProfileElement)
+                    profileEditorService.ExecuteCommand(new RemoveProfileElement(renderProfileElement));
+            });
+
             this.WhenActivated(d =>
             {
                 _profileEditorService.ProfileElement.Subscribe(element => _currentProfileElement = element).DisposeWith(d);
@@ -91,6 +97,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         public ReactiveCommand<Unit, Unit> AddLayer { get; }
         public ReactiveCommand<Unit, Unit> AddFolder { get; }
         public ReactiveCommand<Unit, Unit> Rename { get; }
+        public ReactiveCommand<Unit, Unit> Delete { get; }
 
         public string? RenameValue
         {
