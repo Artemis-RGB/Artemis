@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.DefaultTypes.PropertyInput.SKPointPropertyInputView">
+    <StackPanel Orientation="Horizontal" Spacing="5">
+        <TextBlock Width="25"
+                   Text="{Binding LayerProperty.PropertyDescription.InputPrefix}"
+                   VerticalAlignment="Center" />
+        <controls:NumberBox Classes="condensed"
+                            Value="{Binding X}"
+                            SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                            ToolTip.Tip="X-coordinate (horizontal)"
+                            VerticalAlignment="Center" />
+        <TextBlock VerticalAlignment="Center">,</TextBlock>
+        <controls:NumberBox Classes="condensed"
+                            Value="{Binding Y}"
+                            SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                            VerticalAlignment="Center" />
+        <TextBlock Width="25"
+                   Text="{Binding LayerProperty.PropertyDescription.InputAffix}"
+                   ToolTip.Tip="Y-coordinate (vertical)" />
+    </StackPanel>
+</UserControl>

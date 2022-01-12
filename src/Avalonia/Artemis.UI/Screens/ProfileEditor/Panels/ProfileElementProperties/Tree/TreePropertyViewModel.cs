@@ -11,8 +11,6 @@ internal class TreePropertyViewModel<T> : ActivatableViewModelBase, ITreePropert
         LayerProperty = layerProperty;
         ProfileElementPropertyViewModel = profileElementPropertyViewModel;
         PropertyInputViewModel = propertyInputService.CreatePropertyInputViewModel(LayerProperty);
-
-        // TODO: Update ProfileElementPropertyViewModel visibility on change
     }
 
     public LayerProperty<T> LayerProperty { get; }

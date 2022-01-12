@@ -4,6 +4,7 @@ using Artemis.Core;
 using Artemis.UI.Screens.ProfileEditor.MenuBar;
 using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
+using Artemis.UI.Screens.ProfileEditor.StatusBar;
 using Artemis.UI.Screens.ProfileEditor.VisualEditor;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Ninject;
@@ -24,12 +25,14 @@ namespace Artemis.UI.Screens.ProfileEditor
             ProfileTreeViewModel profileTreeViewModel,
             ProfileEditorTitleBarViewModel profileEditorTitleBarViewModel,
             MenuBarViewModel menuBarViewModel, 
-            ProfileElementPropertiesViewModel profileElementPropertiesViewModel)
+            ProfileElementPropertiesViewModel profileElementPropertiesViewModel,
+            StatusBarViewModel statusBarViewModel)
             : base(hostScreen, "profile-editor")
         {
             VisualEditorViewModel = visualEditorViewModel;
             ProfileTreeViewModel = profileTreeViewModel;
             ProfileElementPropertiesViewModel = profileElementPropertiesViewModel;
+            StatusBarViewModel = statusBarViewModel;
 
             if (OperatingSystem.IsWindows())
                 TitleBarViewModel = profileEditorTitleBarViewModel;
@@ -44,6 +47,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         public ProfileTreeViewModel ProfileTreeViewModel { get; }
         public MenuBarViewModel? MenuBarViewModel { get; }
         public ProfileElementPropertiesViewModel ProfileElementPropertiesViewModel { get; }
+        public StatusBarViewModel StatusBarViewModel { get; }
 
         public ProfileConfiguration? ProfileConfiguration => _profileConfiguration?.Value;
         public ProfileEditorHistory? History => _history?.Value;

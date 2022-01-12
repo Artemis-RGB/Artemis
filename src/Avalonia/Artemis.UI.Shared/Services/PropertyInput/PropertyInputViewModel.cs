@@ -6,6 +6,7 @@ using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia.Controls.Mixins;
 using ReactiveUI;
+using ReactiveUI.Validation.Helpers;
 
 namespace Artemis.UI.Shared.Services.PropertyInput;
 
@@ -15,10 +16,11 @@ namespace Artemis.UI.Shared.Services.PropertyInput;
 /// <typeparam name="T">The type of property this input view model supports</typeparam>
 public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
 {
-    [AllowNull] 
-    private T _inputValue;
-    private bool _inputDragging;
     private T _dragStartValue;
+    private bool _inputDragging;
+
+    [AllowNull] private T _inputValue;
+
     private TimeSpan _time;
 
     /// <summary>
@@ -52,7 +54,7 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
                 .DisposeWith(d);
         });
     }
-    
+
     /// <summary>
     ///     Gets the layer property this view model is editing
     /// </summary>
@@ -69,7 +71,7 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
     public IProfileEditorService ProfileEditorService { get; }
 
     /// <summary>
-    /// Gets the property input service
+    ///     Gets the property input service
     /// </summary>
     public IPropertyInputService PropertyInputService { get; }
 
@@ -89,7 +91,7 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
     /// <summary>
     ///     Gets or sets the input value
     /// </summary>
-    [AllowNull]
+    [MaybeNull]
     public T InputValue
     {
         get => _inputValue;
@@ -127,13 +129,6 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
     }
 
     /// <summary>
-    ///     Called when the input value has been applied to the layer property
-    /// </summary>
-    protected virtual void OnInputValueApplied()
-    {
-    }
-
-    /// <summary>
     ///     Called when the input value has changed
     /// </summary>
     protected virtual void OnInputValueChanged()
@@ -147,23 +142,23 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
     {
     }
 
-    protected virtual T GetDragStartValue()
+    /// <summary>
+    ///     Called when dragging starts to get the initial value before dragging begun
+    /// </summary>
+    /// <returns>The initial value before dragging begun</returns>
+    protected virtual T? GetDragStartValue()
     {
         return InputValue;
     }
 
     /// <summary>
-    ///     Applies the input value to the layer property
+    ///     Applies the input value to the layer property using an <see cref="IProfileEditorCommand" />.
     /// </summary>
-    protected void ApplyInputValue()
+    protected virtual void ApplyInputValue()
     {
-        OnInputValueChanged();
-        LayerProperty.SetCurrentValue(_inputValue, _time);
-        OnInputValueApplied();
-
         if (InputDragging)
             ProfileEditorService.ChangeTime(_time);
-        else
+        else if (ValidationContext.IsValid)
             ProfileEditorService.ExecuteCommand(new UpdateLayerProperty<T>(LayerProperty, _inputValue, _time));
     }
 
@@ -186,23 +181,12 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
         this.RaisePropertyChanged(nameof(IsEnabled));
         OnDataBindingsChanged();
     }
-
-    private void LayerPropertyOnUpdated(object? sender, EventArgs e)
-    {
-        UpdateInputValue();
-    }
-
-    private void OnDataBindingChange(object? sender, DataBindingEventArgs e)
-    {
-        this.RaisePropertyChanged(nameof(IsEnabled));
-        OnDataBindingsChanged();
-    }
 }
 
 /// <summary>
 ///     For internal use only, implement <see cref="PropertyInputViewModel" /> instead.
 /// </summary>
-public abstract class PropertyInputViewModel : ActivatableViewModelBase
+public abstract class PropertyInputViewModel : ReactiveValidationObject, IActivatableViewModel, IDisposable
 {
     /// <summary>
     ///     Prevents this type being implemented directly, implement
@@ -210,4 +194,29 @@ public abstract class PropertyInputViewModel : ActivatableViewModelBase
     /// </summary>
     // ReSharper disable once UnusedMember.Global
     internal abstract object InternalGuard { get; }
+
+    /// <summary>
+    ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">
+    ///     <see langword="true" /> to release both managed and unmanaged resources;
+    ///     <see langword="false" /> to release only unmanaged resources.
+    /// </param>
+    protected virtual void Dispose(bool disposing)
+    {
+    }
+
+    #region Implementation of IActivatableViewModel
+
+    /// <inheritdoc />
+    public ViewModelActivator Activator { get; } = new();
+
+    #endregion
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 }

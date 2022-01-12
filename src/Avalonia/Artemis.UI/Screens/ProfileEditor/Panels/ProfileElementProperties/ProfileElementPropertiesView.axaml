@@ -5,11 +5,16 @@
              xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileElementProperties"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.ProfileElementPropertiesView">
-	<ItemsControl Items="{Binding PropertyGroupViewModels}">
-        <ItemsControl.ItemTemplate>
-            <TreeDataTemplate DataType="{x:Type local:ProfileElementPropertyGroupViewModel}" ItemsSource="{Binding Children}">
-                <ContentControl Content="{Binding TreeGroupViewModel}" />
-            </TreeDataTemplate>
-        </ItemsControl.ItemTemplate>
-	</ItemsControl>
+    <Grid ColumnDefinitions="*,Auto,*">
+        <ItemsControl Grid.Column="0" Items="{Binding PropertyGroupViewModels}">
+            <ItemsControl.ItemTemplate>
+                <TreeDataTemplate DataType="{x:Type local:ProfileElementPropertyGroupViewModel}" ItemsSource="{Binding Children}">
+                    <ContentControl Content="{Binding TreeGroupViewModel}" />
+                </TreeDataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <GridSplitter Grid.Column="1"></GridSplitter>
+	</Grid>
+
 </UserControl>

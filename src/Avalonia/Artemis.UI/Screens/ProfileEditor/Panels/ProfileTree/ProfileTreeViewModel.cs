@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Shared.Services.ProfileEditor;
@@ -16,8 +17,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
     {
         private TreeItemViewModel? _selectedChild;
 
-        public ProfileTreeViewModel(IWindowService windowService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
-            : base(null, null, windowService, profileEditorService, profileEditorVmFactory)
+        public ProfileTreeViewModel(IWindowService windowService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory, IRgbService rgbService)
+            : base(null, null, windowService, profileEditorService, rgbService, profileEditorVmFactory)
         {
             this.WhenActivated(d =>
             {
@@ -42,8 +43,6 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
                 if (model?.ProfileElement is RenderProfileElement renderProfileElement)
                     profileEditorService.ChangeCurrentProfileElement(renderProfileElement);
             });
-
-         
         }
         
         public TreeItemViewModel? SelectedChild

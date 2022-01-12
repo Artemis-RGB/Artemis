@@ -729,7 +729,7 @@ namespace Artemis.Core
             // Ensure the brush reference matches the brush
             LayerBrushReference? current = General.BrushReference.BaseValue;
             if (!descriptor.MatchesLayerBrushReference(current))
-                General.BrushReference.BaseValue = new LayerBrushReference(descriptor);
+                General.BrushReference.SetCurrentValue(new LayerBrushReference(descriptor), null);
 
             ActivateLayerBrush();
         }
@@ -759,6 +759,10 @@ namespace Artemis.Core
                     ? LayerBrushStore.Get(current.LayerBrushProviderId, current.BrushType)?.LayerBrushDescriptor
                     : null;
                 descriptor?.CreateInstance(this);
+
+                General.ShapeType.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
+                General.BlendMode.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
+                Transform.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
 
                 OnLayerBrushUpdated();
                 ClearBrokenState("Failed to initialize layer brush");

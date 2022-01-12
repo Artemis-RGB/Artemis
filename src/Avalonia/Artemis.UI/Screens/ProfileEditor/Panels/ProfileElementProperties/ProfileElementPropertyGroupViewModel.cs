@@ -15,9 +15,9 @@ public class ProfileElementPropertyGroupViewModel : ViewModelBase
 {
     private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
     private readonly IPropertyInputService _propertyInputService;
-    private bool _isVisible;
-    private bool _isExpanded;
     private bool _hasChildren;
+    private bool _isExpanded;
+    private bool _isVisible;
 
     public ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory, IPropertyInputService propertyInputService)
     {
@@ -27,7 +27,32 @@ public class ProfileElementPropertyGroupViewModel : ViewModelBase
         LayerPropertyGroup = layerPropertyGroup;
         TreeGroupViewModel = layerPropertyVmFactory.TreeGroupViewModel(this);
 
+        // TODO: Centralize visibility updating or do it here and dispose
+        _isVisible = !LayerPropertyGroup.IsHidden;
+
         PopulateChildren();
+    }
+
+    public ObservableCollection<ViewModelBase> Children { get; }
+    public LayerPropertyGroup LayerPropertyGroup { get; }
+    public TreeGroupViewModel TreeGroupViewModel { get; }
+
+    public bool IsVisible
+    {
+        get => _isVisible;
+        set => this.RaiseAndSetIfChanged(ref _isVisible, value);
+    }
+
+    public bool IsExpanded
+    {
+        get => _isExpanded;
+        set => this.RaiseAndSetIfChanged(ref _isExpanded, value);
+    }
+
+    public bool HasChildren
+    {
+        get => _hasChildren;
+        set => this.RaiseAndSetIfChanged(ref _hasChildren, value);
     }
 
     private void PopulateChildren()
@@ -55,27 +80,5 @@ public class ProfileElementPropertyGroupViewModel : ViewModelBase
         }
 
         HasChildren = Children.Any(i => i is ProfileElementPropertyViewModel {IsVisible: true} || i is ProfileElementPropertyGroupViewModel {IsVisible: true});
-    }
-
-    public ObservableCollection<ViewModelBase> Children { get; }
-    public LayerPropertyGroup LayerPropertyGroup { get; }
-    public TreeGroupViewModel TreeGroupViewModel { get; }
-
-    public bool IsVisible
-    {
-        get => _isVisible;
-        set => this.RaiseAndSetIfChanged(ref _isVisible, value);
-    }
-
-    public bool IsExpanded
-    {
-        get => _isExpanded;
-        set => this.RaiseAndSetIfChanged(ref _isExpanded, value);
-    }
-
-    public bool HasChildren
-    {
-        get => _hasChildren;
-        set => this.RaiseAndSetIfChanged(ref _hasChildren, value);
     }
 }

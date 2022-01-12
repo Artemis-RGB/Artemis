@@ -11,24 +11,24 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Tree.TreeGroupView">
     <UserControl.Resources>
-        <converters:PropertyTreeMarginConverter x:Key="PropertyTreeMarginConverter" />
+        <converters:PropertyTreeMarginConverter x:Key="PropertyTreeMarginConverter" Length="20"/>
         <sharedConverters:EnumToBooleanConverter x:Key="EnumBoolConverter" />
     </UserControl.Resources>
 	<UserControl.Styles>
 		<Style Selector="avalonia|MaterialIcon.chevron-collapsed">
-            <Setter Property="RenderTransform" Value="rotate(180deg)" />
+            <Setter Property="RenderTransform" Value="rotate(-90deg)" />
         </Style>
 	</UserControl.Styles>
     <StackPanel>
         <Border Name="Bd"
-                BorderBrush="{DynamicResource MaterialDesignDivider}"
+                BorderBrush="{DynamicResource ButtonBorderBrush}"
                 BorderThickness="0,0,0,1"
-                Height="25">
+                Height="29">
             <Grid Margin="{Binding Converter={StaticResource PropertyTreeMarginConverter}}" ColumnDefinitions="19,*">
                
                 <avalonia:MaterialIcon Classes.chevron-collapsed="{Binding !ProfileElementPropertyGroupViewModel.IsExpanded}"
                                        IsVisible="{Binding ProfileElementPropertyGroupViewModel.HasChildren}"
-                                       Kind="ChevronUp"
+                                       Kind="ChevronDown"
                                        Grid.Column="0"
                                        Margin="5 0"
                                        PointerPressed="InputElement_OnPointerPressed"

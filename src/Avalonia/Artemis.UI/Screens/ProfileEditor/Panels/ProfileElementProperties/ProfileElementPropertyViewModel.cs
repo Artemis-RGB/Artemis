@@ -18,6 +18,9 @@ public class ProfileElementPropertyViewModel : ViewModelBase
         LayerProperty = layerProperty;
         TreePropertyViewModel = propertyVmFactory.TreePropertyViewModel(LayerProperty, this);
         TimelinePropertyViewModel = propertyVmFactory.TimelinePropertyViewModel(LayerProperty, this);
+
+        // TODO: Centralize visibility updating or do it here and dispose
+        _isVisible = !LayerProperty.IsHidden;
     }
 
     public ILayerProperty LayerProperty { get; }

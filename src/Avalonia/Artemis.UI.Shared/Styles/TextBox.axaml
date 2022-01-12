@@ -1,5 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
     <Design.PreviewWith>
         <Border Padding="50">
             <StackPanel Spacing="5">
@@ -9,12 +10,20 @@
                 <TextBox Classes="condensed" Text="Hello Down there" />
                 <TextBox Watermark="Watermark" />
                 <TextBox Classes="condensed" Watermark="Watermark" />
-                <TextBox Text="Test" IsEnabled="False" />
-                <TextBox Classes="condensed" Text="Test" IsEnabled="False" />
-                <TextBox Text="Test Clear" Classes="clearButton" />
-                <TextBox Classes="condensed clearButton" Text="Test Clear" />
-                <TextBox Text="Test Password" Classes="revealPasswordButton" PasswordChar="*" />
-                <TextBox Classes="condensed revealPasswordButton" Text="Test Password" PasswordChar="*" />
+
+                <controls:NumberBox Value="1337"></controls:NumberBox>
+                <controls:NumberBox Classes="condensed" Value="1337"></controls:NumberBox>
+
+				<ComboBox SelectedIndex="1">
+                    <ComboBoxItem>Bluasdadseheh</ComboBoxItem>
+                    <ComboBoxItem>Bluheheheheh</ComboBoxItem>
+                    <ComboBoxItem>Bluhgfdgdsheheh</ComboBoxItem>
+                </ComboBox>
+                <ComboBox SelectedIndex="1" Classes="condensed">
+                    <ComboBoxItem>Bluasdadseheh</ComboBoxItem>
+                    <ComboBoxItem>Bluheheheheh</ComboBoxItem>
+                    <ComboBoxItem>Bluhgfdgdsheheh</ComboBoxItem>
+                </ComboBox>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -22,7 +31,19 @@
     <!-- Add Styles Here -->
     <Style Selector="TextBox.condensed">
         <Setter Property="Padding" Value="4 2" />
-        <Setter Property="FontSize" Value="14"></Setter>
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="MinHeight" Value="25" />
+    </Style>
+
+    <Style Selector="controls|NumberBox.condensed /template/ TextBox#InputBox">
+        <Setter Property="Padding" Value="4 2" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="MinHeight" Value="25" />
+    </Style>
+
+    <Style Selector="ComboBox.condensed">
+        <Setter Property="Padding" Value="4 2" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Height" Value="25" />
     </Style>
 </Styles>

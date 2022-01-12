@@ -27,6 +27,7 @@ namespace Artemis.UI.Screens.Root
         private readonly IDebugService _debugService;
         private readonly IClassicDesktopStyleApplicationLifetime _lifeTime;
         private readonly ISettingsService _settingsService;
+        private readonly IRegistrationService _registrationService;
         private readonly ISidebarVmFactory _sidebarVmFactory;
         private readonly IWindowService _windowService;
         private SidebarViewModel? _sidebarViewModel;
@@ -48,6 +49,7 @@ namespace Artemis.UI.Screens.Root
 
             _coreService = coreService;
             _settingsService = settingsService;
+            _registrationService = registrationService;
             _windowService = windowService;
             _debugService = debugService;
             _assetLoader = assetLoader;
@@ -176,6 +178,10 @@ namespace Artemis.UI.Screens.Root
         /// <inheritdoc />
         public void OpenMainWindow()
         {
+            _registrationService.RegisterBuiltInDataModelDisplays();
+            _registrationService.RegisterBuiltInDataModelInputs();
+            _registrationService.RegisterBuiltInPropertyEditors();
+
             if (_lifeTime.MainWindow == null)
             {
                 SidebarViewModel = _sidebarVmFactory.SidebarViewModel(this);

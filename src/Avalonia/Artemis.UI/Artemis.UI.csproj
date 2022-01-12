@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
@@ -46,25 +46,5 @@
 		<Resource Include="Assets\Images\Logo\bow-white.svg" />
 		<Resource Include="Assets\Images\Logo\bow.ico" />
 		<Resource Include="Assets\Images\Logo\bow.svg" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Compile Update="Screens\Debugger\Tabs\Settings\DebugSettingsView.axaml.cs">
-	    <DependentUpon>DebugSettingsView.axaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="Screens\ProfileEditor\Panels\ProfileElementProperties\ProfileElementPropertiesView.axaml.cs">
-	    <DependentUpon>ProfileElementPropertiesView.axaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="Screens\ProfileEditor\Panels\ProfileElementProperties\Windows\BrushConfigurationWindowView.axaml.cs">
-	    <DependentUpon>BrushConfigurationWindowView.axaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="Screens\Sidebar\ContentDialogs\SidebarCategoryEditView.axaml.cs">
-	    <DependentUpon>SidebarCategoryEditView.axaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="Screens\Sidebar\Dialogs\ProfileConfigurationEditView.axaml.cs">
-	    <DependentUpon>ProfileConfigurationEditView.axaml</DependentUpon>
-	  </Compile>
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Screens\ProfileEditor\Tools\" />
 	</ItemGroup>
 </Project>

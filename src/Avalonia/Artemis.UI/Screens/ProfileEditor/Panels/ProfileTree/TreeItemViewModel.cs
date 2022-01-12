@@ -7,6 +7,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.Interfaces;
@@ -27,7 +28,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         private bool _renaming;
         private string? _renameValue;
 
-        protected TreeItemViewModel(TreeItemViewModel? parent, ProfileElement? profileElement, IWindowService windowService, IProfileEditorService profileEditorService,
+        protected TreeItemViewModel(TreeItemViewModel? parent, ProfileElement? profileElement, IWindowService windowService, IProfileEditorService profileEditorService, IRgbService rgbService,
             IProfileEditorVmFactory profileEditorVmFactory)
         {
             _windowService = windowService;
@@ -40,9 +41,17 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             AddLayer = ReactiveCommand.Create(() =>
             {
                 if (ProfileElement is Layer targetLayer)
-                    profileEditorService.ExecuteCommand(new AddProfileElement(new Layer(targetLayer.Parent, "New layer"), targetLayer.Parent, targetLayer.Order));
+                {
+                    Layer layer = new(targetLayer.Parent, "New layer");
+                    layer.AddLeds(rgbService.EnabledDevices.SelectMany(d => d.Leds));
+                    profileEditorService.ExecuteCommand(new AddProfileElement(layer, targetLayer.Parent, targetLayer.Order));
+                }
                 else if (ProfileElement != null)
-                    profileEditorService.ExecuteCommand(new AddProfileElement(new Layer(ProfileElement, "New layer"), ProfileElement, 0));
+                {
+                    Layer layer = new(ProfileElement, "New layer");
+                    layer.AddLeds(rgbService.EnabledDevices.SelectMany(d => d.Leds));
+                    profileEditorService.ExecuteCommand(new AddProfileElement(layer, ProfileElement, 0));
+                }
             });
 
             AddFolder = ReactiveCommand.Create(() =>

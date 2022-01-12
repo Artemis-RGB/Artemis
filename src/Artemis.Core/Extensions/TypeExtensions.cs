@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Humanizer;
@@ -92,7 +93,7 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="value">The value to check</param>
         /// <returns><see langword="true" /> if the value is of a numeric type, otherwise <see langword="false" /></returns>
-        public static bool IsNumber(this object value)
+        public static bool IsNumber([NotNullWhenAttribute(true)] this object? value)
         {
             return value is sbyte
                    || value is byte

@@ -14,9 +14,8 @@ public class PropertyTreeMarginConverter : IValueConverter
     {
         if (value is TreeGroupViewModel treeGroupViewModel)
             return new Thickness(Length * treeGroupViewModel.GetDepth(), 0, 0, 0);
-        // TODO
-        // if (value is ITreePropertyViewModel treePropertyViewModel)
-        //     return new Thickness(Length * treePropertyViewModel.GetDepth(), 0, 0, 0);
+        if (value is ITreePropertyViewModel treePropertyViewModel)
+            return new Thickness(Length * treePropertyViewModel.GetDepth(), 0, 0, 0);
 
         return new Thickness(0);
     }
