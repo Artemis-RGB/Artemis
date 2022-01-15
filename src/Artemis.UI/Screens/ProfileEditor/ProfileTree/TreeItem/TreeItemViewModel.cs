@@ -151,8 +151,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             ProfileElement.AddChild(layer, 0);
             // Could be null if the default brush got disabled
             LayerBrushDescriptor brush = _layerBrushService.GetDefaultLayerBrush();
-            if (brush != null)
-                layer.ChangeLayerBrush(brush);
+            // if (brush != null)
+            //     layer.ChangeLayerBrush(brush);
 
             layer.AddLeds(_rgbService.EnabledDevices.SelectMany(d => d.Leds));
             _profileEditorService.SaveSelectedProfileConfiguration();

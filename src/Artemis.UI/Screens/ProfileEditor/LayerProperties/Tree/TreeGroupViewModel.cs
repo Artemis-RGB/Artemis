@@ -56,94 +56,94 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
             ? LayerPropertyGroupViewModel.Items
             : null;
 
-        public void OpenBrushSettings()
-        {
-            BaseLayerBrush layerBrush = LayerPropertyGroup.LayerBrush;
-            LayerBrushConfigurationDialog configurationViewModel = (LayerBrushConfigurationDialog) layerBrush.ConfigurationDialog;
-            if (configurationViewModel == null)
-                return;
+        // public void OpenBrushSettings()
+        // {
+        //     BaseLayerBrush layerBrush = LayerPropertyGroup.LayerBrush;
+        //     LayerBrushConfigurationDialog configurationViewModel = (LayerBrushConfigurationDialog) layerBrush.ConfigurationDialog;
+        //     if (configurationViewModel == null)
+        //         return;
+        //
+        //     try
+        //     {
+        //         // Limit to one constructor, there's no need to have more and it complicates things anyway
+        //         ConstructorInfo[] constructors = configurationViewModel.Type.GetConstructors();
+        //         if (constructors.Length != 1)
+        //             throw new ArtemisUIException("Brush configuration dialogs must have exactly one constructor");
+        //
+        //         // Find the BaseLayerBrush parameter, it is required by the base constructor so its there for sure
+        //         ParameterInfo brushParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerBrush).IsAssignableFrom(p.ParameterType));
+        //         ConstructorArgument argument = new(brushParameter.Name, layerBrush);
+        //         BrushConfigurationViewModel viewModel = (BrushConfigurationViewModel) layerBrush.Descriptor.Provider.Plugin.Kernel.Get(configurationViewModel.Type, argument);
+        //
+        //         _layerBrushSettingsWindowVm = new LayerBrushSettingsWindowViewModel(viewModel, configurationViewModel);
+        //         _windowManager.ShowDialog(_layerBrushSettingsWindowVm);
+        //         
+        //         // Save changes after the dialog closes
+        //         _profileEditorService.SaveSelectedProfileConfiguration();
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         _dialogService.ShowExceptionDialog("An exception occured while trying to show the brush's settings window", e);
+        //     }
+        // }
 
-            try
-            {
-                // Limit to one constructor, there's no need to have more and it complicates things anyway
-                ConstructorInfo[] constructors = configurationViewModel.Type.GetConstructors();
-                if (constructors.Length != 1)
-                    throw new ArtemisUIException("Brush configuration dialogs must have exactly one constructor");
+        // public void OpenEffectSettings()
+        // {
+        //     BaseLayerEffect layerEffect = LayerPropertyGroup.LayerEffect;
+        //     LayerEffectConfigurationDialog configurationViewModel = (LayerEffectConfigurationDialog) layerEffect.ConfigurationDialog;
+        //     if (configurationViewModel == null)
+        //         return;
+        //
+        //     try
+        //     {
+        //         // Limit to one constructor, there's no need to have more and it complicates things anyway
+        //         ConstructorInfo[] constructors = configurationViewModel.Type.GetConstructors();
+        //         if (constructors.Length != 1)
+        //             throw new ArtemisUIException("Effect configuration dialogs must have exactly one constructor");
+        //
+        //         ParameterInfo effectParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerEffect).IsAssignableFrom(p.ParameterType));
+        //         ConstructorArgument argument = new(effectParameter.Name, layerEffect);
+        //         EffectConfigurationViewModel viewModel = (EffectConfigurationViewModel) layerEffect.Descriptor.Provider.Plugin.Kernel.Get(configurationViewModel.Type, argument);
+        //         
+        //         _layerEffectSettingsWindowVm = new LayerEffectSettingsWindowViewModel(viewModel, configurationViewModel);
+        //         _windowManager.ShowDialog(_layerEffectSettingsWindowVm);
+        //         
+        //         // Save changes after the dialog closes
+        //         _profileEditorService.SaveSelectedProfileConfiguration();
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         _dialogService.ShowExceptionDialog("An exception occured while trying to show the effect's settings window", e);
+        //         throw;
+        //     }
+        // }
 
-                // Find the BaseLayerBrush parameter, it is required by the base constructor so its there for sure
-                ParameterInfo brushParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerBrush).IsAssignableFrom(p.ParameterType));
-                ConstructorArgument argument = new(brushParameter.Name, layerBrush);
-                BrushConfigurationViewModel viewModel = (BrushConfigurationViewModel) layerBrush.Descriptor.Provider.Plugin.Kernel.Get(configurationViewModel.Type, argument);
-
-                _layerBrushSettingsWindowVm = new LayerBrushSettingsWindowViewModel(viewModel, configurationViewModel);
-                _windowManager.ShowDialog(_layerBrushSettingsWindowVm);
-                
-                // Save changes after the dialog closes
-                _profileEditorService.SaveSelectedProfileConfiguration();
-            }
-            catch (Exception e)
-            {
-                _dialogService.ShowExceptionDialog("An exception occured while trying to show the brush's settings window", e);
-            }
-        }
-
-        public void OpenEffectSettings()
-        {
-            BaseLayerEffect layerEffect = LayerPropertyGroup.LayerEffect;
-            LayerEffectConfigurationDialog configurationViewModel = (LayerEffectConfigurationDialog) layerEffect.ConfigurationDialog;
-            if (configurationViewModel == null)
-                return;
-
-            try
-            {
-                // Limit to one constructor, there's no need to have more and it complicates things anyway
-                ConstructorInfo[] constructors = configurationViewModel.Type.GetConstructors();
-                if (constructors.Length != 1)
-                    throw new ArtemisUIException("Effect configuration dialogs must have exactly one constructor");
-
-                ParameterInfo effectParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerEffect).IsAssignableFrom(p.ParameterType));
-                ConstructorArgument argument = new(effectParameter.Name, layerEffect);
-                EffectConfigurationViewModel viewModel = (EffectConfigurationViewModel) layerEffect.Descriptor.Provider.Plugin.Kernel.Get(configurationViewModel.Type, argument);
-                
-                _layerEffectSettingsWindowVm = new LayerEffectSettingsWindowViewModel(viewModel, configurationViewModel);
-                _windowManager.ShowDialog(_layerEffectSettingsWindowVm);
-                
-                // Save changes after the dialog closes
-                _profileEditorService.SaveSelectedProfileConfiguration();
-            }
-            catch (Exception e)
-            {
-                _dialogService.ShowExceptionDialog("An exception occured while trying to show the effect's settings window", e);
-                throw;
-            }
-        }
-
-        public async void RenameEffect()
-        {
-            object result = await _dialogService.ShowDialogAt<RenameViewModel>(
-                "PropertyTreeDialogHost",
-                new Dictionary<string, object>
-                {
-                    {"subject", "effect"},
-                    {"currentName", LayerPropertyGroup.LayerEffect.Name}
-                }
-            );
-            if (result is string newName)
-            {
-                LayerPropertyGroup.LayerEffect.Name = newName;
-                LayerPropertyGroup.LayerEffect.HasBeenRenamed = true;
-                _profileEditorService.SaveSelectedProfileConfiguration();
-            }
-        }
-
-        public void DeleteEffect()
-        {
-            if (LayerPropertyGroup.LayerEffect == null)
-                return;
-
-            LayerPropertyGroup.ProfileElement.RemoveLayerEffect(LayerPropertyGroup.LayerEffect);
-            _profileEditorService.SaveSelectedProfileConfiguration();
-        }
+        // public async void RenameEffect()
+        // {
+        //     object result = await _dialogService.ShowDialogAt<RenameViewModel>(
+        //         "PropertyTreeDialogHost",
+        //         new Dictionary<string, object>
+        //         {
+        //             {"subject", "effect"},
+        //             {"currentName", LayerPropertyGroup.LayerEffect.Name}
+        //         }
+        //     );
+        //     if (result is string newName)
+        //     {
+        //         LayerPropertyGroup.LayerEffect.Name = newName;
+        //         LayerPropertyGroup.LayerEffect.HasBeenRenamed = true;
+        //         _profileEditorService.SaveSelectedProfileConfiguration();
+        //     }
+        // }
+        //
+        // public void DeleteEffect()
+        // {
+        //     if (LayerPropertyGroup.LayerEffect == null)
+        //         return;
+        //
+        //     LayerPropertyGroup.ProfileElement.RemoveLayerEffect(LayerPropertyGroup.LayerEffect);
+        //     _profileEditorService.SaveSelectedProfileConfiguration();
+        // }
 
         public void SuspendedToggled()
         {
@@ -175,10 +175,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 GroupType = LayerPropertyGroupType.General;
             else if (LayerPropertyGroup is LayerTransformProperties)
                 GroupType = LayerPropertyGroupType.Transform;
-            else if (LayerPropertyGroup.Parent == null && LayerPropertyGroup.LayerBrush != null)
-                GroupType = LayerPropertyGroupType.LayerBrushRoot;
-            else if (LayerPropertyGroup.Parent == null && LayerPropertyGroup.LayerEffect != null)
-                GroupType = LayerPropertyGroupType.LayerEffectRoot;
+            // else if (LayerPropertyGroup.Parent == null && LayerPropertyGroup.LayerBrush != null)
+            //     GroupType = LayerPropertyGroupType.LayerBrushRoot;
+            // else if (LayerPropertyGroup.Parent == null && LayerPropertyGroup.LayerEffect != null)
+            //     GroupType = LayerPropertyGroupType.LayerEffectRoot;
             else
                 GroupType = LayerPropertyGroupType.None;
         }

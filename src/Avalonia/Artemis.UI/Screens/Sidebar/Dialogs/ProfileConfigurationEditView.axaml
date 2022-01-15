@@ -12,7 +12,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="850"
         x:Class="Artemis.UI.Screens.Sidebar.ProfileConfigurationEditView"
         Title="{Binding DisplayName}"
-        Icon="/Assets/Images/Logo/bow.ico"
+        Icon="/Assets/Images/Logo/application.ico"
         Width="800"
         MinWidth="420"
         Height="850">

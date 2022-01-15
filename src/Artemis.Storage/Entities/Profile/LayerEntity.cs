@@ -24,9 +24,12 @@ namespace Artemis.Storage.Entities.Profile
         public List<LedEntity> Leds { get; set; }
         public List<IAdaptionHintEntity> AdaptionHints { get; set; }
 
+        public PropertyGroupEntity GeneralPropertyGroup { get; set; }
+        public PropertyGroupEntity TransformPropertyGroup { get; set; }
+        public LayerBrushEntity LayerBrush { get; set; }
+
         [BsonRef("ProfileEntity")]
         public ProfileEntity Profile { get; set; }
-
         public Guid ProfileId { get; set; }
     }
 }

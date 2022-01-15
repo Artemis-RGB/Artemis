@@ -332,19 +332,19 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             if (SelectedProfileElement == null)
                 return;
 
-            // Remove VMs of effects no longer applied on the layer
-            List<LayerPropertyGroupViewModel> toRemove = Items
-                .Where(l => l.LayerPropertyGroup.LayerEffect != null && !SelectedProfileElement.LayerEffects.Contains(l.LayerPropertyGroup.LayerEffect))
-                .ToList();
-            Items.RemoveRange(toRemove);
-
-            foreach (BaseLayerEffect layerEffect in SelectedProfileElement.LayerEffects)
-            {
-                if (Items.Any(l => l.LayerPropertyGroup.LayerEffect == layerEffect) || layerEffect.BaseProperties == null)
-                    continue;
-
-                Items.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layerEffect.BaseProperties));
-            }
+            // // Remove VMs of effects no longer applied on the layer
+            // List<LayerPropertyGroupViewModel> toRemove = Items
+            //     .Where(l => l.LayerPropertyGroup.LayerEffect != null && !SelectedProfileElement.LayerEffects.Contains(l.LayerPropertyGroup.LayerEffect))
+            //     .ToList();
+            // Items.RemoveRange(toRemove);
+            //
+            // foreach (BaseLayerEffect layerEffect in SelectedProfileElement.LayerEffects)
+            // {
+            //     if (Items.Any(l => l.LayerPropertyGroup.LayerEffect == layerEffect) || layerEffect.BaseProperties == null)
+            //         continue;
+            //
+            //     Items.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layerEffect.BaseProperties));
+            // }
 
             SortProperties();
         }
@@ -355,11 +355,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             List<LayerPropertyGroupViewModel> nonEffectProperties = Items
                 .Where(l => l.TreeGroupViewModel.GroupType != LayerEffectRoot)
                 .ToList();
-            // Order the effects
-            List<LayerPropertyGroupViewModel> effectProperties = Items
-                .Where(l => l.TreeGroupViewModel.GroupType == LayerEffectRoot && l.LayerPropertyGroup.LayerEffect != null)
-                .OrderBy(l => l.LayerPropertyGroup.LayerEffect.Order)
-                .ToList();
+            // // Order the effects
+            // List<LayerPropertyGroupViewModel> effectProperties = Items
+            //     .Where(l => l.TreeGroupViewModel.GroupType == LayerEffectRoot && l.LayerPropertyGroup.LayerEffect != null)
+            //     .OrderBy(l => l.LayerPropertyGroup.LayerEffect.Order)
+            //     .ToList();
 
             // Put the non-effect properties in front
             for (int index = 0; index < nonEffectProperties.Count; index++)
@@ -369,13 +369,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                     ((BindableCollection<LayerPropertyGroupViewModel>) Items).Move(Items.IndexOf(layerPropertyGroupViewModel), index);
             }
 
-            // Put the effect properties after, sorted by their order
-            for (int index = 0; index < effectProperties.Count; index++)
-            {
-                LayerPropertyGroupViewModel layerPropertyGroupViewModel = effectProperties[index];
-                if (Items.IndexOf(layerPropertyGroupViewModel) != index + nonEffectProperties.Count)
-                    ((BindableCollection<LayerPropertyGroupViewModel>) Items).Move(Items.IndexOf(layerPropertyGroupViewModel), index + nonEffectProperties.Count);
-            }
+            // // Put the effect properties after, sorted by their order
+            // for (int index = 0; index < effectProperties.Count; index++)
+            // {
+            //     LayerPropertyGroupViewModel layerPropertyGroupViewModel = effectProperties[index];
+            //     if (Items.IndexOf(layerPropertyGroupViewModel) != index + nonEffectProperties.Count)
+            //         ((BindableCollection<LayerPropertyGroupViewModel>) Items).Move(Items.IndexOf(layerPropertyGroupViewModel), index + nonEffectProperties.Count);
+            // }
         }
 
         public async void ToggleEffectsViewModel()

@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using Artemis.Core;
+using Artemis.Core.LayerBrushes;
+using Artemis.Core.LayerEffects;
 using Artemis.UI.Screens.Device;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor;
@@ -67,6 +69,8 @@ namespace Artemis.UI.Ninject.Factories
     {
         ProfileElementPropertyViewModel ProfileElementPropertyViewModel(ILayerProperty layerProperty);
         ProfileElementPropertyGroupViewModel ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup);
+        ProfileElementPropertyGroupViewModel ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, BaseLayerBrush layerBrush);
+        ProfileElementPropertyGroupViewModel ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, BaseLayerEffect layerEffect);
 
         TreeGroupViewModel TreeGroupViewModel(ProfileElementPropertyGroupViewModel profileElementPropertyGroupViewModel);
         // TimelineGroupViewModel TimelineGroupViewModel(ProfileElementPropertiesViewModel profileElementPropertiesViewModel);

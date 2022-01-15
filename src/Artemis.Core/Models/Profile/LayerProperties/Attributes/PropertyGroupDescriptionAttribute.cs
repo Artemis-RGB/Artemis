@@ -8,12 +8,17 @@ namespace Artemis.Core
     public class PropertyGroupDescriptionAttribute : Attribute
     {
         /// <summary>
-        ///     The user-friendly name for this property, shown in the UI.
+        ///     The identifier of this property group used for storage, if not set one will be generated based on the group name in code
         /// </summary>
-        public string? Name { get; set; }
+        public string? Identifier { get; set; }
 
         /// <summary>
-        ///     The user-friendly description for this property, shown in the UI.
+        ///     The user-friendly name for this property group, shown in the UI.
+        /// </summary>
+        public string? Name { get; set; }
+        
+        /// <summary>
+        ///     The user-friendly description for this property group, shown in the UI.
         /// </summary>
         public string? Description { get; set; }
     }

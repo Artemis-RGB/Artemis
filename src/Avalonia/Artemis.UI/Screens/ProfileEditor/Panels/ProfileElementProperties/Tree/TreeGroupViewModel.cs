@@ -46,14 +46,16 @@ public class TreeGroupViewModel : ActivatableViewModelBase
 
     public ProfileElementPropertyGroupViewModel ProfileElementPropertyGroupViewModel { get; }
     public LayerPropertyGroup LayerPropertyGroup => ProfileElementPropertyGroupViewModel.LayerPropertyGroup;
+    public BaseLayerBrush? LayerBrush => ProfileElementPropertyGroupViewModel.LayerBrush;
+    public BaseLayerEffect? LayerEffect => ProfileElementPropertyGroupViewModel.LayerEffect;
+
     public ObservableCollection<ViewModelBase>? Children => ProfileElementPropertyGroupViewModel.IsExpanded ? ProfileElementPropertyGroupViewModel.Children : null;
 
     public LayerPropertyGroupType GroupType { get; private set; }
 
     public async Task OpenBrushSettings()
     {
-        BaseLayerBrush? layerBrush = LayerPropertyGroup.LayerBrush;
-        if (layerBrush?.ConfigurationDialog is not LayerBrushConfigurationDialog configurationViewModel)
+        if (LayerBrush?.ConfigurationDialog is not LayerBrushConfigurationDialog configurationViewModel)
             return;
 
         try
@@ -65,8 +67,9 @@ public class TreeGroupViewModel : ActivatableViewModelBase
 
             // Find the BaseLayerBrush parameter, it is required by the base constructor so its there for sure
             ParameterInfo brushParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerBrush).IsAssignableFrom(p.ParameterType));
-            ConstructorArgument argument = new(brushParameter.Name!, layerBrush);
-            BrushConfigurationViewModel viewModel = (BrushConfigurationViewModel) layerBrush.Descriptor.Provider.Plugin.Kernel!.Get(configurationViewModel.Type, argument);
+            ConstructorArgument argument = new(brushParameter.Name!, LayerBrush);
+            BrushConfigurationViewModel viewModel =
+                (BrushConfigurationViewModel) LayerBrush.Descriptor.Provider.Plugin.Kernel!.Get(configurationViewModel.Type, argument);
 
             _brushConfigurationWindowViewModel = new BrushConfigurationWindowViewModel(viewModel, configurationViewModel);
             await _windowService.ShowDialogAsync(_brushConfigurationWindowViewModel);
@@ -82,8 +85,7 @@ public class TreeGroupViewModel : ActivatableViewModelBase
 
     public async Task OpenEffectSettings()
     {
-        BaseLayerEffect? layerEffect = LayerPropertyGroup.LayerEffect;
-        if (layerEffect?.ConfigurationDialog is not LayerEffectConfigurationDialog configurationViewModel)
+        if (LayerEffect?.ConfigurationDialog is not LayerEffectConfigurationDialog configurationViewModel)
             return;
 
         try
@@ -95,8 +97,9 @@ public class TreeGroupViewModel : ActivatableViewModelBase
 
             // Find the BaseLayerEffect parameter, it is required by the base constructor so its there for sure
             ParameterInfo effectParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerEffect).IsAssignableFrom(p.ParameterType));
-            ConstructorArgument argument = new(effectParameter.Name!, layerEffect);
-            EffectConfigurationViewModel viewModel = (EffectConfigurationViewModel) layerEffect.Descriptor.Provider.Plugin.Kernel!.Get(configurationViewModel.Type, argument);
+            ConstructorArgument argument = new(effectParameter.Name!, LayerEffect);
+            EffectConfigurationViewModel viewModel =
+                (EffectConfigurationViewModel) LayerEffect.Descriptor.Provider.Plugin.Kernel!.Get(configurationViewModel.Type, argument);
 
             _effectConfigurationWindowViewModel = new EffectConfigurationWindowViewModel(viewModel, configurationViewModel);
             await _windowService.ShowDialogAsync(_effectConfigurationWindowViewModel);
@@ -145,9 +148,9 @@ public class TreeGroupViewModel : ActivatableViewModelBase
             GroupType = LayerPropertyGroupType.General;
         else if (LayerPropertyGroup is LayerTransformProperties)
             GroupType = LayerPropertyGroupType.Transform;
-        else if (LayerPropertyGroup.Parent == null && LayerPropertyGroup.LayerBrush != null)
+        else if (LayerPropertyGroup.Parent == null && ProfileElementPropertyGroupViewModel.LayerBrush != null)
             GroupType = LayerPropertyGroupType.LayerBrushRoot;
-        else if (LayerPropertyGroup.Parent == null && LayerPropertyGroup.LayerEffect != null)
+        else if (LayerPropertyGroup.Parent == null && ProfileElementPropertyGroupViewModel.LayerEffect != null)
             GroupType = LayerPropertyGroupType.LayerEffectRoot;
         else
             GroupType = LayerPropertyGroupType.None;

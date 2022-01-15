@@ -23,7 +23,7 @@
 	</UserControl.Styles>
         <ComboBox Classes="brush condensed"
                   Width="200"
-                  HorizontalAlignment="Left"
+                  VerticalAlignment="Center"
                   Items="{Binding Descriptors}"
                   SelectedItem="{Binding SelectedDescriptor}">
             <ComboBox.ItemTemplate>

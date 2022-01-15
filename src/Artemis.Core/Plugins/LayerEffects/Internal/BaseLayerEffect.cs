@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
 namespace Artemis.Core.LayerEffects
@@ -24,16 +25,13 @@ namespace Artemis.Core.LayerEffects
             _profileElement = null!;
             _descriptor = null!;
             _name = null!;
+            LayerEffectEntity = null!;
         }
 
         /// <summary>
-        ///     Gets the unique ID of this effect
+        /// Gets the 
         /// </summary>
-        public Guid EntityId
-        {
-            get => _entityId;
-            internal set => SetAndNotify(ref _entityId, value);
-        }
+        public LayerEffectEntity LayerEffectEntity { get; internal set; }
 
         /// <summary>
         ///     Gets the profile element (such as layer or folder) this effect is applied to
@@ -108,8 +106,6 @@ namespace Artemis.Core.LayerEffects
         ///     Gets a reference to the layer property group without knowing it's type
         /// </summary>
         public virtual LayerPropertyGroup? BaseProperties => null;
-
-        internal string PropertyRootPath => $"LayerEffect.{EntityId}.{GetType().Name}.";
 
         /// <summary>
         ///     Gets a boolean indicating whether the layer effect is enabled or not
@@ -227,5 +223,17 @@ namespace Artemis.Core.LayerEffects
         public override string BrokenDisplayName => Name;
 
         #endregion
+
+        public void Save()
+        {
+            // No need to update the ID, type and provider ID. They're set once by the LayerBrushDescriptors CreateInstance and can't change
+            LayerEffectEntity.Name = Name;
+            LayerEffectEntity.Suspended = Suspended;
+            LayerEffectEntity.HasBeenRenamed = HasBeenRenamed;
+            LayerEffectEntity.Order = Order;
+
+            BaseProperties?.ApplyToEntity();
+            LayerEffectEntity.PropertyGroup = BaseProperties?.PropertyGroupEntity;
+        }
     }
 }

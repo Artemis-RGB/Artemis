@@ -36,8 +36,7 @@ namespace Artemis.Core.LayerEffects
         internal void InitializeProperties()
         {
             Properties = Activator.CreateInstance<T>();
-            Properties.LayerEffect = this;
-            Properties.Initialize(ProfileElement, PropertyRootPath, Descriptor.Provider);
+            Properties.Initialize(ProfileElement, null, new PropertyGroupDescriptionAttribute(){Identifier = "LayerEffect"}, LayerEffectEntity.PropertyGroup);
             PropertiesInitialized = true;
 
             EnableLayerEffect();

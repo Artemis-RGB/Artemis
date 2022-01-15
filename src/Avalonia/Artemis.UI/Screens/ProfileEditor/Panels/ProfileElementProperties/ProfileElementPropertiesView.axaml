@@ -3,18 +3,45 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileElementProperties"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.ProfileElementPropertiesView">
-    <Grid ColumnDefinitions="*,Auto,*">
-        <ItemsControl Grid.Column="0" Items="{Binding PropertyGroupViewModels}">
-            <ItemsControl.ItemTemplate>
-                <TreeDataTemplate DataType="{x:Type local:ProfileElementPropertyGroupViewModel}" ItemsSource="{Binding Children}">
-                    <ContentControl Content="{Binding TreeGroupViewModel}" />
-                </TreeDataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
 
-        <GridSplitter Grid.Column="1"></GridSplitter>
-	</Grid>
+    <Grid ColumnDefinitions="*,Auto,*" RowDefinitions="48,*">
+        <ContentControl Grid.Row="0" Content="{Binding PlaybackViewModel}"></ContentControl>
+
+        <GridSplitter Grid.Row="0" Grid.Column="1" Cursor="SizeWestEast" Foreground="Transparent" Background="Transparent" />
+
+        <ScrollViewer Grid.Row="1"
+                      Grid.Column="0"
+                      Name="TreeScrollViewer"
+                      Offset="{Binding #TimelineScrollViewer.Offset, Mode=OneWay}"
+                      Background="{DynamicResource CardStrokeColorDefaultSolidBrush}">
+            <ItemsControl Items="{Binding PropertyGroupViewModels}" Padding="0 0 8 0">
+                <ItemsControl.ItemTemplate>
+                    <TreeDataTemplate DataType="{x:Type local:ProfileElementPropertyGroupViewModel}" ItemsSource="{Binding Children}">
+                        <ContentControl Content="{Binding TreeGroupViewModel}" />
+                    </TreeDataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <GridSplitter Grid.Row="1" Grid.Column="1" Cursor="SizeWestEast" Foreground="Transparent" Background="{DynamicResource CardStrokeColorDefaultSolidBrush}" />
+
+        <ScrollViewer Grid.Row="1"
+                      Grid.Column="2"
+                      Name="TimelineScrollViewer"
+                      Offset="{Binding #TreeScrollViewer.Offset, Mode=OneWay}"
+                      VerticalScrollBarVisibility="Hidden"
+                      Background="{DynamicResource CardStrokeColorDefaultSolidBrush}">
+            <ItemsControl Items="{Binding PropertyGroupViewModels}">
+                <ItemsControl.ItemTemplate>
+                    <TreeDataTemplate DataType="{x:Type local:ProfileElementPropertyGroupViewModel}" ItemsSource="{Binding Children}">
+                        <ContentControl Content="{Binding TreeGroupViewModel}" />
+                    </TreeDataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
 
 </UserControl>

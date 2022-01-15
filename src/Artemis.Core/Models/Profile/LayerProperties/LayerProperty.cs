@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 
@@ -27,10 +28,10 @@ namespace Artemis.Core
             // These are set right after construction to keep the constructor (and inherited constructs) clean
             ProfileElement = null!;
             LayerPropertyGroup = null!;
-            Path = null!;
             Entity = null!;
             PropertyDescription = null!;
             DataBinding = null!;
+            Path = "";
 
             CurrentValue = default!;
             DefaultValue = default!;
@@ -117,13 +118,11 @@ namespace Artemis.Core
             }
         }
 
-        /// <summary>
-        ///     Gets the profile element (such as layer or folder) this property is applied to
-        /// </summary>
-        public RenderProfileElement ProfileElement { get; internal set; }
+        /// <inheritdoc />
+        public RenderProfileElement ProfileElement { get; private set; }
 
         /// <inheritdoc />
-        public LayerPropertyGroup LayerPropertyGroup { get; internal set; }
+        public LayerPropertyGroup LayerPropertyGroup { get; private set; }
 
         #endregion
 
@@ -457,16 +456,18 @@ namespace Artemis.Core
         internal PropertyEntity Entity { get; set; }
 
         /// <inheritdoc />
-        public void Initialize(RenderProfileElement profileElement, LayerPropertyGroup group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description, string path)
+        public void Initialize(RenderProfileElement profileElement, LayerPropertyGroup group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description)
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
+
+            if (description.Identifier == null)
+                throw new ArtemisCoreException("Can't initialize a property group without an identifier");
 
             _isInitialized = true;
 
             ProfileElement = profileElement ?? throw new ArgumentNullException(nameof(profileElement));
             LayerPropertyGroup = group ?? throw new ArgumentNullException(nameof(group));
-            Path = path;
             Entity = entity ?? throw new ArgumentNullException(nameof(entity));
             PropertyDescription = description ?? throw new ArgumentNullException(nameof(description));
             IsLoadedFromStorage = fromStorage;
@@ -475,6 +476,9 @@ namespace Artemis.Core
             if (PropertyDescription.DisableKeyframes)
                 KeyframesSupported = false;
 
+            // Create the path to this property by walking up the tree
+            Path = LayerPropertyGroup.Path + "." + description.Identifier;
+            
             OnInitialize();
         }
 

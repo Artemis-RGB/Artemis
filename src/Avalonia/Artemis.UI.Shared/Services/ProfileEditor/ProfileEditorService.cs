@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services.Interfaces;
+using Serilog;
 
 namespace Artemis.UI.Shared.Services.ProfileEditor;
 
@@ -15,19 +16,27 @@ internal class ProfileEditorService : IProfileEditorService
     private readonly Dictionary<ProfileConfiguration, ProfileEditorHistory> _profileEditorHistories = new();
     private readonly BehaviorSubject<RenderProfileElement?> _profileElementSubject = new(null);
     private readonly BehaviorSubject<TimeSpan> _timeSubject = new(TimeSpan.Zero);
+    private readonly BehaviorSubject<bool> _playingSubject = new(false);
+    private readonly BehaviorSubject<bool> _suspendedEditingSubject = new(false);
     private readonly BehaviorSubject<double> _pixelsPerSecondSubject = new(300);
+    private readonly ILogger _logger;
     private readonly IProfileService _profileService;
+    private readonly IModuleService _moduleService;
     private readonly IWindowService _windowService;
 
-    public ProfileEditorService(IProfileService profileService, IWindowService windowService)
+    public ProfileEditorService(ILogger logger, IProfileService profileService, IModuleService moduleService, IWindowService windowService)
     {
+        _logger = logger;
         _profileService = profileService;
+        _moduleService = moduleService;
         _windowService = windowService;
 
         ProfileConfiguration = _profileConfigurationSubject.AsObservable();
         ProfileElement = _profileElementSubject.AsObservable();
         History = Observable.Defer(() => Observable.Return(GetHistory(_profileConfigurationSubject.Value))).Concat(ProfileConfiguration.Select(GetHistory));
         Time = _timeSubject.AsObservable();
+        Playing = _playingSubject.AsObservable();
+        SuspendedEditing = _suspendedEditingSubject.AsObservable();
         PixelsPerSecond = _pixelsPerSecondSubject.AsObservable();
     }
 
@@ -47,10 +56,46 @@ internal class ProfileEditorService : IProfileEditorService
     public IObservable<RenderProfileElement?> ProfileElement { get; }
     public IObservable<ProfileEditorHistory?> History { get; }
     public IObservable<TimeSpan> Time { get; }
+    public IObservable<bool> Playing { get; }
+    public IObservable<bool> SuspendedEditing { get; }
     public IObservable<double> PixelsPerSecond { get; }
 
     public void ChangeCurrentProfileConfiguration(ProfileConfiguration? profileConfiguration)
     {
+        if (ReferenceEquals(_profileConfigurationSubject.Value, profileConfiguration))
+            return;
+
+        _logger.Verbose("ChangeCurrentProfileConfiguration {profile}", profileConfiguration);
+
+        // Stop playing and save the current profile
+        Pause();
+        if (_profileConfigurationSubject.Value?.Profile != null)
+            _profileConfigurationSubject.Value.Profile.LastSelectedProfileElement = _profileElementSubject.Value;
+        SaveProfile();
+
+        // No need to deactivate the profile, if needed it will be deactivated next update
+        if (_profileConfigurationSubject.Value != null)
+            _profileConfigurationSubject.Value.IsBeingEdited = false;
+
+        // Deselect whatever profile element was active
+        ChangeCurrentProfileElement(null);
+
+        // The new profile may need activation
+        if (profileConfiguration != null)
+        {
+            profileConfiguration.IsBeingEdited = true;
+            _moduleService.SetActivationOverride(profileConfiguration.Module);
+            _profileService.ActivateProfile(profileConfiguration);
+            _profileService.RenderForEditor = true;
+
+            if (profileConfiguration.Profile?.LastSelectedProfileElement is RenderProfileElement renderProfileElement)
+                ChangeCurrentProfileElement(renderProfileElement);
+        }
+        else
+        {
+            _moduleService.SetActivationOverride(null);
+            _profileService.RenderForEditor = false;
+        }
         _profileConfigurationSubject.OnNext(profileConfiguration);
     }
 
@@ -61,6 +106,7 @@ internal class ProfileEditorService : IProfileEditorService
 
     public void ChangeTime(TimeSpan time)
     {
+        Tick(time);
         _timeSubject.OnNext(time);
     }
 
@@ -100,5 +146,49 @@ internal class ProfileEditorService : IProfileEditorService
     public async Task SaveProfileAsync()
     {
         await Task.Run(SaveProfile);
+    }
+
+    /// <inheritdoc />
+    public void Play()
+    {
+        if (!_playingSubject.Value)
+            _playingSubject.OnNext(true);
+    }
+
+    /// <inheritdoc />
+    public void Pause()
+    {
+        if (_playingSubject.Value)
+            _playingSubject.OnNext(false);
+    }
+
+    private void Tick(TimeSpan time)
+    {
+        if (_profileConfigurationSubject.Value?.Profile == null || _suspendedEditingSubject.Value)
+            return;
+
+        TickProfileElement(_profileConfigurationSubject.Value.Profile.GetRootFolder(), time);
+    }
+
+    private void TickProfileElement(ProfileElement profileElement, TimeSpan time)
+    {
+        if (profileElement is not RenderProfileElement renderElement)
+            return;
+
+        if (renderElement.Suspended)
+        {
+            renderElement.Disable();
+        }
+        else
+        {
+            renderElement.Enable();
+            renderElement.Timeline.Override(
+                time,
+                (renderElement != _profileElementSubject.Value || renderElement.Timeline.Length < time) && renderElement.Timeline.PlayMode == TimelinePlayMode.Repeat
+            );
+
+            foreach (ProfileElement child in renderElement.Children)
+                TickProfileElement(child, time);
+        }
     }
 }

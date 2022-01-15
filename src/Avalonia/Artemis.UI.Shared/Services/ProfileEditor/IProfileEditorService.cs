@@ -3,22 +3,86 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Shared.Services.Interfaces;
 
-namespace Artemis.UI.Shared.Services.ProfileEditor
+namespace Artemis.UI.Shared.Services.ProfileEditor;
+
+/// <summary>
+///     Provides access the the profile editor back-end logic.
+/// </summary>
+public interface IProfileEditorService : IArtemisSharedUIService
 {
-    public interface IProfileEditorService : IArtemisSharedUIService
-    {
-        IObservable<ProfileConfiguration?> ProfileConfiguration { get; }
-        IObservable<RenderProfileElement?> ProfileElement { get; }
-        IObservable<ProfileEditorHistory?> History { get; }
-        IObservable<TimeSpan> Time { get; }
-        IObservable<double> PixelsPerSecond { get; }
+    /// <summary>
+    ///     Gets an observable of the currently selected profile configuration.
+    /// </summary>
+    IObservable<ProfileConfiguration?> ProfileConfiguration { get; }
 
-        void ChangeCurrentProfileConfiguration(ProfileConfiguration? profileConfiguration);
-        void ChangeCurrentProfileElement(RenderProfileElement? renderProfileElement);
-        void ChangeTime(TimeSpan time);
+    /// <summary>
+    ///     Gets an observable of the currently selected profile element.
+    /// </summary>
+    IObservable<RenderProfileElement?> ProfileElement { get; }
 
-        void ExecuteCommand(IProfileEditorCommand command);
-        void SaveProfile();
-        Task SaveProfileAsync();
-    }
+    /// <summary>
+    ///     Gets an observable of the current editor history.
+    /// </summary>
+    IObservable<ProfileEditorHistory?> History { get; }
+
+    /// <summary>
+    ///     Gets an observable of the profile preview playback time.
+    /// </summary>
+    IObservable<TimeSpan> Time { get; }
+
+    /// <summary>
+    ///     Gets an observable of the profile preview playing state.
+    /// </summary>
+    IObservable<bool> Playing { get; }
+
+    /// <summary>
+    ///     Gets an observable of the zoom level.
+    /// </summary>
+    IObservable<double> PixelsPerSecond { get; }
+
+
+    /// <summary>
+    ///     Changes the selected profile by its <see cref="Core.ProfileConfiguration" />.
+    /// </summary>
+    /// <param name="profileConfiguration">The profile configuration of the profile to select.</param>
+    void ChangeCurrentProfileConfiguration(ProfileConfiguration? profileConfiguration);
+
+    /// <summary>
+    ///     Changes the selected profile element.
+    /// </summary>
+    /// <param name="renderProfileElement">The profile element to select.</param>
+    void ChangeCurrentProfileElement(RenderProfileElement? renderProfileElement);
+
+    /// <summary>
+    ///     Changes the current profile preview playback time.
+    /// </summary>
+    /// <param name="time">The new time.</param>
+    void ChangeTime(TimeSpan time);
+
+    /// <summary>
+    ///     Executes the provided command and adds it to the history.
+    /// </summary>
+    /// <param name="command">The command to execute.</param>
+    void ExecuteCommand(IProfileEditorCommand command);
+
+    /// <summary>
+    ///     Saves the current profile.
+    /// </summary>
+    void SaveProfile();
+
+    /// <summary>
+    ///     Asynchronously saves the current profile.
+    /// </summary>
+    /// <returns>A task representing the save action.</returns>
+    Task SaveProfileAsync();
+
+    /// <summary>
+    ///     Resumes profile preview playback.
+    /// </summary>
+    void Play();
+
+    /// <summary>
+    ///     Pauses profile preview playback.
+    /// </summary>
+    void Pause();
 }

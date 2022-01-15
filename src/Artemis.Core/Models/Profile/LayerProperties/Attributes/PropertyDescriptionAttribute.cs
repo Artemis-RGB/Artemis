@@ -8,6 +8,11 @@ namespace Artemis.Core
     public class PropertyDescriptionAttribute : Attribute
     {
         /// <summary>
+        ///     The identifier of this property used for storage, if not set one will be generated property name in code
+        /// </summary>
+        public string? Identifier { get; set; }
+
+        /// <summary>
         ///     The user-friendly name for this property, shown in the UI
         /// </summary>
         public string? Name { get; set; }

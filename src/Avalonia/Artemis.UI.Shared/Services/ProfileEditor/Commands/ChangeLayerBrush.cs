@@ -1,4 +1,5 @@
-﻿using Artemis.Core;
+﻿using System;
+using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 
 namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
@@ -6,11 +7,14 @@ namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 /// <summary>
 ///     Represents a profile editor command that can be used to change the brush of a layer.
 /// </summary>
-public class ChangeLayerBrush : IProfileEditorCommand
+public class ChangeLayerBrush : IProfileEditorCommand, IDisposable
 {
     private readonly Layer _layer;
     private readonly LayerBrushDescriptor _layerBrushDescriptor;
-    private readonly LayerBrushDescriptor? _previousDescriptor;
+    private readonly BaseLayerBrush? _previousBrush;
+
+    private BaseLayerBrush? _newBrush;
+    private bool _executed;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="ChangeLayerBrush" /> class.
@@ -19,7 +23,7 @@ public class ChangeLayerBrush : IProfileEditorCommand
     {
         _layer = layer;
         _layerBrushDescriptor = layerBrushDescriptor;
-        _previousDescriptor = layer.LayerBrush?.Descriptor;
+        _previousBrush = _layer.LayerBrush;
     }
 
     #region Implementation of IProfileEditorCommand
@@ -30,14 +34,32 @@ public class ChangeLayerBrush : IProfileEditorCommand
     /// <inheritdoc />
     public void Execute()
     {
-        _layer.ChangeLayerBrush(_layerBrushDescriptor);
+        // Create the new brush
+        _newBrush ??= _layerBrushDescriptor.CreateInstance(_layer, null);
+        // Change the brush to the new brush
+        _layer.ChangeLayerBrush(_newBrush);
+        
+        _executed = true;
     }
 
     /// <inheritdoc />
     public void Undo()
     {
-        if (_previousDescriptor != null)
-            _layer.ChangeLayerBrush(_previousDescriptor);
+        _layer.ChangeLayerBrush(_previousBrush);
+        _executed = false;
+    }
+
+    #endregion
+
+    #region IDisposable
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (_executed)
+            _previousBrush?.Dispose();
+        else
+            _newBrush?.Dispose();
     }
 
     #endregion

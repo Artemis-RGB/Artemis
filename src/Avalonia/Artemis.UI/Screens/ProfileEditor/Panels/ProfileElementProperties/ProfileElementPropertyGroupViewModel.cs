@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using Artemis.Core;
+using Artemis.Core.LayerBrushes;
+using Artemis.Core.LayerEffects;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Tree;
 using Artemis.UI.Shared;
@@ -33,8 +35,23 @@ public class ProfileElementPropertyGroupViewModel : ViewModelBase
         PopulateChildren();
     }
 
+    public ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory, IPropertyInputService propertyInputService, BaseLayerBrush layerBrush)
+        : this(layerPropertyGroup, layerPropertyVmFactory, propertyInputService)
+    {
+        LayerBrush = layerBrush;
+    }
+    
+    public ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory, IPropertyInputService propertyInputService, BaseLayerEffect layerEffect) 
+        : this(layerPropertyGroup, layerPropertyVmFactory, propertyInputService)
+    {
+        LayerEffect = layerEffect;
+    }
+
     public ObservableCollection<ViewModelBase> Children { get; }
     public LayerPropertyGroup LayerPropertyGroup { get; }
+    public BaseLayerBrush? LayerBrush { get; }
+    public BaseLayerEffect? LayerEffect { get; }
+
     public TreeGroupViewModel TreeGroupViewModel { get; }
 
     public bool IsVisible

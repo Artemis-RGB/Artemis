@@ -1,22 +1,14 @@
 ﻿using System.Collections.Generic;
 using Artemis.Storage.Entities.Profile.DataBindings;
 
-namespace Artemis.Storage.Entities.Profile
+namespace Artemis.Storage.Entities.Profile;
+
+public class PropertyEntity
 {
-    public class PropertyEntity
-    {
-        public PropertyEntity()
-        {
-            KeyframeEntities = new List<KeyframeEntity>();
-        }
+    public string Identifier { get; set; }
+    public string Value { get; set; }
+    public bool KeyframesEnabled { get; set; }
 
-        public string FeatureId { get; set; }
-        public string Path { get; set; }
-        public DataBindingEntity DataBinding { get; set; }
-
-        public string Value { get; set; }
-        public bool KeyframesEnabled { get; set; }
-
-        public List<KeyframeEntity> KeyframeEntities { get; set; }
-    }
+    public DataBindingEntity DataBinding { get; set; }
+    public List<KeyframeEntity> KeyframeEntities { get; set; } = new();
 }

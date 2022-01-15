@@ -93,8 +93,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             folder.AddChild(newLayer);
 
             LayerBrushDescriptor brush = _layerBrushService.GetDefaultLayerBrush();
-            if (brush != null)
-                newLayer.ChangeLayerBrush(brush);
+            // if (brush != null)
+            //     newLayer.ChangeLayerBrush(brush);
 
             newLayer.AddLeds(selectedLeds);
             ProfileEditorService.ChangeSelectedProfileElement(newLayer);

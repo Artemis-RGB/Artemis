@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Artemis.Storage.Entities.Profile
 {
@@ -11,5 +12,7 @@ namespace Artemis.Storage.Entities.Profile
         public bool Suspended { get; set; }
         public bool HasBeenRenamed { get; set; }
         public int Order { get; set; }
+
+        public PropertyGroupEntity PropertyGroup { get; set; }
     }
 }

@@ -94,7 +94,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the general properties of the layer
         /// </summary>
-        [PropertyGroupDescription(Name = "General", Description = "A collection of general properties")]
+        [PropertyGroupDescription(Identifier = "General", Name = "General", Description = "A collection of general properties")]
         public LayerGeneralProperties General
         {
             get => _general;
@@ -104,7 +104,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the transform properties of the layer
         /// </summary>
-        [PropertyGroupDescription(Name = "Transform", Description = "A collection of transformation properties")]
+        [PropertyGroupDescription(Identifier = "Transform", Name = "Transform", Description = "A collection of transformation properties")]
         public LayerTransformProperties Transform
         {
             get => _transform;
@@ -208,19 +208,20 @@ namespace Artemis.Core
             LayerBrushStore.LayerBrushRemoved += LayerBrushStoreOnLayerBrushRemoved;
 
             // Layers have two hardcoded property groups, instantiate them
-            Attribute generalAttribute = Attribute.GetCustomAttribute(
+            PropertyGroupDescriptionAttribute generalAttribute = (PropertyGroupDescriptionAttribute) Attribute.GetCustomAttribute(
                 GetType().GetProperty(nameof(General))!,
                 typeof(PropertyGroupDescriptionAttribute)
             )!;
-            Attribute transformAttribute = Attribute.GetCustomAttribute(
+            PropertyGroupDescriptionAttribute transformAttribute = (PropertyGroupDescriptionAttribute) Attribute.GetCustomAttribute(
                 GetType().GetProperty(nameof(Transform))!,
                 typeof(PropertyGroupDescriptionAttribute)
             )!;
 
-            General.GroupDescription = (PropertyGroupDescriptionAttribute) generalAttribute;
-            General.Initialize(this, "General.", Constants.CorePluginFeature);
-            Transform.GroupDescription = (PropertyGroupDescriptionAttribute) transformAttribute;
-            Transform.Initialize(this, "Transform.", Constants.CorePluginFeature);
+            LayerEntity.GeneralPropertyGroup ??= new PropertyGroupEntity {Identifier = generalAttribute.Identifier};
+            LayerEntity.TransformPropertyGroup ??= new PropertyGroupEntity {Identifier = transformAttribute.Identifier};
+
+            General.Initialize(this, null, generalAttribute, LayerEntity.GeneralPropertyGroup);
+            Transform.Initialize(this, null, transformAttribute, LayerEntity.TransformPropertyGroup);
 
             General.ShapeType.CurrentValueSet += ShapeTypeOnCurrentValueSet;
             ApplyShapeType();
@@ -241,8 +242,7 @@ namespace Artemis.Core
                 return;
 
             LayerBrushReference? current = General.BrushReference.CurrentValue;
-            if (e.Registration.PluginFeature.Id == current?.LayerBrushProviderId &&
-                e.Registration.LayerBrushDescriptor.LayerBrushType.Name == current.BrushType)
+            if (e.Registration.PluginFeature.Id == current?.LayerBrushProviderId && e.Registration.LayerBrushDescriptor.LayerBrushType.Name == current.BrushType)
                 ActivateLayerBrush();
         }
 
@@ -282,7 +282,13 @@ namespace Artemis.Core
 
             General.ApplyToEntity();
             Transform.ApplyToEntity();
-            LayerBrush?.BaseProperties?.ApplyToEntity();
+
+            // Don't override the old value of LayerBrush if the current value is null, this avoid losing settings of an unavailable brush
+            if (LayerBrush != null)
+            {
+                LayerBrush.Save();
+                LayerEntity.LayerBrush = LayerBrush.LayerBrushEntity;
+            }
 
             // LEDs
             LayerEntity.Leds.Clear();
@@ -712,53 +718,32 @@ namespace Artemis.Core
         #region Brush management
 
         /// <summary>
-        ///     Changes the current layer brush to the brush described in the provided <paramref name="descriptor" />
+        ///     Changes the current layer brush to the provided layer brush and activates it
         /// </summary>
-        public void ChangeLayerBrush(LayerBrushDescriptor descriptor)
+        public void ChangeLayerBrush(BaseLayerBrush? layerBrush)
         {
-            if (descriptor == null)
-                throw new ArgumentNullException(nameof(descriptor));
+            General.BrushReference.SetCurrentValue(layerBrush != null ? new LayerBrushReference(layerBrush.Descriptor) : null, null);
+            LayerBrush = layerBrush;
 
             if (LayerBrush != null)
-            {
-                BaseLayerBrush brush = LayerBrush;
-                LayerBrush = null;
-                brush.Dispose();
-            }
-
-            // Ensure the brush reference matches the brush
-            LayerBrushReference? current = General.BrushReference.BaseValue;
-            if (!descriptor.MatchesLayerBrushReference(current))
-                General.BrushReference.SetCurrentValue(new LayerBrushReference(descriptor), null);
-
-            ActivateLayerBrush();
-        }
-
-        /// <summary>
-        ///     Removes the current layer brush from the layer
-        /// </summary>
-        public void RemoveLayerBrush()
-        {
-            if (LayerBrush == null)
-                return;
-
-            BaseLayerBrush brush = LayerBrush;
-            DeactivateLayerBrush();
-            LayerEntity.PropertyEntities.RemoveAll(p => p.FeatureId == brush.ProviderId && p.Path.StartsWith("LayerBrush."));
+                ActivateLayerBrush();
+            else
+                OnLayerBrushUpdated();
         }
 
         internal void ActivateLayerBrush()
         {
             try
             {
-                LayerBrushReference? current = General.BrushReference.CurrentValue;
-                if (current == null)
+                if (LayerBrush == null)
+                {
+                    // If the brush is null, try to instantiate it
+                    LayerBrushReference? brushReference = General.BrushReference.CurrentValue;
+                    if (brushReference?.LayerBrushProviderId != null && brushReference.BrushType != null)
+                        ChangeLayerBrush(LayerBrushStore.Get(brushReference.LayerBrushProviderId, brushReference.BrushType)?.LayerBrushDescriptor.CreateInstance(this, LayerEntity.LayerBrush));
+                    // If that's not possible there's nothing to do
                     return;
-
-                LayerBrushDescriptor? descriptor = current.LayerBrushProviderId != null && current.BrushType != null
-                    ? LayerBrushStore.Get(current.LayerBrushProviderId, current.BrushType)?.LayerBrushDescriptor
-                    : null;
-                descriptor?.CreateInstance(this);
+                }
 
                 General.ShapeType.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
                 General.BlendMode.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
@@ -778,9 +763,9 @@ namespace Artemis.Core
             if (LayerBrush == null)
                 return;
 
-            BaseLayerBrush brush = LayerBrush;
+            BaseLayerBrush? brush = LayerBrush;
             LayerBrush = null;
-            brush.Dispose();
+            brush?.Dispose();
 
             OnLayerBrushUpdated();
         }

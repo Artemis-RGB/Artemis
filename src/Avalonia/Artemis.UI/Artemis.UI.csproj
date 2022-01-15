@@ -12,6 +12,7 @@
 	<ItemGroup>
 	  <None Remove="Artemis.UI.Avalonia.csproj.DotSettings" />
 	  <None Remove="Artemis.UI.csproj.DotSettings" />
+	  <None Remove="Assets\Images\Logo\application.ico" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Avalonia" Version="0.10.11" />

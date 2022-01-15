@@ -49,13 +49,13 @@ namespace Artemis.UI.DefaultTypes.PropertyInput
         {
             if (LayerProperty.ProfileElement is Layer layer)
             {
-                layer.ChangeLayerBrush(SelectedDescriptor);
-                if (layer.LayerBrush?.Presets != null && layer.LayerBrush.Presets.Any())
-                    Execute.PostToUIThread(async () =>
-                    {
-                        await Task.Delay(400);
-                        await _dialogService.ShowDialogAt<LayerBrushPresetViewModel>("LayerProperties", new Dictionary<string, object> {{"layerBrush", layer.LayerBrush}});
-                    });
+                // layer.ChangeLayerBrush(SelectedDescriptor);
+                // if (layer.LayerBrush?.Presets != null && layer.LayerBrush.Presets.Any())
+                //     Execute.PostToUIThread(async () =>
+                //     {
+                //         await Task.Delay(400);
+                //         await _dialogService.ShowDialogAt<LayerBrushPresetViewModel>("LayerProperties", new Dictionary<string, object> {{"layerBrush", layer.LayerBrush}});
+                //     });
             }
         }
 

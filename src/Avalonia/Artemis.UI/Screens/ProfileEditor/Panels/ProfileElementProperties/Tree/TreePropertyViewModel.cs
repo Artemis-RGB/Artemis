@@ -16,6 +16,8 @@ internal class TreePropertyViewModel<T> : ActivatableViewModelBase, ITreePropert
     public LayerProperty<T> LayerProperty { get; }
     public ProfileElementPropertyViewModel ProfileElementPropertyViewModel { get; }
     public PropertyInputViewModel<T>? PropertyInputViewModel { get; }
+
+    public ILayerProperty BaseLayerProperty => LayerProperty;
     public bool HasDataBinding => LayerProperty.HasDataBinding;
 
     public double GetDepth()

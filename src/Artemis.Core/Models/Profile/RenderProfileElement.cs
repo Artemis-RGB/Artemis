@@ -97,20 +97,10 @@ namespace Artemis.Core
         internal void SaveRenderElement()
         {
             RenderElementEntity.LayerEffects.Clear();
-            foreach (BaseLayerEffect layerEffect in LayerEffects)
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
             {
-                LayerEffectEntity layerEffectEntity = new()
-                {
-                    Id = layerEffect.EntityId,
-                    ProviderId = layerEffect.Descriptor?.PlaceholderFor ?? layerEffect.ProviderId,
-                    EffectType = layerEffect.GetEffectTypeName(),
-                    Name = layerEffect.Name,
-                    Suspended = layerEffect.Suspended,
-                    HasBeenRenamed = layerEffect.HasBeenRenamed,
-                    Order = layerEffect.Order
-                };
-                RenderElementEntity.LayerEffects.Add(layerEffectEntity);
-                layerEffect.BaseProperties?.ApplyToEntity();
+                baseLayerEffect.Save();
+                RenderElementEntity.LayerEffects.Add(baseLayerEffect.LayerEffectEntity);
             }
 
             // Condition
@@ -310,7 +300,7 @@ namespace Artemis.Core
             foreach (LayerEffectEntity layerEffectEntity in RenderElementEntity.LayerEffects)
             {
                 // If there is a non-placeholder existing effect, skip this entity
-                BaseLayerEffect? existing = LayerEffectsList.FirstOrDefault(e => e.EntityId == layerEffectEntity.Id);
+                BaseLayerEffect? existing = LayerEffectsList.FirstOrDefault(e => e.LayerEffectEntity.Id == layerEffectEntity.Id);
                 if (existing != null && existing.Descriptor.PlaceholderFor == null)
                     continue;
 
@@ -351,7 +341,7 @@ namespace Artemis.Core
             List<BaseLayerEffect> pluginEffects = LayerEffectsList.Where(ef => ef.ProviderId == e.Registration.PluginFeature.Id).ToList();
             foreach (BaseLayerEffect pluginEffect in pluginEffects)
             {
-                LayerEffectEntity entity = RenderElementEntity.LayerEffects.First(en => en.Id == pluginEffect.EntityId);
+                LayerEffectEntity entity = RenderElementEntity.LayerEffects.First(en => en.Id == pluginEffect.LayerEffectEntity.Id);
                 LayerEffectsList.Remove(pluginEffect);
                 pluginEffect.Dispose();
 

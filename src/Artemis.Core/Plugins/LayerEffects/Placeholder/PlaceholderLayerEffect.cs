@@ -13,7 +13,7 @@ namespace Artemis.Core.LayerEffects.Placeholder
             OriginalEntity = originalEntity;
             PlaceholderFor = placeholderFor;
 
-            EntityId = OriginalEntity.Id;
+            LayerEffectEntity = originalEntity;
             Order = OriginalEntity.Order;
             Name = OriginalEntity.Name;
             Suspended = OriginalEntity.Suspended;

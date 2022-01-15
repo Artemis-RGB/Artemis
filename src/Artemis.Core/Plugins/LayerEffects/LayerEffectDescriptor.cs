@@ -54,11 +54,28 @@ namespace Artemis.Core.LayerEffects
         /// <summary>
         ///     Creates an instance of the described effect and applies it to the render element
         /// </summary>
-        internal void CreateInstance(RenderProfileElement renderElement, LayerEffectEntity entity)
+        internal void CreateInstance(RenderProfileElement renderElement, LayerEffectEntity? entity)
         {
-            // Skip effects already on the element
-            if (renderElement.LayerEffects.Any(e => e.EntityId == entity.Id))
-                return;
+            if (LayerEffectType == null)
+                throw new ArtemisCoreException("Cannot create an instance of a layer effect because this descriptor is not a placeholder but is still missing its LayerEffectType");
+
+            if (entity == null)
+            {
+                entity = new LayerEffectEntity
+                {
+                    Id = Guid.NewGuid(),
+                    Suspended = false,
+                    Order = renderElement.LayerEffects.Count + 1,
+                    ProviderId = Provider.Id,
+                    EffectType = LayerEffectType.FullName
+                };
+            }
+            else
+            {
+                // Skip effects already on the element
+                if (renderElement.LayerEffects.Any(e => e.LayerEffectEntity.Id == entity.Id))
+                    return;
+            }
 
             if (PlaceholderFor != null)
             {
@@ -66,12 +83,9 @@ namespace Artemis.Core.LayerEffects
                 return;
             }
 
-            if (LayerEffectType == null)
-                throw new ArtemisCoreException("Cannot create an instance of a layer effect because this descriptor is not a placeholder but is still missing its LayerEffectType");
-
             BaseLayerEffect effect = (BaseLayerEffect) Provider.Plugin.Kernel!.Get(LayerEffectType);
             effect.ProfileElement = renderElement;
-            effect.EntityId = entity.Id;
+            effect.LayerEffectEntity = entity;
             effect.Order = entity.Order;
             effect.Name = entity.Name;
             effect.Suspended = entity.Suspended;

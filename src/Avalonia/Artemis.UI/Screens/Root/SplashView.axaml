@@ -5,7 +5,7 @@
         xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Artemis.UI.Screens.Root.SplashView"
-        Icon="/Assets/Images/Logo/bow.ico"
+        Icon="/Assets/Images/Logo/application.ico"
         Title="Artemis 2.0"
         Height="450"
         Width="400"

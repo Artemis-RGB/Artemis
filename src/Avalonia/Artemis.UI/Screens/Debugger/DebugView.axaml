@@ -7,7 +7,7 @@
         xmlns:reactiveUi="http://reactiveui.net"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
         x:Class="Artemis.UI.Screens.Debugger.DebugView"
-        Icon="/Assets/Images/Logo/bow.ico"
+        Icon="/Assets/Images/Logo/application.ico"
         Title="Artemis | Debugger"
         Width="1200"
         Height="800">

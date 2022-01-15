@@ -16,6 +16,11 @@ namespace Artemis.Core
         ///     Gets the description attribute applied to this property
         /// </summary>
         PropertyDescriptionAttribute PropertyDescription { get; }
+        
+        /// <summary>
+        ///     Gets the profile element (such as layer or folder) this property is applied to
+        /// </summary>
+        RenderProfileElement ProfileElement { get; }
 
         /// <summary>
         ///     The parent group of this layer property, set after construction
@@ -43,7 +48,7 @@ namespace Artemis.Core
         public bool DataBindingsSupported { get; }
 
         /// <summary>
-        ///     Gets the unique path of the property on the layer
+        ///     Gets the unique path of the property on the render element
         /// </summary>
         string Path { get; }
 
@@ -56,7 +61,7 @@ namespace Artemis.Core
         ///     Indicates whether the BaseValue was loaded from storage, useful to check whether a default value must be applied
         /// </summary>
         bool IsLoadedFromStorage { get; }
-
+        
         /// <summary>
         ///     Initializes the layer property
         ///     <para>
@@ -64,7 +69,7 @@ namespace Artemis.Core
         ///         <see cref="LayerProperty{T}" />
         ///     </para>
         /// </summary>
-        void Initialize(RenderProfileElement profileElement, LayerPropertyGroup group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description, string path);
+        void Initialize(RenderProfileElement profileElement, LayerPropertyGroup group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description);
 
         /// <summary>
         ///     Attempts to load and add the provided keyframe entity to the layer property

@@ -6,9 +6,10 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
+using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Tree;
+using Artemis.UI.Screens.ProfileEditor.Playback;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using ReactiveUI;
@@ -17,20 +18,18 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileElementProperties;
 
 public class ProfileElementPropertiesViewModel : ActivatableViewModelBase
 {
+    private readonly Dictionary<LayerPropertyGroup, ProfileElementPropertyGroupViewModel> _cachedViewModels;
     private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
-    private readonly IProfileEditorService _profileEditorService;
-    private ProfileElementPropertyGroupViewModel? _brushPropertyGroup;
     private ObservableAsPropertyHelper<RenderProfileElement?>? _profileElement;
-    private readonly Dictionary<RenderProfileElement, List<ProfileElementPropertyGroupViewModel>> _profileElementGroups;
     private ObservableCollection<ProfileElementPropertyGroupViewModel> _propertyGroupViewModels;
 
     /// <inheritdoc />
-    public ProfileElementPropertiesViewModel(IProfileEditorService profileEditorService, ILayerPropertyVmFactory layerPropertyVmFactory)
+    public ProfileElementPropertiesViewModel(IProfileEditorService profileEditorService, ILayerPropertyVmFactory layerPropertyVmFactory, PlaybackViewModel playbackViewModel)
     {
-        _profileEditorService = profileEditorService;
         _layerPropertyVmFactory = layerPropertyVmFactory;
-        PropertyGroupViewModels = new ObservableCollection<ProfileElementPropertyGroupViewModel>();
-        _profileElementGroups = new Dictionary<RenderProfileElement, List<ProfileElementPropertyGroupViewModel>>();
+        _propertyGroupViewModels = new ObservableCollection<ProfileElementPropertyGroupViewModel>();
+        _cachedViewModels = new Dictionary<LayerPropertyGroup, ProfileElementPropertyGroupViewModel>();
+        PlaybackViewModel = playbackViewModel;
 
         // Subscribe to events of the latest selected profile element - borrowed from https://stackoverflow.com/a/63950940
         this.WhenAnyValue(vm => vm.ProfileElement)
@@ -47,10 +46,11 @@ public class ProfileElementPropertiesViewModel : ActivatableViewModelBase
             .Subscribe(_ => UpdateGroups());
         // React to service profile element changes as long as the VM is active
 
-        this.WhenActivated(d => _profileElement = _profileEditorService.ProfileElement.ToProperty(this, vm => vm.ProfileElement).DisposeWith(d));
+        this.WhenActivated(d => _profileElement = profileEditorService.ProfileElement.ToProperty(this, vm => vm.ProfileElement).DisposeWith(d));
         this.WhenAnyValue(vm => vm.ProfileElement).Subscribe(_ => UpdateGroups());
     }
 
+    public PlaybackViewModel PlaybackViewModel { get; }
     public RenderProfileElement? ProfileElement => _profileElement?.Value;
     public Layer? Layer => _profileElement?.Value as Layer;
 
@@ -68,57 +68,51 @@ public class ProfileElementPropertiesViewModel : ActivatableViewModelBase
             return;
         }
 
-        if (!_profileElementGroups.TryGetValue(ProfileElement, out List<ProfileElementPropertyGroupViewModel>? viewModels))
-        {
-            viewModels = new List<ProfileElementPropertyGroupViewModel>();
-            _profileElementGroups[ProfileElement] = viewModels;
-        }
-
-        List<LayerPropertyGroup> groups = new();
-
+        ObservableCollection<ProfileElementPropertyGroupViewModel> viewModels = new();
         if (Layer != null)
         {
-            // Add default layer groups
-            groups.Add(Layer.General);
-            groups.Add(Layer.Transform);
-            // Add brush group
+            // Add base VMs
+            viewModels.Add(GetOrCreateViewModel(Layer.General, null, null));
+            viewModels.Add(GetOrCreateViewModel(Layer.Transform, null, null));
+
+            // Add brush VM if the brush has properties
             if (Layer.LayerBrush?.BaseProperties != null)
-                groups.Add(Layer.LayerBrush.BaseProperties);
+                viewModels.Add(GetOrCreateViewModel(Layer.LayerBrush.BaseProperties, Layer.LayerBrush, null));
         }
 
-        // Add effect groups
-        foreach (BaseLayerEffect layerEffect in ProfileElement.LayerEffects)
-        {
+        // Add effect VMs
+        foreach (BaseLayerEffect layerEffect in ProfileElement.LayerEffects.OrderBy(e => e.Order))
             if (layerEffect.BaseProperties != null)
-                groups.Add(layerEffect.BaseProperties);
-        }
+                viewModels.Add(GetOrCreateViewModel(layerEffect.BaseProperties, null, layerEffect));
 
-        // Remove redundant VMs
-        viewModels.RemoveAll(vm => !groups.Contains(vm.LayerPropertyGroup));
-
-        // Create VMs for missing groups
-        foreach (LayerPropertyGroup group in groups)
+        // Map the most recent collection of VMs to the current list of VMs, making as little changes to the collection as possible
+        for (int index = 0; index < viewModels.Count; index++)
         {
-            if (viewModels.All(vm => vm.LayerPropertyGroup != group))
-                viewModels.Add(_layerPropertyVmFactory.ProfileElementPropertyGroupViewModel(group));
+            ProfileElementPropertyGroupViewModel profileElementPropertyGroupViewModel = viewModels[index];
+            if (index > PropertyGroupViewModels.Count - 1)
+                PropertyGroupViewModels.Add(profileElementPropertyGroupViewModel);
+            else if (!ReferenceEquals(PropertyGroupViewModels[index], profileElementPropertyGroupViewModel))
+                PropertyGroupViewModels[index] = profileElementPropertyGroupViewModel;
         }
 
-        // Get all non-effect properties
-        List<ProfileElementPropertyGroupViewModel> nonEffectProperties = viewModels
-            .Where(l => l.TreeGroupViewModel.GroupType != LayerPropertyGroupType.LayerEffectRoot)
-            .ToList();
-        // Order the effects
-        List<ProfileElementPropertyGroupViewModel> effectProperties = viewModels
-            .Where(l => l.TreeGroupViewModel.GroupType == LayerPropertyGroupType.LayerEffectRoot && l.LayerPropertyGroup.LayerEffect != null)
-            .OrderBy(l => l.LayerPropertyGroup.LayerEffect?.Order)
-            .ToList();
+        while (PropertyGroupViewModels.Count > viewModels.Count)
+            PropertyGroupViewModels.RemoveAt(PropertyGroupViewModels.Count - 1);
+    }
 
-        ObservableCollection<ProfileElementPropertyGroupViewModel> propertyGroupViewModels = new();
-        foreach (ProfileElementPropertyGroupViewModel viewModel in nonEffectProperties)
-            propertyGroupViewModels.Add(viewModel);
-        foreach (ProfileElementPropertyGroupViewModel viewModel in effectProperties)
-            propertyGroupViewModels.Add(viewModel);
+    private ProfileElementPropertyGroupViewModel GetOrCreateViewModel(LayerPropertyGroup layerPropertyGroup, BaseLayerBrush? layerBrush, BaseLayerEffect? layerEffect)
+    {
+        if (_cachedViewModels.TryGetValue(layerPropertyGroup, out ProfileElementPropertyGroupViewModel? cachedVm))
+            return cachedVm;
 
-        PropertyGroupViewModels = propertyGroupViewModels;
+        ProfileElementPropertyGroupViewModel createdVm;
+        if (layerBrush != null)
+            createdVm = _layerPropertyVmFactory.ProfileElementPropertyGroupViewModel(layerPropertyGroup, layerBrush);
+        else if (layerEffect != null)
+            createdVm = _layerPropertyVmFactory.ProfileElementPropertyGroupViewModel(layerPropertyGroup, layerEffect);
+        else
+            createdVm = _layerPropertyVmFactory.ProfileElementPropertyGroupViewModel(layerPropertyGroup);
+
+        _cachedViewModels[layerPropertyGroup] = createdVm;
+        return createdVm;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.LayerBrushes
 {
@@ -32,12 +33,11 @@ namespace Artemis.Core.LayerBrushes
             internal set => _properties = value;
         }
 
-        internal void InitializeProperties()
+        internal void InitializeProperties(PropertyGroupEntity? propertyGroupEntity)
         {
             Properties = Activator.CreateInstance<T>();
-            Properties.GroupDescription = new PropertyGroupDescriptionAttribute {Name = Descriptor.DisplayName, Description = Descriptor.Description};
-            Properties.LayerBrush = this;
-            Properties.Initialize(Layer, "LayerBrush.", Descriptor.Provider);
+            PropertyGroupDescriptionAttribute groupDescription = new() {Identifier = "Brush", Name = Descriptor.DisplayName, Description = Descriptor.Description};
+            Properties.Initialize(Layer, null, groupDescription, propertyGroupEntity);
             PropertiesInitialized = true;
 
             EnableLayerBrush();

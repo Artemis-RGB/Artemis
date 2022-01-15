@@ -126,7 +126,7 @@ namespace Artemis.UI.Screens.Root
         {
             _trayIcon = new TrayIcon
             {
-                Icon = new WindowIcon(_assetLoader.Open(new Uri("avares://Artemis.UI/Assets/Images/Logo/bow.ico"))),
+                Icon = new WindowIcon(_assetLoader.Open(new Uri("avares://Artemis.UI/Assets/Images/Logo/application.ico"))),
                 Command = ReactiveCommand.Create(OpenMainWindow)
             };
             _trayIcon.Menu = (NativeMenu?) Application.Current!.FindResource("TrayIconMenu");

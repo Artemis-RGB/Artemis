@@ -31,9 +31,7 @@ namespace Artemis.Core
         {
             // These are set right after construction to keep the constructor (and inherited constructs) clean
             GroupDescription = null!;
-            Feature = null!;
-            ProfileElement = null!;
-            Path = null!;
+            Path = "";
 
             _layerProperties = new List<ILayerProperty>();
             _layerPropertyGroups = new List<LayerPropertyGroup>();
@@ -43,45 +41,30 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets the description of this group
-        /// </summary>
-        public PropertyGroupDescriptionAttribute GroupDescription { get; internal set; }
-
-        /// <summary>
-        ///     Gets the plugin feature this group is associated with
-        /// </summary>
-        public PluginFeature Feature { get; set; }
-
-        /// <summary>
         ///     Gets the profile element (such as layer or folder) this group is associated with
         /// </summary>
-        public RenderProfileElement ProfileElement { get; internal set; }
+        public RenderProfileElement ProfileElement { get; private set; }
+
+        /// <summary>
+        ///     Gets the description of this group
+        /// </summary>
+        public PropertyGroupDescriptionAttribute GroupDescription { get; private set; }
 
         /// <summary>
         ///     The parent group of this group
         /// </summary>
-        [LayerPropertyIgnore]
+        [LayerPropertyIgnore] // Ignore the parent when selecting child groups
         public LayerPropertyGroup? Parent { get; internal set; }
 
         /// <summary>
-        ///     The path of this property group
+        ///     Gets the unique path of the property on the render element
         /// </summary>
-        public string Path { get; internal set; }
+        public string Path { get; private set; }
 
         /// <summary>
         ///     Gets whether this property groups properties are all initialized
         /// </summary>
         public bool PropertiesInitialized { get; private set; }
-
-        /// <summary>
-        ///     The layer brush this property group belongs to
-        /// </summary>
-        public BaseLayerBrush? LayerBrush { get; internal set; }
-
-        /// <summary>
-        ///     The layer effect this property group belongs to
-        /// </summary>
-        public BaseLayerEffect? LayerEffect { get; internal set; }
 
         /// <summary>
         ///     Gets or sets whether the property is hidden in the UI
@@ -95,6 +78,11 @@ namespace Artemis.Core
                 OnVisibilityChanged();
             }
         }
+
+        /// <summary>
+        ///     Gets the entity this property group uses for persistent storage
+        /// </summary>
+        public PropertyGroupEntity? PropertyGroupEntity { get; internal set; }
 
         /// <summary>
         ///     A list of all layer properties in this group
@@ -194,17 +182,20 @@ namespace Artemis.Core
             }
         }
 
-        internal void Initialize(RenderProfileElement profileElement, string path, PluginFeature feature)
+        internal void Initialize(RenderProfileElement profileElement, LayerPropertyGroup? parent, PropertyGroupDescriptionAttribute groupDescription, PropertyGroupEntity? propertyGroupEntity)
         {
-            if (path == null) throw new ArgumentNullException(nameof(path));
+            if (groupDescription.Identifier == null)
+                throw new ArtemisCoreException("Can't initialize a property group without an identifier");
 
             // Doubt this will happen but let's make sure
             if (PropertiesInitialized)
                 throw new ArtemisCoreException("Layer property group already initialized, wut");
 
-            Feature = feature ?? throw new ArgumentNullException(nameof(feature));
-            ProfileElement = profileElement ?? throw new ArgumentNullException(nameof(profileElement));
-            Path = path.TrimEnd('.');
+            ProfileElement = profileElement;
+            Parent = parent;
+            GroupDescription = groupDescription;
+            PropertyGroupEntity = propertyGroupEntity ?? new PropertyGroupEntity {Identifier = groupDescription.Identifier};
+            Path = parent != null ? parent.Path + "." + groupDescription.Identifier : groupDescription.Identifier;
 
             // Get all properties implementing ILayerProperty or LayerPropertyGroup
             foreach (PropertyInfo propertyInfo in GetType().GetProperties())
@@ -271,59 +262,66 @@ namespace Artemis.Core
 
         private void InitializeProperty(PropertyInfo propertyInfo, PropertyDescriptionAttribute propertyDescription)
         {
-            string path = $"{Path}.{propertyInfo.Name}";
-
-            if (!typeof(ILayerProperty).IsAssignableFrom(propertyInfo.PropertyType))
-                throw new ArtemisPluginException($"Layer property with PropertyDescription attribute must be of type LayerProperty at {path}");
-
-            if (!(Activator.CreateInstance(propertyInfo.PropertyType, true) is ILayerProperty instance))
-                throw new ArtemisPluginException($"Failed to create instance of layer property at {path}");
-
-            // Ensure the description has a name, if not this is a good point to set it based on the property info
+            // Ensure the description has an identifier and name, if not this is a good point to set it based on the property info
+            if (string.IsNullOrWhiteSpace(propertyDescription.Identifier))
+                propertyDescription.Identifier = propertyInfo.Name;
             if (string.IsNullOrWhiteSpace(propertyDescription.Name))
                 propertyDescription.Name = propertyInfo.Name.Humanize();
 
-            PropertyEntity entity = GetPropertyEntity(ProfileElement, path, out bool fromStorage);
-            instance.Initialize(ProfileElement, this, entity, fromStorage, propertyDescription, path);
+            if (!typeof(ILayerProperty).IsAssignableFrom(propertyInfo.PropertyType))
+                throw new ArtemisPluginException($"Property with PropertyDescription attribute must be of type ILayerProperty: {propertyDescription.Identifier}");
+            if (Activator.CreateInstance(propertyInfo.PropertyType, true) is not ILayerProperty instance)
+                throw new ArtemisPluginException($"Failed to create instance of layer property: {propertyDescription.Identifier}");
+
+            PropertyEntity entity = GetPropertyEntity(propertyDescription.Identifier, out bool fromStorage);
+            instance.Initialize(ProfileElement, this, entity, fromStorage, propertyDescription);
             propertyInfo.SetValue(this, instance);
+
             _layerProperties.Add(instance);
         }
 
         private void InitializeChildGroup(PropertyInfo propertyInfo, PropertyGroupDescriptionAttribute propertyGroupDescription)
         {
-            string path = Path + ".";
-
-            if (!typeof(LayerPropertyGroup).IsAssignableFrom(propertyInfo.PropertyType))
-                throw new ArtemisPluginException("Layer property with PropertyGroupDescription attribute must be of type LayerPropertyGroup");
-
-            if (!(Activator.CreateInstance(propertyInfo.PropertyType) is LayerPropertyGroup instance))
-                throw new ArtemisPluginException($"Failed to create instance of layer property group at {path + propertyInfo.Name}");
-
-            // Ensure the description has a name, if not this is a good point to set it based on the property info
+            // Ensure the description has an identifier and name name, if not this is a good point to set it based on the property info
+            if (string.IsNullOrWhiteSpace(propertyGroupDescription.Identifier))
+                propertyGroupDescription.Identifier = propertyInfo.Name;
             if (string.IsNullOrWhiteSpace(propertyGroupDescription.Name))
                 propertyGroupDescription.Name = propertyInfo.Name.Humanize();
 
-            instance.Parent = this;
-            instance.GroupDescription = propertyGroupDescription;
-            instance.LayerBrush = LayerBrush;
-            instance.LayerEffect = LayerEffect;
-            instance.Initialize(ProfileElement, $"{path}{propertyInfo.Name}.", Feature);
+            if (!typeof(LayerPropertyGroup).IsAssignableFrom(propertyInfo.PropertyType))
+                throw new ArtemisPluginException($"Property with PropertyGroupDescription attribute must be of type LayerPropertyGroup: {propertyGroupDescription.Identifier}");
+            if (!(Activator.CreateInstance(propertyInfo.PropertyType) is LayerPropertyGroup instance))
+                throw new ArtemisPluginException($"Failed to create instance of layer property group: {propertyGroupDescription.Identifier}");
+            
+            PropertyGroupEntity entity = GetPropertyGroupEntity(propertyGroupDescription.Identifier);
+            instance.Initialize(ProfileElement, this, propertyGroupDescription, entity);
 
             propertyInfo.SetValue(this, instance);
             _layerPropertyGroups.Add(instance);
         }
 
-        private PropertyEntity GetPropertyEntity(RenderProfileElement profileElement, string path, out bool fromStorage)
+        private PropertyEntity GetPropertyEntity(string identifier, out bool fromStorage)
         {
-            PropertyEntity? entity = profileElement.RenderElementEntity.PropertyEntities.FirstOrDefault(p => p.FeatureId == Feature.Id && p.Path == path);
+            if (PropertyGroupEntity == null)
+                throw new ArtemisCoreException($"Can't execute {nameof(GetPropertyEntity)} without {nameof(PropertyGroupEntity)} being setup");
+
+            PropertyEntity? entity = PropertyGroupEntity.Properties.FirstOrDefault(p => p.Identifier == identifier);
             fromStorage = entity != null;
             if (entity == null)
             {
-                entity = new PropertyEntity {FeatureId = Feature.Id, Path = path};
-                profileElement.RenderElementEntity.PropertyEntities.Add(entity);
+                entity = new PropertyEntity {Identifier = identifier};
+                PropertyGroupEntity.Properties.Add(entity);
             }
 
             return entity;
+        }
+
+        private PropertyGroupEntity GetPropertyGroupEntity(string identifier)
+        {
+            if (PropertyGroupEntity == null)
+                throw new ArtemisCoreException($"Can't execute {nameof(GetPropertyGroupEntity)} without {nameof(PropertyGroupEntity)} being setup");
+
+            return PropertyGroupEntity.PropertyGroups.FirstOrDefault(g => g.Identifier == identifier) ?? new PropertyGroupEntity() {Identifier = identifier};
         }
 
         /// <inheritdoc />

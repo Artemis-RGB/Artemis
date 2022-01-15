@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="48"
+             x:Class="Artemis.UI.Screens.ProfileEditor.Playback.PlaybackView">
+    <DockPanel Margin="8 0">
+        <StackPanel Orientation="Horizontal" Spacing="5">
+            <Button Classes="icon-button icon-button-large"
+                    ToolTip.Tip="Play from start (Shift+Space)" Command="{Binding PlayFromStart}"
+                    Focusable="False">
+                <avalonia:MaterialIcon Kind="StepForward" />
+            </Button>
+            <Button Classes="icon-button icon-button-large"
+                    ToolTip.Tip="Toggle play/pause (Space)" Command="{Binding TogglePlay}" Focusable="False">
+                <StackPanel>
+                    <avalonia:MaterialIcon Kind="Play" IsVisible="{Binding !Playing}" />
+                    <avalonia:MaterialIcon Kind="Pause" IsVisible="{Binding Playing}" />
+                </StackPanel>
+            </Button>
+            <Button Classes="icon-button icon-button-large" ToolTip.Tip="Go to start" Command="{Binding GoToStart}" Focusable="False">
+                <avalonia:MaterialIcon Kind="SkipBackward" />
+            </Button>
+            <Button Classes="icon-button icon-button-large" ToolTip.Tip="Go to end" Command="{Binding GoToEnd}" Focusable="False">
+                <avalonia:MaterialIcon Kind="SkipForward" />
+            </Button>
+            <Button Classes="icon-button icon-button-large" ToolTip.Tip="Previous frame" Command="{Binding GoToPreviousFrame}" Focusable="False">
+                <avalonia:MaterialIcon Kind="SkipPrevious" />
+            </Button>
+            <Button Classes="icon-button icon-button-large" ToolTip.Tip="Next frame" Command="{Binding GoToNextFrame}" Focusable="False">
+                <avalonia:MaterialIcon Kind="SkipNext" />
+            </Button>
+            <ToggleButton Classes="icon-button icon-button-large"
+                          IsChecked="{Binding Repeating}"
+                          Focusable="False"
+                          Command="{Binding CycleRepeating}">
+                <ToolTip.Tip>
+                    <StackPanel>
+                        <StackPanel IsVisible="{Binding Repeating}">
+                            <TextBlock Text="Repeat entire timeline"
+                                       IsVisible="{Binding RepeatTimeline}" />
+                            <TextBlock Text="Repeat segment"
+                                       IsVisible="{Binding RepeatSegment}" />
+                        </StackPanel>
+                        <TextBlock IsVisible="{Binding !Repeating}">
+                            Don't repeat the timeline
+                        </TextBlock>
+                        <TextBlock TextWrapping="Wrap">
+                            This setting only applies to the editor and does not affect the repeat mode during normal profile playback
+                        </TextBlock>
+                    </StackPanel>
+                </ToolTip.Tip>
+                <Grid>
+                    <avalonia:MaterialIcon Kind="Repeat" IsVisible="{Binding RepeatTimeline}" />
+                    <avalonia:MaterialIcon Kind="RepeatOne" IsVisible="{Binding RepeatSegment}" />
+                </Grid>
+
+            </ToggleButton>
+        </StackPanel>
+        <TextBlock Classes="h4" Text="{Binding FormattedCurrentTime, FallbackValue=00.000}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0"/>
+    </DockPanel>
+</UserControl>

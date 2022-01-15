@@ -37,8 +37,8 @@
     </UserControl.Styles>
     <Grid ColumnDefinitions="4*,Auto,*" Classes="editor-grid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <ContentControl Content="{Binding MenuBarViewModel}"></ContentControl>
         <Grid Grid.Column="0" RowDefinitions="3*,Auto,*">
@@ -66,8 +66,8 @@
 
             <GridSplitter Grid.Row="1" Classes="editor-grid-splitter-horizontal" />
 
-			<Border  Grid.Row="2" Classes="card card-condensed" Margin="4">
-                <ContentControl Content="{Binding ProfileElementPropertiesViewModel}"></ContentControl>
+            <Border Grid.Row="2" Classes="card card-condensed" Margin="4" Padding="0" ClipToBounds="True">
+                <ContentControl Content="{Binding ProfileElementPropertiesViewModel}"/>
             </Border>
         </Grid>
 
@@ -85,6 +85,6 @@
             </Border>
         </Grid>
 
-        <ContentControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Content="{Binding StatusBarViewModel}"></ContentControl>
+        <ContentControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Content="{Binding StatusBarViewModel}"/>
     </Grid>
 </UserControl>

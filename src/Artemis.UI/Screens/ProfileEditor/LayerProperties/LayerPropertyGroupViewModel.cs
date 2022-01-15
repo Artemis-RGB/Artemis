@@ -87,8 +87,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         public void UpdateOrder(int order)
         {
-            if (LayerPropertyGroup.LayerEffect != null)
-                LayerPropertyGroup.LayerEffect.Order = order;
+            // if (LayerPropertyGroup.LayerEffect != null)
+            //     LayerPropertyGroup.LayerEffect.Order = order;
             NotifyOfPropertyChange(nameof(IsExpanded));
         }
 

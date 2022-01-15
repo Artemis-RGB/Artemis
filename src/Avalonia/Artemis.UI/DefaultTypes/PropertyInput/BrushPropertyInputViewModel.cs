@@ -66,6 +66,16 @@ public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushRefe
             Dispatcher.UIThread.InvokeAsync(() => _windowService.CreateContentDialog().WithViewModel(out LayerBrushPresetViewModel _, ("layerBrush", layer.LayerBrush)).ShowAsync());
     }
 
+    #region Overrides of PropertyInputViewModel<LayerBrushReference>
+
+    /// <inheritdoc />
+    protected override void OnInputValueChanged()
+    {
+        this.RaisePropertyChanged(nameof(SelectedDescriptor));
+    }
+
+    #endregion
+
     private void UpdateDescriptorsIfChanged(PluginFeatureEventArgs e)
     {
         if (e.PluginFeature is not LayerBrushProvider)

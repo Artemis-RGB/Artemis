@@ -59,7 +59,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Models
 
         public KeyframeClipboardModel(ILayerPropertyKeyframe layerPropertyKeyframe)
         {
-            FeatureId = layerPropertyKeyframe.UntypedLayerProperty.LayerPropertyGroup.Feature.Id;
+            // FeatureId = layerPropertyKeyframe.UntypedLayerProperty.LayerPropertyGroup.Feature.Id;
             Path = layerPropertyKeyframe.UntypedLayerProperty.Path;
             KeyframeEntity = layerPropertyKeyframe.GetKeyframeEntity();
         }
@@ -70,15 +70,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Models
 
         public ILayerPropertyKeyframe Paste(List<ILayerProperty> properties, TimeSpan offset)
         {
-            ILayerProperty property = properties.FirstOrDefault(p => p.LayerPropertyGroup.Feature.Id == FeatureId && p.Path == Path);
-            if (property != null)
-            {
-                KeyframeEntity.Position += offset;
-                ILayerPropertyKeyframe keyframe = property.AddKeyframeEntity(KeyframeEntity);
-                KeyframeEntity.Position -= offset;
-
-                return keyframe;
-            }
+            // ILayerProperty property = properties.FirstOrDefault(p => p.LayerPropertyGroup.Feature.Id == FeatureId && p.Path == Path);
+            // if (property != null)
+            // {
+            //     KeyframeEntity.Position += offset;
+            //     ILayerPropertyKeyframe keyframe = property.AddKeyframeEntity(KeyframeEntity);
+            //     KeyframeEntity.Position -= offset;
+            //
+            //     return keyframe;
+            // }
 
             return null;
         }

@@ -2,7 +2,31 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.DefaultTypes.PropertyInput.SKColorPropertyInputView">
-    TODO
+    <UserControl.Resources>
+		<converters:SKColorToStringConverter x:Key="SKColorToStringConverter" />
+		<converters:SKColorToColor2Converter x:Key="SKColorToColor2Converter" />
+		</UserControl.Resources>
+	<Grid Height="24">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <TextBox Classes="condensed" 
+                 Grid.Row="0" 
+                 Grid.Column="0" 
+                 Text="{Binding InputValue, Converter={StaticResource SKColorToStringConverter}}"/>
+        <controls:ColorPickerButton Grid.Row="0" 
+                                    Grid.Column="1" 
+                                    Color="{Binding InputValue, Converter={StaticResource SKColorToColor2Converter}}"
+                                    Classes="condensed"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    Margin="-6 0 -8 0"/>
+    </Grid>
+    
 </UserControl>
