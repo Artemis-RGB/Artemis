@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Shared.Services.Interfaces;
@@ -58,6 +59,17 @@ public interface IProfileEditorService : IArtemisSharedUIService
     /// </summary>
     /// <param name="time">The new time.</param>
     void ChangeTime(TimeSpan time);
+
+    /// <summary>
+    ///     Snaps the given time to the closest relevant element in the timeline, this can be the cursor, a keyframe or a segment end.
+    /// </summary>
+    /// <param name="time">The time to snap.</param>
+    /// <param name="tolerance">How close the time must be to snap.</param>
+    /// <param name="snapToSegments">Enable snapping to timeline segments.</param>
+    /// <param name="snapToCurrentTime">Enable snapping to the current time of the editor.</param>
+    /// <param name="snapTimes">An optional extra list of times to snap to.</param>
+    /// <returns>The snapped time.</returns>
+    TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, List<TimeSpan>? snapTimes = null);
 
     /// <summary>
     ///     Executes the provided command and adds it to the history.

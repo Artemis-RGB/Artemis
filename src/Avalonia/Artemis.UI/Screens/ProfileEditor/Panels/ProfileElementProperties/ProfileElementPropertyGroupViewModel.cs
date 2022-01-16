@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
@@ -6,6 +7,7 @@ using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Tree;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.PropertyInput;
@@ -35,13 +37,15 @@ public class ProfileElementPropertyGroupViewModel : ViewModelBase
         PopulateChildren();
     }
 
-    public ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory, IPropertyInputService propertyInputService, BaseLayerBrush layerBrush)
+    public ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory, IPropertyInputService propertyInputService,
+        BaseLayerBrush layerBrush)
         : this(layerPropertyGroup, layerPropertyVmFactory, propertyInputService)
     {
         LayerBrush = layerBrush;
     }
-    
-    public ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory, IPropertyInputService propertyInputService, BaseLayerEffect layerEffect) 
+
+    public ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory, IPropertyInputService propertyInputService,
+        BaseLayerEffect layerEffect)
         : this(layerPropertyGroup, layerPropertyVmFactory, propertyInputService)
     {
         LayerEffect = layerEffect;
@@ -70,6 +74,21 @@ public class ProfileElementPropertyGroupViewModel : ViewModelBase
     {
         get => _hasChildren;
         set => this.RaiseAndSetIfChanged(ref _hasChildren, value);
+    }
+
+    public List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels(bool expandedOnly)
+    {
+        List<ITimelineKeyframeViewModel> result = new();
+        if (expandedOnly && !IsExpanded)
+            return result;
+
+        foreach (ViewModelBase child in Children)
+            if (child is ProfileElementPropertyViewModel profileElementPropertyViewModel)
+                result.AddRange(profileElementPropertyViewModel.TimelinePropertyViewModel.GetAllKeyframeViewModels());
+            else if (child is ProfileElementPropertyGroupViewModel profileElementPropertyGroupViewModel)
+                result.AddRange(profileElementPropertyGroupViewModel.GetAllKeyframeViewModels(expandedOnly));
+
+        return result;
     }
 
     private void PopulateChildren()

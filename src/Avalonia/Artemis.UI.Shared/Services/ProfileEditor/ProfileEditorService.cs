@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
@@ -108,6 +109,42 @@ internal class ProfileEditorService : IProfileEditorService
     {
         Tick(time);
         _timeSubject.OnNext(time);
+    }
+
+    public TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, List<TimeSpan>? snapTimes = null)
+    {
+        RenderProfileElement? profileElement = _profileElementSubject.Value;
+        if (snapToSegments && profileElement != null)
+        {
+            // Snap to the end of the start segment
+            if (Math.Abs(time.TotalMilliseconds - profileElement.Timeline.StartSegmentEndPosition.TotalMilliseconds) < tolerance.TotalMilliseconds)
+                return profileElement.Timeline.StartSegmentEndPosition;
+
+            // Snap to the end of the main segment
+            if (Math.Abs(time.TotalMilliseconds - profileElement.Timeline.MainSegmentEndPosition.TotalMilliseconds) < tolerance.TotalMilliseconds)
+                return profileElement.Timeline.MainSegmentEndPosition;
+
+            // Snap to the end of the end segment (end of the timeline)
+            if (Math.Abs(time.TotalMilliseconds - profileElement.Timeline.EndSegmentEndPosition.TotalMilliseconds) < tolerance.TotalMilliseconds)
+                return profileElement.Timeline.EndSegmentEndPosition;
+        }
+
+        // Snap to the current time
+        if (snapToCurrentTime)
+        {
+            if (Math.Abs(time.TotalMilliseconds - _timeSubject.Value.TotalMilliseconds) < tolerance.TotalMilliseconds)
+                return _timeSubject.Value;
+        }
+
+        if (snapTimes != null)
+        {
+            // Find the closest keyframe
+            TimeSpan closeSnapTime = snapTimes.FirstOrDefault(s => Math.Abs(time.TotalMilliseconds - s.TotalMilliseconds) < tolerance.TotalMilliseconds)!;
+            if (closeSnapTime != TimeSpan.Zero)
+                return closeSnapTime;
+        }
+
+        return time;
     }
 
     public void ChangePixelsPerSecond(double pixelsPerSecond)
