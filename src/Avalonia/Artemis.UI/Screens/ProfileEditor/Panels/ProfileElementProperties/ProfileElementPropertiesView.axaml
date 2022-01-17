@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileElementProperties"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:controls="clr-namespace:Artemis.UI.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.ProfileElementPropertiesView">
     <Grid ColumnDefinitions="*,Auto,*" Name="ContainerGrid">
@@ -26,30 +27,30 @@
         </Grid>
 
         <GridSplitter Grid.Column="1"
-                      Cursor="SizeWestEast" 
+                      Cursor="SizeWestEast"
                       Foreground="Transparent"
-                      Background="Transparent" 
-                      Margin="0 0 -5 0"/>
+                      Background="Transparent"
+                      Margin="0 0 -5 0" />
 
         <Grid Grid.Column="2" RowDefinitions="48,*">
+            <!-- Timeline header body -->
+            <controls:TimelineHeader Grid.Row="0"
+                                     Name="TimelineHeader"
+                                     Margin="0 18 0 0"
+                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                     PixelsPerSecond="{Binding PixelsPerSecond}"
+                                     HorizontalOffset="{Binding #TimelineScrollViewer.Offset.X, Mode=OneWay}"
+                                     VisibleWidth="{Binding #TimelineScrollViewer.Bounds.Width}"
+                                     OffsetFirstValue="True"
+                                     PointerReleased="TimelineHeader_OnPointerReleased"
+                                     Width="{Binding #TimelineScrollViewer.Viewport.Width}"
+                                     Cursor="Hand" />
 
             <Canvas Grid.Row="0" ZIndex="2">
                 <!-- Timeline segments -->
                 <ContentControl Canvas.Left="{Binding EndTimelineSegmentViewModel.SegmentStartPosition}" Content="{Binding EndTimelineSegmentViewModel}" />
                 <ContentControl Canvas.Left="{Binding MainTimelineSegmentViewModel.SegmentStartPosition}" Content="{Binding MainTimelineSegmentViewModel}" />
                 <ContentControl Canvas.Left="{Binding StartTimelineSegmentViewModel.SegmentStartPosition}" Content="{Binding StartTimelineSegmentViewModel}" />
-
-                <!-- Timeline header body -->
-                <!-- <controls:PropertyTimelineHeader Margin="0 18 0 0" -->
-                <!--                                  Foreground="{DynamicResource MaterialDesignBody}" -->
-                <!--                                  Background="{DynamicResource MaterialDesignCardBackground}" -->
-                <!--                                  PixelsPerSecond="{Binding ProfileEditorService.PixelsPerSecond}" -->
-                <!--                                  HorizontalOffset="{Binding ContentHorizontalOffset, ElementName=TimelineHeaderScrollViewer}" -->
-                <!--                                  VisibleWidth="{Binding ActualWidth, ElementName=TimelineHeaderScrollViewer}" -->
-                <!--                                  OffsetFirstValue="True" -->
-                <!--                                  MouseLeftButtonUp="{s:Action TimelineJump}" -->
-                <!--                                  Width="{Binding ActualWidth, ElementName=PropertyTimeLine}" -->
-                <!--                                  Cursor="Hand" /> -->
 
                 <!-- Timeline caret -->
                 <Polygon Name="TimelineCaret"

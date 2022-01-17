@@ -19,7 +19,7 @@ internal class ProfileEditorService : IProfileEditorService
     private readonly BehaviorSubject<TimeSpan> _timeSubject = new(TimeSpan.Zero);
     private readonly BehaviorSubject<bool> _playingSubject = new(false);
     private readonly BehaviorSubject<bool> _suspendedEditingSubject = new(false);
-    private readonly BehaviorSubject<double> _pixelsPerSecondSubject = new(300);
+    private readonly BehaviorSubject<int> _pixelsPerSecondSubject = new(120);
     private readonly ILogger _logger;
     private readonly IProfileService _profileService;
     private readonly IModuleService _moduleService;
@@ -59,7 +59,7 @@ internal class ProfileEditorService : IProfileEditorService
     public IObservable<TimeSpan> Time { get; }
     public IObservable<bool> Playing { get; }
     public IObservable<bool> SuspendedEditing { get; }
-    public IObservable<double> PixelsPerSecond { get; }
+    public IObservable<int> PixelsPerSecond { get; }
 
     public void ChangeCurrentProfileConfiguration(ProfileConfiguration? profileConfiguration)
     {
@@ -147,7 +147,7 @@ internal class ProfileEditorService : IProfileEditorService
         return time;
     }
 
-    public void ChangePixelsPerSecond(double pixelsPerSecond)
+    public void ChangePixelsPerSecond(int pixelsPerSecond)
     {
         _pixelsPerSecondSubject.OnNext(pixelsPerSecond);
     }

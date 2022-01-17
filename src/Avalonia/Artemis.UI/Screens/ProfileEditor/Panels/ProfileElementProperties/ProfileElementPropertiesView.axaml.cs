@@ -13,33 +13,33 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileElementProperties;
 
 public class ProfileElementPropertiesView : ReactiveUserControl<ProfileElementPropertiesViewModel>
 {
-    private Polygon _timelineCaret;
-    private Line _timelineLine;
+    private readonly Polygon _timelineCaret;
+    private readonly Line _timelineLine;
 
     public ProfileElementPropertiesView()
     {
         InitializeComponent();
+        _timelineCaret = this.Get<Polygon>("TimelineCaret");
+        _timelineLine = this.Get<Line>("TimelineLine");
     }
 
     private void InitializeComponent()
     {
         AvaloniaXamlLoader.Load(this);
-        _timelineCaret = this.Get<Polygon>("TimelineCaret");
-        _timelineLine = this.Get<Line>("TimelineLine");
     }
 
     private void ApplyTransition(bool enable)
     {
-        if (enable)
-        {
-            ((DoubleTransition) _timelineCaret.Transitions![0]).Duration = TimeSpan.FromMilliseconds(50);
-            ((DoubleTransition) _timelineLine.Transitions![0]).Duration = TimeSpan.FromMilliseconds(50);
-        }
-        else
-        {
+        // if (enable)
+        // {
+        //     ((DoubleTransition) _timelineCaret.Transitions![0]).Duration = TimeSpan.FromMilliseconds(50);
+        //     ((DoubleTransition) _timelineLine.Transitions![0]).Duration = TimeSpan.FromMilliseconds(50);
+        // }
+        // else
+        // {
             ((DoubleTransition) _timelineCaret.Transitions![0]).Duration = TimeSpan.Zero;
             ((DoubleTransition) _timelineLine.Transitions![0]).Duration = TimeSpan.Zero;
-        }
+        // }
     }
 
     private void TimelineCaret_OnPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -67,14 +67,7 @@ public class ProfileElementPropertiesView : ReactiveUserControl<ProfileElementPr
         IVisual? parent = senderElement.VisualParent;
         double x = Math.Max(0, e.GetPosition(parent).X);
         TimeSpan newTime = TimeSpan.FromSeconds(x / ViewModel.PixelsPerSecond);
-
-        // Round the time to something that fits the current zoom level
-        if (ViewModel.PixelsPerSecond < 200)
-            newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 5.0) * 5.0);
-        else if (ViewModel.PixelsPerSecond < 500)
-            newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 2.0) * 2.0);
-        else
-            newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds));
+        newTime = RoundTime(newTime);
 
         // If holding down shift, snap to the closest segment or keyframe
         if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
@@ -88,5 +81,27 @@ public class ProfileElementPropertiesView : ReactiveUserControl<ProfileElementPr
             newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 50.0) * 50.0);
 
         ViewModel.TimelineViewModel.ChangeTime(newTime);
+    }
+
+    private void TimelineHeader_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (ViewModel == null || sender is not IInputElement senderElement)
+            return;
+
+        // Get the parent grid, need that for our position
+        double x = Math.Max(0, e.GetPosition(senderElement.VisualParent).X);
+        TimeSpan newTime = TimeSpan.FromSeconds(x / ViewModel.PixelsPerSecond);
+
+        ViewModel.TimelineViewModel.ChangeTime(RoundTime(newTime));
+    }
+
+    private TimeSpan RoundTime(TimeSpan time)
+    {
+        // Round the time to something that fits the current zoom level
+        if (ViewModel!.PixelsPerSecond < 200)
+            return TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds / 5.0) * 5.0);
+        if (ViewModel.PixelsPerSecond < 500)
+            return TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds / 2.0) * 2.0);
+        return TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds));
     }
 }

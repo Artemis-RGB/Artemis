@@ -10,17 +10,21 @@ namespace Artemis.UI.Screens.ProfileEditor.StatusBar;
 
 public class StatusBarViewModel : ActivatableViewModelBase
 {
-    private ProfileEditorHistory? _history;
-    private RenderProfileElement? _profileElement;
-    private string? _statusMessage;
+    private readonly IProfileEditorService _profileEditorService;
+    private ObservableAsPropertyHelper<ProfileEditorHistory?>? _history;
+    private ObservableAsPropertyHelper<int>? _pixelsPerSecond;
+    private ObservableAsPropertyHelper<RenderProfileElement?>? _profileElement;
     private bool _showStatusMessage;
+    private string? _statusMessage;
 
     public StatusBarViewModel(IProfileEditorService profileEditorService)
     {
+        _profileEditorService = profileEditorService;
         this.WhenActivated(d =>
         {
-            profileEditorService.ProfileElement.Subscribe(p => ProfileElement = p).DisposeWith(d);
-            profileEditorService.History.Subscribe(history => History = history).DisposeWith(d);
+            _profileElement = profileEditorService.ProfileElement.ToProperty(this, vm => vm.ProfileElement).DisposeWith(d);
+            _history = profileEditorService.History.ToProperty(this, vm => vm.History).DisposeWith(d);
+            _pixelsPerSecond = profileEditorService.PixelsPerSecond.ToProperty(this, vm => vm.PixelsPerSecond);
         });
 
         this.WhenAnyValue(vm => vm.History)
@@ -36,16 +40,13 @@ public class StatusBarViewModel : ActivatableViewModelBase
         this.WhenAnyValue(vm => vm.StatusMessage).Throttle(TimeSpan.FromSeconds(3)).Subscribe(_ => ShowStatusMessage = false);
     }
 
-    public RenderProfileElement? ProfileElement
-    {
-        get => _profileElement;
-        set => this.RaiseAndSetIfChanged(ref _profileElement, value);
-    }
+    public RenderProfileElement? ProfileElement => _profileElement?.Value;
+    public ProfileEditorHistory? History => _history?.Value;
 
-    public ProfileEditorHistory? History
+    public int PixelsPerSecond
     {
-        get => _history;
-        set => this.RaiseAndSetIfChanged(ref _history, value);
+        get => _pixelsPerSecond?.Value ?? 0;
+        set => _profileEditorService.ChangePixelsPerSecond(value);
     }
 
     public string? StatusMessage

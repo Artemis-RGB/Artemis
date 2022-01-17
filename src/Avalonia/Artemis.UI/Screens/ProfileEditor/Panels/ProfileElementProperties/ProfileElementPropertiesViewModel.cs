@@ -23,7 +23,7 @@ public class ProfileElementPropertiesViewModel : ActivatableViewModelBase
     private readonly IProfileEditorService _profileEditorService;
     private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
     private ObservableAsPropertyHelper<RenderProfileElement?>? _profileElement;
-    private ObservableAsPropertyHelper<double>? _pixelsPerSecond;
+    private ObservableAsPropertyHelper<int>? _pixelsPerSecond;
     private ObservableCollection<ProfileElementPropertyGroupViewModel> _propertyGroupViewModels;
 
     /// <inheritdoc />
@@ -63,7 +63,7 @@ public class ProfileElementPropertiesViewModel : ActivatableViewModelBase
     public TimelineViewModel TimelineViewModel { get; }
     public RenderProfileElement? ProfileElement => _profileElement?.Value;
     public Layer? Layer => _profileElement?.Value as Layer;
-    public double PixelsPerSecond => _pixelsPerSecond?.Value ?? 0;
+    public int PixelsPerSecond => _pixelsPerSecond?.Value ?? 0;
     public IObservable<bool> Playing => _profileEditorService.Playing;
 
     public ObservableCollection<ProfileElementPropertyGroupViewModel> PropertyGroupViewModels

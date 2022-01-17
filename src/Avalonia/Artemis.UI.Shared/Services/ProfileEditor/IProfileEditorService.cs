@@ -39,9 +39,8 @@ public interface IProfileEditorService : IArtemisSharedUIService
     /// <summary>
     ///     Gets an observable of the zoom level.
     /// </summary>
-    IObservable<double> PixelsPerSecond { get; }
-
-
+    IObservable<int> PixelsPerSecond { get; }
+    
     /// <summary>
     ///     Changes the selected profile by its <see cref="Core.ProfileConfiguration" />.
     /// </summary>
@@ -61,7 +60,14 @@ public interface IProfileEditorService : IArtemisSharedUIService
     void ChangeTime(TimeSpan time);
 
     /// <summary>
-    ///     Snaps the given time to the closest relevant element in the timeline, this can be the cursor, a keyframe or a segment end.
+    ///     Changes the current pixels per second
+    /// </summary>
+    /// <param name="pixelsPerSecond">The new pixels per second.</param>
+    void ChangePixelsPerSecond(int pixelsPerSecond);
+
+    /// <summary>
+    ///     Snaps the given time to the closest relevant element in the timeline, this can be the cursor, a keyframe or a
+    ///     segment end.
     /// </summary>
     /// <param name="time">The time to snap.</param>
     /// <param name="tolerance">How close the time must be to snap.</param>
