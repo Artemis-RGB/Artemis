@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:properties="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.TimelineGroupView">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="28" />
+            <RowDefinition Height="1" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ItemsControl Grid.Row="0"
+                      Height="{DynamicResource RailsHeight}"
+                      IsVisible="{Binding !PropertyGroupViewModel.IsExpanded}"
+                      Items="{Binding KeyframePositions}"
+                      HorizontalAlignment="Stretch">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.Styles>
+                <Style Selector="ContentPresenter">
+                    <Setter Property="Canvas.Left" Value="{Binding}" />
+                </Style>
+            </ItemsControl.Styles>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Ellipse Fill="{DynamicResource ControlFillColorDisabledBrush}"
+                             Stroke="White"
+                             StrokeThickness="0"
+                             Width="10"
+                             Height="10"
+                             Margin="-5,6,0,0" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Rectangle Grid.Row="1" HorizontalAlignment="Stretch" Fill="{DynamicResource ButtonBorderBrush}" Height="1" />
+
+        <ItemsControl Grid.Row="2"
+                      Items="{Binding Children}"
+                      IsVisible="{Binding PropertyGroupViewModel.IsExpanded}"
+                      HorizontalAlignment="Stretch">
+            <ItemsControl.DataTemplates>
+                <DataTemplate DataType="properties:PropertyGroupViewModel">
+                    <ContentControl Content="{Binding TimelineGroupViewModel}" IsVisible="{Binding IsVisible}" />
+                </DataTemplate>
+                <DataTemplate DataType="properties:PropertyViewModel">
+                    <ContentControl Content="{Binding TimelinePropertyViewModel}" IsVisible="{Binding IsVisible}" />
+                </DataTemplate>
+            </ItemsControl.DataTemplates>
+        </ItemsControl>
+    </Grid>
+
+</UserControl>

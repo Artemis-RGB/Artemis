@@ -2,8 +2,8 @@
 using System.Reactive.Disposables;
 using Artemis.Core;
 using Artemis.UI.Screens.ProfileEditor.MenuBar;
-using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
+using Artemis.UI.Screens.ProfileEditor.Properties;
 using Artemis.UI.Screens.ProfileEditor.StatusBar;
 using Artemis.UI.Screens.ProfileEditor.VisualEditor;
 using Artemis.UI.Shared.Services.ProfileEditor;
@@ -25,13 +25,13 @@ namespace Artemis.UI.Screens.ProfileEditor
             ProfileTreeViewModel profileTreeViewModel,
             ProfileEditorTitleBarViewModel profileEditorTitleBarViewModel,
             MenuBarViewModel menuBarViewModel, 
-            ProfileElementPropertiesViewModel profileElementPropertiesViewModel,
+            PropertiesViewModel propertiesViewModel,
             StatusBarViewModel statusBarViewModel)
             : base(hostScreen, "profile-editor")
         {
             VisualEditorViewModel = visualEditorViewModel;
             ProfileTreeViewModel = profileTreeViewModel;
-            ProfileElementPropertiesViewModel = profileElementPropertiesViewModel;
+            PropertiesViewModel = propertiesViewModel;
             StatusBarViewModel = statusBarViewModel;
 
             if (OperatingSystem.IsWindows())
@@ -46,7 +46,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         public VisualEditorViewModel VisualEditorViewModel { get; }
         public ProfileTreeViewModel ProfileTreeViewModel { get; }
         public MenuBarViewModel? MenuBarViewModel { get; }
-        public ProfileElementPropertiesViewModel ProfileElementPropertiesViewModel { get; }
+        public PropertiesViewModel PropertiesViewModel { get; }
         public StatusBarViewModel StatusBarViewModel { get; }
 
         public ProfileConfiguration? ProfileConfiguration => _profileConfiguration?.Value;

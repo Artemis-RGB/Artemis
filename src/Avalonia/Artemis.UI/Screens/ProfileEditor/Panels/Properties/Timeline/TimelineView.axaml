@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.TimelineView">
+	<UserControl.Resources>
+		<x:Double x:Key="RailsHeight">28</x:Double>
+		<x:Double x:Key="RailsBorderHeight">29</x:Double>
+	</UserControl.Resources>
+    <Grid Background="Transparent" PointerMoved="InputElement_OnPointerMoved" PointerReleased="InputElement_OnPointerReleased">
+        <ItemsControl Items="{Binding PropertyGroupViewModels}" Padding="0 0 8 0">
+            <ItemsControl.ItemTemplate>
+                <TreeDataTemplate DataType="{x:Type local:PropertyGroupViewModel}" ItemsSource="{Binding Children}">
+                    <ContentControl Content="{Binding TimelineGroupViewModel}" />
+                </TreeDataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+		<controls:SelectionRectangle InputElement="{Binding $parent}" SelectionFinished="SelectionRectangle_OnSelectionFinished"></controls:SelectionRectangle>
+	</Grid>
+
+
+</UserControl>

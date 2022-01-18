@@ -1,0 +1,76 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.TimelineKeyframeView"
+             ClipToBounds="False"
+             Height="{DynamicResource RailsHeight}">
+    <Ellipse Fill="{DynamicResource SystemAccentColorLight2}"
+             Stroke="White"
+             Width="10"
+             Height="10"
+             Margin="-5,0,0,0"
+             ToolTip.Tip="{Binding Timestamp}"
+             Classes.selected="{Binding IsSelected}">
+        <Ellipse.Styles>
+            <Style Selector="Ellipse">
+                <Setter Property="StrokeThickness" Value="0" />
+            </Style>
+            <Style Selector="Ellipse.selected">
+                <Setter Property="StrokeThickness" Value="1" />
+            </Style>
+        </Ellipse.Styles>
+        <Ellipse.Transitions>
+            <Transitions>
+                <DoubleTransition Property="StrokeThickness" Duration="0:0:0.25" />
+            </Transitions>
+        </Ellipse.Transitions>
+        <Ellipse.ContextFlyout>
+            <MenuFlyout>
+                <MenuItem Header="Easing" Items="{Binding EasingViewModels}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Creation" />
+                    </MenuItem.Icon>
+                    <MenuItem.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Polyline Stroke="{DynamicResource MaterialDesignBody}"
+                                          StrokeThickness="1"
+                                          Points="{Binding EasingPoints}"
+                                          Stretch="Uniform"
+                                          Width="20"
+                                          Height="20"
+                                          Margin="0 0 10 0" />
+                                <TextBlock Text="{Binding Description}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </MenuItem.ItemTemplate>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Duplicate" Command="{Binding DuplicateKeyframes}" CommandParameter="{Binding}" InputGesture="Ctrl+D">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="ContentDuplicate" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Copy" Command="{Binding CopyKeyframes}" CommandParameter="{Binding}" InputGesture="Ctrl+C">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="ContentCopy" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Paste" Command="{Binding PasteKeyframes}" CommandParameter="{Binding}" InputGesture="Ctrl+V">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="ContentPaste" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Delete" Command="{Binding DeleteKeyframes}" InputGesture="Delete">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Delete" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuFlyout>
+        </Ellipse.ContextFlyout>
+    </Ellipse>
+</UserControl>

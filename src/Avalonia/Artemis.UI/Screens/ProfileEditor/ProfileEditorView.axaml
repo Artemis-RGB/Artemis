@@ -67,7 +67,7 @@
             <GridSplitter Grid.Row="1" Classes="editor-grid-splitter-horizontal" />
 
             <Border Grid.Row="2" Classes="card card-condensed" Margin="4" Padding="0" ClipToBounds="True">
-                <ContentControl Content="{Binding ProfileElementPropertiesViewModel}"/>
+                <ContentControl Content="{Binding PropertiesViewModel}"/>
             </Border>
         </Grid>
 

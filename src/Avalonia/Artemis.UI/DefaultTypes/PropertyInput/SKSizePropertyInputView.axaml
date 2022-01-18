@@ -13,11 +13,13 @@
                             Value="{Binding Height}"
                             SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
                             ToolTip.Tip="Height"
+                            SimpleNumberFormat="F3"
                             VerticalAlignment="Center"/>
         <TextBlock VerticalAlignment="Center">,</TextBlock>
         <controls:NumberBox Classes="condensed"
                             Value="{Binding Width}" 
                             SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                            SimpleNumberFormat="F3"
                             VerticalAlignment="Center"/>
         <TextBlock Width="25"
                    Text="{Binding LayerProperty.PropertyDescription.InputAffix}"

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Reflection;
 using Artemis.Core;
-using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Timeline;
-using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Tree;
+using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
+using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using Ninject.Extensions.Factory;
 
 namespace Artemis.UI.Ninject.InstanceProviders

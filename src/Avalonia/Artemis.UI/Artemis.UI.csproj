@@ -48,4 +48,9 @@
 		<Resource Include="Assets\Images\Logo\bow.ico" />
 		<Resource Include="Assets\Images\Logo\bow.svg" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Screens\ProfileEditor\Panels\Properties\PropertiesView.axaml.cs">
+	    <DependentUpon>PropertiesView.axaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
 </Project>

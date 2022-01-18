@@ -12,6 +12,7 @@
                             Value="{Binding InputValue}" 
                             SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
                             AcceptsExpression="True"
+                            SimpleNumberFormat="F3"
                             VerticalAlignment="Center"/>
         <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" VerticalAlignment="Center"/>
     </StackPanel>

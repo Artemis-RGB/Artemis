@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Globalization;
-using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Tree;
+using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using Avalonia;
 using Avalonia.Data.Converters;
 

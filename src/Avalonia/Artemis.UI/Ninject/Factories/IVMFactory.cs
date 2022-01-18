@@ -5,10 +5,10 @@ using Artemis.Core.LayerEffects;
 using Artemis.UI.Screens.Device;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor;
-using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties;
-using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Timeline;
-using Artemis.UI.Screens.ProfileEditor.ProfileElementProperties.Tree;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
+using Artemis.UI.Screens.ProfileEditor.Properties;
+using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
+using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Screens.SurfaceEditor;
@@ -67,13 +67,15 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface ILayerPropertyVmFactory : IVmFactory
     {
-        ProfileElementPropertyViewModel ProfileElementPropertyViewModel(ILayerProperty layerProperty);
-        ProfileElementPropertyGroupViewModel ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup);
-        ProfileElementPropertyGroupViewModel ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, BaseLayerBrush layerBrush);
-        ProfileElementPropertyGroupViewModel ProfileElementPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, BaseLayerEffect layerEffect);
+        PropertyViewModel PropertyViewModel(ILayerProperty layerProperty);
+        PropertyGroupViewModel PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup);
+        PropertyGroupViewModel PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, BaseLayerBrush layerBrush);
+        PropertyGroupViewModel PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, BaseLayerEffect layerEffect);
 
-        TreeGroupViewModel TreeGroupViewModel(ProfileElementPropertyGroupViewModel profileElementPropertyGroupViewModel);
-        // TimelineGroupViewModel TimelineGroupViewModel(ProfileElementPropertiesViewModel profileElementPropertiesViewModel);
+        TreeGroupViewModel TreeGroupViewModel(PropertyGroupViewModel propertyGroupViewModel);
+
+        TimelineViewModel TimelineViewModel(ObservableCollection<PropertyGroupViewModel> propertyGroupViewModels);
+        TimelineGroupViewModel TimelineGroupViewModel(PropertyGroupViewModel propertyGroupViewModel);
 
         // TreeViewModel TreeViewModel(ProfileElementPropertiesViewModel profileElementPropertiesViewModel, IObservableCollection<ProfileElementPropertyGroupViewModel> profileElementPropertyGroups);
         // EffectsViewModel EffectsViewModel(ProfileElementPropertiesViewModel profileElementPropertiesViewModel);
@@ -83,7 +85,7 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface IPropertyVmFactory
     {
-        ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, ProfileElementPropertyViewModel profileElementPropertyViewModel);
-        ITimelinePropertyViewModel TimelinePropertyViewModel(ILayerProperty layerProperty, ProfileElementPropertyViewModel profileElementPropertyViewModel);
+        ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, PropertyViewModel propertyViewModel);
+        ITimelinePropertyViewModel TimelinePropertyViewModel(ILayerProperty layerProperty, PropertyViewModel propertyViewModel);
     }
 }

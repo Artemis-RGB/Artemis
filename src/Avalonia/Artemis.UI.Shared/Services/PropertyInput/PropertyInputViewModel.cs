@@ -22,6 +22,7 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
     [AllowNull] private T _inputValue;
 
     private TimeSpan _time;
+    private bool _updating;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="PropertyInputViewModel{T}" /> class
@@ -156,6 +157,9 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
     /// </summary>
     protected virtual void ApplyInputValue()
     {
+        if (_updating)
+            return;
+
         if (InputDragging)
             ProfileEditorService.ChangeTime(_time);
         else if (ValidationContext.IsValid)
@@ -164,16 +168,25 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
 
     private void UpdateInputValue()
     {
-        // Avoid unnecessary UI updates and validator cycles
-        if (_inputValue != null && _inputValue.Equals(LayerProperty.CurrentValue) || _inputValue == null && LayerProperty.CurrentValue == null)
-            return;
+        try
+        {
+            _updating = true;
+            // Avoid unnecessary UI updates and validator cycles
+            if (_inputValue != null && _inputValue.Equals(LayerProperty.CurrentValue) || _inputValue == null && LayerProperty.CurrentValue == null)
+                return;
 
-        // Override the input value
-        _inputValue = LayerProperty.CurrentValue;
+            // Override the input value
+            _inputValue = LayerProperty.CurrentValue;
 
-        // Notify a change in the input value
-        OnInputValueChanged();
-        this.RaisePropertyChanged(nameof(InputValue));
+            // Notify a change in the input value
+            OnInputValueChanged();
+            this.RaisePropertyChanged(nameof(InputValue));
+        }
+        finally
+        {
+            _updating = false;
+        }
+       
     }
 
     private void UpdateDataBinding()

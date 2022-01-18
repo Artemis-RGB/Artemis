@@ -44,9 +44,11 @@ namespace Artemis.UI.Shared.Controls
             AvaloniaProperty.Register<SelectionRectangle, IControl?>(nameof(InputElement), notifying: OnInputElementChanged);
 
         private Rect? _displayRect;
+        private Rect? _absoluteRect;
         private IControl? _oldInputElement;
         private Point _startPosition;
-
+        private Point _absoluteStartPosition;
+        
         /// <inheritdoc />
         public SelectionRectangle()
         {
@@ -140,6 +142,7 @@ namespace Artemis.UI.Shared.Controls
             e.Pointer.Capture(this);
 
             _startPosition = e.GetPosition(Parent);
+            _absoluteStartPosition = e.GetPosition(VisualRoot);
             _displayRect = null;
         }
 
@@ -149,11 +152,18 @@ namespace Artemis.UI.Shared.Controls
                 return;
 
             Point currentPosition = e.GetPosition(Parent);
+            Point absoluteCurrentPosition = e.GetPosition(VisualRoot);
+
             _displayRect = new Rect(
                 new Point(Math.Min(_startPosition.X, currentPosition.X), Math.Min(_startPosition.Y, currentPosition.Y)),
                 new Point(Math.Max(_startPosition.X, currentPosition.X), Math.Max(_startPosition.Y, currentPosition.Y))
             );
-            OnSelectionUpdated(new SelectionRectangleEventArgs(_displayRect.Value, e.KeyModifiers));
+            _absoluteRect = new Rect(
+                new Point(Math.Min(_absoluteStartPosition.X, absoluteCurrentPosition.X), Math.Min(_absoluteStartPosition.Y, absoluteCurrentPosition.Y)),
+                new Point(Math.Max(_absoluteStartPosition.X, absoluteCurrentPosition.X), Math.Max(_absoluteStartPosition.Y, absoluteCurrentPosition.Y))
+            );
+
+            OnSelectionUpdated(new SelectionRectangleEventArgs(_displayRect.Value, _absoluteRect.Value, e.KeyModifiers));
             InvalidateVisual();
         }
 
@@ -164,8 +174,11 @@ namespace Artemis.UI.Shared.Controls
 
             e.Pointer.Capture(null);
 
-            if (_displayRect != null)
-                OnSelectionFinished(new SelectionRectangleEventArgs(_displayRect.Value, e.KeyModifiers));
+            if (_displayRect != null && _absoluteRect != null)
+            {
+                OnSelectionFinished(new SelectionRectangleEventArgs(_displayRect.Value, _absoluteRect.Value, e.KeyModifiers));
+                e.Handled = true;
+            }
 
             _displayRect = null;
             InvalidateVisual();
