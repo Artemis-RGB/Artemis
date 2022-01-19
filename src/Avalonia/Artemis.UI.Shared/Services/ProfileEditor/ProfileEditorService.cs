@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services.Interfaces;
+using DynamicData;
 using Serilog;
 
 namespace Artemis.UI.Shared.Services.ProfileEditor;
@@ -20,6 +22,8 @@ internal class ProfileEditorService : IProfileEditorService
     private readonly BehaviorSubject<bool> _playingSubject = new(false);
     private readonly BehaviorSubject<bool> _suspendedEditingSubject = new(false);
     private readonly BehaviorSubject<int> _pixelsPerSecondSubject = new(120);
+    private readonly SourceList<ILayerPropertyKeyframe> _selectedKeyframes = new();
+
     private readonly ILogger _logger;
     private readonly IProfileService _profileService;
     private readonly IModuleService _moduleService;
@@ -60,6 +64,7 @@ internal class ProfileEditorService : IProfileEditorService
     public IObservable<bool> Playing { get; }
     public IObservable<bool> SuspendedEditing { get; }
     public IObservable<int> PixelsPerSecond { get; }
+    public IObservable<IChangeSet<ILayerPropertyKeyframe>> ConnectToKeyframes() => _selectedKeyframes.Connect();
 
     public void ChangeCurrentProfileConfiguration(ProfileConfiguration? profileConfiguration)
     {
@@ -97,11 +102,13 @@ internal class ProfileEditorService : IProfileEditorService
             _moduleService.SetActivationOverride(null);
             _profileService.RenderForEditor = false;
         }
+
         _profileConfigurationSubject.OnNext(profileConfiguration);
     }
 
     public void ChangeCurrentProfileElement(RenderProfileElement? renderProfileElement)
     {
+        _selectedKeyframes.Clear();
         _profileElementSubject.OnNext(renderProfileElement);
     }
 
@@ -109,6 +116,57 @@ internal class ProfileEditorService : IProfileEditorService
     {
         Tick(time);
         _timeSubject.OnNext(time);
+    }
+
+    public void SelectKeyframe(ILayerPropertyKeyframe? keyframe, bool expand, bool toggle)
+    {
+        if (keyframe == null)
+        {
+            if (!expand)
+                _selectedKeyframes.Clear();
+            return;
+        }
+
+        if (toggle)
+        {
+            // Toggle only the clicked keyframe, leave others alone
+            if (_selectedKeyframes.Items.Contains(keyframe))
+                _selectedKeyframes.Remove(keyframe);
+            else
+                _selectedKeyframes.Add(keyframe);
+        }
+        else
+        {
+            if (expand)
+            {
+                _selectedKeyframes.Add(keyframe);
+            }
+            else
+            {
+                _selectedKeyframes.Edit(l =>
+                {
+                    l.Clear();
+                    l.Add(keyframe);
+                });
+            }
+        }
+    }
+
+    public void SelectKeyframes(IEnumerable<ILayerPropertyKeyframe> keyframes, bool expand)
+    {
+        if (expand)
+        {
+            List<ILayerPropertyKeyframe> toAdd = keyframes.Except(_selectedKeyframes.Items).ToList();
+            _selectedKeyframes.AddRange(toAdd);
+        }
+        else
+        {
+            _selectedKeyframes.Edit(l =>
+            {
+                l.Clear();
+                l.AddRange(keyframes);
+            });
+        }
     }
 
     public TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, List<TimeSpan>? snapTimes = null)

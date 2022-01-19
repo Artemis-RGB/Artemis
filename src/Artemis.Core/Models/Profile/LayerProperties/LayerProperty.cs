@@ -258,6 +258,9 @@ namespace Artemis.Core
         /// </summary>
         public ReadOnlyCollection<LayerPropertyKeyframe<T>> Keyframes { get; }
 
+        /// <inheritdoc />
+        public ReadOnlyCollection<ILayerPropertyKeyframe> UntypedKeyframes => new(Keyframes.Cast<ILayerPropertyKeyframe>().ToList());
+
         /// <summary>
         ///     Gets the current keyframe in the timeline according to the current progress
         /// </summary>

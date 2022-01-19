@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
@@ -51,6 +53,11 @@ namespace Artemis.Core
         ///     Gets the unique path of the property on the render element
         /// </summary>
         string Path { get; }
+
+        /// <summary>
+        ///     Gets a read-only list of all the keyframes on this layer property
+        /// </summary>
+        ReadOnlyCollection<ILayerPropertyKeyframe> UntypedKeyframes { get; }
 
         /// <summary>
         ///     Gets the type of the property

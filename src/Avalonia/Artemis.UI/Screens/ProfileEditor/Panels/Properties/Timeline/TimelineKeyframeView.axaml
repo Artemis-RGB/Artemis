@@ -13,7 +13,10 @@
              Height="10"
              Margin="-5,0,0,0"
              ToolTip.Tip="{Binding Timestamp}"
-             Classes.selected="{Binding IsSelected}">
+             Classes.selected="{Binding IsSelected}"
+             PointerPressed="InputElement_OnPointerPressed"
+             PointerReleased="InputElement_OnPointerReleased"
+             PointerMoved="InputElement_OnPointerMoved">
         <Ellipse.Styles>
             <Style Selector="Ellipse">
                 <Setter Property="StrokeThickness" Value="0" />

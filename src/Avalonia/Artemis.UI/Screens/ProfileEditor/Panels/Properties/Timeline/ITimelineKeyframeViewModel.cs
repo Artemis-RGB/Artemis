@@ -5,11 +5,15 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 
 public interface ITimelineKeyframeViewModel
 {
-    bool IsSelected { get; set; }
+    bool IsSelected { get; }
     TimeSpan Position { get; }
     ILayerPropertyKeyframe Keyframe { get; }
 
     #region Movement
+
+    void Select(bool expand, bool toggle);
+    // void StartMovement();
+    // void FinishMovement();
 
     void SaveOffsetToKeyframe(ITimelineKeyframeViewModel source);
     void ApplyOffsetToKeyframe(ITimelineKeyframeViewModel source);

@@ -43,69 +43,8 @@ public class TimelineViewModel : ActivatableViewModelBase
         return _profileEditorService.SnapToTimeline(time, tolerance, snapToSegments, snapToCurrentTime, snapTimes);
     }
 
-    public void SelectKeyframes(List<ITimelineKeyframeViewModel> keyframes, bool expand)
+    public void SelectKeyframes(IEnumerable<ITimelineKeyframeViewModel> keyframes, bool expand)
     {
-        List<ITimelineKeyframeViewModel> expandedKeyframes = PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(true)).ToList();
-        List<ITimelineKeyframeViewModel> collapsedKeyframes = PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(false)).Except(expandedKeyframes).ToList();
-
-        foreach (ITimelineKeyframeViewModel timelineKeyframeViewModel in collapsedKeyframes)
-            timelineKeyframeViewModel.IsSelected = false;
-        foreach (ITimelineKeyframeViewModel timelineKeyframeViewModel in expandedKeyframes)
-        {
-            if (timelineKeyframeViewModel.IsSelected && expand)
-                continue;
-            timelineKeyframeViewModel.IsSelected = keyframes.Contains(timelineKeyframeViewModel);
-        }
-    }
-
-    public void SelectKeyframe(ITimelineKeyframeViewModel? clicked, bool selectBetween, bool toggle)
-    {
-        List<ITimelineKeyframeViewModel> expandedKeyframes = PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(true)).ToList();
-        List<ITimelineKeyframeViewModel> collapsedKeyframes = PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(false)).Except(expandedKeyframes).ToList();
-
-        foreach (ITimelineKeyframeViewModel timelineKeyframeViewModel in collapsedKeyframes)
-            timelineKeyframeViewModel.IsSelected = false;
-
-        if (clicked == null)
-        {
-            foreach (ITimelineKeyframeViewModel timelineKeyframeViewModel in expandedKeyframes)
-                timelineKeyframeViewModel.IsSelected = false;
-
-            return;
-        }
-
-        if (selectBetween)
-        {
-            int selectedIndex = expandedKeyframes.FindIndex(k => k.IsSelected);
-            // If nothing is selected, select only the clicked
-            if (selectedIndex == -1)
-            {
-                clicked.IsSelected = true;
-                return;
-            }
-
-            foreach (ITimelineKeyframeViewModel keyframeViewModel in expandedKeyframes)
-                keyframeViewModel.IsSelected = false;
-
-            int clickedIndex = expandedKeyframes.IndexOf(clicked);
-            if (clickedIndex < selectedIndex)
-                foreach (ITimelineKeyframeViewModel keyframeViewModel in expandedKeyframes.Skip(clickedIndex).Take(selectedIndex - clickedIndex + 1))
-                    keyframeViewModel.IsSelected = true;
-            else
-                foreach (ITimelineKeyframeViewModel keyframeViewModel in expandedKeyframes.Skip(selectedIndex).Take(clickedIndex - selectedIndex + 1))
-                    keyframeViewModel.IsSelected = true;
-        }
-        else if (toggle)
-        {
-            // Toggle only the clicked keyframe, leave others alone
-            clicked.IsSelected = !clicked.IsSelected;
-        }
-        else
-        {
-            // Only select the clicked keyframe
-            foreach (ITimelineKeyframeViewModel keyframeViewModel in expandedKeyframes)
-                keyframeViewModel.IsSelected = false;
-            clicked.IsSelected = true;
-        }
+        _profileEditorService.SelectKeyframes(keyframes.Select(k => k.Keyframe), expand);
     }
 }

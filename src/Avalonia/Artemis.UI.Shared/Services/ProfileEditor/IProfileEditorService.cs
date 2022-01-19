@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Shared.Services.Interfaces;
+using DynamicData;
 
 namespace Artemis.UI.Shared.Services.ProfileEditor;
 
@@ -40,7 +41,13 @@ public interface IProfileEditorService : IArtemisSharedUIService
     ///     Gets an observable of the zoom level.
     /// </summary>
     IObservable<int> PixelsPerSecond { get; }
-    
+
+    /// <summary>
+    /// Connect to the observable list of keyframes and observe any changes starting with the list's initial items.
+    /// </summary>
+    /// <returns>An observable which emits the change set.</returns>
+    IObservable<IChangeSet<ILayerPropertyKeyframe>> ConnectToKeyframes();
+
     /// <summary>
     ///     Changes the selected profile by its <see cref="Core.ProfileConfiguration" />.
     /// </summary>
@@ -64,6 +71,21 @@ public interface IProfileEditorService : IArtemisSharedUIService
     /// </summary>
     /// <param name="pixelsPerSecond">The new pixels per second.</param>
     void ChangePixelsPerSecond(int pixelsPerSecond);
+
+    /// <summary>
+    /// Selects the provided keyframe.
+    /// </summary>
+    /// <param name="keyframe">The keyframe to select.</param>
+    /// <param name="expand">If <see langword="true"/> expands the current selection; otherwise replaces it with only the provided <paramref name="keyframe"/>.</param>
+    /// <param name="toggle">If <see langword="true"/> toggles the selection and only for the provided <paramref name="keyframe"/>.</param>
+    void SelectKeyframe(ILayerPropertyKeyframe? keyframe, bool expand, bool toggle);
+
+    /// <summary>
+    /// Selects the provided keyframes.
+    /// </summary>
+    /// <param name="keyframes">The keyframes to select.</param>
+    /// <param name="expand">If <see langword="true"/> expands the current selection; otherwise replaces it with only the provided <paramref name="keyframes"/>.</param>
+    void SelectKeyframes(IEnumerable<ILayerPropertyKeyframe> keyframes, bool expand);
 
     /// <summary>
     ///     Snaps the given time to the closest relevant element in the timeline, this can be the cursor, a keyframe or a

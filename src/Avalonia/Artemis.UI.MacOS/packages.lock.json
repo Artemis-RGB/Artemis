@@ -201,8 +201,8 @@
       },
       "DynamicData": {
         "type": "Transitive",
-        "resolved": "7.4.3",
-        "contentHash": "7eGyREbtzyaRutMa+iToi2e41JboEVK9c1ZBcTvJOfEoTRIZX3hChIsxIvV0ErzMXtGHAIS2O0I8jLDUIds5wg==",
+        "resolved": "7.4.9",
+        "contentHash": "bzw9n1WgfflkhsScIaC7tzPlKFTJkfWVTOg2pjJjqzVqxF63ztaJ7HH306Iyx6bs+pC77fQbtE53UoPTpt+8dQ==",
         "dependencies": {
           "System.Reactive": "5.0.0"
         }
@@ -1752,6 +1752,7 @@
           "Avalonia.Diagnostics": "0.10.11",
           "Avalonia.ReactiveUI": "0.10.11",
           "Avalonia.Svg.Skia": "0.10.11",
+          "DynamicData": "7.4.9",
           "FluentAvaloniaUI": "1.1.8",
           "Flurl.Http": "3.2.0",
           "Live.Avalonia": "1.3.1",
@@ -1774,6 +1775,7 @@
           "Avalonia.Xaml.Behaviors": "0.10.11.5",
           "Avalonia.Xaml.Interactions": "0.10.11.5",
           "Avalonia.Xaml.Interactivity": "0.10.11.5",
+          "DynamicData": "7.4.9",
           "FluentAvaloniaUI": "1.1.8",
           "Material.Icons.Avalonia": "1.0.2",
           "RGB.NET.Core": "1.0.0-prerelease7",

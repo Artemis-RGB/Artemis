@@ -1,41 +1,46 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Controls.Mixins;
 using DynamicData;
 using ReactiveUI;
-using Disposable = System.Reactive.Disposables.Disposable;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 
 public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineKeyframeViewModel
 {
-    private bool _isSelected;
-    private string _timestamp;
+    private readonly IProfileEditorService _profileEditorService;
+
     private double _x;
+    private string _timestamp;
+    private ObservableAsPropertyHelper<bool>? _isSelected;
 
     public TimelineKeyframeViewModel(LayerPropertyKeyframe<T> layerPropertyKeyframe, IProfileEditorService profileEditorService)
     {
-        IProfileEditorService profileEditorService1 = profileEditorService;
+        _profileEditorService = profileEditorService;
         _timestamp = "0.000";
         LayerPropertyKeyframe = layerPropertyKeyframe;
         EasingViewModels = new ObservableCollection<TimelineEasingViewModel>();
 
         this.WhenActivated(d =>
         {
-            profileEditorService1.PixelsPerSecond.Subscribe(p =>
+            profileEditorService.PixelsPerSecond.Subscribe(p =>
             {
                 _pixelsPerSecond = p;
-                profileEditorService1.PixelsPerSecond.Subscribe(_ => Update()).DisposeWith(d);
-                Disposable.Create(() =>
+                profileEditorService.PixelsPerSecond.Subscribe(_ => Update()).DisposeWith(d);
+                System.Reactive.Disposables.Disposable.Create(() =>
                 {
                     foreach (TimelineEasingViewModel timelineEasingViewModel in EasingViewModels)
                         timelineEasingViewModel.EasingModeSelected -= TimelineEasingViewModelOnEasingModeSelected;
                 }).DisposeWith(d);
             }).DisposeWith(d);
+
+            _isSelected = profileEditorService.ConnectToKeyframes().ToCollection().Select(keyframes => keyframes.Contains(LayerPropertyKeyframe)).ToProperty(this, vm => vm.IsSelected).DisposeWith(d);
+            profileEditorService.ConnectToKeyframes();
         });
     }
 
@@ -54,20 +59,21 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
         set => this.RaiseAndSetIfChanged(ref _timestamp, value);
     }
 
+    public bool IsSelected => _isSelected?.Value ?? false;
+    public TimeSpan Position => LayerPropertyKeyframe.Position;
+    public ILayerPropertyKeyframe Keyframe => LayerPropertyKeyframe;
+
     public void Update()
     {
         X = _pixelsPerSecond * LayerPropertyKeyframe.Position.TotalSeconds;
         Timestamp = $"{Math.Floor(LayerPropertyKeyframe.Position.TotalSeconds):00}.{LayerPropertyKeyframe.Position.Milliseconds:000}";
     }
 
-    public bool IsSelected
+    /// <inheritdoc />
+    public void Select(bool expand, bool toggle)
     {
-        get => _isSelected;
-        set => this.RaiseAndSetIfChanged(ref _isSelected, value);
+        _profileEditorService.SelectKeyframe(Keyframe, expand, toggle);
     }
-
-    public TimeSpan Position => LayerPropertyKeyframe.Position;
-    public ILayerPropertyKeyframe Keyframe => LayerPropertyKeyframe;
 
     #region Context menu actions
 

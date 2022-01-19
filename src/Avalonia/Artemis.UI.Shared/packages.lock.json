@@ -70,6 +70,15 @@
           "Avalonia": "0.10.11"
         }
       },
+      "DynamicData": {
+        "type": "Direct",
+        "requested": "[7.4.9, )",
+        "resolved": "7.4.9",
+        "contentHash": "bzw9n1WgfflkhsScIaC7tzPlKFTJkfWVTOg2pjJjqzVqxF63ztaJ7HH306Iyx6bs+pC77fQbtE53UoPTpt+8dQ==",
+        "dependencies": {
+          "System.Reactive": "5.0.0"
+        }
+      },
       "FluentAvaloniaUI": {
         "type": "Direct",
         "requested": "[1.1.8, )",
@@ -238,14 +247,6 @@
           "System.Reflection.Emit": "4.3.0",
           "System.Reflection.TypeExtensions": "4.3.0",
           "System.Xml.XmlDocument": "4.3.0"
-        }
-      },
-      "DynamicData": {
-        "type": "Transitive",
-        "resolved": "7.4.3",
-        "contentHash": "7eGyREbtzyaRutMa+iToi2e41JboEVK9c1ZBcTvJOfEoTRIZX3hChIsxIvV0ErzMXtGHAIS2O0I8jLDUIds5wg==",
-        "dependencies": {
-          "System.Reactive": "5.0.0"
         }
       },
       "EmbedIO": {
