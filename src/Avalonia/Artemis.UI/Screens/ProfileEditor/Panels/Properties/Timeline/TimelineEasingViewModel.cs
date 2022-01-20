@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Artemis.Core;
 using Artemis.UI.Shared;
 using Avalonia;
@@ -9,11 +8,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 
 public class TimelineEasingViewModel : ViewModelBase
 {
-    private bool _isEasingModeSelected;
+    private readonly ILayerPropertyKeyframe _keyframe;
 
-    public TimelineEasingViewModel(Easings.Functions easingFunction, bool isSelected)
+    public TimelineEasingViewModel(Easings.Functions easingFunction, ILayerPropertyKeyframe keyframe)
     {
-        _isEasingModeSelected = isSelected;
+        _keyframe = keyframe;
 
         EasingFunction = easingFunction;
         Description = easingFunction.Humanize();
@@ -30,21 +29,5 @@ public class TimelineEasingViewModel : ViewModelBase
     public Easings.Functions EasingFunction { get; }
     public List<Point> EasingPoints { get; }
     public string Description { get; }
-
-    public bool IsEasingModeSelected
-    {
-        get => _isEasingModeSelected;
-        set
-        {
-            _isEasingModeSelected = value;
-            if (value) OnEasingModeSelected();
-        }
-    }
-
-    public event EventHandler EasingModeSelected;
-
-    protected virtual void OnEasingModeSelected()
-    {
-        EasingModeSelected?.Invoke(this, EventArgs.Empty);
-    }
+    public bool IsEasingModeSelected => _keyframe.EasingFunction == EasingFunction;
 }

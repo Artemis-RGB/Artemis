@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.TimelineEasingView">
+    <StackPanel Orientation="Horizontal">
+        <Polyline Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                  StrokeThickness="1"
+                  Points="{Binding EasingPoints}"
+                  Stretch="Uniform"
+                  Width="20"
+                  Height="20"
+                  Margin="0 0 10 0" />
+        <TextBlock Text="{Binding Description}" />
+    </StackPanel>
+</UserControl>

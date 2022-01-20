@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:timeline="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Timeline"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.TimelineKeyframeView"
              ClipToBounds="False"
@@ -31,25 +32,24 @@
             </Transitions>
         </Ellipse.Transitions>
         <Ellipse.ContextFlyout>
-            <MenuFlyout>
+            <MenuFlyout Opening="FlyoutBase_OnOpening">
                 <MenuItem Header="Easing" Items="{Binding EasingViewModels}">
+                    <MenuItem.Styles>
+                        <Style Selector="MenuItem > MenuItem">
+                            <Setter Property="Icon">
+                                <Setter.Value>
+                                    <Template>
+                                        <CheckBox IsHitTestVisible="False" IsChecked="{Binding IsEasingModeSelected}" />
+                                    </Template>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Command" Value="{Binding $parent[UserControl].DataContext.SelectEasingFunction}"></Setter>
+                            <Setter Property="CommandParameter" Value="{Binding EasingFunction}"></Setter>
+                        </Style>
+                    </MenuItem.Styles>
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="Creation" />
                     </MenuItem.Icon>
-                    <MenuItem.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <Polyline Stroke="{DynamicResource MaterialDesignBody}"
-                                          StrokeThickness="1"
-                                          Points="{Binding EasingPoints}"
-                                          Stretch="Uniform"
-                                          Width="20"
-                                          Height="20"
-                                          Margin="0 0 10 0" />
-                                <TextBlock Text="{Binding Description}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </MenuItem.ItemTemplate>
                 </MenuItem>
                 <Separator />
                 <MenuItem Header="Duplicate" Command="{Binding DuplicateKeyframes}" CommandParameter="{Binding}" InputGesture="Ctrl+D">

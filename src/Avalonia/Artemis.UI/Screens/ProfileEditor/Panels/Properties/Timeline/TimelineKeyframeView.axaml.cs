@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
@@ -42,5 +43,10 @@ public class TimelineKeyframeView : ReactiveUserControl<ITimelineKeyframeViewMod
         // Select the keyframe if the user didn't move
         if (!_moved)
             ViewModel?.Select(e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
+    }
+
+    private void FlyoutBase_OnOpening(object? sender, EventArgs e)
+    {
+        ViewModel?.PopulateEasingViewModels();
     }
 }

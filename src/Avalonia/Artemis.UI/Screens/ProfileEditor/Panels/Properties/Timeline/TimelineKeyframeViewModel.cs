@@ -6,7 +6,9 @@ using Artemis.Core;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Controls.Mixins;
+using Avalonia.Input;
 using DynamicData;
+using Humanizer;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
@@ -32,11 +34,6 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
             {
                 _pixelsPerSecond = p;
                 profileEditorService.PixelsPerSecond.Subscribe(_ => Update()).DisposeWith(d);
-                System.Reactive.Disposables.Disposable.Create(() =>
-                {
-                    foreach (TimelineEasingViewModel timelineEasingViewModel in EasingViewModels)
-                        timelineEasingViewModel.EasingModeSelected -= TimelineEasingViewModelOnEasingModeSelected;
-                }).DisposeWith(d);
             }).DisposeWith(d);
 
             _isSelected = profileEditorService.ConnectToKeyframes().ToCollection().Select(keyframes => keyframes.Contains(LayerPropertyKeyframe)).ToProperty(this, vm => vm.IsSelected).DisposeWith(d);
@@ -142,31 +139,45 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
 
         EasingViewModels.AddRange(Enum.GetValues(typeof(Easings.Functions))
             .Cast<Easings.Functions>()
-            .Select(e => new TimelineEasingViewModel(e, e == LayerPropertyKeyframe.EasingFunction)));
-
-        foreach (TimelineEasingViewModel timelineEasingViewModel in EasingViewModels)
-            timelineEasingViewModel.EasingModeSelected += TimelineEasingViewModelOnEasingModeSelected;
+            .Select(e => new TimelineEasingViewModel(e, Keyframe)));
     }
 
-    public void ClearEasingViewModels()
+    public void SelectEasingFunction(Easings.Functions easingFunction)
     {
-        EasingViewModels.Clear();
+        _profileEditorService.ExecuteCommand(new ChangeKeyframeEasing(Keyframe, easingFunction));
     }
 
-    private void TimelineEasingViewModelOnEasingModeSelected(object? sender, EventArgs e)
+    #endregion
+}
+
+public class ChangeKeyframeEasing : IProfileEditorCommand
+{
+    private readonly ILayerPropertyKeyframe _keyframe;
+    private readonly Easings.Functions _easingFunction;
+    private readonly Easings.Functions _originalEasingFunction;
+
+    public ChangeKeyframeEasing(ILayerPropertyKeyframe keyframe, Easings.Functions easingFunction)
     {
-        if (sender is TimelineEasingViewModel timelineEasingViewModel)
-            SelectEasingMode(timelineEasingViewModel);
+        _keyframe = keyframe;
+        _easingFunction = easingFunction;
+        _originalEasingFunction = keyframe.EasingFunction;
     }
 
-    public void SelectEasingMode(TimelineEasingViewModel easingViewModel)
-    {
-        throw new NotImplementedException();
+    #region Implementation of IProfileEditorCommand
 
-        LayerPropertyKeyframe.EasingFunction = easingViewModel.EasingFunction;
-        // Set every selection to false except on the VM that made the change
-        foreach (TimelineEasingViewModel propertyTrackEasingViewModel in EasingViewModels.Where(vm => vm != easingViewModel))
-            propertyTrackEasingViewModel.IsEasingModeSelected = false;
+    /// <inheritdoc />
+    public string DisplayName => "Change easing to " + _easingFunction.Humanize(LetterCasing.LowerCase);
+
+    /// <inheritdoc />
+    public void Execute()
+    {
+        _keyframe.EasingFunction = _easingFunction;
+    }
+
+    /// <inheritdoc />
+    public void Undo()
+    {
+        _keyframe.EasingFunction = _originalEasingFunction;
     }
 
     #endregion

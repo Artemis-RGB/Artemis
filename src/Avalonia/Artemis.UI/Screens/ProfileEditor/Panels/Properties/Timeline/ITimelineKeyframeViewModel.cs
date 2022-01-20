@@ -25,7 +25,6 @@ public interface ITimelineKeyframeViewModel
     #region Context menu actions
 
     void PopulateEasingViewModels();
-    void ClearEasingViewModels();
     void Delete(bool save = true);
 
     #endregion

@@ -14,12 +14,12 @@ namespace Artemis.Core
         ILayerProperty UntypedLayerProperty { get; }
 
         /// <summary>
-        ///     The position of this keyframe in the timeline
+        ///     Gets or sets the position of this keyframe in the timeline
         /// </summary>
         TimeSpan Position { get; set; }
 
         /// <summary>
-        ///     The easing function applied on the value of the keyframe
+        ///     Gets or sets the easing function applied on the value of the keyframe
         /// </summary>
         Easings.Functions EasingFunction { get; set; }
 
