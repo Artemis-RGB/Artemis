@@ -1,5 +1,6 @@
 ﻿using System;
 using Artemis.Core;
+using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 
@@ -12,20 +13,20 @@ public interface ITimelineKeyframeViewModel
     #region Movement
 
     void Select(bool expand, bool toggle);
-    // void StartMovement();
-    // void FinishMovement();
-
-    void SaveOffsetToKeyframe(ITimelineKeyframeViewModel source);
-    void ApplyOffsetToKeyframe(ITimelineKeyframeViewModel source);
-    void UpdatePosition(TimeSpan position);
-    void ReleaseMovement();
+    void StartMovement(ITimelineKeyframeViewModel source);
+    void UpdateMovement(TimeSpan position);
+    void FinishMovement();
+    TimeSpan GetTimeSpanAtPosition(double x);
 
     #endregion
 
     #region Context menu actions
 
     void PopulateEasingViewModels();
-    void Delete(bool save = true);
+    void Duplicate();
+    void Copy();
+    void Paste();
+    void Delete();
 
     #endregion
 }

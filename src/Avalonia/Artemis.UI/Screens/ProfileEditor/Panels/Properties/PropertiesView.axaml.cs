@@ -72,7 +72,7 @@ public class PropertiesView : ReactiveUserControl<PropertiesViewModel>
         if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
         {
             List<TimeSpan> snapTimes = ViewModel.PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(true)).Select(k => k.Position).ToList();
-            newTime = ViewModel.TimelineViewModel.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ViewModel.PixelsPerSecond * 5), true, false, snapTimes);
+            newTime = ViewModel.TimelineViewModel.SnapToTimeline(newTime, true, false, snapTimes);
         }
 
         // If holding down control, round to the closest 50ms

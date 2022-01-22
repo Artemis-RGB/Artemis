@@ -5,10 +5,10 @@ using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
+using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia.Controls.Mixins;
 using Avalonia.Input;
 using DynamicData;
-using Humanizer;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
@@ -30,14 +30,15 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
 
         this.WhenActivated(d =>
         {
+            _isSelected = profileEditorService.ConnectToKeyframes().ToCollection().Select(keyframes => keyframes.Contains(LayerPropertyKeyframe)).ToProperty(this, vm => vm.IsSelected).DisposeWith(d);
+            profileEditorService.ConnectToKeyframes();
             profileEditorService.PixelsPerSecond.Subscribe(p =>
             {
                 _pixelsPerSecond = p;
                 profileEditorService.PixelsPerSecond.Subscribe(_ => Update()).DisposeWith(d);
             }).DisposeWith(d);
 
-            _isSelected = profileEditorService.ConnectToKeyframes().ToCollection().Select(keyframes => keyframes.Contains(LayerPropertyKeyframe)).ToProperty(this, vm => vm.IsSelected).DisposeWith(d);
-            profileEditorService.ConnectToKeyframes();
+            this.WhenAnyValue(vm => vm.LayerPropertyKeyframe.Position).Subscribe(_ => Update()).DisposeWith(d);
         });
     }
 
@@ -72,60 +73,76 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
         _profileEditorService.SelectKeyframe(Keyframe, expand, toggle);
     }
 
+    public TimeSpan GetTimeSpanAtPosition(double x)
+    {
+        return TimeSpan.FromSeconds(x / _pixelsPerSecond);
+    }
+
     #region Context menu actions
 
-    public void Delete(bool save = true)
+    public void Duplicate()
     {
         throw new NotImplementedException();
+    }
+
+    public void Copy()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Paste()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Delete()
+    {
+        _profileEditorService.ExecuteCommand(new DeleteKeyframe<T>(LayerPropertyKeyframe));
     }
 
     #endregion
 
-
     #region Movement
 
     private TimeSpan? _offset;
+    private TimeSpan? _startPosition;
     private double _pixelsPerSecond;
 
-    public void ReleaseMovement()
+    public void StartMovement(ITimelineKeyframeViewModel source)
     {
+        _startPosition = LayerPropertyKeyframe.Position;
+        if (source != this)
+            _offset = LayerPropertyKeyframe.Position - source.Position;
+    }
+
+    public void UpdateMovement(TimeSpan position)
+    {
+        if (_offset == null)
+            UpdatePosition(position);
+        else
+            UpdatePosition(position + _offset.Value);
+    }
+
+    public void FinishMovement()
+    {
+        MoveKeyframe command = _startPosition != null
+            ? new MoveKeyframe(Keyframe, Keyframe.Position, _startPosition.Value)
+            : new MoveKeyframe(Keyframe, Keyframe.Position);
+
+        _startPosition = null;
         _offset = null;
+
+        _profileEditorService.ExecuteCommand(command);
     }
 
-    public void SaveOffsetToKeyframe(ITimelineKeyframeViewModel source)
+    private void UpdatePosition(TimeSpan position)
     {
-        if (source == this)
-        {
-            _offset = null;
-            return;
-        }
-
-        if (_offset != null)
-            return;
-
-        _offset = LayerPropertyKeyframe.Position - source.Position;
-    }
-
-    public void ApplyOffsetToKeyframe(ITimelineKeyframeViewModel source)
-    {
-        if (source == this || _offset == null)
-            return;
-
-        UpdatePosition(source.Position + _offset.Value);
-    }
-
-    public void UpdatePosition(TimeSpan position)
-    {
-        throw new NotImplementedException();
-
-        // if (position < TimeSpan.Zero)
-        //     LayerPropertyKeyframe.Position = TimeSpan.Zero;
-        // else if (position > _profileEditorService.SelectedProfileElement.Timeline.Length)
-        //     LayerPropertyKeyframe.Position = _profileEditorService.SelectedProfileElement.Timeline.Length;
-        // else
-        //     LayerPropertyKeyframe.Position = position;
-
-        Update();
+        if (position < TimeSpan.Zero)
+            LayerPropertyKeyframe.Position = TimeSpan.Zero;
+        else if (position > LayerPropertyKeyframe.LayerProperty.ProfileElement.Timeline.Length)
+            LayerPropertyKeyframe.Position = LayerPropertyKeyframe.LayerProperty.ProfileElement.Timeline.Length;
+        else
+            LayerPropertyKeyframe.Position = position;
     }
 
     #endregion
@@ -141,7 +158,7 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
             .Cast<Easings.Functions>()
             .Select(e => new TimelineEasingViewModel(e, Keyframe)));
     }
-
+    
     public void SelectEasingFunction(Easings.Functions easingFunction)
     {
         _profileEditorService.ExecuteCommand(new ChangeKeyframeEasing(Keyframe, easingFunction));
@@ -150,35 +167,3 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
     #endregion
 }
 
-public class ChangeKeyframeEasing : IProfileEditorCommand
-{
-    private readonly ILayerPropertyKeyframe _keyframe;
-    private readonly Easings.Functions _easingFunction;
-    private readonly Easings.Functions _originalEasingFunction;
-
-    public ChangeKeyframeEasing(ILayerPropertyKeyframe keyframe, Easings.Functions easingFunction)
-    {
-        _keyframe = keyframe;
-        _easingFunction = easingFunction;
-        _originalEasingFunction = keyframe.EasingFunction;
-    }
-
-    #region Implementation of IProfileEditorCommand
-
-    /// <inheritdoc />
-    public string DisplayName => "Change easing to " + _easingFunction.Humanize(LetterCasing.LowerCase);
-
-    /// <inheritdoc />
-    public void Execute()
-    {
-        _keyframe.EasingFunction = _easingFunction;
-    }
-
-    /// <inheritdoc />
-    public void Undo()
-    {
-        _keyframe.EasingFunction = _originalEasingFunction;
-    }
-
-    #endregion
-}

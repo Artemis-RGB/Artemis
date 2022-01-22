@@ -22,6 +22,16 @@ public class MoveKeyframe : IProfileEditorCommand
         _originalPosition = keyframe.Position;
     }
 
+    /// <summary>
+    ///     Creates a new instance of the <see cref="MoveKeyframe" /> class.
+    /// </summary>
+    public MoveKeyframe(ILayerPropertyKeyframe keyframe, TimeSpan position, TimeSpan originalPosition)
+    {
+        _keyframe = keyframe;
+        _position = position;
+        _originalPosition = originalPosition;
+    }
+
     #region Implementation of IProfileEditorCommand
 
     /// <inheritdoc />

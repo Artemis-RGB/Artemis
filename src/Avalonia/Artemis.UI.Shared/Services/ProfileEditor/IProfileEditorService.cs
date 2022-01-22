@@ -43,7 +43,7 @@ public interface IProfileEditorService : IArtemisSharedUIService
     IObservable<int> PixelsPerSecond { get; }
 
     /// <summary>
-    /// Connect to the observable list of keyframes and observe any changes starting with the list's initial items.
+    ///     Connect to the observable list of keyframes and observe any changes starting with the list's initial items.
     /// </summary>
     /// <returns>An observable which emits the change set.</returns>
     IObservable<IChangeSet<ILayerPropertyKeyframe>> ConnectToKeyframes();
@@ -73,18 +73,27 @@ public interface IProfileEditorService : IArtemisSharedUIService
     void ChangePixelsPerSecond(int pixelsPerSecond);
 
     /// <summary>
-    /// Selects the provided keyframe.
+    ///     Selects the provided keyframe.
     /// </summary>
     /// <param name="keyframe">The keyframe to select.</param>
-    /// <param name="expand">If <see langword="true"/> expands the current selection; otherwise replaces it with only the provided <paramref name="keyframe"/>.</param>
-    /// <param name="toggle">If <see langword="true"/> toggles the selection and only for the provided <paramref name="keyframe"/>.</param>
+    /// <param name="expand">
+    ///     If <see langword="true" /> expands the current selection; otherwise replaces it with only the
+    ///     provided <paramref name="keyframe" />.
+    /// </param>
+    /// <param name="toggle">
+    ///     If <see langword="true" /> toggles the selection and only for the provided
+    ///     <paramref name="keyframe" />.
+    /// </param>
     void SelectKeyframe(ILayerPropertyKeyframe? keyframe, bool expand, bool toggle);
 
     /// <summary>
-    /// Selects the provided keyframes.
+    ///     Selects the provided keyframes.
     /// </summary>
     /// <param name="keyframes">The keyframes to select.</param>
-    /// <param name="expand">If <see langword="true"/> expands the current selection; otherwise replaces it with only the provided <paramref name="keyframes"/>.</param>
+    /// <param name="expand">
+    ///     If <see langword="true" /> expands the current selection; otherwise replaces it with only the
+    ///     provided <paramref name="keyframes" />.
+    /// </param>
     void SelectKeyframes(IEnumerable<ILayerPropertyKeyframe> keyframes, bool expand);
 
     /// <summary>
@@ -100,10 +109,24 @@ public interface IProfileEditorService : IArtemisSharedUIService
     TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, List<TimeSpan>? snapTimes = null);
 
     /// <summary>
+    ///     Rounds the given time to something appropriate for the current zoom level.
+    /// </summary>
+    /// <param name="time">The time to round</param>
+    /// <returns>The rounded time.</returns>
+    TimeSpan RoundTime(TimeSpan time);
+
+    /// <summary>
     ///     Executes the provided command and adds it to the history.
     /// </summary>
     /// <param name="command">The command to execute.</param>
     void ExecuteCommand(IProfileEditorCommand command);
+
+    /// <summary>
+    ///     Creates a new command scope which can be used to group undo/redo actions of multiple commands.
+    /// </summary>
+    /// <param name="name">The name of the command scope.</param>
+    /// <returns>The command scope that will group any commands until disposed.</returns>
+    ProfileEditorCommandScope CreateCommandScope(string name);
 
     /// <summary>
     ///     Saves the current profile.

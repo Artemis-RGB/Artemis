@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using DynamicData;
 using Serilog;
 
@@ -28,6 +29,7 @@ internal class ProfileEditorService : IProfileEditorService
     private readonly IProfileService _profileService;
     private readonly IModuleService _moduleService;
     private readonly IWindowService _windowService;
+    private ProfileEditorCommandScope? _profileEditorHistoryScope;
 
     public ProfileEditorService(ILogger logger, IProfileService profileService, IModuleService moduleService, IWindowService windowService)
     {
@@ -85,6 +87,9 @@ internal class ProfileEditorService : IProfileEditorService
 
         // Deselect whatever profile element was active
         ChangeCurrentProfileElement(null);
+
+        // Close the command scope if one was open
+        _profileEditorHistoryScope?.Dispose();
 
         // The new profile may need activation
         if (profileConfiguration != null)
@@ -205,10 +210,26 @@ internal class ProfileEditorService : IProfileEditorService
         return time;
     }
 
+    public TimeSpan RoundTime(TimeSpan time)
+    {
+        // Round the time to something that fits the current zoom level
+        if (_pixelsPerSecondSubject.Value < 50)
+            return TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds / 200.0) * 200.0);
+        if (_pixelsPerSecondSubject.Value < 100)
+            return TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds / 100.0) * 100.0);
+        if (_pixelsPerSecondSubject.Value < 200)
+            return TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds / 50.0) * 50.0);
+        if (_pixelsPerSecondSubject.Value < 500)
+            return TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds / 20.0) * 20.0);
+        return TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds));
+    }
+
     public void ChangePixelsPerSecond(int pixelsPerSecond)
     {
         _pixelsPerSecondSubject.OnNext(pixelsPerSecond);
     }
+
+    #region Commands
 
     public void ExecuteCommand(IProfileEditorCommand command)
     {
@@ -218,6 +239,13 @@ internal class ProfileEditorService : IProfileEditorService
             if (history == null)
                 throw new ArtemisSharedUIException("Can't execute a command when there's no active profile configuration");
 
+            // If a scope is active add the command to it, the scope will execute it immediately
+            if (_profileEditorHistoryScope != null)
+            {
+                _profileEditorHistoryScope.AddCommand(command);
+                return;
+            }
+
             history.Execute.Execute(command).Subscribe();
         }
         catch (Exception e)
@@ -226,6 +254,36 @@ internal class ProfileEditorService : IProfileEditorService
             throw;
         }
     }
+
+    public ProfileEditorCommandScope CreateCommandScope(string name)
+    {
+        if (_profileEditorHistoryScope != null)
+            throw new ArtemisSharedUIException($"A command scope is already active, name: {_profileEditorHistoryScope.Name}.");
+
+        if (name == null)
+            throw new ArgumentNullException(nameof(name));
+
+        _profileEditorHistoryScope = new ProfileEditorCommandScope(this, name);
+        return _profileEditorHistoryScope;
+    }
+
+    internal void StopCommandScope()
+    {
+        // This might happen if the scope is disposed twice, it's no biggie
+        if (_profileEditorHistoryScope == null)
+            return;
+
+        ProfileEditorCommandScope scope = _profileEditorHistoryScope;
+        _profileEditorHistoryScope = null;
+
+        // Executing the composite command won't do anything the first time (see last ctor variable)
+        // commands were already executed each time they were added to the scope
+        ExecuteCommand(new CompositeCommand(scope.ProfileEditorCommands, scope.Name, true));
+    }
+
+    #endregion
+
+
 
     /// <inheritdoc />
     public void SaveProfile()

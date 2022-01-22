@@ -57,6 +57,7 @@ namespace Artemis.Core
             {
                 SetAndNotify(ref _position, value);
                 LayerProperty.SortKeyframes();
+                LayerProperty.ReapplyUpdate();
             }
         }
 

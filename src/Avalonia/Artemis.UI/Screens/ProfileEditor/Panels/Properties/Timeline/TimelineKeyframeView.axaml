@@ -17,7 +17,8 @@
              Classes.selected="{Binding IsSelected}"
              PointerPressed="InputElement_OnPointerPressed"
              PointerReleased="InputElement_OnPointerReleased"
-             PointerMoved="InputElement_OnPointerMoved">
+             PointerMoved="InputElement_OnPointerMoved"
+             Cursor="Hand">
         <Ellipse.Styles>
             <Style Selector="Ellipse">
                 <Setter Property="StrokeThickness" Value="0" />
@@ -52,23 +53,23 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="Duplicate" Command="{Binding DuplicateKeyframes}" CommandParameter="{Binding}" InputGesture="Ctrl+D">
+                <MenuItem Header="Duplicate" Command="{Binding $parent[timeline:TimelineView].DataContext.DuplicateKeyframes}" CommandParameter="{Binding}" InputGesture="Ctrl+D">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="ContentDuplicate" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Copy" Command="{Binding CopyKeyframes}" CommandParameter="{Binding}" InputGesture="Ctrl+C">
+                <MenuItem Header="Copy" Command="{Binding $parent[timeline:TimelineView].DataContext.CopyKeyframes}" CommandParameter="{Binding}" InputGesture="Ctrl+C">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="ContentCopy" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Paste" Command="{Binding PasteKeyframes}" CommandParameter="{Binding}" InputGesture="Ctrl+V">
+                <MenuItem Header="Paste" Command="{Binding $parent[timeline:TimelineView].DataContext.PasteKeyframes}" CommandParameter="{Binding}" InputGesture="Ctrl+V">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="ContentPaste" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="Delete" Command="{Binding DeleteKeyframes}" InputGesture="Delete">
+                <MenuItem Header="Delete" Command="{Binding $parent[timeline:TimelineView].DataContext.DeleteKeyframes}" CommandParameter="{Binding}" InputGesture="Delete">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="Delete" />
                     </MenuItem.Icon>

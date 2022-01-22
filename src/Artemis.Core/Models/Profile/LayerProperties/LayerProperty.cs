@@ -213,7 +213,7 @@ namespace Artemis.Core
             SetCurrentValue(CoreJson.DeserializeObject<T>(json)!, null);
         }
 
-        private void ReapplyUpdate()
+        internal void ReapplyUpdate()
         {
             // Create a timeline with the same position but a delta of zero
             Timeline temporaryTimeline = new();
@@ -291,6 +291,7 @@ namespace Artemis.Core
                 KeyframesEnabled = true;
 
             SortKeyframes();
+            ReapplyUpdate();
             OnKeyframeAdded();
         }
 
@@ -323,7 +324,9 @@ namespace Artemis.Core
                 return;
 
             _keyframes.Remove(keyframe);
+
             SortKeyframes();
+            ReapplyUpdate();
             OnKeyframeRemoved();
         }
 
