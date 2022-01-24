@@ -4,7 +4,7 @@ using Artemis.UI.Shared;
 using Avalonia;
 using Humanizer;
 
-namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
+namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 
 public class TimelineEasingViewModel : ViewModelBase
 {

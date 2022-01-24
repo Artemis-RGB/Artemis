@@ -12,6 +12,7 @@ public class UpdateLayerProperty<T> : IProfileEditorCommand
     private readonly T _newValue;
     private readonly T _originalValue;
     private readonly TimeSpan? _time;
+    private LayerPropertyKeyframe<T>? _newKeyframe;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="UpdateLayerProperty{T}" /> class.
@@ -43,13 +44,16 @@ public class UpdateLayerProperty<T> : IProfileEditorCommand
     /// <inheritdoc />
     public void Execute()
     {
-        _layerProperty.SetCurrentValue(_newValue, _time);
+        _newKeyframe = _layerProperty.SetCurrentValue(_newValue, _time);
     }
 
     /// <inheritdoc />
     public void Undo()
     {
-        _layerProperty.SetCurrentValue(_originalValue, _time);
+        if (_newKeyframe != null)
+            _layerProperty.RemoveKeyframe(_newKeyframe);
+        else
+            _layerProperty.SetCurrentValue(_originalValue, _time);
     }
 
     #endregion

@@ -4,7 +4,7 @@ using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
+namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 
 public class TimelineKeyframeView : ReactiveUserControl<ITimelineKeyframeViewModel>
 {

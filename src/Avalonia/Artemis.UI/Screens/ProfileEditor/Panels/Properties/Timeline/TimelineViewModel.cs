@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
+using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
@@ -17,10 +20,18 @@ public class TimelineViewModel : ActivatableViewModelBase
     private ObservableAsPropertyHelper<double>? _caretPosition;
     private ObservableAsPropertyHelper<int>? _pixelsPerSecond;
     private List<ITimelineKeyframeViewModel>? _moveKeyframes;
+    private ObservableAsPropertyHelper<double> _minWidth;
 
-    public TimelineViewModel(ObservableCollection<PropertyGroupViewModel> propertyGroupViewModels, IProfileEditorService profileEditorService)
+    public TimelineViewModel(ObservableCollection<PropertyGroupViewModel> propertyGroupViewModels,
+        StartSegmentViewModel startSegmentViewModel,
+        MainSegmentViewModel mainSegmentViewModel, 
+        EndSegmentViewModel endSegmentViewModel,
+        IProfileEditorService profileEditorService)
     {
         PropertyGroupViewModels = propertyGroupViewModels;
+        StartSegmentViewModel = startSegmentViewModel;
+        MainSegmentViewModel = mainSegmentViewModel;
+        EndSegmentViewModel = endSegmentViewModel;
 
         _profileEditorService = profileEditorService;
         this.WhenActivated(d =>
@@ -29,14 +40,24 @@ public class TimelineViewModel : ActivatableViewModelBase
                 .CombineLatest(_profileEditorService.PixelsPerSecond, (t, p) => t.TotalSeconds * p)
                 .ToProperty(this, vm => vm.CaretPosition)
                 .DisposeWith(d);
-
             _pixelsPerSecond = _profileEditorService.PixelsPerSecond.ToProperty(this, vm => vm.PixelsPerSecond).DisposeWith(d);
+            _minWidth = profileEditorService.ProfileElement
+                .Select(p => p?.WhenAnyValue(element => element.Timeline.Length) ?? Observable.Never<TimeSpan>())
+                .Switch()
+                .CombineLatest(profileEditorService.PixelsPerSecond, (t, p) => t.TotalSeconds * p + 100)
+                .ToProperty(this, vm => vm.MinWidth)
+                .DisposeWith(d);
         });
     }
 
     public ObservableCollection<PropertyGroupViewModel> PropertyGroupViewModels { get; }
+    public StartSegmentViewModel StartSegmentViewModel { get; }
+    public MainSegmentViewModel MainSegmentViewModel { get; }
+    public EndSegmentViewModel EndSegmentViewModel { get; }
+
     public double CaretPosition => _caretPosition?.Value ?? 0.0;
     public int PixelsPerSecond => _pixelsPerSecond?.Value ?? 0;
+    public double MinWidth => _minWidth?.Value ?? 0;
 
     public void ChangeTime(TimeSpan newTime)
     {
@@ -118,10 +139,10 @@ public class TimelineViewModel : ActivatableViewModelBase
 
     #region Keyframe actions
 
-    public void DuplicateKeyframes(ITimelineKeyframeViewModel source)
+    public void DuplicateKeyframes(ITimelineKeyframeViewModel? source = null)
     {
-        if (!source.IsSelected)
-            source.Duplicate();
+        if (source is { IsSelected: false })
+            source.Delete();
         else
         {
             List<ITimelineKeyframeViewModel> keyframes = PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(true)).Where(k => k.IsSelected).ToList();
@@ -131,9 +152,9 @@ public class TimelineViewModel : ActivatableViewModelBase
         }
     }
 
-    public void CopyKeyframes(ITimelineKeyframeViewModel source)
+    public void CopyKeyframes(ITimelineKeyframeViewModel? source = null)
     {
-        if (!source.IsSelected)
+        if (source is { IsSelected: false })
             source.Copy();
         else
         {
@@ -144,9 +165,9 @@ public class TimelineViewModel : ActivatableViewModelBase
         }
     }
 
-    public void PasteKeyframes(ITimelineKeyframeViewModel source)
+    public void PasteKeyframes(ITimelineKeyframeViewModel? source = null)
     {
-        if (!source.IsSelected)
+        if (source is { IsSelected: false })
             source.Paste();
         else
         {
@@ -157,9 +178,9 @@ public class TimelineViewModel : ActivatableViewModelBase
         }
     }
 
-    public void DeleteKeyframes(ITimelineKeyframeViewModel source)
+    public void DeleteKeyframes(ITimelineKeyframeViewModel? source = null)
     {
-        if (!source.IsSelected)
+        if (source is {IsSelected: false})
             source.Delete();
         else
         {

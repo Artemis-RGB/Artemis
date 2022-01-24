@@ -5,14 +5,14 @@ namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 /// <summary>
 ///     Represents a profile editor command that can be used to delete a keyframe.
 /// </summary>
-public class DeleteKeyframe<T> : IProfileEditorCommand
+public class DeleteKeyframe : IProfileEditorCommand
 {
-    private readonly LayerPropertyKeyframe<T> _keyframe;
+    private readonly ILayerPropertyKeyframe _keyframe;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="DeleteKeyframe{T}" /> class.
     /// </summary>
-    public DeleteKeyframe(LayerPropertyKeyframe<T> keyframe)
+    public DeleteKeyframe(ILayerPropertyKeyframe keyframe)
     {
         _keyframe = keyframe;
     }
@@ -25,13 +25,13 @@ public class DeleteKeyframe<T> : IProfileEditorCommand
     /// <inheritdoc />
     public void Execute()
     {
-        _keyframe.LayerProperty.RemoveKeyframe(_keyframe);
+        _keyframe.UntypedLayerProperty.RemoveUntypedKeyframe(_keyframe);
     }
 
     /// <inheritdoc />
     public void Undo()
     {
-        _keyframe.LayerProperty.AddKeyframe(_keyframe);
+        _keyframe.UntypedLayerProperty.AddUntypedKeyframe(_keyframe);
     }
 
     #endregion

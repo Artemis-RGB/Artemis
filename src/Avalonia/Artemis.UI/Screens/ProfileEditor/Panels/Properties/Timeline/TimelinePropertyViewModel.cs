@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using Artemis.Core;
+using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Controls.Mixins;
@@ -24,6 +25,9 @@ public class TimelinePropertyViewModel<T> : ActivatableViewModelBase, ITimelineP
 
         this.WhenActivated(d =>
         {
+            Observable.FromEventPattern<LayerPropertyEventArgs>(x => LayerProperty.KeyframesToggled += x, x => LayerProperty.KeyframesToggled -= x)
+                .Subscribe(_ => UpdateKeyframes())
+                .DisposeWith(d);
             Observable.FromEventPattern<LayerPropertyEventArgs>(x => LayerProperty.KeyframeAdded += x, x => LayerProperty.KeyframeAdded -= x)
                 .Subscribe(_ => UpdateKeyframes())
                 .DisposeWith(d);

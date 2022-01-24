@@ -8,6 +8,7 @@ using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Properties;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
+using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
@@ -73,14 +74,9 @@ namespace Artemis.UI.Ninject.Factories
         PropertyGroupViewModel PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, BaseLayerEffect layerEffect);
 
         TreeGroupViewModel TreeGroupViewModel(PropertyGroupViewModel propertyGroupViewModel);
-
+        
         TimelineViewModel TimelineViewModel(ObservableCollection<PropertyGroupViewModel> propertyGroupViewModels);
         TimelineGroupViewModel TimelineGroupViewModel(PropertyGroupViewModel propertyGroupViewModel);
-
-        // TreeViewModel TreeViewModel(ProfileElementPropertiesViewModel profileElementPropertiesViewModel, IObservableCollection<ProfileElementPropertyGroupViewModel> profileElementPropertyGroups);
-        // EffectsViewModel EffectsViewModel(ProfileElementPropertiesViewModel profileElementPropertiesViewModel);
-        // TimelineViewModel TimelineViewModel(ProfileElementPropertiesViewModel profileElementPropertiesViewModel, IObservableCollection<ProfileElementPropertyGroupViewModel> profileElementPropertyGroups);
-        // TimelineSegmentViewModel TimelineSegmentViewModel(SegmentViewModelType segment, IObservableCollection<ProfileElementPropertyGroupViewModel> profileElementPropertyGroups);
     }
 
     public interface IPropertyVmFactory

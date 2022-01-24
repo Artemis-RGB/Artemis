@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="18"
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments.StartSegmentView">
+    <UserControl.Styles>
+        <StyleInclude Source="/Screens/ProfileEditor/Panels/Properties/Timeline/Segments/Segment.axaml" />
+    </UserControl.Styles>
+    <Border Classes="segment-container">
+        <Grid Name="SegmentGrid"
+              Background="{DynamicResource CardStrokeColorDefaultSolidBrush}"
+              Width="{Binding Width}"
+              ColumnDefinitions="*,Auto,Auto">
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Name="SegmentTitle"
+                           FontSize="13"
+                           ToolTip.Tip="This segment is played when a layer starts displaying because it's conditions are met">
+                    Start
+                </TextBlock>
+                <Button Name="SegmentClose"
+                        Classes="AppBarButton icon-button icon-button-small"
+                        ToolTip.Tip="Remove this segment"
+                        Command="{Binding RemoveSegment}">
+                    <avalonia:MaterialIcon Kind="CloseCircle" />
+                </Button>
+            </StackPanel>
+
+            <Button Grid.Column="1"
+                    Name="AddMainSegment"
+                    Classes="AppBarButton icon-button icon-button-small"
+                    ToolTip.Tip="Add main segment"
+                    Command="{Binding AddMainSegment}"
+                    IsVisible="{Binding ShowAddMain}">
+                <avalonia:MaterialIcon Kind="PlusCircle" />
+            </Button>
+
+            <Rectangle Name="KeyframeDragVisual"
+                       Grid.Column="2"
+                       Classes="resize-visual" />
+            <Rectangle Name="KeyframeDragAnchor"
+                       Grid.Column="2"
+                       Classes="resize-anchor"
+                       PointerPressed="KeyframeDragAnchor_OnPointerPressed"
+                       PointerMoved="KeyframeDragAnchor_OnPointerMoved"
+                       PointerReleased="KeyframeDragAnchor_OnPointerReleased"
+                       ToolTip.Tip="{Binding EndTimestamp}"/>
+        </Grid>
+    </Border>
+
+</UserControl>

@@ -1,8 +1,7 @@
 ﻿using System;
 using Artemis.Core;
-using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 
-namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
+namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 
 public interface ITimelineKeyframeViewModel
 {

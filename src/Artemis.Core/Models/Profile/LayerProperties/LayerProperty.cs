@@ -97,6 +97,24 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
+        public void RemoveUntypedKeyframe(ILayerPropertyKeyframe keyframe)
+        {
+            if (keyframe is not LayerPropertyKeyframe<T> typedKeyframe)
+                throw new ArtemisCoreException($"Can't remove a keyframe that is not of type {typeof(T).FullName}.");
+
+            RemoveKeyframe(typedKeyframe);
+        }
+
+        /// <inheritdoc />
+        public void AddUntypedKeyframe(ILayerPropertyKeyframe keyframe)
+        {
+            if (keyframe is not LayerPropertyKeyframe<T> typedKeyframe)
+                throw new ArtemisCoreException($"Can't add a keyframe that is not of type {typeof(T).FullName}.");
+
+            AddKeyframe(typedKeyframe);
+        }
+
+        /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
@@ -177,22 +195,25 @@ namespace Artemis.Core
         ///     An optional time to set the value add, if provided and property is using keyframes the value will be set to an new
         ///     or existing keyframe.
         /// </param>
-        public void SetCurrentValue(T value, TimeSpan? time)
+        /// <returns>The new keyframe if one was created.</returns>
+        public LayerPropertyKeyframe<T>? SetCurrentValue(T value, TimeSpan? time)
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
+            LayerPropertyKeyframe<T>? newKeyframe = null;
             if (time == null || !KeyframesEnabled || !KeyframesSupported)
-            {
                 BaseValue = value;
-            }
             else
             {
                 // If on a keyframe, update the keyframe
                 LayerPropertyKeyframe<T>? currentKeyframe = Keyframes.FirstOrDefault(k => k.Position == time.Value);
                 // Create a new keyframe if none found
                 if (currentKeyframe == null)
-                    AddKeyframe(new LayerPropertyKeyframe<T>(value, time.Value, Easings.Functions.Linear, this));
+                {
+                    newKeyframe = new LayerPropertyKeyframe<T>(value, time.Value, Easings.Functions.Linear, this);
+                    AddKeyframe(newKeyframe);
+                }
                 else
                     currentKeyframe.Value = value;
             }
@@ -200,6 +221,7 @@ namespace Artemis.Core
             // Force an update so that the base value is applied to the current value and
             // keyframes/data bindings are applied using the new base value
             ReapplyUpdate();
+            return newKeyframe;
         }
 
         /// <inheritdoc />
@@ -247,6 +269,7 @@ namespace Artemis.Core
             {
                 if (_keyframesEnabled == value) return;
                 _keyframesEnabled = value;
+                ReapplyUpdate();
                 OnKeyframesToggled();
                 OnPropertyChanged(nameof(KeyframesEnabled));
             }

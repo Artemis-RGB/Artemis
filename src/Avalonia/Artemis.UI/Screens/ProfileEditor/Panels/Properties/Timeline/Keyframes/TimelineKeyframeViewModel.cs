@@ -7,11 +7,10 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia.Controls.Mixins;
-using Avalonia.Input;
 using DynamicData;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
+namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 
 public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineKeyframeViewModel
 {
@@ -97,7 +96,7 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
 
     public void Delete()
     {
-        _profileEditorService.ExecuteCommand(new DeleteKeyframe<T>(LayerPropertyKeyframe));
+        _profileEditorService.ExecuteCommand(new DeleteKeyframe(LayerPropertyKeyframe));
     }
 
     #endregion

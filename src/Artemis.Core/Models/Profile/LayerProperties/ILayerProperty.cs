@@ -18,7 +18,7 @@ namespace Artemis.Core
         ///     Gets the description attribute applied to this property
         /// </summary>
         PropertyDescriptionAttribute PropertyDescription { get; }
-        
+
         /// <summary>
         ///     Gets the profile element (such as layer or folder) this property is applied to
         /// </summary>
@@ -68,7 +68,7 @@ namespace Artemis.Core
         ///     Indicates whether the BaseValue was loaded from storage, useful to check whether a default value must be applied
         /// </summary>
         bool IsLoadedFromStorage { get; }
-        
+
         /// <summary>
         ///     Initializes the layer property
         ///     <para>
@@ -101,6 +101,20 @@ namespace Artemis.Core
         /// Updates just the data binding instead of the entire layer
         /// </summary>
         void UpdateDataBinding();
+
+        /// <summary>
+        /// Removes a keyframe from the layer property without knowing it's type.
+        /// <para>Prefer <see cref="LayerProperty{T}.RemoveKeyframe"/>.</para>
+        /// </summary>
+        /// <param name="keyframe"></param>
+        void RemoveUntypedKeyframe(ILayerPropertyKeyframe keyframe);
+
+        /// <summary>
+        /// Adds a keyframe to the layer property without knowing it's type.
+        /// <para>Prefer <see cref="LayerProperty{T}.AddKeyframe"/>.</para>
+        /// </summary>
+        /// <param name="keyframe"></param>
+        void AddUntypedKeyframe(ILayerPropertyKeyframe keyframe);
 
         /// <summary>
         ///     Occurs when the layer property is disposed

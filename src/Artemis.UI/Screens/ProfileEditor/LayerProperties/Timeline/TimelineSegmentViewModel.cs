@@ -337,7 +337,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         {
             if (end < TimeSpan.FromMilliseconds(100))
                 end = TimeSpan.FromMilliseconds(100);
-            
+
             if (Segment == SegmentViewModelType.Start)
                 SelectedProfileElement.Timeline.StartSegmentEndPosition = end;
             else if (Segment == SegmentViewModelType.Main)

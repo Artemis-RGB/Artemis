@@ -12,8 +12,8 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.Styles>
-                <Style Selector="ContentPresenter">
-                    <Setter Property="Canvas.Left" Value="{Binding X}" />
+                <Style Selector="ItemsControl > ContentPresenter">
+                    <Setter Property="Canvas.Left" Value="{Binding X, TargetNullValue=0}" />
                 </Style>
             </ItemsControl.Styles>
         </ItemsControl>

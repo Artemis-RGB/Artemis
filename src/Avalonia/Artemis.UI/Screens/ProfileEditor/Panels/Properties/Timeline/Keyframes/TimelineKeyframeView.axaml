@@ -5,7 +5,7 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:timeline="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Timeline"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.TimelineKeyframeView"
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes.TimelineKeyframeView"
              ClipToBounds="False"
              Height="{DynamicResource RailsHeight}">
     <Ellipse Fill="{DynamicResource SystemAccentColorLight2}"

@@ -1,0 +1,78 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="18"
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments.MainSegmentView">
+    <UserControl.Styles>
+        <StyleInclude Source="/Screens/ProfileEditor/Panels/Properties/Timeline/Segments/Segment.axaml" />
+    </UserControl.Styles>
+    <Border Classes="segment-container">
+        <Grid Name="SegmentGrid"
+              Background="{DynamicResource CardStrokeColorDefaultSolidBrush}"
+              Width="{Binding Width}"
+              ColumnDefinitions="Auto,Auto,*,Auto,Auto">
+
+            <Rectangle Name="KeyframeDragVisualLeft"
+                       Grid.Column="0"
+                       IsVisible="{Binding !ShowAddStart}"
+                       Classes="resize-visual" />
+
+            <Button Name="AddStartSegment"
+                    Grid.Column="1"
+                    Classes="AppBarButton icon-button icon-button-small"
+                    VerticalAlignment="Center"
+                    ToolTip.Tip="Add a start segment"
+                    Command="{Binding AddStartSegment}"
+                    IsVisible="{Binding ShowAddStart}">
+                <avalonia:MaterialIcon Kind="PlusCircle" />
+            </Button>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Name="SegmentTitle"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           FontSize="13"
+                           ToolTip.Tip="This segment is played while a condition is met, either once or on a repeating loop">
+                    Main
+                </TextBlock>
+
+                <Button Name="SegmentClose"
+                        Classes="AppBarButton icon-button icon-button-small"
+                        ToolTip.Tip="Remove this segment"
+                        Command="{Binding DisableSegment}">
+                    <avalonia:MaterialIcon Kind="CloseCircle" />
+                </Button>
+                <ToggleButton Name="SegmentRepeat"
+                              Classes="icon-button icon-button-small"
+                              ToolTip.Tip="Repeat this segment"
+                              IsChecked="{Binding RepeatSegment}"
+                              Padding="0">
+                    <avalonia:MaterialIcon Kind="Repeat" />
+                </ToggleButton>
+            </StackPanel>
+
+            <Button Name="AddEndSegment"
+                    Grid.Column="3"
+                    Classes="AppBarButton icon-button icon-button-small"
+                    VerticalAlignment="Center"
+                    ToolTip.Tip="Add an end segment"
+                    Command="{Binding AddEndSegment}"
+                    IsVisible="{Binding ShowAddEnd}">
+                <avalonia:MaterialIcon Kind="PlusCircle" />
+            </Button>
+
+			<Rectangle Name="KeyframeDragVisual"
+                       Grid.Column="4"
+                       Classes="resize-visual" />
+            <Rectangle Name="KeyframeDragAnchor"
+                       Grid.Column="4"
+                       Classes="resize-anchor"
+                       PointerPressed="KeyframeDragAnchor_OnPointerPressed"
+                       PointerMoved="KeyframeDragAnchor_OnPointerMoved"
+                       PointerReleased="KeyframeDragAnchor_OnPointerReleased"
+                       ToolTip.Tip="{Binding EndTimestamp}"/>
+        </Grid>
+    </Border>
+</UserControl>

@@ -10,8 +10,11 @@
 		<x:Double x:Key="RailsHeight">28</x:Double>
 		<x:Double x:Key="RailsBorderHeight">29</x:Double>
 	</UserControl.Resources>
-    <Grid Background="Transparent" PointerReleased="InputElement_OnPointerReleased">
-        <ItemsControl Items="{Binding PropertyGroupViewModels}" Padding="0 0 8 0">
+    <Grid Background="Transparent" PointerReleased="InputElement_OnPointerReleased" Focusable="True" MinWidth="{Binding MinWidth}">
+        <Grid.KeyBindings>
+            <KeyBinding Command="{Binding DeleteKeyframes}" Gesture="Delete"/>
+        </Grid.KeyBindings>
+        <ItemsControl Items="{Binding PropertyGroupViewModels}">
             <ItemsControl.ItemTemplate>
                 <TreeDataTemplate DataType="{x:Type local:PropertyGroupViewModel}" ItemsSource="{Binding Children}">
                     <ContentControl Content="{Binding TimelineGroupViewModel}" />
