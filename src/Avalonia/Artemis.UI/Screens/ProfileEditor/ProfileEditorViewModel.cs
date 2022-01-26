@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Disposables;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Screens.ProfileEditor.MenuBar;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Properties;
@@ -14,13 +15,14 @@ namespace Artemis.UI.Screens.ProfileEditor
 {
     public class ProfileEditorViewModel : MainScreenViewModel
     {
+        private readonly ISettingsService _settingsService;
         private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
         private ObservableAsPropertyHelper<ProfileEditorHistory?>? _history;
 
         /// <inheritdoc />
         public ProfileEditorViewModel(IScreen hostScreen,
-            IKernel kernel,
             IProfileEditorService profileEditorService,
+            ISettingsService settingsService,
             VisualEditorViewModel visualEditorViewModel,
             ProfileTreeViewModel profileTreeViewModel,
             ProfileEditorTitleBarViewModel profileEditorTitleBarViewModel,
@@ -29,6 +31,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             StatusBarViewModel statusBarViewModel)
             : base(hostScreen, "profile-editor")
         {
+            _settingsService = settingsService;
             VisualEditorViewModel = visualEditorViewModel;
             ProfileTreeViewModel = profileTreeViewModel;
             PropertiesViewModel = propertiesViewModel;
@@ -51,6 +54,9 @@ namespace Artemis.UI.Screens.ProfileEditor
 
         public ProfileConfiguration? ProfileConfiguration => _profileConfiguration?.Value;
         public ProfileEditorHistory? History => _history?.Value;
+        public PluginSetting<double> TreeWidth => _settingsService.GetSetting("ProfileEditor.TreeWidth", 350.0);
+        public PluginSetting<double> ConditionsHeight => _settingsService.GetSetting("ProfileEditor.ConditionsHeight", 300.0);
+        public PluginSetting<double> PropertiesHeight => _settingsService.GetSetting("ProfileEditor.PropertiesHeight", 300.0);
 
         public void OpenUrl(string url)
         {

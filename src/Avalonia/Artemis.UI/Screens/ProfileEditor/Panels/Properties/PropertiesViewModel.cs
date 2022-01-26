@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
+using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Playback;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
@@ -22,16 +23,18 @@ public class PropertiesViewModel : ActivatableViewModelBase
     private readonly Dictionary<LayerPropertyGroup, PropertyGroupViewModel> _cachedViewModels;
     private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
     private readonly IProfileEditorService _profileEditorService;
+    private readonly ISettingsService _settingsService;
     private ObservableAsPropertyHelper<int>? _pixelsPerSecond;
     private ObservableAsPropertyHelper<RenderProfileElement?>? _profileElement;
 
     /// <inheritdoc />
-    public PropertiesViewModel(IProfileEditorService profileEditorService, ILayerPropertyVmFactory layerPropertyVmFactory, PlaybackViewModel playbackViewModel)
+    public PropertiesViewModel(IProfileEditorService profileEditorService, ISettingsService settingsService, ILayerPropertyVmFactory layerPropertyVmFactory, PlaybackViewModel playbackViewModel)
     {
         _profileEditorService = profileEditorService;
+        _settingsService = settingsService;
         _layerPropertyVmFactory = layerPropertyVmFactory;
-        PropertyGroupViewModels = new ObservableCollection<PropertyGroupViewModel>();
         _cachedViewModels = new Dictionary<LayerPropertyGroup, PropertyGroupViewModel>();
+        PropertyGroupViewModels = new ObservableCollection<PropertyGroupViewModel>();
         PlaybackViewModel = playbackViewModel;
         TimelineViewModel = layerPropertyVmFactory.TimelineViewModel(PropertyGroupViewModels);
 
@@ -54,19 +57,22 @@ public class PropertiesViewModel : ActivatableViewModelBase
         {
             _profileElement = profileEditorService.ProfileElement.ToProperty(this, vm => vm.ProfileElement).DisposeWith(d);
             _pixelsPerSecond = profileEditorService.PixelsPerSecond.ToProperty(this, vm => vm.PixelsPerSecond).DisposeWith(d);
+            Disposable.Create(() => _settingsService.SaveAllSettings()).DisposeWith(d);
         });
         this.WhenAnyValue(vm => vm.ProfileElement).Subscribe(_ => UpdateGroups());
     }
 
+    public ObservableCollection<PropertyGroupViewModel> PropertyGroupViewModels { get; }
     public PlaybackViewModel PlaybackViewModel { get; }
     public TimelineViewModel TimelineViewModel { get; }
+
     public RenderProfileElement? ProfileElement => _profileElement?.Value;
     public Layer? Layer => _profileElement?.Value as Layer;
+
     public int PixelsPerSecond => _pixelsPerSecond?.Value ?? 0;
     public IObservable<bool> Playing => _profileEditorService.Playing;
-
-    public ObservableCollection<PropertyGroupViewModel> PropertyGroupViewModels { get; }
-
+    public PluginSetting<double> PropertiesTreeWidth => _settingsService.GetSetting("ProfileEditor.PropertiesTreeWidth", 500.0);
+    
     private void UpdateGroups()
     {
         if (ProfileElement == null)

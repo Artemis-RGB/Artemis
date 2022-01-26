@@ -23,6 +23,8 @@ public class UpdateLayerProperty<T> : IProfileEditorCommand
         _originalValue = layerProperty.CurrentValue;
         _newValue = newValue;
         _time = time;
+
+        DisplayName = $"Update {_layerProperty.PropertyDescription.Name ?? "property"}";
     }
 
     /// <summary>
@@ -34,17 +36,27 @@ public class UpdateLayerProperty<T> : IProfileEditorCommand
         _originalValue = originalValue;
         _newValue = newValue;
         _time = time;
+
+        DisplayName = $"Update {_layerProperty.PropertyDescription.Name ?? "property"}";
     }
 
     #region Implementation of IProfileEditorCommand
 
     /// <inheritdoc />
-    public string DisplayName => $"Update {_layerProperty.PropertyDescription.Name ?? "property"}";
+    public string DisplayName { get; private set; }
 
     /// <inheritdoc />
     public void Execute()
     {
-        _newKeyframe = _layerProperty.SetCurrentValue(_newValue, _time);
+        // If there was already a keyframe from a previous execute that was undone, put it back
+        if (_newKeyframe != null)
+            _layerProperty.AddKeyframe(_newKeyframe);
+        else
+        {
+            _newKeyframe = _layerProperty.SetCurrentValue(_newValue, _time);
+            if (_newKeyframe != null)
+                DisplayName = $"Add {_layerProperty.PropertyDescription.Name ?? "property"} keyframe";
+        }
     }
 
     /// <inheritdoc />

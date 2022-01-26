@@ -4,12 +4,21 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:Artemis.UI.Controls"
              xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="350"
              x:Class="Artemis.UI.Screens.ProfileEditor.Properties.PropertiesView">
     <UserControl.Styles>
         <StyleInclude Source="/Screens/ProfileEditor/Panels/Properties/Timeline/Segments/Segment.axaml" />
     </UserControl.Styles>
-    <Grid ColumnDefinitions="*,Auto,*" Name="ContainerGrid">
+    <UserControl.Resources>
+		<converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter"></converters:DoubleToGridLengthConverter>
+    </UserControl.Resources>
+    <Grid Name="ContainerGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{Binding PropertiesTreeWidth.Value, Mode=TwoWay, Converter={StaticResource DoubleToGridLengthConverter}}" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
         <Grid RowDefinitions="48,*">
             <ContentControl Grid.Row="0" Content="{Binding PlaybackViewModel}" />
 
@@ -97,7 +106,7 @@
                     </Line>
 
                     <!-- Timeline segments -->
-                    <ContentControl Canvas.Left="{Binding TimelineViewModel.EndSegmentViewModel.StartX}" 
+                    <ContentControl Canvas.Left="{Binding TimelineViewModel.EndSegmentViewModel.StartX}"
                                     Classes="segment-content-control"
                                     Content="{Binding TimelineViewModel.EndSegmentViewModel}" />
                     <ContentControl Canvas.Left="{Binding TimelineViewModel.MainSegmentViewModel.StartX}"
