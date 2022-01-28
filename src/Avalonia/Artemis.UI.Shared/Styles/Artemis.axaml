@@ -28,6 +28,8 @@
 	<StyleInclude Source="/Styles/TextBlock.axaml" />
     <StyleInclude Source="/Styles/Sidebar.axaml" />
     <StyleInclude Source="/Styles/InfoBar.axaml" />
+    <StyleInclude Source="/Styles/TextBox.axaml" />
+    <StyleInclude Source="/Styles/NumberBox.axaml" />
     <StyleInclude Source="/Styles/TreeView.axaml" />
 
     <Style Selector="Window:windows:windows10 /template/ Border#RootBorder">

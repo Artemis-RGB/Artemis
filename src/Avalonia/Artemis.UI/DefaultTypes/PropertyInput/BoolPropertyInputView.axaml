@@ -3,7 +3,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             xmlns:propertyInput="clr-namespace:Artemis.UI.DefaultTypes.PropertyInput"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.DefaultTypes.PropertyInput.BoolPropertyInputView">
-	<controls:EnumComboBox Classes="condensed" Width="200" Value="{Binding SelectedBooleanOption}" VerticalAlignment="Center" />
+             x:Class="Artemis.UI.DefaultTypes.PropertyInput.BoolPropertyInputView"
+             x:DataType="propertyInput:BoolPropertyInputViewModel">
+	<controls:EnumComboBox Classes="condensed"
+                           Width="200" 
+                           Value="{CompiledBinding SelectedBooleanOption}" 
+                           VerticalAlignment="Center" />
 </UserControl>

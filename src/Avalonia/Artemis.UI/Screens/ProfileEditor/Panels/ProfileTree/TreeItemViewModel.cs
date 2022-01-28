@@ -68,6 +68,10 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
                 RenameValue = ProfileElement?.Name;
             });
 
+            Duplicate = ReactiveCommand.Create(() => throw new NotImplementedException());
+            Copy = ReactiveCommand.Create(() => throw new NotImplementedException());
+            Paste = ReactiveCommand.Create(() => throw new NotImplementedException());
+
             Delete = ReactiveCommand.Create(() =>
             {
                 if (ProfileElement is RenderProfileElement renderProfileElement)
@@ -106,6 +110,9 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         public ReactiveCommand<Unit, Unit> AddLayer { get; }
         public ReactiveCommand<Unit, Unit> AddFolder { get; }
         public ReactiveCommand<Unit, Unit> Rename { get; }
+        public ReactiveCommand<Unit, Unit> Duplicate { get; }
+        public ReactiveCommand<Unit, Unit> Copy { get; }
+        public ReactiveCommand<Unit, Unit> Paste { get; }
         public ReactiveCommand<Unit, Unit> Delete { get; }
 
         public string? RenameValue

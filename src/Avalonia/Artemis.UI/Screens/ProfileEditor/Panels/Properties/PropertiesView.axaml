@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="350"
-             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.PropertiesView">
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.PropertiesView"
+             x:DataType="local:PropertiesViewModel">
     <UserControl.Styles>
         <StyleInclude Source="/Screens/ProfileEditor/Panels/Properties/Timeline/Segments/Segment.axaml" />
     </UserControl.Styles>
@@ -15,22 +16,22 @@
     </UserControl.Resources>
     <Grid Name="ContainerGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="{Binding PropertiesTreeWidth.Value, Mode=TwoWay, Converter={StaticResource DoubleToGridLengthConverter}}" />
+            <ColumnDefinition Width="{CompiledBinding PropertiesTreeWidth.Value, Mode=TwoWay, Converter={StaticResource DoubleToGridLengthConverter}}" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid RowDefinitions="48,*">
-            <ContentControl Grid.Row="0" Content="{Binding PlaybackViewModel}" />
+            <ContentControl Grid.Row="0" Content="{CompiledBinding PlaybackViewModel}" />
 
             <ScrollViewer Grid.Row="1"
                           Grid.Column="0"
                           Name="TreeScrollViewer"
-                          Offset="{Binding #TimelineScrollViewer.Offset, Mode=OneWay}"
+                          Offset="{CompiledBinding #TimelineScrollViewer.Offset, Mode=OneWay}"
                           Background="{DynamicResource CardStrokeColorDefaultSolidBrush}">
-                <ItemsControl Items="{Binding PropertyGroupViewModels}" Padding="0 0 8 0">
+                <ItemsControl Items="{CompiledBinding PropertyGroupViewModels}" Padding="0 0 8 0">
                     <ItemsControl.ItemTemplate>
-                        <TreeDataTemplate DataType="{x:Type local:PropertyGroupViewModel}" ItemsSource="{Binding Children}">
-                            <ContentControl Content="{Binding TreeGroupViewModel}" />
+                        <TreeDataTemplate DataType="{x:Type local:PropertyGroupViewModel}" ItemsSource="{CompiledBinding Children}">
+                            <ContentControl Content="{CompiledBinding TreeGroupViewModel}" />
                         </TreeDataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -52,53 +53,53 @@
                                          Margin="0 18 0 0"
                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                          HorizontalAlignment="Left"
-                                         PixelsPerSecond="{Binding PixelsPerSecond}"
-                                         HorizontalOffset="{Binding #TimelineScrollViewer.Offset.X, Mode=OneWay}"
-                                         VisibleWidth="{Binding #TimelineScrollViewer.Bounds.Width}"
+                                         PixelsPerSecond="{CompiledBinding PixelsPerSecond}"
+                                         HorizontalOffset="{CompiledBinding #TimelineScrollViewer.Offset.X, Mode=OneWay}"
+                                         VisibleWidth="{CompiledBinding #TimelineScrollViewer.Bounds.Width}"
                                          OffsetFirstValue="True"
                                          PointerReleased="TimelineHeader_OnPointerReleased"
-                                         Width="{Binding #TimelineScrollViewer.Viewport.Width}"
+                                         Width="{CompiledBinding #TimelineScrollViewer.Viewport.Width}"
                                          Cursor="Hand" />
 
                 <Canvas Grid.Row="0" ZIndex="2">
                     <!-- Segment dividers -->
                     <Line Name="TimelineLine"
-                          Canvas.Left="{Binding TimelineViewModel.CaretPosition}"
+                          Canvas.Left="{CompiledBinding TimelineViewModel.CaretPosition}"
                           Cursor="SizeWestEast"
                           PointerPressed="TimelineCaret_OnPointerPressed"
                           PointerReleased="TimelineCaret_OnPointerReleased"
                           PointerMoved="TimelineCaret_OnPointerMoved"
                           StartPoint="0,0"
-                          EndPoint="{Binding #ContainerGrid.Bounds.BottomLeft}"
+                          EndPoint="{CompiledBinding #ContainerGrid.Bounds.BottomLeft}"
                           StrokeThickness="2"
                           Stroke="{DynamicResource SystemAccentColorLight1}">
                     </Line>
 
                     <Line Name="StartSegmentLine"
-                          Canvas.Left="{Binding TimelineViewModel.StartSegmentViewModel.EndX}"
-                          IsVisible="{Binding !TimelineViewModel.MainSegmentViewModel.ShowAddStart}"
+                          Canvas.Left="{CompiledBinding TimelineViewModel.StartSegmentViewModel.EndX}"
+                          IsVisible="{CompiledBinding !TimelineViewModel.MainSegmentViewModel.ShowAddStart}"
                           StartPoint="0,0"
-                          EndPoint="{Binding #ContainerGrid.Bounds.BottomLeft}"
+                          EndPoint="{CompiledBinding #ContainerGrid.Bounds.BottomLeft}"
                           StrokeThickness="2"
                           Stroke="{DynamicResource SystemAccentColorLight1}"
                           StrokeDashArray="6,2"
                           Opacity="0.5">
                     </Line>
                     <Line Name="MainSegmentLine"
-                          Canvas.Left="{Binding TimelineViewModel.MainSegmentViewModel.EndX}"
-                          IsVisible="{Binding !TimelineViewModel.MainSegmentViewModel.ShowAddMain}"
+                          Canvas.Left="{CompiledBinding TimelineViewModel.MainSegmentViewModel.EndX}"
+                          IsVisible="{CompiledBinding !TimelineViewModel.MainSegmentViewModel.ShowAddMain}"
                           StartPoint="0,0"
-                          EndPoint="{Binding #ContainerGrid.Bounds.BottomLeft}"
+                          EndPoint="{CompiledBinding #ContainerGrid.Bounds.BottomLeft}"
                           StrokeThickness="2"
                           Stroke="{DynamicResource SystemAccentColorLight1}"
                           StrokeDashArray="6,2"
                           Opacity="0.5">
                     </Line>
                     <Line Name="EndSegmentLine"
-                          Canvas.Left="{Binding TimelineViewModel.EndSegmentViewModel.EndX}"
-                          IsVisible="{Binding !TimelineViewModel.MainSegmentViewModel.ShowAddEnd}"
+                          Canvas.Left="{CompiledBinding TimelineViewModel.EndSegmentViewModel.EndX}"
+                          IsVisible="{CompiledBinding !TimelineViewModel.MainSegmentViewModel.ShowAddEnd}"
                           StartPoint="0,0"
-                          EndPoint="{Binding #ContainerGrid.Bounds.BottomLeft}"
+                          EndPoint="{CompiledBinding #ContainerGrid.Bounds.BottomLeft}"
                           StrokeThickness="2"
                           Stroke="{DynamicResource SystemAccentColorLight1}"
                           StrokeDashArray="6,2"
@@ -106,19 +107,19 @@
                     </Line>
 
                     <!-- Timeline segments -->
-                    <ContentControl Canvas.Left="{Binding TimelineViewModel.EndSegmentViewModel.StartX}"
+                    <ContentControl Canvas.Left="{CompiledBinding TimelineViewModel.EndSegmentViewModel.StartX}"
                                     Classes="segment-content-control"
-                                    Content="{Binding TimelineViewModel.EndSegmentViewModel}" />
-                    <ContentControl Canvas.Left="{Binding TimelineViewModel.MainSegmentViewModel.StartX}"
+                                    Content="{CompiledBinding TimelineViewModel.EndSegmentViewModel}" />
+                    <ContentControl Canvas.Left="{CompiledBinding TimelineViewModel.MainSegmentViewModel.StartX}"
                                     Classes="segment-content-control"
-                                    Content="{Binding TimelineViewModel.MainSegmentViewModel}" />
-                    <ContentControl Canvas.Left="{Binding TimelineViewModel.StartSegmentViewModel.StartX}"
+                                    Content="{CompiledBinding TimelineViewModel.MainSegmentViewModel}" />
+                    <ContentControl Canvas.Left="{CompiledBinding TimelineViewModel.StartSegmentViewModel.StartX}"
                                     Classes="segment-content-control"
-                                    Content="{Binding TimelineViewModel.StartSegmentViewModel}" />
+                                    Content="{CompiledBinding TimelineViewModel.StartSegmentViewModel}" />
 
                     <!-- Timeline caret -->
                     <Polygon Name="TimelineCaret"
-                             Canvas.Left="{Binding TimelineViewModel.CaretPosition}"
+                             Canvas.Left="{CompiledBinding TimelineViewModel.CaretPosition}"
                              Cursor="SizeWestEast"
                              PointerPressed="TimelineCaret_OnPointerPressed"
                              PointerReleased="TimelineCaret_OnPointerReleased"
@@ -130,9 +131,9 @@
 
                 <ScrollViewer Grid.Row="1"
                               Name="TimelineScrollViewer"
-                              Offset="{Binding #TreeScrollViewer.Offset, Mode=OneWay}"
+                              Offset="{CompiledBinding #TreeScrollViewer.Offset, Mode=OneWay}"
                               VerticalScrollBarVisibility="Hidden">
-                    <ContentControl Content="{Binding TimelineViewModel}"
+                    <ContentControl Content="{CompiledBinding TimelineViewModel}"
                                     Background="{DynamicResource CardStrokeColorDefaultSolidBrush}" />
                 </ScrollViewer>
 

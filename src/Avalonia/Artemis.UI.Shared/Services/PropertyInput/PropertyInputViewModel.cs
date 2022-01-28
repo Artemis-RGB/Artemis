@@ -103,6 +103,16 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
         }
     }
 
+    /// <summary>
+    ///     Gets the prefix to show before input elements
+    /// </summary>
+    public string? Prefix => LayerProperty.PropertyDescription.InputPrefix;
+
+    /// <summary>
+    ///     Gets the affix to show after input elements
+    /// </summary>
+    public string? Affix => LayerProperty.PropertyDescription.InputAffix;
+
     internal override object InternalGuard { get; } = new();
 
     /// <summary>
@@ -186,7 +196,6 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
         {
             _updating = false;
         }
-       
     }
 
     private void UpdateDataBinding()

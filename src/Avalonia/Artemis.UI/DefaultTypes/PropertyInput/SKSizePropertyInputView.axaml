@@ -3,27 +3,29 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:attachedProperties="clr-namespace:Artemis.UI.Shared.AttachedProperties;assembly=Artemis.UI.Shared"
+             xmlns:propertyInput="clr-namespace:Artemis.UI.DefaultTypes.PropertyInput"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.DefaultTypes.PropertyInput.SKSizePropertyInputView">
+             x:Class="Artemis.UI.DefaultTypes.PropertyInput.SKSizePropertyInputView"
+             x:DataType="propertyInput:SKSizePropertyInputViewModel">
     <StackPanel Orientation="Horizontal" Spacing="5">
-        <TextBlock Width="25" 
-                   Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" 
-                   VerticalAlignment="Center" />
         <controls:NumberBox Classes="condensed"
-                            Value="{Binding Height}"
+                            Value="{CompiledBinding Height}"
+                            MinWidth="80"
                             SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
                             ToolTip.Tip="Height"
                             SimpleNumberFormat="F3"
-                            VerticalAlignment="Center"/>
+                            VerticalAlignment="Center"
+                            attachedProperties:NumberBoxAssist.PrefixText="{CompiledBinding Prefix}"
+                            attachedProperties:NumberBoxAssist.SuffixText="{CompiledBinding Affix}"/>
         <TextBlock VerticalAlignment="Center">,</TextBlock>
         <controls:NumberBox Classes="condensed"
-                            Value="{Binding Width}" 
+                            Value="{CompiledBinding Width}"
+                            MinWidth="80"
                             SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
                             SimpleNumberFormat="F3"
-                            VerticalAlignment="Center"/>
-        <TextBlock Width="25"
-                   Text="{Binding LayerProperty.PropertyDescription.InputAffix}"
-                   ToolTip.Tip="Width"
-                   VerticalAlignment="Center"/>
+                            VerticalAlignment="Center"
+                            attachedProperties:NumberBoxAssist.PrefixText="{CompiledBinding Prefix}"
+                            attachedProperties:NumberBoxAssist.SuffixText="{CompiledBinding Affix}"/>
     </StackPanel>
 </UserControl>

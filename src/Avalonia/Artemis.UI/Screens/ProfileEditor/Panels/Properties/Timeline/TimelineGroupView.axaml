@@ -3,18 +3,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:properties="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties"
+             xmlns:timeline="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Timeline"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.TimelineGroupView">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="28" />
-            <RowDefinition Height="1" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.TimelineGroupView"
+             x:DataType="timeline:TimelineGroupViewModel">
+    <Grid RowDefinitions="28,1,Auto">
         <ItemsControl Grid.Row="0"
                       Height="{DynamicResource RailsHeight}"
-                      IsVisible="{Binding !PropertyGroupViewModel.IsExpanded}"
-                      Items="{Binding KeyframePositions}"
+                      IsVisible="{CompiledBinding !PropertyGroupViewModel.IsExpanded}"
+                      Items="{CompiledBinding KeyframePositions}"
                       HorizontalAlignment="Stretch">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -41,15 +38,15 @@
         <Rectangle Grid.Row="1" HorizontalAlignment="Stretch" Fill="{DynamicResource ButtonBorderBrush}" Height="1" />
 
         <ItemsControl Grid.Row="2"
-                      Items="{Binding Children}"
-                      IsVisible="{Binding PropertyGroupViewModel.IsExpanded}"
+                      Items="{CompiledBinding Children}"
+                      IsVisible="{CompiledBinding PropertyGroupViewModel.IsExpanded}"
                       HorizontalAlignment="Stretch">
             <ItemsControl.DataTemplates>
                 <DataTemplate DataType="properties:PropertyGroupViewModel">
-                    <ContentControl Content="{Binding TimelineGroupViewModel}" IsVisible="{Binding IsVisible}" />
+                    <ContentControl Content="{CompiledBinding TimelineGroupViewModel}" IsVisible="{CompiledBinding IsVisible}" />
                 </DataTemplate>
                 <DataTemplate DataType="properties:PropertyViewModel">
-                    <ContentControl Content="{Binding TimelinePropertyViewModel}" IsVisible="{Binding IsVisible}" />
+                    <ContentControl Content="{CompiledBinding TimelinePropertyViewModel}" IsVisible="{CompiledBinding IsVisible}" />
                 </DataTemplate>
             </ItemsControl.DataTemplates>
         </ItemsControl>

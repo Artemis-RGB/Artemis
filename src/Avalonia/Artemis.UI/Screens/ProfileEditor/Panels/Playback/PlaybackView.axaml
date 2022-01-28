@@ -3,8 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:playback="clr-namespace:Artemis.UI.Screens.ProfileEditor.Playback"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="48"
-             x:Class="Artemis.UI.Screens.ProfileEditor.Playback.PlaybackView">
+             x:Class="Artemis.UI.Screens.ProfileEditor.Playback.PlaybackView"
+             x:DataType="playback:PlaybackViewModel">
     <DockPanel Margin="8 0">
         <StackPanel Orientation="Horizontal" Spacing="5">
             <Button Classes="icon-button icon-button-large"
@@ -15,8 +17,8 @@
             <Button Classes="icon-button icon-button-large"
                     ToolTip.Tip="Toggle play/pause (Space)" Command="{Binding TogglePlay}" Focusable="False">
                 <StackPanel>
-                    <avalonia:MaterialIcon Kind="Play" IsVisible="{Binding !Playing}" />
-                    <avalonia:MaterialIcon Kind="Pause" IsVisible="{Binding Playing}" />
+                    <avalonia:MaterialIcon Kind="Play" IsVisible="{CompiledBinding !Playing}" />
+                    <avalonia:MaterialIcon Kind="Pause" IsVisible="{CompiledBinding Playing}" />
                 </StackPanel>
             </Button>
             <Button Classes="icon-button icon-button-large" ToolTip.Tip="Go to start" Command="{Binding GoToStart}" Focusable="False">
@@ -32,18 +34,18 @@
                 <avalonia:MaterialIcon Kind="SkipNext" />
             </Button>
             <ToggleButton Classes="icon-button icon-button-large"
-                          IsChecked="{Binding Repeating}"
+                          IsChecked="{CompiledBinding Repeating}"
                           Focusable="False"
                           Command="{Binding CycleRepeating}">
                 <ToolTip.Tip>
                     <StackPanel>
-                        <StackPanel IsVisible="{Binding Repeating}">
+                        <StackPanel IsVisible="{CompiledBinding Repeating}">
                             <TextBlock Text="Repeat entire timeline"
-                                       IsVisible="{Binding RepeatTimeline}" />
+                                       IsVisible="{CompiledBinding RepeatTimeline}" />
                             <TextBlock Text="Repeat segment"
-                                       IsVisible="{Binding RepeatSegment}" />
+                                       IsVisible="{CompiledBinding RepeatSegment}" />
                         </StackPanel>
-                        <TextBlock IsVisible="{Binding !Repeating}">
+                        <TextBlock IsVisible="{CompiledBinding !Repeating}">
                             Don't repeat the timeline
                         </TextBlock>
                         <TextBlock TextWrapping="Wrap">
@@ -52,12 +54,12 @@
                     </StackPanel>
                 </ToolTip.Tip>
                 <Grid>
-                    <avalonia:MaterialIcon Kind="Repeat" IsVisible="{Binding RepeatTimeline}" />
-                    <avalonia:MaterialIcon Kind="RepeatOne" IsVisible="{Binding RepeatSegment}" />
+                    <avalonia:MaterialIcon Kind="Repeat" IsVisible="{CompiledBinding RepeatTimeline}" />
+                    <avalonia:MaterialIcon Kind="RepeatOne" IsVisible="{CompiledBinding RepeatSegment}" />
                 </Grid>
 
             </ToggleButton>
         </StackPanel>
-        <TextBlock Classes="h4" Text="{Binding FormattedCurrentTime, FallbackValue=00.000}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0"/>
+        <TextBlock Classes="h4" Text="{CompiledBinding FormattedCurrentTime, FallbackValue=00.000}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0"/>
     </DockPanel>
 </UserControl>

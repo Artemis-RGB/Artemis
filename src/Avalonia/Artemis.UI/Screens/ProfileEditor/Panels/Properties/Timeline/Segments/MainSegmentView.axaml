@@ -3,20 +3,22 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:segments="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="18"
-             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments.MainSegmentView">
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments.MainSegmentView"
+             x:DataType="segments:MainSegmentViewModel">
     <UserControl.Styles>
         <StyleInclude Source="/Screens/ProfileEditor/Panels/Properties/Timeline/Segments/Segment.axaml" />
     </UserControl.Styles>
     <Border Classes="segment-container">
         <Grid Name="SegmentGrid"
               Background="{DynamicResource CardStrokeColorDefaultSolidBrush}"
-              Width="{Binding Width}"
+              Width="{CompiledBinding Width}"
               ColumnDefinitions="Auto,Auto,*,Auto,Auto">
 
             <Rectangle Name="KeyframeDragVisualLeft"
                        Grid.Column="0"
-                       IsVisible="{Binding !ShowAddStart}"
+                       IsVisible="{CompiledBinding !ShowAddStart}"
                        Classes="resize-visual" />
 
             <Button Name="AddStartSegment"
@@ -25,7 +27,7 @@
                     VerticalAlignment="Center"
                     ToolTip.Tip="Add a start segment"
                     Command="{Binding AddStartSegment}"
-                    IsVisible="{Binding ShowAddStart}">
+                    IsVisible="{CompiledBinding ShowAddStart}">
                 <avalonia:MaterialIcon Kind="PlusCircle" />
             </Button>
 
@@ -47,7 +49,7 @@
                 <ToggleButton Name="SegmentRepeat"
                               Classes="icon-button icon-button-small"
                               ToolTip.Tip="Repeat this segment"
-                              IsChecked="{Binding RepeatSegment}"
+                              IsChecked="{CompiledBinding RepeatSegment}"
                               Padding="0">
                     <avalonia:MaterialIcon Kind="Repeat" />
                 </ToggleButton>
@@ -59,7 +61,7 @@
                     VerticalAlignment="Center"
                     ToolTip.Tip="Add an end segment"
                     Command="{Binding AddEndSegment}"
-                    IsVisible="{Binding ShowAddEnd}">
+                    IsVisible="{CompiledBinding ShowAddEnd}">
                 <avalonia:MaterialIcon Kind="PlusCircle" />
             </Button>
 
@@ -72,7 +74,7 @@
                        PointerPressed="KeyframeDragAnchor_OnPointerPressed"
                        PointerMoved="KeyframeDragAnchor_OnPointerMoved"
                        PointerReleased="KeyframeDragAnchor_OnPointerReleased"
-                       ToolTip.Tip="{Binding EndTimestamp}"/>
+                       ToolTip.Tip="{CompiledBinding EndTimestamp}"/>
         </Grid>
     </Border>
 </UserControl>

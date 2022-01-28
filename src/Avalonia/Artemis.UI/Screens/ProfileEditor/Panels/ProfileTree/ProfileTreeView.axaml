@@ -3,60 +3,62 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:profileTree="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.ProfileTreeView">
+             x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.ProfileTreeView"
+             x:DataType="profileTree:ProfileTreeViewModel">
     <Grid RowDefinitions="*,Auto">
-        <TreeView Classes="no-right-margin" Items="{Binding Children}" SelectedItem="{Binding SelectedChild}">
+        <TreeView Classes="no-right-margin" Items="{CompiledBinding Children}" SelectedItem="{CompiledBinding SelectedChild}">
             <TreeView.Styles>
                 <Style Selector="TreeViewItem">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                 </Style>
             </TreeView.Styles>
             <TreeView.KeyBindings>
-                <KeyBinding Gesture="F2" Command="{Binding SelectedChild.Rename}" />
-                <KeyBinding Gesture="Delete" Command="{Binding SelectedChild.Delete}" />
-                <KeyBinding Gesture="Ctrl+D" Command="{Binding SelectedChild.Duplicate}" />
-                <KeyBinding Gesture="Ctrl+C" Command="{Binding SelectedChild.Copy}" />
-                <KeyBinding Gesture="Ctrl+V" Command="{Binding SelectedChild.Paste}" />
+                <KeyBinding Gesture="F2" Command="{CompiledBinding SelectedChild.Rename}" />
+                <KeyBinding Gesture="Delete" Command="{CompiledBinding SelectedChild.Delete}" />
+                <KeyBinding Gesture="Ctrl+D" Command="{CompiledBinding SelectedChild.Duplicate}" />
+                <KeyBinding Gesture="Ctrl+C" Command="{CompiledBinding SelectedChild.Copy}" />
+                <KeyBinding Gesture="Ctrl+V" Command="{CompiledBinding SelectedChild.Paste}" />
             </TreeView.KeyBindings>
             <TreeView.ItemTemplate>
                 <TreeDataTemplate ItemsSource="{Binding Children}">
-                    <ContentControl Content="{Binding}">
+                    <ContentControl Content="{Binding}" x:DataType="profileTree:TreeItemViewModel">
                         <ContentControl.ContextFlyout>
                             <MenuFlyout>
-                                <MenuItem Header="Add new folder" Command="{Binding AddFolder}">
+                                <MenuItem Header="Add new folder" Command="{CompiledBinding AddFolder}">
                                     <MenuItem.Icon>
                                         <avalonia:MaterialIcon Kind="CreateNewFolder" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Add new layer" Command="{Binding AddLayer}">
+                                <MenuItem Header="Add new layer" Command="{CompiledBinding AddLayer}">
                                     <MenuItem.Icon>
                                         <avalonia:MaterialIcon Kind="LayersPlus" />
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <Separator />
-                                <MenuItem Header="Duplicate" Command="{Binding Duplicate}" InputGesture="Ctrl+D">
+                                <MenuItem Header="Duplicate" Command="{CompiledBinding Duplicate}" InputGesture="Ctrl+D">
                                     <MenuItem.Icon>
                                         <avalonia:MaterialIcon Kind="ContentDuplicate" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Copy" Command="{Binding Copy}" InputGesture="Ctrl+C">
+                                <MenuItem Header="Copy" Command="{CompiledBinding Copy}" InputGesture="Ctrl+C">
                                     <MenuItem.Icon>
                                         <avalonia:MaterialIcon Kind="ContentCopy" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Paste" Command="{Binding Paste}" InputGesture="Ctrl+V">
+                                <MenuItem Header="Paste" Command="{CompiledBinding Paste}" InputGesture="Ctrl+V">
                                     <MenuItem.Icon>
                                         <avalonia:MaterialIcon Kind="ContentPaste" />
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <Separator />
-                                <MenuItem Header="Rename" Command="{Binding Rename}" InputGesture="F2">
+                                <MenuItem Header="Rename" Command="{CompiledBinding Rename}" InputGesture="F2">
                                     <MenuItem.Icon>
                                         <avalonia:MaterialIcon Kind="RenameBox" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Delete" Command="{Binding Delete}" InputGesture="Delete">
+                                <MenuItem Header="Delete" Command="{CompiledBinding Delete}" InputGesture="Delete">
                                     <MenuItem.Icon>
                                         <avalonia:MaterialIcon Kind="TrashCan" />
                                     </MenuItem.Icon>
@@ -68,10 +70,10 @@
             </TreeView.ItemTemplate>
         </TreeView>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Classes="icon-button" ToolTip.Tip="Add new folder to root" Command="{Binding AddFolder}">
+            <Button Classes="icon-button" ToolTip.Tip="Add new folder to root" Command="{CompiledBinding AddFolder}">
                 <avalonia:MaterialIcon Kind="FolderAdd" />
             </Button>
-            <Button Classes="icon-button" ToolTip.Tip="Add new layer to root" Command="{Binding AddLayer}" Margin="2 0 0 0">
+            <Button Classes="icon-button" ToolTip.Tip="Add new layer to root" Command="{CompiledBinding AddLayer}" Margin="2 0 0 0">
                 <avalonia:MaterialIcon Kind="LayersPlus" />
             </Button>
         </StackPanel>

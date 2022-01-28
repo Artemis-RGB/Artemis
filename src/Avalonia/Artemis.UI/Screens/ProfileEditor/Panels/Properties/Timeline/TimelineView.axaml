@@ -4,8 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties"
              xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             xmlns:timeline="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Timeline"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.TimelineView">
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.TimelineView"
+             x:DataType="timeline:TimelineViewModel">
 	<UserControl.Resources>
 		<x:Double x:Key="RailsHeight">28</x:Double>
 		<x:Double x:Key="RailsBorderHeight">29</x:Double>
@@ -14,14 +16,14 @@
         <Grid.KeyBindings>
             <KeyBinding Command="{Binding DeleteKeyframes}" Gesture="Delete"/>
         </Grid.KeyBindings>
-        <ItemsControl Items="{Binding PropertyGroupViewModels}">
+        <ItemsControl Items="{CompiledBinding PropertyGroupViewModels}">
             <ItemsControl.ItemTemplate>
-                <TreeDataTemplate DataType="{x:Type local:PropertyGroupViewModel}" ItemsSource="{Binding Children}">
-                    <ContentControl Content="{Binding TimelineGroupViewModel}" />
+                <TreeDataTemplate DataType="{x:Type local:PropertyGroupViewModel}" ItemsSource="{CompiledBinding Children}">
+                    <ContentControl Content="{CompiledBinding TimelineGroupViewModel}" />
                 </TreeDataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-		<controls:SelectionRectangle Name="SelectionRectangle" InputElement="{Binding $parent}" SelectionFinished="SelectionRectangle_OnSelectionFinished"></controls:SelectionRectangle>
+		<controls:SelectionRectangle Name="SelectionRectangle" InputElement="{CompiledBinding $parent}" SelectionFinished="SelectionRectangle_OnSelectionFinished"></controls:SelectionRectangle>
 	</Grid>
 
 

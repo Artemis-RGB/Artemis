@@ -10,7 +10,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 
 public class TimelineGroupViewModel : ActivatableViewModelBase
 {
-    private ObservableCollection<double>? _keyframePosition;
+    private ObservableCollection<double>? _keyframePositions;
     private int _pixelsPerSecond;
 
     public TimelineGroupViewModel(PropertyGroupViewModel propertyGroupViewModel, IProfileEditorService profileEditorService)
@@ -33,15 +33,15 @@ public class TimelineGroupViewModel : ActivatableViewModelBase
 
     public ObservableCollection<ViewModelBase>? Children => PropertyGroupViewModel.IsExpanded ? PropertyGroupViewModel.Children : null;
 
-    public ObservableCollection<double>? KeyframePosition
+    public ObservableCollection<double>? KeyframePositions
     {
-        get => _keyframePosition;
-        set => this.RaiseAndSetIfChanged(ref _keyframePosition, value);
+        get => _keyframePositions;
+        set => this.RaiseAndSetIfChanged(ref _keyframePositions, value);
     }
 
     private void UpdateKeyframePositions()
     {
-        KeyframePosition = new ObservableCollection<double>(PropertyGroupViewModel
+        KeyframePositions = new ObservableCollection<double>(PropertyGroupViewModel
             .GetAllKeyframeViewModels(false)
             .Select(p => p.Position.TotalSeconds * _pixelsPerSecond));
     }

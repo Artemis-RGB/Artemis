@@ -5,8 +5,10 @@
              xmlns:paz="clr-namespace:Avalonia.Controls.PanAndZoom;assembly=Avalonia.Controls.PanAndZoom"
              xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
              xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             xmlns:visualEditor="clr-namespace:Artemis.UI.Screens.ProfileEditor.VisualEditor"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.ProfileEditor.VisualEditor.VisualEditorView">
+             x:Class="Artemis.UI.Screens.ProfileEditor.VisualEditor.VisualEditorView"
+             x:DataType="visualEditor:VisualEditorViewModel">
     <Grid>
         <paz:ZoomBorder Name="ZoomBorder"
                         Stretch="None"
@@ -23,7 +25,7 @@
                         <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut"/>
                     </Transitions>
                 </Grid.Transitions>
-                <ItemsControl Items="{Binding Devices}" ClipToBounds="False">
+                <ItemsControl Items="{CompiledBinding Devices}" ClipToBounds="False">
                     <ItemsControl.Styles>
                         <Style Selector="ContentPresenter">
                             <Setter Property="Canvas.Left" Value="{Binding X}" />
@@ -48,8 +50,8 @@
                 <SolidColorBrush Color="{DynamicResource CardStrokeColorDefaultSolid}" Opacity="0.65"></SolidColorBrush>
             </Border.Background>
             <StackPanel Orientation="Horizontal" Margin="8">
-                <controls:ProfileConfigurationIcon ConfigurationIcon="{Binding ProfileConfiguration.Icon}" Margin="0 0 5 0"></controls:ProfileConfigurationIcon>
-                <TextBlock  Text="{Binding ProfileConfiguration.Name}"/>
+                <controls:ProfileConfigurationIcon ConfigurationIcon="{CompiledBinding ProfileConfiguration.Icon}" Margin="0 0 5 0"></controls:ProfileConfigurationIcon>
+                <TextBlock  Text="{CompiledBinding ProfileConfiguration.Name}"/>
             </StackPanel>
         </Border>
     </Grid>

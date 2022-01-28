@@ -54,4 +54,7 @@
 	    <DependentUpon>PropertiesView.axaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="DefaultTypes\DataModel\Display\" />
+	</ItemGroup>
 </Project>

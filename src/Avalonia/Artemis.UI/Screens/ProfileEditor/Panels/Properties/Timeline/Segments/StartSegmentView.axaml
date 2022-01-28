@@ -4,15 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:segments="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="18"
-             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments.StartSegmentView">
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments.StartSegmentView"
+             x:DataType="segments:StartSegmentViewModel">
     <UserControl.Styles>
         <StyleInclude Source="/Screens/ProfileEditor/Panels/Properties/Timeline/Segments/Segment.axaml" />
     </UserControl.Styles>
     <Border Classes="segment-container">
         <Grid Name="SegmentGrid"
               Background="{DynamicResource CardStrokeColorDefaultSolidBrush}"
-              Width="{Binding Width}"
+              Width="{CompiledBinding Width}"
               ColumnDefinitions="*,Auto,Auto">
 
             <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -34,7 +36,7 @@
                     Classes="AppBarButton icon-button icon-button-small"
                     ToolTip.Tip="Add main segment"
                     Command="{Binding AddMainSegment}"
-                    IsVisible="{Binding ShowAddMain}">
+                    IsVisible="{CompiledBinding ShowAddMain}">
                 <avalonia:MaterialIcon Kind="PlusCircle" />
             </Button>
 
@@ -47,7 +49,7 @@
                        PointerPressed="KeyframeDragAnchor_OnPointerPressed"
                        PointerMoved="KeyframeDragAnchor_OnPointerMoved"
                        PointerReleased="KeyframeDragAnchor_OnPointerReleased"
-                       ToolTip.Tip="{Binding EndTimestamp}"/>
+                       ToolTip.Tip="{CompiledBinding EndTimestamp}"/>
         </Grid>
     </Border>
 

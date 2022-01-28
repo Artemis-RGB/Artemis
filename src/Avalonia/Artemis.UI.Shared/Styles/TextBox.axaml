@@ -1,0 +1,122 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:attached="clr-namespace:Artemis.UI.Shared.AttachedProperties"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="20">
+
+
+                <!-- Add Controls for Previewer Here -->
+                <TextBox Text="99999999" 
+                         attached:TextBoxAssist.PrefixText="%"
+                         attached:TextBoxAssist.SuffixText="%"></TextBox>
+                <controls:NumberBox Value="99999999"
+                                    attached:NumberBoxAssist.PrefixText="%"
+                                    attached:NumberBoxAssist.SuffixText="%" />
+
+                <TextBox Classes="condensed"
+                         Text="9999999"
+                         attached:TextBoxAssist.PrefixText="%"
+                         attached:TextBoxAssist.SuffixText="%" />
+                <controls:NumberBox Classes="condensed"
+                                    Value="9999999"
+                                    attached:NumberBoxAssist.PrefixText="%"
+                                    attached:NumberBoxAssist.SuffixText="%" />
+            </StackPanel>
+
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="TextBox">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<DataValidationErrors>
+					<Panel>
+						<!-- This is flipped (scaleY(-1)) for the elevation brush effect
+                        -->
+						<Border
+                          Name="PART_BorderElement"
+                          Background="{TemplateBinding Background}"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          MinWidth="{TemplateBinding MinWidth}"
+                          MinHeight="{TemplateBinding MinHeight}"
+                          RenderTransform="scaleY(-1)"
+						  CornerRadius="{TemplateBinding CornerRadius}"/>
+
+						<Border
+                          Margin="{TemplateBinding BorderThickness}">
+							<Grid ColumnDefinitions="Auto,*,Auto" >
+								<ContentPresenter Grid.Column="0" Grid.ColumnSpan="1" Content="{TemplateBinding InnerLeftContent}"/>
+								<DockPanel x:Name="PART_InnerDockPanel" Grid.Column="1" Grid.ColumnSpan="1" Margin="{TemplateBinding Padding}">
+                                    <TextBlock Name="PART_Prefix"
+                                               Text="{TemplateBinding attached:TextBoxAssist.PrefixText}"
+                                               IsHitTestVisible="False"
+                                               DockPanel.Dock="Left"/>
+									<TextBlock Name="PART_FloatingWatermark"
+                                               Foreground="{DynamicResource SystemAccentColor}"
+                                               FontSize="{TemplateBinding FontSize}"
+                                               Text="{TemplateBinding Watermark}"
+                                               DockPanel.Dock="Top" />
+									<ScrollViewer HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
+                                                  VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}">
+										<Panel>
+											<TextBlock Name="PART_Watermark"
+                                                    Text="{TemplateBinding Watermark}"
+                                                    TextAlignment="{TemplateBinding TextAlignment}"
+                                                    TextWrapping="{TemplateBinding TextWrapping}"
+                                                    IsVisible="{TemplateBinding Text, Converter={x:Static StringConverters.IsNullOrEmpty}}"
+                                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                    IsHitTestVisible="False"/>
+											<TextPresenter Name="PART_TextPresenter"
+                                                          Text="{TemplateBinding Text, Mode=TwoWay}"
+                                                          CaretIndex="{TemplateBinding CaretIndex}"
+                                                          SelectionStart="{TemplateBinding SelectionStart}"
+                                                          SelectionEnd="{TemplateBinding SelectionEnd}"
+                                                          TextAlignment="{TemplateBinding TextAlignment}"
+                                                          TextWrapping="{TemplateBinding TextWrapping}"
+                                                          PasswordChar="{TemplateBinding PasswordChar}"
+                                                          RevealPassword="{TemplateBinding RevealPassword}"
+                                                          SelectionBrush="{TemplateBinding SelectionBrush}"
+                                                          SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
+                                                          CaretBrush="{TemplateBinding CaretBrush}"
+                                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+										</Panel>
+									</ScrollViewer>
+
+                                    <TextBlock Name="PART_Suffix"
+                                               Text="{TemplateBinding attached:TextBoxAssist.SuffixText}"
+                                               IsHitTestVisible="False"
+                                               HorizontalAlignment="Right"
+                                               DockPanel.Dock="Right"/>
+								</DockPanel>
+								<ContentPresenter Grid.Column="2" Grid.ColumnSpan="1" Content="{TemplateBinding InnerRightContent}"/>
+							</Grid>
+						</Border>
+					</Panel>
+				</DataValidationErrors>
+			</ControlTemplate>
+		</Setter>
+    </Style>
+
+	<Style Selector="TextBox /template/ TextBlock#PART_Prefix">
+        <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundDisabled}"></Setter>
+        <Setter Property="Margin" Value="-4 0 4 0"></Setter>
+    </Style>
+    <Style Selector="TextBox /template/ TextBlock#PART_Suffix">
+        <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundDisabled}"></Setter>
+        <Setter Property="Margin" Value="4 0 0 0"></Setter>
+    </Style>
+
+    <Style Selector="TextBox.condensed /template/ TextBlock#PART_Prefix">
+        <Setter Property="Margin" Value="0 0 4 0"></Setter>
+    </Style>
+    <Style Selector="TextBox.condensed /template/ TextBlock#PART_Suffix">
+        <Setter Property="Margin" Value="4 0 0 0"></Setter>
+    </Style>
+
+</Styles>
