@@ -10,6 +10,7 @@ using Artemis.UI.Screens.ProfileEditor.Properties;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
+using Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Screens.SurfaceEditor;
@@ -64,6 +65,7 @@ namespace Artemis.UI.Ninject.Factories
         ProfileEditorViewModel ProfileEditorViewModel(IScreen hostScreen);
         FolderTreeItemViewModel FolderTreeItemViewModel(TreeItemViewModel? parent, Folder folder);
         LayerTreeItemViewModel LayerTreeItemViewModel(TreeItemViewModel? parent, Layer layer);
+        LayerVisualizerViewModel LayerVisualizerViewModel(Layer layer);
     }
 
     public interface ILayerPropertyVmFactory : IVmFactory

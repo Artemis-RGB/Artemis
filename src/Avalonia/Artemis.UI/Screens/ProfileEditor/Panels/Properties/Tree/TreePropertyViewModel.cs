@@ -12,9 +12,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 internal class TreePropertyViewModel<T> : ActivatableViewModelBase, ITreePropertyViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
+    private TimeSpan _time;
 
-    public TreePropertyViewModel(LayerProperty<T> layerProperty, PropertyViewModel propertyViewModel, IProfileEditorService profileEditorService,
-        IPropertyInputService propertyInputService)
+    public TreePropertyViewModel(LayerProperty<T> layerProperty, PropertyViewModel propertyViewModel, IProfileEditorService profileEditorService, IPropertyInputService propertyInputService)
     {
         _profileEditorService = profileEditorService;
 
@@ -22,7 +22,11 @@ internal class TreePropertyViewModel<T> : ActivatableViewModelBase, ITreePropert
         PropertyViewModel = propertyViewModel;
         PropertyInputViewModel = propertyInputService.CreatePropertyInputViewModel(LayerProperty);
 
-        this.WhenActivated(d => this.WhenAnyValue(vm => vm.LayerProperty.KeyframesEnabled).Subscribe(_ => this.RaisePropertyChanged(nameof(KeyframesEnabled))).DisposeWith(d));
+        this.WhenActivated(d =>
+        {
+            _profileEditorService.Time.Subscribe(t => _time = t).DisposeWith(d);
+            this.WhenAnyValue(vm => vm.LayerProperty.KeyframesEnabled).Subscribe(_ => this.RaisePropertyChanged(nameof(KeyframesEnabled))).DisposeWith(d);
+        });
     }
 
     public LayerProperty<T> LayerProperty { get; }
@@ -40,7 +44,7 @@ internal class TreePropertyViewModel<T> : ActivatableViewModelBase, ITreePropert
         if (value == LayerProperty.KeyframesEnabled)
             return;
 
-        _profileEditorService.ExecuteCommand(new ToggleLayerPropertyKeyframes<T>(LayerProperty, value));
+        _profileEditorService.ExecuteCommand(new ToggleLayerPropertyKeyframes<T>(LayerProperty, value, _time));
     }
 
     public ILayerProperty BaseLayerProperty => LayerProperty;

@@ -14,7 +14,7 @@ public class FloatPropertyInputViewModel : PropertyInputViewModel<float>
             this.ValidationRule(vm => vm.InputValue, i => i >= (float) LayerProperty.PropertyDescription.MinInputValue,
                 $"Value must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
         if (LayerProperty.PropertyDescription.MaxInputValue.IsNumber())
-            this.ValidationRule(vm => vm.InputValue, i => i < (float) LayerProperty.PropertyDescription.MaxInputValue,
+            this.ValidationRule(vm => vm.InputValue, i => i <= (float) LayerProperty.PropertyDescription.MaxInputValue,
                 $"Value must be smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
     }
 }

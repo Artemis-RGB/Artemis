@@ -25,6 +25,8 @@
                         <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut"/>
                     </Transitions>
                 </Grid.Transitions>
+
+				<!-- The bottom layer consists of devices -->
                 <ItemsControl Items="{CompiledBinding Devices}" ClipToBounds="False">
                     <ItemsControl.Styles>
                         <Style Selector="ContentPresenter">
@@ -42,6 +44,24 @@
                             <controls:DeviceVisualizer Device="{Binding}" ShowColors="True" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+				<!-- The middle layer contains visualizers -->
+                <ItemsControl Items="{CompiledBinding Visualizers}" ClipToBounds="False">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+				<!-- The top layer contains tools -->
+                <ItemsControl Items="{CompiledBinding Tools}" ClipToBounds="False">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
                 </ItemsControl>
             </Grid>
         </paz:ZoomBorder>

@@ -5,13 +5,13 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
+using Avalonia.Threading;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Playback;
 
 public class PlaybackViewModel : ActivatableViewModelBase
 {
-    private readonly ICoreService _coreService;
     private readonly IProfileEditorService _profileEditorService;
     private readonly ISettingsService _settingsService;
     private RenderProfileElement? _profileElement;
@@ -21,10 +21,10 @@ public class PlaybackViewModel : ActivatableViewModelBase
     private bool _repeating;
     private bool _repeatTimeline;
     private bool _repeatSegment;
+    private DateTime _lastUpdate;
 
-    public PlaybackViewModel(ICoreService coreService, IProfileEditorService profileEditorService, ISettingsService settingsService)
+    public PlaybackViewModel(IProfileEditorService profileEditorService, ISettingsService settingsService)
     {
-        _coreService = coreService;
         _profileEditorService = profileEditorService;
         _settingsService = settingsService;
 
@@ -35,11 +35,13 @@ public class PlaybackViewModel : ActivatableViewModelBase
             _formattedCurrentTime = _profileEditorService.Time.Select(t => $"{Math.Floor(t.TotalSeconds):00}.{t.Milliseconds:000}").ToProperty(this, vm => vm.FormattedCurrentTime).DisposeWith(d);
             _playing = _profileEditorService.Playing.ToProperty(this, vm => vm.Playing).DisposeWith(d);
 
-            Observable.FromEventPattern<FrameRenderingEventArgs>(x => coreService.FrameRendering += x, x => coreService.FrameRendering -= x)
-                .Subscribe(e => CoreServiceOnFrameRendering(e.EventArgs))
-                .DisposeWith(d);
+            _lastUpdate = DateTime.MinValue;
+            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(60.0 / 1000), DispatcherPriority.Render, Update);
+            updateTimer.Start();
+            Disposable.Create(() => updateTimer.Stop());
         });
     }
+
 
     public TimeSpan CurrentTime => _currentTime?.Value ?? TimeSpan.Zero;
     public string? FormattedCurrentTime => _formattedCurrentTime?.Value;
@@ -163,31 +165,41 @@ public class PlaybackViewModel : ActivatableViewModelBase
         return TimeSpan.Zero;
     }
 
-    private void CoreServiceOnFrameRendering(FrameRenderingEventArgs e)
+    private void Update(object? sender, EventArgs e)
     {
-        if (!Playing)
-            return;
-
-        TimeSpan newTime = CurrentTime.Add(TimeSpan.FromSeconds(e.DeltaTime));
-        if (_profileElement != null)
+        try
         {
-            if (Repeating && RepeatTimeline)
-            {
-                if (newTime > _profileElement.Timeline.Length)
-                    newTime = TimeSpan.Zero;
-            }
-            else if (Repeating && RepeatSegment)
-            {
-                if (newTime > GetCurrentSegmentEnd())
-                    newTime = GetCurrentSegmentStart();
-            }
-            else if (newTime > _profileElement.Timeline.Length)
-            {
-                newTime = _profileElement.Timeline.Length;
-                _profileEditorService.Pause();
-            }
-        }
+            if (!Playing)
+                return;
 
-        _profileEditorService.ChangeTime(newTime);
+            if (_lastUpdate == DateTime.MinValue)
+                _lastUpdate = DateTime.Now;
+
+            TimeSpan newTime = CurrentTime.Add(DateTime.Now - _lastUpdate);
+            if (_profileElement != null)
+            {
+                if (Repeating && RepeatTimeline)
+                {
+                    if (newTime > _profileElement.Timeline.Length)
+                        newTime = TimeSpan.Zero;
+                }
+                else if (Repeating && RepeatSegment)
+                {
+                    if (newTime > GetCurrentSegmentEnd())
+                        newTime = GetCurrentSegmentStart();
+                }
+                else if (newTime > _profileElement.Timeline.Length)
+                {
+                    newTime = _profileElement.Timeline.Length;
+                    _profileEditorService.Pause();
+                }
+            }
+
+            _profileEditorService.ChangeTime(newTime);
+        }
+        finally
+        {
+            _lastUpdate = DateTime.Now;
+        }
     }
 }

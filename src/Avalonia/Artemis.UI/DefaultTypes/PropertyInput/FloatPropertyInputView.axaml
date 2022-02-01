@@ -8,13 +8,16 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.DefaultTypes.PropertyInput.FloatPropertyInputView"
              x:DataType="propertyInput:FloatPropertyInputViewModel">
-    <controls:NumberBox Classes="condensed"
+	<UserControl.Styles>
+		<StyleInclude Source="/DefaultTypes/PropertyInput/PropertyInputStyles.axaml" />
+	</UserControl.Styles>
+    <controls:NumberBox Classes="condensed tooltip-validation-left"
                         MinWidth="80"
                         Value="{CompiledBinding InputValue}"
-                        SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                        SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}" 
                         AcceptsExpression="True"
                         SimpleNumberFormat="F3"
                         VerticalAlignment="Center"
                         shared:NumberBoxAssist.PrefixText="{CompiledBinding Prefix}"
-                        shared:NumberBoxAssist.SuffixText="{CompiledBinding Affix}"/>
+                        shared:NumberBoxAssist.SuffixText="{CompiledBinding Affix}" />
 </UserControl>

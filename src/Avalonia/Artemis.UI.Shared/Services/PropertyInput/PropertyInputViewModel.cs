@@ -5,6 +5,7 @@ using Artemis.Core;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia.Controls.Mixins;
+using Avalonia.Threading;
 using ReactiveUI;
 using ReactiveUI.Validation.Helpers;
 
@@ -54,6 +55,8 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
                 .Subscribe(_ => UpdateDataBinding())
                 .DisposeWith(d);
         });
+
+        ValidationContext.ValidationStatusChange.Subscribe(s => Console.WriteLine(s));
     }
 
     /// <summary>
@@ -178,24 +181,28 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
 
     private void UpdateInputValue()
     {
-        try
+        Dispatcher.UIThread.Post(() =>
         {
-            _updating = true;
-            // Avoid unnecessary UI updates and validator cycles
-            if (_inputValue != null && _inputValue.Equals(LayerProperty.CurrentValue) || _inputValue == null && LayerProperty.CurrentValue == null)
-                return;
+            try
+            {
+                _updating = true;
+                // Avoid unnecessary UI updates and validator cycles
+                if (_inputValue != null && _inputValue.Equals(LayerProperty.CurrentValue) || _inputValue == null && LayerProperty.CurrentValue == null)
+                    return;
 
-            // Override the input value
-            _inputValue = LayerProperty.CurrentValue;
+                // Override the input value
+                _inputValue = LayerProperty.CurrentValue;
 
-            // Notify a change in the input value
-            OnInputValueChanged();
-            this.RaisePropertyChanged(nameof(InputValue));
-        }
-        finally
-        {
-            _updating = false;
-        }
+                // Notify a change in the input value
+                OnInputValueChanged();
+                this.RaisePropertyChanged(nameof(InputValue));
+            }
+            finally
+            {
+                _updating = false;
+            }
+        });
+      
     }
 
     private void UpdateDataBinding()
