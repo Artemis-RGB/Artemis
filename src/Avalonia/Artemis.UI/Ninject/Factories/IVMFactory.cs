@@ -65,6 +65,7 @@ namespace Artemis.UI.Ninject.Factories
         ProfileEditorViewModel ProfileEditorViewModel(IScreen hostScreen);
         FolderTreeItemViewModel FolderTreeItemViewModel(TreeItemViewModel? parent, Folder folder);
         LayerTreeItemViewModel LayerTreeItemViewModel(TreeItemViewModel? parent, Layer layer);
+        LayerShapeVisualizerViewModel LayerShapeVisualizerViewModel(Layer layer);
         LayerVisualizerViewModel LayerVisualizerViewModel(Layer layer);
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using Artemis.Core;
@@ -8,6 +9,8 @@ using Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools;
 using Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
+using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor;
@@ -16,13 +19,21 @@ public class VisualEditorViewModel : ActivatableViewModelBase
 {
     private readonly IProfileEditorVmFactory _vmFactory;
     private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
+    private readonly SourceList<IVisualizerViewModel> _visualizers;
 
     public VisualEditorViewModel(IProfileEditorService profileEditorService, IRgbService rgbService, IProfileEditorVmFactory vmFactory)
     {
         _vmFactory = vmFactory;
+        _visualizers = new SourceList<IVisualizerViewModel>();
+
         Devices = new ObservableCollection<ArtemisDevice>(rgbService.EnabledDevices);
-        Visualizers = new ObservableCollection<IVisualizerViewModel>();
         Tools = new ObservableCollection<IToolViewModel>();
+
+        _visualizers.Connect()
+            .Sort(SortExpressionComparer<IVisualizerViewModel>.Ascending(vm => vm.Order))
+            .Bind(out ReadOnlyObservableCollection<IVisualizerViewModel> visualizers)
+            .Subscribe();
+        Visualizers = visualizers;
 
         this.WhenActivated(d =>
         {
@@ -34,21 +45,24 @@ public class VisualEditorViewModel : ActivatableViewModelBase
     public ProfileConfiguration? ProfileConfiguration => _profileConfiguration?.Value;
 
     public ObservableCollection<ArtemisDevice> Devices { get; }
-    public ObservableCollection<IVisualizerViewModel> Visualizers { get; set; }
-    public ObservableCollection<IToolViewModel> Tools { get; set; }
+    public ReadOnlyObservableCollection<IVisualizerViewModel> Visualizers { get; }
+    public ObservableCollection<IToolViewModel> Tools { get; }
 
     private void CreateVisualizers(ProfileConfiguration? profileConfiguration)
     {
-        Visualizers.Clear();
-        if (profileConfiguration?.Profile == null)
-            return;
-
-        foreach (Layer layer in profileConfiguration.Profile.GetAllLayers())
-            CreateVisualizer(layer);
+        _visualizers.Edit(list =>
+        {
+            list.Clear();
+            if (profileConfiguration?.Profile == null)
+                return;
+            foreach (Layer layer in profileConfiguration.Profile.GetAllLayers())
+                CreateVisualizer(list, layer);
+        });
     }
 
-    private void CreateVisualizer(Layer layer)
+    private void CreateVisualizer(ICollection<IVisualizerViewModel> visualizerViewModels, Layer layer)
     {
-        Visualizers.Add(_vmFactory.LayerVisualizerViewModel(layer));
+        visualizerViewModels.Add(_vmFactory.LayerShapeVisualizerViewModel(layer));
+        visualizerViewModels.Add(_vmFactory.LayerVisualizerViewModel(layer));
     }
 }

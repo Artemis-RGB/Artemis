@@ -137,7 +137,7 @@ namespace Artemis.Core
         ///     Updates the <see cref="Timeline" /> according to the provided <paramref name="deltaTime" /> and current display
         ///     condition status
         /// </summary>
-        public void UpdateTimeline(double deltaTime)
+        protected void UpdateTimeline(double deltaTime)
         {
             // TODO: Move to conditions
 
@@ -327,7 +327,7 @@ namespace Artemis.Core
 
             OrderEffects();
         }
-
+        
 
         internal void ActivateLayerEffect(BaseLayerEffect layerEffect)
         {
@@ -406,5 +406,12 @@ namespace Artemis.Core
         }
 
         #endregion
+
+        /// <summary>
+        ///     Overrides the main timeline to the specified time and clears any extra time lines
+        /// </summary>
+        /// <param name="position">The position to set the timeline to</param>
+        /// <param name="stickToMainSegment">Whether to stick to the main segment, wrapping around if needed</param>
+        public abstract void OverrideTimelineAndApply(TimeSpan position, bool stickToMainSegment);
     }
 }

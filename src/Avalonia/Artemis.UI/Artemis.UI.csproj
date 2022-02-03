@@ -56,6 +56,9 @@
 	  <Compile Update="Screens\ProfileEditor\Panels\Properties\PropertiesView.axaml.cs">
 	    <DependentUpon>PropertiesView.axaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Screens\ProfileEditor\Panels\VisualEditor\Visualizers\LayerShapeVisualizerView.axaml.cs">
+	    <DependentUpon>LayerShapeVisualizerView.axaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="DefaultTypes\DataModel\Display\" />

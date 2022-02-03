@@ -146,10 +146,11 @@ namespace Artemis.UI.Shared.Services
             else
             {
                 renderElement.Enable();
-                renderElement.Timeline.Override(
+                renderElement.OverrideTimelineAndApply(
                     CurrentTime,
                     (renderElement != SelectedProfileElement || renderElement.Timeline.Length < CurrentTime) && renderElement.Timeline.PlayMode == TimelinePlayMode.Repeat
                 );
+                renderElement.Update(0);
 
                 foreach (ProfileElement child in renderElement.Children)
                     TickProfileElement(child);

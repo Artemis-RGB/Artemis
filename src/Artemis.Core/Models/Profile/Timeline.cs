@@ -11,7 +11,6 @@ namespace Artemis.Core;
 /// </summary>
 public class Timeline : CorePropertyChanged, IStorageModel
 {
-    private const int MaxExtraTimelines = 15;
     private readonly object _lock = new();
 
     /// <summary>
@@ -21,32 +20,15 @@ public class Timeline : CorePropertyChanged, IStorageModel
     {
         Entity = new TimelineEntity();
         MainSegmentLength = TimeSpan.FromSeconds(5);
-
-        _extraTimelines = new List<Timeline>();
-        ExtraTimelines = new ReadOnlyCollection<Timeline>(_extraTimelines);
-
+        
         Save();
     }
 
     internal Timeline(TimelineEntity entity)
     {
         Entity = entity;
-        _extraTimelines = new List<Timeline>();
-        ExtraTimelines = new ReadOnlyCollection<Timeline>(_extraTimelines);
 
         Load();
-    }
-
-    private Timeline(Timeline parent)
-    {
-        Entity = new TimelineEntity();
-        Parent = parent;
-        StartSegmentLength = Parent.StartSegmentLength;
-        MainSegmentLength = Parent.MainSegmentLength;
-        EndSegmentLength = Parent.EndSegmentLength;
-
-        _extraTimelines = new List<Timeline>();
-        ExtraTimelines = new ReadOnlyCollection<Timeline>(_extraTimelines);
     }
 
     /// <inheritdoc />
@@ -54,45 +36,17 @@ public class Timeline : CorePropertyChanged, IStorageModel
     {
         return $"Progress: {Position}/{Length} - delta: {Delta}";
     }
-
-    #region Extra timelines
-
-    /// <summary>
-    ///     Adds an extra timeline to this timeline
-    /// </summary>
-    public void AddExtraTimeline()
-    {
-        _extraTimelines.Add(new Timeline(this));
-        if (_extraTimelines.Count > MaxExtraTimelines)
-            _extraTimelines.RemoveAt(0);
-    }
-
-    /// <summary>
-    ///     Removes all extra timelines from this timeline
-    /// </summary>
-    public void ClearExtraTimelines()
-    {
-        _extraTimelines.Clear();
-    }
-
-    #endregion
-
+    
     #region Properties
 
     private TimeSpan _position;
     private TimeSpan _lastDelta;
     private TimelinePlayMode _playMode;
     private TimelineStopMode _stopMode;
-    private readonly List<Timeline> _extraTimelines;
     private TimeSpan _startSegmentLength;
     private TimeSpan _mainSegmentLength;
     private TimeSpan _endSegmentLength;
-
-    /// <summary>
-    ///     Gets the parent this timeline is an extra timeline of
-    /// </summary>
-    public Timeline? Parent { get; }
-
+    
     /// <summary>
     ///     Gets the current position of the timeline
     /// </summary>
@@ -105,21 +59,13 @@ public class Timeline : CorePropertyChanged, IStorageModel
     /// <summary>
     ///     Gets the cumulative delta of all calls to <see cref="Update" /> that took place after the last call to
     ///     <see cref="ClearDelta" />
-    ///     <para>
-    ///         Note: If this is an extra timeline <see cref="Delta" /> is always equal to <see cref="DeltaToParent" />
-    ///     </para>
     /// </summary>
     public TimeSpan Delta
     {
-        get => Parent == null ? _lastDelta : DeltaToParent;
+        get => _lastDelta;
         private set => SetAndNotify(ref _lastDelta, value);
     }
-
-    /// <summary>
-    ///     Gets the delta to this timeline's <see cref="Parent" />
-    /// </summary>
-    public TimeSpan DeltaToParent => Parent != null ? Position - Parent.Position : TimeSpan.Zero;
-
+    
     /// <summary>
     ///     Gets or sets the mode in which the render element starts its timeline when display conditions are met
     /// </summary>
@@ -139,14 +85,9 @@ public class Timeline : CorePropertyChanged, IStorageModel
     }
 
     /// <summary>
-    ///     Gets a list of extra copies of the timeline applied to this timeline
-    /// </summary>
-    public ReadOnlyCollection<Timeline> ExtraTimelines { get; }
-
-    /// <summary>
     ///     Gets a boolean indicating whether the timeline has finished its run
     /// </summary>
-    public bool IsFinished => Position > Length && !ExtraTimelines.Any();
+    public bool IsFinished => Position > Length;
 
     /// <summary>
     ///     Gets a boolean indicating whether the timeline progress has been overridden
@@ -327,19 +268,15 @@ public class Timeline : CorePropertyChanged, IStorageModel
             IsOverridden = false;
             _lastOverridePosition = Position;
 
-            if (stickToMainSegment && Position > MainSegmentEndPosition)
-            {
-                // If the main segment has no length, simply stick to the start of the segment
-                if (MainSegmentLength == TimeSpan.Zero)
-                    Position = MainSegmentStartPosition;
-                // Ensure wrapping back around retains the delta time
-                else
-                    Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(delta.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
-            }
+            if (!stickToMainSegment || Position <= MainSegmentEndPosition)
+                return;
 
-            _extraTimelines.RemoveAll(t => t.IsFinished);
-            foreach (Timeline extraTimeline in _extraTimelines)
-                extraTimeline.Update(delta, false);
+            // If the main segment has no length, simply stick to the start of the segment
+            if (MainSegmentLength == TimeSpan.Zero)
+                Position = MainSegmentStartPosition;
+            // Ensure wrapping back around retains the delta time
+            else
+                Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(delta.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
         }
     }
 
@@ -389,11 +326,11 @@ public class Timeline : CorePropertyChanged, IStorageModel
     }
 
     /// <summary>
-    ///     Overrides the <see cref="Position" /> to the specified time and clears any extra time lines
+    ///     Overrides the <see cref="Position" /> to the specified time
     /// </summary>
     /// <param name="position">The position to set the timeline to</param>
     /// <param name="stickToMainSegment">Whether to stick to the main segment, wrapping around if needed</param>
-    public void Override(TimeSpan position, bool stickToMainSegment)
+    internal void Override(TimeSpan position, bool stickToMainSegment)
     {
         lock (_lock)
         {
@@ -403,24 +340,22 @@ public class Timeline : CorePropertyChanged, IStorageModel
             IsOverridden = true;
             _lastOverridePosition = position;
 
-            if (stickToMainSegment && Position >= MainSegmentStartPosition)
-            {
-                bool atSegmentStart = Position == MainSegmentStartPosition;
-                if (MainSegmentLength > TimeSpan.Zero)
-                {
-                    Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
-                    // If the cursor is at the end of the timeline we don't want to wrap back around yet so only allow going to the start if the cursor
-                    // is actually at the start of the segment
-                    if (Position == MainSegmentStartPosition && !atSegmentStart)
-                        Position = MainSegmentEndPosition;
-                }
-                else
-                {
-                    Position = MainSegmentStartPosition;
-                }
-            }
+            if (!stickToMainSegment || Position < MainSegmentStartPosition)
+                return;
 
-            _extraTimelines.Clear();
+            bool atSegmentStart = Position == MainSegmentStartPosition;
+            if (MainSegmentLength > TimeSpan.Zero)
+            {
+                Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
+                // If the cursor is at the end of the timeline we don't want to wrap back around yet so only allow going to the start if the cursor
+                // is actually at the start of the segment
+                if (Position == MainSegmentStartPosition && !atSegmentStart)
+                    Position = MainSegmentEndPosition;
+            }
+            else
+            {
+                Position = MainSegmentStartPosition;
+            }
         }
     }
 

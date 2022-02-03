@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:visualizers="clr-namespace:Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers.LayerShapeVisualizerView"
+             x:DataType="visualizers:LayerShapeVisualizerViewModel"
+             ClipToBounds="False"
+             ZIndex="2">
+    <UserControl.Styles>
+        <Style Selector="Path.layer-visualizer">
+            <Setter Property="Stroke" Value="{StaticResource ButtonBorderBrushDisabled}" />
+        </Style>
+        <Style Selector="Path.layer-visualizer-selected">
+            <Setter Property="Stroke" Value="{StaticResource SystemAccentColorLight1}" />
+        </Style>
+        <Style Selector="Path.layer-visualizer-unbound">
+            <Setter Property="Stroke" Value="{StaticResource ButtonBorderBrushDisabled}" />
+			<Setter Property="Opacity" Value="0.50" />
+        </Style>
+        <Style Selector="Path.layer-visualizer-unbound-selected">
+            <Setter Property="Opacity" Value="0.75" />
+        </Style>
+    </UserControl.Styles>
+    <Canvas>
+		<Path Classes="layer-visualizer-unbound"
+              Classes.layer-visualizer-unbound-selected="{CompiledBinding Selected}"
+              Data="{CompiledBinding ShapeGeometry, Mode=OneWay}"
+              StrokeThickness="2"
+              Margin="0 0 2 2"
+              StrokeJoin="Round">
+        </Path>
+        <Border ClipToBounds="True"
+                Width="{CompiledBinding LayerBounds.Width}"
+                Height="{CompiledBinding LayerBounds.Height}">
+            <Path Classes="layer-visualizer"
+                  Classes.layer-visualizer-selected="{CompiledBinding Selected}"
+                  Data="{CompiledBinding ShapeGeometry, Mode=OneWay}"
+                  StrokeThickness="2"
+                  Margin="0 0 2 2"
+                  StrokeJoin="Round">
+            </Path>
+        </Border>
+    </Canvas>
+	
+
+</UserControl>

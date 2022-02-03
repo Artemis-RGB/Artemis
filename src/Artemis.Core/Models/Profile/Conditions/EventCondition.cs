@@ -158,8 +158,8 @@ namespace Artemis.Core
             // If the timeline was already running, look at the event overlap mode
             if (EventOverlapMode == TimeLineEventOverlapMode.Restart)
                 timeline.JumpToStart();
-            else if (EventOverlapMode == TimeLineEventOverlapMode.Copy)
-                timeline.AddExtraTimeline();
+            else if (EventOverlapMode == TimeLineEventOverlapMode.Copy && ProfileElement is Layer layer)
+                layer.CreateCopyAsChild();
             else if (EventOverlapMode == TimeLineEventOverlapMode.Toggle && !wasMet)
                 timeline.JumpToStart();
 

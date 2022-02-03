@@ -5,19 +5,24 @@
              xmlns:visualizers="clr-namespace:Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers.LayerVisualizerView"
-             x:DataType="visualizers:LayerVisualizerViewModel">
+             x:DataType="visualizers:LayerVisualizerViewModel"
+             ZIndex="1">
     <UserControl.Styles>
         <Style Selector="Path.layer-visualizer">
             <Setter Property="Stroke" Value="{StaticResource ButtonBorderBrushDisabled}" />
         </Style>
         <Style Selector="Path.layer-visualizer-selected">
-            <Setter Property="Stroke" Value="{StaticResource SystemAccentColorLight1}" />
+            <Setter Property="Stroke" Value="{StaticResource SystemAccentColorDark2}" />
         </Style>
     </UserControl.Styles>
     <Path Classes="layer-visualizer"
           Classes.layer-visualizer-selected="{CompiledBinding Selected}"
-          Data="{CompiledBinding ShapeGeometry, Mode=OneWay}"
           StrokeThickness="2"
-          Margin="0 0 2 2">
+          Margin="0 0 2 2" 
+          StrokeDashArray="6,2"
+          StrokeJoin="Round">
+        <Path.Data>
+            <RectangleGeometry Rect="{CompiledBinding LayerBounds}"></RectangleGeometry>
+        </Path.Data>
     </Path>
 </UserControl>

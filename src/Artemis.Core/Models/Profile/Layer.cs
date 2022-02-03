@@ -345,17 +345,30 @@ namespace Artemis.Core
                 Enable();
             else if (Timeline.IsFinished)
                 Disable();
-        }
 
-        /// <inheritdoc />
-        public override void Reset()
-        {
-            UpdateDisplayCondition();
+            if (Timeline.Delta == TimeSpan.Zero)
+                return;
 
-            if (DisplayConditionMet)
-                Timeline.JumpToStart();
-            else
-                Timeline.JumpToEnd();
+            General.Update(Timeline);
+            Transform.Update(Timeline);
+            LayerBrush?.InternalUpdate(Timeline);
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
+                baseLayerEffect.InternalUpdate(Timeline);
+
+            // Remove children that finished their timeline and update the rest
+            for (int index = 0; index < Children.Count; index++)
+            {
+                ProfileElement profileElement = Children[index];
+                if (((Layer) profileElement).Timeline.IsFinished)
+                {
+                    RemoveChild(profileElement);
+                    profileElement.Dispose();
+                    index--;
+                }
+                else
+                    profileElement.Update(deltaTime);
+            }
         }
 
         /// <inheritdoc />
@@ -365,88 +378,18 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Layer");
 
             // Ensure the layer is ready
-            if (!Enabled || Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized)
+            if (!Enabled || Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized || !Leds.Any())
                 return;
+
+            // Render children first so they go below
+            for (int i = Children.Count - 1; i >= 0; i--)
+                Children[i].Render(canvas, basePosition);
+
             // Ensure the brush is ready
             if (LayerBrush == null || LayerBrush?.BaseProperties?.PropertiesInitialized == false)
                 return;
 
-            RenderTimeline(Timeline, canvas, basePosition);
-            foreach (Timeline extraTimeline in Timeline.ExtraTimelines.ToList())
-                RenderTimeline(extraTimeline, canvas, basePosition);
-            Timeline.ClearDelta();
-        }
-
-        /// <inheritdoc />
-        public override void Enable()
-        {
-            if (Enabled)
-                return;
-
-            bool tryOrBreak = TryOrBreak(() => LayerBrush?.InternalEnable(), "Failed to enable layer brush");
-            if (!tryOrBreak)
-                return;
-
-            tryOrBreak = TryOrBreak(() =>
-            {
-                foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
-                    baseLayerEffect.InternalEnable();
-            }, "Failed to enable one or more effects");
-            if (!tryOrBreak)
-                return;
-
-            Enabled = true;
-        }
-
-        /// <inheritdoc />
-        public override void Activate()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public override void Deactivate()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public override void Disable()
-        {
-            if (!Enabled)
-                return;
-
-            LayerBrush?.InternalDisable();
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
-                baseLayerEffect.InternalDisable();
-
-            Enabled = false;
-        }
-
-        private void ApplyTimeline(Timeline timeline)
-        {
-            if (timeline.Delta == TimeSpan.Zero)
-                return;
-
-            General.Update(timeline);
-            Transform.Update(timeline);
-            LayerBrush?.InternalUpdate(timeline);
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                baseLayerEffect.InternalUpdate(timeline);
-        }
-
-        private void RenderTimeline(Timeline timeline, SKCanvas canvas, SKPointI basePosition)
-        {
-            if (Path == null || LayerBrush == null)
-                throw new ArtemisCoreException("The layer is not yet ready for rendering");
-
-            if (!Leds.Any() || timeline.IsFinished)
-                return;
-
-            ApplyTimeline(timeline);
-
-            if (LayerBrush?.BrushType != LayerBrushType.Regular)
+            if (Timeline.IsFinished || LayerBrush?.BrushType != LayerBrushType.Regular)
                 return;
 
             SKPaint layerPaint = new() {FilterQuality = SKFilterQuality.Low};
@@ -501,34 +444,96 @@ namespace Artemis.Core
                 canvas.Restore();
                 layerPaint.DisposeSelfAndProperties();
             }
+
+            Timeline.ClearDelta();
         }
 
-        private void DelegateRendering(SKCanvas canvas, SKPath renderPath, SKRect bounds, SKPaint layerPaint)
+        /// <inheritdoc />
+        public override void Enable()
         {
-            if (LayerBrush == null)
-                throw new ArtemisCoreException("The layer is not yet ready for rendering");
+            if (Enabled)
+                return;
+
+            bool tryOrBreak = TryOrBreak(() => LayerBrush?.InternalEnable(), "Failed to enable layer brush");
+            if (!tryOrBreak)
+                return;
+
+            tryOrBreak = TryOrBreak(() =>
+            {
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                    baseLayerEffect.InternalEnable();
+            }, "Failed to enable one or more effects");
+            if (!tryOrBreak)
+                return;
+
+            Enabled = true;
+        }
+
+        /// <inheritdoc />
+        public override void OverrideTimelineAndApply(TimeSpan position, bool stickToMainSegment)
+        {
+            Timeline.Override(position, stickToMainSegment);
+
+            General.Update(Timeline);
+            Transform.Update(Timeline);
+            LayerBrush?.InternalUpdate(Timeline);
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                baseLayerEffect.InternalPreProcess(canvas, bounds, layerPaint);
+                baseLayerEffect.InternalUpdate(Timeline);
+        }
 
-            try
+        /// <inheritdoc />
+        public override void Activate()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public override void Deactivate()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public override void Disable()
+        {
+            if (!Enabled)
+                return;
+
+            LayerBrush?.InternalDisable();
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                baseLayerEffect.InternalDisable();
+
+            Enabled = false;
+        }
+
+        /// <inheritdoc />
+        public override void Reset()
+        {
+            UpdateDisplayCondition();
+
+            if (DisplayConditionMet)
+                Timeline.JumpToStart();
+            else
+                Timeline.JumpToEnd();
+
+            while (Children.Any())
             {
-                canvas.SaveLayer(layerPaint);
-                canvas.ClipPath(renderPath);
-
-                // Restore the blend mode before doing the actual render
-                layerPaint.BlendMode = SKBlendMode.SrcOver;
-
-                LayerBrush.InternalRender(canvas, bounds, layerPaint);
-
-                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                    baseLayerEffect.InternalPostProcess(canvas, bounds, layerPaint);
+                Children[0].Dispose();
+                RemoveChild(Children[0]);
             }
+        }
 
-            finally
-            {
-                canvas.Restore();
-            }
+        /// <summary>
+        ///     Creates a copy of this layer as a child and plays it once
+        /// </summary>
+        public void CreateCopyAsChild()
+        {
+            throw new NotImplementedException();
+
+            // Create a copy of the layer and it's properties
+
+            // Add to children
         }
 
         internal void CalculateRenderProperties()
@@ -580,6 +585,34 @@ namespace Artemis.Core
             }
 
             return position;
+        }
+
+        private void DelegateRendering(SKCanvas canvas, SKPath renderPath, SKRect bounds, SKPaint layerPaint)
+        {
+            if (LayerBrush == null)
+                throw new ArtemisCoreException("The layer is not yet ready for rendering");
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
+                baseLayerEffect.InternalPreProcess(canvas, bounds, layerPaint);
+
+            try
+            {
+                canvas.SaveLayer(layerPaint);
+                canvas.ClipPath(renderPath);
+
+                // Restore the blend mode before doing the actual render
+                layerPaint.BlendMode = SKBlendMode.SrcOver;
+
+                LayerBrush.InternalRender(canvas, bounds, layerPaint);
+
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
+                    baseLayerEffect.InternalPostProcess(canvas, bounds, layerPaint);
+            }
+
+            finally
+            {
+                canvas.Restore();
+            }
         }
 
         /// <summary>

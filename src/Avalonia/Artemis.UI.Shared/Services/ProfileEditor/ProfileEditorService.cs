@@ -79,10 +79,8 @@ internal class ProfileEditorService : IProfileEditorService
         else
         {
             renderElement.Enable();
-            renderElement.Timeline.Override(
-                time,
-                (renderElement != _profileElementSubject.Value || renderElement.Timeline.Length < time) && renderElement.Timeline.PlayMode == TimelinePlayMode.Repeat
-            );
+            bool stickToMainSegment = (renderElement != _profileElementSubject.Value || renderElement.Timeline.Length < time) && renderElement.Timeline.PlayMode == TimelinePlayMode.Repeat;
+            renderElement.OverrideTimelineAndApply(time, stickToMainSegment);
 
             foreach (ProfileElement child in renderElement.Children)
                 TickProfileElement(child, time);

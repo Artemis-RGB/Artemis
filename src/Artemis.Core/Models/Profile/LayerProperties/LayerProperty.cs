@@ -49,6 +49,12 @@ namespace Artemis.Core
             Keyframes = new ReadOnlyCollection<LayerPropertyKeyframe<T>>(_keyframes);
         }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{Path} - {CurrentValue} ({PropertyType})";
+        }
+
         /// <summary>
         ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
         /// </summary>

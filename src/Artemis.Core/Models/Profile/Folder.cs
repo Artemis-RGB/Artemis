@@ -102,6 +102,9 @@ namespace Artemis.Core
             else if (Timeline.IsFinished)
                 Disable();
 
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
+                baseLayerEffect.InternalUpdate(Timeline);
+
             foreach (ProfileElement child in Children)
                 child.Update(deltaTime);
         }
@@ -176,41 +179,35 @@ namespace Artemis.Core
             // No point rendering if all children are disabled
             if (!Children.Any(c => c is RenderProfileElement {Enabled: true}))
                 return;
-
-            lock (Timeline)
+            
+            SKPaint layerPaint = new() {FilterQuality = SKFilterQuality.Low};
+            try
             {
-                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended)) 
-                    baseLayerEffect.InternalUpdate(Timeline);
+                SKRectI rendererBounds = SKRectI.Create(0, 0, Bounds.Width, Bounds.Height);
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
+                    baseLayerEffect.InternalPreProcess(canvas, rendererBounds, layerPaint);
 
-                SKPaint layerPaint = new() {FilterQuality = SKFilterQuality.Low};
-                try
-                {
-                    SKRectI rendererBounds = SKRectI.Create(0, 0, Bounds.Width, Bounds.Height);
-                    foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                        baseLayerEffect.InternalPreProcess(canvas, rendererBounds, layerPaint);
+                // No point rendering if the alpha was set to zero by one of the effects
+                if (layerPaint.Color.Alpha == 0)
+                    return;
 
-                    // No point rendering if the alpha was set to zero by one of the effects
-                    if (layerPaint.Color.Alpha == 0)
-                        return;
+                canvas.SaveLayer(layerPaint);
+                canvas.Translate(Bounds.Left - basePosition.X, Bounds.Top - basePosition.Y);
 
-                    canvas.SaveLayer(layerPaint);
-                    canvas.Translate(Bounds.Left - basePosition.X, Bounds.Top - basePosition.Y);
+                // Iterate the children in reverse because the first layer must be rendered last to end up on top
+                for (int index = Children.Count - 1; index > -1; index--)
+                    Children[index].Render(canvas, new SKPointI(Bounds.Left, Bounds.Top));
 
-                    // Iterate the children in reverse because the first layer must be rendered last to end up on top
-                    for (int index = Children.Count - 1; index > -1; index--)
-                        Children[index].Render(canvas, new SKPointI(Bounds.Left, Bounds.Top));
-
-                    foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                        baseLayerEffect.InternalPostProcess(canvas, rendererBounds, layerPaint);
-                }
-                finally
-                {
-                    canvas.Restore();
-                    layerPaint.DisposeSelfAndProperties();
-                }
-
-                Timeline.ClearDelta();
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
+                    baseLayerEffect.InternalPostProcess(canvas, rendererBounds, layerPaint);
             }
+            finally
+            {
+                canvas.Restore();
+                layerPaint.DisposeSelfAndProperties();
+            }
+
+            Timeline.ClearDelta();
         }
 
         #endregion
@@ -231,6 +228,14 @@ namespace Artemis.Core
             }
 
             Enabled = true;
+        }
+
+        /// <inheritdoc />
+        public override void OverrideTimelineAndApply(TimeSpan position, bool stickToMainSegment)
+        {
+            Timeline.Override(position, stickToMainSegment);
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
+                baseLayerEffect.InternalUpdate(Timeline);
         }
 
         /// <inheritdoc />
@@ -314,7 +319,7 @@ namespace Artemis.Core
                 ChildrenList.Add(new Layer(Profile, this, childLayer));
 
             // Ensure order integrity, should be unnecessary but no one is perfect specially me
-            ChildrenList.Sort((a,b) => a.Order.CompareTo(b.Order));
+            ChildrenList.Sort((a, b) => a.Order.CompareTo(b.Order));
             for (int index = 0; index < ChildrenList.Count; index++)
                 ChildrenList[index].Order = index + 1;
 
