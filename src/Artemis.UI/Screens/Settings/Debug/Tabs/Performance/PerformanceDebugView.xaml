@@ -12,6 +12,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" TextWrapping="Wrap">
@@ -19,7 +20,18 @@
             If you are having performance issues, below you can find out which plugin might be the culprit.
         </TextBlock>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+        <TextBlock Grid.Row="1" HorizontalAlignment="Right" Margin="0,5,5,0">
+            <Run Text="FPS: " />
+            <Run FontWeight="Bold" Text="{Binding CurrentFps}" />
+            <Run Text="at" />
+            <Run Text="{Binding RenderWidth}" /><Run Text="x" /><Run Text="{Binding RenderHeight}" />
+            <Run Text="- Renderer:"></Run>
+            <Run Text="{Binding Renderer}"></Run>
+            <Run Text="- RGB.NET delta:"></Run>
+            <Run Text="{Binding Delta}"></Run>
+        </TextBlock>
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
             <ItemsControl ItemsSource="{Binding Items}" Margin="0 0 10 0">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>

@@ -25,6 +25,8 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private string _frameTargetPath;
         private string _renderer;
         private int _frames;
+        private double _delta;
+        private double _lastDelta;
 
         public RenderDebugViewModel(ICoreService coreService)
         {
@@ -64,6 +66,12 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
             set => SetAndNotify(ref _renderer, value);
         }
 
+        public double Delta
+        {
+            get => _delta;
+            set => SetAndNotify(ref _delta, value);
+        }
+
         public void SaveFrame()
         {
             VistaSaveFileDialog dialog = new VistaSaveFileDialog {Filter = "Portable network graphic (*.png)|*.png", Title = "Save render frame"};
@@ -80,6 +88,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         protected override void OnActivate()
         {
+            _coreService.FrameRendering += CoreServiceOnFrameRendering;
             _coreService.FrameRendered += CoreServiceOnFrameRendered;
             _fpsTimer.Elapsed += FpsTimerOnElapsed;
             base.OnActivate();
@@ -87,6 +96,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         protected override void OnDeactivate()
         {
+            _coreService.FrameRendering -= CoreServiceOnFrameRendering;
             _coreService.FrameRendered -= CoreServiceOnFrameRendered;
             _fpsTimer.Elapsed -= FpsTimerOnElapsed;
             base.OnDeactivate();
@@ -98,6 +108,10 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
             base.OnClose();
         }
 
+        private void CoreServiceOnFrameRendering(object? sender, FrameRenderingEventArgs e)
+        {
+            _lastDelta = e.DeltaTime;
+        }
 
         private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)
         {
@@ -145,9 +159,9 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         private void FpsTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
+            Delta = _lastDelta;
             CurrentFps = _frames;
-            // Renderer = Constants.ManagedGraphicsContext != null ? Constants.ManagedGraphicsContext.GetType().Name : "Software";
-            Renderer = $"HighAccuracyTimers: {Stopwatch.IsHighResolution}";
+            Renderer = Constants.ManagedGraphicsContext != null ? Constants.ManagedGraphicsContext.GetType().Name : "Software";
             _frames = 0;
         }
     }
