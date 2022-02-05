@@ -57,12 +57,26 @@ public class SelectionAddToolViewModel : ToolViewModel
         base.Dispose(disposing);
     }
 
-    public void AddLedsInRectangle(SKRect rect)
+    public void AddLedsInRectangle(SKRect rect, bool expand, bool inverse)
     {
         if (_layer == null)
             return;
 
-        List<ArtemisLed> leds = _rgbService.EnabledDevices.SelectMany(d => d.Leds).Where(l => l.AbsoluteRectangle.IntersectsWith(rect)).ToList();
-        _profileEditorService.ExecuteCommand(new ChangeLayerLeds(_layer, leds));
+        if (inverse)
+        {
+            List<ArtemisLed> toRemove = _layer.Leds.Where(l => l.AbsoluteRectangle.IntersectsWith(rect)).ToList();
+            List<ArtemisLed> toAdd = _rgbService.EnabledDevices.SelectMany(d => d.Leds).Where(l => l.AbsoluteRectangle.IntersectsWith(rect)).Except(toRemove).ToList();
+            List<ArtemisLed> leds = _layer.Leds.Except(toRemove).ToList();
+            leds.AddRange(toAdd);
+
+            _profileEditorService.ExecuteCommand(new ChangeLayerLeds(_layer, leds));
+        }
+        else
+        {
+            List<ArtemisLed> leds = _rgbService.EnabledDevices.SelectMany(d => d.Leds).Where(l => l.AbsoluteRectangle.IntersectsWith(rect)).ToList();
+            if (expand)
+                leds.AddRange(_layer.Leds);
+            _profileEditorService.ExecuteCommand(new ChangeLayerLeds(_layer, leds.Distinct().ToList()));
+        }
     }
 }

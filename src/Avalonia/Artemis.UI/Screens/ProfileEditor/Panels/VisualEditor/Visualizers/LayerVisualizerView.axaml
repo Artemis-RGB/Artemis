@@ -15,10 +15,10 @@
             <Setter Property="Stroke" Value="{StaticResource SystemAccentColorDark2}" />
         </Style>
     </UserControl.Styles>
-    <Path Classes="layer-visualizer"
+    <Path Name="LayerVisualizer"
+          Classes="layer-visualizer"
           Classes.layer-visualizer-selected="{CompiledBinding Selected}"
-          StrokeThickness="2"
-          Margin="0 0 2 2" 
+          StrokeThickness="4"
           StrokeDashArray="6,2"
           StrokeJoin="Round">
         <Path.Data>

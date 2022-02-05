@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Artemis.Core;
 
 namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
@@ -32,16 +33,37 @@ public class ToggleLayerPropertyKeyframes<T> : IProfileEditorCommand
     /// <inheritdoc />
     public void Execute()
     {
-        _keyframe ??= new LayerPropertyKeyframe<T>(_layerProperty.CurrentValue, _time, Easings.Functions.Linear, _layerProperty);
-        _layerProperty.KeyframesEnabled = _enable;
-        _layerProperty.AddKeyframe(_keyframe);
+        if (_enable)
+        {
+            _layerProperty.KeyframesEnabled = true;
+
+            // If there weren't any keyframes yet, add one with the current value at the current time
+            if (!_layerProperty.Keyframes.Any())
+            {
+                // If executed before, reuse the previous keyframe
+                _keyframe ??= new LayerPropertyKeyframe<T>(_layerProperty.CurrentValue, _time, Easings.Functions.Linear, _layerProperty);
+                _layerProperty.AddKeyframe(_keyframe);
+            }
+        }
+        else
+        {
+            _layerProperty.KeyframesEnabled = false;
+        }
     }
 
     /// <inheritdoc />
     public void Undo()
     {
-        _layerProperty.RemoveKeyframe(_keyframe!);
-        _layerProperty.KeyframesEnabled = !_enable;
+        if (_enable)
+        {
+            if (_keyframe != null)
+                _layerProperty.RemoveKeyframe(_keyframe);
+            _layerProperty.KeyframesEnabled = false;
+        }
+        else
+        {
+            _layerProperty.KeyframesEnabled = true;
+        }
     }
 
     #endregion

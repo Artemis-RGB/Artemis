@@ -218,6 +218,7 @@ namespace Artemis.Core.Services
             );
             _logger.Information("Startup arguments: {args}", StartupArguments);
             _logger.Information("Elevated permissions: {perms}", IsElevated);
+            _logger.Information("Stopwatch high resolution: {perms}", Stopwatch.IsHighResolution);
 
             ApplyLoggingLevel();
 

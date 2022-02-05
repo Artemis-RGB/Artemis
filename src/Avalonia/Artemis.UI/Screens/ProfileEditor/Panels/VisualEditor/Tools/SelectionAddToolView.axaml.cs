@@ -1,4 +1,5 @@
 using Artemis.UI.Shared.Events;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using Avalonia.Skia;
@@ -19,6 +20,6 @@ public class SelectionAddToolView : ReactiveUserControl<SelectionAddToolViewMode
 
     private void SelectionRectangle_OnSelectionFinished(object? sender, SelectionRectangleEventArgs e)
     {
-        ViewModel?.AddLedsInRectangle(e.Rectangle.ToSKRect());
+        ViewModel?.AddLedsInRectangle(e.Rectangle.ToSKRect(), e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
     }
 }

@@ -8,16 +8,23 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using ReactiveUI;
+using SkiaSharp;
 
 namespace Artemis.UI.Screens.Debugger.Performance
 {
     public class PerformanceDebugViewModel : ActivatableViewModelBase, IRoutableViewModel
     {
+        private readonly ICoreService _coreService;
         private readonly IPluginManagementService _pluginManagementService;
+        private double _currentFps;
+        private string? _renderer;
+        private int _renderHeight;
+        private int _renderWidth;
 
-        public PerformanceDebugViewModel(IScreen hostScreen, IPluginManagementService pluginManagementService)
+        public PerformanceDebugViewModel(IScreen hostScreen, ICoreService coreService, IPluginManagementService pluginManagementService)
         {
             HostScreen = hostScreen;
+            _coreService = coreService;
             _pluginManagementService = pluginManagementService;
 
             Timer updateTimer = new(500);
@@ -38,6 +45,7 @@ namespace Artemis.UI.Screens.Debugger.Performance
                     .Subscribe(_ => Repopulate())
                     .DisposeWith(disposables);
 
+                HandleActivation();
                 PopulateItems();
                 updateTimer.Start();
 
@@ -45,21 +53,57 @@ namespace Artemis.UI.Screens.Debugger.Performance
                 {
                     updateTimer.Stop();
                     Items.Clear();
+                    HandleDeactivation();
                 }).DisposeWith(disposables);
             });
         }
 
-        public ObservableCollection<PerformanceDebugPluginViewModel> Items { get; } = new();
-        
+
         public string UrlPathSegment => "performance";
         public IScreen HostScreen { get; }
+        public ObservableCollection<PerformanceDebugPluginViewModel> Items { get; } = new();
+
+        public double CurrentFps
+        {
+            get => _currentFps;
+            set => this.RaiseAndSetIfChanged(ref _currentFps, value);
+        }
+
+        public int RenderWidth
+        {
+            get => _renderWidth;
+            set => this.RaiseAndSetIfChanged(ref _renderWidth, value);
+        }
+
+        public int RenderHeight
+        {
+            get => _renderHeight;
+            set => this.RaiseAndSetIfChanged(ref _renderHeight, value);
+        }
+
+        public string? Renderer
+        {
+            get => _renderer;
+            set => this.RaiseAndSetIfChanged(ref _renderer, value);
+        }
+
+        private void HandleActivation()
+        {
+            Renderer = Constants.ManagedGraphicsContext != null ? Constants.ManagedGraphicsContext.GetType().Name : "Software";
+            _coreService.FrameRendered += CoreServiceOnFrameRendered;
+        }
+
+        private void HandleDeactivation()
+        {
+            _coreService.FrameRendered -= CoreServiceOnFrameRendered;
+        }
 
         private void PopulateItems()
         {
             foreach (PerformanceDebugPluginViewModel performanceDebugPluginViewModel in _pluginManagementService.GetAllPlugins()
-                .Where(p => p.IsEnabled && p.Profilers.Any(pr => pr.Measurements.Any()))
-                .OrderBy(p => p.Info.Name)
-                .Select(p => new PerformanceDebugPluginViewModel(p)))
+                         .Where(p => p.IsEnabled && p.Profilers.Any(pr => pr.Measurements.Any()))
+                         .OrderBy(p => p.Info.Name)
+                         .Select(p => new PerformanceDebugPluginViewModel(p)))
                 Items.Add(performanceDebugPluginViewModel);
         }
 
@@ -69,10 +113,19 @@ namespace Artemis.UI.Screens.Debugger.Performance
             PopulateItems();
         }
 
-        private void UpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
+        private void UpdateTimerOnElapsed(object? sender, ElapsedEventArgs e)
         {
             foreach (PerformanceDebugPluginViewModel viewModel in Items)
                 viewModel.Update();
+        }
+
+        private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
+        {
+            CurrentFps = _coreService.FrameRate;
+            SKImageInfo bitmapInfo = e.Texture.ImageInfo;
+
+            RenderHeight = bitmapInfo.Height;
+            RenderWidth = bitmapInfo.Width;
         }
     }
 }

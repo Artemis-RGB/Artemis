@@ -102,7 +102,6 @@ namespace Artemis.UI.Screens.Debugger.Render
             }
         }
 
-
         public string UrlPathSegment => "render";
         public IScreen HostScreen { get; }
     }

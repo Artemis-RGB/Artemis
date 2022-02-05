@@ -94,6 +94,12 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException("Folder");
 
+            if (Timeline.IsOverridden)
+            {
+                Timeline.ClearOverride();
+                return;
+            }
+
             UpdateDisplayCondition();
             UpdateTimeline(deltaTime);
 

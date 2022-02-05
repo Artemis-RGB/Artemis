@@ -44,6 +44,13 @@ public class SelectionRectangle : Control
         AvaloniaProperty.Register<SelectionRectangle, IControl?>(nameof(InputElement), notifying: OnInputElementChanged);
 
     /// <summary>
+    ///     Defines the <see cref="ZoomRatio" /> property.
+    /// </summary>
+    public static readonly StyledProperty<double> ZoomRatioProperty =
+        AvaloniaProperty.Register<SelectionRectangle, double>(nameof(ZoomRatio), 1);
+
+
+    /// <summary>
     ///     Defines the read-only <see cref="IsSelecting" /> property.
     /// </summary>
     public static readonly DirectProperty<SelectionRectangle, bool> IsSelectingProperty = AvaloniaProperty.RegisterDirect<SelectionRectangle, bool>(nameof(IsSelecting), o => o.IsSelecting);
@@ -109,6 +116,15 @@ public class SelectionRectangle : Control
     }
 
     /// <summary>
+    ///     Gets or sets the zoom ratio to counteract when drawing
+    /// </summary>
+    public double ZoomRatio
+    {
+        get => GetValue(ZoomRatioProperty);
+        set => SetValue(ZoomRatioProperty, value);
+    }
+
+    /// <summary>
     ///     Gets a boolean indicating whether the selection rectangle is currently performing a selection.
     /// </summary>
     public bool IsSelecting
@@ -149,6 +165,7 @@ public class SelectionRectangle : Control
     {
         ((SelectionRectangle) sender).SubscribeToInputElement();
     }
+    
 
     private void ParentOnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
@@ -227,7 +244,7 @@ public class SelectionRectangle : Control
     public override void Render(DrawingContext drawingContext)
     {
         if (_displayRect != null)
-            drawingContext.DrawRectangle(Background, new Pen(BorderBrush, BorderThickness), _displayRect.Value, BorderRadius, BorderRadius);
+            drawingContext.DrawRectangle(Background, new Pen(BorderBrush, BorderThickness / ZoomRatio), _displayRect.Value, BorderRadius / ZoomRatio, BorderRadius / ZoomRatio);
     }
 
     /// <inheritdoc />

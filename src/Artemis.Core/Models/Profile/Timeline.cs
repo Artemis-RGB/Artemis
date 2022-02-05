@@ -20,7 +20,7 @@ public class Timeline : CorePropertyChanged, IStorageModel
     {
         Entity = new TimelineEntity();
         MainSegmentLength = TimeSpan.FromSeconds(5);
-        
+
         Save();
     }
 
@@ -36,7 +36,7 @@ public class Timeline : CorePropertyChanged, IStorageModel
     {
         return $"Progress: {Position}/{Length} - delta: {Delta}";
     }
-    
+
     #region Properties
 
     private TimeSpan _position;
@@ -46,7 +46,8 @@ public class Timeline : CorePropertyChanged, IStorageModel
     private TimeSpan _startSegmentLength;
     private TimeSpan _mainSegmentLength;
     private TimeSpan _endSegmentLength;
-    
+    private TimeSpan _lastOverride;
+
     /// <summary>
     ///     Gets the current position of the timeline
     /// </summary>
@@ -65,7 +66,7 @@ public class Timeline : CorePropertyChanged, IStorageModel
         get => _lastDelta;
         private set => SetAndNotify(ref _lastDelta, value);
     }
-    
+
     /// <summary>
     ///     Gets or sets the mode in which the render element starts its timeline when display conditions are met
     /// </summary>
@@ -251,8 +252,6 @@ public class Timeline : CorePropertyChanged, IStorageModel
 
     #region Updating
 
-    private TimeSpan _lastOverridePosition;
-
     /// <summary>
     ///     Updates the timeline, applying the provided <paramref name="delta" /> to the <see cref="Position" />
     /// </summary>
@@ -262,11 +261,11 @@ public class Timeline : CorePropertyChanged, IStorageModel
     {
         lock (_lock)
         {
+            if (IsOverridden)
+                throw new ArtemisCoreException("Can't update an overridden timeline, call ClearOverride first.");
+
             Delta += delta;
             Position += delta;
-
-            IsOverridden = false;
-            _lastOverridePosition = Position;
 
             if (!stickToMainSegment || Position <= MainSegmentEndPosition)
                 return;
@@ -334,16 +333,19 @@ public class Timeline : CorePropertyChanged, IStorageModel
     {
         lock (_lock)
         {
-            Delta += position - _lastOverridePosition;
-            Position = position;
+            if (_lastOverride == TimeSpan.Zero)
+                Delta = Position - position;
+            else
+                Delta = position - _lastOverride;
 
+            Position = position;
             IsOverridden = true;
-            _lastOverridePosition = position;
+            _lastOverride = position;
 
             if (!stickToMainSegment || Position < MainSegmentStartPosition)
                 return;
 
-            bool atSegmentStart = Position == MainSegmentStartPosition;
+            bool atSegmentStart = Position >= MainSegmentStartPosition;
             if (MainSegmentLength > TimeSpan.Zero)
             {
                 Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
@@ -357,6 +359,12 @@ public class Timeline : CorePropertyChanged, IStorageModel
                 Position = MainSegmentStartPosition;
             }
         }
+    }
+
+    internal void ClearOverride()
+    {
+        IsOverridden = false;
+        _lastOverride = TimeSpan.Zero;
     }
 
     /// <summary>

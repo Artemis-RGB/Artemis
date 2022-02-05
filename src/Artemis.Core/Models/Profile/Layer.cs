@@ -338,6 +338,12 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
+            if (Timeline.IsOverridden)
+            {
+                Timeline.ClearOverride();
+                return;
+            }
+
             UpdateDisplayCondition();
             UpdateTimeline(deltaTime);
 

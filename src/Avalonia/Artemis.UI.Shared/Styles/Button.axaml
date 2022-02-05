@@ -33,6 +33,12 @@
                 <controls:HyperlinkButton Classes="icon-button icon-button-small">
                     <avalonia:MaterialIcon Kind="Web" />
                 </controls:HyperlinkButton>
+
+
+				<TextBlock Margin="0 5 0 0">Button.window-button</TextBlock>
+				<Button Classes="title-bar-button">
+					<avalonia:MaterialIcon Kind="WindowMinimize" />
+				</Button>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -68,5 +74,16 @@
 
     <Style Selector="controls|HyperlinkButton.icon-button">
         <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}" />
+    </Style>
+
+    <Style Selector="Button.title-bar-button">
+        <Setter Property="Width" Value="46"></Setter>
+        <Setter Property="Height" Value="32"></Setter>
+        <Setter Property="BorderThickness" Value="0"></Setter>
+        <Setter Property="CornerRadius" Value="0"></Setter>
+        <Setter Property="Margin" Value="0"></Setter>
+    </Style>
+    <Style Selector="Button.title-bar-button:pointerover">
+        <Setter Property="Background" Value="Red"></Setter>
     </Style>
 </Styles>

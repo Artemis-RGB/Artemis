@@ -9,7 +9,9 @@
         <controls:SelectionRectangle InputElement="{Binding $parent[ZoomBorder]}"
                                      BorderBrush="{DynamicResource SystemAccentColor}"
                                      BorderRadius="8"
-                                     SelectionFinished="SelectionRectangle_OnSelectionFinished">
+                                     BorderThickness="2"
+                                     SelectionFinished="SelectionRectangle_OnSelectionFinished"
+                                     ZoomRatio="{Binding $parent[ZoomBorder].ZoomX}">
             <controls:SelectionRectangle.Background>
                 <SolidColorBrush Color="{DynamicResource SystemAccentColorLight1}" Opacity="0.2"></SolidColorBrush>
             </controls:SelectionRectangle.Background>
