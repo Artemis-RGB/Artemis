@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -37,6 +38,15 @@ namespace Artemis.UI.Screens.Plugins
 
             // Could be slow so take it off of the UI thread
             Task.Run(() => CanUninstall = Prerequisites.Any(p => p.PluginPrerequisite.IsMet()));
+
+            this.WhenActivated(d =>
+            {
+                Disposable.Create(() =>
+                {
+                    _tokenSource?.Cancel();
+                    _tokenSource?.Dispose();
+                }).DisposeWith(d);
+            });
         }
 
         public string CancelLabel { get; }
@@ -132,18 +142,6 @@ namespace Artemis.UI.Screens.Plugins
         public static async Task<object> Show(IWindowService windowService, List<IPrerequisitesSubject> subjects, string cancelLabel = "Cancel")
         {
             return await windowService.ShowDialogAsync<PluginPrerequisitesUninstallDialogViewModel, bool>(("subjects", subjects), ("cancelLabel", cancelLabel));
-        }
-
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _tokenSource?.Cancel();
-                _tokenSource?.Dispose();
-            }
-
-            base.Dispose(disposing);
         }
     }
 }

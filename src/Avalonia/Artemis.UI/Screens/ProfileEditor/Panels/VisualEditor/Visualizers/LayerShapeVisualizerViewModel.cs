@@ -7,13 +7,18 @@ using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia;
 using Avalonia.Controls.Mixins;
 using Avalonia.Media;
+using Avalonia.Skia;
 using ReactiveUI;
+using SkiaSharp;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
 
 public class LayerShapeVisualizerViewModel : ActivatableViewModelBase, IVisualizerViewModel
 {
     private ObservableAsPropertyHelper<bool>? _selected;
+    private Rect _layerBounds;
+    private double _x;
+    private double _y;
     private Geometry? _shapeGeometry;
 
     public LayerShapeVisualizerViewModel(Layer layer, IProfileEditorService profileEditorService)
@@ -40,13 +45,29 @@ public class LayerShapeVisualizerViewModel : ActivatableViewModelBase, IVisualiz
 
             profileEditorService.Time.Subscribe(_ => UpdateTransform()).DisposeWith(d);
             Update();
-            UpdateTransform();
         });
     }
 
     public Layer Layer { get; }
     public bool Selected => _selected?.Value ?? false;
-    public Rect LayerBounds => Layer.Bounds.ToRect();
+
+    public Rect LayerBounds
+    {
+        get => _layerBounds;
+        private set => this.RaiseAndSetIfChanged(ref _layerBounds, value);
+    }
+
+    public double X
+    {
+        get => _x;
+        set => this.RaiseAndSetIfChanged(ref _x, value);
+    }
+
+    public double Y
+    {
+        get => _y;
+        set => this.RaiseAndSetIfChanged(ref _y, value);
+    }
 
     public Geometry? ShapeGeometry
     {
@@ -54,25 +75,43 @@ public class LayerShapeVisualizerViewModel : ActivatableViewModelBase, IVisualiz
         set => this.RaiseAndSetIfChanged(ref _shapeGeometry, value);
     }
 
+    public int Order => 2;
+
     private void Update()
     {
-        if (Layer.General.ShapeType.CurrentValue == LayerShapeType.Rectangle)
-            ShapeGeometry = new RectangleGeometry(new Rect(0, 0, Layer.Bounds.Width, Layer.Bounds.Height));
-        else
-            ShapeGeometry = new EllipseGeometry(new Rect(0, 0, Layer.Bounds.Width, Layer.Bounds.Height));
+        UpdateLayerBounds();
 
-        this.RaisePropertyChanged(nameof(X));
-        this.RaisePropertyChanged(nameof(Y));
-        this.RaisePropertyChanged(nameof(LayerBounds));
+        if (Layer.General.ShapeType.CurrentValue == LayerShapeType.Rectangle)
+            ShapeGeometry = new RectangleGeometry(LayerBounds);
+        else
+            ShapeGeometry = new EllipseGeometry(LayerBounds);
+        
+        UpdateTransform();
+    }
+
+    private void UpdateLayerBounds()
+    {
+        // Create accurate bounds based on the RgbLeds and not the rounded ArtemisLeds
+        SKPath path = new();
+        foreach (ArtemisLed artemisLed in Layer.Leds)
+        {
+            path.AddRect(SKRect.Create(
+                artemisLed.RgbLed.AbsoluteBoundary.Location.X,
+                artemisLed.RgbLed.AbsoluteBoundary.Location.Y,
+                artemisLed.RgbLed.AbsoluteBoundary.Size.Width,
+                artemisLed.RgbLed.AbsoluteBoundary.Size.Height)
+            );
+        }
+
+        SKRect bounds = path.Bounds;
+        LayerBounds = new Rect(0, 0, bounds.Width, bounds.Height);
+        X = bounds.Left;
+        Y = bounds.Top;
     }
 
     private void UpdateTransform()
     {
         if (ShapeGeometry != null)
-            ShapeGeometry.Transform = new MatrixTransform(Layer.GetTransformMatrix(true, true, true, true).ToMatrix());
+            ShapeGeometry.Transform = new MatrixTransform(Layer.GetTransformMatrix(false, true, true, true, LayerBounds.ToSKRect()).ToMatrix());
     }
-
-    public int X => Layer.Bounds.Left;
-    public int Y => Layer.Bounds.Top;
-    public int Order => 2;
 }

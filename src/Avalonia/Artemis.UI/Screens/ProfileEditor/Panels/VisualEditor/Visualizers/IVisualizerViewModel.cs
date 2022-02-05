@@ -2,7 +2,7 @@
 
 public interface IVisualizerViewModel
 {
-    int X { get; }
-    int Y { get; }
+    double X { get; }
+    double Y { get; }
     int Order { get; }
 }

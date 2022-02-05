@@ -565,23 +565,24 @@ namespace Artemis.Core
             OnRenderPropertiesUpdated();
         }
 
-        internal SKPoint GetLayerAnchorPosition(bool applyTranslation, bool zeroBased)
+        internal SKPoint GetLayerAnchorPosition(bool applyTranslation, bool zeroBased, SKRect? customBounds = null)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
+            SKRect bounds = customBounds ?? Bounds;
             SKPoint positionProperty = Transform.Position.CurrentValue;
 
             // Start at the center of the shape
             SKPoint position = zeroBased
-                ? new SKPointI(Bounds.MidX - Bounds.Left, Bounds.MidY - Bounds.Top)
-                : new SKPointI(Bounds.MidX, Bounds.MidY);
+                ? new SKPoint(bounds.MidX - bounds.Left, bounds.MidY - Bounds.Top)
+                : new SKPoint(bounds.MidX, bounds.MidY);
 
             // Apply translation
             if (applyTranslation)
             {
-                position.X += positionProperty.X * Bounds.Width;
-                position.Y += positionProperty.Y * Bounds.Height;
+                position.X += positionProperty.X * bounds.Width;
+                position.Y += positionProperty.Y * bounds.Height;
             }
 
             return position;
@@ -625,8 +626,9 @@ namespace Artemis.Core
         /// <param name="includeTranslation">Whether translation should be included</param>
         /// <param name="includeScale">Whether the scale should be included</param>
         /// <param name="includeRotation">Whether the rotation should be included</param>
+        /// <param name="customBounds">Optional custom bounds to base the anchor on</param>
         /// <returns>The transformation matrix containing the current transformation settings</returns>
-        public SKMatrix GetTransformMatrix(bool zeroBased, bool includeTranslation, bool includeScale, bool includeRotation)
+        public SKMatrix GetTransformMatrix(bool zeroBased, bool includeTranslation, bool includeScale, bool includeRotation, SKRect? customBounds = null)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
@@ -634,15 +636,16 @@ namespace Artemis.Core
             if (Path == null)
                 return SKMatrix.Empty;
 
+            SKRect bounds = customBounds ?? Bounds;
             SKSize sizeProperty = Transform.Scale.CurrentValue;
             float rotationProperty = Transform.Rotation.CurrentValue;
 
-            SKPoint anchorPosition = GetLayerAnchorPosition(true, zeroBased);
+            SKPoint anchorPosition = GetLayerAnchorPosition(true, zeroBased, bounds);
             SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
-            float x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
-            float y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
+            float x = anchorPosition.X - (zeroBased ? bounds.MidX - bounds.Left : bounds.MidX) - anchorProperty.X * bounds.Width;
+            float y = anchorPosition.Y - (zeroBased ? bounds.MidY - bounds.Top : bounds.MidY) - anchorProperty.Y * bounds.Height;
 
             SKMatrix transform = SKMatrix.Empty;
 

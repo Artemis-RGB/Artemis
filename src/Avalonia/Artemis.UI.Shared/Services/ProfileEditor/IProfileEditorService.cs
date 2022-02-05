@@ -43,6 +43,11 @@ public interface IProfileEditorService : IArtemisSharedUIService
     IObservable<int> PixelsPerSecond { get; }
 
     /// <summary>
+    ///     Gets a source list of all available editor tools.
+    /// </summary>
+    SourceList<IToolViewModel> Tools { get; }
+
+    /// <summary>
     ///     Connect to the observable list of keyframes and observe any changes starting with the list's initial items.
     /// </summary>
     /// <returns>An observable which emits the change set.</returns>

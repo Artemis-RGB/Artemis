@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Principal;
 using System.Threading;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Shared.Services.Interfaces;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -36,6 +36,9 @@ namespace Artemis.UI.Linux
                 controlledApplicationLifetime.Exit += (_, _) =>
                 {
                     RunForcedShutdownIfEnabled();
+
+                    // Dispose plugins before disposing the kernel because plugins might access services during dispose
+                    kernel.Get<IPluginManagementService>().Dispose();
                     kernel.Dispose();
                 };
             }

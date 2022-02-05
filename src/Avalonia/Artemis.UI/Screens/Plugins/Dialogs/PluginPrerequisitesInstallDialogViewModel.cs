@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -30,6 +31,15 @@ namespace Artemis.UI.Screens.Plugins
 
             CanInstall = false;
             Task.Run(() => CanInstall = Prerequisites.Any(p => !p.PluginPrerequisite.IsMet()));
+
+            this.WhenActivated(d =>
+            {
+                Disposable.Create(() =>
+                {
+                    _tokenSource?.Cancel();
+                    _tokenSource?.Dispose();
+                }).DisposeWith(d);
+            });
         }
 
         public ObservableCollection<PluginPrerequisiteViewModel> Prerequisites { get; }
@@ -124,18 +134,6 @@ namespace Artemis.UI.Screens.Plugins
         public static async Task<bool> Show(IWindowService windowService, List<IPrerequisitesSubject> subjects)
         {
             return await windowService.ShowDialogAsync<PluginPrerequisitesInstallDialogViewModel, bool>(("subjects", subjects));
-        }
-
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _tokenSource?.Cancel();
-                _tokenSource?.Dispose();
-            }
-
-            base.Dispose(disposing);
         }
     }
 }

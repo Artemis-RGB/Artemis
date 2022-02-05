@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -36,12 +37,25 @@ namespace Artemis.UI.Screens.Plugins
             FeatureInfo = pluginFeatureInfo;
             ShowShield = FeatureInfo.Plugin.Info.RequiresAdmin && showShield;
 
-            _pluginManagementService.PluginFeatureEnabling += OnFeatureEnabling;
-            _pluginManagementService.PluginFeatureEnabled += OnFeatureEnableStopped;
-            _pluginManagementService.PluginFeatureEnableFailed += OnFeatureEnableStopped;
+            this.WhenActivated(d =>
+            {
+                _pluginManagementService.PluginFeatureEnabling += OnFeatureEnabling;
+                _pluginManagementService.PluginFeatureEnabled += OnFeatureEnableStopped;
+                _pluginManagementService.PluginFeatureEnableFailed += OnFeatureEnableStopped;
 
-            FeatureInfo.Plugin.Enabled += PluginOnToggled;
-            FeatureInfo.Plugin.Disabled += PluginOnToggled;
+                FeatureInfo.Plugin.Enabled += PluginOnToggled;
+                FeatureInfo.Plugin.Disabled += PluginOnToggled;
+
+                Disposable.Create(() =>
+                {
+                    _pluginManagementService.PluginFeatureEnabling -= OnFeatureEnabling;
+                    _pluginManagementService.PluginFeatureEnabled -= OnFeatureEnableStopped;
+                    _pluginManagementService.PluginFeatureEnableFailed -= OnFeatureEnableStopped;
+
+                    FeatureInfo.Plugin.Enabled -= PluginOnToggled;
+                    FeatureInfo.Plugin.Disabled -= PluginOnToggled;
+                }).DisposeWith(d);
+            });
         }
 
         public PluginFeatureInfo FeatureInfo { get; }
@@ -97,22 +111,6 @@ namespace Artemis.UI.Screens.Plugins
                 await PluginPrerequisitesUninstallDialogViewModel.Show(_windowService, new List<IPrerequisitesSubject> {FeatureInfo});
                 this.RaisePropertyChanged(nameof(IsEnabled));
             }
-        }
-
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _pluginManagementService.PluginFeatureEnabling -= OnFeatureEnabling;
-                _pluginManagementService.PluginFeatureEnabled -= OnFeatureEnableStopped;
-                _pluginManagementService.PluginFeatureEnableFailed -= OnFeatureEnableStopped;
-
-                FeatureInfo.Plugin.Enabled -= PluginOnToggled;
-                FeatureInfo.Plugin.Disabled -= PluginOnToggled;
-            }
-
-            base.Dispose(disposing);
         }
 
         private async Task UpdateEnabled(bool enable)

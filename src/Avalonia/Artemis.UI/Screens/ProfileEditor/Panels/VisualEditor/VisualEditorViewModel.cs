@@ -20,25 +20,26 @@ public class VisualEditorViewModel : ActivatableViewModelBase
     private readonly IProfileEditorVmFactory _vmFactory;
     private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
     private readonly SourceList<IVisualizerViewModel> _visualizers;
+    private ReadOnlyObservableCollection<IToolViewModel> _tools;
 
     public VisualEditorViewModel(IProfileEditorService profileEditorService, IRgbService rgbService, IProfileEditorVmFactory vmFactory)
     {
         _vmFactory = vmFactory;
         _visualizers = new SourceList<IVisualizerViewModel>();
-
-        Devices = new ObservableCollection<ArtemisDevice>(rgbService.EnabledDevices);
-        Tools = new ObservableCollection<IToolViewModel>();
-
         _visualizers.Connect()
             .Sort(SortExpressionComparer<IVisualizerViewModel>.Ascending(vm => vm.Order))
             .Bind(out ReadOnlyObservableCollection<IVisualizerViewModel> visualizers)
             .Subscribe();
+
+        Devices = new ObservableCollection<ArtemisDevice>(rgbService.EnabledDevices);
         Visualizers = visualizers;
 
         this.WhenActivated(d =>
         {
             _profileConfiguration = profileEditorService.ProfileConfiguration.ToProperty(this, vm => vm.ProfileConfiguration).DisposeWith(d);
             profileEditorService.ProfileConfiguration.Subscribe(CreateVisualizers).DisposeWith(d);
+            profileEditorService.Tools.Connect().AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected)).Filter(t => t.IsSelected).Bind(out ReadOnlyObservableCollection<IToolViewModel> tools).Subscribe().DisposeWith(d);
+            Tools = tools;
         });
     }
 
@@ -46,7 +47,12 @@ public class VisualEditorViewModel : ActivatableViewModelBase
 
     public ObservableCollection<ArtemisDevice> Devices { get; }
     public ReadOnlyObservableCollection<IVisualizerViewModel> Visualizers { get; }
-    public ObservableCollection<IToolViewModel> Tools { get; }
+
+    public ReadOnlyObservableCollection<IToolViewModel> Tools
+    {
+        get => _tools;
+        set => this.RaiseAndSetIfChanged(ref _tools, value);
+    }
 
     private void CreateVisualizers(ProfileConfiguration? profileConfiguration)
     {

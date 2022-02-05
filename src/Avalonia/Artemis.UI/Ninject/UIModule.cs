@@ -2,8 +2,10 @@
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Ninject.InstanceProviders;
 using Artemis.UI.Screens;
+using Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Platform;
 using Avalonia.Shared.PlatformSupport;
 using Ninject.Extensions.Conventions;
@@ -37,6 +39,14 @@ namespace Artemis.UI.Ninject
                     .SelectAllClasses()
                     .InheritedFrom<MainScreenViewModel>()
                     .BindAllBaseClasses();
+            });
+
+            Kernel.Bind(x =>
+            {
+                x.FromThisAssembly()
+                    .SelectAllClasses()
+                    .InheritedFrom<IToolViewModel>()
+                    .BindAllInterfaces();
             });
 
             // Bind UI factories

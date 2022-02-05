@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -7,7 +8,10 @@ using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Properties;
 using Artemis.UI.Screens.ProfileEditor.StatusBar;
 using Artemis.UI.Screens.ProfileEditor.VisualEditor;
+using Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
 using Artemis.UI.Shared.Services.ProfileEditor;
+using DynamicData;
+using DynamicData.Binding;
 using Ninject;
 using ReactiveUI;
 
@@ -18,6 +22,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         private readonly ISettingsService _settingsService;
         private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
         private ObservableAsPropertyHelper<ProfileEditorHistory?>? _history;
+        private ReadOnlyObservableCollection<IToolViewModel> _tools;
 
         /// <inheritdoc />
         public ProfileEditorViewModel(IScreen hostScreen,
@@ -26,7 +31,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             VisualEditorViewModel visualEditorViewModel,
             ProfileTreeViewModel profileTreeViewModel,
             ProfileEditorTitleBarViewModel profileEditorTitleBarViewModel,
-            MenuBarViewModel menuBarViewModel, 
+            MenuBarViewModel menuBarViewModel,
             PropertiesViewModel propertiesViewModel,
             StatusBarViewModel statusBarViewModel)
             : base(hostScreen, "profile-editor")
@@ -42,8 +47,18 @@ namespace Artemis.UI.Screens.ProfileEditor
             else
                 MenuBarViewModel = menuBarViewModel;
 
-            this.WhenActivated(d => _profileConfiguration = profileEditorService.ProfileConfiguration.ToProperty(this, vm => vm.ProfileConfiguration).DisposeWith(d));
-            this.WhenActivated(d => _history = profileEditorService.History.ToProperty(this, vm => vm.History).DisposeWith(d));
+            this.WhenActivated(d =>
+            {
+                _profileConfiguration = profileEditorService.ProfileConfiguration.ToProperty(this, vm => vm.ProfileConfiguration).DisposeWith(d);
+                _history = profileEditorService.History.ToProperty(this, vm => vm.History).DisposeWith(d);
+                profileEditorService.Tools.Connect()
+                    .Filter(t => t.ShowInToolbar)
+                    .Sort(SortExpressionComparer<IToolViewModel>.Ascending(vm => vm.Order))
+                    .Bind(out ReadOnlyObservableCollection<IToolViewModel> tools)
+                    .Subscribe()
+                    .DisposeWith(d);
+                Tools = tools;
+            });
         }
 
         public VisualEditorViewModel VisualEditorViewModel { get; }
@@ -51,6 +66,12 @@ namespace Artemis.UI.Screens.ProfileEditor
         public MenuBarViewModel? MenuBarViewModel { get; }
         public PropertiesViewModel PropertiesViewModel { get; }
         public StatusBarViewModel StatusBarViewModel { get; }
+
+        public ReadOnlyObservableCollection<IToolViewModel> Tools
+        {
+            get => _tools;
+            set => this.RaiseAndSetIfChanged(ref _tools, value);
+        }
 
         public ProfileConfiguration? ProfileConfiguration => _profileConfiguration?.Value;
         public ProfileEditorHistory? History => _history?.Value;

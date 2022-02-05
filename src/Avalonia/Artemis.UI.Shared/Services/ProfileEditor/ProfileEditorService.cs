@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -9,6 +10,8 @@ using Artemis.Core.Services;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using DynamicData;
+using DynamicData.Binding;
+using ReactiveUI;
 using Serilog;
 
 namespace Artemis.UI.Shared.Services.ProfileEditor;
@@ -43,9 +46,33 @@ internal class ProfileEditorService : IProfileEditorService
         Playing = _playingSubject.AsObservable();
         SuspendedEditing = _suspendedEditingSubject.AsObservable();
         PixelsPerSecond = _pixelsPerSecondSubject.AsObservable();
+        Tools = new SourceList<IToolViewModel>();
+        Tools.Connect().AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected)).Subscribe(set =>
+        {
+            IToolViewModel? changed = set.FirstOrDefault()?.Item.Current;
+            if (changed == null)
+                return;
+
+            // Disable all others if the changed one is selected and exclusive
+            if (changed.IsSelected && changed.IsExclusive)
+            {
+                Tools.Edit(list =>
+                {
+                    foreach (IToolViewModel toolViewModel in list.Where(t => t.IsExclusive && t != changed))
+                        toolViewModel.IsSelected = false;
+                });
+            }
+        });
     }
 
     public IObservable<bool> SuspendedEditing { get; }
+    public IObservable<ProfileConfiguration?> ProfileConfiguration { get; }
+    public IObservable<RenderProfileElement?> ProfileElement { get; }
+    public IObservable<ProfileEditorHistory?> History { get; }
+    public IObservable<TimeSpan> Time { get; }
+    public IObservable<bool> Playing { get; }
+    public IObservable<int> PixelsPerSecond { get; }
+    public SourceList<IToolViewModel> Tools { get; }
 
     private ProfileEditorHistory? GetHistory(ProfileConfiguration? profileConfiguration)
     {
@@ -86,13 +113,6 @@ internal class ProfileEditorService : IProfileEditorService
                 TickProfileElement(child, time);
         }
     }
-
-    public IObservable<ProfileConfiguration?> ProfileConfiguration { get; }
-    public IObservable<RenderProfileElement?> ProfileElement { get; }
-    public IObservable<ProfileEditorHistory?> History { get; }
-    public IObservable<TimeSpan> Time { get; }
-    public IObservable<bool> Playing { get; }
-    public IObservable<int> PixelsPerSecond { get; }
 
     public IObservable<IChangeSet<ILayerPropertyKeyframe>> ConnectToKeyframes()
     {

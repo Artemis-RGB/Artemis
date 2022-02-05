@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -33,7 +34,12 @@ namespace Artemis.UI.Screens.Plugins
             this.WhenAnyValue(x => x.Installing, x => x.Uninstalling, (i, u) => i || u).ToProperty(this, x => x.Busy, out _busy);
             this.WhenAnyValue(x => x.ActiveAction, a => Actions.IndexOf(a!)).ToProperty(this, x => x.ActiveStepNumber, out _activeStepNumber);
 
-            PluginPrerequisite.PropertyChanged += PluginPrerequisiteOnPropertyChanged;
+
+            this.WhenActivated(d =>
+            {
+                PluginPrerequisite.PropertyChanged += PluginPrerequisiteOnPropertyChanged;
+                Disposable.Create(() => PluginPrerequisite.PropertyChanged -= PluginPrerequisiteOnPropertyChanged).DisposeWith(d);
+            });
 
             // Could be slow so take it off of the UI thread
             Task.Run(() => IsMet = PluginPrerequisite.IsMet());
@@ -103,14 +109,6 @@ namespace Artemis.UI.Screens.Plugins
                 Uninstalling = false;
                 IsMet = PluginPrerequisite.IsMet();
             }
-        }
-
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing) PluginPrerequisite.PropertyChanged -= PluginPrerequisiteOnPropertyChanged;
-
-            base.Dispose(disposing);
         }
 
         private void PluginPrerequisiteOnPropertyChanged(object? sender, PropertyChangedEventArgs e)

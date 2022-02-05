@@ -6,7 +6,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers.LayerVisualizerView"
              x:DataType="visualizers:LayerVisualizerViewModel"
-             ZIndex="1">
+             ClipToBounds="False">
     <UserControl.Styles>
         <Style Selector="Path.layer-visualizer">
             <Setter Property="Stroke" Value="{StaticResource ButtonBorderBrushDisabled}" />

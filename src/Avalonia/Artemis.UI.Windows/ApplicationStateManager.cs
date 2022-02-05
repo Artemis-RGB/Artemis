@@ -39,6 +39,9 @@ namespace Artemis.UI.Windows
                 controlledApplicationLifetime.Exit += (_, _) =>
                 {
                     RunForcedShutdownIfEnabled();
+
+                    // Dispose plugins before disposing the kernel because plugins might access services during dispose
+                    kernel.Get<IPluginManagementService>().Dispose();
                     kernel.Dispose();
                 };
             }

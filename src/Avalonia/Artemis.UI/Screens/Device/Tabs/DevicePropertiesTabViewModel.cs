@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -65,8 +66,17 @@ namespace Artemis.UI.Screens.Device
 
             this.WhenAnyValue(x => x.RedScale, x => x.GreenScale, x => x.BlueScale).Subscribe(_ => ApplyScaling());
 
-            Device.PropertyChanged += DeviceOnPropertyChanged;
-            _coreService.FrameRendering += OnFrameRendering;
+            this.WhenActivated(d =>
+            {
+                Device.PropertyChanged += DeviceOnPropertyChanged;
+                _coreService.FrameRendering += OnFrameRendering;
+
+                Disposable.Create(() =>
+                {
+                    _coreService.FrameRendering -= OnFrameRendering;
+                    Device.PropertyChanged -= DeviceOnPropertyChanged;
+                }).DisposeWith(d);
+            });
         }
 
         public ArtemisDevice Device { get; }
@@ -233,18 +243,6 @@ namespace Artemis.UI.Screens.Device
             Device.RedScale = _initialRedScale;
             Device.GreenScale = _initialGreenScale;
             Device.BlueScale = _initialBlueScale;
-        }
-
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _coreService.FrameRendering -= OnFrameRendering;
-                Device.PropertyChanged -= DeviceOnPropertyChanged;
-            }
-
-            base.Dispose(disposing);
         }
 
         private bool GetCategory(DeviceCategory category)

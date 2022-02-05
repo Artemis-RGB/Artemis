@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -49,12 +50,23 @@ namespace Artemis.UI.Screens.Plugins
             foreach (PluginFeatureInfo pluginFeatureInfo in Plugin.Features)
                 PluginFeatures.Add(_settingsVmFactory.CreatePluginFeatureViewModel(pluginFeatureInfo, false));
 
-            _pluginManagementService.PluginDisabled += PluginManagementServiceOnPluginToggled;
-            _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginToggled;
+           
 
             OpenSettings = ReactiveCommand.Create(ExecuteOpenSettings, this.WhenAnyValue(x => x.IsEnabled).Select(isEnabled => isEnabled && Plugin.ConfigurationDialog != null));
             InstallPrerequisites = ReactiveCommand.CreateFromTask(ExecuteInstallPrerequisites, this.WhenAnyValue(x => x.CanInstallPrerequisites));
             RemovePrerequisites = ReactiveCommand.CreateFromTask<bool>(ExecuteRemovePrerequisites, this.WhenAnyValue(x => x.CanRemovePrerequisites));
+
+            this.WhenActivated(d =>
+            {
+                _pluginManagementService.PluginDisabled += PluginManagementServiceOnPluginToggled;
+                _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginToggled;
+
+                Disposable.Create(() =>
+                {
+                    _pluginManagementService.PluginDisabled -= PluginManagementServiceOnPluginToggled;
+                    _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginToggled;
+                }).DisposeWith(d);
+            });
         }
 
         public ReactiveCommand<Unit, Unit> OpenSettings { get; }
@@ -235,17 +247,6 @@ namespace Artemis.UI.Screens.Plugins
         public void OpenUri(Uri uri)
         {
             Utilities.OpenUrl(uri.ToString());
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _pluginManagementService.PluginDisabled -= PluginManagementServiceOnPluginToggled;
-                _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginToggled;
-            }
-
-            base.Dispose(disposing);
         }
 
         private void PluginManagementServiceOnPluginToggled(object? sender, PluginEventArgs e)
