@@ -160,6 +160,7 @@ internal class ProfileEditorService : IProfileEditorService
         }
 
         _profileConfigurationSubject.OnNext(profileConfiguration);
+        ChangeTime(TimeSpan.Zero);
     }
 
     public void ChangeCurrentProfileElement(RenderProfileElement? renderProfileElement)
