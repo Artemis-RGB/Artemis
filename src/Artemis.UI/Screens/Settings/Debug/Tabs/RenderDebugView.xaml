@@ -36,6 +36,8 @@
                 <Run Text="{Binding RenderWidth}" /><Run Text="x" /><Run Text="{Binding RenderHeight}" />
                 <Run Text="- Renderer:"></Run>
                 <Run Text="{Binding Renderer}"></Run>
+                <Run Text="- RGB.NET delta:"></Run>
+                <Run Text="{Binding Delta}"></Run>
             </TextBlock>
         </Grid>
 
