@@ -53,7 +53,7 @@ namespace Artemis.UI.Screens.Sidebar
         public SidebarProfileConfigurationViewModel? SelectedProfileConfiguration
         {
             get => _selectedProfileConfiguration;
-            set => this.RaiseAndSetIfChanged(ref _selectedProfileConfiguration, value);
+            set => RaiseAndSetIfChanged(ref _selectedProfileConfiguration, value);
         }
 
         public bool ShowItems

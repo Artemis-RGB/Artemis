@@ -53,7 +53,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             get => _selectionStatus;
             set
             {
-                this.RaiseAndSetIfChanged(ref _selectionStatus, value);
+                RaiseAndSetIfChanged(ref _selectionStatus, value);
                 this.RaisePropertyChanged(nameof(Highlighted));
             }
         }
@@ -65,7 +65,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         public Cursor Cursor
         {
             get => _cursor;
-            set => this.RaiseAndSetIfChanged(ref _cursor, value);
+            set => RaiseAndSetIfChanged(ref _cursor, value);
         }
 
         public void StartMouseDrag(Point mouseStartPosition)

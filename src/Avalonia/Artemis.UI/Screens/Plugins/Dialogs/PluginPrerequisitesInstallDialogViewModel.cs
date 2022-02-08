@@ -47,37 +47,37 @@ namespace Artemis.UI.Screens.Plugins
         public PluginPrerequisiteViewModel? ActivePrerequisite
         {
             get => _activePrerequisite;
-            set => this.RaiseAndSetIfChanged(ref _activePrerequisite, value);
+            set => RaiseAndSetIfChanged(ref _activePrerequisite, value);
         }
 
         public bool ShowProgress
         {
             get => _showProgress;
-            set => this.RaiseAndSetIfChanged(ref _showProgress, value);
+            set => RaiseAndSetIfChanged(ref _showProgress, value);
         }
 
         public bool ShowIntro
         {
             get => _showIntro;
-            set => this.RaiseAndSetIfChanged(ref _showIntro, value);
+            set => RaiseAndSetIfChanged(ref _showIntro, value);
         }
 
         public bool ShowFailed
         {
             get => _showFailed;
-            set => this.RaiseAndSetIfChanged(ref _showFailed, value);
+            set => RaiseAndSetIfChanged(ref _showFailed, value);
         }
 
         public bool ShowInstall
         {
             get => _showInstall;
-            set => this.RaiseAndSetIfChanged(ref _showInstall, value);
+            set => RaiseAndSetIfChanged(ref _showInstall, value);
         }
 
         public bool CanInstall
         {
             get => _canInstall;
-            set => this.RaiseAndSetIfChanged(ref _canInstall, value);
+            set => RaiseAndSetIfChanged(ref _canInstall, value);
         }
 
         public async Task Install()

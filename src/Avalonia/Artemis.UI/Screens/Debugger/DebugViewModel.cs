@@ -38,7 +38,7 @@ namespace Artemis.UI.Screens.Debugger
         public NavigationViewItem? SelectedItem
         {
             get => _selectedItem;
-            set => this.RaiseAndSetIfChanged(ref _selectedItem, value);
+            set => RaiseAndSetIfChanged(ref _selectedItem, value);
         }
 
         private void NavigateToSelectedItem(NavigationViewItem item)

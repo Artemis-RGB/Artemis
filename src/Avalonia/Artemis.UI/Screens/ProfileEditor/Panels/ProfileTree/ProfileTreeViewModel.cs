@@ -48,7 +48,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         public TreeItemViewModel? SelectedChild
         {
             get => _selectedChild;
-            set => this.RaiseAndSetIfChanged(ref _selectedChild, value);
+            set => RaiseAndSetIfChanged(ref _selectedChild, value);
         }
 
         private void SelectCurrentProfileElement(RenderProfileElement? element)

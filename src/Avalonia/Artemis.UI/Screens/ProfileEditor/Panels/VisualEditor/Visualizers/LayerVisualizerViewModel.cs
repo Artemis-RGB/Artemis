@@ -40,19 +40,19 @@ public class LayerVisualizerViewModel : ActivatableViewModelBase, IVisualizerVie
     public Rect LayerBounds
     {
         get => _layerBounds;
-        private set => this.RaiseAndSetIfChanged(ref _layerBounds, value);
+        private set => RaiseAndSetIfChanged(ref _layerBounds, value);
     }
 
     public double X
     {
         get => _x;
-        set => this.RaiseAndSetIfChanged(ref _x, value);
+        set => RaiseAndSetIfChanged(ref _x, value);
     }
 
     public double Y
     {
         get => _y;
-        set => this.RaiseAndSetIfChanged(ref _y, value);
+        set => RaiseAndSetIfChanged(ref _y, value);
     }
 
     public int Order => 1;

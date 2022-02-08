@@ -60,7 +60,7 @@ namespace Artemis.UI.Screens.Device
             get => _isSelected;
             set
             {
-                if (!this.RaiseAndSetIfChanged(ref _isSelected, value))
+                if (!RaiseAndSetIfChanged(ref _isSelected, value))
                     return;
                 Apply();
             }

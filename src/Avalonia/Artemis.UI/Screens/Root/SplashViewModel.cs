@@ -30,7 +30,7 @@ namespace Artemis.UI.Screens.Root
         public string Status
         {
             get => _status;
-            set => this.RaiseAndSetIfChanged(ref _status, value);
+            set => RaiseAndSetIfChanged(ref _status, value);
         }
 
         private void OnPluginManagementServiceOnPluginManagementLoaded(object? sender, PluginEventArgs args)

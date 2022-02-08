@@ -51,7 +51,7 @@ public class VisualEditorViewModel : ActivatableViewModelBase
     public ReadOnlyObservableCollection<IToolViewModel> Tools
     {
         get => _tools;
-        set => this.RaiseAndSetIfChanged(ref _tools, value);
+        set => RaiseAndSetIfChanged(ref _tools, value);
     }
 
     private void CreateVisualizers(ProfileConfiguration? profileConfiguration)

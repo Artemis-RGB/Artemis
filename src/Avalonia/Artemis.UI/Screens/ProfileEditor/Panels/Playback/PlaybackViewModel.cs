@@ -50,19 +50,19 @@ public class PlaybackViewModel : ActivatableViewModelBase
     public bool Repeating
     {
         get => _repeating;
-        set => this.RaiseAndSetIfChanged(ref _repeating, value);
+        set => RaiseAndSetIfChanged(ref _repeating, value);
     }
 
     public bool RepeatTimeline
     {
         get => _repeatTimeline;
-        set => this.RaiseAndSetIfChanged(ref _repeatTimeline, value);
+        set => RaiseAndSetIfChanged(ref _repeatTimeline, value);
     }
 
     public bool RepeatSegment
     {
         get => _repeatSegment;
-        set => this.RaiseAndSetIfChanged(ref _repeatSegment, value);
+        set => RaiseAndSetIfChanged(ref _repeatSegment, value);
     }
 
     public void PlayFromStart()

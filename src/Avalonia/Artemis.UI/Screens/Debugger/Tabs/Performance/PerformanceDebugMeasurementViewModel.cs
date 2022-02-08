@@ -22,31 +22,31 @@ namespace Artemis.UI.Screens.Debugger.Performance
         public string? Last
         {
             get => _last;
-            set => this.RaiseAndSetIfChanged(ref _last, value);
+            set => RaiseAndSetIfChanged(ref _last, value);
         }
 
         public string? Average
         {
             get => _average;
-            set => this.RaiseAndSetIfChanged(ref _average, value);
+            set => RaiseAndSetIfChanged(ref _average, value);
         }
 
         public string? Min
         {
             get => _min;
-            set => this.RaiseAndSetIfChanged(ref _min, value);
+            set => RaiseAndSetIfChanged(ref _min, value);
         }
 
         public string? Max
         {
             get => _max;
-            set => this.RaiseAndSetIfChanged(ref _max, value);
+            set => RaiseAndSetIfChanged(ref _max, value);
         }
 
         public string? Percentile
         {
             get => _percentile;
-            set => this.RaiseAndSetIfChanged(ref _percentile, value);
+            set => RaiseAndSetIfChanged(ref _percentile, value);
         }
 
         public void Update()

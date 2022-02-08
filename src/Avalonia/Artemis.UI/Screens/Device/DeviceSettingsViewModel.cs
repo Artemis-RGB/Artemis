@@ -57,7 +57,7 @@ namespace Artemis.UI.Screens.Device
         public bool TogglingDevice
         {
             get => _togglingDevice;
-            set => this.RaiseAndSetIfChanged(ref _togglingDevice, value);
+            set => RaiseAndSetIfChanged(ref _togglingDevice, value);
         }
 
         public void IdentifyDevice()

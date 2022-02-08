@@ -77,13 +77,13 @@ namespace Artemis.UI.Screens.Root
         public SidebarViewModel? SidebarViewModel
         {
             get => _sidebarViewModel;
-            set => this.RaiseAndSetIfChanged(ref _sidebarViewModel, value);
+            set => RaiseAndSetIfChanged(ref _sidebarViewModel, value);
         }
 
         public ViewModelBase? TitleBarViewModel
         {
             get => _titleBarViewModel;
-            set => this.RaiseAndSetIfChanged(ref _titleBarViewModel, value);
+            set => RaiseAndSetIfChanged(ref _titleBarViewModel, value);
         }
 
         private void CurrentMainWindowOnClosed(object? sender, EventArgs e)

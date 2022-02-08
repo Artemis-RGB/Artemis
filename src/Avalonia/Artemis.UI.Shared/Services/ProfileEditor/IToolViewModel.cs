@@ -78,7 +78,7 @@ public abstract class ToolViewModel : ActivatableViewModelBase, IToolViewModel
     public bool IsSelected
     {
         get => _isSelected;
-        set => this.RaiseAndSetIfChanged(ref _isSelected, value);
+        set => RaiseAndSetIfChanged(ref _isSelected, value);
     }
 
     /// <inheritdoc />

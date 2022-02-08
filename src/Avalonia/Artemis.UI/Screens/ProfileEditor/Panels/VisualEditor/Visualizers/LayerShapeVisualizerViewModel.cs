@@ -54,25 +54,25 @@ public class LayerShapeVisualizerViewModel : ActivatableViewModelBase, IVisualiz
     public Rect LayerBounds
     {
         get => _layerBounds;
-        private set => this.RaiseAndSetIfChanged(ref _layerBounds, value);
+        private set => RaiseAndSetIfChanged(ref _layerBounds, value);
     }
 
     public double X
     {
         get => _x;
-        set => this.RaiseAndSetIfChanged(ref _x, value);
+        set => RaiseAndSetIfChanged(ref _x, value);
     }
 
     public double Y
     {
         get => _y;
-        set => this.RaiseAndSetIfChanged(ref _y, value);
+        set => RaiseAndSetIfChanged(ref _y, value);
     }
 
     public Geometry? ShapeGeometry
     {
         get => _shapeGeometry;
-        set => this.RaiseAndSetIfChanged(ref _shapeGeometry, value);
+        set => RaiseAndSetIfChanged(ref _shapeGeometry, value);
     }
 
     public int Order => 2;

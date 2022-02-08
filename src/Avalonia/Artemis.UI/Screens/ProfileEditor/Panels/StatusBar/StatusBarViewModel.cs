@@ -52,12 +52,12 @@ public class StatusBarViewModel : ActivatableViewModelBase
     public string? StatusMessage
     {
         get => _statusMessage;
-        set => this.RaiseAndSetIfChanged(ref _statusMessage, value);
+        set => RaiseAndSetIfChanged(ref _statusMessage, value);
     }
 
     public bool ShowStatusMessage
     {
         get => _showStatusMessage;
-        set => this.RaiseAndSetIfChanged(ref _showStatusMessage, value);
+        set => RaiseAndSetIfChanged(ref _showStatusMessage, value);
     }
 }

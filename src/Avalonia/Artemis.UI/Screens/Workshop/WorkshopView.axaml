@@ -6,24 +6,26 @@
              xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:attachedProperties="clr-namespace:Artemis.UI.Shared.AttachedProperties;assembly=Artemis.UI.Shared"
+             xmlns:workshop="clr-namespace:Artemis.UI.Screens.Workshop"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Workshop.WorkshopView">
+             x:Class="Artemis.UI.Screens.Workshop.WorkshopView"
+             x:DataType="workshop:WorkshopViewModel">
     <Border Classes="router-container">
         <StackPanel Margin="12">
             <TextBlock>Workshop!! :3</TextBlock>
             <Border Classes="card" Margin="0 12">
                 <StackPanel Spacing="5">
                     <TextBlock Classes="h4">Notification tests</TextBlock>
-                    <Button Command="{Binding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Informational}">
+                    <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Informational}">
                         Notification test (default)
                     </Button>
-                    <Button Command="{Binding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Warning}">
+                    <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Warning}">
                         Notification test (warning)
                     </Button>
-                    <Button Command="{Binding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Error}">
+                    <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Error}">
                         Notification test (error)
                     </Button>
-                    <Button Command="{Binding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Success}">
+                    <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Success}">
                         Notification test (success)
                     </Button>
 
@@ -36,6 +38,13 @@
                     <TextBox
                         attachedProperties:TextBoxAssist.PrefixText="$"
                         attachedProperties:TextBoxAssist.SuffixText="%"></TextBox>
+
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                        <Border Classes="card" Cursor="{CompiledBinding Cursor}">
+                            <TextBlock Text="{CompiledBinding SelectedCursor}"></TextBlock>
+                        </Border>
+                        <controls:EnumComboBox Value="{CompiledBinding SelectedCursor}"></controls:EnumComboBox>
+                    </StackPanel>
                 </StackPanel>
             </Border>
         </StackPanel>

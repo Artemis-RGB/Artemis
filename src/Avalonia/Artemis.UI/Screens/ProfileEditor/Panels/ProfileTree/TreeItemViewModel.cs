@@ -89,19 +89,19 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         public ProfileElement? ProfileElement
         {
             get => _profileElement;
-            set => this.RaiseAndSetIfChanged(ref _profileElement, value);
+            set => RaiseAndSetIfChanged(ref _profileElement, value);
         }
 
         public bool IsExpanded
         {
             get => _isExpanded;
-            set => this.RaiseAndSetIfChanged(ref _isExpanded, value);
+            set => RaiseAndSetIfChanged(ref _isExpanded, value);
         }
 
         public bool Renaming
         {
             get => _renaming;
-            set => this.RaiseAndSetIfChanged(ref _renaming, value);
+            set => RaiseAndSetIfChanged(ref _renaming, value);
         }
 
         public TreeItemViewModel? Parent { get; set; }
@@ -118,7 +118,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         public string? RenameValue
         {
             get => _renameValue;
-            set => this.RaiseAndSetIfChanged(ref _renameValue, value);
+            set => RaiseAndSetIfChanged(ref _renameValue, value);
         }
 
         public async Task ShowBrokenStateExceptions()

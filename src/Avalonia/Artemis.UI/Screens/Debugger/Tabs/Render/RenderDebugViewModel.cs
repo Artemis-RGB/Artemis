@@ -35,31 +35,31 @@ namespace Artemis.UI.Screens.Debugger.Render
         public Bitmap? CurrentFrame
         {
             get => _currentFrame;
-            set => this.RaiseAndSetIfChanged(ref _currentFrame, value);
+            set => RaiseAndSetIfChanged(ref _currentFrame, value);
         }
 
         public double CurrentFps
         {
             get => _currentFps;
-            set => this.RaiseAndSetIfChanged(ref _currentFps, value);
+            set => RaiseAndSetIfChanged(ref _currentFps, value);
         }
 
         public int RenderWidth
         {
             get => _renderWidth;
-            set => this.RaiseAndSetIfChanged(ref _renderWidth, value);
+            set => RaiseAndSetIfChanged(ref _renderWidth, value);
         }
 
         public int RenderHeight
         {
             get => _renderHeight;
-            set => this.RaiseAndSetIfChanged(ref _renderHeight, value);
+            set => RaiseAndSetIfChanged(ref _renderHeight, value);
         }
 
         public string? Renderer
         {
             get => _renderer;
-            set => this.RaiseAndSetIfChanged(ref _renderer, value);
+            set => RaiseAndSetIfChanged(ref _renderer, value);
         }
 
         private void HandleActivation()

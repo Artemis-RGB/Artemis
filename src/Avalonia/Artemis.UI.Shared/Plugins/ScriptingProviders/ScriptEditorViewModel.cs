@@ -42,7 +42,7 @@ namespace Artemis.UI.Shared.ScriptingProviders
         public Script? Script
         {
             get => _script;
-            internal set => this.RaiseAndSetIfChanged(ref _script, value);
+            internal set => RaiseAndSetIfChanged(ref _script, value);
         }
 
         /// <inheritdoc />

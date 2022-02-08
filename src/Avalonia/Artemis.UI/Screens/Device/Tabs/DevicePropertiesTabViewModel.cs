@@ -84,55 +84,55 @@ namespace Artemis.UI.Screens.Device
         public int X
         {
             get => _x;
-            set => this.RaiseAndSetIfChanged(ref _x, value);
+            set => RaiseAndSetIfChanged(ref _x, value);
         }
 
         public int Y
         {
             get => _y;
-            set => this.RaiseAndSetIfChanged(ref _y, value);
+            set => RaiseAndSetIfChanged(ref _y, value);
         }
 
         public float Scale
         {
             get => _scale;
-            set => this.RaiseAndSetIfChanged(ref _scale, value);
+            set => RaiseAndSetIfChanged(ref _scale, value);
         }
 
         public int Rotation
         {
             get => _rotation;
-            set => this.RaiseAndSetIfChanged(ref _rotation, value);
+            set => RaiseAndSetIfChanged(ref _rotation, value);
         }
 
         public float RedScale
         {
             get => _redScale;
-            set => this.RaiseAndSetIfChanged(ref _redScale, value);
+            set => RaiseAndSetIfChanged(ref _redScale, value);
         }
 
         public float GreenScale
         {
             get => _greenScale;
-            set => this.RaiseAndSetIfChanged(ref _greenScale, value);
+            set => RaiseAndSetIfChanged(ref _greenScale, value);
         }
 
         public float BlueScale
         {
             get => _blueScale;
-            set => this.RaiseAndSetIfChanged(ref _blueScale, value);
+            set => RaiseAndSetIfChanged(ref _blueScale, value);
         }
 
         public SKColor CurrentColor
         {
             get => _currentColor;
-            set => this.RaiseAndSetIfChanged(ref _currentColor, value);
+            set => RaiseAndSetIfChanged(ref _currentColor, value);
         }
 
         public bool DisplayOnDevices
         {
             get => _displayOnDevices;
-            set => this.RaiseAndSetIfChanged(ref _displayOnDevices, value);
+            set => RaiseAndSetIfChanged(ref _displayOnDevices, value);
         }
 
         // This solution won't scale well but I don't expect there to be many more categories.

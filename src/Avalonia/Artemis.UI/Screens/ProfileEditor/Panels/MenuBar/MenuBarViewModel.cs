@@ -18,6 +18,6 @@ public class MenuBarViewModel : ActivatableViewModelBase
     public ProfileEditorHistory? History
     {
         get => _history;
-        set => this.RaiseAndSetIfChanged(ref _history, value);
+        set => RaiseAndSetIfChanged(ref _history, value);
     }
 }

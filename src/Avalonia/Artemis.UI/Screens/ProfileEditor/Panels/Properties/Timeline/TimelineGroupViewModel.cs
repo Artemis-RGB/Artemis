@@ -36,7 +36,7 @@ public class TimelineGroupViewModel : ActivatableViewModelBase
     public ObservableCollection<double>? KeyframePositions
     {
         get => _keyframePositions;
-        set => this.RaiseAndSetIfChanged(ref _keyframePositions, value);
+        set => RaiseAndSetIfChanged(ref _keyframePositions, value);
     }
 
     private void UpdateKeyframePositions()

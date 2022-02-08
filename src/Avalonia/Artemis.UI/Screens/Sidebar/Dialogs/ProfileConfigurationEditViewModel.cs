@@ -64,31 +64,31 @@ namespace Artemis.UI.Screens.Sidebar
         public ProfileConfiguration ProfileConfiguration
         {
             get => _profileConfiguration;
-            set => this.RaiseAndSetIfChanged(ref _profileConfiguration, value);
+            set => RaiseAndSetIfChanged(ref _profileConfiguration, value);
         }
 
         public string ProfileName
         {
             get => _profileName;
-            set => this.RaiseAndSetIfChanged(ref _profileName, value);
+            set => RaiseAndSetIfChanged(ref _profileName, value);
         }
 
         public ProfileConfigurationHotkeyMode HotkeyMode
         {
             get => _hotkeyMode;
-            set => this.RaiseAndSetIfChanged(ref _hotkeyMode, value);
+            set => RaiseAndSetIfChanged(ref _hotkeyMode, value);
         }
 
         public Hotkey? EnableHotkey
         {
             get => _enableHotkey;
-            set => this.RaiseAndSetIfChanged(ref _enableHotkey, value);
+            set => RaiseAndSetIfChanged(ref _enableHotkey, value);
         }
 
         public Hotkey? DisableHotkey
         {
             get => _disableHotkey;
-            set => this.RaiseAndSetIfChanged(ref _disableHotkey, value);
+            set => RaiseAndSetIfChanged(ref _disableHotkey, value);
         }
 
         public ObservableCollection<ProfileModuleViewModel> Modules { get; }
@@ -96,7 +96,7 @@ namespace Artemis.UI.Screens.Sidebar
         public ProfileModuleViewModel? SelectedModule
         {
             get => _selectedModule;
-            set => this.RaiseAndSetIfChanged(ref _selectedModule, value);
+            set => RaiseAndSetIfChanged(ref _selectedModule, value);
         }
 
         public async Task Import()
@@ -183,31 +183,31 @@ namespace Artemis.UI.Screens.Sidebar
         public ProfileConfigurationIconType IconType
         {
             get => _iconType;
-            set => this.RaiseAndSetIfChanged(ref _iconType, value);
+            set => RaiseAndSetIfChanged(ref _iconType, value);
         }
 
         public ObservableCollection<ProfileIconViewModel>? MaterialIcons
         {
             get => _materialIcons;
-            set => this.RaiseAndSetIfChanged(ref _materialIcons, value);
+            set => RaiseAndSetIfChanged(ref _materialIcons, value);
         }
 
         public ProfileIconViewModel? SelectedMaterialIcon
         {
             get => _selectedMaterialIcon;
-            set => this.RaiseAndSetIfChanged(ref _selectedMaterialIcon, value);
+            set => RaiseAndSetIfChanged(ref _selectedMaterialIcon, value);
         }
 
         public Bitmap? SelectedBitmapSource
         {
             get => _selectedBitmapSource;
-            set => this.RaiseAndSetIfChanged(ref _selectedBitmapSource, value);
+            set => RaiseAndSetIfChanged(ref _selectedBitmapSource, value);
         }
 
         public SvgImage? SelectedSvgSource
         {
             get => _selectedSvgSource;
-            set => this.RaiseAndSetIfChanged(ref _selectedSvgSource, value);
+            set => RaiseAndSetIfChanged(ref _selectedSvgSource, value);
         }
 
         private void LoadIcon()

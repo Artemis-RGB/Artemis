@@ -64,19 +64,19 @@ public class PropertyGroupViewModel : ViewModelBase
     public bool IsVisible
     {
         get => _isVisible;
-        set => this.RaiseAndSetIfChanged(ref _isVisible, value);
+        set => RaiseAndSetIfChanged(ref _isVisible, value);
     }
 
     public bool IsExpanded
     {
         get => _isExpanded;
-        set => this.RaiseAndSetIfChanged(ref _isExpanded, value);
+        set => RaiseAndSetIfChanged(ref _isExpanded, value);
     }
 
     public bool HasChildren
     {
         get => _hasChildren;
-        set => this.RaiseAndSetIfChanged(ref _hasChildren, value);
+        set => RaiseAndSetIfChanged(ref _hasChildren, value);
     }
 
     public List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels(bool expandedOnly)

@@ -89,13 +89,13 @@ namespace Artemis.UI.Screens.Sidebar
         public ArtemisDevice? HeaderDevice
         {
             get => _headerDevice;
-            set => this.RaiseAndSetIfChanged(ref _headerDevice, value);
+            set => RaiseAndSetIfChanged(ref _headerDevice, value);
         }
 
         public SidebarScreenViewModel? SelectedSidebarScreen
         {
             get => _selectedSidebarScreen;
-            set => this.RaiseAndSetIfChanged(ref _selectedSidebarScreen, value);
+            set => RaiseAndSetIfChanged(ref _selectedSidebarScreen, value);
         }
 
         public SidebarCategoryViewModel AddProfileCategoryViewModel(ProfileCategory profileCategory)

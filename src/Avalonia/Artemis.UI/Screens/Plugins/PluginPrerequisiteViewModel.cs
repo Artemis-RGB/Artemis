@@ -50,7 +50,7 @@ namespace Artemis.UI.Screens.Plugins
         public PluginPrerequisiteActionViewModel? ActiveAction
         {
             get => _activeAction;
-            set => this.RaiseAndSetIfChanged(ref _activeAction, value);
+            set => RaiseAndSetIfChanged(ref _activeAction, value);
         }
 
         public PluginPrerequisite PluginPrerequisite { get; }
@@ -58,19 +58,19 @@ namespace Artemis.UI.Screens.Plugins
         public bool Installing
         {
             get => _installing;
-            set => this.RaiseAndSetIfChanged(ref _installing, value);
+            set => RaiseAndSetIfChanged(ref _installing, value);
         }
 
         public bool Uninstalling
         {
             get => _uninstalling;
-            set => this.RaiseAndSetIfChanged(ref _uninstalling, value);
+            set => RaiseAndSetIfChanged(ref _uninstalling, value);
         }
 
         public bool IsMet
         {
             get => _isMet;
-            set => this.RaiseAndSetIfChanged(ref _isMet, value);
+            set => RaiseAndSetIfChanged(ref _isMet, value);
         }
 
         public bool Busy => _busy.Value;

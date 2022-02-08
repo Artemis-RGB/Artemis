@@ -20,13 +20,13 @@ namespace Artemis.UI.Screens.SurfaceEditor
         public bool IsSelected
         {
             get => _isSelected;
-            set => this.RaiseAndSetIfChanged(ref _isSelected, value);    
+            set => RaiseAndSetIfChanged(ref _isSelected, value);    
         }
 
         public SKColor Color
         {
             get => _color;
-            set => this.RaiseAndSetIfChanged(ref _color, value);
+            set => RaiseAndSetIfChanged(ref _color, value);
         }   
     }
 }

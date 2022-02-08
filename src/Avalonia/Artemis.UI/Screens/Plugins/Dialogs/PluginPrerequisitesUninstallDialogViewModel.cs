@@ -55,19 +55,19 @@ namespace Artemis.UI.Screens.Plugins
         public PluginPrerequisiteViewModel? ActivePrerequisite
         {
             get => _activePrerequisite;
-            set => this.RaiseAndSetIfChanged(ref _activePrerequisite, value);
+            set => RaiseAndSetIfChanged(ref _activePrerequisite, value);
         }
 
         public bool CanUninstall
         {
             get => _canUninstall;
-            set => this.RaiseAndSetIfChanged(ref _canUninstall, value);
+            set => RaiseAndSetIfChanged(ref _canUninstall, value);
         }
 
         public bool IsFinished
         {
             get => _isFinished;
-            set => this.RaiseAndSetIfChanged(ref _isFinished, value);
+            set => RaiseAndSetIfChanged(ref _isFinished, value);
         }
 
         public async Task Uninstall()

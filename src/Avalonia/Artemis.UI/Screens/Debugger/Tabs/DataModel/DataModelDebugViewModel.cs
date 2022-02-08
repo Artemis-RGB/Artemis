@@ -59,13 +59,13 @@ namespace Artemis.UI.Screens.Debugger.DataModel
         public DataModelPropertiesViewModel? MainDataModel
         {
             get => _mainDataModel;
-            set => this.RaiseAndSetIfChanged(ref _mainDataModel, value);
+            set => RaiseAndSetIfChanged(ref _mainDataModel, value);
         }
 
         public string? PropertySearch
         {
             get => _propertySearch;
-            set => this.RaiseAndSetIfChanged(ref _propertySearch, value);
+            set => RaiseAndSetIfChanged(ref _propertySearch, value);
         }
 
         public bool SlowUpdates
@@ -73,7 +73,7 @@ namespace Artemis.UI.Screens.Debugger.DataModel
             get => _slowUpdates;
             set
             {
-                this.RaiseAndSetIfChanged(ref _slowUpdates, value);
+                RaiseAndSetIfChanged(ref _slowUpdates, value);
                 _updateTimer.Interval = _slowUpdates ? 500 : 25;
             }
         }
@@ -85,7 +85,7 @@ namespace Artemis.UI.Screens.Debugger.DataModel
             get => _selectedModule;
             set
             {
-                this.RaiseAndSetIfChanged(ref _selectedModule, value);
+                RaiseAndSetIfChanged(ref _selectedModule, value);
                 GetDataModel();
             }
         }
@@ -95,7 +95,7 @@ namespace Artemis.UI.Screens.Debugger.DataModel
             get => _isModuleFilterEnabled;
             set
             {
-                this.RaiseAndSetIfChanged(ref _isModuleFilterEnabled, value);
+                RaiseAndSetIfChanged(ref _isModuleFilterEnabled, value);
 
                 if (!IsModuleFilterEnabled)
                     SelectedModule = null;

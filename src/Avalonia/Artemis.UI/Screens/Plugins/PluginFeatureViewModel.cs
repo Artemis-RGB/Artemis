@@ -66,7 +66,7 @@ namespace Artemis.UI.Screens.Plugins
         public bool Enabling
         {
             get => _enabling;
-            set => this.RaiseAndSetIfChanged(ref _enabling, value);
+            set => RaiseAndSetIfChanged(ref _enabling, value);
         }
 
         public bool IsEnabled

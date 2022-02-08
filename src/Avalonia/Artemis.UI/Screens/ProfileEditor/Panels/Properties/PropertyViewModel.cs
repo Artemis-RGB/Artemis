@@ -30,18 +30,18 @@ public class PropertyViewModel : ViewModelBase
     public bool IsVisible
     {
         get => _isVisible;
-        set => this.RaiseAndSetIfChanged(ref _isVisible, value);
+        set => RaiseAndSetIfChanged(ref _isVisible, value);
     }
 
     public bool IsHighlighted
     {
         get => _isHighlighted;
-        set => this.RaiseAndSetIfChanged(ref _isHighlighted, value);
+        set => RaiseAndSetIfChanged(ref _isHighlighted, value);
     }
 
     public bool IsExpanded
     {
         get => _isExpanded;
-        set => this.RaiseAndSetIfChanged(ref _isExpanded, value);
+        set => RaiseAndSetIfChanged(ref _isExpanded, value);
     }
 }

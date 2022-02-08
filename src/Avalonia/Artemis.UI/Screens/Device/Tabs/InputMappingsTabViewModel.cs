@@ -37,7 +37,7 @@ namespace Artemis.UI.Screens.Device
         public ArtemisLed? SelectedLed
         {
             get => _selectedLed;
-            set => this.RaiseAndSetIfChanged(ref _selectedLed, value);
+            set => RaiseAndSetIfChanged(ref _selectedLed, value);
         }
 
         public ObservableCollection<(ArtemisLed, ArtemisLed)> InputMappings { get; }

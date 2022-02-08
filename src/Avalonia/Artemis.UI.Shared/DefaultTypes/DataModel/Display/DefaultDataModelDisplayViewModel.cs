@@ -28,7 +28,7 @@ namespace Artemis.UI.Shared.DefaultTypes.DataModel.Display
         public string Display
         {
             get => _display;
-            set => this.RaiseAndSetIfChanged(ref _display, value);
+            set => RaiseAndSetIfChanged(ref _display, value);
         }
         
         protected override void OnDisplayValueUpdated()

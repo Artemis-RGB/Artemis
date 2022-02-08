@@ -78,13 +78,13 @@ namespace Artemis.UI.Screens.Plugins
         public Plugin Plugin
         {
             get => _plugin;
-            set => this.RaiseAndSetIfChanged(ref _plugin, value);
+            set => RaiseAndSetIfChanged(ref _plugin, value);
         }
 
         public bool Enabling
         {
             get => _enabling;
-            set => this.RaiseAndSetIfChanged(ref _enabling, value);
+            set => RaiseAndSetIfChanged(ref _enabling, value);
         }
 
         public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
@@ -100,7 +100,7 @@ namespace Artemis.UI.Screens.Plugins
             get => _isSettingsPopupOpen;
             set
             {
-                if (!this.RaiseAndSetIfChanged(ref _isSettingsPopupOpen, value)) return;
+                if (!RaiseAndSetIfChanged(ref _isSettingsPopupOpen, value)) return;
                 CheckPrerequisites();
             }
         }
@@ -108,13 +108,13 @@ namespace Artemis.UI.Screens.Plugins
         public bool CanInstallPrerequisites
         {
             get => _canInstallPrerequisites;
-            set => this.RaiseAndSetIfChanged(ref _canInstallPrerequisites, value);
+            set => RaiseAndSetIfChanged(ref _canInstallPrerequisites, value);
         }
 
         public bool CanRemovePrerequisites
         {
             get => _canRemovePrerequisites;
-            set => this.RaiseAndSetIfChanged(ref _canRemovePrerequisites, value);
+            set => RaiseAndSetIfChanged(ref _canRemovePrerequisites, value);
         }
 
         private void ExecuteOpenSettings()

@@ -22,7 +22,7 @@ namespace Artemis.UI.Shared.DataModelVisualization
             set
             {
                 if (Equals(value, _displayValue)) return;
-                this.RaiseAndSetIfChanged(ref _displayValue, value);
+                RaiseAndSetIfChanged(ref _displayValue, value);
                 OnDisplayValueUpdated();
             }
         }
@@ -56,7 +56,7 @@ namespace Artemis.UI.Shared.DataModelVisualization
         public DataModelPropertyAttribute? PropertyDescription
         {
             get => _propertyDescription;
-            internal set => this.RaiseAndSetIfChanged(ref _propertyDescription, value);
+            internal set => RaiseAndSetIfChanged(ref _propertyDescription, value);
         }
 
         /// <summary>

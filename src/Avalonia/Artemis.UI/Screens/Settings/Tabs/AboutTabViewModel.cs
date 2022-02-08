@@ -27,31 +27,31 @@ namespace Artemis.UI.Screens.Settings
         public string? Version
         {
             get => _version;
-            set => this.RaiseAndSetIfChanged(ref _version, value);
+            set => RaiseAndSetIfChanged(ref _version, value);
         }
 
         public Bitmap? RobertProfileImage
         {
             get => _robertProfileImage;
-            set => this.RaiseAndSetIfChanged(ref _robertProfileImage, value);
+            set => RaiseAndSetIfChanged(ref _robertProfileImage, value);
         }
 
         public Bitmap? DarthAffeProfileImage
         {
             get => _darthAffeProfileImage;
-            set => this.RaiseAndSetIfChanged(ref _darthAffeProfileImage, value);
+            set => RaiseAndSetIfChanged(ref _darthAffeProfileImage, value);
         }
 
         public Bitmap? DrMeteorProfileImage
         {
             get => _drMeteorProfileImage;
-            set => this.RaiseAndSetIfChanged(ref _drMeteorProfileImage, value);
+            set => RaiseAndSetIfChanged(ref _drMeteorProfileImage, value);
         }
 
         public Bitmap? KaiProfileImage
         {
             get => _kaiProfileImage;
-            set => this.RaiseAndSetIfChanged(ref _kaiProfileImage, value);
+            set => RaiseAndSetIfChanged(ref _kaiProfileImage, value);
         }
 
         private async Task Activate()

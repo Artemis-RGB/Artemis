@@ -46,7 +46,7 @@ namespace Artemis.UI.Screens.Settings
         public string? SearchPluginInput
         {
             get => _searchPluginInput;
-            set => this.RaiseAndSetIfChanged(ref _searchPluginInput, value);
+            set => RaiseAndSetIfChanged(ref _searchPluginInput, value);
         }
 
         public void OpenUrl(string url)

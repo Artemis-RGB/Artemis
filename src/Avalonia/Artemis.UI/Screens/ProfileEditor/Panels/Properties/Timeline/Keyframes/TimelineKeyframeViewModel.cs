@@ -47,13 +47,13 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
     public double X
     {
         get => _x;
-        set => this.RaiseAndSetIfChanged(ref _x, value);
+        set => RaiseAndSetIfChanged(ref _x, value);
     }
 
     public string Timestamp
     {
         get => _timestamp;
-        set => this.RaiseAndSetIfChanged(ref _timestamp, value);
+        set => RaiseAndSetIfChanged(ref _timestamp, value);
     }
 
     public bool IsSelected => _isSelected?.Value ?? false;

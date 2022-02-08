@@ -2,7 +2,160 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tools="clr-namespace:Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools.TransformToolView">
-    Welcome to Avalonia!
+             x:Class="Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools.TransformToolView"
+             x:DataType="tools:TransformToolViewModel">
+    <UserControl.Styles>
+        <Style Selector="Ellipse.rotation-handle">
+            <Setter Property="Margin" Value="-15"></Setter>
+            <Setter Property="Width" Value="30"></Setter>
+            <Setter Property="Height" Value="30"></Setter>
+            <Setter Property="Fill" Value="Green"></Setter>
+            <Setter Property="Cursor" Value="Hand"></Setter>
+        </Style>
+
+        <Style Selector="Ellipse.anchor-handle">
+            <Setter Property="Margin" Value="-15"></Setter>
+            <Setter Property="Width" Value="30"></Setter>
+            <Setter Property="Height" Value="30"></Setter>
+            <Setter Property="Fill" Value="Red"></Setter>
+            <Setter Property="Cursor" Value="SizeAll"></Setter>
+        </Style>
+
+        <Style Selector="Rectangle.resize-handle">
+            <Setter Property="Margin" Value="-6"></Setter>
+            <Setter Property="Width" Value="12"></Setter>
+            <Setter Property="Height" Value="12"></Setter>
+            <Setter Property="Fill" Value="Blue"></Setter>
+            <Setter Property="Cursor" Value="Hand"></Setter>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <RotateTransform Angle="{CompiledBinding InverseRotation}"></RotateTransform>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+
+    <Canvas ClipToBounds="False" UseLayoutRounding="False">
+        <Border Name="TransformationContainer"
+                Width="{CompiledBinding ShapeBounds.Width}"
+                Height="{CompiledBinding ShapeBounds.Height}"
+                ClipToBounds="False"
+                Canvas.Left="{CompiledBinding ShapeBounds.Left}"
+                Canvas.Top="{CompiledBinding ShapeBounds.Top}"
+                RenderTransformOrigin="{CompiledBinding RelativeAnchor}">
+            <Border.RenderTransform>
+                <RotateTransform Angle="{CompiledBinding Rotation}"></RotateTransform>
+            </Border.RenderTransform>
+            <Grid>
+                <!-- Render these first so that they are always behind the actual shape -->
+                <Ellipse Name="RotateTopLeft"
+                         VerticalAlignment="Top"
+                         HorizontalAlignment="Left"
+                         Classes="rotation-handle"
+                         PointerPressed="RotationOnPointerPressed"
+                         PointerReleased="RotationOnPointerReleased"
+                         PointerMoved="RotationOnPointerMoved" />
+                <Ellipse Name="RotateTopRight"
+                         VerticalAlignment="Top"
+                         HorizontalAlignment="Right"
+                         Classes="rotation-handle"
+                         PointerPressed="RotationOnPointerPressed"
+                         PointerReleased="RotationOnPointerReleased"
+                         PointerMoved="RotationOnPointerMoved" />
+                <Ellipse Name="RotateBottomRight"
+                         VerticalAlignment="Bottom"
+                         HorizontalAlignment="Right"
+                         Classes="rotation-handle"
+                         PointerPressed="RotationOnPointerPressed"
+                         PointerReleased="RotationOnPointerReleased"
+                         PointerMoved="RotationOnPointerMoved" />
+                <Ellipse Name="RotateBottomLeft"
+                         VerticalAlignment="Bottom"
+                         HorizontalAlignment="Left"
+                         Classes="rotation-handle"
+                         PointerPressed="RotationOnPointerPressed"
+                         PointerReleased="RotationOnPointerReleased"
+                         PointerMoved="RotationOnPointerMoved" />
+
+                <!-- Mutation points -->
+                <Rectangle Name="ResizeTopCenter"
+                           VerticalAlignment="Top"
+                           HorizontalAlignment="Center"
+                           Classes="resize-handle"
+                           PointerPressed="ResizeOnPointerPressed"
+                           PointerReleased="ResizeOnPointerReleased"
+                           PointerMoved="ResizeOnPointerMoved">
+                </Rectangle>
+                <Rectangle Name="ResizeRightCenter"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"
+                           Classes="resize-handle"
+                           PointerPressed="ResizeOnPointerPressed"
+                           PointerReleased="ResizeOnPointerReleased"
+                           PointerMoved="ResizeOnPointerMoved">
+                </Rectangle>
+                <Rectangle Name="ResizeBottomCenter"
+                           VerticalAlignment="Bottom"
+                           HorizontalAlignment="Center"
+                           Classes="resize-handle"
+                           PointerPressed="ResizeOnPointerPressed"
+                           PointerReleased="ResizeOnPointerReleased"
+                           PointerMoved="ResizeOnPointerMoved">
+                </Rectangle>
+                <Rectangle Name="ResizeLeftCenter"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left"
+                           Classes="resize-handle"
+                           PointerPressed="ResizeOnPointerPressed"
+                           PointerReleased="ResizeOnPointerReleased"
+                           PointerMoved="ResizeOnPointerMoved">
+                </Rectangle>
+
+                <Rectangle Name="ResizeTopLeft"
+                           Classes="resize-handle"
+                           VerticalAlignment="Top"
+                           HorizontalAlignment="Left"
+                           PointerPressed="ResizeOnPointerPressed"
+                           PointerReleased="ResizeOnPointerReleased"
+                           PointerMoved="ResizeOnPointerMoved">
+                </Rectangle>
+                <Rectangle Name="ResizeTopRight"
+                           VerticalAlignment="Top"
+                           HorizontalAlignment="Right"
+                           Classes="resize-handle"
+                           PointerPressed="ResizeOnPointerPressed"
+                           PointerReleased="ResizeOnPointerReleased"
+                           PointerMoved="ResizeOnPointerMoved">
+                </Rectangle>
+                <Rectangle Name="ResizeBottomRight"
+                           VerticalAlignment="Bottom"
+                           HorizontalAlignment="Right"
+                           Classes="resize-handle"
+                           PointerPressed="ResizeOnPointerPressed"
+                           PointerReleased="ResizeOnPointerReleased"
+                           PointerMoved="ResizeOnPointerMoved">
+                </Rectangle>
+                <Rectangle Name="ResizeBottomLeft"
+                           VerticalAlignment="Bottom"
+                           HorizontalAlignment="Left"
+                           Classes="resize-handle"
+                           PointerPressed="ResizeOnPointerPressed"
+                           PointerReleased="ResizeOnPointerReleased"
+                           PointerMoved="ResizeOnPointerMoved">
+                </Rectangle>
+
+                <Canvas>
+                    <Ellipse Name="AnchorPoint"
+                             Canvas.Left="{CompiledBinding Anchor.X}"
+                             Canvas.Top="{CompiledBinding Anchor.Y}"
+                             Classes="anchor-handle"
+                             PointerPressed="MoveOnPointerPressed"
+                             PointerReleased="MoveOnPointerReleased"
+                             PointerMoved="MoveOnPointerMoved" />
+                </Canvas>
+            </Grid>
+        </Border>
+    </Canvas>
 </UserControl>
