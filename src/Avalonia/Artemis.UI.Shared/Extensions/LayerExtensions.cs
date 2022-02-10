@@ -45,30 +45,14 @@ public static class LayerExtensions
     /// <summary>
     ///     Returns an absolute and scaled rectangular path for the given layer in real coordinates.
     /// </summary>
-    public static SKPath GetLayerPath(this Layer layer, bool includeTranslation, bool includeScale, bool includeRotation, SKPoint? anchorOverride = null)
+    public static SKPath GetLayerPath(this Layer layer, bool includeTranslation, bool includeScale, bool includeRotation)
     {
         SKRect layerBounds = GetLayerBounds(layer);
 
-        // Apply transformation like done by the core during layer rendering (same differences apply as in GetLayerTransformGroup)
-        SKPoint anchorPosition = GetLayerAnchorPosition(layer);
-        if (anchorOverride != null)
-            anchorPosition = anchorOverride.Value;
-
-        SKPoint anchorProperty = layer.Transform.AnchorPoint.CurrentValue;
-
-        // Translation originates from the unscaled center of the shape and is tied to the anchor
-        float x = anchorPosition.X - layerBounds.MidX - anchorProperty.X * layerBounds.Width;
-        float y = anchorPosition.Y - layerBounds.MidY - anchorProperty.Y * layerBounds.Height;
-
+        SKMatrix transform = layer.GetTransformMatrix(false, includeTranslation, includeScale, includeRotation, layerBounds);
         SKPath path = new();
         path.AddRect(layerBounds);
-        if (includeTranslation)
-            path.Transform(SKMatrix.CreateTranslation(x, y));
-        if (includeScale)
-            path.Transform(SKMatrix.CreateScale(layer.Transform.Scale.CurrentValue.Width / 100f, layer.Transform.Scale.CurrentValue.Height / 100f, anchorPosition.X, anchorPosition.Y));
-        if (includeRotation)
-            path.Transform(SKMatrix.CreateRotationDegrees(layer.Transform.Rotation.CurrentValue, anchorPosition.X, anchorPosition.Y));
-
+        path.Transform(transform);
         return path;
     }
 
@@ -91,19 +75,27 @@ public static class LayerExtensions
     }
 
     /// <summary>
-    ///     Returns the offset from the given point to the top-left of the layer
+    ///     Returns the offset from the given point to the closest sides of the layer's shape bounds
     /// </summary>
     public static SKPoint GetDragOffset(this Layer layer, SKPoint dragStart)
     {
-        // Figure out what the top left will be if the shape moves to the current cursor position
-        SKPoint scaledDragStart = GetScaledPoint(layer, dragStart, true);
-        SKPoint tempAnchor = GetLayerAnchorPosition(layer, scaledDragStart);
-        SKPoint tempTopLeft = GetLayerPath(layer, true, true, true, tempAnchor)[0];
+        SKRect bounds = layer.GetLayerPath(true, true, false).Bounds;
+        SKPoint anchor = layer.GetLayerAnchorPosition();
 
-        // Get the shape's position
-        SKPoint topLeft = GetLayerPath(layer, true, true, true)[0];
+        float xOffset = 0f, yOffset = 0f;
 
-        // The difference between the two is the offset
-        return topLeft - tempTopLeft;
+        // X offset
+        if (dragStart.X < anchor.X)
+            xOffset = bounds.Left - dragStart.X;
+        else if (dragStart.X > anchor.X)
+            xOffset = bounds.Right - dragStart.X;
+
+        // Y offset
+        if (dragStart.Y < anchor.Y)
+            yOffset = bounds.Top - dragStart.Y;
+        else if (dragStart.Y > anchor.Y)
+            yOffset = bounds.Bottom - dragStart.Y;
+
+        return new SKPoint(xOffset, yOffset);
     }
 }
