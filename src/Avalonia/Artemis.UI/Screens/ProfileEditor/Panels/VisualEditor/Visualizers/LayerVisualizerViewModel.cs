@@ -2,11 +2,13 @@
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia;
 using Avalonia.Controls.Mixins;
 using ReactiveUI;
 using ShimSkiaSharp;
+using SKRect = SkiaSharp.SKRect;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
 
@@ -59,20 +61,9 @@ public class LayerVisualizerViewModel : ActivatableViewModelBase, IVisualizerVie
 
     private void Update()
     {
-        // Create accurate bounds based on the RgbLeds and not the rounded ArtemisLeds
-        SKPath path = new();
-        foreach (ArtemisLed artemisLed in Layer.Leds)
-        {
-            path.AddRect(SKRect.Create(
-                artemisLed.RgbLed.AbsoluteBoundary.Location.X,
-                artemisLed.RgbLed.AbsoluteBoundary.Location.Y,
-                artemisLed.RgbLed.AbsoluteBoundary.Size.Width,
-                artemisLed.RgbLed.AbsoluteBoundary.Size.Height)
-            );
-        }
-
-        LayerBounds = new Rect(0, 0, path.Bounds.Width, path.Bounds.Height);
-        X = path.Bounds.Left;
-        Y = path.Bounds.Top;
+        SKRect bounds = Layer.GetLayerBounds();
+        LayerBounds = new Rect(0, 0, bounds.Width, bounds.Height);
+        X = bounds.Left;
+        Y = bounds.Top;
     }
 }

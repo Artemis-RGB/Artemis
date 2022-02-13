@@ -55,7 +55,7 @@ namespace Artemis.UI.Windows
 
         public bool FocusExistingInstance()
         {
-            _artemisMutex = new Mutex(true, "Artemis-3c24b502-64e6-4587-84bf-9072970e535d", out bool createdNew);
+            _artemisMutex = new Mutex(true, "Artemis-3c24b502-64e6-4587-84bf-9072970e535f", out bool createdNew);
             if (createdNew)
                 return false;
 

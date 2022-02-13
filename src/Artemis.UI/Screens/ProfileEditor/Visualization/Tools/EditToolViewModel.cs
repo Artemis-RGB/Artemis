@@ -420,7 +420,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
         private static SKPoint RoundPoint(SKPoint point, int decimals)
         {
-            return new((float) Math.Round(point.X, decimals, MidpointRounding.AwayFromZero), (float) Math.Round(point.Y, decimals, MidpointRounding.AwayFromZero));
+            return new SKPoint(
+                (float) Math.Round(point.X, decimals, MidpointRounding.AwayFromZero),
+                (float) Math.Round(point.Y, decimals, MidpointRounding.AwayFromZero)
+            );
         }
 
         private static SKPoint[] UnTransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot, bool includeScale)

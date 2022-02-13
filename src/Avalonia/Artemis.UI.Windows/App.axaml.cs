@@ -1,4 +1,7 @@
 using Artemis.Core.Services;
+using Artemis.UI.Shared.Providers;
+using Artemis.UI.Windows.Ninject;
+using Artemis.UI.Windows.Providers;
 using Artemis.UI.Windows.Providers.Input;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -13,7 +16,7 @@ namespace Artemis.UI.Windows
     {
         public override void Initialize()
         {
-            _kernel = ArtemisBootstrapper.Bootstrap(this);
+            _kernel = ArtemisBootstrapper.Bootstrap(this, new WindowsModule());
             RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
             AvaloniaXamlLoader.Load(this);
         }

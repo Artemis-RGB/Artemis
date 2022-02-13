@@ -8,6 +8,19 @@
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
     <None Remove=".gitignore" />
+    <None Remove="Assets\Cursors\aero_crosshair.cur" />
+    <None Remove="Assets\Cursors\aero_crosshair_minus.cur" />
+    <None Remove="Assets\Cursors\aero_crosshair_plus.cur" />
+    <None Remove="Assets\Cursors\aero_drag.cur" />
+    <None Remove="Assets\Cursors\aero_drag_ew.cur" />
+    <None Remove="Assets\Cursors\aero_fill.cur" />
+    <None Remove="Assets\Cursors\aero_pen_min.cur" />
+    <None Remove="Assets\Cursors\aero_pen_plus.cur" />
+    <None Remove="Assets\Cursors\aero_rotate.cur" />
+    <None Remove="Assets\Cursors\aero_rotate_bl.cur" />
+    <None Remove="Assets\Cursors\aero_rotate_br.cur" />
+    <None Remove="Assets\Cursors\aero_rotate_tl.cur" />
+    <None Remove="Assets\Cursors\aero_rotate_tr.cur" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.12" />

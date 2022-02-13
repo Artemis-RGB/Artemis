@@ -30,14 +30,21 @@ public class StatusBarViewModel : ActivatableViewModelBase
         this.WhenAnyValue(vm => vm.History)
             .Select(h => h?.Undo ?? Observable.Never<IProfileEditorCommand?>())
             .Switch()
-            .Subscribe(c => StatusMessage = c != null ? $"Undid '{c.DisplayName}'." : "Nothing to undo.");
+            .Subscribe(c =>
+            {
+                StatusMessage = c != null ? $"Undid '{c.DisplayName}'." : "Nothing to undo.";
+                ShowStatusMessage = true;
+            });
         this.WhenAnyValue(vm => vm.History)
             .Select(h => h?.Redo ?? Observable.Never<IProfileEditorCommand?>())
             .Switch()
-            .Subscribe(c => StatusMessage = c != null ? $"Redid '{c.DisplayName}'." : "Nothing to redo.");
+            .Subscribe(c =>
+            {
+                StatusMessage = c != null ? $"Redid '{c.DisplayName}'." : "Nothing to redo.";
+                ShowStatusMessage = true;
+            });
 
-        this.WhenAnyValue(vm => vm.StatusMessage).Subscribe(_ => ShowStatusMessage = true);
-        this.WhenAnyValue(vm => vm.StatusMessage).Throttle(TimeSpan.FromSeconds(3)).Subscribe(_ => ShowStatusMessage = false);
+        this.WhenAnyValue(vm => vm.ShowStatusMessage).Where(v => v).Throttle(TimeSpan.FromSeconds(3)).Subscribe(_ => ShowStatusMessage = false);
     }
 
     public RenderProfileElement? ProfileElement => _profileElement?.Value;

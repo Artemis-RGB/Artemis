@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reactive;
+using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
@@ -27,11 +29,19 @@ internal class TreePropertyViewModel<T> : ActivatableViewModelBase, ITreePropert
             _profileEditorService.Time.Subscribe(t => _time = t).DisposeWith(d);
             this.WhenAnyValue(vm => vm.LayerProperty.KeyframesEnabled).Subscribe(_ => this.RaisePropertyChanged(nameof(KeyframesEnabled))).DisposeWith(d);
         });
+
+        ResetToDefault = ReactiveCommand.Create(ExecuteResetToDefault, Observable.Return(LayerProperty.DefaultValue != null));
+    }
+
+    private void ExecuteResetToDefault()
+    {
+        _profileEditorService.ExecuteCommand(new ResetLayerProperty<T>(LayerProperty));
     }
 
     public LayerProperty<T> LayerProperty { get; }
     public PropertyViewModel PropertyViewModel { get; }
     public PropertyInputViewModel<T>? PropertyInputViewModel { get; }
+    public ReactiveCommand<Unit, Unit> ResetToDefault { get; }
 
     public bool KeyframesEnabled
     {
@@ -63,3 +73,4 @@ internal class TreePropertyViewModel<T> : ActivatableViewModelBase, ITreePropert
         return depth;
     }
 }
+

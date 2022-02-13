@@ -579,10 +579,8 @@ namespace Artemis.Core
             SKRect bounds = customBounds ?? Bounds;
             SKPoint positionProperty = Transform.Position.CurrentValue;
 
-            // Start at the center of the shape
-            SKPoint position = zeroBased
-                ? new SKPoint(bounds.MidX - bounds.Left, bounds.MidY - Bounds.Top)
-                : new SKPoint(bounds.MidX, bounds.MidY);
+            // Start at the top left of the shape
+            SKPoint position = zeroBased ? new SKPoint(0, 0) : new SKPoint(bounds.Left, bounds.Top);
 
             // Apply translation
             if (applyTranslation)
@@ -649,9 +647,9 @@ namespace Artemis.Core
             SKPoint anchorPosition = GetLayerAnchorPosition(true, zeroBased, bounds);
             SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
 
-            // Translation originates from the unscaled center of the shape and is tied to the anchor
-            float x = anchorPosition.X - (zeroBased ? bounds.MidX - bounds.Left : bounds.MidX) - anchorProperty.X * bounds.Width;
-            float y = anchorPosition.Y - (zeroBased ? bounds.MidY - bounds.Top : bounds.MidY) - anchorProperty.Y * bounds.Height;
+            // Translation originates from the top left of the shape and is tied to the anchor
+            float x = anchorPosition.X - (zeroBased ? 0 : bounds.Left) - anchorProperty.X * bounds.Width;
+            float y = anchorPosition.Y - (zeroBased ? 0 : bounds.Top) - anchorProperty.Y * bounds.Height;
 
             SKMatrix transform = SKMatrix.Empty;
 

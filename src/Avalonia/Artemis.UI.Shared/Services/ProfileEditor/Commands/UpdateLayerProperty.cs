@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Artemis.Core;
 
 namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
@@ -12,6 +13,7 @@ public class UpdateLayerProperty<T> : IProfileEditorCommand
     private readonly T _newValue;
     private readonly T _originalValue;
     private readonly TimeSpan? _time;
+    private readonly bool _hasKeyframe;
     private LayerPropertyKeyframe<T>? _newKeyframe;
 
     /// <summary>
@@ -23,6 +25,7 @@ public class UpdateLayerProperty<T> : IProfileEditorCommand
         _originalValue = layerProperty.CurrentValue;
         _newValue = newValue;
         _time = time;
+        _hasKeyframe = _layerProperty.Keyframes.Any(k => k.Position == time);
 
         DisplayName = $"Update {_layerProperty.PropertyDescription.Name ?? "property"}";
     }
@@ -50,13 +53,19 @@ public class UpdateLayerProperty<T> : IProfileEditorCommand
     {
         // If there was already a keyframe from a previous execute that was undone, put it back
         if (_newKeyframe != null)
+        {
             _layerProperty.AddKeyframe(_newKeyframe);
-        else
+            return;
+        }
+
+        // If the layer had no keyframe yet but keyframes are enabled, a new keyframe will be returned
+        if (!_hasKeyframe && _layerProperty.KeyframesEnabled)
         {
             _newKeyframe = _layerProperty.SetCurrentValue(_newValue, _time);
-            if (_newKeyframe != null)
-                DisplayName = $"Add {_layerProperty.PropertyDescription.Name ?? "property"} keyframe";
+            DisplayName = $"Add {_layerProperty.PropertyDescription.Name ?? "property"} keyframe";
         }
+        else
+            _layerProperty.SetCurrentValue(_newValue, _time);
     }
 
     /// <inheritdoc />

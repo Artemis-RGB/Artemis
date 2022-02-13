@@ -12,13 +12,13 @@ namespace Artemis.Core
         /// <summary>
         ///     The point at which the shape is attached to its position
         /// </summary>
-        [PropertyDescription(Description = "The point at which the shape is attached to its position", InputStepSize = 0.001f)]
+        [PropertyDescription(Description = "The point at which the shape is attached to its position", InputAffix = "%")]
         public SKPointLayerProperty AnchorPoint { get; set; }
 
         /// <summary>
         ///     The position of the shape
         /// </summary>
-        [PropertyDescription(Description = "The position of the shape", InputStepSize = 0.001f)]
+        [PropertyDescription(Description = "The position of the shape", InputAffix = "%")]
         public SKPointLayerProperty Position { get; set; }
 
         /// <summary>
@@ -43,6 +43,8 @@ namespace Artemis.Core
         protected override void PopulateDefaults()
         {
             Scale.DefaultValue = new SKSize(100, 100);
+            AnchorPoint.DefaultValue = new SKPoint(0.5f, 0.5f);
+            Position.DefaultValue = new SKPoint(0.5f, 0.5f);
             Opacity.DefaultValue = 100;
         }
 

@@ -11,6 +11,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Ninject;
+using Ninject.Modules;
 using ReactiveUI;
 using Splat.Ninject;
 
@@ -21,7 +22,7 @@ namespace Artemis.UI
         private static StandardKernel? _kernel;
         private static Application? _application;
 
-        public static StandardKernel Bootstrap(Application application)
+        public static StandardKernel Bootstrap(Application application, params INinjectModule[] modules)
         {
             if (_application != null || _kernel != null)
                 throw new ArtemisUIException("UI already bootstrapped");
@@ -35,6 +36,7 @@ namespace Artemis.UI
             _kernel.Load<CoreModule>();
             _kernel.Load<UIModule>();
             _kernel.Load<SharedUIModule>();
+            _kernel.Load(modules);
 
             _kernel.UseNinjectDependencyResolver();
 

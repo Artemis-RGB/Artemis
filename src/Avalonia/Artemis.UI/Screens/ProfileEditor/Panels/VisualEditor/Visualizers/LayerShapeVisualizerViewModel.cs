@@ -91,19 +91,7 @@ public class LayerShapeVisualizerViewModel : ActivatableViewModelBase, IVisualiz
 
     private void UpdateLayerBounds()
     {
-        // Create accurate bounds based on the RgbLeds and not the rounded ArtemisLeds
-        SKPath path = new();
-        foreach (ArtemisLed artemisLed in Layer.Leds)
-        {
-            path.AddRect(SKRect.Create(
-                artemisLed.RgbLed.AbsoluteBoundary.Location.X,
-                artemisLed.RgbLed.AbsoluteBoundary.Location.Y,
-                artemisLed.RgbLed.AbsoluteBoundary.Size.Width,
-                artemisLed.RgbLed.AbsoluteBoundary.Size.Height)
-            );
-        }
-
-        SKRect bounds = path.Bounds;
+        SKRect bounds = Layer.GetLayerBounds();
         LayerBounds = new Rect(0, 0, bounds.Width, bounds.Height);
         X = bounds.Left;
         Y = bounds.Top;

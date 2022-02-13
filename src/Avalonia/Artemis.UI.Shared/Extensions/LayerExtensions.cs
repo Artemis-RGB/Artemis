@@ -14,6 +14,9 @@ public static class LayerExtensions
     /// </summary>
     public static SKRect GetLayerBounds(this Layer layer)
     {
+        if (!layer.Leds.Any())
+            return SKRect.Empty;
+
         return new SKRect(
             layer.Leds.Min(l => l.RgbLed.AbsoluteBoundary.Location.X),
             layer.Leds.Min(l => l.RgbLed.AbsoluteBoundary.Location.Y),
@@ -32,8 +35,8 @@ public static class LayerExtensions
         if (positionOverride != null)
             positionProperty = positionOverride.Value;
 
-        // Start at the center of the shape
-        SKPoint position = new(layerBounds.MidX, layerBounds.MidY);
+        // Start at the top left of the shape
+        SKPoint position = new(layerBounds.Left, layerBounds.Top);
 
         // Apply translation
         position.X += positionProperty.X * layerBounds.Width;
@@ -59,7 +62,7 @@ public static class LayerExtensions
     /// <summary>
     ///     Returns a new point normalized to 0.0-1.0
     /// </summary>
-    public static SKPoint GetScaledPoint(this Layer layer, SKPoint point, bool absolute)
+    public static SKPoint GetNormalizedPoint(this Layer layer, SKPoint point, bool absolute)
     {
         SKRect bounds = GetLayerBounds(layer);
         if (absolute)

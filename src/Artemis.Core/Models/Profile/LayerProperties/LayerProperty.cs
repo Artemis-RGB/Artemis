@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using Artemis.Storage.Entities.Profile;
@@ -201,33 +202,33 @@ namespace Artemis.Core
         ///     An optional time to set the value add, if provided and property is using keyframes the value will be set to an new
         ///     or existing keyframe.
         /// </param>
-        /// <returns>The new keyframe if one was created.</returns>
+        /// <returns>The keyframe if one was created or updated.</returns>
         public LayerPropertyKeyframe<T>? SetCurrentValue(T value, TimeSpan? time)
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
-            LayerPropertyKeyframe<T>? newKeyframe = null;
+            LayerPropertyKeyframe<T>? keyframe = null;
             if (time == null || !KeyframesEnabled || !KeyframesSupported)
                 BaseValue = value;
             else
             {
                 // If on a keyframe, update the keyframe
-                LayerPropertyKeyframe<T>? currentKeyframe = Keyframes.FirstOrDefault(k => k.Position == time.Value);
+                keyframe = Keyframes.FirstOrDefault(k => k.Position == time.Value);
                 // Create a new keyframe if none found
-                if (currentKeyframe == null)
+                if (keyframe == null)
                 {
-                    newKeyframe = new LayerPropertyKeyframe<T>(value, time.Value, Easings.Functions.Linear, this);
-                    AddKeyframe(newKeyframe);
+                    keyframe = new LayerPropertyKeyframe<T>(value, time.Value, Easings.Functions.Linear, this);
+                    AddKeyframe(keyframe);
                 }
                 else
-                    currentKeyframe.Value = value;
+                    keyframe.Value = value;
             }
 
             // Force an update so that the base value is applied to the current value and
             // keyframes/data bindings are applied using the new base value
             ReapplyUpdate();
-            return newKeyframe;
+            return keyframe;
         }
 
         /// <inheritdoc />
