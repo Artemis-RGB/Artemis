@@ -182,7 +182,7 @@ namespace Artemis.Core
         private void StreamlineOrder()
         {
             for (int index = 0; index < ChildrenList.Count; index++)
-                ChildrenList[index].Order = index;
+                ChildrenList[index].Order = index + 1;
         }
 
         /// <summary>

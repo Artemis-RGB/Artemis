@@ -162,18 +162,28 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             Observable.FromEventPattern<ProfileElementEventArgs>(x => ProfileElement.ChildAdded += x, x => ProfileElement.ChildAdded -= x)
                 .Subscribe(c => AddTreeItemIfMissing(c.EventArgs.ProfileElement)).DisposeWith(d);
             Observable.FromEventPattern<ProfileElementEventArgs>(x => ProfileElement.ChildRemoved += x, x => ProfileElement.ChildRemoved -= x)
-                .Subscribe(c => RemoveTreeItemsIfFound(c.EventArgs.ProfileElement)).DisposeWith(d);
+                .Subscribe(c => RemoveTreeItemsIfFound(c.Sender, c.EventArgs.ProfileElement)).DisposeWith(d);
         }
 
-        protected void RemoveTreeItemsIfFound(ProfileElement profileElement)
+        protected void RemoveTreeItemsIfFound(object? sender, ProfileElement profileElement)
         {
             List<TreeItemViewModel> toRemove = Children.Where(t => t.ProfileElement == profileElement).ToList();
             foreach (TreeItemViewModel treeItemViewModel in toRemove)
                 Children.Remove(treeItemViewModel);
 
-            // Deselect the current profile element if removed
-            if (_currentProfileElement == profileElement)
-                _profileEditorService.ChangeCurrentProfileElement(null);
+            if (_currentProfileElement != profileElement)
+                return;
+
+            // Find a good candidate for a new selection, preferring the next sibling, falling back to the previous sibling and finally the parent
+            ProfileElement? parent = sender as ProfileElement;
+            ProfileElement? newSelection = null;
+            if (parent != null)
+            {
+                newSelection = parent.Children.FirstOrDefault(c => c.Order == profileElement.Order) ?? parent.Children.FirstOrDefault(c => c.Order == profileElement.Order - 1);
+                if (newSelection == null && parent is Folder { IsRootFolder: false })
+                    newSelection = parent;
+            }
+            _profileEditorService.ChangeCurrentProfileElement(newSelection as RenderProfileElement);
         }
 
         protected void AddTreeItemIfMissing(ProfileElement profileElement)

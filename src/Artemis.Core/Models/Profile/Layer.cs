@@ -489,18 +489,6 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public override void Activate()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public override void Deactivate()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
         public override void Disable()
         {
             if (!Enabled)

@@ -12,6 +12,7 @@ public class RemoveProfileElement : IProfileEditorCommand, IDisposable
     private readonly RenderProfileElement _subject;
     private readonly ProfileElement _target;
     private bool _isRemoved;
+    private readonly bool _wasEnabled;
 
     /// <summary>
     /// Creates a new instance of the <see cref="RemoveProfileElement"/> class.
@@ -23,7 +24,8 @@ public class RemoveProfileElement : IProfileEditorCommand, IDisposable
 
         _subject = subject;
         _target = _subject.Parent;
-        _index = _subject.Children.IndexOf(_subject);
+        _index = _target.Children.IndexOf(_subject);
+        _wasEnabled = _subject.Enabled;
 
         DisplayName = subject switch
         {
@@ -50,15 +52,17 @@ public class RemoveProfileElement : IProfileEditorCommand, IDisposable
     {
         _isRemoved = true;
         _target.RemoveChild(_subject);
-        _subject.Deactivate();
+        _subject.Disable();
     }
 
     /// <inheritdoc />
     public void Undo()
     {
         _isRemoved = false;
-        _subject.Activate();
         _target.AddChild(_subject, _index);
+
+        if (_wasEnabled)
+            _subject.Enable();
     }
 
     #endregion

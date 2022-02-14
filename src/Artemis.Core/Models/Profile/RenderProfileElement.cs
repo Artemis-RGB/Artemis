@@ -52,17 +52,7 @@ namespace Artemis.Core
         ///     Occurs when a layer effect has been added or removed to this render element
         /// </summary>
         public event EventHandler? LayerEffectsUpdated;
-
-        /// <summary>
-        ///     Activates the render profile element, loading required brushes, effects or anything else needed for rendering
-        /// </summary>
-        public abstract void Activate();
-
-        /// <summary>
-        ///     Deactivates the render profile element, disposing required brushes, effects or anything else needed for rendering
-        /// </summary>
-        public abstract void Deactivate();
-
+        
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
