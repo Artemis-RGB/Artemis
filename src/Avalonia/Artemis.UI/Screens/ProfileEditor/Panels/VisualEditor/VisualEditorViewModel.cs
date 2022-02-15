@@ -56,6 +56,7 @@ public class VisualEditorViewModel : ActivatableViewModelBase
 
     private void CreateVisualizers(ProfileConfiguration? profileConfiguration)
     {
+        // TODO: Monitor and respond to new layers/folders and deletions
         _visualizers.Edit(list =>
         {
             list.Clear();

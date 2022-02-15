@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -11,14 +12,13 @@ namespace Artemis.Core
     /// </summary>
     public abstract class ProfileElement : BreakableModel, IDisposable
     {
+        internal readonly List<ProfileElement> ChildrenList;
         private Guid _entityId;
         private string? _name;
         private int _order;
         private ProfileElement? _parent;
         private Profile _profile;
         private bool _suspended;
-
-        internal readonly List<ProfileElement> ChildrenList;
 
         internal ProfileElement(Profile profile)
         {
@@ -118,6 +118,49 @@ namespace Artemis.Core
         public override string ToString()
         {
             return $"{nameof(EntityId)}: {EntityId}, {nameof(Order)}: {Order}, {nameof(Name)}: {Name}";
+        }
+
+        /// <summary>
+        ///     Occurs when a child was added to the <see cref="Children" /> list
+        /// </summary>
+        public event EventHandler<ProfileElementEventArgs>? ChildAdded;
+
+        /// <summary>
+        ///     Occurs when a child was removed from the <see cref="Children" /> list
+        /// </summary>
+        public event EventHandler<ProfileElementEventArgs>? ChildRemoved;
+
+        /// <summary>
+        ///     Invokes the <see cref="ChildAdded" /> event
+        /// </summary>
+        protected virtual void OnChildAdded(ProfileElement child)
+        {
+            ChildAdded?.Invoke(this, new ProfileElementEventArgs(child));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="ChildRemoved" /> event
+        /// </summary>
+        protected virtual void OnChildRemoved(ProfileElement child)
+        {
+            ChildRemoved?.Invoke(this, new ProfileElementEventArgs(child));
+        }
+
+        /// <summary>
+        ///     Disposes the profile element
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+            }
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #region Hierarchy
@@ -248,63 +291,54 @@ namespace Artemis.Core
             return layers;
         }
 
+        /// <summary>
+        ///     Returns a name for a new layer according to any other layers with a default name similar to creating new folders in
+        ///     Explorer
+        /// </summary>
+        /// <returns>The resulting name i.e. <c>New layer</c> or <c>New layer (2)</c></returns>
+        public string GetNewLayerName()
+        {
+            if (!Children.Any(c => c is Layer))
+                return "New layer";
+
+            // Grab existing unnamed layers and get the first available number 
+            // Looks slow but it's not https://stackoverflow.com/a/8865806/5015269
+            Regex regex = new(@"New layer \((\d+)\)");
+            int firstAvailable = Enumerable.Range(1, int.MaxValue)
+                .Except(Children.Where(c => c is Layer && c.Name != null && regex.IsMatch(c.Name))
+                    .Select(c => int.Parse(regex.Match(c.Name!).Groups[1].Value))
+                    .OrderBy(i => i))
+                .First();
+            return $"New layer ({firstAvailable})";
+        }
+
+        /// <summary>
+        ///     Returns a name for a new folder according to any other folders with a default name similar to creating new folders
+        ///     in Explorer
+        /// </summary>
+        /// <returns>The resulting name i.e. <c>New folder</c> or <c>New folder (2)</c></returns>
+        public string GetNewFolderName()
+        {
+            if (!Children.Any(c => c is Folder))
+                return "New folder";
+
+            // Grab existing unnamed layers and get the first available number 
+            // Looks slow but it's not https://stackoverflow.com/a/8865806/5015269
+            Regex regex = new(@"New folder \((\d+)\)");
+            int firstAvailable = Enumerable.Range(1, int.MaxValue)
+                .Except(Children.Where(c => c is Folder && c.Name != null && regex.IsMatch(c.Name))
+                    .Select(c => int.Parse(regex.Match(c.Name!).Groups[1].Value))
+                    .OrderBy(i => i))
+                .First();
+            return $"New folder ({firstAvailable})";
+        }
+
         #endregion
 
         #region Storage
 
         internal abstract void Load();
         internal abstract void Save();
-
-        #endregion
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs when a child was added to the <see cref="Children" /> list
-        /// </summary>
-        public event EventHandler<ProfileElementEventArgs>? ChildAdded;
-
-        /// <summary>
-        ///     Occurs when a child was removed from the <see cref="Children" /> list
-        /// </summary>
-        public event EventHandler<ProfileElementEventArgs>? ChildRemoved;
-
-        /// <summary>
-        ///     Invokes the <see cref="ChildAdded" /> event
-        /// </summary>
-        protected virtual void OnChildAdded(ProfileElement child)
-        {
-            ChildAdded?.Invoke(this, new ProfileElementEventArgs(child));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="ChildRemoved" /> event
-        /// </summary>
-        protected virtual void OnChildRemoved(ProfileElement child)
-        {
-            ChildRemoved?.Invoke(this, new ProfileElementEventArgs(child));
-        }
-
-        #endregion
-        
-        #region IDisposable
-        
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        ///     Disposes the profile element
-        /// </summary>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-            }
-        }
 
         #endregion
     }

@@ -7,7 +7,6 @@ using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia;
 using Avalonia.Controls.Mixins;
 using ReactiveUI;
-using ShimSkiaSharp;
 using SKRect = SkiaSharp.SKRect;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;

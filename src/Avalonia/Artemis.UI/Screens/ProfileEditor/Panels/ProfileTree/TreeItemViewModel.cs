@@ -42,13 +42,13 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             {
                 if (ProfileElement is Layer targetLayer)
                 {
-                    Layer layer = new(targetLayer.Parent, "New layer");
+                    Layer layer = new(targetLayer.Parent, targetLayer.GetNewLayerName());
                     layer.AddLeds(rgbService.EnabledDevices.SelectMany(d => d.Leds));
                     profileEditorService.ExecuteCommand(new AddProfileElement(layer, targetLayer.Parent, targetLayer.Order));
                 }
                 else if (ProfileElement != null)
                 {
-                    Layer layer = new(ProfileElement, "New layer");
+                    Layer layer = new(ProfileElement, ProfileElement.GetNewLayerName());
                     layer.AddLeds(rgbService.EnabledDevices.SelectMany(d => d.Leds));
                     profileEditorService.ExecuteCommand(new AddProfileElement(layer, ProfileElement, 0));
                 }
@@ -57,9 +57,9 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             AddFolder = ReactiveCommand.Create(() =>
             {
                 if (ProfileElement is Layer targetLayer)
-                    profileEditorService.ExecuteCommand(new AddProfileElement(new Folder(targetLayer.Parent, "New folder"), targetLayer.Parent, targetLayer.Order));
+                    profileEditorService.ExecuteCommand(new AddProfileElement(new Folder(targetLayer.Parent, targetLayer.Parent.GetNewFolderName()), targetLayer.Parent, targetLayer.Order));
                 else if (ProfileElement != null)
-                    profileEditorService.ExecuteCommand(new AddProfileElement(new Folder(ProfileElement, "New folder"), ProfileElement, 0));
+                    profileEditorService.ExecuteCommand(new AddProfileElement(new Folder(ProfileElement, ProfileElement.GetNewFolderName()), ProfileElement, 0));
             });
 
             Rename = ReactiveCommand.Create(() =>
