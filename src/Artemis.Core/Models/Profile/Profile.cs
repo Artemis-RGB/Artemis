@@ -47,7 +47,6 @@ namespace Artemis.Core
         /// </summary>
         public List<ScriptConfiguration> ScriptConfigurations { get; }
 
-
         /// <summary>
         ///     Gets or sets a boolean indicating whether this profile is freshly imported i.e. no changes have been made to it
         ///     since import

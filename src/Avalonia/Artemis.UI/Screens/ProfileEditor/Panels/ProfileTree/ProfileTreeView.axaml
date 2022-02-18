@@ -15,6 +15,7 @@
                 </Style>
             </TreeView.Styles>
             <TreeView.KeyBindings>
+                <KeyBinding Gesture="Escape" Command="{CompiledBinding ClearSelection}" />
                 <KeyBinding Gesture="F2" Command="{CompiledBinding SelectedChild.Rename}" />
                 <KeyBinding Gesture="Delete" Command="{CompiledBinding SelectedChild.Delete}" />
                 <KeyBinding Gesture="Ctrl+D" Command="{CompiledBinding SelectedChild.Duplicate}" />

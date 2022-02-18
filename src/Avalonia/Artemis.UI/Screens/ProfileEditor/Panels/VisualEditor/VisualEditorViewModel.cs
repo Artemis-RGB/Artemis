@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools;
 using Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
@@ -17,9 +19,9 @@ namespace Artemis.UI.Screens.ProfileEditor.VisualEditor;
 
 public class VisualEditorViewModel : ActivatableViewModelBase
 {
+    private readonly SourceList<IVisualizerViewModel> _visualizers;
     private readonly IProfileEditorVmFactory _vmFactory;
     private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
-    private readonly SourceList<IVisualizerViewModel> _visualizers;
     private ReadOnlyObservableCollection<IToolViewModel> _tools;
 
     public VisualEditorViewModel(IProfileEditorService profileEditorService, IRgbService rgbService, IProfileEditorVmFactory vmFactory)
@@ -36,10 +38,33 @@ public class VisualEditorViewModel : ActivatableViewModelBase
 
         this.WhenActivated(d =>
         {
-            _profileConfiguration = profileEditorService.ProfileConfiguration.ToProperty(this, vm => vm.ProfileConfiguration).DisposeWith(d);
-            profileEditorService.ProfileConfiguration.Subscribe(CreateVisualizers).DisposeWith(d);
-            profileEditorService.Tools.Connect().AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected)).Filter(t => t.IsSelected).Bind(out ReadOnlyObservableCollection<IToolViewModel> tools).Subscribe().DisposeWith(d);
+            _profileConfiguration = profileEditorService.ProfileConfiguration
+                .ToProperty(this, vm => vm.ProfileConfiguration)
+                .DisposeWith(d);
+            profileEditorService.ProfileConfiguration
+                .Subscribe(CreateVisualizers)
+                .DisposeWith(d);
+            profileEditorService.Tools
+                .Connect()
+                .AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected)).Filter(t => t.IsSelected).Bind(out ReadOnlyObservableCollection<IToolViewModel> tools)
+                .Subscribe()
+                .DisposeWith(d);
             Tools = tools;
+
+            this.WhenAnyValue(vm => vm.ProfileConfiguration)
+                .Select(p => p?.Profile != null
+                    ? Observable.FromEventPattern<ProfileElementEventArgs>(x => p.Profile.DescendentAdded += x, x => p.Profile.DescendentAdded -= x)
+                    : Observable.Never<EventPattern<ProfileElementEventArgs>>())
+                .Switch()
+                .Subscribe(AddElement)
+                .DisposeWith(d);
+            this.WhenAnyValue(vm => vm.ProfileConfiguration)
+                .Select(p => p?.Profile != null
+                    ? Observable.FromEventPattern<ProfileElementEventArgs>(x => p.Profile.DescendentRemoved += x, x => p.Profile.DescendentRemoved -= x)
+                    : Observable.Never<EventPattern<ProfileElementEventArgs>>())
+                .Switch()
+                .Subscribe(RemoveElement)
+                .DisposeWith(d);
         });
     }
 
@@ -54,9 +79,21 @@ public class VisualEditorViewModel : ActivatableViewModelBase
         set => RaiseAndSetIfChanged(ref _tools, value);
     }
 
+    private void RemoveElement(EventPattern<ProfileElementEventArgs> eventPattern)
+    {
+        List<IVisualizerViewModel> visualizers = Visualizers.Where(v => v.ProfileElement == eventPattern.EventArgs.ProfileElement).ToList();
+        if (visualizers.Any())
+            _visualizers.RemoveMany(visualizers);
+    }
+
+    private void AddElement(EventPattern<ProfileElementEventArgs> eventPattern)
+    {
+        if (eventPattern.EventArgs.ProfileElement is Layer layer)
+            _visualizers.Edit(list => CreateVisualizer(list, layer));
+    }
+
     private void CreateVisualizers(ProfileConfiguration? profileConfiguration)
     {
-        // TODO: Monitor and respond to new layers/folders and deletions
         _visualizers.Edit(list =>
         {
             list.Clear();

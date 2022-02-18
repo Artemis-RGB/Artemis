@@ -1,3 +1,4 @@
+using System;
 using Artemis.UI.Screens.Root;
 using Avalonia;
 using Avalonia.Controls;
@@ -13,21 +14,27 @@ namespace Artemis.UI
     {
         public MainWindow()
         {
+            Opened += OnOpened;
             InitializeComponent();
-            SetupTitlebar();
 #if DEBUG
             this.AttachDevTools();
 #endif
         }
 
-        private void SetupTitlebar()
+        private void OnOpened(object? sender, EventArgs e)
         {
+            Opened -= OnOpened;
             ICoreApplicationView coreAppTitleBar = this;
             if (coreAppTitleBar.TitleBar != null)
             {
                 coreAppTitleBar.TitleBar.ExtendViewIntoTitleBar = true;
                 SetTitleBar(this.Get<Border>("TitleBar"));
             }
+        }
+
+        private void SetupTitlebar()
+        {
+           
   
         }
 

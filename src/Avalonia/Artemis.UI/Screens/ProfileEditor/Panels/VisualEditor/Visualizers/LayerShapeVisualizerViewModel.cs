@@ -49,6 +49,7 @@ public class LayerShapeVisualizerViewModel : ActivatableViewModelBase, IVisualiz
     }
 
     public Layer Layer { get; }
+    public ProfileElement ProfileElement => Layer;
     public bool Selected => _selected?.Value ?? false;
 
     public Rect LayerBounds
@@ -56,7 +57,7 @@ public class LayerShapeVisualizerViewModel : ActivatableViewModelBase, IVisualiz
         get => _layerBounds;
         private set => RaiseAndSetIfChanged(ref _layerBounds, value);
     }
-
+    
     public double X
     {
         get => _x;

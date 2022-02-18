@@ -238,12 +238,14 @@
       },
       "FluentAvaloniaUI": {
         "type": "Transitive",
-        "resolved": "1.1.8",
-        "contentHash": "pWxi0zvl4+602rffgZgRIS2srUr/bKFCH/duiV72UodmMp291vaWLC3Lzbp3j5TzSuPHYAlcUBIFvEMlnu8WLQ==",
+        "resolved": "1.2.1",
+        "contentHash": "IH9eei7CrOUkUdxL2E/HZYKFgNupSVO+ju74CnVqmV7u7iolyz3g1cTHELqVgatEb+IqXw7KyeLr2459nUxYSw==",
         "dependencies": {
-          "Avalonia": "0.10.11",
-          "Avalonia.Desktop": "0.10.11",
-          "Avalonia.Diagnostics": "0.10.11"
+          "Avalonia": "0.10.12",
+          "Avalonia.Desktop": "0.10.12",
+          "Avalonia.Diagnostics": "0.10.12",
+          "MicroCom.CodeGenerator.MSBuild": "0.10.4",
+          "MicroCom.Runtime": "0.10.4"
         }
       },
       "Flurl": {
@@ -350,6 +352,16 @@
           "Microsoft.DotNet.PlatformAbstractions": "3.1.6",
           "Microsoft.Extensions.DependencyModel": "5.0.0"
         }
+      },
+      "MicroCom.CodeGenerator.MSBuild": {
+        "type": "Transitive",
+        "resolved": "0.10.4",
+        "contentHash": "aG1kLtkgX6lC8qpxVon4OFSCdWYEbQubIg+2/ychWTIFTrDHWFkhcC4YTn0IfGiVCLwh0Yj7eSc8nk5f3UoMKg=="
+      },
+      "MicroCom.Runtime": {
+        "type": "Transitive",
+        "resolved": "0.10.4",
+        "contentHash": "enc2U+/1UnF3rtocxb5ofcg7cJSmJI4adbYPr8DZa5bQzvhqA/VbjlcalxoqjI3CR2RvM5WWpjKT0p3BriFJjw=="
       },
       "Microsoft.CodeAnalysis.Analyzers": {
         "type": "Transitive",
@@ -1769,7 +1781,7 @@
           "Avalonia.ReactiveUI": "0.10.12",
           "Avalonia.Svg.Skia": "0.10.12",
           "DynamicData": "7.4.9",
-          "FluentAvaloniaUI": "1.1.8",
+          "FluentAvaloniaUI": "1.2.1",
           "Flurl.Http": "3.2.0",
           "Live.Avalonia": "1.3.1",
           "Material.Icons.Avalonia": "1.0.2",
@@ -1792,7 +1804,7 @@
           "Avalonia.Xaml.Interactions": "0.10.12",
           "Avalonia.Xaml.Interactivity": "0.10.12",
           "DynamicData": "7.4.9",
-          "FluentAvaloniaUI": "1.1.8",
+          "FluentAvaloniaUI": "1.2.1",
           "Material.Icons.Avalonia": "1.0.2",
           "RGB.NET.Core": "1.0.0-prerelease7",
           "ReactiveUI": "17.1.17",

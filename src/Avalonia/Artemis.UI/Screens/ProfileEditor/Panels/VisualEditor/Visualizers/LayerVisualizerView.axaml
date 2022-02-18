@@ -9,10 +9,19 @@
              ClipToBounds="False">
     <UserControl.Styles>
         <Style Selector="Path.layer-visualizer">
-            <Setter Property="Stroke" Value="{StaticResource ButtonBorderBrushDisabled}" />
+			<Setter Property="Stroke" Value="{StaticResource SystemAccentColorDark2}" />
+            <Setter Property="Opacity" Value="0" />
+			<Setter Property="Transitions">
+                <Setter.Value>
+					<Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.2" Easing="CubicEaseOut"></DoubleTransition>
+                    </Transitions>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style Selector="Path.layer-visualizer-selected">
             <Setter Property="Stroke" Value="{StaticResource SystemAccentColorDark2}" />
+            <Setter Property="Opacity" Value="1" />
         </Style>
     </UserControl.Styles>
     <Path Name="LayerVisualizer"

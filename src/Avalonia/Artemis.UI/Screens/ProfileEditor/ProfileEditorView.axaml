@@ -38,9 +38,6 @@
         <Style Selector="Window:windows Grid.editor-grid">
             <Setter Property="Margin" Value="0 0 4 4"></Setter>
         </Style>
-        <Style Selector="Window:windows Grid.editor-grid">
-            <Setter Property="Margin" Value="0 41 4 4"></Setter>
-        </Style>
     </UserControl.Styles>
     <Grid Classes="editor-grid">
         <Grid.ColumnDefinitions>
@@ -52,7 +49,6 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ContentControl Content="{CompiledBinding MenuBarViewModel}"></ContentControl>
         <Grid Grid.Row="0" Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />

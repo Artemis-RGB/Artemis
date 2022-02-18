@@ -7,12 +7,11 @@
                      x:Class="Artemis.UI.MainWindow"
                      Icon="/Assets/Images/Logo/application.ico"
                      Title="Artemis 2.0">
-    <!-- Use a panel here so the main window can host ContentDialogs -->
-    <Panel>
+    <DockPanel>
+        <ContentControl Content="{Binding SidebarViewModel}" DockPanel.Dock="Left"></ContentControl>
+        <Border Background="Transparent" Name="TitleBar" DockPanel.Dock="Top">
+            <ContentControl Content="{Binding TitleBarViewModel}" />
+        </Border>
         <ContentControl Content="{Binding}" />
-        <Border Background="Transparent" x:Name="TitleBar" VerticalAlignment="Top"  MinHeight="31" >
-            <ContentControl Content="{Binding TitleBarViewModel}" Margin="240 0 150 0"/>
-		</Border>
-
-	</Panel>
+    </DockPanel>
 </controls:CoreWindow>

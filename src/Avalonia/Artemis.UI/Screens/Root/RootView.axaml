@@ -5,17 +5,9 @@
              xmlns:reactiveUi="http://reactiveui.net"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Root.RootView">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="240" MinWidth="175" MaxWidth="400" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-
-        <ContentControl x:Name="SidebarContentControl" Grid.Column="0" Content="{Binding SidebarViewModel}" />
-        <reactiveUi:RoutedViewHost Grid.Column="1" Router="{Binding Router}">
-            <reactiveUi:RoutedViewHost.PageTransition>
-                <CrossFade Duration="0.1" />
-            </reactiveUi:RoutedViewHost.PageTransition>
-        </reactiveUi:RoutedViewHost>
-    </Grid>
+	<reactiveUi:RoutedViewHost Router="{Binding Router}">
+        <reactiveUi:RoutedViewHost.PageTransition>
+            <CrossFade Duration="0.1" />
+        </reactiveUi:RoutedViewHost.PageTransition>
+    </reactiveUi:RoutedViewHost>
 </UserControl>

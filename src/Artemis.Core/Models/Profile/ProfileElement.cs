@@ -131,6 +131,16 @@ namespace Artemis.Core
         public event EventHandler<ProfileElementEventArgs>? ChildRemoved;
 
         /// <summary>
+        ///     Occurs when a child was added to the <see cref="Children" /> list of this element or any of it's descendents.
+        /// </summary>
+        public event EventHandler<ProfileElementEventArgs>? DescendentAdded;
+
+        /// <summary>
+        ///     Occurs when a child was removed from the <see cref="Children" /> list of this element or any of it's descendents.
+        /// </summary>
+        public event EventHandler<ProfileElementEventArgs>? DescendentRemoved;
+
+        /// <summary>
         ///     Invokes the <see cref="ChildAdded" /> event
         /// </summary>
         protected virtual void OnChildAdded(ProfileElement child)
@@ -144,6 +154,24 @@ namespace Artemis.Core
         protected virtual void OnChildRemoved(ProfileElement child)
         {
             ChildRemoved?.Invoke(this, new ProfileElementEventArgs(child));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DescendentAdded" /> event
+        /// </summary>
+        protected virtual void OnDescendentAdded(ProfileElement child)
+        {
+            DescendentAdded?.Invoke(this, new ProfileElementEventArgs(child));
+            Parent?.OnDescendentAdded(child);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DescendentRemoved" /> event
+        /// </summary>
+        protected virtual void OnDescendentRemoved(ProfileElement child)
+        {
+            DescendentRemoved?.Invoke(this, new ProfileElementEventArgs(child));
+            Parent?.OnDescendentRemoved(child);
         }
 
         /// <summary>
@@ -200,6 +228,7 @@ namespace Artemis.Core
             }
 
             OnChildAdded(child);
+            OnDescendentAdded(child);
         }
 
         /// <summary>
@@ -220,6 +249,7 @@ namespace Artemis.Core
             }
 
             OnChildRemoved(child);
+            OnDescendentRemoved(child);
         }
 
         private void StreamlineOrder()

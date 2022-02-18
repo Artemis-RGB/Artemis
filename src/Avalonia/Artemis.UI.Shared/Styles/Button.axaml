@@ -78,10 +78,11 @@
 
     <Style Selector="Button.title-bar-button">
         <Setter Property="Width" Value="46"></Setter>
-        <Setter Property="Height" Value="32"></Setter>
+        <Setter Property="Height" Value="30"></Setter>
         <Setter Property="BorderThickness" Value="0"></Setter>
         <Setter Property="CornerRadius" Value="0"></Setter>
         <Setter Property="Margin" Value="0"></Setter>
+        <Setter Property="Background" Value="Transparent"></Setter>
     </Style>
     <Style Selector="Button.title-bar-button:pointerover">
         <Setter Property="Background" Value="Red"></Setter>

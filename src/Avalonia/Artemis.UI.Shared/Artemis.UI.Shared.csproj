@@ -24,7 +24,7 @@
     <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.12" />
     <PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.10.12" />
     <PackageReference Include="DynamicData" Version="7.4.9" />
-    <PackageReference Include="FluentAvaloniaUI" Version="1.1.8" />
+    <PackageReference Include="FluentAvaloniaUI" Version="1.2.1" />
     <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
     <PackageReference Include="ReactiveUI" Version="17.1.17" />
     <PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />

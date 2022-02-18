@@ -10,8 +10,8 @@
 
         <!-- This border enables dragging the window in between the menu and the buttons-->
         <Border Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" IsHitTestVisible="False" />
-        
-        <Button Grid.Column="2" Classes="icon-button icon-button-small" Command="{Binding ShowDebugger}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0 6 0 0">
+
+        <Button Grid.Column="2" Classes="title-bar-button" Command="{Binding ShowDebugger}" HorizontalAlignment="Right" VerticalAlignment="Top">
             <avalonia:MaterialIcon Kind="Bug"></avalonia:MaterialIcon>
         </Button>
     </Grid>
