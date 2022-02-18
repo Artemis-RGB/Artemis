@@ -5,8 +5,10 @@
              xmlns:layerBrushes="clr-namespace:Artemis.Core.LayerBrushes;assembly=Artemis.Core"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             xmlns:settings="clr-namespace:Artemis.UI.Screens.Settings"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="2400"
-             x:Class="Artemis.UI.Screens.Settings.GeneralTabView">
+             x:Class="Artemis.UI.Screens.Settings.GeneralTabView"
+             x:DataType="settings:GeneralTabViewModel">
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 		<StackPanel Margin="15" MaxWidth="1000">
@@ -20,7 +22,7 @@
 						<StackPanel Grid.Column="0">
 							<TextBlock>Auto-run on startup</TextBlock>
 						</StackPanel>
-						<ToggleSwitch Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" IsChecked="{Binding UIAutoRun.Value}" MinWidth="0" Margin="0 -10"/>
+						<ToggleSwitch Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" IsChecked="{CompiledBinding UIAutoRun.Value}" MinWidth="0" Margin="0 -10"/>
 					</Grid>
 					<Separator Classes="card-separator" />
 
@@ -29,7 +31,7 @@
 							<TextBlock>Hide window on auto-run</TextBlock>
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<ToggleSwitch IsChecked="{Binding !UIShowOnStartup.Value}" IsEnabled="{Binding UIAutoRun.Value}" MinWidth="0" Margin="0 -10"/>
+							<ToggleSwitch IsChecked="{CompiledBinding !UIShowOnStartup.Value}" IsEnabled="{CompiledBinding UIAutoRun.Value}" MinWidth="0" Margin="0 -10"/>
 						</StackPanel>
 					</Grid>
 					<Separator Classes="card-separator" />
@@ -45,7 +47,7 @@
 							</TextBlock>
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
-							<TextBox Text="{Binding UIAutoRunDelay.Value}" IsEnabled="{Binding UIAutoRun.Value}" Width="120" />
+							<TextBox Text="{CompiledBinding UIAutoRunDelay.Value}" IsEnabled="{CompiledBinding UIAutoRun.Value}" Width="120" />
 							<TextBlock VerticalAlignment="Center" TextAlignment="Right" Width="30">sec</TextBlock>
 						</StackPanel>
 					</Grid>
@@ -59,7 +61,7 @@
 							</TextBlock>
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<controls:EnumComboBox Width="150" Value="{Binding UIColorScheme.Value}" />
+							<controls:EnumComboBox Width="150" Value="{CompiledBinding UIColorScheme.Value}" />
 						</StackPanel>
 					</Grid>
 					<Separator Classes="card-separator" />
@@ -74,7 +76,7 @@
 							</TextBlock>
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<controls:EnumComboBox Width="150" Value="{Binding CoreLoggingLevel.Value}" />
+							<controls:EnumComboBox Width="150" Value="{CompiledBinding CoreLoggingLevel.Value}" />
 						</StackPanel>
 					</Grid>
 					<Separator Classes="card-separator" />
@@ -89,7 +91,7 @@
 							</TextBlock>
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<Button Command="{Binding ShowLogs}" Width="150" Content="Show logs" />
+							<Button Command="{CompiledBinding ShowLogs}" Width="150" Content="Show logs" />
 						</StackPanel>
 					</Grid>
 				</StackPanel>
@@ -114,7 +116,7 @@
 							</TextBlock>
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<TextBox Text="{Binding WebServerPort.Value}" Width="150" />
+							<TextBox Text="{CompiledBinding WebServerPort.Value}" Width="150" />
 						</StackPanel>
 					</Grid>
 				</StackPanel>
@@ -136,7 +138,7 @@
 							</TextBlock>
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<ToggleSwitch IsChecked="{Binding UICheckForUpdates.Value}" MinWidth="0" />
+							<ToggleSwitch IsChecked="{CompiledBinding UICheckForUpdates.Value}" MinWidth="0" />
 						</StackPanel>
 					</Grid>
 					<Separator Classes="card-separator" />
@@ -173,7 +175,7 @@
 							</TextBlock>
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<ToggleSwitch IsChecked="{Binding ProfileEditorShowDataModelValues.Value}" MinWidth="0" />
+							<ToggleSwitch IsChecked="{CompiledBinding ProfileEditorShowDataModelValues.Value}" MinWidth="0" />
 						</StackPanel>
 					</Grid>
 					<Separator Classes="card-separator" />
@@ -194,8 +196,8 @@
 										<Setter.Value>
 											<DataTemplate DataType="{x:Type layerBrushes:LayerBrushDescriptor}">
 												<StackPanel Orientation="Horizontal">
-													<avalonia:MaterialIcon Kind="{Binding Icon}" Height="20" Width="20" VerticalAlignment="Center" Margin="0 0 5 0"/>
-													<TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" />
+													<avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Height="20" Width="20" VerticalAlignment="Center" Margin="0 0 5 0"/>
+													<TextBlock Text="{CompiledBinding DisplayName}" VerticalAlignment="Center" />
 												</StackPanel>
 											</DataTemplate>
 										</Setter.Value>
@@ -205,20 +207,20 @@
 							<ComboBox Classes="brush"
 									  Width="200"
 									  HorizontalAlignment="Left"
-									  Items="{Binding LayerBrushDescriptors}"
-									  SelectedItem="{Binding SelectedLayerBrushDescriptor}">
+									  Items="{CompiledBinding LayerBrushDescriptors}"
+									  SelectedItem="{CompiledBinding SelectedLayerBrushDescriptor}">
 								<ComboBox.ItemTemplate>
 									<DataTemplate DataType="{x:Type layerBrushes:LayerBrushDescriptor}">
 										<Grid ColumnDefinitions="30,*" RowDefinitions="Auto,Auto">
 											<avalonia:MaterialIcon Grid.Row="0"
 																   Grid.RowSpan="2"
-																   Kind="{Binding Icon}"
+																   Kind="{CompiledBinding Icon}"
 																   Height="20"
 																   Width="20"
 																   VerticalAlignment="Center"
 																   HorizontalAlignment="Left" />
-											<TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayName}" TextWrapping="Wrap" MaxWidth="350" />
-											<TextBlock Classes="subtitle" Grid.Row="1" Grid.Column="1" Text="{Binding Description}" TextWrapping="Wrap" MaxWidth="350" />
+											<TextBlock Grid.Row="0" Grid.Column="1" Text="{CompiledBinding DisplayName}" TextWrapping="Wrap" MaxWidth="350" />
+											<TextBlock Classes="subtitle" Grid.Row="1" Grid.Column="1" Text="{CompiledBinding Description}" TextWrapping="Wrap" MaxWidth="350" />
 										</Grid>
 									</DataTemplate>
 								</ComboBox.ItemTemplate>
@@ -245,8 +247,8 @@
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
 							<ComboBox Width="150"
-									  SelectedItem="{Binding CorePreferredGraphicsContext.Value}"
-									  Items="{Binding GraphicsContexts}"/>
+									  SelectedItem="{CompiledBinding CorePreferredGraphicsContext.Value}"
+									  Items="{CompiledBinding GraphicsContexts}"/>
 						</StackPanel>
 					</Grid>
 					<Separator Classes="card-separator" />
@@ -262,8 +264,8 @@
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
 							<ComboBox Width="150"
-									  SelectedItem="{Binding SelectedRenderScale}"
-									  Items="{Binding RenderScales}">
+									  SelectedItem="{CompiledBinding SelectedRenderScale}"
+									  Items="{CompiledBinding RenderScales}">
 								<ComboBox.ItemTemplate>
 									<DataTemplate>
 										<TextBlock Text="{Binding [0]}" />
@@ -288,8 +290,8 @@
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
 							<ComboBox Width="150"
-									  SelectedItem="{Binding SelectedTargetFrameRate}"
-									  Items="{Binding TargetFrameRates}">
+									  SelectedItem="{CompiledBinding SelectedTargetFrameRate}"
+									  Items="{CompiledBinding TargetFrameRates}">
 								<ComboBox.ItemTemplate>
 									<DataTemplate>
 										<TextBlock Text="{Binding [0]}" />
@@ -317,7 +319,7 @@
 							</TextBlock>
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<Button Command="{Binding ShowSetupWizard}" Width="150" Content="Show wizard" />
+							<Button Command="{CompiledBinding ShowSetupWizard}" Width="150" Content="Show wizard" />
 						</StackPanel>
 					</Grid>
 					<Separator Classes="card-separator" />
@@ -332,7 +334,7 @@
 							</TextBlock>
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<Button Command="{Binding ShowDebugger}" Width="150" Content="Show debugger" />
+							<Button Command="{CompiledBinding ShowDebugger}" Width="150" Content="Show debugger" />
 						</StackPanel>
 					</Grid>
 					<Separator Classes="card-separator" />
@@ -347,7 +349,7 @@
 							</TextBlock>
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<Button Command="{Binding ShowDataFolder}" Width="150" Content="Show app files" />
+							<Button Command="{CompiledBinding ShowDataFolder}" Width="150" Content="Show app files" />
 						</StackPanel>
 					</Grid>
 				</StackPanel>

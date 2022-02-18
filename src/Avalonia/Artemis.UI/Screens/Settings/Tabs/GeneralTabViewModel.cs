@@ -11,6 +11,8 @@ using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
+using Avalonia;
+using FluentAvalonia.Styling;
 using ReactiveUI;
 using Serilog.Events;
 
@@ -21,12 +23,14 @@ namespace Artemis.UI.Screens.Settings
         private readonly PluginSetting<LayerBrushReference> _defaultLayerBrushDescriptor;
         private readonly ISettingsService _settingsService;
         private readonly IDebugService _debugService;
+        private readonly FluentAvaloniaTheme _fluentAvaloniaTheme;
 
         public GeneralTabViewModel(ISettingsService settingsService, IPluginManagementService pluginManagementService, IDebugService debugService)
         {
             DisplayName = "General";
             _settingsService = settingsService;
             _debugService = debugService;
+            _fluentAvaloniaTheme = AvaloniaLocator.Current.GetService<FluentAvaloniaTheme>(); ;
 
             List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
             LayerBrushDescriptors = new ObservableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
@@ -41,6 +45,20 @@ namespace Artemis.UI.Screens.Settings
             ShowSetupWizard = ReactiveCommand.Create(ExecuteShowSetupWizard);
             ShowDebugger = ReactiveCommand.Create(ExecuteShowDebugger);
             ShowDataFolder = ReactiveCommand.Create(ExecuteShowDataFolder);
+
+            UIColorScheme.SettingChanged += UIColorSchemeOnSettingChanged;
+        }
+
+        private void UIColorSchemeOnSettingChanged(object? sender, EventArgs e)
+        {
+            if (UIColorScheme.Value == ApplicationColorScheme.Automatic)
+                _fluentAvaloniaTheme.RequestedTheme = null;
+            else if (UIColorScheme.Value == ApplicationColorScheme.Light)
+                _fluentAvaloniaTheme.RequestedTheme = "Light";
+            else if (UIColorScheme.Value == ApplicationColorScheme.Dark)
+                _fluentAvaloniaTheme.RequestedTheme = "Dark";
+            else
+                _fluentAvaloniaTheme.RequestedTheme = _fluentAvaloniaTheme.RequestedTheme;
         }
 
         public ReactiveCommand<Unit, Unit> ShowLogs { get; }

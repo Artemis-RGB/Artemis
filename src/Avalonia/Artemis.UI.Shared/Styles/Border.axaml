@@ -22,6 +22,8 @@
     <!-- Add Styles Here -->
     <Style Selector="Border.router-container">
         <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="8 0 0 0" />
         <Setter Property="ClipToBounds" Value="True" />
     </Style>
@@ -36,17 +38,21 @@
     <Style Selector="Border.card">
         <Setter Property="Padding" Value="25" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="{DynamicResource CardCornerRadius}" />
     </Style>
 
     <Style Selector="Border.card-condensed">
         <Setter Property="Padding" Value="10" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="{DynamicResource CardCornerRadius}" />
     </Style>
 
     <Style Selector="Separator.card-separator">
-        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ButtonBorderBrush}" />
         <Setter Property="Margin" Value="-12 15" />
         <Setter Property="Height" Value="1" />
 

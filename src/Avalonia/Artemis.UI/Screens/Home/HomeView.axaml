@@ -10,7 +10,7 @@
 		<Grid RowDefinitions="200,*">
 			<Image Grid.Row="0"
 				   Grid.RowSpan="2"
-				   VerticalAlignment="Top"
+                   VerticalAlignment="Top"
 				   Source="/Assets/Images/home-banner.png"
 				   Height="200"
 				   Stretch="UniformToFill" />
@@ -24,6 +24,7 @@
 					   Text=" Welcome to Artemis, the unified RGB platform." />
 			<TextBlock Grid.Row="0"
 					   TextWrapping="Wrap"
+					   Foreground="White"
 					   FontSize="32"
 					   Margin="30"
 					   Text=" Welcome to Artemis, the unified RGB platform." />
