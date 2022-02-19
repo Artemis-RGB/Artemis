@@ -14,7 +14,7 @@
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaTitleBarHeightHint="450">
     <Grid RowDefinitions="250,50,Auto,*" IsHitTestVisible="False">
-        <Image Grid.Column="0" Stretch="Uniform">
+        <Image Grid.Column="0" Stretch="Uniform" Width="200">
             <Image.Source>
 				<svg:SvgImage Source="/Assets/Images/Logo/bow.svg" />
             </Image.Source>
@@ -22,7 +22,6 @@
         <TextBlock Grid.Row="1"
                    HorizontalAlignment="Center" 
                    VerticalAlignment="Bottom"
-                   FontSize="16"
                    TextWrapping="Wrap">
             Artemis is initializing...
         </TextBlock>

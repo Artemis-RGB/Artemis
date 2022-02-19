@@ -52,15 +52,17 @@ public class VisualEditorViewModel : ActivatableViewModelBase
             Tools = tools;
 
             this.WhenAnyValue(vm => vm.ProfileConfiguration)
-                .Select(p => p?.Profile != null
-                    ? Observable.FromEventPattern<ProfileElementEventArgs>(x => p.Profile.DescendentAdded += x, x => p.Profile.DescendentAdded -= x)
+                .Select(p => p?.Profile)
+                .Select(p => p != null
+                    ? Observable.FromEventPattern<ProfileElementEventArgs>(x => p.DescendentAdded += x, x => p.DescendentAdded -= x)
                     : Observable.Never<EventPattern<ProfileElementEventArgs>>())
                 .Switch()
                 .Subscribe(AddElement)
                 .DisposeWith(d);
             this.WhenAnyValue(vm => vm.ProfileConfiguration)
-                .Select(p => p?.Profile != null
-                    ? Observable.FromEventPattern<ProfileElementEventArgs>(x => p.Profile.DescendentRemoved += x, x => p.Profile.DescendentRemoved -= x)
+                .Select(p => p?.Profile)
+                .Select(p => p != null
+                    ? Observable.FromEventPattern<ProfileElementEventArgs>(x => p.DescendentRemoved += x, x => p.DescendentRemoved -= x)
                     : Observable.Never<EventPattern<ProfileElementEventArgs>>())
                 .Switch()
                 .Subscribe(RemoveElement)

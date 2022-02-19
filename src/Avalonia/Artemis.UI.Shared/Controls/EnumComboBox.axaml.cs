@@ -58,7 +58,7 @@ namespace Artemis.UI.Shared.Controls
 
         private void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            if (_enumComboBox == null)
+            if (_enumComboBox == null || _enumComboBox.SelectedIndex == -1)
                 return;
 
             (Enum enumValue, _) = _currentValues[_enumComboBox.SelectedIndex];

@@ -5,8 +5,10 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             xmlns:sidebar="clr-namespace:Artemis.UI.Screens.Sidebar"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Sidebar.SidebarProfileConfigurationView">
+             x:Class="Artemis.UI.Screens.Sidebar.SidebarProfileConfigurationView"
+             x:DataType="sidebar:SidebarProfileConfigurationViewModel">
     <UserControl.Resources>
         <converters:ValuesAdditionConverter x:Key="ValuesAddition" />
     </UserControl.Resources>
@@ -65,17 +67,11 @@
             </MenuItem>
         </ContextMenu>
     </UserControl.ContextMenu>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
+    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
         <controls:ProfileConfigurationIcon Grid.Column="0"
                                            x:Name="ProfileIcon"
                                            VerticalAlignment="Center"
-                                           ConfigurationIcon="{Binding ProfileConfiguration.Icon}"
+                                           ConfigurationIcon="{CompiledBinding ProfileConfiguration.Icon}"
                                            Width="20"
                                            Height="20" />
 
@@ -85,7 +81,7 @@
                    Margin="10 0 0 0"
                    VerticalAlignment="Center"
                    HorizontalAlignment="Left"
-                   Text="{Binding ProfileConfiguration.Name}"
+                   Text="{CompiledBinding ProfileConfiguration.Name}"
                    TextTrimming="CharacterEllipsis" />
 
         <Border Grid.Column="0"
@@ -117,7 +113,7 @@
                       Grid.Column="3"
                       ToolTip.Tip="Suspend profile"
                       Margin="2 0 0 0"
-                      IsChecked="{Binding IsSuspended}">
+                      IsChecked="{CompiledBinding IsSuspended}">
             <avalonia:MaterialIcon Kind="Pause" />
         </ToggleButton>
     </Grid>

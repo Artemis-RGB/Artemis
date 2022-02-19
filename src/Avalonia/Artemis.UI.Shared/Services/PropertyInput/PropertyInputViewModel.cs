@@ -17,10 +17,8 @@ namespace Artemis.UI.Shared.Services.PropertyInput;
 /// <typeparam name="T">The type of property this input view model supports</typeparam>
 public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
 {
-    private T _dragStartValue;
-    private bool _inputDragging;
-
     [AllowNull] private T _inputValue;
+    private LayerPropertyPreview<T>? _preview;
 
     private TimeSpan _time;
     private bool _updating;
@@ -35,7 +33,6 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
         PropertyInputService = propertyInputService;
 
         _inputValue = default!;
-        _dragStartValue = default!;
 
         this.WhenActivated(d =>
         {
@@ -55,8 +52,6 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
                 .Subscribe(_ => UpdateDataBinding())
                 .DisposeWith(d);
         });
-
-        ValidationContext.ValidationStatusChange.Subscribe(s => Console.WriteLine(s));
     }
 
     /// <summary>
@@ -80,17 +75,13 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
     public IPropertyInputService PropertyInputService { get; }
 
     /// <summary>
-    ///     Gets or sets a boolean indicating whether the input is currently being dragged
+    ///     Gets or boolean indicating whether the current input is being previewed, the value won't be applied until
     ///     <para>
     ///         Only applicable when using something like a <see cref="DraggableFloat" />, see
-    ///         <see cref="InputDragStarted" /> and <see cref="InputDragEnded" />
+    ///         <see cref="StartPreview" /> and <see cref="ApplyPreview" />
     ///     </para>
     /// </summary>
-    public bool InputDragging
-    {
-        get => _inputDragging;
-        private set => this.RaiseAndSetIfChanged(ref _inputDragging, value);
-    }
+    public bool IsPreviewing => _preview != null;
 
     /// <summary>
     ///     Gets or sets the input value
@@ -119,27 +110,37 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
     internal override object InternalGuard { get; } = new();
 
     /// <summary>
-    ///     Called by the view input drag has started
-    ///     <para>
-    ///         To use, add the following to DraggableFloat in your xaml: <c>DragStarted="{s:Action InputDragStarted}"</c>
-    ///     </para>
+    ///     Starts the preview of the current property, allowing updates without causing real changes to the property.
     /// </summary>
-    public void InputDragStarted(object sender, EventArgs e)
+    public void StartPreview()
     {
-        InputDragging = true;
-        _dragStartValue = GetDragStartValue();
+        _preview?.DiscardPreview();
+        _preview = new LayerPropertyPreview<T>(LayerProperty, _time);
     }
 
     /// <summary>
-    ///     Called by the view when input drag has ended
-    ///     <para>
-    ///         To use, add the following to DraggableFloat in your xaml: <c>DragEnded="{s:Action InputDragEnded}"</c>
-    ///     </para>
+    ///     Applies the current preview to the property.
     /// </summary>
-    public void InputDragEnded(object sender, EventArgs e)
+    public void ApplyPreview()
     {
-        InputDragging = false;
-        ProfileEditorService.ExecuteCommand(new UpdateLayerProperty<T>(LayerProperty, _inputValue, _dragStartValue, _time));
+        if (_preview == null)
+            return;
+
+        if (_preview.DiscardPreview() && _preview.PreviewValue != null)
+            ProfileEditorService.ExecuteCommand(new UpdateLayerProperty<T>(LayerProperty, _inputValue, _preview.PreviewValue, _time));
+        _preview = null;
+    }
+
+    /// <summary>
+    ///     Discard the preview of the property.
+    /// </summary>
+    public void DiscardPreview()
+    {
+        if (_preview == null)
+            return;
+
+        _preview.DiscardPreview();
+        _preview = null;
     }
 
     /// <summary>
@@ -157,37 +158,31 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
     }
 
     /// <summary>
-    ///     Called when dragging starts to get the initial value before dragging begun
-    /// </summary>
-    /// <returns>The initial value before dragging begun</returns>
-    protected virtual T? GetDragStartValue()
-    {
-        return InputValue;
-    }
-
-    /// <summary>
-    ///     Applies the input value to the layer property using an <see cref="IProfileEditorCommand" />.
+    ///     Applies the input value to the layer property or the currently active preview.
     /// </summary>
     protected virtual void ApplyInputValue()
     {
-        if (_updating)
+        // Avoid reapplying the latest value by checking if we're currently updating
+        if (_updating || !ValidationContext.IsValid)
             return;
 
-        if (InputDragging)
-            ProfileEditorService.ChangeTime(_time);
-        else if (ValidationContext.IsValid)
+        if (_preview != null)
+            _preview.Preview(_inputValue);
+        else
             ProfileEditorService.ExecuteCommand(new UpdateLayerProperty<T>(LayerProperty, _inputValue, _time));
     }
 
     private void UpdateInputValue()
     {
+        // Always run this on the UI thread to avoid race conditions with ApplyInputValue
         Dispatcher.UIThread.Post(() =>
         {
             try
             {
                 _updating = true;
+
                 // Avoid unnecessary UI updates and validator cycles
-                if (_inputValue != null && _inputValue.Equals(LayerProperty.CurrentValue) || _inputValue == null && LayerProperty.CurrentValue == null)
+                if (Equals(_inputValue, LayerProperty.CurrentValue))
                     return;
 
                 // Override the input value
@@ -202,7 +197,6 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
                 _updating = false;
             }
         });
-      
     }
 
     private void UpdateDataBinding()

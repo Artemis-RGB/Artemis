@@ -83,7 +83,7 @@
             </Button>
             <ToggleButton Classes="category-button icon-button icon-button-small"
                           Grid.Column="3"
-                          ToolTip.Tip="Suspend profile"
+                          ToolTip.Tip="Suspend category"
                           Margin="5 0"
                           IsChecked="{Binding IsSuspended}">
                 <avalonia:MaterialIcon Kind="Pause" />

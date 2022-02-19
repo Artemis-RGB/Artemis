@@ -3,8 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:menuBar="clr-namespace:Artemis.UI.Screens.ProfileEditor.MenuBar"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.ProfileEditor.MenuBar.MenuBarView">
+             x:Class="Artemis.UI.Screens.ProfileEditor.MenuBar.MenuBarView"
+             x:DataType="menuBar:MenuBarViewModel">
 	<Menu VerticalAlignment="Top">
 		<MenuItem Header="_File">
 			<MenuItem Header="New">
@@ -38,11 +40,11 @@
 					<avalonia:MaterialIcon Kind="Magic" />
 				</MenuItem.Icon>
 			</MenuItem>
-			<MenuItem Header="Suspend Profile">
+			<MenuItem Header="Suspend Profile" IsSelected="{CompiledBinding IsSuspended}">
 				<MenuItem.Icon>
 					<CheckBox BorderThickness="0"
 							  IsHitTestVisible="False"
-							  IsChecked="{Binding ProfileConfiguration.IsSuspended}" />
+                              IsChecked="{CompiledBinding IsSuspended}"/>
 				</MenuItem.Icon>
 			</MenuItem>
 			<Separator />

@@ -1,16 +1,20 @@
-﻿using System.Threading.Tasks;
+﻿using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.Interfaces;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar
 {
-    public class SidebarProfileConfigurationViewModel : ViewModelBase
+    public class SidebarProfileConfigurationViewModel : ActivatableViewModelBase
     {
         private readonly SidebarViewModel _sidebarViewModel;
         private readonly IProfileService _profileService;
         private readonly IWindowService _windowService;
+        private ObservableAsPropertyHelper<bool>? _isSuspended;
         public ProfileConfiguration ProfileConfiguration { get; }
 
         public SidebarProfileConfigurationViewModel(SidebarViewModel sidebarViewModel, ProfileConfiguration profileConfiguration, IProfileService profileService, IWindowService windowService)
@@ -18,8 +22,15 @@ namespace Artemis.UI.Screens.Sidebar
             _sidebarViewModel = sidebarViewModel;
             _profileService = profileService;
             _windowService = windowService;
+
             ProfileConfiguration = profileConfiguration;
 
+            this.WhenActivated(d =>
+            {
+                _isSuspended = ProfileConfiguration.WhenAnyValue(c => c.IsSuspended)
+                    .ToProperty(this, vm => vm.IsSuspended)
+                    .DisposeWith(d);
+            });
             _profileService.LoadProfileConfigurationIcon(ProfileConfiguration);
         }
 
@@ -27,7 +38,7 @@ namespace Artemis.UI.Screens.Sidebar
 
         public bool IsSuspended
         {
-            get => ProfileConfiguration.IsSuspended;
+            get => _isSuspended?.Value ?? false;
             set
             {
                 ProfileConfiguration.IsSuspended = value;
