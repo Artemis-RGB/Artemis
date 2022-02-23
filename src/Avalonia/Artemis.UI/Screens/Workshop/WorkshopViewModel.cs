@@ -1,5 +1,6 @@
 ﻿using System.Reactive;
 using System.Reactive.Linq;
+using Artemis.Core;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.Interfaces;
 using Avalonia.Input;
@@ -31,6 +32,8 @@ namespace Artemis.UI.Screens.Workshop
         }
 
         public Cursor Cursor => _cursor.Value;
+
+        public ColorGradient ColorGradient { get; set; } = ColorGradient.GetUnicornBarf();
 
         private void ExecuteShowNotification(NotificationSeverity severity)
         {

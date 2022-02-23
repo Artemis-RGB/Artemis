@@ -5,6 +5,7 @@
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:propertyInput="clr-namespace:Artemis.UI.DefaultTypes.PropertyInput"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="450"
              x:Class="Artemis.UI.DefaultTypes.PropertyInput.SKColorPropertyInputView"
              x:DataType="propertyInput:SKColorPropertyInputViewModel">
@@ -44,7 +45,7 @@
         </Style>
     </UserControl.Styles>
     <UserControl.Resources>
-        <converters:SKColorToStringConverter x:Key="SKColorToStringConverter" />
+        <shared:SKColorToStringConverter x:Key="SKColorToStringConverter" />
         <converters:SKColorToColor2Converter x:Key="SKColorToColor2Converter" />
     </UserControl.Resources>
     <Grid Height="24" ColumnDefinitions="*">

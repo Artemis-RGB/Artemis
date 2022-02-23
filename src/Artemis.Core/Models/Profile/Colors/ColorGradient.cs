@@ -11,7 +11,7 @@ namespace Artemis.Core
     /// <summary>
     ///     A gradient containing a list of <see cref="ColorGradientStop" />s
     /// </summary>
-    public class ColorGradient : IList<ColorGradientStop>, INotifyCollectionChanged
+    public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionChanged
     {
         private static readonly SKColor[] FastLedRainbow =
         {
@@ -173,13 +173,25 @@ namespace Artemis.Core
 
         internal void Sort()
         {
-            _stops.Sort((a, b) => a.Position.CompareTo(b.Position));
+            int requiredIndex = 0;
+            foreach (ColorGradientStop colorGradientStop in _stops.OrderBy(s => s.Position).ToList())
+            {
+                int actualIndex = _stops.IndexOf(colorGradientStop);
+                if (requiredIndex != actualIndex)
+                {
+                    _stops.RemoveAt(actualIndex);
+                    _stops.Insert(requiredIndex, colorGradientStop);
+                    OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, colorGradientStop, requiredIndex, actualIndex));
+                }
+
+                requiredIndex++;
+            }
         }
 
         private void ItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             Sort();
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            OnStopChanged();
         }
 
         #region Implementation of IEnumerable
@@ -209,14 +221,48 @@ namespace Artemis.Core
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, _stops.IndexOf(item)));
         }
 
-
         /// <inheritdoc />
+        public int Add(object? value)
+        {
+            if (value is ColorGradientStop stop)
+                _stops.Add(stop);
+
+            return IndexOf(value);
+        }
+
+        /// <inheritdoc cref="IList.Clear" />
         public void Clear()
         {
             foreach (ColorGradientStop item in _stops)
                 item.PropertyChanged -= ItemOnPropertyChanged;
             _stops.Clear();
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
+        /// <inheritdoc />
+        public bool Contains(object? value)
+        {
+            return _stops.Contains(value);
+        }
+
+        /// <inheritdoc />
+        public int IndexOf(object? value)
+        {
+            return _stops.IndexOf(value);
+        }
+
+        /// <inheritdoc />
+        public void Insert(int index, object? value)
+        {
+            if (value is ColorGradientStop stop)
+                _stops.Insert(index, stop);
+        }
+
+        /// <inheritdoc />
+        public void Remove(object? value)
+        {
+            if (value is ColorGradientStop stop)
+                _stops.Remove(stop);
         }
 
         /// <inheritdoc />
@@ -244,10 +290,28 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
+        public void CopyTo(Array array, int index)
+        {
+            _stops.CopyTo((ColorGradientStop[]) array, index);
+        }
+
+        /// <inheritdoc cref="ICollection{T}.Count" />
         public int Count => _stops.Count;
 
         /// <inheritdoc />
+        public bool IsSynchronized => false;
+
+        /// <inheritdoc />
+        public object SyncRoot => this;
+
+        /// <inheritdoc cref="ICollection{T}.IsReadOnly" />
         public bool IsReadOnly => false;
+
+        object? IList.this[int index]
+        {
+            get => this[index];
+            set => this[index] = (ColorGradientStop) value!;
+        }
 
         #endregion
 
@@ -268,13 +332,15 @@ namespace Artemis.Core
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, _stops.IndexOf(item)));
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="IList{T}.RemoveAt" />
         public void RemoveAt(int index)
         {
             _stops[index].PropertyChanged -= ItemOnPropertyChanged;
             _stops.RemoveAt(index);
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, index));
         }
+
+        public bool IsFixedSize { get; }
 
         /// <inheritdoc />
         public ColorGradientStop this[int index]
@@ -304,5 +370,15 @@ namespace Artemis.Core
         }
 
         #endregion
+
+        /// <summary>
+        ///  Occurs when any of the stops has changed in some way
+        /// </summary>
+        public event EventHandler? StopChanged;
+
+        private void OnStopChanged()
+        {
+            StopChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 }

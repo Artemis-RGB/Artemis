@@ -3,7 +3,7 @@ using System.Globalization;
 using Avalonia.Data.Converters;
 using SkiaSharp;
 
-namespace Artemis.UI.Converters;
+namespace Artemis.UI.Shared.Converters;
 
 /// <inheritdoc />
 /// <summary>
