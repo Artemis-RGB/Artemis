@@ -236,6 +236,9 @@
                                     </ToolTip.Tip>
                                     <avalonia:MaterialIcon Kind="AxisZRotateCounterclockwise" />
                                 </Button>
+                                <Button Name="Randomize" Classes="icon-button operation-button" ToolTip.Tip="Randomize the gradient.">
+                                    <avalonia:MaterialIcon Kind="ShuffleVariant" />
+                                </Button>
                             </StackPanel>
                         </Border>
                     </Grid>

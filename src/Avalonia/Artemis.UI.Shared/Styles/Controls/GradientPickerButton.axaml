@@ -21,7 +21,7 @@
 
     <Style Selector="gradientPicker|GradientPickerButton">
         <Setter Property="MinHeight" Value="{DynamicResource TextControlThemeMinHeight}" />
-        <Setter Property="MinWidth" Value="{DynamicResource TextControlThemeMinWidth}"/>
+        <Setter Property="MinWidth" Value="{DynamicResource TextControlThemeMinWidth}" />
         <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
         <Setter Property="Template">
             <ControlTemplate>
@@ -34,13 +34,10 @@
                                      VerticalAlignment="Stretch"
                                      HorizontalContentAlignment="Stretch"
                                      VerticalContentAlignment="Stretch">
-                        <Border BorderBrush="{DynamicResource ColorPickerButtonOutline}"
-                                BorderThickness="1"
-                                Margin="5"
+                        <Border Classes="gradient-display"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
-                                Background="{TemplateBinding LinearGradientBrush}"
-                                CornerRadius="{TemplateBinding CornerRadius}" />
+                                Background="{TemplateBinding LinearGradientBrush}" />
                     </controls:Button>
 
                     <Viewbox Grid.Column="1"
@@ -57,5 +54,10 @@
         </Setter>
     </Style>
 
-
+    <Style Selector="gradientPicker|GradientPickerButton /template/ Border.gradient-display">
+        <Setter Property="Margin" Value="5" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorPickerButtonOutline}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{TemplateBinding CornerRadius}" />
+    </Style>
 </Styles>

@@ -13,52 +13,6 @@ namespace Artemis.Core;
 /// </summary>
 public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionChanged
 {
-    #region Equality members
-
-    /// <summary>
-    /// Determines whether all the stops in this gradient are equal to the stops in the given <paramref name="other"/> gradient.
-    /// </summary>
-    /// <param name="other">The other gradient to compare to</param>
-    protected bool Equals(ColorGradient other)
-    {
-        if (Count != other.Count)
-            return false;
-
-        for (int i = 0; i < Count; i++)
-        {
-            if (!Equals(this[i], other[i]))
-                return false;
-        }
-
-        return true;
-    }
-
-    /// <inheritdoc />
-    public override bool Equals(object? obj)
-    {
-        if (ReferenceEquals(null, obj))
-            return false;
-        if (ReferenceEquals(this, obj))
-            return true;
-        if (obj.GetType() != this.GetType())
-            return false;
-        return Equals((ColorGradient) obj);
-    }
-
-    /// <inheritdoc />
-    public override int GetHashCode()
-    {
-        unchecked
-        {
-            int hash = 19;
-            foreach (ColorGradientStop stops in this)
-                hash = hash * 31 + stops.GetHashCode();
-            return hash;
-        }
-    }
-
-    #endregion
-
     private static readonly SKColor[] FastLedRainbow =
     {
         new(0xFFFF0000), // Red
@@ -233,14 +187,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     public ColorGradient GetRandom(int stops)
     {
         ColorGradient gradient = new();
-        Random random = new();
-        for (int index = 0; index < stops; index++)
-        {
-            SKColor skColor = SKColor.FromHsv(random.NextSingle() * 360, 100, 100);
-            float position = 1f / (stops - 1f) * index;
-            gradient.Add(new ColorGradientStop(skColor, position));
-        }
-
+        gradient.Randomize(stops);
         return gradient;
     }
 
@@ -361,6 +308,32 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     }
 
     /// <summary>
+    ///     Randomizes the color gradient with the given amount of <paramref name="stops" />.
+    /// </summary>
+    /// <param name="stops">The amount of stops to put into the gradient.</param>
+    public void Randomize(int stops)
+    {
+        try
+        {
+            _updating = true;
+
+            Clear();
+            Random random = new();
+            for (int index = 0; index < stops; index++)
+            {
+                SKColor skColor = SKColor.FromHsv(random.NextSingle() * 360, 100, 100);
+                float position = 1f / (stops - 1f) * index;
+                Add(new ColorGradientStop(skColor, position));
+            }
+        }
+        finally
+        {
+            _updating = false;
+            Sort();
+        }
+    }
+
+    /// <summary>
     ///     Occurs when any of the stops has changed in some way
     /// </summary>
     public event EventHandler? StopChanged;
@@ -395,6 +368,51 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     {
         StopChanged?.Invoke(this, EventArgs.Empty);
     }
+
+    #region Equality members
+
+    /// <summary>
+    ///     Determines whether all the stops in this gradient are equal to the stops in the given <paramref name="other" />
+    ///     gradient.
+    /// </summary>
+    /// <param name="other">The other gradient to compare to</param>
+    protected bool Equals(ColorGradient other)
+    {
+        if (Count != other.Count)
+            return false;
+
+        for (int i = 0; i < Count; i++)
+            if (!Equals(this[i], other[i]))
+                return false;
+
+        return true;
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != GetType())
+            return false;
+        return Equals((ColorGradient) obj);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            int hash = 19;
+            foreach (ColorGradientStop stops in this)
+                hash = hash * 31 + stops.GetHashCode();
+            return hash;
+        }
+    }
+
+    #endregion
 
     #region Implementation of IEnumerable
 

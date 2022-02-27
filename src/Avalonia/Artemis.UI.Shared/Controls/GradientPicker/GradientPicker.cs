@@ -60,12 +60,13 @@ public class GradientPicker : TemplatedControl
         AvaloniaProperty.RegisterDirect<GradientPicker, ICommand>(nameof(DeleteStop), g => g.DeleteStop);
 
     private readonly ICommand _deleteStop;
+    private bool _shiftDown;
     private Button? _flipStops;
     private Border? _gradient;
     private Button? _rotateStops;
-    private bool _shiftDown;
     private Button? _spreadStops;
     private Button? _toggleSeamless;
+    private Button? _randomize;
     private ColorGradient? _lastColorGradient;
     private ColorPicker? _colorPicker;
 
@@ -153,6 +154,8 @@ public class GradientPicker : TemplatedControl
             _flipStops.Click -= FlipStopsOnClick;
         if (_rotateStops != null)
             _rotateStops.Click -= RotateStopsOnClick;
+        if (_randomize != null)
+            _randomize.Click -= RandomizeOnClick;
 
         _colorPicker = e.NameScope.Find<ColorPicker>("ColorPicker");
         _gradient = e.NameScope.Find<Border>("Gradient");
@@ -160,6 +163,7 @@ public class GradientPicker : TemplatedControl
         _toggleSeamless = e.NameScope.Find<Button>("ToggleSeamless");
         _flipStops = e.NameScope.Find<Button>("FlipStops");
         _rotateStops = e.NameScope.Find<Button>("RotateStops");
+        _randomize = e.NameScope.Find<Button>("Randomize");
 
         if (_gradient != null)
             _gradient.PointerPressed += GradientOnPointerPressed;
@@ -171,9 +175,12 @@ public class GradientPicker : TemplatedControl
             _flipStops.Click += FlipStopsOnClick;
         if (_rotateStops != null)
             _rotateStops.Click += RotateStopsOnClick;
+        if (_randomize != null)
+            _randomize.Click += RandomizeOnClick;
 
         base.OnApplyTemplate(e);
     }
+
 
     /// <inheritdoc />
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -308,5 +315,11 @@ public class GradientPicker : TemplatedControl
             return;
 
         ColorGradient.RotateStops(_shiftDown);
+    }
+
+    private void RandomizeOnClick(object? sender, RoutedEventArgs e)
+    {
+        ColorGradient.Randomize(6);
+        SelectedColorStop = ColorGradient.First();
     }
 }
