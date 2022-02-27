@@ -2,7 +2,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.Controls.GradientPicker;assembly=Artemis.UI.Shared"
+             xmlns:propertyInput="clr-namespace:Artemis.UI.DefaultTypes.PropertyInput"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.DefaultTypes.PropertyInput.ColorGradientPropertyInputView">
-    TODO
+             x:Class="Artemis.UI.DefaultTypes.PropertyInput.ColorGradientPropertyInputView"
+             x:DataType="propertyInput:ColorGradientPropertyInputViewModel">
+    <gradientPicker:GradientPickerButton Classes="condensed"
+                                         Width="200"
+                                         ColorGradient="{CompiledBinding ColorGradient}"
+                                         VerticalAlignment="Center" 
+                                         FlyoutOpened="GradientPickerButton_OnFlyoutOpened"
+                                         FlyoutClosed="GradientPickerButton_OnFlyoutClosed"/>
 </UserControl>

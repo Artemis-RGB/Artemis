@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
-using Avalonia.Controls.Mixins;
 using Avalonia.Threading;
 using ReactiveUI;
 using ReactiveUI.Validation.Helpers;
@@ -18,9 +18,9 @@ namespace Artemis.UI.Shared.Services.PropertyInput;
 public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
 {
     [AllowNull] private T _inputValue;
+
     private LayerPropertyPreview<T>? _preview;
 
-    private TimeSpan _time;
     private bool _updating;
 
     /// <summary>
@@ -36,7 +36,7 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
 
         this.WhenActivated(d =>
         {
-            ProfileEditorService.Time.Subscribe(t => _time = t).DisposeWith(d);
+            ProfileEditorService.Time.Subscribe(t => Time = t).DisposeWith(d);
             UpdateInputValue();
 
             Observable.FromEventPattern<LayerPropertyEventArgs>(x => LayerProperty.Updated += x, x => LayerProperty.Updated -= x)
@@ -51,6 +51,8 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
             Observable.FromEventPattern<DataBindingEventArgs>(x => LayerProperty.DataBinding.DataBindingDisabled += x, x => LayerProperty.DataBinding.DataBindingDisabled -= x)
                 .Subscribe(_ => UpdateDataBinding())
                 .DisposeWith(d);
+
+            Disposable.Create(DiscardPreview).DisposeWith(d);
         });
     }
 
@@ -107,34 +109,39 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
     /// </summary>
     public string? Affix => LayerProperty.PropertyDescription.InputAffix;
 
+    /// <summary>
+    ///     Gets the current time at which the property is being edited
+    /// </summary>
+    protected TimeSpan Time { get; private set; }
+
     internal override object InternalGuard { get; } = new();
 
     /// <summary>
     ///     Starts the preview of the current property, allowing updates without causing real changes to the property.
     /// </summary>
-    public void StartPreview()
+    public virtual void StartPreview()
     {
         _preview?.DiscardPreview();
-        _preview = new LayerPropertyPreview<T>(LayerProperty, _time);
+        _preview = new LayerPropertyPreview<T>(LayerProperty, Time);
     }
 
     /// <summary>
     ///     Applies the current preview to the property.
     /// </summary>
-    public void ApplyPreview()
+    public virtual void ApplyPreview()
     {
         if (_preview == null)
             return;
 
         if (_preview.DiscardPreview() && _preview.PreviewValue != null)
-            ProfileEditorService.ExecuteCommand(new UpdateLayerProperty<T>(LayerProperty, _inputValue, _preview.PreviewValue, _time));
+            ProfileEditorService.ExecuteCommand(new UpdateLayerProperty<T>(LayerProperty, _inputValue, _preview.PreviewValue, Time));
         _preview = null;
     }
 
     /// <summary>
     ///     Discard the preview of the property.
     /// </summary>
-    public void DiscardPreview()
+    public virtual void DiscardPreview()
     {
         if (_preview == null)
             return;
@@ -169,7 +176,7 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
         if (_preview != null)
             _preview.Preview(_inputValue);
         else
-            ProfileEditorService.ExecuteCommand(new UpdateLayerProperty<T>(LayerProperty, _inputValue, _time));
+            ProfileEditorService.ExecuteCommand(new UpdateLayerProperty<T>(LayerProperty, _inputValue, Time));
     }
 
     private void UpdateInputValue()

@@ -3,10 +3,22 @@
         xmlns:controls="using:Artemis.UI.Shared.Controls.GradientPicker"
         xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
-        xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:fluent="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters">
+    <Styles.Resources>
+        <VisualBrush x:Key="LightCheckerboardBrush" TileMode="Tile" Stretch="Uniform" DestinationRect="3,0,10,10">
+            <VisualBrush.Visual>
+                <Grid Width="10" Height="10" RowDefinitions="*,*" ColumnDefinitions="*,*">
+                    <Rectangle Grid.Row="0" Grid.Column="0" Fill="#c3c3c3" />
+                    <Rectangle Grid.Row="0" Grid.Column="1" Fill="White" />
+                    <Rectangle Grid.Row="1" Grid.Column="0" Fill="White" />
+                    <Rectangle Grid.Row="1" Grid.Column="1" Fill="#c3c3c3" />
+                </Grid>
+            </VisualBrush.Visual>
+        </VisualBrush>
+    </Styles.Resources>
     <Design.PreviewWith>
-        <controls:GradientPicker Width="800" />
+        <controls:GradientPicker />
     </Design.PreviewWith>
 
     <Style Selector="controls|GradientPickerColorStop /template/ Border.stop-handle">
@@ -15,17 +27,19 @@
         <Setter Property="Height" Value="60" />
         <Setter Property="Margin" Value="-9 -10 0 0"></Setter>
         <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="BorderBrush" Value="{DynamicResource SolidBackgroundFillColorSecondaryBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ToolTipBorderBrush}" />
         <Setter Property="Cursor" Value="Hand" />
     </Style>
     <Style Selector="controls|GradientPickerColorStop /template/ Border.stop-handle > Border">
         <Setter Property="CornerRadius" Value="18" />
-        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderThickness" Value="3" />
         <Setter Property="BorderBrush" Value="{DynamicResource SolidBackgroundFillColorQuarternaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource LightCheckerboardBrush}" />
     </Style>
     <Style Selector="controls|GradientPickerColorStop /template/ Border.stop-handle > Border > Border">
         <Setter Property="CornerRadius" Value="18" />
         <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="Margin" Value="-1" />
         <Setter Property="BorderBrush" Value="{DynamicResource SolidBackgroundFillColorSecondaryBrush}" />
     </Style>
 
@@ -33,17 +47,25 @@
         <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColorLight2}" />
     </Style>
 
-    <Style Selector="Border.stop-position">
+    <Style Selector="controls|GradientPicker Border#Gradient">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector="controls|GradientPicker Border#Gradient Border">
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+
+    <Style Selector="controls|GradientPicker Border.stop-position">
         <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Width" Value="40" />
         <Setter Property="Height" Value="30" />
-        <Setter Property="Margin" Value="-20 -15 0 0"></Setter>
+        <Setter Property="Margin" Value="-20 -15 0 0" />
         <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
     </Style>
 
-    <Style Selector="Border.stop-position TextBlock">
+    <Style Selector="controls|GradientPicker Border.stop-position TextBlock">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Center" />
     </Style>
@@ -52,79 +74,21 @@
         <Style.Resources>
             <converters:ColorGradientToGradientStopsConverter x:Key="ColorGradientToGradientStopsConverter" />
             <converters:SKColorToColorConverter x:Key="SKColorToColorConverter" />
+            <converters:SKColorToBrushConverter x:Key="SKColorToBrushConverter" />
             <converters:SKColorToStringConverter x:Key="SKColorToStringConverter" />
             <converters:WidthNormalizedConverter x:Key="WidthNormalizedConverter" />
         </Style.Resources>
+        <Setter Property="Focusable" Value="True" />
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid>
-                    <Border Name="Background" Background="{TemplateBinding LinearGradientBrush}" />
-                    <Border Classes="card" Margin="20" Padding="20" Background="{DynamicResource SolidBackgroundFillColorBaseBrush}">
-                        <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="Auto,*">
-                            <Border Name="Gradient" Grid.Row="0" Grid.ColumnSpan="2" Height="40" CornerRadius="4" Background="{TemplateBinding LinearGradientBrush}">
-                                <ItemsControl Items="{TemplateBinding ColorGradient}" ClipToBounds="False">
-                                    <ItemsControl.Styles>
-                                        <Style Selector="ContentPresenter">
-                                            <Setter Property="Canvas.Left">
-                                                <Setter.Value>
-                                                    <MultiBinding Converter="{StaticResource WidthNormalizedConverter}">
-                                                        <Binding Path="Position" />
-                                                        <Binding Path="Bounds.Width" ElementName="Gradient" />
-                                                    </MultiBinding>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </ItemsControl.Styles>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="core:ColorGradientStop">
-                                            <controls:GradientPickerColorStop ColorStop="{Binding}"
-                                                                              GradientPicker="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:GradientPicker}}}"
-                                                                              PositionReference="{Binding $parent[Border]}">
-                                                <controls:GradientPickerColorStop.Styles>
-                                                    <Style Selector="controls|GradientPickerColorStop">
-                                                        <Setter Property="ClipToBounds" Value="False"></Setter>
-                                                        <Setter Property="Template">
-                                                            <ControlTemplate>
-                                                                <Border Classes="stop-handle">
-                                                                    <Border>
-                                                                        <Border>
-                                                                            <Border.Background>
-                                                                                <SolidColorBrush Color="{CompiledBinding Color, Converter={StaticResource SKColorToColorConverter}}" />
-                                                                            </Border.Background>
-                                                                        </Border>
-                                                                    </Border>
-                                                                </Border>
-                                                            </ControlTemplate>
-                                                        </Setter>
-                                                    </Style>
-                                                </controls:GradientPickerColorStop.Styles>
-                                            </controls:GradientPickerColorStop>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <Canvas />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                </ItemsControl>
-                            </Border>
-
-                            <Border Grid.Row="1"
-                                    Grid.Column="0"
-                                    Grid.ColumnSpan="2"
-                                    BorderBrush="{DynamicResource ButtonBorderBrush}"
-                                    BorderThickness="0 0 0 1"
-                                    Margin="-20 30"
-                                    Height="2"
-                                    VerticalAlignment="Center">
-                            </Border>
-
-                            <ItemsControl Grid.Row="1"
-                                          Grid.Column="0"
-                                          Grid.ColumnSpan="2"
-                                          VerticalAlignment="Center"
-                                          Items="{TemplateBinding ColorGradient}"
-                                          ClipToBounds="False">
+                <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="Auto,255" Margin="20">
+                    <Border Name="Gradient"
+                            Grid.Row="0"
+                            Grid.ColumnSpan="2"
+                            Background="{DynamicResource LightCheckerboardBrush}"
+                            Margin="5 0">
+                        <Border Background="{TemplateBinding LinearGradientBrush}">
+                            <ItemsControl Items="{TemplateBinding ColorGradient}" ClipToBounds="False">
                                 <ItemsControl.Styles>
                                     <Style Selector="ContentPresenter">
                                         <Setter Property="Canvas.Left">
@@ -139,9 +103,11 @@
                                 </ItemsControl.Styles>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="core:ColorGradientStop">
-                                        <Border Classes="stop-position">
-                                            <TextBlock Text="{Binding Position}"></TextBlock>
-                                        </Border>
+                                        <controls:GradientPickerColorStop ColorStop="{Binding}"
+                                                                          PositionReference="{Binding $parent[Border]}"
+                                                                          Classes="gradient-handle"
+                                                                          GradientPicker="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:GradientPicker}}}">
+                                        </controls:GradientPickerColorStop>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                                 <ItemsControl.ItemsPanel>
@@ -150,42 +116,146 @@
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                             </ItemsControl>
-
-                            <controls1:ColorPicker Grid.Row="2" Grid.Column="0"
-                                                   ColorTextType="HexAlpha"
-                                                   UseColorWheel="True"
-                                                   UseColorTriangle="True"
-                                                   IsMoreButtonVisible="True"
-                                                   IsCompact="True"
-                                                   IsVisible="{TemplateBinding SelectedColorStop, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                                   Color="{Binding SelectedColorStop.Color, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource SKColorToColorConverter}}" />
-
-                            <ListBox Grid.Row="2"
-                                     Grid.Column="1"
-                                     BorderBrush="{DynamicResource ButtonBorderBrush}"
-                                     Items="{TemplateBinding ColorGradient}"
-                                     BorderThickness="1 0 0 0"
-                                     Margin="10 0 0 0">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate DataType="core:ColorGradientStop">
-                                        <Grid VerticalAlignment="Center" ColumnDefinitions="34,*,Auto,Auto">
-                                            <Border Grid.Column="0" Width="28" Height="28" CornerRadius="4" HorizontalAlignment="Left">
-                                                <Border.Background>
-                                                    <SolidColorBrush Color="{Binding Color, Converter={StaticResource SKColorToColorConverter}}"></SolidColorBrush>
-                                                </Border.Background>
-                                            </Border>
-                                            <TextBox Grid.Column="1" Text="{Binding Color, Converter={StaticResource SKColorToStringConverter}}"></TextBox>
-                                            <NumericUpDown Grid.Column="2" Value="{Binding Position}" FormatString="F3" ShowButtonSpinner="False" Margin="5 0"></NumericUpDown>
-                                            <Button Grid.Column="3" Classes="icon-button">
-                                                <avalonia:MaterialIcon Kind="Close"></avalonia:MaterialIcon>
-                                            </Button>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </Grid>
+                        </Border>
                     </Border>
+
+                    <Border Grid.Row="1"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            BorderBrush="{DynamicResource ButtonBorderBrush}"
+                            BorderThickness="0 0 0 1"
+                            Margin="-20 30"
+                            Height="2"
+                            VerticalAlignment="Center">
+                    </Border>
+
+                    <ItemsControl Name="GradientPositions"
+                                  Grid.Row="1"
+                                  Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  VerticalAlignment="Center"
+                                  Items="{TemplateBinding ColorGradient}"
+                                  ClipToBounds="False"
+                                  Margin="5 0">
+                        <ItemsControl.Styles>
+                            <Style Selector="ContentPresenter">
+                                <Setter Property="Canvas.Left">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource WidthNormalizedConverter}">
+                                            <Binding Path="Position" />
+                                            <Binding Path="#GradientPositions.Bounds.Width" />
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ItemsControl.Styles>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="core:ColorGradientStop">
+                                <Border Classes="stop-position">
+                                    <TextBlock Text="{Binding Position}"></TextBlock>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+
+                    <Border Grid.Row="2"
+                            Grid.Column="0"
+                            BorderBrush="{DynamicResource ButtonBorderBrush}"
+                            BorderThickness="0 0 1 0"
+                            Padding="0 0 10 0">
+                        <fluent:ColorPicker Name="ColorPicker"
+                                            ColorTextType="HexAlpha"
+                                            UseColorWheel="True"
+                                            UseColorTriangle="True"
+                                            IsMoreButtonVisible="True"
+                                            IsVisible="{TemplateBinding SelectedColorStop, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                            IsCompact="{Binding IsCompact, RelativeSource={RelativeSource TemplatedParent}}"
+                                            Color="{Binding SelectedColorStop.Color, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource SKColorToColorConverter}}" />
+                    </Border>
+
+                    <Grid Grid.Row="2" Grid.Column="1" RowDefinitions="*,Auto">
+                        <ListBox Grid.Row="0"
+                                 MaxHeight="280"
+                                 Items="{TemplateBinding ColorGradient}"
+                                 SelectedItem="{TemplateBinding SelectedColorStop, Mode=TwoWay}"
+                                 Padding="10 0 15 0">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate DataType="core:ColorGradientStop">
+                                    <Grid VerticalAlignment="Center"
+                                          ColumnDefinitions="34,*,Auto,Auto"
+                                          Margin="-5 0"
+                                          Classes="stop-list-item">
+                                        <Border Grid.Column="0" Width="28" Height="28" CornerRadius="4" HorizontalAlignment="Left"
+                                                BorderThickness="3"
+                                                BorderBrush="{DynamicResource ButtonBorderBrush}"
+                                                ClipToBounds="True"
+                                                Background="{DynamicResource LightCheckerboardBrush}">
+                                            <Border CornerRadius="4" Margin="-2" Background="{Binding Color, Converter={StaticResource SKColorToBrushConverter}}" />
+                                        </Border>
+                                        <TextBox Grid.Column="1" Text="{Binding Color, Converter={StaticResource SKColorToStringConverter}}" />
+                                        <NumericUpDown Grid.Column="2" Value="{Binding Position}" FormatString="F3" ShowButtonSpinner="False" Margin="5 0" />
+                                        <Button Name="DeleteButton"
+                                                Grid.Column="3"
+                                                Classes="icon-button"
+                                                Command="{Binding DeleteStop, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:GradientPicker}}}"
+                                                CommandParameter="{Binding}">
+                                            <avalonia:MaterialIcon Kind="Close" />
+                                        </Button>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <Border Grid.Row="1"
+                                Margin="10 5 0 0"
+                                Padding="0 5 0 0"
+                                BorderBrush="{DynamicResource ButtonBorderBrush}"
+                                BorderThickness="0 1 0 0">
+                            <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Right">
+                                <Button Name="SpreadStops" Classes="icon-button operation-button" ToolTip.Tip="Spread the color stops equally across the gradient.">
+                                    <avalonia:MaterialIcon Kind="ArrowLeftRight" />
+                                </Button>
+                                <Button Name="ToggleSeamless" Classes="icon-button operation-button"
+                                        ToolTip.Tip="Toggle the gradient being seamless by starting and ending with the same color.">
+                                    <avalonia:MaterialIcon Kind="SineWave" />
+                                </Button>
+                                <Button Name="FlipStops" Classes="icon-button operation-button" ToolTip.Tip="Flip the stops of the gradient.">
+                                    <avalonia:MaterialIcon Kind="FlipHorizontal" />
+                                </Button>
+                                <Button Name="RotateStops" Classes="icon-button operation-button">
+                                    <ToolTip.Tip>
+                                        <StackPanel>
+                                            <TextBlock>Rotates the stops of the gradient.</TextBlock>
+                                            <TextBlock>Hold shift to change direction.</TextBlock>
+                                        </StackPanel>
+                                    </ToolTip.Tip>
+                                    <avalonia:MaterialIcon Kind="AxisZRotateCounterclockwise" />
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
                 </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="controls|GradientPickerColorStop.gradient-handle">
+        <Style.Resources>
+            <converters:SKColorToBrushConverter x:Key="SKColorToBrushConverter" />
+        </Style.Resources>
+        <Setter Property="ClipToBounds" Value="False"></Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Classes="stop-handle">
+                    <Border>
+                        <Border Background="{Binding Color, Converter={StaticResource SKColorToBrushConverter}}" />
+                    </Border>
+                </Border>
             </ControlTemplate>
         </Setter>
     </Style>

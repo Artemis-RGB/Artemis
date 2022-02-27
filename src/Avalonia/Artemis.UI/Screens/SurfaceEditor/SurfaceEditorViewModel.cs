@@ -61,23 +61,22 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 startedOn.SelectionStatus = SelectionStatus.Selected;
                 foreach (SurfaceDeviceViewModel device in SurfaceDeviceViewModels.Where(vm => vm != startedOn))
                     device.SelectionStatus = SelectionStatus.None;
-
             }
 
             foreach (SurfaceDeviceViewModel surfaceDeviceViewModel in SurfaceDeviceViewModels)
                 surfaceDeviceViewModel.StartMouseDrag(mousePosition);
         }
 
-        public void UpdateMouseDrag(Point mousePosition)
+        public void UpdateMouseDrag(Point mousePosition, bool round, bool ignoreOverlap)
         {
             foreach (SurfaceDeviceViewModel surfaceDeviceViewModel in SurfaceDeviceViewModels)
-                surfaceDeviceViewModel.UpdateMouseDrag(mousePosition);
+                surfaceDeviceViewModel.UpdateMouseDrag(mousePosition, round, ignoreOverlap);
         }
 
-        public void StopMouseDrag(Point mousePosition)
+        public void StopMouseDrag(Point mousePosition, bool round, bool ignoreOverlap)
         {
             foreach (SurfaceDeviceViewModel surfaceDeviceViewModel in SurfaceDeviceViewModels)
-                surfaceDeviceViewModel.UpdateMouseDrag(mousePosition);
+                surfaceDeviceViewModel.UpdateMouseDrag(mousePosition, round, ignoreOverlap);
 
             if (_saving)
                 return;

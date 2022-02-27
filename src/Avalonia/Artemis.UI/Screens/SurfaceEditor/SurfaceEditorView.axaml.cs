@@ -73,7 +73,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             {
                 if (!_dragging)
                     ViewModel?.StartMouseDrag(e.GetPosition(_containerGrid));
-                ViewModel?.UpdateMouseDrag(e.GetPosition(_containerGrid));
+                ViewModel?.UpdateMouseDrag(e.GetPosition(_containerGrid), e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Alt));
             }
 
             _dragging = true;
@@ -93,7 +93,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
             if (ReferenceEquals(e.Pointer.Captured, sender))
             {
-                ViewModel?.StopMouseDrag(e.GetPosition(_containerGrid));
+                ViewModel?.StopMouseDrag(e.GetPosition(_containerGrid), e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Alt));
                 e.Pointer.Capture(null);
             }
         }

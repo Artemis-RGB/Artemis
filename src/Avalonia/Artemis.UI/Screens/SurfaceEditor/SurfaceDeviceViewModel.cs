@@ -28,7 +28,8 @@ namespace Artemis.UI.Screens.SurfaceEditor
         private double _dragOffsetY;
         private SelectionStatus _selectionStatus;
 
-        public SurfaceDeviceViewModel(ArtemisDevice device, IRgbService rgbService, IDeviceService deviceService, ISettingsService settingsService, IDeviceVmFactory deviceVmFactory, IWindowService windowService)
+        public SurfaceDeviceViewModel(ArtemisDevice device, IRgbService rgbService, IDeviceService deviceService, ISettingsService settingsService, IDeviceVmFactory deviceVmFactory,
+            IWindowService windowService)
         {
             _rgbService = rgbService;
             _deviceService = deviceService;
@@ -77,29 +78,36 @@ namespace Artemis.UI.Screens.SurfaceEditor
             _dragOffsetY = Device.Y - mouseStartPosition.Y;
         }
 
-        public void UpdateMouseDrag(Point mousePosition)
+        public void UpdateMouseDrag(Point mousePosition, bool round, bool ignoreOverlap)
         {
             if (SelectionStatus != SelectionStatus.Selected)
                 return;
 
-            float roundedX = (float) Math.Round((mousePosition.X + _dragOffsetX) / 10d, 0, MidpointRounding.AwayFromZero) * 10f;
-            float roundedY = (float) Math.Round((mousePosition.Y + _dragOffsetY) / 10d, 0, MidpointRounding.AwayFromZero) * 10f;
+            float x = (float) (mousePosition.X + _dragOffsetX);
+            float y = (float) (mousePosition.Y + _dragOffsetY);
 
-            if (Fits(roundedX, roundedY))
+            if (round)
             {
-                Device.X = roundedX;
-                Device.Y = roundedY;
+                x = (float) Math.Round(x / 10d, 0, MidpointRounding.AwayFromZero) * 10f;
+                y = (float) Math.Round(y / 10d, 0, MidpointRounding.AwayFromZero) * 10f;
             }
-            else if (Fits(roundedX, Device.Y))
+
+
+            if (Fits(x, y, ignoreOverlap))
             {
-                Device.X = roundedX;
+                Device.X = x;
+                Device.Y = y;
             }
-            else if (Fits(Device.X, roundedY))
+            else if (Fits(x, Device.Y, ignoreOverlap))
             {
-                Device.Y = roundedY;
+                Device.X = x;
+            }
+            else if (Fits(Device.X, y, ignoreOverlap))
+            {
+                Device.Y = y;
             }
         }
-        
+
         private void ExecuteIdentifyDevice(ArtemisDevice device)
         {
             _deviceService.IdentifyDevice(device);
@@ -110,7 +118,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             await _windowService.ShowDialogAsync(_deviceVmFactory.DevicePropertiesViewModel(device));
         }
 
-        private bool Fits(float x, float y)
+        private bool Fits(float x, float y, bool ignoreOverlap)
         {
             if (x < 0 || y < 0)
                 return false;
@@ -119,16 +127,16 @@ namespace Artemis.UI.Screens.SurfaceEditor
             if (x + Device.Rectangle.Width > maxTextureSize || y + Device.Rectangle.Height > maxTextureSize)
                 return false;
 
-            List<SKRect> own = Device.Leds
-                .Select(l => SKRect.Create(l.Rectangle.Left + x, l.Rectangle.Top + y, l.Rectangle.Width, l.Rectangle.Height))
-                .ToList();
-            List<SKRect> others = _rgbService.EnabledDevices
+            if (ignoreOverlap)
+                return true;
+
+            IEnumerable<SKRect> own = Device.Leds
+                .Select(l => SKRect.Create(l.Rectangle.Left + x, l.Rectangle.Top + y, l.Rectangle.Width, l.Rectangle.Height));
+            IEnumerable<SKRect> others = _rgbService.EnabledDevices
                 .Where(d => d != Device && d.IsEnabled)
                 .SelectMany(d => d.Leds)
-                .Select(l => SKRect.Create(l.Rectangle.Left + l.Device.X, l.Rectangle.Top + l.Device.Y, l.Rectangle.Width, l.Rectangle.Height))
-                .ToList();
-
-
+                .Select(l => SKRect.Create(l.Rectangle.Left + l.Device.X, l.Rectangle.Top + l.Device.Y, l.Rectangle.Width, l.Rectangle.Height));
+                
             return !own.Any(o => others.Any(l => l.IntersectsWith(o)));
         }
     }

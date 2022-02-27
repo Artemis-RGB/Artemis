@@ -29,7 +29,7 @@ public class GradientPickerColorStop : TemplatedControl
         else if (self.GradientPicker != null)
             self.GradientPicker.PropertyChanged += self.GradientPickerOnPropertyChanged;
 
-        self.IsSelected = self.GradientPicker?.SelectedColorStop == self.ColorStop;
+        self.IsSelected = ReferenceEquals(self.GradientPicker?.SelectedColorStop, self.ColorStop);
     }
 
     /// <summary>

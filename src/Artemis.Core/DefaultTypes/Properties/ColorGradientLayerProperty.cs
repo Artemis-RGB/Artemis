@@ -20,7 +20,7 @@ namespace Artemis.Core
         private void CreateDataBindingRegistrations()
         {
             DataBinding.ClearDataBindingProperties();
-            if (CurrentValue == null)
+            if (CurrentValue == null!)
                 return;
 
             for (int index = 0; index < CurrentValue.Count; index++)
@@ -54,10 +54,10 @@ namespace Artemis.Core
         private void OnCurrentValueSet(object? sender, LayerPropertyEventArgs e)
         {
             // Don't allow color gradients to be null
-            if (BaseValue == null)
-                BaseValue = DefaultValue ?? new ColorGradient();
+            if (BaseValue == null!)
+                BaseValue = new ColorGradient(DefaultValue);
 
-            if (_subscribedGradient != BaseValue)
+            if (!ReferenceEquals(_subscribedGradient, BaseValue))
             {
                 if (_subscribedGradient != null)
                     _subscribedGradient.CollectionChanged -= SubscribedGradientOnPropertyChanged;
@@ -80,8 +80,8 @@ namespace Artemis.Core
         protected override void OnInitialize()
         {
             // Don't allow color gradients to be null
-            if (BaseValue == null)
-                BaseValue = DefaultValue ?? new ColorGradient();
+            if (BaseValue == null!)
+                BaseValue = new ColorGradient(DefaultValue);
 
             base.OnInitialize();
         }

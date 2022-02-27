@@ -11,7 +11,7 @@
                 </Grid>
             </VisualBrush.Visual>
         </VisualBrush>
-		<VisualBrush x:Key="LargeCheckerboardBrush" TileMode="Tile" Stretch="Uniform" SourceRect="0,0,25,25">
+        <VisualBrush x:Key="LargeCheckerboardBrush" TileMode="Tile" Stretch="Uniform" SourceRect="0,0,25,25">
             <VisualBrush.Visual>
                 <Grid Width="25" Height="25" RowDefinitions="*,*" ColumnDefinitions="*,*">
                     <Rectangle Grid.Row="0" Grid.Column="0" Fill="Black" Opacity="0.15" />
@@ -33,6 +33,7 @@
     <StyleInclude Source="/Styles/TreeView.axaml" />
 
     <StyleInclude Source="/Styles/Controls/GradientPicker.axaml" />
+    <StyleInclude Source="/Styles/Controls/GradientPickerButton.axaml" />
 
     <Style Selector="Window:windows:windows10 /template/ Border#RootBorder">
         <!-- This will show if custom accent color setting is used in Settings page-->
