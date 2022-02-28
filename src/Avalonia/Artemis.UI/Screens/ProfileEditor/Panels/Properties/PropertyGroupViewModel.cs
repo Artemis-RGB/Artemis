@@ -12,11 +12,10 @@ using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.PropertyInput;
-using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties;
 
-public class PropertyGroupViewModel : ViewModelBase
+public class PropertyGroupViewModel : ViewModelBase, IDisposable
 {
     private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
     private readonly IPropertyInputService _propertyInputService;
@@ -33,7 +32,7 @@ public class PropertyGroupViewModel : ViewModelBase
         TreeGroupViewModel = layerPropertyVmFactory.TreeGroupViewModel(this);
         TimelineGroupViewModel = layerPropertyVmFactory.TimelineGroupViewModel(this);
 
-        // TODO: Centralize visibility updating or do it here and dispose
+        LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
         _isVisible = !LayerPropertyGroup.IsHidden;
 
         PopulateChildren();
@@ -86,10 +85,12 @@ public class PropertyGroupViewModel : ViewModelBase
             return result;
 
         foreach (ViewModelBase child in Children)
+        {
             if (child is PropertyViewModel profileElementPropertyViewModel)
                 result.AddRange(profileElementPropertyViewModel.TimelinePropertyViewModel.GetAllKeyframeViewModels());
             else if (child is PropertyGroupViewModel profileElementPropertyGroupViewModel)
                 result.AddRange(profileElementPropertyGroupViewModel.GetAllKeyframeViewModels(expandedOnly));
+        }
 
         return result;
     }
@@ -119,5 +120,21 @@ public class PropertyGroupViewModel : ViewModelBase
         }
 
         HasChildren = Children.Any(i => i is PropertyViewModel {IsVisible: true} || i is PropertyGroupViewModel {IsVisible: true});
+    }
+
+    private void LayerPropertyGroupOnVisibilityChanged(object? sender, EventArgs e)
+    {
+        IsVisible = !LayerPropertyGroup.IsHidden;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        LayerPropertyGroup.VisibilityChanged -= LayerPropertyGroupOnVisibilityChanged;
+        foreach (ViewModelBase viewModelBase in Children)
+        {
+            if (viewModelBase is IDisposable disposable)
+                disposable.Dispose();
+        }
     }
 }

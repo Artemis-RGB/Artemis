@@ -61,6 +61,8 @@
                 </TabControl.ContentTemplate>
             </TabControl>
         </Border>
+
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="3" Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
     </Grid>
 
 </controls1:CoreWindow>

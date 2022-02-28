@@ -20,51 +20,56 @@
             <Setter Property="Margin" Value="15 0 0 0" />
         </Style>
     </Window.Styles>
-    <controls:NavigationView x:Name="Navigation"
-                             SelectedItem="{Binding SelectedItem}"
-                             IsPaneToggleButtonVisible="False"
-                             PaneDisplayMode="Left"
-                             Margin="0 10 0 0">
-        <controls:NavigationView.MenuItems>
-            <controls:NavigationViewItem Tag="Rendering">
-                <controls:NavigationViewItem.Content>
-                    <StackPanel Orientation="Horizontal" Classes="sidebar-stackpanel">
-                        <avalonia:MaterialIcon Kind="Paint" />
-                        <TextBlock>Rendering</TextBlock>
-                    </StackPanel>
-                </controls:NavigationViewItem.Content>
-            </controls:NavigationViewItem>
-            <controls:NavigationViewItem Tag="DataModel">
-                <controls:NavigationViewItem.Content>
-                    <StackPanel Orientation="Horizontal" Classes="sidebar-stackpanel">
-                        <avalonia:MaterialIcon Kind="FormatListBulletedType" />
-                        <TextBlock>Data Model</TextBlock>
-                    </StackPanel>
-                </controls:NavigationViewItem.Content>
-            </controls:NavigationViewItem>
-            <controls:NavigationViewItem Tag="Performance">
-                <controls:NavigationViewItem.Content>
-                    <StackPanel Orientation="Horizontal" Classes="sidebar-stackpanel">
-                        <avalonia:MaterialIcon Kind="Gauge" />
-                        <TextBlock>Performance</TextBlock>
-                    </StackPanel>
-                </controls:NavigationViewItem.Content>
-            </controls:NavigationViewItem>
-            <controls:NavigationViewItem Tag="Logging">
-                <controls:NavigationViewItem.Content>
-                    <StackPanel Orientation="Horizontal" Classes="sidebar-stackpanel">
-                        <avalonia:MaterialIcon Kind="Text" />
-                        <TextBlock>Logging</TextBlock>
-                    </StackPanel>
-                </controls:NavigationViewItem.Content>
-            </controls:NavigationViewItem>
-        </controls:NavigationView.MenuItems>
 
-        <reactiveUi:RoutedViewHost Router="{Binding Router}" Padding="12">
-            <reactiveUi:RoutedViewHost.PageTransition>
-                <CrossFade Duration="0.1" />
-            </reactiveUi:RoutedViewHost.PageTransition>
-        </reactiveUi:RoutedViewHost>
+	<Panel>
+		<controls:NavigationView x:Name="Navigation"
+								 SelectedItem="{Binding SelectedItem}"
+								 IsPaneToggleButtonVisible="False"
+								 PaneDisplayMode="Left"
+								 Margin="0 10 0 0">
+			<controls:NavigationView.MenuItems>
+				<controls:NavigationViewItem Tag="Rendering">
+					<controls:NavigationViewItem.Content>
+						<StackPanel Orientation="Horizontal" Classes="sidebar-stackpanel">
+							<avalonia:MaterialIcon Kind="Paint" />
+							<TextBlock>Rendering</TextBlock>
+						</StackPanel>
+					</controls:NavigationViewItem.Content>
+				</controls:NavigationViewItem>
+				<controls:NavigationViewItem Tag="DataModel">
+					<controls:NavigationViewItem.Content>
+						<StackPanel Orientation="Horizontal" Classes="sidebar-stackpanel">
+							<avalonia:MaterialIcon Kind="FormatListBulletedType" />
+							<TextBlock>Data Model</TextBlock>
+						</StackPanel>
+					</controls:NavigationViewItem.Content>
+				</controls:NavigationViewItem>
+				<controls:NavigationViewItem Tag="Performance">
+					<controls:NavigationViewItem.Content>
+						<StackPanel Orientation="Horizontal" Classes="sidebar-stackpanel">
+							<avalonia:MaterialIcon Kind="Gauge" />
+							<TextBlock>Performance</TextBlock>
+						</StackPanel>
+					</controls:NavigationViewItem.Content>
+				</controls:NavigationViewItem>
+				<controls:NavigationViewItem Tag="Logging">
+					<controls:NavigationViewItem.Content>
+						<StackPanel Orientation="Horizontal" Classes="sidebar-stackpanel">
+							<avalonia:MaterialIcon Kind="Text" />
+							<TextBlock>Logging</TextBlock>
+						</StackPanel>
+					</controls:NavigationViewItem.Content>
+				</controls:NavigationViewItem>
+			</controls:NavigationView.MenuItems>
 
-    </controls:NavigationView>
+			<reactiveUi:RoutedViewHost Router="{Binding Router}" Padding="12">
+				<reactiveUi:RoutedViewHost.PageTransition>
+					<CrossFade Duration="0.1" />
+				</reactiveUi:RoutedViewHost.PageTransition>
+			</reactiveUi:RoutedViewHost>
+
+		</controls:NavigationView>
+		<StackPanel Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+	</Panel>
+    
 </controls:CoreWindow>

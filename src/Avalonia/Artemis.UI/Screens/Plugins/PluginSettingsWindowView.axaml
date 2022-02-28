@@ -12,5 +12,6 @@
         WindowStartupLocation="CenterOwner">
 	<Panel>
         <ContentControl Content="{Binding ConfigurationViewModel}"></ContentControl>
+        <StackPanel Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
 	</Panel>
 </controls:CoreWindow>

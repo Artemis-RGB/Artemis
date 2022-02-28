@@ -35,9 +35,10 @@
     <StyleInclude Source="/Styles/Sidebar.axaml" />
     <StyleInclude Source="/Styles/InfoBar.axaml" />
     <StyleInclude Source="/Styles/TextBox.axaml" />
+    <StyleInclude Source="/Styles/Notifications.axaml" />
     <StyleInclude Source="/Styles/NumberBox.axaml" />
     <StyleInclude Source="/Styles/TreeView.axaml" />
-
+    
     <Style Selector="Window:windows:windows10 /template/ Border#RootBorder">
         <!-- This will show if custom accent color setting is used in Settings page-->
         <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}" />

@@ -69,7 +69,14 @@ namespace Artemis.UI.Shared.Controls
 
                 // Render device and LED images 
                 if (_deviceImage != null)
-                    drawingContext.DrawImage(_deviceImage, new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height));
+                {
+                    drawingContext.DrawImage(
+                        _deviceImage,
+                        new Rect(_deviceImage.Size),
+                        new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height),
+                        RenderOptions.GetBitmapInterpolationMode(this)
+                    );
+                }
 
                 if (!ShowColors)
                     return;

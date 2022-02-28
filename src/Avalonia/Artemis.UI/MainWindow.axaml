@@ -7,11 +7,14 @@
                      x:Class="Artemis.UI.MainWindow"
                      Icon="/Assets/Images/Logo/application.ico"
                      Title="Artemis 2.0">
-    <DockPanel>
-        <ContentControl Content="{Binding SidebarViewModel}" DockPanel.Dock="Left"></ContentControl>
-        <Border Background="Transparent" Name="TitleBar" DockPanel.Dock="Top">
-            <ContentControl Content="{Binding TitleBarViewModel}" />
-        </Border>
-        <ContentControl Content="{Binding}" />
-    </DockPanel>
+    <Panel>
+        <DockPanel>
+            <ContentControl Content="{Binding SidebarViewModel}" DockPanel.Dock="Left"></ContentControl>
+            <Border Background="Transparent" Name="TitleBar" DockPanel.Dock="Top">
+                <ContentControl Content="{Binding TitleBarViewModel}" />
+            </Border>
+            <ContentControl Content="{Binding}" />
+        </DockPanel>
+        <StackPanel Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+    </Panel>
 </controls:CoreWindow>

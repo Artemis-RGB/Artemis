@@ -26,12 +26,7 @@ public class NotificationBuilder
     public NotificationBuilder(Window parent)
     {
         _parent = parent;
-        _infoBar = new InfoBar
-        {
-            Classes = Classes.Parse("notification-info-bar"),
-            VerticalAlignment = VerticalAlignment.Bottom,
-            HorizontalAlignment = HorizontalAlignment.Right
-        };
+        _infoBar = new InfoBar {Classes = Classes.Parse("notification-info-bar")};
     }
 
     /// <summary>
@@ -121,8 +116,9 @@ public class NotificationBuilder
     /// <exception cref="ArtemisSharedUIException" />
     public Action Show()
     {
-        if (_parent.Content is not Panel panel)
-            throw new ArtemisSharedUIException("Can't display a notification on a window without a panel at its root.");
+        IPanel? panel = _parent.Find<IPanel>("NotificationContainer");
+        if (panel == null)
+            throw new ArtemisSharedUIException("Can't display a notification on a window without a NotificationContainer.");
 
         Dispatcher.UIThread.Post(() =>
         {

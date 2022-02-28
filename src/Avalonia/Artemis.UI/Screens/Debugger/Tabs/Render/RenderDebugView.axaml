@@ -24,7 +24,7 @@
             <TextBlock Text="{Binding Renderer}"></TextBlock>
         </StackPanel>
 
-        <Border Classes="card">
+        <Border Classes="card" Padding="10">
         <ZoomBorder Name="ZoomBorder"
                     Stretch="None"
                     ClipToBounds="True"
