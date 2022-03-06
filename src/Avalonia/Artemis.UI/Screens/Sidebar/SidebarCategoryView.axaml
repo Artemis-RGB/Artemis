@@ -8,6 +8,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Sidebar.SidebarCategoryView">
     <UserControl.Styles>
+        <StyleInclude Source="avares://Avalonia.Xaml.Interactions/Draggable/Styles.axaml" />
         <Style Selector=":is(Button).category-button">
             <Setter Property="IsVisible" Value="False" />
         </Style>
@@ -111,7 +112,7 @@
                     </Border>
                 </DataTemplate>
             </Border.Resources>
-            <ListBox Classes="sidebar-listbox"
+            <ListBox Classes="sidebar-listbox draggable"
                      Items="{Binding ProfileConfigurations}"
                      SelectedItem="{Binding SelectedProfileConfiguration}"
                      MinHeight="10"

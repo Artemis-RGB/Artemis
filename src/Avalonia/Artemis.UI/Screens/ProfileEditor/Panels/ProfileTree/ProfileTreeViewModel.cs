@@ -89,5 +89,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 
             return result;
         }
+
+        public override bool SupportsChildren => true;
     }
 }

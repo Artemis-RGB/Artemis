@@ -4,11 +4,49 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:profileTree="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree"
+             xmlns:profileBehaviors="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree.Behaviors"
+             xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.ProfileTreeView"
              x:DataType="profileTree:ProfileTreeViewModel">
+    <UserControl.Styles>
+        <StyleInclude Source="avares://Avalonia.Xaml.Interactions/Draggable/Styles.axaml" />
+        <Style Selector="TreeView#ProfileTreeView">
+            <Style.Resources>
+				<profileBehaviors:ProfileTreeViewDropHandler x:Key="ProfileTreeViewDropHandler" />
+            </Style.Resources>
+            <Setter Property="(Interaction.Behaviors)">
+                <BehaviorCollectionTemplate>
+                    <BehaviorCollection>
+                        <ContextDropBehavior Handler="{StaticResource ProfileTreeViewDropHandler}" />
+                    </BehaviorCollection>
+                </BehaviorCollectionTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="TreeView#ProfileTreeView TreeViewItem">
+            <Setter Property="IsExpanded" Value="True" />
+            <Setter Property="(Interaction.Behaviors)">
+                <BehaviorCollectionTemplate>
+                    <BehaviorCollection>
+						<behaviors:SimpleContextDragBehavior />
+                    </BehaviorCollection>
+                </BehaviorCollectionTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="TreeView#ProfileTreeView TreeViewItem:dragging-before">
+            <Setter Property="Background" Value="DarkOrange" />
+        </Style>
+        <Style Selector="TreeView#ProfileTreeView TreeViewItem:dragging-into">
+            <Setter Property="Background" Value="Blue" />
+        </Style>
+        <Style Selector="TreeView#ProfileTreeView TreeViewItem:dragging-after">
+            <Setter Property="Background" Value="Green" />
+        </Style>
+	</UserControl.Styles>
     <Grid RowDefinitions="*,Auto">
-        <TreeView Name="ProfileTreeView" Classes="no-right-margin" Items="{CompiledBinding Children}" SelectedItem="{CompiledBinding SelectedChild}" SelectionChanged="ProfileTreeView_OnSelectionChanged">
+        <TreeView Name="ProfileTreeView" Classes="no-right-margin draggable" Items="{CompiledBinding Children}" SelectedItem="{CompiledBinding SelectedChild}" SelectionChanged="ProfileTreeView_OnSelectionChanged">
             <TreeView.Styles>
                 <Style Selector="TreeViewItem">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />

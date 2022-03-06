@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.Interfaces;
@@ -114,6 +115,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         public ReactiveCommand<Unit, Unit> Copy { get; }
         public ReactiveCommand<Unit, Unit> Paste { get; }
         public ReactiveCommand<Unit, Unit> Delete { get; }
+        public abstract bool SupportsChildren { get; }
 
         public string? RenameValue
         {
@@ -154,6 +156,15 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             Renaming = false;
         }
 
+        public void InsertElement(TreeItemViewModel elementViewModel, int targetIndex)
+        {
+            if (elementViewModel.Parent == this && Children.IndexOf(elementViewModel) == targetIndex)
+                return;
+
+            if (ProfileElement != null && elementViewModel.ProfileElement != null)
+                _profileEditorService.ExecuteCommand(new MoveProfileElement(ProfileElement, elementViewModel.ProfileElement, targetIndex));
+        }
+
         protected void SubscribeToProfileElement(CompositeDisposable d)
         {
             if (ProfileElement == null)
@@ -180,9 +191,10 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             if (parent != null)
             {
                 newSelection = parent.Children.FirstOrDefault(c => c.Order == profileElement.Order) ?? parent.Children.FirstOrDefault(c => c.Order == profileElement.Order - 1);
-                if (newSelection == null && parent is Folder { IsRootFolder: false })
+                if (newSelection == null && parent is Folder {IsRootFolder: false})
                     newSelection = parent;
             }
+
             _profileEditorService.ChangeCurrentProfileElement(newSelection as RenderProfileElement);
         }
 
@@ -218,4 +230,6 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             }
         }
     }
+
+
 }

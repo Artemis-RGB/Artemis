@@ -15,5 +15,12 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         }
 
         public Layer Layer { get; }
+
+        #region Overrides of TreeItemViewModel
+
+        /// <inheritdoc />
+        public override bool SupportsChildren => false;
+
+        #endregion
     }
 }

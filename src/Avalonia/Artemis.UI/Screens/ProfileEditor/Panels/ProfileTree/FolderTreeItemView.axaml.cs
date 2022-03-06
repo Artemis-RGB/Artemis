@@ -6,36 +6,35 @@ using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
+namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
+
+public class FolderTreeItemView : ReactiveUserControl<FolderTreeItemViewModel>
 {
-    public class FolderTreeItemView : ReactiveUserControl<FolderTreeItemViewModel>
+    public FolderTreeItemView()
     {
-        public FolderTreeItemView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void InitializeComponent()
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
+        this.WhenActivated(_ => ViewModel?.Rename.Subscribe(_ =>
         {
-            AvaloniaXamlLoader.Load(this);
-            this.WhenActivated(_ => ViewModel?.Rename.Subscribe(_ =>
-            {
-                this.Get<TextBox>("Input").Focus();
-                this.Get<TextBox>("Input").SelectAll();
-            }));
-        }
+            this.Get<TextBox>("Input").Focus();
+            this.Get<TextBox>("Input").SelectAll();
+        }));
+    }
 
-        private void InputElement_OnKeyUp(object? sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-                ViewModel?.SubmitRename();
-            else if (e.Key == Key.Escape)
-                ViewModel?.CancelRename();
-        }
-
-        private void InputElement_OnLostFocus(object? sender, RoutedEventArgs e)
-        {
+    private void InputElement_OnKeyUp(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter)
+            ViewModel?.SubmitRename();
+        else if (e.Key == Key.Escape)
             ViewModel?.CancelRename();
-        }
+    }
+
+    private void InputElement_OnLostFocus(object? sender, RoutedEventArgs e)
+    {
+        ViewModel?.CancelRename();
     }
 }

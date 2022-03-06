@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
@@ -15,23 +15,26 @@
 	  <None Remove="Assets\Images\Logo\application.ico" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Avalonia" Version="0.10.12" />
+		<PackageReference Include="Avalonia" Version="0.10.13" />
 		<PackageReference Include="Avalonia.Controls.PanAndZoom" Version="10.12.0" />
-		<PackageReference Include="Avalonia.Desktop" Version="0.10.12" />
-		<PackageReference Include="Avalonia.Diagnostics" Version="0.10.12" />
-		<PackageReference Include="Avalonia.ReactiveUI" Version="0.10.12" />
+		<PackageReference Include="Avalonia.Desktop" Version="0.10.13" />
+		<PackageReference Include="Avalonia.Diagnostics" Version="0.10.13" />
+		<PackageReference Include="Avalonia.ReactiveUI" Version="0.10.13" />
 		<PackageReference Include="Avalonia.Svg.Skia" Version="0.10.12" />
-		<PackageReference Include="DynamicData" Version="7.4.9" />
-		<PackageReference Include="FluentAvaloniaUI" Version="1.2.1" />
+		<PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.12.2" />
+		<PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.12.2" />
+		<PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.10.12.2" />
+		<PackageReference Include="DynamicData" Version="7.5.4" />
+		<PackageReference Include="FluentAvaloniaUI" Version="1.3.0" />
 		<PackageReference Include="Flurl.Http" Version="3.2.0" />
 		<PackageReference Include="Live.Avalonia" Version="1.3.1" />
 		<PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
-		<PackageReference Include="ReactiveUI" Version="17.1.17" />
+		<PackageReference Include="ReactiveUI" Version="17.1.50" />
 		<PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />
 		<PackageReference Include="RGB.NET.Core" Version="1.0.0-prerelease7" />
 		<PackageReference Include="RGB.NET.Layout" Version="1.0.0-prerelease7" />
 		<PackageReference Include="SkiaSharp" Version="2.88.0-preview.178" />
-		<PackageReference Include="Splat.Ninject" Version="14.1.17" />
+		<PackageReference Include="Splat.Ninject" Version="14.1.45" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Artemis.Core\Artemis.Core.csproj" />
