@@ -55,7 +55,9 @@
         </TextBox>
         <controls:ColorPickerButton Classes="contained-color-picker-button"
                                     Color="{CompiledBinding InputValue, Converter={StaticResource SKColorToColor2Converter}}"
-                                    ShowAcceptDismissButtons="False" />
+                                    ShowAcceptDismissButtons="False"
+                                    FlyoutOpened="ColorPickerButton_OnFlyoutOpened"
+                                    FlyoutClosed="ColorPickerButton_OnFlyoutClosed" />
     </Grid>
 
 </UserControl>

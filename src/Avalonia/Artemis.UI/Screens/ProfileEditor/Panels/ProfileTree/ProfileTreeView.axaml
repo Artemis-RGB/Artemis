@@ -6,14 +6,18 @@
              xmlns:profileTree="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree"
              xmlns:profileBehaviors="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree.Behaviors"
              xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.ProfileTreeView"
              x:DataType="profileTree:ProfileTreeViewModel">
+    <UserControl.Resources>
+        <converters:ColorOpacityConverter x:Key="ColorOpacityConverter" />
+    </UserControl.Resources>
     <UserControl.Styles>
         <StyleInclude Source="avares://Avalonia.Xaml.Interactions/Draggable/Styles.axaml" />
         <Style Selector="TreeView#ProfileTreeView">
             <Style.Resources>
-				<profileBehaviors:ProfileTreeViewDropHandler x:Key="ProfileTreeViewDropHandler" />
+                <profileBehaviors:ProfileTreeViewDropHandler x:Key="ProfileTreeViewDropHandler" />
             </Style.Resources>
             <Setter Property="(Interaction.Behaviors)">
                 <BehaviorCollectionTemplate>
@@ -29,24 +33,56 @@
             <Setter Property="(Interaction.Behaviors)">
                 <BehaviorCollectionTemplate>
                     <BehaviorCollection>
-						<behaviors:SimpleContextDragBehavior />
+                        <behaviors:SimpleContextDragBehavior />
                     </BehaviorCollection>
                 </BehaviorCollectionTemplate>
             </Setter>
         </Style>
 
         <Style Selector="TreeView#ProfileTreeView TreeViewItem:dragging-before">
-            <Setter Property="Background" Value="DarkOrange" />
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,28">
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.0" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.05" />
+                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.05" />
+                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.25" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style Selector="TreeView#ProfileTreeView TreeViewItem:dragging-into">
-            <Setter Property="Background" Value="Blue" />
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,28">
+						<GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.0" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.05" />
+                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.05" />
+                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.25" />
+                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.75" />
+                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.95" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.95" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="1" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style Selector="TreeView#ProfileTreeView TreeViewItem:dragging-after">
-            <Setter Property="Background" Value="Green" />
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,28">
+                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.75" />
+                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.95" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.95" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="1" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
         </Style>
-	</UserControl.Styles>
+    </UserControl.Styles>
     <Grid RowDefinitions="*,Auto">
-        <TreeView Name="ProfileTreeView" Classes="no-right-margin draggable" Items="{CompiledBinding Children}" SelectedItem="{CompiledBinding SelectedChild}" SelectionChanged="ProfileTreeView_OnSelectionChanged">
+        <TreeView Name="ProfileTreeView" Classes="no-right-margin draggable" Items="{CompiledBinding Children}" SelectedItem="{CompiledBinding SelectedChild}"
+                  SelectionChanged="ProfileTreeView_OnSelectionChanged">
             <TreeView.Styles>
                 <Style Selector="TreeViewItem">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />

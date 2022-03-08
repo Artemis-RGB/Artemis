@@ -185,7 +185,7 @@ namespace Artemis.Core
             // No point rendering if all children are disabled
             if (!Children.Any(c => c is RenderProfileElement {Enabled: true}))
                 return;
-            
+
             SKPaint layerPaint = new() {FilterQuality = SKFilterQuality.Low};
             try
             {
@@ -266,7 +266,7 @@ namespace Artemis.Core
         ///     Occurs when a property affecting the rendering properties of this folder has been updated
         /// </summary>
         public event EventHandler? RenderPropertiesUpdated;
-        
+
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {

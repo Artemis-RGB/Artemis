@@ -15,13 +15,15 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 {
     public class ProfileTreeViewModel : TreeItemViewModel
     {
-        private readonly IProfileEditorService _profileEditorService;
         private TreeItemViewModel? _selectedChild;
 
-        public ProfileTreeViewModel(IWindowService windowService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory, IRgbService rgbService)
-            : base(null, null, windowService, profileEditorService, rgbService, profileEditorVmFactory)
+        public ProfileTreeViewModel(IWindowService windowService,
+            IProfileEditorService profileEditorService,
+            ILayerBrushService layerBrushService,
+            IProfileEditorVmFactory profileEditorVmFactory,
+            IRgbService rgbService)
+            : base(null, null, windowService, profileEditorService, rgbService, layerBrushService, profileEditorVmFactory)
         {
-            _profileEditorService = profileEditorService;
             this.WhenActivated(d =>
             {
                 profileEditorService.ProfileConfiguration.WhereNotNull().Subscribe(configuration =>
@@ -46,7 +48,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
                     profileEditorService.ChangeCurrentProfileElement(renderProfileElement);
             });
 
-            ClearSelection = ReactiveCommand.Create(() => _profileEditorService.ChangeCurrentProfileElement(null));
+            ClearSelection = ReactiveCommand.Create(() => profileEditorService.ChangeCurrentProfileElement(null));
         }
 
         public ReactiveCommand<Unit, Unit> ClearSelection { get; }

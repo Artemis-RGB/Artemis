@@ -1,8 +1,10 @@
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
+using FluentAvalonia.UI.Controls;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput
 {
@@ -16,6 +18,16 @@ namespace Artemis.UI.DefaultTypes.PropertyInput
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        private void ColorPickerButton_OnFlyoutOpened(ColorPickerButton sender, EventArgs args)
+        {
+            ViewModel?.StartPreview();
+        }
+
+        private void ColorPickerButton_OnFlyoutClosed(ColorPickerButton sender, EventArgs args)
+        {
+            ViewModel?.ApplyPreview();
         }
     }
 }

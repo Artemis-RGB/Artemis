@@ -8,8 +8,14 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 {
     public class FolderTreeItemViewModel : TreeItemViewModel
     {
-        public FolderTreeItemViewModel(TreeItemViewModel? parent, Folder folder, IWindowService windowService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory, IRgbService rgbService) 
-            : base(parent, folder, windowService, profileEditorService, rgbService, profileEditorVmFactory)
+        public FolderTreeItemViewModel(TreeItemViewModel? parent,
+            Folder folder,
+            IWindowService windowService,
+            IProfileEditorService profileEditorService,
+            ILayerBrushService layerBrushService,
+            IProfileEditorVmFactory profileEditorVmFactory,
+            IRgbService rgbService)
+            : base(parent, folder, windowService, profileEditorService, rgbService, layerBrushService, profileEditorVmFactory)
         {
             Folder = folder;
         }

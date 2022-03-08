@@ -27,5 +27,7 @@ namespace Artemis.Core.Services
         /// Returns the descriptor of the default layer brush
         /// </summary>
         LayerBrushDescriptor? GetDefaultLayerBrush();
+
+        void ApplyDefaultBrush(Layer layer);
     }
 }

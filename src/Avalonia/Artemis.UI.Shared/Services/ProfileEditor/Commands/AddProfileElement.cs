@@ -47,6 +47,8 @@ public class AddProfileElement : IProfileEditorCommand, IDisposable
     {
         _isAdded = true;
         _target.AddChild(_subject, _index);
+
+        _subject.Enable();
     }
 
     /// <inheritdoc />

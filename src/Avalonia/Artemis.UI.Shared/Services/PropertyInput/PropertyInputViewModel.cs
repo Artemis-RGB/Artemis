@@ -134,7 +134,7 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
             return;
 
         if (_preview.DiscardPreview() && _preview.PreviewValue != null)
-            ProfileEditorService.ExecuteCommand(new UpdateLayerProperty<T>(LayerProperty, _inputValue, _preview.PreviewValue, Time));
+            ProfileEditorService.ExecuteCommand(new UpdateLayerProperty<T>(LayerProperty, _inputValue, _preview.OriginalValue, Time));
         _preview = null;
     }
 

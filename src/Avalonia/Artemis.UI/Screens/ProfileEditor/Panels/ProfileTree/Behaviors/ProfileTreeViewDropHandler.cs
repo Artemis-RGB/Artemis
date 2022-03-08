@@ -1,15 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Generators;
-using Avalonia.Controls.Primitives;
-using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Media;
 using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactions.DragAndDrop;
 
@@ -34,7 +30,7 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
         if (sender is ItemsControl itemsControl)
         {
             foreach (TreeViewItem treeViewItem in GetFlattenedTreeView(itemsControl))
-                SetDraggingPseudoClasses(treeViewItem, TreeDropType.After, false);
+                SetDraggingPseudoClasses(treeViewItem, TreeDropType.None);
         }
 
         return result;
@@ -42,8 +38,11 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
 
     public override void Cancel(object? sender, RoutedEventArgs e)
     {
-        if (e.Source is IControl control && control.FindAncestorOfType<TreeViewItem>() != null)
-            SetDraggingPseudoClasses(control.FindAncestorOfType<TreeViewItem>(), TreeDropType.After, false);
+        if (sender is ItemsControl itemsControl)
+        {
+            foreach (TreeViewItem treeViewItem in GetFlattenedTreeView(itemsControl))
+                SetDraggingPseudoClasses(treeViewItem, TreeDropType.None);
+        }
 
         base.Cancel(sender, e);
     }
@@ -102,6 +101,9 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
         if (e.DragEffects != DragDropEffects.Move)
             return false;
 
+        foreach (TreeViewItem treeViewItem in GetFlattenedTreeView(treeView))
+            SetDraggingPseudoClasses(treeViewItem, TreeDropType.None);
+
         if (bExecute)
         {
             if (dropType == TreeDropType.Into)
@@ -118,7 +120,7 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
         }
         else
         {
-            SetDraggingPseudoClasses((IControl) targetVisual, dropType, true);
+            SetDraggingPseudoClasses((IControl) targetVisual, dropType);
         }
 
         return true;
@@ -130,7 +132,7 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
 
         foreach (ItemContainerInfo containerInfo in currentNode.ItemContainerGenerator.Containers)
         {
-            if (containerInfo.ContainerControl is TreeViewItem treeViewItem && containerInfo.Item is TreeItemViewModel viewModel)
+            if (containerInfo.ContainerControl is TreeViewItem treeViewItem && containerInfo.Item is TreeItemViewModel)
             {
                 result.Add(treeViewItem);
                 if (treeViewItem.ItemContainerGenerator.Containers.Any())
@@ -141,9 +143,16 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
         return result;
     }
 
-    private void SetDraggingPseudoClasses(IControl control, TreeDropType type, bool isDragging)
+    private void SetDraggingPseudoClasses(IControl control, TreeDropType type)
     {
-        if (isDragging)
+        if (type == TreeDropType.None)
+        {
+            ((IPseudoClasses) control.Classes).Remove(":dragging");
+            ((IPseudoClasses) control.Classes).Remove(":dragging-before");
+            ((IPseudoClasses) control.Classes).Remove(":dragging-after");
+            ((IPseudoClasses) control.Classes).Remove(":dragging-into");
+        }
+        else
         {
             ((IPseudoClasses) control.Classes).Add(":dragging");
             if (type == TreeDropType.Before)
@@ -165,19 +174,13 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
                 ((IPseudoClasses) control.Classes).Add(":dragging-into");
             }
         }
-        else
-        {
-            ((IPseudoClasses) control.Classes).Remove(":dragging");
-            ((IPseudoClasses) control.Classes).Remove(":dragging-before");
-            ((IPseudoClasses) control.Classes).Remove(":dragging-after");
-            ((IPseudoClasses) control.Classes).Remove(":dragging-into");
-        }
     }
 
     private enum TreeDropType
     {
         Before,
         After,
-        Into
+        Into,
+        None
     }
 }
