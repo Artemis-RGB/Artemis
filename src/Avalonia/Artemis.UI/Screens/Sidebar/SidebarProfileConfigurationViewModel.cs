@@ -52,12 +52,12 @@ namespace Artemis.UI.Screens.Sidebar
 
         public async Task ExecuteEditProfile()
         {
-            ProfileConfiguration? deleted = await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(
+            ProfileConfiguration? edited = await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(
                 ("profileCategory", ProfileConfiguration.Category),
                 ("profileConfiguration", ProfileConfiguration)
             );
 
-            if (deleted != null)
+            if (edited != null)
                 _sidebarViewModel.UpdateProfileCategories();
         }
     }

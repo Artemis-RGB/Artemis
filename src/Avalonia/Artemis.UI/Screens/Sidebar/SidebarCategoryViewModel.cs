@@ -106,7 +106,7 @@ namespace Artemis.UI.Screens.Sidebar
             if (result != null)
             {
                 SidebarProfileConfigurationViewModel viewModel = _vmFactory.SidebarProfileConfigurationViewModel(_sidebarViewModel, result);
-                ProfileConfigurations.Add(viewModel);
+                ProfileConfigurations.Insert(0, viewModel);
                 SelectedProfileConfiguration = viewModel;
             }
         }
