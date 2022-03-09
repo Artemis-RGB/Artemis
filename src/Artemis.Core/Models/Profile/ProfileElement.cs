@@ -203,6 +203,14 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
+            ProfileElement? current = this;
+            while (current != null)
+            {
+                if (ReferenceEquals(child, this))
+                    throw new ArtemisCoreException("Cannot make an element a child of itself");
+                current = current.Parent;
+            }
+
             lock (ChildrenList)
             {
                 if (ChildrenList.Contains(child))

@@ -8,7 +8,6 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Sidebar.SidebarCategoryView">
     <UserControl.Styles>
-        <StyleInclude Source="avares://Avalonia.Xaml.Interactions/Draggable/Styles.axaml" />
         <Style Selector=":is(Button).category-button">
             <Setter Property="IsVisible" Value="False" />
         </Style>
@@ -99,20 +98,7 @@
         </Grid>
 
         <Border Grid.Row="1">
-            <Border.Resources>
-                <DataTemplate x:Key="ProfileDragTemplate" DataType="{x:Type local:SidebarProfileConfigurationViewModel}">
-                    <Border Background="{DynamicResource MaterialDesignDivider}" Padding="10" CornerRadius="4">
-                        <StackPanel Orientation="Horizontal">
-                            <controls:ProfileConfigurationIcon ConfigurationIcon="{Binding ProfileConfiguration.Icon}"
-                                                               Width="20"
-                                                               Height="20"
-                                                               Margin="0 0 10 0" />
-                            <TextBlock Text="{Binding ProfileConfiguration.Name}" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </Border>
-                </DataTemplate>
-            </Border.Resources>
-            <ListBox Classes="sidebar-listbox draggable"
+            <ListBox Classes="sidebar-listbox"
                      Items="{Binding ProfileConfigurations}"
                      SelectedItem="{Binding SelectedProfileConfiguration}"
                      MinHeight="10"

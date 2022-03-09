@@ -102,7 +102,7 @@
 
         </Border>
 
-        <Button Command="{Binding EditProfile}"
+        <Button Command="{CompiledBinding EditProfile}"
                 Classes="icon-button icon-button-small"
                 Grid.Column="2"
                 ToolTip.Tip="View properties"

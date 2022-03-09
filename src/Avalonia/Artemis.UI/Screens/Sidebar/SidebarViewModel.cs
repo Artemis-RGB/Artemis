@@ -73,10 +73,11 @@ namespace Artemis.UI.Screens.Sidebar
                     });
 
                 this.WhenAnyObservable(vm => vm._profileEditorService.ProfileConfiguration)
-                    .WhereNotNull()
-                    .Subscribe(_ =>
+                    .Subscribe(profile =>
                     {
-                        if (_hostScreen.Router.GetCurrentViewModel() is not ProfileEditorViewModel)
+                        if (profile == null && _hostScreen.Router.GetCurrentViewModel() is ProfileEditorViewModel)
+                            SelectedSidebarScreen = SidebarScreens.FirstOrDefault();
+                        else if (profile != null && _hostScreen.Router.GetCurrentViewModel() is not ProfileEditorViewModel)
                             _hostScreen.Router.Navigate.Execute(profileEditorVmFactory.ProfileEditorViewModel(_hostScreen));
                     })
                     .DisposeWith(disposables);

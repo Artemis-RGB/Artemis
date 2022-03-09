@@ -1,4 +1,5 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -24,6 +25,7 @@ namespace Artemis.UI.Screens.Sidebar
             _windowService = windowService;
 
             ProfileConfiguration = profileConfiguration;
+            EditProfile = ReactiveCommand.CreateFromTask(ExecuteEditProfile);
 
             this.WhenActivated(d =>
             {
@@ -33,6 +35,8 @@ namespace Artemis.UI.Screens.Sidebar
             });
             _profileService.LoadProfileConfigurationIcon(ProfileConfiguration);
         }
+
+        public ReactiveCommand<Unit, Unit> EditProfile { get; }
 
         public bool IsProfileActive => ProfileConfiguration.Profile != null;
 
@@ -46,9 +50,14 @@ namespace Artemis.UI.Screens.Sidebar
             }
         }
 
-        public async Task EditProfile()
+        public async Task ExecuteEditProfile()
         {
-            if (await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, bool>(("profileCategory", ProfileConfiguration.Category), ("profileConfiguration", ProfileConfiguration)))
+            ProfileConfiguration? deleted = await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(
+                ("profileCategory", ProfileConfiguration.Category),
+                ("profileConfiguration", ProfileConfiguration)
+            );
+
+            if (deleted != null)
                 _sidebarViewModel.UpdateProfileCategories();
         }
     }

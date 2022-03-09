@@ -8,6 +8,7 @@ using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Media.Imaging;
 using Avalonia.Svg.Skia;
 using Avalonia.Threading;
@@ -17,10 +18,11 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar
 {
-    public class ProfileConfigurationEditViewModel : DialogViewModelBase<bool>
+    public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConfiguration?>
     {
         private readonly ProfileCategory _profileCategory;
         private readonly IProfileService _profileService;
+        private readonly IProfileEditorService _profileEditorService;
         private readonly IWindowService _windowService;
         private Hotkey? _disableHotkey;
         private Hotkey? _enableHotkey;
@@ -35,12 +37,18 @@ namespace Artemis.UI.Screens.Sidebar
         private ProfileModuleViewModel? _selectedModule;
         private SvgImage? _selectedSvgSource;
 
-        public ProfileConfigurationEditViewModel(ProfileCategory profileCategory, ProfileConfiguration? profileConfiguration, IWindowService windowService,
-            IProfileService profileService, IPluginManagementService pluginManagementService)
+        public ProfileConfigurationEditViewModel(
+            ProfileCategory profileCategory,
+            ProfileConfiguration? profileConfiguration,
+            IWindowService windowService,
+            IProfileService profileService,
+            IProfileEditorService profileEditorService,
+            IPluginManagementService pluginManagementService)
         {
             _profileCategory = profileCategory;
             _windowService = windowService;
             _profileService = profileService;
+            _profileEditorService = profileEditorService;
             _profileConfiguration = profileConfiguration ?? profileService.CreateProfileConfiguration(profileCategory, "New profile", Enum.GetValues<MaterialIconKind>().First().ToString());
             _profileName = _profileConfiguration.Name;
             _iconType = _profileConfiguration.Icon.IconType;
@@ -133,7 +141,7 @@ namespace Artemis.UI.Screens.Sidebar
             // Import the new profile configuration
             _profileService.ImportProfile(_profileCategory, profileConfigurationExportModel);
 
-            Close(true);
+            Close(_profileConfiguration);
         }
 
         public async Task Delete()
@@ -145,6 +153,8 @@ namespace Artemis.UI.Screens.Sidebar
 
             try
             {
+                if (_profileConfiguration.IsBeingEdited)
+                    _profileEditorService.ChangeCurrentProfileConfiguration(null);
                 _profileService.RemoveProfileConfiguration(_profileConfiguration);
             }
             catch (Exception e)
@@ -152,8 +162,8 @@ namespace Artemis.UI.Screens.Sidebar
                 Console.WriteLine(e);
                 throw;
             }
-            
-            Close(true);
+
+            Close(_profileConfiguration);
         }
 
         public async Task Confirm()
@@ -168,14 +178,14 @@ namespace Artemis.UI.Screens.Sidebar
 
             _profileService.SaveProfileConfigurationIcon(ProfileConfiguration);
             _profileService.SaveProfileCategory(_profileCategory);
-            Close(true);
+            Close(ProfileConfiguration);
         }
 
         public void Cancel()
         {
             if (IsNew)
                 _profileService.RemoveProfileConfiguration(_profileConfiguration);
-            Close(false);
+            Close(null);
         }
 
         #region Icon
