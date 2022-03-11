@@ -60,6 +60,33 @@ public abstract class ViewModelValidationBase : ReactiveValidationObject
         get => _displayName;
         set => this.RaiseAndSetIfChanged(ref _displayName, value);
     }
+
+    /// <summary>
+    ///     RaiseAndSetIfChanged fully implements a Setter for a read-write property on a ReactiveObject, using
+    ///     CallerMemberName to raise the notification and the ref to the backing field to set the property.
+    /// </summary>
+    /// <typeparam name="TRet">The type of the return value.</typeparam>
+    /// <param name="backingField">A Reference to the backing field for this property.</param>
+    /// <param name="newValue">The new value.</param>
+    /// <param name="propertyName">
+    ///     The name of the property, usually automatically provided through the CallerMemberName
+    ///     attribute.
+    /// </param>
+    /// <returns>The newly set value, normally discarded.</returns>
+    [NotifyPropertyChangedInvocator]
+    public TRet RaiseAndSetIfChanged<TRet>(ref TRet backingField, TRet newValue, [CallerMemberName] string? propertyName = null)
+    {
+        if (propertyName is null)
+            throw new ArgumentNullException(nameof(propertyName));
+
+        if (EqualityComparer<TRet>.Default.Equals(backingField, newValue))
+            return newValue;
+
+        this.RaisePropertyChanging(propertyName);
+        backingField = newValue;
+        this.RaisePropertyChanged(propertyName);
+        return newValue;
+    }
 }
 
 /// <summary>

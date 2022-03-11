@@ -14,6 +14,8 @@ using Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Screens.SurfaceEditor;
+using Artemis.UI.Screens.VisualScripting;
+using Artemis.UI.Screens.VisualScripting.Pins;
 using Artemis.UI.Services;
 using DynamicData.Binding;
 using ReactiveUI;
@@ -86,5 +88,16 @@ namespace Artemis.UI.Ninject.Factories
     {
         ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, PropertyViewModel propertyViewModel);
         ITimelinePropertyViewModel TimelinePropertyViewModel(ILayerProperty layerProperty, PropertyViewModel propertyViewModel);
+    }
+
+    public interface INodeVmFactory
+    {
+        NodeScriptViewModel NodeScriptViewModel(NodeScript nodeScript);
+        NodePickerViewModel NodePickerViewModel(NodeScript nodeScript);
+        NodeViewModel NodeViewModel(INode node);
+        InputPinCollectionViewModel<T> InputPinCollectionViewModel<T>(InputPinCollection<T> inputPinCollection);
+        InputPinViewModel<T> InputPinViewModel<T>(InputPin<T> inputPin);
+        OutputPinCollectionViewModel<T> OutputPinCollectionViewModel<T>(OutputPinCollection<T> outputPinCollection);
+        OutputPinViewModel<T> OutputPinViewModel<T>(OutputPin<T> outputPin);
     }
 }

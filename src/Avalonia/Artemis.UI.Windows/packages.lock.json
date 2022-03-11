@@ -90,6 +90,11 @@
           "Splat": "14.1.45"
         }
       },
+      "ArtemisRGB.Plugins.BuildTask": {
+        "type": "Transitive",
+        "resolved": "1.1.0",
+        "contentHash": "B8A5NkUEzTUgc5M/QACfyjIF5M23EUzSx8A8l/owJtB0bgmij6y/MQW1i/PcS3EDFQRothBOUuC3BCPY5UoRRQ=="
+      },
       "Avalonia.Angle.Windows.Natives": {
         "type": "Transitive",
         "resolved": "2.1.0.2020091801",
@@ -559,6 +564,11 @@
           "Castle.Core": "4.2.0",
           "Ninject": "3.3.3"
         }
+      },
+      "OpenRGB.NET": {
+        "type": "Transitive",
+        "resolved": "1.7.0",
+        "contentHash": "12pMEUaeoG8mN707QRO9hdT529+UnqUpwMW1H/gDTMsJrerhJve6Yt5Dnheu1isQB4PWP1wu3IDVbHCchznkiw=="
       },
       "ReactiveUI.Validation": {
         "type": "Transitive",
@@ -1760,6 +1770,21 @@
           "System.Numerics.Vectors": "4.5.0",
           "System.Reflection.Metadata": "5.0.0",
           "System.ValueTuple": "4.5.0"
+        }
+      },
+      "artemis.plugins.devices.openrgb": {
+        "type": "Project",
+        "dependencies": {
+          "ArtemisRGB.Plugins.BuildTask": "1.1.0",
+          "Avalonia": "0.10.11",
+          "Avalonia.Controls.DataGrid": "0.10.11",
+          "Avalonia.ReactiveUI": "0.10.11",
+          "Material.Icons.Avalonia": "1.0.2",
+          "OpenRGB.NET": "1.7.0",
+          "RGB.NET.Core": "1.0.0-prerelease7",
+          "ReactiveUI": "16.3.10",
+          "Serilog": "2.10.0",
+          "SkiaSharp": "2.88.0-preview.178"
         }
       },
       "artemis.storage": {

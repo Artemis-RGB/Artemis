@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:visualScripting="clr-namespace:Artemis.UI.Screens.VisualScripting"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.VisualScripting.NodePickerView"
+             x:DataType="visualScripting:NodePickerViewModel">
+    <UserControl.Styles>
+        <Style Selector="Border.picker-container">
+
+        </Style>
+        <Style Selector="Border.picker-container-hidden">
+            <Style.Animations>
+                <Animation Duration="0:0:1">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="1.0" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0.0" />
+                        <Setter Property="IsVisible" Value="False" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.picker-container-visible">
+            <Style.Animations>
+                <Animation Duration="0:0:1">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.0" />
+                        <Setter Property="IsVisible" Value="True" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1.0" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </UserControl.Styles>
+    <Border Classes="grid picker-container"
+            Classes.picker-container-hidden="{CompiledBinding !IsVisible}"
+            Classes.picker-container-visible="{CompiledBinding !IsVisible}">
+        <TextBlock>Test</TextBlock>
+    </Border>
+</UserControl>
