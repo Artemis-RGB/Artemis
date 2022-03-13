@@ -2,7 +2,57 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.VisualScripting.NodeView">
-  Welcome to Avalonia!
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:visualScripting="clr-namespace:Artemis.UI.Screens.VisualScripting"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="150"
+             x:Class="Artemis.UI.Screens.VisualScripting.NodeView"
+             x:DataType="visualScripting:NodeViewModel">
+    <UserControl.Styles>
+        <Style Selector="Border.node-container">
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Background" Value="{DynamicResource ContentDialogBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+		<Style Selector="ContentControl#CustomViewModelContainer">
+            <Setter Property="Margin" Value="20 0"></Setter>
+        </Style>
+    </UserControl.Styles>
+    <Border Classes="node-container">
+        <Grid RowDefinitions="Auto,*">
+            <Border Grid.Row="0" Background="{DynamicResource TaskDialogHeaderBackground}" CornerRadius="6 6 0 0">
+                <Grid Classes="node-header"
+                      VerticalAlignment="Top"
+                      ColumnDefinitions="*,Auto">
+                    <TextBlock VerticalAlignment="Center"
+                               TextAlignment="Center"
+                               Margin="5"
+                               Text="{CompiledBinding Node.Name}"
+                               ToolTip.Tip="{CompiledBinding Node.Description}">
+                    </TextBlock>
+                    <Button VerticalAlignment="Center"
+                            Classes="icon-button icon-button-small"
+                            Grid.Column="1"
+                            Margin="5"
+                            Command="{CompiledBinding DeleteNode}">
+                        <avalonia:MaterialIcon Kind="Close"></avalonia:MaterialIcon>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Margin="5">
+                <StackPanel Grid.Column="0">
+                    <ItemsControl Items="{CompiledBinding InputPinViewModels}" />
+                    <ItemsControl Items="{CompiledBinding InputPinCollectionViewModels}" />
+                </StackPanel>
+
+                <ContentControl Name="CustomViewModelContainer" Grid.Column="1" Content="{CompiledBinding CustomNodeViewModel}" IsVisible="{CompiledBinding CustomNodeViewModel}" />
+
+				<StackPanel Grid.Column="2">
+                    <ItemsControl Items="{CompiledBinding OutputPinViewModels}" />
+                    <ItemsControl Items="{CompiledBinding OutputPinCollectionViewModels}" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
 </UserControl>

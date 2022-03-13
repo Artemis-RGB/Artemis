@@ -2,7 +2,30 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.VisualScripting.Pins.OutputPinView">
-  Welcome to Avalonia!
+             xmlns:pins="clr-namespace:Artemis.UI.Screens.VisualScripting.Pins"
+             mc:Ignorable="d"
+             d:DesignWidth="200"
+             x:Class="Artemis.UI.Screens.VisualScripting.Pins.OutputPinView"
+             x:DataType="pins:PinViewModel">
+    <UserControl.Styles>
+        <StyleInclude Source="/Screens/VisualScripting/VisualScripting.axaml" />
+        <Style Selector="StackPanel#PinContainer Border#VisualPinPoint">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <SolidColorBrush Color="{CompiledBinding DarkenedPinColor}" />
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <SolidColorBrush Color="{CompiledBinding PinColor}" />
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+    <StackPanel Name="PinContainer" Orientation="Horizontal" Spacing="6">
+        <TextBlock Name="PinName" VerticalAlignment="Center" Text="{CompiledBinding Pin.Name}" />
+        <Border Name="PinPoint">
+            <Border Name="VisualPinPoint" />
+        </Border>
+    </StackPanel>
 </UserControl>

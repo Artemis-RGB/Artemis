@@ -2,18 +2,70 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:paz="clr-namespace:Avalonia.Controls.PanAndZoom;assembly=Avalonia.Controls.PanAndZoom"
              xmlns:visualScripting="clr-namespace:Artemis.UI.Screens.VisualScripting"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.VisualScripting.NodeScriptView"
              x:DataType="visualScripting:NodeScriptViewModel">
-	<Canvas PointerReleased="InputElement_OnPointerReleased">
-		<!-- Cables -->
+    <UserControl.Styles>
+        <Style Selector="FlyoutPresenter.node-picker-flyout">
+            <Setter Property="MaxWidth" Value="1000"></Setter>
+        </Style>
+    </UserControl.Styles>
+	<UserControl.KeyBindings>
+<KeyBinding Command="{CompiledBinding History.Undo}" Gesture="Ctrl+Z"></KeyBinding>
+<KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y"></KeyBinding>
+    </UserControl.KeyBindings>
+    <paz:ZoomBorder Name="ZoomBorder"
+                    Stretch="None"
+                    ClipToBounds="True"
+                    Focusable="True"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    Background="{DynamicResource LargeCheckerboardBrush}"
+                    ZoomChanged="ZoomBorder_OnZoomChanged">
+        <Grid Name="ContainerGrid" Background="Transparent">
+			<Grid.ContextFlyout>
+				<Flyout FlyoutPresenterClasses="node-picker-flyout">
+					<ContentControl Content="{CompiledBinding NodePickerViewModel}" />
+				</Flyout>
+			</Grid.ContextFlyout>
+			<Grid.Transitions>
+				<Transitions>
+					<TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut" />
+				</Transitions>
+			</Grid.Transitions>
 
-		<!-- Nodes -->
+            <!-- Cables -->
+			<ItemsControl Items="{CompiledBinding CableViewModels}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.Styles>
+                    <Style Selector="ItemsControl > ContentPresenter">
+                        <Setter Property="Canvas.Left" Value="{Binding Node.X, TargetNullValue=0}" />
+                        <Setter Property="Canvas.Top" Value="{Binding Node.Y, TargetNullValue=0}" />
+                    </Style>
+                </ItemsControl.Styles>
+            </ItemsControl>
 
-		<!-- Flyout -->
-        <ContentControl Content="{CompiledBinding NodePickerViewModel}" 
-                        Canvas.Left="{CompiledBinding NodePickerViewModel.Position.X}" 
-                        Canvas.Top="{CompiledBinding NodePickerViewModel.Position.Y}"/>
-    </Canvas>
+            <!-- Nodes -->
+            <ItemsControl Items="{CompiledBinding NodeViewModels}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.Styles>
+                    <Style Selector="ItemsControl > ContentPresenter">
+                        <Setter Property="Canvas.Left" Value="{Binding Node.X, TargetNullValue=0}" />
+                        <Setter Property="Canvas.Top" Value="{Binding Node.Y, TargetNullValue=0}" />
+                    </Style>
+                </ItemsControl.Styles>
+            </ItemsControl>
+        </Grid>
+    </paz:ZoomBorder>
+
 </UserControl>

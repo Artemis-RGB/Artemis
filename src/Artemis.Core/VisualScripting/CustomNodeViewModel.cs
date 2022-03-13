@@ -13,16 +13,6 @@ namespace Artemis.Core
         public INode Node { get; }
 
         /// <summary>
-        ///     Called whenever the custom view model is activated
-        /// </summary>
-        void OnActivate();
-
-        /// <summary>
-        ///     Called whenever the custom view model is closed
-        /// </summary>
-        void OnDeactivate();
-
-        /// <summary>
         ///     Occurs whenever the node was modified by the view model
         /// </summary>
         event EventHandler NodeModified;

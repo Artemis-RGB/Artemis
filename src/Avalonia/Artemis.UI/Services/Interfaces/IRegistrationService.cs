@@ -7,5 +7,6 @@
         void RegisterBuiltInPropertyEditors();
         void RegisterControllers();
         void ApplyPreferredGraphicsContext();
+        void RegisterBuiltInNodeTypes();
     }
 }

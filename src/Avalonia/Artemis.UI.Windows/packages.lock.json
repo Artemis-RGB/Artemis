@@ -90,11 +90,6 @@
           "Splat": "14.1.45"
         }
       },
-      "ArtemisRGB.Plugins.BuildTask": {
-        "type": "Transitive",
-        "resolved": "1.1.0",
-        "contentHash": "B8A5NkUEzTUgc5M/QACfyjIF5M23EUzSx8A8l/owJtB0bgmij6y/MQW1i/PcS3EDFQRothBOUuC3BCPY5UoRRQ=="
-      },
       "Avalonia.Angle.Windows.Natives": {
         "type": "Transitive",
         "resolved": "2.1.0.2020091801",
@@ -447,6 +442,11 @@
         "resolved": "5.0.0",
         "contentHash": "umBECCoMC+sOUgm083yFr8SxTobUOcPFH4AXigdO2xJiszCHAnmeDl4qPphJt+oaJ/XIfV1wOjIts2nRnki61Q=="
       },
+      "Microsoft.Extensions.ObjectPool": {
+        "type": "Transitive",
+        "resolved": "5.0.9",
+        "contentHash": "grj0e6Me0EQsgaurV0fxP0xd8sz8eZVK+Jb816DPzNADHaqXaXJD3xZX9SFjyDl3ykAYvD0y77o5vRd9Hzsk9g=="
+      },
       "Microsoft.NETCore.Platforms": {
         "type": "Transitive",
         "resolved": "5.0.0",
@@ -565,10 +565,13 @@
           "Ninject": "3.3.3"
         }
       },
-      "OpenRGB.NET": {
+      "NoStringEvaluating": {
         "type": "Transitive",
-        "resolved": "1.7.0",
-        "contentHash": "12pMEUaeoG8mN707QRO9hdT529+UnqUpwMW1H/gDTMsJrerhJve6Yt5Dnheu1isQB4PWP1wu3IDVbHCchznkiw=="
+        "resolved": "2.2.2",
+        "contentHash": "hJHivPDA1Vxn0CCgOtHKZ3fmldxQuz7VL1J4lEaPTXCf+Vwcx1FDf05mGMh6olYMSxoKimGX8YK2sEoqeH3pnA==",
+        "dependencies": {
+          "Microsoft.Extensions.ObjectPool": "5.0.9"
+        }
       },
       "ReactiveUI.Validation": {
         "type": "Transitive",
@@ -1772,21 +1775,6 @@
           "System.ValueTuple": "4.5.0"
         }
       },
-      "artemis.plugins.devices.openrgb": {
-        "type": "Project",
-        "dependencies": {
-          "ArtemisRGB.Plugins.BuildTask": "1.1.0",
-          "Avalonia": "0.10.11",
-          "Avalonia.Controls.DataGrid": "0.10.11",
-          "Avalonia.ReactiveUI": "0.10.11",
-          "Material.Icons.Avalonia": "1.0.2",
-          "OpenRGB.NET": "1.7.0",
-          "RGB.NET.Core": "1.0.0-prerelease7",
-          "ReactiveUI": "16.3.10",
-          "Serilog": "2.10.0",
-          "SkiaSharp": "2.88.0-preview.178"
-        }
-      },
       "artemis.storage": {
         "type": "Project",
         "dependencies": {
@@ -1799,6 +1787,7 @@
         "dependencies": {
           "Artemis.Core": "1.0.0",
           "Artemis.UI.Shared": "1.0.0",
+          "Artemis.VisualScripting": "1.0.0",
           "Avalonia": "0.10.13",
           "Avalonia.Controls.PanAndZoom": "10.12.0",
           "Avalonia.Desktop": "0.10.13",
@@ -1834,6 +1823,19 @@
           "RGB.NET.Core": "1.0.0-prerelease7",
           "ReactiveUI": "17.1.50",
           "ReactiveUI.Validation": "2.2.1",
+          "SkiaSharp": "2.88.0-preview.178"
+        }
+      },
+      "artemis.visualscripting": {
+        "type": "Project",
+        "dependencies": {
+          "Artemis.Core": "1.0.0",
+          "Artemis.UI.Shared": "1.0.0",
+          "Avalonia": "0.10.13",
+          "Avalonia.ReactiveUI": "0.10.13",
+          "Ninject": "3.3.4",
+          "NoStringEvaluating": "2.2.2",
+          "ReactiveUI": "17.1.50",
           "SkiaSharp": "2.88.0-preview.178"
         }
       }

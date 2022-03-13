@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.Linux", "Avaloni
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.MacOS", "Avalonia\Artemis.UI.MacOS\Artemis.UI.MacOS.csproj", "{2F5F16DC-FACF-4559-9882-37C2949814C7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.VisualScripting", "Avalonia\Artemis.VisualScripting\Artemis.VisualScripting.csproj", "{412B921A-26F5-4AE6-8B32-0C19BE54F421}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,6 +105,14 @@ Global
 		{2F5F16DC-FACF-4559-9882-37C2949814C7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2F5F16DC-FACF-4559-9882-37C2949814C7}.Release|x64.ActiveCfg = Release|Any CPU
 		{2F5F16DC-FACF-4559-9882-37C2949814C7}.Release|x64.Build.0 = Release|Any CPU
+		{412B921A-26F5-4AE6-8B32-0C19BE54F421}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{412B921A-26F5-4AE6-8B32-0C19BE54F421}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{412B921A-26F5-4AE6-8B32-0C19BE54F421}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{412B921A-26F5-4AE6-8B32-0C19BE54F421}.Debug|x64.Build.0 = Debug|Any CPU
+		{412B921A-26F5-4AE6-8B32-0C19BE54F421}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{412B921A-26F5-4AE6-8B32-0C19BE54F421}.Release|Any CPU.Build.0 = Release|Any CPU
+		{412B921A-26F5-4AE6-8B32-0C19BE54F421}.Release|x64.ActiveCfg = Release|Any CPU
+		{412B921A-26F5-4AE6-8B32-0C19BE54F421}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -113,6 +123,7 @@ Global
 		{DE45A288-9320-461F-BE2A-26DFE3817216} = {960CAAC5-AA73-49F5-BF2F-DF2C789DF042}
 		{9012C8E2-3BEC-42F5-8270-7352A5922B04} = {960CAAC5-AA73-49F5-BF2F-DF2C789DF042}
 		{2F5F16DC-FACF-4559-9882-37C2949814C7} = {960CAAC5-AA73-49F5-BF2F-DF2C789DF042}
+		{412B921A-26F5-4AE6-8B32-0C19BE54F421} = {960CAAC5-AA73-49F5-BF2F-DF2C789DF042}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C203080A-4473-4CC2-844B-F552EA43D66A}

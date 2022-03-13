@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using Artemis.Storage.Entities.Profile.Nodes;
-using Newtonsoft.Json;
 using Ninject;
-using Ninject.Parameters;
 using SkiaSharp;
 
 namespace Artemis.Core.Services
@@ -37,9 +37,19 @@ namespace Artemis.Core.Services
         #region Methods
 
         /// <inheritdoc />
-        public TypeColorRegistration? GetTypeColor(Type type)
+        public TypeColorRegistration GetTypeColorRegistration(Type type)
         {
-            return NodeTypeStore.GetColor(type);
+            TypeColorRegistration? match = NodeTypeStore.GetColor(type);
+            if (match != null)
+                return match;
+
+            // Come up with a random color based on the type name that should be the same each time
+            MD5 md5Hasher = MD5.Create();
+            byte[] hashed = md5Hasher.ComputeHash(Encoding.UTF8.GetBytes(type.FullName!));
+            int hash = BitConverter.ToInt32(hashed, 0);
+
+            SKColor baseColor = SKColor.FromHsl(hash % 255, 50 + hash % 50, 50);
+            return new TypeColorRegistration(type, baseColor, Constants.CorePlugin);
         }
 
         public NodeTypeRegistration RegisterNodeType(Plugin plugin, Type nodeType)
@@ -53,7 +63,7 @@ namespace Artemis.Core.Services
             string name = nodeAttribute?.Name ?? nodeType.Name;
             string description = nodeAttribute?.Description ?? string.Empty;
             string category = nodeAttribute?.Category ?? string.Empty;
-            
+
             NodeData nodeData = new(plugin, nodeType, name, description, category, nodeAttribute?.InputType, nodeAttribute?.OutputType, (s, e) => CreateNode(s, e, nodeType));
             return NodeTypeStore.Add(nodeData);
         }
@@ -105,7 +115,7 @@ namespace Artemis.Core.Services
         /// <summary>
         /// Gets the best matching registration for the provided type
         /// </summary>
-        TypeColorRegistration? GetTypeColor(Type type);
+        TypeColorRegistration GetTypeColorRegistration(Type type);
 
         /// <summary>
         ///     Registers a node of the provided <paramref name="nodeType" />

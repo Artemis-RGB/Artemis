@@ -481,6 +481,11 @@
         "resolved": "5.0.0",
         "contentHash": "umBECCoMC+sOUgm083yFr8SxTobUOcPFH4AXigdO2xJiszCHAnmeDl4qPphJt+oaJ/XIfV1wOjIts2nRnki61Q=="
       },
+      "Microsoft.Extensions.ObjectPool": {
+        "type": "Transitive",
+        "resolved": "5.0.9",
+        "contentHash": "grj0e6Me0EQsgaurV0fxP0xd8sz8eZVK+Jb816DPzNADHaqXaXJD3xZX9SFjyDl3ykAYvD0y77o5vRd9Hzsk9g=="
+      },
       "Microsoft.NETCore.Platforms": {
         "type": "Transitive",
         "resolved": "5.0.0",
@@ -597,6 +602,14 @@
         "dependencies": {
           "Castle.Core": "4.2.0",
           "Ninject": "3.3.3"
+        }
+      },
+      "NoStringEvaluating": {
+        "type": "Transitive",
+        "resolved": "2.2.2",
+        "contentHash": "hJHivPDA1Vxn0CCgOtHKZ3fmldxQuz7VL1J4lEaPTXCf+Vwcx1FDf05mGMh6olYMSxoKimGX8YK2sEoqeH3pnA==",
+        "dependencies": {
+          "Microsoft.Extensions.ObjectPool": "5.0.9"
         }
       },
       "RGB.NET.Presets": {
@@ -1781,6 +1794,19 @@
           "RGB.NET.Core": "1.0.0-prerelease7",
           "ReactiveUI": "17.1.50",
           "ReactiveUI.Validation": "2.2.1",
+          "SkiaSharp": "2.88.0-preview.178"
+        }
+      },
+      "artemis.visualscripting": {
+        "type": "Project",
+        "dependencies": {
+          "Artemis.Core": "1.0.0",
+          "Artemis.UI.Shared": "1.0.0",
+          "Avalonia": "0.10.13",
+          "Avalonia.ReactiveUI": "0.10.13",
+          "Ninject": "3.3.4",
+          "NoStringEvaluating": "2.2.2",
+          "ReactiveUI": "17.1.50",
           "SkiaSharp": "2.88.0-preview.178"
         }
       }

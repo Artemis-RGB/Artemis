@@ -125,9 +125,6 @@ namespace Artemis.Core
                 _nodes.Remove(node);
             }
 
-            if (node is IDisposable disposable)
-                disposable.Dispose();
-
             NodeRemoved?.Invoke(this, new SingleValueEventArgs<INode>(node));
         }
 

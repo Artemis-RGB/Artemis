@@ -59,6 +59,7 @@ namespace Artemis.UI.Ninject
             });
 
             Kernel.Bind<IPropertyVmFactory>().ToFactory(() => new LayerPropertyViewModelInstanceProvider());
+            Kernel.Bind<INodePinVmFactory>().ToFactory(() => new NodePinViewModelInstanceProvider());
 
             // Bind all UI services as singletons
             Kernel.Bind(x =>

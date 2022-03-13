@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DefaultTypes.PropertyInput;
@@ -6,9 +9,11 @@ using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.PropertyInput;
+using Artemis.VisualScripting.Nodes;
 using Avalonia;
 using DynamicData;
 using Ninject;
+using SkiaSharp;
 
 namespace Artemis.UI.Services;
 
@@ -17,13 +22,15 @@ public class RegistrationService : IRegistrationService
     private readonly IKernel _kernel;
     private readonly IInputService _inputService;
     private readonly IPropertyInputService _propertyInputService;
+    private readonly INodeService _nodeService;
     private bool _registeredBuiltInPropertyEditors;
 
-    public RegistrationService(IKernel kernel, IInputService inputService, IPropertyInputService propertyInputService, IProfileEditorService profileEditorService, IEnumerable<IToolViewModel> toolViewModels)
+    public RegistrationService(IKernel kernel, IInputService inputService, IPropertyInputService propertyInputService, IProfileEditorService profileEditorService, INodeService nodeService, IEnumerable<IToolViewModel> toolViewModels)
     {
         _kernel = kernel;
         _inputService = inputService;
         _propertyInputService = propertyInputService;
+        _nodeService = nodeService;
 
         profileEditorService.Tools.AddRange(toolViewModels);
         CreateCursorResources();
@@ -74,5 +81,19 @@ public class RegistrationService : IRegistrationService
 
     public void ApplyPreferredGraphicsContext()
     {
+    }
+
+    public void RegisterBuiltInNodeTypes()
+    {
+        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(bool), new SKColor(0xFFCD3232));
+        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(string), new SKColor(0xFFFFD700));
+        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(int), new SKColor(0xFF32CD32));
+        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(float), new SKColor(0xFFFF7C00));
+        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(SKColor), new SKColor(0xFFAD3EED));
+        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(IList), new SKColor(0xFFED3E61));
+        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(Enum), new SKColor(0xFF1E90FF));
+
+        foreach (Type nodeType in typeof(SumNumericsNode).Assembly.GetTypes().Where(t => typeof(INode).IsAssignableFrom(t) && t.IsPublic && !t.IsAbstract && !t.IsInterface))
+            _nodeService.RegisterNodeType(Constants.CorePlugin, nodeType);
     }
 }

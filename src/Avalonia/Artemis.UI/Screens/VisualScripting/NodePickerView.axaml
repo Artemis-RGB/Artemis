@@ -3,43 +3,54 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:visualScripting="clr-namespace:Artemis.UI.Screens.VisualScripting"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="650" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.VisualScripting.NodePickerView"
-             x:DataType="visualScripting:NodePickerViewModel">
+             x:DataType="visualScripting:NodePickerViewModel"
+             Width="600"
+             Height="400">
     <UserControl.Styles>
-        <Style Selector="Border.picker-container">
-
-        </Style>
-        <Style Selector="Border.picker-container-hidden">
-            <Style.Animations>
-                <Animation Duration="0:0:1">
-                    <KeyFrame Cue="0%">
-                        <Setter Property="Opacity" Value="1.0" />
-                    </KeyFrame>
-                    <KeyFrame Cue="100%">
-                        <Setter Property="Opacity" Value="0.0" />
-                        <Setter Property="IsVisible" Value="False" />
-                    </KeyFrame>
-                </Animation>
-            </Style.Animations>
-        </Style>
-        <Style Selector="Border.picker-container-visible">
-            <Style.Animations>
-                <Animation Duration="0:0:1">
-                    <KeyFrame Cue="0%">
-                        <Setter Property="Opacity" Value="0.0" />
-                        <Setter Property="IsVisible" Value="True" />
-                    </KeyFrame>
-                    <KeyFrame Cue="100%">
-                        <Setter Property="Opacity" Value="1.0" />
-                    </KeyFrame>
-                </Animation>
-            </Style.Animations>
+        <Style Selector="TextBox#SearchBox">
+            <Setter Property="VerticalAlignment" Value="Top"></Setter>
+            <Setter Property="InnerRightContent">
+                <Template>
+                    <StackPanel Orientation="Horizontal">
+                        <controls:Button Content="&#xE8BB;"
+                                         FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                         Classes="AppBarButton"
+                                         Command="{Binding $parent[TextBox].Clear}"
+                                         IsVisible="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TextBox}}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        <controls:Button Content="&#xE721;"
+                                         FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                         Classes="AppBarButton"
+                                         IsHitTestVisible="False" />
+                    </StackPanel>
+                </Template>
+            </Setter>
         </Style>
     </UserControl.Styles>
-    <Border Classes="grid picker-container"
-            Classes.picker-container-hidden="{CompiledBinding !IsVisible}"
-            Classes.picker-container-visible="{CompiledBinding !IsVisible}">
-        <TextBlock>Test</TextBlock>
+    <Border Classes="picker-container">
+        <Grid RowDefinitions="Auto,*">
+            <TextBox Name="SearchBox" Text="{CompiledBinding SearchText}" Margin="0 0 0 15"></TextBox>
+            <ListBox Grid.Row="1"
+                     Items="{CompiledBinding Nodes}"
+                     SelectedItem="{CompiledBinding SelectedNode}"
+                     IsVisible="{CompiledBinding Nodes.Count}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="core:NodeData">
+                        <StackPanel>
+                            <TextBlock Text="{CompiledBinding Name}" FontWeight="Bold"></TextBlock>
+                            <TextBlock Text="{CompiledBinding Description}"></TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <StackPanel Grid.Row="1" VerticalAlignment="Center" Spacing="20" IsVisible="{CompiledBinding !Nodes.Count}">
+                <avalonia:MaterialIcon Kind="CloseCircle" Width="64" Height="64"></avalonia:MaterialIcon>
+                <TextBlock Classes="h4" TextAlignment="Center">None of the nodes match your search</TextBlock>
+            </StackPanel>
+        </Grid>
     </Border>
 </UserControl>

@@ -12,49 +12,54 @@
              x:Class="Artemis.UI.Screens.Workshop.WorkshopView"
              x:DataType="workshop:WorkshopViewModel">
     <Border Classes="router-container">
-        <StackPanel Margin="12">
-            <TextBlock>Workshop!! :3</TextBlock>
-            <Border Classes="card" Margin="0 12">
-                <StackPanel Spacing="5">
-                    <TextBlock Classes="h4">Notification tests</TextBlock>
-                    <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Informational}">
-                        Notification test (default)
-                    </Button>
-                    <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Warning}">
-                        Notification test (warning)
-                    </Button>
-                    <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Error}">
-                        Notification test (error)
-                    </Button>
-                    <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Success}">
-                        Notification test (success)
-                    </Button>
+        <StackPanel Margin="12" Spacing="5">
+			<Border Classes="card">
+				<StackPanel Spacing="5">
+                    <TextBlock Classes="h4">Nodes tests</TextBlock>
+					<ContentControl Content="{CompiledBinding VisualEditorViewModel}" HorizontalAlignment="Stretch" Height="800"></ContentControl>
+				</StackPanel>
+            </Border>
+            <Border Classes="card">
+				<StackPanel Spacing="5">
+					<TextBlock Classes="h4">Notification tests</TextBlock>
+					<Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Informational}">
+						Notification test (default)
+					</Button>
+					<Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Warning}">
+						Notification test (warning)
+					</Button>
+					<Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Error}">
+						Notification test (error)
+					</Button>
+					<Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Success}">
+						Notification test (success)
+					</Button>
 
-                    <controls:HotkeyBox Watermark="Some hotkey" Width="250" HorizontalAlignment="Left" />
+					<controls:HotkeyBox Watermark="Some hotkey" Width="250" HorizontalAlignment="Left" />
 
 					<controls1:NumberBox
                         attachedProperties:NumberBoxAssist.PrefixText="$"
                         attachedProperties:NumberBoxAssist.SuffixText="%"></controls1:NumberBox>
 
-                    <TextBox
+					<TextBox
                         attachedProperties:TextBoxAssist.PrefixText="$"
                         attachedProperties:TextBoxAssist.SuffixText="%"></TextBox>
 
-                    <StackPanel Orientation="Horizontal" Spacing="5">
-                        <Border Classes="card" Cursor="{CompiledBinding Cursor}">
-                            <TextBlock Text="{CompiledBinding SelectedCursor}"></TextBlock>
-                        </Border>
-                        <controls:EnumComboBox Value="{CompiledBinding SelectedCursor}"></controls:EnumComboBox>
-                    </StackPanel>
+					<StackPanel Orientation="Horizontal" Spacing="5">
+						<Border Classes="card" Cursor="{CompiledBinding Cursor}">
+							<TextBlock Text="{CompiledBinding SelectedCursor}"></TextBlock>
+						</Border>
+						<controls:EnumComboBox Value="{CompiledBinding SelectedCursor}"></controls:EnumComboBox>
+					</StackPanel>
 
-                    <Button Command="{Binding CreateRandomGradient}">
-                       Create random gradient
-                    </Button>
+					<Button Command="{Binding CreateRandomGradient}">
+						Create random gradient
+					</Button>
 
 
 					<gradientPicker:GradientPickerButton ColorGradient="{CompiledBinding ColorGradient}" IsCompact="True"/>
-                </StackPanel>
-            </Border>
+				</StackPanel>
+			</Border>
         </StackPanel>
     </Border>
 </UserControl>

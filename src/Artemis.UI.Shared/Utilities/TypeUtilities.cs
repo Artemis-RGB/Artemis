@@ -25,7 +25,7 @@ namespace Artemis.UI.Shared
             if (type == typeof(object))
                 return (SKColors.White.ToColor(), SKColors.White.Darken(0.35f).ToColor());
 
-            TypeColorRegistration? typeColorRegistration = NodeService?.GetTypeColor(type);
+            TypeColorRegistration? typeColorRegistration = NodeService?.GetTypeColorRegistration(type);
             if (typeColorRegistration != null)
                 return (typeColorRegistration.Color.ToColor(), typeColorRegistration.DarkenedColor.ToColor());
 

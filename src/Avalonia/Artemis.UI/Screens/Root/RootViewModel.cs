@@ -181,6 +181,7 @@ namespace Artemis.UI.Screens.Root
             _registrationService.RegisterBuiltInDataModelDisplays();
             _registrationService.RegisterBuiltInDataModelInputs();
             _registrationService.RegisterBuiltInPropertyEditors();
+            _registrationService.RegisterBuiltInNodeTypes();
 
             if (_lifeTime.MainWindow == null)
             {

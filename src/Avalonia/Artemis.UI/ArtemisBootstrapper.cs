@@ -7,6 +7,7 @@ using Artemis.UI.Ninject;
 using Artemis.UI.Screens.Root;
 using Artemis.UI.Shared.Ninject;
 using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.VisualScripting.Ninject;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -36,6 +37,7 @@ namespace Artemis.UI
             _kernel.Load<CoreModule>();
             _kernel.Load<UIModule>();
             _kernel.Load<SharedUIModule>();
+            _kernel.Load<NoStringNinjectModule>();
             _kernel.Load(modules);
 
             _kernel.UseNinjectDependencyResolver();

@@ -90,14 +90,18 @@ namespace Artemis.UI.Ninject.Factories
         ITimelinePropertyViewModel TimelinePropertyViewModel(ILayerProperty layerProperty, PropertyViewModel propertyViewModel);
     }
 
-    public interface INodeVmFactory
+    public interface INodeVmFactory : IVmFactory
     {
         NodeScriptViewModel NodeScriptViewModel(NodeScript nodeScript);
         NodePickerViewModel NodePickerViewModel(NodeScript nodeScript);
-        NodeViewModel NodeViewModel(INode node);
-        InputPinCollectionViewModel<T> InputPinCollectionViewModel<T>(InputPinCollection<T> inputPinCollection);
-        InputPinViewModel<T> InputPinViewModel<T>(InputPin<T> inputPin);
-        OutputPinCollectionViewModel<T> OutputPinCollectionViewModel<T>(OutputPinCollection<T> outputPinCollection);
-        OutputPinViewModel<T> OutputPinViewModel<T>(OutputPin<T> outputPin);
+        NodeViewModel NodeViewModel(NodeScript nodeScript, INode node);
+    }
+
+    public interface INodePinVmFactory 
+    {
+        PinCollectionViewModel InputPinCollectionViewModel(PinCollection inputPinCollection);
+        PinViewModel InputPinViewModel(IPin inputPin);
+        PinCollectionViewModel OutputPinCollectionViewModel(PinCollection outputPinCollection);
+        PinViewModel OutputPinViewModel(IPin outputPin);
     }
 }

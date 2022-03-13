@@ -2,6 +2,8 @@
 using System.Reactive;
 using System.Reactive.Linq;
 using Artemis.Core;
+using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.Interfaces;
 using Avalonia.Input;
@@ -25,14 +27,18 @@ namespace Artemis.UI.Screens.Workshop
             new ColorGradientStop(new SKColor(0xFF00FCCC), 1f),
         };
 
-        public WorkshopViewModel(IScreen hostScreen, INotificationService notificationService) : base(hostScreen, "workshop")
+        public WorkshopViewModel(IScreen hostScreen, INotificationService notificationService, INodeVmFactory nodeVmFactory) : base(hostScreen, "workshop")
         {
             _notificationService = notificationService;
             _cursor = this.WhenAnyValue(vm => vm.SelectedCursor).Select(c => new Cursor(c)).ToProperty(this, vm => vm.Cursor);
 
             DisplayName = "Workshop";
             ShowNotification = ReactiveCommand.Create<NotificationSeverity>(ExecuteShowNotification);
+
+            VisualEditorViewModel = nodeVmFactory.NodeScriptViewModel(new NodeScript<bool>("Test script", "A test script"));
         }
+
+        public NodeScriptViewModel VisualEditorViewModel { get; }
 
         public ReactiveCommand<NotificationSeverity, Unit> ShowNotification { get; set; }
 

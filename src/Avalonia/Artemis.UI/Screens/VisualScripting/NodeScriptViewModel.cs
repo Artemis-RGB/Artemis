@@ -7,6 +7,7 @@ using Artemis.Core.Events;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services.NodeEditor;
 using Avalonia;
 using Avalonia.Controls.Mixins;
 using ReactiveUI;
@@ -16,15 +17,18 @@ namespace Artemis.UI.Screens.VisualScripting;
 public class NodeScriptViewModel : ActivatableViewModelBase
 {
     private readonly INodeService _nodeService;
+    private readonly INodeEditorService _nodeEditorService;
     private readonly INodeVmFactory _nodeVmFactory;
 
-    public NodeScriptViewModel(NodeScript nodeScript, INodeVmFactory nodeVmFactory, INodeService nodeService)
+    public NodeScriptViewModel(NodeScript nodeScript, INodeVmFactory nodeVmFactory, INodeService nodeService, INodeEditorService nodeEditorService)
     {
         _nodeVmFactory = nodeVmFactory;
         _nodeService = nodeService;
+        _nodeEditorService = nodeEditorService;
 
         NodeScript = nodeScript;
         NodePickerViewModel = _nodeVmFactory.NodePickerViewModel(nodeScript);
+        History = _nodeEditorService.GetHistory(NodeScript);
 
         this.WhenActivated(d =>
         {
@@ -38,17 +42,18 @@ public class NodeScriptViewModel : ActivatableViewModelBase
 
         NodeViewModels = new ObservableCollection<NodeViewModel>();
         foreach (INode nodeScriptNode in NodeScript.Nodes)
-            NodeViewModels.Add(_nodeVmFactory.NodeViewModel(nodeScriptNode));
+            NodeViewModels.Add(_nodeVmFactory.NodeViewModel(NodeScript, nodeScriptNode));
     }
 
     public NodeScript NodeScript { get; }
     public ObservableCollection<NodeViewModel> NodeViewModels { get; }
+    public ObservableCollection<CableViewModel> CableViewModels { get; }
     public NodePickerViewModel NodePickerViewModel { get; }
-
+    public NodeEditorHistory History { get; }
 
     private void HandleNodeAdded(SingleValueEventArgs<INode> eventArgs)
     {
-        NodeViewModels.Add(_nodeVmFactory.NodeViewModel(eventArgs.Value));
+        NodeViewModels.Add(_nodeVmFactory.NodeViewModel(NodeScript, eventArgs.Value));
     }
 
     private void HandleNodeRemoved(SingleValueEventArgs<INode> eventArgs)
@@ -56,15 +61,5 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         NodeViewModel? toRemove = NodeViewModels.FirstOrDefault(vm => vm.Node == eventArgs.Value);
         if (toRemove != null)
             NodeViewModels.Remove(toRemove);
-    }
-
-    public void ShowNodePicker(Point position)
-    {
-        NodePickerViewModel.Show(position);
-    }
-
-    public void HideNodePicker()
-    {
-        NodePickerViewModel.Hide();
     }
 }
