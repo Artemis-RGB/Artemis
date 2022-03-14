@@ -1,6 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Artemis.UI.Shared.Controls;
+using Artemis.UI.Shared.Events;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Generators;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -15,13 +20,17 @@ namespace Artemis.UI.Screens.VisualScripting
     {
         private readonly ZoomBorder _zoomBorder;
         private readonly Grid _grid;
+        private readonly ItemsControl _nodesContainer;
+        private readonly SelectionRectangle _selectionRectangle;
 
         public NodeScriptView()
         {
             InitializeComponent();
 
+            _nodesContainer = this.Find<ItemsControl>("NodesContainer");
             _zoomBorder = this.Find<ZoomBorder>("ZoomBorder");
             _grid = this.Find<Grid>("ContainerGrid");
+            _selectionRectangle = this.Find<SelectionRectangle>("SelectionRectangle");
             _zoomBorder.PropertyChanged += ZoomBorderOnPropertyChanged;
             UpdateZoomBorderBackground();
 
@@ -55,6 +64,24 @@ namespace Artemis.UI.Screens.VisualScripting
         private void ZoomBorder_OnZoomChanged(object sender, ZoomChangedEventArgs e)
         {
             UpdateZoomBorderBackground();
+        }
+
+        private void SelectionRectangle_OnSelectionUpdated(object? sender, SelectionRectangleEventArgs e)
+        {
+            List<ItemContainerInfo> itemContainerInfos = _nodesContainer.ItemContainerGenerator.Containers.Where(c => c.ContainerControl.Bounds.Intersects(e.Rectangle)).ToList();
+            List<NodeViewModel> nodes = itemContainerInfos.Where(c => c.Item is NodeViewModel).Select(c => (NodeViewModel) c.Item).ToList();
+            ViewModel?.UpdateNodeSelection(nodes, e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
+        }
+
+        private void SelectionRectangle_OnSelectionFinished(object? sender, SelectionRectangleEventArgs e)
+        {
+            ViewModel?.FinishNodeSelection();
+        }
+
+        private void ZoomBorder_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+        {
+            if (!_selectionRectangle.IsSelecting)
+                ViewModel?.ClearNodeSelection();
         }
     }
 }

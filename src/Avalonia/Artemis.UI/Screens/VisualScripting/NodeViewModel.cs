@@ -4,10 +4,12 @@ using System.Reactive;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.VisualScripting.Pins;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.NodeEditor.Commands;
+using Avalonia;
 using Avalonia.Controls.Mixins;
 using DynamicData;
 using ReactiveUI;
@@ -16,16 +18,18 @@ namespace Artemis.UI.Screens.VisualScripting;
 
 public class NodeViewModel : ActivatableViewModelBase
 {
-    private readonly NodeScript _nodeScript;
     private readonly INodeEditorService _nodeEditorService;
 
     private ICustomNodeViewModel? _customNodeViewModel;
     private ReactiveCommand<Unit, Unit>? _deleteNode;
     private ObservableAsPropertyHelper<bool>? _isStaticNode;
+    private double _dragOffsetX;
+    private double _dragOffsetY;
+    private bool _isSelected;
 
-    public NodeViewModel(NodeScript nodeScript, INode node, INodePinVmFactory nodePinVmFactory, INodeEditorService nodeEditorService)
+    public NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node, INodePinVmFactory nodePinVmFactory, INodeEditorService nodeEditorService)
     {
-        _nodeScript = nodeScript;
+        NodeScriptViewModel = nodeScriptViewModel;
         _nodeEditorService = nodeEditorService;
         Node = node;
 
@@ -54,6 +58,7 @@ public class NodeViewModel : ActivatableViewModelBase
 
     public bool IsStaticNode => _isStaticNode?.Value ?? true;
 
+    public NodeScriptViewModel NodeScriptViewModel { get; set; }
     public INode Node { get; }
     public ReadOnlyObservableCollection<PinViewModel> InputPinViewModels { get; }
     public ReadOnlyObservableCollection<PinCollectionViewModel> InputPinCollectionViewModels { get; }
@@ -72,8 +77,32 @@ public class NodeViewModel : ActivatableViewModelBase
         set => RaiseAndSetIfChanged(ref _deleteNode, value);
     }
 
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set => RaiseAndSetIfChanged(ref _isSelected, value);
+    }
+
+    public void SaveDragOffset(Point mouseStartPosition)
+    {
+        if (!IsSelected)
+            return;
+
+        _dragOffsetX = Node.X - mouseStartPosition.X;
+        _dragOffsetY = Node.Y - mouseStartPosition.Y;
+    }
+
+    public void UpdatePosition(Point mousePosition)
+    {
+        if (!IsSelected)
+            return;
+
+        Node.X = Math.Round((mousePosition.X + _dragOffsetX) / 10d, 0, MidpointRounding.AwayFromZero) * 10d;
+        Node.Y = Math.Round((mousePosition.Y + _dragOffsetY) / 10d, 0, MidpointRounding.AwayFromZero) * 10d;
+    }
+
     private void ExecuteDeleteNode()
     {
-        _nodeEditorService.ExecuteCommand(_nodeScript, new DeleteNode(_nodeScript, Node));
+        _nodeEditorService.ExecuteCommand(NodeScriptViewModel.NodeScript, new DeleteNode(NodeScriptViewModel.NodeScript, Node));
     }
 }

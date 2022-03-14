@@ -13,14 +13,29 @@
             <Setter Property="Background" Value="{DynamicResource ContentDialogBackground}" />
             <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
             <Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Transitions">
+                <Setter.Value>
+					<Transitions>
+                        <BrushTransition Property="BorderBrush" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+                    </Transitions>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style Selector="Border.node-container-selected">
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}" />
         </Style>
 		<Style Selector="ContentControl#CustomViewModelContainer">
             <Setter Property="Margin" Value="20 0"></Setter>
         </Style>
     </UserControl.Styles>
-    <Border Classes="node-container">
+    <Border Classes="node-container" Classes.node-container-selected="{CompiledBinding IsSelected}">
         <Grid RowDefinitions="Auto,*">
-            <Border Grid.Row="0" Background="{DynamicResource TaskDialogHeaderBackground}" CornerRadius="6 6 0 0">
+            <Border Grid.Row="0" 
+                    Background="{DynamicResource TaskDialogHeaderBackground}" 
+                    CornerRadius="6 6 0 0"
+                    Cursor="Hand"
+                    PointerReleased="InputElement_OnPointerReleased"
+                    PointerMoved="InputElement_OnPointerMoved">
                 <Grid Classes="node-header"
                       VerticalAlignment="Top"
                       ColumnDefinitions="*,Auto">

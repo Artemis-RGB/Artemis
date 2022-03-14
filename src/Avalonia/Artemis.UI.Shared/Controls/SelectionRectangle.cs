@@ -166,23 +166,20 @@ public class SelectionRectangle : Control
         ((SelectionRectangle) sender).SubscribeToInputElement();
     }
     
-
-    private void ParentOnPointerPressed(object? sender, PointerPressedEventArgs e)
+    private void ParentOnPointerMoved(object? sender, PointerEventArgs e)
     {
         if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
             return;
 
-        e.Pointer.Capture(this);
-
-        _startPosition = e.GetPosition(Parent);
-        _absoluteStartPosition = e.GetPosition(VisualRoot);
-        _displayRect = null;
-    }
-
-    private void ParentOnPointerMoved(object? sender, PointerEventArgs e)
-    {
+        // Capture the pointer and initialize dragging the first time it moves 
         if (!ReferenceEquals(e.Pointer.Captured, this))
-            return;
+        {
+            e.Pointer.Capture(this);
+
+            _startPosition = e.GetPosition(Parent);
+            _absoluteStartPosition = e.GetPosition(VisualRoot);
+            _displayRect = null;
+        }
 
         Point currentPosition = e.GetPosition(Parent);
         Point absoluteCurrentPosition = e.GetPosition(VisualRoot);
@@ -223,7 +220,6 @@ public class SelectionRectangle : Control
     {
         if (_oldInputElement != null)
         {
-            _oldInputElement.PointerPressed -= ParentOnPointerPressed;
             _oldInputElement.PointerMoved -= ParentOnPointerMoved;
             _oldInputElement.PointerReleased -= ParentOnPointerReleased;
         }
@@ -232,7 +228,6 @@ public class SelectionRectangle : Control
 
         if (InputElement != null)
         {
-            InputElement.PointerPressed += ParentOnPointerPressed;
             InputElement.PointerMoved += ParentOnPointerMoved;
             InputElement.PointerReleased += ParentOnPointerReleased;
         }
@@ -259,7 +254,6 @@ public class SelectionRectangle : Control
     {
         if (_oldInputElement != null)
         {
-            _oldInputElement.PointerPressed -= ParentOnPointerPressed;
             _oldInputElement.PointerMoved -= ParentOnPointerMoved;
             _oldInputElement.PointerReleased -= ParentOnPointerReleased;
             _oldInputElement = null;
