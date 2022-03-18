@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using Artemis.Core;
@@ -6,6 +7,7 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.VisualScripting.Nodes;
 using Avalonia.Input;
 using ReactiveUI;
 using SkiaSharp;
@@ -17,6 +19,7 @@ namespace Artemis.UI.Screens.Workshop
         private readonly INotificationService _notificationService;
         private StandardCursorType _selectedCursor;
         private readonly ObservableAsPropertyHelper<Cursor> _cursor;
+
         private ColorGradient _colorGradient = new()
         {
             new ColorGradientStop(new SKColor(0xFFFF6D00), 0f),
@@ -35,7 +38,16 @@ namespace Artemis.UI.Screens.Workshop
             DisplayName = "Workshop";
             ShowNotification = ReactiveCommand.Create<NotificationSeverity>(ExecuteShowNotification);
 
-            VisualEditorViewModel = nodeVmFactory.NodeScriptViewModel(new NodeScript<bool>("Test script", "A test script"));
+            NodeScript<bool> testScript = new("Test script", "A test script");
+            INode exitNode = testScript.Nodes.Last();
+            exitNode.X = 200;
+            exitNode.Y = 100;
+
+            OrNode orNode = new() {X = 100, Y = 100};
+            testScript.AddNode(orNode);
+            orNode.Result.ConnectTo(exitNode.Pins.First());
+
+            VisualEditorViewModel = nodeVmFactory.NodeScriptViewModel(testScript);
         }
 
         public NodeScriptViewModel VisualEditorViewModel { get; }

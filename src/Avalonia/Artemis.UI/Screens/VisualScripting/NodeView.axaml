@@ -57,14 +57,14 @@
 
             <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Margin="5">
                 <StackPanel Grid.Column="0">
-                    <ItemsControl Items="{CompiledBinding InputPinViewModels}" />
+                    <ItemsControl Items="{CompiledBinding InputPinViewModels}" Margin="4 0" />
                     <ItemsControl Items="{CompiledBinding InputPinCollectionViewModels}" />
                 </StackPanel>
 
                 <ContentControl Name="CustomViewModelContainer" Grid.Column="1" Content="{CompiledBinding CustomNodeViewModel}" IsVisible="{CompiledBinding CustomNodeViewModel}" />
 
 				<StackPanel Grid.Column="2">
-                    <ItemsControl Items="{CompiledBinding OutputPinViewModels}" />
+                    <ItemsControl Items="{CompiledBinding OutputPinViewModels}" Margin="4 0" />
                     <ItemsControl Items="{CompiledBinding OutputPinCollectionViewModels}" />
                 </StackPanel>
             </Grid>

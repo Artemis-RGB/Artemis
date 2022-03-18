@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Artemis.Core.Events;
 
 namespace Artemis.Core
@@ -81,6 +82,8 @@ namespace Artemis.Core
             OnPropertyChanged(nameof(ConnectedTo));
 
             PinConnected?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
+            if (!pin.ConnectedTo.Contains(this))
+                pin.ConnectTo(this);
         }
 
         /// <inheritdoc />
@@ -90,6 +93,8 @@ namespace Artemis.Core
             OnPropertyChanged(nameof(ConnectedTo));
 
             PinDisconnected?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
+            if (pin.ConnectedTo.Contains(this))
+                pin.DisconnectFrom(this);
         }
 
         /// <inheritdoc />
@@ -101,7 +106,11 @@ namespace Artemis.Core
             OnPropertyChanged(nameof(ConnectedTo));
 
             foreach (IPin pin in connectedPins)
+            {
                 PinDisconnected?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
+                if (pin.ConnectedTo.Contains(this))
+                    pin.DisconnectFrom(this);
+            }
         }
 
         #endregion

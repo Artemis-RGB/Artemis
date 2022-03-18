@@ -29,6 +29,24 @@ public class MoveNode : INodeEditorCommand
         _originalY = node.Y;
     }
 
+    /// <summary>
+    ///     Creates a new instance of the <see cref="MoveNode" /> class.
+    /// </summary>
+    /// <param name="node">The node to update.</param>
+    /// <param name="x">The new X-position.</param>
+    /// <param name="y">The new Y-position.</param>
+    /// <param name="originalX">The original X-position.</param>
+    /// <param name="originalY">The original Y-position.</param>
+    public MoveNode(INode node, double x, double y, double originalX, double originalY)
+    {
+        _node = node;
+        _x = x;
+        _y = y;
+
+        _originalX = originalX;
+        _originalY = originalY;
+    }
+
     /// <inheritdoc />
     public string DisplayName => "Move node";
 

@@ -19,7 +19,6 @@
     </UserControl.KeyBindings>
     <paz:ZoomBorder Name="ZoomBorder"
                     Stretch="None"
-                    ClipToBounds="True"
                     Focusable="True"
                     VerticalAlignment="Stretch"
                     HorizontalAlignment="Stretch"
@@ -27,8 +26,9 @@
                     ZoomChanged="ZoomBorder_OnZoomChanged"
                     MaxZoomX="1"
                     MaxZoomY="1"
+                    EnableConstrains="True"
                     PointerReleased="ZoomBorder_OnPointerReleased">
-        <Grid Name="ContainerGrid" Background="Transparent">
+        <Grid Name="ContainerGrid" Background="Transparent" ClipToBounds="False">
 			<Grid.ContextFlyout>
 				<Flyout FlyoutPresenterClasses="node-picker-flyout">
 					<ContentControl Content="{CompiledBinding NodePickerViewModel}" />
@@ -41,10 +41,10 @@
 			</Grid.Transitions>
 
             <!-- Cables -->
-			<ItemsControl Items="{CompiledBinding CableViewModels}">
+			<ItemsControl Items="{CompiledBinding CableViewModels}" ClipToBounds="False">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <Canvas />
+                        <Canvas  />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.Styles>
@@ -56,7 +56,7 @@
             </ItemsControl>
 
             <!-- Nodes -->
-            <ItemsControl Name="NodesContainer" Items="{CompiledBinding NodeViewModels}">
+            <ItemsControl Name="NodesContainer" Items="{CompiledBinding NodeViewModels}"  ClipToBounds="False">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas />

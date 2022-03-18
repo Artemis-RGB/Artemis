@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
@@ -50,27 +51,36 @@ public class NodeView : ReactiveUserControl<NodeViewModel>
             _dragging = false;
             ViewModel.NodeScriptViewModel.FinishNodeDrag();
             e.Pointer.Capture(null);
-            return;
         }
-
-        ViewModel.NodeScriptViewModel.UpdateNodeSelection(new List<NodeViewModel> {ViewModel}, e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
-        ViewModel.NodeScriptViewModel.FinishNodeSelection();
+        else
+        {
+            ViewModel.NodeScriptViewModel.UpdateNodeSelection(new List<NodeViewModel> {ViewModel}, e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
+            ViewModel.NodeScriptViewModel.FinishNodeSelection();
+        }
 
         e.Handled = true;
     }
 
     private void InputElement_OnPointerMoved(object? sender, PointerEventArgs e)
     {
-        PointerPoint point = e.GetCurrentPoint(this.FindAncestorOfType<ZoomBorder>());
+        PointerPoint point = e.GetCurrentPoint(this.FindAncestorOfType<Canvas>());
         if (ViewModel == null || !point.Properties.IsLeftButtonPressed)
             return;
 
         if (!_dragging)
         {
             _dragging = true;
+
+            if (!ViewModel.IsSelected)
+            {
+                ViewModel.NodeScriptViewModel.UpdateNodeSelection(new List<NodeViewModel> {ViewModel}, false, false);
+                ViewModel.NodeScriptViewModel.FinishNodeSelection();
+            }
+
             ViewModel.NodeScriptViewModel.StartNodeDrag(point.Position);
             e.Pointer.Capture((IInputElement?) sender);
         }
+
         ViewModel.NodeScriptViewModel.UpdateNodeDrag(point.Position);
 
         e.Handled = true;

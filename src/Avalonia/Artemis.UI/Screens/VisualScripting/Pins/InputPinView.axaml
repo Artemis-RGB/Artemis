@@ -23,7 +23,7 @@
         </Style>
     </UserControl.Styles>
     <StackPanel Name="PinContainer" Orientation="Horizontal" Spacing="6">
-        <Border Name="PinPoint">
+        <Border Name="PinPoint" PointerMoved="PinPoint_OnPointerMoved" PointerReleased="PinPoint_OnPointerReleased">
             <Border Name="VisualPinPoint" />
         </Border>
         <TextBlock Name="PinName" VerticalAlignment="Center" Text="{CompiledBinding Pin.Name}" />
