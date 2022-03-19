@@ -40,8 +40,8 @@ namespace Artemis.UI.Screens.Workshop
 
             NodeScript<bool> testScript = new("Test script", "A test script");
             INode exitNode = testScript.Nodes.Last();
-            exitNode.X = 200;
-            exitNode.Y = 100;
+            exitNode.X = 300;
+            exitNode.Y = 150;
 
             OrNode orNode = new() {X = 100, Y = 100};
             testScript.AddNode(orNode);

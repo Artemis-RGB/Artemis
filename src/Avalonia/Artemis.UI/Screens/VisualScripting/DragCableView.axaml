@@ -5,21 +5,16 @@
              xmlns:visualScripting="clr-namespace:Artemis.UI.Screens.VisualScripting"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.VisualScripting.CableView"
-             x:DataType="visualScripting:CableViewModel"
+             x:Class="Artemis.UI.Screens.VisualScripting.DragCableView"
+             x:DataType="visualScripting:DragCableViewModel"
              ClipToBounds="False">
     <UserControl.Resources>
         <converters:ColorToSolidColorBrushConverter x:Key="ColorToSolidColorBrushConverter" />
     </UserControl.Resources>
     <Path Name="CablePath"
-          Stroke="{CompiledBinding CableColor, Converter={StaticResource ColorToSolidColorBrushConverter}}"
+          Stroke="{CompiledBinding PinViewModel.PinColor, Converter={StaticResource ColorToSolidColorBrushConverter}}"
           StrokeThickness="4"
           StrokeLineCap="Round">
-        <Path.Transitions>
-            <Transitions>
-                <ThicknessTransition Property="Margin" Duration="200"></ThicknessTransition>
-            </Transitions>
-        </Path.Transitions>
         <Path.Data>
             <PathGeometry>
                 <PathGeometry.Figures>

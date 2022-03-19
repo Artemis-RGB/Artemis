@@ -39,34 +39,44 @@ public class NodeViewModel : ActivatableViewModelBase
 
         SourceList<IPin> nodePins = new();
         SourceList<IPinCollection> nodePinCollections = new();
-        nodePins.AddRange(Node.Pins);
-        nodePinCollections.AddRange(Node.PinCollections);
 
         // Create observable collections split up by direction
-        nodePins.Connect().Filter(n => n.Direction == PinDirection.Input).Transform(nodePinVmFactory.InputPinViewModel)
-            .Bind(out ReadOnlyObservableCollection<PinViewModel> inputPins).Subscribe();
-        nodePins.Connect().Filter(n => n.Direction == PinDirection.Output).Transform(nodePinVmFactory.OutputPinViewModel)
-            .Bind(out ReadOnlyObservableCollection<PinViewModel> outputPins).Subscribe();
+        nodePins.Connect()
+            .Filter(n => n.Direction == PinDirection.Input)
+            .Transform(nodePinVmFactory.InputPinViewModel)
+            .Bind(out ReadOnlyObservableCollection<PinViewModel> inputPins)
+            .Subscribe();
+        nodePins.Connect()
+            .Filter(n => n.Direction == PinDirection.Output)
+            .Transform(nodePinVmFactory.OutputPinViewModel)
+            .Bind(out ReadOnlyObservableCollection<PinViewModel> outputPins)
+            .Subscribe();
         InputPinViewModels = inputPins;
         OutputPinViewModels = outputPins;
 
         // Same again but for pin collections
-        nodePinCollections.Connect().Filter(n => n.Direction == PinDirection.Input).Transform(nodePinVmFactory.InputPinCollectionViewModel)
-            .Bind(out ReadOnlyObservableCollection<PinCollectionViewModel> inputPinCollections).Subscribe();
-        nodePinCollections.Connect().Filter(n => n.Direction == PinDirection.Output).Transform(nodePinVmFactory.OutputPinCollectionViewModel)
-            .Bind(out ReadOnlyObservableCollection<PinCollectionViewModel> outputPinCollections).Subscribe();
+        nodePinCollections.Connect()
+            .Filter(n => n.Direction == PinDirection.Input)
+            .Transform(nodePinVmFactory.InputPinCollectionViewModel)
+            .Bind(out ReadOnlyObservableCollection<PinCollectionViewModel> inputPinCollections)
+            .Subscribe();
+        nodePinCollections.Connect()
+            .Filter(n => n.Direction == PinDirection.Output)
+            .Transform(nodePinVmFactory.OutputPinCollectionViewModel)
+            .Bind(out ReadOnlyObservableCollection<PinCollectionViewModel> outputPinCollections)
+            .Subscribe();
         InputPinCollectionViewModels = inputPinCollections;
         OutputPinCollectionViewModels = outputPinCollections;
 
         // Create a single observable collection containing all pin view models
         InputPinViewModels.ToObservableChangeSet()
-            .Merge(InputPinCollectionViewModels.ToObservableChangeSet().TransformMany(c => c.PinViewModels))
             .Merge(OutputPinViewModels.ToObservableChangeSet())
+            .Merge(InputPinCollectionViewModels.ToObservableChangeSet().TransformMany(c => c.PinViewModels))
             .Merge(OutputPinCollectionViewModels.ToObservableChangeSet().TransformMany(c => c.PinViewModels))
             .Bind(out ReadOnlyObservableCollection<PinViewModel> pins)
             .Subscribe();
 
-        Pins = pins;
+        PinViewModels = pins;
 
         this.WhenActivated(d =>
         {
@@ -98,7 +108,7 @@ public class NodeViewModel : ActivatableViewModelBase
     public ReadOnlyObservableCollection<PinCollectionViewModel> InputPinCollectionViewModels { get; }
     public ReadOnlyObservableCollection<PinViewModel> OutputPinViewModels { get; }
     public ReadOnlyObservableCollection<PinCollectionViewModel> OutputPinCollectionViewModels { get; }
-    public ReadOnlyObservableCollection<PinViewModel> Pins { get; }
+    public ReadOnlyObservableCollection<PinViewModel> PinViewModels { get; }
 
     public ICustomNodeViewModel? CustomNodeViewModel
     {

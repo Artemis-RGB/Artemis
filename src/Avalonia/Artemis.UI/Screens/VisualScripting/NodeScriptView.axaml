@@ -40,6 +40,9 @@
 				</Transitions>
 			</Grid.Transitions>
 
+			<!-- Drag cable, if any -->
+			<ContentControl Content="{CompiledBinding DragViewModel}" ClipToBounds="False"/>
+
             <!-- Cables -->
 			<ItemsControl Items="{CompiledBinding CableViewModels}" ClipToBounds="False">
                 <ItemsControl.ItemsPanel>

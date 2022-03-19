@@ -95,7 +95,8 @@ namespace Artemis.UI.Ninject.Factories
         NodeScriptViewModel NodeScriptViewModel(NodeScript nodeScript);
         NodePickerViewModel NodePickerViewModel(NodeScript nodeScript);
         NodeViewModel NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node);
-        CableViewModel CableViewModel(NodeScriptViewModel nodeScriptViewModel, IPin? from, IPin? to);
+        CableViewModel CableViewModel(NodeScriptViewModel nodeScriptViewModel, IPin from, IPin to);
+        DragCableViewModel DragCableViewModel(PinViewModel pinViewModel);
     }
 
     public interface INodePinVmFactory 

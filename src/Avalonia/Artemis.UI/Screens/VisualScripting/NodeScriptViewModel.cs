@@ -20,14 +20,17 @@ namespace Artemis.UI.Screens.VisualScripting;
 
 public class NodeScriptViewModel : ActivatableViewModelBase
 {
-    private readonly INodeVmFactory _nodeVmFactory;
     private readonly INodeEditorService _nodeEditorService;
+    private readonly SourceList<NodeViewModel> _nodeViewModels;
+    private readonly INodeVmFactory _nodeVmFactory;
+    private DragCableViewModel? _dragViewModel;
     private List<NodeViewModel>? _initialNodeSelection;
 
     public NodeScriptViewModel(NodeScript nodeScript, INodeVmFactory nodeVmFactory, INodeEditorService nodeEditorService)
     {
         _nodeVmFactory = nodeVmFactory;
         _nodeEditorService = nodeEditorService;
+        _nodeViewModels = new SourceList<NodeViewModel>();
 
         NodeScript = nodeScript;
         NodePickerViewModel = _nodeVmFactory.NodePickerViewModel(nodeScript);
@@ -44,47 +47,41 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         });
 
         // Create VMs for all nodes
-        NodeViewModels = new ObservableCollection<NodeViewModel>();
-        foreach (INode nodeScriptNode in NodeScript.Nodes)
-            NodeViewModels.Add(_nodeVmFactory.NodeViewModel(this, nodeScriptNode));
+        _nodeViewModels.Connect().Bind(out ReadOnlyObservableCollection<NodeViewModel> nodeViewModels).Subscribe();
+        _nodeViewModels.Edit(l =>
+        {
+            foreach (INode nodeScriptNode in NodeScript.Nodes)
+                l.Add(_nodeVmFactory.NodeViewModel(this, nodeScriptNode));
+        });
+        NodeViewModels = nodeViewModels;
+
+        NodeViewModels.ToObservableChangeSet().TransformMany(vm => vm.PinViewModels)
+            .Bind(out ReadOnlyObservableCollection<PinViewModel> pinViewModels)
+            .Subscribe();
+        PinViewModels = pinViewModels;
 
         // Observe all outgoing pin connections and create cables for them
-        IObservable<IChangeSet<NodeViewModel>> viewModels = NodeViewModels.ToObservableChangeSet();
-        PinViewModels = viewModels.TransformMany(vm => vm.OutputPinViewModels)
-            .Merge(viewModels.TransformMany(vm => vm.InputPinViewModels))
-            .Merge(viewModels
-                .TransformMany(vm => vm.OutputPinCollectionViewModels)
-                .TransformMany(vm => vm.PinViewModels))
-            .Merge(viewModels
-                .TransformMany(vm => vm.InputPinCollectionViewModels)
-                .TransformMany(vm => vm.PinViewModels))
-            .AsObservableList();
-
-        PinViewModels.Connect()
-            .Filter(p => p.Pin.Direction == PinDirection.Input && p.Pin.ConnectedTo.Any())
-            .Transform(vm => _nodeVmFactory.CableViewModel(this, vm.Pin.ConnectedTo.First(), vm.Pin)) // The first pin is the originating output pin
+        PinViewModels.ToObservableChangeSet()
+            .Filter(p => p.Pin.Direction == PinDirection.Output)
+            .TransformMany(p => p.Connections)
+            .Transform(pin => _nodeVmFactory.CableViewModel(this, pin.ConnectedTo.First(), pin))
             .Bind(out ReadOnlyObservableCollection<CableViewModel> cableViewModels)
             .Subscribe();
-
         CableViewModels = cableViewModels;
     }
 
-    public IObservableList<PinViewModel> PinViewModels { get; }
-
-    public PinViewModel? GetPinViewModel(IPin pin)
-    {
-        return NodeViewModels
-            .SelectMany(n => n.Pins)
-            .Concat(NodeViewModels.SelectMany(n => n.InputPinCollectionViewModels.SelectMany(c => c.PinViewModels)))
-            .Concat(NodeViewModels.SelectMany(n => n.OutputPinCollectionViewModels.SelectMany(c => c.PinViewModels)))
-            .FirstOrDefault(vm => vm.Pin == pin);
-    }
-
     public NodeScript NodeScript { get; }
-    public ObservableCollection<NodeViewModel> NodeViewModels { get; }
+    public ReadOnlyObservableCollection<NodeViewModel> NodeViewModels { get; }
+    public ReadOnlyObservableCollection<PinViewModel> PinViewModels { get; }
     public ReadOnlyObservableCollection<CableViewModel> CableViewModels { get; }
     public NodePickerViewModel NodePickerViewModel { get; }
     public NodeEditorHistory History { get; }
+
+    public DragCableViewModel? DragViewModel
+    {
+        get => _dragViewModel;
+        set => RaiseAndSetIfChanged(ref _dragViewModel, value);
+    }
 
     public void UpdateNodeSelection(List<NodeViewModel> nodes, bool expand, bool invert)
     {
@@ -147,15 +144,37 @@ public class NodeScriptViewModel : ActivatableViewModelBase
             _nodeEditorService.ExecuteCommand(NodeScript, moveNode);
     }
 
+    public bool UpdatePinDrag(PinViewModel sourcePinViewModel, PinViewModel? targetPinVmModel, Point position)
+    {
+        if (DragViewModel?.PinViewModel != sourcePinViewModel)
+            DragViewModel = new DragCableViewModel(sourcePinViewModel);
+
+        DragViewModel.DragPoint = position;
+
+        return targetPinVmModel == null || targetPinVmModel.IsCompatibleWith(sourcePinViewModel);
+    }
+
+    public void FinishPinDrag(PinViewModel sourcePinViewModel, PinViewModel? targetPinVmModel)
+    {
+        if (DragViewModel == null)
+            return;
+
+        DragViewModel = null;
+
+        // If dropped on top of a compatible pin, connect to it
+        if (targetPinVmModel != null && targetPinVmModel.IsCompatibleWith(sourcePinViewModel))
+            _nodeEditorService.ExecuteCommand(NodeScript, new ConnectPins(sourcePinViewModel.Pin, targetPinVmModel.Pin));
+    }
+
     private void HandleNodeAdded(SingleValueEventArgs<INode> eventArgs)
     {
-        NodeViewModels.Add(_nodeVmFactory.NodeViewModel(this, eventArgs.Value));
+        _nodeViewModels.Add(_nodeVmFactory.NodeViewModel(this, eventArgs.Value));
     }
 
     private void HandleNodeRemoved(SingleValueEventArgs<INode> eventArgs)
     {
-        NodeViewModel? toRemove = NodeViewModels.FirstOrDefault(vm => vm.Node == eventArgs.Value);
+        NodeViewModel? toRemove = NodeViewModels.FirstOrDefault(vm => ReferenceEquals(vm.Node, eventArgs.Value));
         if (toRemove != null)
-            NodeViewModels.Remove(toRemove);
+            _nodeViewModels.Remove(toRemove);
     }
 }

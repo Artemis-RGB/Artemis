@@ -26,6 +26,7 @@ namespace Artemis.Core
 
         /// <inheritdoc />
         public event EventHandler<SingleValueEventArgs<IPin>>? PinConnected;
+
         /// <inheritdoc />
         public event EventHandler<SingleValueEventArgs<IPin>>? PinDisconnected;
 
@@ -79,31 +80,29 @@ namespace Artemis.Core
         public void ConnectTo(IPin pin)
         {
             _connectedTo.Add(pin);
-            OnPropertyChanged(nameof(ConnectedTo));
-
-            PinConnected?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
             if (!pin.ConnectedTo.Contains(this))
                 pin.ConnectTo(this);
+
+            OnPropertyChanged(nameof(ConnectedTo));
+            PinConnected?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
         }
 
         /// <inheritdoc />
         public void DisconnectFrom(IPin pin)
         {
             _connectedTo.Remove(pin);
-            OnPropertyChanged(nameof(ConnectedTo));
-
-            PinDisconnected?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
             if (pin.ConnectedTo.Contains(this))
                 pin.DisconnectFrom(this);
+
+            OnPropertyChanged(nameof(ConnectedTo));
+            PinDisconnected?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
         }
 
         /// <inheritdoc />
         public void DisconnectAll()
         {
             List<IPin> connectedPins = new(_connectedTo);
-
             _connectedTo.Clear();
-            OnPropertyChanged(nameof(ConnectedTo));
 
             foreach (IPin pin in connectedPins)
             {
@@ -111,6 +110,8 @@ namespace Artemis.Core
                 if (pin.ConnectedTo.Contains(this))
                     pin.DisconnectFrom(this);
             }
+
+            OnPropertyChanged(nameof(ConnectedTo));
         }
 
         #endregion

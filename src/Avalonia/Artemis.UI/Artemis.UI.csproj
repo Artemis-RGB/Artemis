@@ -63,6 +63,9 @@
 	  <Compile Update="Screens\ProfileEditor\Panels\VisualEditor\Visualizers\LayerShapeVisualizerView.axaml.cs">
 	    <DependentUpon>LayerShapeVisualizerView.axaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Screens\VisualScripting\DragCableView.axaml.cs">
+	    <DependentUpon>DragCableView.axaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="DefaultTypes\DataModel\Display\" />

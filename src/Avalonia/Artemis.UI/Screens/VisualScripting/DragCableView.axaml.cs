@@ -11,17 +11,17 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
-public class CableView : ReactiveUserControl<CableViewModel>
+public class DragCableView : ReactiveUserControl<DragCableViewModel>
 {
     private const double CABLE_OFFSET = 24 * 4;
     private readonly Path _cablePath;
 
-    public CableView()
+    public DragCableView()
     {
         InitializeComponent();
         _cablePath = this.Get<Path>("CablePath");
 
-        // Not using bindings here to avoid a warnings
+        // Not using bindings here to avoid warnings
         this.WhenActivated(d =>
         {
             ViewModel.WhenAnyValue(vm => vm.FromPoint).Subscribe(_ => Update()).DisposeWith(d);
@@ -37,9 +37,6 @@ public class CableView : ReactiveUserControl<CableViewModel>
 
     private void Update()
     {
-        // Workaround for https://github.com/AvaloniaUI/Avalonia/issues/4748
-        _cablePath.Margin = _cablePath.Margin != new Thickness(0, 0, 0, 0) ? new Thickness(0, 0, 0, 0) : new Thickness(1, 1, 0, 0);
-
         PathFigure pathFigure = ((PathGeometry) _cablePath.Data).Figures.First();
         BezierSegment segment = (BezierSegment) pathFigure.Segments!.First();
         pathFigure.StartPoint = ViewModel!.FromPoint;

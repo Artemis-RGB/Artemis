@@ -52,11 +52,16 @@ public abstract class PinViewModel : ActivatableViewModelBase
         set => RaiseAndSetIfChanged(ref _position, value);
     }
 
-    public bool IsTypeCompatible(Type type)
+    public bool IsCompatibleWith(PinViewModel pinViewModel)
     {
-        return Pin.Type == type
-               || Pin.Type == typeof(Enum) && type.IsEnum
+        if (pinViewModel.Pin.Direction == Pin.Direction)
+            return false;
+        if (pinViewModel.Pin.Node == Pin.Node)
+            return false;
+
+        return Pin.Type == pinViewModel.Pin.Type
+               || Pin.Type == typeof(Enum) && pinViewModel.Pin.Type.IsEnum
                || Pin.Direction == PinDirection.Input && Pin.Type == typeof(object)
-               || Pin.Direction == PinDirection.Output && type == typeof(object);
+               || Pin.Direction == PinDirection.Output && pinViewModel.Pin.Type == typeof(object);
     }
 }
