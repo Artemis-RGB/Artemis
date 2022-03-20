@@ -85,4 +85,9 @@ public class NodeView : ReactiveUserControl<NodeViewModel>
 
         e.Handled = true;
     }
+
+    private void NodeContainer_OnPointerMoved(object? sender, PointerEventArgs e)
+    {
+        e.Handled = true;
+    }
 }

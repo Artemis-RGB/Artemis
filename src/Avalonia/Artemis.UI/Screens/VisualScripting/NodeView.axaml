@@ -26,11 +26,8 @@
         <Style Selector="Border.node-container-selected">
             <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}" />
         </Style>
-        <Style Selector="ContentControl#CustomViewModelContainer">
-            <Setter Property="Margin" Value="20 0"></Setter>
-        </Style>
     </UserControl.Styles>
-    <Border Classes="node-container" Classes.node-container-selected="{CompiledBinding IsSelected}">
+    <Border Classes="node-container" Classes.node-container-selected="{CompiledBinding IsSelected}" PointerMoved="NodeContainer_OnPointerMoved">
         <Grid RowDefinitions="Auto,*">
             <Border Grid.Row="0"
                     CornerRadius="6 6 0 0"
@@ -44,7 +41,6 @@
                           VerticalAlignment="Top"
                           ColumnDefinitions="*,Auto">
                         <TextBlock VerticalAlignment="Center"
-                                   TextAlignment="Center"
                                    Margin="5"
                                    Text="{CompiledBinding Node.Name}"
                                    ToolTip.Tip="{CompiledBinding Node.Description}">
@@ -69,7 +65,7 @@
 
                 <ContentControl Grid.Column="1" Name="CustomViewModelContainer" Content="{CompiledBinding CustomNodeViewModel}" IsVisible="{CompiledBinding CustomNodeViewModel}" />
 
-                <StackPanel Grid.Column="2" IsVisible="{CompiledBinding HasInputPins}">
+                <StackPanel Grid.Column="2" IsVisible="{CompiledBinding HasOutputPins}">
                     <ItemsControl Items="{CompiledBinding OutputPinViewModels}" Margin="4 0" />
                     <ItemsControl Items="{CompiledBinding OutputPinCollectionViewModels}" />
                 </StackPanel>

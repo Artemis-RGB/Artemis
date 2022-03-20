@@ -174,6 +174,7 @@ public class SelectionRectangle : Control
         Point position = e.GetCurrentPoint(null).Position;
         if (position == _lastPosition)
             return;
+
         _lastPosition = position;
 
         if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)

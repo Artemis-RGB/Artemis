@@ -1,15 +1,18 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Reactive.Disposables;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.VisualScripting;
+using ReactiveUI;
 
 namespace Artemis.VisualScripting.Nodes.DataModel.CustomViewModels;
 
 public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
 {
     private readonly DataModelEventNode _node;
-    private ObservableCollection<Module> _modules;
+    private ObservableCollection<Module>? _modules;
 
     public DataModelEventNodeCustomViewModel(DataModelEventNode node, ISettingsService settingsService) : base(node)
     {
@@ -17,17 +20,32 @@ public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
 
         ShowFullPaths = settingsService.GetSetting("ProfileEditor.ShowFullPaths", true);
         ShowDataModelValues = settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
+
+        this.WhenActivated(d =>
+        {
+            if (Modules != null)
+                return;
+
+            Modules = new ObservableCollection<Module>();
+            if (_node.Script.Context is Profile scriptProfile && scriptProfile.Configuration.Module != null)
+                Modules.Add(scriptProfile.Configuration.Module);
+            else if (_node.Script.Context is ProfileConfiguration profileConfiguration && profileConfiguration.Module != null)
+                Modules.Add(profileConfiguration.Module);
+
+            _node.PropertyChanged += NodeOnPropertyChanged;
+            Disposable.Create(() => _node.PropertyChanged -= NodeOnPropertyChanged).DisposeWith(d);
+        });
     }
 
     public PluginSetting<bool> ShowFullPaths { get; }
     public PluginSetting<bool> ShowDataModelValues { get; }
     public ObservableCollection<Type> FilterTypes { get; } = new() {typeof(IDataModelEvent)};
 
-    // public ObservableCollection<Module> Modules
-    // {
-    //     get => _modules;
-    //     set => SetAndNotify(ref _modules, value);
-    // }
+    public ObservableCollection<Module>? Modules
+    {
+        get => _modules;
+        set => RaiseAndSetIfChanged(ref _modules, value);
+    }
 
     public DataModelPath DataModelPath
     {
@@ -45,28 +63,9 @@ public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
         }
     }
 
-    // public override void OnActivate()
-    // {
-    //     if (Modules != null)
-    //         return;
-    //
-    //     Modules = new ObservableCollection<Module>();
-    //     if (_node.Script.Context is Profile scriptProfile && scriptProfile.Configuration.Module != null)
-    //         Modules.Add(scriptProfile.Configuration.Module);
-    //     else if (_node.Script.Context is ProfileConfiguration profileConfiguration && profileConfiguration.Module != null)
-    //         Modules.Add(profileConfiguration.Module);
-    //
-    //     _node.PropertyChanged += NodeOnPropertyChanged;
-    // }
-    //
-    // public override void OnDeactivate()
-    // {
-    //     _node.PropertyChanged -= NodeOnPropertyChanged;
-    // }
-    //
-    // private void NodeOnPropertyChanged(object sender, PropertyChangedEventArgs e)
-    // {
-    //     if (e.PropertyName == nameof(DataModelNode.DataModelPath))
-    //         OnPropertyChanged(nameof(DataModelPath));
-    // }
+    private void NodeOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(DataModelNode.DataModelPath))
+            this.RaisePropertyChanged(nameof(DataModelPath));
+    }
 }

@@ -71,4 +71,10 @@
     <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Nodes\CustomViews\StaticStringValueNodeCustomView.axaml.cs">
+      <DependentUpon>StaticStringValueNodeCustomView.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>
