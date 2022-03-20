@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Linq;
 using Artemis.Core;
@@ -25,9 +26,12 @@ public class NodeViewModel : ActivatableViewModelBase
     private double _dragOffsetX;
     private double _dragOffsetY;
     private bool _isSelected;
-    private ObservableAsPropertyHelper<bool>? _isStaticNode;
     private double _startX;
     private double _startY;
+
+    private ObservableAsPropertyHelper<bool>? _isStaticNode;
+    private ObservableAsPropertyHelper<bool>? _hasInputPins;
+    private ObservableAsPropertyHelper<bool>? _hasOutputPins;
 
     public NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node, INodePinVmFactory nodePinVmFactory, INodeEditorService nodeEditorService)
     {
@@ -57,12 +61,12 @@ public class NodeViewModel : ActivatableViewModelBase
         // Same again but for pin collections
         nodePinCollections.Connect()
             .Filter(n => n.Direction == PinDirection.Input)
-            .Transform(nodePinVmFactory.InputPinCollectionViewModel)
+            .Transform(c => nodePinVmFactory.InputPinCollectionViewModel(c, nodeScriptViewModel))
             .Bind(out ReadOnlyObservableCollection<PinCollectionViewModel> inputPinCollections)
             .Subscribe();
         nodePinCollections.Connect()
             .Filter(n => n.Direction == PinDirection.Output)
-            .Transform(nodePinVmFactory.OutputPinCollectionViewModel)
+            .Transform(c => nodePinVmFactory.OutputPinCollectionViewModel(c, nodeScriptViewModel))
             .Bind(out ReadOnlyObservableCollection<PinCollectionViewModel> outputPinCollections)
             .Subscribe();
         InputPinCollectionViewModels = inputPinCollections;
@@ -84,6 +88,16 @@ public class NodeViewModel : ActivatableViewModelBase
                 .Select(tuple => tuple.Item1 || tuple.Item2)
                 .ToProperty(this, model => model.IsStaticNode)
                 .DisposeWith(d);
+            _hasInputPins = InputPinViewModels.ToObservableChangeSet()
+                .Merge(InputPinCollectionViewModels.ToObservableChangeSet().TransformMany(c => c.PinViewModels))
+                .Any()
+                .ToProperty(this, vm => vm.HasInputPins)
+                .DisposeWith(d);
+            _hasOutputPins = OutputPinViewModels.ToObservableChangeSet()
+                .Merge(OutputPinCollectionViewModels.ToObservableChangeSet().TransformMany(c => c.PinViewModels))
+                .Any()
+                .ToProperty(this, vm => vm.HasOutputPins)
+                .DisposeWith(d);
 
             // Subscribe to pin changes
             Node.WhenAnyValue(n => n.Pins).Subscribe(p => nodePins.Edit(source =>
@@ -97,10 +111,15 @@ public class NodeViewModel : ActivatableViewModelBase
                 source.Clear();
                 source.AddRange(c);
             })).DisposeWith(d);
+
+            if (Node is Node coreNode)
+                CustomNodeViewModel = coreNode.GetCustomViewModel();
         });
     }
 
     public bool IsStaticNode => _isStaticNode?.Value ?? true;
+    public bool HasInputPins => _hasInputPins?.Value ?? false;
+    public bool HasOutputPins => _hasOutputPins?.Value ?? false;
 
     public NodeScriptViewModel NodeScriptViewModel { get; }
     public INode Node { get; }

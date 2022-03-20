@@ -1,14 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Artemis.Core;
-using Artemis.UI.Shared.Services.NodeEditor;
 
+namespace Artemis.UI.Shared.Services.NodeEditor.Commands;
+
+/// <summary>
+///     Represents a node editor command that can be used to connect two pins.
+/// </summary>
 public class ConnectPins : INodeEditorCommand
 {
     private readonly IPin _source;
     private readonly IPin _target;
     private readonly List<IPin>? _originalConnections;
 
+    /// <summary>
+    ///     Creates a new instance of the <see cref="ConnectPins" /> class.
+    /// </summary>
+    /// <param name="source">The source of the connection.</param>
+    /// <param name="target">The target of the connection.</param>
     public ConnectPins(IPin source, IPin target)
     {
         _source = source;

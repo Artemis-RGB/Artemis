@@ -62,6 +62,7 @@ public class SelectionRectangle : Control
     private bool _isSelecting;
     private IControl? _oldInputElement;
     private Point _startPosition;
+    private Point _lastPosition;
 
     /// <inheritdoc />
     public SelectionRectangle()
@@ -168,9 +169,16 @@ public class SelectionRectangle : Control
     
     private void ParentOnPointerMoved(object? sender, PointerEventArgs e)
     {
+        // Point moved seems to trigger when the element under the mouse changes?
+        // I'm not sure why this is needed but this check makes sure the position really hasn't changed.
+        Point position = e.GetCurrentPoint(null).Position;
+        if (position == _lastPosition)
+            return;
+        _lastPosition = position;
+
         if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
             return;
-
+        
         // Capture the pointer and initialize dragging the first time it moves 
         if (!ReferenceEquals(e.Pointer.Captured, this))
         {

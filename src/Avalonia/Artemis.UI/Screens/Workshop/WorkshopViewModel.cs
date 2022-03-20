@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
@@ -9,6 +10,7 @@ using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.VisualScripting.Nodes;
 using Avalonia.Input;
+using Avalonia.Threading;
 using ReactiveUI;
 using SkiaSharp;
 
@@ -16,6 +18,8 @@ namespace Artemis.UI.Screens.Workshop
 {
     public class WorkshopViewModel : MainScreenViewModel
     {
+        private static NodeScript<bool>? _testScript = null;
+
         private readonly INotificationService _notificationService;
         private StandardCursorType _selectedCursor;
         private readonly ObservableAsPropertyHelper<Cursor> _cursor;
@@ -38,16 +42,26 @@ namespace Artemis.UI.Screens.Workshop
             DisplayName = "Workshop";
             ShowNotification = ReactiveCommand.Create<NotificationSeverity>(ExecuteShowNotification);
 
-            NodeScript<bool> testScript = new("Test script", "A test script");
-            INode exitNode = testScript.Nodes.Last();
-            exitNode.X = 300;
-            exitNode.Y = 150;
+            if (_testScript == null)
+            {
+                _testScript = new NodeScript<bool>("Test script", "A test script");
+                INode exitNode = _testScript.Nodes.Last();
+                exitNode.X = 300;
+                exitNode.Y = 150;
 
-            OrNode orNode = new() {X = 100, Y = 100};
-            testScript.AddNode(orNode);
-            orNode.Result.ConnectTo(exitNode.Pins.First());
+                OrNode orNode = new() {X = 100, Y = 100};
+                _testScript.AddNode(orNode);
+                orNode.Result.ConnectTo(exitNode.Pins.First());
+            }
 
-            VisualEditorViewModel = nodeVmFactory.NodeScriptViewModel(testScript);
+            VisualEditorViewModel = nodeVmFactory.NodeScriptViewModel(_testScript);
+
+            this.WhenActivated(d =>
+            {
+                DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(20), DispatcherPriority.Normal, (_, _) => _testScript?.Run());
+                updateTimer.Start();
+                Disposable.Create(() => updateTimer.Stop()).DisposeWith(d);
+            });
         }
 
         public NodeScriptViewModel VisualEditorViewModel { get; }

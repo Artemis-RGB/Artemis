@@ -16,15 +16,11 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="node">The node the pin collection belongs to</param>
         /// <param name="name">The name of the pin collection</param>
-        /// <param name="initialCount">The amount of pins to initially add to the collection</param>
         /// <returns>The resulting output pin collection</returns>
-        protected PinCollection(INode node, string name, int initialCount)
+        protected PinCollection(INode node, string name)
         {
             Node = node ?? throw new ArgumentNullException(nameof(node));
             Name = name;
-
-            for (int i = 0; i < initialCount; i++)
-                AddPin();
         }
 
         #endregion
@@ -61,14 +57,18 @@ namespace Artemis.Core
         #region Methods
 
         /// <inheritdoc />
-        public IPin AddPin()
+        public void Add(IPin pin)
         {
-            IPin pin = CreatePin();
+            if (pin.Direction != Direction)
+                throw new ArtemisCoreException($"Can't add a {pin.Direction} pin to an {Direction} pin collection.");
+            if (pin.Type != Type)
+                throw new ArtemisCoreException($"Can't add a {pin.Type} pin to an {Type} pin collection.");
+
+            if (_pins.Contains(pin))
+                return;
+
             _pins.Add(pin);
-
             PinAdded?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
-
-            return pin;
         }
 
         /// <inheritdoc />
@@ -89,11 +89,8 @@ namespace Artemis.Core
                 pin.Reset();
         }
 
-        /// <summary>
-        ///     Creates a new pin to be used in this collection
-        /// </summary>
-        /// <returns>The resulting pin</returns>
-        protected abstract IPin CreatePin();
+        /// <inheritdoc />
+        public abstract IPin CreatePin();
 
         /// <inheritdoc />
         public IEnumerator<IPin> GetEnumerator()

@@ -7,6 +7,8 @@ using Artemis.Core;
 using Artemis.Core.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services.NodeEditor;
+using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Avalonia.Controls.Mixins;
 using DynamicData;
 using ReactiveUI;
@@ -16,10 +18,8 @@ namespace Artemis.UI.Screens.VisualScripting.Pins;
 public abstract class PinCollectionViewModel : ActivatableViewModelBase
 {
     private readonly INodePinVmFactory _nodePinVmFactory;
-    public IPinCollection PinCollection { get; }
-    public ObservableCollection<PinViewModel> PinViewModels { get; }
 
-    protected PinCollectionViewModel(IPinCollection pinCollection, INodePinVmFactory nodePinVmFactory)
+    protected PinCollectionViewModel(IPinCollection pinCollection, NodeScriptViewModel nodeScriptViewModel, INodePinVmFactory nodePinVmFactory, INodeEditorService nodeEditorService)
     {
         _nodePinVmFactory = nodePinVmFactory;
 
@@ -39,13 +39,20 @@ public abstract class PinCollectionViewModel : ActivatableViewModelBase
                 .DisposeWith(d);
         });
 
-        AddPin = ReactiveCommand.Create(() => PinCollection.AddPin());
+        AddPin = ReactiveCommand.Create(() => nodeEditorService.ExecuteCommand(nodeScriptViewModel.NodeScript, new AddPin(pinCollection)));
+        RemovePin = ReactiveCommand.Create((IPin pin) => nodeEditorService.ExecuteCommand(nodeScriptViewModel.NodeScript, new RemovePin(pinCollection, pin)));
     }
 
-    public ReactiveCommand<Unit, IPin> AddPin { get; }
+    public IPinCollection PinCollection { get; }
+    public ReactiveCommand<Unit, Unit> AddPin { get; }
+    public ReactiveCommand<IPin, Unit> RemovePin { get; }
+
+    public ObservableCollection<PinViewModel> PinViewModels { get; }
 
     private PinViewModel CreatePinViewModel(IPin pin)
     {
-        return PinCollection.Direction == PinDirection.Input ? _nodePinVmFactory.InputPinViewModel(pin) : _nodePinVmFactory.OutputPinViewModel(pin);
+        PinViewModel vm = PinCollection.Direction == PinDirection.Input ? _nodePinVmFactory.InputPinViewModel(pin) : _nodePinVmFactory.OutputPinViewModel(pin);
+        vm.RemovePin = RemovePin;
+        return vm;
     }
 }

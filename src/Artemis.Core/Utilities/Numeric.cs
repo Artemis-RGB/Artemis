@@ -11,7 +11,7 @@ namespace Artemis.Core
     ///         Usage outside that context is not recommended due to conversion overhead.
     ///     </para>
     /// </summary>
-    public readonly struct Numeric : IComparable<Numeric>
+    public readonly struct Numeric : IComparable<Numeric>, IConvertible
     {
         private readonly float _value;
 
@@ -140,6 +140,11 @@ namespace Artemis.Core
             return p._value;
         }
 
+        public static implicit operator decimal(Numeric p)
+        {
+            return (decimal) p._value;
+        }
+
         public static implicit operator byte(Numeric p)
         {
             return (byte) Math.Clamp(p._value, 0, 255);
@@ -260,6 +265,112 @@ namespace Artemis.Core
                    type == typeof(int) ||
                    type == typeof(byte);
         }
+
+        #region Implementation of IConvertible
+
+        /// <inheritdoc />
+        public TypeCode GetTypeCode()
+        {
+            return _value.GetTypeCode();
+        }
+
+        /// <inheritdoc />
+        public bool ToBoolean(IFormatProvider? provider)
+        {
+            return Convert.ToBoolean(_value);
+        }
+
+        /// <inheritdoc />
+        public byte ToByte(IFormatProvider? provider)
+        {
+            return (byte) Math.Clamp(_value, 0, 255);
+        }
+
+        /// <inheritdoc />
+        public char ToChar(IFormatProvider? provider)
+        {
+            return Convert.ToChar(_value);
+        }
+
+        /// <inheritdoc />
+        public DateTime ToDateTime(IFormatProvider? provider)
+        {
+            return Convert.ToDateTime(_value);
+        }
+
+        /// <inheritdoc />
+        public decimal ToDecimal(IFormatProvider? provider)
+        {
+            return (decimal) _value;
+        }
+
+        /// <inheritdoc />
+        public double ToDouble(IFormatProvider? provider)
+        {
+            return _value;
+        }
+
+        /// <inheritdoc />
+        public short ToInt16(IFormatProvider? provider)
+        {
+            return (short) MathF.Round(_value, MidpointRounding.AwayFromZero);
+        }
+
+        /// <inheritdoc />
+        public int ToInt32(IFormatProvider? provider)
+        {
+            return (int) MathF.Round(_value, MidpointRounding.AwayFromZero);
+        }
+
+        /// <inheritdoc />
+        public long ToInt64(IFormatProvider? provider)
+        {
+            return (long) MathF.Round(_value, MidpointRounding.AwayFromZero);
+        }
+
+        /// <inheritdoc />
+        public sbyte ToSByte(IFormatProvider? provider)
+        {
+            return (sbyte) Math.Clamp(_value, 0, 255);
+        }
+
+        /// <inheritdoc />
+        public float ToSingle(IFormatProvider? provider)
+        {
+            return _value;
+        }
+
+        /// <inheritdoc />
+        public string ToString(IFormatProvider? provider)
+        {
+            return _value.ToString(provider);
+        }
+
+        /// <inheritdoc />
+        public object ToType(Type conversionType, IFormatProvider? provider)
+        {
+            return Convert.ChangeType(_value, conversionType);
+        }
+
+        /// <inheritdoc />
+        public ushort ToUInt16(IFormatProvider? provider)
+        {
+            return (ushort) MathF.Round(_value, MidpointRounding.AwayFromZero);
+        }
+
+        /// <inheritdoc />
+        public uint ToUInt32(IFormatProvider? provider)
+        {
+            return (uint) MathF.Round(_value, MidpointRounding.AwayFromZero);
+        }
+
+        /// <inheritdoc />
+        public ulong ToUInt64(IFormatProvider? provider)
+        {
+            return (ulong) MathF.Round(_value, MidpointRounding.AwayFromZero);
+        }
+
+        #endregion
     }
 
     /// <summary>
@@ -279,7 +390,8 @@ namespace Artemis.Core
             if (source == null) throw new ArgumentNullException(nameof(source));
 
             float sum = 0;
-            foreach (float v in source) sum += v;
+            foreach (float v in source)
+                sum += v;
 
             return new Numeric(sum);
         }

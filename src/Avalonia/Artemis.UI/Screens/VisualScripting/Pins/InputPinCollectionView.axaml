@@ -13,7 +13,20 @@
                 Command="{CompiledBinding AddPin}">
             <avalonia:MaterialIcon Kind="Add"></avalonia:MaterialIcon>
         </Button>
-        <ItemsControl Items="{CompiledBinding PinViewModels}" Margin="4 0"></ItemsControl>
+        <ItemsControl Items="{CompiledBinding PinViewModels}" Margin="4 0">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="pins:PinViewModel">
+                    <StackPanel Orientation="Horizontal">
+                        <ContentControl Content="{CompiledBinding}"></ContentControl>
+						<Button Classes="icon-button icon-button-small"
+                                ToolTip.Tip="Remove pin"
+                                Command="{CompiledBinding RemovePin}"
+                                CommandParameter="{CompiledBinding Pin}">
+                            <avalonia:MaterialIcon Kind="Close"></avalonia:MaterialIcon>
+                        </Button>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 	</StackPanel>
-
 </UserControl>

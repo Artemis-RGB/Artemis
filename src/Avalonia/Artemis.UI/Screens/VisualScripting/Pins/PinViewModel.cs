@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.Core.Events;
@@ -16,6 +17,7 @@ namespace Artemis.UI.Screens.VisualScripting.Pins;
 public abstract class PinViewModel : ActivatableViewModelBase
 {
     private Point _position;
+    private ReactiveCommand<IPin, Unit>? _removePin;
 
     protected PinViewModel(IPin pin, INodeService nodeService)
     {
@@ -50,6 +52,12 @@ public abstract class PinViewModel : ActivatableViewModelBase
     {
         get => _position;
         set => RaiseAndSetIfChanged(ref _position, value);
+    }
+
+    public ReactiveCommand<IPin, Unit>? RemovePin
+    {
+        get => _removePin;
+        set => RaiseAndSetIfChanged(ref _removePin, value);
     }
 
     public bool IsCompatibleWith(PinViewModel pinViewModel)

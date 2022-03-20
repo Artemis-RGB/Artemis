@@ -70,7 +70,7 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             Node.Script.OnScriptUpdated();
         }
 
-        public void AddPin() => PinCollection.AddPin();
+        public void AddPin() => PinCollection.Add(PinCollection.CreatePin());
 
         public void RemovePin(VisualScriptPin pin) => PinCollection.Remove(pin.Pin);
 

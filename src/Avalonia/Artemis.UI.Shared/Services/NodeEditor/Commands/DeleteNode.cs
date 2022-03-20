@@ -11,11 +11,11 @@ public class DeleteNode : INodeEditorCommand, IDisposable
 {
     private readonly INode _node;
     private readonly INodeScript _nodeScript;
-    private readonly Dictionary<IPin, IReadOnlyList<IPin>> _pinConnections = new();
+    private readonly Dictionary<IPin, List<IPin>> _pinConnections = new();
     private bool _isRemoved;
 
     /// <summary>
-    ///     Creates a new instance of the <see cref="MoveNode" /> class.
+    ///     Creates a new instance of the <see cref="DeleteNode" /> class.
     /// </summary>
     /// <param name="nodeScript">The node script the node belongs to.</param>
     /// <param name="node">The node to delete.</param>
@@ -30,7 +30,7 @@ public class DeleteNode : INodeEditorCommand, IDisposable
         _pinConnections.Clear();
         foreach (IPin nodePin in _node.Pins)
         {
-            _pinConnections.Add(nodePin, nodePin.ConnectedTo);
+            _pinConnections.Add(nodePin, new List<IPin>(nodePin.ConnectedTo));
             nodePin.DisconnectAll();
         }
 
@@ -38,7 +38,7 @@ public class DeleteNode : INodeEditorCommand, IDisposable
         {
             foreach (IPin nodePin in nodePinCollection)
             {
-                _pinConnections.Add(nodePin, nodePin.ConnectedTo);
+                _pinConnections.Add(nodePin, new List<IPin>(nodePin.ConnectedTo));
                 nodePin.DisconnectAll();
             }
         }
@@ -48,18 +48,22 @@ public class DeleteNode : INodeEditorCommand, IDisposable
     {
         foreach (IPin nodePin in _node.Pins)
         {
-            if (_pinConnections.TryGetValue(nodePin, out IReadOnlyList<IPin>? connections))
+            if (_pinConnections.TryGetValue(nodePin, out List<IPin>? connections))
+            {
                 foreach (IPin connection in connections)
                     nodePin.ConnectTo(connection);
+            }
         }
 
         foreach (IPinCollection nodePinCollection in _node.PinCollections)
         {
             foreach (IPin nodePin in nodePinCollection)
             {
-                if (_pinConnections.TryGetValue(nodePin, out IReadOnlyList<IPin>? connections))
+                if (_pinConnections.TryGetValue(nodePin, out List<IPin>? connections))
+                {
                     foreach (IPin connection in connections)
                         nodePin.ConnectTo(connection);
+                }
             }
         }
 

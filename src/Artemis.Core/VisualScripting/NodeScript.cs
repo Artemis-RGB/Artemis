@@ -199,7 +199,7 @@ namespace Artemis.Core
                 while (collection.Count() > entityNodePinCollection.Amount)
                     collection.Remove(collection.Last());
                 while (collection.Count() < entityNodePinCollection.Amount)
-                    collection.AddPin();
+                    collection.Add(collection.CreatePin());
             }
 
             return node;

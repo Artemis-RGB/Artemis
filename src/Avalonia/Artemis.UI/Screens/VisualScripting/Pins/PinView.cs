@@ -78,12 +78,12 @@ public class PinView : ReactiveUserControl<PinViewModel>
 
     private void UpdatePosition()
     {
-        if (_container == null || ViewModel == null)
+        if (_container == null || _pinPoint == null || ViewModel == null)
             return;
 
-        Matrix? transform = this.TransformToVisual(_container);
+        Matrix? transform = _pinPoint.TransformToVisual(_container);
         if (transform != null)
-            ViewModel.Position = new Point(Bounds.Width / 2, Bounds.Height / 2).Transform(transform.Value);
+            ViewModel.Position = new Point(_pinPoint.Bounds.Width / 2, _pinPoint.Bounds.Height / 2).Transform(transform.Value);
     }
 
     #endregion

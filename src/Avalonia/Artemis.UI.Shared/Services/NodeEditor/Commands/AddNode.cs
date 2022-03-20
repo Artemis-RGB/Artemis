@@ -13,7 +13,7 @@ public class AddNode : INodeEditorCommand, IDisposable
     private bool _isRemoved;
 
     /// <summary>
-    ///     Creates a new instance of the <see cref="MoveNode" /> class.
+    ///     Creates a new instance of the <see cref="AddNode" /> class.
     /// </summary>
     /// <param name="nodeScript">The node script the node belongs to.</param>
     /// <param name="node">The node to delete.</param>

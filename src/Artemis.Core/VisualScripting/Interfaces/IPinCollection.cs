@@ -40,10 +40,15 @@ namespace Artemis.Core
         event EventHandler<SingleValueEventArgs<IPin>> PinRemoved;
 
         /// <summary>
-        ///     Creates a new pin and adds it to the collection
+        /// Creates a new pin compatible with this collection
         /// </summary>
-        /// <returns>The newly added pin</returns>
-        IPin AddPin();
+        /// <returns>The newly created pin</returns>
+        IPin CreatePin();
+
+        /// <summary>
+        ///     Adds the provided <paramref name="pin" /> to the collection
+        /// </summary>
+        void Add(IPin pin);
 
         /// <summary>
         ///     Removes the provided <paramref name="pin" /> from the collection

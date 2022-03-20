@@ -59,6 +59,19 @@
         <Setter Property="BorderBrush" Value="Transparent" />
     </Style>
 
+    <Style Selector=":is(Button).icon-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppBarButtonBackgroundPointerOver}" />
+        <Setter Property="TextBlock.Foreground" Value="{DynamicResource AppBarButtonForegroundPointerOver}" />
+    </Style>
+    <Style Selector=":is(Button).icon-button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppBarButtonBackgroundPressed}" />
+        <Setter Property="TextBlock.Foreground" Value="{DynamicResource AppBarButtonForegroundPressed}" />
+    </Style>
+    <Style Selector=":is(Button).icon-button:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppBarButtonBackgroundDisabled}" />
+        <Setter Property="TextBlock.Foreground" Value="{DynamicResource AppBarButtonForegroundDisabled}" />
+    </Style>
+
 	<Style Selector=":is(Button).icon-button-small">
         <Setter Property="Padding" Value="4" />
     </Style>

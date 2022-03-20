@@ -14,8 +14,11 @@ namespace Artemis.Core
         #region Constructors
 
         internal InputPinCollection(INode node, string name, int initialCount)
-            : base(node, name, initialCount)
+            : base(node, name)
         {
+            // Can't do this in the base constructor because the type won't be set yet
+            for (int i = 0; i < initialCount; i++)
+                Add(CreatePin());
         }
 
         #endregion
@@ -23,7 +26,7 @@ namespace Artemis.Core
         #region Methods
 
         /// <inheritdoc />
-        protected override IPin CreatePin()
+        public override IPin CreatePin()
         {
             return new InputPin<T>(Node, string.Empty);
         }
@@ -59,13 +62,13 @@ namespace Artemis.Core
         #region Constructors
 
         internal InputPinCollection(INode node, Type type, string name, int initialCount)
-            : base(node, name, 0)
+            : base(node, name)
         {
             Type = type;
 
             // Can't do this in the base constructor because the type won't be set yet
             for (int i = 0; i < initialCount; i++)
-                AddPin();
+                Add(CreatePin());
         }
 
         #endregion
@@ -73,7 +76,7 @@ namespace Artemis.Core
         #region Methods
 
         /// <inheritdoc />
-        protected override IPin CreatePin()
+        public override IPin CreatePin()
         {
             return new InputPin(Node, Type, string.Empty);
         }

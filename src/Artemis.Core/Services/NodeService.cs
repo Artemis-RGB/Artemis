@@ -43,6 +43,10 @@ namespace Artemis.Core.Services
             if (match != null)
                 return match;
 
+            // Objects represent an input that can take any type, these are hardcoded white
+            if (type == typeof(object))
+                return new TypeColorRegistration(type, new SKColor(255, 255, 255, 255), Constants.CorePlugin);
+
             // Come up with a random color based on the type name that should be the same each time
             MD5 md5Hasher = MD5.Create();
             byte[] hashed = md5Hasher.ComputeHash(Encoding.UTF8.GetBytes(type.FullName!));

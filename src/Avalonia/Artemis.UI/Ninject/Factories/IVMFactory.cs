@@ -101,9 +101,9 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface INodePinVmFactory 
     {
-        PinCollectionViewModel InputPinCollectionViewModel(IPinCollection inputPinCollection);
+        PinCollectionViewModel InputPinCollectionViewModel(IPinCollection inputPinCollection, NodeScriptViewModel nodeScriptViewModel);
         PinViewModel InputPinViewModel(IPin inputPin);
-        PinCollectionViewModel OutputPinCollectionViewModel(IPinCollection outputPinCollection);
+        PinCollectionViewModel OutputPinCollectionViewModel(IPinCollection outputPinCollection, NodeScriptViewModel nodeScriptViewModel);
         PinViewModel OutputPinViewModel(IPin outputPin);
     }
 }

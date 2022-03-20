@@ -20,15 +20,19 @@ namespace Artemis.Core
         #region Constructors
 
         internal OutputPinCollection(INode node, string name, int initialCount)
-            : base(node, name, initialCount)
-        { }
+            : base(node, name)
+        {
+            // Can't do this in the base constructor because the type won't be set yet
+            for (int i = 0; i < initialCount; i++)
+                Add(CreatePin());
+        }
 
         #endregion
 
         #region Methods
 
         /// <inheritdoc />
-        protected override IPin CreatePin() => new OutputPin<T>(Node, string.Empty);
+        public override IPin CreatePin() => new OutputPin<T>(Node, string.Empty);
 
         #endregion
     }

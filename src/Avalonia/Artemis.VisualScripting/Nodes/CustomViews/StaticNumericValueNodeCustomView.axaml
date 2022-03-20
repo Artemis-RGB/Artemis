@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:customViewModels="clr-namespace:Artemis.VisualScripting.Nodes.CustomViewModels"
+             xmlns:converters="clr-namespace:Artemis.VisualScripting.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.VisualScripting.Nodes.CustomViews.StaticNumericValueNodeCustomView"
+             x:DataType="customViewModels:StaticNumericValueNodeCustomViewModel">
+    <UserControl.Resources>
+        <converters:NumericConverter x:Key="NumericConverter" />
+    </UserControl.Resources>
+    <NumericUpDown VerticalAlignment="Center" Value="{Binding Node.Storage, Converter={StaticResource NumericConverter}}"></NumericUpDown>
+</UserControl>
