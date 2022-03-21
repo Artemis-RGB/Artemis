@@ -5,6 +5,7 @@ using Artemis.Core;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject;
 using Artemis.UI.Screens.Root;
+using Artemis.UI.Shared.Controls;
 using Artemis.UI.Shared.Ninject;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.VisualScripting.Ninject;
@@ -41,6 +42,8 @@ namespace Artemis.UI
             _kernel.Load(modules);
 
             _kernel.UseNinjectDependencyResolver();
+
+            DataModelPicker.DataModelUIService = _kernel.Get<IDataModelUIService>();
 
             return _kernel;
         }

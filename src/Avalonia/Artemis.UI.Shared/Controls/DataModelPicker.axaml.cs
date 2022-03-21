@@ -9,9 +9,11 @@ using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Artemis.UI.Shared.Events;
 using Artemis.UI.Shared.Services.Interfaces;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Media;
+using Avalonia.Threading;
 using ReactiveUI;
 
 namespace Artemis.UI.Shared.Controls;
@@ -24,7 +26,7 @@ public class DataModelPicker : TemplatedControl
     ///     Gets or sets data model path.
     /// </summary>
     public static readonly StyledProperty<DataModelPath?> DataModelPathProperty =
-        AvaloniaProperty.Register<DataModelPicker, DataModelPath?>(nameof(DataModelPath), defaultBindingMode: BindingMode.TwoWay, notifying: DataModelPathPropertyChanged);
+        AvaloniaProperty.Register<DataModelPicker, DataModelPath?>(nameof(DataModelPath), defaultBindingMode: BindingMode.TwoWay);
 
     /// <summary>
     ///     Gets or sets the placeholder to show when nothing is selected.
@@ -42,7 +44,7 @@ public class DataModelPicker : TemplatedControl
     ///     Gets or sets a boolean indicating whether the data model picker should show the full path of the selected value.
     /// </summary>
     public static readonly StyledProperty<bool> ShowFullPathProperty =
-        AvaloniaProperty.Register<DataModelPicker, bool>(nameof(ShowFullPath), notifying: ShowFullPathPropertyChanged);
+        AvaloniaProperty.Register<DataModelPicker, bool>(nameof(ShowFullPath));
 
     /// <summary>
     ///     Gets or sets the brush to use when drawing the button.
@@ -54,29 +56,89 @@ public class DataModelPicker : TemplatedControl
     ///     A list of extra modules to show data models of.
     /// </summary>
     public static readonly StyledProperty<ObservableCollection<Module>?> ModulesProperty =
-        AvaloniaProperty.Register<DataModelPicker, ObservableCollection<Module>?>(nameof(Modules), new ObservableCollection<Module>(), notifying: ModulesPropertyChanged);
+        AvaloniaProperty.Register<DataModelPicker, ObservableCollection<Module>?>(nameof(Modules), new ObservableCollection<Module>());
 
     /// <summary>
     ///     The data model view model to show, if not provided one will be retrieved by the control.
     /// </summary>
     public static readonly StyledProperty<DataModelPropertiesViewModel?> DataModelViewModelProperty =
-        AvaloniaProperty.Register<DataModelPicker, DataModelPropertiesViewModel?>(nameof(DataModelViewModel), notifying: DataModelViewModelPropertyChanged);
+        AvaloniaProperty.Register<DataModelPicker, DataModelPropertiesViewModel?>(nameof(DataModelViewModel));
 
     /// <summary>
     ///     A list of data model view models to show
     /// </summary>
     public static readonly StyledProperty<ObservableCollection<DataModelPropertiesViewModel>?> ExtraDataModelViewModelsProperty =
-        AvaloniaProperty.Register<DataModelPicker, ObservableCollection<DataModelPropertiesViewModel>?>(
-            nameof(ExtraDataModelViewModels),
-            new ObservableCollection<DataModelPropertiesViewModel>(),
-            notifying: ExtraDataModelViewModelsPropertyChanged
-        );
+        AvaloniaProperty.Register<DataModelPicker, ObservableCollection<DataModelPropertiesViewModel>?>(nameof(ExtraDataModelViewModels), new ObservableCollection<DataModelPropertiesViewModel>());
 
     /// <summary>
     ///     A list of types to filter the selectable paths on.
     /// </summary>
     public static readonly StyledProperty<ObservableCollection<Type>?> FilterTypesProperty =
         AvaloniaProperty.Register<DataModelPicker, ObservableCollection<Type>?>(nameof(FilterTypes), new ObservableCollection<Type>());
+
+    /// <summary>
+    ///     Gets a boolean indicating whether the data model picker has a value.
+    /// </summary>
+    public static readonly StyledProperty<bool> HasValueProperty =
+        AvaloniaProperty.Register<DataModelPicker, bool>(nameof(HasValue));
+
+    private Button? _dataModelButton;
+    private bool _attached;
+
+    static DataModelPicker()
+    {
+        DataModelPathProperty.Changed.Subscribe(DataModelPathChanged);
+        ShowFullPathProperty.Changed.Subscribe(ShowFullPathChanged);
+        ModulesProperty.Changed.Subscribe(ModulesChanged);
+        DataModelViewModelProperty.Changed.Subscribe(DataModelViewModelPropertyChanged);
+        ExtraDataModelViewModelsProperty.Changed.Subscribe(ExtraDataModelViewModelsChanged);
+    }
+
+    private static void DataModelPathChanged(AvaloniaPropertyChangedEventArgs<DataModelPath?> e)
+    {
+        if (e.Sender is not DataModelPicker dataModelPicker)
+            return;
+
+        if (e.OldValue.Value != null)
+        {
+            e.OldValue.Value.PathInvalidated -= dataModelPicker.PathValidationChanged;
+            e.OldValue.Value.PathValidated -= dataModelPicker.PathValidationChanged;
+            e.OldValue.Value.Dispose();
+        }
+
+        if (!dataModelPicker._attached)
+            return;
+
+        dataModelPicker.UpdateValueDisplay();
+        if (e.NewValue.Value != null)
+        {
+            e.NewValue.Value.PathInvalidated += dataModelPicker.PathValidationChanged;
+            e.NewValue.Value.PathValidated += dataModelPicker.PathValidationChanged;
+        }
+    }
+
+    private static void ShowFullPathChanged(AvaloniaPropertyChangedEventArgs<bool> e)
+    {
+        if (e.Sender is DataModelPicker dataModelPicker)
+            dataModelPicker.UpdateValueDisplay();
+    }
+
+    private static void ModulesChanged(AvaloniaPropertyChangedEventArgs<ObservableCollection<Module>?> e)
+    {
+        if (e.Sender is DataModelPicker dataModelPicker)
+            dataModelPicker.GetDataModel();
+    }
+
+    private static void DataModelViewModelPropertyChanged(AvaloniaPropertyChangedEventArgs<DataModelPropertiesViewModel?> e)
+    {
+        if (e.Sender is DataModelPicker && e.OldValue.Value != null)
+            e.OldValue.Value.Dispose();
+    }
+
+    private static void ExtraDataModelViewModelsChanged(AvaloniaPropertyChangedEventArgs<ObservableCollection<DataModelPropertiesViewModel>?> e)
+    {
+        // TODO, the original did nothing here either and I can't remember why
+    }
 
     /// <summary>
     ///     Creates a new instance of the <see cref="DataModelPicker" /> class.
@@ -91,7 +153,10 @@ public class DataModelPicker : TemplatedControl
     /// </summary>
     public ReactiveCommand<DataModelVisualizationViewModel, Unit> SelectPropertyCommand { get; }
 
-    internal static IDataModelUIService DataModelUIService
+    /// <summary>
+    ///     Internal, don't use.
+    /// </summary>
+    public static IDataModelUIService DataModelUIService
     {
         set
         {
@@ -183,6 +248,15 @@ public class DataModelPicker : TemplatedControl
     }
 
     /// <summary>
+    ///     Gets a boolean indicating whether the data model picker has a value.
+    /// </summary>
+    public bool HasValue
+    {
+        get => GetValue(HasValueProperty);
+        private set => SetValue(HasValueProperty, value);
+    }
+
+    /// <summary>
     ///     Occurs when a new path has been selected
     /// </summary>
     public event EventHandler<DataModelSelectedEventArgs>? DataModelPathSelected;
@@ -228,18 +302,45 @@ public class DataModelPicker : TemplatedControl
             DataModelViewModel.UpdateRequested += DataModelOnUpdateRequested;
     }
 
+    #region Overrides of TemplatedControl
+
+    /// <inheritdoc />
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+    {
+        base.OnApplyTemplate(e);
+        _dataModelButton = e.NameScope.Find<Button>("DataModelButton");
+
+        GetDataModel();
+        UpdateValueDisplay();
+    }
+
+    #endregion
+
     #region Overrides of Visual
 
     /// <inheritdoc />
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        base.OnAttachedToVisualTree(e);
+        _attached = true;
+        if (DataModelPath != null)
+        {
+            DataModelPath.PathInvalidated += PathValidationChanged;
+            DataModelPath.PathValidated += PathValidationChanged;
+        }
 
+        base.OnAttachedToVisualTree(e);
     }
 
     /// <inheritdoc />
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        if (DataModelPath != null)
+        {
+            DataModelPath.PathInvalidated -= PathValidationChanged;
+            DataModelPath.PathValidated -= PathValidationChanged;
+        }
+
+        DataModelViewModel?.Dispose();
         base.OnDetachedFromVisualTree(e);
     }
 
@@ -247,17 +348,27 @@ public class DataModelPicker : TemplatedControl
 
     private void UpdateValueDisplay()
     {
-        ValueDisplay.Visibility = DataModelPath == null || DataModelPath.IsValid ? Visibility.Visible : Visibility.Collapsed;
-        ValuePlaceholder.Visibility = DataModelPath == null || DataModelPath.IsValid ? Visibility.Collapsed : Visibility.Visible;
+        HasValue = DataModelPath != null && DataModelPath.IsValid;
 
         string? formattedPath = null;
         if (DataModelPath != null && DataModelPath.IsValid)
             formattedPath = string.Join(" › ", DataModelPath.Segments.Where(s => s.GetPropertyDescription() != null).Select(s => s.GetPropertyDescription()!.Name));
 
-        DataModelButton.ToolTip = formattedPath;
-        ValueDisplayTextBlock.Text = ShowFullPath
-            ? formattedPath
-            : DataModelPath?.Segments.LastOrDefault()?.GetPropertyDescription()?.Name ?? DataModelPath?.Segments.LastOrDefault()?.Identifier;
+        if (_dataModelButton != null)
+        {
+            if (!HasValue)
+            {
+                ToolTip.SetTip(_dataModelButton, null);
+                _dataModelButton.Content = Placeholder;
+            }
+            else
+            {
+                ToolTip.SetTip(_dataModelButton, formattedPath);
+                _dataModelButton.Content = ShowFullPath
+                    ? formattedPath
+                    : DataModelPath?.Segments.LastOrDefault()?.GetPropertyDescription()?.Name ?? DataModelPath?.Segments.LastOrDefault()?.Identifier;
+            }
+        }
     }
 
     private void DataModelOnUpdateRequested(object? sender, EventArgs e)
@@ -268,23 +379,8 @@ public class DataModelPicker : TemplatedControl
             extraDataModelViewModel.ApplyTypeFilter(true, FilterTypes?.ToArray() ?? Type.EmptyTypes);
     }
 
-    private static void DataModelPathPropertyChanged(IAvaloniaObject sender, bool before)
+    private void PathValidationChanged(object? sender, EventArgs e)
     {
-    }
-
-    private static void ShowFullPathPropertyChanged(IAvaloniaObject sender, bool before)
-    {
-    }
-
-    private static void ModulesPropertyChanged(IAvaloniaObject sender, bool before)
-    {
-    }
-
-    private static void DataModelViewModelPropertyChanged(IAvaloniaObject sender, bool before)
-    {
-    }
-
-    private static void ExtraDataModelViewModelsPropertyChanged(IAvaloniaObject sender, bool before)
-    {
+        Dispatcher.UIThread.InvokeAsync(UpdateValueDisplay, DispatcherPriority.DataBind);
     }
 }

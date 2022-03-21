@@ -21,7 +21,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         private ObservableCollection<DataModelVisualizationViewModel> _children;
         private DataModel? _dataModel;
         private bool _isMatchingFilteredTypes;
-        private bool _isVisualizationExpanded;
+        private bool _isVisualizationExpanded = true;
         private DataModelVisualizationViewModel? _parent;
         private DataModelPropertyAttribute? _propertyDescription;
         private bool _populatedStaticChildren;

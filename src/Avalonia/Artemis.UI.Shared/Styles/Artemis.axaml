@@ -26,6 +26,7 @@
     <!-- Custom controls -->
     <StyleInclude Source="/Styles/Controls/GradientPicker.axaml" />
     <StyleInclude Source="/Styles/Controls/GradientPickerButton.axaml" />
+    <StyleInclude Source="/Controls/DataModelPicker.axaml" />
 
     <!-- Custom styles -->
     <StyleInclude Source="/Styles/Border.axaml" />
