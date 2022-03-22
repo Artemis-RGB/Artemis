@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text;
 using Artemis.Core;
 using Artemis.Core.Modules;
-using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Interfaces;
 using ReactiveUI;
 
@@ -21,7 +20,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         private ObservableCollection<DataModelVisualizationViewModel> _children;
         private DataModel? _dataModel;
         private bool _isMatchingFilteredTypes;
-        private bool _isVisualizationExpanded = true;
+        private bool _isVisualizationExpanded;
         private DataModelVisualizationViewModel? _parent;
         private DataModelPropertyAttribute? _propertyDescription;
         private bool _populatedStaticChildren;

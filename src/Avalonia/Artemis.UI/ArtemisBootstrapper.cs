@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Reactive;
-using Artemis.Core.Ninject;
 using Artemis.Core;
+using Artemis.Core.Ninject;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject;
 using Artemis.UI.Screens.Root;
-using Artemis.UI.Shared.Controls;
+using Artemis.UI.Shared.Controls.DataModelPicker;
 using Artemis.UI.Shared.Ninject;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.VisualScripting.Ninject;
@@ -17,57 +17,55 @@ using Ninject.Modules;
 using ReactiveUI;
 using Splat.Ninject;
 
-namespace Artemis.UI
+namespace Artemis.UI;
+
+public static class ArtemisBootstrapper
 {
-    public static class ArtemisBootstrapper
+    private static StandardKernel? _kernel;
+    private static Application? _application;
+
+    public static StandardKernel Bootstrap(Application application, params INinjectModule[] modules)
     {
-        private static StandardKernel? _kernel;
-        private static Application? _application;
+        if (_application != null || _kernel != null)
+            throw new ArtemisUIException("UI already bootstrapped");
 
-        public static StandardKernel Bootstrap(Application application, params INinjectModule[] modules)
-        {
-            if (_application != null || _kernel != null)
-                throw new ArtemisUIException("UI already bootstrapped");
+        Utilities.PrepareFirstLaunch();
 
-            Utilities.PrepareFirstLaunch();
+        _application = application;
+        _kernel = new StandardKernel();
+        _kernel.Settings.InjectNonPublic = true;
 
-            _application = application;
-            _kernel = new StandardKernel();
-            _kernel.Settings.InjectNonPublic = true;
+        _kernel.Load<CoreModule>();
+        _kernel.Load<UIModule>();
+        _kernel.Load<SharedUIModule>();
+        _kernel.Load<NoStringNinjectModule>();
+        _kernel.Load(modules);
+        _kernel.UseNinjectDependencyResolver();
 
-            _kernel.Load<CoreModule>();
-            _kernel.Load<UIModule>();
-            _kernel.Load<SharedUIModule>();
-            _kernel.Load<NoStringNinjectModule>();
-            _kernel.Load(modules);
+        DataModelPicker.DataModelUIService = _kernel.Get<IDataModelUIService>();
 
-            _kernel.UseNinjectDependencyResolver();
+        return _kernel;
+    }
 
-            DataModelPicker.DataModelUIService = _kernel.Get<IDataModelUIService>();
+    public static void Initialize()
+    {
+        if (_application == null || _kernel == null)
+            throw new ArtemisUIException("UI not yet bootstrapped");
+        if (_application.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            return;
 
-            return _kernel;
-        }
+        // Don't shut down when the last window closes, we might still be active in the tray
+        desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        // Create the root view model that drives the UI
+        RootViewModel rootViewModel = _kernel.Get<RootViewModel>();
+        // Apply the root view model to the data context of the application so that tray icon commands work
+        _application.DataContext = rootViewModel;
 
-        public static void Initialize()
-        {
-            if (_application == null || _kernel == null)
-                throw new ArtemisUIException("UI not yet bootstrapped");
-            if (_application.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
-                return;
+        RxApp.DefaultExceptionHandler = Observer.Create<Exception>(DisplayUnhandledException);
+    }
 
-            // Don't shut down when the last window closes, we might still be active in the tray
-            desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            // Create the root view model that drives the UI
-            RootViewModel rootViewModel = _kernel.Get<RootViewModel>();
-            // Apply the root view model to the data context of the application so that tray icon commands work
-            _application.DataContext = rootViewModel;
-
-            RxApp.DefaultExceptionHandler = Observer.Create<Exception>(DisplayUnhandledException);
-        }
-
-        private static void DisplayUnhandledException(Exception exception)
-        {
-            _kernel?.Get<IWindowService>().ShowExceptionDialog("Exception", exception);
-        }
+    private static void DisplayUnhandledException(Exception exception)
+    {
+        _kernel?.Get<IWindowService>().ShowExceptionDialog("Exception", exception);
     }
 }

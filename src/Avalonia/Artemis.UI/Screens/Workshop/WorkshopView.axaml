@@ -8,6 +8,7 @@
              xmlns:attachedProperties="clr-namespace:Artemis.UI.Shared.AttachedProperties;assembly=Artemis.UI.Shared"
              xmlns:workshop="clr-namespace:Artemis.UI.Screens.Workshop"
              xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.Controls.GradientPicker;assembly=Artemis.UI.Shared"
+             xmlns:dataModelPicker="clr-namespace:Artemis.UI.Shared.Controls.DataModelPicker;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" 
              x:Class="Artemis.UI.Screens.Workshop.WorkshopView"
              x:DataType="workshop:WorkshopViewModel">
@@ -16,8 +17,7 @@
 			<Border Classes="card">
 				<StackPanel Spacing="5">
                     <TextBlock Classes="h4">Nodes tests</TextBlock>
-					<controls:DataModelPicker ></controls:DataModelPicker>
-					<!-- <ContentControl Content="{CompiledBinding VisualEditorViewModel}" HorizontalAlignment="Stretch" Height="800"></ContentControl> -->
+					<dataModelPicker:DataModelPickerButton Placement="BottomEdgeAlignedLeft"/>
 				</StackPanel>
             </Border>
             <Border Classes="card">

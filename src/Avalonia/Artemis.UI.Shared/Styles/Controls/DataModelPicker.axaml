@@ -1,0 +1,75 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dataModel="clr-namespace:Artemis.UI.Shared.DataModelVisualization.Shared"
+        xmlns:dataModelPicker="clr-namespace:Artemis.UI.Shared.Controls.DataModelPicker"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
+    <Design.PreviewWith>
+        <dataModelPicker:DataModelPicker />
+    </Design.PreviewWith>
+
+    <Style Selector="dataModelPicker|DataModelPicker">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid RowDefinitions="Auto,Auto,*" Width="600" Height="400">
+                    <TextBox Grid.Row="0" Watermark="Search" Name="SearchBox"></TextBox>
+
+                    <Border Grid.Row="1" Classes="card card-condensed" Margin="0 15">
+                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,*,*">
+                            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Classes="SubtitleTextBlockStyle">Current selection</TextBlock>
+                            <avalonia:MaterialIcon Kind="CalculatorVariantOutline" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Height="22" Width="22" Margin="5 0 15 0"></avalonia:MaterialIcon>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Classes="BodyStrongTextBlockStyle">Cursor Y-position</TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Classes="BodyTextBlockStyle" Foreground="{DynamicResource TextFillColorSecondary}">The current Y-position of the cursor in pixels</TextBlock>
+                        </Grid>
+                    </Border>
+					
+                    <TreeView Grid.Row="2" Items="{Binding DataModelViewModel.Children, RelativeSource={RelativeSource TemplatedParent}}">
+                        <TreeView.Styles>
+                            <Style Selector="TreeViewItem">
+                                <Setter Property="IsExpanded" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
+                            </Style>
+                        </TreeView.Styles>
+                        <TreeView.DataTemplates>
+                            <TreeDataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}" ItemsSource="{Binding Children}">
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <TextBlock Grid.Column="0" Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding DisplayValue}"
+                                               FontFamily="Consolas"
+                                               HorizontalAlignment="Right"
+                                               Margin="0 0 10 0" />
+                                </Grid>
+                            </TreeDataTemplate>
+
+                            <TreeDataTemplate DataType="{x:Type dataModel:DataModelPropertyViewModel}">
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <TextBlock Grid.Column="0" Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
+                                    <ContentControl Grid.Column="1" Content="{Binding DisplayViewModel}" FontFamily="Consolas" Margin="0 0 10 0" />
+                                </Grid>
+                            </TreeDataTemplate>
+
+                            <TreeDataTemplate DataType="{x:Type dataModel:DataModelListViewModel}">
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <TextBlock Grid.Column="0" Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding CountDisplay, Mode=OneWay}"
+                                               FontFamily="Consolas"
+                                               HorizontalAlignment="Right"
+                                               Margin="0 0 10 0" />
+                                </Grid>
+                            </TreeDataTemplate>
+
+                            <TreeDataTemplate DataType="{x:Type dataModel:DataModelEventViewModel}" ItemsSource="{Binding Children}">
+                                <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
+                            </TreeDataTemplate>
+                        </TreeView.DataTemplates>
+                    </TreeView>
+                    <StackPanel Grid.Row="2" VerticalAlignment="Center" Spacing="20" IsVisible="False">
+                        <avalonia:MaterialIcon Kind="CloseCircle" Width="64" Height="64"></avalonia:MaterialIcon>
+                        <TextBlock Classes="h4" TextAlignment="Center">No parts of the data model match your search</TextBlock>
+                    </StackPanel>
+                </Grid>
+
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

@@ -1,5 +1,4 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 
 namespace Artemis.UI.Shared.Controls.Flyouts;
 
@@ -11,7 +10,7 @@ public sealed class GradientPickerFlyout : Flyout
     private GradientPicker.GradientPicker? _picker;
 
     /// <summary>
-    ///     Gets the gradient picker that this flyout hosts
+    ///     Gets the gradient picker that this flyout hosts.
     /// </summary>
     public GradientPicker.GradientPicker GradientPicker => _picker ??= new GradientPicker.GradientPicker();
 
