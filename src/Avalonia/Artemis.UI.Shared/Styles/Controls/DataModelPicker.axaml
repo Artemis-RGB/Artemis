@@ -2,7 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dataModel="clr-namespace:Artemis.UI.Shared.DataModelVisualization.Shared"
         xmlns:dataModelPicker="clr-namespace:Artemis.UI.Shared.Controls.DataModelPicker"
-        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
     <Design.PreviewWith>
         <dataModelPicker:DataModelPicker />
     </Design.PreviewWith>
@@ -10,19 +11,34 @@
     <Style Selector="dataModelPicker|DataModelPicker">
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid RowDefinitions="Auto,Auto,*" Width="600" Height="400">
-                    <TextBox Grid.Row="0" Watermark="Search" Name="SearchBox"></TextBox>
+                <Grid RowDefinitions="Auto,Auto,*" Width="600" Height="400" Margin="10">
+                    <TextBox Grid.Row="0" Watermark="Search - not yet implemented 😱" Name="SearchBox" IsEnabled="False" />
 
-                    <Border Grid.Row="1" Classes="card card-condensed" Margin="0 15">
-                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,*,*">
-                            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Classes="SubtitleTextBlockStyle">Current selection</TextBlock>
-                            <avalonia:MaterialIcon Kind="CalculatorVariantOutline" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Height="22" Width="22" Margin="5 0 15 0"></avalonia:MaterialIcon>
-                            <TextBlock Grid.Row="1" Grid.Column="1" Classes="BodyStrongTextBlockStyle">Cursor Y-position</TextBlock>
-                            <TextBlock Grid.Row="2" Grid.Column="1" Classes="BodyTextBlockStyle" Foreground="{DynamicResource TextFillColorSecondary}">The current Y-position of the cursor in pixels</TextBlock>
-                        </Grid>
+                    <Border Grid.Row="1" Classes="card card-condensed" Margin="0 10">
+                        <Panel>
+                            <Grid ColumnDefinitions="Auto,*"
+                                  RowDefinitions="*"
+                                  MinHeight="38"
+                                  IsVisible="{Binding DataModelPath, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                <avalonia:MaterialIcon Grid.Column="0" Grid.Row="0" Name="CurrentPathIcon" Kind="QuestionMarkCircle" Height="22" Width="22" Margin="5 0 15 0" />
+                                <StackPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Center">
+                                    <TextBlock Name="CurrentPathDisplay" Classes="BodyStrongTextBlockStyle" MaxHeight="50" />
+                                    <TextBlock Name="CurrentPathDescription" Classes="BodyTextBlockStyle" Foreground="{DynamicResource TextFillColorSecondary}" MaxHeight="50" />
+                                </StackPanel>
+                            </Grid>
+                            <Grid MinHeight="38"
+                                  IsVisible="{Binding DataModelPath, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNull}}" ColumnDefinitions="*,Auto"
+                                  RowDefinitions="*,*">
+                                <TextBlock Grid.Column="0" Grid.Row="0" Classes="BodyStrongTextBlockStyle">Welcome to the data model picker</TextBlock>
+                                <TextBlock Grid.Column="0" Grid.Row="1" Foreground="{DynamicResource TextFillColorSecondary}">Select a value from the data model below</TextBlock>
+                                <controls:HyperlinkButton Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Learn more</controls:HyperlinkButton>
+                            </Grid>
+                        </Panel>
                     </Border>
-					
-                    <TreeView Grid.Row="2" Items="{Binding DataModelViewModel.Children, RelativeSource={RelativeSource TemplatedParent}}">
+
+                    <TreeView Grid.Row="2"
+                              Name="DataModelTreeView"
+                              Items="{Binding DataModelViewModel.Children, RelativeSource={RelativeSource TemplatedParent}}">
                         <TreeView.Styles>
                             <Style Selector="TreeViewItem">
                                 <Setter Property="IsExpanded" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />

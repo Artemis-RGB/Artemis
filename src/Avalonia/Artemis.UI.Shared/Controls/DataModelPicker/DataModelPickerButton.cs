@@ -63,12 +63,6 @@ public class DataModelPickerButton : TemplatedControl
         AvaloniaProperty.Register<DataModelPicker, ObservableCollection<Module>?>(nameof(Modules), new ObservableCollection<Module>());
 
     /// <summary>
-    ///     The data model view model to show, if not provided one will be retrieved by the control.
-    /// </summary>
-    public static readonly StyledProperty<DataModelPropertiesViewModel?> DataModelViewModelProperty =
-        AvaloniaProperty.Register<DataModelPicker, DataModelPropertiesViewModel?>(nameof(DataModelViewModel));
-
-    /// <summary>
     ///     A list of data model view models to show
     /// </summary>
     public static readonly StyledProperty<ObservableCollection<DataModelPropertiesViewModel>?> ExtraDataModelViewModelsProperty =
@@ -84,7 +78,6 @@ public class DataModelPickerButton : TemplatedControl
     private bool _flyoutActive;
     private Button? _button;
     private DataModelPickerFlyout? _flyout;
-    private IDisposable? _dataModelPathChanged;
 
     static DataModelPickerButton()
     {
@@ -156,15 +149,6 @@ public class DataModelPickerButton : TemplatedControl
     }
 
     /// <summary>
-    ///     The data model view model to show, if not provided one will be retrieved by the control.
-    /// </summary>
-    public DataModelPropertiesViewModel? DataModelViewModel
-    {
-        get => GetValue(DataModelViewModelProperty);
-        set => SetValue(DataModelViewModelProperty, value);
-    }
-
-    /// <summary>
     ///     A list of data model view models to show.
     /// </summary>
     public ObservableCollection<DataModelPropertiesViewModel>? ExtraDataModelViewModels
@@ -219,14 +203,6 @@ public class DataModelPickerButton : TemplatedControl
             self.UpdateValueDisplay();
     }
 
-    private void FlyoutDataModelPathChanged(AvaloniaPropertyChangedEventArgs<DataModelPath?> e)
-    {
-        if (!ReferenceEquals(e.Sender, _flyout?.DataModelPicker))
-            return;
-
-        DataModelPath = e.NewValue.Value;
-    }
-
     private void PathValidationChanged(object? sender, EventArgs e)
     {
         Dispatcher.UIThread.InvokeAsync(UpdateValueDisplay, DispatcherPriority.DataBind);
@@ -264,7 +240,6 @@ public class DataModelPickerButton : TemplatedControl
 
         // Logic here is taken from Fluent Avalonia's ColorPicker which also reuses the same control since it's large
         _flyout.DataModelPicker.DataModelPath = DataModelPath;
-        _flyout.DataModelPicker.DataModelViewModel = DataModelViewModel;
         _flyout.DataModelPicker.ExtraDataModelViewModels = ExtraDataModelViewModels;
         _flyout.DataModelPicker.FilterTypes = FilterTypes;
         _flyout.DataModelPicker.Modules = Modules;
@@ -274,20 +249,7 @@ public class DataModelPickerButton : TemplatedControl
         _flyout.ShowAt(_button != null ? _button : this);
         _flyoutActive = true;
 
-        _dataModelPathChanged = DataModelPicker.DataModelPathProperty.Changed.Subscribe(FlyoutDataModelPathChanged);
         FlyoutOpened?.Invoke(this, EventArgs.Empty);
-    }
-
-    private void OnFlyoutClosed(object? sender, EventArgs e)
-    {
-        if (_flyoutActive)
-        {
-            FlyoutClosed?.Invoke(this, EventArgs.Empty);
-            _flyoutActive = false;
-        }
-
-        _dataModelPathChanged?.Dispose();
-        _dataModelPathChanged = null;
     }
 
     #region Overrides of TemplatedControl
@@ -314,14 +276,32 @@ public class DataModelPickerButton : TemplatedControl
             DataModelPath.PathValidated += PathValidationChanged;
         }
 
-        if (_flyout == null)
-        {
-            _flyout = new DataModelPickerFlyout();
-            _flyout.FlyoutPresenterClasses.Add("data-model-picker-presenter");
-        }
-
+        _flyout ??= new DataModelPickerFlyout();
+        _flyout.Confirmed += FlyoutOnConfirmed;
         _flyout.Closed += OnFlyoutClosed;
     }
+
+    private void FlyoutOnConfirmed(DataModelPickerFlyout sender, object args)
+    {
+        if (_flyoutActive)
+        {
+            FlyoutClosed?.Invoke(this, EventArgs.Empty);
+            _flyoutActive = false;
+
+            if (_flyout != null)
+                DataModelPath = _flyout.DataModelPicker.DataModelPath;
+        }
+    }
+
+    private void OnFlyoutClosed(object? sender, EventArgs e)
+    {
+        if (_flyoutActive)
+        {
+            FlyoutClosed?.Invoke(this, EventArgs.Empty);
+            _flyoutActive = false;
+        }
+    }
+
 
     /// <inheritdoc />
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
@@ -331,8 +311,6 @@ public class DataModelPickerButton : TemplatedControl
             DataModelPath.PathInvalidated -= PathValidationChanged;
             DataModelPath.PathValidated -= PathValidationChanged;
         }
-
-        DataModelViewModel?.Dispose();
 
         if (_flyout != null)
             _flyout.Closed -= OnFlyoutClosed;

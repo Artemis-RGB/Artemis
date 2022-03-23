@@ -17,7 +17,8 @@
 			<Border Classes="card">
 				<StackPanel Spacing="5">
                     <TextBlock Classes="h4">Nodes tests</TextBlock>
-					<dataModelPicker:DataModelPickerButton Placement="BottomEdgeAlignedLeft"/>
+					<!-- <dataModelPicker:DataModelPickerButton Placement="BottomEdgeAlignedLeft"/> -->
+                    <ContentControl Content="{CompiledBinding VisualEditorViewModel}" HorizontalAlignment="Stretch" Height="800"></ContentControl>
 				</StackPanel>
             </Border>
             <Border Classes="card">

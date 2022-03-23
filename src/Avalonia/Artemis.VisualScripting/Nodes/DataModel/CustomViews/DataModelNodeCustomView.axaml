@@ -5,10 +5,9 @@
              xmlns:dataModelPicker="clr-namespace:Artemis.UI.Shared.Controls.DataModelPicker;assembly=Artemis.UI.Shared"
              xmlns:customViewModels="clr-namespace:Artemis.VisualScripting.Nodes.DataModel.CustomViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.VisualScripting.Nodes.DataModel.CustomViews.DataModelEventNodeCustomView"
-             x:DataType="customViewModels:DataModelEventNodeCustomViewModel">
+             x:Class="Artemis.VisualScripting.Nodes.DataModel.CustomViews.DataModelNodeCustomView"
+             x:DataType="customViewModels:DataModelNodeCustomViewModel">
     <dataModelPicker:DataModelPickerButton DataModelPath="{CompiledBinding DataModelPath}"
                                            Modules="{CompiledBinding Modules}"
-                                           ShowDataModelValues="{CompiledBinding ShowDataModelValues.Value}"
-                                           FilterTypes="{CompiledBinding FilterTypes}" />
+                                           ShowDataModelValues="{CompiledBinding ShowDataModelValues.Value}" />
 </UserControl>

@@ -75,6 +75,9 @@
     <Compile Update="Nodes\CustomViews\StaticStringValueNodeCustomView.axaml.cs">
       <DependentUpon>StaticStringValueNodeCustomView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Nodes\DataModel\CustomViews\DataModelNodeCustomView.axaml.cs">
+      <DependentUpon>DataModelNodeCustomView.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

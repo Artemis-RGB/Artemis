@@ -9,9 +9,13 @@ using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Artemis.UI.Shared.Events;
 using Artemis.UI.Shared.Services.Interfaces;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
+using Material.Icons;
+using Material.Icons.Avalonia;
 using ReactiveUI;
+using SkiaSharp;
 
 namespace Artemis.UI.Shared.Controls.DataModelPicker;
 
@@ -61,9 +65,15 @@ public class DataModelPicker : TemplatedControl
     public static readonly StyledProperty<ObservableCollection<Type>?> FilterTypesProperty =
         AvaloniaProperty.Register<DataModelPicker, ObservableCollection<Type>?>(nameof(FilterTypes), new ObservableCollection<Type>());
 
+    private MaterialIcon? _currentPathIcon;
+    private TextBlock? _currentPathDisplay;
+    private TextBlock? _currentPathDescription;
+    private TreeView? _dataModelTreeView;
+
     static DataModelPicker()
     {
         ModulesProperty.Changed.Subscribe(ModulesChanged);
+        DataModelPathProperty.Changed.Subscribe(DataModelPathPropertyChanged);
         DataModelViewModelProperty.Changed.Subscribe(DataModelViewModelPropertyChanged);
         ExtraDataModelViewModelsProperty.Changed.Subscribe(ExtraDataModelViewModelsChanged);
     }
@@ -114,7 +124,7 @@ public class DataModelPicker : TemplatedControl
     public DataModelPropertiesViewModel? DataModelViewModel
     {
         get => GetValue(DataModelViewModelProperty);
-        set => SetValue(DataModelViewModelProperty, value);
+        private set => SetValue(DataModelViewModelProperty, value);
     }
 
     /// <summary>
@@ -154,8 +164,34 @@ public class DataModelPicker : TemplatedControl
     /// <inheritdoc />
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
-        GetDataModel();
+        if (_dataModelTreeView != null)
+            _dataModelTreeView.SelectionChanged -= DataModelTreeViewOnSelectionChanged;
+
+        _currentPathIcon = e.NameScope.Find<MaterialIcon>("CurrentPathIcon");
+        _currentPathDisplay = e.NameScope.Find<TextBlock>("CurrentPathDisplay");
+        _currentPathDescription = e.NameScope.Find<TextBlock>("CurrentPathDescription");
+        _dataModelTreeView = e.NameScope.Find<TreeView>("DataModelTreeView");
+
+        if (_dataModelTreeView != null)
+            _dataModelTreeView.SelectionChanged += DataModelTreeViewOnSelectionChanged;
     }
+
+    #region Overrides of Visual
+
+    /// <inheritdoc />
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        GetDataModel();
+        UpdateCurrentPath(true);
+    }
+
+    /// <inheritdoc />
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        DataModelViewModel?.Dispose();
+    }
+
+    #endregion
 
     #endregion
 
@@ -163,6 +199,12 @@ public class DataModelPicker : TemplatedControl
     {
         if (e.Sender is DataModelPicker dataModelPicker)
             dataModelPicker.GetDataModel();
+    }
+
+    private static void DataModelPathPropertyChanged(AvaloniaPropertyChangedEventArgs<DataModelPath?> e)
+    {
+        if (e.Sender is DataModelPicker dataModelPicker)
+            dataModelPicker.UpdateCurrentPath(false);
     }
 
     private static void DataModelViewModelPropertyChanged(AvaloniaPropertyChangedEventArgs<DataModelPropertiesViewModel?> e)
@@ -214,5 +256,60 @@ public class DataModelPicker : TemplatedControl
         if (ExtraDataModelViewModels == null) return;
         foreach (DataModelPropertiesViewModel extraDataModelViewModel in ExtraDataModelViewModels)
             extraDataModelViewModel.ApplyTypeFilter(true, FilterTypes?.ToArray() ?? Type.EmptyTypes);
+    }
+
+    private void DataModelTreeViewOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        // Multi-select isn't a think so grab the first one
+        object? selected = _dataModelTreeView?.SelectedItems[0];
+        if (selected == null)
+            return;
+
+        if (selected is DataModelPropertyViewModel property && property.DataModelPath != null)
+            DataModelPath = new DataModelPath(property.DataModelPath);
+        if (selected is DataModelListViewModel list && list.DataModelPath != null)
+            DataModelPath = new DataModelPath(list.DataModelPath);
+    }
+
+    private void UpdateCurrentPath(bool selectCurrentPath)
+    {
+        if (DataModelPath == null)
+            return;
+
+        if (_dataModelTreeView != null && selectCurrentPath)
+        {
+            // Expand the path
+            DataModel? start = DataModelPath.Target;
+            DataModelVisualizationViewModel? root = DataModelViewModel?.Children.FirstOrDefault(c => c.DataModel == start);
+            if (root != null)
+            {
+                root.ExpandToPath(DataModelPath);
+                _dataModelTreeView.SelectedItem = root.GetViewModelForPath(DataModelPath);
+            }
+        }
+
+        if (_currentPathDisplay != null)
+            _currentPathDisplay.Text = string.Join(" › ", DataModelPath.Segments.Where(s => s.GetPropertyDescription() != null).Select(s => s.GetPropertyDescription()!.Name));
+        if (_currentPathDescription != null)
+            _currentPathDescription.Text = DataModelPath.GetPropertyDescription()?.Description;
+
+        if (_currentPathIcon != null)
+        {
+            Type? type = DataModelPath.GetPropertyType();
+            if (type == null)
+                _currentPathIcon.Kind = MaterialIconKind.QuestionMarkCircle;
+            else if (type.TypeIsNumber())
+                _currentPathIcon.Kind = MaterialIconKind.CalculatorVariantOutline;
+            else if (type.IsEnum)
+                _currentPathIcon.Kind = MaterialIconKind.FormatListBulletedSquare;
+            else if (type == typeof(bool))
+                _currentPathIcon.Kind = MaterialIconKind.CircleHalfFull;
+            else if (type == typeof(string))
+                _currentPathIcon.Kind = MaterialIconKind.Text;
+            else if (type == typeof(SKColor))
+                _currentPathIcon.Kind = MaterialIconKind.Palette;
+            else
+                _currentPathIcon.Kind = MaterialIconKind.Matrix;
+        }
     }
 }

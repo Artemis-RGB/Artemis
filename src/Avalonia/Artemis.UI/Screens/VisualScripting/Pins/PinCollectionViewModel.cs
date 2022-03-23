@@ -17,12 +17,8 @@ namespace Artemis.UI.Screens.VisualScripting.Pins;
 
 public abstract class PinCollectionViewModel : ActivatableViewModelBase
 {
-    private readonly INodePinVmFactory _nodePinVmFactory;
-
-    protected PinCollectionViewModel(IPinCollection pinCollection, NodeScriptViewModel nodeScriptViewModel, INodePinVmFactory nodePinVmFactory, INodeEditorService nodeEditorService)
+    protected PinCollectionViewModel(IPinCollection pinCollection, NodeScriptViewModel nodeScriptViewModel, INodeEditorService nodeEditorService)
     {
-        _nodePinVmFactory = nodePinVmFactory;
-
         PinCollection = pinCollection;
         PinViewModels = new ObservableCollection<PinViewModel>();
 
@@ -49,10 +45,5 @@ public abstract class PinCollectionViewModel : ActivatableViewModelBase
 
     public ObservableCollection<PinViewModel> PinViewModels { get; }
 
-    private PinViewModel CreatePinViewModel(IPin pin)
-    {
-        PinViewModel vm = PinCollection.Direction == PinDirection.Input ? _nodePinVmFactory.InputPinViewModel(pin) : _nodePinVmFactory.OutputPinViewModel(pin);
-        vm.RemovePin = RemovePin;
-        return vm;
-    }
+    protected abstract PinViewModel CreatePinViewModel(IPin pin);
 }
