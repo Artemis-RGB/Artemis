@@ -10,22 +10,28 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
 {
     private int _currentIndex;
     private Type _currentType;
-    private DataModelPath _dataModelPath;
+    private DataModelPath? _dataModelPath;
     private DateTime _lastTrigger;
     private bool _updating;
 
     public DataModelEventNode() : base("Data Model-Event", "Responds to a data model event trigger")
     {
         _currentType = typeof(object);
-        CreateCycleValues(typeof(object), 1);
+
+        CycleValues = CreateInputPinCollection(typeof(object), "", 0);
         Output = CreateOutputPin(typeof(object));
+
+        CycleValues.PinAdded += CycleValuesOnPinAdded;
+        CycleValues.PinRemoved += CycleValuesOnPinRemoved;
+        CycleValues.Add(CycleValues.CreatePin());
     }
 
-    public InputPinCollection CycleValues { get; set; }
-    public OutputPin Output { get; set; }
-    public INodeScript Script { get; set; }
+    public INodeScript? Script { get; set; }
 
-    public DataModelPath DataModelPath
+    public InputPinCollection CycleValues { get; }
+    public OutputPin Output { get; }
+
+    public DataModelPath? DataModelPath
     {
         get => _dataModelPath;
         set => SetAndNotify(ref _dataModelPath, value);
@@ -43,7 +49,7 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
 
     public override void Evaluate()
     {
-        object outputValue = null;
+        object? outputValue = null;
         if (DataModelPath?.GetValue() is IDataModelEvent dataModelEvent)
         {
             if (dataModelEvent.LastTrigger > _lastTrigger)
@@ -64,56 +70,29 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
             Output.Value = Output.Type.GetDefault()!;
     }
 
-    private void CreateCycleValues(Type type, int initialCount)
-    {
-        if (CycleValues != null)
-        {
-            CycleValues.PinAdded -= CycleValuesOnPinAdded;
-            CycleValues.PinRemoved -= CycleValuesOnPinRemoved;
-            foreach (IPin pin in CycleValues)
-            {
-                pin.PinConnected -= OnPinConnected;
-                pin.PinDisconnected -= OnPinDisconnected;
-            }
-
-            RemovePinCollection(CycleValues);
-        }
-
-        CycleValues = CreateInputPinCollection(type, "", initialCount);
-        CycleValues.PinAdded += CycleValuesOnPinAdded;
-        CycleValues.PinRemoved += CycleValuesOnPinRemoved;
-        foreach (IPin pin in CycleValues)
-        {
-            pin.PinConnected += OnPinConnected;
-            pin.PinDisconnected += OnPinDisconnected;
-        }
-    }
-
-    private void CycleValuesOnPinAdded(object sender, SingleValueEventArgs<IPin> e)
+    private void CycleValuesOnPinAdded(object? sender, SingleValueEventArgs<IPin> e)
     {
         e.Value.PinConnected += OnPinConnected;
         e.Value.PinDisconnected += OnPinDisconnected;
     }
 
-    private void CycleValuesOnPinRemoved(object sender, SingleValueEventArgs<IPin> e)
+    private void CycleValuesOnPinRemoved(object? sender, SingleValueEventArgs<IPin> e)
     {
         e.Value.PinConnected -= OnPinConnected;
         e.Value.PinDisconnected -= OnPinDisconnected;
     }
 
-    private void OnPinDisconnected(object sender, SingleValueEventArgs<IPin> e)
+    private void OnPinDisconnected(object? sender, SingleValueEventArgs<IPin> e)
     {
         ProcessPinDisconnected();
     }
 
-    private void OnPinConnected(object sender, SingleValueEventArgs<IPin> e)
+    private void OnPinConnected(object? sender, SingleValueEventArgs<IPin> e)
     {
-        IPin source = e.Value;
-        IPin target = (IPin) sender;
-        ProcessPinConnected(source, target);
+        ProcessPinConnected(e.Value);
     }
 
-    private void ProcessPinConnected(IPin source, IPin target)
+    private void ProcessPinConnected(IPin source)
     {
         if (_updating)
             return;
@@ -123,17 +102,8 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
             _updating = true;
 
             // No need to change anything if the types haven't changed
-            if (_currentType == source.Type)
-                return;
-
-            int reconnectIndex = CycleValues.ToList().IndexOf(target);
-            ChangeCurrentType(source.Type);
-
-            if (reconnectIndex != -1)
-            {
-                CycleValues.ToList()[reconnectIndex].ConnectTo(source);
-                source.ConnectTo(CycleValues.ToList()[reconnectIndex]);
-            }
+            if (_currentType != source.Type)
+                ChangeCurrentType(source.Type);
         }
         finally
         {
@@ -143,17 +113,8 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
 
     private void ChangeCurrentType(Type type)
     {
-        CreateCycleValues(type, CycleValues.Count());
-
-        List<IPin> oldOutputConnections = Output.ConnectedTo.ToList();
-        RemovePin(Output);
-        Output = CreateOutputPin(type);
-        foreach (IPin oldOutputConnection in oldOutputConnections.Where(o => o.Type.IsAssignableFrom(Output.Type)))
-        {
-            oldOutputConnection.DisconnectAll();
-            oldOutputConnection.ConnectTo(Output);
-            Output.ConnectTo(oldOutputConnection);
-        }
+        CycleValues.ChangeType(type);
+        Output.ChangeType(type);
 
         _currentType = type;
     }
@@ -174,10 +135,6 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
         {
             _updating = false;
         }
-    }
-
-    private void UpdatePinsType(IPin source)
-    {
     }
 
     /// <inheritdoc />

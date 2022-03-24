@@ -7,6 +7,7 @@ using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Artemis.UI.Shared.Events;
+using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Services.Interfaces;
 using Avalonia;
 using Avalonia.Controls;
@@ -267,8 +268,10 @@ public class DataModelPicker : TemplatedControl
 
         if (selected is DataModelPropertyViewModel property && property.DataModelPath != null)
             DataModelPath = new DataModelPath(property.DataModelPath);
-        if (selected is DataModelListViewModel list && list.DataModelPath != null)
+        else if (selected is DataModelListViewModel list && list.DataModelPath != null)
             DataModelPath = new DataModelPath(list.DataModelPath);
+        else if (selected is DataModelEventViewModel dataModelEvent && dataModelEvent.DataModelPath != null)
+            DataModelPath = new DataModelPath(dataModelEvent.DataModelPath);
     }
 
     private void UpdateCurrentPath(bool selectCurrentPath)
@@ -292,24 +295,8 @@ public class DataModelPicker : TemplatedControl
             _currentPathDisplay.Text = string.Join(" › ", DataModelPath.Segments.Where(s => s.GetPropertyDescription() != null).Select(s => s.GetPropertyDescription()!.Name));
         if (_currentPathDescription != null)
             _currentPathDescription.Text = DataModelPath.GetPropertyDescription()?.Description;
-
         if (_currentPathIcon != null)
-        {
-            Type? type = DataModelPath.GetPropertyType();
-            if (type == null)
-                _currentPathIcon.Kind = MaterialIconKind.QuestionMarkCircle;
-            else if (type.TypeIsNumber())
-                _currentPathIcon.Kind = MaterialIconKind.CalculatorVariantOutline;
-            else if (type.IsEnum)
-                _currentPathIcon.Kind = MaterialIconKind.FormatListBulletedSquare;
-            else if (type == typeof(bool))
-                _currentPathIcon.Kind = MaterialIconKind.CircleHalfFull;
-            else if (type == typeof(string))
-                _currentPathIcon.Kind = MaterialIconKind.Text;
-            else if (type == typeof(SKColor))
-                _currentPathIcon.Kind = MaterialIconKind.Palette;
-            else
-                _currentPathIcon.Kind = MaterialIconKind.Matrix;
-        }
+            _currentPathIcon.Kind = DataModelPath.GetPropertyType().GetTypeIcon();
+        
     }
 }

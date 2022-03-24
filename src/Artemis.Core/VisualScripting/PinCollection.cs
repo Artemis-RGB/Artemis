@@ -7,7 +7,7 @@ using Artemis.Core.Events;
 namespace Artemis.Core
 {
     /// <inheritdoc cref="IPinCollection"/>
-    public abstract class PinCollection : IPinCollection
+    public abstract class PinCollection : CorePropertyChanged, IPinCollection
     {
         #region Constructors
 

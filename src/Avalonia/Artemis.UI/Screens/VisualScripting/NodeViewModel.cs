@@ -33,7 +33,7 @@ public class NodeViewModel : ActivatableViewModelBase
     private ObservableAsPropertyHelper<bool>? _hasInputPins;
     private ObservableAsPropertyHelper<bool>? _hasOutputPins;
 
-    public NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node, INodeVmFactory nodeVmFactory, INodePinVmFactory nodePinVmFactory, INodeEditorService nodeEditorService)
+    public NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node, INodeVmFactory nodeVmFactory, INodeEditorService nodeEditorService)
     {
         NodeScriptViewModel = nodeScriptViewModel;
         _nodeEditorService = nodeEditorService;
@@ -61,12 +61,12 @@ public class NodeViewModel : ActivatableViewModelBase
         // Same again but for pin collections
         nodePinCollections.Connect()
             .Filter(n => n.Direction == PinDirection.Input)
-            .Transform(c => nodePinVmFactory.InputPinCollectionViewModel(c, nodeScriptViewModel))
+            .Transform(c => (PinCollectionViewModel) nodeVmFactory.InputPinCollectionViewModel(c, nodeScriptViewModel))
             .Bind(out ReadOnlyObservableCollection<PinCollectionViewModel> inputPinCollections)
             .Subscribe();
         nodePinCollections.Connect()
             .Filter(n => n.Direction == PinDirection.Output)
-            .Transform(c => nodePinVmFactory.OutputPinCollectionViewModel(c, nodeScriptViewModel))
+            .Transform(c => (PinCollectionViewModel) nodeVmFactory.OutputPinCollectionViewModel(c, nodeScriptViewModel))
             .Bind(out ReadOnlyObservableCollection<PinCollectionViewModel> outputPinCollections)
             .Subscribe();
         InputPinCollectionViewModels = inputPinCollections;

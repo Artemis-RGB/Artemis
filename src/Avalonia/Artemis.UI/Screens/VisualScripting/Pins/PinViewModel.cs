@@ -16,17 +16,17 @@ namespace Artemis.UI.Screens.VisualScripting.Pins;
 
 public abstract class PinViewModel : ActivatableViewModelBase
 {
-    private Point _position;
+    private readonly INodeService _nodeService;
     private ReactiveCommand<IPin, Unit>? _removePin;
+    private Point _position;
+    private Color _pinColor;
+    private Color _darkenedPinColor;
 
     protected PinViewModel(IPin pin, INodeService nodeService)
     {
+        _nodeService = nodeService;
+
         Pin = pin;
-
-        TypeColorRegistration registration = nodeService.GetTypeColorRegistration(Pin.Type);
-        PinColor = registration.Color.ToColor();
-        DarkenedPinColor = registration.DarkenedColor.ToColor();
-
         SourceList<IPin> connectedPins = new();
         this.WhenActivated(d =>
         {
@@ -36,17 +36,35 @@ public abstract class PinViewModel : ActivatableViewModelBase
             Observable.FromEventPattern<SingleValueEventArgs<IPin>>(x => Pin.PinDisconnected += x, x => Pin.PinDisconnected -= x)
                 .Subscribe(e => connectedPins.Remove(e.EventArgs.Value))
                 .DisposeWith(d);
+            Pin.WhenAnyValue(p => p.Type).Subscribe(_ => UpdatePinColor()).DisposeWith(d);
         });
 
         Connections = connectedPins.Connect().AsObservableList();
         connectedPins.AddRange(Pin.ConnectedTo);
     }
 
+    private void UpdatePinColor()
+    {
+        TypeColorRegistration registration = _nodeService.GetTypeColorRegistration(Pin.Type);
+        PinColor = registration.Color.ToColor();
+        DarkenedPinColor = registration.DarkenedColor.ToColor();
+    }
+
     public IObservableList<IPin> Connections { get; }
 
     public IPin Pin { get; }
-    public Color PinColor { get; }
-    public Color DarkenedPinColor { get; }
+
+    public Color PinColor
+    {
+        get => _pinColor;
+        set => RaiseAndSetIfChanged(ref _pinColor, value);
+    }
+
+    public Color DarkenedPinColor
+    {
+        get => _darkenedPinColor;
+        set => RaiseAndSetIfChanged(ref _darkenedPinColor, value);
+    }
 
     public Point Position
     {
@@ -62,14 +80,9 @@ public abstract class PinViewModel : ActivatableViewModelBase
 
     public bool IsCompatibleWith(PinViewModel pinViewModel)
     {
-        if (pinViewModel.Pin.Direction == Pin.Direction)
-            return false;
-        if (pinViewModel.Pin.Node == Pin.Node)
+        if (pinViewModel.Pin.Direction == Pin.Direction || pinViewModel.Pin.Node == Pin.Node)
             return false;
 
-        return Pin.Type == pinViewModel.Pin.Type
-               || Pin.Type == typeof(Enum) && pinViewModel.Pin.Type.IsEnum
-               || Pin.Direction == PinDirection.Input && Pin.Type == typeof(object)
-               || Pin.Direction == PinDirection.Output && pinViewModel.Pin.Type == typeof(object);
+        return Pin.IsTypeCompatible(pinViewModel.Pin.Type);
     }
 }

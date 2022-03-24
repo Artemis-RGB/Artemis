@@ -33,6 +33,12 @@ public class DataModelPickerButton : TemplatedControl
         AvaloniaProperty.Register<DataModelPicker, bool>(nameof(ShowFullPath));
 
     /// <summary>
+    ///     Gets or sets a boolean indicating whether the button should show the icon of the first provided filter type.
+    /// </summary>
+    public static readonly StyledProperty<bool> ShowTypeIconProperty =
+        AvaloniaProperty.Register<DataModelPicker, bool>(nameof(ShowTypeIcon));
+
+    /// <summary>
     ///     Gets a boolean indicating whether the data model picker has a value.
     /// </summary>
     public static readonly StyledProperty<bool> HasValueProperty =
@@ -77,6 +83,7 @@ public class DataModelPickerButton : TemplatedControl
     private bool _attached;
     private bool _flyoutActive;
     private Button? _button;
+    private TextBlock? _label;
     private DataModelPickerFlyout? _flyout;
 
     static DataModelPickerButton()
@@ -101,6 +108,16 @@ public class DataModelPickerButton : TemplatedControl
     {
         get => GetValue(ShowFullPathProperty);
         set => SetValue(ShowFullPathProperty, value);
+    }
+
+
+    /// <summary>
+    ///     Gets or sets a boolean indicating whether the button should show the icon of the first provided filter type.
+    /// </summary>
+    public bool ShowTypeIcon
+    {
+        get => GetValue(ShowTypeIconProperty);
+        set => SetValue(ShowTypeIconProperty, value);
     }
 
     /// <summary>
@@ -212,13 +229,13 @@ public class DataModelPickerButton : TemplatedControl
     {
         HasValue = DataModelPath != null && DataModelPath.IsValid;
 
-        if (_button == null)
+        if (_button == null || _label == null)
             return;
 
         if (!HasValue)
         {
             ToolTip.SetTip(_button, null);
-            _button.Content = Placeholder;
+            _label.Text = Placeholder;
         }
         else
         {
@@ -227,7 +244,7 @@ public class DataModelPickerButton : TemplatedControl
                 formattedPath = string.Join(" › ", DataModelPath.Segments.Where(s => s.GetPropertyDescription() != null).Select(s => s.GetPropertyDescription()!.Name));
 
             ToolTip.SetTip(_button, formattedPath);
-            _button.Content = ShowFullPath
+            _label.Text = ShowFullPath
                 ? formattedPath
                 : DataModelPath?.Segments.LastOrDefault()?.GetPropertyDescription()?.Name ?? DataModelPath?.Segments.LastOrDefault()?.Identifier;
         }
@@ -261,6 +278,7 @@ public class DataModelPickerButton : TemplatedControl
             _button.Click -= OnButtonClick;
         base.OnApplyTemplate(e);
         _button = e.NameScope.Find<Button>("MainButton");
+        _label = e.NameScope.Find<TextBlock>("MainButtonLabel");
         if (_button != null)
             _button.Click += OnButtonClick;
         UpdateValueDisplay();

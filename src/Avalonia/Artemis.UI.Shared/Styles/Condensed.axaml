@@ -2,7 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         xmlns:controls1="clr-namespace:Artemis.UI.Shared.Controls"
-        xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.Controls.GradientPicker">
+        xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.Controls.GradientPicker"
+        xmlns:dataModelPicker="clr-namespace:Artemis.UI.Shared.Controls.DataModelPicker">
     <Design.PreviewWith>
         <Border Padding="50">
             <StackPanel Spacing="5">
@@ -32,6 +33,9 @@
 
                 <gradientPicker:GradientPickerButton></gradientPicker:GradientPickerButton>
                 <gradientPicker:GradientPickerButton Classes="condensed"></gradientPicker:GradientPickerButton>
+
+				<dataModelPicker:DataModelPickerButton></dataModelPicker:DataModelPickerButton>
+				<dataModelPicker:DataModelPickerButton Classes="condensed"></dataModelPicker:DataModelPickerButton>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -78,5 +82,16 @@
     <Style Selector="gradientPicker|GradientPickerButton.condensed /template/ Border.gradient-display">
         <Setter Property="Margin" Value="4" />
         <Setter Property="CornerRadius" Value="2" />
+    </Style>
+
+    <Style Selector="dataModelPicker|DataModelPickerButton.condensed">
+        <Setter Property="Padding" Value="4 2" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="MinHeight" Value="24" />
+    </Style>
+
+    <Style Selector="dataModelPicker|DataModelPickerButton.condensed /template/ controls|Button">
+		<Setter Property="Padding" Value="6 3 11 3" />
+		<Setter Property="Height" Value="24" />
     </Style>
 </Styles>

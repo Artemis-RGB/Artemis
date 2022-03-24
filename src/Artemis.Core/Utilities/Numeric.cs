@@ -257,7 +257,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Returns a boolean indicating whether the provided type can be used as a <see cref="Numeric" />.
         /// </summary>
-        public static bool IsTypeCompatible(Type type)
+        public static bool IsTypeCompatible(Type? type)
         {
             return type == typeof(Numeric) ||
                    type == typeof(float) ||

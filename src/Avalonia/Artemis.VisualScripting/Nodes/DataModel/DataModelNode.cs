@@ -8,16 +8,17 @@ namespace Artemis.VisualScripting.Nodes.DataModel;
 [Node("Data Model-Value", "Outputs a selectable data model value.", "Data Model")]
 public class DataModelNode : Node<DataModelPathEntity, DataModelNodeCustomViewModel>, IDisposable
 {
-    private DataModelPath _dataModelPath;
+    private DataModelPath? _dataModelPath;
 
     public DataModelNode() : base("Data Model", "Outputs a selectable data model value")
     {
+        Output = CreateOutputPin(typeof(object));
     }
 
-    public INodeScript Script { get; private set; }
-    public OutputPin Output { get; private set; }
+    public INodeScript? Script { get; private set; }
+    public OutputPin Output { get; }
 
-    public DataModelPath DataModelPath
+    public DataModelPath? DataModelPath
     {
         get => _dataModelPath;
         set => SetAndNotify(ref _dataModelPath, value);
@@ -33,58 +34,40 @@ public class DataModelNode : Node<DataModelPathEntity, DataModelNodeCustomViewMo
         DataModelPath = new DataModelPath(Storage);
         DataModelPath.PathValidated += DataModelPathOnPathValidated;
 
-        UpdateOutputPin(false);
+        UpdateOutputPin();
     }
 
     public override void Evaluate()
     {
-        if (DataModelPath.IsValid)
-        {
-            if (Output == null)
-                UpdateOutputPin(false);
-
-            object pathValue = DataModelPath.GetValue();
-
-            if (pathValue == null)
-            {
-                if (!Output.Type.IsValueType)
-                    Output.Value = null;
-            }
-            else
-            {
-                if (Output.Type == typeof(Numeric))
-                    Output.Value = new Numeric(pathValue);
-                else
-                    Output.Value = pathValue;
-            }
-        }
-    }
-
-    public void UpdateOutputPin(bool loadConnections)
-    {
-        Type type = DataModelPath?.GetPropertyType();
-        if (Numeric.IsTypeCompatible(type))
-            type = typeof(Numeric);
-
-        if (Output != null && Output.Type == type)
+        if (DataModelPath == null || !DataModelPath.IsValid)
             return;
 
-        if (Output != null)
+        object? pathValue = DataModelPath.GetValue();
+        if (pathValue == null)
         {
-            RemovePin(Output);
-            Output = null;
+            if (!Output.Type.IsValueType)
+                Output.Value = null;
         }
-
-        if (type != null)
-            Output = CreateOutputPin(type);
-
-        if (loadConnections && Script is NodeScript nodeScript)
-            nodeScript.LoadConnections();
+        else
+        {
+            Output.Value = Output.Type == typeof(Numeric) ? new Numeric(pathValue) : pathValue;
+        }
     }
 
-    private void DataModelPathOnPathValidated(object sender, EventArgs e)
+    public void UpdateOutputPin()
     {
-        Dispatcher.UIThread.InvokeAsync(() => UpdateOutputPin(true));
+        Type? type = DataModelPath?.GetPropertyType();
+        if (Numeric.IsTypeCompatible(type))
+            type = typeof(Numeric);
+        type ??= typeof(object);
+
+        if (Output.Type != type)
+            Output.ChangeType(type);
+    }
+
+    private void DataModelPathOnPathValidated(object? sender, EventArgs e)
+    {
+        Dispatcher.UIThread.InvokeAsync(UpdateOutputPin);
     }
 
     /// <inheritdoc />

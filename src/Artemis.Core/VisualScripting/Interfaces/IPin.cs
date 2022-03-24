@@ -75,5 +75,12 @@ namespace Artemis.Core
         ///     Disconnects all pins this pin is connected to
         /// </summary>
         void DisconnectAll();
+
+        /// <summary>
+        ///     Determines whether this pin is compatible with the given type
+        /// </summary>
+        /// <param name="type">The type to check for compatibility</param>
+        /// <returns><see langword="true"/> if the type is compatible, otherwise <see langword="false"/>.</returns>
+        public bool IsTypeCompatible(Type type);
     }
 }

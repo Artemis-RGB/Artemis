@@ -101,6 +101,9 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void DisconnectAll()
         {
+            if (!_connectedTo.Any())
+                return;
+
             List<IPin> connectedPins = new(_connectedTo);
             _connectedTo.Clear();
 
@@ -113,6 +116,12 @@ namespace Artemis.Core
 
             OnPropertyChanged(nameof(ConnectedTo));
         }
+
+        /// <inheritdoc />
+        public bool IsTypeCompatible(Type type) => Type == type
+                                                   || Type == typeof(Enum) && type.IsEnum
+                                                   || Direction == PinDirection.Input && Type == typeof(object)
+                                                   || Direction == PinDirection.Output && type == typeof(object);
 
         #endregion
     }

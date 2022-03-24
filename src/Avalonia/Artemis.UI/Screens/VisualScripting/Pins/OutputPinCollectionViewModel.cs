@@ -4,12 +4,12 @@ using Artemis.UI.Shared.Services.NodeEditor;
 
 namespace Artemis.UI.Screens.VisualScripting.Pins;
 
-public class OutputPinCollectionViewModel<T> : PinCollectionViewModel
+public class OutputPinCollectionViewModel : PinCollectionViewModel
 {
     private readonly INodeVmFactory _nodeVmFactory;
-    public OutputPinCollection<T> OutputPinCollection { get; }
+    public IPinCollection OutputPinCollection { get; }
 
-    public OutputPinCollectionViewModel(OutputPinCollection<T> outputPinCollection, NodeScriptViewModel nodeScriptViewModel, INodeVmFactory nodeVmFactory, INodeEditorService nodeEditorService)
+    public OutputPinCollectionViewModel(IPinCollection outputPinCollection, NodeScriptViewModel nodeScriptViewModel, INodeVmFactory nodeVmFactory, INodeEditorService nodeEditorService)
         : base(outputPinCollection, nodeScriptViewModel, nodeEditorService)
     {
         _nodeVmFactory = nodeVmFactory;

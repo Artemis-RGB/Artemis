@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Artemis.Core
@@ -76,13 +78,32 @@ namespace Artemis.Core
         internal InputPin(INode node, Type type, string name)
             : base(node, name)
         {
-            Type = type;
+            _type = type;
             _value = type.GetDefault();
         }
 
         #endregion
 
         #region Methods
+
+        /// <summary>
+        ///     Changes the type of this pin, disconnecting any pins that are incompatible with the new type.
+        /// </summary>
+        /// <param name="type">The new type of the pin.</param>
+        public void ChangeType(Type type)
+        {
+            if (_type == type)
+                return;
+
+            // Disconnect pins incompatible with the new type
+            List<IPin> toDisconnect = ConnectedTo.Where(p => !p.IsTypeCompatible(type)).ToList();
+            foreach (IPin pin in toDisconnect)
+                DisconnectFrom(pin);
+
+            // Change the type
+            SetAndNotify(ref _type, type, nameof(Type));
+            Value = type.GetDefault();
+        }
 
         private void Evaluate()
         {
@@ -104,7 +125,7 @@ namespace Artemis.Core
         #region Properties & Fields
 
         /// <inheritdoc />
-        public override Type Type { get; }
+        public override Type Type => _type;
 
         /// <inheritdoc />
         public override object? PinValue => Value;
@@ -113,6 +134,7 @@ namespace Artemis.Core
         public override PinDirection Direction => PinDirection.Input;
 
         private object? _value;
+        private Type _type;
 
         /// <summary>
         ///     Gets or sets the value of the input pin

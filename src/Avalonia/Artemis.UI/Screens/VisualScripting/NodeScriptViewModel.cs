@@ -64,6 +64,7 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         PinViewModels.ToObservableChangeSet()
             .Filter(p => p.Pin.Direction == PinDirection.Output)
             .TransformMany(p => p.Connections)
+            .Filter(p => p.ConnectedTo.Any())
             .Transform(pin => _nodeVmFactory.CableViewModel(this, pin.ConnectedTo.First(), pin))
             .Bind(out ReadOnlyObservableCollection<CableViewModel> cableViewModels)
             .Subscribe();

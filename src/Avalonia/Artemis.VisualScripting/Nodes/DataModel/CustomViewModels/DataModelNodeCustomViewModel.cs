@@ -27,9 +27,9 @@ public class DataModelNodeCustomViewModel : CustomNodeViewModel
                 return;
 
             Modules = new ObservableCollection<Module>();
-            if (_node.Script.Context is Profile scriptProfile && scriptProfile.Configuration.Module != null)
+            if (_node.Script?.Context is Profile scriptProfile && scriptProfile.Configuration.Module != null)
                 Modules.Add(scriptProfile.Configuration.Module);
-            else if (_node.Script.Context is ProfileConfiguration profileConfiguration && profileConfiguration.Module != null)
+            else if (_node.Script?.Context is ProfileConfiguration profileConfiguration && profileConfiguration.Module != null)
                 Modules.Add(profileConfiguration.Module);
 
             _node.PropertyChanged += NodeOnPropertyChanged;
@@ -46,7 +46,7 @@ public class DataModelNodeCustomViewModel : CustomNodeViewModel
         set => RaiseAndSetIfChanged(ref _modules, value);
     }
 
-    public DataModelPath DataModelPath
+    public DataModelPath? DataModelPath
     {
         get => _node.DataModelPath;
         set
@@ -56,10 +56,10 @@ public class DataModelNodeCustomViewModel : CustomNodeViewModel
 
             _node.DataModelPath?.Dispose();
             _node.DataModelPath = value;
-            _node.DataModelPath.Save();
+            _node.DataModelPath?.Save();
 
-            _node.Storage = _node.DataModelPath.Entity;
-            _node.UpdateOutputPin(false);
+            _node.Storage = _node.DataModelPath?.Entity;
+            _node.UpdateOutputPin();
         }
     }
 
