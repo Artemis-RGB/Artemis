@@ -11,7 +11,7 @@ public class LayerPropertyNodeCustomViewModel : CustomNodeViewModel
 
     private RenderProfileElement _selectedProfileElement;
 
-    public LayerPropertyNodeCustomViewModel(LayerPropertyNode node) : base(node)
+    public LayerPropertyNodeCustomViewModel(LayerPropertyNode node, INodeScript script) : base(node, script)
     {
         _node = node;
     }

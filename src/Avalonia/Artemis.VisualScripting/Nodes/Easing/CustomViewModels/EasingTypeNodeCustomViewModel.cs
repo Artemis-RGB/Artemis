@@ -9,7 +9,7 @@ public class EasingTypeNodeCustomViewModel : CustomNodeViewModel
     private readonly EasingTypeNode _node;
     private NodeEasingViewModel _selectedEasingViewModel;
 
-    public EasingTypeNodeCustomViewModel(EasingTypeNode node) : base(node)
+    public EasingTypeNodeCustomViewModel(EasingTypeNode node, INodeScript script) : base(node, script)
     {
         _node = node;
         EasingViewModels = new ObservableCollection<NodeEasingViewModel>(Enum.GetValues(typeof(Easings.Functions)).Cast<Easings.Functions>().Select(e => new NodeEasingViewModel(e)));

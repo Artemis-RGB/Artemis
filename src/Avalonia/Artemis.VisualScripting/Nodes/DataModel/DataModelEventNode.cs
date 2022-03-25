@@ -1,4 +1,5 @@
-﻿using Artemis.Core;
+﻿using System.ComponentModel;
+using Artemis.Core;
 using Artemis.Core.Events;
 using Artemis.Storage.Entities.Profile;
 using Artemis.VisualScripting.Nodes.DataModel.CustomViewModels;
@@ -24,18 +25,15 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
         CycleValues.PinAdded += CycleValuesOnPinAdded;
         CycleValues.PinRemoved += CycleValuesOnPinRemoved;
         CycleValues.Add(CycleValues.CreatePin());
+
+        // Monitor storage for changes
+        StorageModified += (_, _) => UpdateDataModelPath();
     }
 
     public INodeScript? Script { get; set; }
 
     public InputPinCollection CycleValues { get; }
     public OutputPin Output { get; }
-
-    public DataModelPath? DataModelPath
-    {
-        get => _dataModelPath;
-        set => SetAndNotify(ref _dataModelPath, value);
-    }
 
     public override void Initialize(INodeScript script)
     {
@@ -44,13 +42,13 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
         if (Storage == null)
             return;
 
-        DataModelPath = new DataModelPath(Storage);
+        UpdateDataModelPath();
     }
 
     public override void Evaluate()
     {
         object? outputValue = null;
-        if (DataModelPath?.GetValue() is IDataModelEvent dataModelEvent)
+        if (_dataModelPath?.GetValue() is IDataModelEvent dataModelEvent)
         {
             if (dataModelEvent.LastTrigger > _lastTrigger)
             {
@@ -111,6 +109,14 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
         }
     }
 
+
+    private void UpdateDataModelPath()
+    {
+        DataModelPath? old = _dataModelPath;
+        _dataModelPath = Storage != null ? new DataModelPath(Storage) : null;
+        old?.Dispose();
+    }
+
     private void ChangeCurrentType(Type type)
     {
         CycleValues.ChangeType(type);
@@ -140,5 +146,6 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
     /// <inheritdoc />
     public void Dispose()
     {
+        _dataModelPath?.Dispose();
     }
 }

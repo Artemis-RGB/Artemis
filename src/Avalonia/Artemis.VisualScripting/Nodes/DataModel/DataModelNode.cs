@@ -1,4 +1,5 @@
-﻿using Artemis.Core;
+﻿using System.ComponentModel;
+using Artemis.Core;
 using Artemis.Storage.Entities.Profile;
 using Artemis.VisualScripting.Nodes.DataModel.CustomViewModels;
 using Avalonia.Threading;
@@ -13,17 +14,12 @@ public class DataModelNode : Node<DataModelPathEntity, DataModelNodeCustomViewMo
     public DataModelNode() : base("Data Model", "Outputs a selectable data model value")
     {
         Output = CreateOutputPin(typeof(object));
+        StorageModified += (_, _) => UpdateDataModelPath();
     }
 
     public INodeScript? Script { get; private set; }
     public OutputPin Output { get; }
-
-    public DataModelPath? DataModelPath
-    {
-        get => _dataModelPath;
-        set => SetAndNotify(ref _dataModelPath, value);
-    }
-
+    
     public override void Initialize(INodeScript script)
     {
         Script = script;
@@ -31,18 +27,26 @@ public class DataModelNode : Node<DataModelPathEntity, DataModelNodeCustomViewMo
         if (Storage == null)
             return;
 
-        DataModelPath = new DataModelPath(Storage);
-        DataModelPath.PathValidated += DataModelPathOnPathValidated;
+        UpdateDataModelPath();
+    }
 
+    private void UpdateDataModelPath()
+    {
+        DataModelPath? old = _dataModelPath;
+        old?.Dispose();
+
+        _dataModelPath = Storage != null ? new DataModelPath(Storage) : null;
+        if (_dataModelPath != null)
+            _dataModelPath.PathValidated += DataModelPathOnPathValidated;
         UpdateOutputPin();
     }
 
     public override void Evaluate()
     {
-        if (DataModelPath == null || !DataModelPath.IsValid)
+        if (_dataModelPath == null || !_dataModelPath.IsValid)
             return;
 
-        object? pathValue = DataModelPath.GetValue();
+        object? pathValue = _dataModelPath.GetValue();
         if (pathValue == null)
         {
             if (!Output.Type.IsValueType)
@@ -56,7 +60,7 @@ public class DataModelNode : Node<DataModelPathEntity, DataModelNodeCustomViewMo
 
     public void UpdateOutputPin()
     {
-        Type? type = DataModelPath?.GetPropertyType();
+        Type? type = _dataModelPath?.GetPropertyType();
         if (Numeric.IsTypeCompatible(type))
             type = typeof(Numeric);
         type ??= typeof(object);
@@ -73,6 +77,6 @@ public class DataModelNode : Node<DataModelPathEntity, DataModelNodeCustomViewMo
     /// <inheritdoc />
     public void Dispose()
     {
-        DataModelPath?.Dispose();
+        _dataModelPath?.Dispose();
     }
 }

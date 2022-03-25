@@ -113,7 +113,7 @@ public class NodeViewModel : ActivatableViewModelBase
             })).DisposeWith(d);
 
             if (Node is Node coreNode)
-                CustomNodeViewModel = coreNode.GetCustomViewModel();
+                CustomNodeViewModel = coreNode.GetCustomViewModel(nodeScriptViewModel.NodeScript);
         });
     }
 

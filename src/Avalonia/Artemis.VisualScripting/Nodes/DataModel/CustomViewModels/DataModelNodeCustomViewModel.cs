@@ -4,6 +4,9 @@ using System.Reactive.Disposables;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
+using Artemis.Storage.Entities.Profile;
+using Artemis.UI.Shared.Services.NodeEditor;
+using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Artemis.UI.Shared.VisualScripting;
 using ReactiveUI;
 
@@ -12,29 +15,39 @@ namespace Artemis.VisualScripting.Nodes.DataModel.CustomViewModels;
 public class DataModelNodeCustomViewModel : CustomNodeViewModel
 {
     private readonly DataModelNode _node;
+    private readonly INodeEditorService _nodeEditorService;
     private ObservableCollection<Module>? _modules;
+    private DataModelPath? _dataModelPath;
+    private bool _updating;
 
-    public DataModelNodeCustomViewModel(DataModelNode node, ISettingsService settingsService) : base(node)
+    public DataModelNodeCustomViewModel(DataModelNode node, INodeScript script, ISettingsService settingsService, INodeEditorService nodeEditorService) : base(node, script)
     {
         _node = node;
+        _nodeEditorService = nodeEditorService;
 
         ShowFullPaths = settingsService.GetSetting("ProfileEditor.ShowFullPaths", true);
         ShowDataModelValues = settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
 
         this.WhenActivated(d =>
         {
-            if (Modules != null)
-                return;
-
-            Modules = new ObservableCollection<Module>();
+            // Set up extra modules
             if (_node.Script?.Context is Profile scriptProfile && scriptProfile.Configuration.Module != null)
-                Modules.Add(scriptProfile.Configuration.Module);
+                Modules = new ObservableCollection<Module> {scriptProfile.Configuration.Module};
             else if (_node.Script?.Context is ProfileConfiguration profileConfiguration && profileConfiguration.Module != null)
-                Modules.Add(profileConfiguration.Module);
+                Modules = new ObservableCollection<Module> {profileConfiguration.Module};
 
-            _node.PropertyChanged += NodeOnPropertyChanged;
-            Disposable.Create(() => _node.PropertyChanged -= NodeOnPropertyChanged).DisposeWith(d);
+            // Subscribe to node changes 
+            _node.WhenAnyValue(n => n.Storage).Subscribe(UpdateDataModelPath).DisposeWith(d);
+            UpdateDataModelPath(_node.Storage);
+
+            Disposable.Create(() =>
+            {
+                _dataModelPath?.Dispose();
+                _dataModelPath = null;
+            }).DisposeWith(d);
         });
+
+        this.WhenAnyValue(vm => vm.DataModelPath).Subscribe(ApplyDataModelPath);
     }
 
     public PluginSetting<bool> ShowFullPaths { get; }
@@ -48,24 +61,46 @@ public class DataModelNodeCustomViewModel : CustomNodeViewModel
 
     public DataModelPath? DataModelPath
     {
-        get => _node.DataModelPath;
-        set
+        get => _dataModelPath;
+        set => RaiseAndSetIfChanged(ref _dataModelPath, value);
+    }
+
+    private void UpdateDataModelPath(DataModelPathEntity? entity)
+    {
+        try
         {
-            if (ReferenceEquals(_node.DataModelPath, value))
+            if (_updating)
                 return;
 
-            _node.DataModelPath?.Dispose();
-            _node.DataModelPath = value;
-            _node.DataModelPath?.Save();
+            _updating = true;
 
-            _node.Storage = _node.DataModelPath?.Entity;
-            _node.UpdateOutputPin();
+            DataModelPath? old = DataModelPath;
+            DataModelPath = entity != null ? new DataModelPath(entity) : null;
+            old?.Dispose();
+        }
+        finally
+        {
+            _updating = false;
         }
     }
 
-    private void NodeOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void ApplyDataModelPath(DataModelPath? path)
     {
-        if (e.PropertyName == nameof(DataModelNode.DataModelPath))
-            this.RaisePropertyChanged(nameof(DataModelPath));
+        try
+        {
+            if (_updating)
+                return;
+            if (path?.Path == _node.Storage?.Path)
+                return;
+
+            _updating = true;
+
+            path?.Save();
+            _nodeEditorService.ExecuteCommand(Script, new UpdateStorage<DataModelPathEntity>(_node, path?.Entity, "path"));
+        }
+        finally
+        {
+            _updating = false;
+        }
     }
 }

@@ -8,6 +8,7 @@ using Artemis.Core.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.VisualScripting.Pins;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Avalonia;
@@ -21,15 +22,17 @@ namespace Artemis.UI.Screens.VisualScripting;
 public class NodeScriptViewModel : ActivatableViewModelBase
 {
     private readonly INodeEditorService _nodeEditorService;
+    private readonly INotificationService _notificationService;
     private readonly SourceList<NodeViewModel> _nodeViewModels;
     private readonly INodeVmFactory _nodeVmFactory;
     private DragCableViewModel? _dragViewModel;
     private List<NodeViewModel>? _initialNodeSelection;
 
-    public NodeScriptViewModel(NodeScript nodeScript, INodeVmFactory nodeVmFactory, INodeEditorService nodeEditorService)
+    public NodeScriptViewModel(NodeScript nodeScript, INodeVmFactory nodeVmFactory, INodeEditorService nodeEditorService, INotificationService notificationService)
     {
         _nodeVmFactory = nodeVmFactory;
         _nodeEditorService = nodeEditorService;
+        _notificationService = notificationService;
         _nodeViewModels = new SourceList<NodeViewModel>();
 
         NodeScript = nodeScript;
@@ -43,6 +46,13 @@ public class NodeScriptViewModel : ActivatableViewModelBase
                 .DisposeWith(d);
             Observable.FromEventPattern<SingleValueEventArgs<INode>>(x => NodeScript.NodeRemoved += x, x => NodeScript.NodeRemoved -= x)
                 .Subscribe(e => HandleNodeRemoved(e.EventArgs))
+                .DisposeWith(d);
+
+            nodeEditorService.GetHistory(NodeScript).Undo
+                .Subscribe(c => _notificationService.CreateNotification().WithMessage(c != null ? $"Undid {c.DisplayName}" : "Nothing to undo").Show())
+                .DisposeWith(d);
+            nodeEditorService.GetHistory(NodeScript).Redo
+                .Subscribe(c => _notificationService.CreateNotification().WithMessage(c != null ? $"Redid {c.DisplayName}" : "Nothing to redo").Show())
                 .DisposeWith(d);
         });
 

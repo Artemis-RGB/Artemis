@@ -10,7 +10,7 @@ public class EnumEqualsNodeCustomViewModel : CustomNodeViewModel
 {
     private readonly EnumEqualsNode _node;
 
-    public EnumEqualsNodeCustomViewModel(EnumEqualsNode node) : base(node)
+    public EnumEqualsNodeCustomViewModel(EnumEqualsNode node, INodeScript script) : base(node, script)
     {
         _node = node;
     }

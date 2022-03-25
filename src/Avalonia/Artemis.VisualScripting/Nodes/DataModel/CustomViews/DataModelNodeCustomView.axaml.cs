@@ -1,10 +1,12 @@
+using Artemis.VisualScripting.Nodes.DataModel.CustomViewModels;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
 
 namespace Artemis.VisualScripting.Nodes.DataModel.CustomViews
 {
-    public partial class DataModelNodeCustomView : UserControl
+    public partial class DataModelNodeCustomView : ReactiveUserControl<DataModelNodeCustomViewModel>
     {
         public DataModelNodeCustomView()
         {
