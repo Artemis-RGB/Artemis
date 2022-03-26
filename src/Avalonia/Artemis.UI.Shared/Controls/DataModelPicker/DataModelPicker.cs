@@ -13,10 +13,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
-using Material.Icons;
 using Material.Icons.Avalonia;
 using ReactiveUI;
-using SkiaSharp;
 
 namespace Artemis.UI.Shared.Controls.DataModelPicker;
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Artemis.UI.Shared.Controls;
@@ -11,6 +12,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
@@ -33,6 +35,11 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
         UpdateZoomBorderBackground();
 
         _grid.AddHandler(PointerReleasedEvent, CanvasOnPointerReleased, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+        this.WhenActivated(_ => ViewModel?.PickerPositionSubject.Subscribe(p =>
+        {
+            ViewModel.NodePickerViewModel.Position = p;
+            _grid?.ContextFlyout?.ShowAt(_grid, true);
+        }));
     }
 
     private void CanvasOnPointerReleased(object? sender, PointerReleasedEventArgs e)

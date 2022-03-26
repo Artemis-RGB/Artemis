@@ -1,33 +1,28 @@
 using System;
 using System.Reactive.Linq;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
-using Avalonia.VisualTree;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.VisualScripting
-{
-    public partial class NodePickerView : ReactiveUserControl<NodePickerViewModel>
-    {
-        public NodePickerView()
-        {
-            InitializeComponent();
-            this.WhenActivated(
-                d => ViewModel
-                    .WhenAnyValue(vm => vm.IsVisible)
-                    .Where(visible => !visible)
-                    .Subscribe(_ => this.FindLogicalAncestorOfType<Grid>()?.ContextFlyout?.Hide())
-                    .DisposeWith(d)
-            );
-        }
+namespace Artemis.UI.Screens.VisualScripting;
 
-        private void InitializeComponent()
+public class NodePickerView : ReactiveUserControl<NodePickerViewModel>
+{
+    public NodePickerView()
+    {
+        InitializeComponent();
+        this.WhenActivated(d =>
         {
-            AvaloniaXamlLoader.Load(this);
-        }
+            ViewModel?.WhenAnyValue(vm => vm.IsVisible).Where(visible => !visible).Subscribe(_ => this.FindLogicalAncestorOfType<Grid>()?.ContextFlyout?.Hide()).DisposeWith(d);
+            this.Get<TextBox>("SearchBox").SelectAll();
+        });
+    }
+
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }

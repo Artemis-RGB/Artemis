@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
@@ -8,6 +9,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Avalonia;
+using DynamicData;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
@@ -16,36 +18,63 @@ public class NodePickerViewModel : ActivatableViewModelBase
 {
     private readonly INodeEditorService _nodeEditorService;
     private readonly NodeScript _nodeScript;
-    private readonly INodeService _nodeService;
 
     private bool _isVisible;
     private Point _position;
+    private DateTime _closed;
     private string? _searchText;
-    private NodeData? _selectedNode;
+    private object? _selectedNode;
+    private IPin? _targetPin;
 
     public NodePickerViewModel(NodeScript nodeScript, INodeService nodeService, INodeEditorService nodeEditorService)
     {
         _nodeScript = nodeScript;
-        _nodeService = nodeService;
         _nodeEditorService = nodeEditorService;
 
-        Nodes = new ObservableCollection<NodeData>(_nodeService.AvailableNodes);
+        SourceList<NodeData> nodeSourceList = new();
+        IObservable<Func<NodeData, bool>> nodeFilter = this.WhenAnyValue(vm => vm.SearchText, vm => vm.TargetPin).Select(v => CreatePredicate(v.Item1, v.Item2));
+
+        nodeSourceList.Connect()
+            .Filter(nodeFilter)
+            .GroupWithImmutableState(n => n.Category)
+            .Bind(out ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeData, string>> categories)
+            .Subscribe();
+        Categories = categories;
 
         this.WhenActivated(d =>
         {
+            if (DateTime.Now - _closed > TimeSpan.FromSeconds(10))
+                SearchText = null;
+            TargetPin = null;
+
+            nodeSourceList.Edit(list =>
+            {
+                list.Clear();
+                list.AddRange(nodeService.AvailableNodes);
+            });
+
             IsVisible = true;
-            Disposable.Create(() => IsVisible = false).DisposeWith(d);
+            
+            Disposable.Create(() =>
+            {
+                _closed = DateTime.Now;
+                IsVisible = false;
+            }).DisposeWith(d);
         });
 
-        this.WhenAnyValue(vm => vm.SelectedNode).WhereNotNull().Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler).Subscribe(data =>
-        {
-            CreateNode(data);
-            Hide();
-            SelectedNode = null;
-        });
+        this.WhenAnyValue(vm => vm.SelectedNode)
+            .WhereNotNull()
+            .Where(o => o is NodeData)
+            .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+            .Subscribe(data =>
+            {
+                CreateNode((NodeData) data);
+                IsVisible = false;
+                SelectedNode = null;
+            });
     }
 
-    public ObservableCollection<NodeData> Nodes { get; }
+    public ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeData, string>> Categories { get; }
 
     public bool IsVisible
     {
@@ -65,29 +94,47 @@ public class NodePickerViewModel : ActivatableViewModelBase
         set => RaiseAndSetIfChanged(ref _searchText, value);
     }
 
-    public NodeData? SelectedNode
+    public IPin? TargetPin
+    {
+        get => _targetPin;
+        set => RaiseAndSetIfChanged(ref _targetPin, value);
+    }
+
+    public object? SelectedNode
     {
         get => _selectedNode;
         set => RaiseAndSetIfChanged(ref _selectedNode, value);
     }
 
-    public void Show(Point position)
-    {
-        IsVisible = true;
-        Position = position;
-    }
-
-    public void Hide()
-    {
-        IsVisible = false;
-    }
-
-    private void CreateNode(NodeData data)
+    public void CreateNode(NodeData data)
     {
         INode node = data.CreateNode(_nodeScript, null);
-        node.X = Position.X;
-        node.Y = Position.Y;
+        node.X = Math.Round(Position.X / 10d, 0, MidpointRounding.AwayFromZero) * 10d;
+        node.Y = Math.Round(Position.Y / 10d, 0, MidpointRounding.AwayFromZero) * 10d;
 
-        _nodeEditorService.ExecuteCommand(_nodeScript, new AddNode(_nodeScript, node));
+        if (TargetPin != null)
+        {
+            using (_nodeEditorService.CreateCommandScope(_nodeScript, "Create node for pin"))
+            {
+                _nodeEditorService.ExecuteCommand(_nodeScript, new AddNode(_nodeScript, node));
+
+                // Find the first compatible source pin for the target pin
+                IPin? source = TargetPin.Direction == PinDirection.Output
+                    ? node.Pins.Concat(node.PinCollections.SelectMany(c => c)).Where(p => p.Direction == PinDirection.Input).FirstOrDefault(p => TargetPin.IsTypeCompatible(p.Type))
+                    : node.Pins.Concat(node.PinCollections.SelectMany(c => c)).Where(p => p.Direction == PinDirection.Output).FirstOrDefault(p => TargetPin.IsTypeCompatible(p.Type));
+
+                if (source != null)
+                    _nodeEditorService.ExecuteCommand(_nodeScript, new ConnectPins(source, TargetPin));
+            }
+        }
+        else
+            _nodeEditorService.ExecuteCommand(_nodeScript, new AddNode(_nodeScript, node));
+    }
+
+    private Func<NodeData, bool> CreatePredicate(string? text, IPin? targetPin)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return data => data.IsCompatibleWithPin(targetPin);
+        return data => data.IsCompatibleWithPin(targetPin) && data.MatchesSearch(text);
     }
 }

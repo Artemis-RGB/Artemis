@@ -55,7 +55,7 @@ public class PinView : ReactiveUserControl<PinViewModel>
         if (targetPin == ViewModel)
             targetPin = null;
 
-        this.FindAncestorOfType<NodeScriptView>()?.ViewModel?.FinishPinDrag(ViewModel, targetPin);
+        this.FindAncestorOfType<NodeScriptView>()?.ViewModel?.FinishPinDrag(ViewModel, targetPin, point.Position);
         _pinPoint.Cursor = new Cursor(StandardCursorType.Hand);
         e.Handled = true;
     }

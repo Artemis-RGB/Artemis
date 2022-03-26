@@ -193,6 +193,52 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        /// Determines if the <paramref name="typeToCheck"></paramref> is of a certain <paramref name="genericType"/>.
+        /// </summary>
+        /// <param name="typeToCheck">The type to check.</param>
+        /// <param name="genericType">The generic type it should be or implement</param>
+        public static bool IsOfGenericType(this Type typeToCheck, Type genericType)
+        {
+            return typeToCheck.IsOfGenericType(genericType, out Type _);
+        }
+
+        private static bool IsOfGenericType(this Type typeToCheck, Type genericType, out Type concreteGenericType)
+        {
+            while (true)
+            {
+                concreteGenericType = null;
+
+                if (genericType == null)
+                    throw new ArgumentNullException(nameof(genericType));
+
+                if (!genericType.IsGenericTypeDefinition)
+                    throw new ArgumentException("The definition needs to be a GenericTypeDefinition", nameof(genericType));
+
+                if (typeToCheck == null || typeToCheck == typeof(object))
+                    return false;
+
+                if (typeToCheck == genericType)
+                {
+                    concreteGenericType = typeToCheck;
+                    return true;
+                }
+
+                if ((typeToCheck.IsGenericType ? typeToCheck.GetGenericTypeDefinition() : typeToCheck) == genericType)
+                {
+                    concreteGenericType = typeToCheck;
+                    return true;
+                }
+
+                if (genericType.IsInterface)
+                    foreach (var i in typeToCheck.GetInterfaces())
+                        if (i.IsOfGenericType(genericType, out concreteGenericType))
+                            return true;
+
+                typeToCheck = typeToCheck.BaseType;
+            }
+        }
+
+        /// <summary>
         ///     Determines a display name for the given type
         /// </summary>
         /// <param name="type">The type to determine the name for</param>

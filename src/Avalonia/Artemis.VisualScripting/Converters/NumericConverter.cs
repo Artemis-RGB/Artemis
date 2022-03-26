@@ -12,18 +12,15 @@ public class NumericConverter : IValueConverter
     /// <inheritdoc />
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (targetType == typeof(Numeric))
-            return new Numeric(value);
+        if (value is not Numeric numeric)
+            return value;
 
-        return value;
+        return Numeric.IsTypeCompatible(targetType) ? numeric.ToType(targetType, NumberFormatInfo.InvariantInfo) : value;
     }
 
     /// <inheritdoc />
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (targetType == typeof(Numeric))
-            return new Numeric(value);
-
-        return value;
+        return new Numeric(value);
     }
 }

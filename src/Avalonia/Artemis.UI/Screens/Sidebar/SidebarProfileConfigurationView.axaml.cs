@@ -1,9 +1,10 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar
 {
-    public class SidebarProfileConfigurationView : UserControl
+    public class SidebarProfileConfigurationView : ReactiveUserControl<SidebarProfileConfigurationViewModel>
     {
         public SidebarProfileConfigurationView()
         {

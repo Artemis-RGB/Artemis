@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Artemis.Core;
 using Artemis.Core.Events;
+using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.VisualScripting.Pins;
 using Artemis.UI.Shared;
@@ -23,21 +25,27 @@ public class NodeScriptViewModel : ActivatableViewModelBase
 {
     private readonly INodeEditorService _nodeEditorService;
     private readonly INotificationService _notificationService;
-    private readonly SourceList<NodeViewModel> _nodeViewModels;
     private readonly INodeVmFactory _nodeVmFactory;
+    private readonly INodeService _nodeService;
+    private readonly SourceList<NodeViewModel> _nodeViewModels;
+    private readonly Subject<Point> _requestedPickerPositionSubject;
+
     private DragCableViewModel? _dragViewModel;
     private List<NodeViewModel>? _initialNodeSelection;
 
-    public NodeScriptViewModel(NodeScript nodeScript, INodeVmFactory nodeVmFactory, INodeEditorService nodeEditorService, INotificationService notificationService)
+    public NodeScriptViewModel(NodeScript nodeScript, INodeVmFactory nodeVmFactory, INodeService nodeService, INodeEditorService nodeEditorService, INotificationService notificationService)
     {
         _nodeVmFactory = nodeVmFactory;
+        _nodeService = nodeService;
         _nodeEditorService = nodeEditorService;
         _notificationService = notificationService;
         _nodeViewModels = new SourceList<NodeViewModel>();
+        _requestedPickerPositionSubject = new Subject<Point>();
 
         NodeScript = nodeScript;
         NodePickerViewModel = _nodeVmFactory.NodePickerViewModel(nodeScript);
         History = nodeEditorService.GetHistory(NodeScript);
+        PickerPositionSubject = _requestedPickerPositionSubject.AsObservable();
 
         this.WhenActivated(d =>
         {
@@ -87,6 +95,7 @@ public class NodeScriptViewModel : ActivatableViewModelBase
     public ReadOnlyObservableCollection<CableViewModel> CableViewModels { get; }
     public NodePickerViewModel NodePickerViewModel { get; }
     public NodeEditorHistory History { get; }
+    public IObservable<Point> PickerPositionSubject { get; }
 
     public DragCableViewModel? DragViewModel
     {
@@ -165,7 +174,7 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         return targetPinVmModel == null || targetPinVmModel.IsCompatibleWith(sourcePinViewModel);
     }
 
-    public void FinishPinDrag(PinViewModel sourcePinViewModel, PinViewModel? targetPinVmModel)
+    public void FinishPinDrag(PinViewModel sourcePinViewModel, PinViewModel? targetPinVmModel, Point position)
     {
         if (DragViewModel == null)
             return;
@@ -175,6 +184,24 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         // If dropped on top of a compatible pin, connect to it
         if (targetPinVmModel != null && targetPinVmModel.IsCompatibleWith(sourcePinViewModel))
             _nodeEditorService.ExecuteCommand(NodeScript, new ConnectPins(sourcePinViewModel.Pin, targetPinVmModel.Pin));
+        // If not dropped on a pin allow the user to create a new node
+        else if (targetPinVmModel == null)
+        {
+            // If there is only one, spawn that straight away
+            List<NodeData> singleCompatibleNode = _nodeService.AvailableNodes.Where(n => n.IsCompatibleWithPin(sourcePinViewModel.Pin)).ToList();
+            if (singleCompatibleNode.Count == 1)
+            {
+                // Borrow the node picker to spawn the node in, even if it's never shown
+                NodePickerViewModel.TargetPin = sourcePinViewModel.Pin;
+                NodePickerViewModel.CreateNode(singleCompatibleNode.First());
+            }
+            // Otherwise show the user the picker by requesting it at the drop position
+            else
+            {
+                _requestedPickerPositionSubject.OnNext(position);
+                NodePickerViewModel.TargetPin = sourcePinViewModel.Pin;
+            }
+        }
     }
 
     private void HandleNodeAdded(SingleValueEventArgs<INode> eventArgs)

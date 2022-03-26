@@ -30,24 +30,33 @@
                 </Template>
             </Setter>
         </Style>
+
+        <Style Selector="TreeView#NodeTree">
+
+        </Style>
     </UserControl.Styles>
     <Border Classes="picker-container">
         <Grid RowDefinitions="Auto,*">
-            <TextBox Name="SearchBox" Text="{CompiledBinding SearchText}" Margin="0 0 0 15"></TextBox>
-            <ListBox Grid.Row="1"
-                     Items="{CompiledBinding Nodes}"
-                     SelectedItem="{CompiledBinding SelectedNode}"
-                     IsVisible="{CompiledBinding Nodes.Count}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate DataType="core:NodeData">
-                        <StackPanel>
-                            <TextBlock Text="{CompiledBinding Name}" FontWeight="Bold"></TextBlock>
-                            <TextBlock Text="{CompiledBinding Description}"></TextBlock>
+            <TextBox Name="SearchBox" Text="{CompiledBinding SearchText}" Margin="0 0 0 15" Watermark="Search"></TextBox>
+            <TreeView Name="NodeTree" Grid.Row="1" Items="{CompiledBinding Categories}" IsVisible="{CompiledBinding Categories.Count}" SelectedItem="{CompiledBinding SelectedNode}">
+                <TreeView.Styles>
+                    <Style Selector="TreeViewItem">
+                        <Setter Property="IsExpanded" Value="True" />
+                    </Style>
+                </TreeView.Styles>
+                <TreeView.DataTemplates>
+                    <TreeDataTemplate DataType="{x:Type core:NodeData}">
+                        <StackPanel Margin="-15 1 0 1">
+                            <TextBlock Classes="BodyStrongTextBlockStyle" Text="{Binding Name}"></TextBlock>
+                            <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding Description}"></TextBlock>
                         </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <StackPanel Grid.Row="1" VerticalAlignment="Center" Spacing="20" IsVisible="{CompiledBinding !Nodes.Count}">
+                    </TreeDataTemplate>
+                    <TreeDataTemplate ItemsSource="{Binding Items}">
+                        <TextBlock Text="{Binding Key}"></TextBlock>
+                    </TreeDataTemplate>
+                </TreeView.DataTemplates>
+            </TreeView>
+            <StackPanel Grid.Row="1" VerticalAlignment="Center" Spacing="20" IsVisible="{CompiledBinding !Categories.Count}">
                 <avalonia:MaterialIcon Kind="CloseCircle" Width="64" Height="64"></avalonia:MaterialIcon>
                 <TextBlock Classes="h4" TextAlignment="Center">None of the nodes match your search</TextBlock>
             </StackPanel>

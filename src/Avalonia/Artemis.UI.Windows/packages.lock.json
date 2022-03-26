@@ -173,29 +173,29 @@
       },
       "Avalonia.Xaml.Behaviors": {
         "type": "Transitive",
-        "resolved": "0.10.12.2",
-        "contentHash": "EqfzwstvqQcWnTJnaBvezxKwBSddozXpkFi5WrzVe976zedE+A1NruFgnC19aG7Vvy0mTQdlWFTtbAInv6IQyg==",
+        "resolved": "0.10.13.2",
+        "contentHash": "sZlq6FFzNNzYmHK+vARWFpxtDY4XUdnU6q6zVIm4l1iQ3/ZXor4SeUnYDdd3lFZtoJ9yc8K2g4X7d/lVEgV9tA==",
         "dependencies": {
-          "Avalonia": "0.10.12",
-          "Avalonia.Xaml.Interactions": "0.10.12.2",
-          "Avalonia.Xaml.Interactivity": "0.10.12.2"
+          "Avalonia": "0.10.13",
+          "Avalonia.Xaml.Interactions": "0.10.13.2",
+          "Avalonia.Xaml.Interactivity": "0.10.13.2"
         }
       },
       "Avalonia.Xaml.Interactions": {
         "type": "Transitive",
-        "resolved": "0.10.12.2",
-        "contentHash": "01NGXHMbvpg1JcZ4tFAZXD6i55vHIQnJl3+HFi7RSP1jevkjkSaVM8qjwLsTSfREsJ2OoiWxx2LcyUQJvO5Kjw==",
+        "resolved": "0.10.13.2",
+        "contentHash": "bMgr5NtEjJ/qvf+1JD4T4rRt9AbZNnJdYCx5cBfGyXHETbeliTJAt07mqTahcoPY1G2FskF1OSIW5ytljbviLw==",
         "dependencies": {
-          "Avalonia": "0.10.12",
-          "Avalonia.Xaml.Interactivity": "0.10.12.2"
+          "Avalonia": "0.10.13",
+          "Avalonia.Xaml.Interactivity": "0.10.13.2"
         }
       },
       "Avalonia.Xaml.Interactivity": {
         "type": "Transitive",
-        "resolved": "0.10.12.2",
-        "contentHash": "AGAbT1I6XW1+9tweLHDMGX8+SijE111vNNIQy2gI3bpbLfPYTirLPyK0do2s9V6l7hHfQnNmiX2NA6JHC4WG4Q==",
+        "resolved": "0.10.13.2",
+        "contentHash": "OIjK5XCsUrBCqog8lxI/DEbubaNQRwy8e8Px4i3dvllomU28EYsJm4XtrPVakY7MC+we825uXY47tsO/benLug==",
         "dependencies": {
-          "Avalonia": "0.10.12"
+          "Avalonia": "0.10.13"
         }
       },
       "Castle.Core": {
@@ -1794,9 +1794,7 @@
           "Avalonia.Diagnostics": "0.10.13",
           "Avalonia.ReactiveUI": "0.10.13",
           "Avalonia.Svg.Skia": "0.10.12",
-          "Avalonia.Xaml.Behaviors": "0.10.12.2",
-          "Avalonia.Xaml.Interactions": "0.10.12.2",
-          "Avalonia.Xaml.Interactivity": "0.10.12.2",
+          "Avalonia.Xaml.Behaviors": "0.10.13.2",
           "DynamicData": "7.5.4",
           "FluentAvaloniaUI": "1.3.0",
           "Flurl.Http": "3.2.0",
@@ -1817,6 +1815,7 @@
           "Avalonia": "0.10.13",
           "Avalonia.ReactiveUI": "0.10.13",
           "Avalonia.Svg.Skia": "0.10.12",
+          "Avalonia.Xaml.Behaviors": "0.10.13.2",
           "DynamicData": "7.5.4",
           "FluentAvaloniaUI": "1.3.0",
           "Material.Icons.Avalonia": "1.0.2",
@@ -1833,6 +1832,7 @@
           "Artemis.UI.Shared": "1.0.0",
           "Avalonia": "0.10.13",
           "Avalonia.ReactiveUI": "0.10.13",
+          "Avalonia.Xaml.Behaviors": "0.10.13.2",
           "Ninject": "3.3.4",
           "NoStringEvaluating": "2.2.2",
           "ReactiveUI": "17.1.50",

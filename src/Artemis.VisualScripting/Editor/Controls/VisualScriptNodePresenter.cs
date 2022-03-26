@@ -158,7 +158,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
             if (Node?.Node is Node customViewModelNode)
             {
-                CustomViewModel = customViewModelNode.GetCustomViewModel();
+                CustomViewModel = customViewModelNode.GetCustomViewModel((NodeScript) Node.Script.Script);
                 // CustomViewModel?.OnActivate();
             }
             else
