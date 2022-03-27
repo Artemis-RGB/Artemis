@@ -1,74 +1,104 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Reactive.Disposables;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
-using Artemis.VisualScripting.Nodes.CustomViewModels;
-using Stylet;
+using Artemis.Storage.Entities.Profile;
+using Artemis.UI.Shared.Services.NodeEditor;
+using Artemis.UI.Shared.Services.NodeEditor.Commands;
+using Artemis.UI.Shared.VisualScripting;
+using ReactiveUI;
 
-namespace Artemis.VisualScripting.Nodes.DataModel.CustomViewModels
+namespace Artemis.VisualScripting.Nodes.DataModel.CustomViewModels;
+
+public class DataModelNodeCustomViewModel : CustomNodeViewModel
 {
-    public class DataModelNodeCustomViewModel : CustomNodeViewModel
+    private readonly DataModelNode _node;
+    private readonly INodeEditorService _nodeEditorService;
+    private ObservableCollection<Module>? _modules;
+    private DataModelPath? _dataModelPath;
+    private bool _updating;
+
+    public DataModelNodeCustomViewModel(DataModelNode node, INodeScript script, ISettingsService settingsService, INodeEditorService nodeEditorService) : base(node, script)
     {
-        private readonly DataModelNode _node;
-        private BindableCollection<Module> _modules;
+        _node = node;
+        _nodeEditorService = nodeEditorService;
 
-        public DataModelNodeCustomViewModel(DataModelNode node, ISettingsService settingsService) : base(node)
+        ShowFullPaths = settingsService.GetSetting("ProfileEditor.ShowFullPaths", true);
+        ShowDataModelValues = settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
+
+        this.WhenActivated(d =>
         {
-            _node = node;
+            // Set up extra modules
+            if (_node.Script?.Context is Profile scriptProfile && scriptProfile.Configuration.Module != null)
+                Modules = new ObservableCollection<Module> {scriptProfile.Configuration.Module};
+            else if (_node.Script?.Context is ProfileConfiguration profileConfiguration && profileConfiguration.Module != null)
+                Modules = new ObservableCollection<Module> {profileConfiguration.Module};
 
-            ShowFullPaths = settingsService.GetSetting("ProfileEditor.ShowFullPaths", true);
-            ShowDataModelValues = settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
-        }
+            // Subscribe to node changes 
+            _node.WhenAnyValue(n => n.Storage).Subscribe(UpdateDataModelPath).DisposeWith(d);
+            this.WhenAnyValue(vm => vm.DataModelPath).Subscribe(ApplyDataModelPath).DisposeWith(d);
 
-        public PluginSetting<bool> ShowFullPaths { get; }
-        public PluginSetting<bool> ShowDataModelValues { get; }
-
-        public BindableCollection<Module> Modules
-        {
-            get => _modules;
-            set => SetAndNotify(ref _modules, value);
-        }
-
-        public DataModelPath DataModelPath
-        {
-            get => _node.DataModelPath;
-            set
+            Disposable.Create(() =>
             {
-                if (ReferenceEquals(_node.DataModelPath, value))
-                    return;
+                _dataModelPath?.Dispose();
+                _dataModelPath = null;
+            }).DisposeWith(d);
+        });
+    }
 
-                _node.DataModelPath?.Dispose();
-                _node.DataModelPath = value;
-                _node.DataModelPath.Save();
+    public PluginSetting<bool> ShowFullPaths { get; }
+    public PluginSetting<bool> ShowDataModelValues { get; }
 
-                _node.Storage = _node.DataModelPath.Entity;
-                _node.UpdateOutputPin(false);
-            }
-        }
+    public ObservableCollection<Module>? Modules
+    {
+        get => _modules;
+        set => RaiseAndSetIfChanged(ref _modules, value);
+    }
 
-        public override void OnActivate()
+    public DataModelPath? DataModelPath
+    {
+        get => _dataModelPath;
+        set => RaiseAndSetIfChanged(ref _dataModelPath, value);
+    }
+
+    private void UpdateDataModelPath(DataModelPathEntity? entity)
+    {
+        try
         {
-            if (Modules != null)
+            if (_updating)
                 return;
 
-            Modules = new BindableCollection<Module>();
-            if (_node.Script.Context is Profile scriptProfile && scriptProfile.Configuration.Module != null)
-                Modules.Add(scriptProfile.Configuration.Module);
-            else if (_node.Script.Context is ProfileConfiguration profileConfiguration && profileConfiguration.Module != null)
-                Modules.Add(profileConfiguration.Module);
+            _updating = true;
 
-            _node.PropertyChanged += NodeOnPropertyChanged;
+            DataModelPath? old = DataModelPath;
+            DataModelPath = entity != null ? new DataModelPath(entity) : null;
+            old?.Dispose();
         }
-
-        public override void OnDeactivate()
+        finally
         {
-            _node.PropertyChanged -= NodeOnPropertyChanged;
+            _updating = false;
         }
+    }
 
-        private void NodeOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+    private void ApplyDataModelPath(DataModelPath? path)
+    {
+        try
         {
-            if (e.PropertyName == nameof(DataModelNode.DataModelPath))
-                OnPropertyChanged(nameof(DataModelPath));
+            if (_updating)
+                return;
+            if (path?.Path == _node.Storage?.Path)
+                return;
+
+            _updating = true;
+
+            path?.Save();
+            _nodeEditorService.ExecuteCommand(Script, new UpdateStorage<DataModelPathEntity>(_node, path?.Entity, "path"));
+        }
+        finally
+        {
+            _updating = false;
         }
     }
 }

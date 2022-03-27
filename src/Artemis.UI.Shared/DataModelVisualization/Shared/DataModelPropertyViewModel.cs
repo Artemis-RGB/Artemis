@@ -2,8 +2,10 @@
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Interfaces;
+using ReactiveUI;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.DataModelVisualization.Shared
 {
     /// <summary>
     ///     Represents a view model that visualizes a single data model property contained in a
@@ -26,7 +28,7 @@ namespace Artemis.UI.Shared
         public object? DisplayValue
         {
             get => _displayValue;
-            internal set => SetAndNotify(ref _displayValue, value);
+            internal set => this.RaiseAndSetIfChanged(ref _displayValue, value);
         }
 
         /// <summary>
@@ -35,7 +37,7 @@ namespace Artemis.UI.Shared
         public Type? DisplayValueType
         {
             get => _displayValueType;
-            protected set => SetAndNotify(ref _displayValueType, value);
+            protected set => this.RaiseAndSetIfChanged(ref _displayValueType, value);
         }
 
         /// <summary>
@@ -44,7 +46,7 @@ namespace Artemis.UI.Shared
         public DataModelDisplayViewModel? DisplayViewModel
         {
             get => _displayViewModel;
-            internal set => SetAndNotify(ref _displayViewModel, value);
+            internal set => this.RaiseAndSetIfChanged(ref _displayViewModel, value);
         }
 
         /// <inheritdoc />

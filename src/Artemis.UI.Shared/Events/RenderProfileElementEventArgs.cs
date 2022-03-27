@@ -1,7 +1,7 @@
 ﻿using System;
 using Artemis.Core;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.Events
 {
     /// <summary>
     ///     Provides data on profile element related events raised by the profile editor

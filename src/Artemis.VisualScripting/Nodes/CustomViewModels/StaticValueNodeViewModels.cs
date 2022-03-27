@@ -1,18 +1,47 @@
 ﻿using Artemis.Core;
+using Artemis.UI.Shared.Services.NodeEditor;
+using Artemis.UI.Shared.Services.NodeEditor.Commands;
+using Artemis.UI.Shared.VisualScripting;
+using ReactiveUI;
 
-namespace Artemis.VisualScripting.Nodes.CustomViewModels
+namespace Artemis.VisualScripting.Nodes.CustomViewModels;
+
+public class StaticNumericValueNodeCustomViewModel : CustomNodeViewModel
 {
-    public class StaticNumericValueNodeCustomViewModel : CustomNodeViewModel
+    private readonly StaticNumericValueNode _node;
+    private readonly INodeEditorService _nodeEditorService;
+
+    public StaticNumericValueNodeCustomViewModel(StaticNumericValueNode node, INodeScript script, INodeEditorService nodeEditorService) : base(node, script)
     {
-        public StaticNumericValueNodeCustomViewModel(INode node) : base(node)
-        {
-        }
+        _node = node;
+        _nodeEditorService = nodeEditorService;
+
+        NodeModified += (_, _) => this.RaisePropertyChanged(nameof(CurrentValue));
     }
 
-    public class StaticStringValueNodeCustomViewModel : CustomNodeViewModel
+    public Numeric? CurrentValue
     {
-        public StaticStringValueNodeCustomViewModel(INode node) : base(node)
-        {
-        }
+        get => _node.Storage;
+        set => _nodeEditorService.ExecuteCommand(Script, new UpdateStorage<Numeric>(_node, value ?? new Numeric()));
+    }
+}
+
+public class StaticStringValueNodeCustomViewModel : CustomNodeViewModel
+{
+    private readonly StaticStringValueNode _node;
+    private readonly INodeEditorService _nodeEditorService;
+
+    public StaticStringValueNodeCustomViewModel(StaticStringValueNode node, INodeScript script, INodeEditorService nodeEditorService) : base(node, script)
+    {
+        _node = node;
+        _nodeEditorService = nodeEditorService;
+
+        NodeModified += (_, _) => this.RaisePropertyChanged(nameof(CurrentValue));
+    }
+
+    public string? CurrentValue
+    {
+        get => _node.Storage;
+        set => _nodeEditorService.ExecuteCommand(Script, new UpdateStorage<string>(_node, value));
     }
 }

@@ -1,18 +1,12 @@
-﻿using Artemis.UI.Ninject.Factories;
+﻿using ReactiveUI;
 
 namespace Artemis.UI.Screens.Home
 {
     public class HomeViewModel : MainScreenViewModel
     {
-        public HomeViewModel(IHeaderVmFactory headerVmFactory)
+        public HomeViewModel(IScreen hostScreen) : base(hostScreen, "home")
         {
             DisplayName = "Home";
-            HeaderViewModel = headerVmFactory.SimpleHeaderViewModel(DisplayName);
-        }
-
-        public void OpenUrl(string url)
-        {
-            Core.Utilities.OpenUrl(url);
         }
     }
 }

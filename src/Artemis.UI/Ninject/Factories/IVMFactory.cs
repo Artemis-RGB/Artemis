@@ -1,130 +1,105 @@
-﻿using Artemis.Core;
-using Artemis.Core.Modules;
-using Artemis.Core.ScriptingProviders;
-using Artemis.UI.Screens.Header;
+﻿using System.Collections.ObjectModel;
+using Artemis.Core;
+using Artemis.Core.LayerBrushes;
+using Artemis.Core.LayerEffects;
+using Artemis.UI.Screens.Device;
 using Artemis.UI.Screens.Plugins;
-using Artemis.UI.Screens.ProfileEditor.DisplayConditions.Event;
-using Artemis.UI.Screens.ProfileEditor.DisplayConditions.Static;
-using Artemis.UI.Screens.ProfileEditor.LayerProperties;
-using Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects;
-using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
-using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
-using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs;
-using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints;
-using Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem;
-using Artemis.UI.Screens.ProfileEditor.Visualization;
-using Artemis.UI.Screens.ProfileEditor.Visualization.Tools;
-using Artemis.UI.Screens.ProfileEditor.Windows;
-using Artemis.UI.Screens.Scripting;
-using Artemis.UI.Screens.Settings.Device;
-using Artemis.UI.Screens.Settings.Device.Tabs;
-using Artemis.UI.Screens.Settings.Tabs.Devices;
-using Artemis.UI.Screens.Settings.Tabs.Plugins;
-using Artemis.UI.Screens.Shared;
+using Artemis.UI.Screens.ProfileEditor;
+using Artemis.UI.Screens.ProfileEditor.ProfileTree;
+using Artemis.UI.Screens.ProfileEditor.Properties;
+using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
+using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments;
+using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
+using Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
+using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
-using Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit;
-using Stylet;
+using Artemis.UI.Screens.SurfaceEditor;
+using Artemis.UI.Screens.VisualScripting;
+using Artemis.UI.Screens.VisualScripting.Pins;
+using Artemis.UI.Services;
+using DynamicData.Binding;
+using ReactiveUI;
 
-namespace Artemis.UI.Ninject.Factories;
-
-public interface IVmFactory
+namespace Artemis.UI.Ninject.Factories
 {
-}
+    public interface IVmFactory
+    {
+    }
 
-public interface ISettingsVmFactory : IVmFactory
-{
-    PluginSettingsViewModel CreatePluginSettingsViewModel(Plugin plugin);
-    PluginFeatureViewModel CreatePluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo, bool showShield);
-    DeviceSettingsViewModel CreateDeviceSettingsViewModel(ArtemisDevice device);
-}
+    public interface IDeviceVmFactory : IVmFactory
+    {
+        DevicePropertiesViewModel DevicePropertiesViewModel(ArtemisDevice device);
+        DeviceSettingsViewModel DeviceSettingsViewModel(ArtemisDevice device, DevicesTabViewModel devicesTabViewModel);
+        DeviceDetectInputViewModel DeviceDetectInputViewModel(ArtemisDevice device);
+        DevicePropertiesTabViewModel DevicePropertiesTabViewModel(ArtemisDevice device);
+        DeviceInfoTabViewModel DeviceInfoTabViewModel(ArtemisDevice device);
+        DeviceLedsTabViewModel DeviceLedsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds);
+        InputMappingsTabViewModel InputMappingsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds);
+    }
 
-public interface IDeviceDebugVmFactory : IVmFactory
-{
-    DeviceDialogViewModel DeviceDialogViewModel(ArtemisDevice device);
-    DevicePropertiesTabViewModel DevicePropertiesTabViewModel(ArtemisDevice device);
-    DeviceInfoTabViewModel DeviceInfoTabViewModel(ArtemisDevice device);
-    DeviceLedsTabViewModel DeviceLedsTabViewModel(ArtemisDevice device);
-    InputMappingsTabViewModel InputMappingsTabViewModel(ArtemisDevice device);
-}
+    public interface ISettingsVmFactory : IVmFactory
+    {
+        PluginSettingsViewModel CreatePluginSettingsViewModel(Plugin plugin);
+        PluginFeatureViewModel CreatePluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo, bool showShield);
+        // DeviceSettingsViewModel CreateDeviceSettingsViewModel(ArtemisDevice device);
+    }
 
-public interface IProfileTreeVmFactory : IVmFactory
-{
-    FolderViewModel FolderViewModel(ProfileElement folder);
-    LayerViewModel LayerViewModel(ProfileElement layer);
-}
+    public interface ISidebarVmFactory : IVmFactory
+    {
+        SidebarViewModel? SidebarViewModel(IScreen hostScreen);
+        SidebarCategoryViewModel SidebarCategoryViewModel(SidebarViewModel sidebarViewModel, ProfileCategory profileCategory);
+        SidebarProfileConfigurationViewModel SidebarProfileConfigurationViewModel(SidebarViewModel sidebarViewModel, ProfileConfiguration profileConfiguration);
+    }
 
-public interface ILayerHintVmFactory : IVmFactory
-{
-    LayerHintsDialogViewModel LayerHintsDialogViewModel(Layer layer);
-    CategoryAdaptionHintViewModel CategoryAdaptionHintViewModel(CategoryAdaptionHint adaptionHint);
-    DeviceAdaptionHintViewModel DeviceAdaptionHintViewModel(DeviceAdaptionHint adaptionHint);
-    KeyboardSectionAdaptionHintViewModel KeyboardSectionAdaptionHintViewModel(KeyboardSectionAdaptionHint adaptionHint);
-}
+    public interface SurfaceVmFactory : IVmFactory
+    {
+        SurfaceDeviceViewModel SurfaceDeviceViewModel(ArtemisDevice device);
+        ListDeviceViewModel ListDeviceViewModel(ArtemisDevice device);
+    }
 
-public interface IHeaderVmFactory : IVmFactory
-{
-    SimpleHeaderViewModel SimpleHeaderViewModel(string displayName);
-}
+    public interface IPrerequisitesVmFactory : IVmFactory
+    {
+        PluginPrerequisiteViewModel PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall);
+    }
 
-public interface IProfileLayerVmFactory : IVmFactory
-{
-    ProfileLayerViewModel Create(Layer layer, PanZoomViewModel panZoomViewModel);
-}
+    public interface IProfileEditorVmFactory : IVmFactory
+    {
+        ProfileEditorViewModel ProfileEditorViewModel(IScreen hostScreen);
+        FolderTreeItemViewModel FolderTreeItemViewModel(TreeItemViewModel? parent, Folder folder);
+        LayerTreeItemViewModel LayerTreeItemViewModel(TreeItemViewModel? parent, Layer layer);
+        LayerShapeVisualizerViewModel LayerShapeVisualizerViewModel(Layer layer);
+        LayerVisualizerViewModel LayerVisualizerViewModel(Layer layer);
+    }
 
-public interface IVisualizationToolVmFactory : IVmFactory
-{
-    ViewpointMoveToolViewModel ViewpointMoveToolViewModel(PanZoomViewModel panZoomViewModel);
-    EditToolViewModel EditToolViewModel(PanZoomViewModel panZoomViewModel);
-    SelectionToolViewModel SelectionToolViewModel(PanZoomViewModel panZoomViewModel);
-    SelectionRemoveToolViewModel SelectionRemoveToolViewModel(PanZoomViewModel panZoomViewModel);
-}
+    public interface ILayerPropertyVmFactory : IVmFactory
+    {
+        PropertyViewModel PropertyViewModel(ILayerProperty layerProperty);
+        PropertyGroupViewModel PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup);
+        PropertyGroupViewModel PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, BaseLayerBrush layerBrush);
+        PropertyGroupViewModel PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, BaseLayerEffect layerEffect);
 
-public interface ILayerPropertyVmFactory : IVmFactory
-{
-    LayerPropertyViewModel LayerPropertyViewModel(ILayerProperty layerProperty);
+        TreeGroupViewModel TreeGroupViewModel(PropertyGroupViewModel propertyGroupViewModel);
+        
+        TimelineViewModel TimelineViewModel(ObservableCollection<PropertyGroupViewModel> propertyGroupViewModels);
+        TimelineGroupViewModel TimelineGroupViewModel(PropertyGroupViewModel propertyGroupViewModel);
+    }
 
-    LayerPropertyGroupViewModel LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup);
-    TreeGroupViewModel TreeGroupViewModel(LayerPropertyGroupViewModel layerPropertyGroupViewModel);
-    TimelineGroupViewModel TimelineGroupViewModel(LayerPropertyGroupViewModel layerPropertyGroupViewModel);
+    public interface IPropertyVmFactory
+    {
+        ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, PropertyViewModel propertyViewModel);
+        ITimelinePropertyViewModel TimelinePropertyViewModel(ILayerProperty layerProperty, PropertyViewModel propertyViewModel);
+    }
 
-    TreeViewModel TreeViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IObservableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
-    EffectsViewModel EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel);
-    TimelineViewModel TimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IObservableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
-    TimelineSegmentViewModel TimelineSegmentViewModel(SegmentViewModelType segment, IObservableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
-}
-
-public interface IConditionVmFactory : IVmFactory
-{
-    StaticConditionViewModel StaticConditionViewModel(StaticCondition staticCondition);
-    EventConditionViewModel EventConditionViewModel(EventCondition eventCondition);
-}
-
-public interface IPrerequisitesVmFactory : IVmFactory
-{
-    PluginPrerequisiteViewModel PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall);
-}
-
-public interface IScriptVmFactory : IVmFactory
-{
-    ScriptsDialogViewModel ScriptsDialogViewModel(Profile profile);
-    ScriptConfigurationViewModel ScriptConfigurationViewModel(ScriptConfiguration scriptConfiguration);
-}
-
-public interface ISidebarVmFactory : IVmFactory
-{
-    SidebarCategoryViewModel SidebarCategoryViewModel(ProfileCategory profileCategory);
-    SidebarProfileConfigurationViewModel SidebarProfileConfigurationViewModel(ProfileConfiguration profileConfiguration);
-    ProfileConfigurationHotkeyViewModel ProfileConfigurationHotkeyViewModel(ProfileConfiguration profileConfiguration, bool isDisableHotkey);
-    ModuleActivationRequirementViewModel ModuleActivationRequirementViewModel(IModuleActivationRequirement activationRequirement);
-}
-
-public interface INodeVmFactory : IVmFactory
-{
-    NodeScriptWindowViewModel NodeScriptWindowViewModel(NodeScript nodeScript);
-}
-
-public interface IPropertyVmFactory
-{
-    ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, LayerPropertyViewModel layerPropertyViewModel);
-    ITimelinePropertyViewModel TimelinePropertyViewModel(ILayerProperty layerProperty, LayerPropertyViewModel layerPropertyViewModel);
+    public interface INodeVmFactory : IVmFactory
+    {
+        NodeScriptViewModel NodeScriptViewModel(NodeScript nodeScript);
+        NodePickerViewModel NodePickerViewModel(NodeScript nodeScript);
+        NodeViewModel NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node);
+        CableViewModel CableViewModel(NodeScriptViewModel nodeScriptViewModel, IPin from, IPin to);
+        DragCableViewModel DragCableViewModel(PinViewModel pinViewModel);
+        InputPinViewModel InputPinViewModel(IPin inputPin);
+        OutputPinViewModel OutputPinViewModel(IPin outputPin);
+        InputPinCollectionViewModel InputPinCollectionViewModel(IPinCollection inputPinCollection, NodeScriptViewModel nodeScriptViewModel);
+        OutputPinCollectionViewModel OutputPinCollectionViewModel(IPinCollection outputPinCollection, NodeScriptViewModel nodeScriptViewModel);
+    }
 }

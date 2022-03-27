@@ -1,44 +1,48 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
+﻿using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Events;
-using Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit;
 using Artemis.UI.Shared;
-using Artemis.UI.Shared.Services;
-using Newtonsoft.Json;
-using Ookii.Dialogs.Wpf;
-using Stylet;
+using Artemis.UI.Shared.Services.Interfaces;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar
 {
-    public class SidebarProfileConfigurationViewModel : Screen
+    public class SidebarProfileConfigurationViewModel : ActivatableViewModelBase
     {
-        private readonly IDialogService _dialogService;
-        private readonly IEventAggregator _eventAggregator;
+        private readonly SidebarViewModel _sidebarViewModel;
         private readonly IProfileService _profileService;
+        private readonly IWindowService _windowService;
+        private ObservableAsPropertyHelper<bool>? _isSuspended;
+        public ProfileConfiguration ProfileConfiguration { get; }
 
-        public SidebarProfileConfigurationViewModel(ProfileConfiguration profileConfiguration,
-            IProfileService profileService,
-            IDialogService dialogService,
-            IEventAggregator eventAggregator)
+        public SidebarProfileConfigurationViewModel(SidebarViewModel sidebarViewModel, ProfileConfiguration profileConfiguration, IProfileService profileService, IWindowService windowService)
         {
+            _sidebarViewModel = sidebarViewModel;
             _profileService = profileService;
-            _dialogService = dialogService;
-            _eventAggregator = eventAggregator;
+            _windowService = windowService;
+
             ProfileConfiguration = profileConfiguration;
+            EditProfile = ReactiveCommand.CreateFromTask(ExecuteEditProfile);
+
+            this.WhenActivated(d =>
+            {
+                _isSuspended = ProfileConfiguration.WhenAnyValue(c => c.IsSuspended)
+                    .ToProperty(this, vm => vm.IsSuspended)
+                    .DisposeWith(d);
+            });
+            _profileService.LoadProfileConfigurationIcon(ProfileConfiguration);
         }
 
-        public ProfileConfiguration ProfileConfiguration { get; }
+        public ReactiveCommand<Unit, Unit> EditProfile { get; }
 
         public bool IsProfileActive => ProfileConfiguration.Profile != null;
 
         public bool IsSuspended
         {
-            get => ProfileConfiguration.IsSuspended;
+            get => _isSuspended?.Value ?? false;
             set
             {
                 ProfileConfiguration.IsSuspended = value;
@@ -46,119 +50,15 @@ namespace Artemis.UI.Screens.Sidebar
             }
         }
 
-        public async Task ViewProperties()
+        public async Task ExecuteEditProfile()
         {
-            object result = await _dialogService.ShowDialog<ProfileEditViewModel>(new Dictionary<string, object>
-            {
-                {"profileConfiguration", ProfileConfiguration},
-                {"isNew", false}
-            });
+            ProfileConfiguration? edited = await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(
+                ("profileCategory", ProfileConfiguration.Category),
+                ("profileConfiguration", ProfileConfiguration)
+            );
 
-            if (result is nameof(ProfileEditViewModel.Delete))
-                await Delete();
+            if (edited != null)
+                _sidebarViewModel.UpdateProfileCategories();
         }
-
-        public void SuspendAbove(string action)
-        {
-            foreach (ProfileConfiguration profileConfiguration in ProfileConfiguration.Category.ProfileConfigurations.OrderBy(p => p.Order).TakeWhile(c => c != ProfileConfiguration))
-            {
-                if (profileConfiguration != ProfileConfiguration)
-                    profileConfiguration.IsSuspended = action == "suspend";
-            }
-        }
-
-        public void SuspendBelow(string action)
-        {
-            foreach (ProfileConfiguration profileConfiguration in ProfileConfiguration.Category.ProfileConfigurations.OrderBy(p => p.Order).SkipWhile(c => c != ProfileConfiguration))
-            {
-                if (profileConfiguration != ProfileConfiguration)
-                    profileConfiguration.IsSuspended = action == "suspend";
-            }
-        }
-
-        public async Task Export()
-        {
-            string filename = new string(ProfileConfiguration.Name.Select(ch => Path.GetInvalidFileNameChars().Contains(ch) ? '_' : ch).ToArray()) + ".json";
-            VistaSaveFileDialog dialog = new()
-            {
-                Filter = "Artemis Profile|*.json",
-                Title = "Export Artemis profile",
-                FileName = filename
-            };
-            bool? result = dialog.ShowDialog();
-            if (result != true)
-                return;
-
-            ProfileConfigurationExportModel profileConfigurationExportModel = _profileService.ExportProfile(ProfileConfiguration);
-            string json = JsonConvert.SerializeObject(profileConfigurationExportModel, IProfileService.ExportSettings);
-
-            string path = Path.ChangeExtension(dialog.FileName, ".json");
-            await File.WriteAllTextAsync(path, json);
-        }
-
-        public void Duplicate()
-        {
-            ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
-            _profileService.ImportProfile(ProfileConfiguration.Category, export, true, false, "copy");
-        }
-
-        public void Copy()
-        {
-            JsonClipboard.SetObject(_profileService.ExportProfile(ProfileConfiguration));
-        }
-
-        public void Paste()
-        {
-            ProfileConfigurationExportModel profileConfiguration = JsonClipboard.GetData<ProfileConfigurationExportModel>();
-            if (profileConfiguration == null)
-                return;
-
-            _profileService.ImportProfile(ProfileConfiguration.Category, profileConfiguration, true, false, "copy");
-        }
-
-        public async Task Delete()
-        {
-            if (await _dialogService.ShowConfirmDialog("Delete profile", "Are you sure you want to delete this profile?\r\nThis cannot be undone."))
-            {
-                // Close the editor first by heading to Home if the profile is being edited
-                if (ProfileConfiguration.IsBeingEdited)
-                    _eventAggregator.Publish(new RequestSelectSidebarItemEvent("Home"));
-
-                _profileService.RemoveProfileConfiguration(ProfileConfiguration);
-            }
-        }
-
-        #region Overrides of Screen
-
-        /// <inheritdoc />
-        protected override void OnActivate()
-        {
-            _profileService.LoadProfileConfigurationIcon(ProfileConfiguration);
-            ProfileConfiguration.PropertyChanged += ProfileConfigurationOnPropertyChanged;
-            NotifyOfPropertyChange(nameof(IsProfileActive));
-
-            base.OnActivate();
-        }
-
-        /// <inheritdoc />
-        protected override void OnDeactivate()
-        {
-            ProfileConfiguration.PropertyChanged -= ProfileConfigurationOnPropertyChanged;
-            base.OnDeactivate();
-        }
-
-        #endregion
-
-        #region Event handlers
-
-        private void ProfileConfigurationOnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(ProfileConfiguration.Profile))
-                NotifyOfPropertyChange(nameof(IsProfileActive));
-            if (e.PropertyName == nameof(ProfileConfiguration.IsSuspended))
-                NotifyOfPropertyChange(nameof(IsSuspended));
-        }
-
-        #endregion
     }
 }

@@ -1,24 +1,23 @@
 ﻿using System;
 using System.IO;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Artemis.Core;
+using Avalonia;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using Avalonia.Visuals.Media.Imaging;
 using RGB.NET.Core;
-using Color = System.Windows.Media.Color;
-using Point = System.Windows.Point;
-using SolidColorBrush = System.Windows.Media.SolidColorBrush;
+using Color = Avalonia.Media.Color;
+using Point = Avalonia.Point;
+using SolidColorBrush = Avalonia.Media.SolidColorBrush;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.Controls
 {
     internal class DeviceVisualizerLed
     {
-        private const byte Dimmed = 100;
-        private const byte NonDimmed = 255;
-        private GeometryDrawing? _geometryDrawing;
-        private DrawingGroup? _lastBackingStore;
-        private Color _renderColor;
-        private SolidColorBrush? _renderColorBrush;
+        private readonly SolidColorBrush _penBrush;
+        private readonly SolidColorBrush _fillBrush;
+        private readonly Pen _pen;
 
         public DeviceVisualizerLed(ArtemisLed led)
         {
@@ -30,83 +29,63 @@ namespace Artemis.UI.Shared
                 Led.RgbLed.Size.Height
             );
 
-            if (Led.Layout?.Image != null && File.Exists(Led.Layout.Image.LocalPath))
-                LedImage = new BitmapImage(Led.Layout.Image);
+            _fillBrush = new SolidColorBrush();
+            _penBrush = new SolidColorBrush();
+            _pen = new Pen(_penBrush) {LineJoin = PenLineJoin.Round};
 
             CreateLedGeometry();
         }
 
-
         public ArtemisLed Led { get; }
         public Rect LedRect { get; set; }
-        public BitmapImage? LedImage { get; set; }
         public Geometry? DisplayGeometry { get; private set; }
 
-        public void RenderColor(DrawingGroup backingStore, DrawingContext drawingContext, bool isDimmed)
+        public void DrawBitmap(IDrawingContextImpl drawingContext)
         {
-            if (DisplayGeometry == null || backingStore == null)
+            if (Led.Layout?.Image == null || !File.Exists(Led.Layout.Image.LocalPath))
                 return;
 
-            _renderColorBrush ??= new SolidColorBrush();
-            _geometryDrawing ??= new GeometryDrawing(_renderColorBrush, null, new RectangleGeometry(LedRect));
+            try
+            {
+                using Bitmap bitmap = new(Led.Layout.Image.LocalPath);
+                drawingContext.DrawBitmap(
+                    bitmap.PlatformImpl,
+                    1,
+                    new Rect(bitmap.Size),
+                    new Rect(Led.RgbLed.Location.X * 4, Led.RgbLed.Location.Y * 4, Led.RgbLed.Size.Width * 4, Led.RgbLed.Size.Height * 4),
+                    BitmapInterpolationMode.HighQuality
+                );
+            }
+            catch
+            {
+                // ignored
+            }
+        }
 
+        public void RenderGeometry(DrawingContext drawingContext, bool dimmed)
+        {
             byte r = Led.RgbLed.Color.GetR();
             byte g = Led.RgbLed.Color.GetG();
             byte b = Led.RgbLed.Color.GetB();
 
-            _renderColor.A = isDimmed ? Dimmed : NonDimmed;
-            _renderColor.R = r;
-            _renderColor.G = g;
-            _renderColor.B = b;
-            _renderColorBrush.Color = _renderColor;
-
-            if (_lastBackingStore != backingStore)
+            if (dimmed)
             {
-                backingStore.Children.Add(_geometryDrawing);
-                _lastBackingStore = backingStore;
+                _fillBrush.Color = new Color(50, r, g, b);
+                _penBrush.Color = new Color(100, r, g, b);
             }
-        }
+            else
+            {
+                _fillBrush.Color = new Color(100, r, g, b);
+                _penBrush.Color = new Color(255, r, g, b);
+            }
 
-        public void RenderImage(DrawingContext drawingContext)
-        {
-            if (LedImage == null)
-                return;
-
-            drawingContext.DrawImage(LedImage, LedRect);
-        }
-
-        public void RenderOpacityMask(DrawingContext drawingContext)
-        {
-            if (DisplayGeometry == null)
-                return;
-
-            SolidColorBrush fillBrush = new(Color.FromArgb(100, 255, 255, 255));
-            fillBrush.Freeze();
-            SolidColorBrush penBrush = new(Color.FromArgb(255, 255, 255, 255));
-            penBrush.Freeze();
-
-            // Create transparent pixels covering the entire LedRect so the image size matched the LedRect size
-            drawingContext.DrawRectangle(new SolidColorBrush(Colors.Transparent), new Pen(new SolidColorBrush(Colors.Transparent), 1), LedRect);
-            // Translate to the top-left of the LedRect
-            drawingContext.PushTransform(new TranslateTransform(LedRect.X, LedRect.Y));
             // Render the LED geometry
-            drawingContext.DrawGeometry(fillBrush, new Pen(penBrush, 1) {LineJoin = PenLineJoin.Round}, DisplayGeometry.GetOutlinedPathGeometry());
-            // Restore the drawing context
-            drawingContext.Pop();
+            drawingContext.DrawGeometry(_fillBrush, _pen, DisplayGeometry);
         }
 
         public bool HitTest(Point position)
         {
-            if (DisplayGeometry == null)
-                return false;
-
-            PathGeometry translatedGeometry = Geometry.Combine(
-                Geometry.Empty,
-                DisplayGeometry,
-                GeometryCombineMode.Union,
-                new TranslateTransform(Led.RgbLed.Location.X, Led.RgbLed.Location.Y)
-            );
-            return translatedGeometry.FillContains(position);
+            return DisplayGeometry != null && DisplayGeometry.FillContains(position);
         }
 
         private void CreateLedGeometry()
@@ -139,17 +118,17 @@ namespace Artemis.UI.Shared
 
         private void CreateRectangleGeometry()
         {
-            DisplayGeometry = new RectangleGeometry(new Rect(0.5, 0.5, Led.RgbLed.Size.Width - 1, Led.RgbLed.Size.Height - 1));
+            DisplayGeometry = new RectangleGeometry(new Rect(Led.RgbLed.Location.X + 0.5, Led.RgbLed.Location.Y + 0.5, Led.RgbLed.Size.Width - 1, Led.RgbLed.Size.Height - 1));
         }
 
         private void CreateCircleGeometry()
         {
-            DisplayGeometry = new EllipseGeometry(new Rect(0.5, 0.5, Led.RgbLed.Size.Width - 1, Led.RgbLed.Size.Height - 1));
+            DisplayGeometry = new EllipseGeometry(new Rect(Led.RgbLed.Location.X + 0.5, Led.RgbLed.Location.Y + 0.5, Led.RgbLed.Size.Width - 1, Led.RgbLed.Size.Height - 1));
         }
 
         private void CreateKeyCapGeometry()
         {
-            DisplayGeometry = new RectangleGeometry(new Rect(1, 1, Led.RgbLed.Size.Width - 2, Led.RgbLed.Size.Height - 2), 1.6, 1.6);
+            DisplayGeometry = new RectangleGeometry(new Rect(Led.RgbLed.Location.X + 1, Led.RgbLed.Location.Y + 1, Led.RgbLed.Size.Width - 2, Led.RgbLed.Size.Height - 2));
         }
 
         private void CreateCustomGeometry(double deflateAmount)
@@ -158,36 +137,17 @@ namespace Artemis.UI.Shared
             {
                 double width = Led.RgbLed.Size.Width - deflateAmount;
                 double height = Led.RgbLed.Size.Height - deflateAmount;
-                // DisplayGeometry = Geometry.Parse(Led.RgbLed.ShapeData);
-                DisplayGeometry = Geometry.Combine(
-                    Geometry.Empty,
-                    Geometry.Parse(Led.RgbLed.ShapeData),
-                    GeometryCombineMode.Union,
-                    new TransformGroup
+
+                Geometry geometry = Geometry.Parse(Led.RgbLed.ShapeData);
+                geometry.Transform = new TransformGroup
+                {
+                    Children = new Transforms
                     {
-                        Children = new TransformCollection
-                        {
-                            new ScaleTransform(width, height),
-                            new TranslateTransform(deflateAmount / 2, deflateAmount / 2)
-                        }
+                        new ScaleTransform(width, height),
+                        new TranslateTransform(Led.RgbLed.Location.X + deflateAmount / 2, Led.RgbLed.Location.Y + deflateAmount / 2)
                     }
-                );
-
-                if (DisplayGeometry.Bounds.Width > width)
-                {
-                    DisplayGeometry = Geometry.Combine(Geometry.Empty, DisplayGeometry, GeometryCombineMode.Union, new TransformGroup
-                    {
-                        Children = new TransformCollection {new ScaleTransform(width / DisplayGeometry.Bounds.Width, 1)}
-                    });
-                }
-
-                if (DisplayGeometry.Bounds.Height > height)
-                {
-                    DisplayGeometry = Geometry.Combine(Geometry.Empty, DisplayGeometry, GeometryCombineMode.Union, new TransformGroup
-                    {
-                        Children = new TransformCollection {new ScaleTransform(1, height / DisplayGeometry.Bounds.Height)}
-                    });
-                }
+                };
+                DisplayGeometry = geometry;
             }
             catch (Exception)
             {

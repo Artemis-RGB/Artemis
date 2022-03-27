@@ -1,148 +1,99 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Timers;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Threading;
+using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.UI.Shared.Events;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.LogicalTree;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using Avalonia.Rendering;
+using Avalonia.Threading;
+using Avalonia.Visuals.Media.Imaging;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.Controls
 {
     /// <summary>
     ///     Visualizes an <see cref="ArtemisDevice" /> with optional per-LED colors
     /// </summary>
-    public class DeviceVisualizer : FrameworkElement
+    public class DeviceVisualizer : Control
     {
-        /// <summary>
-        ///     The device to visualize
-        /// </summary>
-        public static readonly DependencyProperty DeviceProperty = DependencyProperty.Register(nameof(Device), typeof(ArtemisDevice), typeof(DeviceVisualizer),
-            new FrameworkPropertyMetadata(default(ArtemisDevice), FrameworkPropertyMetadataOptions.AffectsRender, DevicePropertyChangedCallback));
-
-        /// <summary>
-        ///     Whether or not to show per-LED colors
-        /// </summary>
-        public static readonly DependencyProperty ShowColorsProperty = DependencyProperty.Register(nameof(ShowColors), typeof(bool), typeof(DeviceVisualizer),
-            new FrameworkPropertyMetadata(default(bool), FrameworkPropertyMetadataOptions.AffectsRender, ShowColorsPropertyChangedCallback));
-
-        /// <summary>
-        ///     A list of LEDs to highlight
-        /// </summary>
-        public static readonly DependencyProperty HighlightedLedsProperty = DependencyProperty.Register(nameof(HighlightedLeds), typeof(ObservableCollection<ArtemisLed>), typeof(DeviceVisualizer),
-            new FrameworkPropertyMetadata(default(ObservableCollection<ArtemisLed>), HighlightedLedsPropertyChanged));
-
-        private readonly DrawingGroup _backingStore;
+        private const double UpdateFrameRate = 25.0;
         private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
         private readonly DispatcherTimer _timer;
-        private BitmapImage? _deviceImage;
-        private ArtemisDevice? _oldDevice;
-        private List<DeviceVisualizerLed> _highlightedLeds;
-        private List<DeviceVisualizerLed> _dimmedLeds;
 
-        /// <summary>
-        ///     Creates a new instance of the <see cref="DeviceVisualizer" /> class
-        /// </summary>
+        private Rect _deviceBounds;
+        private RenderTargetBitmap? _deviceImage;
+        private List<DeviceVisualizerLed>? _dimmedLeds;
+        private List<DeviceVisualizerLed>? _highlightedLeds;
+        private ArtemisDevice? _oldDevice;
+
+        /// <inheritdoc />
         public DeviceVisualizer()
         {
-            _backingStore = new DrawingGroup();
+            _timer = new DispatcherTimer(DispatcherPriority.Render) {Interval = TimeSpan.FromMilliseconds(1000.0 / UpdateFrameRate)};
             _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
-            _dimmedLeds = new List<DeviceVisualizerLed>();
 
-            // Run an update timer at 25 fps
-            _timer = new DispatcherTimer(DispatcherPriority.Render) {Interval = TimeSpan.FromMilliseconds(40)};
-
-            MouseLeftButtonUp += OnMouseLeftButtonUp;
-            Loaded += OnLoaded;
-            Unloaded += OnUnloaded;
+            PointerReleased += OnPointerReleased;
         }
 
-        /// <summary>
-        ///     Gets or sets the device to visualize
-        /// </summary>
-        public ArtemisDevice? Device
+        /// <inheritdoc />
+        public override void Render(DrawingContext drawingContext)
         {
-            get => (ArtemisDevice) GetValue(DeviceProperty);
-            set => SetValue(DeviceProperty, value);
-        }
+            if (Device == null)
+                return;
 
-        /// <summary>
-        ///     Gets or sets whether or not to show per-LED colors
-        /// </summary>
-        public bool ShowColors
-        {
-            get => (bool) GetValue(ShowColorsProperty);
-            set => SetValue(ShowColorsProperty, value);
-        }
+            // Determine the scale required to fit the desired size of the control
+            double scale = Math.Min(Bounds.Width / _deviceBounds.Width, Bounds.Height / _deviceBounds.Height);
 
-        /// <summary>
-        ///     Gets or sets a list of LEDs to highlight
-        /// </summary>
-        public ObservableCollection<ArtemisLed>? HighlightedLeds
-        {
-            get => (ObservableCollection<ArtemisLed>) GetValue(HighlightedLedsProperty);
-            set => SetValue(HighlightedLedsProperty, value);
+            DrawingContext.PushedState? boundsPush = null;
+            try
+            {
+                // Scale the visualization in the desired bounding box
+                if (Bounds.Width > 0 && Bounds.Height > 0)
+                    boundsPush = drawingContext.PushPreTransform(Matrix.CreateScale(scale, scale));
+
+                // Apply device rotation
+                using DrawingContext.PushedState translationPush = drawingContext.PushPreTransform(Matrix.CreateTranslation(0 - _deviceBounds.Left, 0 - _deviceBounds.Top));
+                using DrawingContext.PushedState rotationPush = drawingContext.PushPreTransform(Matrix.CreateRotation(Matrix.ToRadians(Device.Rotation)));
+
+                // Apply device scale
+                using DrawingContext.PushedState scalePush = drawingContext.PushPreTransform(Matrix.CreateScale(Device.Scale, Device.Scale));
+
+                // Render device and LED images 
+                if (_deviceImage != null)
+                {
+                    drawingContext.DrawImage(
+                        _deviceImage,
+                        new Rect(_deviceImage.Size),
+                        new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height),
+                        RenderOptions.GetBitmapInterpolationMode(this)
+                    );
+                }
+
+                if (!ShowColors)
+                    return;
+
+                foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
+                    deviceVisualizerLed.RenderGeometry(drawingContext, false);
+            }
+            finally
+            {
+                boundsPush?.Dispose();
+            }
         }
 
         /// <summary>
         ///     Occurs when a LED of the device has been clicked
         /// </summary>
         public event EventHandler<LedClickedEventArgs>? LedClicked;
-
-        /// <inheritdoc />
-        protected override void OnRender(DrawingContext drawingContext)
-        {
-            if (Device == null)
-                return;
-
-            // Determine the scale required to fit the desired size of the control
-            Size measureSize = MeasureDevice();
-            double scale = Math.Min(RenderSize.Width / measureSize.Width, RenderSize.Height / measureSize.Height);
-
-            // Scale the visualization in the desired bounding box
-            if (RenderSize.Width > 0 && RenderSize.Height > 0)
-                drawingContext.PushTransform(new ScaleTransform(scale, scale));
-
-            // Determine the offset required to rotate within bounds
-            Rect rotationRect = new(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
-            rotationRect.Transform(new RotateTransform(Device.Rotation).Value);
-
-            // Apply device rotation
-            drawingContext.PushTransform(new TranslateTransform(0 - rotationRect.Left, 0 - rotationRect.Top));
-            drawingContext.PushTransform(new RotateTransform(Device.Rotation));
-
-            // Apply device scale
-            drawingContext.PushTransform(new ScaleTransform(Device.Scale, Device.Scale));
-
-            // Render device and LED images 
-            if (_deviceImage != null)
-                drawingContext.DrawImage(_deviceImage, new Rect(0, 0, Device.RgbDevice.Size.Width, Device.RgbDevice.Size.Height));
-
-            foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                deviceVisualizerLed.RenderImage(drawingContext);
-
-            drawingContext.DrawDrawing(_backingStore);
-        }
-
-        /// <inheritdoc />
-        protected override Size MeasureOverride(Size availableSize)
-        {
-            if (Device == null)
-                return Size.Empty;
-
-            Size deviceSize = MeasureDevice();
-            if (deviceSize.Width <= 0 || deviceSize.Height <= 0)
-                return Size.Empty;
-
-            return ResizeKeepAspect(deviceSize, availableSize.Width, availableSize.Height);
-        }
 
         /// <summary>
         ///     Invokes the <see cref="LedClicked" /> event
@@ -153,72 +104,37 @@ namespace Artemis.UI.Shared
             LedClicked?.Invoke(this, e);
         }
 
-        /// <summary>
-        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">
-        ///     <see langword="true" /> to release both managed and unmanaged resources;
-        ///     <see langword="false" /> to release only unmanaged resources.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
+        private void Update()
         {
-            if (disposing)
-                _timer.Stop();
+            InvalidateVisual();
         }
 
-        private static Size ResizeKeepAspect(Size src, double maxWidth, double maxHeight)
-        {
-            double scale;
-            if (double.IsPositiveInfinity(maxWidth) && !double.IsPositiveInfinity(maxHeight))
-                scale = maxHeight / src.Height;
-            else if (!double.IsPositiveInfinity(maxWidth) && double.IsPositiveInfinity(maxHeight))
-                scale = maxWidth / src.Width;
-            else if (double.IsPositiveInfinity(maxWidth) && double.IsPositiveInfinity(maxHeight))
-                return src;
-            else
-                scale = Math.Min(maxWidth / src.Width, maxHeight / src.Height);
-
-            return new Size(src.Width * scale, src.Height * scale);
-        }
-
-        private Size MeasureDevice()
+        private Rect MeasureDevice()
         {
             if (Device == null)
-                return Size.Empty;
+                return Rect.Empty;
 
-            Rect rotationRect = new(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
-            rotationRect.Transform(new RotateTransform(Device.Rotation).Value);
+            Rect deviceRect = new(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
+            Geometry geometry = new RectangleGeometry(deviceRect);
+            geometry.Transform = new RotateTransform(Device.Rotation);
 
-            return rotationRect.Size;
+            return geometry.Bounds;
         }
 
-        private void OnUnloaded(object? sender, RoutedEventArgs e)
+        private void TimerOnTick(object? sender, EventArgs e)
         {
-            _timer.Stop();
-            _timer.Tick -= TimerOnTick;
-
-            if (HighlightedLeds != null)
-                HighlightedLeds.CollectionChanged -= HighlightedLedsChanged;
-            if (_oldDevice != null)
-            {
-                if (Device != null)
-                {
-                    Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
-                    Device.DeviceUpdated -= DeviceUpdated;
-                }
-
-                _oldDevice = null;
-            }
+            if (ShowColors && IsVisible && Opacity > 0)
+                Update();
         }
 
-        private void OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
         {
             if (Device == null)
                 return;
 
             Point position = e.GetPosition(this);
-            double x = position.X / RenderSize.Width;
-            double y = position.Y / RenderSize.Height;
+            double x = position.X / Bounds.Width;
+            double y = position.Y / Bounds.Height;
 
             Point scaledPosition = new(x * Device.Rectangle.Width, y * Device.Rectangle.Height);
             DeviceVisualizerLed? deviceVisualizerLed = _deviceVisualizerLeds.FirstOrDefault(l => l.HitTest(scaledPosition));
@@ -226,154 +142,173 @@ namespace Artemis.UI.Shared
                 OnLedClicked(new LedClickedEventArgs(deviceVisualizerLed.Led.Device, deviceVisualizerLed.Led));
         }
 
-        private void OnLoaded(object? sender, RoutedEventArgs e)
+        private void DevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            _timer.Start();
-            _timer.Tick += TimerOnTick;
+            Dispatcher.UIThread.Post(SetupForDevice, DispatcherPriority.Background);
         }
 
-        private void TimerOnTick(object? sender, EventArgs e)
+        private void DeviceUpdated(object? sender, EventArgs e)
         {
-            if (ShowColors && Visibility == Visibility.Visible)
-                Render();
+            Dispatcher.UIThread.Post(SetupForDevice, DispatcherPriority.Background);
         }
 
-        private void Render()
+        #region Properties
+
+        /// <summary>
+        ///     Gets or sets the <see cref="ArtemisDevice" /> to display
+        /// </summary>
+        public static readonly StyledProperty<ArtemisDevice?> DeviceProperty =
+            AvaloniaProperty.Register<DeviceVisualizer, ArtemisDevice?>(nameof(Device), notifying: DeviceUpdated);
+
+        private static void DeviceUpdated(IAvaloniaObject sender, bool before)
         {
-            DrawingContext drawingContext = _backingStore.Append();
-
-            if (_highlightedLeds.Any())
-            {
-                foreach (DeviceVisualizerLed deviceVisualizerLed in _highlightedLeds)
-                    deviceVisualizerLed.RenderColor(_backingStore, drawingContext, false);
-
-                foreach (DeviceVisualizerLed deviceVisualizerLed in _dimmedLeds)
-                    deviceVisualizerLed.RenderColor(_backingStore, drawingContext, true);
-            }
-            else
-            {
-                foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                    deviceVisualizerLed.RenderColor(_backingStore, drawingContext, false);
-            }
-
-            drawingContext.Close();
+            if (!before)
+                ((DeviceVisualizer) sender).SetupForDevice();
         }
 
-        private void UpdateTransform()
+        /// <summary>
+        ///     Gets or sets the <see cref="ArtemisDevice" /> to display
+        /// </summary>
+        public ArtemisDevice? Device
         {
-            InvalidateVisual();
-            InvalidateMeasure();
+            get => GetValue(DeviceProperty);
+            set => SetValue(DeviceProperty, value);
         }
 
-        private void SetupForDevice()
+        /// <summary>
+        ///     Gets or sets boolean indicating  whether or not to show per-LED colors
+        /// </summary>
+        public static readonly StyledProperty<bool> ShowColorsProperty =
+            AvaloniaProperty.Register<DeviceVisualizer, bool>(nameof(ShowColors));
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether or not to show per-LED colors
+        /// </summary>
+        public bool ShowColors
         {
+            get => GetValue(ShowColorsProperty);
+            set => SetValue(ShowColorsProperty, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets a list of LEDs to highlight
+        /// </summary>
+        public static readonly StyledProperty<ObservableCollection<ArtemisLed>?> HighlightedLedsProperty =
+            AvaloniaProperty.Register<DeviceVisualizer, ObservableCollection<ArtemisLed>?>(nameof(HighlightedLeds));
+
+        /// <summary>
+        ///     Gets or sets a list of LEDs to highlight
+        /// </summary>
+        public ObservableCollection<ArtemisLed>? HighlightedLeds
+        {
+            get => GetValue(HighlightedLedsProperty);
+            set => SetValue(HighlightedLedsProperty, value);
+        }
+
+        #endregion
+
+        #region Lifetime management
+
+        /// <inheritdoc />
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            _deviceImage?.Dispose();
             _deviceImage = null;
-            _deviceVisualizerLeds.Clear();
-            _highlightedLeds = new List<DeviceVisualizerLed>();
-            _dimmedLeds = new List<DeviceVisualizerLed>();
 
-            if (Device == null)
-                return;
-
-            if (_oldDevice != null)
+            if (Device != null)
             {
                 Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
                 Device.DeviceUpdated -= DeviceUpdated;
             }
 
+            base.OnDetachedFromVisualTree(e);
+        }
+
+        /// <inheritdoc />
+        protected override void OnAttachedToLogicalTree(LogicalTreeAttachmentEventArgs e)
+        {
+            _timer.Start();
+            _timer.Tick += TimerOnTick;
+            base.OnAttachedToLogicalTree(e);
+        }
+
+        /// <inheritdoc />
+        protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
+        {
+            _timer.Stop();
+            _timer.Tick -= TimerOnTick;
+            base.OnDetachedFromLogicalTree(e);
+        }
+
+        private void SetupForDevice()
+        {
+            _deviceImage?.Dispose();
+            _deviceImage = null;
+            _deviceVisualizerLeds.Clear();
+            _highlightedLeds = new List<DeviceVisualizerLed>();
+            _dimmedLeds = new List<DeviceVisualizerLed>();
+
+            if (_oldDevice != null)
+            {
+                _oldDevice.RgbDevice.PropertyChanged -= DevicePropertyChanged;
+                _oldDevice.DeviceUpdated -= DeviceUpdated;
+            }
+
             _oldDevice = Device;
+            if (Device == null)
+                return;
+
+            _deviceBounds = MeasureDevice();
 
             Device.RgbDevice.PropertyChanged += DevicePropertyChanged;
             Device.DeviceUpdated += DeviceUpdated;
-            UpdateTransform();
-
-            // Load the device main image
-            if (Device.Layout?.Image != null && File.Exists(Device.Layout.Image.LocalPath))
-                _deviceImage = new BitmapImage(Device.Layout.Image);
 
             // Create all the LEDs
             foreach (ArtemisLed artemisLed in Device.Leds)
                 _deviceVisualizerLeds.Add(new DeviceVisualizerLed(artemisLed));
 
-            if (!ShowColors)
+            // Load the device main image on a background thread
+            ArtemisDevice? device = Device;
+            Task.Run(() =>
             {
-                InvalidateMeasure();
-                return;
-            }
+                if (device.Layout?.Image == null || !File.Exists(device.Layout.Image.LocalPath))
+                    return;
 
-            // Create the opacity drawing group
-            DrawingGroup opacityDrawingGroup = new();
-            DrawingContext drawingContext = opacityDrawingGroup.Open();
-            foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                deviceVisualizerLed.RenderOpacityMask(drawingContext);
-            drawingContext.Close();
+                try
+                {
+                    // Create a bitmap that'll be used to render the device and LED images just once
+                    RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) device.RgbDevice.Size.Width * 4, (int) device.RgbDevice.Size.Height * 4));
 
-            // Render the store as a bitmap 
-            DrawingImage drawingImage = new(opacityDrawingGroup);
-            Image image = new() {Source = drawingImage};
-            RenderTargetBitmap bitmap = new(
-                Math.Max(1, (int) (opacityDrawingGroup.Bounds.Width * 2.5)),
-                Math.Max(1, (int) (opacityDrawingGroup.Bounds.Height * 2.5)),
-                96,
-                96,
-                PixelFormats.Pbgra32
-            );
-            image.Arrange(new Rect(0, 0, bitmap.Width, bitmap.Height));
-            bitmap.Render(image);
-            bitmap.Freeze();
+                    using IDrawingContextImpl context = renderTargetBitmap.CreateDrawingContext(new ImmediateRenderer(this));
+                    using Bitmap bitmap = new(device.Layout.Image.LocalPath);
+                    context.DrawBitmap(bitmap.PlatformImpl, 1, new Rect(bitmap.Size), new Rect(renderTargetBitmap.Size), BitmapInterpolationMode.HighQuality);
+                    foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
+                        deviceVisualizerLed.DrawBitmap(context);
 
-            // Set the bitmap as the opacity mask for the colors backing store
-            ImageBrush bitmapBrush = new(bitmap);
-            bitmapBrush.Freeze();
-            _backingStore.OpacityMask = bitmapBrush;
-            _backingStore.Children.Clear();
+                    _deviceImage = renderTargetBitmap;
 
-            InvalidateMeasure();
+                    Dispatcher.UIThread.Post(InvalidateMeasure);
+                }
+                catch
+                {
+                    // ignored
+                }
+            });
         }
 
-        private void DeviceUpdated(object? sender, EventArgs e)
+        /// <inheritdoc />
+        protected override Size MeasureOverride(Size availableSize)
         {
-            Dispatcher.Invoke(SetupForDevice);
+            if (_deviceBounds.Width <= 0 || _deviceBounds.Height <= 0)
+                return new Size(0, 0);
+
+            double availableWidth = double.IsInfinity(availableSize.Width) ? _deviceBounds.Width : availableSize.Width;
+            double availableHeight = double.IsInfinity(availableSize.Height) ? _deviceBounds.Height : availableSize.Height;
+            double bestRatio = Math.Min(availableWidth / _deviceBounds.Width, availableHeight / _deviceBounds.Height);
+
+            return new Size(_deviceBounds.Width * bestRatio, _deviceBounds.Height * bestRatio);
         }
 
-        private void DevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            Dispatcher.Invoke(SetupForDevice);
-        }
-
-        private static void DevicePropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            DeviceVisualizer deviceVisualizer = (DeviceVisualizer) d;
-            deviceVisualizer.Dispatcher.Invoke(() => { deviceVisualizer.SetupForDevice(); });
-        }
-
-        private static void ShowColorsPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            DeviceVisualizer deviceVisualizer = (DeviceVisualizer) d;
-            deviceVisualizer.Dispatcher.Invoke(() => { deviceVisualizer.SetupForDevice(); });
-        }
-
-        private static void HighlightedLedsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            DeviceVisualizer deviceVisualizer = (DeviceVisualizer) d;
-            if (e.OldValue is ObservableCollection<ArtemisLed> oldCollection)
-                oldCollection.CollectionChanged -= deviceVisualizer.HighlightedLedsChanged;
-            if (e.NewValue is ObservableCollection<ArtemisLed> newCollection)
-                newCollection.CollectionChanged += deviceVisualizer.HighlightedLedsChanged;
-        }
-
-        private void HighlightedLedsChanged(object? sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
-        {
-            if (HighlightedLeds != null)
-            {
-                _highlightedLeds = _deviceVisualizerLeds.Where(l => HighlightedLeds.Contains(l.Led)).ToList();
-                _dimmedLeds = _deviceVisualizerLeds.Where(l => !HighlightedLeds.Contains(l.Led)).ToList();
-            }
-            else
-            {
-                _highlightedLeds = new List<DeviceVisualizerLed>();
-                _dimmedLeds = new List<DeviceVisualizerLed>();
-            }
-        }
+        #endregion
     }
 }

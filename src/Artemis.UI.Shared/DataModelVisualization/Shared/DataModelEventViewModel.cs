@@ -3,8 +3,10 @@ using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Interfaces;
+using ReactiveUI;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.DataModelVisualization.Shared
 {
     /// <summary>
     ///     Represents a view model that visualizes an event data model property
@@ -23,7 +25,7 @@ namespace Artemis.UI.Shared
         public Type? DisplayValueType
         {
             get => _displayValueType;
-            set => SetAndNotify(ref _displayValueType, value);
+            set => this.RaiseAndSetIfChanged(ref _displayValueType, value);
         }
 
         /// <inheritdoc />

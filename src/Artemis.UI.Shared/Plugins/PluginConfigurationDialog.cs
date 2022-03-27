@@ -15,9 +15,7 @@ namespace Artemis.UI.Shared
     /// </summary>
     public abstract class PluginConfigurationDialog : IPluginConfigurationDialog
     {
-        /// <summary>
-        ///     The type of view model the tab contains
-        /// </summary>
+        /// <inheritdoc />
         public abstract Type Type { get; }
     }
 }

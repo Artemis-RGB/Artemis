@@ -1,12 +1,11 @@
 ﻿using Artemis.Core;
-using Artemis.VisualScripting.Nodes.CustomViewModels;
+using Artemis.UI.Shared.VisualScripting;
 
-namespace Artemis.VisualScripting.Nodes.Maths.CustomViewModels
+namespace Artemis.VisualScripting.Nodes.Maths.CustomViewModels;
+
+public class MathExpressionNodeCustomViewModel : CustomNodeViewModel
 {
-    public class MathExpressionNodeCustomViewModel : CustomNodeViewModel
+    public MathExpressionNodeCustomViewModel(INode node, INodeScript script) : base(node, script)
     {
-        public MathExpressionNodeCustomViewModel(INode node) : base(node)
-        {
-        }
     }
 }

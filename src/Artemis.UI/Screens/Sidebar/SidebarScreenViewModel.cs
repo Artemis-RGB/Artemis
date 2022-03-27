@@ -1,31 +1,37 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿using System;
+using Artemis.UI.Shared;
+using Material.Icons;
 using Ninject;
+using Ninject.Parameters;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar
 {
     public class SidebarScreenViewModel<T> : SidebarScreenViewModel where T : MainScreenViewModel
     {
-        public SidebarScreenViewModel(PackIconKind icon, string displayName) : base(icon, displayName)
+        public SidebarScreenViewModel(MaterialIconKind icon, string displayName) : base(icon, displayName)
         {
         }
 
-        public override MainScreenViewModel CreateInstance(IKernel kernel)
+        public override Type ScreenType => typeof(T);
+
+        public override MainScreenViewModel CreateInstance(IKernel kernel, IScreen screen)
         {
-            return kernel.Get<T>();
+            return kernel.Get<T>(new ConstructorArgument("hostScreen", screen));
         }
     }
 
-    public abstract class SidebarScreenViewModel
+    public abstract class SidebarScreenViewModel : ViewModelBase
     {
-        protected SidebarScreenViewModel(PackIconKind icon, string displayName)
+        protected SidebarScreenViewModel(MaterialIconKind icon, string displayName)
         {
             Icon = icon;
             DisplayName = displayName;
         }
 
-        public PackIconKind Icon { get; }
-        public string DisplayName { get; }
+        public MaterialIconKind Icon { get; }
 
-        public abstract MainScreenViewModel CreateInstance(IKernel kernel);
+        public abstract Type ScreenType { get; }
+        public abstract MainScreenViewModel CreateInstance(IKernel kernel, IScreen screen);
     }
 }

@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Input;
 using Artemis.Core.Modules;
-using Stylet;
+using ReactiveUI;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.DataModelVisualization
 {
     /// <summary>
     ///     Represents a <see cref="DataModel" /> input view model
@@ -37,7 +33,7 @@ namespace Artemis.UI.Shared
         public T InputValue
         {
             get => _inputValue;
-            set => SetAndNotify(ref _inputValue, value);
+            set => this.RaiseAndSetIfChanged(ref _inputValue, value);
         }
 
         /// <summary>
@@ -53,9 +49,6 @@ namespace Artemis.UI.Shared
             if (_closed)
                 return;
             _closed = true;
-
-            foreach (BindingExpressionBase sourceUpdatingBinding in BindingOperations.GetSourceUpdatingBindings(View))
-                sourceUpdatingBinding.UpdateSource();
 
             OnSubmit();
             UpdateCallback(InputValue, true);
@@ -76,7 +69,7 @@ namespace Artemis.UI.Shared
     /// <summary>
     ///     For internal use only, implement <see cref="DataModelInputViewModel{T}" /> instead.
     /// </summary>
-    public abstract class DataModelInputViewModel : PropertyChangedBase, IViewAware
+    public abstract class DataModelInputViewModel : ReactiveObject
     {
         /// <summary>
         ///     Prevents this type being implemented directly, implement <see cref="DataModelInputViewModel{T}" /> instead.
@@ -117,24 +110,5 @@ namespace Artemis.UI.Shared
         protected virtual void OnCancel()
         {
         }
-
-        /// <inheritdoc />
-        public void AttachView(UIElement view)
-        {
-            if (View != null)
-                throw new InvalidOperationException(string.Format("Tried to attach View {0} to ViewModel {1}, but it already has a view attached", view.GetType().Name, GetType().Name));
-
-            View = view;
-
-            // After the animation finishes attempt to focus the input field
-            Task.Run(async () =>
-            {
-                await Task.Delay(50);
-                await Execute.OnUIThreadAsync(() => View.MoveFocus(new TraversalRequest(FocusNavigationDirection.First)));
-            });
-        }
-
-        /// <inheritdoc />
-        public UIElement? View { get; set; }
     }
 }

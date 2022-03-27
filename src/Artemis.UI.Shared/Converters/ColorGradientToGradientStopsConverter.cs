@@ -1,46 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Windows.Data;
-using System.Windows.Media;
 using Artemis.Core;
+using Avalonia.Data.Converters;
+using Avalonia.Media;
 using SkiaSharp;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.Converters;
+
+/// <summary>
+///     Converts  <see cref="T:Artemis.Core.ColorGradient" /> into a <see cref="T:Avalonia.Media.GradientStops" />.
+/// </summary>
+public class ColorGradientToGradientStopsConverter : IValueConverter
 {
     /// <inheritdoc />
-    /// <summary>
-    ///     Converts  <see cref="T:Artemis.Core.Models.Profile.ColorGradient" /> into a
-    ///     <see cref="T:System.Windows.Media.GradientStopCollection" />.
-    /// </summary>
-    [ValueConversion(typeof(ColorGradient), typeof(GradientStopCollection))]
-    public class ColorGradientToGradientStopsConverter : IValueConverter
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        /// <inheritdoc />
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            ColorGradient? colorGradient = value as ColorGradient;
-            GradientStopCollection collection = new();
-            if (colorGradient == null)
-                return collection;
-
-            foreach (ColorGradientStop c in colorGradient.OrderBy(s => s.Position))
-                collection.Add(new GradientStop(Color.FromArgb(c.Color.Alpha, c.Color.Red, c.Color.Green, c.Color.Blue), c.Position));
+        ColorGradient? colorGradient = value as ColorGradient;
+        GradientStops collection = new();
+        if (colorGradient == null)
             return collection;
-        }
 
-        /// <inheritdoc />
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            GradientStopCollection? collection = value as GradientStopCollection;
-            ColorGradient colorGradients = new();
-            if (collection == null)
-                return colorGradients;
+        foreach (ColorGradientStop c in colorGradient.OrderBy(s => s.Position))
+            collection.Add(new GradientStop(Color.FromArgb(c.Color.Alpha, c.Color.Red, c.Color.Green, c.Color.Blue), c.Position));
+        return collection;
+    }
 
-            foreach (GradientStop c in collection.OrderBy(s => s.Offset))
-                colorGradients.Add(new ColorGradientStop(new SKColor(c.Color.R, c.Color.G, c.Color.B, c.Color.A), (float) c.Offset));
+    /// <inheritdoc />
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        GradientStops? collection = value as GradientStops;
+        ColorGradient colorGradients = new();
+        if (collection == null)
             return colorGradients;
-        }
+
+        foreach (GradientStop c in collection.OrderBy(s => s.Offset))
+            colorGradients.Add(new ColorGradientStop(new SKColor(c.Color.R, c.Color.G, c.Color.B, c.Color.A), (float) c.Offset));
+        return colorGradients;
     }
 }

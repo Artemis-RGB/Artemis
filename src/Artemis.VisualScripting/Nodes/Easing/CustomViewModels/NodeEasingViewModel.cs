@@ -1,29 +1,27 @@
-﻿using System.Windows;
-using System.Windows.Media;
-using Artemis.Core;
+﻿using Artemis.Core;
+using Artemis.UI.Shared;
+using Avalonia;
 using Humanizer;
-using Stylet;
 
-namespace Artemis.VisualScripting.Nodes.Easing.CustomViewModels
+namespace Artemis.VisualScripting.Nodes.Easing.CustomViewModels;
+
+public class NodeEasingViewModel : ViewModelBase
 {
-    public class NodeEasingViewModel : PropertyChangedBase
+    public NodeEasingViewModel(Easings.Functions easingFunction)
     {
-        public NodeEasingViewModel(Easings.Functions easingFunction)
+        EasingFunction = easingFunction;
+        Description = easingFunction.Humanize();
+
+        EasingPoints = new List<Point>();
+        for (int i = 1; i <= 10; i++)
         {
-            EasingFunction = easingFunction;
-            Description = easingFunction.Humanize();
-
-            EasingPoints = new PointCollection();
-            for (int i = 1; i <= 10; i++)
-            {
-                int x = i;
-                double y = Easings.Interpolate(i / 10.0, EasingFunction) * 10;
-                EasingPoints.Add(new Point(x, y));
-            }
+            int x = i;
+            double y = Easings.Interpolate(i / 10.0, EasingFunction) * 10;
+            EasingPoints.Add(new Point(x, y));
         }
-
-        public Easings.Functions EasingFunction { get; }
-        public PointCollection EasingPoints { get; }
-        public string Description { get; }
     }
+
+    public Easings.Functions EasingFunction { get; }
+    public List<Point> EasingPoints { get; }
+    public string Description { get; }
 }

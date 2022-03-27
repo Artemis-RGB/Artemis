@@ -2,7 +2,7 @@
 using Artemis.Core;
 using Artemis.UI.Shared.Controls;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.Events
 {
     /// <summary>
     ///     Provides data about selection events raised by <see cref="DataModelPicker" />

@@ -2,17 +2,16 @@
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Ninject.InstanceProviders;
 using Artemis.UI.Screens;
-using Artemis.UI.Screens.ProfileEditor;
-using Artemis.UI.Screens.Splash;
-using Artemis.UI.Services;
-using Artemis.UI.Shared.Services;
-using Artemis.UI.Stylet;
-using FluentValidation;
+using Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools;
+using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services.ProfileEditor;
+using Avalonia.Platform;
+using Avalonia.Shared.PlatformSupport;
 using Ninject.Extensions.Conventions;
 using Ninject.Extensions.Factory;
 using Ninject.Modules;
 using Ninject.Planning.Bindings.Resolvers;
-using Stylet;
 
 namespace Artemis.UI.Ninject
 {
@@ -23,28 +22,31 @@ namespace Artemis.UI.Ninject
             if (Kernel == null)
                 throw new ArgumentNullException("Kernel shouldn't be null here.");
 
-            Kernel.Components.Add<IMissingBindingResolver, UIElementSelfBindingResolver>();
+            Kernel.Components.Add<IMissingBindingResolver, SelfBindingResolver>();
+            Kernel.Bind<IAssetLoader>().ToConstant(new AssetLoader());
 
-            Kernel.Bind<TrayViewModel>().ToSelf().InSingletonScope();
-            Kernel.Bind<SplashViewModel>().ToSelf();
+            Kernel.Bind(x =>
+            {
+                x.FromThisAssembly()
+                    .SelectAllClasses()
+                    .InheritedFrom<ViewModelBase>()
+                    .BindToSelf();
+            });
 
-            // Bind all built-in VMs
             Kernel.Bind(x =>
             {
                 x.FromThisAssembly()
                     .SelectAllClasses()
                     .InheritedFrom<MainScreenViewModel>()
-                    .BindAllBaseClasses()
-                    .Configure(c => c.InSingletonScope());
+                    .BindAllBaseClasses();
             });
 
-            // Bind all dialog VMs
             Kernel.Bind(x =>
             {
                 x.FromThisAssembly()
                     .SelectAllClasses()
-                    .InheritedFrom<DialogViewModelBase>()
-                    .BindAllBaseClasses();
+                    .InheritedFrom<IToolViewModel>()
+                    .BindAllInterfaces();
             });
 
             // Bind UI factories
@@ -58,15 +60,6 @@ namespace Artemis.UI.Ninject
 
             Kernel.Bind<IPropertyVmFactory>().ToFactory(() => new LayerPropertyViewModelInstanceProvider());
 
-            // Bind profile editor VMs
-            Kernel.Bind(x =>
-            {
-                x.FromThisAssembly()
-                    .SelectAllClasses()
-                    .InheritedFrom<IProfileEditorPanelViewModel>()
-                    .BindAllBaseClasses();
-            });
-
             // Bind all UI services as singletons
             Kernel.Bind(x =>
             {
@@ -75,16 +68,6 @@ namespace Artemis.UI.Ninject
                     .InheritedFrom<IArtemisUIService>()
                     .BindAllInterfaces()
                     .Configure(c => c.InSingletonScope());
-            });
-
-            // Bind all validators
-            Bind(typeof(IModelValidator<>)).To(typeof(FluentValidationAdapter<>));
-            Kernel.Bind(x =>
-            {
-                x.FromThisAssembly()
-                    .SelectAllClasses()
-                    .InheritedFrom<IValidator>()
-                    .BindAllInterfaces();
             });
         }
     }

@@ -1,30 +1,38 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows.Data;
-using System.Windows.Media;
+using Avalonia.Data.Converters;
+using Avalonia.Media;
+using FluentAvalonia.UI.Media;
 using SkiaSharp;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.Converters
 {
-    /// <inheritdoc />
     /// <summary>
-    ///     Converts <see cref="T:SkiaSharp.SKColor" /> into a <see cref="T:System.Windows.Media.Color" />.
+    ///     Converts <see cref="T:Avalonia.Media.Color" /> into <see cref="T:SkiaSharp.SKColor" />.
     /// </summary>
-    [ValueConversion(typeof(Color), typeof(SKColor))]
-    public class SKColorToColorConverter : IValueConverter
+    public class ColorToSKColorConverter : IValueConverter
     {
         /// <inheritdoc />
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            SKColor skColor = (SKColor) value;
-            return Color.FromArgb(skColor.Alpha, skColor.Red, skColor.Green, skColor.Blue);
+            if (value is Color avaloniaColor)
+                return new SKColor(avaloniaColor.R, avaloniaColor.G, avaloniaColor.B, avaloniaColor.A);
+            if (value is Color2 fluentAvaloniaColor)
+                return new SKColor(fluentAvaloniaColor.R, fluentAvaloniaColor.G, fluentAvaloniaColor.B, fluentAvaloniaColor.A);
+
+            return SKColor.Empty;
         }
 
         /// <inheritdoc />
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            Color color = (Color) value;
-            return new SKColor(color.R, color.G, color.B, color.A);
+            Color result = new(0, 0, 0, 0);
+            if (value is SKColor skColor)
+                result = new Color(skColor.Alpha, skColor.Red, skColor.Green, skColor.Blue);
+
+            if (targetType == typeof(Color2))
+                return (Color2) result;
+            return result;
         }
     }
 }

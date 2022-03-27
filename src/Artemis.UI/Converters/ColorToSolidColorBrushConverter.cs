@@ -1,32 +1,25 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows.Data;
-using System.Windows.Media;
-using Color = RGB.NET.Core.Color;
+using Avalonia.Data.Converters;
+using Avalonia.Media;
 
 namespace Artemis.UI.Converters
 {
-    /// <inheritdoc />
     /// <summary>
-    ///     Converts <see cref="T:RGB.NET.Core.Color" /> into <see cref="T:System.Windows.Media.SolidColorBrush" />.
+    ///     Converts <see cref="Color" /> into <see cref="SolidColorBrush" />.
     /// </summary>
-    [ValueConversion(typeof(Color), typeof(SolidColorBrush))]
     public class ColorToSolidColorBrushConverter : IValueConverter
     {
         /// <inheritdoc />
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            return new SolidColorBrush(!(value is Color color)
-                ? System.Windows.Media.Color.FromArgb(0, 0, 0, 0)
-                : System.Windows.Media.Color.FromArgb((byte) color.A, (byte) color.R, (byte) color.G, (byte) color.B));
+            return new SolidColorBrush(value is not Color color ? new Color(0, 0, 0, 0) : color);
         }
 
         /// <inheritdoc />
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            return !(value is SolidColorBrush brush)
-                ? Color.Transparent
-                : new Color(brush.Color.A, brush.Color.R, brush.Color.G, brush.Color.B);
+            return value is not SolidColorBrush brush ? new Color(0, 0, 0, 0) : brush.Color;
         }
     }
 }

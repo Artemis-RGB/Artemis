@@ -1,21 +1,33 @@
-﻿using System.Windows;
-using Artemis.UI.Screens.Settings.Debug;
-using MaterialDesignExtensions.Controls;
-using Ninject;
-using Stylet;
+﻿using Artemis.UI.Screens.Debugger;
+using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Services
 {
     public class DebugService : IDebugService
     {
-        private readonly IKernel _kernel;
-        private readonly IWindowManager _windowManager;
-        private DebugViewModel _debugViewModel;
+        private readonly IWindowService _windowService;
+        private DebugViewModel? _debugViewModel;
 
-        public DebugService(IKernel kernel, IWindowManager windowManager)
+        public DebugService(IWindowService windowService)
         {
-            _kernel = kernel;
-            _windowManager = windowManager;
+            _windowService = windowService;
+        }
+
+        public void ClearDebugger()
+        {
+            _debugViewModel = null;
+        }
+
+        private void BringDebuggerToForeground()
+        {
+            if (_debugViewModel != null)
+                _debugViewModel.Activate();
+        }
+
+        private void CreateDebugger()
+        {
+            _debugViewModel = _windowService.ShowWindow<DebugViewModel>();
         }
 
         public void ShowDebugger()
@@ -24,38 +36,6 @@ namespace Artemis.UI.Services
                 BringDebuggerToForeground();
             else
                 CreateDebugger();
-        }
-
-        private void CreateDebugger()
-        {
-            _debugViewModel = _kernel.Get<DebugViewModel>();
-            _debugViewModel.Closed += DebugViewModelOnClosed;
-
-            _windowManager.ShowWindow(_debugViewModel);
-        }
-
-        private void DebugViewModelOnClosed(object sender, CloseEventArgs e)
-        {
-            _debugViewModel.Closed -= DebugViewModelOnClosed;
-            _debugViewModel = null;
-        }
-
-        private void BringDebuggerToForeground()
-        {
-            MaterialWindow materialWindow = (MaterialWindow) _debugViewModel.View;
-
-            // Not as straightforward as you might think, this ensures the window always shows, even if it's behind another window etc.
-            // https://stackoverflow.com/a/4831839/5015269
-            if (!materialWindow.IsVisible)
-                materialWindow.Show();
-
-            if (materialWindow.WindowState == WindowState.Minimized)
-                materialWindow.WindowState = WindowState.Normal;
-
-            materialWindow.Activate();
-            materialWindow.Topmost = true; // important
-            materialWindow.Topmost = false; // important
-            materialWindow.Focus();
         }
     }
 }

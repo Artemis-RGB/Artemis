@@ -1,92 +1,92 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
-using Artemis.UI.Screens.ProfileEditor.Dialogs;
-using Artemis.UI.Shared;
-using Artemis.UI.Shared.Services;
-using Stylet;
+using Artemis.UI.Screens.ProfileEditor.Properties.Tree.Dialogs;
+using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services.ProfileEditor;
+using Artemis.UI.Shared.Services.ProfileEditor.Commands;
+using Artemis.UI.Shared.Services.PropertyInput;
+using Avalonia.Controls.Mixins;
+using Avalonia.Threading;
+using ReactiveUI;
 
-namespace Artemis.UI.DefaultTypes.PropertyInput
+namespace Artemis.UI.DefaultTypes.PropertyInput;
+
+public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushReference>
 {
-    public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushReference>
+    private readonly IPluginManagementService _pluginManagementService;
+    private readonly IProfileEditorService _profileEditorService;
+    private readonly IWindowService _windowService;
+    private ObservableCollection<LayerBrushDescriptor> _descriptors;
+
+    public BrushPropertyInputViewModel(LayerProperty<LayerBrushReference> layerProperty, IPluginManagementService pluginManagementService, IWindowService windowService,
+        IProfileEditorService profileEditorService, IPropertyInputService propertyInputService)
+        : base(layerProperty, profileEditorService, propertyInputService)
     {
-        private readonly IDialogService _dialogService;
-        private readonly IPluginManagementService _pluginManagementService;
-        private BindableCollection<LayerBrushDescriptor> _descriptors;
+        _pluginManagementService = pluginManagementService;
+        _windowService = windowService;
+        _profileEditorService = profileEditorService;
+        _descriptors = new ObservableCollection<LayerBrushDescriptor>(pluginManagementService.GetFeaturesOfType<LayerBrushProvider>().SelectMany(l => l.LayerBrushDescriptors));
 
-        public BrushPropertyInputViewModel(LayerProperty<LayerBrushReference> layerProperty, IProfileEditorService profileEditorService, IPluginManagementService pluginManagementService,
-            IDialogService dialogService)
-            : base(layerProperty, profileEditorService)
+        this.WhenActivated(d =>
         {
-            _pluginManagementService = pluginManagementService;
-            _dialogService = dialogService;
-            UpdateEnumValues();
-        }
+            Observable.FromEventPattern<PluginFeatureEventArgs>(x => pluginManagementService.PluginFeatureEnabled += x, x => pluginManagementService.PluginFeatureEnabled -= x)
+                .Subscribe(e => UpdateDescriptorsIfChanged(e.EventArgs))
+                .DisposeWith(d);
+            Observable.FromEventPattern<PluginFeatureEventArgs>(x => pluginManagementService.PluginFeatureDisabled += x, x => pluginManagementService.PluginFeatureDisabled -= x)
+                .Subscribe(e => UpdateDescriptorsIfChanged(e.EventArgs))
+                .DisposeWith(d);
+        });
+    }
 
-        public BindableCollection<LayerBrushDescriptor> Descriptors
-        {
-            get => _descriptors;
-            set => SetAndNotify(ref _descriptors, value);
-        }
+    public ObservableCollection<LayerBrushDescriptor> Descriptors
+    {
+        get => _descriptors;
+        set => this.RaiseAndSetIfChanged(ref _descriptors, value);
+    }
 
-        public LayerBrushDescriptor SelectedDescriptor
-        {
-            get => Descriptors.FirstOrDefault(d => d.MatchesLayerBrushReference(InputValue));
-            set => SetBrushByDescriptor(value);
-        }
+    public LayerBrushDescriptor? SelectedDescriptor
+    {
+        get => Descriptors.FirstOrDefault(d => d.MatchesLayerBrushReference(InputValue));
+        set => SetBrushByDescriptor(value);
+    }
 
-        public void UpdateEnumValues()
-        {
-            List<LayerBrushProvider> layerBrushProviders = _pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
-            Descriptors = new BindableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
-            NotifyOfPropertyChange(nameof(SelectedDescriptor));
-        }
+    /// <inheritdoc />
+    protected override void ApplyInputValue()
+    {
+        if (LayerProperty.ProfileElement is not Layer layer || SelectedDescriptor == null)
+            return;
 
-        protected override void OnInputValueApplied()
-        {
-            if (LayerProperty.ProfileElement is Layer layer)
-            {
-                // layer.ChangeLayerBrush(SelectedDescriptor);
-                // if (layer.LayerBrush?.Presets != null && layer.LayerBrush.Presets.Any())
-                //     Execute.PostToUIThread(async () =>
-                //     {
-                //         await Task.Delay(400);
-                //         await _dialogService.ShowDialogAt<LayerBrushPresetViewModel>("LayerProperties", new Dictionary<string, object> {{"layerBrush", layer.LayerBrush}});
-                //     });
-            }
-        }
+        _profileEditorService.ExecuteCommand(new ChangeLayerBrush(layer, SelectedDescriptor));
+        if (layer.LayerBrush?.Presets != null && layer.LayerBrush.Presets.Any())
+            Dispatcher.UIThread.InvokeAsync(() => _windowService.CreateContentDialog().WithViewModel(out LayerBrushPresetViewModel _, ("layerBrush", layer.LayerBrush)).ShowAsync());
+    }
 
-        private void SetBrushByDescriptor(LayerBrushDescriptor value)
-        {
+    #region Overrides of PropertyInputViewModel<LayerBrushReference>
+
+    /// <inheritdoc />
+    protected override void OnInputValueChanged()
+    {
+        this.RaisePropertyChanged(nameof(SelectedDescriptor));
+    }
+
+    #endregion
+
+    private void UpdateDescriptorsIfChanged(PluginFeatureEventArgs e)
+    {
+        if (e.PluginFeature is not LayerBrushProvider)
+            return;
+
+        Descriptors = new ObservableCollection<LayerBrushDescriptor>(_pluginManagementService.GetFeaturesOfType<LayerBrushProvider>().SelectMany(l => l.LayerBrushDescriptors));
+    }
+
+    private void SetBrushByDescriptor(LayerBrushDescriptor? value)
+    {
+        if (value != null)
             InputValue = new LayerBrushReference(value);
-        }
-
-        private void PluginManagementServiceOnPluginManagementLoaded(object sender, PluginEventArgs e)
-        {
-            UpdateEnumValues();
-        }
-
-        #region Overrides of Screen
-
-        /// <inheritdoc />
-        protected override void OnInitialActivate()
-        {
-            _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginManagementLoaded;
-            _pluginManagementService.PluginDisabled += PluginManagementServiceOnPluginManagementLoaded;
-            base.OnInitialActivate();
-        }
-
-        /// <inheritdoc />
-        protected override void OnClose()
-        {
-            _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginManagementLoaded;
-            _pluginManagementService.PluginDisabled -= PluginManagementServiceOnPluginManagementLoaded;
-            base.OnClose();
-        }
-
-        #endregion
     }
 }

@@ -1,69 +1,68 @@
-﻿using System;
-using Artemis.Core;
-using Artemis.UI.Shared;
-using Artemis.UI.Shared.Services;
-using FluentValidation;
-using Stylet;
+﻿using Artemis.Core;
+using Artemis.UI.Shared.Services.ProfileEditor;
+using Artemis.UI.Shared.Services.PropertyInput;
+using ReactiveUI;
+using ReactiveUI.Validation.Extensions;
 
-namespace Artemis.UI.DefaultTypes.PropertyInput
+namespace Artemis.UI.DefaultTypes.PropertyInput;
+
+public class FloatRangePropertyInputViewModel : PropertyInputViewModel<FloatRange>
 {
-    public class FloatRangePropertyInputViewModel : PropertyInputViewModel<FloatRange>
+    public FloatRangePropertyInputViewModel(LayerProperty<FloatRange> layerProperty, IProfileEditorService profileEditorService, IPropertyInputService propertyInputService)
+        : base(layerProperty, profileEditorService, propertyInputService)
     {
-        public FloatRangePropertyInputViewModel(LayerProperty<FloatRange> layerProperty,
-            IProfileEditorService profileEditorService,
-            IModelValidator<FloatRangePropertyInputViewModel> validator) : base(layerProperty, profileEditorService, validator)
+        this.ValidationRule(vm => vm.Start, start => start <= End, "Start value must be less than the end value.");
+        this.ValidationRule(vm => vm.End, end => end >= Start, "End value must be greater than the start value.");
+
+        if (LayerProperty.PropertyDescription.MinInputValue.IsNumber())
         {
+            this.ValidationRule(vm => vm.Start, i => i >= (float) LayerProperty.PropertyDescription.MinInputValue,
+                $"Start value must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
+            this.ValidationRule(vm => vm.End, i => i >= (float) LayerProperty.PropertyDescription.MinInputValue,
+                $"End value must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
         }
 
-        public float Start
+        if (LayerProperty.PropertyDescription.MaxInputValue.IsNumber())
         {
-            get => InputValue?.Start ?? 0f;
-            set
-            {
-                if (InputValue == null)
-                    InputValue = new FloatRange(value, value + 1f);
-                else
-                    InputValue.Start = value;
-
-                NotifyOfPropertyChange(nameof(Start));
-            }
-        }
-
-        public float End
-        {
-            get => InputValue?.End ?? 0f;
-            set
-            {
-                if (InputValue == null)
-                    InputValue = new FloatRange(value - 1f, value);
-                else
-                    InputValue.End = value;
-
-                NotifyOfPropertyChange(nameof(End));
-            }
-        }
-
-
-        protected override void OnInputValueChanged()
-        {
-            NotifyOfPropertyChange(nameof(Start));
-            NotifyOfPropertyChange(nameof(End));
+            this.ValidationRule(vm => vm.Start, i => i < (float) LayerProperty.PropertyDescription.MaxInputValue,
+                $"Start value must be smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
+            this.ValidationRule(vm => vm.End, i => i < (float) LayerProperty.PropertyDescription.MaxInputValue,
+                $"End value must be smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
         }
     }
 
-    public class FloatRangePropertyInputViewModelValidator : AbstractValidator<FloatRangePropertyInputViewModel>
+    public float Start
     {
-        public FloatRangePropertyInputViewModelValidator()
+        get => InputValue?.Start ?? 0;
+        set
         {
-            RuleFor(vm => vm.Start).LessThanOrEqualTo(vm => vm.End);
-            RuleFor(vm => vm.End).GreaterThanOrEqualTo(vm => vm.Start);
+            if (InputValue == null)
+                InputValue = new FloatRange(value, value + 1);
+            else
+                InputValue.Start = value;
 
-            RuleFor(vm => vm.Start)
-                .GreaterThanOrEqualTo(vm => Convert.ToSingle(vm.LayerProperty.PropertyDescription.MinInputValue))
-                .When(vm => vm.LayerProperty.PropertyDescription.MinInputValue.IsNumber());
-            RuleFor(vm => vm.End)
-                .LessThanOrEqualTo(vm => Convert.ToSingle(vm.LayerProperty.PropertyDescription.MaxInputValue))
-                .When(vm => vm.LayerProperty.PropertyDescription.MaxInputValue.IsNumber());
+            this.RaisePropertyChanged(nameof(Start));
         }
+    }
+
+    public float End
+    {
+        get => InputValue?.End ?? 0;
+        set
+        {
+            if (InputValue == null)
+                InputValue = new FloatRange(value - 1, value);
+            else
+                InputValue.End = value;
+
+            this.RaisePropertyChanged(nameof(End));
+        }
+    }
+
+
+    protected override void OnInputValueChanged()
+    {
+        this.RaisePropertyChanged(nameof(Start));
+        this.RaisePropertyChanged(nameof(End));
     }
 }

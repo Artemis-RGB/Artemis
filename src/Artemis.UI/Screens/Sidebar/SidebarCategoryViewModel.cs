@@ -1,53 +1,60 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Events;
-using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Screens.Sidebar.Dialogs;
-using Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit;
-using Artemis.UI.Shared.Services;
-using GongSolutions.Wpf.DragDrop;
-using MaterialDesignThemes.Wpf;
-using MaterialDesignThemes.Wpf.Transitions;
-using Newtonsoft.Json;
-using Ookii.Dialogs.Wpf;
-using Stylet;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services.Builders;
+using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services.ProfileEditor;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar
 {
-    public class SidebarCategoryViewModel : Conductor<SidebarProfileConfigurationViewModel>.Collection.AllActive, IDropTarget
+    public class SidebarCategoryViewModel : ActivatableViewModelBase
     {
-        private readonly IDialogService _dialogService;
-        private readonly ISidebarVmFactory _vmFactory;
-        private readonly IEventAggregator _eventAggregator;
         private readonly IProfileService _profileService;
-        private SidebarProfileConfigurationViewModel _selectedProfileConfiguration;
-        private readonly DefaultDropHandler _defaultDropHandler;
-        private bool _addingProfile;
+        private readonly SidebarViewModel _sidebarViewModel;
+        private readonly ISidebarVmFactory _vmFactory;
+        private readonly IWindowService _windowService;
+        private SidebarProfileConfigurationViewModel? _selectedProfileConfiguration;
 
-        public SidebarCategoryViewModel(ProfileCategory profileCategory,
-            IProfileService profileService,
-            IDialogService dialogService,
-            ISidebarVmFactory vmFactory,
-            IEventAggregator eventAggregator)
+        public SidebarCategoryViewModel(SidebarViewModel sidebarViewModel, ProfileCategory profileCategory, IProfileService profileService, IWindowService windowService,
+            IProfileEditorService profileEditorService, ISidebarVmFactory vmFactory)
         {
+            _sidebarViewModel = sidebarViewModel;
             _profileService = profileService;
-            _dialogService = dialogService;
+            _windowService = windowService;
             _vmFactory = vmFactory;
-            _eventAggregator = eventAggregator;
-            _defaultDropHandler = new DefaultDropHandler();
 
             ProfileCategory = profileCategory;
+
+            if (ShowItems)
+                CreateProfileViewModels();
+
+            this.WhenActivated(disposables =>
+            {
+                profileEditorService.ProfileConfiguration
+                    .Subscribe(p => SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(c => ReferenceEquals(c.ProfileConfiguration, p)))
+                    .DisposeWith(disposables);
+                this.WhenAnyValue(vm => vm.SelectedProfileConfiguration)
+                    .WhereNotNull()
+                    .Subscribe(s => profileEditorService.ChangeCurrentProfileConfiguration(s.ProfileConfiguration));
+            });
         }
 
         public ProfileCategory ProfileCategory { get; }
+
+        public ObservableCollection<SidebarProfileConfigurationViewModel> ProfileConfigurations { get; } = new();
+
+        public SidebarProfileConfigurationViewModel? SelectedProfileConfiguration
+        {
+            get => _selectedProfileConfiguration;
+            set => RaiseAndSetIfChanged(ref _selectedProfileConfiguration, value);
+        }
 
         public bool ShowItems
         {
@@ -56,10 +63,12 @@ namespace Artemis.UI.Screens.Sidebar
             {
                 ProfileCategory.IsCollapsed = !value;
                 if (ProfileCategory.IsCollapsed)
-                    Items.Clear();
+                    ProfileConfigurations.Clear();
                 else
                     CreateProfileViewModels();
                 _profileService.SaveProfileCategory(ProfileCategory);
+
+                this.RaisePropertyChanged(nameof(ShowItems));
             }
         }
 
@@ -69,216 +78,46 @@ namespace Artemis.UI.Screens.Sidebar
             set
             {
                 ProfileCategory.IsSuspended = value;
-                NotifyOfPropertyChange(nameof(IsSuspended));
+                this.RaisePropertyChanged(nameof(IsSuspended));
                 _profileService.SaveProfileCategory(ProfileCategory);
             }
         }
 
-        public SidebarProfileConfigurationViewModel SelectedProfileConfiguration
+        public async Task EditCategory()
         {
-            get => _selectedProfileConfiguration;
-            set
-            {
-                if (!SetAndNotify(ref _selectedProfileConfiguration, value)) return;
-                if (value == null) return;
-                try
-                {
-                    ((SidebarViewModel) Parent).SelectProfileConfiguration(value.ProfileConfiguration);
-                }
-                catch (Exception e)
-                {
-                    _dialogService.ShowExceptionDialog("Failed select profile", e);
-                    throw;
-                }
-            }
-        }
+            await _windowService.CreateContentDialog()
+                .WithTitle("Edit category")
+                .WithViewModel(out SidebarCategoryEditViewModel vm, ("category", ProfileCategory))
+                .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Confirm))
+                .HavingSecondaryButton(b => b.WithText("Delete").WithCommand(vm.Delete))
+                .WithCloseButtonText("Cancel")
+                .WithDefaultButton(ContentDialogButton.Primary)
+                .ShowAsync();
 
-        public async Task UpdateCategory()
-        {
-            object result = await _dialogService.ShowDialog<SidebarCategoryUpdateViewModel>(new Dictionary<string, object> {{"profileCategory", ProfileCategory}});
-            if (result is nameof(SidebarCategoryUpdateViewModel.Delete))
-                await DeleteCategory();
-        }
-
-        public async Task DeleteCategory()
-        {
-            bool confirmed = await _dialogService.ShowConfirmDialog(
-                "Delete category",
-                "Are you sure you want to delete this category?\r\nAll profiles will be deleted too."
-            );
-            if (!confirmed)
-                return;
-
-            // Close the editor first by heading to Home if any of the profiles are being edited
-            if (ProfileCategory.ProfileConfigurations.Any(p => p.IsBeingEdited))
-                _eventAggregator.Publish(new RequestSelectSidebarItemEvent("Home"));
-
-            _profileService.DeleteProfileCategory(ProfileCategory);
-            ((SidebarViewModel) Parent).RemoveProfileCategoryViewModel(this);
-        }
-
-        public void OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            ShowItems = !ShowItems;
+            _sidebarViewModel.UpdateProfileCategories();
         }
 
         public async Task AddProfile()
         {
-            try
+            ProfileConfiguration? result = await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(
+                ("profileCategory", ProfileCategory),
+                ("profileConfiguration", null)
+            );
+            if (result != null)
             {
-                _addingProfile = true;
-                ProfileConfiguration profileConfiguration = _profileService.CreateProfileConfiguration(ProfileCategory, "New profile", Enum.GetValues<PackIconKind>().First().ToString());
-                object result = await _dialogService.ShowDialog<ProfileEditViewModel>(new Dictionary<string, object>
-                {
-                    {"profileConfiguration", profileConfiguration},
-                    {"isNew", true}
-                });
-                if (result is nameof(ProfileEditViewModel.Accept))
-                {
-                    if (!ShowItems)
-                        ShowItems = true;
-                    else
-                        CreateProfileViewModels();
-                }
-                else
-                    _profileService.RemoveProfileConfiguration(profileConfiguration);
-            }
-            finally
-            {
-                _addingProfile = false;
-            }
-        }
-
-        public async Task ImportProfile()
-        {
-            VistaOpenFileDialog dialog = new()
-            {
-                Filter = "Artemis Profile|*.json",
-                Title = "Import Artemis profile"
-            };
-            bool? result = dialog.ShowDialog();
-            if (result != true)
-                return;
-
-            string json = await File.ReadAllTextAsync(dialog.FileName);
-            try
-            {
-                ProfileConfigurationExportModel profileConfigurationExportModel = JsonConvert.DeserializeObject<ProfileConfigurationExportModel>(json, IProfileService.ExportSettings);
-                if (profileConfigurationExportModel == null)
-                {
-                    await _dialogService.ShowConfirmDialog("Import profile", "Failed to import this profile, make sure it is a valid Artemis profile.", "Confirm", null);
-                    return;
-                }
-
-                _profileService.ImportProfile(ProfileCategory, profileConfigurationExportModel);
-            }
-            catch (Exception e)
-            {
-                await _dialogService.ShowConfirmDialog("Import profile", $"Failed to import this profile, make sure it is a valid Artemis profile.\r\n{e.Message}", "Confirm", null);
+                SidebarProfileConfigurationViewModel viewModel = _vmFactory.SidebarProfileConfigurationViewModel(_sidebarViewModel, result);
+                ProfileConfigurations.Insert(0, viewModel);
+                SelectedProfileConfiguration = viewModel;
             }
         }
 
         private void CreateProfileViewModels()
         {
-            Items.Clear();
+            ProfileConfigurations.Clear();
             foreach (ProfileConfiguration profileConfiguration in ProfileCategory.ProfileConfigurations.OrderBy(p => p.Order))
-                Items.Add(_vmFactory.SidebarProfileConfigurationViewModel(profileConfiguration));
+                ProfileConfigurations.Add(_vmFactory.SidebarProfileConfigurationViewModel(_sidebarViewModel, profileConfiguration));
 
-            SelectedProfileConfiguration = Items.FirstOrDefault(i => i.ProfileConfiguration.IsBeingEdited);
+            SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(i => i.ProfileConfiguration.IsBeingEdited);
         }
-
-        private void ProfileCategoryOnProfileConfigurationRemoved(object sender, ProfileConfigurationEventArgs e)
-        {
-            if (!_addingProfile && ShowItems)
-            {
-                Items.Remove(Items.FirstOrDefault(i => i.ProfileConfiguration == e.ProfileConfiguration));
-                ((BindableCollection<SidebarProfileConfigurationViewModel>) Items).Sort(p => p.ProfileConfiguration.Order);
-            }
-
-            SelectedProfileConfiguration = Items.FirstOrDefault(i => i.ProfileConfiguration.IsBeingEdited);
-        }
-
-        private void ProfileCategoryOnProfileConfigurationAdded(object sender, ProfileConfigurationEventArgs e)
-        {
-            Execute.PostToUIThread(() =>
-            {
-                if (!_addingProfile && ShowItems)
-                {
-                    Items.Add(_vmFactory.SidebarProfileConfigurationViewModel(e.ProfileConfiguration));
-                    ((BindableCollection<SidebarProfileConfigurationViewModel>)Items).Sort(p => p.ProfileConfiguration.Order);
-                }
-
-                SelectedProfileConfiguration = Items.FirstOrDefault(i => i.ProfileConfiguration.IsBeingEdited);
-            });
-        }
-
-        #region Overrides of Screen
-
-        #region Overrides of AllActive
-
-        /// <inheritdoc />
-        protected override void OnActivate()
-        {
-            if (ShowItems)
-                CreateProfileViewModels();
-            base.OnActivate();
-        }
-
-        #endregion
-
-        /// <inheritdoc />
-        protected override void OnInitialActivate()
-        {
-            ProfileCategory.ProfileConfigurationAdded += ProfileCategoryOnProfileConfigurationAdded;
-            ProfileCategory.ProfileConfigurationRemoved += ProfileCategoryOnProfileConfigurationRemoved;
-            base.OnInitialActivate();
-        }
-
-        /// <inheritdoc />
-        protected override void OnClose()
-        {
-            ProfileCategory.ProfileConfigurationAdded -= ProfileCategoryOnProfileConfigurationAdded;
-            ProfileCategory.ProfileConfigurationRemoved -= ProfileCategoryOnProfileConfigurationRemoved;
-            base.OnClose();
-        }
-
-        #endregion
-
-        #region Implementation of IDropTarget
-
-        /// <inheritdoc />
-        public void DragOver(IDropInfo dropInfo)
-        {
-            _defaultDropHandler.DragOver(dropInfo);
-        }
-
-        /// <inheritdoc />
-        public void Drop(IDropInfo dropInfo)
-        {
-            if (dropInfo.Data is not SidebarProfileConfigurationViewModel sourceItem)
-                return;
-            if (dropInfo.Data == dropInfo.TargetItem)
-                return;
-
-            SidebarCategoryViewModel sourceCategory = (SidebarCategoryViewModel) sourceItem.Parent;
-            SidebarCategoryViewModel targetCategory = (SidebarCategoryViewModel) ((FrameworkElement) dropInfo.VisualTarget).DataContext;
-
-            int targetIndex = 0;
-            if (dropInfo.TargetItem is SidebarProfileConfigurationViewModel targetItem)
-            {
-                if (dropInfo.InsertPosition.HasFlag(RelativeInsertPosition.BeforeTargetItem))
-                    targetIndex = targetCategory.Items.IndexOf(targetItem);
-                else
-                    targetIndex = targetCategory.Items.IndexOf(targetItem) + 1;
-            }
-
-            targetCategory.ProfileCategory.AddProfileConfiguration(sourceItem.ProfileConfiguration, targetIndex);
-
-            if (sourceCategory != targetCategory)
-                _profileService.SaveProfileCategory(sourceCategory.ProfileCategory);
-            _profileService.SaveProfileCategory(targetCategory.ProfileCategory);
-        }
-
-        #endregion
     }
 }

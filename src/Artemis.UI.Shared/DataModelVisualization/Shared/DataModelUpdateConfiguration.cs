@@ -1,4 +1,4 @@
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.DataModelVisualization.Shared
 {
     /// <summary>
     ///     Represents a configuration to use while updating a <see cref="DataModelVisualizationViewModel" />

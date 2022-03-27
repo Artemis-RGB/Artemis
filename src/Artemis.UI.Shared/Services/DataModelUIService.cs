@@ -5,7 +5,10 @@ using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
+using Artemis.UI.Shared.DataModelVisualization;
+using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Artemis.UI.Shared.DefaultTypes.DataModel.Display;
+using Artemis.UI.Shared.Services.Interfaces;
 using Ninject;
 using Ninject.Parameters;
 
@@ -35,7 +38,7 @@ namespace Artemis.UI.Shared.Services
         public DataModelPropertiesViewModel GetMainDataModelVisualization()
         {
             DataModelPropertiesViewModel viewModel = new(null, null, null);
-            foreach (DataModel dataModelExpansion in _dataModelService.GetDataModels().Where(d => d.IsExpansion).OrderBy(d => d.DataModelDescription.Name))
+            foreach (DataModel dataModelExpansion in _dataModelService.GetDataModels().Where(d => d.IsExpansion || d.Module.IsActivated).OrderBy(d => d.DataModelDescription.Name))
                 viewModel.Children.Add(new DataModelPropertiesViewModel(dataModelExpansion, viewModel, new DataModelPath(dataModelExpansion)));
 
             // Update to populate children
