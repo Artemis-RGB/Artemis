@@ -57,7 +57,7 @@
                                  Margin="0 0 15 0"
                                  IsVisible="{Binding RobertProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                             <Ellipse.Fill>
-								<ImageBrush Source="{Binding RobertProfileImage}" />
+                                <ImageBrush Source="{Binding RobertProfileImage}" BitmapInterpolationMode="HighQuality" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
@@ -75,16 +75,7 @@
 
                     <Separator Classes="card-separator" />
 
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                    <Grid RowDefinitions="*,*,*" ColumnDefinitions="Auto,*">
                         <Ellipse Grid.Row="0"
                                  Grid.Column="0"
                                  Grid.RowSpan="3"
@@ -94,7 +85,7 @@
                                  Margin="0 0 15 0"
                                  IsVisible="{Binding DarthAffeProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                             <Ellipse.Fill>
-                                <ImageBrush Source="{Binding DarthAffeProfileImage}" />
+                                <ImageBrush Source="{Binding DarthAffeProfileImage}" BitmapInterpolationMode="HighQuality" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
@@ -122,7 +113,7 @@
                                  Margin="0 0 15 0"
                                  IsVisible="{Binding DrMeteorProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                             <Ellipse.Fill>
-                                <ImageBrush Source="{Binding DrMeteorProfileImage}" />
+                                <ImageBrush Source="{Binding DrMeteorProfileImage}" BitmapInterpolationMode="HighQuality" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
@@ -150,7 +141,7 @@
                                  Margin="0 0 15 0"
                                  IsVisible="{Binding KaiProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                             <Ellipse.Fill>
-                                <ImageBrush Source="{Binding KaiProfileImage}"  />
+                                <ImageBrush Source="{Binding KaiProfileImage}" BitmapInterpolationMode="HighQuality" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
@@ -198,72 +189,69 @@
                     <Grid ColumnDefinitions="Auto,*">
                         <Grid.Styles>
                             <Style Selector="TextBlock.library-name">
-                                <Setter Property="Margin" Value="0 7 15 6"/>
-                                <Setter Property="FontWeight" Value="600"/>
+                                <Setter Property="Margin" Value="0 7 15 6" />
+                                <Setter Property="FontWeight" Value="600" />
                             </Style>
                         </Grid.Styles>
-						
+
                         <StackPanel Grid.Row="0" Grid.Column="0">
-							<TextBlock Classes="library-name">Avalonia</TextBlock>
-							<TextBlock Classes="library-name">FluentAvalonia</TextBlock>
-							<TextBlock Classes="library-name">EmbedIO</TextBlock>
-							<TextBlock Classes="library-name">Furl.Http</TextBlock>
-							<TextBlock Classes="library-name">Humanizer</TextBlock>
-							<TextBlock Classes="library-name">LiteDB</TextBlock>
-							<TextBlock Classes="library-name">McMaster.NETCore.Plugins</TextBlock>
-							<TextBlock Classes="library-name">Newtonsoft.Json</TextBlock>
-							<TextBlock Classes="library-name">Ninject</TextBlock>
-							<TextBlock Classes="library-name">RGB.NET</TextBlock>
-							<TextBlock Classes="library-name">Serilog</TextBlock>
-							<TextBlock Classes="library-name">SkiaSharp</TextBlock>
-							<TextBlock Classes="library-name">Unclassified.NetRevisionTask</TextBlock>
-						</StackPanel>
+                            <TextBlock Classes="library-name">Avalonia</TextBlock>
+                            <TextBlock Classes="library-name">FluentAvalonia</TextBlock>
+                            <TextBlock Classes="library-name">EmbedIO</TextBlock>
+                            <TextBlock Classes="library-name">Furl.Http</TextBlock>
+                            <TextBlock Classes="library-name">Humanizer</TextBlock>
+                            <TextBlock Classes="library-name">LiteDB</TextBlock>
+                            <TextBlock Classes="library-name">McMaster.NETCore.Plugins</TextBlock>
+                            <TextBlock Classes="library-name">Newtonsoft.Json</TextBlock>
+                            <TextBlock Classes="library-name">Ninject</TextBlock>
+                            <TextBlock Classes="library-name">RGB.NET</TextBlock>
+                            <TextBlock Classes="library-name">Serilog</TextBlock>
+                            <TextBlock Classes="library-name">SkiaSharp</TextBlock>
+                            <TextBlock Classes="library-name">Unclassified.NetRevisionTask</TextBlock>
+                        </StackPanel>
                         <StackPanel Grid.Column="1">
                             <controls:HyperlinkButton NavigateUri="https://avaloniaui.net/">
-								https://avaloniaui.net/
-							</controls:HyperlinkButton>
+                                https://avaloniaui.net/
+                            </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://github.com/amwx/FluentAvalonia">
-								https://github.com/amwx/FluentAvalonia
-							</controls:HyperlinkButton>
+                                https://github.com/amwx/FluentAvalonia
+                            </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://unosquare.github.io/embedio/">
                                 https://unosquare.github.io/embedio/
                             </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://flurl.dev/">
-								https://flurl.dev/
-							</controls:HyperlinkButton>
+                                https://flurl.dev/
+                            </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://github.com/Humanizr/Humanizer">
-								https://github.com/Humanizr/Humanizer
-							</controls:HyperlinkButton>
+                                https://github.com/Humanizr/Humanizer
+                            </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://www.litedb.org/">
-								https://www.litedb.org/
-							</controls:HyperlinkButton>
+                                https://www.litedb.org/
+                            </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://github.com/natemcmaster/DotNetCorePlugins">
-								https://github.com/natemcmaster/DotNetCorePlugins
-							</controls:HyperlinkButton>
+                                https://github.com/natemcmaster/DotNetCorePlugins
+                            </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://www.newtonsoft.com/json">
-								https://www.newtonsoft.com/json
-							</controls:HyperlinkButton>
+                                https://www.newtonsoft.com/json
+                            </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="http://www.ninject.org/">
-								http://www.ninject.org/
-							</controls:HyperlinkButton>
+                                http://www.ninject.org/
+                            </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://github.com/DarthAffe/RGB.NET">
-								https://github.com/DarthAffe/RGB.NET
-							</controls:HyperlinkButton>
+                                https://github.com/DarthAffe/RGB.NET
+                            </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://serilog.net/">
-								https://serilog.net/
-							</controls:HyperlinkButton>
+                                https://serilog.net/
+                            </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://github.com/mono/SkiaSharp">
-								https://github.com/mono/SkiaSharp
-							</controls:HyperlinkButton>
+                                https://github.com/mono/SkiaSharp
+                            </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://unclassified.software/en/apps/netrevisiontask">
-								https://unclassified.software/en/apps/netrevisiontask
-							</controls:HyperlinkButton>
+                                https://unclassified.software/en/apps/netrevisiontask
+                            </controls:HyperlinkButton>
                         </StackPanel>
-
-					</Grid>
+                    </Grid>
                 </StackPanel>
-
-
             </Border>
         </StackPanel>
     </ScrollViewer>
