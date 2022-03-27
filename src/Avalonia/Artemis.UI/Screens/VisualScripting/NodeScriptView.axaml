@@ -16,6 +16,7 @@
 	<UserControl.KeyBindings>
 <KeyBinding Command="{CompiledBinding History.Undo}" Gesture="Ctrl+Z"></KeyBinding>
 <KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y"></KeyBinding>
+<KeyBinding Command="{Binding DeleteSelectedNodes}" Gesture="Delete"></KeyBinding>
     </UserControl.KeyBindings>
     <paz:ZoomBorder Name="ZoomBorder"
                     Stretch="None"

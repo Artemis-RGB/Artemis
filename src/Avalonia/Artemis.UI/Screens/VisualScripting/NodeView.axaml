@@ -41,7 +41,7 @@
                           VerticalAlignment="Top"
                           ColumnDefinitions="*,Auto">
                         <TextBlock VerticalAlignment="Center"
-                                   Margin="5"
+                                   Margin="10 0 0 0"
                                    Text="{CompiledBinding Node.Name}"
                                    ToolTip.Tip="{CompiledBinding Node.Description}">
                         </TextBlock>
@@ -57,7 +57,7 @@
             </Border>
 
 
-            <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Margin="5">
+            <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Margin="4">
                 <StackPanel Grid.Column="0" IsVisible="{CompiledBinding HasInputPins}">
                     <ItemsControl Items="{CompiledBinding InputPinViewModels}" Margin="4 0" />
                     <ItemsControl Items="{CompiledBinding InputPinCollectionViewModels}" />

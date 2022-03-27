@@ -8,7 +8,7 @@
              x:Class="Artemis.UI.Screens.VisualScripting.Pins.OutputPinCollectionView"
              x:DataType="pins:PinCollectionViewModel">
     <StackPanel>
-        <Button Classes="icon-button icon-button-small" 
+        <Button Classes="icon-button icon-button-small pin-collection-button"
                 ToolTip.Tip="Add new pin" 
                 HorizontalAlignment="Right"
                 Command="{CompiledBinding AddPin}">

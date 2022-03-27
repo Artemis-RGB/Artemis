@@ -38,7 +38,7 @@ public class DataModelNodeCustomViewModel : CustomNodeViewModel
 
             // Subscribe to node changes 
             _node.WhenAnyValue(n => n.Storage).Subscribe(UpdateDataModelPath).DisposeWith(d);
-            UpdateDataModelPath(_node.Storage);
+            this.WhenAnyValue(vm => vm.DataModelPath).Subscribe(ApplyDataModelPath).DisposeWith(d);
 
             Disposable.Create(() =>
             {
@@ -46,8 +46,6 @@ public class DataModelNodeCustomViewModel : CustomNodeViewModel
                 _dataModelPath = null;
             }).DisposeWith(d);
         });
-
-        this.WhenAnyValue(vm => vm.DataModelPath).Subscribe(ApplyDataModelPath);
     }
 
     public PluginSetting<bool> ShowFullPaths { get; }

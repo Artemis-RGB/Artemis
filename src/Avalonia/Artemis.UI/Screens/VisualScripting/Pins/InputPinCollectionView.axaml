@@ -8,7 +8,7 @@
              x:Class="Artemis.UI.Screens.VisualScripting.Pins.InputPinCollectionView"
              x:DataType="pins:PinCollectionViewModel">
     <StackPanel>
-        <Button Classes="icon-button icon-button-small"
+        <Button Classes="icon-button icon-button-small pin-collection-button"
                 ToolTip.Tip="Add new pin" 
                 Command="{CompiledBinding AddPin}">
             <avalonia:MaterialIcon Kind="Add"></avalonia:MaterialIcon>

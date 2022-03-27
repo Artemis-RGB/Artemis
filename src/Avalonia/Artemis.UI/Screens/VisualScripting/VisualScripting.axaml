@@ -6,8 +6,12 @@
         </Border>
     </Design.PreviewWith>
 
+	<Style Selector=":is(Button).pin-collection-button">
+        <!-- <Setter Property="Margin" Value="0 2"/> -->
+    </Style>
+
     <Style Selector="StackPanel#PinContainer">
-        <Setter Property="Height" Value="24" />
+        <Setter Property="Height" Value="26" />
         <Setter Property="Cursor" Value="Hand" />
     </Style>
     <Style Selector="StackPanel#PinContainer Border#PinPoint">

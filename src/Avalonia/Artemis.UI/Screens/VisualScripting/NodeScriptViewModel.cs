@@ -103,6 +103,19 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         set => RaiseAndSetIfChanged(ref _dragViewModel, value);
     }
 
+    public void DeleteSelectedNodes()
+    {
+        List<NodeViewModel> toRemove = NodeViewModels.Where(vm => vm.IsSelected && !vm.Node.IsDefaultNode && !vm.Node.IsExitNode).ToList();
+        if (!toRemove.Any())
+            return;
+
+        using (_nodeEditorService.CreateCommandScope(NodeScript, "Delete nodes"))
+        {
+            foreach (NodeViewModel node in toRemove)
+                _nodeEditorService.ExecuteCommand(NodeScript, new DeleteNode(NodeScript, node.Node));
+        }
+    }
+
     public void UpdateNodeSelection(List<NodeViewModel> nodes, bool expand, bool invert)
     {
         _initialNodeSelection ??= NodeViewModels.Where(vm => vm.IsSelected).ToList();
