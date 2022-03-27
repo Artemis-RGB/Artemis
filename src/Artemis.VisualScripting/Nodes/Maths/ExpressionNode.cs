@@ -2,6 +2,7 @@
 using Artemis.VisualScripting.Nodes.Maths.CustomViewModels;
 using NoStringEvaluating.Contract;
 using NoStringEvaluating.Contract.Variables;
+using NoStringEvaluating.Models.FormulaChecker;
 using NoStringEvaluating.Models.Values;
 
 namespace Artemis.VisualScripting.Nodes.Maths;
@@ -10,14 +11,16 @@ namespace Artemis.VisualScripting.Nodes.Maths;
 public class MathExpressionNode : Node<string, MathExpressionNodeCustomViewModel>
 {
     private readonly INoStringEvaluator _evaluator;
+    private readonly IFormulaChecker _checker;
     private readonly PinsVariablesContainer _variables;
 
     #region Constructors
 
-    public MathExpressionNode(INoStringEvaluator evaluator)
+    public MathExpressionNode(INoStringEvaluator evaluator, IFormulaChecker checker)
         : base("Math Expression", "Outputs the result of a math expression.")
     {
         _evaluator = evaluator;
+        _checker = checker;
         Output = CreateOutputPin<Numeric>();
         Values = CreateInputPinCollection<Numeric>("Values", 2);
         Values.PinAdded += (_, _) => SetPinNames();
@@ -70,6 +73,45 @@ public class MathExpressionNode : Node<string, MathExpressionNodeCustomViewModel
     }
 
     #endregion
+
+    public bool IsSyntaxValid(string? s)
+    {
+        if (s == null)
+            return true;
+
+        if (!_checker.CheckSyntax(s).Ok)
+            return false;
+
+        try
+        {
+            _evaluator.CalcNumber(s, _variables);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public string GetSyntaxErrors(string? s)
+    {
+        if (s == null)
+            return "";
+
+        CheckFormulaResult? syntaxCheck = _checker.CheckSyntax(s);
+        if (!syntaxCheck.Ok)
+            return string.Join(",", syntaxCheck.Mistakes);
+
+        try
+        {
+            _evaluator.CalcNumber(s, _variables);
+            return "";
+        }
+        catch (Exception e)
+        {
+            return e.Message;
+        }
+    }
 }
 
 public class PinsVariablesContainer : IVariablesContainer

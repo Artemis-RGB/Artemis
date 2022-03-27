@@ -1807,6 +1807,7 @@
           "Ninject": "3.3.4",
           "NoStringEvaluating": "2.2.2",
           "ReactiveUI": "17.1.50",
+          "ReactiveUI.Validation": "2.2.1",
           "SkiaSharp": "2.88.0-preview.178"
         }
       }

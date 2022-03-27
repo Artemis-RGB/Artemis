@@ -14,6 +14,7 @@
     <PackageReference Include="Ninject" Version="3.3.4" />
     <PackageReference Include="NoStringEvaluating" Version="2.2.2" />
     <PackageReference Include="ReactiveUI" Version="17.1.50" />
+    <PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />
     <PackageReference Include="SkiaSharp" Version="2.88.0-preview.178" />
   </ItemGroup>
 

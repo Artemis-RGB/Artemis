@@ -55,13 +55,13 @@ public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
     public ObservableCollection<Module>? Modules
     {
         get => _modules;
-        set => RaiseAndSetIfChanged(ref _modules, value);
+        set => this.RaiseAndSetIfChanged(ref _modules, value);
     }
 
     public DataModelPath? DataModelPath
     {
         get => _dataModelPath;
-        set => RaiseAndSetIfChanged(ref _dataModelPath, value);
+        set => this.RaiseAndSetIfChanged(ref _dataModelPath, value);
     }
 
     private void UpdateDataModelPath(DataModelPathEntity? entity)

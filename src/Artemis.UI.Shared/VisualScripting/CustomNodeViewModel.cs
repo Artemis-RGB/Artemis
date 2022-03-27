@@ -3,13 +3,14 @@ using System.ComponentModel;
 using System.Reactive.Disposables;
 using Artemis.Core;
 using ReactiveUI;
+using ReactiveUI.Validation.Helpers;
 
 namespace Artemis.UI.Shared.VisualScripting;
 
 /// <summary>
 ///     Represents a custom view model for a node
 /// </summary>
-public abstract class CustomNodeViewModel : ActivatableViewModelBase, ICustomNodeViewModel
+public abstract class CustomNodeViewModel : ReactiveValidationObject, IActivatableViewModel, ICustomNodeViewModel
 {
     /// <summary>
     ///     Creates a new instance of the <see cref="CustomNodeViewModel" /> class.
@@ -37,6 +38,13 @@ public abstract class CustomNodeViewModel : ActivatableViewModelBase, ICustomNod
     ///     Gets script the node is contained in.
     /// </summary>
     public INodeScript Script { get; }
+
+    #region Implementation of IActivatableViewModel
+
+    /// <inheritdoc />
+    public ViewModelActivator Activator { get; } = new();
+
+    #endregion
 
     /// <summary>
     ///     Invokes the <see cref="NodeModified" /> event

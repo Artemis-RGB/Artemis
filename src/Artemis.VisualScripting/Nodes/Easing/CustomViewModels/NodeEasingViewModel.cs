@@ -15,9 +15,8 @@ public class NodeEasingViewModel : ViewModelBase
         EasingPoints = new List<Point>();
         for (int i = 1; i <= 10; i++)
         {
-            int x = i;
             double y = Easings.Interpolate(i / 10.0, EasingFunction) * 10;
-            EasingPoints.Add(new Point(x, y));
+            EasingPoints.Add(new Point(i, y));
         }
     }
 

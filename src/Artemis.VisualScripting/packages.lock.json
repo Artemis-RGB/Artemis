@@ -68,6 +68,15 @@
           "Splat": "14.1.45"
         }
       },
+      "ReactiveUI.Validation": {
+        "type": "Direct",
+        "requested": "[2.2.1, )",
+        "resolved": "2.2.1",
+        "contentHash": "rhEphZ4ErbGfNtbBQ/tYMsLJYHyLVyqidU+sgZ3kXKbS7QrNoM4j6PPxCwLMKsJUuvVL8JN45xgmB9tSwm7+lg==",
+        "dependencies": {
+          "ReactiveUI": "16.2.6"
+        }
+      },
       "SkiaSharp": {
         "type": "Direct",
         "requested": "[2.88.0-preview.178, )",
@@ -536,14 +545,6 @@
         "dependencies": {
           "Castle.Core": "4.2.0",
           "Ninject": "3.3.3"
-        }
-      },
-      "ReactiveUI.Validation": {
-        "type": "Transitive",
-        "resolved": "2.2.1",
-        "contentHash": "rhEphZ4ErbGfNtbBQ/tYMsLJYHyLVyqidU+sgZ3kXKbS7QrNoM4j6PPxCwLMKsJUuvVL8JN45xgmB9tSwm7+lg==",
-        "dependencies": {
-          "ReactiveUI": "16.2.6"
         }
       },
       "RGB.NET.Core": {
