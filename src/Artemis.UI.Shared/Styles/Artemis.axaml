@@ -33,6 +33,7 @@
     <StyleInclude Source="/Styles/Border.axaml" />
     <StyleInclude Source="/Styles/Button.axaml" />
     <StyleInclude Source="/Styles/Condensed.axaml" />
+    <StyleInclude Source="/Styles/ColorPickerButton.axaml" />
     <StyleInclude Source="/Styles/TextBlock.axaml" />
     <StyleInclude Source="/Styles/Sidebar.axaml" />
     <StyleInclude Source="/Styles/InfoBar.axaml" />

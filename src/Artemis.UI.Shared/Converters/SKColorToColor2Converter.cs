@@ -4,7 +4,7 @@ using Avalonia.Data.Converters;
 using FluentAvalonia.UI.Media;
 using SkiaSharp;
 
-namespace Artemis.UI.Converters;
+namespace Artemis.UI.Shared.Converters;
 
 /// <summary>
 ///     Converts <see cref="SKColor" /> into <see cref="Color2" />.

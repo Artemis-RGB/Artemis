@@ -13,6 +13,7 @@ public class StaticSKColorValueNode : Node<SKColor, StaticSKColorValueNodeCustom
         : base("Color", "Outputs a configurable color value.")
     {
         Output = CreateOutputPin<SKColor>();
+        Storage = new SKColor(255, 0, 0);
     }
 
     #endregion

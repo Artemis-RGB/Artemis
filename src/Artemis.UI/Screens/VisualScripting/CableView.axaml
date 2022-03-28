@@ -57,19 +57,20 @@
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Stretch" />
                             <Border Margin="5 0 0 0"
-                                    VerticalAlignment="Center"
+                                    VerticalAlignment="Bottom"
                                     HorizontalAlignment="Right"
                                     BorderThickness="1"
                                     MinWidth="18"
                                     MinHeight="18"
                                     Background="{DynamicResource CheckerboardBrush}"
                                     BorderBrush="{DynamicResource ColorPickerButtonOutline}"
-                                    CornerRadius="2">
-                                <Ellipse Stroke="{DynamicResource NormalBorderBrush}">
-                                    <Ellipse.Fill>
-                                        <SolidColorBrush Color="{Binding Converter={StaticResource SKColorToColorConverter}}" />
-                                    </Ellipse.Fill>
-                                </Ellipse>
+                                    CornerRadius="4"
+                                    ClipToBounds="True">
+								<Border CornerRadius="4">
+									<Border.Background>
+										<SolidColorBrush Color="{Binding Converter={StaticResource SKColorToColorConverter}}" />
+									</Border.Background>
+								</Border>
                             </Border>
                         </StackPanel>
                     </DataTemplate>

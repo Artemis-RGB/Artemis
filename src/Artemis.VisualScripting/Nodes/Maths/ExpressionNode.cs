@@ -43,8 +43,15 @@ public class MathExpressionNode : Node<string, MathExpressionNodeCustomViewModel
 
     public override void Evaluate()
     {
-        if (Storage != null)
-            Output.Value = new Numeric(_evaluator.CalcNumber(Storage, _variables));
+        try
+        {
+            if (Storage != null)
+                Output.Value = new Numeric(_evaluator.CalcNumber(Storage, _variables));
+        }
+        catch
+        {
+            Output.Value = new Numeric(0);
+        }
     }
 
     private void SetPinNames()
