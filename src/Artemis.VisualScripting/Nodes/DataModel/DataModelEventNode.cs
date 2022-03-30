@@ -2,7 +2,7 @@
 using Artemis.Core;
 using Artemis.Core.Events;
 using Artemis.Storage.Entities.Profile;
-using Artemis.VisualScripting.Nodes.DataModel.CustomViewModels;
+using Artemis.VisualScripting.Nodes.DataModel.Screens;
 
 namespace Artemis.VisualScripting.Nodes.DataModel;
 

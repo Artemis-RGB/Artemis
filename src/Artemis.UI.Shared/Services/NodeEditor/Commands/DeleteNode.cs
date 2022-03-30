@@ -11,7 +11,7 @@ public class DeleteNode : INodeEditorCommand, IDisposable
 {
     private readonly INode _node;
     private readonly INodeScript _nodeScript;
-    private readonly Dictionary<IPin, List<IPin>> _pinConnections = new();
+    private readonly NodeConnectionStore _connections;
     private bool _isRemoved;
 
     /// <summary>
@@ -23,58 +23,15 @@ public class DeleteNode : INodeEditorCommand, IDisposable
     {
         _nodeScript = nodeScript;
         _node = node;
-    }
 
-    private void StoreConnections()
-    {
-        _pinConnections.Clear();
-        foreach (IPin nodePin in _node.Pins)
-        {
-            _pinConnections.Add(nodePin, new List<IPin>(nodePin.ConnectedTo));
-            nodePin.DisconnectAll();
-        }
-
-        foreach (IPinCollection nodePinCollection in _node.PinCollections)
-        {
-            foreach (IPin nodePin in nodePinCollection)
-            {
-                _pinConnections.Add(nodePin, new List<IPin>(nodePin.ConnectedTo));
-                nodePin.DisconnectAll();
-            }
-        }
-    }
-
-    private void RestoreConnections()
-    {
-        foreach (IPin nodePin in _node.Pins)
-        {
-            if (_pinConnections.TryGetValue(nodePin, out List<IPin>? connections))
-            {
-                foreach (IPin connection in connections)
-                    nodePin.ConnectTo(connection);
-            }
-        }
-
-        foreach (IPinCollection nodePinCollection in _node.PinCollections)
-        {
-            foreach (IPin nodePin in nodePinCollection)
-            {
-                if (_pinConnections.TryGetValue(nodePin, out List<IPin>? connections))
-                {
-                    foreach (IPin connection in connections)
-                        nodePin.ConnectTo(connection);
-                }
-            }
-        }
-
-        _pinConnections.Clear();
+        _connections = new NodeConnectionStore(_node);
     }
 
     /// <inheritdoc />
     public void Dispose()
     {
-        if (_isRemoved)
-            _nodeScript.Dispose();
+        if (_isRemoved && _node is IDisposable disposableNode)
+            disposableNode.Dispose();
     }
 
     /// <inheritdoc />
@@ -83,7 +40,7 @@ public class DeleteNode : INodeEditorCommand, IDisposable
     /// <inheritdoc />
     public void Execute()
     {
-        StoreConnections();
+        _connections.Store();
         _nodeScript.RemoveNode(_node);
 
         _isRemoved = true;
@@ -93,7 +50,7 @@ public class DeleteNode : INodeEditorCommand, IDisposable
     public void Undo()
     {
         _nodeScript.AddNode(_node);
-        RestoreConnections();
+        _connections.Restore();
 
         _isRemoved = false;
     }

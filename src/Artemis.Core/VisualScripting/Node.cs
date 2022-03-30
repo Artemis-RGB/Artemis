@@ -168,6 +168,21 @@ public abstract class Node : CorePropertyChanged, INode
     }
 
     /// <summary>
+    ///     Adds an existing <paramref name="pin"/> to the <see cref="Pins" /> collection.
+    /// </summary>
+    /// <param name="pin">The pin to add</param>
+    protected void AddPin(Pin pin)
+    {
+        if (pin.Node != this)
+            throw new ArtemisCoreException("Can't add a pin to a node that belongs to a different node than the one it's being added to.");
+        if (_pins.Contains(pin))
+            return;
+
+        _pins.Add(pin);
+        OnPropertyChanged(nameof(Pins));
+    }
+
+    /// <summary>
     ///     Creates a new input pin collection and adds it to the <see cref="PinCollections" /> collection
     /// </summary>
     /// <typeparam name="T">The type of value the pins of this collection will hold</typeparam>

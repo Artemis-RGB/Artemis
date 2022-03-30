@@ -10,6 +10,7 @@ using Artemis.UI.Shared.Providers;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.PropertyInput;
 using Artemis.VisualScripting.Nodes;
+using Artemis.VisualScripting.Nodes.Mathematics;
 using Avalonia;
 using DynamicData;
 using Ninject;

@@ -24,10 +24,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Nodes\CustomViews\StaticStringValueNodeCustomView.axaml.cs">
+    <Compile Update="Nodes\Easing\Screens\EasingTypeNodeEasingView.axaml.cs">
+      <DependentUpon>EasingTypeNodeEasingView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Nodes\Static\Screens\StaticStringValueNodeCustomView.axaml.cs">
       <DependentUpon>StaticStringValueNodeCustomView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Nodes\DataModel\CustomViews\DataModelNodeCustomView.axaml.cs">
+    <Compile Update="Nodes\DataModel\Screens\DataModelNodeCustomView.axaml.cs">
       <DependentUpon>DataModelNodeCustomView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>

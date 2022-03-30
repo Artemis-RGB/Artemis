@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using Artemis.Core;
 using Artemis.Storage.Entities.Profile;
-using Artemis.VisualScripting.Nodes.DataModel.CustomViewModels;
+using Artemis.VisualScripting.Nodes.DataModel.Screens;
 using Avalonia.Threading;
 
 namespace Artemis.VisualScripting.Nodes.DataModel;

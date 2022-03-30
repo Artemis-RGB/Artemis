@@ -9,6 +9,7 @@ using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.VisualScripting.Nodes;
+using Artemis.VisualScripting.Nodes.Operators;
 using Avalonia.Input;
 using Avalonia.Threading;
 using ReactiveUI;

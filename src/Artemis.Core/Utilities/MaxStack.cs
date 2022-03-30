@@ -90,7 +90,7 @@ namespace Artemis.Core
         public bool IsTop(T value)
         {
             bool result = false;
-            if (this.Count > 0)
+            if (Count > 0)
             {
                 result = Peek()!.Equals(value);
             }
@@ -100,7 +100,7 @@ namespace Artemis.Core
         public bool Contains(T value)
         {
             bool result = false;
-            if (this.Count > 0)
+            if (Count > 0)
             {
                 result = _list.Contains(value);
             }

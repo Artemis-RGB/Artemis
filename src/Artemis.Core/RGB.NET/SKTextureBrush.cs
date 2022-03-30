@@ -26,7 +26,7 @@ namespace Artemis.Core
         /// <param name="texture">The texture drawn by this brush.</param>
         public SKTextureBrush(SKTexture? texture)
         {
-            this.Texture = texture;
+            Texture = texture;
         }
 
         #endregion

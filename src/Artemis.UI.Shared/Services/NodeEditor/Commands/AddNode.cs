@@ -45,8 +45,8 @@ public class AddNode : INodeEditorCommand, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-        if (_isRemoved)
-            _nodeScript.Dispose();
+        if (_isRemoved && _node is IDisposable disposableNode)
+            disposableNode.Dispose();
     }
 
     #endregion

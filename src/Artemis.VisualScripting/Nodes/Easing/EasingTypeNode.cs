@@ -1,5 +1,5 @@
 ﻿using Artemis.Core;
-using Artemis.VisualScripting.Nodes.Easing.CustomViewModels;
+using Artemis.VisualScripting.Nodes.Easing.Screens;
 
 namespace Artemis.VisualScripting.Nodes.Easing;
 

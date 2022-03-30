@@ -30,15 +30,15 @@
                 </Template>
             </Setter>
         </Style>
-
-        <Style Selector="TreeView#NodeTree">
-
-        </Style>
     </UserControl.Styles>
     <Border Classes="picker-container">
         <Grid RowDefinitions="Auto,*">
             <TextBox Name="SearchBox" Text="{CompiledBinding SearchText}" Margin="0 0 0 15" Watermark="Search"></TextBox>
-            <TreeView Name="NodeTree" Grid.Row="1" Items="{CompiledBinding Categories}" IsVisible="{CompiledBinding Categories.Count}" SelectedItem="{CompiledBinding SelectedNode}">
+            <TreeView Name="NodeTree"
+                      Grid.Row="1"
+                      Items="{CompiledBinding Categories}"
+                      IsVisible="{CompiledBinding Categories.Count}"
+                      SelectedItem="{CompiledBinding SelectedNode}">
                 <TreeView.Styles>
                     <Style Selector="TreeViewItem">
                         <Setter Property="IsExpanded" Value="True" />

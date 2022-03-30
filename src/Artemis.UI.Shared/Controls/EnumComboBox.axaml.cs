@@ -24,6 +24,7 @@ namespace Artemis.UI.Shared.Controls
         private readonly ObservableCollection<(Enum, string)> _currentValues = new();
 
         private ComboBox? _enumComboBox;
+        private Type _currentType;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="EnumComboBox" /> class.
@@ -69,11 +70,14 @@ namespace Artemis.UI.Shared.Controls
         private void UpdateValues()
         {
             Type? newType = Value?.GetType();
-            if (_enumComboBox == null || _currentValues.Any() || newType is not {IsEnum: true})
+            if (_enumComboBox == null || newType == null || _currentType == newType)
                 return;
 
+            _currentValues.Clear();
             foreach ((Enum, string) valueDesc in EnumUtilities.GetAllValuesAndDescriptions(newType))
                 _currentValues.Add(valueDesc);
+
+            _currentType = newType;
         }
 
         private void UpdateSelection()

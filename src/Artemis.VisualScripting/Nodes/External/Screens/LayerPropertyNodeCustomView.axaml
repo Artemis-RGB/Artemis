@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:screens="clr-namespace:Artemis.VisualScripting.Nodes.External.Screens"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.VisualScripting.Nodes.External.Screens.LayerPropertyNodeCustomView"
+             x:DataType="screens:LayerPropertyNodeCustomViewModel">
+    <Grid>
+        <StackPanel Spacing="5" VerticalAlignment="Top" IsVisible="{CompiledBinding !OutsideProfileContext}">
+            <ComboBox Classes="condensed" Items="{CompiledBinding ProfileElements}" SelectedItem="{CompiledBinding SelectedProfileElement}" />
+            <ComboBox Classes="condensed" Items="{CompiledBinding LayerProperties}" SelectedItem="{CompiledBinding SelectedLayerProperty}" />
+        </StackPanel>
+        <StackPanel IsVisible="{CompiledBinding OutsideProfileContext}" VerticalAlignment="Center">
+            <TextBlock Classes="BodyStrongTextBlockStyle" TextAlignment="Center">
+                Node not available
+            </TextBlock>
+            <TextBlock Classes="BodyTextBlockStyle" Foreground="{DynamicResource TextFillColorSecondary}" TextAlignment="Center">
+                This node cannot be used outside profile scripts.
+            </TextBlock>
+        </StackPanel>
+    </Grid>
+
+</UserControl>

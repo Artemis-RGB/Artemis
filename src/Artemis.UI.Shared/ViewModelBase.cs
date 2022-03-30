@@ -58,7 +58,7 @@ public abstract class ViewModelValidationBase : ReactiveValidationObject
     public string? DisplayName
     {
         get => _displayName;
-        set => this.RaiseAndSetIfChanged(ref _displayName, value);
+        set => RaiseAndSetIfChanged(ref _displayName, value);
     }
 
     /// <summary>
