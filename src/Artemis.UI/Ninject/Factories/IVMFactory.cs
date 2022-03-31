@@ -92,7 +92,7 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface INodeVmFactory : IVmFactory
     {
-        NodeScriptViewModel NodeScriptViewModel(NodeScript nodeScript);
+        NodeScriptViewModel NodeScriptViewModel(NodeScript nodeScript, bool isPreview);
         NodePickerViewModel NodePickerViewModel(NodeScript nodeScript);
         NodeViewModel NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node);
         CableViewModel CableViewModel(NodeScriptViewModel nodeScriptViewModel, IPin from, IPin to);

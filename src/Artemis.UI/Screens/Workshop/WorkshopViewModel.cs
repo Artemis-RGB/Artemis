@@ -55,7 +55,7 @@ namespace Artemis.UI.Screens.Workshop
                 orNode.Result.ConnectTo(exitNode.Pins.First());
             }
 
-            VisualEditorViewModel = nodeVmFactory.NodeScriptViewModel(_testScript);
+            VisualEditorViewModel = nodeVmFactory.NodeScriptViewModel(_testScript, false);
 
             this.WhenActivated(d =>
             {

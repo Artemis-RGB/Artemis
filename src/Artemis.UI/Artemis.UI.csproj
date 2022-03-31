@@ -65,6 +65,9 @@
 	  <Compile Update="Screens\VisualScripting\DragCableView.axaml.cs">
 	    <DependentUpon>DragCableView.axaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Screens\VisualScripting\NodeScriptWindowView.axaml.cs">
+	    <DependentUpon>NodeScriptWindowView.axaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
 	  <AvaloniaXaml Update="DefaultTypes\PropertyInput\StringPropertyInputView.axaml">

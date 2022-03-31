@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Screens.ProfileEditor.DisplayCondition;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Properties;
 using Artemis.UI.Screens.ProfileEditor.StatusBar;
@@ -29,6 +30,7 @@ public class ProfileEditorViewModel : MainScreenViewModel
         ProfileTreeViewModel profileTreeViewModel,
         ProfileEditorTitleBarViewModel profileEditorTitleBarViewModel,
         PropertiesViewModel propertiesViewModel,
+        DisplayConditionScriptViewModel displayConditionScriptViewModel,
         StatusBarViewModel statusBarViewModel)
         : base(hostScreen, "profile-editor")
     {
@@ -36,9 +38,10 @@ public class ProfileEditorViewModel : MainScreenViewModel
         VisualEditorViewModel = visualEditorViewModel;
         ProfileTreeViewModel = profileTreeViewModel;
         PropertiesViewModel = propertiesViewModel;
+        DisplayConditionScriptViewModel = displayConditionScriptViewModel;
         StatusBarViewModel = statusBarViewModel;
         TitleBarViewModel = profileEditorTitleBarViewModel;
-
+        
         this.WhenActivated(d =>
         {
             _profileConfiguration = profileEditorService.ProfileConfiguration.ToProperty(this, vm => vm.ProfileConfiguration).DisposeWith(d);
@@ -56,6 +59,7 @@ public class ProfileEditorViewModel : MainScreenViewModel
     public VisualEditorViewModel VisualEditorViewModel { get; }
     public ProfileTreeViewModel ProfileTreeViewModel { get; }
     public PropertiesViewModel PropertiesViewModel { get; }
+    public DisplayConditionScriptViewModel DisplayConditionScriptViewModel { get; }
     public StatusBarViewModel StatusBarViewModel { get; }
 
     public ReadOnlyObservableCollection<IToolViewModel>? Tools
@@ -69,6 +73,7 @@ public class ProfileEditorViewModel : MainScreenViewModel
     public PluginSetting<double> TreeWidth => _settingsService.GetSetting("ProfileEditor.TreeWidth", 350.0);
     public PluginSetting<double> ConditionsHeight => _settingsService.GetSetting("ProfileEditor.ConditionsHeight", 300.0);
     public PluginSetting<double> PropertiesHeight => _settingsService.GetSetting("ProfileEditor.PropertiesHeight", 300.0);
+
 
     public void OpenUrl(string url)
     {

@@ -97,7 +97,7 @@
             <GridSplitter Grid.Row="1" Classes="editor-grid-splitter-horizontal" />
 
             <Border Grid.Row="2" Classes="card card-condensed" Margin="4">
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Conditions</TextBlock>
+				<ContentControl Content="{CompiledBinding DisplayConditionScriptViewModel}"></ContentControl>
             </Border>
         </Grid>
 
