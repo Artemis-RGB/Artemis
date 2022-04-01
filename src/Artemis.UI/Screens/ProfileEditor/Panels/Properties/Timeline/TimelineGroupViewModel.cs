@@ -23,7 +23,7 @@ public class TimelineGroupViewModel : ActivatableViewModelBase
             {
                 _pixelsPerSecond = p;
                 UpdateKeyframePositions();
-            });
+            }).DisposeWith(d);
             this.WhenAnyValue(vm => vm.PropertyGroupViewModel.IsExpanded).Subscribe(_ => UpdateKeyframePositions()).DisposeWith(d);
             PropertyGroupViewModel.WhenAnyValue(vm => vm.IsExpanded).Subscribe(_ => this.RaisePropertyChanged(nameof(Children))).DisposeWith(d);
         });

@@ -1,24 +1,14 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Styles.Resources>
-        <VisualBrush x:Key="CheckerboardBrush" TileMode="Tile" Stretch="Uniform" DestinationRect="0,0,15,15">
+        <VisualBrush x:Key="CheckerboardBrush" TileMode="Tile" Stretch="Uniform" DestinationRect="0,0,12,12">
             <VisualBrush.Visual>
-                <Grid Width="15" Height="15" RowDefinitions="*,*" ColumnDefinitions="*,*">
-                    <Rectangle Grid.Row="0" Grid.Column="0" Fill="Black" Opacity="0.15" />
-                    <Rectangle Grid.Row="0" Grid.Column="1" />
-                    <Rectangle Grid.Row="1" Grid.Column="0" />
-                    <Rectangle Grid.Row="1" Grid.Column="1" Fill="Black" Opacity="0.15" />
-                </Grid>
-            </VisualBrush.Visual>
-        </VisualBrush>
-        <VisualBrush x:Key="LargeCheckerboardBrush" TileMode="Tile" Stretch="Uniform" SourceRect="0,0,25,25">
-            <VisualBrush.Visual>
-                <Grid Width="25" Height="25" RowDefinitions="*,*" ColumnDefinitions="*,*">
-                    <Rectangle Grid.Row="0" Grid.Column="0" Fill="Black" Opacity="0.15" />
-                    <Rectangle Grid.Row="0" Grid.Column="1" />
-                    <Rectangle Grid.Row="1" Grid.Column="0" />
-                    <Rectangle Grid.Row="1" Grid.Column="1" Fill="Black" Opacity="0.15" />
-                </Grid>
+                <Canvas Width="12" Height="12">
+                    <Rectangle Width="6" Height="6" Fill="Black" Opacity="0.15" />
+                    <Rectangle Width="6" Height="6" Canvas.Left="6" />
+                    <Rectangle Width="6" Height="6" Canvas.Top="6" />
+                    <Rectangle Width="6" Height="6" Canvas.Left="6" Canvas.Top="6" Fill="Black" Opacity="0.15" />
+                </Canvas>
             </VisualBrush.Visual>
         </VisualBrush>
     </Styles.Resources>

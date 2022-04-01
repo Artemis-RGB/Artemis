@@ -63,7 +63,10 @@
                     <ItemsControl Items="{CompiledBinding InputPinCollectionViewModels}" />
                 </StackPanel>
 
-                <ContentControl Grid.Column="1" Name="CustomViewModelContainer" Content="{CompiledBinding CustomNodeViewModel}" IsVisible="{CompiledBinding CustomNodeViewModel}" />
+                <ContentControl Grid.Column="1" 
+                                Name="CustomViewModelContainer"
+                                Content="{CompiledBinding CustomNodeViewModel}" 
+                                IsVisible="{CompiledBinding CustomNodeViewModel, Converter={x:Static ObjectConverters.IsNotNull}}" />
 
                 <StackPanel Grid.Column="2" IsVisible="{CompiledBinding HasOutputPins}">
                     <ItemsControl Items="{CompiledBinding OutputPinViewModels}" Margin="4 0" />

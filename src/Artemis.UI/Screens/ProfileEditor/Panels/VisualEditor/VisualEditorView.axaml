@@ -9,6 +9,18 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.VisualEditor.VisualEditorView"
              x:DataType="visualEditor:VisualEditorViewModel">
+    <UserControl.Resources>
+        <VisualBrush x:Key="LargeCheckerboardBrush" TileMode="Tile" Stretch="Uniform" SourceRect="0,0,20,20">
+            <VisualBrush.Visual>
+                <Canvas Width="20" Height="20">
+                    <Rectangle Width="10" Height="10" Fill="Black" Opacity="0.15" />
+                    <Rectangle Width="10" Height="10" Canvas.Left="10" />
+                    <Rectangle Width="10" Height="10" Canvas.Top="10" />
+                    <Rectangle Width="10" Height="10" Canvas.Left="10" Canvas.Top="10" Fill="Black" Opacity="0.15" />
+                </Canvas>
+            </VisualBrush.Visual>
+        </VisualBrush>
+	</UserControl.Resources>
     <Grid>
         <paz:ZoomBorder Name="ZoomBorder"
                         Stretch="None"
@@ -16,7 +28,7 @@
                         Focusable="True"
                         VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch"
-                        Background="{DynamicResource LargeCheckerboardBrush}"
+                        Background="{StaticResource LargeCheckerboardBrush}"
                         ZoomChanged="ZoomBorder_OnZoomChanged">
             <Grid Name="ContainerGrid"
                   Background="Transparent">

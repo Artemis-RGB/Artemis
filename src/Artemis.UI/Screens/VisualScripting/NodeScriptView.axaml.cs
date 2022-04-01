@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Events;
 using Artemis.UI.Shared.Controls;
@@ -15,6 +17,8 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using Avalonia.Threading;
+using DynamicData.Binding;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
@@ -38,27 +42,17 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
         UpdateZoomBorderBackground();
 
         _grid.AddHandler(PointerReleasedEvent, CanvasOnPointerReleased, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+
         this.WhenActivated(d =>
         {
-            ViewModel!.PickerPositionSubject.Subscribe(p =>
-            {
-                ViewModel.NodePickerViewModel.Position = p;
-                _grid?.ContextFlyout?.ShowAt(_grid, true);
-            }).DisposeWith(d);
-
+            ViewModel!.PickerPositionSubject.Subscribe(ShowPickerAt).DisposeWith(d);
             if (ViewModel.IsPreview)
             {
                 BoundsProperty.Changed.Subscribe(BoundsPropertyChanged).DisposeWith(d);
-                ViewModel.NodeScript.NodeAdded += NodesChanged;
-                ViewModel.NodeScript.NodeRemoved += NodesChanged;
-                Disposable.Create(() =>
-                {
-                    ViewModel.NodeScript.NodeAdded -= NodesChanged;
-                    ViewModel.NodeScript.NodeRemoved -= NodesChanged;
-                }).DisposeWith(d);
+                ViewModel.NodeViewModels.ToObservableChangeSet().Subscribe(_ => AutoFitIfPreview()).DisposeWith(d);
             }
 
-            AutoFit(true);
+            Dispatcher.UIThread.InvokeAsync(() => AutoFit(true), DispatcherPriority.ContextIdle);
         });
     }
 
@@ -68,15 +62,18 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
         return base.MeasureOverride(availableSize);
     }
 
+    private void ShowPickerAt(Point point)
+    {
+        if (ViewModel == null)
+            return;
+        ViewModel.NodePickerViewModel.Position = point;
+        _grid?.ContextFlyout?.ShowAt(_grid, true);
+    }
+
     private void AutoFitIfPreview()
     {
         if (ViewModel != null && ViewModel.IsPreview)
             AutoFit(true);
-    }
-
-    private void NodesChanged(object? sender, SingleValueEventArgs<INode> e)
-    {
-        AutoFitIfPreview();
     }
 
     private void BoundsPropertyChanged(AvaloniaPropertyChangedEventArgs<Rect> obj)
@@ -102,8 +99,8 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
         double bottom = _nodesContainer.ItemContainerGenerator.Containers.Select(c => c.ContainerControl.Bounds.Bottom).Max();
         double right = _nodesContainer.ItemContainerGenerator.Containers.Select(c => c.ContainerControl.Bounds.Right).Max();
 
-        // Add a 5 pixel margin around the rect
-        Rect scriptRect = new(new Point(left - 5, top - 5), new Point(right + 5, bottom + 5));
+        // Add a 10 pixel margin around the rect
+        Rect scriptRect = new(new Point(left - 10, top - 10), new Point(right + 10, bottom + 10));
 
         // The scale depends on the available space
         double scale = Math.Min(1, Math.Min(Bounds.Width / scriptRect.Width, Bounds.Height / scriptRect.Height));

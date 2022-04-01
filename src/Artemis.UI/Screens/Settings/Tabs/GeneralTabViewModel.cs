@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -30,8 +31,8 @@ namespace Artemis.UI.Screens.Settings
             DisplayName = "General";
             _settingsService = settingsService;
             _debugService = debugService;
-            _fluentAvaloniaTheme = AvaloniaLocator.Current.GetService<FluentAvaloniaTheme>(); ;
-
+            _fluentAvaloniaTheme = AvaloniaLocator.Current.GetService<FluentAvaloniaTheme>();
+            
             List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
             LayerBrushDescriptors = new ObservableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
             _defaultLayerBrushDescriptor = _settingsService.GetSetting("ProfileEditor.DefaultLayerBrushDescriptor", new LayerBrushReference
@@ -45,8 +46,12 @@ namespace Artemis.UI.Screens.Settings
             ShowSetupWizard = ReactiveCommand.Create(ExecuteShowSetupWizard);
             ShowDebugger = ReactiveCommand.Create(ExecuteShowDebugger);
             ShowDataFolder = ReactiveCommand.Create(ExecuteShowDataFolder);
-
-            UIColorScheme.SettingChanged += UIColorSchemeOnSettingChanged;
+            
+            this.WhenActivated(d =>
+            {
+                UIColorScheme.SettingChanged += UIColorSchemeOnSettingChanged;
+                Disposable.Create(() => UIColorScheme.SettingChanged -= UIColorSchemeOnSettingChanged).DisposeWith(d);
+            });
         }
 
         private void UIColorSchemeOnSettingChanged(object? sender, EventArgs e)
@@ -139,7 +144,7 @@ namespace Artemis.UI.Screens.Settings
         }
 
         #endregion
-        
+
         #region Updating
 
         private Task ExecuteCheckForUpdate(CancellationToken cancellationToken)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Artemis.Core.Properties;
 using Ninject;
 using Ninject.Parameters;
 

@@ -634,7 +634,7 @@ namespace Artemis.Core.Services
                 if (isAutoEnable)
                 {
                     // Schedule a retry based on the amount of attempts
-                    if (pluginFeature.AutoEnableAttempts < 4)
+                    if (pluginFeature.AutoEnableAttempts < 4 && pluginFeature.Plugin.IsEnabled)
                     {
                         TimeSpan retryDelay = TimeSpan.FromSeconds(pluginFeature.AutoEnableAttempts * 10);
                         _logger.Warning(

@@ -15,6 +15,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using JetBrains.Annotations;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Root
@@ -95,6 +96,7 @@ namespace Artemis.UI.Screens.Root
         {
             _lifeTime.MainWindow = null;
             SidebarViewModel = null;
+            Router.NavigateAndReset.Execute(new EmptyViewModel(this, "blank")).Subscribe();
 
             OnMainWindowClosed();
         }
@@ -219,5 +221,13 @@ namespace Artemis.UI.Screens.Root
         }
 
         #endregion
+    }
+
+    internal class EmptyViewModel : MainScreenViewModel
+    {
+        /// <inheritdoc />
+        public EmptyViewModel(IScreen hostScreen, string urlPathSegment) : base(hostScreen, urlPathSegment)
+        {
+        }
     }
 }

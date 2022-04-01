@@ -35,8 +35,8 @@ public class NodeViewModel : ActivatableViewModelBase
 
     public NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node, INodeVmFactory nodeVmFactory, INodeEditorService nodeEditorService)
     {
-        NodeScriptViewModel = nodeScriptViewModel;
         _nodeEditorService = nodeEditorService;
+        NodeScriptViewModel = nodeScriptViewModel;
         Node = node;
 
         DeleteNode = ReactiveCommand.Create(ExecuteDeleteNode, this.WhenAnyValue(vm => vm.IsStaticNode).Select(v => !v));

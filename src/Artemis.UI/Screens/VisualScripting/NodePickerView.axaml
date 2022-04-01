@@ -21,7 +21,7 @@
                                          FontFamily="{StaticResource SymbolThemeFontFamily}"
                                          Classes="AppBarButton"
                                          Command="{Binding $parent[TextBox].Clear}"
-                                         IsVisible="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TextBox}}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                         IsVisible="{Binding $parent[TextBox].Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                         <controls:Button Content="&#xE721;"
                                          FontFamily="{StaticResource SymbolThemeFontFamily}"
                                          Classes="AppBarButton"

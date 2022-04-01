@@ -57,7 +57,14 @@ public class PropertiesViewModel : ActivatableViewModelBase
         {
             _profileElement = profileEditorService.ProfileElement.ToProperty(this, vm => vm.ProfileElement).DisposeWith(d);
             _pixelsPerSecond = profileEditorService.PixelsPerSecond.ToProperty(this, vm => vm.PixelsPerSecond).DisposeWith(d);
-            Disposable.Create(() => _settingsService.SaveAllSettings()).DisposeWith(d);
+            Disposable.Create(() =>
+            {
+                _settingsService.SaveAllSettings();
+                foreach ((LayerPropertyGroup _, PropertyGroupViewModel value) in _cachedViewModels)
+                    value.Dispose();
+                _cachedViewModels.Clear();
+                
+            }).DisposeWith(d);
         });
         this.WhenAnyValue(vm => vm.ProfileElement).Subscribe(_ => UpdateGroups());
     }

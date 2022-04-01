@@ -24,7 +24,7 @@ public class StatusBarViewModel : ActivatableViewModelBase
         {
             _profileElement = profileEditorService.ProfileElement.ToProperty(this, vm => vm.ProfileElement).DisposeWith(d);
             _history = profileEditorService.History.ToProperty(this, vm => vm.History).DisposeWith(d);
-            _pixelsPerSecond = profileEditorService.PixelsPerSecond.ToProperty(this, vm => vm.PixelsPerSecond);
+            _pixelsPerSecond = profileEditorService.PixelsPerSecond.ToProperty(this, vm => vm.PixelsPerSecond).DisposeWith(d);
         });
 
         this.WhenAnyValue(vm => vm.History)

@@ -10,6 +10,15 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.ProfileTreeView"
              x:DataType="profileTree:ProfileTreeViewModel">
+	<!-- These cause binding errors, not my fault - https://github.com/AvaloniaUI/Avalonia/issues/5762 -->
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="Escape" Command="{Binding ClearSelection}" />
+        <KeyBinding Gesture="F2" Command="{Binding RenameSelected}" />
+        <KeyBinding Gesture="Delete" Command="{Binding DeleteSelected}" />
+        <KeyBinding Gesture="Ctrl+D" Command="{Binding DuplicateSelected}" />
+        <KeyBinding Gesture="Ctrl+C" Command="{Binding CopySelected}" />
+        <KeyBinding Gesture="Ctrl+V" Command="{Binding PasteSelected}" />
+    </UserControl.KeyBindings>
     <UserControl.Resources>
         <converters:ColorOpacityConverter x:Key="ColorOpacityConverter" />
     </UserControl.Resources>
@@ -55,7 +64,7 @@
             <Setter Property="Background">
                 <Setter.Value>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,28">
-						<GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.0" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.0" />
                         <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.05" />
                         <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.05" />
                         <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.25" />
@@ -88,14 +97,6 @@
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                 </Style>
             </TreeView.Styles>
-            <TreeView.KeyBindings>
-                <KeyBinding Gesture="Escape" Command="{CompiledBinding ClearSelection}" />
-                <KeyBinding Gesture="F2" Command="{CompiledBinding SelectedChild.Rename}" />
-                <KeyBinding Gesture="Delete" Command="{CompiledBinding SelectedChild.Delete}" />
-                <KeyBinding Gesture="Ctrl+D" Command="{CompiledBinding SelectedChild.Duplicate}" />
-                <KeyBinding Gesture="Ctrl+C" Command="{CompiledBinding SelectedChild.Copy}" />
-                <KeyBinding Gesture="Ctrl+V" Command="{CompiledBinding SelectedChild.Paste}" />
-            </TreeView.KeyBindings>
             <TreeView.ItemTemplate>
                 <TreeDataTemplate ItemsSource="{Binding Children}">
                     <ContentControl Content="{Binding}" x:DataType="profileTree:TreeItemViewModel">

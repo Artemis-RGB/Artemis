@@ -88,9 +88,9 @@
                             Background="{DynamicResource LightCheckerboardBrush}"
                             Margin="5 0">
                         <Border Background="{TemplateBinding LinearGradientBrush}">
-                            <ItemsControl Items="{TemplateBinding ColorGradient}" ClipToBounds="False">
+                            <ItemsControl Name="GradientStops" Items="{TemplateBinding ColorGradient}" ClipToBounds="False">
                                 <ItemsControl.Styles>
-                                    <Style Selector="ContentPresenter">
+                                    <Style Selector="ItemsControl#GradientStops > ContentPresenter">
                                         <Setter Property="Canvas.Left">
                                             <Setter.Value>
                                                 <MultiBinding Converter="{StaticResource WidthNormalizedConverter}">

@@ -14,63 +14,64 @@
             <Setter Property="MaxWidth" Value="1000"></Setter>
         </Style>
     </UserControl.Styles>
-	<UserControl.KeyBindings>
-<KeyBinding Command="{CompiledBinding History.Undo}" Gesture="Ctrl+Z"></KeyBinding>
-<KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y"></KeyBinding>
-<KeyBinding Command="{Binding DeleteSelectedNodes}" Gesture="Delete"></KeyBinding>
-    </UserControl.KeyBindings>
+    <UserControl.Resources>
+        <VisualBrush x:Key="LargeCheckerboardBrush" TileMode="Tile" Stretch="Uniform" SourceRect="0,0,20,20">
+            <VisualBrush.Visual>
+                <Canvas Width="20" Height="20">
+                    <Rectangle Width="10" Height="10" Fill="Black" Opacity="0.15" />
+                    <Rectangle Width="10" Height="10" Canvas.Left="10" />
+                    <Rectangle Width="10" Height="10" Canvas.Top="10" />
+                    <Rectangle Width="10" Height="10" Canvas.Left="10" Canvas.Top="10" Fill="Black" Opacity="0.15" />
+                </Canvas>
+            </VisualBrush.Visual>
+        </VisualBrush>
+    </UserControl.Resources>
     <paz:ZoomBorder Name="ZoomBorder"
                     Stretch="None"
                     Focusable="True"
                     VerticalAlignment="Stretch"
                     HorizontalAlignment="Stretch"
-                    Background="{DynamicResource LargeCheckerboardBrush}"
+                    Background="{StaticResource LargeCheckerboardBrush}"
                     ZoomChanged="ZoomBorder_OnZoomChanged"
                     MaxZoomX="1"
                     MaxZoomY="1"
                     EnableConstrains="True"
                     PointerReleased="ZoomBorder_OnPointerReleased">
         <Grid Name="ContainerGrid" Background="Transparent" ClipToBounds="False">
-			<Grid.ContextFlyout>
-				<Flyout FlyoutPresenterClasses="node-picker-flyout">
-					<ContentControl Content="{CompiledBinding NodePickerViewModel}" />
-				</Flyout>
-			</Grid.ContextFlyout>
-			<Grid.Transitions>
-				<Transitions>
-					<TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut" />
-				</Transitions>
-			</Grid.Transitions>
+            <Grid.ContextFlyout>
+                <Flyout FlyoutPresenterClasses="node-picker-flyout">
+                    <ContentControl Content="{CompiledBinding NodePickerViewModel}" />
+                </Flyout>
+            </Grid.ContextFlyout>
+            <Grid.Transitions>
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut" />
+                </Transitions>
+            </Grid.Transitions>
 
-			<!-- Drag cable, if any -->
-			<ContentControl Content="{CompiledBinding DragViewModel}" ClipToBounds="False"/>
+            <!-- Drag cable, if any -->
+            <ContentControl Content="{CompiledBinding DragViewModel}" ClipToBounds="False" />
 
             <!-- Cables -->
-			<ItemsControl Items="{CompiledBinding CableViewModels}" ClipToBounds="False">
+            <ItemsControl Items="{CompiledBinding CableViewModels}" ClipToBounds="False">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <Canvas  />
+                        <Canvas />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-                <ItemsControl.Styles>
-                    <Style Selector="ItemsControl > ContentPresenter">
-                        <Setter Property="Canvas.Left" Value="{Binding Node.X, TargetNullValue=0}" />
-                        <Setter Property="Canvas.Top" Value="{Binding Node.Y, TargetNullValue=0}" />
-                    </Style>
-                </ItemsControl.Styles>
             </ItemsControl>
 
             <!-- Nodes -->
-            <ItemsControl Name="NodesContainer" Items="{CompiledBinding NodeViewModels}"  ClipToBounds="False">
+            <ItemsControl Name="NodesContainer" Items="{CompiledBinding NodeViewModels}" ClipToBounds="False">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.Styles>
-                    <Style Selector="ItemsControl > ContentPresenter">
-                        <Setter Property="Canvas.Left" Value="{Binding Node.X, TargetNullValue=0}" />
-                        <Setter Property="Canvas.Top" Value="{Binding Node.Y, TargetNullValue=0}" />
+                    <Style Selector="ItemsControl#NodesContainer > ContentPresenter">
+                        <Setter Property="Canvas.Left" Value="{Binding Node.X}" />
+                        <Setter Property="Canvas.Top" Value="{Binding Node.Y}" />
                     </Style>
                 </ItemsControl.Styles>
             </ItemsControl>

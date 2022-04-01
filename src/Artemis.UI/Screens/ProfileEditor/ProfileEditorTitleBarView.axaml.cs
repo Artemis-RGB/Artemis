@@ -19,7 +19,6 @@ namespace Artemis.UI.Screens.ProfileEditor
 
         private void MenuItem_OnSubmenuOpened(object? sender, RoutedEventArgs e)
         {
-            
         }
     }
 }

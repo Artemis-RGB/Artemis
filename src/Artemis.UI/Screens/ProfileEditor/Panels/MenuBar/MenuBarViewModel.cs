@@ -22,7 +22,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
         this.WhenActivated(d =>
         {
             profileEditorService.History.Subscribe(history => History = history).DisposeWith(d);
-            _profileConfiguration = profileEditorService.ProfileConfiguration.ToProperty(this, vm => vm.ProfileConfiguration);
+            _profileConfiguration = profileEditorService.ProfileConfiguration.ToProperty(this, vm => vm.ProfileConfiguration).DisposeWith(d);
             _isSuspended = profileEditorService.ProfileConfiguration
                 .Select(p => p?.WhenAnyValue(c => c.IsSuspended) ?? Observable.Never<bool>())
                 .Switch()

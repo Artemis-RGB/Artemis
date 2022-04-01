@@ -47,7 +47,7 @@
                 Padding="4"
                 Canvas.Left="{CompiledBinding ValuePoint.X}"
                 Canvas.Top="{CompiledBinding ValuePoint.Y}"
-                IsVisible="{CompiledBinding FromViewModel.Pin.PinValue, Converter={x:Static ObjectConverters.IsNotNull}}">
+                IsVisible="{CompiledBinding DisplayValue}">
             <ContentControl Content="{CompiledBinding FromViewModel.Pin.PinValue}">
                 <ContentControl.DataTemplates>
                     <DataTemplate DataType="skiaSharp:SKColor">
