@@ -1,4 +1,4 @@
-﻿namespace Artemis.UI.Shared.Services.Interfaces
+﻿namespace Artemis.UI.Shared.Services
 {
     /// <summary>
     ///     Represents a service provided by the Artemis Shared UI library

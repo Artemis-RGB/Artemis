@@ -8,7 +8,7 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.MainWindow;
 using Avalonia;
 using Avalonia.Controls;

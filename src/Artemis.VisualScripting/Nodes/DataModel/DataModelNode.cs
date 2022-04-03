@@ -1,12 +1,11 @@
-﻿using System.ComponentModel;
-using Artemis.Core;
+﻿using Artemis.Core;
 using Artemis.Storage.Entities.Profile;
 using Artemis.VisualScripting.Nodes.DataModel.Screens;
 using Avalonia.Threading;
 
 namespace Artemis.VisualScripting.Nodes.DataModel;
 
-[Node("Data Model-Value", "Outputs a selectable data model value.", "Data Model")]
+[Node("Data Model-Value", "Outputs a selectable data model value.", "Data Model", OutputType = typeof(object))]
 public class DataModelNode : Node<DataModelPathEntity, DataModelNodeCustomViewModel>, IDisposable
 {
     private DataModelPath? _dataModelPath;
@@ -19,7 +18,7 @@ public class DataModelNode : Node<DataModelPathEntity, DataModelNodeCustomViewMo
 
     public INodeScript? Script { get; private set; }
     public OutputPin Output { get; }
-    
+
     public override void Initialize(INodeScript script)
     {
         Script = script;
@@ -28,17 +27,6 @@ public class DataModelNode : Node<DataModelPathEntity, DataModelNodeCustomViewMo
             return;
 
         UpdateDataModelPath();
-    }
-
-    private void UpdateDataModelPath()
-    {
-        DataModelPath? old = _dataModelPath;
-        old?.Dispose();
-
-        _dataModelPath = Storage != null ? new DataModelPath(Storage) : null;
-        if (_dataModelPath != null)
-            _dataModelPath.PathValidated += DataModelPathOnPathValidated;
-        UpdateOutputPin();
     }
 
     public override void Evaluate()
@@ -67,6 +55,17 @@ public class DataModelNode : Node<DataModelPathEntity, DataModelNodeCustomViewMo
 
         if (Output.Type != type)
             Output.ChangeType(type);
+    }
+
+    private void UpdateDataModelPath()
+    {
+        DataModelPath? old = _dataModelPath;
+        old?.Dispose();
+
+        _dataModelPath = Storage != null ? new DataModelPath(Storage) : null;
+        if (_dataModelPath != null)
+            _dataModelPath.PathValidated += DataModelPathOnPathValidated;
+        UpdateOutputPin();
     }
 
     private void DataModelPathOnPathValidated(object? sender, EventArgs e)

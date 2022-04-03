@@ -7,6 +7,7 @@ using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Properties;
+using Artemis.UI.Screens.ProfileEditor.Properties.DataBinding;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
@@ -82,6 +83,11 @@ namespace Artemis.UI.Ninject.Factories
         
         TimelineViewModel TimelineViewModel(ObservableCollection<PropertyGroupViewModel> propertyGroupViewModels);
         TimelineGroupViewModel TimelineGroupViewModel(PropertyGroupViewModel propertyGroupViewModel);
+    }
+
+    public interface IDataBindingVmFactory : IVmFactory
+    {
+        DataBindingViewModel DataBindingViewModel();
     }
 
     public interface IPropertyVmFactory

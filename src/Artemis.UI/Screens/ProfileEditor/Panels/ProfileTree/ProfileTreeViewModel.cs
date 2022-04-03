@@ -6,7 +6,7 @@ using System.Reactive.Disposables;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using ReactiveUI;
 

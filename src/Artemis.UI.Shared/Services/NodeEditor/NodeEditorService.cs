@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Artemis.Core;
-using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Shared.Services.NodeEditor.Commands;
 
 namespace Artemis.UI.Shared.Services.NodeEditor;

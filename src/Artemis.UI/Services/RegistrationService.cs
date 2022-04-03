@@ -6,7 +6,9 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DefaultTypes.PropertyInput;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.DefaultTypes.DataModel.Display;
 using Artemis.UI.Shared.Providers;
+using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.PropertyInput;
 using Artemis.VisualScripting.Nodes;
@@ -24,14 +26,22 @@ public class RegistrationService : IRegistrationService
     private readonly IInputService _inputService;
     private readonly IPropertyInputService _propertyInputService;
     private readonly INodeService _nodeService;
+    private readonly IDataModelUIService _dataModelUIService;
     private bool _registeredBuiltInPropertyEditors;
 
-    public RegistrationService(IKernel kernel, IInputService inputService, IPropertyInputService propertyInputService, IProfileEditorService profileEditorService, INodeService nodeService, IEnumerable<IToolViewModel> toolViewModels)
+    public RegistrationService(IKernel kernel, 
+        IInputService inputService, 
+        IPropertyInputService propertyInputService,
+        IProfileEditorService profileEditorService,
+        INodeService nodeService, 
+        IDataModelUIService dataModelUIService,
+        IEnumerable<IToolViewModel> toolViewModels)
     {
         _kernel = kernel;
         _inputService = inputService;
         _propertyInputService = propertyInputService;
         _nodeService = nodeService;
+        _dataModelUIService = dataModelUIService;
 
         profileEditorService.Tools.AddRange(toolViewModels);
         CreateCursorResources();
@@ -50,6 +60,7 @@ public class RegistrationService : IRegistrationService
 
     public void RegisterBuiltInDataModelDisplays()
     {
+        _dataModelUIService.RegisterDataModelDisplay<SKColorDataModelDisplayViewModel>(Constants.CorePlugin);
     }
 
     public void RegisterBuiltInDataModelInputs()

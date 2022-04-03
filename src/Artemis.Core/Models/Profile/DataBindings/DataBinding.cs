@@ -39,10 +39,8 @@ namespace Artemis.Core
         ///     Gets the layer property this data binding targets
         /// </summary>
         public LayerProperty<TLayerProperty> LayerProperty { get; }
-
-        /// <summary>
-        ///     Gets the script used to populate the data binding
-        /// </summary>
+        
+        /// <inheritdoc />
         public INodeScript Script => _script;
 
         /// <summary>
@@ -126,7 +124,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Invokes the <see cref="DataBindingDisabled" /> event
+        ///     Invokes the <see cref="DataBindingPropertiesCleared" /> event
         /// </summary>
         protected virtual void OnDataBindingPropertiesCleared()
         {

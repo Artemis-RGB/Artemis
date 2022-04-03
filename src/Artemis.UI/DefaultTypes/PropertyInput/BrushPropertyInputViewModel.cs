@@ -6,7 +6,7 @@ using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree.Dialogs;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Artemis.UI.Shared.Services.PropertyInput;

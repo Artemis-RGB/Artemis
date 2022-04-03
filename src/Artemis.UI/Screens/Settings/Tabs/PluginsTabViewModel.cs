@@ -11,8 +11,8 @@ using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
-using Artemis.UI.Shared.Services.Interfaces;
 using Avalonia.Threading;
 using ReactiveUI;
 

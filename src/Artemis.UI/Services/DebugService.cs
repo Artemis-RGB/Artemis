@@ -1,6 +1,6 @@
 ﻿using Artemis.UI.Screens.Debugger;
 using Artemis.UI.Services.Interfaces;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Services
 {

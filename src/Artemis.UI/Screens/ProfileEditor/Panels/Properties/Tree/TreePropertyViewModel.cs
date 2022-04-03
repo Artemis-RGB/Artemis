@@ -2,6 +2,7 @@
 using System.Reactive;
 using System.Reactive.Linq;
 using Artemis.Core;
+using Artemis.UI.Extensions;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
@@ -15,6 +16,8 @@ internal class TreePropertyViewModel<T> : ActivatableViewModelBase, ITreePropert
 {
     private readonly IProfileEditorService _profileEditorService;
     private TimeSpan _time;
+    private ObservableAsPropertyHelper<bool>? _isCurrentlySelected;
+    private ObservableAsPropertyHelper<bool>? _dataBindingEnabled;
 
     public TreePropertyViewModel(LayerProperty<T> layerProperty, PropertyViewModel propertyViewModel, IProfileEditorService profileEditorService, IPropertyInputService propertyInputService)
     {
@@ -27,17 +30,17 @@ internal class TreePropertyViewModel<T> : ActivatableViewModelBase, ITreePropert
         this.WhenActivated(d =>
         {
             _profileEditorService.Time.Subscribe(t => _time = t).DisposeWith(d);
+            _isCurrentlySelected = _profileEditorService.LayerProperty.Select(l => l == LayerProperty).ToProperty(this, vm => vm.IsCurrentlySelected).DisposeWith(d);
+            _dataBindingEnabled = LayerProperty.BaseDataBinding.GetObservable().Select(b => b.IsEnabled).ToProperty(this, vm => vm.DataBindingEnabled).DisposeWith(d);
+
             this.WhenAnyValue(vm => vm.LayerProperty.KeyframesEnabled).Subscribe(_ => this.RaisePropertyChanged(nameof(KeyframesEnabled))).DisposeWith(d);
         });
 
         ResetToDefault = ReactiveCommand.Create(ExecuteResetToDefault, Observable.Return(LayerProperty.DefaultValue != null));
     }
 
-    private void ExecuteResetToDefault()
-    {
-        _profileEditorService.ExecuteCommand(new ResetLayerProperty<T>(LayerProperty));
-    }
-
+    public bool IsCurrentlySelected => _isCurrentlySelected?.Value ?? false;
+    public bool DataBindingEnabled => _dataBindingEnabled?.Value ?? false;
     public LayerProperty<T> LayerProperty { get; }
     public PropertyViewModel PropertyViewModel { get; }
     public PropertyInputViewModel<T>? PropertyInputViewModel { get; }
@@ -57,8 +60,12 @@ internal class TreePropertyViewModel<T> : ActivatableViewModelBase, ITreePropert
         _profileEditorService.ExecuteCommand(new ToggleLayerPropertyKeyframes<T>(LayerProperty, value, _time));
     }
 
+    private void ExecuteResetToDefault()
+    {
+        _profileEditorService.ExecuteCommand(new ResetLayerProperty<T>(LayerProperty));
+    }
+
     public ILayerProperty BaseLayerProperty => LayerProperty;
-    public bool HasDataBinding => LayerProperty.HasDataBinding;
 
     public double GetDepth()
     {
@@ -72,5 +79,10 @@ internal class TreePropertyViewModel<T> : ActivatableViewModelBase, ITreePropert
 
         return depth;
     }
-}
 
+    /// <inheritdoc />
+    public void ToggleCurrentLayerProperty()
+    {
+        _profileEditorService.ChangeCurrentLayerProperty(IsCurrentlySelected ? null : LayerProperty);
+    }
+}

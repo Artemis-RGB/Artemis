@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using Artemis.Core;
-using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Shared.Services.PropertyInput;
 

@@ -5,8 +5,10 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:sharedConverters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             xmlns:tree="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Tree"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Tree.TreePropertyView">
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Tree.TreePropertyView"
+             x:DataType="tree:ITreePropertyViewModel">
     <UserControl.Resources>
         <converters:PropertyTreeMarginConverter x:Key="PropertyTreeMarginConverter" Length="20" />
     </UserControl.Resources>
@@ -49,14 +51,17 @@
                 <avalonia:MaterialIcon Kind="BackupRestore" />
             </Button>
 
-            <ToggleButton Grid.Column="4" Classes="icon-button"
+            <ToggleButton Grid.Column="4" 
+                          Name="DataBindingToggleButton"
+                          Classes="icon-button"
                           Margin="2 0 0 0"
                           ToolTip.Tip="Change the property's data binding"
                           Width="24"
                           Height="24"
                           VerticalAlignment="Center"
                           IsEnabled="{Binding LayerProperty.DataBindingsSupported}"
-                          IsChecked="{Binding HasDataBinding, Mode=OneWay}">
+                          IsChecked="{CompiledBinding DataBindingEnabled, Mode=OneWay}"
+                          Click="DataBindingToggleButton_OnClick">
                 <avalonia:MaterialIcon Kind="VectorLink" />
             </ToggleButton>
         </Grid>

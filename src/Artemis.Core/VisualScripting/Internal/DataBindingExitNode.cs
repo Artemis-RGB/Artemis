@@ -28,11 +28,11 @@ namespace Artemis.Core.Internal
             {
                 if (inputPin.ConnectedTo.Any())
                     _propertyValues[property] = inputPin.Value!;
-                else 
+                else
                     _propertyValues.Remove(property);
             }
         }
-
+        
         public void ApplyToDataBinding()
         {
             foreach (var (property, pendingValue) in _propertyValues)
@@ -53,9 +53,14 @@ namespace Artemis.Core.Internal
             ClearInputPins();
 
             foreach (IDataBindingProperty property in DataBinding.Properties)
-                _propertyPins.Add(property, CreateInputPin(property.ValueType, property.DisplayName));
+            {
+                _propertyPins.Add(property, Numeric.IsTypeCompatible(property.ValueType)
+                    ? CreateInputPin(typeof(Numeric), property.DisplayName)
+                    : CreateInputPin(property.ValueType, property.DisplayName)
+                );
+            }
         }
-        
+
         #region Event handlers
 
         private void DataBindingOnDataBindingPropertyRegistered(object? sender, DataBindingEventArgs e)
@@ -67,7 +72,7 @@ namespace Artemis.Core.Internal
         {
             ClearInputPins();
         }
-        
+
         #endregion
     }
 }

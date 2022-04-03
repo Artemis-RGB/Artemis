@@ -1,5 +1,4 @@
 ﻿using Artemis.Core.ScriptingProviders;
-using ReactiveUI;
 
 namespace Artemis.UI.Shared.ScriptingProviders
 {

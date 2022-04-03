@@ -1,6 +1,6 @@
 ﻿using Artemis.UI.Shared.Services.Builders;
 
-namespace Artemis.UI.Shared.Services.Interfaces
+namespace Artemis.UI.Shared.Services
 {
     /// <summary>
     ///     A service that can be used to create notifications in either the application or on the desktop.

@@ -5,7 +5,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Shared;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Avalonia.Threading;
 using Humanizer;
 using ReactiveUI;

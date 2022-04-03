@@ -92,6 +92,9 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
+        public INodeScript? NodeScript => Script;
+
+        /// <inheritdoc />
         public void LoadNodeScript()
         {
             Script.Load();

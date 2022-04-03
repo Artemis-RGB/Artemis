@@ -37,12 +37,12 @@
                     MaxZoomY="1"
                     EnableConstrains="True"
                     PointerReleased="ZoomBorder_OnPointerReleased">
-        <Grid Name="ContainerGrid" Background="Transparent" ClipToBounds="False">
-            <Grid.ContextFlyout>
-                <Flyout FlyoutPresenterClasses="node-picker-flyout">
-                    <ContentControl Content="{CompiledBinding NodePickerViewModel}" />
-                </Flyout>
-            </Grid.ContextFlyout>
+        <paz:ZoomBorder.ContextFlyout>
+            <Flyout FlyoutPresenterClasses="node-picker-flyout">
+                <ContentControl Content="{CompiledBinding NodePickerViewModel}" />
+            </Flyout>
+        </paz:ZoomBorder.ContextFlyout>
+        <Grid Name="ContainerGrid" Background="Transparent" ClipToBounds="False" Focusable="True">
             <Grid.Transitions>
                 <Transitions>
                     <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut" />

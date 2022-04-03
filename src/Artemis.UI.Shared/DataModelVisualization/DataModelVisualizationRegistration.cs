@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Artemis.Core;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Shared.DataModelVisualization
 {

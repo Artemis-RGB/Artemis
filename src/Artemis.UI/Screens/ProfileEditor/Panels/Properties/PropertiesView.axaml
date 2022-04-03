@@ -44,8 +44,15 @@
                       Background="Transparent"
                       Margin="0 0 -5 0" />
 
-        <!-- Horizontal scrolling -->
-        <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+        <ContentControl Grid.Column="2" 
+                        IsVisible="{CompiledBinding DataBindingViewModel, Converter={x:Static ObjectConverters.IsNotNull}}"
+                        Content="{CompiledBinding DataBindingViewModel}"/>
+
+		<!-- Horizontal scrolling -->
+        <ScrollViewer Grid.Column="2" 
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Disabled"
+                      IsVisible="{CompiledBinding DataBindingViewModel, Converter={x:Static ObjectConverters.IsNull}}">
             <Grid RowDefinitions="48,*">
                 <!-- Timeline header body -->
                 <controls:TimelineHeader Grid.Row="0"
@@ -136,12 +143,8 @@
                     <ContentControl Content="{CompiledBinding TimelineViewModel}"
                                     Background="{DynamicResource CardStrokeColorDefaultSolidBrush}" />
                 </ScrollViewer>
-
-                <!-- TODO: Databindings here -->
-
             </Grid>
         </ScrollViewer>
-
     </Grid>
 
 </UserControl>

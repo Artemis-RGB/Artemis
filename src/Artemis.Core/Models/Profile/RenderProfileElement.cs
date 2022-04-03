@@ -363,7 +363,7 @@ namespace Artemis.Core
         private bool _displayConditionMet;
 
         /// <summary>
-        ///     Gets the display condition used to determine whether this element is active or not
+        ///     Gets or sets the display condition used to determine whether this element is active or not
         /// </summary>
         public ICondition? DisplayCondition
         {

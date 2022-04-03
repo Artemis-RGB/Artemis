@@ -12,7 +12,7 @@ using Artemis.UI.Screens.ProfileEditor.Properties.Windows;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.LayerBrushes;
 using Artemis.UI.Shared.LayerEffects;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Ninject;
 using Ninject.Parameters;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.UI.Shared.Services.Interfaces;
 using DynamicData;
 
 namespace Artemis.UI.Shared.Services.ProfileEditor;
@@ -21,6 +20,11 @@ public interface IProfileEditorService : IArtemisSharedUIService
     ///     Gets an observable of the currently selected profile element.
     /// </summary>
     IObservable<RenderProfileElement?> ProfileElement { get; }
+
+    /// <summary>
+    ///     Gets an observable of the currently selected layer property.
+    /// </summary>
+    IObservable<ILayerProperty?> LayerProperty { get; }
 
     /// <summary>
     ///     Gets an observable of the current editor history.
@@ -64,6 +68,12 @@ public interface IProfileEditorService : IArtemisSharedUIService
     /// </summary>
     /// <param name="renderProfileElement">The profile element to select.</param>
     void ChangeCurrentProfileElement(RenderProfileElement? renderProfileElement);
+
+    /// <summary>
+    ///     Change the selected layer property.
+    /// </summary>
+    /// <param name="layerProperty">The layer property to select.</param>
+    void ChangeCurrentLayerProperty(ILayerProperty? layerProperty);
 
     /// <summary>
     ///     Changes the current profile preview playback time.

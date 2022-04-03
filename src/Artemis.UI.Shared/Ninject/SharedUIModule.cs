@@ -1,5 +1,5 @@
 ﻿using System;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
 

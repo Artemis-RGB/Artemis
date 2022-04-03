@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using DynamicData;
-using DynamicData.Binding;
 using ReactiveUI;
 using Serilog;
 
@@ -18,6 +15,7 @@ namespace Artemis.UI.Shared.Services.ProfileEditor;
 
 internal class ProfileEditorService : IProfileEditorService
 {
+    private readonly BehaviorSubject<ILayerProperty?> _layerPropertySubject = new(null);
     private readonly ILogger _logger;
     private readonly IModuleService _moduleService;
     private readonly BehaviorSubject<int> _pixelsPerSecondSubject = new(120);
@@ -41,6 +39,7 @@ internal class ProfileEditorService : IProfileEditorService
 
         ProfileConfiguration = _profileConfigurationSubject.AsObservable();
         ProfileElement = _profileElementSubject.AsObservable();
+        LayerProperty = _layerPropertySubject.AsObservable();
         History = Observable.Defer(() => Observable.Return(GetHistory(_profileConfigurationSubject.Value))).Concat(ProfileConfiguration.Select(GetHistory));
         Time = _timeSubject.AsObservable();
         Playing = _playingSubject.AsObservable();
@@ -55,24 +54,15 @@ internal class ProfileEditorService : IProfileEditorService
 
             // Disable all others if the changed one is selected and exclusive
             if (changed.IsSelected && changed.IsExclusive)
-            {
                 Tools.Edit(list =>
                 {
                     foreach (IToolViewModel toolViewModel in list.Where(t => t.IsExclusive && t != changed))
                         toolViewModel.IsSelected = false;
                 });
-            }
         });
     }
 
     public IObservable<bool> SuspendedEditing { get; }
-    public IObservable<ProfileConfiguration?> ProfileConfiguration { get; }
-    public IObservable<RenderProfileElement?> ProfileElement { get; }
-    public IObservable<ProfileEditorHistory?> History { get; }
-    public IObservable<TimeSpan> Time { get; }
-    public IObservable<bool> Playing { get; }
-    public IObservable<int> PixelsPerSecond { get; }
-    public SourceList<IToolViewModel> Tools { get; }
 
     private ProfileEditorHistory? GetHistory(ProfileConfiguration? profileConfiguration)
     {
@@ -113,6 +103,15 @@ internal class ProfileEditorService : IProfileEditorService
                 TickProfileElement(child, time);
         }
     }
+
+    public IObservable<ProfileConfiguration?> ProfileConfiguration { get; }
+    public IObservable<RenderProfileElement?> ProfileElement { get; }
+    public IObservable<ILayerProperty?> LayerProperty { get; }
+    public IObservable<ProfileEditorHistory?> History { get; }
+    public IObservable<TimeSpan> Time { get; }
+    public IObservable<bool> Playing { get; }
+    public IObservable<int> PixelsPerSecond { get; }
+    public SourceList<IToolViewModel> Tools { get; }
 
     public IObservable<IChangeSet<ILayerPropertyKeyframe>> ConnectToKeyframes()
     {
@@ -167,6 +166,13 @@ internal class ProfileEditorService : IProfileEditorService
     {
         _selectedKeyframes.Clear();
         _profileElementSubject.OnNext(renderProfileElement);
+        ChangeCurrentLayerProperty(null);
+    }
+
+    /// <inheritdoc />
+    public void ChangeCurrentLayerProperty(ILayerProperty? layerProperty)
+    {
+        _layerPropertySubject.OnNext(layerProperty);
     }
 
     public void ChangeTime(TimeSpan time)

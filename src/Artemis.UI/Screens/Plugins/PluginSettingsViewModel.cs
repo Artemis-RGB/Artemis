@@ -11,7 +11,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Avalonia.Threading;
 using Ninject;
 using ReactiveUI;

@@ -74,7 +74,6 @@ public class ProfileEditorViewModel : MainScreenViewModel
     public PluginSetting<double> ConditionsHeight => _settingsService.GetSetting("ProfileEditor.ConditionsHeight", 300.0);
     public PluginSetting<double> PropertiesHeight => _settingsService.GetSetting("ProfileEditor.PropertiesHeight", 300.0);
 
-
     public void OpenUrl(string url)
     {
         Utilities.OpenUrl(url);

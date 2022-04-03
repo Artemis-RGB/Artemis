@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI", "Artemis.UI\Ar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.Shared", "Artemis.UI.Shared\Artemis.UI.Shared.csproj", "{05A5AB0F-A303-4404-9623-4DB1C9AA1DA0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avalonia", "Avalonia", "{960CAAC5-AA73-49F5-BF2F-DF2C789DF042}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.Windows", "Artemis.UI.Windows\Artemis.UI.Windows.csproj", "{DE45A288-9320-461F-BE2A-26DFE3817216}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.Linux", "Artemis.UI.Linux\Artemis.UI.Linux.csproj", "{9012C8E2-3BEC-42F5-8270-7352A5922B04}"

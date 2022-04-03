@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.UI.Shared.Services.Builders;
-using Artemis.UI.Shared.Services.Interfaces;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;

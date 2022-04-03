@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Artemis.UI.Shared.Services.Builders;
 using Avalonia.Controls;
 
-namespace Artemis.UI.Shared.Services.Interfaces
+namespace Artemis.UI.Shared.Services
 {
     /// <summary>
     ///     A service that can be used to show windows and dialogs.

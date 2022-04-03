@@ -11,7 +11,7 @@ namespace Artemis.Core
             Setter = setter ?? throw new ArgumentNullException(nameof(setter));
             DisplayName = displayName ?? throw new ArgumentNullException(nameof(displayName));
         }
-        
+
         /// <summary>
         ///     Gets the function to call to get the value of the property
         /// </summary>
@@ -37,10 +37,27 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void SetValue(object? value)
         {
-            if (value is TProperty match)
-                Setter(match);
-            else
-                throw new ArgumentException("Value must match the type of the data binding registration", nameof(value));
+            // Numeric has a bunch of conversion, this seems the cheapest way to use them :)
+            switch (value)
+            {
+                case TProperty match:
+                    Setter(match);
+                    break;
+                case Numeric numeric when Setter is Action<float> floatSetter:
+                    floatSetter(numeric);
+                    break;
+                case Numeric numeric when Setter is Action<int> intSetter:
+                    intSetter(numeric);
+                    break;
+                case Numeric numeric when Setter is Action<double> doubleSetter:
+                    doubleSetter(numeric);
+                    break;
+                case Numeric numeric when Setter is Action<byte> byteSetter:
+                    byteSetter(numeric);
+                    break;
+                default:
+                    throw new ArgumentException("Value must match the type of the data binding registration", nameof(value));
+            }
         }
     }
 }

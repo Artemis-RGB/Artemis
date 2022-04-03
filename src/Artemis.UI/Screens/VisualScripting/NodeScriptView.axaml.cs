@@ -25,10 +25,10 @@ namespace Artemis.UI.Screens.VisualScripting;
 
 public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
 {
-    private readonly Grid _grid;
     private readonly ItemsControl _nodesContainer;
     private readonly SelectionRectangle _selectionRectangle;
     private readonly ZoomBorder _zoomBorder;
+    private readonly Grid _grid;
 
     public NodeScriptView()
     {
@@ -41,8 +41,8 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
         _zoomBorder.PropertyChanged += ZoomBorderOnPropertyChanged;
         UpdateZoomBorderBackground();
 
-        _grid.AddHandler(PointerReleasedEvent, CanvasOnPointerReleased, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
-
+        _zoomBorder.AddHandler(PointerReleasedEvent, CanvasOnPointerReleased, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+        _zoomBorder.AddHandler(PointerWheelChangedEvent, ZoomOnPointerWheelChanged, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
         this.WhenActivated(d =>
         {
             ViewModel!.PickerPositionSubject.Subscribe(ShowPickerAt).DisposeWith(d);
@@ -56,6 +56,13 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
         });
     }
 
+    private void ZoomOnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
+    {
+        // If scroll events aren't handled here the ZoomBorder does some random panning when at the zoom limit
+        if (e.Delta.Y > 0 && _zoomBorder.ZoomX >= 1)
+            e.Handled = true;
+    }
+
     protected override Size MeasureOverride(Size availableSize)
     {
         AutoFitIfPreview();
@@ -67,7 +74,7 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
         if (ViewModel == null)
             return;
         ViewModel.NodePickerViewModel.Position = point;
-        _grid?.ContextFlyout?.ShowAt(_grid, true);
+        _zoomBorder?.ContextFlyout?.ShowAt(_zoomBorder, true);
     }
 
     private void AutoFitIfPreview()

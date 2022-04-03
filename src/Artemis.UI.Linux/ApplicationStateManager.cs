@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Threading;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;

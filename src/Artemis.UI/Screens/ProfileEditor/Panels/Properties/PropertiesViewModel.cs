@@ -11,6 +11,7 @@ using Artemis.Core.LayerEffects;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Playback;
+using Artemis.UI.Screens.ProfileEditor.Properties.DataBinding;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
@@ -20,23 +21,48 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties;
 
 public class PropertiesViewModel : ActivatableViewModelBase
 {
-    private readonly Dictionary<LayerPropertyGroup, PropertyGroupViewModel> _cachedViewModels;
+    private readonly Dictionary<LayerPropertyGroup, PropertyGroupViewModel> _cachedPropertyViewModels;
+    private readonly IDataBindingVmFactory _dataBindingVmFactory;
     private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
     private readonly IProfileEditorService _profileEditorService;
     private readonly ISettingsService _settingsService;
+    private DataBindingViewModel? _backgroundDataBindingViewModel;
+    private DataBindingViewModel? _dataBindingViewModel;
+    private ObservableAsPropertyHelper<ILayerProperty?>? _layerProperty;
     private ObservableAsPropertyHelper<int>? _pixelsPerSecond;
     private ObservableAsPropertyHelper<RenderProfileElement?>? _profileElement;
 
     /// <inheritdoc />
-    public PropertiesViewModel(IProfileEditorService profileEditorService, ISettingsService settingsService, ILayerPropertyVmFactory layerPropertyVmFactory, PlaybackViewModel playbackViewModel)
+    public PropertiesViewModel(IProfileEditorService profileEditorService,
+        ISettingsService settingsService,
+        ILayerPropertyVmFactory layerPropertyVmFactory,
+        IDataBindingVmFactory dataBindingVmFactory,
+        PlaybackViewModel playbackViewModel)
     {
         _profileEditorService = profileEditorService;
         _settingsService = settingsService;
         _layerPropertyVmFactory = layerPropertyVmFactory;
-        _cachedViewModels = new Dictionary<LayerPropertyGroup, PropertyGroupViewModel>();
+        _dataBindingVmFactory = dataBindingVmFactory;
+        _cachedPropertyViewModels = new Dictionary<LayerPropertyGroup, PropertyGroupViewModel>();
+
         PropertyGroupViewModels = new ObservableCollection<PropertyGroupViewModel>();
         PlaybackViewModel = playbackViewModel;
         TimelineViewModel = layerPropertyVmFactory.TimelineViewModel(PropertyGroupViewModels);
+
+        // React to service profile element changes as long as the VM is active
+        this.WhenActivated(d =>
+        {
+            _profileElement = profileEditorService.ProfileElement.ToProperty(this, vm => vm.ProfileElement).DisposeWith(d);
+            _pixelsPerSecond = profileEditorService.PixelsPerSecond.ToProperty(this, vm => vm.PixelsPerSecond).DisposeWith(d);
+            _layerProperty = profileEditorService.LayerProperty.ToProperty(this, vm => vm.LayerProperty).DisposeWith(d);
+            Disposable.Create(() =>
+            {
+                _settingsService.SaveAllSettings();
+                foreach ((LayerPropertyGroup _, PropertyGroupViewModel value) in _cachedPropertyViewModels)
+                    value.Dispose();
+                _cachedPropertyViewModels.Clear();
+            }).DisposeWith(d);
+        });
 
         // Subscribe to events of the latest selected profile element - borrowed from https://stackoverflow.com/a/63950940
         this.WhenAnyValue(vm => vm.ProfileElement)
@@ -44,43 +70,36 @@ public class PropertiesViewModel : ActivatableViewModelBase
                 ? Observable.FromEventPattern(x => l.LayerBrushUpdated += x, x => l.LayerBrushUpdated -= x)
                 : Observable.Never<EventPattern<object>>())
             .Switch()
-            .Subscribe(_ => UpdateGroups());
+            .Subscribe(_ => UpdatePropertyGroups());
         this.WhenAnyValue(vm => vm.ProfileElement)
             .Select(p => p != null
                 ? Observable.FromEventPattern(x => p.LayerEffectsUpdated += x, x => p.LayerEffectsUpdated -= x)
                 : Observable.Never<EventPattern<object>>())
             .Switch()
-            .Subscribe(_ => UpdateGroups());
-        // React to service profile element changes as long as the VM is active
-
-        this.WhenActivated(d =>
-        {
-            _profileElement = profileEditorService.ProfileElement.ToProperty(this, vm => vm.ProfileElement).DisposeWith(d);
-            _pixelsPerSecond = profileEditorService.PixelsPerSecond.ToProperty(this, vm => vm.PixelsPerSecond).DisposeWith(d);
-            Disposable.Create(() =>
-            {
-                _settingsService.SaveAllSettings();
-                foreach ((LayerPropertyGroup _, PropertyGroupViewModel value) in _cachedViewModels)
-                    value.Dispose();
-                _cachedViewModels.Clear();
-                
-            }).DisposeWith(d);
-        });
-        this.WhenAnyValue(vm => vm.ProfileElement).Subscribe(_ => UpdateGroups());
+            .Subscribe(_ => UpdatePropertyGroups());
+        this.WhenAnyValue(vm => vm.ProfileElement).Subscribe(_ => UpdatePropertyGroups());
+        this.WhenAnyValue(vm => vm.LayerProperty).Subscribe(_ => UpdateTimelineViewModel());
     }
 
     public ObservableCollection<PropertyGroupViewModel> PropertyGroupViewModels { get; }
     public PlaybackViewModel PlaybackViewModel { get; }
     public TimelineViewModel TimelineViewModel { get; }
 
+    public DataBindingViewModel? DataBindingViewModel
+    {
+        get => _dataBindingViewModel;
+        set => RaiseAndSetIfChanged(ref _dataBindingViewModel, value);
+    }
+
     public RenderProfileElement? ProfileElement => _profileElement?.Value;
     public Layer? Layer => _profileElement?.Value as Layer;
+    public ILayerProperty? LayerProperty => _layerProperty?.Value;
 
     public int PixelsPerSecond => _pixelsPerSecond?.Value ?? 0;
     public IObservable<bool> Playing => _profileEditorService.Playing;
     public PluginSetting<double> PropertiesTreeWidth => _settingsService.GetSetting("ProfileEditor.PropertiesTreeWidth", 500.0);
-    
-    private void UpdateGroups()
+
+    private void UpdatePropertyGroups()
     {
         if (ProfileElement == null)
         {
@@ -92,18 +111,20 @@ public class PropertiesViewModel : ActivatableViewModelBase
         if (Layer != null)
         {
             // Add base VMs
-            viewModels.Add(GetOrCreateViewModel(Layer.General, null, null));
-            viewModels.Add(GetOrCreateViewModel(Layer.Transform, null, null));
+            viewModels.Add(GetOrCreatePropertyViewModel(Layer.General, null, null));
+            viewModels.Add(GetOrCreatePropertyViewModel(Layer.Transform, null, null));
 
             // Add brush VM if the brush has properties
             if (Layer.LayerBrush?.BaseProperties != null)
-                viewModels.Add(GetOrCreateViewModel(Layer.LayerBrush.BaseProperties, Layer.LayerBrush, null));
+                viewModels.Add(GetOrCreatePropertyViewModel(Layer.LayerBrush.BaseProperties, Layer.LayerBrush, null));
         }
 
         // Add effect VMs
         foreach (BaseLayerEffect layerEffect in ProfileElement.LayerEffects.OrderBy(e => e.Order))
+        {
             if (layerEffect.BaseProperties != null)
-                viewModels.Add(GetOrCreateViewModel(layerEffect.BaseProperties, null, layerEffect));
+                viewModels.Add(GetOrCreatePropertyViewModel(layerEffect.BaseProperties, null, layerEffect));
+        }
 
         // Map the most recent collection of VMs to the current list of VMs, making as little changes to the collection as possible
         for (int index = 0; index < viewModels.Count; index++)
@@ -119,9 +140,9 @@ public class PropertiesViewModel : ActivatableViewModelBase
             PropertyGroupViewModels.RemoveAt(PropertyGroupViewModels.Count - 1);
     }
 
-    private PropertyGroupViewModel GetOrCreateViewModel(LayerPropertyGroup layerPropertyGroup, BaseLayerBrush? layerBrush, BaseLayerEffect? layerEffect)
+    private PropertyGroupViewModel GetOrCreatePropertyViewModel(LayerPropertyGroup layerPropertyGroup, BaseLayerBrush? layerBrush, BaseLayerEffect? layerEffect)
     {
-        if (_cachedViewModels.TryGetValue(layerPropertyGroup, out PropertyGroupViewModel? cachedVm))
+        if (_cachedPropertyViewModels.TryGetValue(layerPropertyGroup, out PropertyGroupViewModel? cachedVm))
             return cachedVm;
 
         PropertyGroupViewModel createdVm;
@@ -132,7 +153,20 @@ public class PropertiesViewModel : ActivatableViewModelBase
         else
             createdVm = _layerPropertyVmFactory.PropertyGroupViewModel(layerPropertyGroup);
 
-        _cachedViewModels[layerPropertyGroup] = createdVm;
+        _cachedPropertyViewModels[layerPropertyGroup] = createdVm;
         return createdVm;
+    }
+
+    private void UpdateTimelineViewModel()
+    {
+        if (LayerProperty == null)
+        {
+            DataBindingViewModel = null;
+        }
+        else
+        {
+            _backgroundDataBindingViewModel ??= _dataBindingVmFactory.DataBindingViewModel();
+            DataBindingViewModel = _backgroundDataBindingViewModel;
+        }
     }
 }

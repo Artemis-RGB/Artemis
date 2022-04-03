@@ -8,7 +8,7 @@ using Artemis.Core.Modules;
 using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Artemis.UI.Shared.Events;
 using Artemis.UI.Shared.Extensions;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;

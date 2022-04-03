@@ -16,6 +16,11 @@ namespace Artemis.Core
         ILayerProperty BaseLayerProperty { get; }
 
         /// <summary>
+        ///     Gets the script used to populate the data binding
+        /// </summary>
+        INodeScript Script { get; }
+
+        /// <summary>
         /// Gets a list of sub-properties this data binding applies to
         /// </summary>
         ReadOnlyCollection<IDataBindingProperty> Properties { get; }

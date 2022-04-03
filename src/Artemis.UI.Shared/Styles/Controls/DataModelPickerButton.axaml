@@ -32,6 +32,8 @@
                                  BorderBrush="{TemplateBinding BorderBrush}"
                                  VerticalAlignment="{TemplateBinding VerticalAlignment}"
                                  HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                 Width="{TemplateBinding Width}"
+                                 Height="{TemplateBinding Height}"
                                  HorizontalContentAlignment="Stretch">
                     <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
                         <TextBlock Name="MainButtonLabel"

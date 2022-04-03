@@ -22,6 +22,7 @@ public class SelectionRemoveToolViewModel : ToolViewModel
     public SelectionRemoveToolViewModel(IProfileEditorService profileEditorService)
     {
         _profileEditorService = profileEditorService;
+        // Not disposed when deactivated but when really disposed
         _isEnabled = profileEditorService.ProfileElement.Select(p => p is Layer).ToProperty(this, vm => vm.IsEnabled);
         this.WhenActivated(d => profileEditorService.ProfileElement.Subscribe(p => _layer = p as Layer).DisposeWith(d));
     }

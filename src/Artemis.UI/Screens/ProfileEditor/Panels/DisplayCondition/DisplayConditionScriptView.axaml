@@ -4,28 +4,104 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:displayCondition="clr-namespace:Artemis.UI.Screens.ProfileEditor.DisplayCondition"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:dataModelPicker="clr-namespace:Artemis.UI.Shared.Controls.DataModelPicker;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="650"
              x:Class="Artemis.UI.Screens.ProfileEditor.DisplayCondition.DisplayConditionScriptView"
              x:DataType="displayCondition:DisplayConditionScriptViewModel">
-    <Grid>
-        <Grid IsVisible="{CompiledBinding NodeScriptViewModel, Converter={x:Static ObjectConverters.IsNotNull}}">
-            <ContentControl Content="{CompiledBinding NodeScriptViewModel}" />
-            <Button Classes="icon-button"
-                    ToolTip.Tip="Open editor"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Margin="4"
-                    Command="{Binding OpenEditor}">
-                <avalonia:MaterialIcon Kind="OpenInNew"></avalonia:MaterialIcon>
+    <UserControl.Styles>
+        <Style Selector="ComboBox.condition-type /template/ ContentControl#ContentPresenter">
+            <Setter Property="ContentTemplate">
+                <Setter.Value>
+                    <DataTemplate DataType="{x:Type displayCondition:ConditionTypeViewModel}">
+                        <TextBlock Text="{CompiledBinding Name}" VerticalAlignment="Center" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+    <ScrollViewer>
+        <DockPanel LastChildFill="False">
+            <DockPanel.Styles>
+                <Style Selector="DockPanel > TextBlock">
+                    <Setter Property="Margin" Value="0 5"></Setter>
+                </Style>
+
+            </DockPanel.Styles>
+            <TextBlock DockPanel.Dock="Top">Condition type</TextBlock>
+            <ComboBox Name="ConditionType"
+                      DockPanel.Dock="Top"
+                      Classes="condition-type"
+                      PlaceholderText="Select a condition type"
+                      Items="{CompiledBinding ConditionTypeViewModels}"
+                      SelectedItem="{CompiledBinding SelectedConditionTypeViewModel}"
+                      HorizontalAlignment="Stretch">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type displayCondition:ConditionTypeViewModel}">
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="{CompiledBinding Name}" TextWrapping="Wrap" MaxWidth="350" />
+                            <TextBlock Text="{CompiledBinding Description}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" MaxWidth="350" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <!-- Event options -->
+            <DockPanel IsVisible="{CompiledBinding ShowEventOptions}" DockPanel.Dock="Top" HorizontalAlignment="Stretch">
+                <TextBlock DockPanel.Dock="Top">Triggered by event</TextBlock>
+                <dataModelPicker:DataModelPickerButton Placeholder="Select an event"
+                                                       DockPanel.Dock="Top"
+                                                       HorizontalAlignment="Stretch" />
+
+                <TextBlock DockPanel.Dock="Top">When the event fires..</TextBlock>
+                <ComboBox PlaceholderText="Select a play mode" HorizontalAlignment="Stretch" DockPanel.Dock="Top">
+                    <ComboBoxItem>
+                        Play the timeline once
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        Toggle the element on or off
+                    </ComboBoxItem>
+                </ComboBox>
+
+                <TextBlock DockPanel.Dock="Top">And if already playing..</TextBlock>
+                <ComboBox PlaceholderText="Select a play mode" HorizontalAlignment="Stretch" DockPanel.Dock="Top">
+                    <ComboBoxItem>
+                        Restart the timeline
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        Play a second copy
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        Do nothing
+                    </ComboBoxItem>
+                </ComboBox>
+            </DockPanel>
+
+            <!-- Static options -->
+            <DockPanel IsVisible="{CompiledBinding ShowStaticOptions}" HorizontalAlignment="Stretch" DockPanel.Dock="Top">
+                <TextBlock DockPanel.Dock="Top">While condition is met..</TextBlock>
+                <ComboBox DockPanel.Dock="Top" PlaceholderText="Select a play mode" HorizontalAlignment="Stretch">
+                    <ComboBoxItem>Play the main segment once</ComboBoxItem>
+                    <ComboBoxItem>Repeat the main segment</ComboBoxItem>
+                </ComboBox>
+
+                <TextBlock DockPanel.Dock="Top">And when no longer met..</TextBlock>
+                <ComboBox DockPanel.Dock="Top" PlaceholderText="Select a stop mode" HorizontalAlignment="Stretch">
+                    <ComboBoxItem>Finish the main segment</ComboBoxItem>
+                    <ComboBoxItem>Skip forward to the end segment</ComboBoxItem>
+                </ComboBox>
+
+                <DockPanel DockPanel.Dock="Top" Margin="0 5">
+                    <avalonia:MaterialIcon Kind="InfoCircle" Margin="5 0"></avalonia:MaterialIcon>
+					<TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                               TextWrapping="Wrap">
+                        The start- and end-segments are always played once.
+                    </TextBlock>
+                </DockPanel>
+            </DockPanel>
+
+            <Button DockPanel.Dock="Bottom" ToolTip.Tip="Open editor" Margin="0 15 0 5" Command="{Binding OpenEditor}" HorizontalAlignment="Stretch">
+                Edit condition script
             </Button>
-        </Grid>
-
-        <Button VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                Command="{Binding EnableConditions}"
-                IsVisible="{CompiledBinding NodeScriptViewModel, Converter={x:Static ObjectConverters.IsNull}}">
-            Enable display conditions
-        </Button>
-    </Grid>
-
+        </DockPanel>
+    </ScrollViewer>
 </UserControl>

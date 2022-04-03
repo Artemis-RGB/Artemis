@@ -5,7 +5,7 @@ using Artemis.Core.Modules;
 using Artemis.UI.Shared.DataModelVisualization;
 using Artemis.UI.Shared.DataModelVisualization.Shared;
 
-namespace Artemis.UI.Shared.Services.Interfaces
+namespace Artemis.UI.Shared.Services
 {
     /// <summary>
     ///     A service for UI related data model tasks

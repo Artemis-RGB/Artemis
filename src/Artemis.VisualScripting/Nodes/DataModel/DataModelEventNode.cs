@@ -6,7 +6,7 @@ using Artemis.VisualScripting.Nodes.DataModel.Screens;
 
 namespace Artemis.VisualScripting.Nodes.DataModel;
 
-[Node("Data Model-Event", "Responds to a data model event trigger", "Data Model", OutputType = typeof(bool))]
+[Node("Data Model-Event", "Responds to a data model event trigger", "Data Model", OutputType = typeof(object))]
 public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCustomViewModel>, IDisposable
 {
     private int _currentIndex;
