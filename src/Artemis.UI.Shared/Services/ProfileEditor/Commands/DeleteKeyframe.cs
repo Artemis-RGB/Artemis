@@ -10,7 +10,7 @@ public class DeleteKeyframe : IProfileEditorCommand
     private readonly ILayerPropertyKeyframe _keyframe;
 
     /// <summary>
-    ///     Creates a new instance of the <see cref="DeleteKeyframe{T}" /> class.
+    ///     Creates a new instance of the <see cref="DeleteKeyframe" /> class.
     /// </summary>
     public DeleteKeyframe(ILayerPropertyKeyframe keyframe)
     {

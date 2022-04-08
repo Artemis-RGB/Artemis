@@ -280,7 +280,7 @@ public abstract class Node : CorePropertyChanged, INode
     ///     Serializes the <see cref="Storage" /> object into a string
     /// </summary>
     /// <returns>The serialized object</returns>
-    internal virtual string SerializeStorage()
+    public virtual string SerializeStorage()
     {
         return string.Empty;
     }
@@ -289,7 +289,7 @@ public abstract class Node : CorePropertyChanged, INode
     ///     Deserializes the <see cref="Storage" /> object and sets it
     /// </summary>
     /// <param name="serialized">The serialized object</param>
-    internal virtual void DeserializeStorage(string serialized)
+    public virtual void DeserializeStorage(string serialized)
     {
     }
 
@@ -333,12 +333,14 @@ public abstract class Node<TStorage> : Node
     /// </summary>
     public event EventHandler? StorageModified;
 
-    internal override string SerializeStorage()
+    /// <inheritdoc />
+    public override string SerializeStorage()
     {
         return CoreJson.SerializeObject(Storage, true);
     }
 
-    internal override void DeserializeStorage(string serialized)
+    /// <inheritdoc />
+    public override void DeserializeStorage(string serialized)
     {
         Storage = CoreJson.DeserializeObject<TStorage>(serialized) ?? default(TStorage);
     }

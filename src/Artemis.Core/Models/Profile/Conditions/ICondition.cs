@@ -16,7 +16,7 @@ public interface ICondition : IDisposable, IStorageModel
     /// <summary>
     ///     Gets the profile element this condition applies to
     /// </summary>
-    public ProfileElement ProfileElement { get; }
+    public RenderProfileElement ProfileElement { get; }
 
     /// <summary>
     ///     Gets a boolean indicating whether the condition is currently met
@@ -30,12 +30,11 @@ public interface ICondition : IDisposable, IStorageModel
     void Update();
 
     /// <summary>
-    ///     Applies the display condition to the provided timeline
+    /// Updates the timeline according to the provided <paramref name="deltaTime" /> as the display condition sees fit.
     /// </summary>
-    /// <param name="isMet"></param>
-    /// <param name="wasMet"></param>
-    /// <param name="timeline">The timeline to apply the display condition to</param>
-    void ApplyToTimeline(bool isMet, bool wasMet, Timeline timeline);
+    void UpdateTimeline(double deltaTime);
+
+    void OverrideTimeline(TimeSpan position);
 }
 
 /// <summary>

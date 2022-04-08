@@ -27,6 +27,7 @@ namespace Artemis.Core
             LayerEffectsList = new List<BaseLayerEffect>();
             LayerEffects = new ReadOnlyCollection<BaseLayerEffect>(LayerEffectsList);
             Parent = parent ?? throw new ArgumentNullException(nameof(parent));
+            _displayCondition = new AlwaysOnCondition(this);
 
             LayerEffectStore.LayerEffectAdded += LayerEffectStoreOnLayerEffectAdded;
             LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;
@@ -52,7 +53,7 @@ namespace Artemis.Core
         ///     Occurs when a layer effect has been added or removed to this render element
         /// </summary>
         public event EventHandler? LayerEffectsUpdated;
-        
+
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
@@ -76,8 +77,10 @@ namespace Artemis.Core
 
             DisplayCondition = RenderElementEntity.DisplayCondition switch
             {
-                StaticConditionEntity staticConditionEntity => new StaticCondition(staticConditionEntity, this),
-                EventConditionEntity eventConditionEntity => new EventCondition(eventConditionEntity, this),
+                AlwaysOnConditionEntity entity => new AlwaysOnCondition(entity, this),
+                PlayOnceConditionEntity entity => new PlayOnceCondition(entity, this),
+                StaticConditionEntity entity => new StaticCondition(entity, this),
+                EventConditionEntity entity => new EventCondition(entity, this),
                 _ => DisplayCondition
             };
 
@@ -124,17 +127,11 @@ namespace Artemis.Core
         public Timeline Timeline { get; private set; }
 
         /// <summary>
-        ///     Updates the <see cref="Timeline" /> according to the provided <paramref name="deltaTime" /> and current display
-        ///     condition status
+        ///     Updates the <see cref="Timeline" /> according to the provided <paramref name="deltaTime" /> and current display condition
         /// </summary>
         protected void UpdateTimeline(double deltaTime)
         {
-            // TODO: Move to conditions
-
-            // The play mode dictates whether to stick to the main segment unless the display conditions contains events
-            bool stickToMainSegment = Timeline.PlayMode == TimelinePlayMode.Repeat && DisplayConditionMet;
-
-            Timeline.Update(TimeSpan.FromSeconds(deltaTime), stickToMainSegment);
+            DisplayCondition.UpdateTimeline(deltaTime);
         }
 
         #endregion
@@ -317,7 +314,7 @@ namespace Artemis.Core
 
             OrderEffects();
         }
-        
+
 
         internal void ActivateLayerEffect(BaseLayerEffect layerEffect)
         {
@@ -365,13 +362,13 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the display condition used to determine whether this element is active or not
         /// </summary>
-        public ICondition? DisplayCondition
+        public ICondition DisplayCondition
         {
             get => _displayCondition;
             set => SetAndNotify(ref _displayCondition, value);
         }
 
-        private ICondition? _displayCondition;
+        private ICondition _displayCondition;
 
         /// <summary>
         ///     Evaluates the display conditions on this element and applies any required changes to the <see cref="Timeline" />
@@ -384,14 +381,7 @@ namespace Artemis.Core
                 return;
             }
 
-            if (DisplayCondition == null)
-            {
-                DisplayConditionMet = true;
-                return;
-            }
-
             DisplayCondition.Update();
-            DisplayCondition.ApplyToTimeline(DisplayCondition.IsMet, DisplayConditionMet, Timeline);
             DisplayConditionMet = DisplayCondition.IsMet;
         }
 
@@ -401,7 +391,6 @@ namespace Artemis.Core
         ///     Overrides the main timeline to the specified time and clears any extra time lines
         /// </summary>
         /// <param name="position">The position to set the timeline to</param>
-        /// <param name="stickToMainSegment">Whether to stick to the main segment, wrapping around if needed</param>
-        public abstract void OverrideTimelineAndApply(TimeSpan position, bool stickToMainSegment);
+        public abstract void OverrideTimelineAndApply(TimeSpan position);
     }
 }

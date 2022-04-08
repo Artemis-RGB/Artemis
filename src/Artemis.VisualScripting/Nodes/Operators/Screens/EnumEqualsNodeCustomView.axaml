@@ -8,7 +8,7 @@
              x:DataType="screens:EnumEqualsNodeCustomViewModel">
     <ComboBox IsEnabled="{CompiledBinding EnumValues.Count}"
               Items="{CompiledBinding EnumValues}"
-              SelectedItem="{CompiledBinding CurrentValue}"
+              SelectedIndex="{CompiledBinding CurrentValue}"
               PlaceholderText="Connect a pin..."
               Classes="condensed"
               VerticalAlignment="Center" />

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Shared;
-using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia.Controls.Mixins;
@@ -17,81 +13,79 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayCondition;
 
 public class DisplayConditionScriptViewModel : ActivatableViewModelBase
 {
+    private readonly ObservableAsPropertyHelper<ViewModelBase?> _conditionViewModel;
+    private readonly IConditionVmFactory _conditionVmFactory;
     private readonly IProfileEditorService _profileEditorService;
-    private readonly ObservableAsPropertyHelper<bool> _showEventOptions;
-    private readonly ObservableAsPropertyHelper<bool> _showStaticOptions;
-    private readonly IWindowService _windowService;
-    private ObservableAsPropertyHelper<NodeScriptViewModel?>? _nodeScriptViewModel;
-    private RenderProfileElement? _profileElement;
+    private ObservableAsPropertyHelper<RenderProfileElement?>? _profileElement;
     private ObservableAsPropertyHelper<ConditionTypeViewModel?>? _selectedConditionTypeViewModel;
 
-    public DisplayConditionScriptViewModel(IProfileEditorService profileEditorService, INodeVmFactory nodeVmFactory, IWindowService windowService)
+    public DisplayConditionScriptViewModel(IProfileEditorService profileEditorService, IConditionVmFactory conditionVmFactory)
     {
         _profileEditorService = profileEditorService;
-        _windowService = windowService;
+        _conditionVmFactory = conditionVmFactory;
 
         ConditionTypeViewModels = new ObservableCollection<ConditionTypeViewModel>
         {
-            new("None", "The element is always active.", null),
-            new("Regular", "The element is activated when the provided visual script ends in true.", typeof(StaticCondition)),
-            new("Event", "The element is activated when the selected event fires.\r\n" +
-                         "Events that contain data can conditionally trigger the layer using a visual script.", typeof(EventCondition))
+            new("Always", "The element is always active.", typeof(AlwaysOnCondition)),
+            new("Once", "The element is shown once until its timeline is finished.", typeof(PlayOnceCondition)),
+            new("Conditional", "The element is activated when the provided visual script ends in true.", typeof(StaticCondition)),
+            new("On event", "The element is activated when the selected event fires.\r\n" +
+                            "Events that contain data can conditionally trigger the layer using a visual script.", typeof(EventCondition))
         };
 
         this.WhenActivated(d =>
         {
-            profileEditorService.ProfileElement.Subscribe(p => _profileElement = p).DisposeWith(d);
-
-            _nodeScriptViewModel = profileEditorService.ProfileElement
-                .Select(p => p?.WhenAnyValue(element => element.DisplayCondition) ?? Observable.Never<ICondition?>())
-                .Switch()
-                .Select(c => c is INodeScriptCondition {NodeScript: NodeScript nodeScript} ? nodeVmFactory.NodeScriptViewModel(nodeScript, true) : null)
-                .ToProperty(this, vm => vm.NodeScriptViewModel)
-                .DisposeWith(d);
+            _profileElement = profileEditorService.ProfileElement.ToProperty(this, vm => vm.ProfileElement).DisposeWith(d);
             _selectedConditionTypeViewModel = profileEditorService.ProfileElement
-                .Select(p => p?.WhenAnyValue(element => element.DisplayCondition) ?? Observable.Never<ICondition?>())
+                .Select(p => p?.WhenAnyValue(element => element.DisplayCondition) ?? Observable.Return<ICondition?>(null))
                 .Switch()
                 .Select(c => c != null ? ConditionTypeViewModels.FirstOrDefault(vm => vm.ConditionType == c.GetType()) : null)
                 .ToProperty(this, vm => vm.SelectedConditionTypeViewModel)
                 .DisposeWith(d);
         });
 
-        _showStaticOptions = this.WhenAnyValue(vm => vm.SelectedConditionTypeViewModel)
-            .Select(c => c != null && c.ConditionType == typeof(StaticCondition))
-            .ToProperty(this, vm => vm.ShowStaticOptions);
-        _showEventOptions = this.WhenAnyValue(vm => vm.SelectedConditionTypeViewModel)
-            .Select(c => c != null && c.ConditionType == typeof(EventCondition))
-            .ToProperty(this, vm => vm.ShowEventOptions);
+        _conditionViewModel = this.WhenAnyValue(vm => vm.SelectedConditionTypeViewModel).Select(_ => CreateConditionViewModel()).ToProperty(this, vm => vm.ConditionViewModel);
     }
 
-    public NodeScriptViewModel? NodeScriptViewModel => _nodeScriptViewModel?.Value;
+    public RenderProfileElement? ProfileElement => _profileElement?.Value;
+    public ViewModelBase? ConditionViewModel => _conditionViewModel.Value;
     public ObservableCollection<ConditionTypeViewModel> ConditionTypeViewModels { get; }
 
     public ConditionTypeViewModel? SelectedConditionTypeViewModel
     {
         get => _selectedConditionTypeViewModel?.Value;
-        set
-        {
-            if (_profileElement == null)
-                return;
-
-            ICondition? condition = null;
-            if (value?.ConditionType == typeof(StaticCondition))
-                condition = new StaticCondition(_profileElement);
-            else if (value?.ConditionType == typeof(EventCondition))
-                condition = new EventCondition(_profileElement);
-
-            _profileEditorService.ExecuteCommand(new ChangeConditionType(_profileElement, condition));
-        }
+        set => ApplyConditionType(value);
     }
 
-    public bool ShowStaticOptions => _showStaticOptions.Value;
-    public bool ShowEventOptions => _showEventOptions.Value;
-
-
-    public async Task OpenEditor()
+    private ViewModelBase? CreateConditionViewModel()
     {
-        if (_profileElement?.DisplayCondition is StaticCondition staticCondition)
-            await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(("nodeScript", staticCondition.Script));
+        if (ProfileElement == null)
+            return null;
+
+        if (ProfileElement.DisplayCondition is AlwaysOnCondition alwaysOnCondition)
+            return _conditionVmFactory.AlwaysOnConditionViewModel(alwaysOnCondition);
+        if (ProfileElement.DisplayCondition is PlayOnceCondition playOnceCondition)
+            return _conditionVmFactory.PlayOnceConditionViewModel(playOnceCondition);
+        if (ProfileElement.DisplayCondition is StaticCondition staticCondition)
+            return _conditionVmFactory.StaticConditionViewModel(staticCondition);
+        if (ProfileElement.DisplayCondition is EventCondition eventCondition)
+            return _conditionVmFactory.EventConditionViewModel(eventCondition);
+
+        return null;
+    }
+
+    private void ApplyConditionType(ConditionTypeViewModel? value)
+    {
+        if (ProfileElement == null || value == null || ProfileElement.DisplayCondition.GetType() == value.ConditionType)
+            return;
+
+        if (value.ConditionType == typeof(AlwaysOnCondition))
+            _profileEditorService.ExecuteCommand(new ChangeConditionType(ProfileElement, new AlwaysOnCondition(ProfileElement)));
+        if (value.ConditionType == typeof(PlayOnceCondition))
+            _profileEditorService.ExecuteCommand(new ChangeConditionType(ProfileElement, new PlayOnceCondition(ProfileElement)));
+        if (value.ConditionType == typeof(StaticCondition))
+            _profileEditorService.ExecuteCommand(new ChangeConditionType(ProfileElement, new StaticCondition(ProfileElement)));
+        if (value.ConditionType == typeof(EventCondition))
+            _profileEditorService.ExecuteCommand(new ChangeConditionType(ProfileElement, new EventCondition(ProfileElement)));
     }
 }

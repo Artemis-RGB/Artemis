@@ -46,13 +46,6 @@
                         Command="{Binding DisableSegment}">
                     <avalonia:MaterialIcon Kind="CloseCircle" />
                 </Button>
-                <ToggleButton Name="SegmentRepeat"
-                              Classes="icon-button icon-button-small"
-                              ToolTip.Tip="Repeat this segment"
-                              IsChecked="{CompiledBinding RepeatSegment}"
-                              Padding="0">
-                    <avalonia:MaterialIcon Kind="Repeat" />
-                </ToggleButton>
             </StackPanel>
 
             <Button Name="AddEndSegment"

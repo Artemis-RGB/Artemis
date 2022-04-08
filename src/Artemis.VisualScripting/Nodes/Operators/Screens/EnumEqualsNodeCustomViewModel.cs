@@ -33,11 +33,7 @@ public class EnumEqualsNodeCustomViewModel : CustomNodeViewModel
             }
 
             Observable.FromEventPattern<SingleValueEventArgs<IPin>>(x => _node.InputPin.PinConnected += x, x => _node.InputPin.PinConnected -= x)
-                .Subscribe(p =>
-                {
-                    EnumValues.AddRange(Enum.GetValues(p.EventArgs.Value.Type).Cast<Enum>());
-                    this.RaisePropertyChanged(nameof(CurrentValue));
-                })
+                .Subscribe(p => EnumValues.AddRange(Enum.GetValues(p.EventArgs.Value.Type).Cast<Enum>()))
                 .DisposeWith(d);
             Observable.FromEventPattern<SingleValueEventArgs<IPin>>(x => _node.InputPin.PinDisconnected += x, x => _node.InputPin.PinDisconnected -= x)
                 .Subscribe(_ => EnumValues.Clear())
@@ -47,13 +43,13 @@ public class EnumEqualsNodeCustomViewModel : CustomNodeViewModel
 
     public ObservableCollection<Enum> EnumValues { get; } = new();
 
-    public Enum? CurrentValue
+    public int CurrentValue
     {
         get => _node.Storage;
         set
         {
-            if (value != null && !Equals(_node.Storage, value))
-                _nodeEditorService.ExecuteCommand(Script, new UpdateStorage<Enum>(_node, value));
+            if (!Equals(_node.Storage, value))
+                _nodeEditorService.ExecuteCommand(Script, new UpdateStorage<int>(_node, value));
         }
     }
 }

@@ -5,6 +5,7 @@ using Artemis.Core.LayerEffects;
 using Artemis.UI.Screens.Device;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor;
+using Artemis.UI.Screens.ProfileEditor.DisplayCondition.ConditionTypes;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Properties;
 using Artemis.UI.Screens.ProfileEditor.Properties.DataBinding;
@@ -52,7 +53,7 @@ namespace Artemis.UI.Ninject.Factories
         SidebarProfileConfigurationViewModel SidebarProfileConfigurationViewModel(SidebarViewModel sidebarViewModel, ProfileConfiguration profileConfiguration);
     }
 
-    public interface SurfaceVmFactory : IVmFactory
+    public interface ISurfaceVmFactory : IVmFactory
     {
         SurfaceDeviceViewModel SurfaceDeviceViewModel(ArtemisDevice device);
         ListDeviceViewModel ListDeviceViewModel(ArtemisDevice device);
@@ -107,5 +108,13 @@ namespace Artemis.UI.Ninject.Factories
         OutputPinViewModel OutputPinViewModel(IPin outputPin);
         InputPinCollectionViewModel InputPinCollectionViewModel(IPinCollection inputPinCollection, NodeScriptViewModel nodeScriptViewModel);
         OutputPinCollectionViewModel OutputPinCollectionViewModel(IPinCollection outputPinCollection, NodeScriptViewModel nodeScriptViewModel);
+    }
+
+    public interface IConditionVmFactory : IVmFactory
+    {
+        AlwaysOnConditionViewModel AlwaysOnConditionViewModel(AlwaysOnCondition alwaysOnCondition);
+        PlayOnceConditionViewModel PlayOnceConditionViewModel(PlayOnceCondition playOnceCondition);
+        StaticConditionViewModel StaticConditionViewModel(StaticCondition staticCondition);
+        EventConditionViewModel EventConditionViewModel(EventCondition eventCondition);
     }
 }

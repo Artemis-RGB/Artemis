@@ -237,11 +237,11 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public override void OverrideTimelineAndApply(TimeSpan position, bool stickToMainSegment)
+        public override void OverrideTimelineAndApply(TimeSpan position)
         {
-            Timeline.Override(position, stickToMainSegment);
+            DisplayCondition.OverrideTimeline(position);
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                baseLayerEffect.InternalUpdate(Timeline);
+                baseLayerEffect.InternalUpdate(Timeline); ;
         }
 
         /// <inheritdoc />

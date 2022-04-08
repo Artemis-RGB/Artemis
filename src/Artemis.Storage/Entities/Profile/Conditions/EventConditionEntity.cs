@@ -5,7 +5,8 @@ namespace Artemis.Storage.Entities.Profile.Conditions
 {
     public class EventConditionEntity : IConditionEntity
     {
-        public int EventOverlapMode { get; set; }
+        public int TriggerMode { get; set; }
+        public int OverlapMode { get; set; }
         public DataModelPathEntity EventPath { get; set; }
         public NodeScriptEntity Script { get; set; }
     }

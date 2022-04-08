@@ -41,8 +41,7 @@ public class Timeline : CorePropertyChanged, IStorageModel
 
     private TimeSpan _position;
     private TimeSpan _lastDelta;
-    private TimelinePlayMode _playMode;
-    private TimelineStopMode _stopMode;
+
     private TimeSpan _startSegmentLength;
     private TimeSpan _mainSegmentLength;
     private TimeSpan _endSegmentLength;
@@ -67,23 +66,7 @@ public class Timeline : CorePropertyChanged, IStorageModel
         private set => SetAndNotify(ref _lastDelta, value);
     }
 
-    /// <summary>
-    ///     Gets or sets the mode in which the render element starts its timeline when display conditions are met
-    /// </summary>
-    public TimelinePlayMode PlayMode
-    {
-        get => _playMode;
-        set => SetAndNotify(ref _playMode, value);
-    }
 
-    /// <summary>
-    ///     Gets or sets the mode in which the render element stops its timeline when display conditions are no longer met
-    /// </summary>
-    public TimelineStopMode StopMode
-    {
-        get => _stopMode;
-        set => SetAndNotify(ref _stopMode, value);
-    }
 
     /// <summary>
     ///     Gets a boolean indicating whether the timeline has finished its run
@@ -388,8 +371,6 @@ public class Timeline : CorePropertyChanged, IStorageModel
         StartSegmentLength = Entity.StartSegmentLength;
         MainSegmentLength = Entity.MainSegmentLength;
         EndSegmentLength = Entity.EndSegmentLength;
-        PlayMode = (TimelinePlayMode) Entity.PlayMode;
-        StopMode = (TimelineStopMode) Entity.StopMode;
 
         JumpToEnd();
     }
@@ -400,8 +381,6 @@ public class Timeline : CorePropertyChanged, IStorageModel
         Entity.StartSegmentLength = StartSegmentLength;
         Entity.MainSegmentLength = MainSegmentLength;
         Entity.EndSegmentLength = EndSegmentLength;
-        Entity.PlayMode = (int) PlayMode;
-        Entity.StopMode = (int) StopMode;
     }
 
     #endregion
@@ -412,62 +391,4 @@ internal enum TimelineSegment
     Start,
     Main,
     End
-}
-
-/// <summary>
-///     Represents a mode for render elements to start their timeline when display conditions are met
-/// </summary>
-public enum TimelinePlayMode
-{
-    /// <summary>
-    ///     Continue repeating the main segment of the timeline while the condition is met
-    /// </summary>
-    Repeat,
-
-    /// <summary>
-    ///     Only play the timeline once when the condition is met
-    /// </summary>
-    Once
-}
-
-/// <summary>
-///     Represents a mode for render elements to stop their timeline when display conditions are no longer met
-/// </summary>
-public enum TimelineStopMode
-{
-    /// <summary>
-    ///     When conditions are no longer met, finish the the current run of the main timeline
-    /// </summary>
-    Finish,
-
-    /// <summary>
-    ///     When conditions are no longer met, skip to the end segment of the timeline
-    /// </summary>
-    SkipToEnd
-}
-
-/// <summary>
-///     Represents a mode for render elements to start their timeline when display conditions events are fired
-/// </summary>
-public enum TimeLineEventOverlapMode
-{
-    /// <summary>
-    ///     Stop the current run and restart the timeline
-    /// </summary>
-    Restart,
-
-    /// <summary>
-    ///     Ignore subsequent event fires until the timeline finishes
-    /// </summary>
-    Ignore,
-
-    /// <summary>
-    ///     Play another copy of the timeline on top of the current run
-    /// </summary>
-    Copy,
-
-    /// <summary>
-    ///     Repeat the timeline until the event fires again
-    /// </summary>
-    Toggle
 }

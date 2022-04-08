@@ -476,9 +476,9 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public override void OverrideTimelineAndApply(TimeSpan position, bool stickToMainSegment)
+        public override void OverrideTimelineAndApply(TimeSpan position)
         {
-            Timeline.Override(position, stickToMainSegment);
+            DisplayCondition.OverrideTimeline(position);
 
             General.Update(Timeline);
             Transform.Update(Timeline);

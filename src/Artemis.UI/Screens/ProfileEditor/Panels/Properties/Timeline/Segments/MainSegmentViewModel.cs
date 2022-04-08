@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared.Services.ProfileEditor;
@@ -13,12 +10,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments;
 
 public class MainSegmentViewModel : TimelineSegmentViewModel
 {
-    private RenderProfileElement? _profileElement;
-    private ObservableAsPropertyHelper<double>? _start;
+    private readonly ObservableAsPropertyHelper<double> _width;
     private ObservableAsPropertyHelper<double>? _end;
     private ObservableAsPropertyHelper<string?>? _endTimestamp;
-    private ObservableAsPropertyHelper<bool>? _repeatSegment;
-    private readonly ObservableAsPropertyHelper<double> _width;
+    private RenderProfileElement? _profileElement;
+    private ObservableAsPropertyHelper<double>? _start;
 
     public MainSegmentViewModel(IProfileEditorService profileEditorService) : base(profileEditorService)
     {
@@ -44,12 +40,6 @@ public class MainSegmentViewModel : TimelineSegmentViewModel
                 .Select(p => $"{Math.Floor(p.TotalSeconds):00}.{p.Milliseconds:000}")
                 .ToProperty(this, vm => vm.EndTimestamp)
                 .DisposeWith(d);
-            _repeatSegment = profileEditorService.ProfileElement
-                .Select(p => p?.WhenAnyValue(element => element.Timeline.PlayMode) ?? Observable.Never<TimelinePlayMode>())
-                .Switch()
-                .Select(p => p == TimelinePlayMode.Repeat)
-                .ToProperty(this, vm => vm.RepeatSegment)
-                .DisposeWith(d);
         });
 
         _width = this.WhenAnyValue(vm => vm.StartX, vm => vm.EndX).Select(t => t.Item2 - t.Item1).ToProperty(this, vm => vm.Width);
@@ -73,10 +63,4 @@ public class MainSegmentViewModel : TimelineSegmentViewModel
     public override double Width => _width.Value;
     public override string? EndTimestamp => _endTimestamp?.Value;
     public override ResizeTimelineSegment.SegmentType Type => ResizeTimelineSegment.SegmentType.Main;
-
-    public bool RepeatSegment
-    {
-        get => _repeatSegment?.Value ?? false;
-        set => throw new NotImplementedException();
-    }
 }

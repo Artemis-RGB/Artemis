@@ -22,7 +22,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         public SurfaceEditorViewModel(IScreen hostScreen,
             IRgbService rgbService,
-            SurfaceVmFactory surfaceVmFactory,
+            ISurfaceVmFactory surfaceVmFactory,
             ISettingsService settingsService) : base(hostScreen, "surface-editor")
         {
             _rgbService = rgbService;
