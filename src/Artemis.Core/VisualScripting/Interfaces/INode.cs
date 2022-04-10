@@ -10,6 +10,11 @@ namespace Artemis.Core
     public interface INode : INotifyPropertyChanged
     {
         /// <summary>
+        ///     Gets or sets the ID of the node.
+        /// </summary>
+        Guid Id { get; set; }
+
+        /// <summary>
         ///     Gets the name of the node
         /// </summary>
         string Name { get; }

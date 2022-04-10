@@ -16,7 +16,9 @@ namespace Artemis.Core
     {
         private void NodeTypeStoreOnNodeTypeChanged(object? sender, NodeTypeStoreEvent e)
         {
-            Load();
+            // Only respond to node changes applicable to the current script
+            if (Entity.Nodes.Any(n => e.TypeRegistration.MatchesEntity(n)))
+                Load();
         }
 
         /// <inheritdoc />
@@ -153,41 +155,38 @@ namespace Artemis.Core
         {
             lock (_nodes)
             {
-                List<INode> removeNodes = _nodes.Where(n => !n.IsExitNode).ToList();
+                // Remove nodes no longer on the entity
+                List<INode> removeNodes = _nodes.Where(n => Entity.Nodes.All(e => e.Id != n.Id)).ToList();
                 foreach (INode removeNode in removeNodes)
+                {
                     RemoveNode(removeNode);
+                    if (removeNode is IDisposable disposable)
+                        disposable.Dispose();
+                }
             }
 
-            // Create nodes
-            foreach (NodeEntity entityNode in Entity.Nodes)
+            // Create missing nodes nodes
+            foreach (NodeEntity nodeEntity in Entity.Nodes)
             {
-                INode? node = LoadNode(entityNode, entityNode.IsExitNode ? ExitNode : null);
-                if (node == null)
-                    continue;
-
-                if (!entityNode.IsExitNode)
-                    AddNode(node);
+                INode? node = Nodes.FirstOrDefault(n => n.Id == nodeEntity.Id);
+                // If the node already exists, apply the entity to it
+                if (node != null)
+                    LoadExistingNode(node, nodeEntity);
+                else
+                {
+                    INode? loaded = LoadNode(nodeEntity);
+                    if (loaded != null)
+                        AddNode(loaded);
+                }
             }
 
             LoadConnections();
         }
 
-        private INode? LoadNode(NodeEntity nodeEntity, INode? node)
+        private void LoadExistingNode(INode node, NodeEntity nodeEntity)
         {
-            if (node == null)
-            {
-                NodeTypeRegistration? nodeTypeRegistration = NodeTypeStore.Get(nodeEntity.PluginId, nodeEntity.Type);
-                if (nodeTypeRegistration == null)
-                    return null;
-
-                // Create the node
-                node = nodeTypeRegistration.NodeData.CreateNode(this, nodeEntity);
-            }
-            else
-            {
-                node.X = nodeEntity.X;
-                node.Y = nodeEntity.Y;
-            }
+            node.X = nodeEntity.X;
+            node.Y = nodeEntity.Y;
 
             // Restore pin collections
             foreach (NodePinCollectionEntity entityNodePinCollection in nodeEntity.PinCollections)
@@ -201,7 +200,17 @@ namespace Artemis.Core
                 while (collection.Count() < entityNodePinCollection.Amount)
                     collection.Add(collection.CreatePin());
             }
+        }
 
+        private INode? LoadNode(NodeEntity nodeEntity)
+        {
+            NodeTypeRegistration? nodeTypeRegistration = NodeTypeStore.Get(nodeEntity);
+            if (nodeTypeRegistration == null)
+                return null;
+
+            // Create the node
+            INode node = nodeTypeRegistration.NodeData.CreateNode(this, nodeEntity);
+            LoadExistingNode(node, nodeEntity);
             return node;
         }
 
@@ -213,10 +222,10 @@ namespace Artemis.Core
             List<INode> nodes = Nodes.ToList();
             foreach (NodeConnectionEntity nodeConnectionEntity in Entity.Connections.OrderBy(p => p.SourcePinCollectionId))
             {
-                INode? source = nodes.ElementAtOrDefault(nodeConnectionEntity.SourceNode);
+                INode? source = nodes.FirstOrDefault(n => n.Id == nodeConnectionEntity.SourceNode);
                 if (source == null)
                     continue;
-                INode? target = nodes.ElementAtOrDefault(nodeConnectionEntity.TargetNode);
+                INode? target = nodes.FirstOrDefault(n => n.Id == nodeConnectionEntity.TargetNode);
                 if (target == null)
                     continue;
 
@@ -263,12 +272,11 @@ namespace Artemis.Core
             if (Nodes.Count() == 1)
                 return;
 
-            int id = 0;
             foreach (INode node in Nodes)
             {
                 NodeEntity nodeEntity = new()
                 {
-                    Id = id,
+                    Id = node.Id,
                     PluginId = NodeTypeStore.GetPlugin(node)?.Guid ?? Constants.CorePlugin.Guid,
                     Type = node.GetType().Name,
                     X = node.X,
@@ -294,7 +302,6 @@ namespace Artemis.Core
                 }
 
                 Entity.Nodes.Add(nodeEntity);
-                id++;
             }
 
             // Store connections
@@ -315,7 +322,6 @@ namespace Artemis.Core
         private void SavePins(INode node, int collectionId, IEnumerable<IPin> pins)
         {
             int sourcePinId = 0;
-            List<INode> nodes = Nodes.ToList();
             foreach (IPin sourcePin in pins.Where(p => p.Direction == PinDirection.Input))
             {
                 foreach (IPin targetPin in sourcePin.ConnectedTo)
@@ -337,11 +343,11 @@ namespace Artemis.Core
                     Entity.Connections.Add(new NodeConnectionEntity
                     {
                         SourceType = sourcePin.Type.Name,
-                        SourceNode = nodes.IndexOf(node),
+                        SourceNode = node.Id,
                         SourcePinCollectionId = collectionId,
                         SourcePinId = sourcePinId,
                         TargetType = targetPin.Type.Name,
-                        TargetNode = nodes.IndexOf(targetPin.Node),
+                        TargetNode = targetPin.Node.Id,
                         TargetPinCollectionId = targetPinCollectionId,
                         TargetPinId = targetPinId
                     });

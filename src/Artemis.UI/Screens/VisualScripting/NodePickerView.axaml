@@ -46,7 +46,7 @@
                 </TreeView.Styles>
                 <TreeView.DataTemplates>
                     <TreeDataTemplate DataType="{x:Type core:NodeData}">
-                        <StackPanel Margin="-15 1 0 1">
+                        <StackPanel Margin="-15 1 0 1" Background="Transparent" PointerReleased="InputElement_OnPointerReleased">
                             <TextBlock Classes="BodyStrongTextBlockStyle" Text="{Binding Name}"></TextBlock>
                             <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding Description}"></TextBlock>
                         </StackPanel>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Artemis.Storage.Entities.Profile.Nodes;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -51,11 +52,11 @@ namespace Artemis.Core
             }
         }
 
-        public static NodeTypeRegistration? Get(Guid pluginGuid, string type)
+        public static NodeTypeRegistration? Get(NodeEntity entity)
         {
             lock (Registrations)
             {
-                return Registrations.FirstOrDefault(r => r.Plugin.Guid == pluginGuid && r.NodeData.Type.Name == type);
+                return Registrations.FirstOrDefault(r => r.MatchesEntity(entity));
             }
         }
 

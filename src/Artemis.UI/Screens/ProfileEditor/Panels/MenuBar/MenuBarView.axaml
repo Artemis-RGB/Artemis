@@ -128,40 +128,41 @@
 		<MenuItem Header="_Options">
 			<MenuItem Header="Focus Selected Layer"
 					  ToolTip.Tip="If enabled, displays only the layer you currently have selected"
-					  IsEnabled="False">
+                      Command="{CompiledBinding ToggleBooleanSetting}"
+                      CommandParameter="{CompiledBinding FocusSelectedLayer}">
 				<MenuItem.Icon>
-					<CheckBox BorderThickness="0"
-							  IsHitTestVisible="False"
-							  IsChecked="{Binding FocusSelectedLayer.Value}" />
-				</MenuItem.Icon>
+					<avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding FocusSelectedLayer.Value}"></avalonia:MaterialIcon>
+                </MenuItem.Icon>
 			</MenuItem>
-			<MenuItem Header="Display Data Model Values">
-				<MenuItem.Icon>
-					<CheckBox BorderThickness="0"
-							  IsHitTestVisible="False"
-							  IsChecked="{Binding ShowDataModelValues.Value}" />
-				</MenuItem.Icon>
+			<MenuItem Header="Display Data Model Values"
+                      Command="{CompiledBinding ToggleBooleanSetting}"
+                      CommandParameter="{CompiledBinding ShowDataModelValues}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding ShowDataModelValues.Value}"></avalonia:MaterialIcon>
+                </MenuItem.Icon>
 			</MenuItem>
-			<MenuItem Header="Display Full Condition Paths">
-				<MenuItem.Icon>
-					<CheckBox BorderThickness="0"
-							  IsHitTestVisible="False"
-							  IsChecked="{Binding ShowFullPaths.Value}" />
-				</MenuItem.Icon>
+			<MenuItem Header="Display Full Condition Paths"
+                      Command="{CompiledBinding ToggleBooleanSetting}"
+                      CommandParameter="{CompiledBinding ShowFullPaths}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding ShowFullPaths.Value}"></avalonia:MaterialIcon>
+                </MenuItem.Icon>
 			</MenuItem>
-			<MenuItem Header="Always Display Cable Values" ToolTip.Tip="If enabled, cable values are always shown instead of only on hover">
-				<MenuItem.Icon>
-					<CheckBox BorderThickness="0"
-							  IsHitTestVisible="False"
-							  IsChecked="{Binding AlwaysShowValues.Value}" />
-				</MenuItem.Icon>
+			<MenuItem Header="Always Display Cable Values" 
+                      ToolTip.Tip="If enabled, cable values are always shown instead of only on hover"
+                      Command="{CompiledBinding ToggleBooleanSetting}"
+                      CommandParameter="{CompiledBinding AlwaysShowValues}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding AlwaysShowValues.Value}"></avalonia:MaterialIcon>
+                </MenuItem.Icon>
 			</MenuItem>
-			<MenuItem Header="Apply All Data Bindings During Edit" ToolTip.Tip="If enabled, updates all data bindings instead of only the one you are editing">
-				<MenuItem.Icon>
-					<CheckBox BorderThickness="0"
-							  IsHitTestVisible="False"
-							  IsChecked="{Binding AlwaysApplyDataBindings.Value}" />
-				</MenuItem.Icon>
+			<MenuItem Header="Apply All Data Bindings During Edit" 
+                      ToolTip.Tip="If enabled, updates all data bindings instead of only the one you are editing"
+                      Command="{CompiledBinding ToggleBooleanSetting}"
+                      CommandParameter="{CompiledBinding AlwaysApplyDataBindings}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding AlwaysApplyDataBindings.Value}"></avalonia:MaterialIcon>
+                </MenuItem.Icon>
 			</MenuItem>
 		</MenuItem>
 		<MenuItem Header="_Help">

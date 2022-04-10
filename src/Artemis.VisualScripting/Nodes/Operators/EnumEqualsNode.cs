@@ -1,5 +1,4 @@
 ﻿using Artemis.Core;
-using Artemis.Core.Events;
 using Artemis.VisualScripting.Nodes.Operators.Screens;
 
 namespace Artemis.VisualScripting.Nodes.Operators;
@@ -11,13 +10,6 @@ public class EnumEqualsNode : Node<int, EnumEqualsNodeCustomViewModel>
     {
         InputPin = CreateInputPin<Enum>();
         OutputPin = CreateOutputPin<bool>();
-
-        InputPin.PinConnected += InputPinOnPinConnected;
-    }
-
-    private void InputPinOnPinConnected(object? sender, SingleValueEventArgs<IPin> e)
-    {
-        Storage = 0;
     }
 
     public InputPin<Enum> InputPin { get; }

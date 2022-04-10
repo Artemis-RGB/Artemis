@@ -18,7 +18,8 @@
                                                DockPanel.Dock="Top"
                                                HorizontalAlignment="Stretch"
                                                FilterTypes="{CompiledBinding FilterTypes}"
-                                               DataModelPath="{CompiledBinding EventPath}"/>
+                                               DataModelPath="{CompiledBinding EventPath}"
+                                               ShowFullPath="{CompiledBinding ShowFullPaths.Value}"/>
 
         <TextBlock DockPanel.Dock="Top">When the event fires..</TextBlock>
         <ComboBox PlaceholderText="Select a play mode" HorizontalAlignment="Stretch" DockPanel.Dock="Top" SelectedIndex="{CompiledBinding SelectedTriggerMode}">

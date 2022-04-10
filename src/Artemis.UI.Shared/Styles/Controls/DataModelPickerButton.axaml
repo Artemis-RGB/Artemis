@@ -39,7 +39,8 @@
                         <TextBlock Name="MainButtonLabel"
                                    Grid.Column="0"
                                    VerticalAlignment="Center"
-                                   TextAlignment="Left" />
+                                   TextAlignment="Left"
+                                   TextTrimming="CharacterEllipsis"/>
                         <TextBlock Name="ChevronTextBlock"
                                    Grid.Column="1"
                                    FontFamily="{DynamicResource SymbolThemeFontFamily}"

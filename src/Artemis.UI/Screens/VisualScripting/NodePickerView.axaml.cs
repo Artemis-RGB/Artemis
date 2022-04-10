@@ -1,8 +1,11 @@
 using System;
 using System.Reactive.Linq;
+using Artemis.Core;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
 using Avalonia.Controls.PanAndZoom;
+using Avalonia.Input;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
@@ -25,5 +28,14 @@ public class NodePickerView : ReactiveUserControl<NodePickerViewModel>
     private void InitializeComponent()
     {
         AvaloniaXamlLoader.Load(this);
+    }
+
+    private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (sender is not IDataContextProvider {DataContext: NodeData nodeData} || ViewModel == null)
+            return;
+
+        ViewModel.CreateNode(nodeData);
+        ViewModel.IsVisible = false;
     }
 }

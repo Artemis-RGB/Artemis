@@ -4,6 +4,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
@@ -20,15 +21,17 @@ public class EventConditionViewModel : ActivatableViewModelBase
     private readonly IProfileEditorService _profileEditorService;
     private readonly ObservableAsPropertyHelper<bool> _showOverlapOptions;
     private readonly IWindowService _windowService;
+    private readonly ISettingsService _settingsService;
     private ObservableAsPropertyHelper<DataModelPath?>? _eventPath;
     private ObservableAsPropertyHelper<int>? _selectedOverlapMode;
     private ObservableAsPropertyHelper<int>? _selectedTriggerMode;
 
-    public EventConditionViewModel(EventCondition eventCondition, IProfileEditorService profileEditorService, IWindowService windowService)
+    public EventConditionViewModel(EventCondition eventCondition, IProfileEditorService profileEditorService, IWindowService windowService, ISettingsService settingsService)
     {
         _eventCondition = eventCondition;
         _profileEditorService = profileEditorService;
         _windowService = windowService;
+        _settingsService = settingsService;
         _showOverlapOptions = this.WhenAnyValue(vm => vm.SelectedTriggerMode)
             .Select(m => m == 0)
             .ToProperty(this, vm => vm.ShowOverlapOptions);
@@ -47,6 +50,7 @@ public class EventConditionViewModel : ActivatableViewModelBase
     public ReactiveCommand<Unit, Unit> OpenEditor { get; }
     public bool ShowOverlapOptions => _showOverlapOptions.Value;
     public bool IsConditionForLayer => _eventCondition.ProfileElement is Layer;
+    public PluginSetting<bool> ShowFullPaths => _settingsService.GetSetting("ProfileEditor.ShowFullPaths", false);
 
     public DataModelPath? EventPath
     {

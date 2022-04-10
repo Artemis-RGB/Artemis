@@ -13,7 +13,7 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
 {
     private readonly string _displayName;
     private readonly EventConditionEntity _entity;
-    private readonly EventDefaultNode _eventNode;
+    private EventDefaultNode _eventNode;
     private DataModelPath? _eventPath;
     private DateTime _lastProcessedTrigger;
     private EventOverlapMode _overlapMode;
@@ -199,6 +199,7 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
         Script = _entity.Script != null
             ? new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", _entity.Script, ProfileElement.Profile)
             : new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", ProfileElement.Profile);
+        UpdateEventNode();
     }
 
     /// <inheritdoc />
@@ -219,8 +220,15 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
     public void LoadNodeScript()
     {
         Script.Load();
+
+        // The load action may have created an event node, use that one over the one we have here
+        INode? existingEventNode = Script.Nodes.FirstOrDefault(n => n.Id == EventDefaultNode.NodeId);
+        if (existingEventNode != null)
+            _eventNode = (EventDefaultNode) existingEventNode;
+        
         UpdateEventNode();
         Script.LoadConnections();
+        
     }
 
     #endregion
@@ -254,12 +262,12 @@ public enum EventOverlapMode
     Restart,
 
     /// <summary>
-    ///     Ignore subsequent event fires until the timeline finishes
-    /// </summary>
-    Ignore,
-
-    /// <summary>
     ///     Play another copy of the timeline on top of the current run
     /// </summary>
-    Copy
+    Copy,
+
+    /// <summary>
+    ///     Ignore subsequent event fires until the timeline finishes
+    /// </summary>
+    Ignore
 }

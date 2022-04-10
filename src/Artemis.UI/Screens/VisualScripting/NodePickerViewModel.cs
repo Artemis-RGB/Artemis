@@ -21,7 +21,6 @@ public class NodePickerViewModel : ActivatableViewModelBase
 
     private bool _isVisible;
     private Point _position;
-    private DateTime _closed;
     private string? _searchText;
     private object? _selectedNode;
     private IPin? _targetPin;
@@ -43,8 +42,7 @@ public class NodePickerViewModel : ActivatableViewModelBase
 
         this.WhenActivated(d =>
         {
-            if (DateTime.Now - _closed > TimeSpan.FromSeconds(10))
-                SearchText = null;
+            SearchText = null;
             TargetPin = null;
 
             nodeSourceList.Edit(list =>
@@ -54,24 +52,8 @@ public class NodePickerViewModel : ActivatableViewModelBase
             });
 
             IsVisible = true;
-            
-            Disposable.Create(() =>
-            {
-                _closed = DateTime.Now;
-                IsVisible = false;
-            }).DisposeWith(d);
+            Disposable.Create(() => IsVisible = false).DisposeWith(d);
         });
-
-        this.WhenAnyValue(vm => vm.SelectedNode)
-            .WhereNotNull()
-            .Where(o => o is NodeData)
-            .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
-            .Subscribe(data =>
-            {
-                CreateNode((NodeData) data);
-                IsVisible = false;
-                SelectedNode = null;
-            });
     }
 
     public ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeData, string>> Categories { get; }

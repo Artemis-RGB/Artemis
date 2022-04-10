@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.Storage.Entities.Profile.Nodes;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -36,6 +37,16 @@ namespace Artemis.Core
             Plugin.Disabled -= OnDisabled;
             if (IsInStore)
                 NodeTypeStore.Remove(this);
+        }
+
+        /// <summary>
+        ///     Determines whether the provided entity matches this node type registration.
+        /// </summary>
+        /// <param name="entity">The entity to check.</param>
+        /// <returns><see langword="true"/> if the entity matches this registration; otherwise <see langword="false"/>.</returns>
+        public bool MatchesEntity(NodeEntity entity)
+        {
+            return Plugin.Guid == entity.PluginId && NodeData.Type.Name == entity.Type;
         }
     }
 

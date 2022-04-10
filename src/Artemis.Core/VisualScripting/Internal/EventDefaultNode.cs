@@ -7,18 +7,17 @@ using Humanizer;
 
 namespace Artemis.Core.Internal
 {
-    internal class EventDefaultNode : Node
+    internal class EventDefaultNode : DefaultNode
     {
+        internal static readonly Guid NodeId = new("278735FE-69E9-4A73-A6B8-59E83EE19305");
         private readonly Dictionary<PropertyInfo, OutputPin> _propertyPins;
         private readonly List<OutputPin> _pinBucket = new();
         private IDataModelEvent? _dataModelEvent;
 
-        public EventDefaultNode() : base("Event Arguments", "Contains the event arguments that triggered the evaluation")
+        public EventDefaultNode() : base(NodeId, "Event Arguments", "Contains the event arguments that triggered the evaluation")
         {
             _propertyPins = new Dictionary<PropertyInfo, OutputPin>();
         }
-
-        public override bool IsDefaultNode => true;
 
         public void CreatePins(IDataModelEvent? dataModelEvent)
         {
@@ -33,9 +32,12 @@ namespace Artemis.Core.Internal
             if (dataModelEvent == null)
                 return;
 
-            foreach (PropertyInfo propertyInfo in dataModelEvent.ArgumentsType.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+            foreach (PropertyInfo propertyInfo in dataModelEvent.ArgumentsType
+                         .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                          .Where(p => p.CustomAttributes.All(a => a.AttributeType != typeof(DataModelIgnoreAttribute))))
+            {
                 _propertyPins.Add(propertyInfo, CreateOrAddOutputPin(propertyInfo.PropertyType, propertyInfo.Name.Humanize()));
+            }
         }
 
         public override void Evaluate()

@@ -73,6 +73,30 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        ///     Creates a new instance of the <see cref="Layer" /> class by copying the provided <paramref name="source"/>.
+        /// </summary>
+        /// <param name="source">The layer to copy</param>
+        /// <param name="parent">The parent of the layer</param>
+        public Layer(Layer source, ProfileElement parent) : base(parent, parent.Profile)
+        {
+            LayerEntity = CoreJson.DeserializeObject<LayerEntity>(CoreJson.SerializeObject(source.LayerEntity, true), true) ?? new LayerEntity();
+            LayerEntity.Id = Guid.NewGuid();
+
+            Profile = source.Profile;
+            Parent = parent;
+
+            _general = new LayerGeneralProperties();
+            _transform = new LayerTransformProperties();
+
+            _leds = new List<ArtemisLed>();
+            Leds = new ReadOnlyCollection<ArtemisLed>(_leds);
+
+            Adapter = new LayerAdapter(this);
+            Load();
+            Initialize();
+        }
+
+        /// <summary>
         ///     A collection of all the LEDs this layer is assigned to.
         /// </summary>
         public ReadOnlyCollection<ArtemisLed> Leds { get; private set; }
@@ -349,7 +373,7 @@ namespace Artemis.Core
 
             if (ShouldBeEnabled)
                 Enable();
-            else if (Timeline.IsFinished)
+            else if (Timeline.IsFinished && !Children.Any())
                 Disable();
 
             if (Timeline.Delta == TimeSpan.Zero)
@@ -365,15 +389,16 @@ namespace Artemis.Core
             // Remove children that finished their timeline and update the rest
             for (int index = 0; index < Children.Count; index++)
             {
-                ProfileElement profileElement = Children[index];
-                if (((Layer) profileElement).Timeline.IsFinished)
+                Layer child = (Layer) Children[index];
+                if (!child.Timeline.IsFinished)
                 {
-                    RemoveChild(profileElement);
-                    profileElement.Dispose();
-                    index--;
+                    child.Update(deltaTime);
+                    continue;
                 }
-                else
-                    profileElement.Update(deltaTime);
+
+                RemoveChild(child);
+                child.Dispose();
+                index--;
             }
         }
 
@@ -383,6 +408,12 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
+            RenderSelf(canvas, basePosition);
+            RenderChildren(canvas, basePosition);
+        }
+
+        private void RenderSelf(SKCanvas canvas, SKPointI basePosition)
+        {
             // Ensure the layer is ready
             if (!Enabled || Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized || !Leds.Any())
                 return;
@@ -454,6 +485,13 @@ namespace Artemis.Core
             Timeline.ClearDelta();
         }
 
+        private void RenderChildren(SKCanvas canvas, SKPointI basePosition)
+        {
+            // Render children first so they go below
+            for (int i = Children.Count - 1; i >= 0; i--)
+                Children[i].Render(canvas, basePosition);
+        }
+
         /// <inheritdoc />
         public override void Enable()
         {
@@ -523,11 +561,11 @@ namespace Artemis.Core
         /// </summary>
         public void CreateCopyAsChild()
         {
-            throw new NotImplementedException();
-
-            // Create a copy of the layer and it's properties
-
-            // Add to children
+            Layer copy = new(this, this);
+            copy.AddLeds(Leds);
+            copy.Enable();
+            copy.Timeline.JumpToStart();
+            AddChild(copy);
         }
 
         internal void CalculateRenderProperties()

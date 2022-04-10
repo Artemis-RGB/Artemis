@@ -59,6 +59,9 @@ namespace Artemis.Core
 
         /// <summary>
         ///     Removes a node from the script
+        ///     <para>
+        ///         Note: If the node is <see cref="IDisposable"/> you must dispose it yourself, unless you plan to reuse the node.
+        ///     </para>
         /// </summary>
         /// <param name="node">The node to remove</param>
         void RemoveNode(INode node);
