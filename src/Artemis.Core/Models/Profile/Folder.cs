@@ -190,8 +190,11 @@ namespace Artemis.Core
             try
             {
                 SKRectI rendererBounds = SKRectI.Create(0, 0, Bounds.Width, Bounds.Height);
-                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                    baseLayerEffect.InternalPreProcess(canvas, rendererBounds, layerPaint);
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                {
+                    if (!baseLayerEffect.Suspended)
+                        baseLayerEffect.InternalPreProcess(canvas, rendererBounds, layerPaint);
+                }
 
                 // No point rendering if the alpha was set to zero by one of the effects
                 if (layerPaint.Color.Alpha == 0)
@@ -204,8 +207,11 @@ namespace Artemis.Core
                 for (int index = Children.Count - 1; index > -1; index--)
                     Children[index].Render(canvas, new SKPointI(Bounds.Left, Bounds.Top));
 
-                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                    baseLayerEffect.InternalPostProcess(canvas, rendererBounds, layerPaint);
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                {
+                    if (!baseLayerEffect.Suspended)
+                        baseLayerEffect.InternalPostProcess(canvas, rendererBounds, layerPaint);
+                }
             }
             finally
             {

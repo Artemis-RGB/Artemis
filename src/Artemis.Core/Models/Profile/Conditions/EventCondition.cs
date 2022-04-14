@@ -149,9 +149,7 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
     {
         if (TriggerMode == EventTriggerMode.Toggle)
         {
-            if (!IsMet && _wasMet)
-                ProfileElement.Timeline.JumpToEnd();
-            else if (IsMet && !_wasMet)
+            if (IsMet && !_wasMet)
                 ProfileElement.Timeline.JumpToStart();
         }
         else
@@ -164,12 +162,13 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
             {
                 if (OverlapMode == EventOverlapMode.Restart)
                     ProfileElement.Timeline.JumpToStart();
-                else if (OverlapMode == EventOverlapMode.Copy && ProfileElement is Layer layer)
-                    layer.CreateCopyAsChild();
+                else if (OverlapMode == EventOverlapMode.Copy && ProfileElement is Layer layer && layer.Parent is not Layer)
+                    layer.CreateRenderCopy(10);
             }
         }
 
-        ProfileElement.Timeline.Update(TimeSpan.FromSeconds(deltaTime), TriggerMode == EventTriggerMode.Toggle);
+        // Stick to mean segment in toggle mode for as long as the condition is met
+        ProfileElement.Timeline.Update(TimeSpan.FromSeconds(deltaTime), TriggerMode == EventTriggerMode.Toggle && IsMet);
     }
 
     /// <inheritdoc />
@@ -225,10 +224,9 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
         INode? existingEventNode = Script.Nodes.FirstOrDefault(n => n.Id == EventDefaultNode.NodeId);
         if (existingEventNode != null)
             _eventNode = (EventDefaultNode) existingEventNode;
-        
+
         UpdateEventNode();
         Script.LoadConnections();
-        
     }
 
     #endregion

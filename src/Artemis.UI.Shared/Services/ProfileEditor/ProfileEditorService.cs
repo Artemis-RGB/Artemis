@@ -62,8 +62,6 @@ internal class ProfileEditorService : IProfileEditorService
         });
     }
 
-    public IObservable<bool> SuspendedEditing { get; }
-
     private ProfileEditorHistory? GetHistory(ProfileConfiguration? profileConfiguration)
     {
         if (profileConfiguration == null)
@@ -107,6 +105,7 @@ internal class ProfileEditorService : IProfileEditorService
     public IObservable<RenderProfileElement?> ProfileElement { get; }
     public IObservable<ILayerProperty?> LayerProperty { get; }
     public IObservable<ProfileEditorHistory?> History { get; }
+    public IObservable<bool> SuspendedEditing { get; }
     public IObservable<TimeSpan> Time { get; }
     public IObservable<bool> Playing { get; }
     public IObservable<int> PixelsPerSecond { get; }
@@ -178,6 +177,25 @@ internal class ProfileEditorService : IProfileEditorService
     {
         Tick(time);
         _timeSubject.OnNext(time);
+    }
+
+    public void ChangeSuspendedEditing(bool suspend)
+    {
+        if (_suspendedEditingSubject.Value == suspend)
+            return;
+
+        _suspendedEditingSubject.OnNext(suspend);
+        if (suspend)
+        {
+            Pause();
+            _profileService.RenderForEditor = false;
+        }
+        else
+        {
+            if (_profileConfigurationSubject.Value != null)
+                _profileService.RenderForEditor = true;
+            Tick(_timeSubject.Value);
+        }
     }
 
     public void SelectKeyframe(ILayerPropertyKeyframe? keyframe, bool expand, bool toggle)

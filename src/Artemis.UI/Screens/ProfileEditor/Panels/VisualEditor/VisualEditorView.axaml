@@ -59,7 +59,7 @@
                 </ItemsControl>
 
 				<!-- The middle layer contains visualizers -->
-                <ItemsControl Items="{CompiledBinding Visualizers}" ClipToBounds="False">
+                <ItemsControl Items="{CompiledBinding Visualizers}" ClipToBounds="False" IsVisible="{CompiledBinding !SuspendedEditing}">
                     <ItemsControl.Styles>
                         <Style Selector="ContentPresenter">
                             <Setter Property="Canvas.Left" Value="{Binding X}" />
@@ -74,7 +74,7 @@
                 </ItemsControl>
 
 				<!-- The top layer contains tools -->
-                <ItemsControl Items="{CompiledBinding Tools}" ClipToBounds="False">
+                <ItemsControl Items="{CompiledBinding Tools}" ClipToBounds="False" IsVisible="{CompiledBinding !SuspendedEditing}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Grid />

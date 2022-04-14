@@ -13,9 +13,19 @@
     <UserControl.Resources>
         <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter"></converters:DoubleToGridLengthConverter>
     </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="Border.suspended-editing">
+            <Setter Property="Margin" Value="-10" />
+            <Setter Property="Background" Value="{DynamicResource SmokeFillColorDefault}" />
+            <Setter Property="IsVisible" Value="{CompiledBinding SuspendedEditing}" />
+            <Setter Property="CornerRadius" Value="{DynamicResource CardCornerRadius}" />
+        </Style>
+    </UserControl.Styles>
     <UserControl.KeyBindings>
         <KeyBinding Command="{CompiledBinding History.Undo}" Gesture="Ctrl+Z"></KeyBinding>
         <KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y"></KeyBinding>
+        <KeyBinding Command="{CompiledBinding ToggleSuspend}" Gesture="F5"></KeyBinding>
+        <KeyBinding Command="{CompiledBinding ToggleAutoSuspend}" Gesture="Shift+F5"></KeyBinding>
     </UserControl.KeyBindings>
     <UserControl.Styles>
         <Style Selector="GridSplitter.editor-grid-splitter-vertical">
@@ -78,7 +88,23 @@
             <GridSplitter Grid.Row="1" Classes="editor-grid-splitter-horizontal" />
 
             <Border Grid.Row="2" Classes="card card-condensed" Margin="4" Padding="0" ClipToBounds="True">
-                <ContentControl Content="{CompiledBinding PropertiesViewModel}" />
+                <Panel>
+                    <ContentControl Content="{CompiledBinding PropertiesViewModel}" />
+                    <Border Classes="suspended-editing">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16">
+                            <avalonia:MaterialIcon Kind="TimerOffOutline" Width="125" Height="125" HorizontalAlignment="Center" />
+                            <TextBlock Classes="h4" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0 10">
+                                Timeline suspended
+                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center">
+                                The profile is currently running in normal mode and the timeline cannot be edited.
+                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center">
+                                Press F5 to switch between editor mode and normal mode. Auto-switching can be disabled in the run menu.
+                            </TextBlock>
+                        </StackPanel>
+					</Border>
+                </Panel>
             </Border>
         </Grid>
 
@@ -91,13 +117,19 @@
                 <RowDefinition Height="{CompiledBinding ConditionsHeight.Value, Mode=TwoWay, Converter={StaticResource DoubleToGridLengthConverter}}" />
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Classes="card card-condensed" Margin="4 0 4 4">
-                <ContentControl Content="{CompiledBinding ProfileTreeViewModel}" />
+                <Panel>
+                    <ContentControl Content="{CompiledBinding ProfileTreeViewModel}" />
+                    <Border Classes="suspended-editing" />
+                </Panel>
             </Border>
 
             <GridSplitter Grid.Row="1" Classes="editor-grid-splitter-horizontal" />
 
             <Border Grid.Row="2" Classes="card card-condensed" Margin="4">
-				<ContentControl Content="{CompiledBinding DisplayConditionScriptViewModel}"></ContentControl>
+                <Panel>
+                    <ContentControl Content="{CompiledBinding DisplayConditionScriptViewModel}"></ContentControl>
+                    <Border Classes="suspended-editing" />
+                </Panel>
             </Border>
         </Grid>
 

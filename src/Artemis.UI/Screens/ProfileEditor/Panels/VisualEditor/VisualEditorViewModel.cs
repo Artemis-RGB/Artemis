@@ -22,6 +22,7 @@ public class VisualEditorViewModel : ActivatableViewModelBase
     private readonly SourceList<IVisualizerViewModel> _visualizers;
     private readonly IProfileEditorVmFactory _vmFactory;
     private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
+    private ObservableAsPropertyHelper<bool>? _suspendedEditing;
     private ReadOnlyObservableCollection<IToolViewModel> _tools;
 
     public VisualEditorViewModel(IProfileEditorService profileEditorService, IRgbService rgbService, IProfileEditorVmFactory vmFactory)
@@ -38,12 +39,10 @@ public class VisualEditorViewModel : ActivatableViewModelBase
 
         this.WhenActivated(d =>
         {
-            _profileConfiguration = profileEditorService.ProfileConfiguration
-                .ToProperty(this, vm => vm.ProfileConfiguration)
-                .DisposeWith(d);
-            profileEditorService.ProfileConfiguration
-                .Subscribe(CreateVisualizers)
-                .DisposeWith(d);
+            _profileConfiguration = profileEditorService.ProfileConfiguration.ToProperty(this, vm => vm.ProfileConfiguration).DisposeWith(d);
+            _suspendedEditing = profileEditorService.SuspendedEditing.ToProperty(this, vm => vm.SuspendedEditing).DisposeWith(d);
+            profileEditorService.ProfileConfiguration.Subscribe(CreateVisualizers).DisposeWith(d);
+
             profileEditorService.Tools
                 .Connect()
                 .AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected)).Filter(t => t.IsSelected).Bind(out ReadOnlyObservableCollection<IToolViewModel> tools)
@@ -71,6 +70,7 @@ public class VisualEditorViewModel : ActivatableViewModelBase
     }
 
     public ProfileConfiguration? ProfileConfiguration => _profileConfiguration?.Value;
+    public bool SuspendedEditing => _suspendedEditing?.Value ?? false;
 
     public ObservableCollection<ArtemisDevice> Devices { get; }
     public ReadOnlyObservableCollection<IVisualizerViewModel> Visualizers { get; }

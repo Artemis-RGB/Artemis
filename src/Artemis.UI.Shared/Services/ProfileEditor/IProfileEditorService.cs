@@ -47,6 +47,11 @@ public interface IProfileEditorService : IArtemisSharedUIService
     IObservable<int> PixelsPerSecond { get; }
 
     /// <summary>
+    ///     Gets an observable of the suspended state.
+    /// </summary>
+    IObservable<bool> SuspendedEditing { get; }
+
+    /// <summary>
     ///     Gets a source list of all available editor tools.
     /// </summary>
     SourceList<IToolViewModel> Tools { get; }
@@ -86,6 +91,12 @@ public interface IProfileEditorService : IArtemisSharedUIService
     /// </summary>
     /// <param name="pixelsPerSecond">The new pixels per second.</param>
     void ChangePixelsPerSecond(int pixelsPerSecond);
+
+    /// <summary>
+    ///     Changes the current suspended state.
+    /// </summary>
+    /// <param name="suspend">The new suspended state.</param>
+    void ChangeSuspendedEditing(bool suspend);
 
     /// <summary>
     ///     Selects the provided keyframe.

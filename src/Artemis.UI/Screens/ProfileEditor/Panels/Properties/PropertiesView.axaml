@@ -5,6 +5,7 @@
              xmlns:controls="clr-namespace:Artemis.UI.Controls"
              xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="350"
              x:Class="Artemis.UI.Screens.ProfileEditor.Properties.PropertiesView"
              x:DataType="local:PropertiesViewModel">

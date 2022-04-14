@@ -31,6 +31,7 @@ public class PropertiesViewModel : ActivatableViewModelBase
     private ObservableAsPropertyHelper<ILayerProperty?>? _layerProperty;
     private ObservableAsPropertyHelper<int>? _pixelsPerSecond;
     private ObservableAsPropertyHelper<RenderProfileElement?>? _profileElement;
+    private ObservableAsPropertyHelper<bool>? _suspendedEditing;
 
     /// <inheritdoc />
     public PropertiesViewModel(IProfileEditorService profileEditorService,
@@ -55,6 +56,7 @@ public class PropertiesViewModel : ActivatableViewModelBase
             _profileElement = profileEditorService.ProfileElement.ToProperty(this, vm => vm.ProfileElement).DisposeWith(d);
             _pixelsPerSecond = profileEditorService.PixelsPerSecond.ToProperty(this, vm => vm.PixelsPerSecond).DisposeWith(d);
             _layerProperty = profileEditorService.LayerProperty.ToProperty(this, vm => vm.LayerProperty).DisposeWith(d);
+            _suspendedEditing = profileEditorService.SuspendedEditing.ToProperty(this, vm => vm.SuspendedEditing).DisposeWith(d);
             Disposable.Create(() =>
             {
                 _settingsService.SaveAllSettings();
@@ -94,10 +96,12 @@ public class PropertiesViewModel : ActivatableViewModelBase
     public RenderProfileElement? ProfileElement => _profileElement?.Value;
     public Layer? Layer => _profileElement?.Value as Layer;
     public ILayerProperty? LayerProperty => _layerProperty?.Value;
+    public bool SuspendedEditing => _suspendedEditing?.Value ?? false;
 
     public int PixelsPerSecond => _pixelsPerSecond?.Value ?? 0;
     public IObservable<bool> Playing => _profileEditorService.Playing;
     public PluginSetting<double> PropertiesTreeWidth => _settingsService.GetSetting("ProfileEditor.PropertiesTreeWidth", 500.0);
+
 
     private void UpdatePropertyGroups()
     {

@@ -16,6 +16,7 @@ namespace Artemis.Core
     /// </summary>
     public sealed class Layer : RenderProfileElement
     {
+        private readonly List<Layer> _renderCopies;
         private LayerGeneralProperties _general;
         private BaseLayerBrush? _layerBrush;
         private LayerShape? _layerShape;
@@ -37,6 +38,8 @@ namespace Artemis.Core
             Name = name;
             Suspended = false;
 
+            // TODO: move to top
+            _renderCopies = new List<Layer>();
             _general = new LayerGeneralProperties();
             _transform = new LayerTransformProperties();
 
@@ -61,6 +64,8 @@ namespace Artemis.Core
             Profile = profile;
             Parent = parent;
 
+            // TODO: move to top
+            _renderCopies = new List<Layer>();
             _general = new LayerGeneralProperties();
             _transform = new LayerTransformProperties();
 
@@ -76,15 +81,15 @@ namespace Artemis.Core
         ///     Creates a new instance of the <see cref="Layer" /> class by copying the provided <paramref name="source"/>.
         /// </summary>
         /// <param name="source">The layer to copy</param>
-        /// <param name="parent">The parent of the layer</param>
-        public Layer(Layer source, ProfileElement parent) : base(parent, parent.Profile)
+        private Layer(Layer source) : base(source, source.Profile)
         {
-            LayerEntity = CoreJson.DeserializeObject<LayerEntity>(CoreJson.SerializeObject(source.LayerEntity, true), true) ?? new LayerEntity();
-            LayerEntity.Id = Guid.NewGuid();
+            LayerEntity = source.LayerEntity;
 
             Profile = source.Profile;
-            Parent = parent;
+            Parent = source;
 
+            // TODO: move to top
+            _renderCopies = new List<Layer>();
             _general = new LayerGeneralProperties();
             _transform = new LayerTransformProperties();
 
@@ -94,6 +99,13 @@ namespace Artemis.Core
             Adapter = new LayerAdapter(this);
             Load();
             Initialize();
+
+            Timeline.JumpToStart();
+            AddLeds(source.Leds);
+            Enable();
+
+            // After loading using the source entity create a new entity so the next call to Save won't mess with the source, just in case.
+            LayerEntity = new LayerEntity();
         }
 
         /// <summary>
@@ -373,7 +385,7 @@ namespace Artemis.Core
 
             if (ShouldBeEnabled)
                 Enable();
-            else if (Timeline.IsFinished && !Children.Any())
+            else if (Timeline.IsFinished && !_renderCopies.Any())
                 Disable();
 
             if (Timeline.Delta == TimeSpan.Zero)
@@ -383,22 +395,26 @@ namespace Artemis.Core
             Transform.Update(Timeline);
             LayerBrush?.InternalUpdate(Timeline);
 
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                baseLayerEffect.InternalUpdate(Timeline);
-
-            // Remove children that finished their timeline and update the rest
-            for (int index = 0; index < Children.Count; index++)
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
             {
-                Layer child = (Layer) Children[index];
+                if (!baseLayerEffect.Suspended)
+                    baseLayerEffect.InternalUpdate(Timeline);
+            }
+
+            // Remove render copies that finished their timeline and update the rest
+            for (int index = 0; index < _renderCopies.Count; index++)
+            {
+                Layer child = _renderCopies[index];
                 if (!child.Timeline.IsFinished)
                 {
                     child.Update(deltaTime);
-                    continue;
                 }
-
-                RemoveChild(child);
-                child.Dispose();
-                index--;
+                else
+                {
+                    _renderCopies.Remove(child);
+                    child.Dispose();
+                    index--;
+                }
             }
         }
 
@@ -408,19 +424,15 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
-            RenderSelf(canvas, basePosition);
-            RenderChildren(canvas, basePosition);
+            RenderLayer(canvas, basePosition);
+            RenderCopies(canvas, basePosition);
         }
 
-        private void RenderSelf(SKCanvas canvas, SKPointI basePosition)
+        private void RenderLayer(SKCanvas canvas, SKPointI basePosition)
         {
             // Ensure the layer is ready
             if (!Enabled || Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized || !Leds.Any())
                 return;
-
-            // Render children first so they go below
-            for (int i = Children.Count - 1; i >= 0; i--)
-                Children[i].Render(canvas, basePosition);
 
             // Ensure the brush is ready
             if (LayerBrush == null || LayerBrush?.BaseProperties?.PropertiesInitialized == false)
@@ -432,7 +444,7 @@ namespace Artemis.Core
             SKPaint layerPaint = new() {FilterQuality = SKFilterQuality.Low};
             try
             {
-                canvas.Save();
+                using SKAutoCanvasRestore _ = new(canvas);
                 canvas.Translate(Bounds.Left - basePosition.X, Bounds.Top - basePosition.Y);
                 using SKPath clipPath = new(Path);
                 clipPath.Transform(SKMatrix.CreateTranslation(Bounds.Left * -1, Bounds.Top * -1));
@@ -478,18 +490,16 @@ namespace Artemis.Core
             }
             finally
             {
-                canvas.Restore();
                 layerPaint.DisposeSelfAndProperties();
             }
 
             Timeline.ClearDelta();
         }
 
-        private void RenderChildren(SKCanvas canvas, SKPointI basePosition)
+        private void RenderCopies(SKCanvas canvas, SKPointI basePosition)
         {
-            // Render children first so they go below
-            for (int i = Children.Count - 1; i >= 0; i--)
-                Children[i].Render(canvas, basePosition);
+            for (int i = _renderCopies.Count - 1; i >= 0; i--)
+                _renderCopies[i].Render(canvas, basePosition);
         }
 
         /// <inheritdoc />
@@ -549,23 +559,24 @@ namespace Artemis.Core
             else
                 Timeline.JumpToEnd();
 
-            while (Children.Any())
+            while (_renderCopies.Any())
             {
-                Children[0].Dispose();
-                RemoveChild(Children[0]);
+                _renderCopies[0].Dispose();
+                _renderCopies.RemoveAt(0);
             }
         }
 
         /// <summary>
-        ///     Creates a copy of this layer as a child and plays it once
+        ///     Creates a copy of this layer and renders it alongside this layer for as long as its timeline lasts.
         /// </summary>
-        public void CreateCopyAsChild()
+        /// <param name="max">The total maximum of render copies to keep</param>
+        public void CreateRenderCopy(int max)
         {
-            Layer copy = new(this, this);
-            copy.AddLeds(Leds);
-            copy.Enable();
-            copy.Timeline.JumpToStart();
-            AddChild(copy);
+            if (_renderCopies.Count >= max)
+                return;
+
+            Layer copy = new(this);
+            _renderCopies.Add(copy);
         }
 
         internal void CalculateRenderProperties()
@@ -623,26 +634,23 @@ namespace Artemis.Core
             if (LayerBrush == null)
                 throw new ArtemisCoreException("The layer is not yet ready for rendering");
 
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                baseLayerEffect.InternalPreProcess(canvas, bounds, layerPaint);
-
-            try
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
             {
-                canvas.SaveLayer(layerPaint);
-                canvas.ClipPath(renderPath);
-
-                // Restore the blend mode before doing the actual render
-                layerPaint.BlendMode = SKBlendMode.SrcOver;
-
-                LayerBrush.InternalRender(canvas, bounds, layerPaint);
-
-                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                    baseLayerEffect.InternalPostProcess(canvas, bounds, layerPaint);
+                if (!baseLayerEffect.Suspended)
+                    baseLayerEffect.InternalPreProcess(canvas, bounds, layerPaint);
             }
 
-            finally
+            using SKAutoCanvasRestore _ = new(canvas);
+            canvas.ClipPath(renderPath);
+
+            // Restore the blend mode before doing the actual render
+            layerPaint.BlendMode = SKBlendMode.SrcOver;
+            LayerBrush.InternalRender(canvas, bounds, layerPaint);
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
             {
-                canvas.Restore();
+                if (!baseLayerEffect.Suspended)
+                    baseLayerEffect.InternalPostProcess(canvas, bounds, layerPaint);
             }
         }
 
