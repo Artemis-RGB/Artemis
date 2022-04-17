@@ -38,13 +38,14 @@ namespace Artemis.Core.Services
         // ReSharper disable UnusedParameter.Local
         public CoreService(IKernel kernel,
             ILogger logger,
-            StorageMigrationService _, // injected to ensure migration runs early
+            StorageMigrationService _1, // injected to ensure migration runs early
             ISettingsService settingsService,
             IPluginManagementService pluginManagementService,
             IRgbService rgbService,
             IProfileService profileService,
             IModuleService moduleService,
-            IScriptingService scriptingService)
+            IScriptingService scriptingService,
+            IProcessMonitorService _2)
         {
             Kernel = kernel;
             Constants.CorePlugin.Kernel = kernel;

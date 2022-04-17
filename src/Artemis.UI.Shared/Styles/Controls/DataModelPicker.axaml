@@ -1,9 +1,9 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dataModel="clr-namespace:Artemis.UI.Shared.DataModelVisualization.Shared"
-        xmlns:dataModelPicker="clr-namespace:Artemis.UI.Shared.Controls.DataModelPicker"
         xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:dataModelPicker="clr-namespace:Artemis.UI.Shared.DataModelPicker">
     <Design.PreviewWith>
         <dataModelPicker:DataModelPicker />
     </Design.PreviewWith>
@@ -20,7 +20,22 @@
                                   RowDefinitions="*"
                                   MinHeight="38"
                                   IsVisible="{Binding DataModelPath, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}">
-                                <avalonia:MaterialIcon Grid.Column="0" Grid.Row="0" Name="CurrentPathIcon" Kind="QuestionMarkCircle" Height="22" Width="22" Margin="5 0 15 0" />
+                                <avalonia:MaterialIcon Grid.Column="0"
+													   Grid.Row="0" 
+                                                       Name="CurrentPathIcon" 
+                                                       Kind="QuestionMarkCircle" 
+                                                       Height="22"
+                                                       Width="22"
+                                                       Margin="5 0 15 0" 
+                                                       IsVisible="{Binding !IsEventPicker, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                <avalonia:MaterialIcon Grid.Column="0"
+                                                       Grid.Row="0" 
+                                                       Name="EventIcon"
+                                                       Kind="LightningBolt"
+                                                       Height="22"
+                                                       Width="22" 
+                                                       Margin="5 0 15 0"
+                                                       IsVisible="{Binding IsEventPicker, RelativeSource={RelativeSource TemplatedParent}}"/>
                                 <StackPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Center">
                                     <TextBlock Name="CurrentPathDisplay" Classes="BodyStrongTextBlockStyle" MaxHeight="50" />
                                     <TextBlock Name="CurrentPathDescription" Classes="BodyTextBlockStyle" Foreground="{DynamicResource TextFillColorSecondary}" MaxHeight="50" />
@@ -42,6 +57,7 @@
                         <TreeView.Styles>
                             <Style Selector="TreeViewItem">
                                 <Setter Property="IsExpanded" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
+                                <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes, Mode=OneWay}" />
                             </Style>
                         </TreeView.Styles>
                         <TreeView.DataTemplates>
@@ -58,7 +74,13 @@
 
                             <TreeDataTemplate DataType="{x:Type dataModel:DataModelPropertyViewModel}">
                                 <Grid ColumnDefinitions="Auto,*">
-                                    <TextBlock Grid.Column="0" Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                        <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
+                                        <TextBlock Text=" changed"
+                                                   ToolTip.Tip="{Binding PropertyDescription.Description}"
+                                                   IsVisible="{Binding IsEventPicker, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type dataModelPicker:DataModelPicker}}}"/>
+                                    </StackPanel>
+
                                     <ContentControl Grid.Column="1" Content="{Binding DisplayViewModel}" FontFamily="Consolas" Margin="0 0 10 0" />
                                 </Grid>
                             </TreeDataTemplate>

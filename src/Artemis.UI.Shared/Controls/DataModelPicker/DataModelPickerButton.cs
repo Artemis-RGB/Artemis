@@ -3,8 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Modules;
-using Artemis.UI.Shared.Controls.Flyouts;
-using Artemis.UI.Shared.DataModelVisualization.Shared;
+using Artemis.UI.Shared.Flyouts;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -13,7 +12,7 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using FluentAvalonia.Core;
 
-namespace Artemis.UI.Shared.Controls.DataModelPicker;
+namespace Artemis.UI.Shared.DataModelPicker;
 
 /// <summary>
 ///     Represents a button that can be used to pick a data model path in a flyout.
@@ -69,16 +68,18 @@ public class DataModelPickerButton : TemplatedControl
         AvaloniaProperty.Register<DataModelPicker, ObservableCollection<Module>?>(nameof(Modules), new ObservableCollection<Module>());
 
     /// <summary>
-    ///     A list of data model view models to show
-    /// </summary>
-    public static readonly StyledProperty<ObservableCollection<DataModelPropertiesViewModel>?> ExtraDataModelViewModelsProperty =
-        AvaloniaProperty.Register<DataModelPicker, ObservableCollection<DataModelPropertiesViewModel>?>(nameof(ExtraDataModelViewModels), new ObservableCollection<DataModelPropertiesViewModel>());
-
-    /// <summary>
     ///     A list of types to filter the selectable paths on.
     /// </summary>
     public static readonly StyledProperty<ObservableCollection<Type>?> FilterTypesProperty =
         AvaloniaProperty.Register<DataModelPicker, ObservableCollection<Type>?>(nameof(FilterTypes), new ObservableCollection<Type>());
+
+    /// <summary>
+    ///     Gets or sets a boolean indicating whether the picker is in event picker mode.
+    ///     When <see langword="true" /> event children aren't selectable and non-events are described as "{PropertyName}
+    ///     changed".
+    /// </summary>
+    public static readonly StyledProperty<bool> IsEventPickerProperty =
+        AvaloniaProperty.Register<DataModelPicker, bool>(nameof(IsEventPicker));
 
     private bool _attached;
     private bool _flyoutActive;
@@ -166,21 +167,23 @@ public class DataModelPickerButton : TemplatedControl
     }
 
     /// <summary>
-    ///     A list of data model view models to show.
-    /// </summary>
-    public ObservableCollection<DataModelPropertiesViewModel>? ExtraDataModelViewModels
-    {
-        get => GetValue(ExtraDataModelViewModelsProperty);
-        set => SetValue(ExtraDataModelViewModelsProperty, value);
-    }
-
-    /// <summary>
     ///     A list of types to filter the selectable paths on.
     /// </summary>
     public ObservableCollection<Type>? FilterTypes
     {
         get => GetValue(FilterTypesProperty);
         set => SetValue(FilterTypesProperty, value);
+    }
+
+    /// <summary>
+    ///     Gets or sets a boolean indicating whether the picker is in event picker mode.
+    ///     When <see langword="true" /> event children aren't selectable and non-events are described as "{PropertyName}
+    ///     changed".
+    /// </summary>
+    public bool IsEventPicker
+    {
+        get => GetValue(IsEventPickerProperty);
+        set => SetValue(IsEventPickerProperty, value);
     }
 
     /// <summary>
@@ -239,14 +242,24 @@ public class DataModelPickerButton : TemplatedControl
         }
         else
         {
+            // If a valid path is selected, gather all its segments and create a visual representation of the path
             string? formattedPath = null;
             if (DataModelPath != null && DataModelPath.IsValid)
                 formattedPath = string.Join(" › ", DataModelPath.Segments.Where(s => s.GetPropertyDescription() != null).Select(s => s.GetPropertyDescription()!.Name));
 
+            // Always show the full path in the tooltip
             ToolTip.SetTip(_button, formattedPath);
-            _label.Text = ShowFullPath
+
+            // Reuse the tooltip value when showing the full path, otherwise only show the last segment
+            string? labelText = ShowFullPath
                 ? formattedPath
                 : DataModelPath?.Segments.LastOrDefault()?.GetPropertyDescription()?.Name ?? DataModelPath?.Segments.LastOrDefault()?.Identifier;
+
+            // Add "changed" to the end of the display value if this is an event picker but no event was picked
+            if (IsEventPicker && labelText != null && DataModelPath?.GetPropertyType()?.IsAssignableTo(typeof(IDataModelEvent)) == false)
+                labelText += " changed";
+
+            _label.Text = labelText ?? Placeholder;
         }
     }
 
@@ -257,8 +270,8 @@ public class DataModelPickerButton : TemplatedControl
 
         // Logic here is taken from Fluent Avalonia's ColorPicker which also reuses the same control since it's large
         _flyout.DataModelPicker.DataModelPath = DataModelPath;
-        _flyout.DataModelPicker.ExtraDataModelViewModels = ExtraDataModelViewModels;
         _flyout.DataModelPicker.FilterTypes = FilterTypes;
+        _flyout.DataModelPicker.IsEventPicker = IsEventPicker;
         _flyout.DataModelPicker.Modules = Modules;
         _flyout.DataModelPicker.ShowDataModelValues = ShowDataModelValues;
 

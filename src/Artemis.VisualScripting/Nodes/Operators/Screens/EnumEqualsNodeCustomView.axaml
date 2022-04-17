@@ -9,7 +9,7 @@
     <ComboBox IsEnabled="{CompiledBinding EnumValues.Count}"
               Items="{CompiledBinding EnumValues}"
               SelectedIndex="{CompiledBinding CurrentValue}"
-              PlaceholderText="Connect a pin..."
+              PlaceholderText="Select a value"
               Classes="condensed"
               VerticalAlignment="Center" />
 </UserControl>

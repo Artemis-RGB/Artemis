@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Artemis.Core.Internal;
+using Artemis.Core.VisualScripting.Internal;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 
@@ -13,13 +14,15 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
 {
     private readonly string _displayName;
     private readonly EventConditionEntity _entity;
-    private EventDefaultNode _eventNode;
+    private IEventConditionNode _startNode;
     private DataModelPath? _eventPath;
-    private DateTime _lastProcessedTrigger;
-    private EventOverlapMode _overlapMode;
     private NodeScript<bool> _script;
-    private EventTriggerMode _triggerMode;
     private bool _wasMet;
+    private DateTime _lastProcessedTrigger;
+    private object? _lastProcessedValue;
+    private EventOverlapMode _overlapMode;
+    private EventTriggerMode _triggerMode;
+    private EventToggleOffMode _toggleOffMode;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="EventCondition" /> class
@@ -30,7 +33,7 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
 
         _entity = new EventConditionEntity();
         _displayName = profileElement.GetType().Name;
-        _eventNode = new EventDefaultNode {X = -300};
+        _startNode = new EventConditionEventStartNode {X = -300};
         _script = new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", ProfileElement.Profile);
     }
 
@@ -40,7 +43,7 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
 
         _entity = entity;
         _displayName = profileElement.GetType().Name;
-        _eventNode = new EventDefaultNode();
+        _startNode = new EventConditionEventStartNode();
         _script = null!;
 
         Load();
@@ -84,17 +87,69 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
     }
 
     /// <summary>
+    ///   Gets or sets the mode for render elements when toggling off the event when using <see cref="EventTriggerMode.Toggle"/>.
+    /// </summary>
+    public EventToggleOffMode ToggleOffMode
+    {
+        get => _toggleOffMode;
+        set => SetAndNotify(ref _toggleOffMode, value);
+    }
+
+    /// <summary>
     ///     Updates the event node, applying the selected event
     /// </summary>
     public void UpdateEventNode()
     {
-        IDataModelEvent? dataModelEvent = EventPath?.GetValue() as IDataModelEvent;
-        _eventNode.CreatePins(dataModelEvent);
+        if (EventPath == null)
+            return;
 
-        if (dataModelEvent != null && !Script.Nodes.Contains(_eventNode))
-            Script.AddNode(_eventNode);
-        else if (dataModelEvent == null && Script.Nodes.Contains(_eventNode))
-            Script.RemoveNode(_eventNode);
+        Type? pathType = EventPath.GetPropertyType();
+        if (pathType == null)
+            return;
+
+        // Create an event node if the path type is a data model event
+        if (pathType.IsAssignableTo(typeof(IDataModelEvent)))
+        {
+            EventConditionEventStartNode eventNode;
+            // Ensure the start node is an event node
+            if (_startNode is not EventConditionEventStartNode node)
+            {
+                eventNode = new EventConditionEventStartNode();
+                ReplaceStartNode(eventNode);
+                _startNode = eventNode;
+            }
+            else
+                eventNode = node;
+
+            IDataModelEvent? dataModelEvent = EventPath?.GetValue() as IDataModelEvent;
+            eventNode.CreatePins(dataModelEvent);
+        }
+        // Create a value changed node if the path type is a regular value
+        else
+        {
+            // Ensure the start nod is a value changed node
+            EventConditionValueChangedStartNode valueChangedNode;
+            // Ensure the start node is an event node
+            if (_startNode is not EventConditionValueChangedStartNode node)
+            {
+                valueChangedNode = new EventConditionValueChangedStartNode();
+                ReplaceStartNode(valueChangedNode);
+            }
+            else
+                valueChangedNode = node;
+
+            valueChangedNode.UpdateOutputPins(EventPath);
+        }
+    }
+
+    private void ReplaceStartNode(IEventConditionNode newStartNode)
+    {
+        if (Script.Nodes.Contains(_startNode))
+            Script.RemoveNode(_startNode);
+
+        _startNode = newStartNode;
+        if (!Script.Nodes.Contains(_startNode))
+            Script.AddNode(_startNode);
     }
 
     /// <summary>
@@ -103,15 +158,30 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
     /// <returns>The start node of the event script, if any.</returns>
     public INode GetStartNode()
     {
-        return _eventNode;
+        return _startNode;
     }
 
     private bool Evaluate()
     {
-        if (EventPath?.GetValue() is not IDataModelEvent dataModelEvent || dataModelEvent.LastTrigger <= _lastProcessedTrigger)
+        if (EventPath == null)
             return false;
 
-        _lastProcessedTrigger = dataModelEvent.LastTrigger;
+        object? value = EventPath.GetValue();
+        if (_startNode is EventConditionEventStartNode)
+        {
+            if (value is not IDataModelEvent dataModelEvent || dataModelEvent.LastTrigger <= _lastProcessedTrigger)
+                return false;
+
+            _lastProcessedTrigger = dataModelEvent.LastTrigger;
+        }
+        else if (_startNode is EventConditionValueChangedStartNode valueChangedNode)
+        {
+            if (Equals(value, _lastProcessedValue))
+                return false;
+
+            valueChangedNode.UpdateValues(value, _lastProcessedValue);
+            _lastProcessedValue = value;
+        }
 
         if (!Script.ExitNodeConnected)
             return true;
@@ -151,6 +221,8 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
         {
             if (IsMet && !_wasMet)
                 ProfileElement.Timeline.JumpToStart();
+            if (!IsMet && _wasMet && ToggleOffMode == EventToggleOffMode.SkipToEnd)
+                ProfileElement.Timeline.JumpToEndSegment();
         }
         else
         {
@@ -191,6 +263,7 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
     {
         TriggerMode = (EventTriggerMode) _entity.TriggerMode;
         OverlapMode = (EventOverlapMode) _entity.OverlapMode;
+        ToggleOffMode = (EventToggleOffMode) _entity.ToggleOffMode;
 
         if (_entity.EventPath != null)
             EventPath = new DataModelPath(_entity.EventPath);
@@ -206,6 +279,8 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
     {
         _entity.TriggerMode = (int) TriggerMode;
         _entity.OverlapMode = (int) OverlapMode;
+        _entity.ToggleOffMode = (int) ToggleOffMode;
+
         Script.Save();
         _entity.Script = Script?.Entity;
         EventPath?.Save();
@@ -221,9 +296,9 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
         Script.Load();
 
         // The load action may have created an event node, use that one over the one we have here
-        INode? existingEventNode = Script.Nodes.FirstOrDefault(n => n.Id == EventDefaultNode.NodeId);
+        INode? existingEventNode = Script.Nodes.FirstOrDefault(n => n.Id == EventConditionEventStartNode.NodeId || n.Id == EventConditionValueChangedStartNode.NodeId);
         if (existingEventNode != null)
-            _eventNode = (EventDefaultNode) existingEventNode;
+            _startNode = (IEventConditionNode) existingEventNode;
 
         UpdateEventNode();
         Script.LoadConnections();
@@ -268,4 +343,20 @@ public enum EventOverlapMode
     ///     Ignore subsequent event fires until the timeline finishes
     /// </summary>
     Ignore
+}
+
+/// <summary>
+///     Represents a mode for render elements when toggling off the event when using <see cref="EventTriggerMode.Toggle"/>.
+/// </summary>
+public enum EventToggleOffMode
+{
+    /// <summary>
+    ///     When the event toggles the condition off, finish the the current run of the main timeline
+    /// </summary>
+    Finish,
+
+    /// <summary>
+    ///     When the event toggles the condition off, skip to the end segment of the timeline
+    /// </summary>
+    SkipToEnd
 }

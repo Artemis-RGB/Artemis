@@ -2,12 +2,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              xmlns:propertyInput="clr-namespace:Artemis.UI.DefaultTypes.PropertyInput"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.DefaultTypes.PropertyInput.BoolPropertyInputView"
              x:DataType="propertyInput:BoolPropertyInputViewModel">
-	<controls:EnumComboBox Classes="condensed"
+	<shared:EnumComboBox Classes="condensed"
                            Width="200" 
                            Value="{CompiledBinding SelectedBooleanOption}" 
                            VerticalAlignment="Center" />

@@ -13,10 +13,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
+using Avalonia.Threading;
 using Material.Icons.Avalonia;
 using ReactiveUI;
 
-namespace Artemis.UI.Shared.Controls.DataModelPicker;
+namespace Artemis.UI.Shared.DataModelPicker;
 
 /// <summary>
 ///     Represents a data model picker picker that can be used to select a data model path.
@@ -53,28 +54,31 @@ public class DataModelPicker : TemplatedControl
         AvaloniaProperty.Register<DataModelPicker, DataModelPropertiesViewModel?>(nameof(DataModelViewModel));
 
     /// <summary>
-    ///     A list of data model view models to show
-    /// </summary>
-    public static readonly StyledProperty<ObservableCollection<DataModelPropertiesViewModel>?> ExtraDataModelViewModelsProperty =
-        AvaloniaProperty.Register<DataModelPicker, ObservableCollection<DataModelPropertiesViewModel>?>(nameof(ExtraDataModelViewModels), new ObservableCollection<DataModelPropertiesViewModel>());
-
-    /// <summary>
     ///     A list of types to filter the selectable paths on.
     /// </summary>
     public static readonly StyledProperty<ObservableCollection<Type>?> FilterTypesProperty =
         AvaloniaProperty.Register<DataModelPicker, ObservableCollection<Type>?>(nameof(FilterTypes), new ObservableCollection<Type>());
 
-    private MaterialIcon? _currentPathIcon;
-    private TextBlock? _currentPathDisplay;
+    /// <summary>
+    ///     Gets or sets a boolean indicating whether the picker is in event picker mode.
+    ///     When <see langword="true" /> event children aren't selectable and non-events are described as "{PropertyName}
+    ///     changed".
+    /// </summary>
+    public static readonly StyledProperty<bool> IsEventPickerProperty =
+        AvaloniaProperty.Register<DataModelPicker, bool>(nameof(IsEventPicker));
+
     private TextBlock? _currentPathDescription;
+    private TextBlock? _currentPathDisplay;
+
+    private MaterialIcon? _currentPathIcon;
     private TreeView? _dataModelTreeView;
+    private DispatcherTimer? _updateTimer;
 
     static DataModelPicker()
     {
         ModulesProperty.Changed.Subscribe(ModulesChanged);
         DataModelPathProperty.Changed.Subscribe(DataModelPathPropertyChanged);
         DataModelViewModelProperty.Changed.Subscribe(DataModelViewModelPropertyChanged);
-        ExtraDataModelViewModelsProperty.Changed.Subscribe(ExtraDataModelViewModelsChanged);
     }
 
     /// <summary>
@@ -125,16 +129,7 @@ public class DataModelPicker : TemplatedControl
         get => GetValue(DataModelViewModelProperty);
         private set => SetValue(DataModelViewModelProperty, value);
     }
-
-    /// <summary>
-    ///     A list of data model view models to show.
-    /// </summary>
-    public ObservableCollection<DataModelPropertiesViewModel>? ExtraDataModelViewModels
-    {
-        get => GetValue(ExtraDataModelViewModelsProperty);
-        set => SetValue(ExtraDataModelViewModelsProperty, value);
-    }
-
+    
     /// <summary>
     ///     A list of types to filter the selectable paths on.
     /// </summary>
@@ -142,6 +137,17 @@ public class DataModelPicker : TemplatedControl
     {
         get => GetValue(FilterTypesProperty);
         set => SetValue(FilterTypesProperty, value);
+    }
+
+    /// <summary>
+    ///     Gets or sets a boolean indicating whether the picker is in event picker mode.
+    ///     When <see langword="true" /> event children aren't selectable and non-events are described as "{PropertyName}
+    ///     changed".
+    /// </summary>
+    public bool IsEventPicker
+    {
+        get => GetValue(IsEventPickerProperty);
+        set => SetValue(IsEventPickerProperty, value);
     }
 
     /// <summary>
@@ -157,42 +163,6 @@ public class DataModelPicker : TemplatedControl
     {
         DataModelPathSelected?.Invoke(this, e);
     }
-
-    #region Overrides of TemplatedControl
-
-    /// <inheritdoc />
-    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
-    {
-        if (_dataModelTreeView != null)
-            _dataModelTreeView.SelectionChanged -= DataModelTreeViewOnSelectionChanged;
-
-        _currentPathIcon = e.NameScope.Find<MaterialIcon>("CurrentPathIcon");
-        _currentPathDisplay = e.NameScope.Find<TextBlock>("CurrentPathDisplay");
-        _currentPathDescription = e.NameScope.Find<TextBlock>("CurrentPathDescription");
-        _dataModelTreeView = e.NameScope.Find<TreeView>("DataModelTreeView");
-
-        if (_dataModelTreeView != null)
-            _dataModelTreeView.SelectionChanged += DataModelTreeViewOnSelectionChanged;
-    }
-
-    #region Overrides of Visual
-
-    /// <inheritdoc />
-    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
-    {
-        GetDataModel();
-        UpdateCurrentPath(true);
-    }
-
-    /// <inheritdoc />
-    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
-    {
-        DataModelViewModel?.Dispose();
-    }
-
-    #endregion
-
-    #endregion
 
     private static void ModulesChanged(AvaloniaPropertyChangedEventArgs<ObservableCollection<Module>?> e)
     {
@@ -212,11 +182,6 @@ public class DataModelPicker : TemplatedControl
             e.OldValue.Value.Dispose();
     }
 
-    private static void ExtraDataModelViewModelsChanged(AvaloniaPropertyChangedEventArgs<ObservableCollection<DataModelPropertiesViewModel>?> e)
-    {
-        // TODO, the original did nothing here either and I can't remember why
-    }
-
     private void ExecuteSelectPropertyCommand(DataModelVisualizationViewModel selected)
     {
         if (selected.DataModelPath == null)
@@ -226,6 +191,14 @@ public class DataModelPicker : TemplatedControl
 
         DataModelPath = new DataModelPath(selected.DataModelPath);
         OnDataModelPathSelected(new DataModelSelectedEventArgs(DataModelPath));
+    }
+
+    private void Update(object? sender, EventArgs e)
+    {
+        if (DataModelUIService == null)
+            return;
+
+        DataModelViewModel?.Update(DataModelUIService, new DataModelUpdateConfiguration(!IsEventPicker));
     }
 
     private void GetDataModel()
@@ -251,10 +224,11 @@ public class DataModelPicker : TemplatedControl
 
     private void DataModelOnUpdateRequested(object? sender, EventArgs e)
     {
-        DataModelViewModel?.ApplyTypeFilter(true, FilterTypes?.ToArray() ?? Type.EmptyTypes);
-        if (ExtraDataModelViewModels == null) return;
-        foreach (DataModelPropertiesViewModel extraDataModelViewModel in ExtraDataModelViewModels)
-            extraDataModelViewModel.ApplyTypeFilter(true, FilterTypes?.ToArray() ?? Type.EmptyTypes);
+        if (DataModelUIService == null || DataModelViewModel == null)
+            return;
+
+        DataModelViewModel.Update(DataModelUIService, new DataModelUpdateConfiguration(IsEventPicker));
+        DataModelViewModel.ApplyTypeFilter(true, FilterTypes?.ToArray() ?? Type.EmptyTypes);
     }
 
     private void DataModelTreeViewOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -295,6 +269,45 @@ public class DataModelPicker : TemplatedControl
             _currentPathDescription.Text = DataModelPath.GetPropertyDescription()?.Description;
         if (_currentPathIcon != null)
             _currentPathIcon.Kind = DataModelPath.GetPropertyType().GetTypeIcon();
-        
     }
+
+    #region Overrides of TemplatedControl
+
+    /// <inheritdoc />
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+    {
+        if (_dataModelTreeView != null)
+            _dataModelTreeView.SelectionChanged -= DataModelTreeViewOnSelectionChanged;
+
+        _currentPathIcon = e.NameScope.Find<MaterialIcon>("CurrentPathIcon");
+        _currentPathDisplay = e.NameScope.Find<TextBlock>("CurrentPathDisplay");
+        _currentPathDescription = e.NameScope.Find<TextBlock>("CurrentPathDescription");
+        _dataModelTreeView = e.NameScope.Find<TreeView>("DataModelTreeView");
+
+        if (_dataModelTreeView != null)
+            _dataModelTreeView.SelectionChanged += DataModelTreeViewOnSelectionChanged;
+    }
+
+    #region Overrides of Visual
+
+    /// <inheritdoc />
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        GetDataModel();
+        UpdateCurrentPath(true);
+        _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, Update);
+        _updateTimer.Start();
+    }
+
+    /// <inheritdoc />
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        DataModelViewModel?.Dispose();
+        _updateTimer?.Stop();
+        _updateTimer = null;
+    }
+
+    #endregion
+
+    #endregion
 }

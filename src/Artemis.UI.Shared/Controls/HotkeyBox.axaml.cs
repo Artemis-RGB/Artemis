@@ -11,7 +11,7 @@ using Avalonia.Markup.Xaml;
 using Humanizer;
 using Material.Icons;
 
-namespace Artemis.UI.Shared.Controls
+namespace Artemis.UI.Shared
 {
     /// <summary>
     /// Represents a control that can be used to display or edit <see cref="Core.Hotkey"/> instances.

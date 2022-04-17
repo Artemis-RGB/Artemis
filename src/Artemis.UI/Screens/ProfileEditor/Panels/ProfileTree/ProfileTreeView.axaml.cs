@@ -1,5 +1,3 @@
-using System;
-using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -17,10 +15,10 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
 public class ProfileTreeView : ReactiveUserControl<ProfileTreeViewModel>
 {
-    private TreeView _treeView;
     private Image? _dragAdorner;
     private Point _dragStartPosition;
     private Point _elementDragOffset;
+    private TreeView _treeView;
 
     public ProfileTreeView()
     {

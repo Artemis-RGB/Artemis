@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
@@ -86,6 +87,26 @@ public class ProfileTreeViewModel : TreeItemViewModel
     public void PasteSelected()
     {
         SelectedChild?.Paste.Execute().Subscribe();
+    }
+
+    public void UpdateCanPaste()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override Task ExecuteDuplicate()
+    {
+        throw new NotSupportedException();
+    }
+
+    protected override Task ExecuteCopy()
+    {
+        throw new NotSupportedException();
+    }
+
+    protected override Task ExecutePaste()
+    {
+        throw new NotSupportedException();
     }
 
     private void SelectCurrentProfileElement(RenderProfileElement? element)

@@ -2,8 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:dataModelPicker="clr-namespace:Artemis.UI.Shared.Controls.DataModelPicker;assembly=Artemis.UI.Shared"
              xmlns:conditionTypes="clr-namespace:Artemis.UI.Screens.ProfileEditor.DisplayCondition.ConditionTypes"
+             xmlns:dataModelPicker="clr-namespace:Artemis.UI.Shared.DataModelPicker;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.DisplayCondition.ConditionTypes.EventConditionView"
              x:DataType="conditionTypes:EventConditionViewModel">
@@ -17,9 +17,9 @@
         <dataModelPicker:DataModelPickerButton Placeholder="Select an event"
                                                DockPanel.Dock="Top"
                                                HorizontalAlignment="Stretch"
-                                               FilterTypes="{CompiledBinding FilterTypes}"
                                                DataModelPath="{CompiledBinding EventPath}"
-                                               ShowFullPath="{CompiledBinding ShowFullPaths.Value}"/>
+                                               ShowFullPath="{CompiledBinding ShowFullPaths.Value}"
+                                               IsEventPicker="True"/>
 
         <TextBlock DockPanel.Dock="Top">When the event fires..</TextBlock>
         <ComboBox PlaceholderText="Select a play mode" HorizontalAlignment="Stretch" DockPanel.Dock="Top" SelectedIndex="{CompiledBinding SelectedTriggerMode}">
@@ -46,6 +46,16 @@
             <ComboBoxItem>
                 Do nothing
             </ComboBoxItem>
+        </ComboBox>
+
+        <TextBlock DockPanel.Dock="Top" IsVisible="{CompiledBinding ShowToggleOffOptions}">When toggling off..</TextBlock>
+        <ComboBox PlaceholderText="Select a play mode"
+                  HorizontalAlignment="Stretch"
+                  DockPanel.Dock="Top"
+                  SelectedIndex="{CompiledBinding SelectedToggleOffMode}"
+                  IsVisible="{CompiledBinding ShowToggleOffOptions}">
+			<ComboBoxItem>Finish the main segment</ComboBoxItem>
+            <ComboBoxItem>Skip forward to the end segment</ComboBoxItem>
         </ComboBox>
 
 		<Button DockPanel.Dock="Bottom"

@@ -8,22 +8,28 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
+using Avalonia;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
 public abstract class TreeItemViewModel : ActivatableViewModelBase
 {
-    private readonly IProfileEditorService _profileEditorService;
+    private readonly ILayerBrushService _layerBrushService;
     private readonly IProfileEditorVmFactory _profileEditorVmFactory;
+    private readonly IRgbService _rgbService;
     private readonly IWindowService _windowService;
+    protected readonly IProfileEditorService ProfileEditorService;
+    private bool _canPaste;
     private RenderProfileElement? _currentProfileElement;
     private bool _isExpanded;
+    private bool _isFlyoutOpen;
     private ProfileElement? _profileElement;
     private string? _renameValue;
     private bool _renaming;
@@ -35,63 +41,31 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
         ILayerBrushService layerBrushService,
         IProfileEditorVmFactory profileEditorVmFactory)
     {
+        ProfileEditorService = profileEditorService;
+        _rgbService = rgbService;
+        _layerBrushService = layerBrushService;
         _windowService = windowService;
-        _profileEditorService = profileEditorService;
         _profileEditorVmFactory = profileEditorVmFactory;
 
         Parent = parent;
         ProfileElement = profileElement;
 
-        AddLayer = ReactiveCommand.Create(() =>
-        {
-            if (ProfileElement is Layer targetLayer)
-            {
-                Layer layer = new(targetLayer.Parent, targetLayer.GetNewLayerName());
-                layerBrushService.ApplyDefaultBrush(layer);
-
-                layer.AddLeds(rgbService.EnabledDevices.SelectMany(d => d.Leds));
-                profileEditorService.ExecuteCommand(new AddProfileElement(layer, targetLayer.Parent, targetLayer.Order));
-            }
-            else if (ProfileElement != null)
-            {
-                Layer layer = new(ProfileElement, ProfileElement.GetNewLayerName());
-                layerBrushService.ApplyDefaultBrush(layer);
-
-                layer.AddLeds(rgbService.EnabledDevices.SelectMany(d => d.Leds));
-                profileEditorService.ExecuteCommand(new AddProfileElement(layer, ProfileElement, 0));
-            }
-        });
-
-        AddFolder = ReactiveCommand.Create(() =>
-        {
-            if (ProfileElement is Layer targetLayer)
-                profileEditorService.ExecuteCommand(new AddProfileElement(new Folder(targetLayer.Parent, targetLayer.Parent.GetNewFolderName()), targetLayer.Parent, targetLayer.Order));
-            else if (ProfileElement != null)
-                profileEditorService.ExecuteCommand(new AddProfileElement(new Folder(ProfileElement, ProfileElement.GetNewFolderName()), ProfileElement, 0));
-        });
-
-        Rename = ReactiveCommand.Create(() =>
-        {
-            Renaming = true;
-            RenameValue = ProfileElement?.Name;
-        });
-
-        Duplicate = ReactiveCommand.Create(() => throw new NotImplementedException());
-        Copy = ReactiveCommand.Create(() => throw new NotImplementedException());
-        Paste = ReactiveCommand.Create(() => throw new NotImplementedException());
-
-        Delete = ReactiveCommand.Create(() =>
-        {
-            if (ProfileElement is RenderProfileElement renderProfileElement)
-                profileEditorService.ExecuteCommand(new RemoveProfileElement(renderProfileElement));
-        });
+        AddLayer = ReactiveCommand.Create(ExecuteAddLayer);
+        AddFolder = ReactiveCommand.Create(ExecuteAddFolder);
+        Rename = ReactiveCommand.Create(ExecuteRename);
+        Delete = ReactiveCommand.Create(ExecuteDelete);
+        Duplicate = ReactiveCommand.CreateFromTask(ExecuteDuplicate);
+        Copy = ReactiveCommand.CreateFromTask(ExecuteCopy);
+        Paste = ReactiveCommand.CreateFromTask(ExecutePaste, this.WhenAnyValue(vm => vm.CanPaste));
 
         this.WhenActivated(d =>
         {
-            _profileEditorService.ProfileElement.Subscribe(element => _currentProfileElement = element).DisposeWith(d);
+            ProfileEditorService.ProfileElement.Subscribe(element => _currentProfileElement = element).DisposeWith(d);
             SubscribeToProfileElement(d);
             CreateTreeItems();
         });
+
+        this.WhenAnyValue(vm => vm.IsFlyoutOpen).Subscribe(UpdateCanPaste);
     }
 
     public ProfileElement? ProfileElement
@@ -106,10 +80,22 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
         set => RaiseAndSetIfChanged(ref _isExpanded, value);
     }
 
+    public bool IsFlyoutOpen
+    {
+        get => _isFlyoutOpen;
+        set => RaiseAndSetIfChanged(ref _isFlyoutOpen, value);
+    }
+
     public bool Renaming
     {
         get => _renaming;
         set => RaiseAndSetIfChanged(ref _renaming, value);
+    }
+
+    public bool CanPaste
+    {
+        get => _canPaste;
+        set => RaiseAndSetIfChanged(ref _canPaste, value);
     }
 
     public TreeItemViewModel? Parent { get; set; }
@@ -154,7 +140,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
             return;
         }
 
-        _profileEditorService.ExecuteCommand(new RenameProfileElement(ProfileElement, RenameValue));
+        ProfileEditorService.ExecuteCommand(new RenameProfileElement(ProfileElement, RenameValue));
         Renaming = false;
     }
 
@@ -169,8 +155,12 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
             return;
 
         if (ProfileElement != null && elementViewModel.ProfileElement != null)
-            _profileEditorService.ExecuteCommand(new MoveProfileElement(ProfileElement, elementViewModel.ProfileElement, targetIndex));
+            ProfileEditorService.ExecuteCommand(new MoveProfileElement(ProfileElement, elementViewModel.ProfileElement, targetIndex));
     }
+
+    protected abstract Task ExecuteDuplicate();
+    protected abstract Task ExecuteCopy();
+    protected abstract Task ExecutePaste();
 
     protected void SubscribeToProfileElement(CompositeDisposable d)
     {
@@ -178,9 +168,11 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
             return;
 
         Observable.FromEventPattern<ProfileElementEventArgs>(x => ProfileElement.ChildAdded += x, x => ProfileElement.ChildAdded -= x)
-            .Subscribe(c => AddTreeItemIfMissing(c.EventArgs.ProfileElement)).DisposeWith(d);
+            .Subscribe(c => AddTreeItemIfMissing(c.EventArgs.ProfileElement))
+            .DisposeWith(d);
         Observable.FromEventPattern<ProfileElementEventArgs>(x => ProfileElement.ChildRemoved += x, x => ProfileElement.ChildRemoved -= x)
-            .Subscribe(c => RemoveTreeItemsIfFound(c.Sender, c.EventArgs.ProfileElement)).DisposeWith(d);
+            .Subscribe(c => RemoveTreeItemsIfFound(c.Sender, c.EventArgs.ProfileElement))
+            .DisposeWith(d);
     }
 
     protected void RemoveTreeItemsIfFound(object? sender, ProfileElement profileElement)
@@ -202,7 +194,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
                 newSelection = parent;
         }
 
-        _profileEditorService.ChangeCurrentProfileElement(newSelection as RenderProfileElement);
+        ProfileEditorService.ChangeCurrentProfileElement(newSelection as RenderProfileElement);
     }
 
     protected void AddTreeItemIfMissing(ProfileElement profileElement)
@@ -217,7 +209,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
 
         // Select the newly added element
         if (profileElement is RenderProfileElement renderProfileElement)
-            _profileEditorService.ChangeCurrentProfileElement(renderProfileElement);
+            ProfileEditorService.ChangeCurrentProfileElement(renderProfileElement);
     }
 
     protected void CreateTreeItems()
@@ -235,5 +227,57 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
             else if (profileElement is Layer layer)
                 Children.Add(_profileEditorVmFactory.LayerTreeItemViewModel(this, layer));
         }
+    }
+
+    private void ExecuteDelete()
+    {
+        if (ProfileElement is RenderProfileElement renderProfileElement)
+            ProfileEditorService.ExecuteCommand(new RemoveProfileElement(renderProfileElement));
+    }
+
+    private void ExecuteRename()
+    {
+        Renaming = true;
+        RenameValue = ProfileElement?.Name;
+    }
+
+    private void ExecuteAddFolder()
+    {
+        if (ProfileElement is Layer targetLayer)
+            ProfileEditorService.ExecuteCommand(new AddProfileElement(new Folder(targetLayer.Parent, targetLayer.Parent.GetNewFolderName()), targetLayer.Parent, targetLayer.Order));
+        else if (ProfileElement != null)
+            ProfileEditorService.ExecuteCommand(new AddProfileElement(new Folder(ProfileElement, ProfileElement.GetNewFolderName()), ProfileElement, 0));
+    }
+
+    private void ExecuteAddLayer()
+    {
+        if (ProfileElement is Layer targetLayer)
+        {
+            Layer layer = new(targetLayer.Parent, targetLayer.GetNewLayerName());
+            _layerBrushService.ApplyDefaultBrush(layer);
+
+            layer.AddLeds(_rgbService.EnabledDevices.SelectMany(d => d.Leds));
+            ProfileEditorService.ExecuteCommand(new AddProfileElement(layer, targetLayer.Parent, targetLayer.Order));
+        }
+        else if (ProfileElement != null)
+        {
+            Layer layer = new(ProfileElement, ProfileElement.GetNewLayerName());
+            _layerBrushService.ApplyDefaultBrush(layer);
+
+            layer.AddLeds(_rgbService.EnabledDevices.SelectMany(d => d.Leds));
+            ProfileEditorService.ExecuteCommand(new AddProfileElement(layer, ProfileElement, 0));
+        }
+    }
+
+    private async void UpdateCanPaste(bool isFlyoutOpen)
+    {
+        if (Application.Current?.Clipboard == null)
+        {
+            CanPaste = false;
+            return;
+        }
+
+        string[] formats = await Application.Current.Clipboard.GetFormatsAsync();
+        CanPaste = formats.Contains(ProfileElementExtensions.ClipboardDataFormat);
     }
 }

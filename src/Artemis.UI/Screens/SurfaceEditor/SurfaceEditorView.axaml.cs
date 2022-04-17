@@ -1,5 +1,5 @@
 using System.Reactive;
-using Artemis.UI.Shared.Controls;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Events;
 using Avalonia;
 using Avalonia.Controls;

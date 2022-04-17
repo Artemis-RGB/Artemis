@@ -32,9 +32,9 @@
                  Classes="condensed"
                  IsVisible="{CompiledBinding Renaming}"
                  Text="{CompiledBinding RenameValue}"
-                 x:Name="Input" 
+                 x:Name="Input"
                  KeyUp="InputElement_OnKeyUp"
-                 LostFocus="InputElement_OnLostFocus"/>
+                 LostFocus="InputElement_OnLostFocus" />
         <TextBlock Grid.Column="2" IsVisible="{CompiledBinding !Renaming}" Text="{Binding Folder.Name}" VerticalAlignment="Center" />
         <ToggleButton Grid.Column="3"
                       Classes="icon-button icon-button-small"

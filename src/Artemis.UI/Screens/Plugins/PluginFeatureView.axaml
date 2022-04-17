@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Plugins.PluginFeatureView">
     <Grid ColumnDefinitions="30,*,Auto">
@@ -23,7 +23,7 @@
         </Grid.ContextFlyout>
 
         <!-- Icon column -->
-        <controls:ArtemisIcon Grid.Column="0"
+        <shared:ArtemisIcon Grid.Column="0"
                             Icon="{Binding FeatureInfo.ResolvedIcon}"
                             Width="20"
                             Height="20"

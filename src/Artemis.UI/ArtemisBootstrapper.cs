@@ -5,7 +5,7 @@ using Artemis.Core.Ninject;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject;
 using Artemis.UI.Screens.Root;
-using Artemis.UI.Shared.Controls.DataModelPicker;
+using Artemis.UI.Shared.DataModelPicker;
 using Artemis.UI.Shared.Ninject;
 using Artemis.UI.Shared.Services;
 using Artemis.VisualScripting.Ninject;

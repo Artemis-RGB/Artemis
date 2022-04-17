@@ -6,7 +6,7 @@ using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Events;
-using Artemis.UI.Shared.Controls;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Events;
 using Avalonia;
 using Avalonia.Controls;
@@ -153,7 +153,7 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
 
     private void ZoomBorder_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (!_selectionRectangle.IsSelecting)
+        if (!_selectionRectangle.IsSelecting && e.InitialPressMouseButton == MouseButton.Left)
             ViewModel?.ClearNodeSelection();
     }
 }

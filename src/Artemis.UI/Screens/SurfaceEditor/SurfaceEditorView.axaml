@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:paz="clr-namespace:Avalonia.Controls.PanAndZoom;assembly=Avalonia.Controls.PanAndZoom"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.SurfaceEditor.SurfaceEditorView">
     <UserControl.Resources>
@@ -101,15 +101,15 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <controls:SelectionRectangle Name="SelectionRectangle"
+                <shared:SelectionRectangle Name="SelectionRectangle"
                                              InputElement="{Binding #ZoomBorder}"
                                              SelectionUpdated="SelectionRectangle_OnSelectionUpdated"
                                              BorderBrush="{DynamicResource SystemAccentColor}"
                                              BorderRadius="8">
-                    <controls:SelectionRectangle.Background>
+                    <shared:SelectionRectangle.Background>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorLight1}" Opacity="0.2"></SolidColorBrush>
-                    </controls:SelectionRectangle.Background>
-                </controls:SelectionRectangle>
+                    </shared:SelectionRectangle.Background>
+                </shared:SelectionRectangle>
 
                 <Border Name="SurfaceBounds"
                         VerticalAlignment="Top"

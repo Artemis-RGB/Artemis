@@ -1,10 +1,10 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="using:Artemis.UI.Shared.Controls.GradientPicker"
         xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
         xmlns:fluent="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-        xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters">
+        xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters"
+        xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.GradientPicker">
     <Styles.Resources>
         <VisualBrush x:Key="LightCheckerboardBrush" TileMode="Tile" Stretch="Uniform" DestinationRect="3,0,10,10">
             <VisualBrush.Visual>
@@ -18,10 +18,10 @@
         </VisualBrush>
     </Styles.Resources>
     <Design.PreviewWith>
-        <controls:GradientPicker />
+        <gradientPicker:GradientPicker />
     </Design.PreviewWith>
 
-    <Style Selector="controls|GradientPickerColorStop /template/ Border.stop-handle">
+    <Style Selector="gradientPicker|GradientPickerColorStop /template/ Border.stop-handle">
         <Setter Property="CornerRadius" Value="18" />
         <Setter Property="Width" Value="18" />
         <Setter Property="Height" Value="60" />
@@ -30,32 +30,32 @@
         <Setter Property="BorderBrush" Value="{DynamicResource ToolTipBorderBrush}" />
         <Setter Property="Cursor" Value="Hand" />
     </Style>
-    <Style Selector="controls|GradientPickerColorStop /template/ Border.stop-handle > Border">
+    <Style Selector="gradientPicker|GradientPickerColorStop /template/ Border.stop-handle > Border">
         <Setter Property="CornerRadius" Value="18" />
         <Setter Property="BorderThickness" Value="3" />
         <Setter Property="BorderBrush" Value="{DynamicResource SolidBackgroundFillColorQuarternaryBrush}" />
         <Setter Property="Background" Value="{DynamicResource LightCheckerboardBrush}" />
     </Style>
-    <Style Selector="controls|GradientPickerColorStop /template/ Border.stop-handle > Border > Border">
+    <Style Selector="gradientPicker|GradientPickerColorStop /template/ Border.stop-handle > Border > Border">
         <Setter Property="CornerRadius" Value="18" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="Margin" Value="-1" />
         <Setter Property="BorderBrush" Value="{DynamicResource SolidBackgroundFillColorSecondaryBrush}" />
     </Style>
 
-    <Style Selector="controls|GradientPickerColorStop:selected /template/ Border.stop-handle > Border">
+    <Style Selector="gradientPicker|GradientPickerColorStop:selected /template/ Border.stop-handle > Border">
         <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColorLight2}" />
     </Style>
 
-    <Style Selector="controls|GradientPicker Border#Gradient">
+    <Style Selector="gradientPicker|GradientPicker Border#Gradient">
         <Setter Property="Height" Value="40" />
         <Setter Property="CornerRadius" Value="4" />
     </Style>
-    <Style Selector="controls|GradientPicker Border#Gradient Border">
+    <Style Selector="gradientPicker|GradientPicker Border#Gradient Border">
         <Setter Property="CornerRadius" Value="4" />
     </Style>
 
-    <Style Selector="controls|GradientPicker Border.stop-position">
+    <Style Selector="gradientPicker|GradientPicker Border.stop-position">
         <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
@@ -65,12 +65,12 @@
         <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
     </Style>
 
-    <Style Selector="controls|GradientPicker Border.stop-position TextBlock">
+    <Style Selector="gradientPicker|GradientPicker Border.stop-position TextBlock">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Center" />
     </Style>
 
-    <Style Selector="controls|GradientPicker">
+    <Style Selector="gradientPicker|GradientPicker">
         <Style.Resources>
             <converters:ColorGradientToGradientStopsConverter x:Key="ColorGradientToGradientStopsConverter" />
             <converters:SKColorToColorConverter x:Key="SKColorToColorConverter" />
@@ -103,11 +103,11 @@
                                 </ItemsControl.Styles>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="core:ColorGradientStop">
-                                        <controls:GradientPickerColorStop ColorStop="{Binding}"
+                                        <gradientPicker:GradientPickerColorStop ColorStop="{Binding}"
                                                                           PositionReference="{Binding $parent[Border]}"
                                                                           Classes="gradient-handle"
-                                                                          GradientPicker="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:GradientPicker}}}">
-                                        </controls:GradientPickerColorStop>
+                                                                          GradientPicker="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gradientPicker:GradientPicker}}}">
+                                        </gradientPicker:GradientPickerColorStop>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                                 <ItemsControl.ItemsPanel>
@@ -202,7 +202,7 @@
                                         <Button Name="DeleteButton"
                                                 Grid.Column="3"
                                                 Classes="icon-button"
-                                                Command="{Binding DeleteStop, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:GradientPicker}}}"
+                                                Command="{Binding DeleteStop, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gradientPicker:GradientPicker}}}"
                                                 CommandParameter="{Binding}">
                                             <avalonia:MaterialIcon Kind="Close" />
                                         </Button>
@@ -247,7 +247,7 @@
         </Setter>
     </Style>
 
-    <Style Selector="controls|GradientPickerColorStop.gradient-handle">
+    <Style Selector="gradientPicker|GradientPickerColorStop.gradient-handle">
         <Style.Resources>
             <converters:SKColorToBrushConverter x:Key="SKColorToBrushConverter" />
         </Style.Resources>

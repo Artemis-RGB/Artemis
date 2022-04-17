@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Styling;
 
-namespace Artemis.UI.Shared.Controls
+namespace Artemis.UI.Shared
 {
     internal class NoInputTextBox : TextBox, IStyleable
     {

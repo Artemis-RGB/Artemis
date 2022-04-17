@@ -11,7 +11,7 @@ using Color = Avalonia.Media.Color;
 using Point = Avalonia.Point;
 using SolidColorBrush = Avalonia.Media.SolidColorBrush;
 
-namespace Artemis.UI.Shared.Controls
+namespace Artemis.UI.Shared
 {
     internal class DeviceVisualizerLed
     {

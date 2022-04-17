@@ -32,7 +32,7 @@
                         <TreeViewItem Header="SubItem Item3" />
                     </TreeViewItem>
                 </TreeViewItem>
-                <TreeViewItem Header="Item3" />
+                <TreeViewItem Header="Item3" IsEnabled="False"/>
                 <TreeViewItem Header="Item4" />
             </TreeView>
         </Border>
@@ -92,6 +92,10 @@
 
 	<Style Selector="Border#TreeViewItemLayoutRoot Panel.PART_ExpandCollapseChevronContainer">
         <Setter Property="Margin" Value="0"></Setter>
+    </Style>
+
+    <Style Selector="TreeView TreeViewItem[IsEnabled=False]">
+    	<Setter Property="Foreground" Value="{DynamicResource ButtonDisabledForegroundThemeBrush}"/>
     </Style>
 
 	<!-- <Style Selector="TreeView.no-right-margin TreeViewItem /template/ Border#TreeViewItemLayoutRoot"> -->

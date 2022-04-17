@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.SurfaceEditor.SurfaceDeviceView">
     <Grid>
@@ -20,7 +20,7 @@
             </Style>
         </Grid.Styles>
 
-        <controls:DeviceVisualizer Device="{Binding Device}" ShowColors="True"/>
+        <shared:DeviceVisualizer Device="{Binding Device}" ShowColors="True"/>
         <Border x:Name="SurfaceDeviceBorder"
                 Classes="selection-border"
                 Classes.selection-border-selected="{Binding Highlighted}"

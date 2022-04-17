@@ -6,7 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 
-namespace Artemis.UI.Shared.Controls;
+namespace Artemis.UI.Shared;
 
 /// <summary>
 ///     Visualizes an <see cref="ArtemisDevice" /> with optional per-LED colors

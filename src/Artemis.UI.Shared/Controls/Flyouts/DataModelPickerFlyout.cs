@@ -5,7 +5,7 @@ using FluentAvalonia.Core;
 using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Controls.Primitives;
 
-namespace Artemis.UI.Shared.Controls.Flyouts;
+namespace Artemis.UI.Shared.Flyouts;
 
 /// <summary>
 ///     Defines a flyout that hosts a data model picker.

@@ -1,6 +1,5 @@
 ﻿using System;
 using Artemis.Core;
-using Artemis.UI.Shared.Controls;
 
 namespace Artemis.UI.Shared.Events
 {

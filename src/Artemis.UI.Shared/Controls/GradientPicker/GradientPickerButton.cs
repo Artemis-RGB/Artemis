@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Linq;
 using Artemis.Core;
-using Artemis.UI.Shared.Controls.Flyouts;
+using Artemis.UI.Shared.Flyouts;
 using Artemis.UI.Shared.Providers;
 using Avalonia;
 using Avalonia.Controls;
@@ -13,7 +13,7 @@ using Avalonia.Media;
 using FluentAvalonia.Core;
 using Button = FluentAvalonia.UI.Controls.Button;
 
-namespace Artemis.UI.Shared.Controls.GradientPicker;
+namespace Artemis.UI.Shared.GradientPicker;
 
 /// <summary>
 ///     Represents a gradient picker box that can be used to edit a gradient

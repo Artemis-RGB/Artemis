@@ -12,8 +12,9 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
     private int _currentIndex;
     private Type _currentType;
     private DataModelPath? _dataModelPath;
-    private DateTime _lastTrigger;
     private bool _updating;
+    private DateTime _lastTrigger;
+    private object? _lastPathValue;
 
     public DataModelEventNode() : base("Data Model-Event", "Responds to a data model event trigger")
     {
@@ -47,25 +48,42 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
 
     public override void Evaluate()
     {
-        object? outputValue = null;
-        if (_dataModelPath?.GetValue() is IDataModelEvent dataModelEvent)
+        object? pathValue = _dataModelPath?.GetValue();
+        bool hasTriggered = pathValue is IDataModelEvent dataModelEvent
+            ? EvaluateEvent(dataModelEvent)
+            : EvaluateValue(pathValue);
+
+        if (hasTriggered)
         {
-            if (dataModelEvent.LastTrigger > _lastTrigger)
-            {
-                _lastTrigger = dataModelEvent.LastTrigger;
-                _currentIndex++;
+            _currentIndex++;
 
-                if (_currentIndex >= CycleValues.Count())
-                    _currentIndex = 0;
-            }
-
-            outputValue = CycleValues.ElementAt(_currentIndex).PinValue;
+            if (_currentIndex >= CycleValues.Count())
+                _currentIndex = 0;
         }
 
+        object? outputValue = CycleValues.ElementAt(_currentIndex).PinValue;
         if (Output.Type.IsInstanceOfType(outputValue))
             Output.Value = outputValue;
         else if (Output.Type.IsValueType)
             Output.Value = Output.Type.GetDefault()!;
+    }
+
+    private bool EvaluateEvent(IDataModelEvent dataModelEvent)
+    {
+        if (dataModelEvent.LastTrigger <= _lastTrigger)
+            return false;
+
+        _lastTrigger = dataModelEvent.LastTrigger;
+        return true;
+    }
+
+    private bool EvaluateValue(object? pathValue)
+    {
+        if (Equals(pathValue, _lastPathValue))
+            return false;
+
+        _lastPathValue = pathValue;
+        return true;
     }
 
     private void CycleValuesOnPinAdded(object? sender, SingleValueEventArgs<IPin> e)
@@ -108,7 +126,6 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
             _updating = false;
         }
     }
-
 
     private void UpdateDataModelPath()
     {

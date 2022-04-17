@@ -28,10 +28,8 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
             result = Validate<TreeItemViewModel>(treeView, e, sourceContext, targetContext, true);
 
         if (sender is ItemsControl itemsControl)
-        {
             foreach (TreeViewItem treeViewItem in GetFlattenedTreeView(itemsControl))
                 SetDraggingPseudoClasses(treeViewItem, TreeDropType.None);
-        }
 
         return result;
     }
@@ -39,10 +37,8 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
     public override void Cancel(object? sender, RoutedEventArgs e)
     {
         if (sender is ItemsControl itemsControl)
-        {
             foreach (TreeViewItem treeViewItem in GetFlattenedTreeView(itemsControl))
                 SetDraggingPseudoClasses(treeViewItem, TreeDropType.None);
-        }
 
         base.Cancel(sender, e);
     }

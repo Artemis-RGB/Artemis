@@ -334,20 +334,18 @@ namespace Artemis.Core
         ///     Explorer
         /// </summary>
         /// <returns>The resulting name i.e. <c>New layer</c> or <c>New layer (2)</c></returns>
-        public string GetNewLayerName()
+        public string GetNewLayerName(string baseName = "New layer")
         {
-            if (!Children.Any(c => c is Layer))
-                return "New layer";
+            if (!Children.Any(c => c is Layer && c.Name == baseName))
+                return baseName;
 
-            // Grab existing unnamed layers and get the first available number 
-            // Looks slow but it's not https://stackoverflow.com/a/8865806/5015269
-            Regex regex = new(@"New layer \((\d+)\)");
-            int firstAvailable = Enumerable.Range(1, int.MaxValue)
-                .Except(Children.Where(c => c is Layer && c.Name != null && regex.IsMatch(c.Name))
-                    .Select(c => int.Parse(regex.Match(c.Name!).Groups[1].Value))
-                    .OrderBy(i => i))
-                .First();
-            return $"New layer ({firstAvailable})";
+            int current = 2;
+            while (true)
+            {
+                if (Children.All(c => c is Layer && c.Name != $"{baseName} ({current})"))
+                    return $"{baseName} ({current})";
+                current++;
+            }
         }
 
         /// <summary>
@@ -355,20 +353,18 @@ namespace Artemis.Core
         ///     in Explorer
         /// </summary>
         /// <returns>The resulting name i.e. <c>New folder</c> or <c>New folder (2)</c></returns>
-        public string GetNewFolderName()
+        public string GetNewFolderName(string baseName = "New folder")
         {
-            if (!Children.Any(c => c is Folder))
-                return "New folder";
+            if (!Children.Any(c => c is Folder && c.Name == baseName))
+                return baseName;
 
-            // Grab existing unnamed layers and get the first available number 
-            // Looks slow but it's not https://stackoverflow.com/a/8865806/5015269
-            Regex regex = new(@"New folder \((\d+)\)");
-            int firstAvailable = Enumerable.Range(1, int.MaxValue)
-                .Except(Children.Where(c => c is Folder && c.Name != null && regex.IsMatch(c.Name))
-                    .Select(c => int.Parse(regex.Match(c.Name!).Groups[1].Value))
-                    .OrderBy(i => i))
-                .First();
-            return $"New folder ({firstAvailable})";
+            int current = 2;
+            while (true)
+            {
+                if (Children.All(c => c is Folder && c.Name != $"{baseName} ({current})"))
+                    return $"{baseName} ({current})";
+                current++;
+            }
         }
 
         #endregion

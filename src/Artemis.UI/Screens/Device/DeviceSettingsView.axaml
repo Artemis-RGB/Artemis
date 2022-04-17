@@ -4,13 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-             xmlns:controls1="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Device.DeviceSettingsView">
     <Border Classes="card" Padding="0" Width="200" ClipToBounds="True" Margin="5">
         <Grid RowDefinitions="140,*,Auto">
             <Rectangle Grid.Row="0" Fill="{DynamicResource CheckerboardBrush}"/>
-            <controls1:DeviceVisualizer VerticalAlignment="Center"
+            <shared:DeviceVisualizer VerticalAlignment="Center"
                                      HorizontalAlignment="Center"
                                      Margin="5"
                                      ShowColors="False"

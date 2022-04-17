@@ -1,9 +1,9 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-        xmlns:controls1="clr-namespace:Artemis.UI.Shared.Controls"
-        xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.Controls.GradientPicker"
-        xmlns:dataModelPicker="clr-namespace:Artemis.UI.Shared.Controls.DataModelPicker">
+        xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.GradientPicker"
+        xmlns:dataModelPicker="clr-namespace:Artemis.UI.Shared.DataModelPicker"
+        xmlns:controls1="clr-namespace:Artemis.UI.Shared">
     <Design.PreviewWith>
         <Border Padding="50">
             <StackPanel Spacing="5">

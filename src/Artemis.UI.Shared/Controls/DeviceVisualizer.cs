@@ -18,7 +18,7 @@ using Avalonia.Rendering;
 using Avalonia.Threading;
 using Avalonia.Visuals.Media.Imaging;
 
-namespace Artemis.UI.Shared.Controls
+namespace Artemis.UI.Shared
 {
     /// <summary>
     ///     Visualizes an <see cref="ArtemisDevice" /> with optional per-LED colors

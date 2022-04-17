@@ -2,11 +2,10 @@
 using Artemis.Core;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 
-namespace Artemis.UI.Shared.Controls.GradientPicker;
+namespace Artemis.UI.Shared.GradientPicker;
 
 public class GradientPickerColorStop : TemplatedControl
 {

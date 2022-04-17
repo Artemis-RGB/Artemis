@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
-using Artemis.UI.Shared.Controls;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Events;
 using Artemis.UI.Shared.Extensions;
 using Avalonia;

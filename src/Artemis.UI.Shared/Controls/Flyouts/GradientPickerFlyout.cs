@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
 
-namespace Artemis.UI.Shared.Controls.Flyouts;
+namespace Artemis.UI.Shared.Flyouts;
 
 /// <summary>
 ///     Defines a flyout that hosts a gradient picker.

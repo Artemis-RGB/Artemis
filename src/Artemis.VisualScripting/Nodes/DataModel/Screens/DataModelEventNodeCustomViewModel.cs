@@ -50,7 +50,6 @@ public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
 
     public PluginSetting<bool> ShowFullPaths { get; }
     public PluginSetting<bool> ShowDataModelValues { get; }
-    public ObservableCollection<Type> FilterTypes { get; } = new() {typeof(IDataModelEvent)};
 
     public ObservableCollection<Module>? Modules
     {

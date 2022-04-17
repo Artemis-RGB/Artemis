@@ -2,8 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
         xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
         x:Class="Artemis.UI.Screens.Device.DevicePropertiesView"
         Icon="/Assets/Images/Logo/application.ico"
@@ -26,7 +26,7 @@
         </Grid.Background>
         <Grid Grid.Column="0" Name="DeviceDisplayGrid">
             <!-- No need to provide LEDs to highlight as LEDs are already physically highlighted -->
-            <controls:DeviceVisualizer Device="{Binding Device}"
+            <shared:DeviceVisualizer Device="{Binding Device}"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        ShowColors="True"

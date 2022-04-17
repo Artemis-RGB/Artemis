@@ -1,5 +1,4 @@
 ﻿using System;
-using Artemis.UI.Shared.Controls;
 using Avalonia;
 using Avalonia.Input;
 

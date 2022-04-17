@@ -10,7 +10,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.ProfileTreeView"
              x:DataType="profileTree:ProfileTreeViewModel">
-	<!-- These cause binding errors, not my fault - https://github.com/AvaloniaUI/Avalonia/issues/5762 -->
+    <!-- These cause binding errors, not my fault - https://github.com/AvaloniaUI/Avalonia/issues/5762 -->
     <UserControl.KeyBindings>
         <KeyBinding Gesture="Escape" Command="{Binding ClearSelection}" />
         <KeyBinding Gesture="F2" Command="{Binding RenameSelected}" />
@@ -101,7 +101,7 @@
                 <TreeDataTemplate ItemsSource="{Binding Children}">
                     <ContentControl Content="{Binding}" x:DataType="profileTree:TreeItemViewModel">
                         <ContentControl.ContextFlyout>
-                            <MenuFlyout>
+                            <MenuFlyout IsOpen="{CompiledBinding IsFlyoutOpen, Mode=OneWayToSource}">
                                 <MenuItem Header="Add new folder" Command="{CompiledBinding AddFolder}">
                                     <MenuItem.Icon>
                                         <avalonia:MaterialIcon Kind="CreateNewFolder" />

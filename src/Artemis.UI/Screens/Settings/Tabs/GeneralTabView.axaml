@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:layerBrushes="clr-namespace:Artemis.Core.LayerBrushes;assembly=Artemis.Core"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              xmlns:settings="clr-namespace:Artemis.UI.Screens.Settings"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="2400"
              x:Class="Artemis.UI.Screens.Settings.GeneralTabView"
              x:DataType="settings:GeneralTabViewModel">
@@ -61,7 +61,7 @@
 							</TextBlock>
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<controls:EnumComboBox Width="150" Value="{CompiledBinding UIColorScheme.Value}" />
+							<shared:EnumComboBox Width="150" Value="{CompiledBinding UIColorScheme.Value}" />
 						</StackPanel>
 					</Grid>
 					<Separator Classes="card-separator" />
@@ -76,7 +76,7 @@
 							</TextBlock>
 						</StackPanel>
 						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<controls:EnumComboBox Width="150" Value="{CompiledBinding CoreLoggingLevel.Value}" />
+							<shared:EnumComboBox Width="150" Value="{CompiledBinding CoreLoggingLevel.Value}" />
 						</StackPanel>
 					</Grid>
 					<Separator Classes="card-separator" />

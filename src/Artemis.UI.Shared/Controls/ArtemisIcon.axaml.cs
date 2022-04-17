@@ -8,7 +8,7 @@ using Avalonia.Svg.Skia;
 using Material.Icons;
 using Material.Icons.Avalonia;
 
-namespace Artemis.UI.Shared.Controls
+namespace Artemis.UI.Shared
 {
     /// <summary>
     ///     Represents a control that can display an arbitrary kind of icon.
