@@ -81,8 +81,11 @@ namespace Artemis.UI.Shared
                 if (!ShowColors)
                     return;
 
-                foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                    deviceVisualizerLed.RenderGeometry(drawingContext, false);
+                lock (_deviceVisualizerLeds)
+                {
+                    foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
+                        deviceVisualizerLed.RenderGeometry(drawingContext, false);
+                }
             }
             finally
             {
@@ -244,9 +247,13 @@ namespace Artemis.UI.Shared
         {
             _deviceImage?.Dispose();
             _deviceImage = null;
-            _deviceVisualizerLeds.Clear();
             _highlightedLeds = new List<DeviceVisualizerLed>();
             _dimmedLeds = new List<DeviceVisualizerLed>();
+
+            lock (_deviceVisualizerLeds)
+            {
+                _deviceVisualizerLeds.Clear();
+            }
 
             if (_oldDevice != null)
             {
@@ -264,8 +271,11 @@ namespace Artemis.UI.Shared
             Device.DeviceUpdated += DeviceUpdated;
 
             // Create all the LEDs
-            foreach (ArtemisLed artemisLed in Device.Leds)
-                _deviceVisualizerLeds.Add(new DeviceVisualizerLed(artemisLed));
+            lock (_deviceVisualizerLeds)
+            {
+                foreach (ArtemisLed artemisLed in Device.Leds)
+                    _deviceVisualizerLeds.Add(new DeviceVisualizerLed(artemisLed));
+            }
 
             // Load the device main image on a background thread
             ArtemisDevice? device = Device;
@@ -282,8 +292,11 @@ namespace Artemis.UI.Shared
                     using IDrawingContextImpl context = renderTargetBitmap.CreateDrawingContext(new ImmediateRenderer(this));
                     using Bitmap bitmap = new(device.Layout.Image.LocalPath);
                     context.DrawBitmap(bitmap.PlatformImpl, 1, new Rect(bitmap.Size), new Rect(renderTargetBitmap.Size), BitmapInterpolationMode.HighQuality);
-                    foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                        deviceVisualizerLed.DrawBitmap(context);
+                    lock (_deviceVisualizerLeds)
+                    {
+                        foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
+                            deviceVisualizerLed.DrawBitmap(context);
+                    }
 
                     _deviceImage = renderTargetBitmap;
 

@@ -3,9 +3,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:surfaceEditor="clr-namespace:Artemis.UI.Screens.SurfaceEditor"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.SurfaceEditor.SurfaceDeviceView">
-    <Grid>
+             x:Class="Artemis.UI.Screens.SurfaceEditor.SurfaceDeviceView"
+             x:DataType="surfaceEditor:SurfaceDeviceViewModel">
+    <Grid PointerMoved="InputElement_OnPointerMoved"
+          PointerReleased="InputElement_OnPointerReleased"
+          Cursor="Hand">
         <Grid.Styles>
             <Style Selector="Border.selection-border">
                 <Setter Property="Opacity" Value="0" />
@@ -15,22 +19,26 @@
                     </Transitions>
                 </Setter>
             </Style>
-            <Style Selector="Border.selection-border-selected">
+            <Style Selector="Border.deselected:pointerover">
+                <Setter Property="Opacity" Value="0.5" />
+            </Style>
+            <Style Selector="Border.selected">
                 <Setter Property="Opacity" Value="1" />
             </Style>
         </Grid.Styles>
 
-        <shared:DeviceVisualizer Device="{Binding Device}" ShowColors="True"/>
+        <shared:DeviceVisualizer Device="{CompiledBinding Device}" ShowColors="True" />
         <Border x:Name="SurfaceDeviceBorder"
                 Classes="selection-border"
-                Classes.selection-border-selected="{Binding Highlighted}"
+                Classes.selected="{CompiledBinding IsSelected}"
+                Classes.deselected="{CompiledBinding !IsSelected}"
                 BorderThickness="1">
             <Border.BorderBrush>
-				<SolidColorBrush Color="{DynamicResource SystemAccentColorLight2}"></SolidColorBrush>
-			</Border.BorderBrush>
+                <SolidColorBrush Color="{DynamicResource SystemAccentColorLight2}" />
+            </Border.BorderBrush>
             <Border.Background>
-                <SolidColorBrush Color="{DynamicResource SystemAccentColorLight2}" Opacity="0.2"></SolidColorBrush>
-			</Border.Background>
+                <SolidColorBrush Color="{DynamicResource SystemAccentColorLight2}" Opacity="0.2" />
+            </Border.Background>
         </Border>
     </Grid>
 

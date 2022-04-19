@@ -1,43 +1,68 @@
+using System.Collections.Generic;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
+using Avalonia.VisualTree;
 
-namespace Artemis.UI.Screens.SurfaceEditor
+namespace Artemis.UI.Screens.SurfaceEditor;
+
+public class SurfaceDeviceView : ReactiveUserControl<SurfaceDeviceViewModel>
 {
-    public class SurfaceDeviceView : ReactiveUserControl<SurfaceDeviceViewModel>
+    private bool _dragging;
+
+    public SurfaceDeviceView()
     {
-        public SurfaceDeviceView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        /// <inheritdoc />
-        protected override void OnPointerEnter(PointerEventArgs e)
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
+    }
+
+    private void InputElement_OnPointerMoved(object? sender, PointerEventArgs e)
+    {
+        PointerPoint point = e.GetCurrentPoint(this.FindAncestorOfType<Canvas>());
+        if (ViewModel == null || !point.Properties.IsLeftButtonPressed)
+            return;
+
+        if (!_dragging)
         {
-            if (ViewModel?.SelectionStatus == SelectionStatus.None)
+            _dragging = true;
+
+            if (!ViewModel.IsSelected)
             {
-                ViewModel.SelectionStatus = SelectionStatus.Hover;
-                Cursor = new Cursor(StandardCursorType.Hand);
+                ViewModel.SurfaceEditorViewModel.UpdateSelection(new List<SurfaceDeviceViewModel> {ViewModel}, false, false);
+                ViewModel.SurfaceEditorViewModel.FinishSelection();
             }
 
-            base.OnPointerEnter(e);
+            ViewModel.SurfaceEditorViewModel.StartMouseDrag(point.Position);
+            e.Pointer.Capture((IInputElement?) sender);
         }
 
-        /// <inheritdoc />
-        protected override void OnPointerLeave(PointerEventArgs e)
+        ViewModel.SurfaceEditorViewModel.UpdateMouseDrag(point.Position, e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Alt));
+
+        e.Handled = true;
+    }
+
+    private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (ViewModel == null || e.InitialPressMouseButton != MouseButton.Left)
+            return;
+
+        if (_dragging)
         {
-            if (ViewModel?.SelectionStatus == SelectionStatus.Hover)
-            {
-                ViewModel.SelectionStatus = SelectionStatus.None;
-                Cursor = new Cursor(StandardCursorType.Arrow);
-            }
-
-            base.OnPointerLeave(e);
+            _dragging = false;
+            ViewModel.SurfaceEditorViewModel.FinishSelection();
+            e.Pointer.Capture(null);
         }
-
-        private void InitializeComponent()
+        else
         {
-            AvaloniaXamlLoader.Load(this);
+            ViewModel.SurfaceEditorViewModel.UpdateSelection(new List<SurfaceDeviceViewModel> {ViewModel}, e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
+            ViewModel.SurfaceEditorViewModel.FinishSelection();
         }
+
+        e.Handled = true;
     }
 }

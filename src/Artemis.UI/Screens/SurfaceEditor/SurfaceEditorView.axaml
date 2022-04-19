@@ -28,16 +28,14 @@
                         HorizontalAlignment="Stretch"
                         Background="{StaticResource LargeCheckerboardBrush}"
                         ZoomChanged="ZoomBorder_OnZoomChanged"
-                        PointerPressed="ZoomBorder_OnPointerPressed"
-                        PointerMoved="ZoomBorder_OnPointerMoved"
                         PointerReleased="ZoomBorder_OnPointerReleased">
             <Grid Name="ContainerGrid" Background="Transparent">
                 <Grid.Transitions>
                     <Transitions>
-                        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+                        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut" />
                     </Transitions>
                 </Grid.Transitions>
-                <ItemsControl Items="{Binding SurfaceDeviceViewModels}" ClipToBounds="False">
+                <ItemsControl Name="DeviceContainer" Items="{Binding SurfaceDeviceViewModels}" ClipToBounds="False">
                     <ItemsControl.Styles>
                         <Style Selector="ContentPresenter">
                             <Setter Property="Canvas.Left" Value="{Binding Device.X}" />
@@ -102,12 +100,12 @@
                 </ItemsControl>
 
                 <shared:SelectionRectangle Name="SelectionRectangle"
-                                             InputElement="{Binding #ZoomBorder}"
-                                             SelectionUpdated="SelectionRectangle_OnSelectionUpdated"
-                                             BorderBrush="{DynamicResource SystemAccentColor}"
-                                             BorderRadius="8">
+                                           InputElement="{Binding #ZoomBorder}"
+                                           SelectionUpdated="SelectionRectangle_OnSelectionUpdated"
+                                           BorderBrush="{DynamicResource SystemAccentColor}"
+                                           BorderRadius="8">
                     <shared:SelectionRectangle.Background>
-                        <SolidColorBrush Color="{DynamicResource SystemAccentColorLight1}" Opacity="0.2"></SolidColorBrush>
+                        <SolidColorBrush Color="{DynamicResource SystemAccentColorLight1}" Opacity="0.2" />
                     </shared:SelectionRectangle.Background>
                 </shared:SelectionRectangle>
 
