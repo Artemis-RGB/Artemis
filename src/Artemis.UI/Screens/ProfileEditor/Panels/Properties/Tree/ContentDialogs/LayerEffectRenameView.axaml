@@ -1,0 +1,15 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:contentDialogs="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Tree.ContentDialogs"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Tree.ContentDialogs.LayerEffectRenameView"
+             x:DataType="contentDialogs:LayerEffectRenameViewModel">
+    <StackPanel>
+        <StackPanel.KeyBindings>
+            <KeyBinding Gesture="Enter" Command="{CompiledBinding Confirm}" />
+        </StackPanel.KeyBindings>
+        <TextBox Name="NameTextBox" Text="{CompiledBinding LayerEffectName}" Watermark="Layer effect name"/>
+    </StackPanel>
+</UserControl>

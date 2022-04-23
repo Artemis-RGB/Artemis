@@ -222,8 +222,8 @@ namespace Artemis.Core.LayerEffects
         /// <inheritdoc />
         public void Load()
         {
-            Name = LayerEffectEntity.Name;
             HasBeenRenamed = LayerEffectEntity.HasBeenRenamed;
+            Name = HasBeenRenamed ? LayerEffectEntity.Name : Descriptor.DisplayName;
             Order = LayerEffectEntity.Order;
         }
 

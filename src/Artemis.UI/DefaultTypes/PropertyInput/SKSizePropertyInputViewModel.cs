@@ -1,4 +1,5 @@
-﻿using Artemis.Core;
+﻿using System;
+using Artemis.Core;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.PropertyInput;
 using ReactiveUI;
@@ -16,17 +17,17 @@ public class SKSizePropertyInputViewModel : PropertyInputViewModel<SKSize>
     {
         if (LayerProperty.PropertyDescription.MinInputValue.IsNumber())
         {
-            this.ValidationRule(vm => vm.Width, i => i >= (float) LayerProperty.PropertyDescription.MinInputValue,
+            this.ValidationRule(vm => vm.Width, i => i >= Convert.ToSingle(LayerProperty.PropertyDescription.MinInputValue),
                 $"Width must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
-            this.ValidationRule(vm => vm.Height, i => i >= (float) LayerProperty.PropertyDescription.MinInputValue,
+            this.ValidationRule(vm => vm.Height, i => i >= Convert.ToSingle(LayerProperty.PropertyDescription.MinInputValue),
                 $"Height must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
         }
 
         if (LayerProperty.PropertyDescription.MaxInputValue.IsNumber())
         {
-            this.ValidationRule(vm => vm.Width, i => i <= (float) LayerProperty.PropertyDescription.MaxInputValue,
+            this.ValidationRule(vm => vm.Width, i => i <= Convert.ToSingle(LayerProperty.PropertyDescription.MaxInputValue),
                 $"Width must be equal to or smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
-            this.ValidationRule(vm => vm.Height, i => i <= (float) LayerProperty.PropertyDescription.MaxInputValue,
+            this.ValidationRule(vm => vm.Height, i => i <= Convert.ToSingle(LayerProperty.PropertyDescription.MaxInputValue),
                 $"Height must be equal to or smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
         }
     }

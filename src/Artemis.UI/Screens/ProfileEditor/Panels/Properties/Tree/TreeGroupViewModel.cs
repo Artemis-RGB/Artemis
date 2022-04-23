@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -8,12 +9,15 @@ using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.UI.Exceptions;
+using Artemis.UI.Screens.ProfileEditor.Properties.Tree.ContentDialogs;
 using Artemis.UI.Screens.ProfileEditor.Properties.Windows;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.LayerBrushes;
 using Artemis.UI.Shared.LayerEffects;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
+using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Ninject;
 using Ninject.Parameters;
 using ReactiveUI;
@@ -41,19 +45,25 @@ public class TreeGroupViewModel : ActivatableViewModelBase
         });
 
         // TODO: Update ProfileElementPropertyGroupViewModel visibility on change (can remove the sub on line 41 as well then)
+        OpenBrushSettings = ReactiveCommand.CreateFromTask(ExecuteOpenBrushSettings);
+        OpenEffectSettings = ReactiveCommand.CreateFromTask(ExecuteOpenEffectSettings);
+        RenameEffect = ReactiveCommand.CreateFromTask(ExecuteRenameEffect);
+        DeleteEffect = ReactiveCommand.Create(ExecuteDeleteEffect);
     }
-
 
     public PropertyGroupViewModel PropertyGroupViewModel { get; }
     public LayerPropertyGroup LayerPropertyGroup => PropertyGroupViewModel.LayerPropertyGroup;
     public BaseLayerBrush? LayerBrush => PropertyGroupViewModel.LayerBrush;
     public BaseLayerEffect? LayerEffect => PropertyGroupViewModel.LayerEffect;
-
-    public ObservableCollection<ViewModelBase>? Children => PropertyGroupViewModel.IsExpanded ? PropertyGroupViewModel.Children : null;
-
     public LayerPropertyGroupType GroupType { get; private set; }
+    public ObservableCollection<ViewModelBase>? Children => PropertyGroupViewModel.IsExpanded ? PropertyGroupViewModel.Children : null;
+    
+    public ReactiveCommand<Unit, Unit> OpenBrushSettings { get; }
+    public ReactiveCommand<Unit, Unit> OpenEffectSettings { get; }
+    public ReactiveCommand<Unit, Unit> RenameEffect { get; }
+    public ReactiveCommand<Unit, Unit> DeleteEffect { get; }
 
-    public async Task OpenBrushSettings()
+    private async Task ExecuteOpenBrushSettings()
     {
         if (LayerBrush?.ConfigurationDialog is not LayerBrushConfigurationDialog configurationViewModel)
             return;
@@ -83,7 +93,7 @@ public class TreeGroupViewModel : ActivatableViewModelBase
         }
     }
 
-    public async Task OpenEffectSettings()
+    private async Task ExecuteOpenEffectSettings()
     {
         if (LayerEffect?.ConfigurationDialog is not LayerEffectConfigurationDialog configurationViewModel)
             return;
@@ -113,14 +123,26 @@ public class TreeGroupViewModel : ActivatableViewModelBase
         }
     }
 
-    public async Task RenameEffect()
+    private async Task ExecuteRenameEffect()
     {
-        await _windowService.ShowConfirmContentDialog("Not yet implemented", "Try again later :p");
+        if (LayerEffect == null)
+            return;
+
+        await _windowService.CreateContentDialog()
+            .WithTitle("Rename layer effect")
+            .WithViewModel(out LayerEffectRenameViewModel vm, ("layerEffect", LayerEffect))
+            .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Confirm))
+            .WithCloseButtonText("Cancel")
+            .WithDefaultButton(ContentDialogButton.Primary)
+            .ShowAsync();
     }
 
-    public async Task DeleteEffect()
+    private void ExecuteDeleteEffect()
     {
-        await _windowService.ShowConfirmContentDialog("Not yet implemented", "Try again later :p");
+        if (LayerEffect == null)
+            return;
+
+        _profileEditorService.ExecuteCommand(new RemoveLayerEffect(LayerEffect));
     }
 
     public double GetDepth()

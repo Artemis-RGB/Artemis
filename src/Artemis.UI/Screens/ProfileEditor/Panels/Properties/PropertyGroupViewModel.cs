@@ -117,7 +117,8 @@ public class PropertyGroupViewModel : ViewModelBase, IDisposable
     {
         // Get all properties and property groups and create VMs for them
         // The group has methods for getting this without reflection but then we lose the order of the properties as they are defined on the group
-        foreach (PropertyInfo propertyInfo in LayerPropertyGroup.GetType().GetProperties())
+        // Sorting is done to ensure properties defined by the Core (such as on layers) are always on top.
+        foreach (PropertyInfo propertyInfo in LayerPropertyGroup.GetType().GetProperties().OrderBy(p => p.DeclaringType?.Assembly != Constants.CoreAssembly))
         {
             if (Attribute.IsDefined(propertyInfo, typeof(LayerPropertyIgnoreAttribute)))
                 continue;

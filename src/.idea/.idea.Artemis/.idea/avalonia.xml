@@ -18,9 +18,12 @@
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/ColorGradientPropertyInputView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/Properties/Dialogs/AddEffectView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/Properties/PropertiesView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/ProfileEditor/Panels/Properties/Tree/ContentDialogs/LayerEffectRenameView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/ProfileEditor/Panels/Properties/Tree/ContentDialogs/SidebarCategoryEditView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/Properties/Tree/TreeGroupView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/Properties/Tree/TreePropertyView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Settings/Tabs/GeneralTabView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/Sidebar/ContentDialogs/SidebarCategoryEditView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Avalonia/Artemis.UI/Screens/Debugger/Tabs/Render/RenderDebugView.axaml" value="Avalonia/Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Avalonia/Artemis.UI/Styles/Artemis.axaml" value="Avalonia/Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
       </map>

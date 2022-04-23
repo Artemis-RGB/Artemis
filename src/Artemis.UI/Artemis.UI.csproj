@@ -68,6 +68,14 @@
 	  <Compile Update="Screens\VisualScripting\NodeScriptWindowView.axaml.cs">
 	    <DependentUpon>NodeScriptWindowView.axaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Screens\ProfileEditor\Panels\Properties\Tree\ContentDialogs\LayerEffectRenameView.axaml.cs">
+	    <DependentUpon>LayerEffectRenameView.axaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="Screens\ProfileEditor\Panels\Properties\Tree\ContentDialogs\SidebarCategoryEditView.axaml.cs">
+	    <DependentUpon>SidebarCategoryEditView.axaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
 	  <AvaloniaXaml Update="DefaultTypes\PropertyInput\StringPropertyInputView.axaml">

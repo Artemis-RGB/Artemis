@@ -35,7 +35,6 @@ namespace Artemis.Core.LayerBrushes
                 canvas.SetMatrix(canvas.TotalMatrix.PreConcat(Layer.GetTransformMatrix(true, false, false, true).Invert()));
 
             using SKPath pointsPath = new();
-            using SKPaint ledPaint = new();
             foreach (ArtemisLed artemisLed in Layer.Leds)
             {
                 pointsPath.AddPoly(new[]
@@ -61,7 +60,7 @@ namespace Artemis.Core.LayerBrushes
                         continue;
 
                     // Let the brush determine the color
-                    ledPaint.Color = GetColor(artemisLed, renderPoint);
+                    paint.Color = GetColor(artemisLed, renderPoint);
 
                     SKRect ledRectangle = SKRect.Create(
                         artemisLed.AbsoluteRectangle.Left - Layer.Bounds.Left,
@@ -70,7 +69,7 @@ namespace Artemis.Core.LayerBrushes
                         artemisLed.AbsoluteRectangle.Height
                     );
 
-                    canvas.DrawRect(ledRectangle, ledPaint);
+                    canvas.DrawRect(ledRectangle, paint);
                 }
             }, "Failed to render");
         }

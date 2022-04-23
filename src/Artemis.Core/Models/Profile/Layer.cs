@@ -627,13 +627,12 @@ namespace Artemis.Core
             if (LayerBrush == null)
                 throw new ArtemisCoreException("The layer is not yet ready for rendering");
 
+            using SKAutoCanvasRestore _ = new(canvas);
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
             {
                 if (!baseLayerEffect.Suspended)
                     baseLayerEffect.InternalPreProcess(canvas, bounds, layerPaint);
             }
-
-            using SKAutoCanvasRestore _ = new(canvas);
             canvas.ClipPath(renderPath);
 
             // Restore the blend mode before doing the actual render

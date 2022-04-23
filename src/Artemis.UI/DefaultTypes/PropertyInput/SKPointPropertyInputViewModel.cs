@@ -1,4 +1,5 @@
-﻿using Artemis.Core;
+﻿using System;
+using Artemis.Core;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.PropertyInput;
 using ReactiveUI;
@@ -14,17 +15,17 @@ public class SKPointPropertyInputViewModel : PropertyInputViewModel<SKPoint>
     {
         if (LayerProperty.PropertyDescription.MinInputValue.IsNumber())
         {
-            this.ValidationRule(vm => vm.X, i => i >= (float) LayerProperty.PropertyDescription.MinInputValue,
+            this.ValidationRule(vm => vm.X, i => i >= Convert.ToSingle(LayerProperty.PropertyDescription.MinInputValue),
                 $"X must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
-            this.ValidationRule(vm => vm.Y, i => i >= (float) LayerProperty.PropertyDescription.MinInputValue,
+            this.ValidationRule(vm => vm.Y, i => i >= Convert.ToSingle(LayerProperty.PropertyDescription.MinInputValue),
                 $"Y must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
         }
 
         if (LayerProperty.PropertyDescription.MaxInputValue.IsNumber())
         {
-            this.ValidationRule(vm => vm.X, i => i <= (float) LayerProperty.PropertyDescription.MaxInputValue,
+            this.ValidationRule(vm => vm.X, i => i <= Convert.ToSingle(LayerProperty.PropertyDescription.MaxInputValue),
                 $"X must be equal to or smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
-            this.ValidationRule(vm => vm.Y, i => i <= (float) LayerProperty.PropertyDescription.MaxInputValue,
+            this.ValidationRule(vm => vm.Y, i => i <= Convert.ToSingle(LayerProperty.PropertyDescription.MaxInputValue),
                 $"Y must be equal to or smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using Artemis.Core.JsonConverters;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Core;
@@ -14,6 +15,11 @@ namespace Artemis.Core
     /// </summary>
     public static class Constants
     {
+        /// <summary>
+        ///     The Artemis.Core assembly
+        /// </summary>
+        public static readonly Assembly CoreAssembly = typeof(Constants).Assembly;
+
         /// <summary>
         ///     The full path to the Artemis application folder
         /// </summary>

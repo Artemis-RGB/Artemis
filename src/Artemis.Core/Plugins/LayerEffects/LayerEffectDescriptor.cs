@@ -87,6 +87,7 @@ public class LayerEffectDescriptor
         else
         {
             effect.LayerEffectEntity = new LayerEffectEntity();
+            effect.Name = DisplayName;
             effect.Initialize();
             effect.Save();
         }
