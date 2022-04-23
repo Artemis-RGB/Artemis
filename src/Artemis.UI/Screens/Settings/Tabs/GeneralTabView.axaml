@@ -268,7 +268,7 @@
 									  Items="{CompiledBinding RenderScales}">
 								<ComboBox.ItemTemplate>
 									<DataTemplate>
-										<TextBlock Text="{Binding [0]}" />
+										<TextBlock Text="{CompiledBinding Display}" />
 									</DataTemplate>
 								</ComboBox.ItemTemplate>
 							</ComboBox>
@@ -294,7 +294,7 @@
 									  Items="{CompiledBinding TargetFrameRates}">
 								<ComboBox.ItemTemplate>
 									<DataTemplate>
-										<TextBlock Text="{Binding [0]}" />
+										<TextBlock Text="{CompiledBinding Display}" />
 									</DataTemplate>
 								</ComboBox.ItemTemplate>
 							</ComboBox>

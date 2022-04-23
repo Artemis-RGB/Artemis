@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.Linq;
-using Artemis.Core;
+﻿using Artemis.Core;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Artemis.UI.Shared.Services.PropertyInput;
-using Avalonia.Media;
 using ReactiveUI;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
@@ -60,14 +56,10 @@ public class ColorGradientPropertyInputViewModel : PropertyInputViewModel<ColorG
 
         // Make sure something actually changed
         if (Equals(ColorGradient, _originalGradient))
-        {
             LayerProperty.CurrentValue = _originalGradient;
-        }
         else
-        {
             // Update the gradient for realsies, giving the command a reference to the old gradient
             ProfileEditorService.ExecuteCommand(new UpdateLayerProperty<ColorGradient>(LayerProperty, ColorGradient, _originalGradient, Time));
-        }
 
         _originalGradient = null;
     }

@@ -69,8 +69,6 @@ namespace Artemis.Core.LayerBrushes
             brush.LayerBrushEntity = entity ?? new LayerBrushEntity { ProviderId = Provider.Id, BrushType = LayerBrushType.FullName };
            
             brush.Initialize();
-            brush.Update(0);
-
             return brush;
         }
     }

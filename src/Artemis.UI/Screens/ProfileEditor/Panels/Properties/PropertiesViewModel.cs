@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
@@ -12,8 +13,12 @@ using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Playback;
 using Artemis.UI.Screens.ProfileEditor.Properties.DataBinding;
+using Artemis.UI.Screens.ProfileEditor.Properties.Dialogs;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
+using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using ReactiveUI;
 
@@ -23,6 +28,8 @@ public class PropertiesViewModel : ActivatableViewModelBase
 {
     private readonly Dictionary<LayerPropertyGroup, PropertyGroupViewModel> _cachedPropertyViewModels;
     private readonly IDataBindingVmFactory _dataBindingVmFactory;
+    private readonly IWindowService _windowService;
+    private readonly ILayerEffectService _layerEffectService;
     private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
     private readonly IProfileEditorService _profileEditorService;
     private readonly ISettingsService _settingsService;
@@ -38,18 +45,22 @@ public class PropertiesViewModel : ActivatableViewModelBase
         ISettingsService settingsService,
         ILayerPropertyVmFactory layerPropertyVmFactory,
         IDataBindingVmFactory dataBindingVmFactory,
+        IWindowService windowService,
+        ILayerEffectService layerEffectService,
         PlaybackViewModel playbackViewModel)
     {
         _profileEditorService = profileEditorService;
         _settingsService = settingsService;
         _layerPropertyVmFactory = layerPropertyVmFactory;
         _dataBindingVmFactory = dataBindingVmFactory;
+        _windowService = windowService;
+        _layerEffectService = layerEffectService;
         _cachedPropertyViewModels = new Dictionary<LayerPropertyGroup, PropertyGroupViewModel>();
 
         PropertyGroupViewModels = new ObservableCollection<PropertyGroupViewModel>();
         PlaybackViewModel = playbackViewModel;
         TimelineViewModel = layerPropertyVmFactory.TimelineViewModel(PropertyGroupViewModels);
-
+        AddEffect = ReactiveCommand.CreateFromTask(ExecuteAddEffect);
         // React to service profile element changes as long as the VM is active
         this.WhenActivated(d =>
         {
@@ -86,6 +97,7 @@ public class PropertiesViewModel : ActivatableViewModelBase
     public ObservableCollection<PropertyGroupViewModel> PropertyGroupViewModels { get; }
     public PlaybackViewModel PlaybackViewModel { get; }
     public TimelineViewModel TimelineViewModel { get; }
+    public ReactiveCommand<Unit, Unit> AddEffect { get; }
 
     public DataBindingViewModel? DataBindingViewModel
     {
@@ -102,6 +114,17 @@ public class PropertiesViewModel : ActivatableViewModelBase
     public IObservable<bool> Playing => _profileEditorService.Playing;
     public PluginSetting<double> PropertiesTreeWidth => _settingsService.GetSetting("ProfileEditor.PropertiesTreeWidth", 500.0);
 
+    private async Task ExecuteAddEffect()
+    {
+        if (ProfileElement == null)
+            return;
+
+        await _windowService.CreateContentDialog()
+            .WithTitle("Add layer effect")
+            .WithViewModel(out AddEffectViewModel _, ("renderProfileElement", ProfileElement))
+            .WithCloseButtonText("Cancel")
+            .ShowAsync();
+    }
 
     private void UpdatePropertyGroups()
     {

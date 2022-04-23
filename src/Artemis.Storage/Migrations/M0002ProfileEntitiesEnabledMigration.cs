@@ -17,15 +17,17 @@ namespace Artemis.Storage.Migrations
                 foreach (FolderEntity profileEntityFolder in profileEntity.Folders)
                 {
                     profileEntityFolder.Suspended = false;
-                    foreach (LayerEffectEntity layerEffectEntity in profileEntityFolder.LayerEffects)
-                        layerEffectEntity.Suspended = false;
+                    // Commented out during Avalonia port when Suspended was moved into the LayerEffect's LayerProperties
+                    // foreach (LayerEffectEntity layerEffectEntity in profileEntityFolder.LayerEffects)
+                    //     layerEffectEntity.Suspended = false;
                 }
 
                 foreach (LayerEntity profileEntityLayer in profileEntity.Layers)
                 {
                     profileEntityLayer.Suspended = false;
-                    foreach (LayerEffectEntity layerEffectEntity in profileEntityLayer.LayerEffects)
-                        layerEffectEntity.Suspended = false;
+                    // Commented out during Avalonia port when Suspended was moved into the LayerEffect's LayerProperties
+                    // foreach (LayerEffectEntity layerEffectEntity in profileEntityLayer.LayerEffects)
+                    //     layerEffectEntity.Suspended = false;
                 }
 
                 repository.Upsert(profileEntity);

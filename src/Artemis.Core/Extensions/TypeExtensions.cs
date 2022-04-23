@@ -230,7 +230,7 @@ namespace Artemis.Core
                 }
 
                 if (genericType.IsInterface)
-                    foreach (var i in typeToCheck.GetInterfaces())
+                    foreach (Type i in typeToCheck.GetInterfaces())
                         if (i.IsOfGenericType(genericType, out concreteGenericType))
                             return true;
 

@@ -71,7 +71,7 @@ namespace Artemis.Core
         /// </summary>
         public void SaveAllSettings()
         {
-            foreach (var (_, pluginSetting) in _settingEntities)
+            foreach ((string _, IPluginSetting? pluginSetting) in _settingEntities)
                 pluginSetting.Save();
         }
 

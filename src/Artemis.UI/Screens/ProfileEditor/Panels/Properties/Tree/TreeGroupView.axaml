@@ -53,7 +53,7 @@
                     <StackPanel Orientation="Horizontal"
                                 Margin="0 5"
                                 IsVisible="{Binding GroupType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModel:LayerPropertyGroupType.General}}">
-                        <avalonia:MaterialIcon Kind="HammerWrench" Margin="0 -1 5 0" />
+                        <avalonia:MaterialIcon Kind="HammerWrench" Margin="0 0 5 0" />
                         <TextBlock ToolTip.Tip="{Binding LayerPropertyGroup.GroupDescription.Description}">General</TextBlock>
                     </StackPanel>
 
@@ -61,22 +61,23 @@
                     <StackPanel Orientation="Horizontal"
                                 Margin="0 5"
                                 IsVisible="{Binding GroupType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModel:LayerPropertyGroupType.Transform}}">
-                        <avalonia:MaterialIcon Kind="TransitConnectionVariant" Margin="0 -1 5 0" />
+                        <avalonia:MaterialIcon Kind="TransitConnectionVariant" Margin="0 0 5 0" />
                         <TextBlock ToolTip.Tip="{Binding LayerPropertyGroup.GroupDescription.Description}">Transform</TextBlock>
                     </StackPanel>
 
                     <!-- Type: LayerBrushRoot -->
                     <Grid IsVisible="{Binding GroupType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModel:LayerPropertyGroupType.LayerBrushRoot}}"
+                          Height="29"
                           ColumnDefinitions="Auto,Auto,Auto,*">
                         <shared:ArtemisIcon Grid.Column="0"
                                               Icon="{Binding LayerBrush.Descriptor.Icon}"
                                               Width="16"
                                               Height="16"
-                                              Margin="0 5 5 0" />
+                                              Margin="0 0 5 0" />
                         <TextBlock Grid.Column="1"
                                    ToolTip.Tip="{Binding LayerBrush.Descriptor.Description}"
-                                   Margin="0 5 0 0">
-                            Brush -&#160;
+                                   Margin="0 5 5 0">
+                            Brush - 
                         </TextBlock>
                         <TextBlock Grid.Column="2"
                                    Text="{Binding LayerBrush.Descriptor.DisplayName}"
@@ -101,8 +102,8 @@
                     </Grid>
 
                     <!-- Type: LayerEffectRoot -->
-                    <Grid Height="24"
-                          IsVisible="{Binding GroupType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModel:LayerPropertyGroupType.LayerEffectRoot}}"
+                    <Grid IsVisible="{Binding GroupType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModel:LayerPropertyGroupType.LayerEffectRoot}}"
+                          Height="29"
                           ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto">
                         <shared:ArtemisIcon
                             Grid.Column="0"
@@ -110,7 +111,7 @@
                             Icon="{Binding LayerEffect.Descriptor.Icon}"
                             Width="16"
                             Height="16"
-                            Margin="0 5 5 0"
+                            Margin="0 0 5 0"
                             Background="Transparent" />
                         <TextBlock Grid.Column="1" ToolTip.Tip="{Binding LayerEffect.Descriptor.Description}" Margin="0 5 0 0">
                             Effect
@@ -133,18 +134,23 @@
                                    Margin="0 5"
                                    IsVisible="{Binding LayerEffect.Name, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
-                        <StackPanel Grid.Column="5" Orientation="Horizontal">
-                            <ToggleButton
-                                Classes="icon-button"
-                                ToolTip.Tip="Toggle suspended state"
-                                Width="18"
-                                Height="18"
-                                IsChecked="{Binding !LayerEffect.Suspended}"
-                                VerticalAlignment="Center" Padding="-25"
-                                Margin="5 0"
-                                Command="{Binding SuspendedToggled}">
-                                <avalonia:MaterialIcon Kind="Eye" Height="13" Width="13" />
-                            </ToggleButton>
+                        <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="2">
+                            <Button Classes="icon-button"
+                                    ToolTip.Tip="Toggle suspended state"
+                                    Width="24"
+                                    Height="24"
+                                    VerticalAlignment="Center"
+                                    Command="{Binding SuspendedToggled}">
+                                <avalonia:MaterialIcon Kind="EyeOff" Height="16" Width="16" IsVisible="True" />
+                            </Button>
+                            <Button Classes="icon-button"
+                                    ToolTip.Tip="Toggle suspended state"
+                                    Width="24"
+                                    Height="24"
+                                    VerticalAlignment="Center"
+                                    Command="{Binding SuspendedToggled}">
+                                <avalonia:MaterialIcon Kind="Eye" Height="16" Width="16" IsVisible="True" />
+                            </Button>
                             <Button Classes="icon-button"
                                     ToolTip.Tip="Rename"
                                     Width="24"

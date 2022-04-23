@@ -12,7 +12,7 @@ namespace Artemis.Core.Modules
     /// <summary>
     ///     Allows you to add new data to the Artemis data model
     /// </summary>
-    public abstract class Module<T> : Module where T : DataModel
+    public abstract class Module<T> : Module where T : DataModel, new()
     {
         /// <summary>
         ///     The data model driving this module
@@ -79,7 +79,7 @@ namespace Artemis.Core.Modules
 
         internal override void InternalEnable()
         {
-            DataModel = Activator.CreateInstance<T>();
+            DataModel = new T();
             DataModel.Module = this;
             DataModel.DataModelDescription = GetDataModelDescription();
             base.InternalEnable();
@@ -310,7 +310,7 @@ namespace Artemis.Core.Modules
         /// <inheritdoc />
         internal override void InternalEnable()
         {
-            foreach ((DefaultCategoryName categoryName, var path) in _pendingDefaultProfilePaths)
+            foreach ((DefaultCategoryName categoryName, string? path) in _pendingDefaultProfilePaths)
                 AddDefaultProfile(categoryName, path);
             _pendingDefaultProfilePaths.Clear();
 

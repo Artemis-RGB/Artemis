@@ -13,7 +13,7 @@
         <StyleInclude Source="/Screens/ProfileEditor/Panels/Properties/Timeline/Segments/Segment.axaml" />
     </UserControl.Styles>
     <UserControl.Resources>
-		<converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter"></converters:DoubleToGridLengthConverter>
+        <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter"></converters:DoubleToGridLengthConverter>
     </UserControl.Resources>
     <Grid Name="ContainerGrid">
         <Grid.ColumnDefinitions>
@@ -29,13 +29,22 @@
                           Name="TreeScrollViewer"
                           Offset="{CompiledBinding #TimelineScrollViewer.Offset, Mode=OneWay}"
                           Background="{DynamicResource CardStrokeColorDefaultSolidBrush}">
-                <ItemsControl Items="{CompiledBinding PropertyGroupViewModels}" Padding="0 0 8 0">
-                    <ItemsControl.ItemTemplate>
-                        <TreeDataTemplate DataType="{x:Type local:PropertyGroupViewModel}" ItemsSource="{CompiledBinding Children}">
-                            <ContentControl Content="{CompiledBinding TreeGroupViewModel}" />
-                        </TreeDataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <Grid RowDefinitions="*,Auto">
+                    <ItemsControl Items="{CompiledBinding PropertyGroupViewModels}" Padding="0 0 8 0">
+                        <ItemsControl.ItemTemplate>
+                            <TreeDataTemplate DataType="{x:Type local:PropertyGroupViewModel}" ItemsSource="{CompiledBinding Children}">
+                                <ContentControl Content="{CompiledBinding TreeGroupViewModel}" />
+                            </TreeDataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Button Grid.Row="1"
+                            Command="{CompiledBinding AddEffect}"
+                            Margin="4"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Right">
+                        Add new effect
+                    </Button>
+                </Grid>
             </ScrollViewer>
         </Grid>
 
@@ -45,12 +54,12 @@
                       Background="Transparent"
                       Margin="0 0 -5 0" />
 
-        <ContentControl Grid.Column="2" 
+        <ContentControl Grid.Column="2"
                         IsVisible="{CompiledBinding DataBindingViewModel, Converter={x:Static ObjectConverters.IsNotNull}}"
-                        Content="{CompiledBinding DataBindingViewModel}"/>
+                        Content="{CompiledBinding DataBindingViewModel}" />
 
-		<!-- Horizontal scrolling -->
-        <ScrollViewer Grid.Column="2" 
+        <!-- Horizontal scrolling -->
+        <ScrollViewer Grid.Column="2"
                       HorizontalScrollBarVisibility="Auto"
                       VerticalScrollBarVisibility="Disabled"
                       IsVisible="{CompiledBinding DataBindingViewModel, Converter={x:Static ObjectConverters.IsNull}}">

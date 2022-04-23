@@ -296,7 +296,6 @@ namespace Artemis.Core
             Suspended = LayerEntity.Suspended;
             Order = LayerEntity.Order;
 
-            ExpandedPropertyGroups.AddRange(LayerEntity.ExpandedPropertyGroups);
             LoadRenderElement();
             Adapter.Load();
         }
@@ -313,8 +312,6 @@ namespace Artemis.Core
             LayerEntity.Suspended = Suspended;
             LayerEntity.Name = Name;
             LayerEntity.ProfileId = Profile.EntityId;
-            LayerEntity.ExpandedPropertyGroups.Clear();
-            LayerEntity.ExpandedPropertyGroups.AddRange(ExpandedPropertyGroups);
 
             General.ApplyToEntity();
             Transform.ApplyToEntity();
@@ -382,7 +379,7 @@ namespace Artemis.Core
 
             UpdateDisplayCondition();
             UpdateTimeline(deltaTime);
-
+            
             if (ShouldBeEnabled)
                 Enable();
             else if (Timeline.IsFinished && !_renderCopies.Any())
@@ -505,9 +502,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void Enable()
         {
-            if (Enabled)
-                return;
-
+            // No checks here, the brush and effects will do their own checks to ensure they never enable twice
             bool tryOrBreak = TryOrBreak(() => LayerBrush?.InternalEnable(), "Failed to enable layer brush");
             if (!tryOrBreak)
                 return;
@@ -519,8 +514,19 @@ namespace Artemis.Core
             }, "Failed to enable one or more effects");
             if (!tryOrBreak)
                 return;
-
+            
             Enabled = true;
+        }
+
+        /// <inheritdoc />
+        public override void Disable()
+        {
+            // No checks here, the brush and effects will do their own checks to ensure they never disable twice
+            LayerBrush?.InternalDisable();
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                baseLayerEffect.InternalDisable();
+
+            Enabled = false;
         }
 
         /// <inheritdoc />
@@ -534,19 +540,6 @@ namespace Artemis.Core
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
                 baseLayerEffect.InternalUpdate(Timeline);
-        }
-
-        /// <inheritdoc />
-        public override void Disable()
-        {
-            if (!Enabled)
-                return;
-
-            LayerBrush?.InternalDisable();
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
-                baseLayerEffect.InternalDisable();
-
-            Enabled = false;
         }
 
         /// <inheritdoc />
@@ -822,6 +815,7 @@ namespace Artemis.Core
                 General.ShapeType.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
                 General.BlendMode.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
                 Transform.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
+                LayerBrush?.Update(0);
 
                 OnLayerBrushUpdated();
                 ClearBrokenState("Failed to initialize layer brush");

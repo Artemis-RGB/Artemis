@@ -6,7 +6,7 @@ namespace Artemis.Core.LayerBrushes
     /// <summary>
     ///     For internal use only, please use <see cref="LayerBrush{T}" /> or <see cref="PerLedLayerBrush{T}" /> or instead
     /// </summary>
-    public abstract class PropertiesLayerBrush<T> : BaseLayerBrush where T : LayerPropertyGroup
+    public abstract class PropertiesLayerBrush<T> : BaseLayerBrush where T : LayerPropertyGroup, new()
     {
         private T _properties = null!;
 
@@ -35,7 +35,7 @@ namespace Artemis.Core.LayerBrushes
 
         internal void InitializeProperties(PropertyGroupEntity? propertyGroupEntity)
         {
-            Properties = Activator.CreateInstance<T>();
+            Properties = new T();
             PropertyGroupDescriptionAttribute groupDescription = new() {Identifier = "Brush", Name = Descriptor.DisplayName, Description = Descriptor.Description};
             Properties.Initialize(Layer, null, groupDescription, propertyGroupEntity);
             PropertiesInitialized = true;

@@ -7,12 +7,11 @@ namespace Artemis.Core.LayerEffects
     /// <summary>
     ///     For internal use only, please use <see cref="LayerEffect{T}" /> instead
     /// </summary>
-    public abstract class BaseLayerEffect : BreakableModel, IDisposable
+    public abstract class BaseLayerEffect : BreakableModel, IDisposable, IStorageModel
     {
         private ILayerEffectConfigurationDialog? _configurationDialog;
         private LayerEffectDescriptor _descriptor;
         private bool _suspended;
-        private Guid _entityId;
         private bool _hasBeenRenamed;
         private string _name;
         private int _order;
@@ -49,15 +48,6 @@ namespace Artemis.Core.LayerEffects
         {
             get => _name;
             set => SetAndNotify(ref _name, value);
-        }
-
-        /// <summary>
-        ///     Gets or sets the suspended state, if suspended the effect is skipped in render and update
-        /// </summary>
-        public bool Suspended
-        {
-            get => _suspended;
-            set => SetAndNotify(ref _suspended, value);
         }
 
         /// <summary>
@@ -105,12 +95,17 @@ namespace Artemis.Core.LayerEffects
         /// <summary>
         ///     Gets a reference to the layer property group without knowing it's type
         /// </summary>
-        public virtual LayerPropertyGroup? BaseProperties => null;
+        public virtual LayerEffectPropertyGroup? BaseProperties => null;
 
         /// <summary>
         ///     Gets a boolean indicating whether the layer effect is enabled or not
         /// </summary>
         public bool Enabled { get; private set; }
+
+        /// <summary>
+        ///     Gets a boolean indicating whether the layer effect is suspended or not
+        /// </summary>
+        public bool Suspended => BaseProperties is not {PropertiesInitialized: true} || !BaseProperties.IsEnabled;
 
         #region IDisposable
 
@@ -224,11 +219,20 @@ namespace Artemis.Core.LayerEffects
 
         #endregion
 
+        /// <inheritdoc />
+        public void Load()
+        {
+            Name = LayerEffectEntity.Name;
+            HasBeenRenamed = LayerEffectEntity.HasBeenRenamed;
+            Order = LayerEffectEntity.Order;
+        }
+
+        /// <inheritdoc />
         public void Save()
         {
-            // No need to update the ID, type and provider ID. They're set once by the LayerBrushDescriptors CreateInstance and can't change
+            LayerEffectEntity.ProviderId = Descriptor.Provider.Id;
+            LayerEffectEntity.EffectType = GetType().FullName;
             LayerEffectEntity.Name = Name;
-            LayerEffectEntity.Suspended = Suspended;
             LayerEffectEntity.HasBeenRenamed = HasBeenRenamed;
             LayerEffectEntity.Order = Order;
 

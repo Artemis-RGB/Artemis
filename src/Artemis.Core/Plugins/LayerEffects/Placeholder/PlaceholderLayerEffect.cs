@@ -16,7 +16,6 @@ namespace Artemis.Core.LayerEffects.Placeholder
             LayerEffectEntity = originalEntity;
             Order = OriginalEntity.Order;
             Name = OriginalEntity.Name;
-            Suspended = OriginalEntity.Suspended;
             HasBeenRenamed = OriginalEntity.HasBeenRenamed;
         }
 
@@ -58,7 +57,7 @@ namespace Artemis.Core.LayerEffects.Placeholder
     /// <summary>
     ///     This is in place so that the UI has something to show
     /// </summary>
-    internal class PlaceholderProperties : LayerPropertyGroup
+    internal class PlaceholderProperties : LayerEffectPropertyGroup
     {
         protected override void PopulateDefaults()
         {

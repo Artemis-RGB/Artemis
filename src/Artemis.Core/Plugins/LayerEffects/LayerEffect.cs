@@ -6,7 +6,7 @@ namespace Artemis.Core.LayerEffects
     ///     Represents an effect that applies preprocessing and/or postprocessing to a layer
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class LayerEffect<T> : BaseLayerEffect where T : LayerPropertyGroup
+    public abstract class LayerEffect<T> : BaseLayerEffect where T : LayerEffectPropertyGroup, new()
     {
         private T _properties = null!;
 
@@ -16,7 +16,7 @@ namespace Artemis.Core.LayerEffects
         public bool PropertiesInitialized { get; internal set; }
 
         /// <inheritdoc />
-        public override LayerPropertyGroup BaseProperties => Properties;
+        public override LayerEffectPropertyGroup BaseProperties => Properties;
 
         /// <summary>
         ///     Gets the properties of this effect.
@@ -32,19 +32,22 @@ namespace Artemis.Core.LayerEffects
             }
             internal set => _properties = value;
         }
-
-        internal void InitializeProperties()
-        {
-            Properties = Activator.CreateInstance<T>();
-            Properties.Initialize(ProfileElement, null, new PropertyGroupDescriptionAttribute(){Identifier = "LayerEffect"}, LayerEffectEntity.PropertyGroup);
-            PropertiesInitialized = true;
-
-            EnableLayerEffect();
-        }
-
+        
         internal override void Initialize()
         {
             InitializeProperties();
+        }
+        
+        private void InitializeProperties()
+        {
+            Properties = new T();
+            Properties.Initialize(ProfileElement, null, new PropertyGroupDescriptionAttribute {Identifier = "LayerEffect"}, LayerEffectEntity.PropertyGroup);
+            
+            // Initialize will call PopulateDefaults but that is for plugin developers so can't rely on that to default IsEnabled to true
+            Properties.InitializeIsEnabled();
+            PropertiesInitialized = true;
+
+            EnableLayerEffect();
         }
     }
 }

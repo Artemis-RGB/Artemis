@@ -80,21 +80,21 @@ namespace Artemis.UI.Screens.Settings
             "Vulkan"
         };
 
-        public ObservableCollection<(string, double)> RenderScales { get; } = new()
+        public ObservableCollection<RenderSettingViewModel> RenderScales { get; } = new()
         {
-            new ValueTuple<string, double>("25%", 0.25),
-            new ValueTuple<string, double>("50%", 0.5),
-            new ValueTuple<string, double>("100%", 1)
+            new RenderSettingViewModel("25%", 0.25),
+            new RenderSettingViewModel("50%", 0.5),
+            new RenderSettingViewModel("100%", 1)
         };
 
-        public ObservableCollection<(string, int)> TargetFrameRates { get; } = new()
+        public ObservableCollection<RenderSettingViewModel> TargetFrameRates { get; } = new()
         {
-            new ValueTuple<string, int>("10 FPS", 10),
-            new ValueTuple<string, int>("20 FPS", 20),
-            new ValueTuple<string, int>("30 FPS", 30),
-            new ValueTuple<string, int>("45 FPS", 45),
-            new ValueTuple<string, int>("60 FPS (lol)", 60),
-            new ValueTuple<string, int>("144 FPS (omegalol)", 144)
+            new RenderSettingViewModel("10 FPS", 10),
+            new RenderSettingViewModel("20 FPS", 20),
+            new RenderSettingViewModel("30 FPS", 30),
+            new RenderSettingViewModel("45 FPS", 45),
+            new RenderSettingViewModel("60 FPS (lol)", 60),
+            new RenderSettingViewModel("144 FPS (omegalol)", 144)
         };
 
         public LayerBrushDescriptor? SelectedLayerBrushDescriptor
@@ -106,21 +106,23 @@ namespace Artemis.UI.Screens.Settings
             }
         }
 
-        public (string, double)? SelectedRenderScale
+        public RenderSettingViewModel? SelectedRenderScale
         {
-            get => RenderScales.FirstOrDefault(s => Math.Abs(s.Item2 - CoreRenderScale.Value) < 0.01);
+            get => RenderScales.FirstOrDefault(s => Math.Abs(s.Value - CoreRenderScale.Value) < 0.01);
             set
             {
-                if (value != null) CoreRenderScale.Value = value.Value.Item2;
+                if (value != null) 
+                    CoreRenderScale.Value = value.Value;
             }
         }
 
-        public (string, int)? SelectedTargetFrameRate
+        public RenderSettingViewModel? SelectedTargetFrameRate
         {
-            get => TargetFrameRates.FirstOrDefault(s => s.Item2 == CoreTargetFrameRate.Value);
+            get => TargetFrameRates.FirstOrDefault(s => Math.Abs(s.Value - CoreTargetFrameRate.Value) < 0.01);
             set
             {
-                if (value != null) CoreTargetFrameRate.Value = value.Value.Item2;
+                if (value != null) 
+                    CoreTargetFrameRate.Value = (int) value.Value;
             }
         }
 

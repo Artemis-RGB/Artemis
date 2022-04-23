@@ -227,19 +227,29 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void Enable()
         {
-            if (Enabled)
-                return;
-
+            // No checks here, effects will do their own checks to ensure they never enable twice
+            // Also not enabling children, they'll enable themselves during their own Update
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
                 baseLayerEffect.InternalEnable();
 
+            Enabled = true;
+        }
+
+        /// <inheritdoc />
+        public override void Disable()
+        {
+            // No checks here, effects will do their own checks to ensure they never disable twice
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                baseLayerEffect.InternalDisable();
+
+            // Disabling children since their Update won't get called with their parent disabled
             foreach (ProfileElement profileElement in Children)
             {
-                if (profileElement is RenderProfileElement renderProfileElement && renderProfileElement.ShouldBeEnabled)
-                    renderProfileElement.Enable();
+                if (profileElement is RenderProfileElement renderProfileElement)
+                    renderProfileElement.Disable();
             }
 
-            Enabled = true;
+            Enabled = false;
         }
 
         /// <inheritdoc />
@@ -248,24 +258,6 @@ namespace Artemis.Core
             DisplayCondition.OverrideTimeline(position);
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
                 baseLayerEffect.InternalUpdate(Timeline); ;
-        }
-
-        /// <inheritdoc />
-        public override void Disable()
-        {
-            if (!Enabled)
-                return;
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
-                baseLayerEffect.InternalDisable();
-
-            foreach (ProfileElement profileElement in Children)
-            {
-                if (profileElement is RenderProfileElement renderProfileElement)
-                    renderProfileElement.Disable();
-            }
-
-            Enabled = false;
         }
 
         /// <summary>
@@ -308,7 +300,6 @@ namespace Artemis.Core
 
         internal override void Load()
         {
-            ExpandedPropertyGroups.AddRange(FolderEntity.ExpandedPropertyGroups);
             Reset();
 
             // Load child folders
@@ -340,8 +331,6 @@ namespace Artemis.Core
             FolderEntity.Suspended = Suspended;
 
             FolderEntity.ProfileId = Profile.EntityId;
-            FolderEntity.ExpandedPropertyGroups.Clear();
-            FolderEntity.ExpandedPropertyGroups.AddRange(ExpandedPropertyGroups);
 
             SaveRenderElement();
         }

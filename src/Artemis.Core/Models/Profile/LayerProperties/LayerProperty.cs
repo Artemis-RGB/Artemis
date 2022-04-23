@@ -203,7 +203,7 @@ namespace Artemis.Core
         ///     or existing keyframe.
         /// </param>
         /// <returns>The keyframe if one was created or updated.</returns>
-        public LayerPropertyKeyframe<T>? SetCurrentValue(T value, TimeSpan? time)
+        public LayerPropertyKeyframe<T>? SetCurrentValue(T value, TimeSpan? time = null)
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");

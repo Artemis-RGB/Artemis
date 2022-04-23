@@ -42,8 +42,6 @@ public static class ArtemisBootstrapper
         _kernel.Load(modules);
         _kernel.UseNinjectDependencyResolver();
 
-        DataModelPicker.DataModelUIService = _kernel.Get<IDataModelUIService>();
-
         return _kernel;
     }
 
@@ -62,6 +60,7 @@ public static class ArtemisBootstrapper
         _application.DataContext = rootViewModel;
 
         RxApp.DefaultExceptionHandler = Observer.Create<Exception>(DisplayUnhandledException);
+        DataModelPicker.DataModelUIService = _kernel.Get<IDataModelUIService>();
     }
 
     private static void DisplayUnhandledException(Exception exception)

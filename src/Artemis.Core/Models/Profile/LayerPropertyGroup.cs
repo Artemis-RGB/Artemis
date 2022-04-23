@@ -249,6 +249,15 @@ namespace Artemis.Core
                 layerPropertyGroup.Update(timeline);
         }
 
+        internal void MoveLayerProperty(ILayerProperty layerProperty, int index)
+        {
+            if (!_layerProperties.Contains(layerProperty))
+                return;
+            
+            _layerProperties.Remove(layerProperty);
+            _layerProperties.Insert(index, layerProperty);
+        }
+
         internal virtual void OnVisibilityChanged()
         {
             VisibilityChanged?.Invoke(this, EventArgs.Empty);
@@ -292,7 +301,7 @@ namespace Artemis.Core
                 throw new ArtemisPluginException($"Property with PropertyGroupDescription attribute must be of type LayerPropertyGroup: {propertyGroupDescription.Identifier}");
             if (!(Activator.CreateInstance(propertyInfo.PropertyType) is LayerPropertyGroup instance))
                 throw new ArtemisPluginException($"Failed to create instance of layer property group: {propertyGroupDescription.Identifier}");
-            
+
             PropertyGroupEntity entity = GetPropertyGroupEntity(propertyGroupDescription.Identifier);
             instance.Initialize(ProfileElement, this, propertyGroupDescription, entity);
 

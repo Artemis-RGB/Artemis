@@ -38,18 +38,36 @@ public class PropertyGroupViewModel : ViewModelBase, IDisposable
         PopulateChildren();
     }
 
-    public PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory, IPropertyInputService propertyInputService,
-        BaseLayerBrush layerBrush)
-        : this(layerPropertyGroup, layerPropertyVmFactory, propertyInputService)
+    public PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory, IPropertyInputService propertyInputService, BaseLayerBrush layerBrush)
     {
+        _layerPropertyVmFactory = layerPropertyVmFactory;
+        _propertyInputService = propertyInputService;
         LayerBrush = layerBrush;
+        Children = new ObservableCollection<ViewModelBase>();
+        LayerPropertyGroup = layerPropertyGroup;
+        TreeGroupViewModel = layerPropertyVmFactory.TreeGroupViewModel(this);
+        TimelineGroupViewModel = layerPropertyVmFactory.TimelineGroupViewModel(this);
+
+        LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
+        _isVisible = !LayerPropertyGroup.IsHidden;
+
+        PopulateChildren();
     }
 
-    public PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory, IPropertyInputService propertyInputService,
-        BaseLayerEffect layerEffect)
-        : this(layerPropertyGroup, layerPropertyVmFactory, propertyInputService)
+    public PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory, IPropertyInputService propertyInputService, BaseLayerEffect layerEffect)
     {
+        _layerPropertyVmFactory = layerPropertyVmFactory;
+        _propertyInputService = propertyInputService;
         LayerEffect = layerEffect;
+        Children = new ObservableCollection<ViewModelBase>();
+        LayerPropertyGroup = layerPropertyGroup;
+        TreeGroupViewModel = layerPropertyVmFactory.TreeGroupViewModel(this);
+        TimelineGroupViewModel = layerPropertyVmFactory.TimelineGroupViewModel(this);
+
+        LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
+        _isVisible = !LayerPropertyGroup.IsHidden;
+
+        PopulateChildren();
     }
 
     public ObservableCollection<ViewModelBase> Children { get; }

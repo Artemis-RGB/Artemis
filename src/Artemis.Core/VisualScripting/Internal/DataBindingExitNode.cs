@@ -24,7 +24,7 @@ namespace Artemis.Core.Internal
 
         public override void Evaluate()
         {
-            foreach (var (property, inputPin) in _propertyPins)
+            foreach ((IDataBindingProperty? property, InputPin? inputPin) in _propertyPins)
             {
                 if (inputPin.ConnectedTo.Any())
                     _propertyValues[property] = inputPin.Value!;
@@ -35,7 +35,7 @@ namespace Artemis.Core.Internal
         
         public void ApplyToDataBinding()
         {
-            foreach (var (property, pendingValue) in _propertyValues)
+            foreach ((IDataBindingProperty? property, object? pendingValue) in _propertyValues)
                 property.SetValue(pendingValue);
         }
 

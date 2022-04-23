@@ -1,4 +1,5 @@
-﻿using Artemis.Core;
+﻿using System;
+using Artemis.Core;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.PropertyInput;
 using ReactiveUI;
@@ -16,17 +17,17 @@ public class IntRangePropertyInputViewModel : PropertyInputViewModel<IntRange>
 
         if (LayerProperty.PropertyDescription.MinInputValue.IsNumber())
         {
-            this.ValidationRule(vm => vm.Start, i => i >= (int) LayerProperty.PropertyDescription.MinInputValue,
+            this.ValidationRule(vm => vm.Start, i => i >= Convert.ToInt32(LayerProperty.PropertyDescription.MinInputValue),
                 $"Start value must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
-            this.ValidationRule(vm => vm.End, i => i >= (int)LayerProperty.PropertyDescription.MinInputValue,
+            this.ValidationRule(vm => vm.End, i => i >= Convert.ToInt32(LayerProperty.PropertyDescription.MinInputValue),
                 $"End value must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
         }
 
         if (LayerProperty.PropertyDescription.MaxInputValue.IsNumber())
         {
-            this.ValidationRule(vm => vm.Start, i => i < (int)LayerProperty.PropertyDescription.MaxInputValue,
+            this.ValidationRule(vm => vm.Start, i => i < Convert.ToInt32(LayerProperty.PropertyDescription.MaxInputValue),
                 $"Start value must be smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
-            this.ValidationRule(vm => vm.End, i => i < (int) LayerProperty.PropertyDescription.MaxInputValue,
+            this.ValidationRule(vm => vm.End, i => i < Convert.ToInt32(LayerProperty.PropertyDescription.MaxInputValue),
                 $"End value must be smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
         }
     }

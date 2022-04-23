@@ -50,7 +50,7 @@ namespace Artemis.Core.Services
                 .WithModule(PluginsModule);
 
             // Add registered modules
-            foreach (var webModule in _modules)
+            foreach (WebModuleRegistration? webModule in _modules)
                 server = server.WithModule(webModule.CreateInstance());
 
             server = server
@@ -132,7 +132,7 @@ namespace Artemis.Core.Services
             return endPoint;
         }
 
-        public DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(Module<T> module, string endPointName) where T : DataModel
+        public DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(Module<T> module, string endPointName) where T : DataModel, new()
         {
             if (module == null) throw new ArgumentNullException(nameof(module));
             if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
@@ -141,7 +141,7 @@ namespace Artemis.Core.Services
             return endPoint;
         }
 
-        private void HandleDataModelRequest<T>(Module<T> module, T value) where T : DataModel
+        private void HandleDataModelRequest<T>(Module<T> module, T value) where T : DataModel, new()
         {
         }
 

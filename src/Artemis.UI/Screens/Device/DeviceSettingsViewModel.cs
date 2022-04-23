@@ -77,7 +77,7 @@ namespace Artemis.UI.Screens.Device
 
             await _windowService.CreateContentDialog()
                 .WithTitle($"{Device.RgbDevice.DeviceInfo.DeviceName} - Detect input")
-                .WithViewModel<DeviceDetectInputViewModel>(out var viewModel, ("device", Device))
+                .WithViewModel<DeviceDetectInputViewModel>(out DeviceDetectInputViewModel? viewModel, ("device", Device))
                 .WithCloseButtonText("Cancel")
                 .ShowAsync();
 

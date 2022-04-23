@@ -301,7 +301,7 @@ namespace Artemis.Core.Services
 
         public void ReleaseAll()
         {
-            foreach (var (device, keys) in _pressedKeys.ToList())
+            foreach ((ArtemisDevice? device, HashSet<KeyboardKey>? keys) in _pressedKeys.ToList())
             {
                 foreach (KeyboardKey keyboardKey in keys)
                 {

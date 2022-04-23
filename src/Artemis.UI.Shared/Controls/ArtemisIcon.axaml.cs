@@ -53,7 +53,7 @@ namespace Artemis.UI.Shared
                     {
                         SvgSource source = new();
                         source.Load(iconString);
-                        Content = new SvgImage {Source = source};
+                        Content = new Image {Source = new SvgImage {Source = source}};
                     }
                     // An URI pointing to a different kind of image
                     else
@@ -79,10 +79,8 @@ namespace Artemis.UI.Shared
 
         private void OnDetachedFromLogicalTree(object? sender, LogicalTreeAttachmentEventArgs e)
         {
-            if (Content is SvgImage svgImage)
-                svgImage.Source?.Dispose();
-            else if (Content is Image image)
-                ((Bitmap) image.Source).Dispose();
+            if (Content is Image image && image.Source is IDisposable disposable)
+                disposable.Dispose();
         }
 
         private void InitializeComponent()
