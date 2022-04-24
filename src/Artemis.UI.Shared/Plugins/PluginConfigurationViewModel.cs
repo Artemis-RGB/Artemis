@@ -6,7 +6,7 @@ namespace Artemis.UI.Shared
     /// <summary>
     ///     Represents a view model for a plugin configuration window
     /// </summary>
-    public abstract class PluginConfigurationViewModel : ViewModelValidationBase, IPluginConfigurationViewModel
+    public abstract class PluginConfigurationViewModel : ValidatableViewModelBase, IPluginConfigurationViewModel
     {
         /// <summary>
         ///     Creates a new instance of the <see cref="PluginConfigurationViewModel" /> class

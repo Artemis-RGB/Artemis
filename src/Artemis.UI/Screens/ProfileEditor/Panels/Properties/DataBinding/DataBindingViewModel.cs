@@ -30,13 +30,13 @@ public class DataBindingViewModel : ActivatableViewModelBase
         {
             _layerProperty = profileEditorService.LayerProperty.ToProperty(this, vm => vm.LayerProperty).DisposeWith(d);
             _nodeScriptViewModel = profileEditorService.LayerProperty
-                .Select(p => p != null ? p.BaseDataBinding.GetObservable() : Observable.Never<IDataBinding>())
+                .Select(p => p != null ? p.BaseDataBinding.AsObservable() : Observable.Never<IDataBinding>())
                 .Switch()
                 .Select(b => b.IsEnabled ? nodeVmFactory.NodeScriptViewModel((NodeScript) b.Script, false) : null)
                 .ToProperty(this, vm => vm.NodeScriptViewModel)
                 .DisposeWith(d);
             _dataBindingEnabled = profileEditorService.LayerProperty
-                .Select(p => p != null ? p.BaseDataBinding.GetObservable() : Observable.Never<IDataBinding>())
+                .Select(p => p != null ? p.BaseDataBinding.AsObservable() : Observable.Never<IDataBinding>())
                 .Switch()
                 .Select(b => b.IsEnabled)
                 .ToProperty(this, vm => vm.DataBindingEnabled)

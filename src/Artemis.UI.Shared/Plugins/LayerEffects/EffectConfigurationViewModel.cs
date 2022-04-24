@@ -8,7 +8,7 @@ namespace Artemis.UI.Shared.LayerEffects;
 /// <summary>
 ///     Represents a view model for an effect configuration window
 /// </summary>
-public abstract class EffectConfigurationViewModel : ActivatableViewModelBase
+public abstract class EffectConfigurationViewModel : ValidatableViewModelBase
 {
     /// <summary>
     ///     Creates a new instance of the <see cref="EffectConfigurationViewModel" /> class

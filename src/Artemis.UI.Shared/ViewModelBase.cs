@@ -12,7 +12,7 @@ namespace Artemis.UI.Shared;
 /// <summary>
 ///     Represents the base class for Artemis view models
 /// </summary>
-public abstract class ContentDialogViewModelBase : ReactiveValidationObject, IActivatableViewModel, IDisposable
+public abstract class ContentDialogViewModelBase : ValidatableViewModelBase, IDisposable
 {
     /// <summary>
     ///     Gets the content dialog that hosts the view model
@@ -29,14 +29,7 @@ public abstract class ContentDialogViewModelBase : ReactiveValidationObject, IAc
     protected virtual void Dispose(bool disposing)
     {
     }
-
-    #region Implementation of IActivatableViewModel
-
-    /// <inheritdoc />
-    public ViewModelActivator Activator { get; } = new();
-
-    #endregion
-
+    
     /// <inheritdoc />
     public void Dispose()
     {
@@ -46,9 +39,35 @@ public abstract class ContentDialogViewModelBase : ReactiveValidationObject, IAc
 }
 
 /// <summary>
-///     Represents the base class for Artemis view models
+///     Represents the base class for Artemis view models used to drive dialogs
 /// </summary>
-public abstract class ViewModelValidationBase : ReactiveValidationObject
+public abstract class DialogViewModelBase<TResult> : ValidatableViewModelBase
+{
+    /// <summary>
+    ///     Closes the dialog with the given <paramref name="result" />
+    /// </summary>
+    /// <param name="result">The result of the dialog</param>
+    public void Close(TResult result)
+    {
+        CloseRequested?.Invoke(this, new DialogClosedEventArgs<TResult>(result));
+    }
+
+    /// <summary>
+    ///     Closes the dialog without a result
+    /// </summary>
+    public void Cancel()
+    {
+        CancelRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    internal event EventHandler<DialogClosedEventArgs<TResult>>? CloseRequested;
+    internal event EventHandler? CancelRequested;
+}
+
+/// <summary>
+///     Represents the base class for Artemis view models that are interested in validation and the activated event
+/// </summary>
+public abstract class ValidatableViewModelBase : ReactiveValidationObject, IActivatableViewModel
 {
     private string? _displayName;
 
@@ -60,7 +79,10 @@ public abstract class ViewModelValidationBase : ReactiveValidationObject
         get => _displayName;
         set => RaiseAndSetIfChanged(ref _displayName, value);
     }
-
+    
+    /// <inheritdoc />
+    public ViewModelActivator Activator { get; } = new();
+    
     /// <summary>
     ///     RaiseAndSetIfChanged fully implements a Setter for a read-write property on a ReactiveObject, using
     ///     CallerMemberName to raise the notification and the ref to the backing field to set the property.
@@ -87,6 +109,15 @@ public abstract class ViewModelValidationBase : ReactiveValidationObject
         this.RaisePropertyChanged(propertyName);
         return newValue;
     }
+}
+
+/// <summary>
+///     Represents the base class for Artemis view models that are interested in the activated event
+/// </summary>
+public abstract class ActivatableViewModelBase : ViewModelBase, IActivatableViewModel
+{
+    /// <inheritdoc />
+    public ViewModelActivator Activator { get; } = new();
 }
 
 /// <summary>
@@ -131,39 +162,4 @@ public abstract class ViewModelBase : ReactiveObject
         this.RaisePropertyChanged(propertyName);
         return newValue;
     }
-}
-
-/// <summary>
-///     Represents the base class for Artemis view models that are interested in the activated event
-/// </summary>
-public abstract class ActivatableViewModelBase : ViewModelBase, IActivatableViewModel
-{
-    /// <inheritdoc />
-    public ViewModelActivator Activator { get; } = new();
-}
-
-/// <summary>
-///     Represents the base class for Artemis view models used to drive dialogs
-/// </summary>
-public abstract class DialogViewModelBase<TResult> : ActivatableViewModelBase
-{
-    /// <summary>
-    ///     Closes the dialog with the given <paramref name="result" />
-    /// </summary>
-    /// <param name="result">The result of the dialog</param>
-    public void Close(TResult result)
-    {
-        CloseRequested?.Invoke(this, new DialogClosedEventArgs<TResult>(result));
-    }
-
-    /// <summary>
-    ///     Closes the dialog without a result
-    /// </summary>
-    public void Cancel()
-    {
-        CancelRequested?.Invoke(this, EventArgs.Empty);
-    }
-
-    internal event EventHandler<DialogClosedEventArgs<TResult>>? CloseRequested;
-    internal event EventHandler? CancelRequested;
 }

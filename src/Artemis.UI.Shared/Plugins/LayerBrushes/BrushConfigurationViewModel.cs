@@ -7,7 +7,7 @@ namespace Artemis.UI.Shared.LayerBrushes
     /// <summary>
     ///     Represents a view model for a brush configuration window
     /// </summary>
-    public abstract class BrushConfigurationViewModel : ActivatableViewModelBase
+    public abstract class BrushConfigurationViewModel : ValidatableViewModelBase
     {
         /// <summary>
         ///     Creates a new instance of the <see cref="BrushConfigurationViewModel" /> class
