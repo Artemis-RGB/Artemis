@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Windows;
 
-public class BrushConfigurationWindowView : ReactiveCoreWindow<EffectConfigurationWindowViewModel>
+public class BrushConfigurationWindowView : ReactiveCoreWindow<BrushConfigurationWindowViewModel>
 {
     public BrushConfigurationWindowView()
     {
@@ -20,8 +20,11 @@ public class BrushConfigurationWindowView : ReactiveCoreWindow<EffectConfigurati
         Closing += OnClosing;
     }
 
-    private void OnClosing(object? sender, CancelEventArgs e)
+    private async void OnClosing(object? sender, CancelEventArgs e)
     {
-        e.Cancel = ViewModel?.CanClose() ?? true;
+        if (ViewModel == null)
+            return;
+
+        e.Cancel = !await ViewModel.CanClose();
     }
 }

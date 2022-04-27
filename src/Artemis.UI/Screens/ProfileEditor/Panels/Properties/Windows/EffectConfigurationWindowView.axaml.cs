@@ -20,8 +20,11 @@ public class EffectConfigurationWindowView : ReactiveCoreWindow<EffectConfigurat
         Closing += OnClosing;
     }
 
-    private void OnClosing(object? sender, CancelEventArgs e)
+    private async void OnClosing(object? sender, CancelEventArgs e)
     {
-        e.Cancel = ViewModel?.CanClose() ?? true;
+        if (ViewModel == null)
+            return;
+
+        e.Cancel = !await ViewModel.CanClose();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.LayerBrushes;
 using Avalonia.Threading;
@@ -18,14 +19,15 @@ public class BrushConfigurationWindowViewModel : DialogViewModelBase<object?>
     public BrushConfigurationViewModel ConfigurationViewModel { get; }
     public LayerBrushConfigurationDialog Configuration { get; }
 
-    public bool CanClose()
+    public async Task<bool> CanClose()
     {
-        return ConfigurationViewModel.CanClose() && Dispatcher.UIThread.InvokeAsync(async () => await ConfigurationViewModel.CanCloseAsync()).GetAwaiter().GetResult();
+        // ReSharper disable once MethodHasAsyncOverload - Checking both in case the plugin developer only implemented CanClose
+        return ConfigurationViewModel.CanClose() && await ConfigurationViewModel.CanCloseAsync();
     }
 
-    private void ConfigurationViewModelOnCloseRequested(object? sender, EventArgs e)
+    private async void ConfigurationViewModelOnCloseRequested(object? sender, EventArgs e)
     {
-        if (CanClose())
+        if (await CanClose())
             Close(null);
     }
 }
