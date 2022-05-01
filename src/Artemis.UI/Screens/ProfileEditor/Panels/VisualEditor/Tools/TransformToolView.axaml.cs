@@ -358,7 +358,7 @@ public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
         float startAngle = CalculateAngleToAnchor(e);
         _rotationDragOffset = startAngle - ViewModel.Layer.Transform.Rotation;
         ViewModel.StartRotation();
-        ToolTip.SetTip((Control)sender, $"{ViewModel.Layer.Transform.Rotation.CurrentValue:F3}°");
+        ToolTip.SetTip((Control)sender, $"{ViewModel.Layer.Transform.Rotation.CurrentValue:F3}Â°");
         ToolTip.SetIsOpen((Control)sender, true);
 
         e.Pointer.Capture((IInputElement?) sender);
@@ -376,7 +376,7 @@ public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
             angle += 360;
 
         ViewModel?.UpdateRotation(angle, e.KeyModifiers.HasFlag(KeyModifiers.Control));
-        ToolTip.SetTip((Control)sender, $"{ViewModel.Layer.Transform.Rotation.CurrentValue:F3}°");
+        ToolTip.SetTip((Control)sender, $"{ViewModel.Layer.Transform.Rotation.CurrentValue:F3}Â°");
 
         e.Handled = true;
     }
