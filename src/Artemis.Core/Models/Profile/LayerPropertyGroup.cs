@@ -231,14 +231,18 @@ namespace Artemis.Core
 
         internal void ApplyToEntity()
         {
-            if (!PropertiesInitialized)
+            if (!PropertiesInitialized || PropertyGroupEntity == null)
                 return;
 
             foreach (ILayerProperty layerProperty in LayerProperties)
                 layerProperty.Save();
 
+            PropertyGroupEntity.PropertyGroups.Clear();
             foreach (LayerPropertyGroup layerPropertyGroup in LayerPropertyGroups)
+            {
                 layerPropertyGroup.ApplyToEntity();
+                PropertyGroupEntity.PropertyGroups.Add(layerPropertyGroup.PropertyGroupEntity);
+            }
         }
 
         internal void Update(Timeline timeline)
