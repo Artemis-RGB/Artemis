@@ -55,7 +55,7 @@ namespace Artemis.UI.Screens.Root
 
         private void PluginManagementServiceOnPluginFeatureEnabling(object? sender, PluginFeatureEventArgs e)
         {
-            Status = "Enabling: " + e.PluginFeature.GetType().Name.Humanize();
+            Status = "Enabling: " + e.PluginFeature.Info.Name;
         }
 
         private void PluginManagementServiceOnPluginFeatureEnabled(object? sender, PluginFeatureEventArgs e)

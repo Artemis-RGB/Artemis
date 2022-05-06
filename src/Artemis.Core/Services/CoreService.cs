@@ -232,6 +232,7 @@ namespace Artemis.Core.Services
             _pluginManagementService.CopyBuiltInPlugins();
             _pluginManagementService.LoadPlugins(StartupArguments, IsElevated);
 
+            _rgbService.ApplyPreferredGraphicsContext(StartupArguments.Contains("--force-software-render"));
             _rgbService.SetRenderPaused(false);
             OnInitialized();
         }

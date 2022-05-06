@@ -13,6 +13,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Avalonia;
+using DynamicData;
 using FluentAvalonia.Styling;
 using ReactiveUI;
 using Serilog.Events;
@@ -26,15 +27,19 @@ namespace Artemis.UI.Screens.Settings
         private readonly IDebugService _debugService;
         private readonly FluentAvaloniaTheme _fluentAvaloniaTheme;
 
-        public GeneralTabViewModel(ISettingsService settingsService, IPluginManagementService pluginManagementService, IDebugService debugService)
+        public GeneralTabViewModel(ISettingsService settingsService, IPluginManagementService pluginManagementService, IDebugService debugService, IGraphicsContextProvider? graphicsContextProvider)
         {
             DisplayName = "General";
             _settingsService = settingsService;
             _debugService = debugService;
             _fluentAvaloniaTheme = AvaloniaLocator.Current.GetService<FluentAvaloniaTheme>();
-            
+
             List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
             LayerBrushDescriptors = new ObservableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
+            GraphicsContexts = new ObservableCollection<string> {"Software"};
+            if (graphicsContextProvider != null)
+                GraphicsContexts.AddRange(graphicsContextProvider.GraphicsContextNames);
+
             _defaultLayerBrushDescriptor = _settingsService.GetSetting("ProfileEditor.DefaultLayerBrushDescriptor", new LayerBrushReference
             {
                 LayerBrushProviderId = "Artemis.Plugins.LayerBrushes.Color.ColorBrushProvider-92a9d6ba",
@@ -46,7 +51,7 @@ namespace Artemis.UI.Screens.Settings
             ShowSetupWizard = ReactiveCommand.Create(ExecuteShowSetupWizard);
             ShowDebugger = ReactiveCommand.Create(ExecuteShowDebugger);
             ShowDataFolder = ReactiveCommand.Create(ExecuteShowDataFolder);
-            
+
             this.WhenActivated(d =>
             {
                 UIColorScheme.SettingChanged += UIColorSchemeOnSettingChanged;
@@ -73,12 +78,7 @@ namespace Artemis.UI.Screens.Settings
         public ReactiveCommand<Unit, Unit> ShowDataFolder { get; }
 
         public ObservableCollection<LayerBrushDescriptor> LayerBrushDescriptors { get; }
-
-        public ObservableCollection<string> GraphicsContexts { get; } = new()
-        {
-            "Software",
-            "Vulkan"
-        };
+        public ObservableCollection<string> GraphicsContexts { get; }
 
         public ObservableCollection<RenderSettingViewModel> RenderScales { get; } = new()
         {
@@ -111,7 +111,7 @@ namespace Artemis.UI.Screens.Settings
             get => RenderScales.FirstOrDefault(s => Math.Abs(s.Value - CoreRenderScale.Value) < 0.01);
             set
             {
-                if (value != null) 
+                if (value != null)
                     CoreRenderScale.Value = value.Value;
             }
         }
@@ -121,7 +121,7 @@ namespace Artemis.UI.Screens.Settings
             get => TargetFrameRates.FirstOrDefault(s => Math.Abs(s.Value - CoreTargetFrameRate.Value) < 0.01);
             set
             {
-                if (value != null) 
+                if (value != null)
                     CoreTargetFrameRate.Value = (int) value.Value;
             }
         }

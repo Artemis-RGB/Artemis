@@ -8,6 +8,7 @@ using Artemis.Core.Services.Models;
 using Artemis.Core.SkiaSharp;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
+using Ninject;
 using RGB.NET.Core;
 using Serilog;
 
@@ -22,21 +23,27 @@ namespace Artemis.Core.Services
         private readonly List<ArtemisDevice> _devices;
         private readonly List<ArtemisDevice> _enabledDevices;
         private readonly ILogger _logger;
+        private readonly IKernel _kernel;
+        private readonly ISettingsService _settingsService;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly PluginSetting<double> _renderScaleSetting;
         private readonly PluginSetting<int> _targetFrameRateSetting;
+        private readonly PluginSetting<string> _preferredGraphicsContext;
         private readonly SKTextureBrush _textureBrush = new(null) {CalculationMode = RenderMode.Absolute};
         private Dictionary<Led, ArtemisLed> _ledMap;
         private ListLedGroup? _surfaceLedGroup;
         private SKTexture? _texture;
 
-        public RgbService(ILogger logger, ISettingsService settingsService, IPluginManagementService pluginManagementService, IDeviceRepository deviceRepository)
+        public RgbService(ILogger logger, IKernel kernel, ISettingsService settingsService, IPluginManagementService pluginManagementService, IDeviceRepository deviceRepository)
         {
             _logger = logger;
+            _kernel = kernel;
+            _settingsService = settingsService;
             _pluginManagementService = pluginManagementService;
             _deviceRepository = deviceRepository;
             _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 30);
             _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.25);
+            _preferredGraphicsContext = _settingsService.GetSetting("Core.PreferredGraphicsContext", "Vulkan");
 
             Surface = new RGBSurface();
             Utilities.RenderScaleMultiplier = (int) (1 / _renderScaleSetting.Value);
@@ -46,6 +53,7 @@ namespace Artemis.Core.Services
             Surface.SurfaceLayoutChanged += SurfaceOnLayoutChanged;
             _targetFrameRateSetting.SettingChanged += TargetFrameRateSettingOnSettingChanged;
             _renderScaleSetting.SettingChanged += RenderScaleSettingOnSettingChanged;
+            _preferredGraphicsContext.SettingChanged += PreferredGraphicsContextOnSettingChanged;
             _enabledDevices = new List<ArtemisDevice>();
             _devices = new List<ArtemisDevice>();
             _ledMap = new Dictionary<Led, ArtemisLed>();
@@ -60,6 +68,7 @@ namespace Artemis.Core.Services
 
             Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
         }
+
 
         public TimerUpdateTrigger UpdateTrigger { get; }
 
@@ -135,11 +144,16 @@ namespace Artemis.Core.Services
         private void RenderScaleSettingOnSettingChanged(object? sender, EventArgs e)
         {
             Utilities.RenderScaleMultiplier = (int) (1 / _renderScaleSetting.Value);
-            
+
             _texture?.Invalidate();
             foreach (ArtemisDevice artemisDevice in Devices)
                 artemisDevice.CalculateRenderProperties();
             OnLedsChanged();
+        }
+
+        private void PreferredGraphicsContextOnSettingChanged(object? sender, EventArgs e)
+        {
+            ApplyPreferredGraphicsContext(false);
         }
 
         public IReadOnlyCollection<ArtemisDevice> EnabledDevices { get; }
@@ -271,6 +285,7 @@ namespace Artemis.Core.Services
 
         private IManagedGraphicsContext? _newGraphicsContext;
 
+
         public SKTexture OpenRender()
         {
             if (RenderOpen)
@@ -331,6 +346,40 @@ namespace Artemis.Core.Services
                     _newGraphicsContext = null;
                 }
             }
+        }
+
+        public void ApplyPreferredGraphicsContext(bool forceSoftware)
+        {
+            if (forceSoftware)
+            {
+                _logger.Warning("Startup argument '--force-software-render' is applied, forcing software rendering");
+                UpdateGraphicsContext(null);
+                return;
+            }
+
+            if (_preferredGraphicsContext.Value == "Software")
+            {
+                UpdateGraphicsContext(null);
+                return;
+            }
+
+            IGraphicsContextProvider? provider = _kernel.TryGet<IGraphicsContextProvider>();
+            if (provider == null)
+            {
+                _logger.Warning("No graphics context provider found, defaulting to software rendering");
+                UpdateGraphicsContext(null);
+                return;
+            }
+
+            IManagedGraphicsContext? context = provider.GetGraphicsContext(_preferredGraphicsContext.Value);
+            if (context == null)
+            {
+                _logger.Warning("No graphics context named '{Context}' found, defaulting to software rendering", _preferredGraphicsContext.Value);
+                UpdateGraphicsContext(null);
+                return;
+            }
+
+            UpdateGraphicsContext(context);
         }
 
         public void UpdateGraphicsContext(IManagedGraphicsContext? managedGraphicsContext)

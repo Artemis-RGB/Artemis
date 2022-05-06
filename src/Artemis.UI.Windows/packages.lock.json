@@ -90,6 +90,16 @@
           "Splat": "14.1.45"
         }
       },
+      "SkiaSharp.Vulkan.SharpVk": {
+        "type": "Direct",
+        "requested": "[2.80.3, )",
+        "resolved": "2.80.3",
+        "contentHash": "IeR9oOHBsJUqpuVs23XgZXnrFV6WuOTaLpFhLVlXt2XILWIRrlrqx1PILgJm5bLqesceJLYZyMxVb/Ow7/uReA==",
+        "dependencies": {
+          "SharpVk": "0.4.2",
+          "SkiaSharp": "2.80.3"
+        }
+      },
       "Avalonia.Angle.Windows.Natives": {
         "type": "Transitive",
         "resolved": "2.1.0.2020091801",
@@ -736,6 +746,15 @@
         "contentHash": "uwV5hdhWPwUH1szhO8PJpFiahqXmzPzJT/sOijH/kFgUx+cyoDTMM8MHD0adw9+Iem6itoibbUXHYslzXsLEAg==",
         "dependencies": {
           "Serilog": "2.10.0"
+        }
+      },
+      "SharpVk": {
+        "type": "Transitive",
+        "resolved": "0.4.2",
+        "contentHash": "0CzZJWKw6CTmxKOXzCCyTKCD7tZB6g2+tm2VSSCXWTHlIMHxlRzbH5BaqkYCGo9Y23wp0hPuz2U3NifMH1VI6w==",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "4.4.0",
+          "System.ValueTuple": "4.4.0"
         }
       },
       "ShimSkiaSharp": {

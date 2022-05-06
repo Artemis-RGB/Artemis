@@ -3,8 +3,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
+        xmlns:root="clr-namespace:Artemis.UI.Screens.Root"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Artemis.UI.Screens.Root.SplashView"
+        x:DataType="root:SplashViewModel"
         Icon="/Assets/Images/Logo/application.ico"
         Title="Artemis 2.0"
         Height="450"
@@ -20,12 +22,13 @@
             </Image.Source>
         </Image>
         <TextBlock Grid.Row="1"
+                   Classes="h5"
                    HorizontalAlignment="Center" 
                    VerticalAlignment="Bottom"
                    TextWrapping="Wrap">
             Artemis is initializing...
         </TextBlock>
-        <TextBlock Grid.Row="2" HorizontalAlignment="Center" Text="{Binding Status}" />
+        <TextBlock Grid.Row="2" Classes="subtitle" HorizontalAlignment="Center" Text="{CompiledBinding Status}" />
         <ProgressBar Grid.Row="3" IsIndeterminate="True" Margin="16 0" />
     </Grid>
 </Window>

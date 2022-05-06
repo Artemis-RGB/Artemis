@@ -90,11 +90,7 @@ public class RegistrationService : IRegistrationService
     public void RegisterControllers()
     {
     }
-
-    public void ApplyPreferredGraphicsContext()
-    {
-    }
-
+    
     public void RegisterBuiltInNodeTypes()
     {
         _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(bool), new SKColor(0xFFCD3232));

@@ -1,4 +1,5 @@
-﻿using Artemis.UI.Shared.Providers;
+﻿using Artemis.Core.Services;
+using Artemis.UI.Shared.Providers;
 using Artemis.UI.Windows.Providers;
 using Ninject.Modules;
 
@@ -12,6 +13,7 @@ public class WindowsModule : NinjectModule
     public override void Load()
     {
         Kernel!.Bind<ICursorProvider>().To<CursorProvider>().InSingletonScope();
+        Kernel!.Bind<IGraphicsContextProvider>().To<GraphicsContextProvider>().InSingletonScope();
     }
 
     #endregion
