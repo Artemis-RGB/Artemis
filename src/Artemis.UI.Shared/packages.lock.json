@@ -54,9 +54,9 @@
       },
       "RGB.NET.Core": {
         "type": "Direct",
-        "requested": "[1.0.0-prerelease7, )",
-        "resolved": "1.0.0-prerelease7",
-        "contentHash": "IIja5sC4QZ5pbSNckRCG7TlY4U6j/dRbrl4e2FZqsTGgsevaVB3IqonUQLFY1GGst4xNSl2oh0A23coXQxXGbQ=="
+        "requested": "[1.0.0-prerelease.32, )",
+        "resolved": "1.0.0-prerelease.32",
+        "contentHash": "HlhhikrkV7OQIRszn6RT6+6N4QGGHaN6NDHK1YssZEJTtE2MIdeRajeQFFziPc4OVOvMgxY13unw/v25r/YALw=="
       },
       "SharpVectors.Reloaded": {
         "type": "Direct",
@@ -272,18 +272,18 @@
       },
       "RGB.NET.Layout": {
         "type": "Transitive",
-        "resolved": "1.0.0-prerelease7",
-        "contentHash": "S0kfWVa8EfMOAl2WPHsq98dwaO+SNz9TWr1AtMkdo8aZuYIVhaJ1c+mSAMMnH1V+mSbxDWPHWkNzi9ITszJucA==",
+        "resolved": "1.0.0-prerelease.32",
+        "contentHash": "O7I8zR5Hy+joSLCJW10lkIPNMDS1gXe8hQuwm+T5DEDDpykVyc4tnO55WlO5GDmDCS/cXhcwq+qNpLez5Th4Xw==",
         "dependencies": {
-          "RGB.NET.Core": "1.0.0-prerelease7"
+          "RGB.NET.Core": "1.0.0-prerelease.32"
         }
       },
       "RGB.NET.Presets": {
         "type": "Transitive",
-        "resolved": "1.0.0-prerelease7",
-        "contentHash": "NgShvOPQM0miOsdqMKjkNunngJUZMwr8KR8ME2/Ksir7wgIQfgJj1YwZy8aIj+ar7fDo6VZJZenAshs/Ul+04A==",
+        "resolved": "1.0.0-prerelease.32",
+        "contentHash": "tqPUA/KUG1hw5pT4D7OLXI6buXxpUIUYNET90gHnVXbadYi0C0OJZ703XDsaPpj4Db8/B2k8f1T4tM4s2KCJhw==",
         "dependencies": {
-          "RGB.NET.Core": "1.0.0-prerelease7"
+          "RGB.NET.Core": "1.0.0-prerelease.32"
         }
       },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl": {
@@ -1325,9 +1325,9 @@
           "Ninject": "3.3.4",
           "Ninject.Extensions.ChildKernel": "3.3.0",
           "Ninject.Extensions.Conventions": "3.3.0",
-          "RGB.NET.Core": "1.0.0-prerelease7",
-          "RGB.NET.Layout": "1.0.0-prerelease7",
-          "RGB.NET.Presets": "1.0.0-prerelease7",
+          "RGB.NET.Core": "1.0.0-prerelease.32",
+          "RGB.NET.Layout": "1.0.0-prerelease.32",
+          "RGB.NET.Presets": "1.0.0-prerelease.32",
           "Serilog": "2.10.0",
           "Serilog.Sinks.Console": "4.0.0",
           "Serilog.Sinks.Debug": "2.0.0",

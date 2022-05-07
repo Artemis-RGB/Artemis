@@ -36,6 +36,7 @@
                 <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.Color}" Header="Color (ARGB)" Width="Auto" CanUserSort="False" />
                 <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.Layout.Image, Converter={StaticResource UriToFileNameConverter}, Mode=OneWay}" Header="Image file" CanUserSort="False" />
                 <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.Shape}" Header="Shape" />
+                <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.Location}" Header="Location" Width="Auto" CanUserSort="False" />
                 <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.Size}" Header="Size" Width="Auto" CanUserSort="False" />
                 <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.CustomData}" Header="LED data" Width="Auto" />
             </DataGrid.Columns>
