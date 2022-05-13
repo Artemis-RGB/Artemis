@@ -4,14 +4,26 @@ using Artemis.Storage.Entities.Profile.Conditions;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    /// Represents a condition that plays once when its script evaluates to <see langword="true"/>.
+    /// </summary>
     public class PlayOnceCondition : ICondition
     {
+        /// <summary>
+        ///     Creates a new instance of the <see cref="PlayOnceCondition" /> class.
+        /// </summary>
+        /// <param name="profileElement">The profile element this condition applies to.</param>
         public PlayOnceCondition(RenderProfileElement profileElement)
         {
             ProfileElement = profileElement;
             Entity = new PlayOnceConditionEntity();
         }
 
+        /// <summary>
+        ///     Creates a new instance of the <see cref="PlayOnceCondition" /> class.
+        /// </summary>
+        /// <param name="entity">The entity used to store this condition.</param>
+        /// <param name="profileElement">The profile element this condition applies to.</param>
         public PlayOnceCondition(PlayOnceConditionEntity entity, RenderProfileElement profileElement)
         {
             ProfileElement = profileElement;

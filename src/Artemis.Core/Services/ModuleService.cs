@@ -85,7 +85,7 @@ namespace Artemis.Core.Services
             }
         }
 
-        private void ActivationUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
+        private void ActivationUpdateTimerOnElapsed(object? sender, ElapsedEventArgs e)
         {
             UpdateModuleActivation();
         }

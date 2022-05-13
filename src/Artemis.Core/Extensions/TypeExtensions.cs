@@ -50,7 +50,7 @@ namespace Artemis.Core
         /// <param name="type">The type to check</param>
         /// <param name="genericType">The generic type to match</param>
         /// <returns>True if the <paramref name="type" /> is generic and of generic type <paramref name="genericType" /></returns>
-        public static bool IsGenericType(this Type type, Type genericType)
+        public static bool IsGenericType(this Type? type, Type genericType)
         {
             if (type == null)
                 return false;
@@ -95,17 +95,7 @@ namespace Artemis.Core
         /// <returns><see langword="true" /> if the value is of a numeric type, otherwise <see langword="false" /></returns>
         public static bool IsNumber([NotNullWhenAttribute(true)] this object? value)
         {
-            return value is sbyte
-                   || value is byte
-                   || value is short
-                   || value is ushort
-                   || value is int
-                   || value is uint
-                   || value is long
-                   || value is ulong
-                   || value is float
-                   || value is double
-                   || value is decimal;
+            return value is sbyte or byte or short or ushort or int or uint or long or ulong or float or double or decimal;
         }
 
         // From https://stackoverflow.com/a/2224421/5015269 but inverted and renamed to match similar framework methods
@@ -199,10 +189,10 @@ namespace Artemis.Core
         /// <param name="genericType">The generic type it should be or implement</param>
         public static bool IsOfGenericType(this Type typeToCheck, Type genericType)
         {
-            return typeToCheck.IsOfGenericType(genericType, out Type _);
+            return typeToCheck.IsOfGenericType(genericType, out Type? _);
         }
 
-        private static bool IsOfGenericType(this Type typeToCheck, Type genericType, out Type concreteGenericType)
+        private static bool IsOfGenericType(this Type? typeToCheck, Type genericType, out Type? concreteGenericType)
         {
             while (true)
             {

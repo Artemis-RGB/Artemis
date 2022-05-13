@@ -9,8 +9,8 @@ namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 public class ChangeConditionType : IProfileEditorCommand, IDisposable
 {
     private readonly RenderProfileElement _profileElement;
-    private readonly ICondition? _condition;
-    private readonly ICondition? _oldCondition;
+    private readonly ICondition _condition;
+    private readonly ICondition _oldCondition;
     private bool _executed;
 
     /// <summary>
@@ -18,7 +18,7 @@ public class ChangeConditionType : IProfileEditorCommand, IDisposable
     /// </summary>
     /// <param name="profileElement">The profile element whose condition type to change.</param>
     /// <param name="condition">The new condition type.</param>
-    public ChangeConditionType(RenderProfileElement profileElement, ICondition? condition)
+    public ChangeConditionType(RenderProfileElement profileElement, ICondition condition)
     {
         _profileElement = profileElement;
         _condition = condition;

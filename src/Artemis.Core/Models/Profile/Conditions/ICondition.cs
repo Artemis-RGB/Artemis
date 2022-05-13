@@ -34,6 +34,9 @@ public interface ICondition : IDisposable, IStorageModel
     /// </summary>
     void UpdateTimeline(double deltaTime);
 
+    /// <summary>
+    /// Overrides the timeline to the provided <paramref name="position"/> as the display condition sees fit.
+    /// </summary>
     void OverrideTimeline(TimeSpan position);
 }
 

@@ -13,6 +13,9 @@ namespace Artemis.UI.Shared.Behaviors;
 /// </summary>
 public class SliderPointerReleasedBindingBehavior : Behavior<Slider>
 {
+    /// <summary>
+    /// Gets or sets the value of the binding.
+    /// </summary>
     public static readonly StyledProperty<double> ValueProperty = AvaloniaProperty.Register<LostFocusTextBoxBindingBehavior, double>(
         nameof(Value), defaultBindingMode: BindingMode.TwoWay);
 
@@ -21,6 +24,9 @@ public class SliderPointerReleasedBindingBehavior : Behavior<Slider>
         ValueProperty.Changed.Subscribe(e => ((SliderPointerReleasedBindingBehavior) e.Sender).OnBindingValueChanged());
     }
 
+    /// <summary>
+    /// Gets or sets the value of the binding.
+    /// </summary>
     public double Value
     {
         get => GetValue(ValueProperty);

@@ -12,6 +12,9 @@ namespace Artemis.UI.Shared.Behaviors;
 /// </summary>
 public class LostFocusNumberBoxBindingBehavior : Behavior<NumberBox>
 {
+    /// <summary>
+    /// Gets or sets the value of the binding.
+    /// </summary>
     public static readonly StyledProperty<double> ValueProperty = AvaloniaProperty.Register<LostFocusTextBoxBindingBehavior, double>(
         nameof(Value), defaultBindingMode: BindingMode.TwoWay);
 
@@ -20,6 +23,9 @@ public class LostFocusNumberBoxBindingBehavior : Behavior<NumberBox>
         ValueProperty.Changed.Subscribe(e => ((LostFocusNumberBoxBindingBehavior) e.Sender).OnBindingValueChanged());
     }
 
+    /// <summary>
+    /// Gets or sets the value of the binding.
+    /// </summary>
     public double Value
     {
         get => GetValue(ValueProperty);

@@ -154,6 +154,27 @@
           "Ninject": "3.3.3"
         }
       },
+      "RGB.NET.Core": {
+        "type": "Transitive",
+        "resolved": "1.0.0-prerelease.32",
+        "contentHash": "HlhhikrkV7OQIRszn6RT6+6N4QGGHaN6NDHK1YssZEJTtE2MIdeRajeQFFziPc4OVOvMgxY13unw/v25r/YALw=="
+      },
+      "RGB.NET.Layout": {
+        "type": "Transitive",
+        "resolved": "1.0.0-prerelease.32",
+        "contentHash": "O7I8zR5Hy+joSLCJW10lkIPNMDS1gXe8hQuwm+T5DEDDpykVyc4tnO55WlO5GDmDCS/cXhcwq+qNpLez5Th4Xw==",
+        "dependencies": {
+          "RGB.NET.Core": "1.0.0-prerelease.32"
+        }
+      },
+      "RGB.NET.Presets": {
+        "type": "Transitive",
+        "resolved": "1.0.0-prerelease.32",
+        "contentHash": "tqPUA/KUG1hw5pT4D7OLXI6buXxpUIUYNET90gHnVXbadYi0C0OJZ703XDsaPpj4Db8/B2k8f1T4tM4s2KCJhw==",
+        "dependencies": {
+          "RGB.NET.Core": "1.0.0-prerelease.32"
+        }
+      },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -1091,7 +1112,39 @@
         }
       },
       "artemis.core": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "Artemis.Storage": "1.0.0",
+          "EmbedIO": "3.4.3",
+          "HidSharp": "2.1.0",
+          "Humanizer.Core": "2.11.10",
+          "LiteDB": "5.0.10",
+          "McMaster.NETCore.Plugins": "1.4.0",
+          "Newtonsoft.Json": "13.0.1",
+          "Ninject": "3.3.4",
+          "Ninject.Extensions.ChildKernel": "3.3.0",
+          "Ninject.Extensions.Conventions": "3.3.0",
+          "RGB.NET.Core": "1.0.0-prerelease.32",
+          "RGB.NET.Layout": "1.0.0-prerelease.32",
+          "RGB.NET.Presets": "1.0.0-prerelease.32",
+          "Serilog": "2.10.0",
+          "Serilog.Sinks.Console": "4.0.0",
+          "Serilog.Sinks.Debug": "2.0.0",
+          "Serilog.Sinks.File": "5.0.0",
+          "SkiaSharp": "2.80.3",
+          "System.Buffers": "4.5.1",
+          "System.IO.FileSystem.AccessControl": "5.0.0",
+          "System.Numerics.Vectors": "4.5.0",
+          "System.Reflection.Metadata": "5.0.0",
+          "System.ValueTuple": "4.5.0"
+        }
+      },
+      "artemis.storage": {
+        "type": "Project",
+        "dependencies": {
+          "LiteDB": "5.0.10",
+          "Serilog": "2.10.0"
+        }
       }
     }
   }

@@ -73,9 +73,8 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         }
         else
         {
-            List<SKColor> colors = this.Select(c => c.Color).ToList();
             for (int i = 0; i <= timesToRepeat; i++)
-                result.AddRange(colors);
+                result.AddRange(this.Select(c => c.Color));
         }
 
         if (seamless && !IsSeamless())
@@ -87,9 +86,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     /// <summary>
     ///     Gets all the positions in the color gradient
     /// </summary>
-    /// <param name="timesToRepeat">
-    ///     The amount of times to repeat the positions
-    /// </param>
+    /// <param name="timesToRepeat">The amount of times to repeat the positions</param>
     /// <param name="seamless">
     ///     A boolean indicating whether to make the gradient seamless by adding the first color behind the
     ///     last color
@@ -120,7 +117,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
             // Compress current points evenly
             float compression = 1f - 1f / result.Count;
             for (int index = 0; index < result.Count; index++)
-                result[index] = result[index] * compression;
+                result[index] *= compression;
             // Add one extra point at the end
             result.Add(1f);
         }
@@ -132,19 +129,30 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     ///     Gets a color at any position between 0.0 and 1.0 using interpolation
     /// </summary>
     /// <param name="position">A position between 0.0 and 1.0</param>
-    public SKColor GetColor(float position)
+    /// <param name="timesToRepeat">The amount of times to repeat the positions</param>
+    /// <param name="seamless">
+    ///     A boolean indicating whether to make the gradient seamless by adding the first color behind the
+    ///     last color
+    /// </param>
+    public SKColor GetColor(float position, int timesToRepeat = 0, bool seamless = false)
     {
         if (!this.Any())
             return new SKColor(255, 255, 255);
 
-        ColorGradientStop[] stops = this.ToArray();
-        if (position <= 0) return stops[0].Color;
-        if (position >= 1) return stops[^1].Color;
-        ColorGradientStop left = stops[0];
-        ColorGradientStop? right = null;
-        foreach (ColorGradientStop stop in stops)
+        SKColor[] colors = GetColorsArray(timesToRepeat, seamless);
+        float[] stops = GetPositionsArray(timesToRepeat, seamless);
+
+        // If at or over the edges, return the corresponding edge
+        if (position <= 0) return colors[0];
+        if (position >= 1) return colors[^1];
+
+        // Walk through the stops until we find the one at or after the requested position, that becomes the right stop
+        // The left stop is the previous stop before the right one was found.
+        float left = stops[0];
+        float? right = null;
+        foreach (float stop in stops)
         {
-            if (stop.Position >= position)
+            if (stop >= position)
             {
                 right = stop;
                 break;
@@ -153,14 +161,22 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
             left = stop;
         }
 
-        if (right == null || left == right)
-            return left.Color;
+        // Get the left stop's color
+        SKColor leftColor = colors[Array.IndexOf(stops, left)];
 
-        position = (float) Math.Round((position - left.Position) / (right.Position - left.Position), 2);
-        byte a = (byte) ((right.Color.Alpha - left.Color.Alpha) * position + left.Color.Alpha);
-        byte r = (byte) ((right.Color.Red - left.Color.Red) * position + left.Color.Red);
-        byte g = (byte) ((right.Color.Green - left.Color.Green) * position + left.Color.Green);
-        byte b = (byte) ((right.Color.Blue - left.Color.Blue) * position + left.Color.Blue);
+        // If no right stop was found or the left and right stops are on the same spot, return the left stop's color
+        if (right == null || left == right)
+            return leftColor;
+
+        // Get the right stop's color
+        SKColor rightColor = colors[Array.IndexOf(stops, right)];
+
+        // Interpolate the position between the left and right color
+        position = MathF.Round((position - left) / (right.Value - left), 2);
+        byte a = (byte) ((rightColor.Alpha - leftColor.Alpha) * position + leftColor.Alpha);
+        byte r = (byte) ((rightColor.Red - leftColor.Red) * position + leftColor.Red);
+        byte g = (byte) ((rightColor.Green - leftColor.Green) * position + leftColor.Green);
+        byte b = (byte) ((rightColor.Blue - leftColor.Blue) * position + leftColor.Blue);
         return new SKColor(r, g, b, a);
     }
 
@@ -561,7 +577,8 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, index));
     }
 
-    public bool IsFixedSize { get; }
+    /// <inheritdoc />
+    public bool IsFixedSize => false;
 
     /// <inheritdoc />
     public ColorGradientStop this[int index]

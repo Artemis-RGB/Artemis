@@ -11,7 +11,6 @@ namespace Artemis.Core.LayerEffects
     {
         private ILayerEffectConfigurationDialog? _configurationDialog;
         private LayerEffectDescriptor _descriptor;
-        private bool _suspended;
         private bool _hasBeenRenamed;
         private string _name;
         private int _order;

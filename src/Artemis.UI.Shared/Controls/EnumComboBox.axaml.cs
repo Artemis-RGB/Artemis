@@ -24,7 +24,7 @@ namespace Artemis.UI.Shared
         private readonly ObservableCollection<(Enum, string)> _currentValues = new();
 
         private ComboBox? _enumComboBox;
-        private Type _currentType;
+        private Type? _currentType;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="EnumComboBox" /> class.

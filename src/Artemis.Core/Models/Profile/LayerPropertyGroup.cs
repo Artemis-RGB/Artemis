@@ -30,6 +30,7 @@ namespace Artemis.Core
         protected LayerPropertyGroup()
         {
             // These are set right after construction to keep the constructor (and inherited constructs) clean
+            ProfileElement = null!;
             GroupDescription = null!;
             Path = "";
 

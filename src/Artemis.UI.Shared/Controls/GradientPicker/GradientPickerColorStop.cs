@@ -127,14 +127,14 @@ public class GradientPickerColorStop : TemplatedControl
     {
         if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed || !ReferenceEquals(e.Pointer.Captured, this) || PositionReference == null)
         {
-            if (_draggingStop != ColorStop)
+            if (!Equals(_draggingStop, ColorStop))
                 return;
 
             _dragOffset = e.GetCurrentPoint(PositionReference).Position.X - GetPixelPosition();
         }
 
         double position = e.GetCurrentPoint(PositionReference).Position.X - _dragOffset;
-        ColorStop.Position = MathF.Round((float) Math.Clamp(position / PositionReference.Bounds.Width, 0, 1), 3, MidpointRounding.AwayFromZero);
+        ColorStop.Position = MathF.Round((float) Math.Clamp(position / PositionReference?.Bounds.Width ?? 0, 0, 1), 3, MidpointRounding.AwayFromZero);
         e.Handled = true;
     }
 

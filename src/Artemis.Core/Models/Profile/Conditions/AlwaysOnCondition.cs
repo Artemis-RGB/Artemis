@@ -4,14 +4,26 @@ using Artemis.Storage.Entities.Profile.Conditions;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    /// Represents a condition that is always true.
+    /// </summary>
     public class AlwaysOnCondition : ICondition
     {
+        /// <summary>
+        ///     Creates a new instance of the <see cref="AlwaysOnCondition" /> class.
+        /// </summary>
+        /// <param name="profileElement">The profile element this condition applies to.</param>
         public AlwaysOnCondition(RenderProfileElement profileElement)
         {
             ProfileElement = profileElement;
             Entity = new AlwaysOnConditionEntity();
         }
 
+        /// <summary>
+        ///     Creates a new instance of the <see cref="AlwaysOnCondition" /> class.
+        /// </summary>
+        /// <param name="alwaysOnConditionEntity">The entity used to store this condition.</param>
+        /// <param name="profileElement">The profile element this condition applies to.</param>
         public AlwaysOnCondition(AlwaysOnConditionEntity alwaysOnConditionEntity, RenderProfileElement profileElement)
         {
             ProfileElement = profileElement;

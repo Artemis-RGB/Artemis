@@ -8,8 +8,8 @@ namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 /// </summary>
 public class ChangeElementDisplayCondition : IProfileEditorCommand, IDisposable
 {
-    private readonly ICondition? _condition;
-    private readonly ICondition? _oldCondition;
+    private readonly ICondition _condition;
+    private readonly ICondition _oldCondition;
     private readonly RenderProfileElement _profileElement;
     private bool _executed;
 
@@ -18,7 +18,7 @@ public class ChangeElementDisplayCondition : IProfileEditorCommand, IDisposable
     /// </summary>
     /// <param name="profileElement">The render profile element whose display condition to change.</param>
     /// <param name="condition">The new display condition.</param>
-    public ChangeElementDisplayCondition(RenderProfileElement profileElement, ICondition? condition)
+    public ChangeElementDisplayCondition(RenderProfileElement profileElement, ICondition condition)
     {
         _profileElement = profileElement;
         _condition = condition;

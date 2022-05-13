@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net6.0</TargetFramework>
@@ -13,9 +13,6 @@
     <DocumentationFile>bin\Artemis.UI.Avalonia.Shared.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Artemis.UI.Avalonia.Shared.csproj.DotSettings" />
-    <None Remove="Artemis.UI.Shared.csproj.DotSettings" />
-    <None Remove="DefaultTypes\DataModel\Display\DefaultDataModelDisplayView.xaml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.13" />

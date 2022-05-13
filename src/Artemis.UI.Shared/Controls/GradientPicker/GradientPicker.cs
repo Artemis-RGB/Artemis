@@ -70,6 +70,9 @@ public class GradientPicker : TemplatedControl
     private ColorGradient? _lastColorGradient;
     private ColorPicker? _colorPicker;
 
+    /// <summary>
+    /// Creates a new instance of the <see cref="GradientPicker"/> class.
+    /// </summary>
     public GradientPicker()
     {
         _deleteStop = ReactiveCommand.Create<ColorGradientStop>(s =>
