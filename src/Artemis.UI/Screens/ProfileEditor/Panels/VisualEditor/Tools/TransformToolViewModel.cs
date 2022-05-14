@@ -185,8 +185,8 @@ public class TransformToolViewModel : ToolViewModel
         // Get a normalized point
         SKPoint scaled = Layer.GetNormalizedPoint(position, true);
         // Compensate for the anchor
-        scaled.X += ((Layer.Transform.AnchorPoint.CurrentValue.X) * (Layer.Transform.Scale.CurrentValue.Width/100f));
-        scaled.Y += ((Layer.Transform.AnchorPoint.CurrentValue.Y) * (Layer.Transform.Scale.CurrentValue.Height/100f));
+        scaled.X += Layer.Transform.AnchorPoint.CurrentValue.X * (Layer.Transform.Scale.CurrentValue.Width / 100f);
+        scaled.Y += Layer.Transform.AnchorPoint.CurrentValue.Y * (Layer.Transform.Scale.CurrentValue.Height / 100f);
         _movementPreview.Preview(scaled);
     }
 

@@ -57,11 +57,24 @@ public class TreeGroupViewModel : ActivatableViewModelBase
     public BaseLayerEffect? LayerEffect => PropertyGroupViewModel.LayerEffect;
     public LayerPropertyGroupType GroupType { get; private set; }
     public ObservableCollection<ViewModelBase>? Children => PropertyGroupViewModel.IsExpanded ? PropertyGroupViewModel.Children : null;
-    
+
     public ReactiveCommand<Unit, Unit> OpenBrushSettings { get; }
     public ReactiveCommand<Unit, Unit> OpenEffectSettings { get; }
     public ReactiveCommand<Unit, Unit> RenameEffect { get; }
     public ReactiveCommand<Unit, Unit> DeleteEffect { get; }
+
+    public double GetDepth()
+    {
+        int depth = 0;
+        LayerPropertyGroup? current = LayerPropertyGroup.Parent;
+        while (current != null)
+        {
+            depth++;
+            current = current.Parent;
+        }
+
+        return depth;
+    }
 
     private async Task ExecuteOpenBrushSettings()
     {
@@ -143,19 +156,6 @@ public class TreeGroupViewModel : ActivatableViewModelBase
             return;
 
         _profileEditorService.ExecuteCommand(new RemoveLayerEffect(LayerEffect));
-    }
-
-    public double GetDepth()
-    {
-        int depth = 0;
-        LayerPropertyGroup? current = LayerPropertyGroup.Parent;
-        while (current != null)
-        {
-            depth++;
-            current = current.Parent;
-        }
-
-        return depth;
     }
 
     private void CloseViewModels()

@@ -44,8 +44,8 @@
                                     </Template>
                                 </Setter.Value>
                             </Setter>
-                            <Setter Property="Command" Value="{Binding $parent[UserControl].DataContext.SelectEasingFunction}"></Setter>
-                            <Setter Property="CommandParameter" Value="{Binding EasingFunction}"></Setter>
+                            <Setter Property="Command" Value="{Binding $parent[UserControl].DataContext.SelectEasingFunction}" />
+                            <Setter Property="CommandParameter" Value="{Binding EasingFunction}" />
                         </Style>
                     </MenuItem.Styles>
                     <MenuItem.Icon>

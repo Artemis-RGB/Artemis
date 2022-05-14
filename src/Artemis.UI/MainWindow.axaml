@@ -7,9 +7,15 @@
                      x:Class="Artemis.UI.MainWindow"
                      Icon="/Assets/Images/Logo/application.ico"
                      Title="Artemis 2.0">
-    <Panel>
+    <Panel Name="RootPanel">
         <DockPanel>
-            <ContentControl Content="{Binding SidebarViewModel}" DockPanel.Dock="Left"></ContentControl>
+            <ContentControl Name="SidebarContentControl" Content="{Binding SidebarViewModel}" DockPanel.Dock="Left" Width="240">
+                <ContentControl.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Width" Duration="0:0:0.2" Easing="CubicEaseOut"></DoubleTransition>
+                    </Transitions>
+                </ContentControl.Transitions>
+            </ContentControl>
             <Border Background="Transparent" Name="TitleBar" DockPanel.Dock="Top">
                 <ContentControl Content="{Binding TitleBarViewModel}" />
             </Border>

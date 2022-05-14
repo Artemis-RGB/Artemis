@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
-using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
-using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia.Controls.Mixins;
 using ReactiveUI;
 
@@ -18,13 +16,13 @@ public class TimelineViewModel : ActivatableViewModelBase
 {
     private readonly IProfileEditorService _profileEditorService;
     private ObservableAsPropertyHelper<double>? _caretPosition;
-    private ObservableAsPropertyHelper<int>? _pixelsPerSecond;
-    private List<ITimelineKeyframeViewModel>? _moveKeyframes;
     private ObservableAsPropertyHelper<double> _minWidth;
+    private List<ITimelineKeyframeViewModel>? _moveKeyframes;
+    private ObservableAsPropertyHelper<int>? _pixelsPerSecond;
 
     public TimelineViewModel(ObservableCollection<PropertyGroupViewModel> propertyGroupViewModels,
         StartSegmentViewModel startSegmentViewModel,
-        MainSegmentViewModel mainSegmentViewModel, 
+        MainSegmentViewModel mainSegmentViewModel,
         EndSegmentViewModel endSegmentViewModel,
         IProfileEditorService profileEditorService)
     {
@@ -141,8 +139,10 @@ public class TimelineViewModel : ActivatableViewModelBase
 
     public void DuplicateKeyframes(ITimelineKeyframeViewModel? source = null)
     {
-        if (source is { IsSelected: false })
+        if (source is {IsSelected: false})
+        {
             source.Delete();
+        }
         else
         {
             List<ITimelineKeyframeViewModel> keyframes = PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(true)).Where(k => k.IsSelected).ToList();
@@ -154,8 +154,10 @@ public class TimelineViewModel : ActivatableViewModelBase
 
     public void CopyKeyframes(ITimelineKeyframeViewModel? source = null)
     {
-        if (source is { IsSelected: false })
+        if (source is {IsSelected: false})
+        {
             source.Copy();
+        }
         else
         {
             List<ITimelineKeyframeViewModel> keyframes = PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(true)).Where(k => k.IsSelected).ToList();
@@ -167,8 +169,10 @@ public class TimelineViewModel : ActivatableViewModelBase
 
     public void PasteKeyframes(ITimelineKeyframeViewModel? source = null)
     {
-        if (source is { IsSelected: false })
+        if (source is {IsSelected: false})
+        {
             source.Paste();
+        }
         else
         {
             List<ITimelineKeyframeViewModel> keyframes = PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(true)).Where(k => k.IsSelected).ToList();
@@ -181,7 +185,9 @@ public class TimelineViewModel : ActivatableViewModelBase
     public void DeleteKeyframes(ITimelineKeyframeViewModel? source = null)
     {
         if (source is {IsSelected: false})
+        {
             source.Delete();
+        }
         else
         {
             List<ITimelineKeyframeViewModel> keyframes = PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(true)).Where(k => k.IsSelected).ToList();

@@ -11,7 +11,7 @@
              x:DataType="dialogs:AddEffectViewModel"
              Width="500">
     <Grid RowDefinitions="Auto,*">
-        <TextBox Name="SearchBox" Text="{CompiledBinding SearchText}" Margin="0 0 0 15" Watermark="Search"></TextBox>
+        <TextBox Name="SearchBox" Text="{CompiledBinding SearchText}" Margin="0 0 0 15" Watermark="Search" />
         <ListBox Name="EffectDescriptorsList"
                  Grid.Row="1"
                  Items="{CompiledBinding LayerEffectDescriptors}"
@@ -21,17 +21,17 @@
             <ListBox.DataTemplates>
                 <DataTemplate DataType="{x:Type layerEffects:LayerEffectDescriptor}">
                     <Grid RowDefinitions="Auto,*"
-                          ColumnDefinitions="Auto,Auto" 
-                          Background="Transparent" 
+                          ColumnDefinitions="Auto,Auto"
+                          Background="Transparent"
                           PointerReleased="InputElement_OnPointerReleased"
                           Margin="0 4"
                           VerticalAlignment="Center">
-                        <shared:ArtemisIcon Grid.Column="0" 
-                                            Grid.RowSpan="2" 
+                        <shared:ArtemisIcon Grid.Column="0"
+                                            Grid.RowSpan="2"
                                             Icon="{CompiledBinding Icon}"
                                             Width="24"
-                                            Height="24" 
-                                            VerticalAlignment="Center" 
+                                            Height="24"
+                                            VerticalAlignment="Center"
                                             Margin="0 0 15 0" />
                         <TextBlock Grid.Column="1"
                                    Grid.Row="0"
@@ -51,14 +51,14 @@
                 </DataTemplate>
             </ListBox.DataTemplates>
         </ListBox>
-		<Grid Grid.Row="1" Height="300">
+        <Grid Grid.Row="1" Height="300">
             <StackPanel VerticalAlignment="Center"
                         Spacing="20"
                         IsVisible="{CompiledBinding !LayerEffectDescriptors.Count}">
-                <avalonia:MaterialIcon Kind="CloseCircle" Width="32" Height="32"></avalonia:MaterialIcon>
+                <avalonia:MaterialIcon Kind="CloseCircle" Width="32" Height="32" />
                 <TextBlock Classes="h5" TextAlignment="Center">None of the effects match your search</TextBlock>
             </StackPanel>
-		</Grid>
+        </Grid>
 
-	</Grid>
+    </Grid>
 </UserControl>

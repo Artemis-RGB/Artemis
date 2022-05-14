@@ -15,9 +15,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 internal class TreePropertyViewModel<T> : ActivatableViewModelBase, ITreePropertyViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
-    private TimeSpan _time;
-    private ObservableAsPropertyHelper<bool>? _isCurrentlySelected;
     private ObservableAsPropertyHelper<bool>? _dataBindingEnabled;
+    private ObservableAsPropertyHelper<bool>? _isCurrentlySelected;
+    private TimeSpan _time;
 
     public TreePropertyViewModel(LayerProperty<T> layerProperty, PropertyViewModel propertyViewModel, IProfileEditorService profileEditorService, IPropertyInputService propertyInputService)
     {
@@ -40,7 +40,6 @@ internal class TreePropertyViewModel<T> : ActivatableViewModelBase, ITreePropert
     }
 
     public bool IsCurrentlySelected => _isCurrentlySelected?.Value ?? false;
-    public bool DataBindingEnabled => _dataBindingEnabled?.Value ?? false;
     public LayerProperty<T> LayerProperty { get; }
     public PropertyViewModel PropertyViewModel { get; }
     public PropertyInputViewModel<T>? PropertyInputViewModel { get; }
@@ -64,6 +63,8 @@ internal class TreePropertyViewModel<T> : ActivatableViewModelBase, ITreePropert
     {
         _profileEditorService.ExecuteCommand(new ResetLayerProperty<T>(LayerProperty));
     }
+
+    public bool DataBindingEnabled => _dataBindingEnabled?.Value ?? false;
 
     public ILayerProperty BaseLayerProperty => LayerProperty;
 

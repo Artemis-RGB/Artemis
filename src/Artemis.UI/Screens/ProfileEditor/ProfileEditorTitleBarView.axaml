@@ -6,13 +6,13 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileEditorTitleBarView">
     <Grid ColumnDefinitions="Auto,*,Auto">
-        <ContentControl Grid.Row="0" Grid.Column="0" Content="{Binding MenuBarViewModel}"></ContentControl>
+        <ContentControl Grid.Row="0" Grid.Column="0" Content="{Binding MenuBarViewModel}" />
 
         <!-- This border enables dragging the window in between the menu and the buttons-->
         <Border Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" IsHitTestVisible="False" />
 
         <Button Grid.Column="2" Classes="title-bar-button" Command="{Binding ShowDebugger}" HorizontalAlignment="Right" VerticalAlignment="Top">
-            <avalonia:MaterialIcon Kind="Bug"></avalonia:MaterialIcon>
+            <avalonia:MaterialIcon Kind="Bug" />
         </Button>
     </Grid>
 </UserControl>

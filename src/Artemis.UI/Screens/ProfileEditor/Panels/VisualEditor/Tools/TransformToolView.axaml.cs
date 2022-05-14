@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared.Extensions;
-using Artemis.UI.Shared.Providers;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
@@ -24,6 +23,7 @@ namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools;
 
 public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
 {
+    private readonly Grid _handleGrid;
     private readonly List<Control> _handles = new();
     private readonly Panel _resizeBottomCenter;
     private readonly Panel _resizeBottomLeft;
@@ -36,7 +36,6 @@ public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
 
     private SKPoint _dragOffset;
     private ZoomBorder? _zoomBorder;
-    private readonly Grid _handleGrid;
 
     public TransformToolView()
     {
@@ -358,8 +357,8 @@ public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
         float startAngle = CalculateAngleToAnchor(e);
         _rotationDragOffset = startAngle - ViewModel.Layer.Transform.Rotation;
         ViewModel.StartRotation();
-        ToolTip.SetTip((Control)sender, $"{ViewModel.Layer.Transform.Rotation.CurrentValue:F3}°");
-        ToolTip.SetIsOpen((Control)sender, true);
+        ToolTip.SetTip((Control) sender, $"{ViewModel.Layer.Transform.Rotation.CurrentValue:F3}°");
+        ToolTip.SetIsOpen((Control) sender, true);
 
         e.Pointer.Capture((IInputElement?) sender);
         e.Handled = true;
@@ -376,7 +375,7 @@ public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
             angle += 360;
 
         ViewModel?.UpdateRotation(angle, e.KeyModifiers.HasFlag(KeyModifiers.Control));
-        ToolTip.SetTip((Control)sender, $"{ViewModel.Layer.Transform.Rotation.CurrentValue:F3}°");
+        ToolTip.SetTip((Control) sender, $"{ViewModel.Layer.Transform.Rotation.CurrentValue:F3}°");
 
         e.Handled = true;
     }
@@ -387,8 +386,8 @@ public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
             return;
 
         ViewModel?.FinishRotation();
-        ToolTip.SetTip((Control)sender, null);
-        ToolTip.SetIsOpen((Control)sender, false);
+        ToolTip.SetTip((Control) sender, null);
+        ToolTip.SetIsOpen((Control) sender, false);
 
         e.Pointer.Capture(null);
         e.Handled = true;

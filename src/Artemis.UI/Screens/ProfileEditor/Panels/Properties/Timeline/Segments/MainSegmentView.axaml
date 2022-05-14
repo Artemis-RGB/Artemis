@@ -58,7 +58,7 @@
                 <avalonia:MaterialIcon Kind="PlusCircle" />
             </Button>
 
-			<Rectangle Name="KeyframeDragVisual"
+            <Rectangle Name="KeyframeDragVisual"
                        Grid.Column="4"
                        Classes="resize-visual" />
             <Rectangle Name="KeyframeDragAnchor"
@@ -67,7 +67,7 @@
                        PointerPressed="KeyframeDragAnchor_OnPointerPressed"
                        PointerMoved="KeyframeDragAnchor_OnPointerMoved"
                        PointerReleased="KeyframeDragAnchor_OnPointerReleased"
-                       ToolTip.Tip="{CompiledBinding EndTimestamp}"/>
+                       ToolTip.Tip="{CompiledBinding EndTimestamp}" />
         </Grid>
     </Border>
 </UserControl>

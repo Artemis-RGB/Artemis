@@ -6,7 +6,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.DisplayCondition.ConditionTypes.PlayOnceConditionView">
     <DockPanel VerticalAlignment="Top" Margin="0 5">
-        <avalonia:MaterialIcon Kind="InfoCircle" Margin="5 0"/>
+        <avalonia:MaterialIcon Kind="InfoCircle" Margin="5 0" />
         <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                    TextWrapping="Wrap">
             Every segment of the timeline is played once.

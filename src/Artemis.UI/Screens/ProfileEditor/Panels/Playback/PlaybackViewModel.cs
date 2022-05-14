@@ -14,14 +14,14 @@ public class PlaybackViewModel : ActivatableViewModelBase
 {
     private readonly IProfileEditorService _profileEditorService;
     private readonly ISettingsService _settingsService;
-    private RenderProfileElement? _profileElement;
     private ObservableAsPropertyHelper<TimeSpan>? _currentTime;
     private ObservableAsPropertyHelper<string?>? _formattedCurrentTime;
-    private ObservableAsPropertyHelper<bool>? _playing;
-    private bool _repeating;
-    private bool _repeatTimeline;
-    private bool _repeatSegment;
     private DateTime _lastUpdate;
+    private ObservableAsPropertyHelper<bool>? _playing;
+    private RenderProfileElement? _profileElement;
+    private bool _repeating;
+    private bool _repeatSegment;
+    private bool _repeatTimeline;
 
     public PlaybackViewModel(IProfileEditorService profileEditorService, ISettingsService settingsService)
     {

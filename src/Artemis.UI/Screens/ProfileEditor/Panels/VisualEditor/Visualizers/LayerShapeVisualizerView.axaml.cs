@@ -12,11 +12,11 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
 
-public partial class LayerShapeVisualizerView : ReactiveUserControl<LayerShapeVisualizerViewModel>
+public class LayerShapeVisualizerView : ReactiveUserControl<LayerShapeVisualizerViewModel>
 {
-    private ZoomBorder? _zoomBorder;
-    private readonly Path _layerVisualizerUnbound;
     private readonly Path _layerVisualizer;
+    private readonly Path _layerVisualizerUnbound;
+    private ZoomBorder? _zoomBorder;
 
     public LayerShapeVisualizerView()
     {

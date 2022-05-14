@@ -7,212 +7,193 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.MenuBar.MenuBarView"
              x:DataType="menuBar:MenuBarViewModel">
-	<Menu VerticalAlignment="Top">
-		<MenuItem Header="_File">
-			<MenuItem Header="New">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="Plus" />
-				</MenuItem.Icon>
-				<MenuItem Header="Folder" Command="{Binding AddFolder}">
-					<MenuItem.Icon>
-						<avalonia:MaterialIcon Kind="Folder" />
-					</MenuItem.Icon>
-				</MenuItem>
-				<MenuItem Header="Layer" Command="{Binding AddLayer}">
-					<MenuItem.Icon>
-						<avalonia:MaterialIcon Kind="Layers" />
-					</MenuItem.Icon>
-				</MenuItem>
-			</MenuItem>
-			<Separator />
-			<MenuItem Header="View Properties" Command="{Binding ViewProperties}">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="Settings" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="_View Scripts" Command="{Binding ViewScripts}">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="BookEdit" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Adapt Profile" Command="{Binding AdaptProfile}">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="Magic" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Suspend Profile" IsSelected="{CompiledBinding IsSuspended}">
-				<MenuItem.Icon>
-					<CheckBox BorderThickness="0"
-							  IsHitTestVisible="False"
-                              IsChecked="{CompiledBinding IsSuspended}"/>
-				</MenuItem.Icon>
-			</MenuItem>
-			<Separator />
-			<MenuItem Header="Export Profile" Command="{Binding ExportProfile}">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="Export" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Duplicate Profile" Command="{Binding DuplicateProfile}">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="ContentDuplicate" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<Separator />
-			<MenuItem Header="Delete Profile" Command="{Binding DeleteProfile}">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="Trash" />
-				</MenuItem.Icon>
-			</MenuItem>
-		</MenuItem>
-		<MenuItem Header="_Edit" SubmenuOpened="MenuItem_OnSubmenuOpened">
-            <MenuItem Header="_Undo"
-                      Command="{Binding History.Undo}"
-                      HotKey="Ctrl+Z"
-                      InputGesture="Ctrl+Z">
+    <Menu VerticalAlignment="Top">
+        <MenuItem Header="_File">
+            <MenuItem Header="New">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Plus" />
+                </MenuItem.Icon>
+                <MenuItem Header="Folder" Command="{CompiledBinding AddFolder}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Folder" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Layer" Command="{CompiledBinding AddLayer}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Layers" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="View Properties" Command="{CompiledBinding ViewProperties}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Settings" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="_View Scripts" Command="{Binding ViewScripts}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="BookEdit" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Adapt Profile" Command="{Binding AdaptProfile}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Magic" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Suspend Profile" Command="{CompiledBinding ToggleSuspended}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding IsSuspended}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="Export Profile" Command="{CompiledBinding ExportProfile}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Export" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Duplicate Profile" Command="{CompiledBinding DuplicateProfile}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="ContentDuplicate" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="Delete Profile" Command="{CompiledBinding DeleteProfile}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Trash" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuItem>
+        <MenuItem Header="_Edit" SubmenuOpened="MenuItem_OnSubmenuOpened">
+            <MenuItem Header="_Undo" Command="{CompiledBinding History.Undo}" InputGesture="Ctrl+Z">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Undo" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="_Redo"
-                      Command="{Binding History.Redo}"
-                      HotKey="Ctrl+Y"
-                      InputGesture="Ctrl+Y">
+            <MenuItem Header="_Redo" Command="{CompiledBinding History.Redo}" InputGesture="Ctrl+Y">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Redo" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
-			<MenuItem Header="_Duplicate"
-                      Command="{Binding Duplicate}"
-                      HotKey="Ctrl+D"
-                      IsEnabled="{Binding HasSelectedElement}">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="ContentDuplicate" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="_Copy"
-					  Command="{Binding Copy}"
-					  HotKey="Ctrl+C"
-					  IsEnabled="{Binding HasSelectedElement}">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="ContentCopy" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="_Paste"
-					  Command="{Binding Paste}"
-					  HotKey="Ctrl+V">
-				<MenuItem.Icon>
-					<avalonia:MaterialIconExt Kind="ContentPaste" />
-				</MenuItem.Icon>
-			</MenuItem>
-		</MenuItem>
-		<MenuItem Header="_Run">
-			<MenuItem Header="_Switch run mode"
-					  Command="{Binding ToggleSuspend}"
-					  HotKey="F5">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="SwapHorizontal" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Run Profile on Focus Loss"
-					  ToolTip.Tip="If enabled, run mode is set to normal on focus loss"
-					  HotKey="Shift+F5">
-				<MenuItem.Icon>
-					<CheckBox BorderThickness="0"
-							  IsHitTestVisible="False"
-							  IsChecked="{Binding StopOnFocusLoss.Value}" />
-				</MenuItem.Icon>
-			</MenuItem>
-		</MenuItem>
-		<MenuItem Header="_Options">
-			<MenuItem Header="Focus Selected Layer"
-					  ToolTip.Tip="If enabled, displays only the layer you currently have selected"
+            <MenuItem Header="_Duplicate" Command="{Binding Duplicate}" InputGesture="Ctrl+D">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="ContentDuplicate" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="_Copy" Command="{Binding Copy}" InputGesture="Ctrl+C">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="ContentCopy" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="_Paste" Command="{Binding Paste}" InputGesture="Ctrl+V">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIconExt Kind="ContentPaste" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuItem>
+        <MenuItem Header="_Run">
+            <MenuItem Header="_Switch run mode" Command="{CompiledBinding ToggleSuspendedEditing}" InputGesture="F5">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="SwapHorizontal" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Switch Run Mode on Focus Loss" 
+                      ToolTip.Tip="If enabled, run mode is set to normal on focus loss" 
+                      InputGesture="Shift+F5"
+                      Command="{CompiledBinding ToggleBooleanSetting}"
+                      CommandParameter="{CompiledBinding AutoSuspend}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding AutoSuspend.Value}" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuItem>
+        <MenuItem Header="_Options">
+            <MenuItem Header="Focus Selected Layer" ToolTip.Tip="If enabled, displays only the layer you currently have selected"
                       Command="{CompiledBinding ToggleBooleanSetting}"
                       CommandParameter="{CompiledBinding FocusSelectedLayer}">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding FocusSelectedLayer.Value}"></avalonia:MaterialIcon>
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding FocusSelectedLayer.Value}" />
                 </MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Display Data Model Values"
+            </MenuItem>
+            <MenuItem Header="Display Data Model Values"
                       Command="{CompiledBinding ToggleBooleanSetting}"
                       CommandParameter="{CompiledBinding ShowDataModelValues}">
                 <MenuItem.Icon>
-                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding ShowDataModelValues.Value}"></avalonia:MaterialIcon>
+                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding ShowDataModelValues.Value}" />
                 </MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Display Full Condition Paths"
+            </MenuItem>
+            <MenuItem Header="Display Full Condition Paths"
                       Command="{CompiledBinding ToggleBooleanSetting}"
                       CommandParameter="{CompiledBinding ShowFullPaths}">
                 <MenuItem.Icon>
-                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding ShowFullPaths.Value}"></avalonia:MaterialIcon>
+                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding ShowFullPaths.Value}" />
                 </MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Always Display Cable Values" 
+            </MenuItem>
+            <MenuItem Header="Always Display Cable Values"
                       ToolTip.Tip="If enabled, cable values are always shown instead of only on hover"
                       Command="{CompiledBinding ToggleBooleanSetting}"
                       CommandParameter="{CompiledBinding AlwaysShowValues}">
                 <MenuItem.Icon>
-                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding AlwaysShowValues.Value}"></avalonia:MaterialIcon>
+                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding AlwaysShowValues.Value}" />
                 </MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Apply All Data Bindings During Edit" 
+            </MenuItem>
+            <MenuItem Header="Apply All Data Bindings During Edit"
                       ToolTip.Tip="If enabled, updates all data bindings instead of only the one you are editing"
                       Command="{CompiledBinding ToggleBooleanSetting}"
                       CommandParameter="{CompiledBinding AlwaysApplyDataBindings}">
                 <MenuItem.Icon>
-                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding AlwaysApplyDataBindings.Value}"></avalonia:MaterialIcon>
+                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding AlwaysApplyDataBindings.Value}" />
                 </MenuItem.Icon>
-			</MenuItem>
-		</MenuItem>
-		<MenuItem Header="_Help">
-			<MenuItem Header="Artemis Wiki" Command="{Binding OpenUrl}" CommandParameter="https://wiki.artemis-rgb.com/">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="BookEdit" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<Separator />
-			<MenuItem Header="Editor" Command="{Binding OpenUrl}" CommandParameter="https://wiki.artemis-rgb.com/en/guides/user/profiles">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="Edit" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Layers" Command="{Binding OpenUrl}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/layers">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="Layers" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Display Conditions" Command="{Binding OpenUrl}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/conditions">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="NotEqual" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Timeline" Command="{Binding OpenUrl}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/timeline">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="Stopwatch" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Data Bindings" Command="{Binding OpenUrl}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/data-bindings">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="VectorLink" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Scripting" Command="{Binding OpenUrl}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/scripting">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="CodeJson" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<Separator />
-			<MenuItem Header="Report a Bug" Command="{Binding OpenUrl}" CommandParameter="https://github.com/Artemis-RGB/Artemis/issues">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="Github" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="Get Help on Discord" Command="{Binding OpenUrl}" CommandParameter="https://discord.gg/S3MVaC9">
-				<MenuItem.Icon>
-					<avalonia:MaterialIcon Kind="Discord" />
-				</MenuItem.Icon>
-			</MenuItem>
-		</MenuItem>
-	</Menu>
+            </MenuItem>
+        </MenuItem>
+        <MenuItem Header="_Help">
+            <MenuItem Header="Artemis Wiki" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="BookEdit" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="Editor" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/en/guides/user/profiles">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Edit" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Layers" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/layers">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Layers" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Display Conditions" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/conditions">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="NotEqual" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Timeline" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/timeline">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Stopwatch" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Data Bindings" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/data-bindings">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="VectorLink" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Scripting" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/scripting">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="CodeJson" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="Report a Bug" Command="{CompiledBinding OpenUri}" CommandParameter="https://github.com/Artemis-RGB/Artemis/issues">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Github" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Get Help on Discord" Command="{CompiledBinding OpenUri}" CommandParameter="https://discord.gg/S3MVaC9">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Discord" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuItem>
+    </Menu>
 </UserControl>

@@ -26,31 +26,22 @@ namespace Artemis.UI.Screens.Sidebar
 
             ProfileConfiguration = profileConfiguration;
             EditProfile = ReactiveCommand.CreateFromTask(ExecuteEditProfile);
+            ToggleSuspended = ReactiveCommand.Create(ExecuteToggleSuspended);
 
             this.WhenActivated(d =>
             {
-                _isSuspended = ProfileConfiguration.WhenAnyValue(c => c.IsSuspended)
-                    .ToProperty(this, vm => vm.IsSuspended)
-                    .DisposeWith(d);
+                _isSuspended = ProfileConfiguration.WhenAnyValue(c => c.IsSuspended).ToProperty(this, vm => vm.IsSuspended).DisposeWith(d);
             });
             _profileService.LoadProfileConfigurationIcon(ProfileConfiguration);
         }
 
+        
         public ReactiveCommand<Unit, Unit> EditProfile { get; }
+        public ReactiveCommand<Unit,Unit> ToggleSuspended { get;  }
 
-        public bool IsProfileActive => ProfileConfiguration.Profile != null;
+        public bool IsSuspended => _isSuspended?.Value ?? false;
 
-        public bool IsSuspended
-        {
-            get => _isSuspended?.Value ?? false;
-            set
-            {
-                ProfileConfiguration.IsSuspended = value;
-                _profileService.SaveProfileCategory(ProfileConfiguration.Category);
-            }
-        }
-
-        public async Task ExecuteEditProfile()
+        private async Task ExecuteEditProfile()
         {
             ProfileConfiguration? edited = await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(
                 ("profileCategory", ProfileConfiguration.Category),
@@ -59,6 +50,12 @@ namespace Artemis.UI.Screens.Sidebar
 
             if (edited != null)
                 _sidebarViewModel.UpdateProfileCategories();
+        }
+        
+        private void ExecuteToggleSuspended()
+        {
+            ProfileConfiguration.IsSuspended = !ProfileConfiguration.IsSuspended;
+            _profileService.SaveProfileCategory(ProfileConfiguration.Category);
         }
     }
 }

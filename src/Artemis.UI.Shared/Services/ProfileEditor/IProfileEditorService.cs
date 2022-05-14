@@ -142,6 +142,20 @@ public interface IProfileEditorService : IArtemisSharedUIService
     TimeSpan RoundTime(TimeSpan time);
 
     /// <summary>
+    ///     Creates a new folder as a sibling or child of the given target.
+    /// </summary>
+    /// <param name="target">The target, if this is a layer the new layer will become a sibling, otherwise a child.</param>
+    /// <returns>The resulting folder.</returns>
+    Folder CreateAndAddFolder(ProfileElement target);
+
+    /// <summary>
+    ///     Creates a new layer with the default brush and all current LEDs as a sibling or child of the given target.
+    /// </summary>
+    /// <param name="target">The target, if this is a layer the new layer will become a sibling, otherwise a child.</param>
+    /// <returns>The resulting layer.</returns>
+    Layer CreateAndAddLayer(ProfileElement target);
+
+    /// <summary>
     ///     Executes the provided command and adds it to the history.
     /// </summary>
     /// <param name="command">The command to execute.</param>

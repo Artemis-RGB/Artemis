@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia.Controls.Mixins;
-using Castle.DynamicProxy.Generators;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments;
@@ -14,13 +11,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments;
 public class StartSegmentViewModel : TimelineSegmentViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
-    private RenderProfileElement? _profileElement;
-    private int _pixelsPerSecond;
-    private TimeSpan _time;
+    private readonly ObservableAsPropertyHelper<double> _width;
     private ObservableAsPropertyHelper<double>? _end;
     private ObservableAsPropertyHelper<string?>? _endTimestamp;
-    private readonly ObservableAsPropertyHelper<double> _width;
     private TimeSpan _initialLength;
+    private int _pixelsPerSecond;
+    private RenderProfileElement? _profileElement;
+    private TimeSpan _time;
 
     public StartSegmentViewModel(IProfileEditorService profileEditorService) : base(profileEditorService)
     {
@@ -52,6 +49,7 @@ public class StartSegmentViewModel : TimelineSegmentViewModel
     public override double StartX => 0;
     public override TimeSpan End => _profileElement?.Timeline.StartSegmentEndPosition ?? TimeSpan.Zero;
     public override double EndX => _end?.Value ?? 0;
+
     public override TimeSpan Length
     {
         get => _profileElement?.Timeline.StartSegmentLength ?? TimeSpan.Zero;

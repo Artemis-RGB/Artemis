@@ -79,7 +79,7 @@
                 Canvas.Top="{CompiledBinding ShapeBounds.Top}"
                 RenderTransformOrigin="{CompiledBinding RelativeAnchor}">
             <Border.RenderTransform>
-                <RotateTransform Angle="{CompiledBinding Rotation}"></RotateTransform>
+                <RotateTransform Angle="{CompiledBinding Rotation}" />
             </Border.RenderTransform>
             <Grid Name="HandleGrid">
                 <!-- Render these first so that they are always behind the actual shape -->

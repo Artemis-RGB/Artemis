@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared.Services.ProfileEditor;
@@ -13,14 +11,14 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments;
 public class EndSegmentViewModel : TimelineSegmentViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
-    private RenderProfileElement? _profileElement;
-    private int _pixelsPerSecond;
-    private TimeSpan _time;
-    private ObservableAsPropertyHelper<double>? _start;
+    private readonly ObservableAsPropertyHelper<double> _width;
     private ObservableAsPropertyHelper<double>? _end;
     private ObservableAsPropertyHelper<string?>? _endTimestamp;
-    private readonly ObservableAsPropertyHelper<double> _width;
     private TimeSpan _initialLength;
+    private int _pixelsPerSecond;
+    private RenderProfileElement? _profileElement;
+    private ObservableAsPropertyHelper<double>? _start;
+    private TimeSpan _time;
 
 
     public EndSegmentViewModel(IProfileEditorService profileEditorService) : base(profileEditorService)
@@ -59,6 +57,7 @@ public class EndSegmentViewModel : TimelineSegmentViewModel
     public override double StartX => _start?.Value ?? 0;
     public override TimeSpan End => _profileElement?.Timeline.EndSegmentEndPosition ?? TimeSpan.Zero;
     public override double EndX => _end?.Value ?? 0;
+
     public override TimeSpan Length
     {
         get => _profileElement?.Timeline.EndSegmentLength ?? TimeSpan.Zero;
@@ -70,7 +69,7 @@ public class EndSegmentViewModel : TimelineSegmentViewModel
     }
 
     public override double Width => _width.Value;
-    
+
     public override string? EndTimestamp => _endTimestamp?.Value;
     public override ResizeTimelineSegment.SegmentType Type => ResizeTimelineSegment.SegmentType.End;
 }

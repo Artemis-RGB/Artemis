@@ -7,7 +7,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.Core.Services;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared;
@@ -21,9 +20,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
 public abstract class TreeItemViewModel : ActivatableViewModelBase
 {
-    private readonly ILayerBrushService _layerBrushService;
     private readonly IProfileEditorVmFactory _profileEditorVmFactory;
-    private readonly IRgbService _rgbService;
     private readonly IWindowService _windowService;
     protected readonly IProfileEditorService ProfileEditorService;
     private bool _canPaste;
@@ -34,16 +31,13 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
     private string? _renameValue;
     private bool _renaming;
 
-    protected TreeItemViewModel(TreeItemViewModel? parent, ProfileElement? profileElement,
+    protected TreeItemViewModel(TreeItemViewModel? parent,
+        ProfileElement? profileElement,
         IWindowService windowService,
         IProfileEditorService profileEditorService,
-        IRgbService rgbService,
-        ILayerBrushService layerBrushService,
         IProfileEditorVmFactory profileEditorVmFactory)
     {
         ProfileEditorService = profileEditorService;
-        _rgbService = rgbService;
-        _layerBrushService = layerBrushService;
         _windowService = windowService;
         _profileEditorVmFactory = profileEditorVmFactory;
 
@@ -126,9 +120,10 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
         foreach (IBreakableModel current in broken)
         {
             _windowService.ShowExceptionDialog($"{current.BrokenDisplayName} - {current.BrokenState}", current.BrokenStateException!);
-            if (broken.Last() != current)
-                if (!await _windowService.ShowConfirmContentDialog("Broken state", "Do you want to view the next exception?"))
-                    return;
+            if (broken.Last() == current)
+                continue;
+            if (!await _windowService.ShowConfirmContentDialog("Broken state", "Do you want to view the next exception?"))
+                return;
         }
     }
 
@@ -243,30 +238,14 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
 
     private void ExecuteAddFolder()
     {
-        if (ProfileElement is Layer targetLayer)
-            ProfileEditorService.ExecuteCommand(new AddProfileElement(new Folder(targetLayer.Parent, targetLayer.Parent.GetNewFolderName()), targetLayer.Parent, targetLayer.Order));
-        else if (ProfileElement != null)
-            ProfileEditorService.ExecuteCommand(new AddProfileElement(new Folder(ProfileElement, ProfileElement.GetNewFolderName()), ProfileElement, 0));
+        if (ProfileElement != null)
+            ProfileEditorService.CreateAndAddFolder(ProfileElement);
     }
 
     private void ExecuteAddLayer()
     {
-        if (ProfileElement is Layer targetLayer)
-        {
-            Layer layer = new(targetLayer.Parent, targetLayer.GetNewLayerName());
-            _layerBrushService.ApplyDefaultBrush(layer);
-
-            layer.AddLeds(_rgbService.EnabledDevices.SelectMany(d => d.Leds));
-            ProfileEditorService.ExecuteCommand(new AddProfileElement(layer, targetLayer.Parent, targetLayer.Order));
-        }
-        else if (ProfileElement != null)
-        {
-            Layer layer = new(ProfileElement, ProfileElement.GetNewLayerName());
-            _layerBrushService.ApplyDefaultBrush(layer);
-
-            layer.AddLeds(_rgbService.EnabledDevices.SelectMany(d => d.Leds));
-            ProfileEditorService.ExecuteCommand(new AddProfileElement(layer, ProfileElement, 0));
-        }
+        if (ProfileElement != null)
+            ProfileEditorService.CreateAndAddLayer(ProfileElement);
     }
 
     private async void UpdateCanPaste(bool isFlyoutOpen)

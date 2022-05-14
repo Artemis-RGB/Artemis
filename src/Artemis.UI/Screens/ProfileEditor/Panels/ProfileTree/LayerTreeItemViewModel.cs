@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
@@ -14,14 +13,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
 public class LayerTreeItemViewModel : TreeItemViewModel
 {
-    public LayerTreeItemViewModel(TreeItemViewModel? parent,
-        Layer layer,
-        IWindowService windowService,
-        IProfileEditorService profileEditorService,
-        IRgbService rgbService,
-        ILayerBrushService layerBrushService,
-        IProfileEditorVmFactory profileEditorVmFactory)
-        : base(parent, layer, windowService, profileEditorService, rgbService, layerBrushService, profileEditorVmFactory)
+    public LayerTreeItemViewModel(TreeItemViewModel? parent, Layer layer, IWindowService windowService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
+        : base(parent, layer, windowService, profileEditorService, profileEditorVmFactory)
     {
         Layer = layer;
     }

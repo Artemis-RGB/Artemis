@@ -9,12 +9,12 @@
              ClipToBounds="False">
     <UserControl.Styles>
         <Style Selector="Path.layer-visualizer">
-			<Setter Property="Stroke" Value="{StaticResource SystemAccentColorDark2}" />
+            <Setter Property="Stroke" Value="{StaticResource SystemAccentColorDark2}" />
             <Setter Property="Opacity" Value="0" />
-			<Setter Property="Transitions">
+            <Setter Property="Transitions">
                 <Setter.Value>
-					<Transitions>
-                        <DoubleTransition Property="Opacity" Duration="0:0:0.2" Easing="CubicEaseOut"></DoubleTransition>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.2" Easing="CubicEaseOut" />
                     </Transitions>
                 </Setter.Value>
             </Setter>
@@ -31,7 +31,7 @@
           StrokeDashArray="6,2"
           StrokeJoin="Round">
         <Path.Data>
-            <RectangleGeometry Rect="{CompiledBinding LayerBounds}"></RectangleGeometry>
+            <RectangleGeometry Rect="{CompiledBinding LayerBounds}" />
         </Path.Data>
     </Path>
 </UserControl>

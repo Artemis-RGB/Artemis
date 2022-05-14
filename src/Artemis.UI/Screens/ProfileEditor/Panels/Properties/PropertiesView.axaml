@@ -5,7 +5,6 @@
              xmlns:controls="clr-namespace:Artemis.UI.Controls"
              xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
-             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="350"
              x:Class="Artemis.UI.Screens.ProfileEditor.Properties.PropertiesView"
              x:DataType="local:PropertiesViewModel">
@@ -13,7 +12,7 @@
         <StyleInclude Source="/Screens/ProfileEditor/Panels/Properties/Timeline/Segments/Segment.axaml" />
     </UserControl.Styles>
     <UserControl.Resources>
-        <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter"></converters:DoubleToGridLengthConverter>
+        <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter" />
     </UserControl.Resources>
     <Grid Name="ContainerGrid">
         <Grid.ColumnDefinitions>
@@ -89,8 +88,7 @@
                           StartPoint="0,0"
                           EndPoint="{CompiledBinding #ContainerGrid.Bounds.BottomLeft}"
                           StrokeThickness="2"
-                          Stroke="{DynamicResource SystemAccentColorLight1}">
-                    </Line>
+                          Stroke="{DynamicResource SystemAccentColorLight1}" />
 
                     <Line Name="StartSegmentLine"
                           Canvas.Left="{CompiledBinding TimelineViewModel.StartSegmentViewModel.EndX}"
@@ -100,8 +98,7 @@
                           StrokeThickness="2"
                           Stroke="{DynamicResource SystemAccentColorLight1}"
                           StrokeDashArray="6,2"
-                          Opacity="0.5">
-                    </Line>
+                          Opacity="0.5" />
                     <Line Name="MainSegmentLine"
                           Canvas.Left="{CompiledBinding TimelineViewModel.MainSegmentViewModel.EndX}"
                           IsVisible="{CompiledBinding !TimelineViewModel.MainSegmentViewModel.ShowAddMain}"
@@ -110,8 +107,7 @@
                           StrokeThickness="2"
                           Stroke="{DynamicResource SystemAccentColorLight1}"
                           StrokeDashArray="6,2"
-                          Opacity="0.5">
-                    </Line>
+                          Opacity="0.5" />
                     <Line Name="EndSegmentLine"
                           Canvas.Left="{CompiledBinding TimelineViewModel.EndSegmentViewModel.EndX}"
                           IsVisible="{CompiledBinding !TimelineViewModel.MainSegmentViewModel.ShowAddEnd}"
@@ -120,8 +116,7 @@
                           StrokeThickness="2"
                           Stroke="{DynamicResource SystemAccentColorLight1}"
                           StrokeDashArray="6,2"
-                          Opacity="0.5">
-                    </Line>
+                          Opacity="0.5" />
 
                     <!-- Timeline segments -->
                     <ContentControl Canvas.Left="{CompiledBinding TimelineViewModel.EndSegmentViewModel.StartX}"
@@ -142,8 +137,7 @@
                              PointerReleased="TimelineCaret_OnPointerReleased"
                              PointerMoved="TimelineCaret_OnPointerMoved"
                              Points="-8,0 -8,8 0,20, 8,8 8,0"
-                             Fill="{DynamicResource SystemAccentColorLight1}">
-                    </Polygon>
+                             Fill="{DynamicResource SystemAccentColorLight1}" />
                 </Canvas>
 
                 <ScrollViewer Grid.Row="1"

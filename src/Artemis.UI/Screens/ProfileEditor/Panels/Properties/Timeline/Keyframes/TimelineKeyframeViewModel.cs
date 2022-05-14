@@ -15,10 +15,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineKeyframeViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
+    private ObservableAsPropertyHelper<bool>? _isSelected;
+    private string _timestamp;
 
     private double _x;
-    private string _timestamp;
-    private ObservableAsPropertyHelper<bool>? _isSelected;
 
     public TimelineKeyframeViewModel(LayerPropertyKeyframe<T> layerPropertyKeyframe, IProfileEditorService profileEditorService)
     {
@@ -56,15 +56,15 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
         set => RaiseAndSetIfChanged(ref _timestamp, value);
     }
 
-    public bool IsSelected => _isSelected?.Value ?? false;
-    public TimeSpan Position => LayerPropertyKeyframe.Position;
-    public ILayerPropertyKeyframe Keyframe => LayerPropertyKeyframe;
-
     public void Update()
     {
         X = _pixelsPerSecond * LayerPropertyKeyframe.Position.TotalSeconds;
         Timestamp = $"{Math.Floor(LayerPropertyKeyframe.Position.TotalSeconds):00}.{LayerPropertyKeyframe.Position.Milliseconds:000}";
     }
+
+    public bool IsSelected => _isSelected?.Value ?? false;
+    public TimeSpan Position => LayerPropertyKeyframe.Position;
+    public ILayerPropertyKeyframe Keyframe => LayerPropertyKeyframe;
 
     /// <inheritdoc />
     public void Select(bool expand, bool toggle)
@@ -157,7 +157,7 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
             .Cast<Easings.Functions>()
             .Select(e => new TimelineEasingViewModel(e, Keyframe)));
     }
-    
+
     public void SelectEasingFunction(Easings.Functions easingFunction)
     {
         _profileEditorService.ExecuteCommand(new ChangeKeyframeEasing(Keyframe, easingFunction));
@@ -165,4 +165,3 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
 
     #endregion
 }
-

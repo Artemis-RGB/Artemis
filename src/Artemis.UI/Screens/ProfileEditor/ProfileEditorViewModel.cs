@@ -97,5 +97,6 @@ public class ProfileEditorViewModel : MainScreenViewModel
 
     private void ExecuteToggleAutoSuspend()
     {
+        // TODO
     }
 }

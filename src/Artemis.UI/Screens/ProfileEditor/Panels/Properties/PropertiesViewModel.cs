@@ -15,10 +15,8 @@ using Artemis.UI.Screens.ProfileEditor.Playback;
 using Artemis.UI.Screens.ProfileEditor.Properties.DataBinding;
 using Artemis.UI.Screens.ProfileEditor.Properties.Dialogs;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
-using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using ReactiveUI;
 
@@ -28,11 +26,11 @@ public class PropertiesViewModel : ActivatableViewModelBase
 {
     private readonly Dictionary<LayerPropertyGroup, PropertyGroupViewModel> _cachedPropertyViewModels;
     private readonly IDataBindingVmFactory _dataBindingVmFactory;
-    private readonly IWindowService _windowService;
     private readonly ILayerEffectService _layerEffectService;
     private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
     private readonly IProfileEditorService _profileEditorService;
     private readonly ISettingsService _settingsService;
+    private readonly IWindowService _windowService;
     private DataBindingViewModel? _backgroundDataBindingViewModel;
     private DataBindingViewModel? _dataBindingViewModel;
     private ObservableAsPropertyHelper<ILayerProperty?>? _layerProperty;

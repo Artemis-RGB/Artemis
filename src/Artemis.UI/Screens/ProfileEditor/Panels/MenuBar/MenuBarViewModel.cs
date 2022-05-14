@@ -1,31 +1,50 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
+using Artemis.UI.Shared.Services.ProfileEditor.Commands;
+using Newtonsoft.Json;
 using ReactiveUI;
+using Serilog;
 
 namespace Artemis.UI.Screens.ProfileEditor.MenuBar;
 
 public class MenuBarViewModel : ActivatableViewModelBase
 {
+    private readonly ILogger _logger;
+    private readonly IProfileEditorService _profileEditorService;
     private readonly IProfileService _profileService;
     private readonly ISettingsService _settingsService;
+    private readonly IWindowService _windowService;
     private ProfileEditorHistory? _history;
-    private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
+    private ObservableAsPropertyHelper<bool>? _suspendedEditing;
     private ObservableAsPropertyHelper<bool>? _isSuspended;
+    private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
+    private ObservableAsPropertyHelper<RenderProfileElement?>? _profileElement;
 
-    public MenuBarViewModel(IProfileEditorService profileEditorService, IProfileService profileService, ISettingsService settingsService)
+    public MenuBarViewModel(ILogger logger, IProfileEditorService profileEditorService, IProfileService profileService, ISettingsService settingsService, IWindowService windowService)
     {
+        _logger = logger;
+        _profileEditorService = profileEditorService;
         _profileService = profileService;
         _settingsService = settingsService;
+        _windowService = windowService;
         this.WhenActivated(d =>
         {
             profileEditorService.History.Subscribe(history => History = history).DisposeWith(d);
             _profileConfiguration = profileEditorService.ProfileConfiguration.ToProperty(this, vm => vm.ProfileConfiguration).DisposeWith(d);
+            _profileElement = profileEditorService.ProfileElement.ToProperty(this, vm => vm.ProfileElement).DisposeWith(d);
+            _suspendedEditing = profileEditorService.SuspendedEditing.ToProperty(this, vm => vm.SuspendedEditing).DisposeWith(d);
             _isSuspended = profileEditorService.ProfileConfiguration
                 .Select(p => p?.WhenAnyValue(c => c.IsSuspended) ?? Observable.Never<bool>())
                 .Switch()
@@ -33,17 +52,35 @@ public class MenuBarViewModel : ActivatableViewModelBase
                 .DisposeWith(d);
         });
 
+        AddFolder = ReactiveCommand.Create(ExecuteAddFolder);
+        AddLayer = ReactiveCommand.Create(ExecuteAddLayer);
+        ViewProperties = ReactiveCommand.CreateFromTask(ExecuteViewProperties, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
+        ToggleSuspended = ReactiveCommand.Create(ExecuteToggleSuspended, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
+        DeleteProfile = ReactiveCommand.CreateFromTask(ExecuteDeleteProfile, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
+        ExportProfile = ReactiveCommand.CreateFromTask(ExecuteExportProfile, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
+        DuplicateProfile = ReactiveCommand.Create(ExecuteDuplicateProfile, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
+        ToggleSuspendedEditing = ReactiveCommand.Create(ExecuteToggleSuspendedEditing);
         ToggleBooleanSetting = ReactiveCommand.Create<PluginSetting<bool>>(ExecuteToggleBooleanSetting);
+        OpenUri = ReactiveCommand.CreateFromTask<string>(ExecuteOpenUri);
     }
 
-    private void ExecuteToggleBooleanSetting(PluginSetting<bool> setting)
-    {
-        setting.Value = !setting.Value;
-        setting.Save();
-    }
-
+    public ReactiveCommand<Unit, Unit> AddFolder { get; }
+    public ReactiveCommand<Unit, Unit> AddLayer { get; }
+    public ReactiveCommand<Unit, Unit> ToggleSuspended { get; }
+    public ReactiveCommand<Unit, Unit> ViewProperties { get; }
+    public ReactiveCommand<Unit, Unit> DeleteProfile { get; }
+    public ReactiveCommand<Unit, Unit> ExportProfile { get; }
+    public ReactiveCommand<Unit, Unit> DuplicateProfile { get; }
     public ReactiveCommand<PluginSetting<bool>, Unit> ToggleBooleanSetting { get; }
+    public ReactiveCommand<string, Unit> OpenUri { get; }
+    public ReactiveCommand<Unit, Unit> ToggleSuspendedEditing { get; }
+    
     public ProfileConfiguration? ProfileConfiguration => _profileConfiguration?.Value;
+    public RenderProfileElement? ProfileElement => _profileElement?.Value;
+    public bool IsSuspended => _isSuspended?.Value ?? false;
+    public bool SuspendedEditing => _suspendedEditing?.Value ?? false;
+    
+    public PluginSetting<bool> AutoSuspend => _settingsService.GetSetting("ProfileEditor.AutoSuspend", true);
     public PluginSetting<bool> FocusSelectedLayer => _settingsService.GetSetting("ProfileEditor.FocusSelectedLayer", false);
     public PluginSetting<bool> ShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
     public PluginSetting<bool> ShowFullPaths => _settingsService.GetSetting("ProfileEditor.ShowFullPaths", false);
@@ -56,16 +93,113 @@ public class MenuBarViewModel : ActivatableViewModelBase
         set => RaiseAndSetIfChanged(ref _history, value);
     }
 
-    public bool IsSuspended
+    private void ExecuteAddFolder()
     {
-        get => _isSuspended?.Value ?? false;
-        set
-        {
-            if (ProfileConfiguration == null)
-                return;
+        if (ProfileConfiguration?.Profile == null)
+            return;
 
-            ProfileConfiguration.IsSuspended = value;
-            _profileService.SaveProfileCategory(ProfileConfiguration.Category);
+        RenderProfileElement target = ProfileElement ?? ProfileConfiguration.Profile.GetRootFolder();
+        _profileEditorService.CreateAndAddFolder(target);
+    }
+
+    private void ExecuteAddLayer()
+    {
+        if (ProfileConfiguration?.Profile == null)
+            return;
+
+        RenderProfileElement target = ProfileElement ?? ProfileConfiguration.Profile.GetRootFolder();
+        _profileEditorService.CreateAndAddLayer(target);
+    }
+
+    private async Task ExecuteViewProperties()
+    {
+        if (ProfileConfiguration == null)
+            return;
+
+        await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(
+            ("profileCategory", ProfileConfiguration.Category),
+            ("profileConfiguration", ProfileConfiguration)
+        );
+    }
+
+    private void ExecuteToggleSuspended()
+    {
+        if (ProfileConfiguration == null)
+            return;
+
+        ProfileConfiguration.IsSuspended = !ProfileConfiguration.IsSuspended;
+        _profileService.SaveProfileCategory(ProfileConfiguration.Category);
+    }
+
+    private async Task ExecuteDeleteProfile()
+    {
+        if (ProfileConfiguration == null)
+            return;
+        if (!await _windowService.ShowConfirmContentDialog("Delete profile", "Are you sure you want to permanently delete this profile?"))
+            return;
+
+        if (ProfileConfiguration.IsBeingEdited)
+            _profileEditorService.ChangeCurrentProfileConfiguration(null);
+        _profileService.RemoveProfileConfiguration(ProfileConfiguration);
+    }
+
+    private async Task ExecuteExportProfile()
+    {
+        if (ProfileConfiguration == null)
+            return;
+
+        // Might not cover everything but then the dialog will complain and that's good enough
+        string fileName = Path.GetInvalidFileNameChars().Aggregate(ProfileConfiguration.Name, (current, c) => current.Replace(c, '-'));
+        string? result = await _windowService.CreateSaveFileDialog()
+            .HavingFilter(f => f.WithExtension("json").WithName("Artemis profile"))
+            .WithInitialFileName(fileName)
+            .ShowAsync();
+
+        if (result == null)
+            return;
+
+        ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
+        string json = JsonConvert.SerializeObject(export, IProfileService.ExportSettings);
+        try
+        {
+            await File.WriteAllTextAsync(result, json);
+        }
+        catch (Exception e)
+        {
+            _windowService.ShowExceptionDialog("Failed to export profile", e);
+        }
+    }
+
+    private void ExecuteDuplicateProfile()
+    {
+        if (ProfileConfiguration == null)
+            return;
+
+        ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
+        _profileService.ImportProfile(ProfileConfiguration.Category, export, true, false, "copy");
+    }
+    
+    private void ExecuteToggleSuspendedEditing()
+    {
+        _profileEditorService.ChangeSuspendedEditing(!SuspendedEditing);
+    }
+    
+    private void ExecuteToggleBooleanSetting(PluginSetting<bool> setting)
+    {
+        setting.Value = !setting.Value;
+        setting.Save();
+    }
+
+    private async Task ExecuteOpenUri(string uri)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(uri) {UseShellExecute = true, Verb = "open"});
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Failed to open URL");
+            await _windowService.ShowConfirmContentDialog("Failed to open URL", "We couldn't open the URL for you, check the logs for more details", "Confirm", null);
         }
     }
 }

@@ -15,9 +15,9 @@ namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools;
 
 public class SelectionAddToolViewModel : ToolViewModel
 {
+    private readonly ObservableAsPropertyHelper<bool>? _isEnabled;
     private readonly IProfileEditorService _profileEditorService;
     private readonly IRgbService _rgbService;
-    private readonly ObservableAsPropertyHelper<bool>? _isEnabled;
     private Layer? _layer;
 
     /// <inheritdoc />
@@ -49,15 +49,6 @@ public class SelectionAddToolViewModel : ToolViewModel
     /// <inheritdoc />
     public override string ToolTip => "Add LEDs to the current layer";
 
-    /// <inheritdoc />
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-            _isEnabled?.Dispose();
-
-        base.Dispose(disposing);
-    }
-
     public void AddLedsInRectangle(SKRect rect, bool expand, bool inverse)
     {
         if (_layer == null)
@@ -79,5 +70,14 @@ public class SelectionAddToolViewModel : ToolViewModel
                 leds.AddRange(_layer.Leds);
             _profileEditorService.ExecuteCommand(new ChangeLayerLeds(_layer, leds.Distinct().ToList()));
         }
+    }
+
+    /// <inheritdoc />
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+            _isEnabled?.Dispose();
+
+        base.Dispose(disposing);
     }
 }

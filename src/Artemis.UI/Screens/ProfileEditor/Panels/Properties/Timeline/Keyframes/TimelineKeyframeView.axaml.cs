@@ -8,9 +8,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 
 public class TimelineKeyframeView : ReactiveUserControl<ITimelineKeyframeViewModel>
 {
+    private bool _moved;
     private TimelinePropertyView? _timelinePropertyView;
     private TimelineView? _timelineView;
-    private bool _moved;
 
     public TimelineKeyframeView()
     {
@@ -70,7 +70,9 @@ public class TimelineKeyframeView : ReactiveUserControl<ITimelineKeyframeViewMod
 
         // Select the keyframe if the user didn't move
         if (!_moved)
+        {
             ViewModel.Select(e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
+        }
         else
         {
             TimeSpan time = ViewModel.GetTimeSpanAtPosition(e.GetPosition(_timelinePropertyView).X);

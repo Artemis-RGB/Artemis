@@ -5,7 +5,8 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Sidebar"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Sidebar.SidebarCategoryView">
+             x:Class="Artemis.UI.Screens.Sidebar.SidebarCategoryView"
+             x:DataType="local:SidebarCategoryViewModel">
     <UserControl.Styles>
         <Style Selector=":is(Button).category-button">
             <Setter Property="IsVisible" Value="False" />
@@ -26,11 +27,14 @@
         <Style Selector="Border.fadable.suspended">
             <Setter Property="Opacity" Value="1" />
         </Style>
+        <Style Selector=".sidebar-listbox > ListBoxItem">
+            <Setter Property="Padding" Value="6 0"/>
+        </Style>
     </UserControl.Styles>
     <Grid x:Name="ContainerGrid" Margin="0 8 0 0" RowDefinitions="Auto,*">
-        <Grid Grid.Row="0" Background="Transparent" ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto">
+        <Grid Grid.Row="0" Background="Transparent" Margin="0 0 6 0" ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto">
 
-            <avalonia:MaterialIcon Classes.chevron-collapsed="{Binding ShowItems}"
+            <avalonia:MaterialIcon Classes.chevron-collapsed="{CompiledBinding !IsCollapsed}"
                                    Kind="ChevronUp"
                                    Grid.Column="0"
                                    Margin="5 0"
@@ -44,13 +48,14 @@
             </avalonia:MaterialIcon>
 
             <TextBlock Classes="fadable"
-                       Classes.suspended="{Binding IsSuspended}"
+                       Classes.suspended="{CompiledBinding IsSuspended}"
                        Grid.Column="1"
                        Padding="0 5"
                        FontWeight="SemiBold"
                        FontSize="13"
                        VerticalAlignment="Center"
-                       Text="{Binding ProfileCategory.Name, FallbackValue='Profile name'}"
+                       Text="{CompiledBinding ProfileCategory.Name, FallbackValue='Profile name'}"
+                       TextTrimming="CharacterEllipsis"
                        PointerPressed="Title_OnPointerPressed"
                        Background="Transparent">
                 <TextBlock.Transitions>
@@ -61,7 +66,7 @@
             </TextBlock>
 
             <Border Classes="fadable"
-                    Classes.suspended="{Binding IsSuspended}"
+                    Classes.suspended="{CompiledBinding IsSuspended}"
                     Grid.Column="1"
                     BorderBrush="White"
                     BorderThickness="0.5"
@@ -77,29 +82,34 @@
                     Grid.Column="2"
                     ToolTip.Tip="Edit category"
                     HorizontalAlignment="Right"
-                    Command="{Binding EditCategory}">
+                    Command="{CompiledBinding EditCategory}"
+                    Margin="0 0 2 0">
                 <avalonia:MaterialIcon Kind="Cog" />
             </Button>
-            <ToggleButton Classes="category-button icon-button icon-button-small"
-                          Grid.Column="3"
-                          ToolTip.Tip="Suspend category"
-                          Margin="5 0"
-                          IsChecked="{Binding IsSuspended}">
-                <avalonia:MaterialIcon Kind="Pause" />
-            </ToggleButton>
+            <Button Classes="icon-button icon-button-small"
+                    Command="{CompiledBinding ToggleSuspended}"
+                    Grid.Column="3"
+                    ToolTip.Tip="Suspend/resume profile"
+                    Margin="0 0 2 0">
+                <Panel>
+                    <avalonia:MaterialIcon Kind="EyeOff" IsVisible="{CompiledBinding IsSuspended}" />
+                    <avalonia:MaterialIcon Kind="Eye" IsVisible="{CompiledBinding !IsSuspended}" />
+                </Panel>
+            </Button>
             <Button Classes="category-button icon-button icon-button-small"
                     Grid.Column="4"
                     ToolTip.Tip="Add profile"
                     HorizontalAlignment="Right"
-                    Command="{Binding AddProfile}">
+                    Command="{CompiledBinding AddProfile}"
+                    Margin="0 0 2 0">
                 <avalonia:MaterialIcon Kind="Plus" />
             </Button>
         </Grid>
 
         <Border Grid.Row="1">
             <ListBox Classes="sidebar-listbox"
-                     Items="{Binding ProfileConfigurations}"
-                     SelectedItem="{Binding SelectedProfileConfiguration}"
+                     Items="{CompiledBinding ProfileConfigurations}"
+                     SelectedItem="{CompiledBinding SelectedProfileConfiguration}"
                      MinHeight="10"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      ScrollViewer.VerticalScrollBarVisibility="Disabled">

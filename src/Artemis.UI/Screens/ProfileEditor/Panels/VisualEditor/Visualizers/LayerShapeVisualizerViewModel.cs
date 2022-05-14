@@ -15,11 +15,11 @@ namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
 
 public class LayerShapeVisualizerViewModel : ActivatableViewModelBase, IVisualizerViewModel
 {
-    private ObservableAsPropertyHelper<bool>? _selected;
     private Rect _layerBounds;
+    private ObservableAsPropertyHelper<bool>? _selected;
+    private Geometry? _shapeGeometry;
     private double _x;
     private double _y;
-    private Geometry? _shapeGeometry;
 
     public LayerShapeVisualizerViewModel(Layer layer, IProfileEditorService profileEditorService)
     {
@@ -49,7 +49,6 @@ public class LayerShapeVisualizerViewModel : ActivatableViewModelBase, IVisualiz
     }
 
     public Layer Layer { get; }
-    public ProfileElement ProfileElement => Layer;
     public bool Selected => _selected?.Value ?? false;
 
     public Rect LayerBounds
@@ -57,26 +56,12 @@ public class LayerShapeVisualizerViewModel : ActivatableViewModelBase, IVisualiz
         get => _layerBounds;
         private set => RaiseAndSetIfChanged(ref _layerBounds, value);
     }
-    
-    public double X
-    {
-        get => _x;
-        set => RaiseAndSetIfChanged(ref _x, value);
-    }
-
-    public double Y
-    {
-        get => _y;
-        set => RaiseAndSetIfChanged(ref _y, value);
-    }
 
     public Geometry? ShapeGeometry
     {
         get => _shapeGeometry;
         set => RaiseAndSetIfChanged(ref _shapeGeometry, value);
     }
-
-    public int Order => 2;
 
     private void Update()
     {
@@ -86,7 +71,7 @@ public class LayerShapeVisualizerViewModel : ActivatableViewModelBase, IVisualiz
             ShapeGeometry = new RectangleGeometry(LayerBounds);
         else
             ShapeGeometry = new EllipseGeometry(LayerBounds);
-        
+
         UpdateTransform();
     }
 
@@ -103,4 +88,20 @@ public class LayerShapeVisualizerViewModel : ActivatableViewModelBase, IVisualiz
         if (ShapeGeometry != null)
             ShapeGeometry.Transform = new MatrixTransform(Layer.GetTransformMatrix(false, true, true, true, LayerBounds.ToSKRect()).ToMatrix());
     }
+
+    public ProfileElement ProfileElement => Layer;
+
+    public double X
+    {
+        get => _x;
+        set => RaiseAndSetIfChanged(ref _x, value);
+    }
+
+    public double Y
+    {
+        get => _y;
+        set => RaiseAndSetIfChanged(ref _y, value);
+    }
+
+    public int Order => 2;
 }

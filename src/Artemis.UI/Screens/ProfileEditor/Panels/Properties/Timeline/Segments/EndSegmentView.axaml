@@ -28,7 +28,7 @@
                     IsVisible="{CompiledBinding ShowAddMain}">
                 <avalonia:MaterialIcon Kind="PlusCircle" />
             </Button>
-            
+
             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" ClipToBounds="True">
                 <TextBlock Name="SegmentTitle"
                            FontSize="13"
@@ -43,7 +43,7 @@
                 </Button>
             </StackPanel>
 
-			<Rectangle Name="KeyframeDragVisualRight"
+            <Rectangle Name="KeyframeDragVisualRight"
                        Grid.Column="3"
                        Classes="resize-visual" />
             <Rectangle Name="KeyframeDragAnchor"
@@ -52,7 +52,7 @@
                        PointerPressed="KeyframeDragAnchor_OnPointerPressed"
                        PointerMoved="KeyframeDragAnchor_OnPointerMoved"
                        PointerReleased="KeyframeDragAnchor_OnPointerReleased"
-                       ToolTip.Tip="{CompiledBinding EndTimestamp}"/>
+                       ToolTip.Tip="{CompiledBinding EndTimestamp}" />
         </Grid>
     </Border>
 </UserControl>

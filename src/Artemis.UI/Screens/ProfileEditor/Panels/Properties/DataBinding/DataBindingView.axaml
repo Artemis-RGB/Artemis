@@ -27,7 +27,7 @@
                     HorizontalAlignment="Right"
                     Margin="10"
                     Command="{Binding OpenEditor}">
-                <avalonia:MaterialIcon Kind="OpenInNew"></avalonia:MaterialIcon>
+                <avalonia:MaterialIcon Kind="OpenInNew" />
             </Button>
         </Grid>
 
@@ -42,7 +42,7 @@
             <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Foreground="{DynamicResource TextFillColorSecondary}">
                 When you enable data bindings you can no longer use keyframes or normal values for this property.
             </TextBlock>
-            <controls:HyperlinkButton HorizontalAlignment="Center" 
+            <controls:HyperlinkButton HorizontalAlignment="Center"
                                       NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/profiles/data-bindings"
                                       Margin="0 10">
                 Learn more

@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
@@ -14,20 +13,13 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
 public class FolderTreeItemViewModel : TreeItemViewModel
 {
-    public FolderTreeItemViewModel(TreeItemViewModel? parent,
-        Folder folder,
-        IWindowService windowService,
-        IProfileEditorService profileEditorService,
-        ILayerBrushService layerBrushService,
-        IProfileEditorVmFactory profileEditorVmFactory,
-        IRgbService rgbService)
-        : base(parent, folder, windowService, profileEditorService, rgbService, layerBrushService, profileEditorVmFactory)
+    public FolderTreeItemViewModel(TreeItemViewModel? parent, Folder folder, IWindowService windowService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
+        : base(parent, folder, windowService, profileEditorService, profileEditorVmFactory)
     {
         Folder = folder;
     }
 
     public Folder Folder { get; }
-
 
     #region Overrides of TreeItemViewModel
 

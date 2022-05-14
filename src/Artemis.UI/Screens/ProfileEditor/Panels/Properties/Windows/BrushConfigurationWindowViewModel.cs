@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.LayerBrushes;
-using Avalonia.Threading;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Windows;
 

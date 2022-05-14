@@ -8,18 +8,18 @@
              x:Class="Artemis.UI.Screens.ProfileEditor.DisplayCondition.ConditionTypes.EventConditionView"
              x:DataType="conditionTypes:EventConditionViewModel">
     <DockPanel HorizontalAlignment="Stretch">
-		<DockPanel.Styles>
-			<Style Selector="DockPanel > TextBlock">
-				<Setter Property="Margin" Value="0 5" />
-			</Style>
-		</DockPanel.Styles>
+        <DockPanel.Styles>
+            <Style Selector="DockPanel > TextBlock">
+                <Setter Property="Margin" Value="0 5" />
+            </Style>
+        </DockPanel.Styles>
         <TextBlock DockPanel.Dock="Top">Triggered by event</TextBlock>
         <dataModelPicker:DataModelPickerButton Placeholder="Select an event"
                                                DockPanel.Dock="Top"
                                                HorizontalAlignment="Stretch"
                                                DataModelPath="{CompiledBinding EventPath}"
                                                ShowFullPath="{CompiledBinding ShowFullPaths.Value}"
-                                               IsEventPicker="True"/>
+                                               IsEventPicker="True" />
 
         <TextBlock DockPanel.Dock="Top">When the event fires..</TextBlock>
         <ComboBox PlaceholderText="Select a play mode" HorizontalAlignment="Stretch" DockPanel.Dock="Top" SelectedIndex="{CompiledBinding SelectedTriggerMode}">
@@ -54,11 +54,11 @@
                   DockPanel.Dock="Top"
                   SelectedIndex="{CompiledBinding SelectedToggleOffMode}"
                   IsVisible="{CompiledBinding ShowToggleOffOptions}">
-			<ComboBoxItem>Finish the main segment</ComboBoxItem>
+            <ComboBoxItem>Finish the main segment</ComboBoxItem>
             <ComboBoxItem>Skip forward to the end segment</ComboBoxItem>
         </ComboBox>
 
-		<Button DockPanel.Dock="Bottom"
+        <Button DockPanel.Dock="Bottom"
                 ToolTip.Tip="Open editor"
                 Margin="0 15 0 5"
                 Command="{CompiledBinding OpenEditor}"

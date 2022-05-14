@@ -1,5 +1,4 @@
-﻿using System.Reactive;
-using Artemis.Core;
+﻿using Artemis.Core;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Tree;

@@ -18,6 +18,8 @@ internal class ProfileEditorService : IProfileEditorService
     private readonly BehaviorSubject<ILayerProperty?> _layerPropertySubject = new(null);
     private readonly ILogger _logger;
     private readonly IModuleService _moduleService;
+    private readonly IRgbService _rgbService;
+    private readonly ILayerBrushService _layerBrushService;
     private readonly BehaviorSubject<int> _pixelsPerSecondSubject = new(120);
     private readonly BehaviorSubject<bool> _playingSubject = new(false);
     private readonly BehaviorSubject<ProfileConfiguration?> _profileConfigurationSubject = new(null);
@@ -30,11 +32,18 @@ internal class ProfileEditorService : IProfileEditorService
     private readonly IWindowService _windowService;
     private ProfileEditorCommandScope? _profileEditorHistoryScope;
 
-    public ProfileEditorService(ILogger logger, IProfileService profileService, IModuleService moduleService, IWindowService windowService)
+    public ProfileEditorService(ILogger logger,
+        IProfileService profileService,
+        IModuleService moduleService,
+        IRgbService rgbService,
+        ILayerBrushService layerBrushService,
+        IWindowService windowService)
     {
         _logger = logger;
         _profileService = profileService;
         _moduleService = moduleService;
+        _rgbService = rgbService;
+        _layerBrushService = layerBrushService;
         _windowService = windowService;
 
         ProfileConfiguration = _profileConfigurationSubject.AsObservable();
@@ -291,6 +300,48 @@ internal class ProfileEditorService : IProfileEditorService
         if (_pixelsPerSecondSubject.Value < 500)
             return TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds / 20.0) * 20.0);
         return TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds));
+    }
+
+    /// <inheritdoc />
+    public Folder CreateAndAddFolder(ProfileElement target)
+    {
+        if (target is Layer targetLayer)
+        {
+            Folder folder = new(targetLayer.Parent, targetLayer.Parent.GetNewFolderName());
+            ExecuteCommand(new AddProfileElement(folder, targetLayer.Parent, targetLayer.Order));
+            return folder;
+        }
+        else
+        {
+            Folder folder = new(target, target.GetNewFolderName());
+            ExecuteCommand(new AddProfileElement(folder, target, 0));
+            return folder;
+        }
+    }
+    
+    /// <inheritdoc />
+    public Layer CreateAndAddLayer(ProfileElement target)
+    {
+        if (target is Layer targetLayer)
+        {
+            Layer layer = new(targetLayer.Parent, targetLayer.GetNewLayerName());
+            _layerBrushService.ApplyDefaultBrush(layer);
+
+            layer.AddLeds(_rgbService.EnabledDevices.SelectMany(d => d.Leds));
+            ExecuteCommand(new AddProfileElement(layer, targetLayer.Parent, targetLayer.Order));
+
+            return layer;
+        }
+        else
+        {
+            Layer layer = new(target, target.GetNewLayerName());
+            _layerBrushService.ApplyDefaultBrush(layer);
+
+            layer.AddLeds(_rgbService.EnabledDevices.SelectMany(d => d.Leds));
+            ExecuteCommand(new AddProfileElement(layer, target, 0));
+
+            return layer;
+        }
     }
 
     public void ChangePixelsPerSecond(int pixelsPerSecond)

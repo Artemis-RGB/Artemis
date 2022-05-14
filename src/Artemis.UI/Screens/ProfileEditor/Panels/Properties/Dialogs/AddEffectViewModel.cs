@@ -14,8 +14,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Dialogs;
 
 public class AddEffectViewModel : ContentDialogViewModelBase
 {
-    private readonly RenderProfileElement _renderProfileElement;
     private readonly IProfileEditorService _profileEditorService;
+    private readonly RenderProfileElement _renderProfileElement;
     private string? _searchText;
 
     public AddEffectViewModel(RenderProfileElement renderProfileElement, IProfileEditorService profileEditorService, ILayerEffectService layerEffectService)
@@ -39,7 +39,7 @@ public class AddEffectViewModel : ContentDialogViewModelBase
     public string? SearchText
     {
         get => _searchText;
-        set => this.RaiseAndSetIfChanged(ref _searchText, value);
+        set => RaiseAndSetIfChanged(ref _searchText, value);
     }
 
     public void AddLayerEffect(LayerEffectDescriptor descriptor)
@@ -59,4 +59,3 @@ public class AddEffectViewModel : ContentDialogViewModelBase
                        data.Description.Contains(search, StringComparison.InvariantCultureIgnoreCase);
     }
 }
-

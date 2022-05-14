@@ -8,13 +8,11 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.TimelineView"
              x:DataType="timeline:TimelineViewModel">
-	<UserControl.Resources>
-		<x:Double x:Key="RailsHeight">28</x:Double>
-		<x:Double x:Key="RailsBorderHeight">29</x:Double>
-	</UserControl.Resources>
+    <UserControl.Resources>
+    </UserControl.Resources>
     <Grid Background="Transparent" PointerReleased="InputElement_OnPointerReleased" Focusable="True" MinWidth="{Binding MinWidth}">
         <Grid.KeyBindings>
-            <KeyBinding Command="{Binding DeleteKeyframes}" Gesture="Delete"/>
+            <KeyBinding Command="{Binding DeleteKeyframes}" Gesture="Delete" />
         </Grid.KeyBindings>
         <ItemsControl Items="{CompiledBinding PropertyGroupViewModels}">
             <ItemsControl.ItemTemplate>
@@ -23,8 +21,8 @@
                 </TreeDataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-		<shared:SelectionRectangle Name="SelectionRectangle" InputElement="{CompiledBinding $parent}" SelectionFinished="SelectionRectangle_OnSelectionFinished"></shared:SelectionRectangle>
-	</Grid>
+        <shared:SelectionRectangle Name="SelectionRectangle" InputElement="{CompiledBinding $parent}" SelectionFinished="SelectionRectangle_OnSelectionFinished" />
+    </Grid>
 
 
 </UserControl>

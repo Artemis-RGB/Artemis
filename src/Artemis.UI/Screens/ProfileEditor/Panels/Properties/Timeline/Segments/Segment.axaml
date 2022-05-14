@@ -6,23 +6,22 @@
         </Border>
     </Design.PreviewWith>
 
-	<Style Selector="ContentControl.segment-content-control">
-    </Style>
+    <Style Selector="ContentControl.segment-content-control" />
 
     <Style Selector="Border.segment-container">
-        <Setter Property="Height" Value="18"></Setter>
+        <Setter Property="Height" Value="18" />
     </Style>
 
     <Style Selector="Rectangle.resize-visual">
-        <Setter Property="Fill" Value="{DynamicResource SystemAccentColorLight2}"/>
-        <Setter Property="Width" Value="4"/>
-        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Fill" Value="{DynamicResource SystemAccentColorLight2}" />
+        <Setter Property="Width" Value="4" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
     </Style>
 
     <Style Selector="Rectangle.resize-anchor">
-        <Setter Property="Fill" Value="Transparent"/>
-        <Setter Property="Width" Value="10"/>
-        <Setter Property="HorizontalAlignment" Value="Right"/>
-        <Setter Property="Cursor" Value="SizeWestEast"/>
+        <Setter Property="Fill" Value="Transparent" />
+        <Setter Property="Width" Value="10" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="Cursor" Value="SizeWestEast" />
     </Style>
 </Styles>

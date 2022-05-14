@@ -2,23 +2,21 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.ProfileEditor
+namespace Artemis.UI.Screens.ProfileEditor;
+
+public class ProfileEditorView : ReactiveUserControl<ProfileEditorViewModel>
 {
-    public class ProfileEditorView : ReactiveUserControl<ProfileEditorViewModel>
+    public ProfileEditorView()
     {
-        public ProfileEditorView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
+    }
 
-        private void MenuItem_OnSubmenuOpened(object? sender, RoutedEventArgs e)
-        {
-            
-        }
+    private void MenuItem_OnSubmenuOpened(object? sender, RoutedEventArgs e)
+    {
     }
 }

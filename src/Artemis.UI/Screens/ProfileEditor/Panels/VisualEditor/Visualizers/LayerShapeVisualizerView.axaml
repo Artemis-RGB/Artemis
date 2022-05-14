@@ -10,11 +10,11 @@
     <UserControl.Styles>
         <Style Selector="Path.layer-visualizer">
             <Setter Property="Stroke" Value="{StaticResource ButtonBorderBrushDisabled}" />
-			<Setter Property="Transitions">
+            <Setter Property="Transitions">
                 <Setter.Value>
-					<Transitions>
-                        <DoubleTransition Property="StrokeThickness" Duration="0:0:0.2" Easing="CubicEaseOut"></DoubleTransition>
-                        <BrushTransition Property="Stroke" Duration="0:0:0.2" Easing="CubicEaseOut"></BrushTransition>
+                    <Transitions>
+                        <DoubleTransition Property="StrokeThickness" Duration="0:0:0.2" Easing="CubicEaseOut" />
+                        <BrushTransition Property="Stroke" Duration="0:0:0.2" Easing="CubicEaseOut" />
                     </Transitions>
                 </Setter.Value>
             </Setter>
@@ -28,7 +28,7 @@
             <Setter Property="Transitions">
                 <Setter.Value>
                     <Transitions>
-                        <DoubleTransition Property="StrokeThickness" Duration="0:0:0.2" Easing="CubicEaseOut"></DoubleTransition>
+                        <DoubleTransition Property="StrokeThickness" Duration="0:0:0.2" Easing="CubicEaseOut" />
                     </Transitions>
                 </Setter.Value>
             </Setter>
@@ -43,8 +43,7 @@
               Classes.layer-visualizer-unbound-selected="{CompiledBinding Selected}"
               Data="{CompiledBinding ShapeGeometry, Mode=OneWay}"
               StrokeThickness="4"
-              StrokeJoin="Round">
-        </Path>
+              StrokeJoin="Round" />
         <Border Name="LayerVisualizerBounds"
                 ClipToBounds="True"
                 Width="{CompiledBinding LayerBounds.Width, Mode=OneWay}"
@@ -54,8 +53,7 @@
                   Classes.layer-visualizer-selected="{CompiledBinding Selected}"
                   Data="{CompiledBinding ShapeGeometry, Mode=OneWay}"
                   StrokeThickness="4"
-                  StrokeJoin="Round">
-            </Path>
+                  StrokeJoin="Round" />
         </Border>
     </Canvas>
 

@@ -33,11 +33,11 @@
             </TextBlock>
         </DockPanel>
 
-        <Button DockPanel.Dock="Bottom" 
-                ToolTip.Tip="Open editor" 
-                Margin="0 15 0 5" 
-                Command="{CompiledBinding OpenEditor}" 
-                HorizontalAlignment="Stretch" 
+        <Button DockPanel.Dock="Bottom"
+                ToolTip.Tip="Open editor"
+                Margin="0 15 0 5"
+                Command="{CompiledBinding OpenEditor}"
+                HorizontalAlignment="Stretch"
                 VerticalAlignment="Bottom">
             Edit condition script
         </Button>

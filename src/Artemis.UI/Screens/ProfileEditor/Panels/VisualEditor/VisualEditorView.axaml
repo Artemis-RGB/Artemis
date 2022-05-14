@@ -20,7 +20,7 @@
                 </Canvas>
             </VisualBrush.Visual>
         </VisualBrush>
-	</UserControl.Resources>
+    </UserControl.Resources>
     <Grid>
         <paz:ZoomBorder Name="ZoomBorder"
                         Stretch="None"
@@ -34,11 +34,11 @@
                   Background="Transparent">
                 <Grid.Transitions>
                     <Transitions>
-                        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+                        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut" />
                     </Transitions>
                 </Grid.Transitions>
 
-				<!-- The bottom layer consists of devices -->
+                <!-- The bottom layer consists of devices -->
                 <ItemsControl Items="{CompiledBinding Devices}" ClipToBounds="False">
                     <ItemsControl.Styles>
                         <Style Selector="ContentPresenter">
@@ -58,7 +58,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-				<!-- The middle layer contains visualizers -->
+                <!-- The middle layer contains visualizers -->
                 <ItemsControl Items="{CompiledBinding Visualizers}" ClipToBounds="False" IsVisible="{CompiledBinding !SuspendedEditing}">
                     <ItemsControl.Styles>
                         <Style Selector="ContentPresenter">
@@ -73,7 +73,7 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
 
-				<!-- The top layer contains tools -->
+                <!-- The top layer contains tools -->
                 <ItemsControl Items="{CompiledBinding Tools}" ClipToBounds="False" IsVisible="{CompiledBinding !SuspendedEditing}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -85,15 +85,15 @@
         </paz:ZoomBorder>
         <Border CornerRadius="0 0 8 0" VerticalAlignment="Top" HorizontalAlignment="Left">
             <Border.Background>
-                <SolidColorBrush Color="{DynamicResource CardStrokeColorDefaultSolid}" Opacity="0.65"></SolidColorBrush>
+                <SolidColorBrush Color="{DynamicResource CardStrokeColorDefaultSolid}" Opacity="0.65" />
             </Border.Background>
             <StackPanel Orientation="Horizontal" Margin="8">
                 <shared:ProfileConfigurationIcon ConfigurationIcon="{CompiledBinding ProfileConfiguration.Icon}"
                                                  Foreground="{DynamicResource ToolTipForeground}"
                                                  Width="18"
                                                  Height="18"
-                                                 Margin="0 0 5 0"></shared:ProfileConfigurationIcon>
-                <TextBlock  Text="{CompiledBinding ProfileConfiguration.Name}"/>
+                                                 Margin="0 0 5 0" />
+                <TextBlock Text="{CompiledBinding ProfileConfiguration.Name}" />
             </StackPanel>
         </Border>
     </Grid>

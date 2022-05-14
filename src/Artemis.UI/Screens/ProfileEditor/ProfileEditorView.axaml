@@ -3,7 +3,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:profileEditor="clr-namespace:Artemis.UI.Screens.ProfileEditor"
              xmlns:shared="clr-namespace:Artemis.UI.Shared.Services.ProfileEditor;assembly=Artemis.UI.Shared"
@@ -11,7 +10,7 @@
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileEditorView"
              x:DataType="profileEditor:ProfileEditorViewModel">
     <UserControl.Resources>
-        <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter"></converters:DoubleToGridLengthConverter>
+        <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter" />
     </UserControl.Resources>
     <UserControl.Styles>
         <Style Selector="Border.suspended-editing">
@@ -22,10 +21,10 @@
         </Style>
     </UserControl.Styles>
     <UserControl.KeyBindings>
-        <KeyBinding Command="{CompiledBinding History.Undo}" Gesture="Ctrl+Z"></KeyBinding>
-        <KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y"></KeyBinding>
-        <KeyBinding Command="{CompiledBinding ToggleSuspend}" Gesture="F5"></KeyBinding>
-        <KeyBinding Command="{CompiledBinding ToggleAutoSuspend}" Gesture="Shift+F5"></KeyBinding>
+        <KeyBinding Command="{CompiledBinding History.Undo}" Gesture="Ctrl+Z" />
+        <KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y" />
+        <KeyBinding Command="{CompiledBinding ToggleSuspend}" Gesture="F5" />
+        <KeyBinding Command="{CompiledBinding ToggleAutoSuspend}" Gesture="Shift+F5" />
     </UserControl.KeyBindings>
     <UserControl.Styles>
         <Style Selector="GridSplitter.editor-grid-splitter-vertical">
@@ -46,7 +45,7 @@
             <Setter Property="Height" Value="18" />
         </Style>
         <Style Selector="Window:windows Grid.editor-grid">
-            <Setter Property="Margin" Value="0 0 4 4"></Setter>
+            <Setter Property="Margin" Value="0 0 4 4" />
         </Style>
     </UserControl.Styles>
     <Grid Classes="editor-grid">
@@ -103,7 +102,7 @@
                                 Press F5 to switch between editor mode and normal mode. Auto-switching can be disabled in the run menu.
                             </TextBlock>
                         </StackPanel>
-					</Border>
+                    </Border>
                 </Panel>
             </Border>
         </Grid>
@@ -127,7 +126,7 @@
 
             <Border Grid.Row="2" Classes="card card-condensed" Margin="4">
                 <Panel>
-                    <ContentControl Content="{CompiledBinding DisplayConditionScriptViewModel}"></ContentControl>
+                    <ContentControl Content="{CompiledBinding DisplayConditionScriptViewModel}" />
                     <Border Classes="suspended-editing" />
                 </Panel>
             </Border>

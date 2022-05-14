@@ -2,23 +2,21 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.ProfileEditor.MenuBar
+namespace Artemis.UI.Screens.ProfileEditor.MenuBar;
+
+public class MenuBarView : ReactiveUserControl<MenuBarViewModel>
 {
-    public partial class MenuBarView : ReactiveUserControl<MenuBarViewModel>
+    public MenuBarView()
     {
-        public MenuBarView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
+    }
 
-        private void MenuItem_OnSubmenuOpened(object? sender, RoutedEventArgs e)
-        {
-            
-        }
+    private void MenuItem_OnSubmenuOpened(object? sender, RoutedEventArgs e)
+    {
     }
 }

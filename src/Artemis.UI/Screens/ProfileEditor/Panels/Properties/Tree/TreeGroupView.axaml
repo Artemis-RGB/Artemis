@@ -71,14 +71,14 @@
                           Height="29"
                           ColumnDefinitions="Auto,Auto,Auto,*">
                         <shared:ArtemisIcon Grid.Column="0"
-                                              Icon="{CompiledBinding LayerBrush.Descriptor.Icon}"
-                                              Width="16"
-                                              Height="16"
-                                              Margin="0 0 5 0" />
+                                            Icon="{CompiledBinding LayerBrush.Descriptor.Icon}"
+                                            Width="16"
+                                            Height="16"
+                                            Margin="0 0 5 0" />
                         <TextBlock Grid.Column="1"
                                    ToolTip.Tip="{CompiledBinding LayerBrush.Descriptor.Description}"
                                    Margin="0 5 5 0">
-                            Brush - 
+                            Brush -
                         </TextBlock>
                         <TextBlock Grid.Column="2"
                                    Text="{CompiledBinding LayerBrush.Descriptor.DisplayName}"

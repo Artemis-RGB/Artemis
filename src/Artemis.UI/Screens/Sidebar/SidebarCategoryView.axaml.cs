@@ -1,4 +1,5 @@
-﻿using Avalonia.Input;
+﻿using System;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
@@ -18,8 +19,7 @@ namespace Artemis.UI.Screens.Sidebar
 
         private void Title_OnPointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (ViewModel != null)
-                ViewModel.ShowItems = !ViewModel.ShowItems;
+            ViewModel?.ToggleCollapsed.Execute().Subscribe();
         }
     }
 }

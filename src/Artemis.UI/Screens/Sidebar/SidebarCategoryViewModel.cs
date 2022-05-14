@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.Core.Events;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
+using DynamicData;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar
@@ -21,6 +25,8 @@ namespace Artemis.UI.Screens.Sidebar
         private readonly ISidebarVmFactory _vmFactory;
         private readonly IWindowService _windowService;
         private SidebarProfileConfigurationViewModel? _selectedProfileConfiguration;
+        private ObservableAsPropertyHelper<bool>? _isCollapsed;
+        private ObservableAsPropertyHelper<bool>? _isSuspended;
 
         public SidebarCategoryViewModel(SidebarViewModel sidebarViewModel, ProfileCategory profileCategory, IProfileService profileService, IWindowService windowService,
             IProfileEditorService profileEditorService, ISidebarVmFactory vmFactory)
@@ -31,24 +37,59 @@ namespace Artemis.UI.Screens.Sidebar
             _vmFactory = vmFactory;
 
             ProfileCategory = profileCategory;
+            SourceCache<ProfileConfiguration, Guid> profileConfigurations = new(t => t.ProfileId);
 
-            if (ShowItems)
-                CreateProfileViewModels();
+            // Only show items when not collapsed
+            IObservable<Func<ProfileConfiguration, bool>> profileConfigurationsFilter = this.WhenAnyValue(vm => vm.IsCollapsed).Select(b => new Func<object, bool>(_ => !b));
+            profileConfigurations.Connect()
+                .SortBy(c => c.Order)
+                .Filter(profileConfigurationsFilter)
+                .Transform(c => _vmFactory.SidebarProfileConfigurationViewModel(_sidebarViewModel, c))
+                .Bind(out ReadOnlyObservableCollection<SidebarProfileConfigurationViewModel> profileConfigurationViewModels)
+                .Subscribe();
+            ProfileConfigurations = profileConfigurationViewModels;
 
-            this.WhenActivated(disposables =>
+            ToggleCollapsed = ReactiveCommand.Create(ExecuteToggleCollapsed);
+            ToggleSuspended = ReactiveCommand.Create(ExecuteToggleSuspended);
+            AddProfile = ReactiveCommand.CreateFromTask(ExecuteAddProfile);
+            EditCategory = ReactiveCommand.CreateFromTask(ExecuteEditCategory);
+
+            this.WhenActivated(d =>
             {
-                profileEditorService.ProfileConfiguration
-                    .Subscribe(p => SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(c => ReferenceEquals(c.ProfileConfiguration, p)))
-                    .DisposeWith(disposables);
-                this.WhenAnyValue(vm => vm.SelectedProfileConfiguration)
-                    .WhereNotNull()
-                    .Subscribe(s => profileEditorService.ChangeCurrentProfileConfiguration(s.ProfileConfiguration));
+                // Update the list of profiles whenever the category fires events
+                Observable.FromEventPattern<ProfileConfigurationEventArgs>(x => profileCategory.ProfileConfigurationAdded += x, x => profileCategory.ProfileConfigurationAdded -= x)
+                    .Subscribe(e => profileConfigurations.AddOrUpdate(e.EventArgs.ProfileConfiguration))
+                    .DisposeWith(d);
+                Observable.FromEventPattern<ProfileConfigurationEventArgs>(x => profileCategory.ProfileConfigurationRemoved += x, x => profileCategory.ProfileConfigurationRemoved -= x)
+                    .Subscribe(e => profileConfigurations.Remove(e.EventArgs.ProfileConfiguration))
+                    .DisposeWith(d);
+
+                profileEditorService.ProfileConfiguration.Subscribe(p => SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(c => ReferenceEquals(c.ProfileConfiguration, p)))
+                    .DisposeWith(d);
+
+                _isCollapsed = ProfileCategory.WhenAnyValue(vm => vm.IsCollapsed).ToProperty(this, vm => vm.IsCollapsed).DisposeWith(d);
+                _isSuspended = ProfileCategory.WhenAnyValue(vm => vm.IsSuspended).ToProperty(this, vm => vm.IsSuspended).DisposeWith(d);
+
+                // Change the current profile configuration when a new one is selected
+                this.WhenAnyValue(vm => vm.SelectedProfileConfiguration).WhereNotNull().Subscribe(s => profileEditorService.ChangeCurrentProfileConfiguration(s.ProfileConfiguration));
+            });
+
+            profileConfigurations.Edit(updater =>
+            {
+                foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
+                    updater.AddOrUpdate(profileConfiguration);
             });
         }
 
+        public ReactiveCommand<Unit, Unit> ToggleCollapsed { get; }
+        public ReactiveCommand<Unit, Unit> ToggleSuspended { get; }
+        public ReactiveCommand<Unit, Unit> AddProfile { get; }
+        public ReactiveCommand<Unit, Unit> EditCategory { get; }
         public ProfileCategory ProfileCategory { get; }
+        public ReadOnlyObservableCollection<SidebarProfileConfigurationViewModel> ProfileConfigurations { get; }
 
-        public ObservableCollection<SidebarProfileConfigurationViewModel> ProfileConfigurations { get; } = new();
+        public bool IsCollapsed => _isCollapsed?.Value ?? false;
+        public bool IsSuspended => _isSuspended?.Value ?? false;
 
         public SidebarProfileConfigurationViewModel? SelectedProfileConfiguration
         {
@@ -56,34 +97,7 @@ namespace Artemis.UI.Screens.Sidebar
             set => RaiseAndSetIfChanged(ref _selectedProfileConfiguration, value);
         }
 
-        public bool ShowItems
-        {
-            get => !ProfileCategory.IsCollapsed;
-            set
-            {
-                ProfileCategory.IsCollapsed = !value;
-                if (ProfileCategory.IsCollapsed)
-                    ProfileConfigurations.Clear();
-                else
-                    CreateProfileViewModels();
-                _profileService.SaveProfileCategory(ProfileCategory);
-
-                this.RaisePropertyChanged(nameof(ShowItems));
-            }
-        }
-
-        public bool IsSuspended
-        {
-            get => ProfileCategory.IsSuspended;
-            set
-            {
-                ProfileCategory.IsSuspended = value;
-                this.RaisePropertyChanged(nameof(IsSuspended));
-                _profileService.SaveProfileCategory(ProfileCategory);
-            }
-        }
-
-        public async Task EditCategory()
+        private async Task ExecuteEditCategory()
         {
             await _windowService.CreateContentDialog()
                 .WithTitle("Edit category")
@@ -97,7 +111,7 @@ namespace Artemis.UI.Screens.Sidebar
             _sidebarViewModel.UpdateProfileCategories();
         }
 
-        public async Task AddProfile()
+        private async Task ExecuteAddProfile()
         {
             ProfileConfiguration? result = await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(
                 ("profileCategory", ProfileCategory),
@@ -106,18 +120,20 @@ namespace Artemis.UI.Screens.Sidebar
             if (result != null)
             {
                 SidebarProfileConfigurationViewModel viewModel = _vmFactory.SidebarProfileConfigurationViewModel(_sidebarViewModel, result);
-                ProfileConfigurations.Insert(0, viewModel);
                 SelectedProfileConfiguration = viewModel;
             }
         }
 
-        private void CreateProfileViewModels()
+        private void ExecuteToggleCollapsed()
         {
-            ProfileConfigurations.Clear();
-            foreach (ProfileConfiguration profileConfiguration in ProfileCategory.ProfileConfigurations.OrderBy(p => p.Order))
-                ProfileConfigurations.Add(_vmFactory.SidebarProfileConfigurationViewModel(_sidebarViewModel, profileConfiguration));
+            ProfileCategory.IsCollapsed = !ProfileCategory.IsCollapsed;
+            _profileService.SaveProfileCategory(ProfileCategory);
+        }
 
-            SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(i => i.ProfileConfiguration.IsBeingEdited);
+        private void ExecuteToggleSuspended()
+        {
+            ProfileCategory.IsSuspended = !ProfileCategory.IsSuspended;
+            _profileService.SaveProfileCategory(ProfileCategory);
         }
     }
 }

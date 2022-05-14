@@ -69,11 +69,11 @@
     </UserControl.ContextMenu>
     <Grid ColumnDefinitions="Auto,*,Auto,Auto">
         <shared:ProfileConfigurationIcon Grid.Column="0"
-                                           x:Name="ProfileIcon"
-                                           VerticalAlignment="Center"
-                                           ConfigurationIcon="{CompiledBinding ProfileConfiguration.Icon}"
-                                           Width="20"
-                                           Height="20" />
+                                         x:Name="ProfileIcon"
+                                         VerticalAlignment="Center"
+                                         ConfigurationIcon="{CompiledBinding ProfileConfiguration.Icon}"
+                                         Width="20"
+                                         Height="20" />
 
         <TextBlock Grid.Column="1"
                    x:Name="ProfileName"
@@ -106,15 +106,18 @@
                 Classes="icon-button icon-button-small"
                 Grid.Column="2"
                 ToolTip.Tip="View properties"
-                HorizontalAlignment="Right">
+                HorizontalAlignment="Right"
+                Margin="0 0 2 0">
             <avalonia:MaterialIcon Kind="Cog" />
         </Button>
-        <ToggleButton Classes="icon-button icon-button-small"
-                      Grid.Column="3"
-                      ToolTip.Tip="Suspend profile"
-                      Margin="2 0 0 0"
-                      IsChecked="{CompiledBinding IsSuspended}">
-            <avalonia:MaterialIcon Kind="Pause" />
-        </ToggleButton>
+        <Button Classes="icon-button icon-button-small"
+                Command="{CompiledBinding ToggleSuspended}"
+                Grid.Column="3"
+                ToolTip.Tip="Suspend/resume profile">
+            <Panel>
+                <avalonia:MaterialIcon Kind="EyeOff" IsVisible="{CompiledBinding IsSuspended}" />
+                <avalonia:MaterialIcon Kind="Eye" IsVisible="{CompiledBinding !IsSuspended}" />
+            </Panel>
+        </Button>
     </Grid>
 </UserControl>

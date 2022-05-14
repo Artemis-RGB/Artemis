@@ -15,14 +15,14 @@ public abstract class TimelineSegmentViewModel : ActivatableViewModelBase
 {
     private static readonly TimeSpan NewSegmentLength = TimeSpan.FromSeconds(2);
     private readonly IProfileEditorService _profileEditorService;
-    private RenderProfileElement? _profileElement;
+    private TimeSpan _initialLength;
+    private readonly Dictionary<ILayerPropertyKeyframe, TimeSpan> _originalKeyframePositions = new();
     private int _pixelsPerSecond;
-    private Dictionary<ILayerPropertyKeyframe, TimeSpan> _originalKeyframePositions = new();
+    private RenderProfileElement? _profileElement;
+    private ObservableAsPropertyHelper<bool>? _showAddEnd;
+    private ObservableAsPropertyHelper<bool>? _showAddMain;
 
     private ObservableAsPropertyHelper<bool>? _showAddStart;
-    private ObservableAsPropertyHelper<bool>? _showAddMain;
-    private ObservableAsPropertyHelper<bool>? _showAddEnd;
-    private TimeSpan _initialLength;
 
     protected TimelineSegmentViewModel(IProfileEditorService profileEditorService)
     {
@@ -136,8 +136,10 @@ public abstract class TimelineSegmentViewModel : ActivatableViewModelBase
 
         // Delete keyframes in the segment
         foreach (ILayerPropertyKeyframe layerPropertyKeyframe in keyframes)
+        {
             if (layerPropertyKeyframe.Position > Start && layerPropertyKeyframe.Position <= End)
                 _profileEditorService.ExecuteCommand(new DeleteKeyframe(layerPropertyKeyframe));
+        }
 
         // Move keyframes after the segment forwards
         ShiftKeyframes(keyframes.Where(s => s.Position > End), new TimeSpan(Length.Ticks * -1));

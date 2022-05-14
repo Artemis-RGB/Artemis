@@ -8,13 +8,13 @@
              x:Class="Artemis.UI.Screens.ProfileEditor.StatusBar.StatusBarView">
     <UserControl.Styles>
         <Style Selector="Border.status-message-border">
-            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}"></Setter>
-            <Setter Property="BorderThickness" Value="1 0 0 0"></Setter>
-            <Setter Property="Margin" Value="5 2 0 2"></Setter>
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1 0 0 0" />
+            <Setter Property="Margin" Value="5 2 0 2" />
             <Setter Property="Transitions">
                 <Setter.Value>
                     <Transitions>
-                        <DoubleTransition Property="Opacity" Duration="0.2"></DoubleTransition>
+                        <DoubleTransition Property="Opacity" Duration="0.2" />
                     </Transitions>
                 </Setter.Value>
             </Setter>
@@ -47,6 +47,6 @@
                 Maximum="350"
                 Width="319"
                 Value="{Binding PixelsPerSecond}"
-                HorizontalAlignment="Right"/>
+                HorizontalAlignment="Right" />
     </Grid>
 </UserControl>

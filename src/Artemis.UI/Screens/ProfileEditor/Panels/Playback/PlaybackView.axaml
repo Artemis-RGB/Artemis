@@ -60,6 +60,6 @@
 
             </ToggleButton>
         </StackPanel>
-        <TextBlock Classes="h4" Text="{CompiledBinding FormattedCurrentTime, FallbackValue=00.000}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0"/>
+        <TextBlock Classes="h4" Text="{CompiledBinding FormattedCurrentTime, FallbackValue=00.000}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0" />
     </DockPanel>
 </UserControl>
