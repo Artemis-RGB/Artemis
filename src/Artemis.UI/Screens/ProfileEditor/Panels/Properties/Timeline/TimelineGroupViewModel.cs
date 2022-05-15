@@ -11,7 +11,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 public class TimelineGroupViewModel : ActivatableViewModelBase
 {
     private ObservableCollection<double>? _keyframePositions;
-    private int _pixelsPerSecond;
+    private ObservableAsPropertyHelper<int>? _pixelsPerSecond;
 
     public TimelineGroupViewModel(PropertyGroupViewModel propertyGroupViewModel, IProfileEditorService profileEditorService)
     {
@@ -19,16 +19,16 @@ public class TimelineGroupViewModel : ActivatableViewModelBase
 
         this.WhenActivated(d =>
         {
-            profileEditorService.PixelsPerSecond.Subscribe(p =>
-            {
-                _pixelsPerSecond = p;
-                UpdateKeyframePositions();
-            }).DisposeWith(d);
-            this.WhenAnyValue(vm => vm.PropertyGroupViewModel.IsExpanded).Subscribe(_ => UpdateKeyframePositions()).DisposeWith(d);
+            _pixelsPerSecond = profileEditorService.PixelsPerSecond.ToProperty(this, vm => vm.PixelsPerSecond).DisposeWith(d);
+            profileEditorService.PixelsPerSecond.Subscribe(p => UpdateKeyframePositions()).DisposeWith(d);
             PropertyGroupViewModel.WhenAnyValue(vm => vm.IsExpanded).Subscribe(_ => this.RaisePropertyChanged(nameof(Children))).DisposeWith(d);
+            PropertyGroupViewModel.WhenAnyValue(vm => vm.IsExpanded).Subscribe(_ => UpdateKeyframePositions()).DisposeWith(d);
+            this.WhenAnyValue(vm => vm.PixelsPerSecond).Subscribe(_ => UpdateKeyframePositions()).DisposeWith(d);
+            UpdateKeyframePositions();
         });
     }
 
+    public int PixelsPerSecond => _pixelsPerSecond?.Value ?? 0;
     public PropertyGroupViewModel PropertyGroupViewModel { get; }
 
     public ObservableCollection<ViewModelBase>? Children => PropertyGroupViewModel.IsExpanded ? PropertyGroupViewModel.Children : null;
@@ -43,6 +43,6 @@ public class TimelineGroupViewModel : ActivatableViewModelBase
     {
         KeyframePositions = new ObservableCollection<double>(PropertyGroupViewModel
             .GetAllKeyframeViewModels(false)
-            .Select(p => p.Position.TotalSeconds * _pixelsPerSecond));
+            .Select(p => p.Position.TotalSeconds * PixelsPerSecond));
     }
 }

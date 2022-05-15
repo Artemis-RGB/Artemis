@@ -142,7 +142,10 @@ namespace Artemis.UI.Shared
             Point scaledPosition = new(x * Device.Rectangle.Width, y * Device.Rectangle.Height);
             DeviceVisualizerLed? deviceVisualizerLed = _deviceVisualizerLeds.FirstOrDefault(l => l.HitTest(scaledPosition));
             if (deviceVisualizerLed != null)
-                OnLedClicked(new LedClickedEventArgs(deviceVisualizerLed.Led.Device, deviceVisualizerLed.Led));
+            {
+                OnLedClicked(new LedClickedEventArgs(deviceVisualizerLed.Led.Device, deviceVisualizerLed.Led, e));
+                e.Handled = true;
+            }
         }
 
         private void DevicePropertyChanged(object? sender, PropertyChangedEventArgs e)

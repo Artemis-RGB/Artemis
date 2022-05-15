@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Reactive.Disposables;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
@@ -30,7 +31,22 @@ namespace Artemis.UI.Screens.Device
             Device = device;
             DisplayName = "Input Mappings";
             InputMappings = new ObservableCollection<(ArtemisLed, ArtemisLed)>();
+
+            this.WhenActivated(d =>
+            {
+                _selectedLeds.CollectionChanged += SelectedLedsOnCollectionChanged;
+                _inputService.KeyboardKeyUp += InputServiceOnKeyboardKeyUp;
+                UpdateInputMappings();
+
+                Disposable.Create(() =>
+                {
+                    _selectedLeds.CollectionChanged -= SelectedLedsOnCollectionChanged;
+                    _inputService.KeyboardKeyUp -= InputServiceOnKeyboardKeyUp;
+                    InputMappings.Clear();
+                }).DisposeWith(d);
+            });
         }
+
 
         public ArtemisDevice Device { get; }
 
@@ -42,13 +58,13 @@ namespace Artemis.UI.Screens.Device
 
         public ObservableCollection<(ArtemisLed, ArtemisLed)> InputMappings { get; }
 
-        public void DeleteMapping(Tuple<ArtemisLed, ArtemisLed> inputMapping)
+        public void DeleteMapping((ArtemisLed, ArtemisLed) inputMapping)
         {
             Device.InputMappings.Remove(inputMapping.Item1);
             UpdateInputMappings();
         }
 
-        private void InputServiceOnKeyboardKeyUp(object sender, ArtemisKeyboardKeyEventArgs e)
+        private void InputServiceOnKeyboardKeyUp(object? sender, ArtemisKeyboardKeyEventArgs e)
         {
             if (SelectedLed == null || e.Led == null)
                 return;
@@ -64,7 +80,7 @@ namespace Artemis.UI.Screens.Device
             // Apply the new LED mapping
             Device.InputMappings[SelectedLed] = artemisLed;
             _rgbService.SaveDevice(Device);
-            // ((DeviceDialogViewModel) Parent).SelectedLeds.Clear();
+            _selectedLeds.Clear();
 
             UpdateInputMappings();
         }
@@ -74,35 +90,13 @@ namespace Artemis.UI.Screens.Device
             if (InputMappings.Any())
                 InputMappings.Clear();
 
-            // InputMappings.AddRange(Device.InputMappings.Select(m => new Tuple<ArtemisLed, ArtemisLed>(m.Key, m.Value)));
+            foreach ((ArtemisLed, ArtemisLed) tuple in Device.InputMappings.Select(m => (m.Key, m.Value)))
+                InputMappings.Add(tuple);
         }
 
-        private void SelectedLedsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void SelectedLedsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            // SelectedLed = ((DeviceDialogViewModel) Parent).SelectedLeds.FirstOrDefault();
+            SelectedLed = _selectedLeds.FirstOrDefault();
         }
-        //
-        // #region Overrides of Screen
-        //
-        // /// <inheritdoc />
-        // protected override void OnActivate()
-        // {
-        //     UpdateInputMappings();
-        //     _inputService.KeyboardKeyUp += InputServiceOnKeyboardKeyUp;
-        //     ((DeviceDialogViewModel) Parent).SelectedLeds.CollectionChanged += SelectedLedsOnCollectionChanged;
-        //
-        //     base.OnActivate();
-        // }
-        //
-        // /// <inheritdoc />
-        // protected override void OnDeactivate()
-        // {
-        //     InputMappings.Clear();
-        //     _inputService.KeyboardKeyUp -= InputServiceOnKeyboardKeyUp;
-        //     ((DeviceDialogViewModel) Parent).SelectedLeds.CollectionChanged -= SelectedLedsOnCollectionChanged;
-        //     base.OnDeactivate();
-        // }
-        //
-        // #endregion
     }
 }

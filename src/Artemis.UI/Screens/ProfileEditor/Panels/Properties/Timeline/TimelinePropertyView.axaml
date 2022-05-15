@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.TimelinePropertyView">
-    <Border Height="{DynamicResource RailsBorderHeight}" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource ButtonBorderBrush}">
+    <Border Height="29" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource ButtonBorderBrush}">
         <ItemsControl Items="{Binding KeyframeViewModels}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -14,6 +14,7 @@
             <ItemsControl.Styles>
                 <Style Selector="ItemsControl > ContentPresenter">
                     <Setter Property="Canvas.Left" Value="{Binding X, TargetNullValue=0}" />
+                    <Setter Property="Canvas.Top" Value="9" />
                 </Style>
             </ItemsControl.Styles>
         </ItemsControl>

@@ -55,6 +55,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
         AddFolder = ReactiveCommand.Create(ExecuteAddFolder);
         AddLayer = ReactiveCommand.Create(ExecuteAddLayer);
         ViewProperties = ReactiveCommand.CreateFromTask(ExecuteViewProperties, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
+        AdaptProfile = ReactiveCommand.CreateFromTask(ExecuteAdaptProfile, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
         ToggleSuspended = ReactiveCommand.Create(ExecuteToggleSuspended, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
         DeleteProfile = ReactiveCommand.CreateFromTask(ExecuteDeleteProfile, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
         ExportProfile = ReactiveCommand.CreateFromTask(ExecuteExportProfile, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
@@ -68,6 +69,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
     public ReactiveCommand<Unit, Unit> AddLayer { get; }
     public ReactiveCommand<Unit, Unit> ToggleSuspended { get; }
     public ReactiveCommand<Unit, Unit> ViewProperties { get; }
+    public ReactiveCommand<Unit,Unit> AdaptProfile { get; }
     public ReactiveCommand<Unit, Unit> DeleteProfile { get; }
     public ReactiveCommand<Unit, Unit> ExportProfile { get; }
     public ReactiveCommand<Unit, Unit> DuplicateProfile { get; }
@@ -120,6 +122,16 @@ public class MenuBarViewModel : ActivatableViewModelBase
             ("profileCategory", ProfileConfiguration.Category),
             ("profileConfiguration", ProfileConfiguration)
         );
+    }
+    private async Task ExecuteAdaptProfile()
+    {
+        if (ProfileConfiguration?.Profile == null)
+            return;
+
+        if (!await _windowService.ShowConfirmContentDialog("Adapt profile", "Are you sure you want to adapt the profile to your current surface? Layer assignments may change."))
+            return;
+
+        _profileService.AdaptProfile(ProfileConfiguration.Profile);
     }
 
     private void ExecuteToggleSuspended()

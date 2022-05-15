@@ -1,16 +1,20 @@
 <controls1:CoreWindow xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-        xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
-        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
-        x:Class="Artemis.UI.Screens.Device.DevicePropertiesView"
-        Icon="/Assets/Images/Logo/application.ico"
-        Title="Artemis | Device Properties"
-        Width="1250"
-        Height="900">
-
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                      xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+                      xmlns:device="clr-namespace:Artemis.UI.Screens.Device"
+                      mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+                      x:Class="Artemis.UI.Screens.Device.DevicePropertiesView"
+                      x:DataType="device:DevicePropertiesViewModel"
+                      Icon="/Assets/Images/Logo/application.ico"
+                      Title="Artemis | Device Properties"
+                      Width="1250"
+                      Height="900">
+    <controls1:CoreWindow.KeyBindings>
+        <KeyBinding Gesture="Escape" Command="{CompiledBinding ClearSelectedLeds}" />
+    </controls1:CoreWindow.KeyBindings>
     <Grid ColumnDefinitions="*,0,1.5*">
         <Grid.Background>
             <VisualBrush TileMode="Tile" Stretch="Uniform" DestinationRect="0,0,25,25">
@@ -24,45 +28,46 @@
                 </VisualBrush.Visual>
             </VisualBrush>
         </Grid.Background>
-        <Grid Grid.Column="0" Name="DeviceDisplayGrid">
+        <Grid Grid.Column="0" Name="DeviceDisplayGrid" PointerReleased="DeviceDisplayGrid_OnPointerReleased">
             <!-- No need to provide LEDs to highlight as LEDs are already physically highlighted -->
-            <shared:DeviceVisualizer Device="{Binding Device}"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       ShowColors="True"
-                                       Margin="20" />
+            <shared:DeviceVisualizer Device="{CompiledBinding Device}"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     ShowColors="True"
+                                     Margin="20"
+                                     LedClicked="DeviceVisualizer_OnLedClicked" />
 
             <StackPanel Orientation="Horizontal"
                         VerticalAlignment="Bottom"
                         HorizontalAlignment="Left"
                         Margin="15"
-                        IsVisible="{Binding Device.Layout.RgbLayout.Author, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        IsVisible="{CompiledBinding Device.Layout.RgbLayout.Author, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                 <TextBlock Classes="h5" Text="Device layout by " />
-                <TextBlock Classes="h5" FontWeight="Bold" Text="{Binding Device.Layout.RgbLayout.Author}" />
+                <TextBlock Classes="h5" FontWeight="Bold" Text="{CompiledBinding Device.Layout.RgbLayout.Author}" />
             </StackPanel>
         </Grid>
 
 
         <GridSplitter Grid.Column="1" Width="15" Margin="-15 0 0 0" Background="Transparent" HorizontalAlignment="Stretch" />
 
-        <Border Grid.Column="2" Classes="card" CornerRadius="10 0 0 0" Margin="0 10 0 0" Background="#ff323232">
-            <TabControl Items="{Binding Tabs}">
+        <Border Grid.Column="2" Classes="card-condensed" CornerRadius="10 0 0 0" Margin="0 10 0 0" Background="#ff323232">
+            <TabControl Items="{CompiledBinding Tabs}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding DisplayName}" />
+                        <TextBlock Text="{CompiledBinding DisplayName}" />
                     </DataTemplate>
                 </TabControl.ItemTemplate>
                 <TabControl.ContentTemplate>
                     <DataTemplate>
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                            <ContentControl Content="{Binding}" Margin="0 10 0 0" />
+                            <ContentControl Content="{Binding}" Margin="0 12" />
                         </ScrollViewer>
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>
         </Border>
 
-        <StackPanel Grid.Column="0" Grid.ColumnSpan="3" Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="3" Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
     </Grid>
 
 </controls1:CoreWindow>

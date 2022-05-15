@@ -112,7 +112,7 @@
                                         <avalonia:MaterialIcon Kind="LayersPlus" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <Separator />
+                                <MenuItem Header="-" />
                                 <MenuItem Header="Duplicate" Command="{CompiledBinding Duplicate}" InputGesture="Ctrl+D">
                                     <MenuItem.Icon>
                                         <avalonia:MaterialIcon Kind="ContentDuplicate" />
@@ -128,7 +128,7 @@
                                         <avalonia:MaterialIcon Kind="ContentPaste" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <Separator />
+                                <MenuItem Header="-" />
                                 <MenuItem Header="Rename" Command="{CompiledBinding Rename}" InputGesture="F2">
                                     <MenuItem.Icon>
                                         <avalonia:MaterialIcon Kind="RenameBox" />

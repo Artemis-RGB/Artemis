@@ -240,9 +240,9 @@ namespace Artemis.UI.Screens.Device
             HasRoomCategory = Device.Categories.Contains(DeviceCategory.Room);
             HasPeripheralsCategory = Device.Categories.Contains(DeviceCategory.Peripherals);
 
-            Device.RedScale = _initialRedScale;
-            Device.GreenScale = _initialGreenScale;
-            Device.BlueScale = _initialBlueScale;
+            RedScale = _initialRedScale * 100;
+            GreenScale = _initialGreenScale * 100;
+            BlueScale = _initialBlueScale * 100;
         }
 
         private bool GetCategory(DeviceCategory category)
@@ -254,7 +254,7 @@ namespace Artemis.UI.Screens.Device
         {
             if (value && !_categories.Contains(category))
                 _categories.Add(category);
-            else
+            else if (!value)
                 _categories.Remove(category);
 
             this.RaisePropertyChanged($"Has{category}Category");

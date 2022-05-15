@@ -6,8 +6,7 @@
              xmlns:timeline="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Timeline"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes.TimelineKeyframeView"
-             ClipToBounds="False"
-             Height="{DynamicResource RailsHeight}">
+             ClipToBounds="False">
     <Ellipse Fill="{DynamicResource SystemAccentColorLight2}"
              Stroke="White"
              Width="10"
@@ -52,7 +51,7 @@
                         <avalonia:MaterialIcon Kind="Creation" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <Separator />
+                <MenuItem Header="-" />
                 <MenuItem Header="Duplicate" Command="{Binding $parent[timeline:TimelineView].DataContext.DuplicateKeyframes}" CommandParameter="{Binding}" InputGesture="Ctrl+D">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="ContentDuplicate" />
@@ -68,7 +67,7 @@
                         <avalonia:MaterialIcon Kind="ContentPaste" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <Separator />
+                <MenuItem Header="-" />
                 <MenuItem Header="Delete" Command="{Binding $parent[timeline:TimelineView].DataContext.DeleteKeyframes}" CommandParameter="{Binding}" InputGesture="Delete">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="Delete" />

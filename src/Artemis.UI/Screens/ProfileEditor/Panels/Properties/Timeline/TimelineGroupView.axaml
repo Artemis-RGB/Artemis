@@ -9,7 +9,7 @@
              x:DataType="timeline:TimelineGroupViewModel">
     <Grid RowDefinitions="28,1,Auto">
         <ItemsControl Grid.Row="0"
-                      Height="{DynamicResource RailsHeight}"
+                      Height="28"
                       IsVisible="{CompiledBinding !PropertyGroupViewModel.IsExpanded}"
                       Items="{CompiledBinding KeyframePositions}"
                       HorizontalAlignment="Stretch">
@@ -21,16 +21,17 @@
             <ItemsControl.Styles>
                 <Style Selector="ContentPresenter">
                     <Setter Property="Canvas.Left" Value="{Binding}" />
+                    <Setter Property="Canvas.Top" Value="9" />
                 </Style>
             </ItemsControl.Styles>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Ellipse Fill="{DynamicResource ControlFillColorDisabledBrush}"
+                    <Ellipse Fill="{DynamicResource ControlSolidFillColorDefaultBrush}"
                              Stroke="White"
                              StrokeThickness="0"
                              Width="10"
                              Height="10"
-                             Margin="-5,6,0,0" />
+                             Margin="-5 0 0 0" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

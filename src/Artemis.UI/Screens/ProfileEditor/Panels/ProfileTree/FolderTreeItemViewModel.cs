@@ -56,6 +56,19 @@ public class FolderTreeItemViewModel : TreeItemViewModel
         ProfileEditorService.ExecuteCommand(new AddProfileElement(pasted, parent, Folder.Order - 1));
     }
 
+    private async Task ExecutePasteInto()
+    {
+        RenderProfileElement? pasted = await Folder.PasteChildFromClipboard();
+        if (pasted == null)
+            return;
+
+        // If the target contains an element with the same name, affix with " - copy"
+        if (Folder.Children.Any(c => c.Name == pasted.Name))
+            pasted.Name = Folder.GetNewFolderName(pasted.Name + " - copy");
+
+        ProfileEditorService.ExecuteCommand(new AddProfileElement(pasted, Folder, 0));
+    }
+
     /// <inheritdoc />
     public override bool SupportsChildren => true;
 
