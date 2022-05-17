@@ -1,4 +1,5 @@
-﻿using Artemis.Core;
+﻿using System;
+using Artemis.Core;
 using Artemis.UI.Shared;
 using SkiaSharp;
 
@@ -6,6 +7,8 @@ namespace Artemis.UI.Screens.SurfaceEditor;
 
 public class ListDeviceViewModel : ViewModelBase
 {
+    private static readonly Random Random = new();
+    
     private SKColor _color;
     private bool _isSelected;
 
@@ -13,6 +16,7 @@ public class ListDeviceViewModel : ViewModelBase
     {
         Device = device;
         SurfaceEditorViewModel = surfaceEditorViewModel;
+        Color = SKColor.FromHsv(Random.NextSingle() * 360, 95, 100);
     }
 
     public ArtemisDevice Device { get; }

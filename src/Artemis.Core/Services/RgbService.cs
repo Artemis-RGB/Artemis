@@ -43,7 +43,7 @@ namespace Artemis.Core.Services
             _deviceRepository = deviceRepository;
             _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 30);
             _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.25);
-            _preferredGraphicsContext = _settingsService.GetSetting("Core.PreferredGraphicsContext", "Vulkan");
+            _preferredGraphicsContext = _settingsService.GetSetting("Core.PreferredGraphicsContext", "Software");
 
             Surface = new RGBSurface();
             Utilities.RenderScaleMultiplier = (int) (1 / _renderScaleSetting.Value);

@@ -133,7 +133,7 @@ namespace Artemis.UI.Screens.Settings
         public PluginSetting<ApplicationColorScheme> UIColorScheme => _settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
         public PluginSetting<bool> ProfileEditorShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
         public PluginSetting<LogEventLevel> CoreLoggingLevel => _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information);
-        public PluginSetting<string> CorePreferredGraphicsContext => _settingsService.GetSetting("Core.PreferredGraphicsContext", "Vulkan");
+        public PluginSetting<string> CorePreferredGraphicsContext => _settingsService.GetSetting("Core.PreferredGraphicsContext", "Software");
         public PluginSetting<double> CoreRenderScale => _settingsService.GetSetting("Core.RenderScale", 0.25);
         public PluginSetting<int> CoreTargetFrameRate => _settingsService.GetSetting("Core.TargetFrameRate", 30);
         public PluginSetting<int> WebServerPort => _settingsService.GetSetting("WebServer.Port", 9696);

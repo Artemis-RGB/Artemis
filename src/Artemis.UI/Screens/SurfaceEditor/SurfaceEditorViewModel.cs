@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Shared.Services;
 using Avalonia;
 using ReactiveUI;
+using SkiaSharp;
 
 namespace Artemis.UI.Screens.SurfaceEditor;
 
@@ -17,29 +20,67 @@ public class SurfaceEditorViewModel : MainScreenViewModel
 {
     private readonly IRgbService _rgbService;
     private readonly ISettingsService _settingsService;
+    private readonly IDeviceVmFactory _deviceVmFactory;
+    private readonly IWindowService _windowService;
+    private readonly IDeviceService _deviceService;
     private List<SurfaceDeviceViewModel>? _initialSelection;
     private bool _saving;
+    private bool _colorFirstLedOnly;
+    private bool _colorDevices;
+    private double _overlayOpacity;
 
     public SurfaceEditorViewModel(IScreen hostScreen,
+        ICoreService coreService,
         IRgbService rgbService,
         ISurfaceVmFactory surfaceVmFactory,
-        ISettingsService settingsService) : base(hostScreen, "surface-editor")
+        ISettingsService settingsService,
+        IDeviceVmFactory deviceVmFactory,
+        IWindowService windowService,
+        IDeviceService deviceService) : base(hostScreen, "surface-editor")
     {
         _rgbService = rgbService;
         _settingsService = settingsService;
+        _deviceVmFactory = deviceVmFactory;
+        _windowService = windowService;
+        _deviceService = deviceService;
+
         DisplayName = "Surface Editor";
         SurfaceDeviceViewModels = new ObservableCollection<SurfaceDeviceViewModel>(rgbService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => surfaceVmFactory.SurfaceDeviceViewModel(d, this)));
         ListDeviceViewModels = new ObservableCollection<ListDeviceViewModel>(rgbService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => surfaceVmFactory.ListDeviceViewModel(d, this)));
 
+        AutoArrange = ReactiveCommand.CreateFromTask(ExecuteAutoArrange);
+        IdentifyDevice = ReactiveCommand.Create<ArtemisDevice>(ExecuteIdentifyDevice);
+        ViewProperties = ReactiveCommand.CreateFromTask<ArtemisDevice>(ExecuteViewProperties);
         BringToFront = ReactiveCommand.Create<ArtemisDevice>(ExecuteBringToFront);
         BringForward = ReactiveCommand.Create<ArtemisDevice>(ExecuteBringForward);
         SendToBack = ReactiveCommand.Create<ArtemisDevice>(ExecuteSendToBack);
         SendBackward = ReactiveCommand.Create<ArtemisDevice>(ExecuteSendBackward);
+
+        this.WhenActivated(d =>
+        {
+            coreService.FrameRendering += CoreServiceOnFrameRendering;
+            Disposable.Create(() => coreService.FrameRendering -= CoreServiceOnFrameRendering).DisposeWith(d);
+        });
+    }
+
+    public bool ColorDevices
+    {
+        get => _colorDevices;
+        set => RaiseAndSetIfChanged(ref _colorDevices, value);
+    }
+
+    public bool ColorFirstLedOnly
+    {
+        get => _colorFirstLedOnly;
+        set => RaiseAndSetIfChanged(ref _colorFirstLedOnly, value);
     }
 
     public ObservableCollection<SurfaceDeviceViewModel> SurfaceDeviceViewModels { get; }
     public ObservableCollection<ListDeviceViewModel> ListDeviceViewModels { get; }
 
+    public ReactiveCommand<Unit, Unit> AutoArrange { get; }
+    public ReactiveCommand<ArtemisDevice, Unit> IdentifyDevice { get; }
+    public ReactiveCommand<ArtemisDevice, Unit> ViewProperties { get; }
     public ReactiveCommand<ArtemisDevice, Unit> BringToFront { get; }
     public ReactiveCommand<ArtemisDevice, Unit> BringForward { get; }
     public ReactiveCommand<ArtemisDevice, Unit> SendToBack { get; }
@@ -108,14 +149,62 @@ public class SurfaceEditorViewModel : MainScreenViewModel
         foreach (SurfaceDeviceViewModel surfaceDeviceViewModel in SurfaceDeviceViewModels)
             surfaceDeviceViewModel.UpdateMouseDrag(mousePosition, round, ignoreOverlap);
     }
-    
-    private void ApplySurfaceSelection()
+
+    private async Task ExecuteAutoArrange()
     {
-        foreach (ListDeviceViewModel viewModel in ListDeviceViewModels)
-            viewModel.IsSelected = SurfaceDeviceViewModels.Any(s => s.Device == viewModel.Device && s.IsSelected);
+        bool confirmed = await _windowService.ShowConfirmContentDialog("Auto-arrange layout", "Are you sure you want to auto-arrange your layout? Your current settings will be overwritten.");
+        if (!confirmed)
+            return;
+
+        _rgbService.AutoArrangeDevices();
+    }
+
+    private void CoreServiceOnFrameRendering(object? sender, FrameRenderingEventArgs e)
+    {
+        // Animate the overlay because I'm vain
+        if (ColorDevices && _overlayOpacity < 1)
+            _overlayOpacity = Math.Min(1, _overlayOpacity + e.DeltaTime * 3);
+        else if (!ColorDevices && _overlayOpacity > 0)
+            _overlayOpacity = Math.Max(0, _overlayOpacity - e.DeltaTime * 3);
+
+        if (_overlayOpacity == 0)
+            return;
+
+        using SKPaint paint = new();
+        byte alpha = (byte) (Easings.CubicEaseInOut(_overlayOpacity) * 255);
+
+        // Fill the entire canvas with a black backdrop
+        paint.Color = SKColors.Black.WithAlpha(alpha);
+        e.Canvas.DrawRect(e.Canvas.LocalClipBounds, paint);
+        
+        // Draw a rectangle for each LED
+        foreach (ListDeviceViewModel listDeviceViewModel in ListDeviceViewModels)
+        {
+            // Order by position to accurately get the first LED
+            List<ArtemisLed> leds = listDeviceViewModel.Device.Leds.OrderBy(l => l.RgbLed.Location.Y).ThenBy(l => l.RgbLed.Location.X).ToList();
+            for (int index = 0; index < leds.Count; index++)
+            {
+                ArtemisLed artemisLed = leds[index];
+                if (ColorFirstLedOnly && index == 0 || !ColorFirstLedOnly)
+                {
+                    paint.Color = listDeviceViewModel.Color.WithAlpha(alpha);
+                    e.Canvas.DrawRect(artemisLed.AbsoluteRectangle, paint);
+                }
+            }
+        }
     }
 
     #region Context menu commands
+
+    private void ExecuteIdentifyDevice(ArtemisDevice device)
+    {
+        _deviceService.IdentifyDevice(device);
+    }
+
+    private async Task ExecuteViewProperties(ArtemisDevice device)
+    {
+        await _windowService.ShowDialogAsync(_deviceVmFactory.DevicePropertiesViewModel(device));
+    }
 
     private void ExecuteBringToFront(ArtemisDevice device)
     {

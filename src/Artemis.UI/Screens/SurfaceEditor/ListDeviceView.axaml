@@ -2,7 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:surfaceEditor="clr-namespace:Artemis.UI.Screens.SurfaceEditor"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.SurfaceEditor.ListDeviceView">
-    Welcome to Avalonia!
+             x:Class="Artemis.UI.Screens.SurfaceEditor.ListDeviceView"
+             x:DataType="surfaceEditor:ListDeviceViewModel">
+    <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="*,*">
+        <Border Grid.Column="0" Grid.RowSpan="2" Width="64" Height="50" Margin="0 0 10 0">
+            <shared:DeviceVisualizer Device="{CompiledBinding Device}" ShowColors="True" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Border>
+        <TextBlock Grid.Column="1" Grid.Row="0" Text="{CompiledBinding Device.RgbDevice.DeviceInfo.DeviceName}" VerticalAlignment="Bottom" />
+        <TextBlock Grid.Column="1" Grid.Row="1" Classes="subtitle" Text="{CompiledBinding Device.RgbDevice.DeviceInfo.Manufacturer}" VerticalAlignment="Top" />
+    </Grid>
 </UserControl>

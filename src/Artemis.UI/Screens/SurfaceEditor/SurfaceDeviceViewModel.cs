@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
-using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared;
-using Artemis.UI.Shared.Services;
-using ReactiveUI;
 using RGB.NET.Core;
 using SkiaSharp;
 using Point = Avalonia.Point;
@@ -17,34 +12,20 @@ namespace Artemis.UI.Screens.SurfaceEditor;
 
 public class SurfaceDeviceViewModel : ActivatableViewModelBase
 {
-    private readonly IDeviceService _deviceService;
-    private readonly IDeviceVmFactory _deviceVmFactory;
     private readonly IRgbService _rgbService;
     private readonly ISettingsService _settingsService;
-    private readonly IWindowService _windowService;
     private double _dragOffsetX;
     private double _dragOffsetY;
     private bool _isSelected;
 
-    public SurfaceDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel, IRgbService rgbService, IDeviceService deviceService, ISettingsService settingsService,
-        IDeviceVmFactory deviceVmFactory,
-        IWindowService windowService)
+    public SurfaceDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel, IRgbService rgbService, ISettingsService settingsService)
     {
         _rgbService = rgbService;
-        _deviceService = deviceService;
         _settingsService = settingsService;
-        _deviceVmFactory = deviceVmFactory;
-        _windowService = windowService;
 
         Device = device;
         SurfaceEditorViewModel = surfaceEditorViewModel;
-
-        IdentifyDevice = ReactiveCommand.Create<ArtemisDevice>(ExecuteIdentifyDevice);
-        ViewProperties = ReactiveCommand.CreateFromTask<ArtemisDevice>(ExecuteViewProperties);
     }
-
-    public ReactiveCommand<ArtemisDevice, Unit> IdentifyDevice { get; }
-    public ReactiveCommand<ArtemisDevice, Unit> ViewProperties { get; }
 
     public ArtemisDevice Device { get; }
     public SurfaceEditorViewModel SurfaceEditorViewModel { get; }
@@ -94,16 +75,6 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
         {
             Device.Y = y;
         }
-    }
-
-    private void ExecuteIdentifyDevice(ArtemisDevice device)
-    {
-        _deviceService.IdentifyDevice(device);
-    }
-
-    private async Task ExecuteViewProperties(ArtemisDevice device)
-    {
-        await _windowService.ShowDialogAsync(_deviceVmFactory.DevicePropertiesViewModel(device));
     }
 
     private bool Fits(float x, float y, bool ignoreOverlap)
