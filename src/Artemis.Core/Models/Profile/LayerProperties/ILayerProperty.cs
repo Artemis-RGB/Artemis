@@ -144,11 +144,11 @@ namespace Artemis.Core
         /// <summary>
         ///     Occurs when a new keyframe was added to the layer property
         /// </summary>
-        public event EventHandler<LayerPropertyEventArgs>? KeyframeAdded;
+        public event EventHandler<LayerPropertyKeyframeEventArgs>? KeyframeAdded;
 
         /// <summary>
         ///     Occurs when a keyframe was removed from the layer property
         /// </summary>
-        public event EventHandler<LayerPropertyEventArgs>? KeyframeRemoved;
+        public event EventHandler<LayerPropertyKeyframeEventArgs>? KeyframeRemoved;
     }
 }

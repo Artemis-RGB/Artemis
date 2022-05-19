@@ -8,6 +8,7 @@ using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Controls.Mixins;
+using DynamicData;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
@@ -15,59 +16,60 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 public class TimelinePropertyViewModel<T> : ActivatableViewModelBase, ITimelinePropertyViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
+    private readonly SourceList<LayerPropertyKeyframe<T>> _keyframes;
+    private ObservableAsPropertyHelper<bool>? _keyframesEnabled;
 
     public TimelinePropertyViewModel(LayerProperty<T> layerProperty, PropertyViewModel propertyViewModel, IProfileEditorService profileEditorService)
     {
         _profileEditorService = profileEditorService;
         LayerProperty = layerProperty;
         PropertyViewModel = propertyViewModel;
-        KeyframeViewModels = new ObservableCollection<TimelineKeyframeViewModel<T>>();
+
+        _keyframes = new SourceList<LayerPropertyKeyframe<T>>();
+
+        _keyframes.Connect()
+            // Only show items when keyframes are enabled
+            .Filter(this.WhenAnyValue(vm => vm.KeyframesEnabled).Select(b => new Func<LayerPropertyKeyframe<T>, bool>(_ => b)))
+            .Transform(k => new TimelineKeyframeViewModel<T>(k, _profileEditorService))
+            .Bind(out ReadOnlyObservableCollection<TimelineKeyframeViewModel<T>> keyframeViewModels)
+            .Subscribe();
+        KeyframeViewModels = keyframeViewModels;
 
         this.WhenActivated(d =>
         {
-            Observable.FromEventPattern<LayerPropertyEventArgs>(x => LayerProperty.KeyframesToggled += x, x => LayerProperty.KeyframesToggled -= x)
-                .Subscribe(_ => UpdateKeyframes())
+            _keyframesEnabled = LayerProperty.WhenAnyValue(p => p.KeyframesEnabled).ToProperty(this, vm => vm.KeyframesEnabled).DisposeWith(d);
+            Observable.FromEventPattern<LayerPropertyKeyframeEventArgs>(x => LayerProperty.KeyframeAdded += x, x => LayerProperty.KeyframeAdded -= x)
+                .Subscribe(e => _keyframes.Add((LayerPropertyKeyframe<T>) e.EventArgs.Keyframe))
                 .DisposeWith(d);
-            Observable.FromEventPattern<LayerPropertyEventArgs>(x => LayerProperty.KeyframeAdded += x, x => LayerProperty.KeyframeAdded -= x)
-                .Subscribe(_ => UpdateKeyframes())
-                .DisposeWith(d);
-            Observable.FromEventPattern<LayerPropertyEventArgs>(x => LayerProperty.KeyframeRemoved += x, x => LayerProperty.KeyframeRemoved -= x)
-                .Subscribe(_ => UpdateKeyframes())
+            Observable.FromEventPattern<LayerPropertyKeyframeEventArgs>(x => LayerProperty.KeyframeRemoved += x, x => LayerProperty.KeyframeRemoved -= x)
+                .Subscribe(e => _keyframes.Remove((LayerPropertyKeyframe<T>) e.EventArgs.Keyframe))
                 .DisposeWith(d);
 
-            UpdateKeyframes();
+            _keyframes.Edit(k =>
+            {
+                k.Clear();
+                k.AddRange(LayerProperty.Keyframes);
+            });
         });
     }
 
     public LayerProperty<T> LayerProperty { get; }
     public PropertyViewModel PropertyViewModel { get; }
-    public ObservableCollection<TimelineKeyframeViewModel<T>> KeyframeViewModels { get; }
+    public ReadOnlyObservableCollection<TimelineKeyframeViewModel<T>> KeyframeViewModels { get; }
+    public bool KeyframesEnabled => _keyframesEnabled?.Value ?? false;
 
     private void UpdateKeyframes()
     {
-        // Only show keyframes if they are enabled
-        if (LayerProperty.KeyframesEnabled)
-        {
-            List<LayerPropertyKeyframe<T>> keyframes = LayerProperty.Keyframes.ToList();
-
-            List<TimelineKeyframeViewModel<T>> toRemove = KeyframeViewModels.Where(t => !keyframes.Contains(t.LayerPropertyKeyframe)).ToList();
-            foreach (TimelineKeyframeViewModel<T> timelineKeyframeViewModel in toRemove)
-                KeyframeViewModels.Remove(timelineKeyframeViewModel);
-            List<TimelineKeyframeViewModel<T>> toAdd = keyframes.Where(k => KeyframeViewModels.All(t => t.LayerPropertyKeyframe != k))
-                .Select(k => new TimelineKeyframeViewModel<T>(k, _profileEditorService)).ToList();
-            foreach (TimelineKeyframeViewModel<T> timelineKeyframeViewModel in toAdd)
-                KeyframeViewModels.Add(timelineKeyframeViewModel);
-        }
-        else
-        {
-            KeyframeViewModels.Clear();
-        }
-
         foreach (TimelineKeyframeViewModel<T> timelineKeyframeViewModel in KeyframeViewModels)
             timelineKeyframeViewModel.Update();
     }
 
     #region Implementation of ITimelinePropertyViewModel
+
+    public List<ILayerPropertyKeyframe> GetAllKeyframes()
+    {
+        return LayerProperty.KeyframesEnabled ? new List<ILayerPropertyKeyframe>(LayerProperty.Keyframes) : new List<ILayerPropertyKeyframe>();
+    }
 
     public List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels()
     {
@@ -78,7 +80,6 @@ public class TimelinePropertyViewModel<T> : ActivatableViewModelBase, ITimelineP
     {
         start ??= TimeSpan.Zero;
         end ??= TimeSpan.MaxValue;
-
 
         List<LayerPropertyKeyframe<T>> toShift = LayerProperty.Keyframes.Where(k => k.Position >= start && k.Position < end).ToList();
         foreach (LayerPropertyKeyframe<T> keyframe in toShift)

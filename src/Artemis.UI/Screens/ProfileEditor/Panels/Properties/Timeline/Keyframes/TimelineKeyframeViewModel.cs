@@ -29,14 +29,14 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
 
         this.WhenActivated(d =>
         {
-            _isSelected = profileEditorService.ConnectToKeyframes().ToCollection().Select(keyframes => keyframes.Contains(LayerPropertyKeyframe)).ToProperty(this, vm => vm.IsSelected).DisposeWith(d);
+            _isSelected = profileEditorService.ConnectToKeyframes()
+                .ToCollection()
+                .Select(keyframes => keyframes.Contains(LayerPropertyKeyframe))
+                .ToProperty(this, vm => vm.IsSelected)
+                .DisposeWith(d);
             profileEditorService.ConnectToKeyframes();
-            profileEditorService.PixelsPerSecond.Subscribe(p =>
-            {
-                _pixelsPerSecond = p;
-                profileEditorService.PixelsPerSecond.Subscribe(_ => Update()).DisposeWith(d);
-            }).DisposeWith(d);
-
+            profileEditorService.PixelsPerSecond.Subscribe(p => _pixelsPerSecond = p).DisposeWith(d);
+            profileEditorService.PixelsPerSecond.Subscribe(_ => Update()).DisposeWith(d);
             this.WhenAnyValue(vm => vm.LayerPropertyKeyframe.Position).Subscribe(_ => Update()).DisposeWith(d);
         });
     }

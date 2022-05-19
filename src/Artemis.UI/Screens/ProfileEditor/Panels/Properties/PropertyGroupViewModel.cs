@@ -12,29 +12,32 @@ using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.PropertyInput;
+using DynamicData;
+using DynamicData.Binding;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties;
 
-public class PropertyGroupViewModel : ViewModelBase, IDisposable
+public class PropertyGroupViewModel : PropertyViewModelBase, IDisposable
 {
     private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
     private readonly IPropertyInputService _propertyInputService;
     private bool _hasChildren;
     private bool _isExpanded;
     private bool _isVisible;
+    private ReadOnlyObservableCollection<ILayerPropertyKeyframe> _keyframes = null!;
+    private IDisposable _keyframeSubscription = null!;
 
     public PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory, IPropertyInputService propertyInputService)
     {
         _layerPropertyVmFactory = layerPropertyVmFactory;
         _propertyInputService = propertyInputService;
-        Children = new ObservableCollection<ViewModelBase>();
         LayerPropertyGroup = layerPropertyGroup;
         TreeGroupViewModel = layerPropertyVmFactory.TreeGroupViewModel(this);
         TimelineGroupViewModel = layerPropertyVmFactory.TimelineGroupViewModel(this);
 
         LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
         _isVisible = !LayerPropertyGroup.IsHidden;
-
+        
         PopulateChildren();
     }
 
@@ -43,14 +46,13 @@ public class PropertyGroupViewModel : ViewModelBase, IDisposable
         _layerPropertyVmFactory = layerPropertyVmFactory;
         _propertyInputService = propertyInputService;
         LayerBrush = layerBrush;
-        Children = new ObservableCollection<ViewModelBase>();
         LayerPropertyGroup = layerPropertyGroup;
         TreeGroupViewModel = layerPropertyVmFactory.TreeGroupViewModel(this);
         TimelineGroupViewModel = layerPropertyVmFactory.TimelineGroupViewModel(this);
 
         LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
         _isVisible = !LayerPropertyGroup.IsHidden;
-
+        
         PopulateChildren();
     }
 
@@ -59,18 +61,17 @@ public class PropertyGroupViewModel : ViewModelBase, IDisposable
         _layerPropertyVmFactory = layerPropertyVmFactory;
         _propertyInputService = propertyInputService;
         LayerEffect = layerEffect;
-        Children = new ObservableCollection<ViewModelBase>();
         LayerPropertyGroup = layerPropertyGroup;
         TreeGroupViewModel = layerPropertyVmFactory.TreeGroupViewModel(this);
         TimelineGroupViewModel = layerPropertyVmFactory.TimelineGroupViewModel(this);
 
         LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
         _isVisible = !LayerPropertyGroup.IsHidden;
-
+        
         PopulateChildren();
     }
 
-    public ObservableCollection<ViewModelBase> Children { get; }
+    public ObservableCollection<PropertyViewModelBase> Children { get; private set; } = null!;
     public LayerPropertyGroup LayerPropertyGroup { get; }
     public BaseLayerBrush? LayerBrush { get; }
     public BaseLayerEffect? LayerEffect { get; }
@@ -96,13 +97,32 @@ public class PropertyGroupViewModel : ViewModelBase, IDisposable
         set => RaiseAndSetIfChanged(ref _hasChildren, value);
     }
 
+    public override ReadOnlyObservableCollection<ILayerPropertyKeyframe> Keyframes => _keyframes;
+
+    public List<ILayerPropertyKeyframe> GetAllKeyframes(bool expandedOnly)
+    {
+        List<ILayerPropertyKeyframe> result = new();
+        if (expandedOnly && !IsExpanded)
+            return result;
+
+        foreach (PropertyViewModelBase child in Children)
+        {
+            if (child is PropertyViewModel profileElementPropertyViewModel)
+                result.AddRange(profileElementPropertyViewModel.TimelinePropertyViewModel.GetAllKeyframes());
+            else if (child is PropertyGroupViewModel profileElementPropertyGroupViewModel)
+                result.AddRange(profileElementPropertyGroupViewModel.GetAllKeyframes(expandedOnly));
+        }
+
+        return result;
+    }
+    
     public List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels(bool expandedOnly)
     {
         List<ITimelineKeyframeViewModel> result = new();
         if (expandedOnly && !IsExpanded)
             return result;
 
-        foreach (ViewModelBase child in Children)
+        foreach (PropertyViewModelBase child in Children)
         {
             if (child is PropertyViewModel profileElementPropertyViewModel)
                 result.AddRange(profileElementPropertyViewModel.TimelinePropertyViewModel.GetAllKeyframeViewModels());
@@ -115,6 +135,8 @@ public class PropertyGroupViewModel : ViewModelBase, IDisposable
 
     private void PopulateChildren()
     {
+        Children = new ObservableCollection<PropertyViewModelBase>();
+
         // Get all properties and property groups and create VMs for them
         // The group has methods for getting this without reflection but then we lose the order of the properties as they are defined on the group
         // Sorting is done to ensure properties defined by the Core (such as on layers) are always on top.
@@ -138,7 +160,14 @@ public class PropertyGroupViewModel : ViewModelBase, IDisposable
             }
         }
 
-        HasChildren = Children.Any(i => i is PropertyViewModel {IsVisible: true} || i is PropertyGroupViewModel {IsVisible: true});
+        HasChildren = Children.Any(i => i is PropertyViewModel {IsVisible: true} or PropertyGroupViewModel {IsVisible: true});
+        _keyframeSubscription = Children
+            .ToObservableChangeSet()
+            .TransformMany(c => c.Keyframes)
+            .Bind(out ReadOnlyObservableCollection<ILayerPropertyKeyframe> keyframes)
+            .Subscribe();
+
+        _keyframes = keyframes;
     }
 
     private void LayerPropertyGroupOnVisibilityChanged(object? sender, EventArgs e)
@@ -155,5 +184,7 @@ public class PropertyGroupViewModel : ViewModelBase, IDisposable
             if (viewModelBase is IDisposable disposable)
                 disposable.Dispose();
         }
+        
+        _keyframeSubscription.Dispose();
     }
 }

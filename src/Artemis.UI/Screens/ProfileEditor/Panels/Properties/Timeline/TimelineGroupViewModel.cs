@@ -1,48 +1,47 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Controls.Mixins;
+using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 
 public class TimelineGroupViewModel : ActivatableViewModelBase
 {
-    private ObservableCollection<double>? _keyframePositions;
-    private ObservableAsPropertyHelper<int>? _pixelsPerSecond;
+    private ReadOnlyObservableCollection<double> _keyframePositions;
+    private int _pixelsPerSecond;
 
     public TimelineGroupViewModel(PropertyGroupViewModel propertyGroupViewModel, IProfileEditorService profileEditorService)
     {
         PropertyGroupViewModel = propertyGroupViewModel;
+        _keyframePositions = new ReadOnlyObservableCollection<double>(new ObservableCollection<double>());
 
         this.WhenActivated(d =>
         {
-            _pixelsPerSecond = profileEditorService.PixelsPerSecond.ToProperty(this, vm => vm.PixelsPerSecond).DisposeWith(d);
-            profileEditorService.PixelsPerSecond.Subscribe(p => UpdateKeyframePositions()).DisposeWith(d);
+            profileEditorService.PixelsPerSecond.Subscribe(p => _pixelsPerSecond = p).DisposeWith(d);
+
             PropertyGroupViewModel.WhenAnyValue(vm => vm.IsExpanded).Subscribe(_ => this.RaisePropertyChanged(nameof(Children))).DisposeWith(d);
-            PropertyGroupViewModel.WhenAnyValue(vm => vm.IsExpanded).Subscribe(_ => UpdateKeyframePositions()).DisposeWith(d);
-            this.WhenAnyValue(vm => vm.PixelsPerSecond).Subscribe(_ => UpdateKeyframePositions()).DisposeWith(d);
-            UpdateKeyframePositions();
+            PropertyGroupViewModel.Keyframes
+                .ToObservableChangeSet()
+                .AutoRefreshOnObservable(_ => profileEditorService.PixelsPerSecond)
+                .Transform(k => k.Position.TotalSeconds * _pixelsPerSecond, true)
+                .Bind(out ReadOnlyObservableCollection<double> keyframePositions)
+                .Subscribe()
+                .DisposeWith(d);
+            KeyframePositions = keyframePositions;
         });
     }
 
-    public int PixelsPerSecond => _pixelsPerSecond?.Value ?? 0;
     public PropertyGroupViewModel PropertyGroupViewModel { get; }
 
-    public ObservableCollection<ViewModelBase>? Children => PropertyGroupViewModel.IsExpanded ? PropertyGroupViewModel.Children : null;
+    public ObservableCollection<PropertyViewModelBase>? Children => PropertyGroupViewModel.IsExpanded ? PropertyGroupViewModel.Children : null;
 
-    public ObservableCollection<double>? KeyframePositions
+    public ReadOnlyObservableCollection<double> KeyframePositions
     {
         get => _keyframePositions;
         set => RaiseAndSetIfChanged(ref _keyframePositions, value);
-    }
-
-    private void UpdateKeyframePositions()
-    {
-        KeyframePositions = new ObservableCollection<double>(PropertyGroupViewModel
-            .GetAllKeyframeViewModels(false)
-            .Select(p => p.Position.TotalSeconds * PixelsPerSecond));
     }
 }

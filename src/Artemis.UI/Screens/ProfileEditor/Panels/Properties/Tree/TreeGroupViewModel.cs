@@ -56,7 +56,7 @@ public class TreeGroupViewModel : ActivatableViewModelBase
     public BaseLayerBrush? LayerBrush => PropertyGroupViewModel.LayerBrush;
     public BaseLayerEffect? LayerEffect => PropertyGroupViewModel.LayerEffect;
     public LayerPropertyGroupType GroupType { get; private set; }
-    public ObservableCollection<ViewModelBase>? Children => PropertyGroupViewModel.IsExpanded ? PropertyGroupViewModel.Children : null;
+    public ObservableCollection<PropertyViewModelBase>? Children => PropertyGroupViewModel.IsExpanded ? PropertyGroupViewModel.Children : null;
 
     public ReactiveCommand<Unit, Unit> OpenBrushSettings { get; }
     public ReactiveCommand<Unit, Unit> OpenEffectSettings { get; }

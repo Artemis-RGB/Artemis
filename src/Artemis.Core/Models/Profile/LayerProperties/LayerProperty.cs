@@ -322,7 +322,7 @@ namespace Artemis.Core
 
             SortKeyframes();
             ReapplyUpdate();
-            OnKeyframeAdded();
+            OnKeyframeAdded(keyframe);
         }
 
         /// <inheritdoc />
@@ -357,7 +357,7 @@ namespace Artemis.Core
 
             SortKeyframes();
             ReapplyUpdate();
-            OnKeyframeRemoved();
+            OnKeyframeRemoved(keyframe);
         }
 
         /// <summary>
@@ -604,10 +604,10 @@ namespace Artemis.Core
         public event EventHandler<LayerPropertyEventArgs>? KeyframesToggled;
 
         /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? KeyframeAdded;
+        public event EventHandler<LayerPropertyKeyframeEventArgs>? KeyframeAdded;
 
         /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? KeyframeRemoved;
+        public event EventHandler<LayerPropertyKeyframeEventArgs>? KeyframeRemoved;
 
         /// <summary>
         ///     Invokes the <see cref="Updated" /> event
@@ -645,17 +645,19 @@ namespace Artemis.Core
         /// <summary>
         ///     Invokes the <see cref="KeyframeAdded" /> event
         /// </summary>
-        protected virtual void OnKeyframeAdded()
+        /// <param name="keyframe"></param>
+        protected virtual void OnKeyframeAdded(ILayerPropertyKeyframe keyframe)
         {
-            KeyframeAdded?.Invoke(this, new LayerPropertyEventArgs(this));
+            KeyframeAdded?.Invoke(this, new LayerPropertyKeyframeEventArgs(keyframe));
         }
 
         /// <summary>
         ///     Invokes the <see cref="KeyframeRemoved" /> event
         /// </summary>
-        protected virtual void OnKeyframeRemoved()
+        /// <param name="keyframe"></param>
+        protected virtual void OnKeyframeRemoved(ILayerPropertyKeyframe keyframe)
         {
-            KeyframeRemoved?.Invoke(this, new LayerPropertyEventArgs(this));
+            KeyframeRemoved?.Invoke(this, new LayerPropertyKeyframeEventArgs(keyframe));
         }
 
         #endregion
