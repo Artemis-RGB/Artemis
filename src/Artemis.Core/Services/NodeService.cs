@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using Artemis.Core.VisualScripting;
 using Artemis.Storage.Entities.Profile.Nodes;
+using Newtonsoft.Json;
 using Ninject;
 using SkiaSharp;
 
@@ -80,6 +82,21 @@ namespace Artemis.Core.Services
             return NodeTypeStore.AddColor(type, color, plugin);
         }
 
+        public string ExportScript(NodeScript nodeScript)
+        {
+            nodeScript.Save();
+            return JsonConvert.SerializeObject(nodeScript.Entity, IProfileService.ExportSettings);
+        }
+        
+        public void ImportScript(string json, NodeScript target)
+        {
+            NodeScriptEntity? entity = JsonConvert.DeserializeObject<NodeScriptEntity>(json);
+            if (entity == null)
+                throw new ArtemisCoreException("Failed to load node script");
+
+            target.LoadFromEntity(entity);
+        }
+
         private INode CreateNode(INodeScript script, NodeEntity? entity, Type nodeType)
         {
             INode node = _kernel.Get(nodeType) as INode ?? throw new InvalidOperationException($"Node {nodeType} is not an INode");
@@ -135,5 +152,8 @@ namespace Artemis.Core.Services
         /// <param name="type">The type to associate the color with</param>
         /// <param name="color">The color to display</param>
         TypeColorRegistration RegisterTypeColor(Plugin plugin, Type type, SKColor color);
+
+        string ExportScript(NodeScript nodeScript);
+        void ImportScript(string json, NodeScript target);
     }
 }

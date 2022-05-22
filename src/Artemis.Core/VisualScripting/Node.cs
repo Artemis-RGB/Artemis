@@ -15,14 +15,14 @@ public abstract class Node : CorePropertyChanged, INode
     public event EventHandler? Resetting;
 
     #region Properties & Fields
-    
+
     private Guid _id;
 
     /// <inheritdoc />
     public Guid Id
     {
         get => _id;
-        set => SetAndNotify(ref _id , value);
+        set => SetAndNotify(ref _id, value);
     }
 
     private string _name;
@@ -73,7 +73,7 @@ public abstract class Node : CorePropertyChanged, INode
     public IReadOnlyCollection<IPin> Pins => new ReadOnlyCollection<IPin>(_pins);
 
     private readonly List<IPinCollection> _pinCollections = new();
-    
+
     /// <inheritdoc />
     public IReadOnlyCollection<IPinCollection> PinCollections => new ReadOnlyCollection<IPinCollection>(_pinCollections);
 
@@ -88,6 +88,7 @@ public abstract class Node : CorePropertyChanged, INode
     {
         _name = string.Empty;
         _description = string.Empty;
+        _id = Guid.NewGuid();
     }
 
     /// <summary>
@@ -97,6 +98,7 @@ public abstract class Node : CorePropertyChanged, INode
     {
         _name = name;
         _description = description;
+        _id = Guid.NewGuid();
     }
 
     #endregion

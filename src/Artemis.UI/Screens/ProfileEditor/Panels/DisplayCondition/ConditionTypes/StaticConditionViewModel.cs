@@ -51,6 +51,6 @@ public class StaticConditionViewModel : ActivatableViewModelBase
 
     private async Task ExecuteOpenEditor()
     {
-        await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(("nodeScript", _staticCondition.NodeScript));
+        await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(("nodeScript", _staticCondition.Script));
     }
 }

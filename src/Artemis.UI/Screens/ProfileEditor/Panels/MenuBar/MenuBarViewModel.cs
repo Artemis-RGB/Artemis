@@ -12,7 +12,6 @@ using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
-using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Newtonsoft.Json;
 using ReactiveUI;
 using Serilog;
@@ -27,10 +26,10 @@ public class MenuBarViewModel : ActivatableViewModelBase
     private readonly ISettingsService _settingsService;
     private readonly IWindowService _windowService;
     private ProfileEditorHistory? _history;
-    private ObservableAsPropertyHelper<bool>? _suspendedEditing;
     private ObservableAsPropertyHelper<bool>? _isSuspended;
     private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
     private ObservableAsPropertyHelper<RenderProfileElement?>? _profileElement;
+    private ObservableAsPropertyHelper<bool>? _suspendedEditing;
 
     public MenuBarViewModel(ILogger logger, IProfileEditorService profileEditorService, IProfileService profileService, ISettingsService settingsService, IWindowService windowService)
     {
@@ -62,26 +61,26 @@ public class MenuBarViewModel : ActivatableViewModelBase
         DuplicateProfile = ReactiveCommand.Create(ExecuteDuplicateProfile, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
         ToggleSuspendedEditing = ReactiveCommand.Create(ExecuteToggleSuspendedEditing);
         ToggleBooleanSetting = ReactiveCommand.Create<PluginSetting<bool>>(ExecuteToggleBooleanSetting);
-        OpenUri = ReactiveCommand.CreateFromTask<string>(ExecuteOpenUri);
+        OpenUri = ReactiveCommand.Create<string>(s => Process.Start(new ProcessStartInfo(s) {UseShellExecute = true, Verb = "open"}));
     }
 
     public ReactiveCommand<Unit, Unit> AddFolder { get; }
     public ReactiveCommand<Unit, Unit> AddLayer { get; }
     public ReactiveCommand<Unit, Unit> ToggleSuspended { get; }
     public ReactiveCommand<Unit, Unit> ViewProperties { get; }
-    public ReactiveCommand<Unit,Unit> AdaptProfile { get; }
+    public ReactiveCommand<Unit, Unit> AdaptProfile { get; }
     public ReactiveCommand<Unit, Unit> DeleteProfile { get; }
     public ReactiveCommand<Unit, Unit> ExportProfile { get; }
     public ReactiveCommand<Unit, Unit> DuplicateProfile { get; }
     public ReactiveCommand<PluginSetting<bool>, Unit> ToggleBooleanSetting { get; }
     public ReactiveCommand<string, Unit> OpenUri { get; }
     public ReactiveCommand<Unit, Unit> ToggleSuspendedEditing { get; }
-    
+
     public ProfileConfiguration? ProfileConfiguration => _profileConfiguration?.Value;
     public RenderProfileElement? ProfileElement => _profileElement?.Value;
     public bool IsSuspended => _isSuspended?.Value ?? false;
     public bool SuspendedEditing => _suspendedEditing?.Value ?? false;
-    
+
     public PluginSetting<bool> AutoSuspend => _settingsService.GetSetting("ProfileEditor.AutoSuspend", true);
     public PluginSetting<bool> FocusSelectedLayer => _settingsService.GetSetting("ProfileEditor.FocusSelectedLayer", false);
     public PluginSetting<bool> ShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
@@ -123,6 +122,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
             ("profileConfiguration", ProfileConfiguration)
         );
     }
+
     private async Task ExecuteAdaptProfile()
     {
         if (ProfileConfiguration?.Profile == null)
@@ -190,28 +190,15 @@ public class MenuBarViewModel : ActivatableViewModelBase
         ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
         _profileService.ImportProfile(ProfileConfiguration.Category, export, true, false, "copy");
     }
-    
+
     private void ExecuteToggleSuspendedEditing()
     {
         _profileEditorService.ChangeSuspendedEditing(!SuspendedEditing);
     }
-    
+
     private void ExecuteToggleBooleanSetting(PluginSetting<bool> setting)
     {
         setting.Value = !setting.Value;
         setting.Save();
-    }
-
-    private async Task ExecuteOpenUri(string uri)
-    {
-        try
-        {
-            Process.Start(new ProcessStartInfo(uri) {UseShellExecute = true, Verb = "open"});
-        }
-        catch (Exception e)
-        {
-            _logger.Error(e, "Failed to open URL");
-            await _windowService.ShowConfirmContentDialog("Failed to open URL", "We couldn't open the URL for you, check the logs for more details", "Confirm", null);
-        }
     }
 }

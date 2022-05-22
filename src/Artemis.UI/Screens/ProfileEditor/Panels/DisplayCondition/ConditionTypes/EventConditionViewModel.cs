@@ -16,6 +16,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayCondition.ConditionTypes;
 public class EventConditionViewModel : ActivatableViewModelBase
 {
     private readonly EventCondition _eventCondition;
+    private readonly INodeService _nodeService;
     private readonly IProfileEditorService _profileEditorService;
     private readonly ISettingsService _settingsService;
     private readonly ObservableAsPropertyHelper<bool> _showOverlapOptions;
@@ -26,18 +27,15 @@ public class EventConditionViewModel : ActivatableViewModelBase
     private ObservableAsPropertyHelper<int>? _selectedToggleOffMode;
     private ObservableAsPropertyHelper<int>? _selectedTriggerMode;
 
-    public EventConditionViewModel(EventCondition eventCondition, IProfileEditorService profileEditorService, IWindowService windowService, ISettingsService settingsService)
+    public EventConditionViewModel(EventCondition eventCondition, IProfileEditorService profileEditorService, INodeService nodeService, IWindowService windowService, ISettingsService settingsService)
     {
         _eventCondition = eventCondition;
         _profileEditorService = profileEditorService;
+        _nodeService = nodeService;
         _windowService = windowService;
         _settingsService = settingsService;
-        _showOverlapOptions = this.WhenAnyValue(vm => vm.SelectedTriggerMode)
-            .Select(m => m == 0)
-            .ToProperty(this, vm => vm.ShowOverlapOptions);
-        _showToggleOffOptions = this.WhenAnyValue(vm => vm.SelectedTriggerMode)
-            .Select(m => m == 1)
-            .ToProperty(this, vm => vm.ShowToggleOffOptions);
+        _showOverlapOptions = this.WhenAnyValue(vm => vm.SelectedTriggerMode).Select(m => m == 0).ToProperty(this, vm => vm.ShowOverlapOptions);
+        _showToggleOffOptions = this.WhenAnyValue(vm => vm.SelectedTriggerMode).Select(m => m == 1).ToProperty(this, vm => vm.ShowToggleOffOptions);
 
         this.WhenActivated(d =>
         {
@@ -82,6 +80,6 @@ public class EventConditionViewModel : ActivatableViewModelBase
 
     private async Task ExecuteOpenEditor()
     {
-        await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(("nodeScript", _eventCondition.NodeScript));
+        await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(("nodeScript", _eventCondition.Script));
     }
 }

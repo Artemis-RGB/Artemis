@@ -45,6 +45,7 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
         _zoomBorder.AddHandler(PointerWheelChangedEvent, ZoomOnPointerWheelChanged, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
         this.WhenActivated(d =>
         {
+            ViewModel.AutoFitRequested += ViewModelOnAutoFitRequested;
             ViewModel!.PickerPositionSubject.Subscribe(ShowPickerAt).DisposeWith(d);
             if (ViewModel.IsPreview)
             {
@@ -53,6 +54,7 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
             }
 
             Dispatcher.UIThread.InvokeAsync(() => AutoFit(true), DispatcherPriority.ContextIdle);
+            Disposable.Create(() => ViewModel.AutoFitRequested -= ViewModelOnAutoFitRequested).DisposeWith(d);
         });
     }
 
@@ -117,6 +119,11 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
         _zoomBorder.Pan(Bounds.Center.X - scriptRect.Center.X * scale, Bounds.Center.Y - scriptRect.Center.Y * scale, skipTransitions);
     }
 
+    private void ViewModelOnAutoFitRequested(object? sender, EventArgs e)
+    {
+        Dispatcher.UIThread.Post(() => AutoFit(false));
+    }
+
     private void ZoomBorderOnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
         if (e.Property.Name == nameof(_zoomBorder.Background))
@@ -136,6 +143,8 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
 
     private void ZoomBorder_OnZoomChanged(object sender, ZoomChangedEventArgs e)
     {
+        if (ViewModel != null)
+            ViewModel.PanMatrix = _zoomBorder.Matrix;
         UpdateZoomBorderBackground();
     }
 

@@ -30,6 +30,7 @@ public class NodeScriptViewModel : ActivatableViewModelBase
 
     private DragCableViewModel? _dragViewModel;
     private List<NodeViewModel>? _initialNodeSelection;
+    private Matrix _panMatrix;
 
     public NodeScriptViewModel(NodeScript nodeScript, bool isPreview, INodeVmFactory nodeVmFactory, INodeService nodeService, INodeEditorService nodeEditorService)
     {
@@ -94,6 +95,12 @@ public class NodeScriptViewModel : ActivatableViewModelBase
     {
         get => _dragViewModel;
         set => RaiseAndSetIfChanged(ref _dragViewModel, value);
+    }
+    
+    public Matrix PanMatrix
+    {
+        get => _panMatrix;
+        set => RaiseAndSetIfChanged(ref _panMatrix, value);
     }
 
     public void DeleteSelectedNodes()
@@ -223,4 +230,11 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         if (toRemove != null)
             _nodeViewModels.Remove(toRemove);
     }
+
+    public void RequestAutoFit()
+    {
+        AutoFitRequested?.Invoke(this, EventArgs.Empty);
+    }
+    
+    public event EventHandler? AutoFitRequested;
 }

@@ -29,7 +29,7 @@ namespace Artemis.Core
 
         #region Properties & Fields
 
-        internal NodeScriptEntity Entity { get; }
+        internal NodeScriptEntity Entity { get; private set; }
 
         /// <inheritdoc />
         public string Name { get; }
@@ -183,8 +183,15 @@ namespace Artemis.Core
             LoadConnections();
         }
 
+        internal void LoadFromEntity(NodeScriptEntity entity)
+        {
+            Entity = entity;
+            Load();
+        }
+
         private void LoadExistingNode(INode node, NodeEntity nodeEntity)
         {
+            node.Id = nodeEntity.Id;
             node.X = nodeEntity.X;
             node.Y = nodeEntity.Y;
 
@@ -245,17 +252,21 @@ namespace Artemis.Core
 
                 // Clear existing connections on input pins, we don't want none of that now
                 if (targetPin.Direction == PinDirection.Input)
+                {
                     while (targetPin.ConnectedTo.Any())
                         targetPin.DisconnectFrom(targetPin.ConnectedTo[0]);
+                }
 
                 if (sourcePin.Direction == PinDirection.Input)
+                {
                     while (sourcePin.ConnectedTo.Any())
                         sourcePin.DisconnectFrom(sourcePin.ConnectedTo[0]);
+                }
 
                 // Only connect the nodes if they aren't already connected (LoadConnections may be called twice or more)
-                if (!targetPin.ConnectedTo.Contains(sourcePin))
+                if (!targetPin.ConnectedTo.Contains(sourcePin) && targetPin.IsTypeCompatible(sourcePin.Type))
                     targetPin.ConnectTo(sourcePin);
-                if (!sourcePin.ConnectedTo.Contains(targetPin))
+                if (!sourcePin.ConnectedTo.Contains(targetPin) && sourcePin.IsTypeCompatible(targetPin.Type))
                     sourcePin.ConnectTo(targetPin);
             }
         }

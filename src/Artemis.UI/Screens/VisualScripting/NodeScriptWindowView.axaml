@@ -4,18 +4,163 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:visualScripting="clr-namespace:Artemis.UI.Screens.VisualScripting"
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Artemis.UI.Screens.VisualScripting.NodeScriptWindowView"
         x:DataType="visualScripting:NodeScriptWindowViewModel"
         Title="Artemis | Visual Script Editor"
         Width="1200"
         Height="800">
-    <Grid Margin="15" ColumnDefinitions="*,*" RowDefinitions="Auto,*">
-        <StackPanel Grid.Row="0">
-            <TextBlock Classes="h4" Text="{CompiledBinding NodeScript.Name}"/>
-            <TextBlock Classes="subtitle" Margin="0 0 0 10" Text="{CompiledBinding NodeScript.Description}"/>
+    <Window.KeyBindings>
+        <KeyBinding Command="{CompiledBinding History.Undo}" Gesture="Ctrl+Z" />
+        <KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y" />
+    </Window.KeyBindings>
+    <Grid Margin="15" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,*">
+        <Menu Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Top" Margin="-10 -10 -10 0">
+            <MenuItem Header="_File">
+                <MenuItem Header="Add Node" Items="{CompiledBinding Categories}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Plus" />
+                    </MenuItem.Icon>
+                    <MenuItem.Styles>
+                        <Style Selector="MenuItem > MenuItem > MenuItem">
+                            <Setter Property="Command" Value="{Binding $parent[visualScripting:NodeScriptWindowView].DataContext.CreateNode}" />
+                            <Setter Property="CommandParameter" Value="{Binding}" />
+                            <Setter Property="Items" Value="{Binding Items}" />
+                        </Style>
+                    </MenuItem.Styles>
+                    <MenuItem.DataTemplates>
+                        <DataTemplate DataType="{x:Type core:NodeData}">
+                            <StackPanel Background="Transparent">
+                                <TextBlock Text="{Binding Name}" TextWrapping="Wrap"></TextBlock>
+                                <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding Description}" TextWrapping="Wrap"></TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Key}"></TextBlock>
+                        </DataTemplate>
+                    </MenuItem.DataTemplates>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Export Script" Command="{CompiledBinding Export}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Export" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Import Script" Command="{CompiledBinding Import}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Import" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Undo" Command="{CompiledBinding History.Undo}" InputGesture="Ctrl+Z">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Undo" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Redo" Command="{CompiledBinding History.Redo}" InputGesture="Ctrl+Y">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Redo" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="_Duplicate" Command="{Binding Duplicate}" InputGesture="Ctrl+D">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="ContentDuplicate" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Copy" Command="{Binding Copy}" InputGesture="Ctrl+C">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="ContentCopy" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Paste" Command="{Binding Paste}" InputGesture="Ctrl+V">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIconExt Kind="ContentPaste" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Options">
+                <MenuItem Header="Display Data Model Values"
+                          Command="{CompiledBinding ToggleBooleanSetting}"
+                          CommandParameter="{CompiledBinding ShowDataModelValues}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding ShowDataModelValues.Value}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Display Full Condition Paths"
+                          Command="{CompiledBinding ToggleBooleanSetting}"
+                          CommandParameter="{CompiledBinding ShowFullPaths}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding ShowFullPaths.Value}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Always Display Cable Values"
+                          ToolTip.Tip="If enabled, cable values are always shown instead of only on hover"
+                          Command="{CompiledBinding ToggleBooleanSetting}"
+                          CommandParameter="{CompiledBinding AlwaysShowValues}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding AlwaysShowValues.Value}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="Artemis Wiki" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="BookEdit" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Editor" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/en/guides/user/profiles">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Edit" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Layers" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/layers">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Layers" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Display Conditions" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/conditions">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="NotEqual" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Timeline" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/timeline">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Stopwatch" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Data Bindings" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/data-bindings">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="VectorLink" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Scripting" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/scripting">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="CodeJson" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Report a Bug" Command="{CompiledBinding OpenUri}" CommandParameter="https://github.com/Artemis-RGB/Artemis/issues">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Github" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Get Help on Discord" Command="{CompiledBinding OpenUri}" CommandParameter="https://discord.gg/S3MVaC9">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Discord" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+            <TextBlock Classes="h4" Text="{CompiledBinding NodeScript.Name}" />
+            <TextBlock Classes="subtitle" Margin="10 0 0 13" Text="{CompiledBinding NodeScript.Description}" VerticalAlignment="Bottom" />
         </StackPanel>
-        <controls:HyperlinkButton Grid.Row="0"
+        <controls:HyperlinkButton Grid.Row="1"
                                   Grid.Column="1"
                                   VerticalAlignment="Top"
                                   HorizontalAlignment="Right"
@@ -23,7 +168,7 @@
             Learn more about visual scripts
         </controls:HyperlinkButton>
 
-        <Border Classes="card" Grid.Row="1" Grid.ColumnSpan="2">
+        <Border Classes="card-condensed" Grid.Row="2" Grid.ColumnSpan="2">
             <ContentControl Content="{CompiledBinding NodeScriptViewModel}" />
         </Border>
 

@@ -27,7 +27,8 @@ public class EnumEqualsNodeCustomViewModel : CustomNodeViewModel
             if (_node.InputPin.ConnectedTo.Any())
             {
                 EnumValues.Clear();
-                EnumValues.AddRange(Enum.GetValues(_node.InputPin.ConnectedTo.First().Type).Cast<Enum>());
+                if (_node.InputPin.ConnectedTo.First().Type.IsEnum)
+                    EnumValues.AddRange(Enum.GetValues(_node.InputPin.ConnectedTo.First().Type).Cast<Enum>());
 
                 this.RaisePropertyChanged(nameof(CurrentValue));
             }

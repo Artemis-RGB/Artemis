@@ -55,7 +55,7 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
     public NodeScript<bool> Script
     {
         get => _script;
-        set => SetAndNotify(ref _script, value);
+        private set => SetAndNotify(ref _script, value);
     }
 
     /// <summary>

@@ -16,7 +16,8 @@ namespace Artemis.Core.Internal
             DataBinding = dataBinding;
             DataBinding.DataBindingPropertiesCleared += DataBindingOnDataBindingPropertiesCleared;
             DataBinding.DataBindingPropertyRegistered += DataBindingOnDataBindingPropertyRegistered;
-
+            Id = IExitNode.NodeId;
+            
             CreateInputPins();
         }
 
