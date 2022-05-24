@@ -7,7 +7,7 @@
     <ComboBox x:Name="EnumComboBox" HorizontalAlignment="Stretch">
         <ComboBox.ItemTemplate>
             <DataTemplate>
-                <TextBlock Text="{Binding [0]}" />
+                <TextBlock Text="{Binding [1]}" />
             </DataTemplate>
         </ComboBox.ItemTemplate>
     </ComboBox>

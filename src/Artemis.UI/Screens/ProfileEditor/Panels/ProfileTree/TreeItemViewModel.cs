@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
@@ -46,6 +47,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
 
         AddLayer = ReactiveCommand.Create(ExecuteAddLayer);
         AddFolder = ReactiveCommand.Create(ExecuteAddFolder);
+        OpenAdaptionHints = ReactiveCommand.CreateFromTask(ExecuteOpenAdaptionHints, this.WhenAnyValue(vm => vm.ProfileElement).Select(p => p is Layer));
         Rename = ReactiveCommand.Create(ExecuteRename);
         Delete = ReactiveCommand.Create(ExecuteDelete);
         Duplicate = ReactiveCommand.CreateFromTask(ExecuteDuplicate);
@@ -97,6 +99,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
 
     public ReactiveCommand<Unit, Unit> AddLayer { get; }
     public ReactiveCommand<Unit, Unit> AddFolder { get; }
+    public ReactiveCommand<Unit, Unit> OpenAdaptionHints { get; }
     public ReactiveCommand<Unit, Unit> Rename { get; }
     public ReactiveCommand<Unit, Unit> Duplicate { get; }
     public ReactiveCommand<Unit, Unit> Copy { get; }
@@ -246,6 +249,14 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
     {
         if (ProfileElement != null)
             ProfileEditorService.CreateAndAddLayer(ProfileElement);
+    }
+    
+    private async Task ExecuteOpenAdaptionHints()
+    {
+        if (ProfileElement is not Layer layer)
+            return;
+
+        await _windowService.ShowDialogAsync<LayerHintsDialogViewModel, bool>(("layer", layer));
     }
 
     private async void UpdateCanPaste(bool isFlyoutOpen)

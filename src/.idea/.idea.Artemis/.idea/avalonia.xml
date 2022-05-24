@@ -14,6 +14,7 @@
         <entry key="Artemis.UI.Avalonia/Screens/Sidebar/Views/SidebarProfileConfigurationView.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
         <entry key="Artemis.UI.Avalonia/Screens/SidebarView.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
         <entry key="Artemis.UI.Avalonia/Views/MainWindow.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
+        <entry key="Artemis.UI.Shared/Controls/EnumComboBox.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Shared/Styles/Border.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Windows/App.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/ColorGradientPropertyInputView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
@@ -27,7 +28,12 @@
         <entry key="Artemis.UI/Screens/Plugins/PluginFeatureView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Plugins/PluginSettingsView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/MenuBar/MenuBarView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/ProfileEditor/Panels/ProfileTree/Dialogs/AdaptionHints/CategoryAdaptionHintView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/ProfileEditor/Panels/ProfileTree/Dialogs/AdaptionHints/DeviceAdaptionHintView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/ProfileEditor/Panels/ProfileTree/Dialogs/AdaptionHints/KeyboardSectionAdaptionHintView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/ProfileEditor/Panels/ProfileTree/Dialogs/LayerHintsDialogView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/ProfileTree/FolderTreeItemView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/ProfileEditor/Panels/ProfileTree/LayerTreeItemView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/ProfileTree/ProfileTreeView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/Properties/Dialogs/AddEffectView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/Properties/PropertiesView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
@@ -40,6 +46,7 @@
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/Properties/Tree/TreeGroupView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/Properties/Tree/TreePropertyView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/Properties/Windows/EffectConfigurationWindowView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/ProfileEditor/Panels/StatusBar/StatusBarView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/VisualEditor/Tools/TransformToolView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/VisualEditor/VisualEditorView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/ProfileEditorTitleBarView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
@@ -47,6 +54,7 @@
         <entry key="Artemis.UI/Screens/Root/SplashView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Settings/Tabs/GeneralTabView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/ContentDialogs/SidebarCategoryEditView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/Sidebar/Dialogs/ProfileConfigurationEditView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/SidebarCategoryView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/SidebarProfileConfigurationView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/SidebarView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />

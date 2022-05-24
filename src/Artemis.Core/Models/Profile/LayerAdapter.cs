@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.AdaptionHints;
@@ -12,10 +13,13 @@ namespace Artemis.Core
     /// </summary>
     public class LayerAdapter : IStorageModel
     {
+        private readonly List<IAdaptionHint> _adaptionHints;
+
         internal LayerAdapter(Layer layer)
         {
+            _adaptionHints = new List<IAdaptionHint>();
             Layer = layer;
-            AdaptionHints = new List<IAdaptionHint>();
+            AdaptionHints = new ReadOnlyCollection<IAdaptionHint>(_adaptionHints);
         }
 
         /// <summary>
@@ -26,7 +30,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets a list containing the adaption hints used by this adapter
         /// </summary>
-        public List<IAdaptionHint> AdaptionHints { get; set; }
+        public ReadOnlyCollection<IAdaptionHint> AdaptionHints { get; set; }
 
         /// <summary>
         ///     Modifies the layer, adapting it to the provided <paramref name="devices" />
@@ -73,7 +77,7 @@ namespace Artemis.Core
             if (devices.All(DoesLayerCoverDevice))
             {
                 DeviceAdaptionHint hint = new() {DeviceType = RGBDeviceType.All};
-                AdaptionHints.Add(hint);
+                Add(hint);
                 newHints.Add(hint);
             }
             else
@@ -88,7 +92,7 @@ namespace Artemis.Core
                     if (DoesLayerCoverDevice(device))
                     {
                         DeviceAdaptionHint hint = new() {DeviceType = device.DeviceType};
-                        AdaptionHints.Add(hint);
+                        Add(hint);
                         newHints.Add(hint);
                     }
                 }
@@ -103,7 +107,7 @@ namespace Artemis.Core
                     if (categoryDevices.Any() && categoryDevices.All(DoesLayerCoverDevice))
                     {
                         CategoryAdaptionHint hint = new() {Category = deviceCategory};
-                        AdaptionHints.Add(hint);
+                        Add(hint);
                         newHints.Add(hint);
                     }
                 }
@@ -117,25 +121,57 @@ namespace Artemis.Core
             return device.Leds.All(l => Layer.Leds.Contains(l));
         }
 
+        /// <summary>
+        /// Adds an adaption hint to the adapter.
+        /// </summary>
+        /// <param name="adaptionHint">The adaption hint to add.</param>
+        public void Add(IAdaptionHint adaptionHint)
+        {
+            if (_adaptionHints.Contains(adaptionHint))
+                return;
+            
+            _adaptionHints.Add(adaptionHint);
+            AdapterHintAdded?.Invoke(this, new LayerAdapterHintEventArgs(adaptionHint));
+        }
+
+        /// <summary>
+        /// Removes the first occurrence of a specific adaption hint from the adapter.
+        /// </summary>
+        /// <param name="adaptionHint">The adaption hint to remove.</param>
+        public void Remove(IAdaptionHint adaptionHint)
+        {
+            if (_adaptionHints.Remove(adaptionHint))
+                AdapterHintRemoved?.Invoke(this, new LayerAdapterHintEventArgs(adaptionHint));
+        }
+
+        /// <summary>
+        /// Removes all adaption hints from the adapter.
+        /// </summary>
+        public void Clear()
+        {
+            while (_adaptionHints.Any())
+                Remove(_adaptionHints.First());
+        }
+
         #region Implementation of IStorageModel
 
         /// <inheritdoc />
         public void Load()
         {
-            AdaptionHints.Clear();
+            _adaptionHints.Clear();
             // Kind of meh.
             // This leaves the adapter responsible for finding the right hint for the right entity, but it's gotta be done somewhere..
             foreach (IAdaptionHintEntity hintEntity in Layer.LayerEntity.AdaptionHints)
                 switch (hintEntity)
                 {
                     case DeviceAdaptionHintEntity entity:
-                        AdaptionHints.Add(new DeviceAdaptionHint(entity));
+                        Add(new DeviceAdaptionHint(entity));
                         break;
                     case CategoryAdaptionHintEntity entity:
-                        AdaptionHints.Add(new CategoryAdaptionHint(entity));
+                        Add(new CategoryAdaptionHint(entity));
                         break;
                     case KeyboardSectionAdaptionHintEntity entity:
-                        AdaptionHints.Add(new KeyboardSectionAdaptionHint(entity));
+                        Add(new KeyboardSectionAdaptionHint(entity));
                         break;
                 }
         }
@@ -149,5 +185,15 @@ namespace Artemis.Core
         }
 
         #endregion
+
+        /// <summary>
+        /// Occurs whenever a new adapter hint is added to the adapter.
+        /// </summary>
+        public event EventHandler<LayerAdapterHintEventArgs>? AdapterHintAdded;
+
+        /// <summary>
+        /// Occurs whenever an adapter hint is removed from the adapter.
+        /// </summary>
+        public event EventHandler<LayerAdapterHintEventArgs>? AdapterHintRemoved;
     }
 }

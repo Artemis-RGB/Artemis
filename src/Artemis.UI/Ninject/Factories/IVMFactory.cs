@@ -7,6 +7,7 @@ using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.ProfileEditor.DisplayCondition.ConditionTypes;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
+using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints;
 using Artemis.UI.Screens.ProfileEditor.Properties;
 using Artemis.UI.Screens.ProfileEditor.Properties.DataBinding;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
@@ -114,4 +115,11 @@ public interface IConditionVmFactory : IVmFactory
     PlayOnceConditionViewModel PlayOnceConditionViewModel(PlayOnceCondition playOnceCondition);
     StaticConditionViewModel StaticConditionViewModel(StaticCondition staticCondition);
     EventConditionViewModel EventConditionViewModel(EventCondition eventCondition);
+}
+
+public interface ILayerHintVmFactory : IVmFactory
+{
+    CategoryAdaptionHintViewModel CategoryAdaptionHintViewModel(CategoryAdaptionHint adaptionHint);
+    DeviceAdaptionHintViewModel DeviceAdaptionHintViewModel(DeviceAdaptionHint adaptionHint);
+    KeyboardSectionAdaptionHintViewModel KeyboardSectionAdaptionHintViewModel(KeyboardSectionAdaptionHint adaptionHint);
 }

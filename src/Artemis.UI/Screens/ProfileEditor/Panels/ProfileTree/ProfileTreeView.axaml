@@ -112,6 +112,11 @@
                                         <avalonia:MaterialIcon Kind="LayersPlus" />
                                     </MenuItem.Icon>
                                 </MenuItem>
+                                <MenuItem Header="Open adaption hints" Command="{CompiledBinding OpenAdaptionHints}">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="Magic" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
                                 <MenuItem Header="-" />
                                 <MenuItem Header="Duplicate" Command="{CompiledBinding Duplicate}" InputGesture="Ctrl+D">
                                     <MenuItem.Icon>
