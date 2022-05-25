@@ -4,7 +4,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints;
 
 public class DeviceAdaptionHintViewModel : AdaptionHintViewModelBase
 {
-    public DeviceAdaptionHintViewModel(DeviceAdaptionHint adaptionHint) : base(adaptionHint)
+    public DeviceAdaptionHintViewModel(Layer layer, DeviceAdaptionHint adaptionHint) : base(layer, adaptionHint)
     {
         DeviceAdaptionHint = adaptionHint;
     }

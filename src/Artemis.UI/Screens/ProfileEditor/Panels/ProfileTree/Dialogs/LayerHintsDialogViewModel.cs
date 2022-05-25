@@ -76,9 +76,9 @@ public class LayerHintsDialogViewModel : DialogViewModelBase<bool>
     {
         return hint switch
         {
-            CategoryAdaptionHint categoryAdaptionHint => _vmFactory.CategoryAdaptionHintViewModel(categoryAdaptionHint),
-            DeviceAdaptionHint deviceAdaptionHint => _vmFactory.DeviceAdaptionHintViewModel(deviceAdaptionHint),
-            KeyboardSectionAdaptionHint keyboardSectionAdaptionHint => _vmFactory.KeyboardSectionAdaptionHintViewModel(keyboardSectionAdaptionHint),
+            CategoryAdaptionHint categoryAdaptionHint => _vmFactory.CategoryAdaptionHintViewModel(Layer, categoryAdaptionHint),
+            DeviceAdaptionHint deviceAdaptionHint => _vmFactory.DeviceAdaptionHintViewModel(Layer, deviceAdaptionHint),
+            KeyboardSectionAdaptionHint keyboardSectionAdaptionHint => _vmFactory.KeyboardSectionAdaptionHintViewModel(Layer, keyboardSectionAdaptionHint),
             _ => throw new ArgumentOutOfRangeException(nameof(hint))
         };
     }

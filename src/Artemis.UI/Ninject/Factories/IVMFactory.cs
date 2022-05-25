@@ -119,7 +119,7 @@ public interface IConditionVmFactory : IVmFactory
 
 public interface ILayerHintVmFactory : IVmFactory
 {
-    CategoryAdaptionHintViewModel CategoryAdaptionHintViewModel(CategoryAdaptionHint adaptionHint);
-    DeviceAdaptionHintViewModel DeviceAdaptionHintViewModel(DeviceAdaptionHint adaptionHint);
-    KeyboardSectionAdaptionHintViewModel KeyboardSectionAdaptionHintViewModel(KeyboardSectionAdaptionHint adaptionHint);
+    CategoryAdaptionHintViewModel CategoryAdaptionHintViewModel(Layer layer, CategoryAdaptionHint adaptionHint);
+    DeviceAdaptionHintViewModel DeviceAdaptionHintViewModel(Layer layer, DeviceAdaptionHint adaptionHint);
+    KeyboardSectionAdaptionHintViewModel KeyboardSectionAdaptionHintViewModel(Layer layer, KeyboardSectionAdaptionHint adaptionHint);
 }

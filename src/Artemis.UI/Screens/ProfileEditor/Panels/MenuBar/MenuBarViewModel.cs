@@ -128,10 +128,15 @@ public class MenuBarViewModel : ActivatableViewModelBase
         if (ProfileConfiguration?.Profile == null)
             return;
 
-        if (!await _windowService.ShowConfirmContentDialog("Adapt profile", "Are you sure you want to adapt the profile to your current surface? Layer assignments may change."))
+        bool confirmed = await _windowService.ShowConfirmContentDialog(
+            "Adapt profile",
+            "Are you sure you want to adapt the profile to your current surface? Layer assignments may change and you will lose your undo/redo history."
+        );
+        if (!confirmed)
             return;
 
         _profileService.AdaptProfile(ProfileConfiguration.Profile);
+        _history?.Clear();
     }
 
     private void ExecuteToggleSuspended()

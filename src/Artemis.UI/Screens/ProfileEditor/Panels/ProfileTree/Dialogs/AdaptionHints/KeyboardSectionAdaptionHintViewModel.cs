@@ -4,7 +4,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints;
 
 public class KeyboardSectionAdaptionHintViewModel : AdaptionHintViewModelBase
 {
-    public KeyboardSectionAdaptionHintViewModel(KeyboardSectionAdaptionHint adaptionHint) : base(adaptionHint)
+    public KeyboardSectionAdaptionHintViewModel(Layer layer, KeyboardSectionAdaptionHint adaptionHint) : base(layer, adaptionHint)
     {
         KeyboardSectionAdaptionHint = adaptionHint;
     }

@@ -7,16 +7,19 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints;
 
 public abstract class AdaptionHintViewModelBase : ViewModelBase
 {
-    protected AdaptionHintViewModelBase(IAdaptionHint adaptionHint)
+    protected AdaptionHintViewModelBase(Layer layer, IAdaptionHint adaptionHint)
     {
+        Layer = layer;
         AdaptionHint = adaptionHint;
         Remove = ReactiveCommand.Create(ExecuteRemove);
     }
 
-    public ReactiveCommand<Unit, Unit> Remove { get; }
+    public Layer Layer { get; }
     public IAdaptionHint AdaptionHint { get; }
-    
+    public ReactiveCommand<Unit, Unit> Remove { get; }
+
     private void ExecuteRemove()
     {
+        Layer.Adapter.Remove(AdaptionHint);
     }
 }
