@@ -14,6 +14,7 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar
@@ -37,13 +38,13 @@ namespace Artemis.UI.Screens.Sidebar
             _vmFactory = vmFactory;
 
             ProfileCategory = profileCategory;
-            SourceCache<ProfileConfiguration, Guid> profileConfigurations = new(t => t.ProfileId);
+            SourceList<ProfileConfiguration> profileConfigurations = new();
 
             // Only show items when not collapsed
             IObservable<Func<ProfileConfiguration, bool>> profileConfigurationsFilter = this.WhenAnyValue(vm => vm.IsCollapsed).Select(b => new Func<object, bool>(_ => !b));
             profileConfigurations.Connect()
-                .SortBy(c => c.Order)
                 .Filter(profileConfigurationsFilter)
+                .Sort(SortExpressionComparer<ProfileConfiguration>.Ascending(c => c.Order))
                 .Transform(c => _vmFactory.SidebarProfileConfigurationViewModel(_sidebarViewModel, c))
                 .Bind(out ReadOnlyObservableCollection<SidebarProfileConfigurationViewModel> profileConfigurationViewModels)
                 .Subscribe();
@@ -58,7 +59,7 @@ namespace Artemis.UI.Screens.Sidebar
             {
                 // Update the list of profiles whenever the category fires events
                 Observable.FromEventPattern<ProfileConfigurationEventArgs>(x => profileCategory.ProfileConfigurationAdded += x, x => profileCategory.ProfileConfigurationAdded -= x)
-                    .Subscribe(e => profileConfigurations.AddOrUpdate(e.EventArgs.ProfileConfiguration))
+                    .Subscribe(e => profileConfigurations.Add(e.EventArgs.ProfileConfiguration))
                     .DisposeWith(d);
                 Observable.FromEventPattern<ProfileConfigurationEventArgs>(x => profileCategory.ProfileConfigurationRemoved += x, x => profileCategory.ProfileConfigurationRemoved -= x)
                     .Subscribe(e => profileConfigurations.Remove(e.EventArgs.ProfileConfiguration))
@@ -77,7 +78,7 @@ namespace Artemis.UI.Screens.Sidebar
             profileConfigurations.Edit(updater =>
             {
                 foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
-                    updater.AddOrUpdate(profileConfiguration);
+                    updater.Add(profileConfiguration);
             });
         }
 
@@ -134,6 +135,17 @@ namespace Artemis.UI.Screens.Sidebar
         {
             ProfileCategory.IsSuspended = !ProfileCategory.IsSuspended;
             _profileService.SaveProfileCategory(ProfileCategory);
+        }
+
+        public void AddProfileConfiguration(ProfileConfiguration profileConfiguration, int? index)
+        {
+            ProfileCategory oldCategory = profileConfiguration.Category;
+            ProfileCategory.AddProfileConfiguration(profileConfiguration, index);
+
+            _profileService.SaveProfileCategory(ProfileCategory);
+            // If the profile moved to a new category, also save the old category
+            if (oldCategory != ProfileCategory)
+                _profileService.SaveProfileCategory(oldCategory);
         }
     }
 }

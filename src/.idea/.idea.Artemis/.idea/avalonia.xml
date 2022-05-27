@@ -55,7 +55,7 @@
         <entry key="Artemis.UI/Screens/Settings/Tabs/GeneralTabView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/ContentDialogs/SidebarCategoryEditView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/Dialogs/ProfileConfigurationEditView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
-        <entry key="Artemis.UI/Screens/Sidebar/SidebarCategoryView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/Sidebar/SidebarCategoryView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/SidebarProfileConfigurationView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/SidebarView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/SurfaceEditor/ListDeviceView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />

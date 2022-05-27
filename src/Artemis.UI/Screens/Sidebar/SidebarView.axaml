@@ -7,6 +7,9 @@
              xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
              mc:Ignorable="d" d:DesignWidth="240" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Sidebar.SidebarView">
+    <UserControl.Styles>
+        <StyleInclude Source="avares://Avalonia.Xaml.Interactions/Draggable/Styles.axaml" />
+    </UserControl.Styles>
     <Grid RowDefinitions="60,Auto,Auto,*,Auto,Auto">
         <Grid Grid.Row="0" IsHitTestVisible="False" ColumnDefinitions="Auto,*">
             <Image Grid.Column="0">
@@ -33,7 +36,7 @@
         <!-- Categories -->
         <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <ItemsControl Margin="10 2" Items="{Binding SidebarCategories}" />
+                <ItemsControl Margin="10 2" Items="{Binding SidebarCategories}" Classes="profile-categories" />
                 <Button Content="Add new category"
                         Margin="10"
                         HorizontalAlignment="Stretch"

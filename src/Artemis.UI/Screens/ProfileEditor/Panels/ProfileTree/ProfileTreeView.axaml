@@ -90,7 +90,9 @@
         </Style>
     </UserControl.Styles>
     <Grid RowDefinitions="*,Auto">
-        <TreeView Name="ProfileTreeView" Classes="no-right-margin draggable" Items="{CompiledBinding Children}" SelectedItem="{CompiledBinding SelectedChild}"
+        <TreeView Name="ProfileTreeView" Classes="no-right-margin draggable" 
+                  Items="{CompiledBinding Children}" 
+                  SelectedItem="{CompiledBinding SelectedChild}"
                   SelectionChanged="ProfileTreeView_OnSelectionChanged">
             <TreeView.Styles>
                 <Style Selector="TreeViewItem">
