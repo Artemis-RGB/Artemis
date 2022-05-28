@@ -36,7 +36,7 @@
     </Style>
 
     <Style Selector="Border.card">
-        <Setter Property="Padding" Value="25" />
+        <Setter Property="Padding" Value="16" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="1" />
@@ -44,7 +44,7 @@
     </Style>
 
     <Style Selector="Border.card-condensed">
-        <Setter Property="Padding" Value="10" />
+        <Setter Property="Padding" Value="8" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="1" />

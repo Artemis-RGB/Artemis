@@ -276,12 +276,7 @@ namespace Artemis.Core
         {
             Entity.Name = Name;
             Entity.Description = Description;
-
             Entity.Nodes.Clear();
-
-            // No need to save the exit node if that's all there is
-            if (Nodes.Count() == 1)
-                return;
 
             foreach (INode node in Nodes)
             {

@@ -134,7 +134,7 @@ namespace Artemis.Core
         ///     Gets the data model condition that must evaluate to <see langword="true" /> for this profile to be activated
         ///     alongside any activation requirements of the <see cref="Module" />, if set
         /// </summary>
-        public NodeScript<bool> ActivationCondition { get; set; }
+        public NodeScript<bool> ActivationCondition { get; }
 
         /// <summary>
         ///     Gets or sets the module this profile uses
@@ -241,11 +241,7 @@ namespace Artemis.Core
 
             Icon.Load();
 
-            ActivationCondition.Dispose();
-            ActivationCondition = Entity.ActivationCondition != null 
-                ? new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", Entity.ActivationCondition, this) 
-                : new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", this);
-
+            ActivationCondition.LoadFromEntity(Entity.ActivationCondition);
             EnableHotkey = Entity.EnableHotkey != null ? new Hotkey(Entity.EnableHotkey) : null;
             DisableHotkey = Entity.DisableHotkey != null ? new Hotkey(Entity.DisableHotkey) : null;
         }
@@ -265,8 +261,8 @@ namespace Artemis.Core
 
             Icon.Save();
 
-            ActivationCondition?.Save();
-            Entity.ActivationCondition = ActivationCondition?.Entity;
+            ActivationCondition.Save();
+            Entity.ActivationCondition = ActivationCondition.Entity;
 
             EnableHotkey?.Save();
             Entity.EnableHotkey = EnableHotkey?.Entity;

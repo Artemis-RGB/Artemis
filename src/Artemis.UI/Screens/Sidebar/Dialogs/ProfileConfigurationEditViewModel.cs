@@ -2,10 +2,13 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
+using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
@@ -43,7 +46,8 @@ namespace Artemis.UI.Screens.Sidebar
             IWindowService windowService,
             IProfileService profileService,
             IProfileEditorService profileEditorService,
-            IPluginManagementService pluginManagementService)
+            IPluginManagementService pluginManagementService,
+            INodeVmFactory nodeVmFactory)
         {
             _profileCategory = profileCategory;
             _windowService = windowService;
@@ -63,8 +67,17 @@ namespace Artemis.UI.Screens.Sidebar
             Modules = new ObservableCollection<ProfileModuleViewModel>(
                 pluginManagementService.GetFeaturesOfType<Module>().Where(m => !m.IsAlwaysAvailable).Select(m => new ProfileModuleViewModel(m))
             );
-
+            VisualEditorViewModel = nodeVmFactory.NodeScriptViewModel(_profileConfiguration.ActivationCondition, true);
             Dispatcher.UIThread.Post(LoadIcon, DispatcherPriority.Background);
+
+            BrowseBitmapFile = ReactiveCommand.CreateFromTask(ExecuteBrowseBitmapFile);
+            BrowseSvgFile = ReactiveCommand.CreateFromTask(ExecuteBrowseSvgFile);
+            OpenConditionEditor = ReactiveCommand.CreateFromTask(ExecuteOpenConditionEditor);
+            Confirm = ReactiveCommand.CreateFromTask(ExecuteConfirm);
+            Import = ReactiveCommand.CreateFromTask(ExecuteImport);
+            Delete = ReactiveCommand.CreateFromTask(ExecuteDelete);
+            Cancel = ReactiveCommand.Create(ExecuteCancel);
+            
         }
 
         public bool IsNew { get; }
@@ -107,7 +120,17 @@ namespace Artemis.UI.Screens.Sidebar
             set => RaiseAndSetIfChanged(ref _selectedModule, value);
         }
 
-        public async Task Import()
+        public NodeScriptViewModel VisualEditorViewModel { get; }
+
+        public ReactiveCommand<Unit, Unit> OpenConditionEditor { get; }
+        public ReactiveCommand<Unit, Unit> BrowseBitmapFile { get; }
+        public ReactiveCommand<Unit, Unit> BrowseSvgFile { get; }
+        public ReactiveCommand<Unit, Unit> Confirm { get; }
+        public ReactiveCommand<Unit, Unit> Import { get; }
+        public ReactiveCommand<Unit, Unit> Delete { get; }
+        public new ReactiveCommand<Unit, Unit> Cancel { get; }
+        
+        private async Task ExecuteImport()
         {
             if (!IsNew)
                 return;
@@ -144,7 +167,7 @@ namespace Artemis.UI.Screens.Sidebar
             Close(_profileConfiguration);
         }
 
-        public async Task Delete()
+        private async Task ExecuteDelete()
         {
             if (IsNew)
                 return;
@@ -157,7 +180,7 @@ namespace Artemis.UI.Screens.Sidebar
             Close(_profileConfiguration);
         }
 
-        public async Task Confirm()
+        private async Task ExecuteConfirm()
         {
             ProfileConfiguration.Name = ProfileName;
             ProfileConfiguration.Module = SelectedModule?.Module;
@@ -172,7 +195,7 @@ namespace Artemis.UI.Screens.Sidebar
             Close(ProfileConfiguration);
         }
 
-        public void Cancel()
+        private void ExecuteCancel()
         {
             if (IsNew)
                 _profileService.RemoveProfileConfiguration(_profileConfiguration);
@@ -255,7 +278,7 @@ namespace Artemis.UI.Screens.Sidebar
             }
         }
 
-        public async Task BrowseBitmapFile()
+        private async Task ExecuteBrowseBitmapFile()
         {
             string[]? result = await _windowService.CreateOpenFileDialog()
                 .HavingFilter(f => f.WithExtension("png").WithExtension("jpg").WithExtension("bmp").WithName("Bitmap image"))
@@ -268,7 +291,7 @@ namespace Artemis.UI.Screens.Sidebar
             _selectedIconPath = result[0];
         }
 
-        public async Task BrowseSvgFile()
+        private async Task ExecuteBrowseSvgFile()
         {
             string[]? result = await _windowService.CreateOpenFileDialog()
                 .HavingFilter(f => f.WithExtension("svg").WithName("SVG image"))
@@ -282,6 +305,11 @@ namespace Artemis.UI.Screens.Sidebar
 
             SelectedSvgSource = new SvgImage {Source = newSource};
             _selectedIconPath = result[0];
+        }
+        
+        private async Task ExecuteOpenConditionEditor()
+        {
+            await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(("nodeScript", ProfileConfiguration.ActivationCondition));
         }
 
         #endregion
