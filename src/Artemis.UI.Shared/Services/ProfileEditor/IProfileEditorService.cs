@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Artemis.Core;
-using DynamicData;
 
 namespace Artemis.UI.Shared.Services.ProfileEditor;
 
@@ -52,15 +52,14 @@ public interface IProfileEditorService : IArtemisSharedUIService
     IObservable<bool> SuspendedEditing { get; }
 
     /// <summary>
-    ///     Gets a source list of all available editor tools.
+    ///     Gets an observable read only collection of all available editor tools.
     /// </summary>
-    SourceList<IToolViewModel> Tools { get; }
+    ReadOnlyObservableCollection<IToolViewModel> Tools { get; }
 
     /// <summary>
-    ///     Connect to the observable list of keyframes and observe any changes starting with the list's initial items.
+    ///     Gets an observable read only collection of selected keyframes.
     /// </summary>
-    /// <returns>An observable which emits the change set.</returns>
-    IObservable<IChangeSet<ILayerPropertyKeyframe>> ConnectToKeyframes();
+    ReadOnlyObservableCollection<ILayerPropertyKeyframe> SelectedKeyframes { get; }
 
     /// <summary>
     ///     Changes the selected profile by its <see cref="Core.ProfileConfiguration" />.
@@ -188,4 +187,16 @@ public interface IProfileEditorService : IArtemisSharedUIService
     ///     Pauses profile preview playback.
     /// </summary>
     void Pause();
+
+    /// <summary>
+    ///     Adds a profile editor tool by it's view model.
+    /// </summary>
+    /// <param name="toolViewModel">The view model of the tool to add.</param>
+    void AddTool(IToolViewModel toolViewModel);
+
+    /// <summary>
+    ///     Removes a profile editor tool by it's view model.
+    /// </summary>
+    /// <param name="toolViewModel">The view model of the tool to remove.</param>
+    void RemoveTool(IToolViewModel toolViewModel);
 }

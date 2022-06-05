@@ -1,0 +1,28 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:sidebar="clr-namespace:Artemis.UI.Screens.Sidebar"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Sidebar.ModuleActivationRequirementsView"
+             x:DataType="sidebar:ModuleActivationRequirementsViewModel">
+    <StackPanel>
+        <Grid ColumnDefinitions="*,Auto,*">
+            <Separator Grid.Column="0" Height="1" Background="{DynamicResource TextFillColorTertiaryBrush}" />
+            <TextBlock Grid.Column="1" Margin="16 0">AND</TextBlock>
+            <Separator Grid.Column="2" Height="1" Background="{DynamicResource TextFillColorTertiaryBrush}" />
+        </Grid>
+        <Border Classes="card" Margin="0 5">
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="This module has built-in activation requirements and your profile won't activate until " TextWrapping="Wrap" />
+                    <TextBlock Text="{CompiledBinding ActivationType}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontWeight="Medium" TextWrapping="Wrap" />
+                    <TextBlock Text="." />
+                </StackPanel>
+                <TextBlock TextWrapping="Wrap">These requirements allow the module creator to decide when the data is available to your profile you cannot override them.</TextBlock>
+
+                <ItemsControl Items="{CompiledBinding ActivationRequirements}" />
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

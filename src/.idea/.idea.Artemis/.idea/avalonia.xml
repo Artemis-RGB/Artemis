@@ -16,6 +16,7 @@
         <entry key="Artemis.UI.Avalonia/Views/MainWindow.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
         <entry key="Artemis.UI.Shared/Controls/EnumComboBox.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Shared/Styles/Border.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI.Shared/Styles/TextBlock.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Windows/App.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/ColorGradientPropertyInputView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/SKSizePropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
@@ -55,6 +56,8 @@
         <entry key="Artemis.UI/Screens/Root/SplashView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Settings/Tabs/GeneralTabView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/ContentDialogs/SidebarCategoryEditView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/Sidebar/Dialogs/ModuleActivationRequirementView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/Sidebar/Dialogs/ModuleActivationRequirementsView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/Dialogs/ProfileConfigurationEditView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/SidebarCategoryView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/SidebarProfileConfigurationView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />

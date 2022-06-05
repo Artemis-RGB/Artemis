@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Artemis.Storage.Entities.Profile;
 
@@ -79,11 +78,11 @@ namespace Artemis.Core
         void Initialize(RenderProfileElement profileElement, LayerPropertyGroup group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description);
 
         /// <summary>
-        ///     Attempts to load and add the provided keyframe entity to the layer property
+        ///     Attempts to create a keyframe for this property from the provided entity
         /// </summary>
-        /// <param name="keyframeEntity">The entity representing the keyframe to add</param>
+        /// <param name="keyframeEntity">The entity representing the keyframe to create</param>
         /// <returns>If succeeded the resulting keyframe, otherwise <see langword="null" /></returns>
-        ILayerPropertyKeyframe? AddKeyframeEntity(KeyframeEntity keyframeEntity);
+        ILayerPropertyKeyframe? CreateKeyframeFromEntity(KeyframeEntity keyframeEntity);
 
         /// <summary>
         ///     Overrides the property value with the default value

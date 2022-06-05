@@ -2,11 +2,18 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
+using Artemis.Core;
+using Artemis.UI.Models;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments;
+using Artemis.UI.Services.ProfileEditor.Commands;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Services.ProfileEditor;
+using Avalonia;
 using Avalonia.Controls.Mixins;
 using ReactiveUI;
 
@@ -19,6 +26,8 @@ public class TimelineViewModel : ActivatableViewModelBase
     private ObservableAsPropertyHelper<double> _minWidth;
     private List<ITimelineKeyframeViewModel>? _moveKeyframes;
     private ObservableAsPropertyHelper<int>? _pixelsPerSecond;
+    private RenderProfileElement? _profileElement;
+    private TimeSpan _time;
 
     public TimelineViewModel(ObservableCollection<PropertyGroupViewModel> propertyGroupViewModels,
         StartSegmentViewModel startSegmentViewModel,
@@ -34,6 +43,8 @@ public class TimelineViewModel : ActivatableViewModelBase
         _profileEditorService = profileEditorService;
         this.WhenActivated(d =>
         {
+            _profileEditorService.ProfileElement.Subscribe(p => _profileElement = p).DisposeWith(d);
+            _profileEditorService.Time.Subscribe(t => _time = t).DisposeWith(d);
             _caretPosition = _profileEditorService.Time
                 .CombineLatest(_profileEditorService.PixelsPerSecond, (t, p) => t.TotalSeconds * p)
                 .ToProperty(this, vm => vm.CaretPosition)
@@ -46,12 +57,21 @@ public class TimelineViewModel : ActivatableViewModelBase
                 .ToProperty(this, vm => vm.MinWidth)
                 .DisposeWith(d);
         });
+
+        DuplicateSelectedKeyframes = ReactiveCommand.Create(ExecuteDuplicateSelectedKeyframes);
+        CopySelectedKeyframes = ReactiveCommand.Create(ExecuteCopySelectedKeyframes);
+        PasteKeyframes = ReactiveCommand.CreateFromTask(ExecutePasteKeyframes);
+        DeleteSelectedKeyframes = ReactiveCommand.Create(ExecuteDeleteSelectedKeyframes);
     }
 
     public ObservableCollection<PropertyGroupViewModel> PropertyGroupViewModels { get; }
     public StartSegmentViewModel StartSegmentViewModel { get; }
     public MainSegmentViewModel MainSegmentViewModel { get; }
     public EndSegmentViewModel EndSegmentViewModel { get; }
+    public ReactiveCommand<Unit, Unit> DuplicateSelectedKeyframes { get; }
+    public ReactiveCommand<Unit, Unit> CopySelectedKeyframes { get; }
+    public ReactiveCommand<Unit, Unit> PasteKeyframes { get; }
+    public ReactiveCommand<Unit, Unit> DeleteSelectedKeyframes { get; }
 
     public double CaretPosition => _caretPosition?.Value ?? 0.0;
     public int PixelsPerSecond => _pixelsPerSecond?.Value ?? 0;
@@ -137,64 +157,34 @@ public class TimelineViewModel : ActivatableViewModelBase
 
     #region Keyframe actions
 
-    public void DuplicateKeyframes(ITimelineKeyframeViewModel? source = null)
+    private void ExecuteDuplicateSelectedKeyframes()
     {
-        if (source is {IsSelected: false})
-        {
-            source.Delete();
-        }
-        else
-        {
-            List<ITimelineKeyframeViewModel> keyframes = PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(true)).Where(k => k.IsSelected).ToList();
-            using ProfileEditorCommandScope scope = _profileEditorService.CreateCommandScope($"Duplicate {keyframes.Count} keyframes.");
-            foreach (ITimelineKeyframeViewModel timelineKeyframeViewModel in keyframes)
-                timelineKeyframeViewModel.Duplicate();
-        }
+        PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(true)).FirstOrDefault(k => k.IsSelected)?.Duplicate.Execute().Subscribe();
     }
 
-    public void CopyKeyframes(ITimelineKeyframeViewModel? source = null)
+    private void ExecuteCopySelectedKeyframes()
     {
-        if (source is {IsSelected: false})
-        {
-            source.Copy();
-        }
-        else
-        {
-            List<ITimelineKeyframeViewModel> keyframes = PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(true)).Where(k => k.IsSelected).ToList();
-            using ProfileEditorCommandScope scope = _profileEditorService.CreateCommandScope($"Copy {keyframes.Count} keyframes.");
-            foreach (ITimelineKeyframeViewModel timelineKeyframeViewModel in keyframes)
-                timelineKeyframeViewModel.Copy();
-        }
+        PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(true)).FirstOrDefault(k => k.IsSelected)?.Copy.Execute().Subscribe();
     }
 
-    public void PasteKeyframes(ITimelineKeyframeViewModel? source = null)
+    private async Task ExecutePasteKeyframes()
     {
-        if (source is {IsSelected: false})
-        {
-            source.Paste();
-        }
-        else
-        {
-            List<ITimelineKeyframeViewModel> keyframes = PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(true)).Where(k => k.IsSelected).ToList();
-            using ProfileEditorCommandScope scope = _profileEditorService.CreateCommandScope($"Paste {keyframes.Count} keyframes.");
-            foreach (ITimelineKeyframeViewModel timelineKeyframeViewModel in keyframes)
-                timelineKeyframeViewModel.Paste();
-        }
+        if (_profileElement == null || Application.Current?.Clipboard == null)
+            return;
+
+        List<KeyframeClipboardModel>? keyframes = await Application.Current.Clipboard.GetJsonAsync<List<KeyframeClipboardModel>>(KeyframeClipboardModel.ClipboardDataFormat);
+        if (keyframes == null)
+            return;
+
+        PasteKeyframes command = new(_profileElement, keyframes, _time);
+        _profileEditorService.ExecuteCommand(command);
+        if (command.PastedKeyframes != null && command.PastedKeyframes.Any())
+            _profileEditorService.SelectKeyframes(command.PastedKeyframes, false);
     }
 
-    public void DeleteKeyframes(ITimelineKeyframeViewModel? source = null)
+    private void ExecuteDeleteSelectedKeyframes()
     {
-        if (source is {IsSelected: false})
-        {
-            source.Delete();
-        }
-        else
-        {
-            List<ITimelineKeyframeViewModel> keyframes = PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(true)).Where(k => k.IsSelected).ToList();
-            using ProfileEditorCommandScope scope = _profileEditorService.CreateCommandScope($"Delete {keyframes.Count} keyframes.");
-            foreach (ITimelineKeyframeViewModel timelineKeyframeViewModel in keyframes)
-                timelineKeyframeViewModel.Delete();
-        }
+        PropertyGroupViewModels.SelectMany(g => g.GetAllKeyframeViewModels(true)).FirstOrDefault(k => k.IsSelected)?.Delete.Execute().Subscribe();
     }
 
     #endregion

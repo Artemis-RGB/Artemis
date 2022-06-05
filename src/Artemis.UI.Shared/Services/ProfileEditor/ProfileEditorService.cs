@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -26,9 +27,10 @@ internal class ProfileEditorService : IProfileEditorService
     private readonly Dictionary<ProfileConfiguration, ProfileEditorHistory> _profileEditorHistories = new();
     private readonly BehaviorSubject<RenderProfileElement?> _profileElementSubject = new(null);
     private readonly IProfileService _profileService;
-    private readonly SourceList<ILayerPropertyKeyframe> _selectedKeyframes = new();
     private readonly BehaviorSubject<bool> _suspendedEditingSubject = new(false);
     private readonly BehaviorSubject<TimeSpan> _timeSubject = new(TimeSpan.Zero);
+    private readonly SourceList<IToolViewModel> _tools;
+    private readonly SourceList<ILayerPropertyKeyframe> _selectedKeyframes;
     private readonly IWindowService _windowService;
     private ProfileEditorCommandScope? _profileEditorHistoryScope;
 
@@ -46,6 +48,12 @@ internal class ProfileEditorService : IProfileEditorService
         _layerBrushService = layerBrushService;
         _windowService = windowService;
 
+        _tools = new SourceList<IToolViewModel>();
+        _selectedKeyframes = new SourceList<ILayerPropertyKeyframe>();
+        _tools.Connect().AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected)).Subscribe(OnToolSelected);
+        _tools.Connect().Bind(out ReadOnlyObservableCollection<IToolViewModel> tools).Subscribe();
+        _selectedKeyframes.Connect().Bind(out ReadOnlyObservableCollection<ILayerPropertyKeyframe> selectedKeyframes).Subscribe();
+
         ProfileConfiguration = _profileConfigurationSubject.AsObservable();
         ProfileElement = _profileElementSubject.AsObservable();
         LayerProperty = _layerPropertySubject.AsObservable();
@@ -54,60 +62,8 @@ internal class ProfileEditorService : IProfileEditorService
         Playing = _playingSubject.AsObservable();
         SuspendedEditing = _suspendedEditingSubject.AsObservable();
         PixelsPerSecond = _pixelsPerSecondSubject.AsObservable();
-        Tools = new SourceList<IToolViewModel>();
-        Tools.Connect().AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected)).Subscribe(set =>
-        {
-            IToolViewModel? changed = set.FirstOrDefault()?.Item.Current;
-            if (changed == null)
-                return;
-
-            // Disable all others if the changed one is selected and exclusive
-            if (changed.IsSelected && changed.IsExclusive)
-                Tools.Edit(list =>
-                {
-                    foreach (IToolViewModel toolViewModel in list.Where(t => t.IsExclusive && t != changed))
-                        toolViewModel.IsSelected = false;
-                });
-        });
-    }
-
-    private ProfileEditorHistory? GetHistory(ProfileConfiguration? profileConfiguration)
-    {
-        if (profileConfiguration == null)
-            return null;
-        if (_profileEditorHistories.TryGetValue(profileConfiguration, out ProfileEditorHistory? history))
-            return history;
-
-        ProfileEditorHistory newHistory = new(profileConfiguration);
-        _profileEditorHistories.Add(profileConfiguration, newHistory);
-        return newHistory;
-    }
-
-    private void Tick(TimeSpan time)
-    {
-        if (_profileConfigurationSubject.Value?.Profile == null || _suspendedEditingSubject.Value)
-            return;
-
-        TickProfileElement(_profileConfigurationSubject.Value.Profile.GetRootFolder(), time);
-    }
-
-    private void TickProfileElement(ProfileElement profileElement, TimeSpan time)
-    {
-        if (profileElement is not RenderProfileElement renderElement)
-            return;
-
-        if (renderElement.Suspended)
-        {
-            renderElement.Disable();
-        }
-        else
-        {
-            renderElement.Enable();
-            renderElement.OverrideTimelineAndApply(time);
-
-            foreach (ProfileElement child in renderElement.Children)
-                TickProfileElement(child, time);
-        }
+        Tools = tools;
+        SelectedKeyframes = selectedKeyframes;
     }
 
     public IObservable<ProfileConfiguration?> ProfileConfiguration { get; }
@@ -118,12 +74,8 @@ internal class ProfileEditorService : IProfileEditorService
     public IObservable<TimeSpan> Time { get; }
     public IObservable<bool> Playing { get; }
     public IObservable<int> PixelsPerSecond { get; }
-    public SourceList<IToolViewModel> Tools { get; }
-
-    public IObservable<IChangeSet<ILayerPropertyKeyframe>> ConnectToKeyframes()
-    {
-        return _selectedKeyframes.Connect();
-    }
+    public ReadOnlyObservableCollection<IToolViewModel> Tools { get; }
+    public ReadOnlyObservableCollection<ILayerPropertyKeyframe> SelectedKeyframes { get; }
 
     public void ChangeCurrentProfileConfiguration(ProfileConfiguration? profileConfiguration)
     {
@@ -318,7 +270,7 @@ internal class ProfileEditorService : IProfileEditorService
             return folder;
         }
     }
-    
+
     /// <inheritdoc />
     public Layer CreateAndAddLayer(ProfileElement target)
     {
@@ -380,6 +332,18 @@ internal class ProfileEditorService : IProfileEditorService
             _playingSubject.OnNext(false);
     }
 
+    /// <inheritdoc />
+    public void AddTool(IToolViewModel toolViewModel)
+    {
+        _tools.Add(toolViewModel);
+    }
+
+    /// <inheritdoc />
+    public void RemoveTool(IToolViewModel toolViewModel)
+    {
+        _tools.Remove(toolViewModel);
+    }
+
     #region Commands
 
     public void ExecuteCommand(IProfileEditorCommand command)
@@ -433,4 +397,58 @@ internal class ProfileEditorService : IProfileEditorService
     }
 
     #endregion
+
+    private void OnToolSelected(IChangeSet<IToolViewModel> changeSet)
+    {
+        IToolViewModel? changed = changeSet.FirstOrDefault()?.Item.Current;
+        if (changed == null)
+            return;
+
+        // Disable all others if the changed one is selected and exclusive
+        if (changed.IsSelected && changed.IsExclusive)
+            _tools.Edit(list =>
+            {
+                foreach (IToolViewModel toolViewModel in list.Where(t => t.IsExclusive && t != changed))
+                    toolViewModel.IsSelected = false;
+            });
+    }
+
+    private ProfileEditorHistory? GetHistory(ProfileConfiguration? profileConfiguration)
+    {
+        if (profileConfiguration == null)
+            return null;
+        if (_profileEditorHistories.TryGetValue(profileConfiguration, out ProfileEditorHistory? history))
+            return history;
+
+        ProfileEditorHistory newHistory = new(profileConfiguration);
+        _profileEditorHistories.Add(profileConfiguration, newHistory);
+        return newHistory;
+    }
+
+    private void Tick(TimeSpan time)
+    {
+        if (_profileConfigurationSubject.Value?.Profile == null || _suspendedEditingSubject.Value)
+            return;
+
+        TickProfileElement(_profileConfigurationSubject.Value.Profile.GetRootFolder(), time);
+    }
+
+    private void TickProfileElement(ProfileElement profileElement, TimeSpan time)
+    {
+        if (profileElement is not RenderProfileElement renderElement)
+            return;
+
+        if (renderElement.Suspended)
+        {
+            renderElement.Disable();
+        }
+        else
+        {
+            renderElement.Enable();
+            renderElement.OverrideTimelineAndApply(time);
+
+            foreach (ProfileElement child in renderElement.Children)
+                TickProfileElement(child, time);
+        }
+    }
 }

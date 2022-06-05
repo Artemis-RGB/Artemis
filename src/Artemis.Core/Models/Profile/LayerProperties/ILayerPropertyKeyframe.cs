@@ -32,5 +32,12 @@ namespace Artemis.Core
         ///     Removes the keyframe from the layer property
         /// </summary>
         void Remove();
+
+        /// <summary>
+        ///     Creates a copy of this keyframe.
+        ///     <para>Note: The copied keyframe is not added to the layer property.</para>
+        /// </summary>
+        /// <returns>The resulting copy</returns>
+        ILayerPropertyKeyframe CreateCopy();
     }
 }

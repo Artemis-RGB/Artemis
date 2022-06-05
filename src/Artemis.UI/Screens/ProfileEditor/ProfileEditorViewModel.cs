@@ -51,7 +51,8 @@ public class ProfileEditorViewModel : MainScreenViewModel
             _profileConfiguration = profileEditorService.ProfileConfiguration.ToProperty(this, vm => vm.ProfileConfiguration).DisposeWith(d);
             _history = profileEditorService.History.ToProperty(this, vm => vm.History).DisposeWith(d);
             _suspendedEditing = profileEditorService.SuspendedEditing.ToProperty(this, vm => vm.SuspendedEditing).DisposeWith(d);
-            profileEditorService.Tools.Connect()
+            profileEditorService.Tools
+                .ToObservableChangeSet()
                 .Filter(t => t.ShowInToolbar)
                 .Sort(SortExpressionComparer<IToolViewModel>.Ascending(vm => vm.Order))
                 .Bind(out ReadOnlyObservableCollection<IToolViewModel> tools)

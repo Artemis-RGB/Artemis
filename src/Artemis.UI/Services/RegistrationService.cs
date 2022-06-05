@@ -11,10 +11,8 @@ using Artemis.UI.Shared.Providers;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.PropertyInput;
-using Artemis.VisualScripting.Nodes;
 using Artemis.VisualScripting.Nodes.Mathematics;
 using Avalonia;
-using DynamicData;
 using Ninject;
 using SkiaSharp;
 
@@ -43,7 +41,8 @@ public class RegistrationService : IRegistrationService
         _nodeService = nodeService;
         _dataModelUIService = dataModelUIService;
 
-        profileEditorService.Tools.AddRange(toolViewModels);
+        foreach (IToolViewModel toolViewModel in toolViewModels)
+            profileEditorService.AddTool(toolViewModel);
         CreateCursorResources();
     }
 

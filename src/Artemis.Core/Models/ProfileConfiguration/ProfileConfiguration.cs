@@ -241,7 +241,9 @@ namespace Artemis.Core
 
             Icon.Load();
 
-            ActivationCondition.LoadFromEntity(Entity.ActivationCondition);
+            if (Entity.ActivationCondition != null)
+                ActivationCondition.LoadFromEntity(Entity.ActivationCondition);
+            
             EnableHotkey = Entity.EnableHotkey != null ? new Hotkey(Entity.EnableHotkey) : null;
             DisableHotkey = Entity.DisableHotkey != null ? new Hotkey(Entity.DisableHotkey) : null;
         }

@@ -44,8 +44,10 @@ public class VisualEditorViewModel : ActivatableViewModelBase
             profileEditorService.ProfileConfiguration.Subscribe(CreateVisualizers).DisposeWith(d);
 
             profileEditorService.Tools
-                .Connect()
-                .AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected)).Filter(t => t.IsSelected).Bind(out ReadOnlyObservableCollection<IToolViewModel> tools)
+                .ToObservableChangeSet()
+                .AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected))
+                .Filter(t => t.IsSelected)
+                .Bind(out ReadOnlyObservableCollection<IToolViewModel> tools)
                 .Subscribe()
                 .DisposeWith(d);
             Tools = tools;

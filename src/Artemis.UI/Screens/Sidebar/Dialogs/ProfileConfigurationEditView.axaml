@@ -53,10 +53,10 @@
                                 </ItemsPanelTemplate>
                             </ComboBox.ItemsPanel>
                             <ComboBox.ItemTemplate>
-                                <DataTemplate DataType="{x:Type local:ProfileModuleViewModel}">
+                                <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
-                                        <shared:ArtemisIcon Icon="{CompiledBinding Icon}" Width="16" Height="16" Margin="0 0 5 0" />
-                                        <TextBlock Text="{CompiledBinding Name}" />
+                                        <shared:ArtemisIcon Icon="{CompiledBinding Icon, FallbackValue='Close'}" Width="16" Height="16" Margin="0 0 5 0" />
+                                        <TextBlock Text="{CompiledBinding Name, FallbackValue='None'}" />
                                     </StackPanel>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
@@ -167,7 +167,7 @@
                     <TextBlock Classes="h5 section-header">Activation conditions</TextBlock>
                     <TextBlock Classes="subtitle section-subtitle">Set up certain conditions under which the profile should be active</TextBlock>
                 </StackPanel>
-                <Border Classes="card" Margin="0 5 0 15">
+                <Border Classes="card" Margin="0 5">
                     <Grid>
                         <Border CornerRadius="5" ClipToBounds="True">
                             <ContentControl Content="{CompiledBinding VisualEditorViewModel}" Height="150" />
@@ -182,8 +182,9 @@
                             Edit condition script
                         </Button>
                     </Grid>
-
                 </Border>
+
+                <ContentControl Content="{CompiledBinding ModuleActivationRequirementsViewModel}" />
             </StackPanel>
         </ScrollViewer>
 

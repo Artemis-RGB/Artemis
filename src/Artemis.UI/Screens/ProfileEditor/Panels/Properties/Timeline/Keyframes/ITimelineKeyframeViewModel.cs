@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Reactive;
 using Artemis.Core;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 
@@ -22,10 +24,11 @@ public interface ITimelineKeyframeViewModel
     #region Context menu actions
 
     void PopulateEasingViewModels();
-    void Duplicate();
-    void Copy();
-    void Paste();
-    void Delete();
+
+    ReactiveCommand<Unit, Unit> Duplicate { get; }
+    ReactiveCommand<Unit, Unit> Copy { get; }
+    ReactiveCommand<Unit, Unit> Paste { get; }
+    ReactiveCommand<Unit, Unit> Delete { get; }
 
     #endregion
 }

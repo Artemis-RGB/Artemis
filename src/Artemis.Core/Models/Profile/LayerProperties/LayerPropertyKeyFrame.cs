@@ -80,5 +80,11 @@ namespace Artemis.Core
         {
             LayerProperty.RemoveKeyframe(this);
         }
+
+        /// <inheritdoc />
+        public ILayerPropertyKeyframe CreateCopy()
+        {
+            return new LayerPropertyKeyframe<T>(Value, Position, EasingFunction, LayerProperty);
+        }
     }
 }

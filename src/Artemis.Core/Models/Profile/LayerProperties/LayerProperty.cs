@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 
@@ -326,19 +324,24 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public ILayerPropertyKeyframe? AddKeyframeEntity(KeyframeEntity keyframeEntity)
+        public ILayerPropertyKeyframe? CreateKeyframeFromEntity(KeyframeEntity keyframeEntity)
         {
             if (keyframeEntity.Position > ProfileElement.Timeline.Length)
                 return null;
-            T? value = CoreJson.DeserializeObject<T>(keyframeEntity.Value);
-            if (value == null)
-                return null;
 
-            LayerPropertyKeyframe<T> keyframe = new(
-                CoreJson.DeserializeObject<T>(keyframeEntity.Value)!, keyframeEntity.Position, (Easings.Functions) keyframeEntity.EasingFunction, this
-            );
-            AddKeyframe(keyframe);
-            return keyframe;
+            try
+            {
+                T? value = CoreJson.DeserializeObject<T>(keyframeEntity.Value);
+                if (value == null)
+                    return null;
+
+                LayerPropertyKeyframe<T> keyframe = new(value, keyframeEntity.Position, (Easings.Functions) keyframeEntity.EasingFunction, this);
+                return keyframe;
+            }
+            catch (JsonException)
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -514,7 +517,7 @@ namespace Artemis.Core
 
             // Create the path to this property by walking up the tree
             Path = LayerPropertyGroup.Path + "." + description.Identifier;
-            
+
             OnInitialize();
         }
 
@@ -547,7 +550,7 @@ namespace Artemis.Core
             try
             {
                 foreach (KeyframeEntity keyframeEntity in Entity.KeyframeEntities.Where(k => k.Position <= ProfileElement.Timeline.Length))
-                    AddKeyframeEntity(keyframeEntity);
+                    CreateKeyframeFromEntity(keyframeEntity);
             }
             catch (JsonException)
             {

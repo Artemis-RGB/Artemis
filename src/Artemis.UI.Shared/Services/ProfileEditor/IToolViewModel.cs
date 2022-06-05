@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Windows.Input;
 using Material.Icons;
-using ReactiveUI;
 
 namespace Artemis.UI.Shared.Services.ProfileEditor;
 
@@ -47,6 +45,7 @@ public interface IToolViewModel : IDisposable
     public string ToolTip { get; }
 }
 
+/// <inheritdoc cref="IToolViewModel" />
 public abstract class ToolViewModel : ActivatableViewModelBase, IToolViewModel
 {
     private bool _isSelected;

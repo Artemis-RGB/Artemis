@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Modules;
@@ -39,6 +40,7 @@ namespace Artemis.UI.Screens.Sidebar
         private ProfileIconViewModel? _selectedMaterialIcon;
         private ProfileModuleViewModel? _selectedModule;
         private SvgImage? _selectedSvgSource;
+        private readonly ObservableAsPropertyHelper<ModuleActivationRequirementsViewModel?> _moduleActivationRequirementsViewModel;
 
         public ProfileConfigurationEditViewModel(
             ProfileCategory profileCategory,
@@ -64,11 +66,12 @@ namespace Artemis.UI.Screens.Sidebar
 
             IsNew = profileConfiguration == null;
             DisplayName = IsNew ? "Artemis | Add profile" : "Artemis | Edit profile";
-            Modules = new ObservableCollection<ProfileModuleViewModel>(
+            Modules = new ObservableCollection<ProfileModuleViewModel?>(
                 pluginManagementService.GetFeaturesOfType<Module>().Where(m => !m.IsAlwaysAvailable).Select(m => new ProfileModuleViewModel(m))
             );
+            Modules.Insert(0, null);
+            
             VisualEditorViewModel = nodeVmFactory.NodeScriptViewModel(_profileConfiguration.ActivationCondition, true);
-            Dispatcher.UIThread.Post(LoadIcon, DispatcherPriority.Background);
 
             BrowseBitmapFile = ReactiveCommand.CreateFromTask(ExecuteBrowseBitmapFile);
             BrowseSvgFile = ReactiveCommand.CreateFromTask(ExecuteBrowseSvgFile);
@@ -77,7 +80,12 @@ namespace Artemis.UI.Screens.Sidebar
             Import = ReactiveCommand.CreateFromTask(ExecuteImport);
             Delete = ReactiveCommand.CreateFromTask(ExecuteDelete);
             Cancel = ReactiveCommand.Create(ExecuteCancel);
-            
+
+            _moduleActivationRequirementsViewModel = this.WhenAnyValue(vm => vm.SelectedModule)
+                .Select(m => m != null ? new ModuleActivationRequirementsViewModel(m.Module) : null)
+                .ToProperty(this, vm => vm.ModuleActivationRequirementsViewModel);
+
+            Dispatcher.UIThread.Post(LoadIcon, DispatcherPriority.Background);
         }
 
         public bool IsNew { get; }
@@ -112,7 +120,7 @@ namespace Artemis.UI.Screens.Sidebar
             set => RaiseAndSetIfChanged(ref _disableHotkey, value);
         }
 
-        public ObservableCollection<ProfileModuleViewModel> Modules { get; }
+        public ObservableCollection<ProfileModuleViewModel?> Modules { get; }
 
         public ProfileModuleViewModel? SelectedModule
         {
@@ -121,6 +129,7 @@ namespace Artemis.UI.Screens.Sidebar
         }
 
         public NodeScriptViewModel VisualEditorViewModel { get; }
+        public ModuleActivationRequirementsViewModel? ModuleActivationRequirementsViewModel => _moduleActivationRequirementsViewModel.Value;
 
         public ReactiveCommand<Unit, Unit> OpenConditionEditor { get; }
         public ReactiveCommand<Unit, Unit> BrowseBitmapFile { get; }
@@ -129,7 +138,7 @@ namespace Artemis.UI.Screens.Sidebar
         public ReactiveCommand<Unit, Unit> Import { get; }
         public ReactiveCommand<Unit, Unit> Delete { get; }
         public new ReactiveCommand<Unit, Unit> Cancel { get; }
-        
+
         private async Task ExecuteImport()
         {
             if (!IsNew)
@@ -306,7 +315,7 @@ namespace Artemis.UI.Screens.Sidebar
             SelectedSvgSource = new SvgImage {Source = newSource};
             _selectedIconPath = result[0];
         }
-        
+
         private async Task ExecuteOpenConditionEditor()
         {
             await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(("nodeScript", ProfileConfiguration.ActivationCondition));
