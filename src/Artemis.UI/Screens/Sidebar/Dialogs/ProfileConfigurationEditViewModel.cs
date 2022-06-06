@@ -14,7 +14,6 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Media.Imaging;
-using Avalonia.Svg.Skia;
 using Avalonia.Threading;
 using Material.Icons;
 using Newtonsoft.Json;
@@ -39,7 +38,6 @@ namespace Artemis.UI.Screens.Sidebar
         private string? _selectedIconPath;
         private ProfileIconViewModel? _selectedMaterialIcon;
         private ProfileModuleViewModel? _selectedModule;
-        private SvgImage? _selectedSvgSource;
         private readonly ObservableAsPropertyHelper<ModuleActivationRequirementsViewModel?> _moduleActivationRequirementsViewModel;
 
         public ProfileConfigurationEditViewModel(
@@ -74,7 +72,6 @@ namespace Artemis.UI.Screens.Sidebar
             VisualEditorViewModel = nodeVmFactory.NodeScriptViewModel(_profileConfiguration.ActivationCondition, true);
 
             BrowseBitmapFile = ReactiveCommand.CreateFromTask(ExecuteBrowseBitmapFile);
-            BrowseSvgFile = ReactiveCommand.CreateFromTask(ExecuteBrowseSvgFile);
             OpenConditionEditor = ReactiveCommand.CreateFromTask(ExecuteOpenConditionEditor);
             Confirm = ReactiveCommand.CreateFromTask(ExecuteConfirm);
             Import = ReactiveCommand.CreateFromTask(ExecuteImport);
@@ -133,7 +130,6 @@ namespace Artemis.UI.Screens.Sidebar
 
         public ReactiveCommand<Unit, Unit> OpenConditionEditor { get; }
         public ReactiveCommand<Unit, Unit> BrowseBitmapFile { get; }
-        public ReactiveCommand<Unit, Unit> BrowseSvgFile { get; }
         public ReactiveCommand<Unit, Unit> Confirm { get; }
         public ReactiveCommand<Unit, Unit> Import { get; }
         public ReactiveCommand<Unit, Unit> Delete { get; }
@@ -237,30 +233,21 @@ namespace Artemis.UI.Screens.Sidebar
             set => RaiseAndSetIfChanged(ref _selectedBitmapSource, value);
         }
 
-        public SvgImage? SelectedSvgSource
-        {
-            get => _selectedSvgSource;
-            set => RaiseAndSetIfChanged(ref _selectedSvgSource, value);
-        }
-
         private void LoadIcon()
         {
             // Preselect the icon based on streams if needed
             if (_profileConfiguration.Icon.IconType == ProfileConfigurationIconType.BitmapImage)
             {
-                SelectedBitmapSource = new Bitmap(_profileConfiguration.Icon.GetIconStream());
-            }
-            else if (_profileConfiguration.Icon.IconType == ProfileConfigurationIconType.SvgImage)
-            {
-                Stream? iconStream = _profileConfiguration.Icon.GetIconStream();
-                if (iconStream != null)
+                try
                 {
-                    SvgSource newSource = new();
-                    newSource.Load(iconStream);
-                    SelectedSvgSource = new SvgImage {Source = newSource};
+                    SelectedBitmapSource = new Bitmap(_profileConfiguration.Icon.GetIconStream());
+                }
+                catch (Exception e)
+                {
+                    _windowService.ShowConfirmContentDialog("Failed to load profile icon", e.Message, "Meh", null);
                 }
             }
-
+            
             // Prepare the contents of the dropdown box, it should be virtualized so no need to wait with this
             ObservableCollection<ProfileIconViewModel> icons = new(Enum.GetValues<MaterialIconKind>()
                 .Select(kind => new ProfileIconViewModel(kind))
@@ -299,23 +286,7 @@ namespace Artemis.UI.Screens.Sidebar
             SelectedBitmapSource = new Bitmap(result[0]);
             _selectedIconPath = result[0];
         }
-
-        private async Task ExecuteBrowseSvgFile()
-        {
-            string[]? result = await _windowService.CreateOpenFileDialog()
-                .HavingFilter(f => f.WithExtension("svg").WithName("SVG image"))
-                .ShowAsync();
-
-            if (result == null)
-                return;
-
-            SvgSource newSource = new();
-            newSource.Load(result[0]);
-
-            SelectedSvgSource = new SvgImage {Source = newSource};
-            _selectedIconPath = result[0];
-        }
-
+        
         private async Task ExecuteOpenConditionEditor()
         {
             await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(("nodeScript", ProfileConfiguration.ActivationCondition));

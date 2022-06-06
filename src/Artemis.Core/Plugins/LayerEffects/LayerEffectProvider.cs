@@ -43,7 +43,7 @@ namespace Artemis.Core.LayerEffects
             if (!IsEnabled)
                 throw new ArtemisPluginFeatureException(this, "Can only add a layer effect descriptor when the plugin is enabled");
 
-            if (icon.ToLower().EndsWith(".svg"))
+            if (icon.Contains('.'))
                 icon = Plugin.ResolveRelativePath(icon);
             LayerEffectDescriptor descriptor = new(displayName, description, icon, typeof(T), this);
             _layerEffectDescriptors.Add(descriptor);

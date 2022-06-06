@@ -8,10 +8,14 @@ namespace Artemis.Core
     /// <summary>
     ///     Represents the icon of a <see cref="ProfileConfiguration" />
     /// </summary>
-    public class ProfileConfigurationIcon : IStorageModel
+    public class ProfileConfigurationIcon : CorePropertyChanged, IStorageModel
     {
         private readonly ProfileConfigurationEntity _entity;
         private Stream? _iconStream;
+        private ProfileConfigurationIconType _iconType;
+        private string? _iconName;
+        private string? _originalFileName;
+        private bool _fill;
 
         internal ProfileConfigurationIcon(ProfileConfigurationEntity entity)
         {
@@ -21,17 +25,38 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the type of icon this profile configuration uses
         /// </summary>
-        public ProfileConfigurationIconType IconType { get; private set; }
+        public ProfileConfigurationIconType IconType
+        {
+            get => _iconType;
+            private set => SetAndNotify(ref _iconType, value);
+        }
 
         /// <summary>
         ///     Gets the name of the icon if <see cref="IconType" /> is <see cref="ProfileConfigurationIconType.MaterialIcon" />
         /// </summary>
-        public string? IconName { get; private set; }
+        public string? IconName
+        {
+            get => _iconName;
+            private set => SetAndNotify(ref _iconName, value);
+        }
 
         /// <summary>
         ///     Gets the original file name of the icon (if applicable)
         /// </summary>
-        public string? OriginalFileName { get; private set; }
+        public string? OriginalFileName
+        {
+            get => _originalFileName;
+            private set => SetAndNotify(ref _originalFileName, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether or not this icon should be filled.
+        /// </summary>
+        public bool Fill
+        {
+            get => _fill;
+            set => SetAndNotify(ref _fill, value);
+        }
 
         /// <summary>
         ///     Updates the <see cref="IconName" /> to the provided value and changes the <see cref="IconType" /> is
@@ -68,7 +93,7 @@ namespace Artemis.Core
 
             IconName = null;
             OriginalFileName = originalFileName;
-            IconType = OriginalFileName.EndsWith(".svg") ? ProfileConfigurationIconType.SvgImage : ProfileConfigurationIconType.BitmapImage;
+            IconType = ProfileConfigurationIconType.BitmapImage;
             OnIconUpdated();
         }
 
@@ -108,7 +133,8 @@ namespace Artemis.Core
         public void Load()
         {
             IconType = (ProfileConfigurationIconType) _entity.IconType;
-            if (IconType != ProfileConfigurationIconType.MaterialIcon) 
+            Fill = _entity.IconFill;
+            if (IconType != ProfileConfigurationIconType.MaterialIcon)
                 return;
 
             IconName = _entity.MaterialIcon;
@@ -120,6 +146,7 @@ namespace Artemis.Core
         {
             _entity.IconType = (int) IconType;
             _entity.MaterialIcon = IconType == ProfileConfigurationIconType.MaterialIcon ? IconName : null;
+            _entity.IconFill = Fill;
         }
 
         #endregion
@@ -139,10 +166,5 @@ namespace Artemis.Core
         ///     A bitmap image icon
         /// </summary>
         [Description("Bitmap Image")] BitmapImage,
-
-        /// <summary>
-        ///     An SVG image icon
-        /// </summary>
-        [Description("SVG Image")] SvgImage
     }
 }

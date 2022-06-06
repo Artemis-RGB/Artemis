@@ -72,34 +72,31 @@
                                          IsChecked="{CompiledBinding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.MaterialIcon}}" />
                             <RadioButton Content="Bitmap image"
                                          IsChecked="{CompiledBinding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.BitmapImage}}" />
-                            <RadioButton Content="SVG image"
-                                         IsChecked="{CompiledBinding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.SvgImage}}" />
                         </WrapPanel>
 
                         <StackPanel Orientation="Horizontal"
                                     IsVisible="{CompiledBinding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.BitmapImage}}">
-                            <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="78" Height="78">
+                                                       
+                            <Border IsVisible="{CompiledBinding ProfileConfiguration.Icon.Fill}" Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="78" Height="78">
+                                <Border Name="FillPreview" Background="{DynamicResource TextFillColorPrimary}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10">
+                                    <Border.OpacityMask>
+                                        <ImageBrush Source="{CompiledBinding SelectedBitmapSource}" BitmapInterpolationMode="HighQuality" />
+                                    </Border.OpacityMask>
+                                </Border>
+                            </Border>
+                            <Border IsVisible="{CompiledBinding !ProfileConfiguration.Icon.Fill}" Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="78" Height="78">
                                 <Image Source="{CompiledBinding SelectedBitmapSource}" Margin="10" />
                             </Border>
+                            
                             <Button Command="{CompiledBinding BrowseBitmapFile}"
                                     VerticalAlignment="Bottom"
                                     Margin="10 0"
                                     IsVisible="{CompiledBinding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.BitmapImage}}">
                                 Browse bitmap file
                             </Button>
+                            <CheckBox VerticalAlignment="Bottom" IsChecked="{CompiledBinding ProfileConfiguration.Icon.Fill}">Fill</CheckBox>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal"
-                                    IsVisible="{CompiledBinding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.SvgImage}}">
-                            <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="78" Height="78">
-                                <Image Margin="10" Source="{CompiledBinding SelectedSvgSource}" />
-                            </Border>
-                            <Button Command="{CompiledBinding BrowseSvgFile}"
-                                    VerticalAlignment="Bottom"
-                                    Margin="10 0"
-                                    IsVisible="{CompiledBinding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.SvgImage}}">
-                                Browse SVG file
-                            </Button>
-                        </StackPanel>
+                        
                         <StackPanel Orientation="Horizontal"
                                     IsVisible="{CompiledBinding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.MaterialIcon}}">
                             <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="78" Height="78">

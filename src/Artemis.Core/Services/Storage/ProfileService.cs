@@ -304,10 +304,7 @@ namespace Artemis.Core.Services
         {
             if (profileConfiguration.Icon.IconType == ProfileConfigurationIconType.MaterialIcon)
                 return;
-            
-            // This can happen if the icon was saved before the original file name was stored (pre-Avalonia)
-            profileConfiguration.Entity.IconOriginalFileName ??= profileConfiguration.Icon.IconType == ProfileConfigurationIconType.BitmapImage ? "icon.png" : "icon.svg";
-
+          
             using Stream? stream = _profileCategoryRepository.GetProfileIconStream(profileConfiguration.Entity.FileIconId);
             if (stream != null)
                 profileConfiguration.Icon.SetIconByStream(profileConfiguration.Entity.IconOriginalFileName, stream);

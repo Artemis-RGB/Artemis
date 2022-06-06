@@ -3,10 +3,13 @@ using System.IO;
 using Artemis.Core;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Layout;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Svg.Skia;
+using Avalonia.Threading;
+using Avalonia.Visuals.Media.Imaging;
 using Material.Icons;
 using Material.Icons.Avalonia;
 
@@ -15,8 +18,10 @@ namespace Artemis.UI.Shared
     /// <summary>
     ///     Represents a control that can display the icon of a specific <see cref="ProfileConfiguration"/>.
     /// </summary>
-    public class ProfileConfigurationIcon : UserControl
+    public class ProfileConfigurationIcon : UserControl, IDisposable
     {
+        private Stream? _stream;
+
         /// <summary>
         ///     Creates a new instance of the <see cref="ProfileConfigurationIcon" /> class.
         /// </summary>
@@ -27,11 +32,11 @@ namespace Artemis.UI.Shared
             PropertyChanged += OnPropertyChanged;
         }
 
-
         private void Update()
         {
             if (ConfigurationIcon == null)
                 return;
+            Dispose();
 
             try
             {
@@ -40,35 +45,38 @@ namespace Artemis.UI.Shared
                     Content = Enum.TryParse(ConfigurationIcon.IconName, true, out MaterialIconKind parsedIcon)
                         ? new MaterialIcon {Kind = parsedIcon!}
                         : new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
-                    return;
-                }
-
-                Stream? stream = ConfigurationIcon.GetIconStream();
-                if (stream == null)
-                {
-                    Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
-                    return;
-                }
-
-                if (ConfigurationIcon.IconType == ProfileConfigurationIconType.SvgImage)
-                {
-                    SvgSource source = new();
-                    source.Load(stream);
-                    Content = new Image {Source = new SvgImage {Source = source}};
-                }
-                else if (ConfigurationIcon.IconType == ProfileConfigurationIconType.BitmapImage)
-                {
-                    Content = new Image {Source = new Bitmap(ConfigurationIcon.GetIconStream())};
                 }
                 else
                 {
-                    Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
+                    Stream? stream = ConfigurationIcon.GetIconStream();
+                    if (stream == null)
+                        Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
+                    else
+                        LoadFromBitmap(ConfigurationIcon, stream);
                 }
             }
-            catch
+            catch (Exception)
             {
                 Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
             }
+        }
+
+        private void LoadFromBitmap(Core.ProfileConfigurationIcon configurationIcon, Stream stream)
+        {
+            _stream = stream;
+            if (!configurationIcon.Fill)
+            {
+                Content = new Image {Source = new Bitmap(stream)};
+                return;
+            }
+
+            Content = new Border
+            {
+                Background = TextBlock.GetForeground(this),
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                OpacityMask = new ImageBrush(new Bitmap(stream)) {BitmapInterpolationMode = BitmapInterpolationMode.MediumQuality}
+            };
         }
 
         private void InitializeComponent()
@@ -81,8 +89,7 @@ namespace Artemis.UI.Shared
             if (ConfigurationIcon != null)
                 ConfigurationIcon.IconUpdated -= ConfigurationIconOnIconUpdated;
 
-            if (Content is Image image && image.Source is IDisposable disposable)
-                disposable.Dispose();
+            Dispose();
         }
 
         private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
@@ -95,12 +102,12 @@ namespace Artemis.UI.Shared
             if (e.NewValue is Core.ProfileConfigurationIcon newIcon)
                 newIcon.IconUpdated += ConfigurationIconOnIconUpdated;
 
-            Update();
+            Dispatcher.UIThread.Post(Update, DispatcherPriority.ApplicationIdle);
         }
 
         private void ConfigurationIconOnIconUpdated(object? sender, EventArgs e)
         {
-            Update();
+            Dispatcher.UIThread.Post(Update, DispatcherPriority.ApplicationIdle);
         }
 
         #region Properties
@@ -110,6 +117,7 @@ namespace Artemis.UI.Shared
         /// </summary>
         public static readonly StyledProperty<Core.ProfileConfigurationIcon?> ConfigurationIconProperty =
             AvaloniaProperty.Register<ProfileConfigurationIcon, Core.ProfileConfigurationIcon?>(nameof(ConfigurationIcon));
+
 
         /// <summary>
         ///     Gets or sets the <see cref="Core.ProfileConfigurationIcon" /> to display
@@ -121,5 +129,17 @@ namespace Artemis.UI.Shared
         }
 
         #endregion
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            if (Content is Image {Source: IDisposable d})
+            {
+                d.Dispose();
+                Content = null;
+            }
+
+            _stream?.Dispose();
+        }
     }
 }

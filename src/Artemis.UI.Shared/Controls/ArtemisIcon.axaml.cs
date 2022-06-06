@@ -1,10 +1,12 @@
 using System;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Layout;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Svg.Skia;
+using Avalonia.Visuals.Media.Imaging;
 using Material.Icons;
 using Material.Icons.Avalonia;
 
@@ -45,20 +47,29 @@ namespace Artemis.UI.Shared
                 {
                     // An enum defined as a string
                     if (Enum.TryParse(iconString, true, out MaterialIconKind parsedIcon))
-                    {
                         Content = new MaterialIcon {Kind = parsedIcon, Width = Bounds.Width, Height = Bounds.Height};
-                    }
-                    // An URI pointing to an SVG
-                    else if (iconString.EndsWith(".svg"))
-                    {
-                        SvgSource source = new();
-                        source.Load(iconString);
-                        Content = new Image {Source = new SvgImage {Source = source}};
-                    }
-                    // An URI pointing to a different kind of image
+                    // An URI pointing to an image
                     else
                     {
-                        Content = new Image {Source = new Bitmap(iconString), Width = Bounds.Width, Height = Bounds.Height};
+                        if (!Fill)
+                        {
+                            Content = new Image
+                            {
+                                Source = new Bitmap(iconString),
+                                VerticalAlignment = VerticalAlignment.Stretch,
+                                HorizontalAlignment = HorizontalAlignment.Stretch
+                            };
+                        }
+                        else
+                        {
+                            Content = new Border
+                            {
+                                Background = TextBlock.GetForeground(this),
+                                VerticalAlignment = VerticalAlignment.Stretch,
+                                HorizontalAlignment = HorizontalAlignment.Stretch,
+                                OpacityMask = new ImageBrush(new Bitmap(iconString)) {BitmapInterpolationMode = BitmapInterpolationMode.MediumQuality}
+                            };
+                        }
                     }
                 }
             }
@@ -106,6 +117,23 @@ namespace Artemis.UI.Shared
         {
             get => GetValue(IconProperty);
             set => SetValue(IconProperty, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether or not the icon should be filled in with the primary text color of the
+        ///     theme
+        /// </summary>
+        public static readonly StyledProperty<bool> FillProperty =
+            AvaloniaProperty.Register<ArtemisIcon, bool>(nameof(Icon), defaultValue: true, notifying: IconChanging);
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether or not the icon should be filled in with the primary text color of the
+        ///     theme
+        /// </summary>
+        public bool Fill
+        {
+            get => GetValue(FillProperty);
+            set => SetValue(FillProperty, value);
         }
 
         #endregion

@@ -14,7 +14,9 @@
         <entry key="Artemis.UI.Avalonia/Screens/Sidebar/Views/SidebarProfileConfigurationView.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
         <entry key="Artemis.UI.Avalonia/Screens/SidebarView.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
         <entry key="Artemis.UI.Avalonia/Views/MainWindow.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
+        <entry key="Artemis.UI.Shared/Controls/ArtemisIcon.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Shared/Controls/EnumComboBox.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI.Shared/Controls/ProfileConfigurationIcon.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Shared/Styles/Border.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Shared/Styles/TextBlock.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Windows/App.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
@@ -53,7 +55,8 @@
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/VisualEditor/VisualEditorView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/ProfileEditorTitleBarView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/ProfileEditorView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
-        <entry key="Artemis.UI/Screens/Root/SplashView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/Root/SplashView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
+        <entry key="Artemis.UI/Screens/Settings/Tabs/AboutTabView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Settings/Tabs/GeneralTabView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/ContentDialogs/SidebarCategoryEditView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/Dialogs/ModuleActivationRequirementView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
@@ -69,7 +72,7 @@
         <entry key="Artemis.UI/Screens/VisualScripting/NodeScriptView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/VisualScripting/NodeScriptWindowView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/Screens/VisualScripting/NodeView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
-        <entry key="Artemis.UI/Screens/Workshop/WorkshopView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/Workshop/WorkshopView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Avalonia/Artemis.UI/Screens/Debugger/Tabs/Render/RenderDebugView.axaml" value="Avalonia/Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Avalonia/Artemis.UI/Styles/Artemis.axaml" value="Avalonia/Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
       </map>

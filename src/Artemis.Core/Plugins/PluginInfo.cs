@@ -161,7 +161,7 @@ namespace Artemis.Core
             {
                 if (Icon == null)
                     return null;
-                return Icon.EndsWith(".svg") ? Plugin.ResolveRelativePath(Icon) : Icon;
+                return Icon.Contains('.') ? Plugin.ResolveRelativePath(Icon) : Icon;
             }
         }
 

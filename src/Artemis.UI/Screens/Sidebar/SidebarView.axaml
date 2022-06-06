@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-             xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
              mc:Ignorable="d" d:DesignWidth="240" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Sidebar.SidebarView">
     <UserControl.Styles>
@@ -12,11 +11,7 @@
     </UserControl.Styles>
     <Grid RowDefinitions="60,Auto,Auto,*,Auto,Auto">
         <Grid Grid.Row="0" IsHitTestVisible="False" ColumnDefinitions="Auto,*">
-            <Image Grid.Column="0">
-                <Image.Source>
-                    <svg:SvgImage Source="/Assets/Images/Logo/bow.svg" />
-                </Image.Source>
-            </Image>
+            <Image Grid.Column="0" Margin="12" Source="/Assets/Images/Logo/bow.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
             <TextBlock Grid.Column="1"
                        FontSize="24"
                        VerticalAlignment="Center"

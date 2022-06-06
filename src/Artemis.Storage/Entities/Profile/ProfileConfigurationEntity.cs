@@ -1,5 +1,4 @@
 ﻿using System;
-using Artemis.Storage.Entities.Profile.Conditions;
 using Artemis.Storage.Entities.Profile.Nodes;
 
 namespace Artemis.Storage.Entities.Profile
@@ -11,6 +10,7 @@ namespace Artemis.Storage.Entities.Profile
         public string IconOriginalFileName { get; set; }
         public Guid FileIconId { get; set; }
         public int IconType { get; set; }
+        public bool IconFill { get; set; }
         public int Order { get; set; }
 
         public bool IsSuspended { get; set; }

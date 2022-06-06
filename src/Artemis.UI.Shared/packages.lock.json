@@ -28,18 +28,6 @@
           "System.Reactive": "5.0.0"
         }
       },
-      "Avalonia.Svg.Skia": {
-        "type": "Direct",
-        "requested": "[0.10.12, )",
-        "resolved": "0.10.12",
-        "contentHash": "qsXKdm5eWpfoVPe0xgtxhbOYlhG8QdbYNJZTTihg/c4iPFYuh1G7DldiNskuVFuGiGxLVZ0g6ebql7ZkwbO1pA==",
-        "dependencies": {
-          "Avalonia": "0.10.12",
-          "Avalonia.Skia": "0.10.12",
-          "SkiaSharp": "2.88.0-preview.178",
-          "Svg.Skia": "0.5.12"
-        }
-      },
       "Avalonia.Xaml.Behaviors": {
         "type": "Direct",
         "requested": "[0.10.13.3, )",
@@ -256,11 +244,6 @@
         "dependencies": {
           "Unosquare.Swan.Lite": "3.0.0"
         }
-      },
-      "Fizzler": {
-        "type": "Transitive",
-        "resolved": "1.2.0",
-        "contentHash": "CPxuWF8EPvM0rwAtMTR5G+7EuLoGNXsEfqyx06upN9JyVALZ73KgbGn3SLFwGosifiUAXrvNHtXlUwGGytdECg=="
       },
       "HarfBuzzSharp": {
         "type": "Transitive",
@@ -694,20 +677,6 @@
           "Serilog": "2.10.0"
         }
       },
-      "ShimSkiaSharp": {
-        "type": "Transitive",
-        "resolved": "0.5.12",
-        "contentHash": "oUGM7gQHRzbGPRs3E1pe5e8VwML21YyEz9xdo+r2ov1mAqSDPyXErVQP6pN4gnfYMVf5ADR7BVkVzt4R9Iz3gQ=="
-      },
-      "SkiaSharp.HarfBuzz": {
-        "type": "Transitive",
-        "resolved": "2.88.0-preview.178",
-        "contentHash": "qTf3PbRJsTVOttQkYWOCswa1QnkH0dEOqMSgr3iXZQuKPNlj1qpGY8+OGPs25WKgUEqOpv2nog/AYQ/bpyOXzA==",
-        "dependencies": {
-          "HarfBuzzSharp": "2.8.2-preview.178",
-          "SkiaSharp": "2.88.0-preview.178"
-        }
-      },
       "SkiaSharp.NativeAssets.Linux": {
         "type": "Transitive",
         "resolved": "2.88.0-preview.178",
@@ -735,37 +704,6 @@
         "type": "Transitive",
         "resolved": "14.1.45",
         "contentHash": "ayHdfTUklD5ci0s9m4uYMccjtkKVjZ9fVPT5q3PN+SnvyD6bjQVRozOfUHwdwh4LAz9ETZjR/tAgrm+IapXKrw=="
-      },
-      "Svg.Custom": {
-        "type": "Transitive",
-        "resolved": "0.5.12",
-        "contentHash": "kmjLQf5U5WC7tRGBedUhtrOUCR0NaNL2auzOA2a/oMwEA0Bjrpd6qvMTpJUS3HITxi8vJazGl270K+i0JvdJog==",
-        "dependencies": {
-          "Fizzler": "1.2.0",
-          "System.Memory": "4.5.3",
-          "System.ObjectModel": "4.3.0",
-          "System.ValueTuple": "4.5.0"
-        }
-      },
-      "Svg.Model": {
-        "type": "Transitive",
-        "resolved": "0.5.12",
-        "contentHash": "/CPiXIugg4oVyYlQr26fB1X9iQfICALF8AJXbTWnXGoP2WZa1t6aZbAXPk3HoPApA0w5waf3XXkBiYYnWwawaQ==",
-        "dependencies": {
-          "ShimSkiaSharp": "0.5.12",
-          "Svg.Custom": "0.5.12"
-        }
-      },
-      "Svg.Skia": {
-        "type": "Transitive",
-        "resolved": "0.5.12",
-        "contentHash": "KjKpjz0FKge+WpRzjD1bqywAW3vZhXwpR5c7Ej5OuP4xDrQjBwtFeB0iZ+yEJMzwXf/Rs4ImuN8m3bmBDJvMHg==",
-        "dependencies": {
-          "SkiaSharp": "2.88.0-preview.178",
-          "SkiaSharp.HarfBuzz": "2.88.0-preview.178",
-          "Svg.Custom": "0.5.12",
-          "Svg.Model": "0.5.12"
-        }
       },
       "System.AppContext": {
         "type": "Transitive",
