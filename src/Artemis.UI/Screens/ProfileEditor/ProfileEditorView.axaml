@@ -8,7 +8,8 @@
              xmlns:shared="clr-namespace:Artemis.UI.Shared.Services.ProfileEditor;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileEditorView"
-             x:DataType="profileEditor:ProfileEditorViewModel">
+             x:DataType="profileEditor:ProfileEditorViewModel"
+             Name="ProfileEditorView">
     <UserControl.Resources>
         <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter" />
     </UserControl.Resources>
@@ -25,6 +26,8 @@
         <KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y" />
         <KeyBinding Command="{CompiledBinding ToggleSuspend}" Gesture="F5" />
         <KeyBinding Command="{CompiledBinding ToggleAutoSuspend}" Gesture="Shift+F5" />
+        <KeyBinding Command="{CompiledBinding PropertiesViewModel.PlaybackViewModel.TogglePlay}" Gesture="Space" />
+        <KeyBinding Command="{CompiledBinding PropertiesViewModel.PlaybackViewModel.PlayFromStart}" Gesture="Shift+Space" />
     </UserControl.KeyBindings>
     <UserControl.Styles>
         <Style Selector="GridSplitter.editor-grid-splitter-vertical">

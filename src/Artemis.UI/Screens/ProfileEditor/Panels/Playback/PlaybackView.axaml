@@ -10,33 +10,33 @@
     <DockPanel Margin="8 0">
         <StackPanel Orientation="Horizontal" Spacing="5">
             <Button Classes="icon-button icon-button-large"
-                    ToolTip.Tip="Play from start (Shift+Space)" Command="{Binding PlayFromStart}"
+                    ToolTip.Tip="Play from start (Shift+Space)" Command="{CompiledBinding PlayFromStart}"
                     Focusable="False">
                 <avalonia:MaterialIcon Kind="StepForward" />
             </Button>
             <Button Classes="icon-button icon-button-large"
-                    ToolTip.Tip="Toggle play/pause (Space)" Command="{Binding TogglePlay}" Focusable="False">
+                    ToolTip.Tip="Toggle play/pause (Space)" Command="{CompiledBinding TogglePlay}" Focusable="False">
                 <StackPanel>
                     <avalonia:MaterialIcon Kind="Play" IsVisible="{CompiledBinding !Playing}" />
                     <avalonia:MaterialIcon Kind="Pause" IsVisible="{CompiledBinding Playing}" />
                 </StackPanel>
             </Button>
-            <Button Classes="icon-button icon-button-large" ToolTip.Tip="Go to start" Command="{Binding GoToStart}" Focusable="False">
+            <Button Classes="icon-button icon-button-large" ToolTip.Tip="Go to start" Command="{CompiledBinding GoToStart}" Focusable="False">
                 <avalonia:MaterialIcon Kind="SkipBackward" />
             </Button>
-            <Button Classes="icon-button icon-button-large" ToolTip.Tip="Go to end" Command="{Binding GoToEnd}" Focusable="False">
+            <Button Classes="icon-button icon-button-large" ToolTip.Tip="Go to end" Command="{CompiledBinding GoToEnd}" Focusable="False">
                 <avalonia:MaterialIcon Kind="SkipForward" />
             </Button>
-            <Button Classes="icon-button icon-button-large" ToolTip.Tip="Previous frame" Command="{Binding GoToPreviousFrame}" Focusable="False">
+            <Button Classes="icon-button icon-button-large" ToolTip.Tip="Previous frame" Command="{CompiledBinding GoToPreviousFrame}" Focusable="False">
                 <avalonia:MaterialIcon Kind="SkipPrevious" />
             </Button>
-            <Button Classes="icon-button icon-button-large" ToolTip.Tip="Next frame" Command="{Binding GoToNextFrame}" Focusable="False">
+            <Button Classes="icon-button icon-button-large" ToolTip.Tip="Next frame" Command="{CompiledBinding GoToNextFrame}" Focusable="False">
                 <avalonia:MaterialIcon Kind="SkipNext" />
             </Button>
             <ToggleButton Classes="icon-button icon-button-large"
                           IsChecked="{CompiledBinding Repeating}"
                           Focusable="False"
-                          Command="{Binding CycleRepeating}">
+                          Command="{CompiledBinding CycleRepeating}">
                 <ToolTip.Tip>
                     <StackPanel>
                         <StackPanel IsVisible="{CompiledBinding Repeating}">

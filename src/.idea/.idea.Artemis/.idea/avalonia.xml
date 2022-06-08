@@ -32,6 +32,7 @@
         <entry key="Artemis.UI/Screens/Plugins/PluginSettingsView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/DisplayCondition/ConditionTypes/StaticConditionView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/MenuBar/MenuBarView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/ProfileEditor/Panels/Playback/PlaybackView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/ProfileTree/Dialogs/AdaptionHints/CategoryAdaptionHintView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/ProfileTree/Dialogs/AdaptionHints/DeviceAdaptionHintView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/ProfileTree/Dialogs/AdaptionHints/KeyboardSectionAdaptionHintView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />

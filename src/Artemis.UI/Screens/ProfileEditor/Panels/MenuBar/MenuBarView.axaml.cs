@@ -1,6 +1,8 @@
+using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
+using Avalonia.VisualTree;
 
 namespace Artemis.UI.Screens.ProfileEditor.MenuBar;
 
@@ -16,7 +18,9 @@ public class MenuBarView : ReactiveUserControl<MenuBarViewModel>
         AvaloniaXamlLoader.Load(this);
     }
 
-    private void MenuItem_OnSubmenuOpened(object? sender, RoutedEventArgs e)
+    private void MenuBase_OnMenuClosed(object? sender, RoutedEventArgs e)
     {
+        ProfileEditorView? profileEditorView = this.FindAncestorOfType<Window>().FindDescendantOfType<ProfileEditorView>();
+        profileEditorView?.Focus();
     }
 }

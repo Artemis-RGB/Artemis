@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
@@ -40,8 +41,15 @@ public class PlaybackViewModel : ActivatableViewModelBase
             updateTimer.Start();
             Disposable.Create(() => updateTimer.Stop());
         });
-    }
 
+        PlayFromStart = ReactiveCommand.Create(ExecutePlayFromStart);
+        TogglePlay = ReactiveCommand.Create(ExecuteTogglePlay);
+        GoToStart = ReactiveCommand.Create(ExecuteGoToStart);
+        GoToEnd = ReactiveCommand.Create(ExecuteGoToEnd);
+        GoToPreviousFrame = ReactiveCommand.Create(ExecuteGoToPreviousFrame);
+        GoToNextFrame = ReactiveCommand.Create(ExecuteGoToNextFrame);
+        CycleRepeating = ReactiveCommand.Create(ExecuteCycleRepeating);
+    }
 
     public TimeSpan CurrentTime => _currentTime?.Value ?? TimeSpan.Zero;
     public string? FormattedCurrentTime => _formattedCurrentTime?.Value;
@@ -64,15 +72,23 @@ public class PlaybackViewModel : ActivatableViewModelBase
         get => _repeatSegment;
         set => RaiseAndSetIfChanged(ref _repeatSegment, value);
     }
+    
+    public ReactiveCommand<Unit,Unit> PlayFromStart { get; }
+    public ReactiveCommand<Unit,Unit> TogglePlay { get; }
+    public ReactiveCommand<Unit,Unit> GoToStart { get; }
+    public ReactiveCommand<Unit,Unit> GoToEnd { get; }
+    public ReactiveCommand<Unit,Unit> GoToPreviousFrame { get; }
+    public ReactiveCommand<Unit,Unit> GoToNextFrame { get; }
+    public ReactiveCommand<Unit,Unit> CycleRepeating { get; }
 
-    public void PlayFromStart()
+    private void ExecutePlayFromStart()
     {
-        GoToStart();
+        ExecuteGoToStart();
         if (!Playing)
             _profileEditorService.Play();
     }
 
-    public void TogglePlay()
+    private void ExecuteTogglePlay()
     {
         if (!Playing)
             _profileEditorService.Play();
@@ -80,12 +96,12 @@ public class PlaybackViewModel : ActivatableViewModelBase
             _profileEditorService.Pause();
     }
 
-    public void GoToStart()
+    private void ExecuteGoToStart()
     {
         _profileEditorService.ChangeTime(TimeSpan.Zero);
     }
 
-    public void GoToEnd()
+    private void ExecuteGoToEnd()
     {
         if (_profileElement == null)
             return;
@@ -93,7 +109,7 @@ public class PlaybackViewModel : ActivatableViewModelBase
         _profileEditorService.ChangeTime(_profileElement.Timeline.EndSegmentEndPosition);
     }
 
-    public void GoToPreviousFrame()
+    private void ExecuteGoToPreviousFrame()
     {
         if (_profileElement == null)
             return;
@@ -103,7 +119,7 @@ public class PlaybackViewModel : ActivatableViewModelBase
         _profileEditorService.ChangeTime(TimeSpan.FromMilliseconds(newTime));
     }
 
-    public void GoToNextFrame()
+    private void ExecuteGoToNextFrame()
     {
         if (_profileElement == null)
             return;
@@ -114,7 +130,7 @@ public class PlaybackViewModel : ActivatableViewModelBase
         _profileEditorService.ChangeTime(TimeSpan.FromMilliseconds(newTime));
     }
 
-    public void CycleRepeating()
+    private void ExecuteCycleRepeating()
     {
         if (!Repeating)
         {

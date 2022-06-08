@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
@@ -10,6 +11,17 @@ public class ProfileEditorView : ReactiveUserControl<ProfileEditorViewModel>
     {
         InitializeComponent();
     }
+
+    #region Overrides of Visual
+
+    /// <inheritdoc />
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        Focus();
+    }
+
+    #endregion
 
     private void InitializeComponent()
     {

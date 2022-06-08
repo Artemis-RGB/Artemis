@@ -98,6 +98,8 @@ public class ProfileEditorViewModel : MainScreenViewModel
 
     private void ExecuteToggleAutoSuspend()
     {
-        // TODO
+        PluginSetting<bool> setting = _settingsService.GetSetting("ProfileEditor.AutoSuspend", true);
+        setting.Value = !setting.Value;
+        setting.Save();
     }
 }
