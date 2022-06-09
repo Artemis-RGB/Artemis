@@ -27,6 +27,7 @@ public class TimelineGroupViewModel : ActivatableViewModelBase
             PropertyGroupViewModel.Keyframes
                 .ToObservableChangeSet()
                 .AutoRefreshOnObservable(_ => profileEditorService.PixelsPerSecond)
+                .AutoRefreshOnObservable(k => k.WhenAnyValue(kv => kv.Position))
                 .Transform(k => k.Position.TotalSeconds * _pixelsPerSecond, true)
                 .Bind(out ReadOnlyObservableCollection<double> keyframePositions)
                 .Subscribe()

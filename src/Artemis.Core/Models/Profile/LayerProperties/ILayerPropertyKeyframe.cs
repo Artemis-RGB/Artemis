@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
@@ -6,7 +7,7 @@ namespace Artemis.Core
     /// <summary>
     ///     Represents a keyframe on a <see cref="ILayerProperty" /> containing a value and a timestamp
     /// </summary>
-    public interface ILayerPropertyKeyframe
+    public interface ILayerPropertyKeyframe : INotifyPropertyChanged
     {
         /// <summary>
         ///     Gets an untyped reference to the layer property of this keyframe
