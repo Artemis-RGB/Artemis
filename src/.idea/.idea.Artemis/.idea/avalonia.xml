@@ -21,6 +21,7 @@
         <entry key="Artemis.UI.Shared/Styles/TextBlock.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Windows/App.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/ColorGradientPropertyInputView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
+        <entry key="Artemis.UI/DefaultTypes/PropertyInput/SKColorPropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/SKSizePropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/MainWindow.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Device/DevicePropertiesView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />

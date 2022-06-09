@@ -24,16 +24,16 @@
     <None Remove="Assets\Cursors\aero_rotate_tr.cur" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.13" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.13" />
+    <PackageReference Include="Avalonia" Version="0.10.15" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.15" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.13" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.13" />
-    <PackageReference Include="Avalonia.Win32" Version="0.10.13" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.15" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.15" />
+    <PackageReference Include="Avalonia.Win32" Version="0.10.15" />
     <PackageReference Include="Microsoft.Win32" Version="2.0.1" />
     <PackageReference Include="RawInput.Sharp" Version="0.0.4" />
     <PackageReference Include="ReactiveUI" Version="17.1.50" />
-    <PackageReference Include="SkiaSharp.Vulkan.SharpVk" Version="2.80.3" />
+    <PackageReference Include="SkiaSharp.Vulkan.SharpVk" Version="2.88.1-preview.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />

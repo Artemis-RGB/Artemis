@@ -8,14 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.13" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.13" />
-    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.13.3" />
+    <PackageReference Include="Avalonia" Version="0.10.15" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.15" />
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.14" />
     <PackageReference Include="Ninject" Version="3.3.4" />
     <PackageReference Include="NoStringEvaluating" Version="2.2.2" />
     <PackageReference Include="ReactiveUI" Version="17.1.50" />
     <PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />
-    <PackageReference Include="SkiaSharp" Version="2.88.0-preview.178" />
+    <PackageReference Include="SkiaSharp" Version="2.88.1-preview.1" />
   </ItemGroup>
 
   <ItemGroup>

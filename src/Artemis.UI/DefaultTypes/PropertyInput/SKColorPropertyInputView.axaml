@@ -10,7 +10,7 @@
              x:DataType="propertyInput:SKColorPropertyInputViewModel">
     <UserControl.Resources>
         <shared:SKColorToStringConverter x:Key="SKColorToStringConverter" />
-        <shared:SKColorToColor2Converter x:Key="SKColorToColor2Converter" />
+        <shared:SKColorToColorConverter x:Key="SKColorToColorConverter" />
     </UserControl.Resources>
     <Grid Height="24" ColumnDefinitions="*">
         <TextBox Classes="condensed"
@@ -18,7 +18,7 @@
                  Padding="2 2 30 2">
         </TextBox>
         <controls:ColorPickerButton Classes="contained-color-picker-button"
-                                    Color="{CompiledBinding InputValue, Converter={StaticResource SKColorToColor2Converter}}"
+                                    Color="{CompiledBinding InputValue, Converter={StaticResource SKColorToColorConverter}}"
                                     ShowAcceptDismissButtons="False"
                                     FlyoutOpened="ColorPickerButton_OnFlyoutOpened"
                                     FlyoutClosed="ColorPickerButton_OnFlyoutClosed" />
