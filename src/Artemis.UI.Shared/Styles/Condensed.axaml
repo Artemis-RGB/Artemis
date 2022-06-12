@@ -3,7 +3,8 @@
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.GradientPicker"
         xmlns:dataModelPicker="clr-namespace:Artemis.UI.Shared.DataModelPicker"
-        xmlns:controls1="clr-namespace:Artemis.UI.Shared">
+        xmlns:controls1="clr-namespace:Artemis.UI.Shared"
+        xmlns:controls2="clr-namespace:Artemis.UI.Shared.Controls">
     <Design.PreviewWith>
         <Border Padding="50">
             <StackPanel Spacing="5">
@@ -15,7 +16,9 @@
                 <TextBox Classes="condensed" Watermark="Watermark" />
 
                 <controls:NumberBox Value="1337"></controls:NumberBox>
-                <controls:NumberBox Classes="condensed" Value="1337"></controls:NumberBox>
+                <controls2:DraggableNumberBox Value="1337" HorizontalAlignment="Left"></controls2:DraggableNumberBox>
+                <controls:NumberBox Classes="condensed" Value="1337" ></controls:NumberBox>
+                <controls2:DraggableNumberBox Classes="condensed" Value="1337" HorizontalAlignment="Left"></controls2:DraggableNumberBox>
 
 				<ComboBox SelectedIndex="1">
                     <ComboBoxItem>Bluasdadseheh</ComboBoxItem>
@@ -42,25 +45,31 @@
 
     <!-- Add Styles Here -->
     <Style Selector="TextBox.condensed">
-        <Setter Property="Padding" Value="4 2" />
+        <Setter Property="Padding" Value="2" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="MinHeight" Value="24" />
     </Style>
 
     <Style Selector="controls|NumberBox.condensed /template/ TextBox#InputBox">
-        <Setter Property="Padding" Value="4 2" />
+        <Setter Property="Padding" Value="6 2" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="MinHeight" Value="24" />
+    </Style>
+    
+    <Style Selector="controls2|DraggableNumberBox.condensed controls|NumberBox /template/ TextBox#InputBox">
+        <Setter Property="Padding" Value="6 2" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="MinHeight" Value="24" />
     </Style>
 
     <Style Selector="ComboBox.condensed">
-        <Setter Property="Padding" Value="4 2" />
+        <Setter Property="Padding" Value="6 2" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="Height" Value="24" />
     </Style>
 
     <Style Selector="controls1|EnumComboBox.condensed > ComboBox">
-        <Setter Property="Padding" Value="4 2" />
+        <Setter Property="Padding" Value="6 2" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="Height" Value="24" />
     </Style>

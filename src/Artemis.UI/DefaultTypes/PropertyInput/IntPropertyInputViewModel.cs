@@ -12,10 +12,20 @@ public class IntPropertyInputViewModel : PropertyInputViewModel<int>
         : base(layerProperty, profileEditorService, propertyInputService)
     {
         if (LayerProperty.PropertyDescription.MinInputValue.IsNumber())
-            this.ValidationRule(vm => vm.InputValue, i => i >= Convert.ToInt32(LayerProperty.PropertyDescription.MinInputValue),
-                $"Value must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
+        {
+            int minInputValue = Convert.ToInt32(LayerProperty.PropertyDescription.MinInputValue);
+            this.ValidationRule(vm => vm.InputValue, i => i >= minInputValue, $"Value must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
+            MinInputValue = minInputValue;
+        }
+
         if (LayerProperty.PropertyDescription.MaxInputValue.IsNumber())
-            this.ValidationRule(vm => vm.InputValue, i => i < Convert.ToInt32(LayerProperty.PropertyDescription.MaxInputValue), 
-                $"Value must be smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
+        {
+            int maxInputValue = Convert.ToInt32(LayerProperty.PropertyDescription.MaxInputValue);
+            this.ValidationRule(vm => vm.InputValue, i => i < maxInputValue, $"Value must be smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
+            MaxInputValue = maxInputValue;
+        }
     }
+
+    public int MinInputValue { get; } = int.MinValue;
+    public int MaxInputValue { get; } = int.MaxValue;
 }

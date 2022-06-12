@@ -2,22 +2,24 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-             xmlns:shared="clr-namespace:Artemis.UI.Shared.AttachedProperties;assembly=Artemis.UI.Shared"
              xmlns:propertyInput="clr-namespace:Artemis.UI.DefaultTypes.PropertyInput"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.DefaultTypes.PropertyInput.FloatPropertyInputView"
              x:DataType="propertyInput:FloatPropertyInputViewModel">
 	<UserControl.Styles>
 		<StyleInclude Source="/DefaultTypes/PropertyInput/PropertyInputStyles.axaml" />
 	</UserControl.Styles>
-    <controls:NumberBox Classes="condensed tooltip-validation-left"
+    <controls:DraggableNumberBox Classes="condensed tooltip-validation-left"
                         MinWidth="80"
                         Value="{CompiledBinding InputValue}"
-                        SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}" 
-                        AcceptsExpression="True"
+                        Prefix="{CompiledBinding Prefix}"
+                        Suffix="{CompiledBinding Affix}"
+                        Minimum="{CompiledBinding MinInputValue}"
+                        Maximum="{CompiledBinding MaxInputValue}"
+                        SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
                         SimpleNumberFormat="F3"
                         VerticalAlignment="Center"
-                        shared:NumberBoxAssist.PrefixText="{CompiledBinding Prefix}"
-                        shared:NumberBoxAssist.SuffixText="{CompiledBinding Affix}" />
+                        DragStarted="DraggableNumberBox_OnDragStarted"
+                        DragFinished="DraggableNumberBox_OnDragFinished"/>
 </UserControl>

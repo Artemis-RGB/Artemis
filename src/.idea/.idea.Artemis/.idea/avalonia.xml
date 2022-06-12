@@ -15,13 +15,22 @@
         <entry key="Artemis.UI.Avalonia/Screens/SidebarView.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
         <entry key="Artemis.UI.Avalonia/Views/MainWindow.axaml" value="Artemis.UI.Avalonia/Artemis.UI.Avalonia.csproj" />
         <entry key="Artemis.UI.Shared/Controls/ArtemisIcon.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI.Shared/Controls/DraggableNumberBox.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Shared/Controls/EnumComboBox.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI.Shared/Controls/HotkeyBox.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Shared/Controls/ProfileConfigurationIcon.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Shared/Styles/Border.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI.Shared/Styles/Condensed.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI.Shared/Styles/TextBlock.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Windows/App.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/ColorGradientPropertyInputView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
+        <entry key="Artemis.UI/DefaultTypes/PropertyInput/FloatPropertyInputView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
+        <entry key="Artemis.UI/DefaultTypes/PropertyInput/FloatRangePropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/DefaultTypes/PropertyInput/IntPropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/DefaultTypes/PropertyInput/IntRangePropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/DefaultTypes/PropertyInput/PropertyInputStyles.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/SKColorPropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/DefaultTypes/PropertyInput/SKPointPropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/SKSizePropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/MainWindow.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Device/DevicePropertiesView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />

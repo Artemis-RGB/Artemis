@@ -1,4 +1,5 @@
-using Avalonia.Input;
+using System;
+using Artemis.UI.Shared.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
@@ -9,7 +10,6 @@ public class FloatPropertyInputView : ReactiveUserControl<FloatPropertyInputView
     public FloatPropertyInputView()
     {
         InitializeComponent();
-        AddHandler(KeyUpEvent, OnRoutedKeyUp, handledEventsToo: true);
     }
 
     private void InitializeComponent()
@@ -17,9 +17,13 @@ public class FloatPropertyInputView : ReactiveUserControl<FloatPropertyInputView
         AvaloniaXamlLoader.Load(this);
     }
 
-    private void OnRoutedKeyUp(object? sender, KeyEventArgs e)
+    private void DraggableNumberBox_OnDragStarted(DraggableNumberBox sender, EventArgs args)
     {
-        if (e.Key == Key.Enter || e.Key == Key.Escape)
-            FocusManager.Instance!.Focus(null);
+        ViewModel?.StartPreview();
+    }
+
+    private void DraggableNumberBox_OnDragFinished(DraggableNumberBox sender, EventArgs args)
+    {
+        ViewModel?.ApplyPreview();
     }
 }

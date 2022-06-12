@@ -25,6 +25,7 @@ public class WorkshopViewModel : MainScreenViewModel
     };
 
     private StandardCursorType _selectedCursor;
+    private double _testValue;
 
     public WorkshopViewModel(IScreen hostScreen, INotificationService notificationService) : base(hostScreen, "workshop")
     {
@@ -49,6 +50,12 @@ public class WorkshopViewModel : MainScreenViewModel
     {
         get => _colorGradient;
         set => RaiseAndSetIfChanged(ref _colorGradient, value);
+    }
+
+    public double TestValue
+    {
+        get => _testValue;
+        set => RaiseAndSetIfChanged(ref _testValue, value);
     }
 
     public void CreateRandomGradient()

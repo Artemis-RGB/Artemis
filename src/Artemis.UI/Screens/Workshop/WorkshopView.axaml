@@ -8,6 +8,7 @@
              xmlns:workshop="clr-namespace:Artemis.UI.Screens.Workshop"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.GradientPicker;assembly=Artemis.UI.Shared"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800"
              x:Class="Artemis.UI.Screens.Workshop.WorkshopView"
              x:DataType="workshop:WorkshopViewModel">
@@ -41,6 +42,10 @@
                             attachedProperties:TextBoxAssist.PrefixText="$"
                             attachedProperties:TextBoxAssist.SuffixText="%">
                         </TextBox>
+                        
+                        <TextBlock Classes="h4" Text="{CompiledBinding TestValue}"/>
+                        <controls:DraggableNumberBox Value="{CompiledBinding TestValue}"/>
+                        <controls:DraggableNumberBox Value="{CompiledBinding TestValue}" Classes="condensed"/>
 
                         <StackPanel Orientation="Horizontal" Spacing="5">
                             <Border Classes="card" Cursor="{CompiledBinding Cursor}">
