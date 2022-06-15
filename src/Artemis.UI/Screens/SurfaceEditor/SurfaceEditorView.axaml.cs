@@ -47,7 +47,6 @@ public class SurfaceEditorView : ReactiveUserControl<SurfaceEditorViewModel>
     private void ZoomBorder_OnZoomChanged(object sender, ZoomChangedEventArgs e)
     {
         UpdateZoomBorderBackground();
-        _selectionRectangle.BorderThickness = 1 / _zoomBorder.ZoomX;
         _surfaceBounds.BorderThickness = new Thickness(2 / _zoomBorder.ZoomX);
     }
 

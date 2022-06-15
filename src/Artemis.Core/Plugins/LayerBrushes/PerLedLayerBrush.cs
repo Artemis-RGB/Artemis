@@ -60,7 +60,7 @@ namespace Artemis.Core.LayerBrushes
                         continue;
 
                     // Let the brush determine the color
-                    paint.Color = GetColor(artemisLed, renderPoint);
+                    paint.Color = GetColor(artemisLed, renderPoint).WithAlpha(paint.Color.Alpha);
 
                     SKRect ledRectangle = SKRect.Create(
                         artemisLed.AbsoluteRectangle.Left - Layer.Bounds.Left,

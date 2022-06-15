@@ -7,30 +7,29 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.DefaultTypes.PropertyInput.SKPointPropertyInputView"
              x:DataType="propertyInput:SKPointPropertyInputViewModel">
-    
     <StackPanel Orientation="Horizontal" Spacing="5">
         <controls:DraggableNumberBox Classes="condensed tooltip-validation-left"
                                      MinWidth="80"
                                      Value="{CompiledBinding X}"
                                      Prefix="{CompiledBinding Prefix}"
                                      Suffix="{CompiledBinding Affix}"
-                                     SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                                     LargeChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
                                      SimpleNumberFormat="F3"
                                      VerticalAlignment="Center"
                                      ToolTip.Tip="X-coordinate (horizontal)"
                                      DragStarted="DraggableNumberBox_OnDragStarted"
-                                     DragFinished="DraggableNumberBox_OnDragFinished"/>
+                                     DragFinished="DraggableNumberBox_OnDragFinished" />
         <TextBlock VerticalAlignment="Center">,</TextBlock>
         <controls:DraggableNumberBox Classes="condensed tooltip-validation-left"
                                      MinWidth="80"
                                      Value="{CompiledBinding Y}"
                                      Prefix="{CompiledBinding Prefix}"
                                      Suffix="{CompiledBinding Affix}"
-                                     SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                                     LargeChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
                                      SimpleNumberFormat="F3"
                                      VerticalAlignment="Center"
                                      ToolTip.Tip="Y-coordinate (vertical)"
                                      DragStarted="DraggableNumberBox_OnDragStarted"
-                                     DragFinished="DraggableNumberBox_OnDragFinished"/>
+                                     DragFinished="DraggableNumberBox_OnDragFinished" />
     </StackPanel>
 </UserControl>

@@ -7,19 +7,19 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.DefaultTypes.PropertyInput.FloatPropertyInputView"
              x:DataType="propertyInput:FloatPropertyInputViewModel">
-	<UserControl.Styles>
-		<StyleInclude Source="/DefaultTypes/PropertyInput/PropertyInputStyles.axaml" />
-	</UserControl.Styles>
+    <UserControl.Styles>
+        <StyleInclude Source="/DefaultTypes/PropertyInput/PropertyInputStyles.axaml" />
+    </UserControl.Styles>
     <controls:DraggableNumberBox Classes="condensed tooltip-validation-left"
-                        MinWidth="80"
-                        Value="{CompiledBinding InputValue}"
-                        Prefix="{CompiledBinding Prefix}"
-                        Suffix="{CompiledBinding Affix}"
-                        Minimum="{CompiledBinding MinInputValue}"
-                        Maximum="{CompiledBinding MaxInputValue}"
-                        SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
-                        SimpleNumberFormat="F3"
-                        VerticalAlignment="Center"
-                        DragStarted="DraggableNumberBox_OnDragStarted"
-                        DragFinished="DraggableNumberBox_OnDragFinished"/>
+                                 MinWidth="80"
+                                 Value="{CompiledBinding InputValue}"
+                                 Prefix="{CompiledBinding Prefix}"
+                                 Suffix="{CompiledBinding Affix}"
+                                 Minimum="{CompiledBinding MinInputValue}"
+                                 Maximum="{CompiledBinding MaxInputValue}"
+                                 LargeChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                                 SimpleNumberFormat="F3"
+                                 VerticalAlignment="Center"
+                                 DragStarted="DraggableNumberBox_OnDragStarted"
+                                 DragFinished="DraggableNumberBox_OnDragFinished" />
 </UserControl>

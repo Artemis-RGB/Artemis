@@ -134,13 +134,17 @@ public partial class DraggableNumberBox : UserControl
         _inputTextBox = _numberBox.FindDescendantOfType<TextBox>();
         _moved = false;
         _startX = point.Position.X;
+        _lastX = point.Position.X;
         e.Handled = true;
     }
 
     private void OnPointerMoved(object? sender, PointerEventArgs e)
     {
         PointerPoint point = e.GetCurrentPoint(this);
-        if (!_moved && Math.Abs(point.Position.X - _startX) < 2 || !point.Properties.IsLeftButtonPressed || _inputTextBox == null || _inputTextBox.IsFocused)
+        if (!point.Properties.IsLeftButtonPressed || _inputTextBox == null || _inputTextBox.IsFocused)
+            return;
+
+        if (!_moved && Math.Abs(point.Position.X - _startX) < 2)
         {
             _lastX = point.Position.X;
             return;
@@ -155,11 +159,24 @@ public partial class DraggableNumberBox : UserControl
             DragStarted?.Invoke(this, EventArgs.Empty);
         }
 
-        double smallChange = SmallChange != 0 ? SmallChange : 0.1;
-        double largeChange = LargeChange != 0 ? LargeChange : smallChange * 10;
-        double changeMultiplier = e.KeyModifiers.HasFlag(KeyModifiers.Shift) ? smallChange : largeChange;
+        double smallChange;
+        if (SmallChange != 0)
+            smallChange = SmallChange;
+        else if (LargeChange != 0)
+            smallChange = LargeChange / 10;
+        else
+            smallChange = 0.1;
 
-        Value += (point.Position.X - _lastX) * changeMultiplier;
+        double largeChange;
+        if (LargeChange != 0)
+            largeChange = LargeChange;
+        else if (LargeChange != 0)
+            largeChange = LargeChange * 10;
+        else
+            largeChange = 1;
+
+        double changeMultiplier = e.KeyModifiers.HasFlag(KeyModifiers.Shift) ? smallChange : largeChange;
+        Value = Math.Clamp(Value + (point.Position.X - _lastX) * changeMultiplier, Minimum, Maximum);
         _lastX = point.Position.X;
         e.Handled = true;
     }

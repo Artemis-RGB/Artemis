@@ -32,6 +32,7 @@
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/SKColorPropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/SKPointPropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/SKSizePropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/DefaultTypes/PropertyInput/StringPropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/MainWindow.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Device/DevicePropertiesView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Device/DeviceSettingsView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
@@ -62,6 +63,8 @@
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/Properties/Tree/TreePropertyView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/Properties/Windows/EffectConfigurationWindowView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/StatusBar/StatusBarView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/ProfileEditor/Panels/VisualEditor/Tools/SelectionAddToolView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/ProfileEditor/Panels/VisualEditor/Tools/SelectionRemoveToolView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/VisualEditor/Tools/TransformToolView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/Panels/VisualEditor/VisualEditorView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/Screens/ProfileEditor/ProfileEditorTitleBarView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />

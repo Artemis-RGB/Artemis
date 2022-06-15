@@ -30,8 +30,7 @@
                         HorizontalAlignment="Stretch"
                         Background="{StaticResource LargeCheckerboardBrush}"
                         ZoomChanged="ZoomBorder_OnZoomChanged">
-            <Grid Name="ContainerGrid"
-                  Background="Transparent">
+            <Grid Name="ContainerGrid" Background="Transparent">
                 <Grid.Transitions>
                     <Transitions>
                         <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut" />

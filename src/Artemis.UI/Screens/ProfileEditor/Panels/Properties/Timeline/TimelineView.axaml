@@ -24,7 +24,16 @@
                 </TreeDataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <shared:SelectionRectangle Name="SelectionRectangle" InputElement="{CompiledBinding $parent}" SelectionFinished="SelectionRectangle_OnSelectionFinished" />
+        <shared:SelectionRectangle Name="SelectionRectangle"
+                                   InputElement="{CompiledBinding $parent}"
+                                   BorderBrush="{DynamicResource SystemAccentColor}"
+                                   BorderRadius="8"
+                                   BorderThickness="1"
+                                   SelectionFinished="SelectionRectangle_OnSelectionFinished">
+            <shared:SelectionRectangle.Background>
+                <SolidColorBrush Color="{DynamicResource SystemAccentColorLight1}" Opacity="0.2" />
+            </shared:SelectionRectangle.Background>
+        </shared:SelectionRectangle>
     </Grid>
 
 

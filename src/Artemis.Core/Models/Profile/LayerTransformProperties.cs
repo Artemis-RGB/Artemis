@@ -30,13 +30,13 @@ namespace Artemis.Core
         /// <summary>
         ///     The rotation of the shape in degree
         /// </summary>
-        [PropertyDescription(Description = "The rotation of the shape in degrees", InputAffix = "°")]
+        [PropertyDescription(Description = "The rotation of the shape in degrees", InputAffix = "°",  InputStepSize = 0.5f)]
         public FloatLayerProperty Rotation { get; set; }
 
         /// <summary>
         ///     The opacity of the shape
         /// </summary>
-        [PropertyDescription(Description = "The opacity of the shape", InputAffix = "%", MinInputValue = 0f, MaxInputValue = 100f)]
+        [PropertyDescription(Description = "The opacity of the shape", InputAffix = "%", MinInputValue = 0f, MaxInputValue = 100f, InputStepSize = 0.1f)]
         public FloatLayerProperty Opacity { get; set; }
 
         /// <inheritdoc />

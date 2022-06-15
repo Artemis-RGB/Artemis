@@ -11,7 +11,7 @@
         <shared:SelectionRectangle InputElement="{Binding $parent[paz:ZoomBorder]}"
                                    BorderBrush="{DynamicResource SystemAccentColor}"
                                    BorderRadius="8"
-                                   BorderThickness="2"
+                                   BorderThickness="1"
                                    SelectionFinished="SelectionRectangle_OnSelectionFinished"
                                    ZoomRatio="{Binding $parent[ZoomBorder].ZoomX}">
             <shared:SelectionRectangle.Background>

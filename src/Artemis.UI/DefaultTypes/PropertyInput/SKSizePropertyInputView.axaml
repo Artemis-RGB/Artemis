@@ -9,27 +9,27 @@
              x:DataType="propertyInput:SKSizePropertyInputViewModel">
     <StackPanel Orientation="Horizontal" Spacing="5">
         <controls:DraggableNumberBox Classes="condensed tooltip-validation-left"
-                                      MinWidth="80"
-                                      Value="{CompiledBinding Height}"
-                                      Prefix="{CompiledBinding Prefix}"
-                                      Suffix="{CompiledBinding Affix}"
-                                      SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
-                                      SimpleNumberFormat="F3"
-                                      VerticalAlignment="Center"
-                                      ToolTip.Tip="Height"
-                                      DragStarted="DraggableNumberBox_OnDragStarted"
-                                      DragFinished="DraggableNumberBox_OnDragFinished"/>
+                                     MinWidth="80"
+                                     Value="{CompiledBinding Height}"
+                                     Prefix="{CompiledBinding Prefix}"
+                                     Suffix="{CompiledBinding Affix}"
+                                     LargeChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                                     SimpleNumberFormat="F3"
+                                     VerticalAlignment="Center"
+                                     ToolTip.Tip="Height"
+                                     DragStarted="DraggableNumberBox_OnDragStarted"
+                                     DragFinished="DraggableNumberBox_OnDragFinished" />
         <TextBlock VerticalAlignment="Center">,</TextBlock>
         <controls:DraggableNumberBox Classes="condensed tooltip-validation-left"
-                                      MinWidth="80"
-                                      Value="{CompiledBinding Width}"
-                                      Prefix="{CompiledBinding Prefix}"
-                                      Suffix="{CompiledBinding Affix}"
-                                      SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
-                                      SimpleNumberFormat="F3"
-                                      VerticalAlignment="Center"
-                                      ToolTip.Tip="Width"
-                                      DragStarted="DraggableNumberBox_OnDragStarted"
-                                      DragFinished="DraggableNumberBox_OnDragFinished"/>
+                                     MinWidth="80"
+                                     Value="{CompiledBinding Width}"
+                                     Prefix="{CompiledBinding Prefix}"
+                                     Suffix="{CompiledBinding Affix}"
+                                     LargeChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                                     SimpleNumberFormat="F3"
+                                     VerticalAlignment="Center"
+                                     ToolTip.Tip="Width"
+                                     DragStarted="DraggableNumberBox_OnDragStarted"
+                                     DragFinished="DraggableNumberBox_OnDragFinished" />
     </StackPanel>
 </UserControl>

@@ -103,7 +103,9 @@
                                                InputElement="{Binding #ZoomBorder}"
                                                SelectionUpdated="SelectionRectangle_OnSelectionUpdated"
                                                BorderBrush="{DynamicResource SystemAccentColor}"
-                                               BorderRadius="8">
+                                               BorderRadius="8"
+                                               BorderThickness="1"
+                                               ZoomRatio="{Binding $parent[ZoomBorder].ZoomX}">
                         <shared:SelectionRectangle.Background>
                             <SolidColorBrush Color="{DynamicResource SystemAccentColorLight1}" Opacity="0.2" />
                         </shared:SelectionRectangle.Background>

@@ -17,9 +17,9 @@
                                  Suffix="{CompiledBinding Affix}"
                                  Minimum="{CompiledBinding MinInputValue}"
                                  Maximum="{CompiledBinding MaxInputValue}"
-                                 SmallChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                                 LargeChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
                                  SimpleNumberFormat="F1"
                                  VerticalAlignment="Center"
                                  DragStarted="DraggableNumberBox_OnDragStarted"
-                                 DragFinished="DraggableNumberBox_OnDragFinished"/>
+                                 DragFinished="DraggableNumberBox_OnDragFinished" />
 </UserControl>
