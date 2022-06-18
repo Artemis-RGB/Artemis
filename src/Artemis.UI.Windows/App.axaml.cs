@@ -37,9 +37,9 @@ namespace Artemis.UI.Windows
             inputService.AddInputProvider(standardKernel.Get<WindowsInputProvider>());
         }
 
-        // ReSharper disable NotAccessedField.Local
         private StandardKernel? _kernel;
 
+        // ReSharper disable NotAccessedField.Local
         private ApplicationStateManager? _applicationStateManager;
         // ReSharper restore NotAccessedField.Local
     }

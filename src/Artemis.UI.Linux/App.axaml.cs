@@ -17,6 +17,7 @@ namespace Artemis.UI.Linux
         public override void Initialize()
         {
             _kernel = ArtemisBootstrapper.Bootstrap(this);
+            Program.CreateLogger(_kernel);
             RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
             AvaloniaXamlLoader.Load(this);
 
