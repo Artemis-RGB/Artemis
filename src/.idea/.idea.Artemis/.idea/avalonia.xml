@@ -23,7 +23,10 @@
         <entry key="Artemis.UI.Shared/Styles/Condensed.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI.Shared/Styles/TextBlock.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Windows/App.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
+        <entry key="Artemis.UI/DefaultTypes/PropertyInput/BoolPropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/DefaultTypes/PropertyInput/BrushPropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/ColorGradientPropertyInputView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
+        <entry key="Artemis.UI/DefaultTypes/PropertyInput/EnumPropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/FloatPropertyInputView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/FloatRangePropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/DefaultTypes/PropertyInput/IntPropertyInputView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />

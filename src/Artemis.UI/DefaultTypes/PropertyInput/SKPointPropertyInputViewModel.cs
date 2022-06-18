@@ -15,18 +15,16 @@ public class SKPointPropertyInputViewModel : PropertyInputViewModel<SKPoint>
     {
         if (LayerProperty.PropertyDescription.MinInputValue.IsNumber())
         {
-            this.ValidationRule(vm => vm.X, i => i >= Convert.ToSingle(LayerProperty.PropertyDescription.MinInputValue),
-                $"X must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
-            this.ValidationRule(vm => vm.Y, i => i >= Convert.ToSingle(LayerProperty.PropertyDescription.MinInputValue),
-                $"Y must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
+            Min = Convert.ToSingle(LayerProperty.PropertyDescription.MinInputValue);
+            this.ValidationRule(vm => vm.X, i => i >= Min, $"X must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
+            this.ValidationRule(vm => vm.Y, i => i >= Min, $"Y must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
         }
 
         if (LayerProperty.PropertyDescription.MaxInputValue.IsNumber())
         {
-            this.ValidationRule(vm => vm.X, i => i <= Convert.ToSingle(LayerProperty.PropertyDescription.MaxInputValue),
-                $"X must be equal to or smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
-            this.ValidationRule(vm => vm.Y, i => i <= Convert.ToSingle(LayerProperty.PropertyDescription.MaxInputValue),
-                $"Y must be equal to or smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
+            Max = Convert.ToSingle(LayerProperty.PropertyDescription.MaxInputValue);
+            this.ValidationRule(vm => vm.X, i => i <= Max, $"X must be equal to or smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
+            this.ValidationRule(vm => vm.Y, i => i <= Max, $"Y must be equal to or smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
         }
     }
 
@@ -42,6 +40,8 @@ public class SKPointPropertyInputViewModel : PropertyInputViewModel<SKPoint>
         set => InputValue = new SKPoint(X, value);
     }
 
+    public float Min { get; } = float.MinValue;
+    public float Max { get; } = float.MaxValue;
 
     protected override void OnInputValueChanged()
     {

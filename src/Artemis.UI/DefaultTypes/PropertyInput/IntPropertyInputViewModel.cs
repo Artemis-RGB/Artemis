@@ -13,19 +13,17 @@ public class IntPropertyInputViewModel : PropertyInputViewModel<int>
     {
         if (LayerProperty.PropertyDescription.MinInputValue.IsNumber())
         {
-            int minInputValue = Convert.ToInt32(LayerProperty.PropertyDescription.MinInputValue);
-            this.ValidationRule(vm => vm.InputValue, i => i >= minInputValue, $"Value must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
-            MinInputValue = minInputValue;
+            Min = Convert.ToInt32(LayerProperty.PropertyDescription.MinInputValue);
+            this.ValidationRule(vm => vm.InputValue, i => i >= Min, $"Value must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
         }
 
         if (LayerProperty.PropertyDescription.MaxInputValue.IsNumber())
         {
-            int maxInputValue = Convert.ToInt32(LayerProperty.PropertyDescription.MaxInputValue);
-            this.ValidationRule(vm => vm.InputValue, i => i < maxInputValue, $"Value must be smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
-            MaxInputValue = maxInputValue;
+            Max = Convert.ToInt32(LayerProperty.PropertyDescription.MaxInputValue);
+            this.ValidationRule(vm => vm.InputValue, i => i < Max, $"Value must be smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
         }
     }
 
-    public int MinInputValue { get; } = int.MinValue;
-    public int MaxInputValue { get; } = int.MaxValue;
+    public int Min { get; } = int.MinValue;
+    public int Max { get; } = int.MaxValue;
 }

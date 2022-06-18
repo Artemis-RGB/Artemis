@@ -17,18 +17,14 @@ public class FloatRangePropertyInputViewModel : PropertyInputViewModel<FloatRang
 
         if (LayerProperty.PropertyDescription.MinInputValue.IsNumber())
         {
-            this.ValidationRule(vm => vm.Start, i => i >= Convert.ToSingle(LayerProperty.PropertyDescription.MinInputValue),
-                $"Start value must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
-            this.ValidationRule(vm => vm.End, i => i >= Convert.ToSingle(LayerProperty.PropertyDescription.MinInputValue),
-                $"End value must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
+            Min = Convert.ToSingle(LayerProperty.PropertyDescription.MinInputValue);
+            this.ValidationRule(vm => vm.Start, i => i >= Min, $"Start value must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
         }
 
         if (LayerProperty.PropertyDescription.MaxInputValue.IsNumber())
         {
-            this.ValidationRule(vm => vm.Start, i => i < Convert.ToSingle(LayerProperty.PropertyDescription.MaxInputValue),
-                $"Start value must be smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
-            this.ValidationRule(vm => vm.End, i => i < Convert.ToSingle(LayerProperty.PropertyDescription.MaxInputValue),
-                $"End value must be smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
+            Max = Convert.ToSingle(LayerProperty.PropertyDescription.MaxInputValue);
+            this.ValidationRule(vm => vm.End, i => i < Max, $"End value must be smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
         }
     }
 
@@ -59,7 +55,9 @@ public class FloatRangePropertyInputViewModel : PropertyInputViewModel<FloatRang
             this.RaisePropertyChanged(nameof(End));
         }
     }
-
+    
+    public float Min { get; } = float.MinValue;
+    public float Max { get; } = float.MaxValue;
 
     protected override void OnInputValueChanged()
     {

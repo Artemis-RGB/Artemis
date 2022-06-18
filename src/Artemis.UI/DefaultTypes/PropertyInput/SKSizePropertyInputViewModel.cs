@@ -17,18 +17,16 @@ public class SKSizePropertyInputViewModel : PropertyInputViewModel<SKSize>
     {
         if (LayerProperty.PropertyDescription.MinInputValue.IsNumber())
         {
-            this.ValidationRule(vm => vm.Width, i => i >= Convert.ToSingle(LayerProperty.PropertyDescription.MinInputValue),
-                $"Width must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
-            this.ValidationRule(vm => vm.Height, i => i >= Convert.ToSingle(LayerProperty.PropertyDescription.MinInputValue),
-                $"Height must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
+            Min = Convert.ToSingle(LayerProperty.PropertyDescription.MinInputValue);
+            this.ValidationRule(vm => vm.Width, i => i >= Min, $"Width must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
+            this.ValidationRule(vm => vm.Height, i => i >= Min, $"Height must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
         }
 
         if (LayerProperty.PropertyDescription.MaxInputValue.IsNumber())
         {
-            this.ValidationRule(vm => vm.Width, i => i <= Convert.ToSingle(LayerProperty.PropertyDescription.MaxInputValue),
-                $"Width must be equal to or smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
-            this.ValidationRule(vm => vm.Height, i => i <= Convert.ToSingle(LayerProperty.PropertyDescription.MaxInputValue),
-                $"Height must be equal to or smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
+            Max = Convert.ToSingle(LayerProperty.PropertyDescription.MaxInputValue);
+            this.ValidationRule(vm => vm.Width, i => i <= Max, $"Width must be equal to or smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
+            this.ValidationRule(vm => vm.Height, i => i <= Max, $"Height must be equal to or smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
         }
     }
 
@@ -45,6 +43,9 @@ public class SKSizePropertyInputViewModel : PropertyInputViewModel<SKSize>
         set => InputValue = new SKSize(Width, value);
     }
 
+    public float Min { get; } = float.MinValue;
+    public float Max { get; } = float.MaxValue;
+    
     protected override void OnInputValueChanged()
     {
         this.RaisePropertyChanged(nameof(Width));
