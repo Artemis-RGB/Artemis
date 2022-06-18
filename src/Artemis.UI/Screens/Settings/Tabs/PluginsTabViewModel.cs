@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Avalonia.Threading;
+using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Settings
@@ -35,13 +38,34 @@ namespace Artemis.UI.Screens.Settings
             _settingsVmFactory = settingsVmFactory;
 
             DisplayName = "Plugins";
-            Plugins = new ObservableCollection<PluginSettingsViewModel>();
 
-            this.WhenAnyValue(x => x.SearchPluginInput).Throttle(TimeSpan.FromMilliseconds(100)).Subscribe(SearchPlugins);
-            this.WhenActivated((CompositeDisposable _) => GetPluginInstances());
+            SourceList<Plugin> plugins = new();
+            IObservable<Func<Plugin, bool>> pluginFilter = this.WhenAnyValue(vm => vm.SearchPluginInput).Throttle(TimeSpan.FromMilliseconds(100)).Select(CreatePredicate);
+
+            plugins.Connect()
+                .Filter(pluginFilter)
+                .Sort(SortExpressionComparer<Plugin>.Ascending(p => p.Info.Name))
+                .TransformAsync(p => Dispatcher.UIThread.InvokeAsync(() => _settingsVmFactory.CreatePluginSettingsViewModel(p), DispatcherPriority.Background))
+                .Bind(out ReadOnlyObservableCollection<PluginSettingsViewModel> pluginViewModels)
+                .Subscribe();
+            Plugins = pluginViewModels;
+
+            this.WhenActivated(d =>
+            {
+                plugins.AddRange(_pluginManagementService.GetAllPlugins());
+                Observable.FromEventPattern<PluginEventArgs>(x => _pluginManagementService.PluginLoaded += x, x => _pluginManagementService.PluginLoaded -= x)
+                    .Subscribe(a => plugins.Add(a.EventArgs.Plugin))
+                    .DisposeWith(d);
+                Observable.FromEventPattern<PluginEventArgs>(x => _pluginManagementService.PluginUnloaded += x, x => _pluginManagementService.PluginUnloaded -= x)
+                    .Subscribe(a => plugins.Remove(a.EventArgs.Plugin))
+                    .DisposeWith(d);
+                Disposable.Create(() => plugins.Clear()).DisposeWith(d);
+            });
+            ImportPlugin = ReactiveCommand.CreateFromTask(ExecuteImportPlugin);
         }
 
-        public ObservableCollection<PluginSettingsViewModel> Plugins { get; }
+        public ReadOnlyObservableCollection<PluginSettingsViewModel> Plugins { get; }
+        public ReactiveCommand<Unit, Unit> ImportPlugin { get; }
 
         public string? SearchPluginInput
         {
@@ -54,71 +78,43 @@ namespace Artemis.UI.Screens.Settings
             Utilities.OpenUrl(url);
         }
 
-        public async Task ImportPlugin()
+        private async Task ExecuteImportPlugin()
         {
             string[]? files = await _windowService.CreateOpenFileDialog().WithTitle("Import Artemis plugin").HavingFilter(f => f.WithExtension("zip").WithName("ZIP files")).ShowAsync();
             if (files == null)
                 return;
 
-            // Take the actual import off of the UI thread
-            await Task.Run(() =>
+            try
             {
                 Plugin plugin = _pluginManagementService.ImportPlugin(files[0]);
-
-                GetPluginInstances();
                 SearchPluginInput = plugin.Info.Name;
 
+                // Wait for the VM to be created asynchronously (it would be better to respond to some event here)
+                await Task.Delay(200);
                 // Enable it via the VM to enable the prerequisite dialog
                 PluginSettingsViewModel? pluginViewModel = Plugins.FirstOrDefault(i => i.Plugin == plugin);
                 if (pluginViewModel is {IsEnabled: false})
                     pluginViewModel.IsEnabled = true;
 
                 _notificationService.CreateNotification()
-                    .WithTitle("Success")
-                    .WithMessage($"Imported plugin: {plugin.Info.Name}")
+                    .WithTitle("Plugin imported")
+                    .WithMessage($"Added the '{plugin.Info.Name}' plugin")
                     .WithSeverity(NotificationSeverity.Success)
                     .Show();
-            });
+            }
+            catch (Exception e)
+            {
+                await _windowService.ShowConfirmContentDialog("Failed to import plugin", "Make sure the selected ZIP file is a valid Artemis plugin.\r\n" + e.Message, "Close", null);
+            }
         }
 
-        public void GetPluginInstances()
+        private Func<Plugin, bool> CreatePredicate(string? text)
         {
-            Plugins.Clear();
-            Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                _instances = _pluginManagementService.GetAllPlugins()
-                    .Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p))
-                    .OrderBy(i => i.Plugin.Info.Name)
-                    .ToList();
+            if (string.IsNullOrWhiteSpace(text))
+                return _ => true;
 
-                SearchPlugins(SearchPluginInput);
-            }, DispatcherPriority.Background);
-        }
-
-        private void SearchPlugins(string? searchPluginInput)
-        {
-            if (_instances == null)
-                return;
-
-            List<PluginSettingsViewModel> instances = _instances;
-            string? search = searchPluginInput?.ToLower();
-            if (!string.IsNullOrWhiteSpace(search))
-                instances = instances.Where(i => i.Plugin.Info.Name.ToLower().Contains(search) ||
-                                                 i.Plugin.Info.Description != null && i.Plugin.Info.Description.ToLower().Contains(search)).ToList();
-
-            foreach (PluginSettingsViewModel pluginSettingsViewModel in instances)
-            {
-                if (!Plugins.Contains(pluginSettingsViewModel))
-                    Plugins.Add(pluginSettingsViewModel);
-            }
-
-            foreach (PluginSettingsViewModel pluginSettingsViewModel in Plugins.ToList())
-            {
-                if (!instances.Contains(pluginSettingsViewModel))
-                    Plugins.Remove(pluginSettingsViewModel);
-            }
-
-            Plugins.Sort(i => i.Plugin.Info.Name);
+            return data => data.Info.Name.Contains(text, StringComparison.InvariantCultureIgnoreCase) ||
+                           (data.Info.Description != null && data.Info.Description.Contains(text, StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }

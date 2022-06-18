@@ -476,6 +476,7 @@ namespace Artemis.Core.Services
             lock (_plugins)
             {
                 _plugins.Remove(plugin);
+                OnPluginUnloaded(new PluginEventArgs(plugin));
             }
         }
 

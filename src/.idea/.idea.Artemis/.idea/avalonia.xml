@@ -75,6 +75,7 @@
         <entry key="Artemis.UI/Screens/Root/SplashView.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI/Screens/Settings/Tabs/AboutTabView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Settings/Tabs/GeneralTabView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/Settings/Tabs/PluginsTabView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/ContentDialogs/SidebarCategoryEditView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/Dialogs/ModuleActivationRequirementView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Sidebar/Dialogs/ModuleActivationRequirementsView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
