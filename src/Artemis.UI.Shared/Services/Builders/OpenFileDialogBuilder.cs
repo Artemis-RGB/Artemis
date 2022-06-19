@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 
@@ -65,6 +66,8 @@ namespace Artemis.UI.Shared.Services.Builders
         {
             FileDialogFilterBuilder builder = new();
             configure(builder);
+            
+            _openFileDialog.Filters ??= new List<FileDialogFilter>();
             _openFileDialog.Filters.Add(builder.Build());
 
             return this;

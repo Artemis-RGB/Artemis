@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:propertyInput="clr-namespace:Artemis.UI.DefaultTypes.PropertyInput"
-             xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.GradientPicker;assembly=Artemis.UI.Shared"
+             xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.Controls.GradientPicker;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.DefaultTypes.PropertyInput.ColorGradientPropertyInputView"
              x:DataType="propertyInput:ColorGradientPropertyInputViewModel">

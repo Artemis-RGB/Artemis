@@ -1,41 +1,41 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Library</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ApplicationIcon />
-    <StartupObject />
-    <OutputPath>bin\</OutputPath>
-    <PlatformTarget>x64</PlatformTarget>
-    <Platforms>x64</Platforms>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <DocumentationFile>bin\Artemis.UI.Avalonia.Shared.xml</DocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.15" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.15" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.15" />
-    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.14" />
-    <PackageReference Include="DynamicData" Version="7.8.6" />
-    <PackageReference Include="FluentAvaloniaUI" Version="1.4.0" />
-    <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
-    <PackageReference Include="ReactiveUI" Version="17.1.50" />
-    <PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />
-    <PackageReference Include="RGB.NET.Core" Version="1.0.0-prerelease.32" />
-    <PackageReference Include="SkiaSharp" Version="2.88.1-preview.1" />
-   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
-  </ItemGroup>
-	<ItemGroup>
-    <Compile Update="Controls\HotkeyBox.axaml.cs">
-      <DependentUpon>HotkeyBox.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="Services\Window\ExceptionDialogView.axaml.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
-    </Compile>
-  </ItemGroup>
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ApplicationIcon />
+        <StartupObject />
+        <OutputPath>bin\</OutputPath>
+        <PlatformTarget>x64</PlatformTarget>
+        <Platforms>x64</Platforms>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        <DocumentationFile>bin\Artemis.UI.Avalonia.Shared.xml</DocumentationFile>
+    </PropertyGroup>
+    <ItemGroup>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="0.10.15" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.15" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.15" />
+        <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.14" />
+        <PackageReference Include="DynamicData" Version="7.8.6" />
+        <PackageReference Include="FluentAvaloniaUI" Version="1.4.0" />
+        <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
+        <PackageReference Include="ReactiveUI" Version="17.1.50" />
+        <PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />
+        <PackageReference Include="RGB.NET.Core" Version="1.0.0-prerelease.32" />
+        <PackageReference Include="SkiaSharp" Version="2.88.1-preview.1" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Update="Controls\HotkeyBox.axaml.cs">
+            <DependentUpon>HotkeyBox.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Services\Window\ExceptionDialogView.axaml.cs">
+            <DependentUpon>%(Filename)</DependentUpon>
+        </Compile>
+    </ItemGroup>
 </Project>

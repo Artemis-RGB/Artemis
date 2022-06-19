@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
+using Artemis.UI.Shared.Controls;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia.Threading;
@@ -79,7 +80,7 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
     /// <summary>
     ///     Gets or boolean indicating whether the current input is being previewed, the value won't be applied until
     ///     <para>
-    ///         Only applicable when using something like a <see cref="DraggableFloat" />, see
+    ///         Only applicable when using something like a <see cref="DraggableNumberBox" />, see
     ///         <see cref="StartPreview" /> and <see cref="ApplyPreview" />
     ///     </para>
     /// </summary>

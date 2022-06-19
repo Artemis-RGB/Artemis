@@ -6,26 +6,36 @@
     <members>
         <member name="F:Artemis.UI.Avalonia.Shared.Controls.ArtemisIcon.IconProperty">
             <summary>
-                Gets or sets the currently displayed icon as either a <see cref="T:Material.Icons.MaterialIconKind" /> or an <see cref="T:System.Uri" /> pointing
+                Gets or sets the currently displayed icon as either a
+                <see cref="T:Material.Icons.MaterialIconKind"/>
+                or an
+                <see cref="T:System.Uri"/>
+                pointing
                 to an SVG
             </summary>
         </member>
         <member name="P:Artemis.UI.Avalonia.Shared.Controls.ArtemisIcon.Icon">
             <summary>
-                Gets or sets the currently displayed icon as either a <see cref="T:Material.Icons.MaterialIconKind" /> or an <see cref="T:System.Uri" /> pointing
+                Gets or sets the currently displayed icon as either a
+                <see cref="T:Material.Icons.MaterialIconKind"/>
+                or an
+                <see cref="T:System.Uri"/>
+                pointing
                 to an SVG
             </summary>
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.Controls.DeviceVisualizer">
             <summary>
-                Visualizes an <see cref="T:Artemis.Core.ArtemisDevice" /> with optional per-LED colors
+                Visualizes an
+                <see cref="T:Artemis.Core.ArtemisDevice"/>
+                with optional per-LED colors
             </summary>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Controls.DeviceVisualizer.#ctor">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Controls.DeviceVisualizer.Render(Avalonia.Media.DrawingContext)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="E:Artemis.UI.Avalonia.Shared.Controls.DeviceVisualizer.LedClicked">
             <summary>
@@ -34,23 +44,29 @@
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Controls.DeviceVisualizer.OnLedClicked(Artemis.UI.Avalonia.Shared.Events.LedClickedEventArgs)">
             <summary>
-                Invokes the <see cref="E:Artemis.UI.Avalonia.Shared.Controls.DeviceVisualizer.LedClicked" /> event
+                Invokes the
+                <see cref="E:Artemis.UI.Avalonia.Shared.Controls.DeviceVisualizer.LedClicked"/>
+                event
             </summary>
             <param name="e"></param>
         </member>
         <member name="F:Artemis.UI.Avalonia.Shared.Controls.DeviceVisualizer.DeviceProperty">
             <summary>
-                Gets or sets the <see cref="T:Artemis.Core.ArtemisDevice" /> to display
+                Gets or sets the
+                <see cref="T:Artemis.Core.ArtemisDevice"/>
+                to display
             </summary>
         </member>
         <member name="P:Artemis.UI.Avalonia.Shared.Controls.DeviceVisualizer.Device">
             <summary>
-                Gets or sets the <see cref="T:Artemis.Core.ArtemisDevice" /> to display
+                Gets or sets the
+                <see cref="T:Artemis.Core.ArtemisDevice"/>
+                to display
             </summary>
         </member>
         <member name="F:Artemis.UI.Avalonia.Shared.Controls.DeviceVisualizer.ShowColorsProperty">
             <summary>
-                Gets or sets boolean indicating  whether or not to show per-LED colors
+                Gets or sets boolean indicating whether or not to show per-LED colors
             </summary>
         </member>
         <member name="P:Artemis.UI.Avalonia.Shared.Controls.DeviceVisualizer.ShowColors">
@@ -69,13 +85,13 @@
             </summary>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Controls.DeviceVisualizer.OnAttachedToLogicalTree(Avalonia.LogicalTree.LogicalTreeAttachmentEventArgs)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Controls.DeviceVisualizer.OnDetachedFromLogicalTree(Avalonia.LogicalTree.LogicalTreeAttachmentEventArgs)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Controls.DeviceVisualizer.MeasureOverride(Avalonia.Size)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="F:Artemis.UI.Avalonia.Shared.Controls.EnumComboBox.ValueProperty">
             <summary>
@@ -88,48 +104,62 @@
             </summary>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Controls.EnumComboBox.OnAttachedToLogicalTree(Avalonia.LogicalTree.LogicalTreeAttachmentEventArgs)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Controls.EnumComboBox.OnDetachedFromLogicalTree(Avalonia.LogicalTree.LogicalTreeAttachmentEventArgs)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="F:Artemis.UI.Avalonia.Shared.Controls.ProfileConfigurationIcon.ConfigurationIconProperty">
             <summary>
-                Gets or sets the <see cref="T:Artemis.Core.ProfileConfigurationIcon" /> to display
+                Gets or sets the
+                <see cref="T:Artemis.Core.ProfileConfigurationIcon"/>
+                to display
             </summary>
         </member>
         <member name="P:Artemis.UI.Avalonia.Shared.Controls.ProfileConfigurationIcon.ConfigurationIcon">
             <summary>
-                Gets or sets the <see cref="T:Artemis.Core.ProfileConfigurationIcon" /> to display
+                Gets or sets the
+                <see cref="T:Artemis.Core.ProfileConfigurationIcon"/>
+                to display
             </summary>
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle">
             <summary>
-                Visualizes an <see cref="T:Artemis.Core.ArtemisDevice" /> with optional per-LED colors
+                Visualizes an
+                <see cref="T:Artemis.Core.ArtemisDevice"/>
+                with optional per-LED colors
             </summary>
         </member>
         <member name="F:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.BackgroundProperty">
             <summary>
-                Defines the <see cref="P:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.Background" /> property.
+                Defines the
+                <see cref="P:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.Background"/>
+                property.
             </summary>
         </member>
         <member name="F:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.BorderBrushProperty">
             <summary>
-                Defines the <see cref="P:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.BorderBrush" /> property.
+                Defines the
+                <see cref="P:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.BorderBrush"/>
+                property.
             </summary>
         </member>
         <member name="F:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.BorderThicknessProperty">
             <summary>
-                Defines the <see cref="P:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.BorderBrush" /> property.
+                Defines the
+                <see cref="P:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.BorderBrush"/>
+                property.
             </summary>
         </member>
         <member name="F:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.InputElementProperty">
             <summary>
-                Defines the <see cref="M:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.get_InputElement" /> property.
+                Defines the
+                <see cref="M:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.get_InputElement"/>
+                property.
             </summary>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.#ctor">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="P:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.Background">
             <summary>
@@ -147,36 +177,41 @@
             </summary>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.OnAttachedToVisualTree(Avalonia.VisualTreeAttachmentEventArgs)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Controls.SelectionRectangle.OnDetachedFromVisualTree(Avalonia.VisualTreeAttachmentEventArgs)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.Converters.ColorToSKColorConverter">
             <summary>
-                Converts <see cref="T:Avalonia.Media.Color" /> into <see cref="T:SkiaSharp.SKColor" />.
+                Converts
+                <see cref="T:Avalonia.Media.Color"/>
+                into<see cref="T:SkiaSharp.SKColor"/>.
             </summary>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Converters.ColorToSKColorConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Converters.ColorToSKColorConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.Converters.SKColorToColorConverter">
             <summary>
-                Converts <see cref="T:SkiaSharp.SKColor" /> into <see cref="T:Avalonia.Media.Color" />.
+                Converts
+                <see cref="T:SkiaSharp.SKColor"/>
+                into<see cref="T:Avalonia.Media.Color"/>.
             </summary>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Converters.SKColorToColorConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Converters.SKColorToColorConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.Events.DataModelInputDynamicEventArgs">
             <summary>
-                Provides data about selection events raised by <see cref="!:DataModelDynamicViewModel" />
+                Provides data about selection events raised by
+                <see cref="!:DataModelDynamicViewModel"/>
             </summary>
         </member>
         <member name="P:Artemis.UI.Avalonia.Shared.Events.DataModelInputDynamicEventArgs.DataModelPath">
@@ -186,7 +221,8 @@
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.Events.DataModelInputStaticEventArgs">
             <summary>
-                Provides data about submit events raised by <see cref="!:DataModelStaticViewModel" />
+                Provides data about submit events raised by
+                <see cref="!:DataModelStaticViewModel"/>
             </summary>
         </member>
         <member name="P:Artemis.UI.Avalonia.Shared.Events.DataModelInputStaticEventArgs.Value">
@@ -246,17 +282,19 @@
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.Ninject.SharedUIModule">
             <summary>
-                The main <see cref="T:Ninject.Modules.NinjectModule" /> of the Artemis Shared UI toolkit that binds all services
+                The main
+                <see cref="T:Ninject.Modules.NinjectModule"/>
+                of the Artemis Shared UI toolkit that binds all services
             </summary>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Ninject.SharedUIModule.Load">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.PluginConfigurationDialog`1">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="P:Artemis.UI.Avalonia.Shared.PluginConfigurationDialog`1.Type">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.PluginConfigurationDialog">
             <summary>
@@ -264,7 +302,7 @@
             </summary>
         </member>
         <member name="P:Artemis.UI.Avalonia.Shared.PluginConfigurationDialog.Type">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.PluginConfigurationViewModel">
             <summary>
@@ -273,7 +311,9 @@
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.PluginConfigurationViewModel.#ctor(Artemis.Core.Plugin)">
             <summary>
-                Creates a new instance of the <see cref="T:Artemis.UI.Avalonia.Shared.PluginConfigurationViewModel" /> class
+                Creates a new instance of the
+                <see cref="T:Artemis.UI.Avalonia.Shared.PluginConfigurationViewModel"/>
+                class
             </summary>
             <param name="plugin"></param>
         </member>
@@ -294,7 +334,7 @@
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.Services.Builders.FileDialogFilterBuilder">
             <summary>
-                Represents a builder that can create a <see cref="T:Avalonia.Controls.FileDialogFilter" />.
+                Represents a builder that can create a<see cref="T:Avalonia.Controls.FileDialogFilter"/>.
             </summary>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Services.Builders.FileDialogFilterBuilder.WithName(System.String)">
@@ -314,7 +354,7 @@
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.Services.Builders.OpenFileDialogBuilder">
             <summary>
-                Represents a builder that can create a <see cref="T:Avalonia.Controls.OpenFileDialog" />.
+                Represents a builder that can create a<see cref="T:Avalonia.Controls.OpenFileDialog"/>.
             </summary>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Services.Builders.OpenFileDialogBuilder.WithAllowMultiple">
@@ -353,7 +393,7 @@
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.Services.Builders.SaveFileDialogBuilder">
             <summary>
-                Represents a builder that can create a <see cref="T:Avalonia.Controls.SaveFileDialog" />.
+                Represents a builder that can create a<see cref="T:Avalonia.Controls.SaveFileDialog"/>.
             </summary>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Services.Builders.SaveFileDialogBuilder.WithTitle(System.String)">
@@ -397,59 +437,74 @@
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Services.Interfaces.IWindowService.ShowWindow``1(System.ValueTuple{System.String,System.Object}[])">
             <summary>
-            Creates a view model instance of type <typeparamref name="TViewModel" /> and shows its corresponding View as a window
+                Creates a view model instance of type
+                <typeparamref name="TViewModel"/>
+                and shows its corresponding View as a window
             </summary>
             <typeparam name="TViewModel">The type of view model to create</typeparam>
             <returns>The created view model</returns>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Services.Interfaces.IWindowService.ShowWindow(System.Object)">
             <summary>
-            Given a ViewModel, show its corresponding View as a window
+                Given a ViewModel, show its corresponding View as a window
             </summary>
             <param name="viewModel">ViewModel to show the View for</param>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Services.Interfaces.IWindowService.ShowExceptionDialog(System.String,System.Exception)">
             <summary>
-            Shows a dialog displaying the given exception
+                Shows a dialog displaying the given exception
             </summary>
             <param name="title">The title of the dialog</param>
             <param name="exception">The exception to display</param>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Services.Interfaces.IWindowService.ShowDialogAsync``1(Artemis.UI.Avalonia.Shared.DialogViewModelBase{``0})">
             <summary>
-            Given an existing ViewModel, show its corresponding View as a Dialog
+                Given an existing ViewModel, show its corresponding View as a Dialog
             </summary>
             <typeparam name="TResult">The return type</typeparam>
             <param name="viewModel">ViewModel to show the View for</param>
-            <returns>A task containing the return value of type <typeparamref name="TResult" /></returns>
+            <returns>A task containing the return value of type
+                <typeparamref name="TResult"/>
+            </returns>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Services.Interfaces.IWindowService.ShowDialogAsync``2(System.ValueTuple{System.String,System.Object}[])">
             <summary>
-            Creates a view model instance of type <typeparamref name="TViewModel"/> and shows its corresponding View as a Dialog
+                Creates a view model instance of type
+                <typeparamref name="TViewModel"/>
+                and shows its corresponding View as a Dialog
             </summary>
             <typeparam name="TViewModel">The view model type</typeparam>
             <typeparam name="TResult">The return type</typeparam>
-            <returns>A task containing the return value of type <typeparamref name="TResult" /></returns>
+            <returns>A task containing the return value of type
+                <typeparamref name="TResult"/>
+            </returns>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Services.Interfaces.IWindowService.ShowConfirmContentDialog(System.String,System.String,System.String,System.String)">
             <summary>
-            Shows a content dialog asking the user to confirm an action
+                Shows a content dialog asking the user to confirm an action
             </summary>
             <param name="title">The title of the dialog</param>
             <param name="message">The message of the dialog</param>
             <param name="confirm">The text of the confirm button</param>
-            <param name="cancel">The text of the cancel button, if <see langword="null"/> the cancel button will not be shown</param>
-            <returns>A task containing the result of the dialog, <see langword="true"/> if confirmed; otherwise <see langword="false"/></returns>
+            <param name="cancel">The text of the cancel button, if
+                <see langword="null"/>
+                the cancel button will not be shown
+            </param>
+            <returns>A task containing the result of the dialog,
+                <see langword="true"/>
+                if confirmed; otherwise
+                <see langword="false"/>
+            </returns>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Services.Interfaces.IWindowService.CreateOpenFileDialog">
             <summary>
-            Creates an open file dialog, use the fluent API to configure it
+                Creates an open file dialog, use the fluent API to configure it
             </summary>
             <returns>The builder that can be used to configure the dialog</returns>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.Services.Interfaces.IWindowService.CreateSaveFileDialog">
             <summary>
-            Creates a save file dialog, use the fluent API to configure it
+                Creates a save file dialog, use the fluent API to configure it
             </summary>
             <returns>The builder that can be used to configure the dialog</returns>
         </member>
@@ -469,22 +524,24 @@
             </summary>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.ActivatableViewModelBase.#ctor">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.ActivatableViewModelBase.Dispose(System.Boolean)">
             <summary>
                 Releases the unmanaged resources used by the object and optionally releases the managed resources.
             </summary>
             <param name="disposing">
-                <see langword="true" /> to release both managed and unmanaged resources;
-                <see langword="false" /> to release only unmanaged resources.
+                <see langword="true"/>
+                to release both managed and unmanaged resources;
+                <see langword="false"/>
+                to release only unmanaged resources.
             </param>
         </member>
         <member name="P:Artemis.UI.Avalonia.Shared.ActivatableViewModelBase.Activator">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.ActivatableViewModelBase.Dispose">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="T:Artemis.UI.Avalonia.Shared.DialogViewModelBase`1">
             <summary>
@@ -493,7 +550,8 @@
         </member>
         <member name="M:Artemis.UI.Avalonia.Shared.DialogViewModelBase`1.Close(`0)">
             <summary>
-                Closes the dialog with the given <paramref name="result" />
+                Closes the dialog with the given
+                <paramref name="result"/>
             </summary>
             <param name="result">The result of the dialog</param>
         </member>

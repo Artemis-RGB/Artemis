@@ -87,7 +87,7 @@ namespace Artemis.Core.Services
             nodeScript.Save();
             return JsonConvert.SerializeObject(nodeScript.Entity, IProfileService.ExportSettings);
         }
-        
+
         public void ImportScript(string json, NodeScript target)
         {
             NodeScriptEntity? entity = JsonConvert.DeserializeObject<NodeScriptEntity>(json);
@@ -153,7 +153,18 @@ namespace Artemis.Core.Services
         /// <param name="color">The color to display</param>
         TypeColorRegistration RegisterTypeColor(Plugin plugin, Type type, SKColor color);
 
+        /// <summary>
+        /// Exports the provided node script to JSON.
+        /// </summary>
+        /// <param name="nodeScript">The node script to export.</param>
+        /// <returns>The resulting JSON.</returns>
         string ExportScript(NodeScript nodeScript);
+
+        /// <summary>
+        /// Imports the provided JSON onto the provided node script, overwriting any existing contents.
+        /// </summary>
+        /// <param name="json">The JSON to import.</param>
+        /// <param name="target">The target node script whose contents to overwrite.</param>
         void ImportScript(string json, NodeScript target);
     }
 }

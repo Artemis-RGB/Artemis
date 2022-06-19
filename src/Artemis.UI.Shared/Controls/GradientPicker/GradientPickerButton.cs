@@ -13,7 +13,7 @@ using Avalonia.Media;
 using FluentAvalonia.Core;
 using Button = FluentAvalonia.UI.Controls.Button;
 
-namespace Artemis.UI.Shared.GradientPicker;
+namespace Artemis.UI.Shared.Controls.GradientPicker;
 
 /// <summary>
 ///     Represents a gradient picker box that can be used to edit a gradient

@@ -5,9 +5,9 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 
-namespace Artemis.UI.Shared.GradientPicker;
+namespace Artemis.UI.Shared.Controls.GradientPicker;
 
-public class GradientPickerColorStop : TemplatedControl
+internal class GradientPickerColorStop : TemplatedControl
 {
     private static ColorGradientStop? _draggingStop;
     private static IPointer? _dragPointer;

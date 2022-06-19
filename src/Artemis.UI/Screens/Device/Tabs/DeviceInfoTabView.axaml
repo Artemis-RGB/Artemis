@@ -5,81 +5,84 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Device.DeviceInfoTabView">
-    <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,*" Margin="-5">
-        <!-- First row -->
-        <Border Classes="card" Grid.Column="0" Grid.Row="0" Margin="5">
-            <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Top">
-                <TextBlock FontWeight="Bold">Device name</TextBlock>
-                <TextBlock TextWrapping="Wrap" Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName}" />
-                <Separator Classes="card-separator" />
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,*" Margin="-5">
+            <!-- First row -->
+            <Border Classes="card" Grid.Column="0" Grid.Row="0" Margin="5">
+                <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                    <TextBlock FontWeight="Bold">Device name</TextBlock>
+                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName}" />
+                    <Separator Classes="card-separator" />
 
-                <TextBlock FontWeight="Bold">Manufacturer</TextBlock>
-                <TextBlock TextWrapping="Wrap" Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer}" />
-                <Separator Classes="card-separator" />
+                    <TextBlock FontWeight="Bold">Manufacturer</TextBlock>
+                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer}" />
+                    <Separator Classes="card-separator" />
 
 
-                <TextBlock FontWeight="Bold">Device type</TextBlock>
-                <TextBlock TextWrapping="Wrap" Text="{Binding Device.DeviceType}" />
-                <Separator Classes="card-separator" IsVisible="{Binding IsKeyboard}" />
+                    <TextBlock FontWeight="Bold">Device type</TextBlock>
+                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.DeviceType}" />
+                    <Separator Classes="card-separator" IsVisible="{Binding IsKeyboard}" />
 
-                <StackPanel IsVisible="{Binding IsKeyboard}">
-                    <TextBlock FontWeight="Bold">Physical layout</TextBlock>
-                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.PhysicalLayout}" />
+                    <StackPanel IsVisible="{Binding IsKeyboard}">
+                        <TextBlock FontWeight="Bold">Physical layout</TextBlock>
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Device.PhysicalLayout}" />
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
-        </Border>
+            </Border>
 
-        <Border Classes="card" Grid.Row="0" Grid.Column="1" Margin="5">
-            <StackPanel VerticalAlignment="Top">
-                <TextBlock FontWeight="Bold">Size (1px = 1mm)</TextBlock>
-                <TextBlock TextWrapping="Wrap" Text="{Binding Device.RgbDevice.Size}" />
-                <Separator Classes="card-separator" />
+            <Border Classes="card" Grid.Row="0" Grid.Column="1" Margin="5">
+                <StackPanel VerticalAlignment="Top">
+                    <TextBlock FontWeight="Bold">Size (1px = 1mm)</TextBlock>
+                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.RgbDevice.Size}" />
+                    <Separator Classes="card-separator" />
 
-                <TextBlock FontWeight="Bold">Location (1px = 1mm)</TextBlock>
-                <TextBlock TextWrapping="Wrap" Text="{Binding Device.RgbDevice.Location}" />
-                <Separator Classes="card-separator" />
+                    <TextBlock FontWeight="Bold">Location (1px = 1mm)</TextBlock>
+                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.RgbDevice.Location}" />
+                    <Separator Classes="card-separator" />
 
-                <TextBlock FontWeight="Bold">Rotation (degrees)</TextBlock>
-                <TextBlock TextWrapping="Wrap" Text="{Binding Device.RgbDevice.Rotation.Degrees}" />
-                <Separator Classes="card-separator" IsVisible="{Binding IsKeyboard}" />
+                    <TextBlock FontWeight="Bold">Rotation (degrees)</TextBlock>
+                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.RgbDevice.Rotation.Degrees}" />
+                    <Separator Classes="card-separator" IsVisible="{Binding IsKeyboard}" />
 
-                <StackPanel IsVisible="{Binding IsKeyboard}">
-                    <TextBlock FontWeight="Bold">Logical layout</TextBlock>
-                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.LogicalLayout}" />
+                    <StackPanel IsVisible="{Binding IsKeyboard}">
+                        <TextBlock FontWeight="Bold">Logical layout</TextBlock>
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Device.LogicalLayout}" />
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
-        </Border>
+            </Border>
 
-        <!-- Second row -->
-        <Border Classes="card" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="5">
-            <StackPanel>
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock FontWeight="Bold">Default layout file path</TextBlock>
-                    <Button Grid.Column="1"
-                            Classes="icon-button"
-                            ToolTip.Tip="Copy path to clipboard"
-                            Command="{Binding CopyToClipboard}"
-                            CommandParameter="{Binding DefaultLayoutPath}">
-                        <avalonia:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
-                    </Button>
-                </Grid>
-                <TextBlock
-                    TextWrapping="Wrap"
-                    Text="{Binding DefaultLayoutPath}" />
-                <Separator Classes="card-separator" />
+            <!-- Second row -->
+            <Border Classes="card" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="5">
+                <StackPanel>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock FontWeight="Bold">Default layout file path</TextBlock>
+                        <Button Grid.Column="1"
+                                Classes="icon-button"
+                                ToolTip.Tip="Copy path to clipboard"
+                                Command="{Binding CopyToClipboard}"
+                                CommandParameter="{Binding DefaultLayoutPath}">
+                            <avalonia:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
+                        </Button>
+                    </Grid>
+                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="{Binding DefaultLayoutPath}" />
+                    <Separator Classes="card-separator" />
 
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock FontWeight="Bold">Image file path</TextBlock>
-                    <Button Grid.Column="1"
-                            Classes="icon-button"
-                            ToolTip.Tip="Copy path to clipboard"
-                            Command="{Binding CopyToClipboard}"
-                            CommandParameter="{Binding Device.Layout.Image.LocalPath}">
-                        <avalonia:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
-                    </Button>
-                </Grid>
-                <TextBlock TextWrapping="Wrap" Text="{Binding Device.Layout.Image.LocalPath}" />
-            </StackPanel>
-        </Border>
-    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock FontWeight="Bold">Image file path</TextBlock>
+                        <Button Grid.Column="1"
+                                Classes="icon-button"
+                                ToolTip.Tip="Copy path to clipboard"
+                                Command="{Binding CopyToClipboard}"
+                                CommandParameter="{Binding Device.Layout.Image.LocalPath}">
+                            <avalonia:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
+                        </Button>
+                    </Grid>
+                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.Layout.Image.LocalPath}" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+
 </UserControl>

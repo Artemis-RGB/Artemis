@@ -1,5 +1,5 @@
 using System;
-using Artemis.UI.Shared.GradientPicker;
+using Artemis.UI.Shared.Controls.GradientPicker;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 

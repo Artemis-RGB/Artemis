@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
@@ -12,99 +11,60 @@ using FluentAvalonia.UI.Controls;
 
 namespace Artemis.UI.Shared.Controls;
 
-public partial class DraggableNumberBox : UserControl
+/// <summary>
+///     Represents a number box that can be mutated by dragging over it horizontally
+/// </summary>
+public class DraggableNumberBox : UserControl
 {
     /// <summary>
-    ///    Gets or sets the value of the number box.
+    ///     Defines the <see cref="Value" /> property.
     /// </summary>
     public static readonly StyledProperty<double> ValueProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Value), defaultBindingMode: BindingMode.TwoWay);
 
     /// <summary>
-    ///     Gets or sets the value of the number box.
-    /// </summary>
-    public double Value
-    {
-        get => GetValue(ValueProperty);
-        set => SetValue(ValueProperty, value);
-    }
-
-    /// <summary>
-    ///    Gets or sets the minimum of the number box.
+    ///     Defines the <see cref="Minimum" /> property.
     /// </summary>
     public static readonly StyledProperty<double> MinimumProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Minimum), double.MinValue);
 
     /// <summary>
-    ///     Gets or sets the minimum of the number box.
-    /// </summary>
-    public double Minimum
-    {
-        get => GetValue(MinimumProperty);
-        set => SetValue(MinimumProperty, value);
-    }
-
-    /// <summary>
-    ///    Gets or sets the maximum of the number box.
+    ///     Defines the <see cref="Maximum" /> property.
     /// </summary>
     public static readonly StyledProperty<double> MaximumProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Maximum), double.MaxValue);
 
     /// <summary>
-    ///     Gets or sets the maximum of the number box.
+    ///     Defines the <see cref="LargeChange" /> property.
     /// </summary>
-    public double Maximum
-    {
-        get => GetValue(MaximumProperty);
-        set => SetValue(MaximumProperty, value);
-    }
-
     public static readonly StyledProperty<double> LargeChangeProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(LargeChange));
 
-    public double LargeChange
-    {
-        get => GetValue(LargeChangeProperty);
-        set => SetValue(LargeChangeProperty, value);
-    }
-
+    /// <summary>
+    ///     Defines the <see cref="SmallChange" /> property.
+    /// </summary>
     public static readonly StyledProperty<double> SmallChangeProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(SmallChange));
 
-    public double SmallChange
-    {
-        get => GetValue(SmallChangeProperty);
-        set => SetValue(SmallChangeProperty, value);
-    }
-
+    /// <summary>
+    ///     Defines the <see cref="SimpleNumberFormat" /> property.
+    /// </summary>
     public static readonly StyledProperty<string> SimpleNumberFormatProperty = AvaloniaProperty.Register<DraggableNumberBox, string>(nameof(SimpleNumberFormat));
 
-    public string SimpleNumberFormat
-    {
-        get => GetValue(SimpleNumberFormatProperty);
-        set => SetValue(SimpleNumberFormatProperty, value);
-    }
+    /// <summary>
+    ///     Defines the <see cref="Prefix" /> property.
+    /// </summary>
+    public static readonly StyledProperty<string?> PrefixProperty = AvaloniaProperty.Register<DraggableNumberBox, string?>(nameof(Prefix));
 
-    public static readonly StyledProperty<string> PrefixProperty = AvaloniaProperty.Register<DraggableNumberBox, string>(nameof(Prefix));
-
-    public string Prefix
-    {
-        get => GetValue(PrefixProperty);
-        set => SetValue(PrefixProperty, value);
-    }
-
-    public static readonly StyledProperty<string> SuffixProperty = AvaloniaProperty.Register<DraggableNumberBox, string>(nameof(Suffix));
-
-    public string Suffix
-    {
-        get => GetValue(SuffixProperty);
-        set => SetValue(SuffixProperty, value);
-    }
-
-    public event TypedEventHandler<DraggableNumberBox, EventArgs>? DragStarted;
-    public event TypedEventHandler<DraggableNumberBox, EventArgs>? DragFinished;
+    /// <summary>
+    ///     Defines the <see cref="Suffix" /> property.
+    /// </summary>
+    public static readonly StyledProperty<string?> SuffixProperty = AvaloniaProperty.Register<DraggableNumberBox, string?>(nameof(Suffix));
 
     private readonly NumberBox _numberBox;
     private TextBox? _inputTextBox;
-    private bool _moved;
     private double _lastX;
+    private bool _moved;
     private double _startX;
 
+    /// <summary>
+    ///     Creates a new instance of the <see cref="DraggableNumberBox" /> class.
+    /// </summary>
     public DraggableNumberBox()
     {
         InitializeComponent();
@@ -116,6 +76,88 @@ public partial class DraggableNumberBox : UserControl
 
         AddHandler(KeyUpEvent, HandleKeyUp, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
     }
+
+    /// <summary>
+    ///     Gets or sets the value of the number box.
+    /// </summary>
+    public double Value
+    {
+        get => GetValue(ValueProperty);
+        set => SetValue(ValueProperty, value);
+    }
+
+    /// <summary>
+    ///     Gets or sets the minimum of the number box.
+    /// </summary>
+    public double Minimum
+    {
+        get => GetValue(MinimumProperty);
+        set => SetValue(MinimumProperty, value);
+    }
+
+    /// <summary>
+    ///     Gets or sets the maximum of the number box.
+    /// </summary>
+    public double Maximum
+    {
+        get => GetValue(MaximumProperty);
+        set => SetValue(MaximumProperty, value);
+    }
+
+    /// <summary>
+    ///     Gets or sets the amount with which to increase/decrease the value when dragging.
+    /// </summary>
+    public double LargeChange
+    {
+        get => GetValue(LargeChangeProperty);
+        set => SetValue(LargeChangeProperty, value);
+    }
+
+    /// <summary>
+    ///     Gets or sets the amount with which to increase/decrease the value when dragging and holding down shift.
+    /// </summary>
+    public double SmallChange
+    {
+        get => GetValue(SmallChangeProperty);
+        set => SetValue(SmallChangeProperty, value);
+    }
+
+    /// <summary>
+    ///     Gets or sets the number format string used to format the value into a display value.
+    /// </summary>
+    public string SimpleNumberFormat
+    {
+        get => GetValue(SimpleNumberFormatProperty);
+        set => SetValue(SimpleNumberFormatProperty, value);
+    }
+
+    /// <summary>
+    ///     Gets or sets the prefix to show before the value.
+    /// </summary>
+    public string? Prefix
+    {
+        get => GetValue(PrefixProperty);
+        set => SetValue(PrefixProperty, value);
+    }
+
+    /// <summary>
+    ///     Gets or sets the affix to show behind the value.
+    /// </summary>
+    public string? Suffix
+    {
+        get => GetValue(SuffixProperty);
+        set => SetValue(SuffixProperty, value);
+    }
+
+    /// <summary>
+    ///     Occurs when the user starts dragging over the control.
+    /// </summary>
+    public event TypedEventHandler<DraggableNumberBox, EventArgs>? DragStarted;
+
+    /// <summary>
+    ///     Occurs when the user finishes dragging over the control.
+    /// </summary>
+    public event TypedEventHandler<DraggableNumberBox, EventArgs>? DragFinished;
 
     private void HandleKeyUp(object? sender, KeyEventArgs e)
     {
@@ -184,7 +226,9 @@ public partial class DraggableNumberBox : UserControl
     private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         if (!_moved)
+        {
             _inputTextBox?.Focus();
+        }
         else
         {
             _moved = false;

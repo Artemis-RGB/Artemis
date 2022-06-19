@@ -4,6 +4,9 @@ using Artemis.UI.Shared.Services.ProfileEditor;
 
 namespace Artemis.UI.Shared.Services.NodeEditor;
 
+/// <summary>
+///     Represents a service that can be used to execute editor commands on node scripts.
+/// </summary>
 public interface INodeEditorService : IArtemisSharedUIService
 {
     /// <summary>

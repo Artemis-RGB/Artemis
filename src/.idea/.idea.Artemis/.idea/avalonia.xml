@@ -19,6 +19,8 @@
         <entry key="Artemis.UI.Shared/Controls/EnumComboBox.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Shared/Controls/HotkeyBox.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Shared/Controls/ProfileConfigurationIcon.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI.Shared/DefaultTypes/DataModel/Display/DefaultDataModelDisplayView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI.Shared/DefaultTypes/DataModel/Display/SKColorDataModelDisplayView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Shared/Styles/Border.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI.Shared/Styles/Condensed.axaml" value="Artemis.UI.Windows/Artemis.UI.Windows.csproj" />
         <entry key="Artemis.UI.Shared/Styles/TextBlock.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
@@ -40,6 +42,7 @@
         <entry key="Artemis.UI/Screens/Device/DevicePropertiesView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Device/DeviceSettingsView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Device/Tabs/DeviceInfoTabView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
+        <entry key="Artemis.UI/Screens/Device/Tabs/DeviceLedsTabView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Device/Tabs/DevicePropertiesTabView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Device/Tabs/InputMappingsTabView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
         <entry key="Artemis.UI/Screens/Plugins/PluginFeatureView.axaml" value="Artemis.UI.Linux/Artemis.UI.Linux.csproj" />
