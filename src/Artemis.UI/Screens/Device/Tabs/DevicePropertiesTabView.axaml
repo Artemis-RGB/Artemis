@@ -7,13 +7,11 @@
              xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
              xmlns:device="clr-namespace:Artemis.UI.Screens.Device"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="1200"
-             x:Class="Artemis.UI.Screens.Device.DevicePropertiesTabView">
+             x:Class="Artemis.UI.Screens.Device.DevicePropertiesTabView"
+             x:DataType="device:DevicePropertiesTabViewModel">
     <UserControl.Resources>
         <converters:SKColorToColorConverter x:Key="SKColorToColorConverter" />
     </UserControl.Resources>
-    <Design.DataContext>
-        <device:DevicePropertiesTabViewModel />
-    </Design.DataContext>
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <!-- Body -->
@@ -30,19 +28,19 @@
                     You can hover over a category for a more detailed description.
                 </TextBlock>
                 <StackPanel Orientation="Horizontal">
-                    <CheckBox IsChecked="{Binding HasDeskCategory}"
+                    <CheckBox IsChecked="{CompiledBinding HasDeskCategory}"
                               ToolTip.Tip="A device acting as desk ornamentation such as a LED strip"
                               Content="Desk" />
-                    <CheckBox IsChecked="{Binding HasMonitorCategory}"
+                    <CheckBox IsChecked="{CompiledBinding HasMonitorCategory}"
                               ToolTip.Tip="A device attached to the monitor such as ambilight LEDs"
                               Content="Monitor" />
                     <CheckBox ToolTip.Tip="A device inside your computer case"
-                              IsChecked="{Binding HasCaseCategory}"
+                              IsChecked="{CompiledBinding HasCaseCategory}"
                               Content="Case" />
-                    <CheckBox IsChecked="{Binding HasRoomCategory}"
+                    <CheckBox IsChecked="{CompiledBinding HasRoomCategory}"
                               ToolTip.Tip="A device elsewhere in the room"
                               Content="Room" />
-                    <CheckBox IsChecked="{Binding HasPeripheralsCategory}"
+                    <CheckBox IsChecked="{CompiledBinding HasPeripheralsCategory}"
                               ToolTip.Tip="A peripheral such as a mouse or keyboard"
                               Content="Peripheral" />
                 </StackPanel>
@@ -58,7 +56,7 @@
                                        Grid.Column="1"
                                        Margin="10 0"
                                        VerticalAlignment="Center"
-                                       Value="{Binding X}" />
+                                       Value="{CompiledBinding X}" />
                         <TextBlock Grid.Row="1" Grid.Column="2" VerticalAlignment="Center">mm</TextBlock>
 
                         <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Y-coordinate</TextBlock>
@@ -66,7 +64,7 @@
                                        Grid.Column="1"
                                        Margin="10 0"
                                        VerticalAlignment="Center"
-                                       Value="{Binding Y}" />
+                                       Value="{CompiledBinding Y}" />
                         <TextBlock Grid.Row="2" Grid.Column="2" VerticalAlignment="Center">mm</TextBlock>
 
                         <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Scale</TextBlock>
@@ -74,7 +72,7 @@
                                        Grid.Column="1"
                                        Margin="10 0"
                                        VerticalAlignment="Center"
-                                       Value="{Binding Scale}" />
+                                       Value="{CompiledBinding Scale}" />
                         <TextBlock Grid.Row="3" Grid.Column="2" VerticalAlignment="Center">times</TextBlock>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center">Rotation</TextBlock>
@@ -82,7 +80,7 @@
                                        Grid.Column="1"
                                        Margin="10 0"
                                        VerticalAlignment="Center"
-                                       Value="{Binding Rotation}" />
+                                       Value="{CompiledBinding Rotation}" />
                         <TextBlock Grid.Row="4" Grid.Column="2" VerticalAlignment="Center">deg</TextBlock>
 
                     </Grid>
@@ -100,12 +98,12 @@
 
                         <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="*,*,*,*">
                             <Label Grid.Row="0" Grid.Column="0" Content="R" VerticalAlignment="Center" />
-                            <Slider Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="200" Value="{Binding RedScale}" Margin="10 0" VerticalAlignment="Center" />
+                            <Slider Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="200" Value="{CompiledBinding RedScale}" Margin="10 0" VerticalAlignment="Center" />
                             <NumericUpDown Grid.Row="0"
                                            Grid.Column="2"
                                            VerticalAlignment="Center"
                                            Width="65"
-                                           Value="{Binding RedScale}"
+                                           Value="{CompiledBinding RedScale}"
                                            ShowButtonSpinner="False"
                                            FormatString="{}{0:0.0}"
                                            Minimum="0"
@@ -113,12 +111,12 @@
                                            ClipValueToMinMax="True" />
 
                             <Label Grid.Row="1" Grid.Column="0" Content="G" VerticalAlignment="Center" />
-                            <Slider Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="200" Value="{Binding GreenScale}" Margin="10 0" VerticalAlignment="Center" />
+                            <Slider Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="200" Value="{CompiledBinding GreenScale}" Margin="10 0" VerticalAlignment="Center" />
                             <NumericUpDown Grid.Row="1"
                                            Grid.Column="2"
                                            VerticalAlignment="Center"
                                            Width="65"
-                                           Value="{Binding GreenScale}"
+                                           Value="{CompiledBinding GreenScale}"
                                            ShowButtonSpinner="False"
                                            FormatString="{}{0:0.0}"
                                            Minimum="0"
@@ -126,24 +124,24 @@
                                            ClipValueToMinMax="True" />
 
                             <Label Grid.Row="2" Grid.Column="0" Content="B" VerticalAlignment="Center" />
-                            <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="200" Value="{Binding BlueScale}" Margin="10 0" Ticks="100" VerticalAlignment="Center" />
+                            <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="200" Value="{CompiledBinding BlueScale}" Margin="10 0" Ticks="100" VerticalAlignment="Center" />
                             <NumericUpDown Grid.Row="2"
                                            Grid.Column="2"
                                            VerticalAlignment="Center"
                                            Width="65"
-                                           Value="{Binding BlueScale}"
+                                           Value="{CompiledBinding BlueScale}"
                                            ShowButtonSpinner="False"
                                            FormatString="{}{0:0.0}"
                                            Minimum="0"
                                            Maximum="200"
                                            ClipValueToMinMax="True" />
 
-                            <CheckBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding DisplayOnDevices}" Content="Show preview" VerticalAlignment="Center" />
+                            <CheckBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{CompiledBinding DisplayOnDevices}" Content="Show preview" VerticalAlignment="Center" />
                             <controls:ColorPickerButton Grid.Row="3"
                                                         Grid.Column="2"
                                                         VerticalAlignment="Center"
                                                         HorizontalAlignment="Right"
-                                                        Color="{Binding CurrentColor, Converter={StaticResource SKColorToColorConverter}}"
+                                                        Color="{CompiledBinding CurrentColor, Converter={StaticResource SKColorToColorConverter}}"
                                                         ShowAcceptDismissButtons="False" />
                         </Grid>
                     </StackPanel>
@@ -187,7 +185,10 @@
 
             <!-- Buttons -->
             <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
-                <Button Grid.Column="0" Command="{Binding SelectPhysicalLayout}" ToolTip.Tip="Restart device setup, allowing you to select a new physical and logical layout">
+                <Button Grid.Column="0"
+                        IsVisible="{CompiledBinding RequiresManualSetup}"
+                        Command="{Binding RestartSetup}"
+                        ToolTip.Tip="Restart device setup, allowing you to select a new physical and logical layout">
                     Restart setup
                 </Button>
 

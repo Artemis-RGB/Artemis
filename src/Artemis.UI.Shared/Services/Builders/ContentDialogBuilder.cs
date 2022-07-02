@@ -143,6 +143,16 @@ namespace Artemis.UI.Shared.Services.Builders
         }
 
         /// <summary>
+        /// Changes the dialog to take the full height of the window it's being hosted in.
+        /// </summary>
+        /// <returns>The builder that can be used to further build the dialog.</returns>
+        public ContentDialogBuilder WithFullSize()
+        {
+            _contentDialog.FullSizeDesired = true;
+            return this;
+        }
+
+        /// <summary>
         /// Asynchronously shows the content dialog.
         /// </summary>
         /// <returns>A task containing the result of the content dialog.</returns>

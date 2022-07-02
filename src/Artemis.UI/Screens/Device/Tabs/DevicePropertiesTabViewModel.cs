@@ -33,12 +33,6 @@ namespace Artemis.UI.Screens.Device
         private int _x;
         private int _y;
 
-#pragma warning disable CS8618 // Design-time constructor
-        public DevicePropertiesTabViewModel()
-        {
-        }
-#pragma warning restore CS8618
-
         public DevicePropertiesTabViewModel(ArtemisDevice device, ICoreService coreService, IRgbService rgbService, IWindowService windowService, INotificationService notificationService)
         {
             _coreService = coreService;
@@ -167,6 +161,8 @@ namespace Artemis.UI.Screens.Device
             set => SetCategory(DeviceCategory.Peripherals, value);
         }
 
+        public bool RequiresManualSetup => !Device.DeviceProvider.CanDetectPhysicalLayout || !Device.DeviceProvider.CanDetectLogicalLayout;
+
         public void ApplyScaling()
         {
             Device.RedScale = RedScale / 100f;
@@ -201,12 +197,18 @@ namespace Artemis.UI.Screens.Device
             }
         }
 
-        public async Task SelectPhysicalLayout()
+        public async Task RestartSetup()
         {
-            await _windowService.CreateContentDialog()
-                .WithTitle("Select layout")
-                .WithViewModel<DeviceLayoutDialogViewModel>(("device", Device))
-                .ShowAsync();
+            if (!RequiresManualSetup)
+                return;
+            if (!Device.DeviceProvider.CanDetectPhysicalLayout && !await DevicePhysicalLayoutDialogViewModel.SelectPhysicalLayout(_windowService, Device))
+                return;
+            if (!Device.DeviceProvider.CanDetectLogicalLayout && !await DeviceLogicalLayoutDialogViewModel.SelectLogicalLayout(_windowService, Device))
+                return;
+
+            await Task.Delay(400);
+            _rgbService.SaveDevice(Device);
+            _rgbService.ApplyBestDeviceLayout(Device);
         }
 
         public async Task Apply()

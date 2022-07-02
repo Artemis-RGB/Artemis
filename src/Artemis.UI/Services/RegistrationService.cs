@@ -33,6 +33,7 @@ public class RegistrationService : IRegistrationService
         IProfileEditorService profileEditorService,
         INodeService nodeService, 
         IDataModelUIService dataModelUIService,
+        IDeviceLayoutService deviceLayoutService, // here to make sure it is instantiated
         IEnumerable<IToolViewModel> toolViewModels)
     {
         _kernel = kernel;

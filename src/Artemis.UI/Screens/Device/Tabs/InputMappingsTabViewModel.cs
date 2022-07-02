@@ -47,7 +47,6 @@ namespace Artemis.UI.Screens.Device
             });
         }
 
-
         public ArtemisDevice Device { get; }
 
         public ArtemisLed? SelectedLed

@@ -1,0 +1,104 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:device="clr-namespace:Artemis.UI.Screens.Device"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Device.DevicePhysicalLayoutDialogView"
+             x:DataType="device:DevicePhysicalLayoutDialogViewModel">
+    <Grid RowDefinitions="Auto,*">
+        <StackPanel Grid.Row="0">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock> Artemis couldn't automatically determine the physical layout of your </TextBlock>
+                <TextBlock Text="{CompiledBinding Device.RgbDevice.DeviceInfo.DeviceName, Mode=OneWay}" />
+            </StackPanel>
+            <TextBlock>In order for Artemis to know which keys are on your keyboard and where they're located, select the matching layout below.</TextBlock>
+            <TextBlock Margin="0 15 0 0">P.S. Don't worry about missing special keys like num keys/function keys or macro keys, they aren't important here.</TextBlock>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" Margin="0 25" MaxHeight="425">
+            <StackPanel HorizontalAlignment="Center">
+                <Button Classes="AppBarButton"
+                        Command="{CompiledBinding ApplyPhysicalLayout}"
+                        CommandParameter="ISO"
+                        Width="400"
+                        Height="225">
+                    <StackPanel>
+                        <Image Source="/Assets/Images/PhysicalLayouts/iso.png" />
+                        <TextBlock TextAlignment="Center" Classes="h4" Margin="0 10">
+                            ISO
+                        </TextBlock>
+                        <TextBlock TextAlignment="Center" Classes="subtitle" TextWrapping="Wrap">
+                            Most commonly used in the EU (tall enter)
+                        </TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <Button Classes="AppBarButton"
+                        Command="{CompiledBinding ApplyPhysicalLayout}"
+                        CommandParameter="ANSI"
+                        Width="400"
+                        Height="225">
+                    <StackPanel>
+                        <Image Source="/Assets/Images/PhysicalLayouts/ansi.png" />
+                        <TextBlock TextAlignment="Center" Classes="h4" Margin="0 10">
+                            ANSI
+                        </TextBlock>
+                        <TextBlock TextAlignment="Center" Classes="subtitle" TextWrapping="Wrap">
+                            Most commonly used in the US (short enter)
+                        </TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <Button Classes="AppBarButton"
+                        Command="{CompiledBinding ApplyPhysicalLayout}"
+                        CommandParameter="ABNT"
+                        Width="400"
+                        Height="225">
+                    <StackPanel>
+                        <Image Source="/Assets/Images/PhysicalLayouts/abnt.png" />
+                        <TextBlock TextAlignment="Center" Classes="h4" Margin="0 10">
+                            ABNT
+                        </TextBlock>
+                        <TextBlock TextAlignment="Center" Classes="subtitle" TextWrapping="Wrap">
+                            Most commonly used in Brazil/Portugal (based on ISO)
+                        </TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <Button Classes="AppBarButton"
+                        Command="{CompiledBinding ApplyPhysicalLayout}"
+                        CommandParameter="KS"
+                        Width="400"
+                        Height="225">
+                    <StackPanel>
+                        <Image Source="/Assets/Images/PhysicalLayouts/ks.png" />
+                        <TextBlock TextAlignment="Center" Classes="h4" Margin="0 10">
+                            KS
+                        </TextBlock>
+                        <TextBlock TextAlignment="Center" Classes="subtitle" TextWrapping="Wrap">
+                            Most commonly used in South Korea
+                        </TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <Button Classes="AppBarButton"
+                        Command="{CompiledBinding ApplyPhysicalLayout}"
+                        CommandParameter="JIS"
+                        Width="400"
+                        Height="225">
+                    <StackPanel>
+                        <Image Source="/Assets/Images/PhysicalLayouts/jis.png" />
+                        <TextBlock TextAlignment="Center" Classes="h4" Margin="0 10">
+                            JIS
+                        </TextBlock>
+                        <TextBlock TextAlignment="Center" Classes="subtitle" TextWrapping="Wrap">
+                            Most commonly used in Japan (based on ISO)
+                        </TextBlock>
+                    </StackPanel>
+                </Button>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
