@@ -192,7 +192,8 @@ public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
 
         SKPoint position = e.GetCurrentPoint(this).Position.ToSKPoint() - _dragOffset;
         ViewModel.UpdateMovement(position, e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
-        ToolTip.SetTip((Control) sender, $"X: {ViewModel.Layer.Transform.Position.CurrentValue.X:F3}% Y: {ViewModel.Layer.Transform.Position.CurrentValue.Y:F3}%");
+        if (sender is Control control)
+            ToolTip.SetTip(control, $"X: {ViewModel.Layer.Transform.Position.CurrentValue.X:F3}% Y: {ViewModel.Layer.Transform.Position.CurrentValue.Y:F3}%");
 
         e.Handled = true;
     }
@@ -236,7 +237,8 @@ public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
 
         SKPoint position = e.GetCurrentPoint(this).Position.ToSKPoint() - _dragOffset;
         ViewModel.UpdateAnchorMovement(position, e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
-        ToolTip.SetTip((Control) sender, $"X: {ViewModel.Layer.Transform.AnchorPoint.CurrentValue.X:F3}% Y: {ViewModel.Layer.Transform.AnchorPoint.CurrentValue.Y:F3}%");
+        if (sender is Control control)
+            ToolTip.SetTip(control, $"X: {ViewModel.Layer.Transform.AnchorPoint.CurrentValue.X:F3}% Y: {ViewModel.Layer.Transform.AnchorPoint.CurrentValue.Y:F3}%");
 
         e.Handled = true;
     }
@@ -366,7 +368,7 @@ public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
 
     private void RotationOnPointerMoved(object? sender, PointerEventArgs e)
     {
-        if (sender == null || !ReferenceEquals(e.Pointer.Captured, sender) || !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+        if (sender == null || ViewModel == null || !ReferenceEquals(e.Pointer.Captured, sender) || !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
             return;
 
         float angle = CalculateAngleToAnchor(e);
@@ -374,8 +376,8 @@ public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
         if (angle < 0)
             angle += 360;
 
-        ViewModel?.UpdateRotation(angle, e.KeyModifiers.HasFlag(KeyModifiers.Control));
-        ToolTip.SetTip((Control) sender, $"{ViewModel.Layer.Transform.Rotation.CurrentValue:F3}°");
+        ViewModel.UpdateRotation(angle, e.KeyModifiers.HasFlag(KeyModifiers.Control));
+        ToolTip.SetTip((Control) sender, $"{ViewModel.Layer?.Transform.Rotation.CurrentValue:F3}°");
 
         e.Handled = true;
     }

@@ -45,7 +45,9 @@ namespace Artemis.VisualScripting.Ninject
 
         private void InjectUserDefinedFunctions()
         {
-            IFunctionReader functionReader = (IFunctionReader) Kernel!.GetService(typeof(IFunctionReader));
+            IFunctionReader? functionReader = (IFunctionReader?) Kernel?.GetService(typeof(IFunctionReader));
+            if (functionReader == null)
+                throw new Exception($"Could not get service of type {nameof(IFunctionReader)}.");
             NoStringFunctionsInitializer.InitializeFunctions(functionReader, typeof(NoStringNinjectModule));
         }
     }

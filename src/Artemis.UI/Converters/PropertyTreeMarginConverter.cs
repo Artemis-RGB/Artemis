@@ -10,7 +10,7 @@ public class PropertyTreeMarginConverter : IValueConverter
 {
     public double Length { get; set; }
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is TreeGroupViewModel treeGroupViewModel)
             return new Thickness(Length * treeGroupViewModel.GetDepth(), 0, 0, 0);
@@ -20,7 +20,7 @@ public class PropertyTreeMarginConverter : IValueConverter
         return new Thickness(0);
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
     }

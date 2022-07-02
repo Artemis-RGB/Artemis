@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -25,9 +24,7 @@ namespace Artemis.UI.Screens.Settings
     {
         private readonly INotificationService _notificationService;
         private readonly IPluginManagementService _pluginManagementService;
-        private readonly ISettingsVmFactory _settingsVmFactory;
         private readonly IWindowService _windowService;
-        private List<PluginSettingsViewModel>? _instances;
         private string? _searchPluginInput;
 
         public PluginsTabViewModel(IPluginManagementService pluginManagementService, INotificationService notificationService, IWindowService windowService, ISettingsVmFactory settingsVmFactory)
@@ -35,7 +32,6 @@ namespace Artemis.UI.Screens.Settings
             _pluginManagementService = pluginManagementService;
             _notificationService = notificationService;
             _windowService = windowService;
-            _settingsVmFactory = settingsVmFactory;
 
             DisplayName = "Plugins";
 
@@ -45,7 +41,7 @@ namespace Artemis.UI.Screens.Settings
             plugins.Connect()
                 .Filter(pluginFilter)
                 .Sort(SortExpressionComparer<Plugin>.Ascending(p => p.Info.Name))
-                .TransformAsync(p => Dispatcher.UIThread.InvokeAsync(() => _settingsVmFactory.CreatePluginSettingsViewModel(p), DispatcherPriority.Background))
+                .TransformAsync(p => Dispatcher.UIThread.InvokeAsync(() => settingsVmFactory.CreatePluginSettingsViewModel(p), DispatcherPriority.Background))
                 .Bind(out ReadOnlyObservableCollection<PluginSettingsViewModel> pluginViewModels)
                 .Subscribe();
             Plugins = pluginViewModels;

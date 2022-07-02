@@ -23,6 +23,8 @@ public class ProfileTreeView : ReactiveUserControl<ProfileTreeViewModel>
     public ProfileTreeView()
     {
         InitializeComponent();
+        _treeView = this.Get<TreeView>("ProfileTreeView");
+        
         AddHandler(DragDrop.DragEnterEvent, HandleDragEnterEvent, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
         AddHandler(DragDrop.DragOverEvent, HandleDragOver, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
         AddHandler(PointerEnterEvent, HandlePointerEnter, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
@@ -116,7 +118,6 @@ public class ProfileTreeView : ReactiveUserControl<ProfileTreeViewModel>
     private void InitializeComponent()
     {
         AvaloniaXamlLoader.Load(this);
-        _treeView = this.Get<TreeView>("ProfileTreeView");
     }
 
     private void ProfileTreeView_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)

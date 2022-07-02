@@ -10,23 +10,16 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments;
 
 public class StartSegmentViewModel : TimelineSegmentViewModel
 {
-    private readonly IProfileEditorService _profileEditorService;
     private readonly ObservableAsPropertyHelper<double> _width;
     private ObservableAsPropertyHelper<double>? _end;
     private ObservableAsPropertyHelper<string?>? _endTimestamp;
-    private TimeSpan _initialLength;
-    private int _pixelsPerSecond;
     private RenderProfileElement? _profileElement;
-    private TimeSpan _time;
 
     public StartSegmentViewModel(IProfileEditorService profileEditorService) : base(profileEditorService)
     {
-        _profileEditorService = profileEditorService;
         this.WhenActivated(d =>
         {
             profileEditorService.ProfileElement.Subscribe(p => _profileElement = p).DisposeWith(d);
-            profileEditorService.Time.Subscribe(t => _time = t).DisposeWith(d);
-            profileEditorService.PixelsPerSecond.Subscribe(p => _pixelsPerSecond = p).DisposeWith(d);
 
             _end = profileEditorService.ProfileElement
                 .Select(p => p?.WhenAnyValue(element => element.Timeline.StartSegmentEndPosition) ?? Observable.Never<TimeSpan>())

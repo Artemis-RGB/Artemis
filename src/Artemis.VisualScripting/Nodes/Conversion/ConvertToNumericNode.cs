@@ -38,7 +38,7 @@ public class ConvertToNumericNode : Node
         };
     }
 
-    private Numeric TryParse(object input)
+    private Numeric TryParse(object? input)
     {
         Numeric.TryParse(input?.ToString(), out Numeric value);
         return value;

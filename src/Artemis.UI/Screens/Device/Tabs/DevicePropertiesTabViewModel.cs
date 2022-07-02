@@ -203,10 +203,10 @@ namespace Artemis.UI.Screens.Device
 
         public async Task SelectPhysicalLayout()
         {
-            // await _windowService.CreateContentDialog()
-            //     .WithTitle("Select layout")
-            //     .WithViewModel<DeviceLayoutDialogViewModel>(("device", Device))
-            //     .ShowAsync();
+            await _windowService.CreateContentDialog()
+                .WithTitle("Select layout")
+                .WithViewModel<DeviceLayoutDialogViewModel>(("device", Device))
+                .ShowAsync();
         }
 
         public async Task Apply()

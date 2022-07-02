@@ -45,8 +45,8 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
         _zoomBorder.AddHandler(PointerWheelChangedEvent, ZoomOnPointerWheelChanged, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
         this.WhenActivated(d =>
         {
-            ViewModel.AutoFitRequested += ViewModelOnAutoFitRequested;
-            ViewModel!.PickerPositionSubject.Subscribe(ShowPickerAt).DisposeWith(d);
+            ViewModel!.AutoFitRequested += ViewModelOnAutoFitRequested;
+            ViewModel.PickerPositionSubject.Subscribe(ShowPickerAt).DisposeWith(d);
             if (ViewModel.IsPreview)
             {
                 BoundsProperty.Changed.Subscribe(BoundsPropertyChanged).DisposeWith(d);

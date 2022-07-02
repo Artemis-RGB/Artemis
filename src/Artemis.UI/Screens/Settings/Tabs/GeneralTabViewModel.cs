@@ -32,7 +32,7 @@ namespace Artemis.UI.Screens.Settings
             DisplayName = "General";
             _settingsService = settingsService;
             _debugService = debugService;
-            _fluentAvaloniaTheme = AvaloniaLocator.Current.GetService<FluentAvaloniaTheme>();
+            _fluentAvaloniaTheme = AvaloniaLocator.Current.GetService<FluentAvaloniaTheme>() ?? throw new Exception($"Could not get required service of type {nameof(FluentAvaloniaTheme)}.");
 
             List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
             LayerBrushDescriptors = new ObservableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));

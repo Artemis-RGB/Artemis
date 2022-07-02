@@ -23,7 +23,7 @@ public class VisualEditorViewModel : ActivatableViewModelBase
     private readonly IProfileEditorVmFactory _vmFactory;
     private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
     private ObservableAsPropertyHelper<bool>? _suspendedEditing;
-    private ReadOnlyObservableCollection<IToolViewModel> _tools;
+    private ReadOnlyObservableCollection<IToolViewModel>? _tools;
 
     public VisualEditorViewModel(IProfileEditorService profileEditorService, IRgbService rgbService, IProfileEditorVmFactory vmFactory)
     {
@@ -77,7 +77,7 @@ public class VisualEditorViewModel : ActivatableViewModelBase
     public ObservableCollection<ArtemisDevice> Devices { get; }
     public ReadOnlyObservableCollection<IVisualizerViewModel> Visualizers { get; }
 
-    public ReadOnlyObservableCollection<IToolViewModel> Tools
+    public ReadOnlyObservableCollection<IToolViewModel>? Tools
     {
         get => _tools;
         set => RaiseAndSetIfChanged(ref _tools, value);

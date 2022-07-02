@@ -23,7 +23,7 @@ public class TimelineViewModel : ActivatableViewModelBase
 {
     private readonly IProfileEditorService _profileEditorService;
     private ObservableAsPropertyHelper<double>? _caretPosition;
-    private ObservableAsPropertyHelper<double> _minWidth;
+    private ObservableAsPropertyHelper<double>? _minWidth;
     private List<ITimelineKeyframeViewModel>? _moveKeyframes;
     private ObservableAsPropertyHelper<int>? _pixelsPerSecond;
     private RenderProfileElement? _profileElement;

@@ -24,7 +24,7 @@ public class PinsVariablesContainer : IVariablesContainer
     /// <inheritdoc />
     public EvaluatorValue GetValue(string name)
     {
-        IPin pin = _values.FirstOrDefault(v => v.Name == name);
+        IPin? pin = _values.FirstOrDefault(v => v.Name == name);
         if (pin?.PinValue is Numeric numeric)
             return new EvaluatorValue(numeric);
         return new EvaluatorValue(0);
@@ -33,7 +33,7 @@ public class PinsVariablesContainer : IVariablesContainer
     /// <inheritdoc />
     public bool TryGetValue(string name, out EvaluatorValue value)
     {
-        IPin pin = _values.FirstOrDefault(v => v.Name == name);
+        IPin? pin = _values.FirstOrDefault(v => v.Name == name);
         if (pin?.PinValue is Numeric numeric)
         {
             value = new EvaluatorValue(numeric);

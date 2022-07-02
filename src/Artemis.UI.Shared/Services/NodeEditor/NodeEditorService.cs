@@ -10,6 +10,9 @@ public class NodeEditorService : INodeEditorService
 {
     private readonly IWindowService _windowService;
 
+    /// <summary>
+    /// Creates a new instance of the <see cref="NodeEditorService"/> class.
+    /// </summary>
     public NodeEditorService(IWindowService windowService)
     {
         _windowService = windowService;

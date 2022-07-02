@@ -4,6 +4,9 @@ using Artemis.Core;
 
 namespace Artemis.UI.Shared.Services.PropertyInput;
 
+/// <summary>
+/// Represents a service that can be used to register property editors.
+/// </summary>
 public interface IPropertyInputService : IArtemisSharedUIService
 {
     /// <summary>
