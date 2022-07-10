@@ -71,5 +71,11 @@ namespace Artemis.Core.ScriptingProviders
         /// </summary>
         /// <param name="scriptType">The type of script the editor will host</param>
         public abstract IScriptEditorViewModel CreateScriptEditor(ScriptType scriptType);
+
+        /// <summary>
+        /// Called when a script for a certain type needs default content.
+        /// </summary>
+        /// <param name="scriptType">The type of script the default content is for.</param>
+        public abstract string GetDefaultScriptContent(ScriptType scriptType);
     }
 }

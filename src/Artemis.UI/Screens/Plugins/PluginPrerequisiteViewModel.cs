@@ -75,7 +75,6 @@ namespace Artemis.UI.Screens.Plugins
 
         public bool Busy => _busy.Value;
         public int ActiveStepNumber => _activeStepNumber.Value;
-        public bool HasMultipleActions => Actions.Count > 1;
 
         public async Task Install(CancellationToken cancellationToken)
         {

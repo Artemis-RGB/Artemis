@@ -9,6 +9,7 @@ namespace Artemis.Core.ScriptingProviders
     public abstract class Script : CorePropertyChanged, IDisposable
     {
         private ScriptingProvider _scriptingProvider = null!;
+        private bool _disposed;
 
         /// <summary>
         ///     The base constructor of any script
@@ -71,6 +72,10 @@ namespace Artemis.Core.ScriptingProviders
         /// <inheritdoc />
         public void Dispose()
         {
+            if (_disposed)
+                return;
+            
+            _disposed = true;
             ScriptConfiguration.PropertyChanged -= ScriptConfigurationOnPropertyChanged;
             ScriptConfiguration.Script = null;
             ScriptingProvider.InternalScripts.Remove(this);

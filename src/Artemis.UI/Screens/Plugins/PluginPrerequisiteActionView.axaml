@@ -1,0 +1,21 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:plugins="clr-namespace:Artemis.UI.Screens.Plugins"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Plugins.PluginPrerequisiteActionView"
+             x:DataType="plugins:PluginPrerequisiteActionViewModel">
+    <StackPanel>
+        <ProgressBar Value="{CompiledBinding Action.Progress.Percentage, Mode=OneWay}"
+                     IsIndeterminate="{CompiledBinding Action.ProgressIndeterminate, Mode=OneWay}"
+                     IsVisible="{CompiledBinding Action.ShowProgressBar, Mode=OneWay}"
+                     Margin="0 10"/>
+        <ProgressBar Value="{CompiledBinding Action.SubProgress.Percentage, Mode=OneWay}"
+                     IsIndeterminate="{CompiledBinding Action.SubProgressIndeterminate, Mode=OneWay}"
+                     IsVisible="{CompiledBinding Action.ShowSubProgressBar, Mode=OneWay}"
+                     Margin="0 10"/>
+
+        <TextBlock TextWrapping="Wrap" Text="{CompiledBinding Action.Status, Mode=OneWay}" />
+    </StackPanel>
+</UserControl>

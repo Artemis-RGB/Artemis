@@ -49,13 +49,16 @@ namespace Artemis.UI.Screens.Plugins
             PluginFeatures = new ObservableCollection<PluginFeatureViewModel>();
             foreach (PluginFeatureInfo pluginFeatureInfo in Plugin.Features)
                 PluginFeatures.Add(_settingsVmFactory.CreatePluginFeatureViewModel(pluginFeatureInfo, false));
-
            
-
+            Reload = ReactiveCommand.CreateFromTask(ExecuteReload);
             OpenSettings = ReactiveCommand.Create(ExecuteOpenSettings, this.WhenAnyValue(x => x.IsEnabled).Select(isEnabled => isEnabled && Plugin.ConfigurationDialog != null));
+            RemoveSettings = ReactiveCommand.CreateFromTask(ExecuteRemoveSettings);
+            Remove = ReactiveCommand.CreateFromTask(ExecuteRemove);
             InstallPrerequisites = ReactiveCommand.CreateFromTask(ExecuteInstallPrerequisites, this.WhenAnyValue(x => x.CanInstallPrerequisites));
             RemovePrerequisites = ReactiveCommand.CreateFromTask<bool>(ExecuteRemovePrerequisites, this.WhenAnyValue(x => x.CanRemovePrerequisites));
-
+            ShowLogsFolder = ReactiveCommand.Create(ExecuteShowLogsFolder);
+            OpenPluginDirectory = ReactiveCommand.Create(ExecuteOpenPluginDirectory);
+            
             this.WhenActivated(d =>
             {
                 _pluginManagementService.PluginDisabled += PluginManagementServiceOnPluginToggled;
@@ -69,10 +72,15 @@ namespace Artemis.UI.Screens.Plugins
             });
         }
 
+        public ReactiveCommand<Unit,Unit> Reload { get;  }
         public ReactiveCommand<Unit, Unit> OpenSettings { get; }
+        public ReactiveCommand<Unit,Unit> RemoveSettings { get; }
+        public ReactiveCommand<Unit,Unit> Remove { get;}
         public ReactiveCommand<Unit, Unit> InstallPrerequisites { get; }
         public ReactiveCommand<bool, Unit> RemovePrerequisites { get; }
-
+        public ReactiveCommand<Unit,Unit> ShowLogsFolder { get; }
+        public ReactiveCommand<Unit,Unit> OpenPluginDirectory { get; }
+        
         public ObservableCollection<PluginFeatureViewModel> PluginFeatures { get; }
 
         public Plugin Plugin
@@ -137,7 +145,7 @@ namespace Artemis.UI.Screens.Plugins
             }
         }
 
-        public void OpenPluginDirectory()
+        private void ExecuteOpenPluginDirectory()
         {
             try
             {
@@ -149,7 +157,7 @@ namespace Artemis.UI.Screens.Plugins
             }
         }
 
-        public async Task Reload()
+        private async Task ExecuteReload()
         {
             bool wasEnabled = IsEnabled;
 
@@ -167,28 +175,28 @@ namespace Artemis.UI.Screens.Plugins
             _notificationService.CreateNotification().WithTitle("Reloaded plugin.").Show();
         }
 
-        public async Task ExecuteInstallPrerequisites()
+        private async Task ExecuteInstallPrerequisites()
         {
             List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
             subjects.AddRange(Plugin.Features.Where(f => f.AlwaysEnabled));
 
-            if (subjects.Any(s => s.Prerequisites.Any()))
+            if (subjects.Any(s => s.PlatformPrerequisites.Any()))
                 await PluginPrerequisitesInstallDialogViewModel.Show(_windowService, subjects);
         }
 
-        public async Task ExecuteRemovePrerequisites(bool forPluginRemoval = false)
+        private async Task ExecuteRemovePrerequisites(bool forPluginRemoval = false)
         {
             List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
             subjects.AddRange(!forPluginRemoval ? Plugin.Features.Where(f => f.AlwaysEnabled) : Plugin.Features);
 
-            if (subjects.Any(s => s.Prerequisites.Any(p => p.UninstallActions.Any())))
+            if (subjects.Any(s => s.PlatformPrerequisites.Any(p => p.UninstallActions.Any())))
             {
                 await PluginPrerequisitesUninstallDialogViewModel.Show(_windowService, subjects, forPluginRemoval ? "Skip, remove plugin" : "Cancel");
                 this.RaisePropertyChanged(nameof(IsEnabled));
             }
         }
 
-        public async Task RemoveSettings()
+        private async Task ExecuteRemoveSettings()
         {
             bool confirmed = await _windowService.ShowConfirmContentDialog("Clear plugin settings", "Are you sure you want to clear the settings of this plugin?");
             if (!confirmed)
@@ -207,7 +215,7 @@ namespace Artemis.UI.Screens.Plugins
             _notificationService.CreateNotification().WithTitle("Cleared plugin settings.").Show();
         }
 
-        public async Task Remove()
+        private async Task ExecuteRemove()
         {
             bool confirmed = await _windowService.ShowConfirmContentDialog("Remove plugin", "Are you sure you want to remove this plugin?");
             if (!confirmed)
@@ -216,7 +224,7 @@ namespace Artemis.UI.Screens.Plugins
             // If the plugin or any of its features has uninstall actions, offer to run these
             List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
             subjects.AddRange(Plugin.Features);
-            if (subjects.Any(s => s.Prerequisites.Any(p => p.UninstallActions.Any())))
+            if (subjects.Any(s => s.PlatformPrerequisites.Any(p => p.UninstallActions.Any())))
                 await ExecuteRemovePrerequisites(true);
 
             try
@@ -232,7 +240,7 @@ namespace Artemis.UI.Screens.Plugins
             _notificationService.CreateNotification().WithTitle("Removed plugin.").Show();
         }
 
-        public void ShowLogsFolder()
+        private void ExecuteShowLogsFolder()
         {
             try
             {
@@ -242,11 +250,6 @@ namespace Artemis.UI.Screens.Plugins
             {
                 _windowService.ShowExceptionDialog("Welp, we couldn\'t open the logs folder for you", e);
             }
-        }
-
-        public void OpenUri(Uri uri)
-        {
-            Utilities.OpenUrl(uri.ToString());
         }
 
         private void PluginManagementServiceOnPluginToggled(object? sender, PluginEventArgs e)
@@ -300,7 +303,7 @@ namespace Artemis.UI.Screens.Plugins
                     {
                         await Dispatcher.UIThread.InvokeAsync(() => _notificationService.CreateNotification()
                             .WithMessage($"Failed to enable plugin {Plugin.Info.Name}\r\n{e.Message}")
-                            .HavingButton(b => b.WithText("View logs").WithAction(ShowLogsFolder))
+                            .HavingButton(b => b.WithText("View logs").WithCommand(ShowLogsFolder))
                             .Show());
                     }
                     finally
@@ -325,10 +328,10 @@ namespace Artemis.UI.Screens.Plugins
 
         private void CheckPrerequisites()
         {
-            CanInstallPrerequisites = Plugin.Info.Prerequisites.Any() ||
-                                      Plugin.Features.Where(f => f.AlwaysEnabled).Any(f => f.Prerequisites.Any());
-            CanRemovePrerequisites = Plugin.Info.Prerequisites.Any(p => p.UninstallActions.Any()) ||
-                                     Plugin.Features.Where(f => f.AlwaysEnabled).Any(f => f.Prerequisites.Any(p => p.UninstallActions.Any()));
+            CanInstallPrerequisites = Plugin.Info.PlatformPrerequisites.Any() ||
+                                      Plugin.Features.Where(f => f.AlwaysEnabled).Any(f => f.PlatformPrerequisites.Any());
+            CanRemovePrerequisites = Plugin.Info.PlatformPrerequisites.Any(p => p.UninstallActions.Any()) ||
+                                     Plugin.Features.Where(f => f.AlwaysEnabled).Any(f => f.PlatformPrerequisites.Any(p => p.UninstallActions.Any()));
         }
     }
 }

@@ -7,14 +7,28 @@ namespace Artemis.Core.Services
     internal class WebModuleRegistration
     {
         public PluginFeature Feature { get; }
-        public Type WebModuleType { get; }
+        public Type? WebModuleType { get; }
+        public Func<IWebModule>? Create { get; }
 
         public WebModuleRegistration(PluginFeature feature, Type webModuleType)
         {
-            Feature = feature;
-            WebModuleType = webModuleType;
+            Feature = feature ?? throw new ArgumentNullException(nameof(feature));
+            WebModuleType = webModuleType ?? throw new ArgumentNullException(nameof(webModuleType));
         }
 
-        public IWebModule CreateInstance() => (IWebModule) Feature.Plugin.Kernel!.Get(WebModuleType);
+        public WebModuleRegistration(PluginFeature feature, Func<IWebModule> create)
+        {
+            Feature = feature ?? throw new ArgumentNullException(nameof(feature));
+            Create = create ?? throw new ArgumentNullException(nameof(create));
+        }
+
+        public IWebModule CreateInstance()
+        {
+            if (Create != null)
+                return Create();
+            if (WebModuleType != null)
+                return (IWebModule) Feature.Plugin.Kernel!.Get(WebModuleType);
+            throw new ArtemisCoreException("WebModuleRegistration doesn't have a create function nor a web module type :(");
+        }
     }
 }

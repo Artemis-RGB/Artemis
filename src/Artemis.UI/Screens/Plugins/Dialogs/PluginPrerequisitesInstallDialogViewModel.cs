@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,11 +10,14 @@ using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Avalonia.Threading;
+using FluentAvalonia.UI.Controls;
 using ReactiveUI;
+using ContentDialogButton = Artemis.UI.Shared.Services.Builders.ContentDialogButton;
 
 namespace Artemis.UI.Screens.Plugins
 {
-    public class PluginPrerequisitesInstallDialogViewModel : DialogViewModelBase<bool>
+    public class PluginPrerequisitesInstallDialogViewModel : ContentDialogViewModelBase
     {
         private PluginPrerequisiteViewModel? _activePrerequisite;
         private bool _canInstall;
@@ -26,22 +30,23 @@ namespace Artemis.UI.Screens.Plugins
         public PluginPrerequisitesInstallDialogViewModel(List<IPrerequisitesSubject> subjects, IPrerequisitesVmFactory prerequisitesVmFactory)
         {
             Prerequisites = new ObservableCollection<PluginPrerequisiteViewModel>();
-            foreach (PluginPrerequisite prerequisite in subjects.SelectMany(prerequisitesSubject => prerequisitesSubject.Prerequisites))
+            foreach (PluginPrerequisite prerequisite in subjects.SelectMany(prerequisitesSubject => prerequisitesSubject.PlatformPrerequisites))
                 Prerequisites.Add(prerequisitesVmFactory.PluginPrerequisiteViewModel(prerequisite, false));
+            Install = ReactiveCommand.CreateFromTask(ExecuteInstall, this.WhenAnyValue(vm => vm.CanInstall));
 
-            CanInstall = false;
-            Task.Run(() => CanInstall = Prerequisites.Any(p => !p.PluginPrerequisite.IsMet()));
-
+            Dispatcher.UIThread.Post(() => CanInstall = Prerequisites.Any(p => !p.PluginPrerequisite.IsMet()), DispatcherPriority.Background);
             this.WhenActivated(d =>
             {
                 Disposable.Create(() =>
                 {
                     _tokenSource?.Cancel();
                     _tokenSource?.Dispose();
+                    _tokenSource = null;
                 }).DisposeWith(d);
             });
         }
 
+        public ReactiveCommand<Unit, Unit> Install { get; }
         public ObservableCollection<PluginPrerequisiteViewModel> Prerequisites { get; }
 
         public PluginPrerequisiteViewModel? ActivePrerequisite
@@ -80,13 +85,18 @@ namespace Artemis.UI.Screens.Plugins
             set => RaiseAndSetIfChanged(ref _canInstall, value);
         }
 
-        public async Task Install()
+        private async Task ExecuteInstall()
         {
+            ContentDialogClosingDeferral? deferral = null;
+            if (ContentDialog != null)
+                ContentDialog.Closing += (_, args) => deferral = args.GetDeferral();
+
             CanInstall = false;
             ShowFailed = false;
             ShowIntro = false;
             ShowProgress = true;
 
+            _tokenSource?.Dispose();
             _tokenSource = new CancellationTokenSource();
 
             try
@@ -110,30 +120,31 @@ namespace Artemis.UI.Screens.Plugins
 
                     // Wait after the task finished for the user to process what happened
                     if (pluginPrerequisiteViewModel != Prerequisites.Last())
+                        await Task.Delay(250);
+                    else
                         await Task.Delay(1000);
                 }
 
-                ShowInstall = false;
+                if (deferral != null)
+                    deferral.Complete();
+                else
+                    ContentDialog?.Hide(ContentDialogResult.Primary);
             }
             catch (OperationCanceledException)
             {
                 // ignored
             }
-            finally
-            {
-                _tokenSource.Dispose();
-                _tokenSource = null;
-            }
         }
 
-        public void Accept()
+        public static async Task Show(IWindowService windowService, List<IPrerequisitesSubject> subjects)
         {
-            Close(true);
-        }
-
-        public static async Task<bool> Show(IWindowService windowService, List<IPrerequisitesSubject> subjects)
-        {
-            return await windowService.ShowDialogAsync<PluginPrerequisitesInstallDialogViewModel, bool>(("subjects", subjects));
+            await windowService.CreateContentDialog()
+                .WithTitle("Plugin prerequisites")
+                .WithViewModel(out PluginPrerequisitesInstallDialogViewModel vm, ("subjects", subjects))
+                .WithCloseButtonText("Cancel")
+                .HavingPrimaryButton(b => b.WithText("Install").WithCommand(vm.Install))
+                .WithDefaultButton(ContentDialogButton.Primary)
+                .ShowAsync();
         }
     }
 }

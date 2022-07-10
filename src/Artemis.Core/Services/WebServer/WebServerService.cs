@@ -170,6 +170,20 @@ namespace Artemis.Core.Services
 
         #region Module management
 
+        public void AddModule(PluginFeature feature, Func<IWebModule> create)
+        {
+            if (feature == null) throw new ArgumentNullException(nameof(feature));
+            
+            _modules.Add(new WebModuleRegistration(feature, create));
+            StartWebServer();
+        }
+        
+        public void RemoveModule(Func<IWebModule> create)
+        {
+            _modules.RemoveAll(r => r.Create == create);
+            StartWebServer();
+        }
+
         public void AddModule<T>(PluginFeature feature) where T : IWebModule
         {
             if (feature == null) throw new ArgumentNullException(nameof(feature));

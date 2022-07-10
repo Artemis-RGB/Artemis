@@ -23,6 +23,11 @@ namespace Artemis.Core
         public abstract string Description { get; }
 
         /// <summary>
+        ///     Gets or sets the platform(s) this prerequisite applies to.     
+        /// </summary>
+        public PluginPlatform? Platform { get; protected set; }
+
+        /// <summary>
         ///     Gets a list of actions to execute when <see cref="Install" /> is called
         /// </summary>
         public abstract List<PluginPrerequisiteAction> InstallActions { get; }
@@ -90,6 +95,23 @@ namespace Artemis.Core
         /// </summary>
         /// <returns><see langword="true" /> if the prerequisite is met; otherwise <see langword="false" /></returns>
         public abstract bool IsMet();
+
+        /// <summary>
+        ///     Determines whether this prerequisite applies to the current operating system.
+        /// </summary>
+        public bool AppliesToPlatform()
+        {
+            if (Platform == null)
+                return true;
+
+            if (OperatingSystem.IsWindows())
+                return Platform.Value.HasFlag(PluginPlatform.Windows);
+            if (OperatingSystem.IsLinux())
+                return Platform.Value.HasFlag(PluginPlatform.Linux);
+            if (OperatingSystem.IsMacOS())
+                return Platform.Value.HasFlag(PluginPlatform.OSX);
+            return false;
+        }
 
         /// <summary>
         ///     Called before installation starts

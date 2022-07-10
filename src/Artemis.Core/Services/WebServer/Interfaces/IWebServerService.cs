@@ -102,6 +102,16 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <typeparam name="T">The type of Web API controller to remove</typeparam>
         void RemoveController<T>() where T : WebApiController;
+        
+        /// <summary>
+        ///     Adds a new EmbedIO module and restarts the web server
+        /// </summary>
+        void AddModule(PluginFeature feature, Func<IWebModule> create);
+        
+        /// <summary>
+        ///     Removes a EmbedIO module and restarts the web server
+        /// </summary>
+        void RemoveModule(Func<IWebModule> create);
 
         /// <summary>
         ///     Adds a new EmbedIO module and restarts the web server

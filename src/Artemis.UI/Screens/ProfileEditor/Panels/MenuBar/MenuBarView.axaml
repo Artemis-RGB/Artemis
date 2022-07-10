@@ -30,7 +30,7 @@
                     <avalonia:MaterialIcon Kind="Settings" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="_View Scripts" Command="{Binding ViewScripts}">
+            <MenuItem Header="_View Scripts" Command="{CompiledBinding ViewScripts}">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="BookEdit" />
                 </MenuItem.Icon>

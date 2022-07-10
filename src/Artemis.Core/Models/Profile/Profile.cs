@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.ScriptingProviders;
 using Artemis.Storage.Entities.Profile;
@@ -15,19 +16,24 @@ namespace Artemis.Core
         private readonly object _lock = new();
         private bool _isFreshImport;
         private ProfileElement? _lastSelectedProfileElement;
+        private readonly ObservableCollection<ProfileScript> _scripts;
+        private readonly ObservableCollection<ScriptConfiguration> _scriptConfigurations;
 
         internal Profile(ProfileConfiguration configuration, ProfileEntity profileEntity) : base(null!)
         {
+            _scripts = new ObservableCollection<ProfileScript>();
+            _scriptConfigurations = new ObservableCollection<ScriptConfiguration>();
+
             Configuration = configuration;
             Profile = this;
             ProfileEntity = profileEntity;
             EntityId = profileEntity.Id;
-            Scripts = new List<ProfileScript>();
-            ScriptConfigurations = new List<ScriptConfiguration>();
 
             UndoStack = new MaxStack<string>(20);
             RedoStack = new MaxStack<string>(20);
             Exceptions = new List<Exception>();
+            Scripts = new ReadOnlyObservableCollection<ProfileScript>(_scripts);
+            ScriptConfigurations = new ReadOnlyObservableCollection<ScriptConfiguration>(_scriptConfigurations);
 
             Load();
         }
@@ -40,12 +46,12 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a collection of all active scripts assigned to this profile
         /// </summary>
-        public List<ProfileScript> Scripts { get; }
+        public ReadOnlyObservableCollection<ProfileScript> Scripts { get; }
 
         /// <summary>
         ///     Gets a collection of all script configurations assigned to this profile
         /// </summary>
-        public List<ScriptConfiguration> ScriptConfigurations { get; }
+        public ReadOnlyObservableCollection<ScriptConfiguration> ScriptConfigurations { get; }
 
         /// <summary>
         ///     Gets or sets a boolean indicating whether this profile is freshly imported i.e. no changes have been made to it
@@ -169,8 +175,8 @@ namespace Artemis.Core
             if (!disposing)
                 return;
 
-            while (Scripts.Count > 1)
-                Scripts[0].Dispose();
+            while (Scripts.Count > 0)
+                RemoveScript(Scripts[0]);
 
             foreach (ProfileElement profileElement in Children)
                 profileElement.Dispose();
@@ -208,14 +214,60 @@ namespace Artemis.Core
             else
                 LastSelectedProfileElement = null;
 
-            foreach (ScriptConfiguration scriptConfiguration in ScriptConfigurations)
-                scriptConfiguration.Script?.Dispose();
-            ScriptConfigurations.Clear();
-            ScriptConfigurations.AddRange(ProfileEntity.ScriptConfigurations.Select(e => new ScriptConfiguration(e)));
+            while (_scriptConfigurations.Any())
+                RemoveScriptConfiguration(_scriptConfigurations[0]);
+            foreach (ScriptConfiguration scriptConfiguration in ProfileEntity.ScriptConfigurations.Select(e => new ScriptConfiguration(e)))
+                AddScriptConfiguration(scriptConfiguration);
 
             // Load node scripts last since they may rely on the profile structure being in place
-            foreach (RenderProfileElement renderProfileElement in renderElements) 
+            foreach (RenderProfileElement renderProfileElement in renderElements)
                 renderProfileElement.LoadNodeScript();
+        }
+
+        /// <summary>
+        ///     Removes a script configuration from the profile, if the configuration has an active script it is also removed.
+        /// </summary>
+        internal void RemoveScriptConfiguration(ScriptConfiguration scriptConfiguration)
+        {
+            if (!_scriptConfigurations.Contains(scriptConfiguration))
+                return;
+
+            Script? script = scriptConfiguration.Script;
+            if (script != null)
+                RemoveScript((ProfileScript) script);
+
+            _scriptConfigurations.Remove(scriptConfiguration);
+        }
+
+        /// <summary>
+        ///     Adds a script configuration to the profile but does not instantiate it's script.
+        /// </summary>
+        internal void AddScriptConfiguration(ScriptConfiguration scriptConfiguration)
+        {
+            if (!_scriptConfigurations.Contains(scriptConfiguration))
+                _scriptConfigurations.Add(scriptConfiguration);
+        }
+
+        /// <summary>
+        ///     Adds a script that has a script configuration belonging to this profile.
+        /// </summary>
+        internal void AddScript(ProfileScript script)
+        {
+            if (!_scriptConfigurations.Contains(script.ScriptConfiguration))
+                throw new ArtemisCoreException("Cannot add a script to a profile whose script configuration doesn't belong to the same profile.");
+
+            if (!_scripts.Contains(script))
+                _scripts.Add(script);
+        }
+
+        /// <summary>
+        ///     Removes a script from the profile and disposes it.
+        /// </summary>
+        internal void RemoveScript(ProfileScript script)
+        {
+            _scripts.Remove(script);
+            script.Dispose();
+            
         }
 
         internal override void Save()

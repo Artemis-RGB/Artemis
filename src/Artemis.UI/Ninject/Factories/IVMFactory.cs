@@ -2,6 +2,7 @@
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
+using Artemis.Core.ScriptingProviders;
 using Artemis.UI.Screens.Device;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor;
@@ -13,6 +14,8 @@ using Artemis.UI.Screens.ProfileEditor.Properties.DataBinding;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
+using Artemis.UI.Screens.Scripting;
+using Artemis.UI.Screens.Scripting.Dialogs;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Screens.SurfaceEditor;
@@ -122,4 +125,10 @@ public interface ILayerHintVmFactory : IVmFactory
     CategoryAdaptionHintViewModel CategoryAdaptionHintViewModel(Layer layer, CategoryAdaptionHint adaptionHint);
     DeviceAdaptionHintViewModel DeviceAdaptionHintViewModel(Layer layer, DeviceAdaptionHint adaptionHint);
     KeyboardSectionAdaptionHintViewModel KeyboardSectionAdaptionHintViewModel(Layer layer, KeyboardSectionAdaptionHint adaptionHint);
+}
+
+public interface IScriptVmFactory : IVmFactory
+{
+    ScriptConfigurationViewModel ScriptConfigurationViewModel(ScriptConfiguration scriptConfiguration);
+    ScriptConfigurationViewModel ScriptConfigurationViewModel(Profile profile, ScriptConfiguration scriptConfiguration);
 }

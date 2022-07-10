@@ -76,8 +76,8 @@ namespace Artemis.UI.Screens.Plugins
         }
 
         public bool CanToggleEnabled => FeatureInfo.Plugin.IsEnabled && !FeatureInfo.AlwaysEnabled;
-        public bool CanInstallPrerequisites => FeatureInfo.Prerequisites.Any();
-        public bool CanRemovePrerequisites => FeatureInfo.Prerequisites.Any(p => p.UninstallActions.Any());
+        public bool CanInstallPrerequisites => FeatureInfo.PlatformPrerequisites.Any();
+        public bool CanRemovePrerequisites => FeatureInfo.PlatformPrerequisites.Any(p => p.UninstallActions.Any());
         public bool IsPopupEnabled => CanInstallPrerequisites || CanRemovePrerequisites;
 
         public void ShowLogsFolder()
@@ -100,13 +100,13 @@ namespace Artemis.UI.Screens.Plugins
 
         public async Task InstallPrerequisites()
         {
-            if (FeatureInfo.Prerequisites.Any())
+            if (FeatureInfo.PlatformPrerequisites.Any())
                 await PluginPrerequisitesInstallDialogViewModel.Show(_windowService, new List<IPrerequisitesSubject> {FeatureInfo});
         }
 
         public async Task RemovePrerequisites()
         {
-            if (FeatureInfo.Prerequisites.Any(p => p.UninstallActions.Any()))
+            if (FeatureInfo.PlatformPrerequisites.Any(p => p.UninstallActions.Any()))
             {
                 await PluginPrerequisitesUninstallDialogViewModel.Show(_windowService, new List<IPrerequisitesSubject> {FeatureInfo});
                 this.RaisePropertyChanged(nameof(IsEnabled));

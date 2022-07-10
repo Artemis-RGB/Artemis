@@ -34,7 +34,7 @@ namespace Artemis.UI.Linux
         private void RegisterProviders()
         {
             IInputService inputService = _kernel.Get<IInputService>();
-            inputService.AddInputProvider(_kernel.Get<LinuxInputProvider>());
+            // inputService.AddInputProvider(_kernel.Get<LinuxInputProvider>());
         }
     }
 }

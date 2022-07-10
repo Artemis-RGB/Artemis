@@ -62,9 +62,9 @@
       },
       "FluentAvaloniaUI": {
         "type": "Direct",
-        "requested": "[1.4.0, )",
-        "resolved": "1.4.0",
-        "contentHash": "K0dwenW6dbRFSnJmJAqIVWVlGIakmodgMxXWyj0gm1MoLJkuMJ5vMU/skw5X7xJJDpr88mcB4FkMPjEIp1vk9A==",
+        "requested": "[1.4.1, )",
+        "resolved": "1.4.1",
+        "contentHash": "2m9e3YuCNa0a7EBHA9HXVq5EeA5/xtNKIJU4utMhUKHHCUgxKnBWffHUbCKzPGhhsVrVnK4Uwb/WyI8nQCHEZw==",
         "dependencies": {
           "Avalonia": "0.10.15",
           "Avalonia.Controls.DataGrid": "0.10.15",

@@ -17,7 +17,7 @@ namespace Artemis.UI.Shared.Services.Builders
         /// Creates a new instance of the <see cref="OpenFileDialogBuilder"/> class.
         /// </summary>
         /// <param name="parent">The parent window that will host the dialog.</param>
-        public OpenFileDialogBuilder(Window parent)
+        internal OpenFileDialogBuilder(Window parent)
         {
             _parent = parent;
             _openFileDialog = new OpenFileDialog();

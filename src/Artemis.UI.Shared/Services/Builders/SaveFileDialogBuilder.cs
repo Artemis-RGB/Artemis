@@ -17,7 +17,7 @@ namespace Artemis.UI.Shared.Services.Builders
         ///     Creates a new instance of the <see cref="SaveFileDialogBuilder" /> class.
         /// </summary>
         /// <param name="parent">The parent window that will host the notification.</param>
-        public SaveFileDialogBuilder(Window parent)
+        internal SaveFileDialogBuilder(Window parent)
         {
             _parent = parent;
             _saveFileDialog = new SaveFileDialog();

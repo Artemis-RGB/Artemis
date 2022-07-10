@@ -1,0 +1,72 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:plugins="clr-namespace:Artemis.UI.Screens.Plugins"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Plugins.PluginPrerequisitesUninstallDialogView"
+             x:DataType="plugins:PluginPrerequisitesUninstallDialogViewModel">
+    <UserControl.Styles>
+        <Styles>
+            <Style Selector="Border.status-border">
+                <Setter Property="Width" Value="32" />
+                <Setter Property="Height" Value="32" />
+                <Setter Property="CornerRadius" Value="16" />
+            </Style>
+
+            <Style Selector="Border.status-border avalonia|MaterialIcon">
+                <Setter Property="Width" Value="16" />
+                <Setter Property="Height" Value="16" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+            </Style>
+        </Styles>
+    </UserControl.Styles>
+    <Grid ColumnDefinitions="250,*">
+        <Grid.RowDefinitions>
+            <RowDefinition MinHeight="200" />
+        </Grid.RowDefinitions>
+
+        <ListBox Grid.Row="0"
+                 Grid.Column="0"
+                 Items="{CompiledBinding Prerequisites}"
+                 SelectedItem="{CompiledBinding ActivePrerequisite, Mode=OneWay}"
+                 IsHitTestVisible="False">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type plugins:PluginPrerequisiteViewModel}">
+                    <Grid ColumnDefinitions="Auto,*" Margin="0 6">
+                        <Border Grid.Row="0" Grid.Column="0" Classes="status-border" IsVisible="{CompiledBinding !IsMet}" Background="#ff3838">
+                            <avalonia:MaterialIcon Kind="Close" />
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="0" Classes="status-border" IsVisible="{CompiledBinding IsMet}" Background="#32a852">
+                            <avalonia:MaterialIcon Kind="Check" />
+                        </Border>
+
+                        <StackPanel Margin="8 0 0 0" Grid.Column="1" VerticalAlignment="Stretch">
+                            <TextBlock FontWeight="Bold" Text="{CompiledBinding PluginPrerequisite.Name}" TextWrapping="Wrap" />
+                            <TextBlock Text="{CompiledBinding PluginPrerequisite.Description}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <ContentControl Grid.Row="0"
+                        Grid.Column="1"
+                        Content="{CompiledBinding ActivePrerequisite}"
+                        VerticalContentAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Margin="10 0"
+                        IsTabStop="False"
+                        IsVisible="{CompiledBinding ActivePrerequisite, Converter={x:Static ObjectConverters.IsNotNull}}" />
+
+        <TextBlock Grid.Row="0"
+                   Grid.Column="1"
+                   TextWrapping="Wrap"
+                   Margin="10 0"
+                   IsVisible="{CompiledBinding ActivePrerequisite, Converter={x:Static ObjectConverters.IsNull}}">
+            This plugin/feature installed certain prerequisites in order to function. In this screen you can chose to remove these, this will mean the plugin/feature will no longer work until you reinstall the prerequisites.
+        </TextBlock>
+    </Grid>
+</UserControl>

@@ -18,11 +18,13 @@ namespace Artemis.Core.ScriptingProviders
         /// <summary>
         ///     Creates a new instance of the <see cref="ScriptConfiguration" /> class
         /// </summary>
-        public ScriptConfiguration(ScriptingProvider provider, string name)
+        public ScriptConfiguration(ScriptingProvider provider, string name, ScriptType scriptType)
         {
             _scriptingProviderId = provider.Id;
             _name = name;
             Entity = new ScriptConfigurationEntity();
+            PendingScriptContent = provider.GetDefaultScriptContent(scriptType);
+            ScriptContent = PendingScriptContent;
         }
 
         internal ScriptConfiguration(ScriptConfigurationEntity entity)

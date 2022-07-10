@@ -60,10 +60,7 @@ namespace Artemis.Core.ScriptingProviders
         /// <inheritdoc />
         internal override void InternalCleanup()
         {
-            lock (Profile.Scripts)
-            {
-                Profile.Scripts.Remove(this);
-            }
+            Profile.RemoveScript(this);
         }
 
         #endregion

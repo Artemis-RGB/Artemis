@@ -175,11 +175,14 @@ namespace Artemis.Core
 
         /// <inheritdoc />
         public List<PluginPrerequisite> Prerequisites { get; } = new();
+        
+        /// <inheritdoc />
+        public IEnumerable<PluginPrerequisite> PlatformPrerequisites => Prerequisites.Where(p => p.AppliesToPlatform());
 
         /// <inheritdoc />
         public bool ArePrerequisitesMet()
         {
-            return Prerequisites.All(p => p.IsMet());
+            return PlatformPrerequisites.All(p => p.IsMet());
         }
     }
 }
