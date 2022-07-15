@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reflection;
 using System.Text;
+using System.Windows;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.UI.Shared.Services;
