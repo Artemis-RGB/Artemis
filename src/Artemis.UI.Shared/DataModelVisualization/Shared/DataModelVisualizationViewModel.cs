@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reflection;
 using System.Text;
 using Artemis.Core;
@@ -33,11 +34,19 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
         DataModelPath = dataModelPath;
         IsMatchingFilteredTypes = true;
 
+        CopyPath = ReactiveCommand.CreateFromTask(async () =>
+        {
+            if (Avalonia.Application.Current?.Clipboard != null && Path != null)
+                await Avalonia.Application.Current.Clipboard.SetTextAsync(Path);
+        });
+
         if (parent == null)
             IsRootViewModel = true;
         else
             PropertyDescription = DataModelPath?.GetPropertyDescription() ?? DataModel?.DataModelDescription;
     }
+
+    public ReactiveCommand<Unit,Unit> CopyPath { get; }
 
     /// <summary>
     ///     Gets a boolean indicating whether this view model is at the root of the data model

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:dataModel="clr-namespace:Artemis.UI.Shared.DataModelVisualization.Shared;assembly=Artemis.UI.Shared"
              xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Debugger.DataModel.DataModelDebugView">
     <UserControl.Resources>
@@ -24,6 +25,17 @@
 			<TreeView.Styles>
 				<Style Selector="TreeViewItem">
 					<Setter Property="IsExpanded" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
+					<Setter Property="ContextFlyout">
+						<Setter.Value>
+							<MenuFlyout>
+								<MenuItem Header="Copy path" Command="{Binding CopyPath}">
+									<MenuItem.Icon>
+										<avalonia:MaterialIcon Kind="ContentCopy" />
+									</MenuItem.Icon>
+								</MenuItem>
+							</MenuFlyout>
+						</Setter.Value>
+					</Setter>
 				</Style>
 			</TreeView.Styles>
 			<TreeView.DataTemplates>
@@ -59,7 +71,6 @@
 				</TreeDataTemplate>
 				<TreeDataTemplate DataType="{x:Type dataModel:DataModelPropertyViewModel}">
 					<Grid ColumnDefinitions="Auto,Auto,*">
-
 						<!-- Value description -->
 						<StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0 0 5 0">
 							<TextBlock FontWeight="Bold">[</TextBlock>
