@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Windows;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.UI.Shared.Services;
@@ -192,6 +193,12 @@ namespace Artemis.UI.Shared
                                                                  type.IsGenericType && t == type.GetGenericTypeDefinition());
             else
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t == type || t == typeof(Enum) && type.IsEnum);
+        }
+
+        public void CopyPath()
+        {
+            if (Path != null)
+                Clipboard.SetText(Path);
         }
 
         internal virtual int GetChildDepth()

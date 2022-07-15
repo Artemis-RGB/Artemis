@@ -273,7 +273,7 @@ namespace Artemis.Core
             int index = 0;
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.OrderBy(e => e.Order))
             {
-                baseLayerEffect.Order = Order = index + 1;
+                baseLayerEffect.Order = index + 1;
                 index++;
             }
 

@@ -81,6 +81,11 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
             }
         }
 
+        public void CopyPath(DataModelVisualizationViewModel viewModel)
+        {
+            viewModel.CopyPath();
+        }
+
         #region Overrides of Screen
 
         /// <inheritdoc />
