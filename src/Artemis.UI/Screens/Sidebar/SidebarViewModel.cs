@@ -52,8 +52,7 @@ namespace Artemis.UI.Screens.Sidebar
                 new SidebarScreenViewModel<SurfaceEditorViewModel>(MaterialIconKind.Devices, "Surface Editor"),
                 new SidebarScreenViewModel<SettingsViewModel>(MaterialIconKind.Cog, "Settings")
             };
-            _selectedSidebarScreen = SidebarScreens.First();
-
+           
             UpdateProfileCategories();
             UpdateHeaderDevice();
 
@@ -81,6 +80,8 @@ namespace Artemis.UI.Screens.Sidebar
                             _hostScreen.Router.Navigate.Execute(profileEditorVmFactory.ProfileEditorViewModel(_hostScreen));
                     })
                     .DisposeWith(disposables);
+                
+                SelectedSidebarScreen = SidebarScreens.First();
             });
         }
 

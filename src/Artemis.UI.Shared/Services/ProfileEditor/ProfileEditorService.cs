@@ -8,6 +8,7 @@ using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using DynamicData;
 using ReactiveUI;
@@ -40,6 +41,7 @@ internal class ProfileEditorService : IProfileEditorService
         IModuleService moduleService,
         IRgbService rgbService,
         ILayerBrushService layerBrushService,
+        IMainWindowService mainWindowService,
         IWindowService windowService)
     {
         _logger = logger;
@@ -78,6 +80,9 @@ internal class ProfileEditorService : IProfileEditorService
             .Throttle(TimeSpan.FromSeconds(1))
             .SelectMany(async _ => await AutoSaveProfileAsync())
             .Subscribe();
+        
+        // When the main window closes, stop editing
+        mainWindowService.MainWindowClosed += (_, _) => ChangeCurrentProfileConfiguration(null);
     }
 
     public IObservable<ProfileConfiguration?> ProfileConfiguration { get; }

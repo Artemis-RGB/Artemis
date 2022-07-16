@@ -40,7 +40,7 @@ public class PlaybackViewModel : ActivatableViewModelBase
             _lastUpdate = DateTime.MinValue;
             DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(60.0 / 1000), DispatcherPriority.Render, Update);
             updateTimer.Start();
-            Disposable.Create(() => updateTimer.Stop());
+            Disposable.Create(() => updateTimer.Stop()).DisposeWith(d);
         });
 
         PlayFromStart = ReactiveCommand.Create(ExecutePlayFromStart);

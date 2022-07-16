@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -92,12 +91,11 @@ namespace Artemis.UI.Screens.Root
             set => RaiseAndSetIfChanged(ref _titleBarViewModel, value);
         }
 
-        private void CurrentMainWindowOnClosed(object? sender, EventArgs e)
+        private void CurrentMainWindowOnClosing(object? sender, EventArgs e)
         {
             _lifeTime.MainWindow = null;
             SidebarViewModel = null;
             Router.NavigateAndReset.Execute(new EmptyViewModel(this, "blank")).Subscribe();
-
             OnMainWindowClosed();
         }
 
@@ -190,7 +188,7 @@ namespace Artemis.UI.Screens.Root
                 SidebarViewModel = _sidebarVmFactory.SidebarViewModel(this);
                 _lifeTime.MainWindow = new MainWindow {DataContext = this};
                 _lifeTime.MainWindow.Show();
-                _lifeTime.MainWindow.Closed += CurrentMainWindowOnClosed;
+                _lifeTime.MainWindow.Closing += CurrentMainWindowOnClosing;
             }
 
             _lifeTime.MainWindow.WindowState = WindowState.Normal;
