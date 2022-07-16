@@ -143,4 +143,18 @@ public class ScriptsDialogViewModel : DialogViewModelBase<object?>
         // Select the new script
         SelectedScript = ScriptConfigurations.LastOrDefault();
     }
+
+    public async Task<bool> CanClose()
+    {
+        if (!ScriptConfigurations.Any(s => s.ScriptConfiguration.HasChanges))
+            return true;
+        
+        bool result = await _windowService.ShowConfirmContentDialog("Discard changes", "One or more scripts still have pending changes, do you want to discard them?");
+        if (!result)
+            return false;
+        
+        foreach (ScriptConfigurationViewModel scriptConfigurationViewModel in ScriptConfigurations)
+            scriptConfigurationViewModel.ScriptConfiguration.DiscardPendingChanges();
+        return true;
+    }
 }

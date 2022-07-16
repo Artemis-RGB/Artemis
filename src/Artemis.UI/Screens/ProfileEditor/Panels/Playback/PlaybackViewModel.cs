@@ -28,7 +28,8 @@ public class PlaybackViewModel : ActivatableViewModelBase
     {
         _profileEditorService = profileEditorService;
         _settingsService = settingsService;
-
+        _repeatTimeline = true;
+        
         this.WhenActivated(d =>
         {
             _profileEditorService.ProfileElement.Subscribe(e => _profileElement = e).DisposeWith(d);
@@ -142,6 +143,7 @@ public class PlaybackViewModel : ActivatableViewModelBase
         {
             RepeatTimeline = false;
             RepeatSegment = true;
+            this.RaisePropertyChanged(nameof(Repeating));
         }
         else if (RepeatSegment)
         {
@@ -149,6 +151,7 @@ public class PlaybackViewModel : ActivatableViewModelBase
             RepeatSegment = false;
             Repeating = false;
         }
+        
     }
 
     private TimeSpan GetCurrentSegmentStart()

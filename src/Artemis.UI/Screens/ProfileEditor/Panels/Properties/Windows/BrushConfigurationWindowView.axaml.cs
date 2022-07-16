@@ -6,6 +6,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Windows;
 
 public class BrushConfigurationWindowView : ReactiveCoreWindow<BrushConfigurationWindowViewModel>
 {
+    private bool _canClose;
+    
     public BrushConfigurationWindowView()
     {
         InitializeComponent();
@@ -22,9 +24,14 @@ public class BrushConfigurationWindowView : ReactiveCoreWindow<BrushConfiguratio
 
     private async void OnClosing(object? sender, CancelEventArgs e)
     {
-        if (ViewModel == null)
+        if (_canClose)
             return;
-
-        e.Cancel = !await ViewModel.CanClose();
+        
+        e.Cancel = true;
+        if (ViewModel == null || await ViewModel.CanClose())
+        {
+            _canClose = true;
+            Close();
+        }
     }
 }

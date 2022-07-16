@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
@@ -64,6 +65,19 @@ internal class ProfileEditorService : IProfileEditorService
         PixelsPerSecond = _pixelsPerSecondSubject.AsObservable();
         Tools = tools;
         SelectedKeyframes = selectedKeyframes;
+
+        // Observe executing, undoing and redoing commands and run the auto-save after 1 second
+        History.Select(h => h?.Execute ?? Observable.Never<Unit>())
+            .Switch()
+            .Merge(History.Select(h => h?.Undo ?? Observable.Never<IProfileEditorCommand?>())
+                .Switch()
+                .Select(_ => Unit.Default))
+            .Merge(History.Select(h => h?.Redo ?? Observable.Never<IProfileEditorCommand?>())
+                .Switch()
+                .Select(_ => Unit.Default))
+            .Throttle(TimeSpan.FromSeconds(1))
+            .SelectMany(async _ => await AutoSaveProfileAsync())
+            .Subscribe();
     }
 
     public IObservable<ProfileConfiguration?> ProfileConfiguration { get; }
@@ -423,6 +437,22 @@ internal class ProfileEditorService : IProfileEditorService
         ProfileEditorHistory newHistory = new(profileConfiguration);
         _profileEditorHistories.Add(profileConfiguration, newHistory);
         return newHistory;
+    }
+
+    private async Task<Unit> AutoSaveProfileAsync()
+    {
+        try
+        {
+            await SaveProfileAsync();
+        }
+        catch (Exception e)
+        {
+            _windowService.ShowExceptionDialog("Failed to auto-save profile", e);
+            _logger.Error(e, "Failed to auto-save profile");
+            throw;
+        }
+
+        return Unit.Default;
     }
 
     private void Tick(TimeSpan time)

@@ -41,7 +41,7 @@ namespace Artemis.UI
             if (coreAppTitleBar.TitleBar != null)
             {
                 coreAppTitleBar.TitleBar.ExtendViewIntoTitleBar = true;
-                SetTitleBar(this.Get<Border>("TitleBar"));
+                SetTitleBar(this.Get<Border>("DragHandle"));
             }
         }
 

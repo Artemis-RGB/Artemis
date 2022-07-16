@@ -132,6 +132,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
             return;
 
         await _windowService.ShowDialogAsync<ScriptsDialogViewModel, object?>(("profile", ProfileConfiguration.Profile));
+        await _profileEditorService.SaveProfileAsync();
     }
 
     private async Task ExecuteAdaptProfile()

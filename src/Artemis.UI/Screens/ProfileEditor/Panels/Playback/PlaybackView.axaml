@@ -34,7 +34,7 @@
                 <avalonia:MaterialIcon Kind="SkipNext" />
             </Button>
             <ToggleButton Classes="icon-button icon-button-large"
-                          IsChecked="{CompiledBinding Repeating}"
+                          IsChecked="{CompiledBinding Repeating, Mode=OneWay}"
                           Focusable="False"
                           Command="{CompiledBinding CycleRepeating}">
                 <ToolTip.Tip>

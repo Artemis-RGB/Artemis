@@ -22,13 +22,12 @@ namespace Artemis.UI.Windows
 
         public override void OnFrameworkInitializationCompleted()
         {
+            if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+                return;
+            
             ArtemisBootstrapper.Initialize();
-
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                _applicationStateManager = new ApplicationStateManager(_kernel!, desktop.Args);
-                RegisterProviders(_kernel!);
-            }
+            _applicationStateManager = new ApplicationStateManager(_kernel!, desktop.Args);
+            RegisterProviders(_kernel!);
         }
 
         private void RegisterProviders(StandardKernel standardKernel)

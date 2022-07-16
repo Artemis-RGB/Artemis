@@ -23,11 +23,7 @@ public class ViewLocator : IDataTemplate
             throw new ArtemisUIException($"The views of activatable view models should inherit ReactiveUserControl<T>, in this case ReactiveUserControl<{data.GetType().Name}>.");
 
         if (type != null)
-        {
-            Debug.WriteLine("[ViewLocator] Creating instance of '{0}'", type);
             return (Control) Activator.CreateInstance(type)!;
-        }
-
         return new TextBlock {Text = "Not Found: " + name};
     }
 

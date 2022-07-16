@@ -9,9 +9,11 @@
                      mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                      x:Class="Artemis.UI.Screens.Scripting.ScriptsDialogView"
                      x:DataType="scripting:ScriptsDialogViewModel"
-                     Title="ScriptsDialogView">
+                     Title="Artemis | Scripts"
+                     Width="1200"
+                     Height="750">
     <DockPanel>
-        <ScrollViewer DockPanel.Dock="Left" VerticalScrollBarVisibility="Auto" Width="240">
+        <ScrollViewer DockPanel.Dock="Left" VerticalScrollBarVisibility="Auto" Width="300" Margin="10">
             <StackPanel>
                 <ListBox Items="{CompiledBinding ScriptConfigurations}" SelectedItem="{CompiledBinding SelectedScript}">
                     <ListBox.ItemTemplate>
@@ -29,7 +31,8 @@
                                            Grid.Column="1"
                                            VerticalAlignment="Center"
                                            Text="{CompiledBinding ScriptConfiguration.Name}"
-                                           IsVisible="{CompiledBinding !ScriptConfiguration.HasChanges}" />
+                                           IsVisible="{CompiledBinding !ScriptConfiguration.HasChanges}"
+                                           TextTrimming="CharacterEllipsis" />
                                 <StackPanel Grid.Row="0"
                                             Grid.Column="1"
                                             VerticalAlignment="Center"
@@ -78,7 +81,7 @@
             </StackPanel>
         </ScrollViewer>
 
-        <Border DockPanel.Dock="Top" Classes="router-container">
+        <Border DockPanel.Dock="Top" Classes="router-container" Margin="0 10 0 0">
             <ContentControl Content="{CompiledBinding ScriptEditorViewModel}" />
         </Border>
     </DockPanel>
