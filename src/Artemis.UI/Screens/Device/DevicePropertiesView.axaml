@@ -35,7 +35,8 @@
                                      VerticalAlignment="Center"
                                      ShowColors="True"
                                      Margin="20"
-                                     LedClicked="DeviceVisualizer_OnLedClicked" />
+                                     LedClicked="DeviceVisualizer_OnLedClicked"
+                                     Clicked="DeviceVisualizer_OnClicked"/>
 
             <StackPanel Orientation="Horizontal"
                         VerticalAlignment="Bottom"

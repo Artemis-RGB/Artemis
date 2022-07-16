@@ -32,9 +32,15 @@ public class DevicePropertiesView : ReactiveCoreWindow<DevicePropertiesViewModel
         ViewModel.SelectedLeds.Add(e.Led);
     }
 
-    private void DeviceDisplayGrid_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    private void DeviceVisualizer_OnClicked(object? sender, PointerReleasedEventArgs e)
     {
         if (!e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+            ViewModel?.ClearSelectedLeds.Execute().Subscribe();
+    }
+
+    private void DeviceDisplayGrid_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (!e.KeyModifiers.HasFlag(KeyModifiers.Shift) && e.Source is not DeviceVisualizer)
             ViewModel?.ClearSelectedLeds.Execute().Subscribe();
     }
 }

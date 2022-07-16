@@ -97,14 +97,26 @@ namespace Artemis.UI.Shared
         ///     Occurs when a LED of the device has been clicked
         /// </summary>
         public event EventHandler<LedClickedEventArgs>? LedClicked;
+        
+        /// <summary>
+        /// Occurs when the device was clicked but not on a LED.
+        /// </summary>
+        public event EventHandler<PointerReleasedEventArgs>? Clicked;
 
         /// <summary>
         ///     Invokes the <see cref="LedClicked" /> event
         /// </summary>
-        /// <param name="e"></param>
         protected virtual void OnLedClicked(LedClickedEventArgs e)
         {
             LedClicked?.Invoke(this, e);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="Clicked" /> event
+        /// </summary>
+        protected virtual void OnClicked(PointerReleasedEventArgs e)
+        {
+            Clicked?.Invoke(this, e);
         }
 
         private void Update()
@@ -142,10 +154,9 @@ namespace Artemis.UI.Shared
             Point scaledPosition = new(x * Device.Rectangle.Width, y * Device.Rectangle.Height);
             DeviceVisualizerLed? deviceVisualizerLed = _deviceVisualizerLeds.FirstOrDefault(l => l.HitTest(scaledPosition));
             if (deviceVisualizerLed != null)
-            {
                 OnLedClicked(new LedClickedEventArgs(deviceVisualizerLed.Led.Device, deviceVisualizerLed.Led, e));
-                e.Handled = true;
-            }
+            else
+                OnClicked(e);
         }
 
         private void DevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -326,5 +337,7 @@ namespace Artemis.UI.Shared
         }
 
         #endregion
+
+
     }
 }
