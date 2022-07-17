@@ -24,7 +24,7 @@ public class GradientPickerButton : TemplatedControl
     ///     Gets or sets the color gradient.
     /// </summary>
     public static readonly StyledProperty<ColorGradient?> ColorGradientProperty =
-        AvaloniaProperty.Register<GradientPickerButton, ColorGradient?>(nameof(ColorGradient), notifying: ColorGradientChanged, defaultValue: ColorGradient.GetUnicornBarf());
+        AvaloniaProperty.Register<GradientPickerButton, ColorGradient?>(nameof(ColorGradient), notifying: ColorGradientChanged);
 
     /// <summary>
     ///     Gets or sets a boolean indicating whether the gradient picker should be in compact mode or not.
@@ -108,7 +108,8 @@ public class GradientPickerButton : TemplatedControl
 
     private static void ColorGradientChanged(IAvaloniaObject sender, bool before)
     {
-        (sender as GradientPickerButton)?.Subscribe();
+        if (!before)
+            (sender as GradientPickerButton)?.Subscribe();
     }
 
     private void Subscribe()

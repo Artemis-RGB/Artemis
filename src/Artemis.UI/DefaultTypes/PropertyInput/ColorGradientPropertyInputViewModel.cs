@@ -1,4 +1,6 @@
-﻿using Artemis.Core;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Artemis.Core;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Artemis.UI.Shared.Services.PropertyInput;
@@ -9,37 +11,19 @@ namespace Artemis.UI.DefaultTypes.PropertyInput;
 public class ColorGradientPropertyInputViewModel : PropertyInputViewModel<ColorGradient>
 {
     private ColorGradient _colorGradient = null!;
-    private ColorGradient? _originalGradient;
+    private List<ColorGradientStop>? _originalStops;
 
     public ColorGradientPropertyInputViewModel(LayerProperty<ColorGradient> layerProperty, IProfileEditorService profileEditorService, IPropertyInputService propertyInputService)
         : base(layerProperty, profileEditorService, propertyInputService)
     {
     }
-
-    public ColorGradient ColorGradient
-    {
-        get => _colorGradient;
-        set => this.RaiseAndSetIfChanged(ref _colorGradient, value);
-    }
-
-    protected override void OnInputValueChanged()
-    {
-        ColorGradient = new ColorGradient(InputValue);
-    }
-
+    
     #region Overrides of PropertyInputViewModel<ColorGradient>
 
     /// <inheritdoc />
     public override void StartPreview()
     {
-        _originalGradient = LayerProperty.CurrentValue;
-
-        // Set the property value to the gradient being edited by the picker, this will cause any updates to show right away because
-        // ColorGradient is a reference type
-        LayerProperty.CurrentValue = ColorGradient;
-
-        // This won't fly if we ever support keyframes but at that point ColorGradient would have to be a value type anyway and this
-        // whole VM no longer makes sense
+        _originalStops = InputValue?.Select(s => new ColorGradientStop(s.Color, s.Position)).ToList();
     }
 
     /// <inheritdoc />
@@ -51,29 +35,41 @@ public class ColorGradientPropertyInputViewModel : PropertyInputViewModel<ColorG
     /// <inheritdoc />
     public override void ApplyPreview()
     {
-        if (_originalGradient == null)
+        // If the new stops are equal to the old ones, nothing changes
+        if (InputValue == null || _originalStops == null || !HasPreviewChanges())
             return;
-
-        // Make sure something actually changed
-        if (Equals(ColorGradient, _originalGradient))
-            LayerProperty.CurrentValue = _originalGradient;
-        else
-            // Update the gradient for realsies, giving the command a reference to the old gradient
-            ProfileEditorService.ExecuteCommand(new UpdateLayerProperty<ColorGradient>(LayerProperty, ColorGradient, _originalGradient, Time));
-
-        _originalGradient = null;
+        
+        ProfileEditorService.ExecuteCommand(new UpdateColorGradient(InputValue, InputValue.ToList(), _originalStops));
+        _originalStops = null;
     }
 
     /// <inheritdoc />
     public override void DiscardPreview()
     {
-        if (_originalGradient == null)
+        if (InputValue == null || _originalStops == null)
             return;
 
         // Put the old gradient back
-        InputValue = _originalGradient;
-        ColorGradient = new ColorGradient(InputValue);
+        InputValue.Clear();
+        foreach (ColorGradientStop colorGradientStop in _originalStops)
+            InputValue.Add(colorGradientStop);
+        _originalStops = null;
     }
 
+    private bool HasPreviewChanges()
+    {
+        if (InputValue == null || _originalStops == null)
+            return false;
+        
+        if (InputValue.Count != _originalStops.Count)
+            return true;
+
+        for (int i = 0; i < InputValue.Count; i++)
+            if (!Equals(InputValue[i], _originalStops[i]))
+                return true;
+
+        return false;
+    }
+    
     #endregion
 }

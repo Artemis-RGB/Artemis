@@ -3,17 +3,11 @@
     /// <inheritdoc />
     public class IntRangeLayerProperty : LayerProperty<IntRange>
     {
-        internal IntRangeLayerProperty()
-        {
-            CurrentValueSet += OnCurrentValueSet;
-            DefaultValue = new IntRange();
-        }
-
         /// <inheritdoc />
         protected override void OnInitialize()
         {
-            DataBinding.RegisterDataBindingProperty(() => CurrentValue.Start, value => CurrentValue.Start = value, "Start");
-            DataBinding.RegisterDataBindingProperty(() => CurrentValue.End, value => CurrentValue.End = value, "End");
+            DataBinding.RegisterDataBindingProperty(() => CurrentValue.Start, value => CurrentValue = new IntRange(value, CurrentValue.End), "Start");
+            DataBinding.RegisterDataBindingProperty(() => CurrentValue.End, value => CurrentValue = new IntRange(CurrentValue.Start, value), "End");
         }
 
         /// <inheritdoc />
@@ -25,12 +19,6 @@
                 (int) (CurrentKeyframe!.Value.Start + startDiff * keyframeProgressEased),
                 (int) (CurrentKeyframe!.Value.End + endDiff * keyframeProgressEased)
             );
-        }
-
-        private void OnCurrentValueSet(object? sender, LayerPropertyEventArgs e)
-        {
-            // Don't allow the int range to be null
-            BaseValue ??= DefaultValue ?? new IntRange();
         }
     }
 }

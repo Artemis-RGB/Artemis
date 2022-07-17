@@ -30,28 +30,20 @@ public class IntRangePropertyInputViewModel : PropertyInputViewModel<IntRange>
 
     public int Start
     {
-        get => InputValue?.Start ?? 0;
+        get => InputValue.Start;
         set
         {
-            if (InputValue == null)
-                InputValue = new IntRange(value, value + 1);
-            else
-                InputValue.Start = value;
-
+            InputValue = new IntRange(value, InputValue.End);
             this.RaisePropertyChanged(nameof(Start));
         }
     }
 
     public int End
     {
-        get => InputValue?.End ?? 0;
+        get => InputValue.End;
         set
         {
-            if (InputValue == null)
-                InputValue = new IntRange(value - 1, value);
-            else
-                InputValue.End = value;
-
+            InputValue = new IntRange(InputValue.Start, value);
             this.RaisePropertyChanged(nameof(End));
         }
     }

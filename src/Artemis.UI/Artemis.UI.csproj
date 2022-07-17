@@ -8,44 +8,44 @@
         <Platforms>x64</Platforms>
     </PropertyGroup>
     <ItemGroup>
-        <AvaloniaResource Include="Assets\**" />
+        <AvaloniaResource Include="Assets\**"/>
     </ItemGroup>
     <ItemGroup>
-        <None Remove="Artemis.UI.Avalonia.csproj.DotSettings" />
-        <None Remove="Artemis.UI.csproj.DotSettings" />
-        <None Remove="Assets\Images\Logo\application.ico" />
+        <None Remove="Artemis.UI.Avalonia.csproj.DotSettings"/>
+        <None Remove="Artemis.UI.csproj.DotSettings"/>
+        <None Remove="Assets\Images\Logo\application.ico"/>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="0.10.15" />
-        <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="10.14.0" />
-        <PackageReference Include="Avalonia.Desktop" Version="0.10.15" />
-        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.15" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.15" />
-        <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.14" />
-        <PackageReference Include="DynamicData" Version="7.8.6" />
-        <PackageReference Include="FluentAvaloniaUI" Version="1.4.1" />
-        <PackageReference Include="Flurl.Http" Version="3.2.4" />
-        <PackageReference Include="Live.Avalonia" Version="1.3.1" />
-        <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2" />
-        <PackageReference Include="ReactiveUI" Version="17.1.50" />
-        <PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />
-        <PackageReference Include="RGB.NET.Core" Version="1.0.0-prerelease.32" />
-        <PackageReference Include="RGB.NET.Layout" Version="1.0.0-prerelease.32" />
-        <PackageReference Include="SkiaSharp" Version="2.88.1-preview.1" />
-        <PackageReference Include="Splat.Ninject" Version="14.1.45" />
+        <PackageReference Include="Avalonia" Version="0.10.15"/>
+        <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="10.14.0"/>
+        <PackageReference Include="Avalonia.Desktop" Version="0.10.15"/>
+        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.15"/>
+        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.15"/>
+        <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.14"/>
+        <PackageReference Include="DynamicData" Version="7.8.6"/>
+        <PackageReference Include="FluentAvaloniaUI" Version="1.4.1"/>
+        <PackageReference Include="Flurl.Http" Version="3.2.4"/>
+        <PackageReference Include="Live.Avalonia" Version="1.3.1"/>
+        <PackageReference Include="Material.Icons.Avalonia" Version="1.0.2"/>
+        <PackageReference Include="ReactiveUI" Version="17.1.50"/>
+        <PackageReference Include="ReactiveUI.Validation" Version="2.2.1"/>
+        <PackageReference Include="RGB.NET.Core" Version="1.0.0-prerelease.32"/>
+        <PackageReference Include="RGB.NET.Layout" Version="1.0.0-prerelease.32"/>
+        <PackageReference Include="SkiaSharp" Version="2.88.1-preview.1"/>
+        <PackageReference Include="Splat.Ninject" Version="14.1.45"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
-        <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
-        <ProjectReference Include="..\Artemis.VisualScripting\Artemis.VisualScripting.csproj" />
+        <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj"/>
+        <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj"/>
+        <ProjectReference Include="..\Artemis.VisualScripting\Artemis.VisualScripting.csproj"/>
     </ItemGroup>
     <ItemGroup>
-        <Content Include="Assets\Images\Logo\bow-white.ico" />
-        <Content Include="Assets\Images\Logo\bow.ico" />
+        <Content Include="Assets\Images\Logo\bow-white.ico"/>
+        <Content Include="Assets\Images\Logo\bow.ico"/>
     </ItemGroup>
     <ItemGroup>
-        <Resource Include="Assets\Images\Logo\bow-black.ico" />
-        <Resource Include="Assets\Images\Logo\bow-white.ico" />
+        <Resource Include="Assets\Images\Logo\bow-black.ico"/>
+        <Resource Include="Assets\Images\Logo\bow-white.ico"/>
     </ItemGroup>
     <ItemGroup>
         <Compile Update="DefaultTypes\PropertyInput\StringPropertyInputView.axaml.cs">
@@ -72,8 +72,8 @@
             <SubType>Code</SubType>
         </Compile>
         <Compile Update="Screens\Scripting\Dialogs\ScriptConfigurationEditView.axaml.cs">
-          <DependentUpon>ScriptConfigurationEditView.axaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>ScriptConfigurationEditView.axaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
     <ItemGroup>

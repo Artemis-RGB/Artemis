@@ -9,7 +9,7 @@
              x:DataType="propertyInput:ColorGradientPropertyInputViewModel">
     <gradientPicker:GradientPickerButton Classes="condensed"
                                          Width="200"
-                                         ColorGradient="{CompiledBinding ColorGradient}"
+                                         ColorGradient="{CompiledBinding InputValue}"
                                          VerticalAlignment="Center" 
                                          FlyoutOpened="GradientPickerButton_OnFlyoutOpened"
                                          FlyoutClosed="GradientPickerButton_OnFlyoutClosed"/>

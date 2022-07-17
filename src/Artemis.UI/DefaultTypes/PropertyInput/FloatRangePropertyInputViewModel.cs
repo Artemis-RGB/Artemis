@@ -30,28 +30,20 @@ public class FloatRangePropertyInputViewModel : PropertyInputViewModel<FloatRang
 
     public float Start
     {
-        get => InputValue?.Start ?? 0;
+        get => InputValue.Start;
         set
         {
-            if (InputValue == null)
-                InputValue = new FloatRange(value, value + 1);
-            else
-                InputValue.Start = value;
-
+            InputValue = new FloatRange(value, InputValue.End);
             this.RaisePropertyChanged(nameof(Start));
         }
     }
 
     public float End
     {
-        get => InputValue?.End ?? 0;
+        get => InputValue.End;
         set
         {
-            if (InputValue == null)
-                InputValue = new FloatRange(value - 1, value);
-            else
-                InputValue.End = value;
-
+            InputValue = new FloatRange(InputValue.Start, value);
             this.RaisePropertyChanged(nameof(End));
         }
     }

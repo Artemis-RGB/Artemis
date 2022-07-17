@@ -39,8 +39,6 @@ namespace Artemis.Core.LayerBrushes
             PropertyGroupDescriptionAttribute groupDescription = new() {Identifier = "Brush", Name = Descriptor.DisplayName, Description = Descriptor.Description};
             Properties.Initialize(Layer, null, groupDescription, propertyGroupEntity);
             PropertiesInitialized = true;
-
-            EnableLayerBrush();
         }
     }
 }

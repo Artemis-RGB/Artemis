@@ -56,6 +56,21 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     }
 
     /// <summary>
+    ///     Creates a new instance of the <see cref="ColorGradient" /> class
+    /// </summary>
+    /// <param name="stops">The stops to copy</param>
+    public ColorGradient(List<ColorGradientStop> stops)
+    {
+        _stops = new List<ColorGradientStop>();
+        foreach (ColorGradientStop colorGradientStop in stops)
+        {
+            ColorGradientStop stop = new(colorGradientStop.Color, colorGradientStop.Position);
+            stop.PropertyChanged += ItemOnPropertyChanged;
+            _stops.Add(stop);
+        }
+    }
+
+    /// <summary>
     ///     Gets all the colors in the color gradient
     /// </summary>
     /// <param name="timesToRepeat">The amount of times to repeat the colors</param>
@@ -462,7 +477,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     public int Add(object? value)
     {
         if (value is ColorGradientStop stop)
-            _stops.Add(stop);
+            Add(stop);
 
         return IndexOf(value);
     }
@@ -492,14 +507,14 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     public void Insert(int index, object? value)
     {
         if (value is ColorGradientStop stop)
-            _stops.Insert(index, stop);
+            Insert(index, stop);
     }
 
     /// <inheritdoc />
     public void Remove(object? value)
     {
         if (value is ColorGradientStop stop)
-            _stops.Remove(stop);
+            Remove(stop);
     }
 
     /// <inheritdoc />

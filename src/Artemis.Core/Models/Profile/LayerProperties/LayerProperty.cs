@@ -261,7 +261,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets whether keyframes are supported on this type of property
         /// </summary>
-        public bool KeyframesSupported { get; protected internal set; } = true;
+        public bool KeyframesSupported { get; protected set; } = true;
 
         /// <summary>
         ///     Gets or sets whether keyframes are enabled on this property, has no effect if <see cref="KeyframesSupported" /> is

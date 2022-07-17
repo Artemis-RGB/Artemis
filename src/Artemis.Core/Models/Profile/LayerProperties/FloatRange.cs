@@ -5,17 +5,9 @@ namespace Artemis.Core
     /// <summary>
     ///     Represents a range between two single-precision floating point numbers
     /// </summary>
-    public class FloatRange
+    public readonly struct FloatRange
     {
         private readonly Random _rand;
-
-        /// <summary>
-        ///     Creates a new instance of the <see cref="FloatRange" /> class
-        /// </summary>
-        public FloatRange()
-        {
-            _rand = new Random();
-        }
 
         /// <summary>
         ///     Creates a new instance of the <see cref="FloatRange" /> class
@@ -31,14 +23,14 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets or sets the start value of the range
+        ///     Gets the start value of the range
         /// </summary>
-        public float Start { get; set; }
+        public float Start { get; }
 
         /// <summary>
-        ///     Gets or sets the end value of the range
+        ///     Gets the end value of the range
         /// </summary>
-        public float End { get; set; }
+        public float End { get; }
 
         /// <summary>
         ///     Determines whether the given value is in this range

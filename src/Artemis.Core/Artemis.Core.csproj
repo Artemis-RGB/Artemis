@@ -1,83 +1,79 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <PreserveCompilationContext>false</PreserveCompilationContext>
-    <ShouldIncludeNativeSkiaSharp>false</ShouldIncludeNativeSkiaSharp>
-    <AssemblyTitle>Artemis.Core</AssemblyTitle>
-    <Product>Artemis Core</Product>
-    <Copyright>Copyright © Robert Beekman - 2020</Copyright>
-    <OutputPath>bin\</OutputPath>
-    <Platforms>x64</Platforms>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <DocumentationFile>bin\Artemis.Core.xml</DocumentationFile>
-    <NoWarn></NoWarn>
-    <WarningLevel>5</WarningLevel>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <PreserveCompilationContext>false</PreserveCompilationContext>
+        <ShouldIncludeNativeSkiaSharp>false</ShouldIncludeNativeSkiaSharp>
+        <AssemblyTitle>Artemis.Core</AssemblyTitle>
+        <Product>Artemis Core</Product>
+        <Copyright>Copyright © Robert Beekman - 2020</Copyright>
+        <OutputPath>bin\</OutputPath>
+        <Platforms>x64</Platforms>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        <PlatformTarget>x64</PlatformTarget>
+        <DocumentationFile>bin\Artemis.Core.xml</DocumentationFile>
+        <NoWarn></NoWarn>
+        <WarningLevel>5</WarningLevel>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <NrtRevisionFormat>1.0-{chash:6}</NrtRevisionFormat>
-    <NrtResolveSimpleAttributes>true</NrtResolveSimpleAttributes>
-    <NrtResolveInformationalAttribute>true</NrtResolveInformationalAttribute>
-    <NrtResolveCopyright>true</NrtResolveCopyright>
-    <NrtTagMatch>v[0-9]*</NrtTagMatch>
-    <NrtRemoveTagV>true</NrtRemoveTagV>
-    <NrtRequiredVcs>git</NrtRequiredVcs>
-    <NrtShowRevision>true</NrtShowRevision>
-    <Nullable>enable</Nullable>
-    <AnalysisLevel>latest</AnalysisLevel>
-  </PropertyGroup>
+    <PropertyGroup>
+        <NrtRevisionFormat>1.0-{chash:6}</NrtRevisionFormat>
+        <NrtResolveSimpleAttributes>true</NrtResolveSimpleAttributes>
+        <NrtResolveInformationalAttribute>true</NrtResolveInformationalAttribute>
+        <NrtResolveCopyright>true</NrtResolveCopyright>
+        <NrtTagMatch>v[0-9]*</NrtTagMatch>
+        <NrtRemoveTagV>true</NrtRemoveTagV>
+        <NrtRequiredVcs>git</NrtRequiredVcs>
+        <NrtShowRevision>true</NrtShowRevision>
+        <Nullable>enable</Nullable>
+        <AnalysisLevel>latest</AnalysisLevel>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DocumentationFile>bin\Artemis.Core.xml</DocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj">
-      <Private>false</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="EmbedIO" Version="3.4.3" />
-    <PackageReference Include="HidSharp" Version="2.1.0" />
-    <PackageReference Include="Humanizer.Core" Version="2.14.1" />
-    <PackageReference Include="LiteDB" Version="5.0.11" />
-    <PackageReference Include="McMaster.NETCore.Plugins" Version="1.4.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Ninject" Version="3.3.4" />
-    <PackageReference Include="Ninject.Extensions.ChildKernel" Version="3.3.0" />
-    <PackageReference Include="Ninject.Extensions.Conventions" Version="3.3.0" />
-    <PackageReference Include="RGB.NET.Core" Version="1.0.0-prerelease.32" />
-    <PackageReference Include="RGB.NET.Layout" Version="1.0.0-prerelease.32" />
-    <PackageReference Include="RGB.NET.Presets" Version="1.0.0-prerelease.32" />
-    <PackageReference Include="Serilog" Version="2.10.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
-    <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="SkiaSharp" Version="2.88.1-preview.1" />
-    <PackageReference Include="System.Buffers" Version="4.5.1" />
-    <PackageReference Include="System.IO.FileSystem.AccessControl" Version="5.0.0" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-    <PackageReference Include="System.Reflection.Metadata" Version="5.0.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-    <PackageReference Include="Unclassified.NetRevisionTask" Version="0.4.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Resources\intro-profile.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+        <DocumentationFile>bin\Artemis.Core.xml</DocumentationFile>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj">
+            <Private>false</Private>
+        </ProjectReference>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="EmbedIO" Version="3.4.3"/>
+        <PackageReference Include="HidSharp" Version="2.1.0"/>
+        <PackageReference Include="Humanizer.Core" Version="2.14.1"/>
+        <PackageReference Include="LiteDB" Version="5.0.11"/>
+        <PackageReference Include="McMaster.NETCore.Plugins" Version="1.4.0"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="Ninject" Version="3.3.4"/>
+        <PackageReference Include="Ninject.Extensions.ChildKernel" Version="3.3.0"/>
+        <PackageReference Include="Ninject.Extensions.Conventions" Version="3.3.0"/>
+        <PackageReference Include="RGB.NET.Core" Version="1.0.0-prerelease.32"/>
+        <PackageReference Include="RGB.NET.Layout" Version="1.0.0-prerelease.32"/>
+        <PackageReference Include="RGB.NET.Presets" Version="1.0.0-prerelease.32"/>
+        <PackageReference Include="Serilog" Version="2.10.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1"/>
+        <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0"/>
+        <PackageReference Include="SkiaSharp" Version="2.88.1-preview.1"/>
+        <PackageReference Include="System.Buffers" Version="4.5.1"/>
+        <PackageReference Include="System.IO.FileSystem.AccessControl" Version="5.0.0"/>
+        <PackageReference Include="System.Numerics.Vectors" Version="4.5.0"/>
+        <PackageReference Include="System.Reflection.Metadata" Version="5.0.0"/>
+        <PackageReference Include="System.ValueTuple" Version="4.5.0"/>
+        <PackageReference Include="Unclassified.NetRevisionTask" Version="0.4.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="Resources\intro-profile.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Update="DefaultLayouts\**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DefaultTypes\DataBindings\" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Update="DefaultLayouts\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>

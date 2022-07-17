@@ -379,7 +379,7 @@ namespace Artemis.Core
 
             UpdateDisplayCondition();
             UpdateTimeline(deltaTime);
-            
+
             if (ShouldBeEnabled)
                 Enable();
             else if (Timeline.IsFinished && !_renderCopies.Any())
@@ -514,7 +514,7 @@ namespace Artemis.Core
             }, "Failed to enable one or more effects");
             if (!tryOrBreak)
                 return;
-            
+
             Enabled = true;
         }
 
@@ -633,6 +633,7 @@ namespace Artemis.Core
                 if (!baseLayerEffect.Suspended)
                     baseLayerEffect.InternalPreProcess(canvas, bounds, layerPaint);
             }
+
             canvas.ClipPath(renderPath);
 
             // Restore the blend mode before doing the actual render
@@ -788,10 +789,14 @@ namespace Artemis.Core
         /// </summary>
         public void ChangeLayerBrush(BaseLayerBrush? layerBrush)
         {
+            BaseLayerBrush? oldLayerBrush = LayerBrush;
+            
             General.BrushReference.SetCurrentValue(layerBrush != null ? new LayerBrushReference(layerBrush.Descriptor) : null, null);
             LayerBrush = layerBrush;
             LayerEntity.LayerBrush = new LayerBrushEntity();
-            
+
+            oldLayerBrush?.InternalDisable();
+
             if (LayerBrush != null)
                 ActivateLayerBrush();
             else
@@ -815,7 +820,12 @@ namespace Artemis.Core
                 General.ShapeType.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
                 General.BlendMode.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
                 Transform.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
-                LayerBrush?.Update(0);
+                if (LayerBrush != null)
+                {
+                    if (!LayerBrush.Enabled)
+                        LayerBrush.InternalEnable();
+                    LayerBrush?.Update(0);
+                }
 
                 OnLayerBrushUpdated();
                 ClearBrokenState("Failed to initialize layer brush");

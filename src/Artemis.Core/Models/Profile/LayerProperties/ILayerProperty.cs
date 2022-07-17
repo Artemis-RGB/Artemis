@@ -47,7 +47,7 @@ namespace Artemis.Core
         ///     Gets a boolean indicating whether data bindings are supported on this type of property
         /// </summary>
         public bool DataBindingsSupported { get; }
-
+        
         /// <summary>
         ///     Gets the unique path of the property on the render element
         /// </summary>
