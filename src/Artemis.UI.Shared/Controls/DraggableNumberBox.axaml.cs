@@ -24,12 +24,12 @@ public class DraggableNumberBox : UserControl
     /// <summary>
     ///     Defines the <see cref="Minimum" /> property.
     /// </summary>
-    public static readonly StyledProperty<double> MinimumProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Minimum), double.MinValue);
+    public static readonly StyledProperty<double> MinimumProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Minimum));
 
     /// <summary>
     ///     Defines the <see cref="Maximum" /> property.
     /// </summary>
-    public static readonly StyledProperty<double> MaximumProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Maximum), double.MaxValue);
+    public static readonly StyledProperty<double> MaximumProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Maximum));
 
     /// <summary>
     ///     Defines the <see cref="LargeChange" /> property.

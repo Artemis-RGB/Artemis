@@ -95,6 +95,9 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
         get => _inputValue;
         set
         {
+            if (Equals(_inputValue, value))
+                return;
+            
             this.RaiseAndSetIfChanged(ref _inputValue, value);
             ApplyInputValue();
         }

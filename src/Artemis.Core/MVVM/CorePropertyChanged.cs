@@ -21,7 +21,7 @@ namespace Artemis.Core
         #region Methods
 
         /// <summary>
-        ///     Checks if the property already matches the desirec value or needs to be updated.
+        ///     Checks if the property already matches the desired value or needs to be updated.
         /// </summary>
         /// <typeparam name="T">Type of the property.</typeparam>
         /// <param name="storage">Reference to the backing-filed.</param>
