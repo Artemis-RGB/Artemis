@@ -88,7 +88,8 @@ namespace Artemis.UI.Screens.Plugins
             // Disable all subjects that are features if still required
             foreach (IPrerequisitesSubject prerequisitesSubject in _subjects)
             {
-                if (prerequisitesSubject is not PluginFeatureInfo featureInfo) continue;
+                if (prerequisitesSubject is not PluginFeatureInfo featureInfo)
+                    continue;
 
                 // Disable the parent plugin if the feature is AlwaysEnabled
                 if (featureInfo.AlwaysEnabled)

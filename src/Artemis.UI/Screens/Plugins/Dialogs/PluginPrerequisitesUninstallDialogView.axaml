@@ -35,19 +35,10 @@
                  IsHitTestVisible="False">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type plugins:PluginPrerequisiteViewModel}">
-                    <Grid ColumnDefinitions="Auto,*" Margin="0 6">
-                        <Border Grid.Row="0" Grid.Column="0" Classes="status-border" IsVisible="{CompiledBinding !IsMet}" Background="#ff3838">
-                            <avalonia:MaterialIcon Kind="Close" />
-                        </Border>
-                        <Border Grid.Row="0" Grid.Column="0" Classes="status-border" IsVisible="{CompiledBinding IsMet}" Background="#32a852">
-                            <avalonia:MaterialIcon Kind="Check" />
-                        </Border>
-
-                        <StackPanel Margin="8 0 0 0" Grid.Column="1" VerticalAlignment="Stretch">
-                            <TextBlock FontWeight="Bold" Text="{CompiledBinding PluginPrerequisite.Name}" TextWrapping="Wrap" />
-                            <TextBlock Text="{CompiledBinding PluginPrerequisite.Description}" TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Grid>
+                    <StackPanel Margin="0 6" VerticalAlignment="Stretch">
+                        <TextBlock FontWeight="Bold" Text="{CompiledBinding PluginPrerequisite.Name}" TextWrapping="Wrap" />
+                        <TextBlock Text="{CompiledBinding PluginPrerequisite.Description}" TextWrapping="Wrap" />
+                    </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

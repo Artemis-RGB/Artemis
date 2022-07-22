@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -37,6 +38,11 @@ namespace Artemis.UI.Screens.Plugins
             FeatureInfo = pluginFeatureInfo;
             ShowShield = FeatureInfo.Plugin.Info.RequiresAdmin && showShield;
 
+            ShowLogsFolder = ReactiveCommand.Create(ExecuteShowLogsFolder);
+            ViewLoadException = ReactiveCommand.Create(ExecuteViewLoadException);
+            InstallPrerequisites = ReactiveCommand.CreateFromTask(ExecuteInstallPrerequisites);
+            RemovePrerequisites = ReactiveCommand.CreateFromTask(ExecuteRemovePrerequisites);
+
             this.WhenActivated(d =>
             {
                 _pluginManagementService.PluginFeatureEnabling += OnFeatureEnabling;
@@ -58,6 +64,11 @@ namespace Artemis.UI.Screens.Plugins
             });
         }
 
+        public ReactiveCommand<Unit, Unit> ShowLogsFolder { get; }
+        public ReactiveCommand<Unit, Unit> ViewLoadException { get; }
+        public ReactiveCommand<Unit, Unit> InstallPrerequisites { get; }
+        public ReactiveCommand<Unit, Unit> RemovePrerequisites { get; }
+        
         public PluginFeatureInfo FeatureInfo { get; }
         public Exception? LoadException => FeatureInfo.LoadException;
 
@@ -80,7 +91,7 @@ namespace Artemis.UI.Screens.Plugins
         public bool CanRemovePrerequisites => FeatureInfo.PlatformPrerequisites.Any(p => p.UninstallActions.Any());
         public bool IsPopupEnabled => CanInstallPrerequisites || CanRemovePrerequisites;
 
-        public void ShowLogsFolder()
+        private void ExecuteShowLogsFolder()
         {
             try
             {
@@ -92,19 +103,19 @@ namespace Artemis.UI.Screens.Plugins
             }
         }
 
-        public void ViewLoadException()
+        private void ExecuteViewLoadException()
         {
             if (LoadException != null)
                 _windowService.ShowExceptionDialog("Feature failed to enable", LoadException);
         }
 
-        public async Task InstallPrerequisites()
+        private async Task ExecuteInstallPrerequisites()
         {
             if (FeatureInfo.PlatformPrerequisites.Any())
                 await PluginPrerequisitesInstallDialogViewModel.Show(_windowService, new List<IPrerequisitesSubject> {FeatureInfo});
         }
 
-        public async Task RemovePrerequisites()
+        private async Task ExecuteRemovePrerequisites()
         {
             if (FeatureInfo.PlatformPrerequisites.Any(p => p.UninstallActions.Any()))
             {
@@ -126,7 +137,7 @@ namespace Artemis.UI.Screens.Plugins
                 this.RaisePropertyChanged(nameof(IsEnabled));
                 _notificationService.CreateNotification()
                     .WithMessage($"Feature '{FeatureInfo.Name}' is in a broken state and cannot enable.")
-                    .HavingButton(b => b.WithText("View logs").WithAction(ShowLogsFolder))
+                    .HavingButton(b => b.WithText("View logs").WithCommand(ShowLogsFolder))
                     .WithSeverity(NotificationSeverity.Error)
                     .Show();
                 return;
@@ -165,7 +176,7 @@ namespace Artemis.UI.Screens.Plugins
                 {
                     _notificationService.CreateNotification()
                         .WithMessage($"Failed to enable '{FeatureInfo.Name}'.\r\n{e.Message}")
-                        .HavingButton(b => b.WithText("View logs").WithAction(ShowLogsFolder))
+                        .HavingButton(b => b.WithText("View logs").WithCommand(ShowLogsFolder))
                         .WithSeverity(NotificationSeverity.Error)
                         .Show();
                 }

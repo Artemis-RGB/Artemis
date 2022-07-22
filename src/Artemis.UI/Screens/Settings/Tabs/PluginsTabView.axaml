@@ -16,7 +16,7 @@
             <Button Grid.Row="0" Grid.Column="1" Classes="accent" Command="{CompiledBinding ImportPlugin}" HorizontalAlignment="Right">Import plugin</Button>
         </Grid>
 
-        <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
             <ItemsControl Items="{CompiledBinding Plugins}" MaxWidth="900" VerticalAlignment="Center"/>
         </ScrollViewer>
     </Grid>

@@ -44,6 +44,10 @@
                 <ToggleButton Classes="icon-button">
                     <avalonia:MaterialIcon Kind="BlockChain" />
                 </ToggleButton>
+                
+                <Button Classes="icon-button">
+                    <avalonia:MaterialIcon Kind="Cog" />
+                </Button>
             </StackPanel>
         </Border>
     </Design.PreviewWith>

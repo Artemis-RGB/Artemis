@@ -11,12 +11,12 @@
     <Grid ColumnDefinitions="30,*,Auto">
         <Grid.ContextFlyout>
             <MenuFlyout>
-                <MenuItem Header="Install prerequisites" Command="{Binding InstallPrerequisites}">
+                <MenuItem Header="Install prerequisites" Command="{CompiledBinding InstallPrerequisites}">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="CheckAll" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Remove prerequisites" Command="{Binding RemovePrerequisites}">
+                <MenuItem Header="Remove prerequisites" Command="{CompiledBinding RemovePrerequisites}">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="Delete" />
                     </MenuItem.Icon>
@@ -58,11 +58,29 @@
                                    ToolTip.Tip="Plugin requires admin rights"
                                    VerticalAlignment="Center"
                                    Margin="0 0 5 0"
-                                   IsVisible="{Binding ShowShield}" />
+                                   IsVisible="{CompiledBinding ShowShield}" />
 
             <CheckBox IsChecked="{CompiledBinding IsEnabled}" IsEnabled="{CompiledBinding CanToggleEnabled}">
                 Enable feature
             </CheckBox>
+
+            <Button Classes="icon-button" Margin="5 0 0 0" IsVisible="{CompiledBinding CanInstallPrerequisites}">
+                <Button.Flyout>
+                    <MenuFlyout Placement="Bottom" >
+                        <MenuItem Header="Install prerequisites" Command="{CompiledBinding InstallPrerequisites}">
+                            <MenuItem.Icon>
+                                <avalonia:MaterialIcon Kind="CheckAll" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Remove prerequisites" Command="{CompiledBinding RemovePrerequisites}">
+                            <MenuItem.Icon>
+                                <avalonia:MaterialIcon Kind="Delete" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuFlyout>
+                </Button.Flyout>
+                <avalonia:MaterialIcon Kind="DotsVertical"></avalonia:MaterialIcon>
+            </Button>
 
         </StackPanel>
         <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="7" IsVisible="{CompiledBinding Enabling}">

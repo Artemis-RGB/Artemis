@@ -97,7 +97,7 @@ namespace Artemis.UI.Shared
         ///     Occurs when a LED of the device has been clicked
         /// </summary>
         public event EventHandler<LedClickedEventArgs>? LedClicked;
-        
+
         /// <summary>
         /// Occurs when the device was clicked but not on a LED.
         /// </summary>
@@ -259,8 +259,6 @@ namespace Artemis.UI.Shared
 
         private void SetupForDevice()
         {
-            _deviceImage?.Dispose();
-            _deviceImage = null;
             _highlightedLeds = new List<DeviceVisualizerLed>();
             _dimmedLeds = new List<DeviceVisualizerLed>();
 
@@ -296,7 +294,11 @@ namespace Artemis.UI.Shared
             Task.Run(() =>
             {
                 if (device.Layout?.Image == null || !File.Exists(device.Layout.Image.LocalPath))
+                {
+                    _deviceImage?.Dispose();
+                    _deviceImage = null;
                     return;
+                }
 
                 try
                 {
@@ -312,6 +314,7 @@ namespace Artemis.UI.Shared
                             deviceVisualizerLed.DrawBitmap(context);
                     }
 
+                    _deviceImage?.Dispose();
                     _deviceImage = renderTargetBitmap;
 
                     Dispatcher.UIThread.Post(InvalidateMeasure);
@@ -337,7 +340,5 @@ namespace Artemis.UI.Shared
         }
 
         #endregion
-
-
     }
 }

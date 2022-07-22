@@ -31,9 +31,8 @@ namespace Artemis.UI.Screens.Plugins
                 ? PluginPrerequisite.InstallActions.Select(a => new PluginPrerequisiteActionViewModel(a))
                 : PluginPrerequisite.UninstallActions.Select(a => new PluginPrerequisiteActionViewModel(a)));
 
-            this.WhenAnyValue(x => x.Installing, x => x.Uninstalling, (i, u) => i || u).ToProperty(this, x => x.Busy, out _busy);
-            this.WhenAnyValue(x => x.ActiveAction, a => Actions.IndexOf(a!)).ToProperty(this, x => x.ActiveStepNumber, out _activeStepNumber);
-
+            _busy = this.WhenAnyValue(x => x.Installing, x => x.Uninstalling, (i, u) => i || u).ToProperty(this, x => x.Busy);
+            _activeStepNumber = this.WhenAnyValue(x => x.ActiveAction, a => Actions.IndexOf(a!) + 1).ToProperty(this, x => x.ActiveStepNumber);
 
             this.WhenActivated(d =>
             {
