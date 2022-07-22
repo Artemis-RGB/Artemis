@@ -19,7 +19,7 @@
                     <Setter Property="MaxHeight" Value="0" />
                 </KeyFrame>
                 <KeyFrame Cue="100%">
-                    <Setter Property="MaxHeight" Value="50" />
+                    <Setter Property="MaxHeight" Value="600" />
                 </KeyFrame>
             </Animation>
         </Style.Animations>

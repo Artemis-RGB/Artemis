@@ -51,17 +51,8 @@ public abstract class DialogViewModelBase<TResult> : ValidatableViewModelBase
     {
         CloseRequested?.Invoke(this, new DialogClosedEventArgs<TResult>(result));
     }
-
-    /// <summary>
-    ///     Closes the dialog without a result
-    /// </summary>
-    public void Cancel()
-    {
-        CancelRequested?.Invoke(this, EventArgs.Empty);
-    }
-
+    
     internal event EventHandler<DialogClosedEventArgs<TResult>>? CloseRequested;
-    internal event EventHandler? CancelRequested;
 }
 
 /// <summary>

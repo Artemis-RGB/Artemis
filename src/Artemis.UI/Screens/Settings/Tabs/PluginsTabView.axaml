@@ -6,11 +6,18 @@
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Settings.PluginsTabView"
              x:DataType="settings:PluginsTabViewModel">
-    <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,*" Width="900">
-        <TextBox Grid.Row="0" Grid.Column="0" Classes="clearButton" Text="{CompiledBinding SearchPluginInput}" Watermark="Search plugins" Margin="0 10" />
-        <Button Grid.Row="0" Grid.Column="1" Classes="accent" Command="{CompiledBinding ImportPlugin}" HorizontalAlignment="Right">Import plugin</Button>
-        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-            <ItemsControl Items="{CompiledBinding Plugins}" />
+    <Grid RowDefinitions="Auto,*">
+        <Grid Grid.Row="0" Grid.Column="0" MaxWidth="900" Margin="0 10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MinWidth="165" MaxWidth="400"/>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBox Classes="clearButton" Text="{CompiledBinding SearchPluginInput}" Watermark="Search plugins" Margin="0 0 10 0"/>
+            <Button Grid.Row="0" Grid.Column="1" Classes="accent" Command="{CompiledBinding ImportPlugin}" HorizontalAlignment="Right">Import plugin</Button>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <ItemsControl Items="{CompiledBinding Plugins}" MaxWidth="900" VerticalAlignment="Center"/>
         </ScrollViewer>
     </Grid>
 </UserControl>

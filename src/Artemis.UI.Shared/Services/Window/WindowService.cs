@@ -30,7 +30,7 @@ namespace Artemis.UI.Shared.Services
             return viewModel;
         }
 
-        public void ShowWindow(object viewModel)
+        public Window ShowWindow(object viewModel)
         {
             Window? parent = GetCurrentWindow();
 
@@ -49,6 +49,8 @@ namespace Artemis.UI.Shared.Services
                 window.Show(parent);
             else
                 window.Show();
+
+            return window;
         }
 
         public async Task<TResult> ShowDialogAsync<TViewModel, TResult>(params (string name, object? value)[] parameters) where TViewModel : DialogViewModelBase<TResult>
@@ -86,7 +88,6 @@ namespace Artemis.UI.Shared.Services
             Window window = (Window) Activator.CreateInstance(type)!;
             window.DataContext = viewModel;
             viewModel.CloseRequested += (_, args) => window.Close(args.Result);
-            viewModel.CancelRequested += (_, _) => window.Close();
 
             return await window.ShowDialog<TResult>(parent);
         }
@@ -117,6 +118,14 @@ namespace Artemis.UI.Shared.Services
             if (currentWindow == null)
                 throw new ArtemisSharedUIException("Can't show a content dialog without any windows being shown.");
             return new ContentDialogBuilder(_kernel, currentWindow);
+        }
+        
+        public OpenFolderDialogBuilder CreateOpenFolderDialog()
+        {
+            Window? currentWindow = GetCurrentWindow();
+            if (currentWindow == null)
+                throw new ArtemisSharedUIException("Can't show an open folder dialog without any windows being shown.");
+            return new OpenFolderDialogBuilder(currentWindow);
         }
 
         public OpenFileDialogBuilder CreateOpenFileDialog()

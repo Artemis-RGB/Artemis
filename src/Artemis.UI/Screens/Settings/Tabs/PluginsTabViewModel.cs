@@ -90,7 +90,7 @@ namespace Artemis.UI.Screens.Settings
                 // Enable it via the VM to enable the prerequisite dialog
                 PluginSettingsViewModel? pluginViewModel = Plugins.FirstOrDefault(i => i.Plugin == plugin);
                 if (pluginViewModel is {IsEnabled: false})
-                    pluginViewModel.IsEnabled = true;
+                    await pluginViewModel.UpdateEnabled(true);
 
                 _notificationService.CreateNotification()
                     .WithTitle("Plugin imported")

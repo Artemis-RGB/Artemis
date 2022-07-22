@@ -22,7 +22,7 @@ namespace Artemis.UI.Shared.Services
         ///     Given a ViewModel, show its corresponding View as a window
         /// </summary>
         /// <param name="viewModel">ViewModel to show the View for</param>
-        void ShowWindow(object viewModel);
+        Window ShowWindow(object viewModel);
 
         /// <summary>
         ///     Shows a dialog displaying the given exception
@@ -61,6 +61,12 @@ namespace Artemis.UI.Shared.Services
         /// </returns>
         Task<bool> ShowConfirmContentDialog(string title, string message, string confirm = "Confirm", string? cancel = "Cancel");
 
+        /// <summary>
+        ///     Creates an open folder dialog, use the fluent API to configure it
+        /// </summary>
+        /// <returns>The builder that can be used to configure the dialog</returns>
+        OpenFolderDialogBuilder CreateOpenFolderDialog();
+        
         /// <summary>
         ///     Creates an open file dialog, use the fluent API to configure it
         /// </summary>

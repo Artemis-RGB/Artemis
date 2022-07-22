@@ -101,16 +101,7 @@ namespace Artemis.Core
         /// </summary>
         public bool AppliesToPlatform()
         {
-            if (Platform == null)
-                return true;
-
-            if (OperatingSystem.IsWindows())
-                return Platform.Value.HasFlag(PluginPlatform.Windows);
-            if (OperatingSystem.IsLinux())
-                return Platform.Value.HasFlag(PluginPlatform.Linux);
-            if (OperatingSystem.IsMacOS())
-                return Platform.Value.HasFlag(PluginPlatform.OSX);
-            return false;
+            return Platform.MatchesCurrentOperatingSystem();
         }
 
         /// <summary>

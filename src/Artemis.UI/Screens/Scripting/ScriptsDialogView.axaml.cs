@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Artemis.UI.Shared;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;

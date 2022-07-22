@@ -2,6 +2,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Windows.Ninject;
 using Artemis.UI.Windows.Providers.Input;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
@@ -22,9 +23,9 @@ namespace Artemis.UI.Windows
 
         public override void OnFrameworkInitializationCompleted()
         {
-            if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop || Design.IsDesignMode)
                 return;
-            
+
             ArtemisBootstrapper.Initialize();
             _applicationStateManager = new ApplicationStateManager(_kernel!, desktop.Args);
             RegisterProviders(_kernel!);

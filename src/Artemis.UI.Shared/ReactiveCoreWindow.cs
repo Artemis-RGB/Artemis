@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 
-namespace Artemis.UI
+namespace Artemis.UI.Shared
 {
     /// <summary>
     ///     A ReactiveUI <see cref="Window" /> that implements the <see cref="IViewFor{TViewModel}" /> interface and will

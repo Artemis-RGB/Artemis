@@ -4,8 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:plugins="clr-namespace:Artemis.UI.Screens.Plugins"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Plugins.PluginFeatureView">
+             x:Class="Artemis.UI.Screens.Plugins.PluginFeatureView"
+             x:DataType="plugins:PluginFeatureViewModel">
     <Grid ColumnDefinitions="30,*,Auto">
         <Grid.ContextFlyout>
             <MenuFlyout>
@@ -24,14 +26,15 @@
 
         <!-- Icon column -->
         <shared:ArtemisIcon Grid.Column="0"
-                            Icon="{Binding FeatureInfo.ResolvedIcon}"
+                            Icon="{CompiledBinding FeatureInfo.ResolvedIcon}"
+                            Fill="False"
                             Width="20"
                             Height="20"
-                            IsVisible="{Binding LoadException, Converter={x:Static ObjectConverters.IsNull}}" />
+                            IsVisible="{CompiledBinding LoadException, Converter={x:Static ObjectConverters.IsNull}}" />
 
         <Button Grid.Column="0"
                 Classes="AppBarButton icon-button"
-                IsVisible="{Binding LoadException, Converter={x:Static ObjectConverters.IsNotNull}}"
+                IsVisible="{CompiledBinding LoadException, Converter={x:Static ObjectConverters.IsNotNull}}"
                 Foreground="#E74C4C"
                 ToolTip.Tip="An exception occurred while enabling this feature, click to view"
                 Command="{Binding ViewLoadException}">
@@ -40,15 +43,15 @@
 
         <!-- Display name column -->
         <TextBlock Grid.Column="1"
-                   Text="{Binding FeatureInfo.Name}"
+                   Text="{CompiledBinding FeatureInfo.Name}"
                    TextWrapping="Wrap"
                    VerticalAlignment="Center"
-                   ToolTip.Tip="{Binding FeatureInfo.Description}" />
+                   ToolTip.Tip="{CompiledBinding FeatureInfo.Description}" />
 
         <!-- Enable toggle column -->
         <StackPanel Grid.Column="2"
                     HorizontalAlignment="Right"
-                    IsVisible="{Binding !Enabling}"
+                    IsVisible="{CompiledBinding !Enabling}"
                     Orientation="Horizontal"
                     ToolTip.Tip="This feature cannot be disabled without disabling the whole plugin">
             <avalonia:MaterialIcon Kind="ShieldHalfFull"
@@ -57,12 +60,12 @@
                                    Margin="0 0 5 0"
                                    IsVisible="{Binding ShowShield}" />
 
-            <CheckBox IsChecked="{Binding IsEnabled}" IsEnabled="{Binding CanToggleEnabled}">
-                Feature enabled
+            <CheckBox IsChecked="{CompiledBinding IsEnabled}" IsEnabled="{CompiledBinding CanToggleEnabled}">
+                Enable feature
             </CheckBox>
 
         </StackPanel>
-        <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="7" IsVisible="{Binding Enabling}">
+        <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="7" IsVisible="{CompiledBinding Enabling}">
             <ProgressBar Value="0" IsIndeterminate="True" />
         </StackPanel>
 

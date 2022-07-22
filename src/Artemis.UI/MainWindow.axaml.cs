@@ -1,5 +1,6 @@
 using System;
 using Artemis.UI.Screens.Root;
+using Artemis.UI.Shared;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;

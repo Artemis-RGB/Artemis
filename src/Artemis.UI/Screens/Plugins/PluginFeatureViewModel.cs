@@ -71,7 +71,7 @@ namespace Artemis.UI.Screens.Plugins
 
         public bool IsEnabled
         {
-            get => FeatureInfo.Instance != null && FeatureInfo.Instance.IsEnabled;
+            get => FeatureInfo.AlwaysEnabled || FeatureInfo.Instance != null && FeatureInfo.Instance.IsEnabled;
             set => Dispatcher.UIThread.InvokeAsync(() => UpdateEnabled(value));
         }
 

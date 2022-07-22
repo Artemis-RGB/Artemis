@@ -26,6 +26,7 @@ namespace Artemis.Core
 
         /// <summary>
         ///     Marks the feature to always be enabled as long as the plugin is enabled
+        ///     <para>Note: always <see langword="true"/> if this is the plugin's only feature</para>
         /// </summary>
         public bool AlwaysEnabled { get; set; }
     }

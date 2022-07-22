@@ -1,6 +1,7 @@
 using Artemis.Core.Services;
 using Artemis.UI.Linux.Providers.Input;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using ReactiveUI;
@@ -26,6 +27,9 @@ namespace Artemis.UI.Linux
 
         public override void OnFrameworkInitializationCompleted()
         {
+            if (Design.IsDesignMode)
+                return;
+            
             ArtemisBootstrapper.Initialize();
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 _applicationStateManager = new ApplicationStateManager(_kernel!, desktop.Args);

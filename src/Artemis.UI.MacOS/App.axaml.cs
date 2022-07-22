@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Ninject;
@@ -20,6 +21,9 @@ namespace Artemis.UI.MacOS
 
         public override void OnFrameworkInitializationCompleted()
         {
+            if (Design.IsDesignMode)
+                return;
+            
             ArtemisBootstrapper.Initialize();
         }
     }

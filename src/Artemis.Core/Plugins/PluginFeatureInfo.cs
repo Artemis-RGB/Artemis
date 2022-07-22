@@ -122,10 +122,11 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Marks the feature to always be enabled as long as the plugin is enabled and cannot be disabled
+        ///     Marks the feature to always be enabled as long as the plugin is enabled and cannot be disabled.
+        ///     <para>Note: always <see langword="true"/> if this is the plugin's only feature</para>
         /// </summary>
         [JsonProperty]
-        public bool AlwaysEnabled { get; }
+        public bool AlwaysEnabled { get; internal set; }
 
         /// <summary>
         ///     Gets a boolean indicating whether the feature is enabled in persistent storage

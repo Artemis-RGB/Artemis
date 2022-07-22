@@ -260,7 +260,7 @@ namespace Artemis.Core.Services
                 }
             }
 
-            foreach (Plugin plugin in _plugins.Where(p => p.Entity.IsEnabled))
+            foreach (Plugin plugin in _plugins.Where(p => p.Info.IsCompatible && p.Entity.IsEnabled))
             {
                 try
                 {
@@ -364,7 +364,13 @@ namespace Artemis.Core.Services
                 // Load the enabled state and if not found, default to true
                 PluginFeatureEntity featureEntity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName) ??
                                                     new PluginFeatureEntity {IsEnabled = true, Type = featureType.FullName!};
-                plugin.AddFeature(new PluginFeatureInfo(plugin, featureType, featureEntity, (PluginFeatureAttribute?) Attribute.GetCustomAttribute(featureType, typeof(PluginFeatureAttribute))));
+                PluginFeatureInfo feature = new(plugin, featureType, featureEntity, (PluginFeatureAttribute?) Attribute.GetCustomAttribute(featureType, typeof(PluginFeatureAttribute)));
+                
+                // If the plugin only has a single feature, it should always be enabled
+                if (featureTypes.Count == 1)
+                    feature.AlwaysEnabled = true;
+                
+                plugin.AddFeature(feature);
             }
 
             if (!featureTypes.Any())
@@ -390,6 +396,9 @@ namespace Artemis.Core.Services
 
         public void EnablePlugin(Plugin plugin, bool saveState, bool ignorePluginLock)
         {
+            if (!plugin.Info.IsCompatible)
+                throw new ArtemisPluginException(plugin, $"This plugin only supports the following operating system(s): {plugin.Info.Platforms}");
+            
             if (plugin.Assembly == null)
                 throw new ArtemisPluginException(plugin, "Cannot enable a plugin that hasn't successfully been loaded");
 
@@ -446,7 +455,18 @@ namespace Artemis.Core.Services
 
             // Activate features after they are all loaded
             foreach (PluginFeatureInfo pluginFeature in plugin.Features.Where(f => f.Instance != null && (f.EnabledInStorage || f.AlwaysEnabled)))
-                EnablePluginFeature(pluginFeature.Instance!, false, !ignorePluginLock);
+            {
+                try
+                {
+                    EnablePluginFeature(pluginFeature.Instance!, false, !ignorePluginLock);
+                }
+                catch (Exception)
+                {
+                    if (pluginFeature.AlwaysEnabled)
+                        DisablePlugin(plugin, false);
+                    throw;
+                }
+            }
 
             if (saveState)
             {

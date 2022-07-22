@@ -1,3 +1,4 @@
+using Artemis.UI.Shared;
 using Avalonia;
 using Avalonia.Markup.Xaml;
 
