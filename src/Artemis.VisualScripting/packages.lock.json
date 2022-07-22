@@ -533,23 +533,23 @@
       },
       "RGB.NET.Core": {
         "type": "Transitive",
-        "resolved": "1.0.0-prerelease.32",
-        "contentHash": "HlhhikrkV7OQIRszn6RT6+6N4QGGHaN6NDHK1YssZEJTtE2MIdeRajeQFFziPc4OVOvMgxY13unw/v25r/YALw=="
+        "resolved": "1.0.0-prerelease.46",
+        "contentHash": "MUpN34/EogozC8V1RCItBCrrgLiEvDwlcUfSQAoi4k3RhTLW67z2s/U5CBlM8smx9CZ6MDXEGMEfbS3jhYTxNg=="
       },
       "RGB.NET.Layout": {
         "type": "Transitive",
-        "resolved": "1.0.0-prerelease.32",
-        "contentHash": "O7I8zR5Hy+joSLCJW10lkIPNMDS1gXe8hQuwm+T5DEDDpykVyc4tnO55WlO5GDmDCS/cXhcwq+qNpLez5Th4Xw==",
+        "resolved": "1.0.0-prerelease.46",
+        "contentHash": "B2fyY+JeEw6/+C00UHvzoNpllakW+NHXB1synWadeQmZGlbunK/SQCIl/ESU4IpS7LV9Ms0QK6muNOn/5vQmLA==",
         "dependencies": {
-          "RGB.NET.Core": "1.0.0-prerelease.32"
+          "RGB.NET.Core": "1.0.0-prerelease.46"
         }
       },
       "RGB.NET.Presets": {
         "type": "Transitive",
-        "resolved": "1.0.0-prerelease.32",
-        "contentHash": "tqPUA/KUG1hw5pT4D7OLXI6buXxpUIUYNET90gHnVXbadYi0C0OJZ703XDsaPpj4Db8/B2k8f1T4tM4s2KCJhw==",
+        "resolved": "1.0.0-prerelease.46",
+        "contentHash": "QM8jwPBGfts+bnOhVVsokaLlE0v/Duu0Kwas8Ti1r17dDaYrqOWlFzUYfNQdqy+lcF1ngfMS/Xbz6sg9nJBbgA==",
         "dependencies": {
-          "RGB.NET.Core": "1.0.0-prerelease.32"
+          "RGB.NET.Core": "1.0.0-prerelease.46"
         }
       },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl": {
@@ -1631,7 +1631,10 @@
       "Unosquare.Swan.Lite": {
         "type": "Transitive",
         "resolved": "3.0.0",
-        "contentHash": "noPwJJl1Q9uparXy1ogtkmyAPGNfSGb0BLT1292nFH1jdMKje6o2kvvrQUvF9Xklj+IoiAI0UzF6Aqxlvo10lw=="
+        "contentHash": "noPwJJl1Q9uparXy1ogtkmyAPGNfSGb0BLT1292nFH1jdMKje6o2kvvrQUvF9Xklj+IoiAI0UzF6Aqxlvo10lw==",
+        "dependencies": {
+          "System.ValueTuple": "4.5.0"
+        }
       },
       "artemis.core": {
         "type": "Project",
@@ -1646,9 +1649,9 @@
           "Ninject": "3.3.4",
           "Ninject.Extensions.ChildKernel": "3.3.0",
           "Ninject.Extensions.Conventions": "3.3.0",
-          "RGB.NET.Core": "1.0.0-prerelease.32",
-          "RGB.NET.Layout": "1.0.0-prerelease.32",
-          "RGB.NET.Presets": "1.0.0-prerelease.32",
+          "RGB.NET.Core": "1.0.0-prerelease.46",
+          "RGB.NET.Layout": "1.0.0-prerelease.46",
+          "RGB.NET.Presets": "1.0.0-prerelease.46",
           "Serilog": "2.10.0",
           "Serilog.Sinks.Console": "4.0.1",
           "Serilog.Sinks.Debug": "2.0.0",
@@ -1679,7 +1682,7 @@
           "DynamicData": "7.8.6",
           "FluentAvaloniaUI": "1.4.1",
           "Material.Icons.Avalonia": "1.0.2",
-          "RGB.NET.Core": "1.0.0-prerelease.32",
+          "RGB.NET.Core": "1.0.0-prerelease.46",
           "ReactiveUI": "17.1.50",
           "ReactiveUI.Validation": "2.2.1",
           "SkiaSharp": "2.88.1-preview.1"
