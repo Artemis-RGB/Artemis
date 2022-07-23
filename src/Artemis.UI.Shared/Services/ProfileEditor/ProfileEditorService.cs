@@ -30,6 +30,7 @@ internal class ProfileEditorService : IProfileEditorService
     private readonly BehaviorSubject<RenderProfileElement?> _profileElementSubject = new(null);
     private readonly IProfileService _profileService;
     private readonly BehaviorSubject<bool> _suspendedEditingSubject = new(false);
+    private readonly BehaviorSubject<bool> _suspendedKeybindingsSubject = new(false);
     private readonly BehaviorSubject<TimeSpan> _timeSubject = new(TimeSpan.Zero);
     private readonly SourceList<IToolViewModel> _tools;
     private readonly SourceList<ILayerPropertyKeyframe> _selectedKeyframes;
@@ -64,6 +65,7 @@ internal class ProfileEditorService : IProfileEditorService
         Time = _timeSubject.AsObservable();
         Playing = _playingSubject.AsObservable();
         SuspendedEditing = _suspendedEditingSubject.AsObservable();
+        SuspendedKeybindings = _suspendedKeybindingsSubject.AsObservable();
         PixelsPerSecond = _pixelsPerSecondSubject.AsObservable();
         Tools = tools;
         SelectedKeyframes = selectedKeyframes;
@@ -80,7 +82,7 @@ internal class ProfileEditorService : IProfileEditorService
             .Throttle(TimeSpan.FromSeconds(1))
             .SelectMany(async _ => await AutoSaveProfileAsync())
             .Subscribe();
-        
+
         // When the main window closes, stop editing
         mainWindowService.MainWindowClosed += (_, _) => ChangeCurrentProfileConfiguration(null);
     }
@@ -90,6 +92,7 @@ internal class ProfileEditorService : IProfileEditorService
     public IObservable<ILayerProperty?> LayerProperty { get; }
     public IObservable<ProfileEditorHistory?> History { get; }
     public IObservable<bool> SuspendedEditing { get; }
+    public IObservable<bool> SuspendedKeybindings { get; }
     public IObservable<TimeSpan> Time { get; }
     public IObservable<bool> Playing { get; }
     public IObservable<int> PixelsPerSecond { get; }
@@ -138,6 +141,7 @@ internal class ProfileEditorService : IProfileEditorService
 
         _profileConfigurationSubject.OnNext(profileConfiguration);
         ChangeTime(TimeSpan.Zero);
+        ChangeSuspendedKeybindings(false);
     }
 
     public void ChangeCurrentProfileElement(RenderProfileElement? renderProfileElement)
@@ -176,6 +180,14 @@ internal class ProfileEditorService : IProfileEditorService
                 _profileService.RenderForEditor = true;
             Tick(_timeSubject.Value);
         }
+    }
+
+    public void ChangeSuspendedKeybindings(bool suspend)
+    {
+        if (_suspendedKeybindingsSubject.Value == suspend)
+            return;
+
+        _suspendedKeybindingsSubject.OnNext(suspend);
     }
 
     public void SelectKeyframe(ILayerPropertyKeyframe? keyframe, bool expand, bool toggle)

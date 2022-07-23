@@ -342,7 +342,7 @@ namespace Artemis.Core
             int current = 2;
             while (true)
             {
-                if (Children.All(c => c is Layer && c.Name != $"{baseName} ({current})"))
+                if (Children.Where(c => c is Layer).All(c => c.Name != $"{baseName} ({current})"))
                     return $"{baseName} ({current})";
                 current++;
             }
@@ -361,7 +361,7 @@ namespace Artemis.Core
             int current = 2;
             while (true)
             {
-                if (Children.All(c => c is Folder && c.Name != $"{baseName} ({current})"))
+                if (Children.Where(c => c is Folder).All(c => c.Name != $"{baseName} ({current})"))
                     return $"{baseName} ({current})";
                 current++;
             }

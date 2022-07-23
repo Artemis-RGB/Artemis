@@ -10,6 +10,7 @@
                       x:DataType="device:DevicePropertiesViewModel"
                       Icon="/Assets/Images/Logo/application.ico"
                       Title="Artemis | Device Properties"
+                      WindowStartupLocation="CenterOwner"
                       Width="1250"
                       Height="900">
     <controls1:CoreWindow.KeyBindings>

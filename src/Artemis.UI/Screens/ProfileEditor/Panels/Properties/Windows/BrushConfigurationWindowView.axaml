@@ -9,7 +9,8 @@
                      x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Windows.BrushConfigurationWindowView"
                      Title="Artemis | Brush configuration"
                      Width="{Binding Configuration.DialogWidth}"
-                     Height="{Binding Configuration.DialogHeight}">
+                     Height="{Binding Configuration.DialogHeight}"
+                     WindowStartupLocation="CenterOwner">
     <Panel>
         <ContentControl Content="{Binding ConfigurationViewModel}" />
     </Panel>

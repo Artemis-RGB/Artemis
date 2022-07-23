@@ -50,6 +50,11 @@ public interface IProfileEditorService : IArtemisSharedUIService
     ///     Gets an observable of the suspended state.
     /// </summary>
     IObservable<bool> SuspendedEditing { get; }
+    
+    /// <summary>
+    ///     Gets an observable of the suspended keybindings state.
+    /// </summary>
+    IObservable<bool> SuspendedKeybindings { get; }
 
     /// <summary>
     ///     Gets an observable read only collection of all available editor tools.
@@ -96,6 +101,12 @@ public interface IProfileEditorService : IArtemisSharedUIService
     /// </summary>
     /// <param name="suspend">The new suspended state.</param>
     void ChangeSuspendedEditing(bool suspend);
+    
+    /// <summary>
+    ///     Changes the current suspended keybindings state.
+    /// </summary>
+    /// <param name="suspend">The new suspended state.</param>
+    void ChangeSuspendedKeybindings(bool suspend);
 
     /// <summary>
     ///     Selects the provided keyframe.

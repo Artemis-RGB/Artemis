@@ -7,6 +7,7 @@ using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree.Dialogs;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Artemis.UI.Shared.Services.PropertyInput;
@@ -63,7 +64,14 @@ public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushRefe
 
         _profileEditorService.ExecuteCommand(new ChangeLayerBrush(layer, SelectedDescriptor));
         if (layer.LayerBrush?.Presets != null && layer.LayerBrush.Presets.Any())
-            Dispatcher.UIThread.InvokeAsync(() => _windowService.CreateContentDialog().WithViewModel(out LayerBrushPresetViewModel _, ("layerBrush", layer.LayerBrush)).ShowAsync());
+        {
+            Dispatcher.UIThread.InvokeAsync(() => _windowService.CreateContentDialog()
+                .WithTitle("Select preset")
+                .WithViewModel(out LayerBrushPresetViewModel _, ("layerBrush", layer.LayerBrush))
+                .WithDefaultButton(ContentDialogButton.Close)
+                .WithCloseButtonText("Use defaults")
+                .ShowAsync());
+        }
     }
 
     #region Overrides of PropertyInputViewModel<LayerBrushReference>

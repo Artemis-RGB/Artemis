@@ -140,11 +140,13 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
 
         ProfileEditorService.ExecuteCommand(new RenameProfileElement(ProfileElement, RenameValue));
         Renaming = false;
+        ProfileEditorService.ChangeSuspendedKeybindings(false);
     }
 
     public void CancelRename()
     {
         Renaming = false;
+        ProfileEditorService.ChangeSuspendedKeybindings(false);
     }
 
     public void InsertElement(TreeItemViewModel elementViewModel, int targetIndex)
@@ -237,6 +239,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
     {
         Renaming = true;
         RenameValue = ProfileElement?.Name;
+        ProfileEditorService.ChangeSuspendedKeybindings(true);
     }
 
     private void ExecuteAddFolder()

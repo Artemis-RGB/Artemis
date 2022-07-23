@@ -105,7 +105,7 @@ public class SimpleContextDragBehavior : Behavior<Control>
     private void AssociatedObject_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         PointerPointProperties properties = e.GetCurrentPoint(AssociatedObject).Properties;
-        if (!properties.IsLeftButtonPressed)
+        if (!properties.IsLeftButtonPressed || FocusManager.Instance?.Current is TextBox)
             return;
         if (e.Source is not IControl control || AssociatedObject?.DataContext != control.DataContext)
             return;

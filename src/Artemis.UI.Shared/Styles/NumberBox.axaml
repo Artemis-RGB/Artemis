@@ -24,83 +24,6 @@
 	</Design.PreviewWith>
 
 	<!-- Add Styles Here -->
-	<Style Selector="TextBox.NumberBoxTextBoxStyle">
-		<Setter Property="Template">
-			<ControlTemplate>
-				<DataValidationErrors>
-					<Panel>
-						<Border Name="PART_BorderElement"
-								Background="{TemplateBinding Background}"
-								BorderBrush="{TemplateBinding BorderBrush}"
-								BorderThickness="{TemplateBinding BorderThickness}"
-								MinWidth="{TemplateBinding MinWidth}"
-								MinHeight="{TemplateBinding MinHeight}"
-								RenderTransform="scaleY(-1)"
-								CornerRadius="{TemplateBinding CornerRadius}" />
-
-						<Border Margin="{TemplateBinding BorderThickness}">
-							<Grid ColumnDefinitions="Auto,*,Auto" >
-                                <TextBlock Name="PART_Prefix"
-										   Text="{TemplateBinding attachedProperties:TextBoxAssist.PrefixText}"
-										   Padding="{TemplateBinding Padding}"
-                                           IsHitTestVisible="False"/>
-                                <DockPanel x:Name="PART_InnerDockPanel"
-                                           Grid.Column="1"
-                                           Grid.ColumnSpan="1"
-                                           Margin="{TemplateBinding Padding}">
-									<ScrollViewer HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
-                                                  VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}">
-										<Panel>
-											<TextBlock Name="PART_Watermark"
-                                                       Text="{TemplateBinding Watermark}"
-                                                       TextAlignment="{TemplateBinding TextAlignment}"
-                                                       TextWrapping="{TemplateBinding TextWrapping}"
-                                                       IsVisible="{TemplateBinding Text, Converter={x:Static StringConverters.IsNullOrEmpty}}"
-                                                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                       IsHitTestVisible="False"/>
-                                            <TextPresenter Name="PART_TextPresenter"
-                                                           Text="{TemplateBinding Text, Mode=TwoWay}"
-                                                           CaretIndex="{TemplateBinding CaretIndex}"
-                                                           SelectionStart="{TemplateBinding SelectionStart}"
-                                                           SelectionEnd="{TemplateBinding SelectionEnd}"
-                                                           TextAlignment="{TemplateBinding TextAlignment}"
-                                                           TextWrapping="{TemplateBinding TextWrapping}"
-                                                           PasswordChar="{TemplateBinding PasswordChar}"
-                                                           RevealPassword="{TemplateBinding RevealPassword}"
-                                                           SelectionBrush="{TemplateBinding SelectionBrush}"
-                                                           SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
-                                                           CaretBrush="{TemplateBinding CaretBrush}"
-                                                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                        </Panel>
-									</ScrollViewer>
-								</DockPanel>
-								<StackPanel Orientation="Horizontal" Grid.Column="2" Grid.ColumnSpan="1">
-                                    <TextBlock Name="PART_Suffix"
-											   Text="{TemplateBinding attachedProperties:TextBoxAssist.SuffixText}"
-											   Padding="{TemplateBinding Padding}"
-                                               IsHitTestVisible="False"/>
-									<ContentPresenter Content="{TemplateBinding InnerRightContent}"
-                                                      Name="InnerRightContent"/>
-									<Viewbox Margin="{DynamicResource NumberBoxPopupIndicatorMargin}"
-											 VerticalAlignment="Center" HorizontalAlignment="Center"
-											 Width="18" Height="18"
-											 Name="PopupIndicator">
-										<controls:FontIcon Glyph="&#xEC8F;"
-													 FontFamily="{DynamicResource SymbolThemeFontFamily}"
-													 FontSize="24"
-													 Foreground="{DynamicResource NumberBoxPopupIndicatorForeground}" />
-									</Viewbox>
-								</StackPanel>
-							</Grid>
-						</Border>
-					</Panel>
-				</DataValidationErrors>
-			</ControlTemplate>
-		</Setter>
-	</Style>
-
     <Style Selector="controls|NumberBox /template/ TextBox.NumberBoxTextBoxStyle /template/ TextBlock#PART_Prefix">
         <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundDisabled}"></Setter>
         <Setter Property="Margin" Value="-4 0 -12 0"></Setter>
@@ -121,9 +44,5 @@
 	<Style Selector="controls|NumberBox /template/ TextBox.NumberBoxTextBoxStyle">
         <Setter Property="attachedProperties:TextBoxAssist.PrefixText" Value="{TemplateBinding attachedProperties:NumberBoxAssist.PrefixText}"></Setter>
         <Setter Property="attachedProperties:TextBoxAssist.SuffixText" Value="{TemplateBinding attachedProperties:NumberBoxAssist.SuffixText}"></Setter>
-    </Style>
-
-    <Style Selector="controls|NumberBox /template/ TextBox.NumberBoxTextBoxStyle">
-        <Setter Property="DataValidationErrors.Errors" Value="{TemplateBinding DataValidationErrors.Errors}" />
     </Style>
 </Styles>

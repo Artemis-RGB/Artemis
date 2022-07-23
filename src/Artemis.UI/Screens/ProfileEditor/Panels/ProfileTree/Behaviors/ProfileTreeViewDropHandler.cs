@@ -49,7 +49,8 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
         IVisual? targetVisual = treeView.GetVisualAt(position).FindAncestorOfType<TreeViewItem>();
         if (sourceContext is not T sourceNode || targetContext is not ProfileTreeViewModel vm || targetVisual is not IControl {DataContext: T targetNode})
             return false;
-
+        if (bExecute && targetNode == sourceNode)
+            return false;
         TreeItemViewModel? sourceParent = sourceNode.Parent;
         TreeItemViewModel? targetParent = targetNode.Parent;
         ObservableCollection<TreeItemViewModel> sourceNodes = sourceParent is { } ? sourceParent.Children : vm.Children;
