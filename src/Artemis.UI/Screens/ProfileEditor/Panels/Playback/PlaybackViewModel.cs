@@ -6,8 +6,6 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
-using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Threading;
 using ReactiveUI;
 

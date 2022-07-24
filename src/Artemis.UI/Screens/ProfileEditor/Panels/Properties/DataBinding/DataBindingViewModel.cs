@@ -1,6 +1,10 @@
-﻿using System.Reactive.Linq;
+﻿using System;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.VisualScripting;
@@ -8,7 +12,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
-using Avalonia.Controls.Mixins;
+using Avalonia.Threading;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.DataBinding;
@@ -17,14 +21,17 @@ public class DataBindingViewModel : ActivatableViewModelBase
 {
     private readonly IProfileEditorService _profileEditorService;
     private readonly IWindowService _windowService;
+    private readonly PluginSetting<bool> _alwaysApplyDataBindings;
     private ObservableAsPropertyHelper<bool>? _dataBindingEnabled;
     private ObservableAsPropertyHelper<ILayerProperty?>? _layerProperty;
     private ObservableAsPropertyHelper<NodeScriptViewModel?>? _nodeScriptViewModel;
+    private bool _playing;
 
-    public DataBindingViewModel(IProfileEditorService profileEditorService, INodeVmFactory nodeVmFactory, IWindowService windowService)
+    public DataBindingViewModel(IProfileEditorService profileEditorService, INodeVmFactory nodeVmFactory, IWindowService windowService, ISettingsService settingsService)
     {
         _profileEditorService = profileEditorService;
         _windowService = windowService;
+        _alwaysApplyDataBindings = settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", false);
 
         this.WhenActivated(d =>
         {
@@ -41,6 +48,11 @@ public class DataBindingViewModel : ActivatableViewModelBase
                 .Select(b => b.IsEnabled)
                 .ToProperty(this, vm => vm.DataBindingEnabled)
                 .DisposeWith(d);
+            _profileEditorService.Playing.CombineLatest(_profileEditorService.SuspendedEditing).Subscribe(tuple => _playing = tuple.First || tuple.Second).DisposeWith(d);
+
+            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(60.0 / 1000), DispatcherPriority.Render, Update);
+            updateTimer.Start();
+            Disposable.Create(() => updateTimer.Stop()).DisposeWith(d);
         });
     }
 
@@ -61,5 +73,14 @@ public class DataBindingViewModel : ActivatableViewModelBase
     {
         if (LayerProperty != null && LayerProperty.BaseDataBinding.IsEnabled)
             await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(("nodeScript", LayerProperty.BaseDataBinding.Script));
+    }
+
+    private void Update(object? sender, EventArgs e)
+    {
+        // If playing the data binding will already be updated, no need to do it here
+        if (_playing || !_alwaysApplyDataBindings.Value)
+            return;
+
+        LayerProperty?.UpdateDataBinding();
     }
 }

@@ -10,6 +10,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Threading;
 using FluentAvalonia.Core;
 using Button = FluentAvalonia.UI.Controls.Button;
 
@@ -138,12 +139,12 @@ public class GradientPickerButton : TemplatedControl
 
     private void ColorGradientOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        UpdateGradient();
+        Dispatcher.UIThread.Post(UpdateGradient);
     }
 
     private void ColorGradientOnStopChanged(object? sender, EventArgs e)
     {
-        UpdateGradient();
+        Dispatcher.UIThread.Post(UpdateGradient);
     }
 
     private void OnButtonClick(object? sender, RoutedEventArgs e)
