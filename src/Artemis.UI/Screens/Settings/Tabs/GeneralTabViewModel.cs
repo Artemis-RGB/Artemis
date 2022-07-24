@@ -25,14 +25,12 @@ namespace Artemis.UI.Screens.Settings
         private readonly PluginSetting<LayerBrushReference> _defaultLayerBrushDescriptor;
         private readonly ISettingsService _settingsService;
         private readonly IDebugService _debugService;
-        private readonly FluentAvaloniaTheme _fluentAvaloniaTheme;
 
         public GeneralTabViewModel(ISettingsService settingsService, IPluginManagementService pluginManagementService, IDebugService debugService, IGraphicsContextProvider? graphicsContextProvider = null)
         {
             DisplayName = "General";
             _settingsService = settingsService;
             _debugService = debugService;
-            _fluentAvaloniaTheme = AvaloniaLocator.Current.GetService<FluentAvaloniaTheme>() ?? throw new Exception($"Could not get required service of type {nameof(FluentAvaloniaTheme)}.");
 
             List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
             LayerBrushDescriptors = new ObservableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
@@ -51,24 +49,6 @@ namespace Artemis.UI.Screens.Settings
             ShowSetupWizard = ReactiveCommand.Create(ExecuteShowSetupWizard);
             ShowDebugger = ReactiveCommand.Create(ExecuteShowDebugger);
             ShowDataFolder = ReactiveCommand.Create(ExecuteShowDataFolder);
-
-            this.WhenActivated(d =>
-            {
-                UIColorScheme.SettingChanged += UIColorSchemeOnSettingChanged;
-                Disposable.Create(() => UIColorScheme.SettingChanged -= UIColorSchemeOnSettingChanged).DisposeWith(d);
-            });
-        }
-
-        private void UIColorSchemeOnSettingChanged(object? sender, EventArgs e)
-        {
-            if (UIColorScheme.Value == ApplicationColorScheme.Automatic)
-                _fluentAvaloniaTheme.RequestedTheme = null;
-            else if (UIColorScheme.Value == ApplicationColorScheme.Light)
-                _fluentAvaloniaTheme.RequestedTheme = "Light";
-            else if (UIColorScheme.Value == ApplicationColorScheme.Dark)
-                _fluentAvaloniaTheme.RequestedTheme = "Dark";
-            else
-                _fluentAvaloniaTheme.RequestedTheme = _fluentAvaloniaTheme.RequestedTheme;
         }
 
         public ReactiveCommand<Unit, Unit> ShowLogs { get; }
@@ -130,7 +110,6 @@ namespace Artemis.UI.Screens.Settings
         public PluginSetting<int> UIAutoRunDelay => _settingsService.GetSetting("UI.AutoRunDelay", 15);
         public PluginSetting<bool> UIShowOnStartup => _settingsService.GetSetting("UI.ShowOnStartup", true);
         public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.CheckForUpdates", true);
-        public PluginSetting<ApplicationColorScheme> UIColorScheme => _settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
         public PluginSetting<bool> ProfileEditorShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
         public PluginSetting<LogEventLevel> CoreLoggingLevel => _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information);
         public PluginSetting<string> CorePreferredGraphicsContext => _settingsService.GetSetting("Core.PreferredGraphicsContext", "Software");

@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Screens.Device;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
+using ReactiveUI;
 using RGB.NET.Core;
 using SkiaSharp;
 using Point = Avalonia.Point;
@@ -14,29 +19,33 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
 {
     private readonly IRgbService _rgbService;
     private readonly ISettingsService _settingsService;
+    private readonly IWindowService _windowService;
     private double _dragOffsetX;
     private double _dragOffsetY;
     private bool _isSelected;
 
-    public SurfaceDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel, IRgbService rgbService, ISettingsService settingsService)
+    public SurfaceDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel, IRgbService rgbService, ISettingsService settingsService, IWindowService windowService)
     {
         _rgbService = rgbService;
         _settingsService = settingsService;
+        _windowService = windowService;
 
         Device = device;
         SurfaceEditorViewModel = surfaceEditorViewModel;
+        DetectInput = ReactiveCommand.CreateFromTask(ExecuteDetectInput, this.WhenAnyValue(vm => vm.CanDetectInput));
     }
 
+    public ReactiveCommand<Unit,Unit> DetectInput { get; }
+    
     public ArtemisDevice Device { get; }
     public SurfaceEditorViewModel SurfaceEditorViewModel { get; }
-
+    public bool CanDetectInput => Device.DeviceType == RGBDeviceType.Keyboard || Device.DeviceType == RGBDeviceType.Mouse;
+    
     public bool IsSelected
     {
         get => _isSelected;
         set => RaiseAndSetIfChanged(ref _isSelected, value);
     }
-
-    public bool CanDetectInput => Device.DeviceType == RGBDeviceType.Keyboard || Device.DeviceType == RGBDeviceType.Mouse;
 
     public void StartMouseDrag(Point mouseStartPosition)
     {
@@ -97,5 +106,20 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
             .Select(l => SKRect.Create(l.Rectangle.Left + l.Device.X, l.Rectangle.Top + l.Device.Y, l.Rectangle.Width, l.Rectangle.Height));
 
         return !own.Any(o => others.Any(l => l.IntersectsWith(o)));
+    }
+    
+    private async Task ExecuteDetectInput()
+    {
+        if (!CanDetectInput)
+            return;
+
+        await _windowService.CreateContentDialog()
+            .WithTitle($"{Device.RgbDevice.DeviceInfo.DeviceName} - Detect input")
+            .WithViewModel<DeviceDetectInputViewModel>(out DeviceDetectInputViewModel? viewModel, ("device", Device))
+            .WithCloseButtonText("Cancel")
+            .ShowAsync();
+
+        if (viewModel.MadeChanges)
+            _rgbService.SaveDevice(Device);
     }
 }

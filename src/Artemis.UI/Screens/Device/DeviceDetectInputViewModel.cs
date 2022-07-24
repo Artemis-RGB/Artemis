@@ -7,6 +7,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
+using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using RGB.NET.Core;
 
@@ -36,11 +37,16 @@ namespace Artemis.UI.Screens.Device
 
             this.WhenActivated(disposables =>
             {
+                _inputService.IdentifyDevice(device);
                 Observable.FromEventPattern(x => _inputService.DeviceIdentified += x, x => _inputService.DeviceIdentified -= x)
                     .Subscribe(_ => InputServiceOnDeviceIdentified())
                     .DisposeWith(disposables);
 
-                Disposable.Create(() => _ledGroup.Detach()).DisposeWith(disposables);
+                Disposable.Create(() =>
+                {
+                    _inputService.StopIdentify();
+                    _ledGroup.Detach();
+                }).DisposeWith(disposables);
             });
         }
 
@@ -51,6 +57,7 @@ namespace Artemis.UI.Screens.Device
 
         private void InputServiceOnDeviceIdentified()
         {
+            ContentDialog?.Hide(ContentDialogResult.Primary);
             _notificationService.CreateNotification()
                 .WithMessage($"{Device.RgbDevice.DeviceInfo.DeviceName} identified 😁")
                 .WithSeverity(NotificationSeverity.Success)

@@ -52,20 +52,7 @@
 						</StackPanel>
 					</Grid>
 					<Separator Classes="card-separator" />
-
-					<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-						<StackPanel Grid.Column="0">
-							<TextBlock>Color scheme</TextBlock>
-							<TextBlock Classes="subtitle" TextWrapping="Wrap">
-								Pick between a light and dark color scheme, the automatic option copies your system settings.
-							</TextBlock>
-						</StackPanel>
-						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<shared:EnumComboBox Width="150" Value="{CompiledBinding UIColorScheme.Value}" />
-						</StackPanel>
-					</Grid>
-					<Separator Classes="card-separator" />
-
+					
 					<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
 						<StackPanel Grid.Column="0">
 							<TextBlock>

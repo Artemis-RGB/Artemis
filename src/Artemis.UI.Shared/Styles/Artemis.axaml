@@ -32,14 +32,14 @@
     <StyleInclude Source="/Styles/NumberBox.axaml" />
     <StyleInclude Source="/Styles/TreeView.axaml" />
 
-    <Style Selector="Window:windows:windows10 /template/ Border#RootBorder">
-        <!-- This will show if custom accent color setting is used in Settings page-->
-        <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}" />
-        <Setter Property="BorderThickness" Value="0 1 0 0" />
-    </Style>
-
-    <Style Selector="Window[IsActive=False]:windows:windows10 /template/ Border#RootBorder">
-        <Setter Property="BorderBrush" Value="#3d3d3d" />
-        <Setter Property="BorderThickness" Value="0 1 0 0" />
-    </Style>
+    <!-- <Style Selector="Window:windows:windows10 /template/ Border#RootBorder"> -->
+    <!--     ~1~ This will show if custom accent color setting is used in Settings page@1@ -->
+    <!--     <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}" /> -->
+    <!--     <Setter Property="BorderThickness" Value="0 1 0 0" /> -->
+    <!-- </Style> -->
+    <!-- -->
+    <!-- <Style Selector="Window[IsActive=False]:windows:windows10 /template/ Border#RootBorder"> -->
+    <!--     <Setter Property="BorderBrush" Value="#3d3d3d" /> -->
+    <!--     <Setter Property="BorderThickness" Value="0 1 0 0" /> -->
+    <!-- </Style> -->
 </Styles>

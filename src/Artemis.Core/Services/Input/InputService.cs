@@ -90,8 +90,10 @@ namespace Artemis.Core.Services
 
         public void StopIdentify()
         {
+            if (_identifyingDevice == null)
+                return;
+            
             _logger.Debug("Stop identifying device {device}", _identifyingDevice);
-
             _identifyingDevice = null;
             _rgbService.SaveDevices();
 

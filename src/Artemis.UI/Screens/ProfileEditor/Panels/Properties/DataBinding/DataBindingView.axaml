@@ -9,7 +9,7 @@
              x:Class="Artemis.UI.Screens.ProfileEditor.Properties.DataBinding.DataBindingView"
              x:DataType="dataBinding:DataBindingViewModel">
     <Grid RowDefinitions="48,*">
-        <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,*">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,*" Background="{DynamicResource ControlFillColorDefaultBrush}">
             <TextBlock Grid.Column="0"
                        Classes="h5"
                        VerticalAlignment="Center"

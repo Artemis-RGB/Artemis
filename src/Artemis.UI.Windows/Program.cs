@@ -28,7 +28,15 @@ namespace Artemis.UI.Windows
         // Avalonia configuration, don't remove; also used by visual designer.
         public static AppBuilder BuildAvaloniaApp()
         {
-            return AppBuilder.Configure<App>().UsePlatformDetect().LogToTrace().UseReactiveUI();
+            return AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .LogToTrace()
+                .With(new Win32PlatformOptions()
+                {
+                    UseWindowsUIComposition = true,
+                    CompositionBackdropCornerRadius = 8f
+                })
+                .UseReactiveUI();
         }
 
         private static ILogger? Logger { get; set; }

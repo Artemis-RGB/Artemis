@@ -21,13 +21,12 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid RowDefinitions="48,*">
-            <ContentControl Grid.Row="0" Content="{CompiledBinding PlaybackViewModel}" />
+            <ContentControl Grid.Row="0" Content="{CompiledBinding PlaybackViewModel}" Background="{DynamicResource ControlFillColorDefaultBrush}" />
 
             <ScrollViewer Grid.Row="1"
                           Grid.Column="0"
                           Name="TreeScrollViewer"
-                          Offset="{CompiledBinding #TimelineScrollViewer.Offset, Mode=OneWay}"
-                          Background="{DynamicResource CardStrokeColorDefaultSolidBrush}">
+                          Offset="{CompiledBinding #TimelineScrollViewer.Offset, Mode=OneWay}">
                 <Grid RowDefinitions="*,Auto">
                     <ItemsControl Items="{CompiledBinding PropertyGroupViewModels}" Padding="0 0 8 0">
                         <ItemsControl.ItemTemplate>
@@ -68,6 +67,7 @@
                                          Name="TimelineHeader"
                                          Margin="0 18 0 0"
                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                         Background="{DynamicResource ControlFillColorDefaultBrush}"
                                          HorizontalAlignment="Left"
                                          PixelsPerSecond="{CompiledBinding PixelsPerSecond}"
                                          HorizontalOffset="{CompiledBinding #TimelineScrollViewer.Offset.X, Mode=OneWay}"
@@ -144,8 +144,7 @@
                               Name="TimelineScrollViewer"
                               Offset="{CompiledBinding #TreeScrollViewer.Offset, Mode=OneWay}"
                               VerticalScrollBarVisibility="Hidden">
-                    <ContentControl Content="{CompiledBinding TimelineViewModel}"
-                                    Background="{DynamicResource CardStrokeColorDefaultSolidBrush}" />
+                    <ContentControl Content="{CompiledBinding TimelineViewModel}" />
                 </ScrollViewer>
             </Grid>
         </ScrollViewer>

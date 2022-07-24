@@ -9,7 +9,7 @@
     <Style Selector="ContentControl.segment-content-control" />
 
     <Style Selector="Border.segment-container">
-        <Setter Property="Height" Value="18" />
+        <Setter Property="Height" Value="17" />
     </Style>
 
     <Style Selector="Rectangle.resize-visual">

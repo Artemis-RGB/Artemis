@@ -12,7 +12,7 @@
     </UserControl.Styles>
     <Border Classes="segment-container">
         <Grid Name="SegmentGrid"
-              Background="{DynamicResource CardStrokeColorDefaultSolidBrush}"
+              Background="{DynamicResource ControlFillColorDefaultBrush}"
               Width="{CompiledBinding Width}"
               ColumnDefinitions="Auto, Auto,*,Auto">
 

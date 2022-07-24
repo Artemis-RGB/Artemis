@@ -21,7 +21,7 @@
 
     <!-- Add Styles Here -->
     <Style Selector="Border.router-container">
-        <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiary}" />
+        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="8 0 0 0" />

@@ -50,7 +50,6 @@
             <MenuItem Header="-" />
             <MenuItem Header="Identify input"
                       Command="{Binding DetectInput}"
-                      CommandParameter="{Binding Device}"
                       ToolTip.Tip="Teach Artemis which keypresses and/or button presses belong to this device">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="GestureDoubleTap" />
