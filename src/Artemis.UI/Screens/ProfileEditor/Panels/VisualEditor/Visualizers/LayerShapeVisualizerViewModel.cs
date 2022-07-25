@@ -8,6 +8,7 @@ using Avalonia;
 using Avalonia.Controls.Mixins;
 using Avalonia.Media;
 using Avalonia.Skia;
+using Avalonia.Threading;
 using ReactiveUI;
 using SkiaSharp;
 
@@ -27,7 +28,7 @@ public class LayerShapeVisualizerViewModel : ActivatableViewModelBase, IVisualiz
 
         this.WhenActivated(d =>
         {
-            Observable.FromEventPattern(x => Layer.RenderPropertiesUpdated += x, x => Layer.RenderPropertiesUpdated -= x).Subscribe(_ => Update()).DisposeWith(d);
+            Observable.FromEventPattern(x => Layer.RenderPropertiesUpdated += x, x => Layer.RenderPropertiesUpdated -= x).Subscribe(_ => Dispatcher.UIThread.Post(Update)).DisposeWith(d);
             Observable.FromEventPattern<LayerPropertyEventArgs>(x => Layer.Transform.Position.CurrentValueSet += x, x => Layer.Transform.Position.CurrentValueSet -= x)
                 .Subscribe(_ => UpdateTransform())
                 .DisposeWith(d);
