@@ -260,6 +260,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
             return;
 
         await _windowService.ShowDialogAsync<LayerHintsDialogViewModel, bool>(("layer", layer));
+        await ProfileEditorService.SaveProfileAsync();
     }
 
     private async void UpdateCanPaste(bool isFlyoutOpen)

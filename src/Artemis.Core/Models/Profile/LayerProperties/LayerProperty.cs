@@ -550,7 +550,11 @@ namespace Artemis.Core
             try
             {
                 foreach (KeyframeEntity keyframeEntity in Entity.KeyframeEntities.Where(k => k.Position <= ProfileElement.Timeline.Length))
-                    CreateKeyframeFromEntity(keyframeEntity);
+                {
+                    LayerPropertyKeyframe<T>? keyframe = CreateKeyframeFromEntity(keyframeEntity) as LayerPropertyKeyframe<T>;
+                    if (keyframe != null)
+                        AddKeyframe(keyframe);
+                }
             }
             catch (JsonException)
             {

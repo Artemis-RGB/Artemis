@@ -82,10 +82,7 @@
                 </ItemsControl>
             </Grid>
         </paz:ZoomBorder>
-        <Border CornerRadius="0 0 8 0" VerticalAlignment="Top" HorizontalAlignment="Left">
-            <Border.Background>
-                <SolidColorBrush Color="{DynamicResource CardStrokeColorDefaultSolid}" Opacity="0.65" />
-            </Border.Background>
+        <Border CornerRadius="0 0 8 0" VerticalAlignment="Top" HorizontalAlignment="Left" Background="{DynamicResource ControlFillColorDefaultBrush}">
             <StackPanel Orientation="Horizontal" Margin="8">
                 <shared:ProfileConfigurationIcon ConfigurationIcon="{CompiledBinding ProfileConfiguration.Icon}"
                                                  Foreground="{DynamicResource ToolTipForeground}"

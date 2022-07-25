@@ -8,6 +8,7 @@
                      mc:Ignorable="d"
                      x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.LayerHintsDialogView"
                      x:DataType="dialogs:LayerHintsDialogViewModel"
+                     WindowStartupLocation="CenterOwner"
                      Title="Artemis | Adaption hints"
                      Width="750"
                      Height="800">
@@ -15,10 +16,10 @@
     <Grid Margin="15" RowDefinitions="Auto,*,Auto">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
             <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <avalonia:MaterialIcon Kind="{CompiledBinding Layer.LayerBrush.Descriptor.Icon}" Width="24" Height="24" Margin="0 0 5 10"/>
-                <TextBlock Classes="h4" Text="{CompiledBinding Layer.Name}" TextWrapping="Wrap"/>
+                <avalonia:MaterialIcon Kind="{CompiledBinding Layer.LayerBrush.Descriptor.Icon}" Width="24" Height="24" Margin="0 0 5 10" />
+                <TextBlock Classes="h4" Text="{CompiledBinding Layer.Name}" TextWrapping="Wrap" />
             </StackPanel>
-            
+
             <controls:HyperlinkButton Grid.Row="0"
                                       Grid.Column="1"
                                       VerticalAlignment="Top"
@@ -31,22 +32,37 @@
             </TextBlock>
         </Grid>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" Margin="0 15">
-            <ItemsControl Items="{CompiledBinding AdaptionHints}" Classes="adaption-hints">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Spacing="10" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Classes="card-condensed">
-                            <ContentControl Content="{Binding}"></ContentControl>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+        <Border Grid.Row="1" Classes="card" Margin="0 15">
+            <Panel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" IsVisible="{CompiledBinding AdaptionHints.Count}">
+                    <ItemsControl Items="{CompiledBinding AdaptionHints}" Classes="adaption-hints">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="10" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Classes="card-condensed">
+                                    <ContentControl Content="{Binding}"></ContentControl>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <StackPanel IsVisible="{CompiledBinding !AdaptionHints.Count}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <avalonia:MaterialIcon Kind="AlertCircleOutline" HorizontalAlignment="Center" Width="48" Height="48" />
+                    <TextBlock Classes="h4" TextAlignment="Center" TextWrapping="Wrap">
+                        You haven't set up any adaption hints
+                    </TextBlock>
+                    <TextBlock Classes="subtitle" TextAlignment="Center" TextWrapping="Wrap">
+                        Artemis will attempt to directly map the LEDs of this layer to different surfaces but results may vary.
+                    </TextBlock>
+                </StackPanel>
+            </Panel>
+
+        </Border>
 
         <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
             <Button Grid.Row="0" Grid.Column="0" Command="{Binding AutoDetermineHints}">Auto-determine hints</Button>
