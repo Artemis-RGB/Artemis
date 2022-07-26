@@ -105,25 +105,25 @@ public abstract class TimelineSegmentViewModel : ActivatableViewModelBase
         _initialLength = Length;
     }
 
-    public void UpdateResize(double x)
+    public void UpdateResize(double x, bool snap, bool round)
     {
         if (_profileElement == null)
             return;
 
-        TimeSpan difference = GetTimeFromX(x) - Length;
+        TimeSpan difference = GetTimeFromX(x, snap, round) - Length;
         List<ILayerPropertyKeyframe> keyframes = _profileElement.GetAllLayerProperties().SelectMany(p => p.UntypedKeyframes).ToList();
         ShiftKeyframes(keyframes.Where(k => k.Position > End.Add(difference)), difference);
-        Length = GetTimeFromX(x);
+        Length = GetTimeFromX(x, snap, round);
     }
 
-    public void FinishResize(double x)
+    public void FinishResize(double x, bool snap, bool round)
     {
         if (_profileElement == null)
             return;
 
         using ProfileEditorCommandScope scope = _profileEditorService.CreateCommandScope("Resize segment");
         ApplyPendingKeyframeMovement();
-        _profileEditorService.ExecuteCommand(new ResizeTimelineSegment(Type, _profileElement, GetTimeFromX(x), _initialLength));
+        _profileEditorService.ExecuteCommand(new ResizeTimelineSegment(Type, _profileElement, GetTimeFromX(x, snap, round), _initialLength));
     }
 
     public void RemoveSegment()
@@ -148,12 +148,18 @@ public abstract class TimelineSegmentViewModel : ActivatableViewModelBase
         _profileEditorService.ExecuteCommand(new ResizeTimelineSegment(Type, _profileElement, TimeSpan.Zero));
     }
 
-    protected TimeSpan GetTimeFromX(double x)
+    protected TimeSpan GetTimeFromX(double x, bool snap, bool round)
     {
-        TimeSpan length = TimeSpan.FromSeconds(x / _pixelsPerSecond);
-        if (length < TimeSpan.Zero)
-            length = TimeSpan.Zero;
-        return length;
+        TimeSpan time = TimeSpan.FromSeconds(x / _pixelsPerSecond);
+        if (time < TimeSpan.Zero)
+            time = TimeSpan.Zero;
+        
+        if (round)
+            time = _profileEditorService.RoundTime(time);
+        if (snap)
+            time = SnapToTimeline(time);
+        
+        return time;
     }
 
     protected void ShiftKeyframes(IEnumerable<ILayerPropertyKeyframe> keyframes, TimeSpan amount)
@@ -172,5 +178,11 @@ public abstract class TimelineSegmentViewModel : ActivatableViewModelBase
             _profileEditorService.ExecuteCommand(new MoveKeyframe(keyframe, keyframe.Position, originalPosition));
 
         _originalKeyframePositions.Clear();
+    }
+    
+    private TimeSpan SnapToTimeline(TimeSpan time)
+    {
+        TimeSpan tolerance = TimeSpan.FromMilliseconds(1000f / _pixelsPerSecond * 5);
+        return _profileEditorService.SnapToTimeline(time, tolerance, false, true);
     }
 }

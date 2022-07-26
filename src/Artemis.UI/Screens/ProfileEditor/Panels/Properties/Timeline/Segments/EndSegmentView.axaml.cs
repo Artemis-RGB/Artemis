@@ -36,7 +36,7 @@ public class EndSegmentView : ReactiveUserControl<EndSegmentViewModel>
     {
         if (ViewModel == null || !ReferenceEquals(e.Pointer.Captured, _keyframeDragAnchor))
             return;
-        ViewModel.UpdateResize(e.GetCurrentPoint(this).Position.X + _dragOffset);
+        ViewModel.UpdateResize(e.GetCurrentPoint(this).Position.X + _dragOffset, e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
     }
 
     private void KeyframeDragAnchor_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
@@ -44,6 +44,6 @@ public class EndSegmentView : ReactiveUserControl<EndSegmentViewModel>
         if (ViewModel == null || !ReferenceEquals(e.Pointer.Captured, _keyframeDragAnchor))
             return;
         e.Pointer.Capture(null);
-        ViewModel.FinishResize(e.GetCurrentPoint(this).Position.X + _dragOffset);
+        ViewModel.FinishResize(e.GetCurrentPoint(this).Position.X + _dragOffset, e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
     }
 }
