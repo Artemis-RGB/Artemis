@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Linq;
 using Artemis.Core;
+using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia.Controls.Mixins;
@@ -15,7 +16,7 @@ public class StartSegmentViewModel : TimelineSegmentViewModel
     private ObservableAsPropertyHelper<string?>? _endTimestamp;
     private RenderProfileElement? _profileElement;
 
-    public StartSegmentViewModel(IProfileEditorService profileEditorService) : base(profileEditorService)
+    public StartSegmentViewModel(IProfileEditorService profileEditorService, IWindowService windowService) : base(profileEditorService, windowService)
     {
         this.WhenActivated(d =>
         {
@@ -50,6 +51,7 @@ public class StartSegmentViewModel : TimelineSegmentViewModel
         {
             if (_profileElement != null)
                 _profileElement.Timeline.StartSegmentLength = value;
+            this.RaisePropertyChanged(nameof(Length));
         }
     }
 
