@@ -1703,10 +1703,7 @@
       "Unosquare.Swan.Lite": {
         "type": "Transitive",
         "resolved": "3.0.0",
-        "contentHash": "noPwJJl1Q9uparXy1ogtkmyAPGNfSGb0BLT1292nFH1jdMKje6o2kvvrQUvF9Xklj+IoiAI0UzF6Aqxlvo10lw==",
-        "dependencies": {
-          "System.ValueTuple": "4.5.0"
-        }
+        "contentHash": "noPwJJl1Q9uparXy1ogtkmyAPGNfSGb0BLT1292nFH1jdMKje6o2kvvrQUvF9Xklj+IoiAI0UzF6Aqxlvo10lw=="
       },
       "artemis.core": {
         "type": "Project",
@@ -1752,7 +1749,6 @@
           "Avalonia": "0.10.15",
           "Avalonia.Controls.PanAndZoom": "10.14.0",
           "Avalonia.Desktop": "0.10.15",
-          "Avalonia.Diagnostics": "0.10.15",
           "Avalonia.ReactiveUI": "0.10.15",
           "Avalonia.Xaml.Behaviors": "0.10.14",
           "DynamicData": "7.8.6",
@@ -1773,7 +1769,6 @@
         "dependencies": {
           "Artemis.Core": "1.0.0",
           "Avalonia": "0.10.15",
-          "Avalonia.Diagnostics": "0.10.15",
           "Avalonia.ReactiveUI": "0.10.15",
           "Avalonia.Xaml.Behaviors": "0.10.14",
           "DynamicData": "7.8.6",

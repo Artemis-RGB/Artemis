@@ -53,6 +53,7 @@ namespace Artemis.UI.Shared
         /// <inheritdoc />
         protected override void OnOpened(EventArgs e)
         {
+            // TODO: Move to a style and remove opacity on focus loss
             base.OnOpened(e);
 
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || !IsWindows11)
@@ -63,8 +64,8 @@ namespace Artemis.UI.Shared
             TransparencyLevelHint = WindowTransparencyLevel.Mica;
 
             Color2 color = this.TryFindResource("SolidBackgroundFillColorBase", out object? value) ? (Color) value : new Color2(32, 32, 32);
-            color = color.LightenPercent(-0.8f);
-            Background = new ImmutableSolidColorBrush(color, 0.78);
+            color = color.LightenPercent(-0.1f);
+            Background = new ImmutableSolidColorBrush(color, 0.82);
         }
 
         private void OnDataContextChanged(object? value)
