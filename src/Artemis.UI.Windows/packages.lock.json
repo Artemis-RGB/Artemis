@@ -1749,6 +1749,7 @@
           "Avalonia": "0.10.15",
           "Avalonia.Controls.PanAndZoom": "10.14.0",
           "Avalonia.Desktop": "0.10.15",
+          "Avalonia.Diagnostics": "0.10.15",
           "Avalonia.ReactiveUI": "0.10.15",
           "Avalonia.Xaml.Behaviors": "0.10.14",
           "DynamicData": "7.8.6",
@@ -1769,6 +1770,7 @@
         "dependencies": {
           "Artemis.Core": "1.0.0",
           "Avalonia": "0.10.15",
+          "Avalonia.Diagnostics": "0.10.15",
           "Avalonia.ReactiveUI": "0.10.15",
           "Avalonia.Xaml.Behaviors": "0.10.14",
           "DynamicData": "7.8.6",

@@ -105,7 +105,7 @@ namespace Artemis.UI.Windows
         private void KillOtherInstances()
         {
             // Kill everything else heh
-            List<Process> processes = Process.GetProcessesByName("Artemis.UI").Where(p => p.Id != Process.GetCurrentProcess().Id).ToList();
+            List<Process> processes = Process.GetProcessesByName("Artemis.UI.Windows").Where(p => p.Id != Process.GetCurrentProcess().Id).ToList();
             foreach (Process process in processes)
             {
                 try
@@ -128,7 +128,7 @@ namespace Artemis.UI.Windows
             string args = argsList.Any() ? "-ArgumentList " + string.Join(',', argsList) : "";
             string command =
                 $"-Command \"& {{Start-Sleep -Milliseconds {(int) e.Delay.TotalMilliseconds}; " +
-                "(Get-Process 'Artemis.UI').kill(); " +
+                "(Get-Process 'Artemis.UI.Windows').kill(); " +
                 $"Start-Process -FilePath '{Constants.ExecutablePath}' -WorkingDirectory '{Constants.ApplicationFolder}' {args}}}\"";
             // Elevated always runs with RunAs
             if (e.Elevate)
