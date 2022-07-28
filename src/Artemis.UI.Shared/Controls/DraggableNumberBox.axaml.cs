@@ -19,17 +19,31 @@ public class DraggableNumberBox : UserControl
     /// <summary>
     ///     Defines the <see cref="Value" /> property.
     /// </summary>
-    public static readonly StyledProperty<double> ValueProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Value), defaultBindingMode: BindingMode.TwoWay);
+    public static readonly StyledProperty<double> ValueProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Value), defaultBindingMode: BindingMode.TwoWay, notifying: ValueChanged);
+
+    private static void ValueChanged(IAvaloniaObject sender, bool before)
+    {
+        if (before)
+            return;
+
+        DraggableNumberBox draggable = (DraggableNumberBox) sender;
+        if (!(Math.Abs(draggable._numberBox.Value - draggable.Value) > 0.00001))
+            return;
+
+        draggable._updating = true;
+        draggable._numberBox.Value = draggable.Value;
+        draggable._updating = false;
+    }
 
     /// <summary>
     ///     Defines the <see cref="Minimum" /> property.
     /// </summary>
-    public static readonly StyledProperty<double> MinimumProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Minimum));
+    public static readonly StyledProperty<double> MinimumProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Minimum), double.MinValue);
 
     /// <summary>
     ///     Defines the <see cref="Maximum" /> property.
     /// </summary>
-    public static readonly StyledProperty<double> MaximumProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Maximum));
+    public static readonly StyledProperty<double> MaximumProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Maximum), double.MaxValue);
 
     /// <summary>
     ///     Defines the <see cref="LargeChange" /> property.
@@ -61,6 +75,7 @@ public class DraggableNumberBox : UserControl
     private double _lastX;
     private bool _moved;
     private double _startX;
+    private bool _updating;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="DraggableNumberBox" /> class.
@@ -69,6 +84,7 @@ public class DraggableNumberBox : UserControl
     {
         InitializeComponent();
         _numberBox = this.Get<NumberBox>("NumberBox");
+        _numberBox.Value = Value;
 
         PointerPressed += OnPointerPressed;
         PointerMoved += OnPointerMoved;
@@ -236,5 +252,26 @@ public class DraggableNumberBox : UserControl
         }
 
         e.Handled = true;
+    }
+
+    private void NumberBox_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+        if (_updating)
+            return;
+
+        if (args.NewValue < Minimum)
+        {
+            _numberBox.Value = Minimum;
+            return;
+        }
+
+        if (args.NewValue > Maximum)
+        {
+            _numberBox.Value = Maximum;
+            return;
+        }
+
+        if (Math.Abs(Value - _numberBox.Value) > 0.00001)
+            Value = _numberBox.Value;
     }
 }

@@ -25,15 +25,13 @@
     <Panel>
         <controls:NumberBox Name="NumberBox"
                             AcceptsExpression="True"
-                            Value="{Binding $parent[sharedControls:DraggableNumberBox].Value}"
-                            Minimum="{Binding $parent[sharedControls:DraggableNumberBox].Minimum}"
-                            Maximum="{Binding $parent[sharedControls:DraggableNumberBox].Maximum}"
                             LargeChange="{Binding $parent[sharedControls:DraggableNumberBox].LargeChange}"
                             SmallChange="{Binding $parent[sharedControls:DraggableNumberBox].SmallChange}"
                             SimpleNumberFormat="{Binding $parent[sharedControls:DraggableNumberBox].SimpleNumberFormat}"
                             attachedProperties:NumberBoxAssist.PrefixText="{Binding $parent[sharedControls:DraggableNumberBox].Prefix}"
                             attachedProperties:NumberBoxAssist.SuffixText="{Binding $parent[sharedControls:DraggableNumberBox].Suffix}"
-                            HorizontalAlignment="{Binding $parent[sharedControls:DraggableNumberBox].HorizontalAlignment}" />
+                            HorizontalAlignment="{Binding $parent[sharedControls:DraggableNumberBox].HorizontalAlignment}" 
+                            ValueChanged="NumberBox_OnValueChanged"/>
         <Rectangle Name="DragCollider" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Fill="Transparent"></Rectangle>
     </Panel>
 
