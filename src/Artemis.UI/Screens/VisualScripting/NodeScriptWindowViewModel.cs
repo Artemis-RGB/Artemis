@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -12,6 +13,7 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Avalonia;
+using Avalonia.Threading;
 using DynamicData;
 using DynamicData.List;
 using ReactiveUI;
@@ -54,6 +56,13 @@ public class NodeScriptWindowViewModel : DialogViewModelBase<bool>
         CreateNode = ReactiveCommand.Create<NodeData>(ExecuteCreateNode);
         Export = ReactiveCommand.CreateFromTask(ExecuteExport);
         Import = ReactiveCommand.CreateFromTask(ExecuteImport);
+
+        this.WhenActivated(d =>
+        {
+            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000), DispatcherPriority.Normal, Update);
+            updateTimer.Start();
+            Disposable.Create(() => updateTimer.Stop()).DisposeWith(d);
+        });
     }
 
     public NodeScript NodeScript { get; }
@@ -118,5 +127,10 @@ public class NodeScriptWindowViewModel : DialogViewModelBase<bool>
 
         await Task.Delay(200);
         NodeScriptViewModel.RequestAutoFit();
+    }
+
+    private void Update(object? sender, EventArgs e)
+    {
+        NodeScript.Run();
     }
 }
