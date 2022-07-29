@@ -25,7 +25,10 @@ public class DeviceLogicalLayoutDialogViewModel : ContentDialogViewModelBase
         Device = device;
         ApplyLogicalLayout = ReactiveCommand.Create(ExecuteApplyLogicalLayout, this.WhenAnyValue(vm => vm.SelectedRegion).Select(r => r != null));
         Regions = new ObservableCollection<RegionInfo>(CultureInfo.GetCultures(CultureTypes.SpecificCultures)
-            .Where(c => c.LCID != LOCALE_INVARIANT && c.LCID != LOCALE_NEUTRAL && c.LCID != LOCALE_CUSTOM_DEFAULT)
+            .Where(c => c.LCID != LOCALE_INVARIANT && 
+                        c.LCID != LOCALE_NEUTRAL && 
+                        c.LCID != LOCALE_CUSTOM_DEFAULT && 
+                        !c.CultureTypes.HasFlag(CultureTypes.UserCustomCulture))
             .Select(c => new RegionInfo(c.LCID))
             .GroupBy(r => r.EnglishName)
             .Select(g => g.First())

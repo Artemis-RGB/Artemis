@@ -38,7 +38,14 @@ namespace Artemis.UI.Linux
         private void RegisterProviders()
         {
             IInputService inputService = _kernel.Get<IInputService>();
-            // inputService.AddInputProvider(_kernel.Get<LinuxInputProvider>());
+            try
+            {
+                inputService.AddInputProvider(_kernel.Get<LinuxInputProvider>());
+            }
+            catch
+            {
+                //TODO: handle not having permissions for the input file.
+            }
         }
     }
 }
