@@ -6,7 +6,8 @@
                      mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                      x:Class="Artemis.UI.MainWindow"
                      Icon="/Assets/Images/Logo/application.ico"
-                     Title="Artemis 2.0">
+                     Title="Artemis 2.0"
+                     WindowStartupLocation="CenterScreen">
     <Panel Name="RootPanel">
         <Border Name="DragHandle" Background="Transparent" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
         <DockPanel>

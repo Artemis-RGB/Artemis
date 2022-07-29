@@ -9,6 +9,7 @@
                      x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.LayerHintsDialogView"
                      x:DataType="dialogs:LayerHintsDialogViewModel"
                      WindowStartupLocation="CenterOwner"
+                     Icon="/Assets/Images/Logo/application.ico"
                      Title="Artemis | Adaption hints"
                      Width="750"
                      Height="800">

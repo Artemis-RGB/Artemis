@@ -11,8 +11,8 @@
                       mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="850"
                       x:Class="Artemis.UI.Screens.Sidebar.ProfileConfigurationEditView"
                       x:DataType="local:ProfileConfigurationEditViewModel"
-                      Title="{CompiledBinding DisplayName}"
                       Icon="/Assets/Images/Logo/application.ico"
+                      Title="{CompiledBinding DisplayName}"
                       Width="800"
                       MinWidth="420"
                       Height="975">

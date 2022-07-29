@@ -91,7 +91,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     The name of the plugin
+        ///     The name of the feature
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string Name
@@ -101,7 +101,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     A short description of the plugin
+        ///     A short description of the feature
         /// </summary>
         [JsonProperty]
         public string? Description

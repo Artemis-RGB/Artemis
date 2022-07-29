@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Artemis.Core.DeviceProviders;
 using Artemis.Storage.Entities.Plugins;
 using McMaster.NETCore.Plugins;
 using Ninject;
@@ -16,6 +17,7 @@ namespace Artemis.Core
     /// </summary>
     public class Plugin : CorePropertyChanged, IDisposable
     {
+        private readonly bool _loadedFromStorage;
         private readonly List<PluginFeatureInfo> _features;
         private readonly List<Profiler> _profilers;
 
@@ -25,9 +27,10 @@ namespace Artemis.Core
         {
             Info = info;
             Directory = directory;
-            Entity = pluginEntity ?? new PluginEntity {Id = Guid, IsEnabled = true};
+            Entity = pluginEntity ?? new PluginEntity {Id = Guid};
             Info.Plugin = this;
 
+            _loadedFromStorage = pluginEntity != null;
             _features = new List<PluginFeatureInfo>();
             _profilers = new List<Profiler>();
 
@@ -309,6 +312,27 @@ namespace Artemis.Core
         {
             return Entity.Features.Any(f => f.IsEnabled) || Features.Any(f => f.AlwaysEnabled);
         }
+        
+        internal void AutoEnableIfNew()
+        {
+            if (_loadedFromStorage)
+                return;
+            
+            // Enabled is preset to true if the plugin meets the following criteria
+            // - Requires no admin rights
+            // - No always-enabled device providers
+            // - Either has no prerequisites or they are all met
+            Entity.IsEnabled = !Info.RequiresAdmin &&
+                               Features.All(f => !f.AlwaysEnabled || !f.FeatureType.IsAssignableTo(typeof(DeviceProvider))) &&
+                               Info.ArePrerequisitesMet();
+
+            if (!Entity.IsEnabled)
+                return;
+            
+            // Also auto-enable any non-device provider feature
+            foreach (PluginFeatureInfo pluginFeatureInfo in Features)
+                pluginFeatureInfo.Entity.IsEnabled = !pluginFeatureInfo.FeatureType.IsAssignableTo(typeof(DeviceProvider));
+        }
 
         /// <inheritdoc />
         public void Dispose()
@@ -316,5 +340,7 @@ namespace Artemis.Core
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+       
     }
 }

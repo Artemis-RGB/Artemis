@@ -9,6 +9,7 @@
                      mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                      x:Class="Artemis.UI.Screens.Scripting.ScriptsDialogView"
                      x:DataType="scripting:ScriptsDialogViewModel"
+                     Icon="/Assets/Images/Logo/application.ico"
                      Title="Artemis | Scripts"
                      Width="1200"
                      Height="750">

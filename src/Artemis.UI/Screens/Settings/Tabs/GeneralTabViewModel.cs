@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
+using Artemis.UI.Screens.StartupWizard;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using Avalonia;
 using DynamicData;
 using FluentAvalonia.Styling;
@@ -26,12 +28,14 @@ namespace Artemis.UI.Screens.Settings
         private readonly PluginSetting<LayerBrushReference> _defaultLayerBrushDescriptor;
         private readonly ISettingsService _settingsService;
         private readonly IDebugService _debugService;
+        private readonly IWindowService _windowService;
 
-        public GeneralTabViewModel(IKernel kernel, ISettingsService settingsService, IPluginManagementService pluginManagementService, IDebugService debugService)
+        public GeneralTabViewModel(IKernel kernel, ISettingsService settingsService, IPluginManagementService pluginManagementService, IDebugService debugService, IWindowService windowService)
         {
             DisplayName = "General";
             _settingsService = settingsService;
             _debugService = debugService;
+            _windowService = windowService;
 
             List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
             LayerBrushDescriptors = new ObservableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
@@ -48,7 +52,7 @@ namespace Artemis.UI.Screens.Settings
 
             ShowLogs = ReactiveCommand.Create(ExecuteShowLogs);
             CheckForUpdate = ReactiveCommand.CreateFromTask(ExecuteCheckForUpdate);
-            ShowSetupWizard = ReactiveCommand.Create(ExecuteShowSetupWizard);
+            ShowSetupWizard = ReactiveCommand.CreateFromTask(ExecuteShowSetupWizard);
             ShowDebugger = ReactiveCommand.Create(ExecuteShowDebugger);
             ShowDataFolder = ReactiveCommand.Create(ExecuteShowDataFolder);
         }
@@ -139,8 +143,9 @@ namespace Artemis.UI.Screens.Settings
 
         #region Tools
 
-        private void ExecuteShowSetupWizard()
+        private async Task ExecuteShowSetupWizard()
         {
+            await _windowService.ShowDialogAsync<StartupWizardViewModel, bool>();
         }
 
         private void ExecuteShowDebugger()
@@ -163,12 +168,5 @@ namespace Artemis.UI.Screens.Settings
                 Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", path);
             }
         }
-    }
-
-    public enum ApplicationColorScheme
-    {
-        Light,
-        Dark,
-        Automatic
     }
 }

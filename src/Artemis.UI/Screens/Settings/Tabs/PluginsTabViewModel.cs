@@ -41,7 +41,7 @@ namespace Artemis.UI.Screens.Settings
             plugins.Connect()
                 .Filter(pluginFilter)
                 .Sort(SortExpressionComparer<Plugin>.Ascending(p => p.Info.Name))
-                .TransformAsync(p => Dispatcher.UIThread.InvokeAsync(() => settingsVmFactory.CreatePluginSettingsViewModel(p), DispatcherPriority.Background))
+                .TransformAsync(p => Dispatcher.UIThread.InvokeAsync(() => settingsVmFactory.PluginSettingsViewModel(p), DispatcherPriority.Background))
                 .Bind(out ReadOnlyObservableCollection<PluginSettingsViewModel> pluginViewModels)
                 .Subscribe();
             Plugins = pluginViewModels;
@@ -88,9 +88,9 @@ namespace Artemis.UI.Screens.Settings
                 // Wait for the VM to be created asynchronously (it would be better to respond to some event here)
                 await Task.Delay(200);
                 // Enable it via the VM to enable the prerequisite dialog
-                PluginSettingsViewModel? pluginViewModel = Plugins.FirstOrDefault(i => i.Plugin == plugin);
-                if (pluginViewModel is {IsEnabled: false})
-                    await pluginViewModel.UpdateEnabled(true);
+                PluginSettingsViewModel? settingsViewModel = Plugins.FirstOrDefault(i => i.PluginViewModel.Plugin == plugin);
+                if (settingsViewModel != null && !settingsViewModel.PluginViewModel.IsEnabled)
+                    await settingsViewModel.PluginViewModel.UpdateEnabled(true);
 
                 _notificationService.CreateNotification()
                     .WithTitle("Plugin imported")

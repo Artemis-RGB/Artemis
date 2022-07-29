@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reactive;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
@@ -42,10 +43,9 @@ public interface IDeviceVmFactory : IVmFactory
 
 public interface ISettingsVmFactory : IVmFactory
 {
-    PluginSettingsViewModel CreatePluginSettingsViewModel(Plugin plugin);
-
-    PluginFeatureViewModel CreatePluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo, bool showShield);
-    // DeviceSettingsViewModel CreateDeviceSettingsViewModel(ArtemisDevice device);
+    PluginSettingsViewModel PluginSettingsViewModel(Plugin plugin);
+    PluginViewModel PluginViewModel(Plugin plugin, ReactiveCommand<Unit, Unit>? reload);
+    PluginFeatureViewModel PluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo, bool showShield);
 }
 
 public interface ISidebarVmFactory : IVmFactory

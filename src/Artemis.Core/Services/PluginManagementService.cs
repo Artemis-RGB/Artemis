@@ -362,23 +362,25 @@ namespace Artemis.Core.Services
             foreach (Type featureType in featureTypes)
             {
                 // Load the enabled state and if not found, default to true
-                PluginFeatureEntity featureEntity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName) ??
-                                                    new PluginFeatureEntity {IsEnabled = true, Type = featureType.FullName!};
+                PluginFeatureEntity featureEntity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName) ?? new PluginFeatureEntity {Type = featureType.FullName!};
                 PluginFeatureInfo feature = new(plugin, featureType, featureEntity, (PluginFeatureAttribute?) Attribute.GetCustomAttribute(featureType, typeof(PluginFeatureAttribute)));
-                
+
                 // If the plugin only has a single feature, it should always be enabled
                 if (featureTypes.Count == 1)
                     feature.AlwaysEnabled = true;
-                
+
                 plugin.AddFeature(feature);
             }
 
             if (!featureTypes.Any())
                 _logger.Warning("Plugin {plugin} contains no features", plugin);
 
+            // It is appropriate to call this now that we have the features of this plugin
+            plugin.AutoEnableIfNew();
+
             List<Type> bootstrappers = plugin.Assembly.GetTypes().Where(t => typeof(PluginBootstrapper).IsAssignableFrom(t)).ToList();
             if (bootstrappers.Count > 1)
-                _logger.Warning($"{plugin} has more than one bootstrapper, only initializing {bootstrappers.First().FullName}");
+                _logger.Warning("{Plugin} has more than one bootstrapper, only initializing {FullName}", plugin, bootstrappers.First().FullName);
             if (bootstrappers.Any())
             {
                 plugin.Bootstrapper = (PluginBootstrapper?) Activator.CreateInstance(bootstrappers.First());
@@ -398,7 +400,7 @@ namespace Artemis.Core.Services
         {
             if (!plugin.Info.IsCompatible)
                 throw new ArtemisPluginException(plugin, $"This plugin only supports the following operating system(s): {plugin.Info.Platforms}");
-            
+
             if (plugin.Assembly == null)
                 throw new ArtemisPluginException(plugin, "Cannot enable a plugin that hasn't successfully been loaded");
 
