@@ -15,6 +15,7 @@ using Artemis.UI.Shared;
 using Avalonia;
 using DynamicData;
 using FluentAvalonia.Styling;
+using Ninject;
 using ReactiveUI;
 using Serilog.Events;
 
@@ -26,7 +27,7 @@ namespace Artemis.UI.Screens.Settings
         private readonly ISettingsService _settingsService;
         private readonly IDebugService _debugService;
 
-        public GeneralTabViewModel(ISettingsService settingsService, IPluginManagementService pluginManagementService, IDebugService debugService, IGraphicsContextProvider? graphicsContextProvider = null)
+        public GeneralTabViewModel(IKernel kernel, ISettingsService settingsService, IPluginManagementService pluginManagementService, IDebugService debugService)
         {
             DisplayName = "General";
             _settingsService = settingsService;
@@ -35,6 +36,7 @@ namespace Artemis.UI.Screens.Settings
             List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
             LayerBrushDescriptors = new ObservableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
             GraphicsContexts = new ObservableCollection<string> {"Software"};
+            IGraphicsContextProvider? graphicsContextProvider = kernel.TryGet<IGraphicsContextProvider>();
             if (graphicsContextProvider != null)
                 GraphicsContexts.AddRange(graphicsContextProvider.GraphicsContextNames);
 
