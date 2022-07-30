@@ -101,7 +101,7 @@
             </TreeView.Styles>
             <TreeView.ItemTemplate>
                 <TreeDataTemplate ItemsSource="{Binding Children}">
-                    <ContentControl Content="{Binding}" x:DataType="profileTree:TreeItemViewModel">
+                    <ContentControl Content="{Binding}" x:DataType="profileTree:TreeItemViewModel" Background="Transparent">
                         <ContentControl.ContextFlyout>
                             <MenuFlyout IsOpen="{CompiledBinding IsFlyoutOpen, Mode=OneWayToSource}">
                                 <MenuItem Header="Add new folder" Command="{CompiledBinding AddFolder}">

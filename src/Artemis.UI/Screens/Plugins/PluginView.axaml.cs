@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -26,5 +27,10 @@ public partial class PluginView : ReactiveUserControl<PluginViewModel>
     private void EnabledToggleOnClick(object? sender, RoutedEventArgs e)
     {
         Dispatcher.UIThread.Post(() => ViewModel?.UpdateEnabled(!ViewModel.Plugin.IsEnabled));
+    }
+
+    private void FlyoutBase_OnOpening(object? sender, EventArgs e)
+    {
+        ViewModel?.CheckPrerequisites();
     }
 }

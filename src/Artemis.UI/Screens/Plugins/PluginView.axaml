@@ -49,7 +49,7 @@
             <StackPanel Orientation="Horizontal">
                 <controls:SplitButton Content="Settings" Command="{CompiledBinding OpenSettings}">
                     <controls:SplitButton.Flyout>
-                        <MenuFlyout Placement="Bottom" IsOpen="{CompiledBinding IsSettingsPopupOpen, Mode=OneWayToSource}">
+                        <MenuFlyout Placement="Bottom" Opening="FlyoutBase_OnOpening">
                             <MenuItem Header="Open plugin directory" Command="{CompiledBinding OpenPluginDirectory}">
                                 <MenuItem.Icon>
                                     <avalonia:MaterialIcon Kind="FolderOpen" />

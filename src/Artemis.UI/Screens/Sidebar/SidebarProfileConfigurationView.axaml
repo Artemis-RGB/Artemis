@@ -8,65 +8,56 @@
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Sidebar.SidebarProfileConfigurationView"
-             x:DataType="sidebar:SidebarProfileConfigurationViewModel">
+             x:DataType="sidebar:SidebarProfileConfigurationViewModel"
+             Background="Transparent">
     <UserControl.Resources>
         <converters:ValuesAdditionConverter x:Key="ValuesAddition" />
     </UserControl.Resources>
-    <UserControl.ContextMenu>
-        <ContextMenu>
-            <MenuItem Header="View properties">
+    <UserControl.ContextFlyout>
+        <MenuFlyout>
+            <MenuItem Header="View properties" Command="{CompiledBinding EditProfile}">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Cog" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Suspend">
+            <MenuItem Header="Suspend" Command="{CompiledBinding ToggleSuspended}">
                 <MenuItem.Icon>
-                    <avalonia:MaterialIcon Kind="Pause" />
+                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding IsSuspended}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Suspend all">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Pause" />
                 </MenuItem.Icon>
-                <MenuItem Header="Above" CommandParameter="suspend" />
-                <MenuItem Header="Below" CommandParameter="suspend" />
+                <MenuItem Header="Above" Command="{CompiledBinding SuspendAll}" CommandParameter="above" />
+                <MenuItem Header="Below" Command="{CompiledBinding SuspendAll}" CommandParameter="below" />
             </MenuItem>
             <MenuItem Header="Resume all">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Play" />
                 </MenuItem.Icon>
-                <MenuItem Header="Above" CommandParameter="resume" />
-                <MenuItem Header="Below" CommandParameter="resume" />
+                <MenuItem Header="Above" Command="{CompiledBinding ResumeAll}" CommandParameter="above" />
+                <MenuItem Header="Below" Command="{CompiledBinding ResumeAll}" CommandParameter="below" />
             </MenuItem>
-            <Separator />
-            <MenuItem Header="Export">
+            <MenuItem Header="-" />
+            <MenuItem Header="Export" Command="{CompiledBinding ExportProfile}">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Export" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Duplicate">
+            <MenuItem Header="Duplicate" Command="{CompiledBinding DuplicateProfile}">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="ContentDuplicate" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Copy">
-                <MenuItem.Icon>
-                    <avalonia:MaterialIcon Kind="ContentCopy" />
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="Paste">
-                <MenuItem.Icon>
-                    <avalonia:MaterialIcon Kind="ContentPaste" />
-                </MenuItem.Icon>
-            </MenuItem>
-            <Separator />
-            <MenuItem Header="Delete">
+            <MenuItem Header="-" />
+            <MenuItem Header="Delete" Command="{CompiledBinding DeleteProfile}">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Trash" />
                 </MenuItem.Icon>
             </MenuItem>
-        </ContextMenu>
-    </UserControl.ContextMenu>
+        </MenuFlyout>
+    </UserControl.ContextFlyout>
     <Grid ColumnDefinitions="Auto,*,Auto,Auto">
         <shared:ProfileConfigurationIcon Grid.Column="0"
                                          x:Name="ProfileIcon"

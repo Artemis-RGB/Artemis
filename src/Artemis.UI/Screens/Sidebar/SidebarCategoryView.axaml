@@ -171,15 +171,6 @@
                      MinHeight="10"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                <ListBox.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Paste">
-                            <MenuItem.Icon>
-                                <avalonia:MaterialIcon Kind="ContentPaste" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                    </ContextMenu>
-                </ListBox.ContextMenu>
             </ListBox>
         </Border>
     </Grid>

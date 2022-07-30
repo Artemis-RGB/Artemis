@@ -28,14 +28,13 @@ public class PluginViewModel : ActivatableViewModelBase
     private bool _canInstallPrerequisites;
     private bool _canRemovePrerequisites;
     private bool _enabling;
-    private bool _isSettingsPopupOpen;
     private Plugin _plugin;
     private Window? _window;
 
-    public PluginViewModel(Plugin plugin, 
-        ReactiveCommand<Unit, Unit>? reload, 
-        ICoreService coreService, 
-        IWindowService windowService, 
+    public PluginViewModel(Plugin plugin,
+        ReactiveCommand<Unit, Unit>? reload,
+        ICoreService coreService,
+        IWindowService windowService,
         INotificationService notificationService,
         IPluginManagementService pluginManagementService)
     {
@@ -105,16 +104,6 @@ public class PluginViewModel : ActivatableViewModelBase
     public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
     public bool IsEnabled => Plugin.IsEnabled;
 
-    public bool IsSettingsPopupOpen
-    {
-        get => _isSettingsPopupOpen;
-        set
-        {
-            if (!RaiseAndSetIfChanged(ref _isSettingsPopupOpen, value)) return;
-            CheckPrerequisites();
-        }
-    }
-
     public bool CanInstallPrerequisites
     {
         get => _canInstallPrerequisites;
@@ -166,7 +155,7 @@ public class PluginViewModel : ActivatableViewModelBase
             _windowService.ShowExceptionDialog("Welp, we couldn't open the device's plugin folder for you", e);
         }
     }
-    
+
     private async Task ExecuteInstallPrerequisites()
     {
         List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
@@ -309,12 +298,17 @@ public class PluginViewModel : ActivatableViewModelBase
     }
 
 
-    private void CheckPrerequisites()
+    public void CheckPrerequisites()
     {
-        CanInstallPrerequisites = Plugin.Info.PlatformPrerequisites.Any() ||
-                                  Plugin.Features.Where(f => f.AlwaysEnabled).Any(f => f.PlatformPrerequisites.Any());
-        CanRemovePrerequisites = Plugin.Info.PlatformPrerequisites.Any(p => p.UninstallActions.Any()) ||
-                                 Plugin.Features.Where(f => f.AlwaysEnabled).Any(f => f.PlatformPrerequisites.Any(p => p.UninstallActions.Any()));
+        CanInstallPrerequisites = false;
+        CanRemovePrerequisites = false;
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            CanInstallPrerequisites = !Plugin.Info.ArePrerequisitesMet() || Plugin.Features.Where(f => f.AlwaysEnabled).Any(f => !f.ArePrerequisitesMet());
+            CanRemovePrerequisites = Plugin.Info.PlatformPrerequisites.Any(p => p.IsMet() && p.UninstallActions.Any()) ||
+                                     Plugin.Features.Where(f => f.AlwaysEnabled).Any(f => f.PlatformPrerequisites.Any(p => p.IsMet() && p.UninstallActions.Any()));
+        });
     }
 
     private void OnPluginToggled(object? sender, EventArgs e)
