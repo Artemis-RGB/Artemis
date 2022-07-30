@@ -793,8 +793,7 @@ namespace Artemis.Core
             
             General.BrushReference.SetCurrentValue(layerBrush != null ? new LayerBrushReference(layerBrush.Descriptor) : null, null);
             LayerBrush = layerBrush;
-            LayerEntity.LayerBrush = new LayerBrushEntity();
-
+            
             oldLayerBrush?.InternalDisable();
 
             if (LayerBrush != null)

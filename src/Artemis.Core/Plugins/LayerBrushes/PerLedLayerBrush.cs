@@ -76,7 +76,7 @@ namespace Artemis.Core.LayerBrushes
 
         internal override void Initialize()
         {
-            TryOrBreak(() => InitializeProperties(Layer.LayerEntity.LayerBrush?.PropertyGroup), "Failed to initialize");
+            TryOrBreak(InitializeProperties, "Failed to initialize");
         }
     }
 }

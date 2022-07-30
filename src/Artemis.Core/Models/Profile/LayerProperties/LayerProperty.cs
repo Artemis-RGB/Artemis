@@ -235,9 +235,20 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
-            string json = CoreJson.SerializeObject(DefaultValue, true);
+            if (DefaultValue == null)
+                return;
+
             KeyframesEnabled = false;
-            SetCurrentValue(CoreJson.DeserializeObject<T>(json)!, null);
+            
+            // For value types there's no need to make a copy
+            if (DefaultValue.GetType().IsValueType)
+                SetCurrentValue(DefaultValue);
+            // Reference types make a deep clone (ab)using JSON
+            else
+            {
+                string json = CoreJson.SerializeObject(DefaultValue, true);
+                SetCurrentValue(CoreJson.DeserializeObject<T>(json)!);
+            }
         }
 
         internal void ReapplyUpdate()

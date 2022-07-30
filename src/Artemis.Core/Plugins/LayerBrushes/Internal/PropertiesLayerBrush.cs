@@ -33,11 +33,11 @@ namespace Artemis.Core.LayerBrushes
             internal set => _properties = value;
         }
 
-        internal void InitializeProperties(PropertyGroupEntity? propertyGroupEntity)
+        internal void InitializeProperties()
         {
             Properties = new T();
             PropertyGroupDescriptionAttribute groupDescription = new() {Identifier = "Brush", Name = Descriptor.DisplayName, Description = Descriptor.Description};
-            Properties.Initialize(Layer, null, groupDescription, propertyGroupEntity);
+            Properties.Initialize(Layer, null, groupDescription, LayerBrushEntity.PropertyGroup);
             PropertiesInitialized = true;
         }
     }
