@@ -30,8 +30,6 @@ namespace Artemis.UI.Screens.Root
         private readonly ISidebarVmFactory _sidebarVmFactory;
         private readonly IWindowService _windowService;
         private SidebarViewModel? _sidebarViewModel;
-        private TrayIcon? _trayIcon;
-        private TrayIcons? _trayIcons;
         private ViewModelBase? _titleBarViewModel;
 
         public RootViewModel(ICoreService coreService,
@@ -78,7 +76,6 @@ namespace Artemis.UI.Screens.Root
                 TitleBarViewModel = _defaultTitleBarViewModel;
         }
 
-
         public SidebarViewModel? SidebarViewModel
         {
             get => _sidebarViewModel;
@@ -105,12 +102,6 @@ namespace Artemis.UI.Screens.Root
             bool minimized = _coreService.StartupArguments.Contains("--minimized");
             bool showOnAutoRun = _settingsService.GetSetting("UI.ShowOnStartup", true).Value;
 
-            // Always show the tray icon if ShowOnStartup is false or the user has no way to open the main window
-            bool showTrayIcon = !showOnAutoRun || _settingsService.GetSetting("UI.ShowTrayIcon", true).Value;
-
-            if (showTrayIcon)
-                ShowTrayIcon();
-
             if (autoRunning && !showOnAutoRun || minimized)
             {
                 // TODO: Auto-update
@@ -125,27 +116,6 @@ namespace Artemis.UI.Screens.Root
         private void ShowSplashScreen()
         {
             _windowService.ShowWindow<SplashViewModel>();
-        }
-
-        private void ShowTrayIcon()
-        {
-            _trayIcon = new TrayIcon
-            {
-                Icon = new WindowIcon(_assetLoader.Open(new Uri("avares://Artemis.UI/Assets/Images/Logo/application.ico"))),
-                Command = ReactiveCommand.Create(OpenMainWindow)
-            };
-            _trayIcon.Menu = (NativeMenu?) Application.Current!.FindResource("TrayIconMenu");
-            _trayIcons = new TrayIcons {_trayIcon};
-            TrayIcon.SetIcons(Application.Current!, _trayIcons);
-        }
-
-        private void HideTrayIcon()
-        {
-            _trayIcon?.Dispose();
-            TrayIcon.SetIcons(Application.Current!, null!);
-
-            _trayIcon = null;
-            _trayIcons = null;
         }
 
         /// <inheritdoc />
