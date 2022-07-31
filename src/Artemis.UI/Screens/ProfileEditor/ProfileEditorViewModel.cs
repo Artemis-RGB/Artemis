@@ -10,6 +10,7 @@ using Artemis.UI.Screens.ProfileEditor.Properties;
 using Artemis.UI.Screens.ProfileEditor.StatusBar;
 using Artemis.UI.Screens.ProfileEditor.VisualEditor;
 using Artemis.UI.Shared.Services.ProfileEditor;
+using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
@@ -24,6 +25,11 @@ public class ProfileEditorViewModel : MainScreenViewModel
     private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
     private ObservableAsPropertyHelper<bool>? _suspendedEditing;
     private ReadOnlyObservableCollection<IToolViewModel>? _tools;
+    private StatusBarViewModel _statusBarViewModel;
+    private DisplayConditionScriptViewModel _displayConditionScriptViewModel;
+    private PropertiesViewModel _propertiesViewModel;
+    private ProfileTreeViewModel _profileTreeViewModel;
+    private VisualEditorViewModel _visualEditorViewModel;
 
     /// <inheritdoc />
     public ProfileEditorViewModel(IScreen hostScreen,
@@ -39,12 +45,6 @@ public class ProfileEditorViewModel : MainScreenViewModel
     {
         _profileEditorService = profileEditorService;
         _settingsService = settingsService;
-        VisualEditorViewModel = visualEditorViewModel;
-        ProfileTreeViewModel = profileTreeViewModel;
-        PropertiesViewModel = propertiesViewModel;
-        DisplayConditionScriptViewModel = displayConditionScriptViewModel;
-        StatusBarViewModel = statusBarViewModel;
-        TitleBarViewModel = profileEditorTitleBarViewModel;
 
         this.WhenActivated(d =>
         {
@@ -59,17 +59,49 @@ public class ProfileEditorViewModel : MainScreenViewModel
                 .Subscribe()
                 .DisposeWith(d);
             Tools = tools;
+            
+            // Slow and steady wins the race (and doesn't lock up the entire UI)
+            Dispatcher.UIThread.Post(() => StatusBarViewModel = statusBarViewModel, DispatcherPriority.Loaded);
+            Dispatcher.UIThread.Post(() => VisualEditorViewModel = visualEditorViewModel, DispatcherPriority.Loaded);
+            Dispatcher.UIThread.Post(() => ProfileTreeViewModel = profileTreeViewModel, DispatcherPriority.Loaded);
+            Dispatcher.UIThread.Post(() => PropertiesViewModel = propertiesViewModel, DispatcherPriority.Loaded);
+            Dispatcher.UIThread.Post(() => DisplayConditionScriptViewModel = displayConditionScriptViewModel, DispatcherPriority.Loaded);
         });
 
+        TitleBarViewModel = profileEditorTitleBarViewModel;
         ToggleSuspend = ReactiveCommand.Create(ExecuteToggleSuspend);
         ToggleAutoSuspend = ReactiveCommand.Create(ExecuteToggleAutoSuspend);
     }
 
-    public VisualEditorViewModel VisualEditorViewModel { get; }
-    public ProfileTreeViewModel ProfileTreeViewModel { get; }
-    public PropertiesViewModel PropertiesViewModel { get; }
-    public DisplayConditionScriptViewModel DisplayConditionScriptViewModel { get; }
-    public StatusBarViewModel StatusBarViewModel { get; }
+    public VisualEditorViewModel VisualEditorViewModel
+    {
+        get => _visualEditorViewModel;
+        set => RaiseAndSetIfChanged(ref _visualEditorViewModel, value);
+    }
+
+    public ProfileTreeViewModel ProfileTreeViewModel
+    {
+        get => _profileTreeViewModel;
+        set => RaiseAndSetIfChanged(ref _profileTreeViewModel, value);
+    }
+
+    public PropertiesViewModel PropertiesViewModel
+    {
+        get => _propertiesViewModel;
+        set => RaiseAndSetIfChanged(ref _propertiesViewModel, value);
+    }
+
+    public DisplayConditionScriptViewModel DisplayConditionScriptViewModel
+    {
+        get => _displayConditionScriptViewModel;
+        set => RaiseAndSetIfChanged(ref _displayConditionScriptViewModel, value);
+    }
+
+    public StatusBarViewModel StatusBarViewModel
+    {
+        get => _statusBarViewModel;
+        set => RaiseAndSetIfChanged(ref _statusBarViewModel, value);
+    }
 
     public ReadOnlyObservableCollection<IToolViewModel>? Tools
     {
