@@ -11,15 +11,21 @@ namespace Artemis.Core
     /// </summary>
     public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
     {
-        private ProfileCategory _category;
         private bool _disposed;
 
-        private bool _isMissingModule;
-        private bool _isSuspended;
-        private Module? _module;
         private string _name;
         private int _order;
+        private bool _isSuspended;
+        private bool _isMissingModule;
+        private ProfileCategory _category;
+        private ProfileConfigurationHotkeyMode _hotkeyMode;
+        private Hotkey? _enableHotkey;
+        private Hotkey? _disableHotkey;
+        private ActivationBehaviour _activationBehaviour;
+        private bool _activationConditionMet;
+        private bool _isBeingEdited;
         private Profile? _profile;
+        private Module? _module;
 
         internal ProfileConfiguration(ProfileCategory category, string name, string icon)
         {
@@ -92,30 +98,59 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets the icon configuration
-        /// </summary>
-        public ProfileConfigurationIcon Icon { get; }
-
-        /// <summary>
         ///     Gets or sets the <see cref="ProfileConfigurationHotkeyMode" /> used to determine hotkey behaviour
         /// </summary>
-        public ProfileConfigurationHotkeyMode HotkeyMode { get; set; }
+        public ProfileConfigurationHotkeyMode HotkeyMode
+        {
+            get => _hotkeyMode;
+            set => SetAndNotify(ref _hotkeyMode, value);
+        }
 
         /// <summary>
         ///     Gets or sets the hotkey used to enable or toggle the profile
         /// </summary>
-        public Hotkey? EnableHotkey { get; set; }
+        public Hotkey? EnableHotkey
+        {
+            get => _enableHotkey;
+            set => SetAndNotify(ref _enableHotkey, value);
+        }
 
         /// <summary>
         ///     Gets or sets the hotkey used to disable the profile
         /// </summary>
-        public Hotkey? DisableHotkey { get; set; }
+        public Hotkey? DisableHotkey
+        {
+            get => _disableHotkey;
+            set => SetAndNotify(ref _disableHotkey, value);
+        }
 
         /// <summary>
-        ///     Gets the ID of the profile of this profile configuration
+        ///     Gets or sets the behaviour of when this profile is activated
         /// </summary>
-        public Guid ProfileId => Entity.ProfileId;
+        public ActivationBehaviour ActivationBehaviour
+        {
+            get => _activationBehaviour;
+            set => SetAndNotify(ref _activationBehaviour, value);
+        }
 
+        /// <summary>
+        ///     Gets a boolean indicating whether the activation conditions where met during the last <see cref="Update" /> call
+        /// </summary>
+        public bool ActivationConditionMet
+        {
+            get => _activationConditionMet;
+            private set => SetAndNotify(ref _activationConditionMet, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether this profile configuration is being edited
+        /// </summary>
+        public bool IsBeingEdited
+        {
+            get => _isBeingEdited;
+            set => SetAndNotify(ref _isBeingEdited, value);
+        }
+        
         /// <summary>
         ///     Gets the profile of this profile configuration
         /// </summary>
@@ -126,17 +161,6 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets or sets the behaviour of when this profile is activated
-        /// </summary>
-        public ActivationBehaviour ActivationBehaviour { get; set; }
-
-        /// <summary>
-        ///     Gets the data model condition that must evaluate to <see langword="true" /> for this profile to be activated
-        ///     alongside any activation requirements of the <see cref="Module" />, if set
-        /// </summary>
-        public NodeScript<bool> ActivationCondition { get; }
-
-        /// <summary>
         ///     Gets or sets the module this profile uses
         /// </summary>
         public Module? Module
@@ -144,25 +168,31 @@ namespace Artemis.Core
             get => _module;
             set
             {
-                _module = value;
+                SetAndNotify(ref _module, value);
                 IsMissingModule = false;
             }
         }
-
+        
         /// <summary>
-        ///     Gets a boolean indicating whether the activation conditions where met during the last <see cref="Update" /> call
+        ///     Gets the icon configuration
         /// </summary>
-        public bool ActivationConditionMet { get; private set; }
-
+        public ProfileConfigurationIcon Icon { get; }
+        
         /// <summary>
-        ///     Gets or sets a boolean indicating whether this profile configuration is being edited
+        ///     Gets the data model condition that must evaluate to <see langword="true" /> for this profile to be activated
+        ///     alongside any activation requirements of the <see cref="Module" />, if set
         /// </summary>
-        public bool IsBeingEdited { get; set; }
+        public NodeScript<bool> ActivationCondition { get; }
 
         /// <summary>
         ///     Gets the entity used by this profile config
         /// </summary>
         public ProfileConfigurationEntity Entity { get; }
+        
+        /// <summary>
+        ///     Gets the ID of the profile of this profile configuration
+        /// </summary>
+        public Guid ProfileId => Entity.ProfileId;
 
         /// <summary>
         ///     Updates this configurations activation condition status
@@ -243,7 +273,7 @@ namespace Artemis.Core
 
             if (Entity.ActivationCondition != null)
                 ActivationCondition.LoadFromEntity(Entity.ActivationCondition);
-            
+
             EnableHotkey = Entity.EnableHotkey != null ? new Hotkey(Entity.EnableHotkey) : null;
             DisableHotkey = Entity.DisableHotkey != null ? new Hotkey(Entity.DisableHotkey) : null;
         }

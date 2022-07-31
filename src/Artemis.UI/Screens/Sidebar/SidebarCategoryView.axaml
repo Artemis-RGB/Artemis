@@ -104,36 +104,38 @@
                 </avalonia:MaterialIcon.Transitions>
             </avalonia:MaterialIcon>
 
-            <TextBlock Classes="fadable"
-                       Classes.suspended="{CompiledBinding IsSuspended}"
-                       Grid.Column="1"
-                       Padding="0 5"
-                       FontWeight="SemiBold"
-                       FontSize="13"
-                       VerticalAlignment="Center"
-                       Text="{CompiledBinding ProfileCategory.Name, FallbackValue='Profile name'}"
-                       TextTrimming="CharacterEllipsis"
-                       PointerReleased="InputElement_OnPointerReleased"
-                       Background="Transparent">
-                <TextBlock.Transitions>
-                    <Transitions>
-                        <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
-                    </Transitions>
-                </TextBlock.Transitions>
-            </TextBlock>
+            <Panel Grid.Column="1" HorizontalAlignment="Left">
+                <TextBlock Classes="fadable"
+                           Classes.suspended="{CompiledBinding IsSuspended}"
+                           Padding="0 5"
+                           FontWeight="SemiBold"
+                           FontSize="13"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left"
+                           Text="{CompiledBinding ProfileCategory.Name, FallbackValue='Profile name'}"
+                           TextTrimming="CharacterEllipsis"
+                           PointerReleased="InputElement_OnPointerReleased"
+                           Background="Transparent">
+                    <TextBlock.Transitions>
+                        <Transitions>
+                            <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
+                        </Transitions>
+                    </TextBlock.Transitions>
+                </TextBlock>
 
-            <Border Classes="fadable"
-                    Classes.suspended="{CompiledBinding IsSuspended}"
-                    Grid.Column="1"
-                    BorderBrush="White"
-                    BorderThickness="0.5"
-                    Height="1">
-                <Border.Transitions>
-                    <Transitions>
-                        <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
-                    </Transitions>
-                </Border.Transitions>
-            </Border>
+                <Border Classes="fadable"
+                        Classes.suspended="{CompiledBinding IsSuspended}"
+                        HorizontalAlignment="Stretch"
+                        BorderBrush="White"
+                        BorderThickness="0.5"
+                        Height="1">
+                    <Border.Transitions>
+                        <Transitions>
+                            <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
+                        </Transitions>
+                    </Border.Transitions>
+                </Border>
+            </Panel>
 
             <Button Classes="category-button icon-button icon-button-small"
                     Grid.Column="2"

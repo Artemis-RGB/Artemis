@@ -21,8 +21,7 @@ namespace Artemis.UI.Screens.Sidebar
         private readonly IProfileService _profileService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IWindowService _windowService;
-        private ObservableAsPropertyHelper<bool>? _isSuspended;
-        public ProfileConfiguration ProfileConfiguration { get; }
+        private ObservableAsPropertyHelper<bool>? _isDisabled;
 
         public SidebarProfileConfigurationViewModel(SidebarViewModel sidebarViewModel,
             ProfileConfiguration profileConfiguration,
@@ -44,11 +43,13 @@ namespace Artemis.UI.Screens.Sidebar
             ExportProfile = ReactiveCommand.CreateFromTask(ExecuteExportProfile);
             DuplicateProfile = ReactiveCommand.Create(ExecuteDuplicateProfile);
 
-            this.WhenActivated(d => { _isSuspended = ProfileConfiguration.WhenAnyValue(c => c.IsSuspended).ToProperty(this, vm => vm.IsSuspended).DisposeWith(d); });
+            this.WhenActivated(d => _isDisabled = ProfileConfiguration.WhenAnyValue(c => c.IsSuspended, c => c.ActivationConditionMet, (suspended, met) => suspended || !met)
+                .ToProperty(this, vm => vm.IsDisabled)
+                .DisposeWith(d));
             _profileService.LoadProfileConfigurationIcon(ProfileConfiguration);
         }
 
-
+        public ProfileConfiguration ProfileConfiguration { get; }
         public ReactiveCommand<Unit, Unit> EditProfile { get; }
         public ReactiveCommand<Unit, Unit> ToggleSuspended { get; }
         public ReactiveCommand<string, Unit> ResumeAll { get; }
@@ -57,7 +58,7 @@ namespace Artemis.UI.Screens.Sidebar
         public ReactiveCommand<Unit, Unit> ExportProfile { get; }
         public ReactiveCommand<Unit, Unit> DuplicateProfile { get; }
 
-        public bool IsSuspended => _isSuspended?.Value ?? false;
+        public bool IsDisabled => _isDisabled?.Value ?? false;
 
         private async Task ExecuteEditProfile()
         {
