@@ -116,17 +116,6 @@
           "Avalonia.X11": "0.10.15"
         }
       },
-      "Avalonia.Diagnostics": {
-        "type": "Transitive",
-        "resolved": "0.10.15",
-        "contentHash": "s3TSl7vmMXv3EzJPzsa69PshiPp9ajoMeVGP9FAfYopR6iuq60MxikEZTscjhsJ+BySCALXN83F1Gwz8o3oGJA==",
-        "dependencies": {
-          "Avalonia": "0.10.15",
-          "Avalonia.Controls.DataGrid": "0.10.15",
-          "Microsoft.CodeAnalysis.CSharp.Scripting": "3.4.0",
-          "System.Reactive": "5.0.0"
-        }
-      },
       "Avalonia.FreeDesktop": {
         "type": "Transitive",
         "resolved": "0.10.15",
@@ -337,75 +326,6 @@
         "type": "Transitive",
         "resolved": "0.10.4",
         "contentHash": "enc2U+/1UnF3rtocxb5ofcg7cJSmJI4adbYPr8DZa5bQzvhqA/VbjlcalxoqjI3CR2RvM5WWpjKT0p3BriFJjw=="
-      },
-      "Microsoft.CodeAnalysis.Analyzers": {
-        "type": "Transitive",
-        "resolved": "2.9.6",
-        "contentHash": "Kmms3TxGQMNb95Cu/3K+0bIcMnV4qf/phZBLAB0HUi65rBPxP4JO3aM2LoAcb+DFS600RQJMZ7ZLyYDTbLwJOQ=="
-      },
-      "Microsoft.CodeAnalysis.Common": {
-        "type": "Transitive",
-        "resolved": "3.4.0",
-        "contentHash": "3ncA7cV+iXGA1VYwe2UEZXcvWyZSlbexWjM9AvocP7sik5UD93qt9Hq0fMRGk0jFRmvmE4T2g+bGfXiBVZEhLw==",
-        "dependencies": {
-          "Microsoft.CodeAnalysis.Analyzers": "2.9.6",
-          "System.Collections.Immutable": "1.5.0",
-          "System.Memory": "4.5.3",
-          "System.Reflection.Metadata": "1.6.0",
-          "System.Runtime.CompilerServices.Unsafe": "4.5.2",
-          "System.Text.Encoding.CodePages": "4.5.1",
-          "System.Threading.Tasks.Extensions": "4.5.3"
-        }
-      },
-      "Microsoft.CodeAnalysis.CSharp": {
-        "type": "Transitive",
-        "resolved": "3.4.0",
-        "contentHash": "/LsTtgcMN6Tu1oo7/WYbRAHL4/ubXC/miEakwTpcZKJKtFo7D0AK95Hw0dbGxul6C8WJu60v6NP2435TDYZM+Q==",
-        "dependencies": {
-          "Microsoft.CodeAnalysis.Common": "[3.4.0]"
-        }
-      },
-      "Microsoft.CodeAnalysis.CSharp.Scripting": {
-        "type": "Transitive",
-        "resolved": "3.4.0",
-        "contentHash": "tLgqc76qXHmONUhWhxo7z3TcL/LmGFWIUJm1exbQmVJohuQvJnejUMxmVkdxDfMuMZU1fIyJXPZ6Fkp4FEneAg==",
-        "dependencies": {
-          "Microsoft.CSharp": "4.3.0",
-          "Microsoft.CodeAnalysis.CSharp": "[3.4.0]",
-          "Microsoft.CodeAnalysis.Common": "[3.4.0]",
-          "Microsoft.CodeAnalysis.Scripting.Common": "[3.4.0]"
-        }
-      },
-      "Microsoft.CodeAnalysis.Scripting.Common": {
-        "type": "Transitive",
-        "resolved": "3.4.0",
-        "contentHash": "+b6I3DZL2zvck+B/E/aiOveakj5U2G2BcYODQxcGh2IDbatNU3XXxGT1HumkWB5uIZI2Leu0opBgBpjScmjGMA==",
-        "dependencies": {
-          "Microsoft.CodeAnalysis.Common": "[3.4.0]"
-        }
-      },
-      "Microsoft.CSharp": {
-        "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "P+MBhIM0YX+JqROuf7i306ZLJEjQYA9uUyRDE+OqwUI5sh41e2ZbPQV3LfAPh+29cmceE1pUffXsGfR4eMY3KA==",
-        "dependencies": {
-          "System.Collections": "4.3.0",
-          "System.Diagnostics.Debug": "4.3.0",
-          "System.Dynamic.Runtime": "4.3.0",
-          "System.Globalization": "4.3.0",
-          "System.Linq": "4.3.0",
-          "System.Linq.Expressions": "4.3.0",
-          "System.ObjectModel": "4.3.0",
-          "System.Reflection": "4.3.0",
-          "System.Reflection.Extensions": "4.3.0",
-          "System.Reflection.Primitives": "4.3.0",
-          "System.Reflection.TypeExtensions": "4.3.0",
-          "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
-          "System.Runtime.Extensions": "4.3.0",
-          "System.Runtime.InteropServices": "4.3.0",
-          "System.Threading": "4.3.0"
-        }
       },
       "Microsoft.DotNet.PlatformAbstractions": {
         "type": "Transitive",
@@ -755,11 +675,6 @@
           "System.Threading": "4.3.0",
           "System.Threading.Tasks": "4.3.0"
         }
-      },
-      "System.Collections.Immutable": {
-        "type": "Transitive",
-        "resolved": "1.5.0",
-        "contentHash": "EXKiDFsChZW0RjrZ4FYHu9aW6+P4MCgEDCklsVseRfhoO0F+dXeMSsMRAlVXIo06kGJ/zv+2w1a2uc2+kxxSaQ=="
       },
       "System.Collections.NonGeneric": {
         "type": "Transitive",
@@ -1494,15 +1409,6 @@
           "System.Runtime": "4.3.0"
         }
       },
-      "System.Text.Encoding.CodePages": {
-        "type": "Transitive",
-        "resolved": "4.5.1",
-        "contentHash": "4J2JQXbftjPMppIHJ7IC+VXQ9XfEagN92vZZNoG12i+zReYlim5dMoXFC1Zzg7tsnKDM7JPo5bYfFK4Jheq44w==",
-        "dependencies": {
-          "Microsoft.NETCore.Platforms": "2.1.2",
-          "System.Runtime.CompilerServices.Unsafe": "4.5.2"
-        }
-      },
       "System.Text.Encoding.Extensions": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -1543,8 +1449,13 @@
       },
       "System.Threading.Tasks.Extensions": {
         "type": "Transitive",
-        "resolved": "4.5.3",
-        "contentHash": "+MvhNtcvIbqmhANyKu91jQnvIRVSTiaOiFNfKWwXGHG48YAb4I/TyH8spsySiPYla7gKal5ZnF3teJqZAximyQ=="
+        "resolved": "4.3.0",
+        "contentHash": "npvJkVKl5rKXrtl1Kkm6OhOUaYGEiF9wFbppFRWSMoApKzt2PiPHT2Bb8a5sAWxprvdOAtvaARS9QYMznEUtug==",
+        "dependencies": {
+          "System.Collections": "4.3.0",
+          "System.Runtime": "4.3.0",
+          "System.Threading.Tasks": "4.3.0"
+        }
       },
       "System.Threading.Timer": {
         "type": "Transitive",
@@ -1631,10 +1542,7 @@
       "Unosquare.Swan.Lite": {
         "type": "Transitive",
         "resolved": "3.0.0",
-        "contentHash": "noPwJJl1Q9uparXy1ogtkmyAPGNfSGb0BLT1292nFH1jdMKje6o2kvvrQUvF9Xklj+IoiAI0UzF6Aqxlvo10lw==",
-        "dependencies": {
-          "System.ValueTuple": "4.5.0"
-        }
+        "contentHash": "noPwJJl1Q9uparXy1ogtkmyAPGNfSGb0BLT1292nFH1jdMKje6o2kvvrQUvF9Xklj+IoiAI0UzF6Aqxlvo10lw=="
       },
       "artemis.core": {
         "type": "Project",
@@ -1676,7 +1584,6 @@
         "dependencies": {
           "Artemis.Core": "1.0.0",
           "Avalonia": "0.10.15",
-          "Avalonia.Diagnostics": "0.10.15",
           "Avalonia.ReactiveUI": "0.10.15",
           "Avalonia.Xaml.Behaviors": "0.10.14",
           "DynamicData": "7.8.6",
