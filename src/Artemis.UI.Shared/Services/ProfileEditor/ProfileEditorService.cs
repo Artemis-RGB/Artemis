@@ -393,6 +393,7 @@ internal class ProfileEditorService : IProfileEditorService
             }
 
             history.Execute.Execute(command).Subscribe();
+            Tick(_timeSubject.Value);
         }
         catch (Exception e)
         {
