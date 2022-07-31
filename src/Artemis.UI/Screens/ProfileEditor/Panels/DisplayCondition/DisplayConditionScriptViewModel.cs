@@ -44,7 +44,7 @@ public class DisplayConditionScriptViewModel : ActivatableViewModelBase
                 .DisposeWith(d);
         });
 
-        _conditionViewModel = this.WhenAnyValue(vm => vm.SelectedConditionTypeViewModel).Select(_ => CreateConditionViewModel()).ToProperty(this, vm => vm.ConditionViewModel);
+        _conditionViewModel = this.WhenAnyValue(vm => vm.SelectedConditionTypeViewModel, vm => vm.ProfileElement).Select(_ => CreateConditionViewModel()).ToProperty(this, vm => vm.ConditionViewModel);
     }
 
     public RenderProfileElement? ProfileElement => _profileElement?.Value;

@@ -38,7 +38,7 @@ namespace Artemis.Core
         /// <summary>
         ///     The full path to the Artemis data folder
         /// </summary>
-        public static readonly string DataFolder = Path.Combine(BaseFolder, "Artemis.Avalonia");
+        public static readonly string DataFolder = Path.Combine(BaseFolder, "Artemis");
 
         /// <summary>
         ///     The full path to the Artemis logs folder

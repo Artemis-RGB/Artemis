@@ -32,7 +32,7 @@ public class DataModelDebugViewModel : ActivatableViewModelBase, IRoutableViewMo
     {
         _dataModelUIService = dataModelUIService;
         _pluginManagementService = pluginManagementService;
-        _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(25), DispatcherPriority.Normal, (_, _) => Update());
+        _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(25), DispatcherPriority.DataBind, (_, _) => Update());
 
         HostScreen = hostScreen;
         Modules = new ObservableCollection<Module>();

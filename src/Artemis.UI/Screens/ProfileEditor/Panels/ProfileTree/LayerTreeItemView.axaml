@@ -31,6 +31,7 @@
                       Classes="icon-button icon-button-small"
                       ToolTip.Tip="Toggle suspended state"
                       IsChecked="{CompiledBinding Layer.Suspended}"
+                      Focusable="False"
                       VerticalAlignment="Center"
                       Margin="4 0">
             <avalonia:MaterialIcon Kind="Pause" />

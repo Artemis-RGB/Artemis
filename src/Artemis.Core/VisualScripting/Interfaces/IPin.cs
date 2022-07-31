@@ -30,6 +30,11 @@ namespace Artemis.Core
         Type Type { get; }
 
         /// <summary>
+        ///     Gets a boolean indicating whether the type of this pin is numeric.
+        /// </summary>
+        bool IsNumeric { get;  }
+
+        /// <summary>
         ///     Gets the value the pin holds
         /// </summary>
         object? PinValue { get; }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -13,52 +14,36 @@ namespace Artemis.UI.Screens.Plugins;
 public class PluginSettingsViewModel : ActivatableViewModelBase
 {
     private Plugin _plugin;
-    
-    private readonly ISettingsVmFactory _settingsVmFactory;
+
     private readonly IPluginManagementService _pluginManagementService;
     private readonly INotificationService _notificationService;
-    
-    private PluginViewModel _pluginViewModel;
 
     public PluginSettingsViewModel(Plugin plugin, ISettingsVmFactory settingsVmFactory, IPluginManagementService pluginManagementService, INotificationService notificationService)
     {
         _plugin = plugin;
-        _settingsVmFactory = settingsVmFactory;
         _pluginManagementService = pluginManagementService;
         _notificationService = notificationService;
 
         Reload = ReactiveCommand.CreateFromTask(ExecuteReload);
-        
         PluginViewModel = settingsVmFactory.PluginViewModel(_plugin, Reload);
-        PluginFeatures = new ObservableCollection<PluginFeatureViewModel>();
-        foreach (PluginFeatureInfo pluginFeatureInfo in _plugin.Features)
-            PluginFeatures.Add(settingsVmFactory.PluginFeatureViewModel(pluginFeatureInfo, false));
+        PluginFeatures = new ObservableCollection<PluginFeatureViewModel>(_plugin.Features.Select(f => settingsVmFactory.PluginFeatureViewModel(f, false)));
     }
 
     public ReactiveCommand<Unit, Unit> Reload { get; }
 
-    public PluginViewModel PluginViewModel
-    {
-        get => _pluginViewModel;
-        private set => RaiseAndSetIfChanged(ref _pluginViewModel, value);
-    }
+    public PluginViewModel PluginViewModel { get; }
 
     public ObservableCollection<PluginFeatureViewModel> PluginFeatures { get; }
 
     private async Task ExecuteReload()
     {
+        // Unloading the plugin will remove this viewmodel, this method is it's final act 😭
         bool wasEnabled = _plugin.IsEnabled;
         await Task.Run(() => _pluginManagementService.UnloadPlugin(_plugin));
 
-        PluginFeatures.Clear();
         _plugin = _pluginManagementService.LoadPlugin(_plugin.Directory);
-        
-        PluginViewModel = _settingsVmFactory.PluginViewModel(_plugin, Reload);
-        foreach (PluginFeatureInfo pluginFeatureInfo in _plugin.Features)
-            PluginFeatures.Add(_settingsVmFactory.PluginFeatureViewModel(pluginFeatureInfo, false));
-
         if (wasEnabled)
-            await PluginViewModel.UpdateEnabled(true);
+            await Task.Run(() => _pluginManagementService.EnablePlugin(_plugin, true, true));
 
         _notificationService.CreateNotification().WithTitle("Reloaded plugin.").Show();
     }

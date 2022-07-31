@@ -50,10 +50,19 @@ namespace Artemis.Core
             get => _isEvaluated;
             set => SetAndNotify(ref _isEvaluated, value);
         }
+        
+        private bool _isNumeric;
+        
+        /// <inheritdoc />
+        public bool IsNumeric
+        {
+            get => _isNumeric;
+            protected set => SetAndNotify(ref _isNumeric, value);
+        }
 
         private readonly List<IPin> _connectedTo = new();
         private string _name;
-
+        
         /// <inheritdoc />
         public IReadOnlyList<IPin> ConnectedTo => new ReadOnlyCollection<IPin>(_connectedTo);
 

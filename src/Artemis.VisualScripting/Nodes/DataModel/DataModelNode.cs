@@ -42,16 +42,17 @@ public class DataModelNode : Node<DataModelPathEntity, DataModelNodeCustomViewMo
         }
         else
         {
-            Output.Value = Output.Type == typeof(Numeric) ? new Numeric(pathValue) : pathValue;
+            Output.Value = Output.IsNumeric ? new Numeric(pathValue) : pathValue;
         }
     }
 
     public void UpdateOutputPin()
     {
         Type? type = _dataModelPath?.GetPropertyType();
-        if (Numeric.IsTypeCompatible(type))
+        if (type == null)
+            type = typeof(object);
+        else if (Numeric.IsTypeCompatible(type))
             type = typeof(Numeric);
-        type ??= typeof(object);
 
         if (Output.Type != type)
             Output.ChangeType(type);

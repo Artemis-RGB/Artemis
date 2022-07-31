@@ -382,7 +382,7 @@ namespace Artemis.Core
 
             if (ShouldBeEnabled)
                 Enable();
-            else if (Timeline.IsFinished && !_renderCopies.Any())
+            else if (Suspended || (Timeline.IsFinished && !_renderCopies.Any()))
                 Disable();
 
             if (Timeline.Delta == TimeSpan.Zero)

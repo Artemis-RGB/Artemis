@@ -31,6 +31,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
     private ProfileElement? _profileElement;
     private string? _renameValue;
     private bool _renaming;
+    private TimeSpan _time;
 
     protected TreeItemViewModel(TreeItemViewModel? parent,
         ProfileElement? profileElement,
@@ -56,6 +57,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
 
         this.WhenActivated(d =>
         {
+            ProfileEditorService.Time.Subscribe(t => _time = t).DisposeWith(d);
             ProfileEditorService.ProfileElement.Subscribe(element => _currentProfileElement = element).DisposeWith(d);
             SubscribeToProfileElement(d);
             CreateTreeItems();
@@ -173,6 +175,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
         Observable.FromEventPattern<ProfileElementEventArgs>(x => ProfileElement.ChildRemoved += x, x => ProfileElement.ChildRemoved -= x)
             .Subscribe(c => RemoveTreeItemsIfFound(c.Sender, c.EventArgs.ProfileElement))
             .DisposeWith(d);
+        ProfileElement.WhenAnyValue(e => e.Suspended).Subscribe(_ => ProfileEditorService.ChangeTime(_time)).DisposeWith(d);
     }
 
     protected void RemoveTreeItemsIfFound(object? sender, ProfileElement profileElement)

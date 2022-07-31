@@ -60,6 +60,7 @@ namespace Artemis.Core
                 int value => value,
                 double value => (float) value,
                 byte value => value,
+                Numeric value => value,
                 _ => ParseFloatOrDefault(pathValue?.ToString())
             };
         }

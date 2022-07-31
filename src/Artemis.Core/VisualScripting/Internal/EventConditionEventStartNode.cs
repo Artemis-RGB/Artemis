@@ -47,7 +47,10 @@ internal class EventConditionEventStartNode : DefaultNode, IEventConditionNode
         foreach ((PropertyInfo propertyInfo, OutputPin outputPin) in _propertyPins)
         {
             if (outputPin.ConnectedTo.Any())
-                outputPin.Value = propertyInfo.GetValue(_dataModelEvent.LastEventArgumentsUntyped) ?? outputPin.Type.GetDefault()!;
+            {
+                object value = propertyInfo.GetValue(_dataModelEvent.LastEventArgumentsUntyped) ?? outputPin.Type.GetDefault()!;
+                outputPin.Value = outputPin.IsNumeric ? new Numeric(value) : value;
+            }
         }
     }
 
@@ -60,6 +63,9 @@ internal class EventConditionEventStartNode : DefaultNode, IEventConditionNode
     {
         // Grab the first pin from the bucket that isn't on the node yet
         OutputPin? pin = _pinBucket.FirstOrDefault(p => !Pins.Contains(p));
+
+        if (Numeric.IsTypeCompatible(valueType))
+            valueType = typeof(Numeric);
 
         // If there is none, create a new one and add it to the bucket
         if (pin == null)

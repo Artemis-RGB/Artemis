@@ -20,10 +20,11 @@ internal class EventConditionValueChangedStartNode : DefaultNode, IEventConditio
 
     public void UpdateOutputPins(DataModelPath dataModelPath)
     {
-        Type? type = dataModelPath?.GetPropertyType();
-        if (Numeric.IsTypeCompatible(type))
+        Type? type = dataModelPath.GetPropertyType();
+        if (type == null)
+            type = typeof(object);
+        else if (Numeric.IsTypeCompatible(type))
             type = typeof(Numeric);
-        type ??= typeof(object);
 
         if (NewValue.Type != type)
             NewValue.ChangeType(type);
@@ -33,8 +34,8 @@ internal class EventConditionValueChangedStartNode : DefaultNode, IEventConditio
 
     public void UpdateValues(object? newValue, object? oldValue)
     {
-        _newValue = newValue;
-        _oldValue = oldValue;
+        _newValue = NewValue.IsNumeric ? new Numeric(newValue) : newValue;
+        _oldValue = OldValue.IsNumeric ? new Numeric(oldValue) : oldValue;
     }
 
     /// <inheritdoc />

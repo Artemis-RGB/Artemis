@@ -17,6 +17,7 @@ namespace Artemis.Core
             : base(node, name)
         {
             _value = default;
+            IsNumeric = typeof(T) == typeof(Numeric);
         }
 
         #endregion
@@ -70,6 +71,7 @@ namespace Artemis.Core
         {
             _type = type;
             _value = type.GetDefault();
+            IsNumeric = type == typeof(Numeric);
         }
 
         #endregion
@@ -90,6 +92,7 @@ namespace Artemis.Core
             // Change the type
             SetAndNotify(ref _type, type, nameof(Type));
             Value = type.GetDefault();
+            IsNumeric = type == typeof(Numeric);
         }
 
         #endregion
