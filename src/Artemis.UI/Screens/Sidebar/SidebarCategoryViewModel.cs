@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -54,6 +55,8 @@ namespace Artemis.UI.Screens.Sidebar
             ToggleSuspended = ReactiveCommand.Create(ExecuteToggleSuspended);
             AddProfile = ReactiveCommand.CreateFromTask(ExecuteAddProfile);
             EditCategory = ReactiveCommand.CreateFromTask(ExecuteEditCategory);
+            MoveUp = ReactiveCommand.Create(ExecuteMoveUp);
+            MoveDown = ReactiveCommand.Create(ExecuteMoveDown);
 
             this.WhenActivated(d =>
             {
@@ -86,6 +89,9 @@ namespace Artemis.UI.Screens.Sidebar
         public ReactiveCommand<Unit, Unit> ToggleSuspended { get; }
         public ReactiveCommand<Unit, Unit> AddProfile { get; }
         public ReactiveCommand<Unit, Unit> EditCategory { get; }
+        public ReactiveCommand<Unit, Unit> MoveUp { get; }
+        public ReactiveCommand<Unit, Unit> MoveDown { get; }
+
         public ProfileCategory ProfileCategory { get; }
         public ReadOnlyObservableCollection<SidebarProfileConfigurationViewModel> ProfileConfigurations { get; }
 
@@ -135,6 +141,36 @@ namespace Artemis.UI.Screens.Sidebar
         {
             ProfileCategory.IsSuspended = !ProfileCategory.IsSuspended;
             _profileService.SaveProfileCategory(ProfileCategory);
+        }
+
+        private void ExecuteMoveUp()
+        {
+            List<ProfileCategory> categories = _profileService.ProfileCategories.OrderBy(p => p.Order).ToList();
+            int index = categories.IndexOf(ProfileCategory);
+            if (index <= 0)
+                return;
+
+            categories[index - 1].Order++;
+            ProfileCategory.Order--;
+            _profileService.SaveProfileCategory(categories[index - 1]);
+            _profileService.SaveProfileCategory(ProfileCategory);
+            
+            _sidebarViewModel.UpdateProfileCategories();
+        }
+
+        private void ExecuteMoveDown()
+        {
+            List<ProfileCategory> categories = _profileService.ProfileCategories.OrderBy(p => p.Order).ToList();
+            int index = categories.IndexOf(ProfileCategory);
+            if (index >= categories.Count - 1)
+                return;
+
+            categories[index + 1].Order--;
+            ProfileCategory.Order++;
+            _profileService.SaveProfileCategory(categories[index + 1]);
+            _profileService.SaveProfileCategory(ProfileCategory);
+
+            _sidebarViewModel.UpdateProfileCategories();
         }
 
         public void AddProfileConfiguration(ProfileConfiguration profileConfiguration, int? index)

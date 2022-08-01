@@ -43,7 +43,8 @@ namespace Artemis.UI.Screens.Sidebar
             ExportProfile = ReactiveCommand.CreateFromTask(ExecuteExportProfile);
             DuplicateProfile = ReactiveCommand.Create(ExecuteDuplicateProfile);
 
-            this.WhenActivated(d => _isDisabled = ProfileConfiguration.WhenAnyValue(c => c.IsSuspended, c => c.ActivationConditionMet, (suspended, met) => suspended || !met)
+            this.WhenActivated(d => _isDisabled = ProfileConfiguration.WhenAnyValue(c => c.Profile)
+                .Select(p => p == null)
                 .ToProperty(this, vm => vm.IsDisabled)
                 .DisposeWith(d));
             _profileService.LoadProfileConfigurationIcon(ProfileConfiguration);

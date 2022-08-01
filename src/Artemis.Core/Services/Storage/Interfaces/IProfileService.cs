@@ -11,11 +11,6 @@ namespace Artemis.Core.Services
     public interface IProfileService : IArtemisService
     {
         /// <summary>
-        ///     Gets the JSON serializer settings used to create profile mementos
-        /// </summary>
-        public static JsonSerializerSettings MementoSettings { get; } = new() {TypeNameHandling = TypeNameHandling.All};
-
-        /// <summary>
         ///     Gets the JSON serializer settings used to import/export profiles
         /// </summary>
         public static JsonSerializerSettings ExportSettings { get; } = new() {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
@@ -101,26 +96,14 @@ namespace Artemis.Core.Services
         ///     Saves the current icon of this profile
         /// </summary>
         void SaveProfileConfigurationIcon(ProfileConfiguration profileConfiguration);
-
+        
         /// <summary>
         ///     Writes the profile to persistent storage
         /// </summary>
         /// <param name="profile"></param>
         /// <param name="includeChildren"></param>
         void SaveProfile(Profile profile, bool includeChildren);
-
-        /// <summary>
-        ///     Attempts to restore the profile to the state it had before the last <see cref="SaveProfile" /> call.
-        /// </summary>
-        /// <param name="profile"></param>
-        bool UndoSaveProfile(Profile profile);
-
-        /// <summary>
-        ///     Attempts to restore the profile to the state it had before the last <see cref="UndoSaveProfile" /> call.
-        /// </summary>
-        /// <param name="profile"></param>
-        bool RedoSaveProfile(Profile profile);
-
+        
         /// <summary>
         ///     Exports the profile described in the given <see cref="ProfileConfiguration" /> into an export model
         /// </summary>

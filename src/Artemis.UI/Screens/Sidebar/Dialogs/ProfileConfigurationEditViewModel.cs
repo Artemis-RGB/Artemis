@@ -68,6 +68,7 @@ namespace Artemis.UI.Screens.Sidebar
                 pluginManagementService.GetFeaturesOfType<Module>().Where(m => !m.IsAlwaysAvailable).Select(m => new ProfileModuleViewModel(m))
             );
             Modules.Insert(0, null);
+            _selectedModule = Modules.FirstOrDefault(m => m?.Module == _profileConfiguration.Module);
             
             VisualEditorViewModel = nodeVmFactory.NodeScriptViewModel(_profileConfiguration.ActivationCondition, true);
 

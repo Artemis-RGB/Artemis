@@ -29,8 +29,6 @@ namespace Artemis.Core
             ProfileEntity = profileEntity;
             EntityId = profileEntity.Id;
 
-            UndoStack = new MaxStack<string>(20);
-            RedoStack = new MaxStack<string>(20);
             Exceptions = new List<Exception>();
             Scripts = new ReadOnlyObservableCollection<ProfileScript>(_scripts);
             ScriptConfigurations = new ReadOnlyObservableCollection<ScriptConfiguration>(_scriptConfigurations);
@@ -81,8 +79,6 @@ namespace Artemis.Core
         /// </summary>
         public ProfileEntity ProfileEntity { get; internal set; }
 
-        internal MaxStack<string> UndoStack { get; set; }
-        internal MaxStack<string> RedoStack { get; set; }
         internal List<Exception> Exceptions { get; }
 
         /// <inheritdoc />

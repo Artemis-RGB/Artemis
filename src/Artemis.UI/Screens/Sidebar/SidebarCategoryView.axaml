@@ -89,7 +89,32 @@
             </Setter>
         </Style>
     </UserControl.Styles>
-    <Grid x:Name="ContainerGrid" Margin="0 8 0 0" RowDefinitions="Auto,*">
+    <Grid x:Name="ContainerGrid" Margin="0 8 0 0" RowDefinitions="Auto,*" >
+        <Grid.ContextFlyout>
+            <MenuFlyout>
+                <MenuItem Header="View properties" Command="{CompiledBinding EditCategory}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Cog" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Suspend" Command="{CompiledBinding ToggleSuspended}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding IsSuspended}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="-" />
+                <MenuItem Header="Move up" Command="{CompiledBinding MoveUp}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="ArrowUp" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Move down" Command="{CompiledBinding MoveDown}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="ArrowDown" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuFlyout>
+        </Grid.ContextFlyout>
         <Grid Grid.Row="0" Background="Transparent" Margin="0 0 6 0" ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto">
             <avalonia:MaterialIcon Classes.chevron-collapsed="{CompiledBinding !IsCollapsed}"
                                    Kind="ChevronUp"

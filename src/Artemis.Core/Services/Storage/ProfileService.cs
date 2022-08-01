@@ -442,88 +442,24 @@ namespace Artemis.Core.Services
                 _profileCategories.Sort((a, b) => a.Order - b.Order);
             }
         }
-
+        
         public void SaveProfile(Profile profile, bool includeChildren)
         {
-            string memento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
+            _logger.Debug("Updating profile - Saving {Profile}", profile);
             profile.Save();
             if (includeChildren)
             {
                 foreach (RenderProfileElement child in profile.GetAllRenderElements())
                     child.Save();
             }
-
-            // If there are no changes, don't bother saving
-            string updatedMemento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
-            if (memento.Equals(updatedMemento))
-            {
-                _logger.Debug("Updating profile - Skipping save, no changes");
-                return;
-            }
-
-            _logger.Debug("Updating profile - Saving " + profile);
-            profile.RedoStack.Clear();
-            profile.UndoStack.Push(memento);
-
+            
             // At this point the user made actual changes, save that
             profile.IsFreshImport = false;
             profile.ProfileEntity.IsFreshImport = false;
 
             _profileRepository.Save(profile.ProfileEntity);
         }
-
-        public bool UndoSaveProfile(Profile profile)
-        {
-            // Keep the profile from being rendered by locking it
-            lock (profile)
-            {
-                if (profile.UndoStack.Count == 0)
-                {
-                    _logger.Debug("Undo profile update - Failed, undo stack empty");
-                    return false;
-                }
-
-                string top = profile.UndoStack.Pop();
-                string memento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
-                profile.RedoStack.Push(memento);
-                profile.ProfileEntity =
-                    JsonConvert.DeserializeObject<ProfileEntity>(top, IProfileService.MementoSettings)
-                    ?? throw new InvalidOperationException("Failed to deserialize memento");
-
-                profile.Load();
-                profile.PopulateLeds(_rgbService.EnabledDevices);
-            }
-
-            _logger.Debug("Undo profile update - Success");
-            return true;
-        }
-
-        public bool RedoSaveProfile(Profile profile)
-        {
-            // Keep the profile from being rendered by locking it
-            lock (profile)
-            {
-                if (profile.RedoStack.Count == 0)
-                {
-                    _logger.Debug("Redo profile update - Failed, redo empty");
-                    return false;
-                }
-
-                string top = profile.RedoStack.Pop();
-                string memento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
-                profile.UndoStack.Push(memento);
-                profile.ProfileEntity =
-                    JsonConvert.DeserializeObject<ProfileEntity>(top, IProfileService.MementoSettings)
-                    ?? throw new InvalidOperationException("Failed to deserialize memento");
-
-                profile.Load();
-                profile.PopulateLeds(_rgbService.EnabledDevices);
-
-                _logger.Debug("Redo profile update - Success");
-                return true;
-            }
-        }
-
+        
         public ProfileConfigurationExportModel ExportProfile(ProfileConfiguration profileConfiguration)
         {
             // The profile may not be active and in that case lets activate it real quick
@@ -596,8 +532,6 @@ namespace Artemis.Core.Services
         /// <inheritdoc />
         public void AdaptProfile(Profile profile)
         {
-            string memento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
-
             List<ArtemisDevice> devices = _rgbService.EnabledDevices.ToList();
             foreach (Layer layer in profile.GetAllLayers())
                 layer.Adapter.Adapt(devices);
@@ -608,9 +542,6 @@ namespace Artemis.Core.Services
                 renderProfileElement.Save();
 
             _logger.Debug("Adapt profile - Saving " + profile);
-            profile.RedoStack.Clear();
-            profile.UndoStack.Push(memento);
-
             _profileRepository.Save(profile.ProfileEntity);
         }
 
