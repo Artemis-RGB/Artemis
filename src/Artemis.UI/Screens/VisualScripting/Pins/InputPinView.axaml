@@ -14,7 +14,7 @@
     <UserControl.Styles>
         <StyleInclude Source="/Screens/VisualScripting/VisualScripting.axaml" />
     </UserControl.Styles>
-    <StackPanel Name="PinContainer" Orientation="Horizontal" Spacing="6">
+    <StackPanel Name="PinContainer" Orientation="Horizontal" Spacing="6" PointerReleased="PinContainer_OnPointerReleased">
         <Border Name="PinPoint">
             <Border Name="VisualPinPoint" 
                     BorderBrush="{CompiledBinding PinColor, Converter={StaticResource ColorToSolidColorBrushConverter}}" 

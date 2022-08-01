@@ -47,12 +47,12 @@ public class NodeViewModel : ActivatableViewModelBase
         // Create observable collections split up by direction
         nodePins.Connect()
             .Filter(n => n.Direction == PinDirection.Input)
-            .Transform(p => (PinViewModel) nodeVmFactory.InputPinViewModel(p))
+            .Transform(p => (PinViewModel) nodeVmFactory.InputPinViewModel(p, nodeScriptViewModel))
             .Bind(out ReadOnlyObservableCollection<PinViewModel> inputPins)
             .Subscribe();
         nodePins.Connect()
             .Filter(n => n.Direction == PinDirection.Output)
-            .Transform(p => (PinViewModel) nodeVmFactory.OutputPinViewModel(p))
+            .Transform(p => (PinViewModel) nodeVmFactory.OutputPinViewModel(p, nodeScriptViewModel))
             .Bind(out ReadOnlyObservableCollection<PinViewModel> outputPins)
             .Subscribe();
         InputPinViewModels = inputPins;

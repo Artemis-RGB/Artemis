@@ -106,8 +106,8 @@ public interface INodeVmFactory : IVmFactory
     NodeViewModel NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node);
     CableViewModel CableViewModel(NodeScriptViewModel nodeScriptViewModel, IPin from, IPin to);
     DragCableViewModel DragCableViewModel(PinViewModel pinViewModel);
-    InputPinViewModel InputPinViewModel(IPin inputPin);
-    OutputPinViewModel OutputPinViewModel(IPin outputPin);
+    InputPinViewModel InputPinViewModel(IPin inputPin, NodeScriptViewModel nodeScriptViewModel);
+    OutputPinViewModel OutputPinViewModel(IPin outputPin, NodeScriptViewModel nodeScriptViewModel);
     InputPinCollectionViewModel InputPinCollectionViewModel(IPinCollection inputPinCollection, NodeScriptViewModel nodeScriptViewModel);
     OutputPinCollectionViewModel OutputPinCollectionViewModel(IPinCollection outputPinCollection, NodeScriptViewModel nodeScriptViewModel);
 }

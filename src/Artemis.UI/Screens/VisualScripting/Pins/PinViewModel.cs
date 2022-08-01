@@ -6,6 +6,8 @@ using Artemis.Core.Events;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Extensions;
+using Artemis.UI.Shared.Services.NodeEditor;
+using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Avalonia;
 using Avalonia.Controls.Mixins;
 using Avalonia.Media;
@@ -22,11 +24,13 @@ public abstract class PinViewModel : ActivatableViewModelBase
     private Color _pinColor;
     private Color _darkenedPinColor;
 
-    protected PinViewModel(IPin pin, INodeService nodeService)
+    protected PinViewModel(IPin pin, NodeScriptViewModel nodeScriptViewModel, INodeService nodeService, INodeEditorService nodeEditorService)
     {
         _nodeService = nodeService;
 
         Pin = pin;
+        DisconnectPin = ReactiveCommand.Create(() => nodeEditorService.ExecuteCommand(nodeScriptViewModel.NodeScript, new DisconnectPins(Pin)));
+        
         SourceList<IPin> connectedPins = new();
         this.WhenActivated(d =>
         {
@@ -77,6 +81,8 @@ public abstract class PinViewModel : ActivatableViewModelBase
         get => _removePin;
         set => RaiseAndSetIfChanged(ref _removePin, value);
     }
+
+    public ReactiveCommand<Unit, Unit> DisconnectPin { get; }
 
     public bool IsCompatibleWith(PinViewModel pinViewModel)
     {
