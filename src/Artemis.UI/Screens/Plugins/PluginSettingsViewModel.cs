@@ -13,7 +13,7 @@ namespace Artemis.UI.Screens.Plugins;
 
 public class PluginSettingsViewModel : ActivatableViewModelBase
 {
-    private Plugin _plugin;
+    private readonly Plugin _plugin;
 
     private readonly IPluginManagementService _pluginManagementService;
     private readonly INotificationService _notificationService;
@@ -41,10 +41,13 @@ public class PluginSettingsViewModel : ActivatableViewModelBase
         bool wasEnabled = _plugin.IsEnabled;
         await Task.Run(() => _pluginManagementService.UnloadPlugin(_plugin));
 
-        _plugin = _pluginManagementService.LoadPlugin(_plugin.Directory);
-        if (wasEnabled)
-            await Task.Run(() => _pluginManagementService.EnablePlugin(_plugin, true, true));
-
-        _notificationService.CreateNotification().WithTitle("Reloaded plugin.").Show();
+        Plugin? plugin = _pluginManagementService.LoadPlugin(_plugin.Directory);
+        if (plugin != null && wasEnabled)
+        {
+            await Task.Run(() => _pluginManagementService.EnablePlugin(plugin, true, true));
+            _notificationService.CreateNotification().WithTitle("Reloaded plugin.").Show();
+        }
+        else if (plugin == null)
+            _notificationService.CreateNotification().WithTitle("Failed to load plugin after unloading it.").Show();
     }
 }

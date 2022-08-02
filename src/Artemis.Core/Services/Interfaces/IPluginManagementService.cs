@@ -37,7 +37,7 @@ namespace Artemis.Core.Services
         ///     Loads the plugin located in the provided <paramref name="directory" />
         /// </summary>
         /// <param name="directory">The directory where the plugin is located</param>
-        Plugin LoadPlugin(DirectoryInfo directory);
+        Plugin? LoadPlugin(DirectoryInfo directory);
 
         /// <summary>
         ///     Enables the provided <paramref name="plugin" />
@@ -68,7 +68,7 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="fileName">The full path to the ZIP file that contains the plugin</param>
         /// <returns>The resulting plugin</returns>
-        Plugin ImportPlugin(string fileName);
+        Plugin? ImportPlugin(string fileName);
 
         /// <summary>
         ///     Unloads and permanently removes the provided plugin

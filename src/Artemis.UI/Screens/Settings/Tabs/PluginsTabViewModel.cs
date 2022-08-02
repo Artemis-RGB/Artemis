@@ -82,7 +82,13 @@ namespace Artemis.UI.Screens.Settings
 
             try
             {
-                Plugin plugin = _pluginManagementService.ImportPlugin(files[0]);
+                Plugin? plugin = _pluginManagementService.ImportPlugin(files[0]);
+                if (plugin == null)
+                {
+                    await _windowService.ShowConfirmContentDialog("Failed to import plugin", "Make sure it is compatible with the current platform.", "Close", null);
+                    return;
+                }
+
                 SearchPluginInput = plugin.Info.Name;
 
                 // Wait for the VM to be created asynchronously (it would be better to respond to some event here)

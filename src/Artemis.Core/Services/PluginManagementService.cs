@@ -292,7 +292,7 @@ namespace Artemis.Core.Services
             }
         }
 
-        public Plugin LoadPlugin(DirectoryInfo directory)
+        public Plugin? LoadPlugin(DirectoryInfo directory)
         {
             _logger.Verbose("Loading plugin from {directory}", directory.FullName);
 
@@ -303,6 +303,9 @@ namespace Artemis.Core.Services
 
             // PluginInfo contains the ID which we need to move on
             PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile))!;
+
+            if (!pluginInfo.IsCompatible)
+                return null;
 
             if (pluginInfo.Guid == Constants.CorePluginInfo.Guid)
                 throw new ArtemisPluginException($"Plugin {pluginInfo} cannot use reserved GUID {pluginInfo.Guid}");
@@ -531,7 +534,7 @@ namespace Artemis.Core.Services
             OnPluginDisabled(new PluginEventArgs(plugin));
         }
 
-        public Plugin ImportPlugin(string fileName)
+        public Plugin? ImportPlugin(string fileName)
         {
             DirectoryInfo pluginDirectory = new(Constants.PluginsFolder);
 
