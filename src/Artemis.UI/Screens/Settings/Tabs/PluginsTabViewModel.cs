@@ -36,7 +36,7 @@ namespace Artemis.UI.Screens.Settings
             DisplayName = "Plugins";
 
             SourceList<Plugin> plugins = new();
-            IObservable<Func<Plugin, bool>> pluginFilter = this.WhenAnyValue(vm => vm.SearchPluginInput).Throttle(TimeSpan.FromMilliseconds(100)).Select(CreatePredicate);
+            IObservable<Func<Plugin, bool>> pluginFilter = this.WhenAnyValue(vm => vm.SearchPluginInput).Throttle(TimeSpan.FromMilliseconds(100), AvaloniaScheduler.Instance).Select(CreatePredicate);
 
             plugins.Connect()
                 .Filter(pluginFilter)
