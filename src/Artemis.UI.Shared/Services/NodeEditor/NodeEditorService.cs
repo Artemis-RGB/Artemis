@@ -38,7 +38,7 @@ public class NodeEditorService : INodeEditorService
         try
         {
             NodeEditorHistory history = GetHistory(nodeScript);
-
+            
             // If a scope is active add the command to it, the scope will execute it immediately
             _nodeEditorCommandScopes.TryGetValue(nodeScript, out NodeEditorCommandScope? scope);
             if (scope != null)

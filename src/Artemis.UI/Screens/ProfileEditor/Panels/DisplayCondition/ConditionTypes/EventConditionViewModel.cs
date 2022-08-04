@@ -81,5 +81,6 @@ public class EventConditionViewModel : ActivatableViewModelBase
     private async Task ExecuteOpenEditor()
     {
         await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(("nodeScript", _eventCondition.Script));
+        await _profileEditorService.SaveProfileAsync();
     }
 }

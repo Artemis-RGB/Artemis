@@ -39,7 +39,7 @@ namespace Artemis.Core
         ///     Gets the layer property this data binding targets
         /// </summary>
         public LayerProperty<TLayerProperty> LayerProperty { get; }
-        
+
         /// <inheritdoc />
         public INodeScript Script => _script;
 
@@ -204,7 +204,6 @@ namespace Artemis.Core
         /// <inheritdoc />
         public event EventHandler<DataBindingEventArgs>? DataBindingDisabled;
 
-
         #region Storage
 
         /// <inheritdoc />
@@ -231,9 +230,14 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DataBinding");
 
-            _script.Save();
             Entity.IsEnabled = IsEnabled;
-            Entity.NodeScript = _script.Entity.Nodes.Any() ? _script.Entity : null;
+            if (_script.ExitNodeConnected || _script.Nodes.Count() > 1)
+            {
+                _script.Save();
+                Entity.NodeScript = _script.Entity;
+            }
+            else
+                Entity.NodeScript = null;
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 
@@ -123,7 +124,9 @@ namespace Artemis.Core
             PlayMode = (StaticPlayMode) _entity.PlayMode;
             StopMode = (StaticStopMode) _entity.StopMode;
 
-            Script = new NodeScript<bool>($"Activate {_displayName}", $"Whether or not this {_displayName} should be active", _entity.Script, ProfileElement.Profile);
+            Script = _entity.Script != null
+                ? new NodeScript<bool>($"Activate {_displayName}", $"Whether or not this {_displayName} should be active", _entity.Script, ProfileElement.Profile)
+                : new NodeScript<bool>($"Activate {_displayName}", $"Whether or not this {_displayName} should be active", ProfileElement.Profile);
         }
 
         /// <inheritdoc />
@@ -132,8 +135,16 @@ namespace Artemis.Core
             _entity.PlayMode = (int) PlayMode;
             _entity.StopMode = (int) StopMode;
 
-            Script.Save();
-            _entity.Script = Script.Entity;
+            // If the exit node isn't connected and there is only the exit node, don't save the script
+            if (!Script.ExitNodeConnected && Script.Nodes.Count() == 1)
+            {
+                _entity.Script = null;
+            }
+            else
+            {
+                Script.Save();
+                _entity.Script = Script.Entity;
+            }
         }
 
         /// <inheritdoc />

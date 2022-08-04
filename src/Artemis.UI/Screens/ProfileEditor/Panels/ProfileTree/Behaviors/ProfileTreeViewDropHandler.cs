@@ -63,7 +63,8 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
         TreeDropType dropType = TreeDropType.Before;
         if (!targetNode.SupportsChildren)
         {
-            if (position.Y > targetVisual.Bounds.Top + targetVisual.Bounds.Height / 2)
+            position = e.GetPosition(targetVisual);
+            if (position.Y > targetVisual.Bounds.Height / 2)
                 dropType = TreeDropType.After;
         }
         else
@@ -71,10 +72,11 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
             IVisual? header = targetVisual.GetVisualDescendants().FirstOrDefault(d => d is Border b && b.Name == "PART_LayoutRoot");
             if (header != null)
             {
+                position = e.GetPosition(header);
                 double segments = header.Bounds.Height / 3.0;
-                if (position.Y > targetVisual.Bounds.Top + segments * 2)
+                if (position.Y > segments * 2)
                     dropType = TreeDropType.After;
-                else if (position.Y > targetVisual.Bounds.Top + segments)
+                else if (position.Y > segments)
                     dropType = TreeDropType.Into;
             }
         }

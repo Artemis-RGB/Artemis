@@ -140,6 +140,7 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
 
             valueChangedNode.UpdateOutputPins(EventPath);
         }
+        Script.Save();
     }
 
     private void ReplaceStartNode(IEventConditionNode newStartNode)
@@ -270,7 +271,7 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
 
         Script = _entity.Script != null
             ? new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", _entity.Script, ProfileElement.Profile)
-            : new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", ProfileElement.Profile);
+            :  new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", ProfileElement.Profile);
         UpdateEventNode();
     }
 
@@ -281,8 +282,17 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
         _entity.OverlapMode = (int) OverlapMode;
         _entity.ToggleOffMode = (int) ToggleOffMode;
 
-        Script.Save();
-        _entity.Script = Script?.Entity;
+        // If the exit node isn't connected and there are only the start- and exit node, don't save the script
+        if (!Script.ExitNodeConnected && Script.Nodes.Count() <= 2)
+        {
+            _entity.Script = null;
+        }
+        else
+        {
+            Script.Save();
+            _entity.Script = Script.Entity;
+        }
+
         EventPath?.Save();
         _entity.EventPath = EventPath?.Entity;
     }

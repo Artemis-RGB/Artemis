@@ -402,6 +402,8 @@ namespace Artemis.Core
         {
             ExitNode = new ExitNode<T>(name, description);
             AddNode(ExitNode);
+            
+            Save();
         }
 
         [UsedImplicitly(ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature)]

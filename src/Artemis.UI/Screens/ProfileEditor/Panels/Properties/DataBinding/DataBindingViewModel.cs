@@ -10,6 +10,7 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia.Threading;
@@ -72,7 +73,10 @@ public class DataBindingViewModel : ActivatableViewModelBase
     public async Task OpenEditor()
     {
         if (LayerProperty != null && LayerProperty.BaseDataBinding.IsEnabled)
+        {
             await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(("nodeScript", LayerProperty.BaseDataBinding.Script));
+            await _profileEditorService.SaveProfileAsync();
+        }
     }
 
     private void Update(object? sender, EventArgs e)
