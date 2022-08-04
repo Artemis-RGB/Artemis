@@ -48,7 +48,7 @@ namespace Artemis.UI.Screens.Settings
 
             this.WhenActivated(d =>
             {
-                plugins.AddRange(_pluginManagementService.GetAllPlugins());
+                Dispatcher.UIThread.Post(() => plugins.AddRange(_pluginManagementService.GetAllPlugins()), DispatcherPriority.Background);
                 Observable.FromEventPattern<PluginEventArgs>(x => _pluginManagementService.PluginLoaded += x, x => _pluginManagementService.PluginLoaded -= x)
                     .Subscribe(a => plugins.Add(a.EventArgs.Plugin))
                     .DisposeWith(d);
