@@ -41,7 +41,7 @@ namespace Artemis.UI.Screens.Settings
             plugins.Connect()
                 .Filter(pluginFilter)
                 .Sort(SortExpressionComparer<Plugin>.Ascending(p => p.Info.Name))
-                .TransformAsync(p => Dispatcher.UIThread.InvokeAsync(() => settingsVmFactory.PluginSettingsViewModel(p), DispatcherPriority.Background))
+                .Transform(settingsVmFactory.PluginSettingsViewModel)
                 .Bind(out ReadOnlyObservableCollection<PluginSettingsViewModel> pluginViewModels)
                 .Subscribe();
             Plugins = pluginViewModels;
