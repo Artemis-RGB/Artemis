@@ -14,7 +14,7 @@
                   IsReadOnly="True"
                   AutoGenerateColumns="False"
                   CanUserReorderColumns="False"
-                 CanUserResizeColumns="False"
+                  CanUserResizeColumns="False"
                   Margin="10 5 10 10">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Measurement.Identifier}" Header="Identifier" />

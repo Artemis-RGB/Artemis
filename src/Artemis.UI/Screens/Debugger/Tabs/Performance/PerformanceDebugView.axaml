@@ -28,12 +28,12 @@
             <TextBlock Text="{Binding RenderWidth}" />
             <TextBlock Text="x" />
             <TextBlock Text="{Binding RenderHeight}" />
-            <TextBlock Text=" - Renderer: "></TextBlock>
-            <TextBlock Text="{Binding Renderer}"></TextBlock>
+            <TextBlock Text=" - Renderer: " />
+            <TextBlock Text="{Binding Renderer}" />
         </StackPanel>
 
 
-		<ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
             <ItemsControl Items="{Binding Items}" Margin="0 0 10 0" />
         </ScrollViewer>
     </Grid>

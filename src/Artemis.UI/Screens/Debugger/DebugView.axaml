@@ -1,16 +1,19 @@
 <controls:CoreWindow xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-        xmlns:reactiveUi="http://reactiveui.net"
-        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
-        x:Class="Artemis.UI.Screens.Debugger.DebugView"
-        Icon="/Assets/Images/Logo/application.ico"
-        Title="Artemis | Debugger"
-        Width="1200"
-        Height="800">
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                     xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+                     xmlns:reactiveUi="http://reactiveui.net"
+                     xmlns:debugger="clr-namespace:Artemis.UI.Screens.Debugger"
+                     xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+                     mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+                     x:Class="Artemis.UI.Screens.Debugger.DebugView"
+                     x:DataType="debugger:DebugViewModel"
+                     Icon="/Assets/Images/Logo/application.ico"
+                     Title="Artemis | Debugger"
+                     Width="1200"
+                     Height="800">
 
     <Window.Styles>
         <Style Selector="StackPanel.sidebar-stackpanel avalonia|MaterialIcon">
@@ -21,55 +24,18 @@
         </Style>
     </Window.Styles>
 
-	<Panel>
-		<controls:NavigationView x:Name="Navigation"
-								 SelectedItem="{Binding SelectedItem}"
-								 IsPaneToggleButtonVisible="False"
-								 PaneDisplayMode="Left"
-								 Margin="0 10 0 0">
-			<controls:NavigationView.MenuItems>
-				<controls:NavigationViewItem Tag="Rendering">
-					<controls:NavigationViewItem.Content>
-						<StackPanel Orientation="Horizontal" Classes="sidebar-stackpanel">
-							<avalonia:MaterialIcon Kind="Paint" />
-							<TextBlock>Rendering</TextBlock>
-						</StackPanel>
-					</controls:NavigationViewItem.Content>
-				</controls:NavigationViewItem>
-				<controls:NavigationViewItem Tag="DataModel">
-					<controls:NavigationViewItem.Content>
-						<StackPanel Orientation="Horizontal" Classes="sidebar-stackpanel">
-							<avalonia:MaterialIcon Kind="FormatListBulletedType" />
-							<TextBlock>Data Model</TextBlock>
-						</StackPanel>
-					</controls:NavigationViewItem.Content>
-				</controls:NavigationViewItem>
-				<controls:NavigationViewItem Tag="Performance">
-					<controls:NavigationViewItem.Content>
-						<StackPanel Orientation="Horizontal" Classes="sidebar-stackpanel">
-							<avalonia:MaterialIcon Kind="Gauge" />
-							<TextBlock>Performance</TextBlock>
-						</StackPanel>
-					</controls:NavigationViewItem.Content>
-				</controls:NavigationViewItem>
-				<controls:NavigationViewItem Tag="Logging">
-					<controls:NavigationViewItem.Content>
-						<StackPanel Orientation="Horizontal" Classes="sidebar-stackpanel">
-							<avalonia:MaterialIcon Kind="Text" />
-							<TextBlock>Logging</TextBlock>
-						</StackPanel>
-					</controls:NavigationViewItem.Content>
-				</controls:NavigationViewItem>
-			</controls:NavigationView.MenuItems>
+    <Grid ColumnDefinitions="240,*">
+        <ListBox Items="{CompiledBinding Items}" SelectedItem="{CompiledBinding SelectedItem}" Grid.Column="0" Margin="10">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="shared:ViewModelBase">
+                    <TextBlock Text="{CompiledBinding DisplayName}" VerticalAlignment="Center" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Border Classes="router-container" Grid.Column="1">
+            <ContentControl Content="{CompiledBinding SelectedItem}" Margin="15"></ContentControl>
+        </Border>
 
-			<reactiveUi:RoutedViewHost Router="{Binding Router}" Padding="12">
-				<reactiveUi:RoutedViewHost.PageTransition>
-					<CrossFade Duration="0.1" />
-				</reactiveUi:RoutedViewHost.PageTransition>
-			</reactiveUi:RoutedViewHost>
-
-		</controls:NavigationView>
-		<StackPanel Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
-	</Panel>
-    
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
+    </Grid>
 </controls:CoreWindow>

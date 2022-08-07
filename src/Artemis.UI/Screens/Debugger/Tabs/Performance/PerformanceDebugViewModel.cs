@@ -12,7 +12,7 @@ using SkiaSharp;
 
 namespace Artemis.UI.Screens.Debugger.Performance;
 
-public class PerformanceDebugViewModel : ActivatableViewModelBase, IRoutableViewModel
+public class PerformanceDebugViewModel : ActivatableViewModelBase
 {
     private readonly ICoreService _coreService;
     private readonly IPluginManagementService _pluginManagementService;
@@ -22,13 +22,14 @@ public class PerformanceDebugViewModel : ActivatableViewModelBase, IRoutableView
     private int _renderHeight;
     private int _renderWidth;
 
-    public PerformanceDebugViewModel(IScreen hostScreen, ICoreService coreService, IPluginManagementService pluginManagementService)
+    public PerformanceDebugViewModel(ICoreService coreService, IPluginManagementService pluginManagementService)
     {
-        HostScreen = hostScreen;
         _coreService = coreService;
         _pluginManagementService = pluginManagementService;
         _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Normal, (_, _) => Update());
 
+        DisplayName = "Performance";
+        
         this.WhenActivated(disposables =>
         {
             Observable.FromEventPattern<PluginFeatureEventArgs>(x => pluginManagementService.PluginFeatureEnabled += x, x => pluginManagementService.PluginFeatureEnabled -= x)
@@ -123,8 +124,4 @@ public class PerformanceDebugViewModel : ActivatableViewModelBase, IRoutableView
         RenderHeight = bitmapInfo.Height;
         RenderWidth = bitmapInfo.Width;
     }
-
-
-    public string UrlPathSegment => "performance";
-    public IScreen HostScreen { get; }
 }

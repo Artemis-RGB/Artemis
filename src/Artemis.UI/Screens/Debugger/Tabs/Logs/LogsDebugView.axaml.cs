@@ -1,18 +1,17 @@
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Debugger.Logs
-{
-    public class LogsDebugView : ReactiveUserControl<LogsDebugViewModel>
-    {
-        public LogsDebugView()
-        {
-            InitializeComponent();
-        }
+namespace Artemis.UI.Screens.Debugger.Logs;
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+public class LogsDebugView : ReactiveUserControl<LogsDebugViewModel>
+{
+    public LogsDebugView()
+    {
+        InitializeComponent();
+    }
+
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }

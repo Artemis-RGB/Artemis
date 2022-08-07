@@ -36,12 +36,13 @@ namespace Artemis.UI.Screens.Settings
             DisplayName = "Plugins";
 
             SourceList<Plugin> plugins = new();
-            IObservable<Func<Plugin, bool>> pluginFilter = this.WhenAnyValue(vm => vm.SearchPluginInput).Throttle(TimeSpan.FromMilliseconds(100), AvaloniaScheduler.Instance).Select(CreatePredicate);
+            IObservable<Func<Plugin, bool>> pluginFilter = this.WhenAnyValue(vm => vm.SearchPluginInput).Throttle(TimeSpan.FromMilliseconds(100)).Select(CreatePredicate);
 
             plugins.Connect()
                 .Filter(pluginFilter)
                 .Sort(SortExpressionComparer<Plugin>.Ascending(p => p.Info.Name))
                 .Transform(settingsVmFactory.PluginSettingsViewModel)
+                .ObserveOn(AvaloniaScheduler.Instance)
                 .Bind(out ReadOnlyObservableCollection<PluginSettingsViewModel> pluginViewModels)
                 .Subscribe();
             Plugins = pluginViewModels;

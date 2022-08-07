@@ -1,18 +1,17 @@
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Debugger.Performance
-{
-    public class PerformanceDebugView : ReactiveUserControl<PerformanceDebugViewModel>
-    {
-        public PerformanceDebugView()
-        {
-            InitializeComponent();
-        }
+namespace Artemis.UI.Screens.Debugger.Performance;
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+public class PerformanceDebugView : ReactiveUserControl<PerformanceDebugViewModel>
+{
+    public PerformanceDebugView()
+    {
+        InitializeComponent();
+    }
+
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }

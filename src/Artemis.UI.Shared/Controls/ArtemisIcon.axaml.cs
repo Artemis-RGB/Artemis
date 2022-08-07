@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
@@ -17,6 +18,7 @@ namespace Artemis.UI.Shared
     /// </summary>
     public class ArtemisIcon : UserControl
     {
+        private static Regex _imageRegex = new(@"[\/.](gif|jpg|jpeg|tiff|png)$", RegexOptions.Compiled);
         /// <summary>
         ///     Creates a new instance of the <see cref="ArtemisIcon" /> class.
         /// </summary>
@@ -39,9 +41,7 @@ namespace Artemis.UI.Shared
             {
                 // First look for an enum value instead of a string
                 if (Icon is MaterialIconKind materialIcon)
-                {
                     Content = new MaterialIcon {Kind = materialIcon, Width = Bounds.Width, Height = Bounds.Height};
-                }
                 // If it's a string there are several options
                 else if (Icon is string iconString)
                 {
@@ -49,7 +49,7 @@ namespace Artemis.UI.Shared
                     if (Enum.TryParse(iconString, true, out MaterialIconKind parsedIcon))
                         Content = new MaterialIcon {Kind = parsedIcon, Width = Bounds.Width, Height = Bounds.Height};
                     // An URI pointing to an image
-                    else
+                    else if (_imageRegex.IsMatch(iconString))
                     {
                         if (!Fill)
                         {
@@ -71,6 +71,8 @@ namespace Artemis.UI.Shared
                             };
                         }
                     }
+                    else
+                        Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark, Width = Bounds.Width, Height = Bounds.Height};
                 }
             }
             catch

@@ -3,29 +3,28 @@ using System.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared;
 
-namespace Artemis.UI.Screens.Debugger.Performance
+namespace Artemis.UI.Screens.Debugger.Performance;
+
+public class PerformanceDebugProfilerViewModel : ViewModelBase
 {
-    public class PerformanceDebugProfilerViewModel : ViewModelBase
+    public PerformanceDebugProfilerViewModel(Profiler profiler)
     {
-        public PerformanceDebugProfilerViewModel(Profiler profiler)
+        Profiler = profiler;
+    }
+
+    public Profiler Profiler { get; }
+
+    public ObservableCollection<PerformanceDebugMeasurementViewModel> Measurements { get; } = new();
+
+    public void Update()
+    {
+        foreach ((string _, ProfilingMeasurement measurement) in Profiler.Measurements)
         {
-            Profiler = profiler;
+            if (Measurements.All(m => m.Measurement != measurement))
+                Measurements.Add(new PerformanceDebugMeasurementViewModel(measurement));
         }
 
-        public Profiler Profiler { get; }
-
-        public ObservableCollection<PerformanceDebugMeasurementViewModel> Measurements { get; } = new();
-
-        public void Update()
-        {
-            foreach ((string _, ProfilingMeasurement measurement) in Profiler.Measurements)
-            {
-                if (Measurements.All(m => m.Measurement != measurement))
-                    Measurements.Add(new PerformanceDebugMeasurementViewModel(measurement));
-            }
-
-            foreach (PerformanceDebugMeasurementViewModel profilingMeasurementViewModel in Measurements)
-                profilingMeasurementViewModel.Update();
-        }
+        foreach (PerformanceDebugMeasurementViewModel profilingMeasurementViewModel in Measurements)
+            profilingMeasurementViewModel.Update();
     }
 }

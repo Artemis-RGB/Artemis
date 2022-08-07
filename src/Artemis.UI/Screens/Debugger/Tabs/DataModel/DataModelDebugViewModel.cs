@@ -16,7 +16,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Debugger.DataModel;
 
-public class DataModelDebugViewModel : ActivatableViewModelBase, IRoutableViewModel
+public class DataModelDebugViewModel : ActivatableViewModelBase
 {
     private readonly IDataModelUIService _dataModelUIService;
     private readonly IPluginManagementService _pluginManagementService;
@@ -28,15 +28,15 @@ public class DataModelDebugViewModel : ActivatableViewModelBase, IRoutableViewMo
     private Module? _selectedModule;
     private bool _slowUpdates;
 
-    public DataModelDebugViewModel(IScreen hostScreen, IDataModelUIService dataModelUIService, IPluginManagementService pluginManagementService)
+    public DataModelDebugViewModel(IDataModelUIService dataModelUIService, IPluginManagementService pluginManagementService)
     {
         _dataModelUIService = dataModelUIService;
         _pluginManagementService = pluginManagementService;
-        _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(25), DispatcherPriority.DataBind, (_, _) => Update());
+        _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(40), DispatcherPriority.Background, (_, _) => Update());
 
-        HostScreen = hostScreen;
+        DisplayName = "Data Model";
         Modules = new ObservableCollection<Module>();
-        
+
         this.WhenActivated(disposables =>
         {
             Observable.FromEventPattern<PluginFeatureEventArgs>(x => pluginManagementService.PluginFeatureEnabled += x, x => pluginManagementService.PluginFeatureEnabled -= x)
@@ -142,7 +142,4 @@ public class DataModelDebugViewModel : ActivatableViewModelBase, IRoutableViewMo
             SelectedModule = null;
         }
     }
-
-    public string UrlPathSegment => "data-model";
-    public IScreen HostScreen { get; }
 }

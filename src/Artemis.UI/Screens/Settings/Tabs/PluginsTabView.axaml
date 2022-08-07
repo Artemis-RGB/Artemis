@@ -17,22 +17,18 @@
             <TextBox Classes="clearButton" Text="{CompiledBinding SearchPluginInput}" Watermark="Search plugins" Margin="0 0 10 0" />
 
             <StackPanel Spacing="5" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
-                <controls:HyperlinkButton Grid.Row="0"
-                                          Grid.Column="1"
-                                          VerticalAlignment="Top"
-                                          NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/plugins">
+                <controls:HyperlinkButton VerticalAlignment="Top" NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/plugins">
                     Get more plugins
                 </controls:HyperlinkButton>
                 <Button Classes="accent" Command="{CompiledBinding ImportPlugin}">Import plugin</Button>
             </StackPanel>
-
         </Grid>
 
         <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
             <ItemsRepeater Items="{CompiledBinding Plugins}" MaxWidth="900" VerticalAlignment="Center">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="plugins:PluginSettingsViewModel">
-                        <ContentControl Content="{CompiledBinding}"/>
+                        <ContentControl Content="{CompiledBinding}" Height="200"/>
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>

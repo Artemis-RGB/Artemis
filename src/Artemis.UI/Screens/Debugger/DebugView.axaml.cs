@@ -22,17 +22,13 @@ namespace Artemis.UI.Screens.Debugger
             this.AttachDevTools();
 #endif
 
-            NavigationView navigation = this.Get<NavigationView>("Navigation");
-
             this.WhenActivated(d =>
             {
                 Observable.FromEventPattern(x => ViewModel!.ActivationRequested += x, x => ViewModel!.ActivationRequested -= x).Subscribe(_ =>
                 {
                     WindowState = WindowState.Normal;
                     Activate();
-                    
                 }).DisposeWith(d);
-                ViewModel!.SelectedItem = (NavigationViewItem) navigation.MenuItems.ElementAt(0);
             });
         }
 

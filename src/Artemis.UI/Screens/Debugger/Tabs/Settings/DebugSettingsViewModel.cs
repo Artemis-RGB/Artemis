@@ -1,16 +1,11 @@
 ﻿using Artemis.UI.Shared;
-using ReactiveUI;
 
-namespace Artemis.UI.Screens.Debugger.Settings
+namespace Artemis.UI.Screens.Debugger.Settings;
+
+public class DebugSettingsViewModel : ActivatableViewModelBase
 {
-    public class DebugSettingsViewModel : ActivatableViewModelBase, IRoutableViewModel
+    public DebugSettingsViewModel()
     {
-        public DebugSettingsViewModel(IScreen hostScreen)
-        {
-            HostScreen = hostScreen;
-        }
-
-        public string UrlPathSegment => "logs";
-        public IScreen HostScreen { get; }
+        DisplayName = "Settings";
     }
 }
