@@ -1,5 +1,6 @@
 using Artemis.Core.Services;
 using Artemis.UI.Windows.Ninject;
+using Artemis.UI.Windows.Providers;
 using Artemis.UI.Windows.Providers.Input;
 using Avalonia;
 using Avalonia.Controls;

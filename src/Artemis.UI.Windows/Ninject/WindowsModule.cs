@@ -1,4 +1,5 @@
-﻿using Artemis.Core.Services;
+﻿using Artemis.Core.Providers;
+using Artemis.Core.Services;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Windows.Providers;
 using Ninject.Modules;
@@ -14,6 +15,8 @@ public class WindowsModule : NinjectModule
     {
         Kernel!.Bind<ICursorProvider>().To<CursorProvider>().InSingletonScope();
         Kernel!.Bind<IGraphicsContextProvider>().To<GraphicsContextProvider>().InSingletonScope();
+        Kernel!.Bind<IUpdateProvider>().To<UpdateProvider>().InSingletonScope();
+        Kernel!.Bind<IAutoRunProvider>().To<AutoRunProvider>();
     }
 
     #endregion

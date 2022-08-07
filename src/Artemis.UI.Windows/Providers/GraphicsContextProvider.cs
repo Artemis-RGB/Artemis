@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Artemis.Core.Services;
+﻿using Artemis.Core.Providers;
 using Artemis.Core.SkiaSharp;
 using Artemis.UI.Windows.SkiaSharp;
 
@@ -9,18 +8,11 @@ public class GraphicsContextProvider : IGraphicsContextProvider
 {
     private VulkanContext? _vulkanContext;
 
-    /// <inheritdoc />
-    public IReadOnlyCollection<string> GraphicsContextNames => new List<string> {"Vulkan"}.AsReadOnly();
+    public string GraphicsContextName => "Vulkan";
 
-    /// <inheritdoc />
-    public IManagedGraphicsContext? GetGraphicsContext(string name)
+    public IManagedGraphicsContext? GetGraphicsContext()
     {
-        if (name == "Vulkan")
-        {
-            _vulkanContext ??= new VulkanContext();
-            return _vulkanContext;
-        }
-
-        return null;
+        _vulkanContext ??= new VulkanContext();
+        return _vulkanContext;
     }
 }

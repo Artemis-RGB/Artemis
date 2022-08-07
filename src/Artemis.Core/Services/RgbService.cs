@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using Artemis.Core.DeviceProviders;
+using Artemis.Core.Providers;
 using Artemis.Core.Services.Models;
 using Artemis.Core.SkiaSharp;
 using Artemis.Storage.Entities.Surface;
@@ -363,15 +364,15 @@ namespace Artemis.Core.Services
                 return;
             }
 
-            IGraphicsContextProvider? provider = _kernel.TryGet<IGraphicsContextProvider>();
-            if (provider == null)
+            List<IGraphicsContextProvider> providers = _kernel.Get<List<IGraphicsContextProvider>>();
+            if (!providers.Any())
             {
                 _logger.Warning("No graphics context provider found, defaulting to software rendering");
                 UpdateGraphicsContext(null);
                 return;
             }
 
-            IManagedGraphicsContext? context = provider.GetGraphicsContext(_preferredGraphicsContext.Value);
+            IManagedGraphicsContext? context = providers.FirstOrDefault(p => p.GraphicsContextName == _preferredGraphicsContext.Value)?.GetGraphicsContext();
             if (context == null)
             {
                 _logger.Warning("No graphics context named '{Context}' found, defaulting to software rendering", _preferredGraphicsContext.Value);

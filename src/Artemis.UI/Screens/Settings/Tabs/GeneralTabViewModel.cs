@@ -9,14 +9,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
+using Artemis.Core.Providers;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.StartupWizard;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Providers;
 using Artemis.UI.Shared.Services;
-using Avalonia;
+using Avalonia.Threading;
 using DynamicData;
-using FluentAvalonia.Styling;
 using Ninject;
 using ReactiveUI;
 using Serilog.Events;
@@ -29,20 +30,28 @@ namespace Artemis.UI.Screens.Settings
         private readonly ISettingsService _settingsService;
         private readonly IDebugService _debugService;
         private readonly IWindowService _windowService;
+        private readonly IUpdateService _updateService;
+        private readonly IAutoRunProvider? _autoRunProvider;
 
-        public GeneralTabViewModel(IKernel kernel, ISettingsService settingsService, IPluginManagementService pluginManagementService, IDebugService debugService, IWindowService windowService)
+        public GeneralTabViewModel(IKernel kernel,
+            ISettingsService settingsService,
+            IPluginManagementService pluginManagementService,
+            IDebugService debugService,
+            IWindowService windowService,
+            IUpdateService updateService)
         {
             DisplayName = "General";
             _settingsService = settingsService;
             _debugService = debugService;
             _windowService = windowService;
+            _updateService = updateService;
+            _autoRunProvider = kernel.TryGet<IAutoRunProvider>();
 
             List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
+            List<IGraphicsContextProvider> graphicsContextProviders = kernel.Get<List<IGraphicsContextProvider>>();
             LayerBrushDescriptors = new ObservableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
             GraphicsContexts = new ObservableCollection<string> {"Software"};
-            IGraphicsContextProvider? graphicsContextProvider = kernel.TryGet<IGraphicsContextProvider>();
-            if (graphicsContextProvider != null)
-                GraphicsContexts.AddRange(graphicsContextProvider.GraphicsContextNames);
+            GraphicsContexts.AddRange(graphicsContextProviders.Select(p => p.GraphicsContextName));
 
             _defaultLayerBrushDescriptor = _settingsService.GetSetting("ProfileEditor.DefaultLayerBrushDescriptor", new LayerBrushReference
             {
@@ -55,6 +64,21 @@ namespace Artemis.UI.Screens.Settings
             ShowSetupWizard = ReactiveCommand.CreateFromTask(ExecuteShowSetupWizard);
             ShowDebugger = ReactiveCommand.Create(ExecuteShowDebugger);
             ShowDataFolder = ReactiveCommand.Create(ExecuteShowDataFolder);
+
+            this.WhenActivated(d =>
+            {
+                UIAutoRun.SettingChanged += UIAutoRunOnSettingChanged;
+                UIAutoRunDelay.SettingChanged += UIAutoRunDelayOnSettingChanged;
+
+                Dispatcher.UIThread.InvokeAsync(ApplyAutoRun);
+                Disposable.Create(() =>
+                {
+                    UIAutoRun.SettingChanged -= UIAutoRunOnSettingChanged;
+                    UIAutoRunDelay.SettingChanged -= UIAutoRunDelayOnSettingChanged;
+                    
+                    _settingsService.SaveAllSettings();
+                }).DisposeWith(d);
+            });
         }
 
         public ReactiveCommand<Unit, Unit> ShowLogs { get; }
@@ -62,6 +86,9 @@ namespace Artemis.UI.Screens.Settings
         public ReactiveCommand<Unit, Unit> ShowSetupWizard { get; }
         public ReactiveCommand<Unit, Unit> ShowDebugger { get; }
         public ReactiveCommand<Unit, Unit> ShowDataFolder { get; }
+
+        public bool IsAutoRunSupported => _autoRunProvider != null;
+        public bool IsUpdatingSupported => _updateService.UpdatingSupported;
 
         public ObservableCollection<LayerBrushDescriptor> LayerBrushDescriptors { get; }
         public ObservableCollection<string> GraphicsContexts { get; }
@@ -116,6 +143,7 @@ namespace Artemis.UI.Screens.Settings
         public PluginSetting<int> UIAutoRunDelay => _settingsService.GetSetting("UI.AutoRunDelay", 15);
         public PluginSetting<bool> UIShowOnStartup => _settingsService.GetSetting("UI.ShowOnStartup", true);
         public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.CheckForUpdates", true);
+        public PluginSetting<bool> UIAutoUpdate => _settingsService.GetSetting("UI.AutoUpdate", false);
         public PluginSetting<bool> ProfileEditorShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
         public PluginSetting<LogEventLevel> CoreLoggingLevel => _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information);
         public PluginSetting<string> CorePreferredGraphicsContext => _settingsService.GetSetting("Core.PreferredGraphicsContext", "Software");
@@ -123,25 +151,16 @@ namespace Artemis.UI.Screens.Settings
         public PluginSetting<int> CoreTargetFrameRate => _settingsService.GetSetting("Core.TargetFrameRate", 30);
         public PluginSetting<int> WebServerPort => _settingsService.GetSetting("WebServer.Port", 9696);
 
-        #region General
-
         private void ExecuteShowLogs()
         {
-            OpenFolder(Constants.LogsFolder);
+            Utilities.OpenFolder(Constants.LogsFolder);
         }
 
-        #endregion
 
-        #region Updating
-
-        private Task ExecuteCheckForUpdate(CancellationToken cancellationToken)
+        private async Task ExecuteCheckForUpdate(CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            await _updateService.ManualUpdate();
         }
-
-        #endregion
-
-        #region Tools
 
         private async Task ExecuteShowSetupWizard()
         {
@@ -153,19 +172,46 @@ namespace Artemis.UI.Screens.Settings
             _debugService.ShowDebugger();
         }
 
-
         private void ExecuteShowDataFolder()
         {
-            OpenFolder(Constants.DataFolder);
+            Utilities.OpenFolder(Constants.DataFolder);
         }
 
-        #endregion
-
-        private void OpenFolder(string path)
+        private async Task ApplyAutoRun()
         {
-            if (OperatingSystem.IsWindows())
+            if (_autoRunProvider == null)
+                return;
+
+            try
             {
-                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", path);
+                if (UIAutoRun.Value)
+                    await _autoRunProvider.EnableAutoRun(false, UIAutoRunDelay.Value);
+                else
+                    await _autoRunProvider.DisableAutoRun();
+            }
+            catch (Exception exception)
+            {
+                _windowService.ShowExceptionDialog("Failed to apply auto-run", exception);
+            }
+        }
+
+        private async void UIAutoRunOnSettingChanged(object? sender, EventArgs e)
+        {
+            await ApplyAutoRun();
+        }
+
+        private async void UIAutoRunDelayOnSettingChanged(object? sender, EventArgs e)
+        {
+            if (_autoRunProvider == null || !UIAutoRun.Value)
+                return;
+
+            try
+            {
+                await _autoRunProvider.EnableAutoRun(true, UIAutoRunDelay.Value);
+            }
+            catch (Exception exception)
+            {
+                _windowService.ShowExceptionDialog("Failed to apply auto-run", exception);
             }
         }
     }
