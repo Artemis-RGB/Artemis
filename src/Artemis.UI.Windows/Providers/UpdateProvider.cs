@@ -158,7 +158,6 @@ public class UpdateProvider : IUpdateProvider, IDisposable
             .AddText("An update is available")
             .AddButton(new ToastButton().SetContent("Install").AddArgument("action", "install").SetBackgroundActivation())
             .AddButton(new ToastButton().SetContent("View changes").AddArgument("action", "view-changes"))
-            .AddHeroImage(new Uri(@"C:\Repos\Artemis\src\Artemis.UI\Assets\Images\home-banner.png"))
             .Show();
     }
 

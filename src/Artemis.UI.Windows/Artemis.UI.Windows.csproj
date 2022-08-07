@@ -7,10 +7,8 @@
         <Platforms>x64</Platforms>
         <OutputPath>bin</OutputPath>
         <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
-        <Company>Artemis RGB</Company>
-        <Product>Artemis 2.0</Product>
-        <ApplicationIcon>..\Artemis.UI\Assets\Images\Logo\application.ico</ApplicationIcon>
-        <AssemblyName>Artemis 2</AssemblyName>
+        <AssemblyTitle>Artemis 2</AssemblyTitle>
+        <ApplicationIcon>..\Artemis.UI\Assets\Images\Logo\application.ico</ApplicationIcon>	    
     </PropertyGroup>
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />

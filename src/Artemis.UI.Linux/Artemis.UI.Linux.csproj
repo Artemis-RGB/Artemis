@@ -6,8 +6,8 @@
         <PlatformTarget>x64</PlatformTarget>
         <Platforms>x64</Platforms>
         <OutputPath>bin</OutputPath>
-        <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
-        <AssemblyName>Artemis 2</AssemblyName>
+        <AssemblyTitle>Artemis 2</AssemblyTitle>
+        <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>        
     </PropertyGroup>
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />

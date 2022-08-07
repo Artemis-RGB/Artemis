@@ -11,9 +11,9 @@ public class CursorProvider : ICursorProvider
 {
     public CursorProvider(IAssetLoader assetLoader)
     {
-        Rotate = new Cursor(new Bitmap(assetLoader.Open(new Uri("avares://Artemis 2/Assets/Cursors/aero_rotate.png"))), new PixelPoint(21, 10));
-        Drag = new Cursor(new Bitmap(assetLoader.Open(new Uri("avares://Artemis 2/Assets/Cursors/aero_drag.png"))), new PixelPoint(11, 3));
-        DragHorizontal = new Cursor(new Bitmap(assetLoader.Open(new Uri("avares://Artemis 2/Assets/Cursors/aero_drag_horizontal.png"))), new PixelPoint(16, 5));
+        Rotate = new Cursor(new Bitmap(assetLoader.Open(new Uri("avares://Artemis.UI.Windows/Assets/Cursors/aero_rotate.png"))), new PixelPoint(21, 10));
+        Drag = new Cursor(new Bitmap(assetLoader.Open(new Uri("avares://Artemis.UI.Windows/Assets/Cursors/aero_drag.png"))), new PixelPoint(11, 3));
+        DragHorizontal = new Cursor(new Bitmap(assetLoader.Open(new Uri("avares://Artemis.UI.Windows/Assets/Cursors/aero_drag_horizontal.png"))), new PixelPoint(16, 5));
     }
 
     public Cursor Rotate { get; }

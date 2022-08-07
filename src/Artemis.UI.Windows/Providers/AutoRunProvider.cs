@@ -41,7 +41,7 @@ public class AutoRunProvider : IAutoRunProvider
 
     private async Task CreateAutoRunTask(TimeSpan autoRunDelay)
     {
-        await using Stream taskFile = _assetLoader.Open(new Uri("avares://Artemis 2/Assets/autorun.xml"));
+        await using Stream taskFile = _assetLoader.Open(new Uri("avares://Artemis.UI.Windows/Assets/autorun.xml"));
 
         XDocument document = await XDocument.LoadAsync(taskFile, LoadOptions.None, CancellationToken.None);
         XElement task = document.Descendants().First();
