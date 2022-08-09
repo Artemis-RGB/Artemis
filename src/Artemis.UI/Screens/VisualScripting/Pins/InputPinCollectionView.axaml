@@ -19,6 +19,7 @@
                     <StackPanel Orientation="Horizontal">
                         <ContentControl Content="{CompiledBinding}"></ContentControl>
 						<Button Classes="icon-button icon-button-small"
+                                Margin="2 2 0 0"
                                 ToolTip.Tip="Remove pin"
                                 Command="{CompiledBinding RemovePin}"
                                 CommandParameter="{CompiledBinding Pin}">

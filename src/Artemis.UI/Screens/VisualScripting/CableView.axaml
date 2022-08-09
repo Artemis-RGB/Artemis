@@ -7,6 +7,7 @@
              xmlns:skiaSharp="clr-namespace:SkiaSharp;assembly=SkiaSharp"
              xmlns:shared="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.VisualScripting.CableView"
              x:DataType="visualScripting:CableViewModel"
@@ -55,7 +56,8 @@
                             <TextBlock x:Name="HexDisplay"
                                        Text="{CompiledBinding Converter={StaticResource SKColorToStringConverter}}"
                                        VerticalAlignment="Center"
-                                       HorizontalAlignment="Stretch" />
+                                       HorizontalAlignment="Stretch" 
+                                       FontFamily="Consolas"/>
                             <Border Margin="5 0 0 0"
                                     VerticalAlignment="Bottom"
                                     HorizontalAlignment="Right"
@@ -74,8 +76,11 @@
                             </Border>
                         </StackPanel>
                     </DataTemplate>
+                    <DataTemplate DataType="core:Numeric">
+                        <TextBlock Text="{Binding}" FontFamily="Consolas"/>
+                    </DataTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" />
+                        <TextBlock Text="{Binding}" FontFamily="Consolas"/>
                     </DataTemplate>
                 </ContentControl.DataTemplates>
             </ContentControl>

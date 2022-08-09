@@ -44,7 +44,7 @@ public class MathExpressionNode : Node<string, MathExpressionNodeCustomViewModel
         try
         {
             if (Storage != null)
-                Output.Value = new Numeric(_evaluator.CalcNumber(Storage, _variables));
+                Output.Value = new Numeric(Math.Round(_evaluator.CalcNumber(Storage, _variables), 4, MidpointRounding.AwayFromZero));
         }
         catch
         {

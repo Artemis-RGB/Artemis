@@ -80,7 +80,7 @@ public class GradientPickerButton : TemplatedControl
     /// <summary>
     ///     Gets the linear gradient brush representing the color gradient.
     /// </summary>
-    public LinearGradientBrush LinearGradientBrush { get; } = new();
+    public LinearGradientBrush LinearGradientBrush { get; } = new() {StartPoint = RelativePoint.TopLeft, EndPoint = new RelativePoint(1, 0, RelativeUnit.Relative)};
 
     /// <summary>
     ///     Raised when the flyout opens.

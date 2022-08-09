@@ -19,6 +19,7 @@
                 <DataTemplate DataType="pins:PinViewModel">
                     <StackPanel Orientation="Horizontal">
 						<Button Classes="icon-button icon-button-small"
+                                Margin="0 2 2 0"
                                 ToolTip.Tip="Remove pin"
                                 Command="{CompiledBinding RemovePin}"
                                 CommandParameter="{CompiledBinding Pin}">
