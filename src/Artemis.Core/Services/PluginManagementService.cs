@@ -75,9 +75,9 @@ namespace Artemis.Core.Services
                 Directory.Delete(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.Modules.Overlay-29e3ff97"), true);
             if (Directory.Exists(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.DataModelExpansions.TestData-ab41d601")))
                 Directory.Delete(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.DataModelExpansions.TestData-ab41d601"), true);
-
+            
             // Iterate built-in plugins
-            DirectoryInfo builtInPluginDirectory = new(Path.Combine(Directory.GetCurrentDirectory(), "Plugins"));
+            DirectoryInfo builtInPluginDirectory = new(Path.Combine(Constants.ApplicationFolder, "Plugins"));
             if (!builtInPluginDirectory.Exists)
             {
                 _logger.Warning("No built-in plugins found at {pluginDir}, skipping CopyBuiltInPlugins", builtInPluginDirectory.FullName);
