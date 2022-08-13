@@ -109,7 +109,11 @@ internal class ProfileEditorService : IProfileEditorService
         // Stop playing and save the current profile
         Pause();
         if (_profileConfigurationSubject.Value?.Profile != null)
+        {
+            _profileConfigurationSubject.Value.Profile.Reset();
             _profileConfigurationSubject.Value.Profile.LastSelectedProfileElement = _profileElementSubject.Value;
+        }
+
         SaveProfile();
 
         // No need to deactivate the profile, if needed it will be deactivated next update
@@ -173,6 +177,7 @@ internal class ProfileEditorService : IProfileEditorService
         {
             Pause();
             _profileService.RenderForEditor = false;
+            _profileConfigurationSubject.Value?.Profile?.Reset();
         }
         else
         {

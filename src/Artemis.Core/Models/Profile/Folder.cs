@@ -124,6 +124,9 @@ namespace Artemis.Core
                 Timeline.JumpToStart();
             else
                 Timeline.JumpToEnd();
+            
+            foreach (ProfileElement child in Children)
+                child.Reset();
         }
 
         /// <inheritdoc />

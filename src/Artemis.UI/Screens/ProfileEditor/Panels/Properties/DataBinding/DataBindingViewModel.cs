@@ -53,7 +53,11 @@ public class DataBindingViewModel : ActivatableViewModelBase
 
             DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(60.0 / 1000), DispatcherPriority.Render, Update);
             updateTimer.Start();
-            Disposable.Create(() => updateTimer.Stop()).DisposeWith(d);
+            Disposable.Create(() =>
+            {
+                updateTimer.Stop();
+                _profileEditorService.SaveProfile();
+            }).DisposeWith(d);
         });
     }
 

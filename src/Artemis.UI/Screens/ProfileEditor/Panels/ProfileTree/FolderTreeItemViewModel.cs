@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
@@ -13,9 +14,17 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
 public class FolderTreeItemViewModel : TreeItemViewModel
 {
-    public FolderTreeItemViewModel(TreeItemViewModel? parent, Folder folder, IWindowService windowService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
+    private readonly IRgbService _rgbService;
+
+    public FolderTreeItemViewModel(TreeItemViewModel? parent,
+        Folder folder,
+        IWindowService windowService,
+        IProfileEditorService profileEditorService,
+        IRgbService rgbService,
+        IProfileEditorVmFactory profileEditorVmFactory)
         : base(parent, folder, windowService, profileEditorService, profileEditorVmFactory)
     {
+        _rgbService = rgbService;
         Folder = folder;
     }
 
@@ -54,6 +63,7 @@ public class FolderTreeItemViewModel : TreeItemViewModel
             pasted.Name = parent.GetNewFolderName(pasted.Name + " - copy");
 
         ProfileEditorService.ExecuteCommand(new AddProfileElement(pasted, parent, Folder.Order - 1));
+        Folder.Profile.PopulateLeds(_rgbService.EnabledDevices);
     }
 
     private async Task ExecutePasteInto()
