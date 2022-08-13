@@ -38,7 +38,7 @@
                 </Grid.Transitions>
 
                 <!-- The bottom layer consists of devices -->
-                <ItemsControl Items="{CompiledBinding Devices}" ClipToBounds="False">
+                <ItemsControl Name="DevicesContainer" Items="{CompiledBinding Devices}" ClipToBounds="False">
                     <ItemsControl.Styles>
                         <Style Selector="ContentPresenter">
                             <Setter Property="Canvas.Left" Value="{Binding X}" />

@@ -113,4 +113,11 @@ public class VisualEditorViewModel : ActivatableViewModelBase
         visualizerViewModels.Add(_vmFactory.LayerShapeVisualizerViewModel(layer));
         visualizerViewModels.Add(_vmFactory.LayerVisualizerViewModel(layer));
     }
+    
+    public void RequestAutoFit()
+    {
+        AutoFitRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    public event EventHandler? AutoFitRequested;
 }

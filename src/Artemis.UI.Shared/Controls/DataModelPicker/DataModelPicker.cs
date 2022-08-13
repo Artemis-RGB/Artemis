@@ -13,6 +13,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
+using Avalonia.Interactivity;
+using Avalonia.LogicalTree;
 using Avalonia.Threading;
 using Material.Icons.Avalonia;
 using ReactiveUI;
@@ -129,7 +131,7 @@ public class DataModelPicker : TemplatedControl
         get => GetValue(DataModelViewModelProperty);
         private set => SetValue(DataModelViewModelProperty, value);
     }
-    
+
     /// <summary>
     ///     A list of types to filter the selectable paths on.
     /// </summary>
@@ -246,6 +248,13 @@ public class DataModelPicker : TemplatedControl
             DataModelPath = new DataModelPath(dataModelEvent.DataModelPath);
     }
 
+    private void DataModelTreeViewOnDoubleTapped(object? sender, RoutedEventArgs e)
+    {
+        TreeViewItem? treeViewItem = (e.Source as ILogical)?.FindLogicalAncestorOfType<TreeViewItem>();
+        if (treeViewItem != null)
+            treeViewItem.IsExpanded = !treeViewItem.IsExpanded;
+    }
+
     private void UpdateCurrentPath(bool selectCurrentPath)
     {
         if (DataModelPath == null)
@@ -278,6 +287,8 @@ public class DataModelPicker : TemplatedControl
     {
         if (_dataModelTreeView != null)
             _dataModelTreeView.SelectionChanged -= DataModelTreeViewOnSelectionChanged;
+        if (_dataModelTreeView != null)
+            _dataModelTreeView.DoubleTapped -= DataModelTreeViewOnDoubleTapped;
 
         _currentPathIcon = e.NameScope.Find<MaterialIcon>("CurrentPathIcon");
         _currentPathDisplay = e.NameScope.Find<TextBlock>("CurrentPathDisplay");
@@ -286,6 +297,8 @@ public class DataModelPicker : TemplatedControl
 
         if (_dataModelTreeView != null)
             _dataModelTreeView.SelectionChanged += DataModelTreeViewOnSelectionChanged;
+        if (_dataModelTreeView != null)
+            _dataModelTreeView.DoubleTapped += DataModelTreeViewOnDoubleTapped;
     }
 
     #region Overrides of Visual
