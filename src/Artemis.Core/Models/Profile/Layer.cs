@@ -635,9 +635,6 @@ namespace Artemis.Core
             }
 
             canvas.ClipPath(renderPath);
-
-            // Restore the blend mode before doing the actual render
-            layerPaint.BlendMode = SKBlendMode.SrcOver;
             LayerBrush.InternalRender(canvas, bounds, layerPaint);
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
@@ -790,10 +787,10 @@ namespace Artemis.Core
         public void ChangeLayerBrush(BaseLayerBrush? layerBrush)
         {
             BaseLayerBrush? oldLayerBrush = LayerBrush;
-            
+
             General.BrushReference.SetCurrentValue(layerBrush != null ? new LayerBrushReference(layerBrush.Descriptor) : null, null);
             LayerBrush = layerBrush;
-            
+
             oldLayerBrush?.InternalDisable();
 
             if (LayerBrush != null)
