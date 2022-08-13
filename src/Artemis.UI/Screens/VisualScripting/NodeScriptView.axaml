@@ -26,6 +26,13 @@
             </VisualBrush.Visual>
         </VisualBrush>
     </UserControl.Resources>
+    <UserControl.KeyBindings>
+        <KeyBinding Command="{CompiledBinding ClearSelection}" Gesture="Escape" />
+        <KeyBinding Command="{CompiledBinding DeleteSelected}" Gesture="Delete" />
+        <KeyBinding Command="{CompiledBinding DuplicateSelected}" Gesture="Ctrl+D" />
+        <KeyBinding Command="{CompiledBinding History.Undo}" Gesture="Ctrl+Z" />
+        <KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y" />
+    </UserControl.KeyBindings>
     <paz:ZoomBorder Name="ZoomBorder"
                     Stretch="None"
                     Focusable="True"
@@ -77,11 +84,11 @@
             </ItemsControl>
 
             <shared:SelectionRectangle Name="SelectionRectangle"
-                                         InputElement="{Binding #ZoomBorder}"
-                                         SelectionUpdated="SelectionRectangle_OnSelectionUpdated"
-                                         SelectionFinished="SelectionRectangle_OnSelectionFinished"
-                                         BorderBrush="{DynamicResource SystemAccentColor}"
-                                         BorderRadius="8">
+                                       InputElement="{Binding #ZoomBorder}"
+                                       SelectionUpdated="SelectionRectangle_OnSelectionUpdated"
+                                       SelectionFinished="SelectionRectangle_OnSelectionFinished"
+                                       BorderBrush="{DynamicResource SystemAccentColor}"
+                                       BorderRadius="8">
                 <shared:SelectionRectangle.Background>
                     <SolidColorBrush Color="{DynamicResource SystemAccentColorLight1}" Opacity="0.2"></SolidColorBrush>
                 </shared:SelectionRectangle.Background>

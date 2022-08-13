@@ -264,10 +264,22 @@ namespace Artemis.Core
                 }
 
                 // Only connect the nodes if they aren't already connected (LoadConnections may be called twice or more)
-                if (!targetPin.ConnectedTo.Contains(sourcePin) && targetPin.IsTypeCompatible(sourcePin.Type))
+                // Type checking is done later when all connections are in place
+                if (!targetPin.ConnectedTo.Contains(sourcePin))
                     targetPin.ConnectTo(sourcePin);
-                if (!sourcePin.ConnectedTo.Contains(targetPin) && sourcePin.IsTypeCompatible(targetPin.Type))
+                if (!sourcePin.ConnectedTo.Contains(targetPin))
                     sourcePin.ConnectTo(targetPin);
+            }
+            
+            // With all connections restored, ensure types match (connecting pins may affect types so the check is done afterwards)
+            foreach (INode node in nodes)
+            {
+                foreach (IPin nodePin in node.Pins.Concat(node.PinCollections.SelectMany(p => p)))
+                {
+                    List<IPin> toDisconnect = nodePin.ConnectedTo.Where(c => !c.IsTypeCompatible(nodePin.Type)).ToList();
+                    foreach (IPin pin in toDisconnect)
+                        pin.DisconnectFrom(nodePin);
+                }
             }
         }
 

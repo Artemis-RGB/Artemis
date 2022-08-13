@@ -53,18 +53,20 @@ public class NodeConnectionStore
     {
         foreach (IPin nodePin in Node.Pins)
         {
-            if (_pinConnections.TryGetValue(nodePin, out List<IPin>? connections))
-                foreach (IPin connection in connections)
-                    nodePin.ConnectTo(connection);
+            if (!_pinConnections.TryGetValue(nodePin, out List<IPin>? connections))
+                continue;
+            foreach (IPin connection in connections)
+                nodePin.ConnectTo(connection);
         }
 
         foreach (IPinCollection nodePinCollection in Node.PinCollections)
         {
             foreach (IPin nodePin in nodePinCollection)
             {
-                if (_pinConnections.TryGetValue(nodePin, out List<IPin>? connections))
-                    foreach (IPin connection in connections)
-                        nodePin.ConnectTo(connection);
+                if (!_pinConnections.TryGetValue(nodePin, out List<IPin>? connections))
+                    continue;
+                foreach (IPin connection in connections)
+                    nodePin.ConnectTo(connection);
             }
         }
 

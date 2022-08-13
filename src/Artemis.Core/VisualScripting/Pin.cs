@@ -129,6 +129,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public bool IsTypeCompatible(Type type) => Type == type
                                                    || Type == typeof(Enum) && type.IsEnum
+                                                   || Type.IsEnum && type == typeof(Enum)
                                                    || Direction == PinDirection.Input && Type == typeof(object)
                                                    || Direction == PinDirection.Output && type == typeof(object);
 

@@ -4,7 +4,7 @@ using Artemis.VisualScripting.Nodes.Operators.Screens;
 namespace Artemis.VisualScripting.Nodes.Operators;
 
 [Node("Enum Equals", "Determines the equality between an input and a selected enum value", "Operators", InputType = typeof(Enum), OutputType = typeof(bool))]
-public class EnumEqualsNode : Node<int, EnumEqualsNodeCustomViewModel>
+public class EnumEqualsNode : Node<long, EnumEqualsNodeCustomViewModel>
 {
     public EnumEqualsNode() : base("Enum Equals", "Determines the equality between an input and a selected enum value")
     {
@@ -21,6 +21,6 @@ public class EnumEqualsNode : Node<int, EnumEqualsNodeCustomViewModel>
         if (InputPin.Value == null)
             OutputPin.Value = false;
         else
-            OutputPin.Value = Convert.ToInt32(InputPin.Value) == Storage;
+            OutputPin.Value = Convert.ToInt64(InputPin.Value) == Storage;
     }
 }

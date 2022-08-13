@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Artemis.Core;
@@ -79,6 +80,12 @@ public class NodeScriptViewModel : ActivatableViewModelBase
             .Bind(out ReadOnlyObservableCollection<CableViewModel> cableViewModels)
             .Subscribe();
         CableViewModels = cableViewModels;
+
+        ClearSelection = ReactiveCommand.Create(ExecuteClearSelection);
+        DeleteSelected = ReactiveCommand.Create(ExecuteDeleteSelected);
+        DuplicateSelected = ReactiveCommand.Create(ExecuteDuplicateSelected);
+        CopySelected = ReactiveCommand.Create(ExecuteCopySelected);
+        PasteSelected = ReactiveCommand.Create(ExecutePasteSelected);
     }
 
     public NodeScript NodeScript { get; }
@@ -91,12 +98,18 @@ public class NodeScriptViewModel : ActivatableViewModelBase
 
     public bool IsPreview { get; }
 
+    public ReactiveCommand<Unit, Unit> ClearSelection { get; }
+    public ReactiveCommand<Unit, Unit> DeleteSelected { get; }
+    public ReactiveCommand<Unit, Unit> DuplicateSelected { get; }
+    public ReactiveCommand<Unit, Unit> CopySelected { get; }
+    public ReactiveCommand<Unit, Unit> PasteSelected { get; }
+
     public DragCableViewModel? DragViewModel
     {
         get => _dragViewModel;
         set => RaiseAndSetIfChanged(ref _dragViewModel, value);
     }
-    
+
     public Matrix PanMatrix
     {
         get => _panMatrix;
@@ -219,6 +232,43 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         }
     }
 
+    private void ExecuteClearSelection()
+    {
+        ClearNodeSelection();
+    }
+
+    private void ExecuteDeleteSelected()
+    {
+        List<INode> nodes = NodeViewModels.Where(vm => vm.IsSelected).Select(vm => vm.Node).ToList();
+        using NodeEditorCommandScope scope = _nodeEditorService.CreateCommandScope(NodeScript, "Delete nodes");
+        foreach (INode node in nodes.Where(n => !n.IsDefaultNode && !n.IsExitNode))
+            _nodeEditorService.ExecuteCommand(NodeScript, new DeleteNode(NodeScript, node));
+    }
+
+    private void ExecuteDuplicateSelected()
+    {
+        int nodeCount = NodeViewModels.Count;
+        List<INode> nodes = NodeViewModels.Where(vm => vm.IsSelected).Select(vm => vm.Node).ToList();
+        using NodeEditorCommandScope scope = _nodeEditorService.CreateCommandScope(NodeScript, "Duplicate nodes");
+        foreach (INode node in  nodes.Where(n => !n.IsDefaultNode && !n.IsExitNode))
+            _nodeEditorService.ExecuteCommand(NodeScript, new DuplicateNode(NodeScript, node, false, _nodeService));
+
+        // Select only the new nodes
+        for (int index = 0; index < NodeViewModels.Count; index++)
+        {
+            NodeViewModel nodeViewModel = NodeViewModels[index];
+            nodeViewModel.IsSelected = index >= nodeCount;
+        }
+    }
+
+    private void ExecuteCopySelected()
+    {
+    }
+
+    private void ExecutePasteSelected()
+    {
+    }
+
     private void HandleNodeAdded(SingleValueEventArgs<INode> eventArgs)
     {
         _nodeViewModels.Add(_nodeVmFactory.NodeViewModel(this, eventArgs.Value));
@@ -235,6 +285,6 @@ public class NodeScriptViewModel : ActivatableViewModelBase
     {
         AutoFitRequested?.Invoke(this, EventArgs.Empty);
     }
-    
+
     public event EventHandler? AutoFitRequested;
 }

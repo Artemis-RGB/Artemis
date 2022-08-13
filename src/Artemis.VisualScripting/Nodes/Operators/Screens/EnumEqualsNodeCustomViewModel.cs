@@ -6,7 +6,10 @@ using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Artemis.UI.Shared.VisualScripting;
 using Avalonia.Controls.Mixins;
+using Avalonia.Threading;
 using DynamicData;
+using FluentAvalonia.Core;
+using Humanizer;
 using ReactiveUI;
 
 namespace Artemis.VisualScripting.Nodes.Operators.Screens;
@@ -28,13 +31,11 @@ public class EnumEqualsNodeCustomViewModel : CustomNodeViewModel
             {
                 EnumValues.Clear();
                 if (_node.InputPin.ConnectedTo.First().Type.IsEnum)
-                    EnumValues.AddRange(Enum.GetValues(_node.InputPin.ConnectedTo.First().Type).Cast<Enum>());
-
-                this.RaisePropertyChanged(nameof(CurrentValue));
+                    AddEnumValues(_node.InputPin.ConnectedTo.First().Type);
             }
 
             Observable.FromEventPattern<SingleValueEventArgs<IPin>>(x => _node.InputPin.PinConnected += x, x => _node.InputPin.PinConnected -= x)
-                .Subscribe(p => EnumValues.AddRange(Enum.GetValues(p.EventArgs.Value.Type).Cast<Enum>()))
+                .Subscribe(p => AddEnumValues(p.EventArgs.Value.Type))
                 .DisposeWith(d);
             Observable.FromEventPattern<SingleValueEventArgs<IPin>>(x => _node.InputPin.PinDisconnected += x, x => _node.InputPin.PinDisconnected -= x)
                 .Subscribe(_ => EnumValues.Clear())
@@ -42,15 +43,29 @@ public class EnumEqualsNodeCustomViewModel : CustomNodeViewModel
         });
     }
 
-    public ObservableCollection<Enum> EnumValues { get; } = new();
-
-    public int CurrentValue
+    private void AddEnumValues(Type type)
     {
-        get => _node.Storage;
+        Dispatcher.UIThread.Post(() =>
+        {
+            List<(long, string)> values = Enum.GetValues(type).Cast<Enum>().Select(e => (Convert.ToInt64(e), e.Humanize())).ToList();
+            if (values.Count > 20)
+                EnumValues.AddRange(values.OrderBy(v => v.Item2));
+            else
+                EnumValues.AddRange(Enum.GetValues(type).Cast<Enum>().Select(e => (Convert.ToInt64(e), e.Humanize())));
+
+            this.RaisePropertyChanged(nameof(CurrentValue));
+        }, DispatcherPriority.Background);
+    }
+
+    public ObservableCollection<(long, string)> EnumValues { get; } = new();
+
+    public (long, string) CurrentValue
+    {
+        get => EnumValues.FirstOrDefault(v => v.Item1 == _node.Storage);
         set
         {
-            if (!Equals(_node.Storage, value))
-                _nodeEditorService.ExecuteCommand(Script, new UpdateStorage<int>(_node, value));
+            if (!Equals(_node.Storage, value.Item1))
+                _nodeEditorService.ExecuteCommand(Script, new UpdateStorage<long>(_node, value.Item1));
         }
     }
 }
