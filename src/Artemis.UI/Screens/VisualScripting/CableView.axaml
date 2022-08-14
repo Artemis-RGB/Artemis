@@ -18,7 +18,8 @@
         <shared:SKColorToStringConverter x:Key="SKColorToStringConverter" />
         <shared:SKColorToColorConverter x:Key="SKColorToColorConverter" />
     </UserControl.Resources>
-    <Canvas>
+    <Canvas PointerEnter="OnPointerEnter"
+            PointerLeave="OnPointerLeave">
         <Path Name="CablePath"
               Stroke="{CompiledBinding CableColor, Converter={StaticResource ColorToSolidColorBrushConverter}}"
               StrokeThickness="4"

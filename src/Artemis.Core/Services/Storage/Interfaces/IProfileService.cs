@@ -34,6 +34,11 @@ namespace Artemis.Core.Services
         ///     Gets or sets a boolean indicating whether rendering should only be done for profiles being edited
         /// </summary>
         bool RenderForEditor { get; set; }
+        
+        /// <summary>
+        ///     Gets or sets the profile element to focus on while rendering for the editor
+        /// </summary>
+        ProfileElement? EditorFocus { get; set; }
 
         /// <summary>
         ///     Activates the profile of the given <see cref="ProfileConfiguration" /> with the currently active surface

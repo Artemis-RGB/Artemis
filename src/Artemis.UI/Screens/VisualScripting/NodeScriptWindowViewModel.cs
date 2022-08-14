@@ -78,7 +78,7 @@ public class NodeScriptWindowViewModel : DialogViewModelBase<bool>
 
     public PluginSetting<bool> ShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
     public PluginSetting<bool> ShowFullPaths => _settingsService.GetSetting("ProfileEditor.ShowFullPaths", false);
-    public PluginSetting<bool> AlwaysShowValues => _settingsService.GetSetting("ProfileEditor.AlwaysShowValues", false);
+    public PluginSetting<bool> AlwaysShowValues => _settingsService.GetSetting("ProfileEditor.AlwaysShowValues", true);
 
     private void ExecuteToggleBooleanSetting(PluginSetting<bool> setting)
     {

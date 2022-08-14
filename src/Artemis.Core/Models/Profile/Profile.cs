@@ -101,7 +101,7 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public override void Render(SKCanvas canvas, SKPointI basePosition)
+        public override void Render(SKCanvas canvas, SKPointI basePosition, ProfileElement? editorFocus)
         {
             lock (_lock)
             {
@@ -112,7 +112,7 @@ namespace Artemis.Core
                     profileScript.OnProfileRendering(canvas, canvas.LocalClipBounds);
 
                 foreach (ProfileElement profileElement in Children)
-                    profileElement.Render(canvas, basePosition);
+                    profileElement.Render(canvas, basePosition, editorFocus);
 
                 foreach (ProfileScript profileScript in Scripts)
                     profileScript.OnProfileRendered(canvas, canvas.LocalClipBounds);

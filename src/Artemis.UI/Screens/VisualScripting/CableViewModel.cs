@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Screens.VisualScripting.Pins;
 using Artemis.UI.Shared;
@@ -15,6 +17,9 @@ namespace Artemis.UI.Screens.VisualScripting;
 
 public class CableViewModel : ActivatableViewModelBase
 {
+    private readonly NodeScriptViewModel _nodeScriptViewModel;
+    private readonly IPin _from;
+    private readonly IPin _to;
     private ObservableAsPropertyHelper<Color>? _cableColor;
     private ObservableAsPropertyHelper<Point>? _fromPoint;
     private ObservableAsPropertyHelper<Point>? _toPoint;
@@ -25,13 +30,18 @@ public class CableViewModel : ActivatableViewModelBase
     private PinViewModel? _toViewModel;
     private bool _displayValue;
 
-    public CableViewModel(NodeScriptViewModel nodeScriptViewModel, IPin from, IPin to)
+    public CableViewModel(NodeScriptViewModel nodeScriptViewModel, IPin from, IPin to, ISettingsService settingsService)
     {
+        _nodeScriptViewModel = nodeScriptViewModel;
+        _from = from;
+        _to = to;
+
+        AlwaysShowValues = settingsService.GetSetting("ProfileEditor.AlwaysShowValues", true);
+
         if (from.Direction != PinDirection.Output)
             throw new ArtemisUIException("Can only create cables originating from an output pin");
         if (to.Direction != PinDirection.Input)
             throw new ArtemisUIException("Can only create cables targeted to an input pin");
-
 
         this.WhenActivated(d =>
         {
@@ -65,11 +75,16 @@ public class CableViewModel : ActivatableViewModelBase
                 .Select(tuple => tuple.Item1 != new Point(0, 0) && tuple.Item2 != new Point(0, 0))
                 .ToProperty(this, vm => vm.Connected)
                 .DisposeWith(d);
+
+            AlwaysShowValues.SettingChanged += AlwaysShowValuesOnSettingChanged;
+            Disposable.Create(() => AlwaysShowValues.SettingChanged -= AlwaysShowValuesOnSettingChanged).DisposeWith(d);
         });
 
 
-        DisplayValue = !nodeScriptViewModel.IsPreview;
+        UpdateDisplayValue(false);
     }
+
+    public PluginSetting<bool> AlwaysShowValues { get; }
 
     public PinViewModel? FromViewModel
     {
@@ -86,13 +101,30 @@ public class CableViewModel : ActivatableViewModelBase
     public bool DisplayValue
     {
         get => _displayValue;
-        set => _displayValue = value;
+        set => RaiseAndSetIfChanged(ref _displayValue, value);
     }
 
     public bool Connected => _connected?.Value ?? false;
+    public bool IsFirst => _from.ConnectedTo[0] == _to;
 
     public Point FromPoint => _fromPoint?.Value ?? new Point();
     public Point ToPoint => _toPoint?.Value ?? new Point();
     public Point ValuePoint => _valuePoint?.Value ?? new Point();
     public Color CableColor => _cableColor?.Value ?? new Color(255, 255, 255, 255);
+
+    private void AlwaysShowValuesOnSettingChanged(object? sender, EventArgs e)
+    {
+        UpdateDisplayValue(false);
+    }
+
+    public void UpdateDisplayValue(bool hoveringOver)
+    {
+        if (_nodeScriptViewModel.IsPreview)
+            DisplayValue = false;
+
+        if (hoveringOver)
+            DisplayValue = true;
+        else
+            DisplayValue = AlwaysShowValues.Value && IsFirst;
+    }
 }

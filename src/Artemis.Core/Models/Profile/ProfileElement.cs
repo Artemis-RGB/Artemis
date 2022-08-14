@@ -105,9 +105,12 @@ namespace Artemis.Core
         public abstract void Update(double deltaTime);
 
         /// <summary>
-        ///     Renders the element
+        /// Renders the element
         /// </summary>
-        public abstract void Render(SKCanvas canvas, SKPointI basePosition);
+        /// <param name="canvas">The canvas to render upon.</param>
+        /// <param name="basePosition">The base position to use to translate relative positions to absolute positions.</param>
+        /// <param name="editorFocus">An optional element to focus on while rendering (other elements will not render).</param>
+        public abstract void Render(SKCanvas canvas, SKPointI basePosition, ProfileElement? editorFocus);
 
         /// <summary>
         ///     Resets the internal state of the element

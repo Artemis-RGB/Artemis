@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
 using Avalonia.Controls.Shapes;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
@@ -50,5 +51,15 @@ public class CableView : ReactiveUserControl<CableViewModel>
         segment.Point1 = new Point(ViewModel.FromPoint.X + CABLE_OFFSET, ViewModel.FromPoint.Y);
         segment.Point2 = new Point(ViewModel.ToPoint.X - CABLE_OFFSET, ViewModel.ToPoint.Y);
         segment.Point3 = new Point(ViewModel.ToPoint.X, ViewModel.ToPoint.Y);
+    }
+
+    private void OnPointerEnter(object? sender, PointerEventArgs e)
+    {
+        ViewModel?.UpdateDisplayValue(true);
+    }
+
+    private void OnPointerLeave(object? sender, PointerEventArgs e)
+    {
+        ViewModel?.UpdateDisplayValue(false);
     }
 }

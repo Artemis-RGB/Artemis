@@ -36,6 +36,7 @@ internal class ProfileEditorService : IProfileEditorService
     private readonly SourceList<ILayerPropertyKeyframe> _selectedKeyframes;
     private readonly IWindowService _windowService;
     private ProfileEditorCommandScope? _profileEditorHistoryScope;
+    private readonly PluginSetting<bool> _focusSelectedLayer;
 
     public ProfileEditorService(ILogger logger,
         IProfileService profileService,
@@ -43,7 +44,8 @@ internal class ProfileEditorService : IProfileEditorService
         IRgbService rgbService,
         ILayerBrushService layerBrushService,
         IMainWindowService mainWindowService,
-        IWindowService windowService)
+        IWindowService windowService,
+        ISettingsService settingsService)
     {
         _logger = logger;
         _profileService = profileService;
@@ -51,7 +53,8 @@ internal class ProfileEditorService : IProfileEditorService
         _rgbService = rgbService;
         _layerBrushService = layerBrushService;
         _windowService = windowService;
-
+        _focusSelectedLayer = settingsService.GetSetting("ProfileEditor.FocusSelectedLayer", false);
+        
         _tools = new SourceList<IToolViewModel>();
         _selectedKeyframes = new SourceList<ILayerPropertyKeyframe>();
         _tools.Connect().AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected)).Subscribe(OnToolSelected);
@@ -85,6 +88,7 @@ internal class ProfileEditorService : IProfileEditorService
 
         // When the main window closes, stop editing
         mainWindowService.MainWindowClosed += (_, _) => ChangeCurrentProfileConfiguration(null);
+        _focusSelectedLayer.SettingChanged += FocusSelectedLayerOnSettingChanged;
     }
 
     public IObservable<ProfileConfiguration?> ProfileConfiguration { get; }
@@ -152,6 +156,7 @@ internal class ProfileEditorService : IProfileEditorService
     {
         _selectedKeyframes.Clear();
         _profileElementSubject.OnNext(renderProfileElement);
+        _profileService.EditorFocus = _focusSelectedLayer.Value ? renderProfileElement : null;
         ChangeCurrentLayerProperty(null);
     }
 
@@ -503,5 +508,10 @@ internal class ProfileEditorService : IProfileEditorService
             foreach (ProfileElement child in renderElement.Children)
                 TickProfileElement(child, time);
         }
+    }
+    
+    private void FocusSelectedLayerOnSettingChanged(object? sender, EventArgs e)
+    {
+        _profileService.EditorFocus = _focusSelectedLayer.Value ? _profileElementSubject.Value : null;
     }
 }

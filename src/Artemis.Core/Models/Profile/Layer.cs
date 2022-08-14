@@ -416,10 +416,13 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public override void Render(SKCanvas canvas, SKPointI basePosition)
+        public override void Render(SKCanvas canvas, SKPointI basePosition, ProfileElement? editorFocus)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
+
+            if (editorFocus != null && editorFocus != this)
+                return;
 
             RenderLayer(canvas, basePosition);
             RenderCopies(canvas, basePosition);
@@ -496,7 +499,7 @@ namespace Artemis.Core
         private void RenderCopies(SKCanvas canvas, SKPointI basePosition)
         {
             for (int i = _renderCopies.Count - 1; i >= 0; i--)
-                _renderCopies[i].Render(canvas, basePosition);
+                _renderCopies[i].Render(canvas, basePosition, null);
         }
 
         /// <inheritdoc />
@@ -627,20 +630,31 @@ namespace Artemis.Core
             if (LayerBrush == null)
                 throw new ArtemisCoreException("The layer is not yet ready for rendering");
 
-            using SKAutoCanvasRestore _ = new(canvas);
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
             {
                 if (!baseLayerEffect.Suspended)
                     baseLayerEffect.InternalPreProcess(canvas, bounds, layerPaint);
             }
-
-            canvas.ClipPath(renderPath);
-            LayerBrush.InternalRender(canvas, bounds, layerPaint);
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+            
+            try
             {
-                if (!baseLayerEffect.Suspended)
-                    baseLayerEffect.InternalPostProcess(canvas, bounds, layerPaint);
+                canvas.SaveLayer(layerPaint);
+                canvas.ClipPath(renderPath);
+
+                // Restore the blend mode before doing the actual render
+                layerPaint.BlendMode = SKBlendMode.SrcOver;
+
+                LayerBrush.InternalRender(canvas, bounds, layerPaint);
+
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                {
+                    if (!baseLayerEffect.Suspended)
+                        baseLayerEffect.InternalPostProcess(canvas, bounds, layerPaint);
+                }
+            }
+            finally
+            {
+                canvas.Restore();
             }
         }
 

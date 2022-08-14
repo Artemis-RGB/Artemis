@@ -190,6 +190,7 @@ namespace Artemis.Core.Services
 
         public bool HotkeysEnabled { get; set; }
         public bool RenderForEditor { get; set; }
+        public ProfileElement? EditorFocus { get; set; }
 
         public void UpdateProfiles(double deltaTime)
         {
@@ -247,7 +248,7 @@ namespace Artemis.Core.Services
                 ProfileConfiguration? editedProfileConfiguration = _profileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(p => p.IsBeingEdited);
                 if (editedProfileConfiguration != null)
                 {
-                    editedProfileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
+                    editedProfileConfiguration.Profile?.Render(canvas, SKPointI.Empty, RenderForEditor ? EditorFocus : null);
                     return;
                 }
 
@@ -265,7 +266,7 @@ namespace Artemis.Core.Services
                             ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
                             // Ensure all criteria are met before rendering
                             if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && profileConfiguration.ActivationConditionMet)
-                                profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
+                                profileConfiguration.Profile?.Render(canvas, SKPointI.Empty, null);
                         }
                         catch (Exception e)
                         {

@@ -176,7 +176,7 @@ namespace Artemis.Core
         #region Rendering
 
         /// <inheritdoc />
-        public override void Render(SKCanvas canvas, SKPointI basePosition)
+        public override void Render(SKCanvas canvas, SKPointI basePosition, ProfileElement? editorFocus)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Folder");
@@ -188,6 +188,10 @@ namespace Artemis.Core
             // No point rendering if all children are disabled
             if (!Children.Any(c => c is RenderProfileElement {Enabled: true}))
                 return;
+            
+            // If the editor focus is on this folder, discard further focus for children to effectively focus the entire folder and all descendants
+            if (editorFocus == this)
+                editorFocus = null;
 
             SKPaint layerPaint = new() {FilterQuality = SKFilterQuality.Low};
             try
@@ -208,7 +212,7 @@ namespace Artemis.Core
 
                 // Iterate the children in reverse because the first layer must be rendered last to end up on top
                 for (int index = Children.Count - 1; index > -1; index--)
-                    Children[index].Render(canvas, new SKPointI(Bounds.Left, Bounds.Top));
+                    Children[index].Render(canvas, new SKPointI(Bounds.Left, Bounds.Top), editorFocus);
 
                 foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
                 {
