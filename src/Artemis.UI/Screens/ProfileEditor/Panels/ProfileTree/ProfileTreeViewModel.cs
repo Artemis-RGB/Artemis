@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
@@ -17,7 +18,7 @@ public class ProfileTreeViewModel : TreeItemViewModel
     private readonly IProfileEditorService _profileEditorService;
     private TreeItemViewModel? _selectedChild;
 
-    public ProfileTreeViewModel(IWindowService windowService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
+    public ProfileTreeViewModel(IWindowService windowService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory, ISettingsService settingsService)
         : base(null, null, windowService, profileEditorService, profileEditorVmFactory)
     {
         _profileEditorService = profileEditorService;
@@ -44,8 +45,11 @@ public class ProfileTreeViewModel : TreeItemViewModel
             if (model?.ProfileElement is RenderProfileElement renderProfileElement)
                 profileEditorService.ChangeCurrentProfileElement(renderProfileElement);
         });
+
+        FocusMode = settingsService.GetSetting("ProfileEditor.FocusMode", ProfileEditorFocusMode.Folder);
     }
 
+    public PluginSetting<ProfileEditorFocusMode> FocusMode { get; }
     public TreeItemViewModel? SelectedChild
     {
         get => _selectedChild;

@@ -28,6 +28,7 @@
         <KeyBinding Command="{CompiledBinding ToggleAutoSuspend}" Gesture="Shift+F5" />
         <KeyBinding Command="{CompiledBinding PropertiesViewModel.PlaybackViewModel.TogglePlay}" Gesture="Space" />
         <KeyBinding Command="{CompiledBinding PropertiesViewModel.PlaybackViewModel.PlayFromStart}" Gesture="Shift+Space" />
+        <KeyBinding Command="{Binding TitleBarViewModel.MenuBarViewModel.CycleFocusMode}" Gesture="F" />
     </UserControl.KeyBindings>
     <UserControl.Styles>
         <Style Selector="GridSplitter.editor-grid-splitter-vertical">

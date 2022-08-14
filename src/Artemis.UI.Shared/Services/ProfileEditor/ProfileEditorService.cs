@@ -31,12 +31,12 @@ internal class ProfileEditorService : IProfileEditorService
     private readonly IProfileService _profileService;
     private readonly BehaviorSubject<bool> _suspendedEditingSubject = new(false);
     private readonly BehaviorSubject<bool> _suspendedKeybindingsSubject = new(false);
+    private readonly BehaviorSubject<ProfileEditorFocusMode> _focusModeSubject = new(ProfileEditorFocusMode.None);
     private readonly BehaviorSubject<TimeSpan> _timeSubject = new(TimeSpan.Zero);
     private readonly SourceList<IToolViewModel> _tools;
     private readonly SourceList<ILayerPropertyKeyframe> _selectedKeyframes;
     private readonly IWindowService _windowService;
     private ProfileEditorCommandScope? _profileEditorHistoryScope;
-    private readonly PluginSetting<bool> _focusSelectedLayer;
 
     public ProfileEditorService(ILogger logger,
         IProfileService profileService,
@@ -44,8 +44,7 @@ internal class ProfileEditorService : IProfileEditorService
         IRgbService rgbService,
         ILayerBrushService layerBrushService,
         IMainWindowService mainWindowService,
-        IWindowService windowService,
-        ISettingsService settingsService)
+        IWindowService windowService)
     {
         _logger = logger;
         _profileService = profileService;
@@ -53,8 +52,7 @@ internal class ProfileEditorService : IProfileEditorService
         _rgbService = rgbService;
         _layerBrushService = layerBrushService;
         _windowService = windowService;
-        _focusSelectedLayer = settingsService.GetSetting("ProfileEditor.FocusSelectedLayer", false);
-        
+
         _tools = new SourceList<IToolViewModel>();
         _selectedKeyframes = new SourceList<ILayerPropertyKeyframe>();
         _tools.Connect().AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected)).Subscribe(OnToolSelected);
@@ -70,6 +68,8 @@ internal class ProfileEditorService : IProfileEditorService
         SuspendedEditing = _suspendedEditingSubject.AsObservable();
         SuspendedKeybindings = _suspendedKeybindingsSubject.AsObservable();
         PixelsPerSecond = _pixelsPerSecondSubject.AsObservable();
+        FocusMode = _focusModeSubject.AsObservable();
+
         Tools = tools;
         SelectedKeyframes = selectedKeyframes;
 
@@ -88,7 +88,6 @@ internal class ProfileEditorService : IProfileEditorService
 
         // When the main window closes, stop editing
         mainWindowService.MainWindowClosed += (_, _) => ChangeCurrentProfileConfiguration(null);
-        _focusSelectedLayer.SettingChanged += FocusSelectedLayerOnSettingChanged;
     }
 
     public IObservable<ProfileConfiguration?> ProfileConfiguration { get; }
@@ -100,6 +99,7 @@ internal class ProfileEditorService : IProfileEditorService
     public IObservable<TimeSpan> Time { get; }
     public IObservable<bool> Playing { get; }
     public IObservable<int> PixelsPerSecond { get; }
+    public IObservable<ProfileEditorFocusMode> FocusMode { get; }
     public ReadOnlyObservableCollection<IToolViewModel> Tools { get; }
     public ReadOnlyObservableCollection<ILayerPropertyKeyframe> SelectedKeyframes { get; }
 
@@ -156,7 +156,8 @@ internal class ProfileEditorService : IProfileEditorService
     {
         _selectedKeyframes.Clear();
         _profileElementSubject.OnNext(renderProfileElement);
-        _profileService.EditorFocus = _focusSelectedLayer.Value ? renderProfileElement : null;
+        
+        ApplyFocusMode();
         ChangeCurrentLayerProperty(null);
     }
 
@@ -190,6 +191,8 @@ internal class ProfileEditorService : IProfileEditorService
                 _profileService.RenderForEditor = true;
             Tick(_timeSubject.Value);
         }
+
+        ApplyFocusMode();
     }
 
     public void ChangeSuspendedKeybindings(bool suspend)
@@ -198,6 +201,15 @@ internal class ProfileEditorService : IProfileEditorService
             return;
 
         _suspendedKeybindingsSubject.OnNext(suspend);
+    }
+
+    public void ChangeFocusMode(ProfileEditorFocusMode focusMode)
+    {
+        if (_focusModeSubject.Value == focusMode)
+            return;
+
+        _focusModeSubject.OnNext(focusMode);
+        ApplyFocusMode();
     }
 
     public void SelectKeyframe(ILayerPropertyKeyframe? keyframe, bool expand, bool toggle)
@@ -509,9 +521,18 @@ internal class ProfileEditorService : IProfileEditorService
                 TickProfileElement(child, time);
         }
     }
-    
-    private void FocusSelectedLayerOnSettingChanged(object? sender, EventArgs e)
+
+    private void ApplyFocusMode()
     {
-        _profileService.EditorFocus = _focusSelectedLayer.Value ? _profileElementSubject.Value : null;
+        if (_suspendedEditingSubject.Value)
+            _profileService.EditorFocus = null;
+
+        _profileService.EditorFocus = _focusModeSubject.Value switch
+        {
+            ProfileEditorFocusMode.None => null,
+            ProfileEditorFocusMode.Folder => _profileElementSubject.Value?.Parent,
+            ProfileEditorFocusMode.Selection => _profileElementSubject.Value,
+            _ => _profileService.EditorFocus
+        };
     }
 }

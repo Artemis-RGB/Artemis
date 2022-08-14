@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:menuBar="clr-namespace:Artemis.UI.Screens.ProfileEditor.MenuBar"
+             xmlns:profileEditor="clr-namespace:Artemis.UI.Shared.Services.ProfileEditor;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.MenuBar.MenuBarView"
              x:DataType="menuBar:MenuBarViewModel">
@@ -97,8 +98,8 @@
                     <avalonia:MaterialIcon Kind="SwapHorizontal" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Switch Run Mode on Focus Loss" 
-                      ToolTip.Tip="If enabled, run mode is set to normal on focus loss" 
+            <MenuItem Header="Switch Run Mode on Focus Loss"
+                      ToolTip.Tip="If enabled, run mode is set to normal on focus loss"
                       InputGesture="Shift+F5"
                       Command="{CompiledBinding ToggleBooleanSetting}"
                       CommandParameter="{CompiledBinding AutoSuspend}">
@@ -108,12 +109,28 @@
             </MenuItem>
         </MenuItem>
         <MenuItem Header="_Options">
-            <MenuItem Header="Focus Selected Layer" ToolTip.Tip="If enabled, displays only the layer you currently have selected"
-                      Command="{CompiledBinding ToggleBooleanSetting}"
-                      CommandParameter="{CompiledBinding FocusSelectedLayer}">
-                <MenuItem.Icon>
-                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding FocusSelectedLayer.Value}" />
-                </MenuItem.Icon>
+            <MenuItem Header="Focus Mode" InputGesture="F">
+                <MenuItem Header="None"
+                          Command="{CompiledBinding ChangeFocusMode}"
+                          CommandParameter="{x:Static profileEditor:ProfileEditorFocusMode.None}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding FocusNone}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Current Folder"
+                          Command="{CompiledBinding ChangeFocusMode}"
+                          CommandParameter="{x:Static profileEditor:ProfileEditorFocusMode.Folder}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding FocusFolder}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Current Selection"
+                          Command="{CompiledBinding ChangeFocusMode}"
+                          CommandParameter="{x:Static profileEditor:ProfileEditorFocusMode.Selection}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding FocusSelection}" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="Display Data Model Values"
                       Command="{CompiledBinding ToggleBooleanSetting}"

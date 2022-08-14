@@ -90,8 +90,8 @@
         </Style>
     </UserControl.Styles>
     <Grid RowDefinitions="*,Auto">
-        <TreeView Name="ProfileTreeView" Classes="no-right-margin draggable" 
-                  Items="{CompiledBinding Children}" 
+        <TreeView Name="ProfileTreeView" Classes="no-right-margin draggable"
+                  Items="{CompiledBinding Children}"
                   SelectedItem="{CompiledBinding SelectedChild}"
                   SelectionChanged="ProfileTreeView_OnSelectionChanged">
             <TreeView.Styles>
@@ -152,14 +152,25 @@
                 </TreeDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Classes="icon-button" ToolTip.Tip="Add new folder to root" Command="{CompiledBinding AddFolder}">
-                <avalonia:MaterialIcon Kind="FolderAdd" />
-            </Button>
-            <Button Classes="icon-button" ToolTip.Tip="Add new layer to root" Command="{CompiledBinding AddLayer}" Margin="2 0 0 0">
-                <avalonia:MaterialIcon Kind="LayersPlus" />
-            </Button>
-        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="5" ToolTip.Tip="Focus Mode - Use to disable parts of the profile you're not working on (F to change)">
+                <avalonia:MaterialIcon Kind="ImageFilterCenterFocusStrong" />
+                <TextBlock Text="{CompiledBinding FocusMode.Value}" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <Button Classes="icon-button" ToolTip.Tip="Add new folder to root" Command="{CompiledBinding AddFolder}">
+                    <avalonia:MaterialIcon Kind="FolderAdd" />
+                </Button>
+                <Button Classes="icon-button" ToolTip.Tip="Add new layer to root" Command="{CompiledBinding AddLayer}" Margin="2 0 0 0">
+                    <avalonia:MaterialIcon Kind="LayersPlus" />
+                </Button>
+            </StackPanel>
+        </Grid>
+
     </Grid>
 
 </UserControl>

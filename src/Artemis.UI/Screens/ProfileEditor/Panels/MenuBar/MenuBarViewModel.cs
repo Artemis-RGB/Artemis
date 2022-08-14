@@ -31,6 +31,9 @@ public class MenuBarViewModel : ActivatableViewModelBase
     private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
     private ObservableAsPropertyHelper<RenderProfileElement?>? _profileElement;
     private ObservableAsPropertyHelper<bool>? _suspendedEditing;
+    private ObservableAsPropertyHelper<bool>? _focusNone;
+    private ObservableAsPropertyHelper<bool>? _focusFolder;
+    private ObservableAsPropertyHelper<bool>? _focusSelection;
 
     public MenuBarViewModel(ILogger logger, IProfileEditorService profileEditorService, IProfileService profileService, ISettingsService settingsService, IWindowService windowService)
     {
@@ -50,6 +53,10 @@ public class MenuBarViewModel : ActivatableViewModelBase
                 .Switch()
                 .ToProperty(this, vm => vm.IsSuspended)
                 .DisposeWith(d);
+
+            _focusNone = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.None).ToProperty(this, vm => vm.FocusNone).DisposeWith(d);
+            _focusFolder = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.Folder).ToProperty(this, vm => vm.FocusFolder).DisposeWith(d);
+            _focusSelection = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.Selection).ToProperty(this, vm => vm.FocusSelection).DisposeWith(d);
         });
 
         AddFolder = ReactiveCommand.Create(ExecuteAddFolder);
@@ -62,8 +69,10 @@ public class MenuBarViewModel : ActivatableViewModelBase
         ExportProfile = ReactiveCommand.CreateFromTask(ExecuteExportProfile, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
         DuplicateProfile = ReactiveCommand.Create(ExecuteDuplicateProfile, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
         ToggleSuspendedEditing = ReactiveCommand.Create(ExecuteToggleSuspendedEditing);
-        ToggleBooleanSetting = ReactiveCommand.Create<PluginSetting<bool>>(ExecuteToggleBooleanSetting);
         OpenUri = ReactiveCommand.Create<string>(s => Process.Start(new ProcessStartInfo(s) {UseShellExecute = true, Verb = "open"}));
+        ToggleBooleanSetting = ReactiveCommand.Create<PluginSetting<bool>>(ExecuteToggleBooleanSetting);
+        CycleFocusMode = ReactiveCommand.Create(ExecuteCycleFocusMode);
+        ChangeFocusMode = ReactiveCommand.Create<ProfileEditorFocusMode>(ExecuteChangeFocusMode);
     }
 
     public ReactiveCommand<Unit, Unit> AddFolder { get; }
@@ -78,18 +87,23 @@ public class MenuBarViewModel : ActivatableViewModelBase
     public ReactiveCommand<PluginSetting<bool>, Unit> ToggleBooleanSetting { get; }
     public ReactiveCommand<string, Unit> OpenUri { get; }
     public ReactiveCommand<Unit, Unit> ToggleSuspendedEditing { get; }
-
+    public ReactiveCommand<Unit, Unit> CycleFocusMode { get; }
+    public ReactiveCommand<ProfileEditorFocusMode, Unit> ChangeFocusMode { get; }
+    
     public ProfileConfiguration? ProfileConfiguration => _profileConfiguration?.Value;
     public RenderProfileElement? ProfileElement => _profileElement?.Value;
     public bool IsSuspended => _isSuspended?.Value ?? false;
     public bool SuspendedEditing => _suspendedEditing?.Value ?? false;
+    public bool FocusNone => _focusNone?.Value ?? false;
+    public bool FocusFolder => _focusFolder?.Value ?? false;
+    public bool FocusSelection => _focusSelection?.Value ?? false;
 
     public PluginSetting<bool> AutoSuspend => _settingsService.GetSetting("ProfileEditor.AutoSuspend", true);
-    public PluginSetting<bool> FocusSelectedLayer => _settingsService.GetSetting("ProfileEditor.FocusSelectedLayer", false);
     public PluginSetting<bool> ShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
     public PluginSetting<bool> ShowFullPaths => _settingsService.GetSetting("ProfileEditor.ShowFullPaths", false);
     public PluginSetting<bool> AlwaysShowValues => _settingsService.GetSetting("ProfileEditor.AlwaysShowValues", true);
     public PluginSetting<bool> AlwaysApplyDataBindings => _settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", false);
+    public PluginSetting<ProfileEditorFocusMode> FocusMode => _settingsService.GetSetting("ProfileEditor.FocusMode", ProfileEditorFocusMode.Folder);
 
     public ProfileEditorHistory? History
     {
@@ -125,7 +139,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
             ("profileConfiguration", ProfileConfiguration)
         );
     }
-    
+
     private async Task ExecuteViewScripts()
     {
         if (ProfileConfiguration?.Profile == null)
@@ -217,5 +231,25 @@ public class MenuBarViewModel : ActivatableViewModelBase
     {
         setting.Value = !setting.Value;
         setting.Save();
+    }
+
+    private void ExecuteCycleFocusMode()
+    {
+        if (FocusMode.Value == ProfileEditorFocusMode.None)
+            FocusMode.Value = ProfileEditorFocusMode.Folder;
+        else if (FocusMode.Value == ProfileEditorFocusMode.Folder)
+            FocusMode.Value = ProfileEditorFocusMode.Selection;
+        else if (FocusMode.Value == ProfileEditorFocusMode.Selection)
+            FocusMode.Value = ProfileEditorFocusMode.None;
+
+        FocusMode.Save();
+        _profileEditorService.ChangeFocusMode(FocusMode.Value);
+    }
+
+    private void ExecuteChangeFocusMode(ProfileEditorFocusMode focusMode)
+    {
+        FocusMode.Value = focusMode;
+        FocusMode.Save();
+        _profileEditorService.ChangeFocusMode(FocusMode.Value);
     }
 }
