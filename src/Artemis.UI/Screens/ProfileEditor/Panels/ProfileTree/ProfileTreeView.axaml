@@ -152,14 +152,18 @@
                 </TreeDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="5" ToolTip.Tip="Focus Mode - Use to disable parts of the profile you're not working on (F to change)">
-                <avalonia:MaterialIcon Kind="ImageFilterCenterFocusStrong" />
-                <TextBlock Text="{CompiledBinding FocusMode.Value}" />
+        <Grid Grid.Row="1" ColumnDefinitions="*,*">
+            <StackPanel Grid.Column="0" 
+                        Orientation="Horizontal" 
+                        VerticalAlignment="Center" 
+                        Spacing="5" 
+                        Background="Transparent"
+                        ToolTip.Tip="Focus Mode - Use to disable parts of the profile you're not working on (F to change)">
+                <avalonia:MaterialIcon Kind="EyeOff" IsVisible="{CompiledBinding FocusNone}" />
+                <avalonia:MaterialIcon Kind="Eye" IsVisible="{CompiledBinding !FocusNone}" />
+                <TextBlock Text="Focus disabled" IsVisible="{CompiledBinding FocusNone}" />
+                <TextBlock Text="Focus on folder" IsVisible="{CompiledBinding FocusFolder}" />
+                <TextBlock Text="Focus on selection" IsVisible="{CompiledBinding FocusSelection}" />
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
                 <Button Classes="icon-button" ToolTip.Tip="Add new folder to root" Command="{CompiledBinding AddFolder}">
@@ -170,7 +174,5 @@
                 </Button>
             </StackPanel>
         </Grid>
-
     </Grid>
-
 </UserControl>

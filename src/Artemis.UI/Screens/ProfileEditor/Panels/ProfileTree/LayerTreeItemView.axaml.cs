@@ -1,7 +1,9 @@
 using System;
+using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
@@ -13,16 +15,19 @@ public class LayerTreeItemView : ReactiveUserControl<LayerTreeItemViewModel>
     public LayerTreeItemView()
     {
         InitializeComponent();
+        this.WhenActivated(d =>
+        {
+            ViewModel?.Rename.Subscribe(_ =>
+            {
+                this.Get<TextBox>("Input").Focus();
+                this.Get<TextBox>("Input").SelectAll();
+            }).DisposeWith(d);
+        });
     }
 
     private void InitializeComponent()
     {
         AvaloniaXamlLoader.Load(this);
-        this.WhenActivated(_ => ViewModel?.Rename.Subscribe(_ =>
-        {
-            this.Get<TextBox>("Input").Focus();
-            this.Get<TextBox>("Input").SelectAll();
-        }));
     }
 
     private void InputElement_OnKeyUp(object? sender, KeyEventArgs e)

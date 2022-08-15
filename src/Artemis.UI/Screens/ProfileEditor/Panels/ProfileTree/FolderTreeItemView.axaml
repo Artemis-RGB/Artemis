@@ -7,7 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.FolderTreeItemView"
              x:DataType="profileTree:FolderTreeItemViewModel">
-    <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+    <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto">
         <Button Grid.Column="0"
                 ToolTip.Tip="{CompiledBinding ProfileElement.BrokenState}"
                 IsVisible="{CompiledBinding ProfileElement.BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
@@ -35,8 +35,10 @@
                  x:Name="Input"
                  KeyUp="InputElement_OnKeyUp"
                  LostFocus="InputElement_OnLostFocus" />
-        <TextBlock Grid.Column="2" IsVisible="{CompiledBinding !Renaming}" Text="{Binding Folder.Name}" VerticalAlignment="Center" />
-        <ToggleButton Grid.Column="3"
+        <TextBlock Grid.Column="2" IsVisible="{CompiledBinding !Renaming}" Text="{CompiledBinding Folder.Name}" VerticalAlignment="Center" />
+        
+        <avalonia:MaterialIcon Grid.Column="3" Kind="Eye" IsVisible="{CompiledBinding IsFocused}" ToolTip.Tip="This element is visible because of the current focus mode" Margin="0 0 5 0"/>
+        <ToggleButton Grid.Column="4"
                       Classes="icon-button icon-button-small"
                       ToolTip.Tip="Toggle suspended state"
                       IsChecked="{CompiledBinding Folder.Suspended}"

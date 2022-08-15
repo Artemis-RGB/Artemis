@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -17,8 +18,11 @@ public class ProfileTreeViewModel : TreeItemViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
     private TreeItemViewModel? _selectedChild;
+    private ObservableAsPropertyHelper<bool>? _focusNone;
+    private ObservableAsPropertyHelper<bool>? _focusFolder;
+    private ObservableAsPropertyHelper<bool>? _focusSelection;
 
-    public ProfileTreeViewModel(IWindowService windowService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory, ISettingsService settingsService)
+    public ProfileTreeViewModel(IWindowService windowService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
         : base(null, null, windowService, profileEditorService, profileEditorVmFactory)
     {
         _profileEditorService = profileEditorService;
@@ -38,6 +42,10 @@ public class ProfileTreeViewModel : TreeItemViewModel
             }).DisposeWith(d);
 
             profileEditorService.ProfileElement.Subscribe(SelectCurrentProfileElement).DisposeWith(d);
+
+            _focusNone = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.None).ToProperty(this, vm => vm.FocusNone).DisposeWith(d);
+            _focusFolder = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.Folder).ToProperty(this, vm => vm.FocusFolder).DisposeWith(d);
+            _focusSelection = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.Selection).ToProperty(this, vm => vm.FocusSelection).DisposeWith(d);
         });
 
         this.WhenAnyValue(vm => vm.SelectedChild).Subscribe(model =>
@@ -45,11 +53,12 @@ public class ProfileTreeViewModel : TreeItemViewModel
             if (model?.ProfileElement is RenderProfileElement renderProfileElement)
                 profileEditorService.ChangeCurrentProfileElement(renderProfileElement);
         });
-
-        FocusMode = settingsService.GetSetting("ProfileEditor.FocusMode", ProfileEditorFocusMode.Folder);
     }
 
-    public PluginSetting<ProfileEditorFocusMode> FocusMode { get; }
+    public bool FocusNone => _focusNone?.Value ?? false;
+    public bool FocusFolder => _focusFolder?.Value ?? false;
+    public bool FocusSelection => _focusSelection?.Value ?? false;
+
     public TreeItemViewModel? SelectedChild
     {
         get => _selectedChild;

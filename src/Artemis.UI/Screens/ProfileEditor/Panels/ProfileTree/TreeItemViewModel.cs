@@ -32,6 +32,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
     private string? _renameValue;
     private bool _renaming;
     private TimeSpan _time;
+    private ObservableAsPropertyHelper<bool>? _isFocused;
 
     protected TreeItemViewModel(TreeItemViewModel? parent,
         ProfileElement? profileElement,
@@ -57,6 +58,11 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
 
         this.WhenActivated(d =>
         {
+            _isFocused = ProfileEditorService.FocusMode
+                .CombineLatest(ProfileEditorService.ProfileElement)
+                .Select(tuple => GetIsFocused(tuple.First, tuple.Second))
+                .ToProperty(this, vm => vm.IsFocused);
+
             ProfileEditorService.Time.Subscribe(t => _time = t).DisposeWith(d);
             ProfileEditorService.ProfileElement.Subscribe(element => _currentProfileElement = element).DisposeWith(d);
             SubscribeToProfileElement(d);
@@ -65,6 +71,8 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
 
         this.WhenAnyValue(vm => vm.IsFlyoutOpen).Subscribe(UpdateCanPaste);
     }
+
+    public bool IsFocused => _isFocused?.Value ?? false;
 
     public ProfileElement? ProfileElement
     {
@@ -256,7 +264,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
         if (ProfileElement != null)
             ProfileEditorService.CreateAndAddLayer(ProfileElement);
     }
-    
+
     private async Task ExecuteOpenAdaptionHints()
     {
         if (ProfileElement is not Layer layer)
@@ -276,5 +284,20 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
 
         string[] formats = await Application.Current.Clipboard.GetFormatsAsync();
         CanPaste = formats.Contains(ProfileElementExtensions.ClipboardDataFormat);
+    }
+
+    private bool GetIsFocused(ProfileEditorFocusMode focusMode, RenderProfileElement? currentProfileElement)
+    {
+        if (focusMode == ProfileEditorFocusMode.None || currentProfileElement == null)
+            return false;
+        if (focusMode == ProfileEditorFocusMode.Selection)
+            return currentProfileElement == ProfileElement;
+        if (focusMode == ProfileEditorFocusMode.Folder && currentProfileElement?.Parent != null)
+        {
+            // Any direct parent or direct siblings cause focus
+            return currentProfileElement.Parent == ProfileElement?.Parent || currentProfileElement.Parent.GetAllRenderElements().Any(e => e == ProfileElement);
+        }
+
+        return false;
     }
 }
