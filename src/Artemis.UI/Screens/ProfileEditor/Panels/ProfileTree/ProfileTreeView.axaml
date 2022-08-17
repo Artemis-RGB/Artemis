@@ -12,12 +12,12 @@
              x:DataType="profileTree:ProfileTreeViewModel">
     <!-- These cause binding errors, not my fault - https://github.com/AvaloniaUI/Avalonia/issues/5762 -->
     <UserControl.KeyBindings>
-        <KeyBinding Gesture="Escape" Command="{Binding ClearSelection}" />
-        <KeyBinding Gesture="F2" Command="{Binding RenameSelected}" />
-        <KeyBinding Gesture="Delete" Command="{Binding DeleteSelected}" />
-        <KeyBinding Gesture="Ctrl+D" Command="{Binding DuplicateSelected}" />
-        <KeyBinding Gesture="Ctrl+C" Command="{Binding CopySelected}" />
-        <KeyBinding Gesture="Ctrl+V" Command="{Binding PasteSelected}" />
+        <KeyBinding Gesture="Escape" Command="{CompiledBinding ClearSelection}" />
+        <KeyBinding Gesture="F2" Command="{CompiledBinding RenameSelected}" />
+        <KeyBinding Gesture="Delete" Command="{CompiledBinding DeleteSelected}" />
+        <KeyBinding Gesture="Ctrl+D" Command="{CompiledBinding DuplicateSelected}" />
+        <KeyBinding Gesture="Ctrl+C" Command="{CompiledBinding CopySelected}" />
+        <KeyBinding Gesture="Ctrl+V" Command="{CompiledBinding PasteSelected}" />
     </UserControl.KeyBindings>
     <UserControl.Resources>
         <converters:ColorOpacityConverter x:Key="ColorOpacityConverter" />

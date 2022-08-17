@@ -34,6 +34,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
     private ObservableAsPropertyHelper<bool>? _focusNone;
     private ObservableAsPropertyHelper<bool>? _focusFolder;
     private ObservableAsPropertyHelper<bool>? _focusSelection;
+    private ObservableAsPropertyHelper<bool>? _keyBindingsEnabled;
 
     public MenuBarViewModel(ILogger logger, IProfileEditorService profileEditorService, IProfileService profileService, ISettingsService settingsService, IWindowService windowService)
     {
@@ -57,6 +58,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
             _focusNone = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.None).ToProperty(this, vm => vm.FocusNone).DisposeWith(d);
             _focusFolder = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.Folder).ToProperty(this, vm => vm.FocusFolder).DisposeWith(d);
             _focusSelection = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.Selection).ToProperty(this, vm => vm.FocusSelection).DisposeWith(d);
+            _keyBindingsEnabled = profileEditorService.SuspendedKeybindings.Select(s => !s).ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
         });
 
         AddFolder = ReactiveCommand.Create(ExecuteAddFolder);
@@ -71,8 +73,8 @@ public class MenuBarViewModel : ActivatableViewModelBase
         ToggleSuspendedEditing = ReactiveCommand.Create(ExecuteToggleSuspendedEditing);
         OpenUri = ReactiveCommand.Create<string>(s => Process.Start(new ProcessStartInfo(s) {UseShellExecute = true, Verb = "open"}));
         ToggleBooleanSetting = ReactiveCommand.Create<PluginSetting<bool>>(ExecuteToggleBooleanSetting);
-        CycleFocusMode = ReactiveCommand.Create(ExecuteCycleFocusMode);
         ChangeFocusMode = ReactiveCommand.Create<ProfileEditorFocusMode>(ExecuteChangeFocusMode);
+        CycleFocusMode = ReactiveCommand.Create(ExecuteCycleFocusMode, this.WhenAnyValue(vm => vm.KeyBindingsEnabled));
     }
 
     public ReactiveCommand<Unit, Unit> AddFolder { get; }
@@ -87,9 +89,9 @@ public class MenuBarViewModel : ActivatableViewModelBase
     public ReactiveCommand<PluginSetting<bool>, Unit> ToggleBooleanSetting { get; }
     public ReactiveCommand<string, Unit> OpenUri { get; }
     public ReactiveCommand<Unit, Unit> ToggleSuspendedEditing { get; }
-    public ReactiveCommand<Unit, Unit> CycleFocusMode { get; }
     public ReactiveCommand<ProfileEditorFocusMode, Unit> ChangeFocusMode { get; }
-    
+    public ReactiveCommand<Unit, Unit> CycleFocusMode { get; }
+
     public ProfileConfiguration? ProfileConfiguration => _profileConfiguration?.Value;
     public RenderProfileElement? ProfileElement => _profileElement?.Value;
     public bool IsSuspended => _isSuspended?.Value ?? false;
@@ -97,6 +99,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
     public bool FocusNone => _focusNone?.Value ?? false;
     public bool FocusFolder => _focusFolder?.Value ?? false;
     public bool FocusSelection => _focusSelection?.Value ?? false;
+    public bool KeyBindingsEnabled => _keyBindingsEnabled?.Value ?? false;
 
     public PluginSetting<bool> AutoSuspend => _settingsService.GetSetting("ProfileEditor.AutoSuspend", true);
     public PluginSetting<bool> ShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);

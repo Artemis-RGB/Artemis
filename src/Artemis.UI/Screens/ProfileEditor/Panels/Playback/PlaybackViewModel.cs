@@ -17,14 +17,13 @@ public class PlaybackViewModel : ActivatableViewModelBase
     private readonly ISettingsService _settingsService;
     private ObservableAsPropertyHelper<TimeSpan>? _currentTime;
     private ObservableAsPropertyHelper<string?>? _formattedCurrentTime;
-    private DateTime _lastUpdate;
+    private ObservableAsPropertyHelper<bool>? _keyBindingsEnabled;
     private ObservableAsPropertyHelper<bool>? _playing;
     private RenderProfileElement? _profileElement;
     private bool _repeating;
     private bool _repeatSegment;
     private bool _repeatTimeline;
-    private ReactiveCommand<Unit, Unit>? _togglePlay;
-    private ReactiveCommand<Unit, Unit>? _playFromStart;
+    private DateTime _lastUpdate;
 
     public PlaybackViewModel(IProfileEditorService profileEditorService, ISettingsService settingsService)
     {
@@ -38,15 +37,16 @@ public class PlaybackViewModel : ActivatableViewModelBase
             _currentTime = _profileEditorService.Time.ToProperty(this, vm => vm.CurrentTime).DisposeWith(d);
             _formattedCurrentTime = _profileEditorService.Time.Select(t => $"{Math.Floor(t.TotalSeconds):00}.{t.Milliseconds:000}").ToProperty(this, vm => vm.FormattedCurrentTime).DisposeWith(d);
             _playing = _profileEditorService.Playing.ToProperty(this, vm => vm.Playing).DisposeWith(d);
+            _keyBindingsEnabled = _profileEditorService.SuspendedKeybindings.Select(s => !s).ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
+            
             _lastUpdate = DateTime.MinValue;
             DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(60.0 / 1000), DispatcherPriority.Render, Update);
             updateTimer.Start();
             Disposable.Create(() => updateTimer.Stop()).DisposeWith(d);
-            
-            PlayFromStart = ReactiveCommand.Create(ExecutePlayFromStart, _profileEditorService.SuspendedKeybindings.Select(s => !s)).DisposeWith(d);
-            TogglePlay = ReactiveCommand.Create(ExecuteTogglePlay, _profileEditorService.SuspendedKeybindings.Select(s => !s)).DisposeWith(d);
         });
         
+        PlayFromStart = ReactiveCommand.Create(ExecutePlayFromStart, this.WhenAnyValue(vm => vm.KeyBindingsEnabled));
+        TogglePlay = ReactiveCommand.Create(ExecuteTogglePlay, this.WhenAnyValue(vm => vm.KeyBindingsEnabled));
         GoToStart = ReactiveCommand.Create(ExecuteGoToStart);
         GoToEnd = ReactiveCommand.Create(ExecuteGoToEnd);
         GoToPreviousFrame = ReactiveCommand.Create(ExecuteGoToPreviousFrame);
@@ -57,7 +57,8 @@ public class PlaybackViewModel : ActivatableViewModelBase
     public TimeSpan CurrentTime => _currentTime?.Value ?? TimeSpan.Zero;
     public string? FormattedCurrentTime => _formattedCurrentTime?.Value;
     public bool Playing => _playing?.Value ?? false;
-
+    public bool KeyBindingsEnabled => _keyBindingsEnabled?.Value ?? false;
+    
     public bool Repeating
     {
         get => _repeating;
@@ -76,18 +77,8 @@ public class PlaybackViewModel : ActivatableViewModelBase
         set => RaiseAndSetIfChanged(ref _repeatSegment, value);
     }
 
-    public ReactiveCommand<Unit, Unit>? PlayFromStart
-    {
-        get => _playFromStart;
-        set => RaiseAndSetIfChanged(ref _playFromStart, value);
-    }
-
-    public ReactiveCommand<Unit, Unit>? TogglePlay
-    {
-        get => _togglePlay;
-        set => RaiseAndSetIfChanged(ref _togglePlay, value);
-    }
-
+    public ReactiveCommand<Unit, Unit> PlayFromStart { get; }
+    public ReactiveCommand<Unit, Unit> TogglePlay { get; }
     public ReactiveCommand<Unit,Unit> GoToStart { get; }
     public ReactiveCommand<Unit,Unit> GoToEnd { get; }
     public ReactiveCommand<Unit,Unit> GoToPreviousFrame { get; }

@@ -55,7 +55,8 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
         Duplicate = ReactiveCommand.CreateFromTask(ExecuteDuplicate);
         Copy = ReactiveCommand.CreateFromTask(ExecuteCopy);
         Paste = ReactiveCommand.CreateFromTask(ExecutePaste, this.WhenAnyValue(vm => vm.CanPaste));
-
+        AbsorbCommand = ReactiveCommand.Create(() => true);
+        
         this.WhenActivated(d =>
         {
             _isFocused = ProfileEditorService.FocusMode
@@ -71,6 +72,8 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
 
         this.WhenAnyValue(vm => vm.IsFlyoutOpen).Subscribe(UpdateCanPaste);
     }
+
+    public ReactiveCommand<Unit,bool> AbsorbCommand { get; }
 
     public bool IsFocused => _isFocused?.Value ?? false;
 

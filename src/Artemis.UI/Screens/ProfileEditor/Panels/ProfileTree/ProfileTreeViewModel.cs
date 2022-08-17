@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -16,16 +17,15 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
 public class ProfileTreeViewModel : TreeItemViewModel
 {
-    private readonly IProfileEditorService _profileEditorService;
     private TreeItemViewModel? _selectedChild;
     private ObservableAsPropertyHelper<bool>? _focusNone;
     private ObservableAsPropertyHelper<bool>? _focusFolder;
     private ObservableAsPropertyHelper<bool>? _focusSelection;
+    private ObservableAsPropertyHelper<bool>? _keyBindingsEnabled;
 
     public ProfileTreeViewModel(IWindowService windowService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
         : base(null, null, windowService, profileEditorService, profileEditorVmFactory)
     {
-        _profileEditorService = profileEditorService;
         this.WhenActivated(d =>
         {
             profileEditorService.ProfileConfiguration.WhereNotNull().Subscribe(configuration =>
@@ -46,7 +46,15 @@ public class ProfileTreeViewModel : TreeItemViewModel
             _focusNone = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.None).ToProperty(this, vm => vm.FocusNone).DisposeWith(d);
             _focusFolder = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.Folder).ToProperty(this, vm => vm.FocusFolder).DisposeWith(d);
             _focusSelection = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.Selection).ToProperty(this, vm => vm.FocusSelection).DisposeWith(d);
+            _keyBindingsEnabled = profileEditorService.SuspendedKeybindings.Select(s => !s).ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
         });
+
+        ClearSelection = ReactiveCommand.Create(() => profileEditorService.ChangeCurrentProfileElement(null), this.WhenAnyValue(vm => vm.KeyBindingsEnabled));
+        RenameSelected = ReactiveCommand.Create(() => { SelectedChild?.Rename.Execute().Subscribe(); }, this.WhenAnyValue(vm => vm.KeyBindingsEnabled));
+        DeleteSelected = ReactiveCommand.Create(() => { SelectedChild?.Delete.Execute().Subscribe(); }, this.WhenAnyValue(vm => vm.KeyBindingsEnabled));
+        DuplicateSelected = ReactiveCommand.Create(() => { SelectedChild?.Duplicate.Execute().Subscribe(); }, this.WhenAnyValue(vm => vm.KeyBindingsEnabled));
+        CopySelected = ReactiveCommand.Create(() => { SelectedChild?.Copy.Execute().Subscribe(); }, this.WhenAnyValue(vm => vm.KeyBindingsEnabled));
+        PasteSelected = ReactiveCommand.Create(() => { SelectedChild?.Paste.Execute().Subscribe(); }, this.WhenAnyValue(vm => vm.KeyBindingsEnabled));
 
         this.WhenAnyValue(vm => vm.SelectedChild).Subscribe(model =>
         {
@@ -58,44 +66,22 @@ public class ProfileTreeViewModel : TreeItemViewModel
     public bool FocusNone => _focusNone?.Value ?? false;
     public bool FocusFolder => _focusFolder?.Value ?? false;
     public bool FocusSelection => _focusSelection?.Value ?? false;
-
+    public bool KeyBindingsEnabled => _keyBindingsEnabled?.Value ?? false;
+    
     public TreeItemViewModel? SelectedChild
     {
         get => _selectedChild;
         set => RaiseAndSetIfChanged(ref _selectedChild, value);
     }
 
+    public ReactiveCommand<Unit, Unit> ClearSelection { get; }
+    public ReactiveCommand<Unit, Unit> RenameSelected { get; }
+    public ReactiveCommand<Unit, Unit> DeleteSelected { get; }
+    public ReactiveCommand<Unit, Unit> DuplicateSelected { get; }
+    public ReactiveCommand<Unit, Unit> CopySelected { get; }
+    public ReactiveCommand<Unit, Unit> PasteSelected { get; }
+
     public override bool SupportsChildren => true;
-
-    public void ClearSelection()
-    {
-        _profileEditorService.ChangeCurrentProfileElement(null);
-    }
-
-    public void RenameSelected()
-    {
-        SelectedChild?.Rename.Execute().Subscribe();
-    }
-
-    public void DeleteSelected()
-    {
-        SelectedChild?.Delete.Execute().Subscribe();
-    }
-
-    public void DuplicateSelected()
-    {
-        SelectedChild?.Duplicate.Execute().Subscribe();
-    }
-
-    public void CopySelected()
-    {
-        SelectedChild?.Copy.Execute().Subscribe();
-    }
-
-    public void PasteSelected()
-    {
-        SelectedChild?.Paste.Execute().Subscribe();
-    }
 
     public void UpdateCanPaste()
     {

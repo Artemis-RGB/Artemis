@@ -132,7 +132,7 @@ public class SimpleContextDragBehavior : Behavior<Control>
     private async void AssociatedObject_PointerMoved(object? sender, PointerEventArgs e)
     {
         PointerPointProperties properties = e.GetCurrentPoint(AssociatedObject).Properties;
-        if (!properties.IsLeftButtonPressed)
+        if (!properties.IsLeftButtonPressed || FocusManager.Instance?.Current is TextBox)
             return;
 
         if (_triggerEvent is null)
