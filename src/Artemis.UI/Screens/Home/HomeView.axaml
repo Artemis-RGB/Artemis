@@ -58,7 +58,7 @@
 
 				<Border Classes="card" Margin="8" Grid.Row="1" Grid.Column="0" ClipToBounds="True">
 					<Grid VerticalAlignment="Stretch" RowDefinitions="150,95" ColumnDefinitions="150,*">
-						<avalonia:MaterialIcon Kind="Discord" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" />
+						<avalonia:MaterialIcon Kind="Chat" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" />
 						<StackPanel Grid.Row="0" Grid.Column="1">
 							<TextBlock Classes="h3">Have a chat</TextBlock>
 							<TextBlock TextWrapping="Wrap" VerticalAlignment="Top">
@@ -82,7 +82,7 @@
 								</controls:HyperlinkButton>
 								<controls:HyperlinkButton Grid.Row="1" NavigateUri="https://discordapp.com/invite/S3MVaC9">
 									<StackPanel Orientation="Horizontal">
-										<avalonia:MaterialIcon Kind="Discord" />
+										<avalonia:MaterialIcon Kind="Chat" />
 										<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Discord</TextBlock>
 									</StackPanel>
 								</controls:HyperlinkButton>

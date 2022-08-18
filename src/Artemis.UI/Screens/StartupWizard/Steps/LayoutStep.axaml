@@ -30,7 +30,7 @@
                 Height="280"
                 IsEnabled="False">
             <StackPanel>
-                <avalonia:MaterialIcon Kind="HandLeft" Width="150" Height="150" HorizontalAlignment="Center" />
+                <avalonia:MaterialIcon Kind="HandBackLeft" Width="150" Height="150" HorizontalAlignment="Center" />
                 <TextBlock TextAlignment="Center" Classes="h4" Margin="0 10 0 0">
                     Left-handed preset (NYI)
                 </TextBlock>
@@ -49,7 +49,7 @@
                 Width="280"
                 Height="280">
             <StackPanel>
-                <avalonia:MaterialIcon Kind="HandRight" Width="150" Height="150" HorizontalAlignment="Center" />
+                <avalonia:MaterialIcon Kind="HandBackRight" Width="150" Height="150" HorizontalAlignment="Center" />
                 <TextBlock TextAlignment="Center" Classes="h4" Margin="0 10 0 0">
                     Right-handed preset
                 </TextBlock>

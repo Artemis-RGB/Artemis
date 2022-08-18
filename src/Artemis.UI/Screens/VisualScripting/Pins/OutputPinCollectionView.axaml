@@ -17,7 +17,7 @@
 		<ItemsControl Items="{CompiledBinding PinViewModels}" Margin="4 0" HorizontalAlignment="Right">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="pins:PinViewModel">
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 						<Button Classes="icon-button icon-button-small"
                                 Margin="0 2 2 0"
                                 ToolTip.Tip="Remove pin"
