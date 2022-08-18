@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using Artemis.Core;
@@ -21,10 +23,10 @@ public class ProfileEditorViewModel : MainScreenViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
     private readonly ISettingsService _settingsService;
+    private readonly SourceList<IToolViewModel> _tools;
     private ObservableAsPropertyHelper<ProfileEditorHistory?>? _history;
     private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
     private ObservableAsPropertyHelper<bool>? _suspendedEditing;
-    private ReadOnlyObservableCollection<IToolViewModel>? _tools;
     private StatusBarViewModel _statusBarViewModel;
     private DisplayConditionScriptViewModel _displayConditionScriptViewModel;
     private PropertiesViewModel _propertiesViewModel;
@@ -40,26 +42,30 @@ public class ProfileEditorViewModel : MainScreenViewModel
         ProfileEditorTitleBarViewModel profileEditorTitleBarViewModel,
         PropertiesViewModel propertiesViewModel,
         DisplayConditionScriptViewModel displayConditionScriptViewModel,
-        StatusBarViewModel statusBarViewModel)
+        StatusBarViewModel statusBarViewModel,
+        IEnumerable<IToolViewModel> toolViewModels)
         : base(hostScreen, "profile-editor")
     {
         _profileEditorService = profileEditorService;
         _settingsService = settingsService;
+
+        _tools = new SourceList<IToolViewModel>();
+        _tools.AddRange(toolViewModels);
+        _tools.Connect().AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected)).Subscribe(OnToolSelected);
+        _tools.Connect()
+            .Filter(t => t.ShowInToolbar)
+            .Sort(SortExpressionComparer<IToolViewModel>.Ascending(vm => vm.Order))
+            .Bind(out ReadOnlyObservableCollection<IToolViewModel> tools)
+            .Subscribe();
+        Tools = tools;
+        visualEditorViewModel.SetTools(_tools);
 
         this.WhenActivated(d =>
         {
             _profileConfiguration = profileEditorService.ProfileConfiguration.ToProperty(this, vm => vm.ProfileConfiguration).DisposeWith(d);
             _history = profileEditorService.History.ToProperty(this, vm => vm.History).DisposeWith(d);
             _suspendedEditing = profileEditorService.SuspendedEditing.ToProperty(this, vm => vm.SuspendedEditing).DisposeWith(d);
-            profileEditorService.Tools
-                .ToObservableChangeSet()
-                .Filter(t => t.ShowInToolbar)
-                .Sort(SortExpressionComparer<IToolViewModel>.Ascending(vm => vm.Order))
-                .Bind(out ReadOnlyObservableCollection<IToolViewModel> tools)
-                .Subscribe()
-                .DisposeWith(d);
-            Tools = tools;
-            
+
             // Slow and steady wins the race (and doesn't lock up the entire UI)
             Dispatcher.UIThread.Post(() => StatusBarViewModel = statusBarViewModel, DispatcherPriority.Loaded);
             Dispatcher.UIThread.Post(() => VisualEditorViewModel = visualEditorViewModel, DispatcherPriority.Loaded);
@@ -103,12 +109,7 @@ public class ProfileEditorViewModel : MainScreenViewModel
         set => RaiseAndSetIfChanged(ref _statusBarViewModel, value);
     }
 
-    public ReadOnlyObservableCollection<IToolViewModel>? Tools
-    {
-        get => _tools;
-        set => RaiseAndSetIfChanged(ref _tools, value);
-    }
-
+    public ReadOnlyObservableCollection<IToolViewModel> Tools { get; }
     public ProfileConfiguration? ProfileConfiguration => _profileConfiguration?.Value;
     public ProfileEditorHistory? History => _history?.Value;
     public bool SuspendedEditing => _suspendedEditing?.Value ?? false;
@@ -133,5 +134,22 @@ public class ProfileEditorViewModel : MainScreenViewModel
         PluginSetting<bool> setting = _settingsService.GetSetting("ProfileEditor.AutoSuspend", true);
         setting.Value = !setting.Value;
         setting.Save();
+    }
+
+    private void OnToolSelected(IChangeSet<IToolViewModel> changeSet)
+    {
+        IToolViewModel? changed = changeSet.FirstOrDefault()?.Item.Current;
+        if (changed == null)
+            return;
+
+        if (!changed.IsSelected || !changed.IsExclusive)
+            return;
+        
+        // Disable all others if the changed one is selected and exclusive
+        _tools.Edit(list =>
+        {
+            foreach (IToolViewModel toolViewModel in list.Where(t => t.IsExclusive && t != changed))
+                toolViewModel.IsSelected = false;
+        });
     }
 }

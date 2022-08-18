@@ -60,12 +60,7 @@ public interface IProfileEditorService : IArtemisSharedUIService
     ///     Gets an observable of the suspended keybindings state.
     /// </summary>
     IObservable<ProfileEditorFocusMode> FocusMode { get; }
-
-    /// <summary>
-    ///     Gets an observable read only collection of all available editor tools.
-    /// </summary>
-    ReadOnlyObservableCollection<IToolViewModel> Tools { get; }
-
+    
     /// <summary>
     ///     Gets an observable read only collection of selected keyframes.
     /// </summary>
@@ -209,16 +204,4 @@ public interface IProfileEditorService : IArtemisSharedUIService
     ///     Pauses profile preview playback.
     /// </summary>
     void Pause();
-
-    /// <summary>
-    ///     Adds a profile editor tool by it's view model.
-    /// </summary>
-    /// <param name="toolViewModel">The view model of the tool to add.</param>
-    void AddTool(IToolViewModel toolViewModel);
-
-    /// <summary>
-    ///     Removes a profile editor tool by it's view model.
-    /// </summary>
-    /// <param name="toolViewModel">The view model of the tool to remove.</param>
-    void RemoveTool(IToolViewModel toolViewModel);
 }

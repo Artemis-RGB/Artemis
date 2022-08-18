@@ -33,7 +33,6 @@ internal class ProfileEditorService : IProfileEditorService
     private readonly BehaviorSubject<bool> _suspendedKeybindingsSubject = new(false);
     private readonly BehaviorSubject<ProfileEditorFocusMode> _focusModeSubject = new(ProfileEditorFocusMode.None);
     private readonly BehaviorSubject<TimeSpan> _timeSubject = new(TimeSpan.Zero);
-    private readonly SourceList<IToolViewModel> _tools;
     private readonly SourceList<ILayerPropertyKeyframe> _selectedKeyframes;
     private readonly IWindowService _windowService;
     private ProfileEditorCommandScope? _profileEditorHistoryScope;
@@ -53,10 +52,7 @@ internal class ProfileEditorService : IProfileEditorService
         _layerBrushService = layerBrushService;
         _windowService = windowService;
 
-        _tools = new SourceList<IToolViewModel>();
         _selectedKeyframes = new SourceList<ILayerPropertyKeyframe>();
-        _tools.Connect().AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected)).Subscribe(OnToolSelected);
-        _tools.Connect().Bind(out ReadOnlyObservableCollection<IToolViewModel> tools).Subscribe();
         _selectedKeyframes.Connect().Bind(out ReadOnlyObservableCollection<ILayerPropertyKeyframe> selectedKeyframes).Subscribe();
 
         ProfileConfiguration = _profileConfigurationSubject.AsObservable();
@@ -69,8 +65,6 @@ internal class ProfileEditorService : IProfileEditorService
         SuspendedKeybindings = _suspendedKeybindingsSubject.AsObservable();
         PixelsPerSecond = _pixelsPerSecondSubject.AsObservable();
         FocusMode = _focusModeSubject.AsObservable();
-
-        Tools = tools;
         SelectedKeyframes = selectedKeyframes;
 
         // Observe executing, undoing and redoing commands and run the auto-save after 1 second
@@ -100,7 +94,6 @@ internal class ProfileEditorService : IProfileEditorService
     public IObservable<bool> Playing { get; }
     public IObservable<int> PixelsPerSecond { get; }
     public IObservable<ProfileEditorFocusMode> FocusMode { get; }
-    public ReadOnlyObservableCollection<IToolViewModel> Tools { get; }
     public ReadOnlyObservableCollection<ILayerPropertyKeyframe> SelectedKeyframes { get; }
 
     public void ChangeCurrentProfileConfiguration(ProfileConfiguration? profileConfiguration)
@@ -384,19 +377,7 @@ internal class ProfileEditorService : IProfileEditorService
         if (_playingSubject.Value)
             _playingSubject.OnNext(false);
     }
-
-    /// <inheritdoc />
-    public void AddTool(IToolViewModel toolViewModel)
-    {
-        _tools.Add(toolViewModel);
-    }
-
-    /// <inheritdoc />
-    public void RemoveTool(IToolViewModel toolViewModel)
-    {
-        _tools.Remove(toolViewModel);
-    }
-
+    
     #region Commands
 
     public void ExecuteCommand(IProfileEditorCommand command)
@@ -451,22 +432,7 @@ internal class ProfileEditorService : IProfileEditorService
     }
 
     #endregion
-
-    private void OnToolSelected(IChangeSet<IToolViewModel> changeSet)
-    {
-        IToolViewModel? changed = changeSet.FirstOrDefault()?.Item.Current;
-        if (changed == null)
-            return;
-
-        // Disable all others if the changed one is selected and exclusive
-        if (changed.IsSelected && changed.IsExclusive)
-            _tools.Edit(list =>
-            {
-                foreach (IToolViewModel toolViewModel in list.Where(t => t.IsExclusive && t != changed))
-                    toolViewModel.IsSelected = false;
-            });
-    }
-
+    
     private ProfileEditorHistory? GetHistory(ProfileConfiguration? profileConfiguration)
     {
         if (profileConfiguration == null)
