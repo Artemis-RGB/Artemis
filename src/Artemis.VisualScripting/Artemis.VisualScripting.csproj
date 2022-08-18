@@ -5,6 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Platforms>x64</Platforms>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,6 +16,7 @@
         <PackageReference Include="NoStringEvaluating" Version="2.2.2" />
         <PackageReference Include="ReactiveUI" Version="17.1.50" />
         <PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />
+        <PackageReference Include="ScreenCapture.NET" Version="1.2.0" />
         <PackageReference Include="SkiaSharp" Version="2.88.1-preview.1" />
     </ItemGroup>
 
@@ -26,6 +28,9 @@
     <ItemGroup>
         <Compile Update="Nodes\Easing\Screens\EasingTypeNodeEasingView.axaml.cs">
             <DependentUpon>EasingTypeNodeEasingView.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Nodes\Image\Screens\CaptureScreenNodeCustomView.axaml.cs">
+          <DependentUpon>CaptureScreenNodeCustomView.axaml</DependentUpon>
         </Compile>
         <Compile Update="Nodes\Static\Screens\StaticStringValueNodeCustomView.axaml.cs">
             <DependentUpon>StaticStringValueNodeCustomView.axaml</DependentUpon>
