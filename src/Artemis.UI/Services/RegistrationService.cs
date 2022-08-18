@@ -27,14 +27,14 @@ public class RegistrationService : IRegistrationService
     private readonly IDataModelUIService _dataModelUIService;
     private bool _registeredBuiltInPropertyEditors;
 
-    public RegistrationService(IKernel kernel, 
-        IInputService inputService, 
+    public RegistrationService(IKernel kernel,
+        IInputService inputService,
         IPropertyInputService propertyInputService,
         IProfileEditorService profileEditorService,
-        INodeService nodeService, 
+        INodeService nodeService,
         IDataModelUIService dataModelUIService,
-        IDeviceLayoutService deviceLayoutService, // here to make sure it is instantiated
-        IEnumerable<IToolViewModel> toolViewModels)
+        IDeviceLayoutService deviceLayoutService // here to make sure it is instantiated
+    )
     {
         _kernel = kernel;
         _inputService = inputService;
@@ -42,8 +42,6 @@ public class RegistrationService : IRegistrationService
         _nodeService = nodeService;
         _dataModelUIService = dataModelUIService;
 
-        foreach (IToolViewModel toolViewModel in toolViewModels)
-            profileEditorService.AddTool(toolViewModel);
         CreateCursorResources();
     }
 
@@ -90,7 +88,7 @@ public class RegistrationService : IRegistrationService
     public void RegisterControllers()
     {
     }
-    
+
     public void RegisterBuiltInNodeTypes()
     {
         _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(bool), new SKColor(0xFFCD3232));

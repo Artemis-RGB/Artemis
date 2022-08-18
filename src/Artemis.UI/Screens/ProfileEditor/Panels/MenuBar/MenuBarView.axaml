@@ -208,7 +208,7 @@
             </MenuItem>
             <MenuItem Header="Get Help on Discord" Command="{CompiledBinding OpenUri}" CommandParameter="https://discord.gg/S3MVaC9">
                 <MenuItem.Icon>
-                    <avalonia:MaterialIcon Kind="Discord" />
+                    <avalonia:MaterialIcon Kind="Chat" />
                 </MenuItem.Icon>
             </MenuItem>
         </MenuItem>

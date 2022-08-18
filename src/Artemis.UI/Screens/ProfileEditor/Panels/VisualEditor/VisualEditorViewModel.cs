@@ -43,15 +43,6 @@ public class VisualEditorViewModel : ActivatableViewModelBase
             _suspendedEditing = profileEditorService.SuspendedEditing.ToProperty(this, vm => vm.SuspendedEditing).DisposeWith(d);
             profileEditorService.ProfileConfiguration.Subscribe(CreateVisualizers).DisposeWith(d);
 
-            profileEditorService.Tools
-                .ToObservableChangeSet()
-                .AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected))
-                .Filter(t => t.IsSelected)
-                .Bind(out ReadOnlyObservableCollection<IToolViewModel> tools)
-                .Subscribe()
-                .DisposeWith(d);
-            Tools = tools;
-
             this.WhenAnyValue(vm => vm.ProfileConfiguration)
                 .Select(p => p?.Profile)
                 .Select(p => p != null
@@ -74,14 +65,14 @@ public class VisualEditorViewModel : ActivatableViewModelBase
     public ProfileConfiguration? ProfileConfiguration => _profileConfiguration?.Value;
     public bool SuspendedEditing => _suspendedEditing?.Value ?? false;
 
-    public ObservableCollection<ArtemisDevice> Devices { get; }
-    public ReadOnlyObservableCollection<IVisualizerViewModel> Visualizers { get; }
-
     public ReadOnlyObservableCollection<IToolViewModel>? Tools
     {
         get => _tools;
         set => RaiseAndSetIfChanged(ref _tools, value);
     }
+
+    public ReadOnlyObservableCollection<IVisualizerViewModel> Visualizers { get; }
+    public ObservableCollection<ArtemisDevice> Devices { get; }
 
     private void RemoveElement(EventPattern<ProfileElementEventArgs> eventPattern)
     {
@@ -113,7 +104,17 @@ public class VisualEditorViewModel : ActivatableViewModelBase
         visualizerViewModels.Add(_vmFactory.LayerShapeVisualizerViewModel(layer));
         visualizerViewModels.Add(_vmFactory.LayerVisualizerViewModel(layer));
     }
-    
+
+    public void SetTools(SourceList<IToolViewModel> tools)
+    {
+        tools.Connect()
+            .AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected))
+            .Filter(t => t.IsSelected)
+            .Bind(out ReadOnlyObservableCollection<IToolViewModel> selectedTools)
+            .Subscribe();
+        Tools = selectedTools;
+    }
+
     public void RequestAutoFit()
     {
         AutoFitRequested?.Invoke(this, EventArgs.Empty);

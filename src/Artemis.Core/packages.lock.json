@@ -132,13 +132,12 @@
       },
       "SkiaSharp": {
         "type": "Direct",
-        "requested": "[2.88.1-preview.1, )",
-        "resolved": "2.88.1-preview.1",
-        "contentHash": "BvnJSq10bfDD9szhOsLzD0lwnxD5oO7C/e2A8l0QjVhUQEZrcLji2HcSmqnYxmqFxfJQtini4/5+9q7uly12zA==",
+        "requested": "[2.88.1-preview.108, )",
+        "resolved": "2.88.1-preview.108",
+        "contentHash": "Zfs4qdQuvLsdSdBa42CnD8Dlcnkr46GaaFEwouzrjOLse8DmKkf/zBaCFCUkNIjGDZFkjFGe/ai5qHYkMcXIsg==",
         "dependencies": {
-          "SkiaSharp.NativeAssets.Win32": "2.88.1-preview.1",
-          "SkiaSharp.NativeAssets.macOS": "2.88.1-preview.1",
-          "System.Memory": "4.5.3"
+          "SkiaSharp.NativeAssets.Win32": "2.88.1-preview.108",
+          "SkiaSharp.NativeAssets.macOS": "2.88.1-preview.108"
         }
       },
       "System.Buffers": {
@@ -397,13 +396,13 @@
       },
       "SkiaSharp.NativeAssets.macOS": {
         "type": "Transitive",
-        "resolved": "2.88.1-preview.1",
-        "contentHash": "s60CtPHHu230/IzChOEnxOqf4eOIpyxFUJnmOhxIqCJ45QlqBKaSRov7ucbqmEUBgYJ7el2QoTEtWuLNH2Sq3g=="
+        "resolved": "2.88.1-preview.108",
+        "contentHash": "nz+Ege0i1aCicLnaHOBzuTBj5LnLxlZVxLv+wUEtOXaAHq6of7kxaE+/+4KC1OBnKs64L8WDGf88VC2fIC/zxw=="
       },
       "SkiaSharp.NativeAssets.Win32": {
         "type": "Transitive",
-        "resolved": "2.88.1-preview.1",
-        "contentHash": "dRC2qtqLsLAtx31+ZWJlY+ciRXAzp5deL3bq8y8bYNC9bzArgIXyAOxaBgdrk0euprIKzHNzh44ueHSuxoAaxw=="
+        "resolved": "2.88.1-preview.108",
+        "contentHash": "98r2fGVjPNjIhH0ooHtvAcqsHUjWZPEkqrfpynZNWdo8gkUPZhENvOodDtvBNUW6we24Bo4aWCnGbJuhyn//ug=="
       },
       "System.AppContext": {
         "type": "Transitive",
@@ -740,11 +739,6 @@
           "System.Runtime.Extensions": "4.3.0",
           "System.Threading": "4.3.0"
         }
-      },
-      "System.Memory": {
-        "type": "Transitive",
-        "resolved": "4.5.3",
-        "contentHash": "3oDzvc/zzetpTKWMShs1AADwZjQ/36HnsufHRPcOjyRAAMLDlu2iD33MBI2opxnezcVUtXyqDXXjoFMOU9c7SA=="
       },
       "System.Net.Http": {
         "type": "Transitive",
@@ -1256,10 +1250,7 @@
       "Unosquare.Swan.Lite": {
         "type": "Transitive",
         "resolved": "3.0.0",
-        "contentHash": "noPwJJl1Q9uparXy1ogtkmyAPGNfSGb0BLT1292nFH1jdMKje6o2kvvrQUvF9Xklj+IoiAI0UzF6Aqxlvo10lw==",
-        "dependencies": {
-          "System.ValueTuple": "4.5.0"
-        }
+        "contentHash": "noPwJJl1Q9uparXy1ogtkmyAPGNfSGb0BLT1292nFH1jdMKje6o2kvvrQUvF9Xklj+IoiAI0UzF6Aqxlvo10lw=="
       },
       "artemis.storage": {
         "type": "Project",

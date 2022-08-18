@@ -68,7 +68,7 @@
                                       Height="44"
                                       ToolTip.Tip="Join our Discord"
                                       NavigateUri="https://discord.gg/S3MVaC9">
-                <avalonia:MaterialIcon Kind="Discord" Width="20" Height="20" />
+                <avalonia:MaterialIcon Kind="Chat" Width="20" Height="20" />
             </controls:HyperlinkButton>
             <controls:HyperlinkButton Classes="icon-button"
                                       Width="44"

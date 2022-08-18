@@ -62,7 +62,8 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
             _isFocused = ProfileEditorService.FocusMode
                 .CombineLatest(ProfileEditorService.ProfileElement)
                 .Select(tuple => GetIsFocused(tuple.First, tuple.Second))
-                .ToProperty(this, vm => vm.IsFocused);
+                .ToProperty(this, vm => vm.IsFocused)
+                .DisposeWith(d);
 
             ProfileEditorService.Time.Subscribe(t => _time = t).DisposeWith(d);
             ProfileEditorService.ProfileElement.Subscribe(element => _currentProfileElement = element).DisposeWith(d);
