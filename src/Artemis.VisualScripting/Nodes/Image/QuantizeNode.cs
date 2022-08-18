@@ -6,12 +6,12 @@ using SkiaSharp;
 
 namespace Artemis.VisualScripting.Nodes.Image;
 
-[Node("Quantize", "Quantizes the image into key-colors", "Image", InputType = typeof(SKImage), OutputType = typeof(SKColor))]
+[Node("Quantize", "Quantizes the image into key-colors", "Image", InputType = typeof(SKBitmap), OutputType = typeof(SKColor))]
 public class QuantizeNode : Node
 {
     #region Properties & Fields
     
-    public InputPin<SKImage> Image { get; set; }
+    public InputPin<SKBitmap> Image { get; set; }
 
     public OutputPin<SKColor> Vibrant { get; set; }
     public OutputPin<SKColor> Muted { get; set; }
@@ -27,7 +27,7 @@ public class QuantizeNode : Node
     public QuantizeNode()
         : base("Quantize", "Quantizes the image into key-colors")
     {
-        Image = CreateInputPin<SKImage>("Image");
+        Image = CreateInputPin<SKBitmap>("Image");
 
         Vibrant = CreateOutputPin<SKColor>("Vibrant");
         Muted = CreateOutputPin<SKColor>("Muted");
@@ -45,8 +45,7 @@ public class QuantizeNode : Node
     {
         if (Image.Value == null) return;
 
-        using SKBitmap bitmap = SKBitmap.FromImage(Image.Value);
-        SKColor[] colorPalette = ColorQuantizer.Quantize(bitmap.Pixels, 32); //TODO DarthAffe 18.08.2022: Palette-Size as input
+        SKColor[] colorPalette = ColorQuantizer.Quantize(Image.Value.Pixels, 32); //TODO DarthAffe 18.08.2022: Palette-Size as input
         ColorSwatch swatch = ColorQuantizer.FindAllColorVariations(colorPalette, true);
 
         Vibrant.Value = swatch.Vibrant;

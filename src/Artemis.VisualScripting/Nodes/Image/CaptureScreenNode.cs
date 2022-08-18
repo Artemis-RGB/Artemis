@@ -5,7 +5,7 @@ using SkiaSharp;
 
 namespace Artemis.VisualScripting.Nodes.Image;
 
-[Node("Capture Screen", "Captures a region of the screen", "Image", OutputType = typeof(SKImage))]
+[Node("Capture Screen", "Captures a region of the screen", "Image", OutputType = typeof(SKBitmap))]
 public class CaptureScreenNode : Node<object, CaptureScreenNodeCustomViewModel>
 {
     #region Properties & Fields
@@ -30,7 +30,7 @@ public class CaptureScreenNode : Node<object, CaptureScreenNodeCustomViewModel>
 
     private CaptureZone _captureZone;
 
-    public OutputPin<SKImage> Output { get; set; }
+    public OutputPin<SKBitmap> Output { get; set; }
 
     #endregion
 
@@ -39,9 +39,9 @@ public class CaptureScreenNode : Node<object, CaptureScreenNodeCustomViewModel>
     public CaptureScreenNode()
         : base("Capture Screen", "Captures a region of the screen")
     {
-        Output = CreateOutputPin<SKImage>("Image");
+        Output = CreateOutputPin<SKBitmap>("Image");
 
-        _captureZone = _screenCapture.RegisterCaptureZone(4500, 700, 256, 256, 1);
+        _captureZone = _screenCapture.RegisterCaptureZone(20, 20, 256, 256, 1);
     }
 
     #endregion
@@ -56,7 +56,7 @@ public class CaptureScreenNode : Node<object, CaptureScreenNodeCustomViewModel>
             if (capture.IsEmpty) return;
 
             fixed (byte* ptr = capture)
-                Output.Value = SKImage.FromPixels(new SKImageInfo(_captureZone.Width, _captureZone.Height, SKColorType.Bgra8888, SKAlphaType.Opaque), new IntPtr(ptr), _captureZone.Stride);
+                Output.Value = SKBitmap.FromImage(SKImage.FromPixels(new SKImageInfo(_captureZone.Width, _captureZone.Height, SKColorType.Bgra8888, SKAlphaType.Opaque), new IntPtr(ptr), _captureZone.Stride));
 
             //TODO DarthAffe 18.08.2022: Dispose Output or better reuse it
         }

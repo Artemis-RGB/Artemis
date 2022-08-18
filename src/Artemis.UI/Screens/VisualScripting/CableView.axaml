@@ -83,6 +83,9 @@
           <DataTemplate DataType="core:Numeric">
             <TextBlock Text="{Binding}" FontFamily="Consolas"/>
           </DataTemplate>
+          <DataTemplate DataType="skiaSharp:SKBitmap">
+            <SKBitmapControl Bitmap="{Binding}"></SKBitmapControl>
+          </DataTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding}" FontFamily="Consolas"/>
           </DataTemplate>
