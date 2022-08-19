@@ -34,6 +34,7 @@ namespace Artemis.Core.Services
         private readonly IQueuedActionRepository _queuedActionRepository;
         private readonly List<Plugin> _plugins;
         private bool _isElevated;
+        private bool _disposed;
 
         public PluginManagementService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository, IDeviceRepository deviceRepository, IQueuedActionRepository queuedActionRepository)
         {
@@ -196,6 +197,7 @@ namespace Artemis.Core.Services
 
         public void Dispose()
         {
+            _disposed = true;
             UnloadPlugins();
         }
 
@@ -675,7 +677,7 @@ namespace Artemis.Core.Services
                         Task.Run(async () =>
                         {
                             await Task.Delay(retryDelay);
-                            if (!pluginFeature.IsEnabled)
+                            if (!pluginFeature.IsEnabled && !_disposed)
                                 EnablePluginFeature(pluginFeature, saveState, true);
                         });
                     }

@@ -53,9 +53,9 @@
       },
       "DynamicData": {
         "type": "Direct",
-        "requested": "[7.8.6, )",
-        "resolved": "7.8.6",
-        "contentHash": "u/w92NsBjg11Ga+UZRrdzKmQRKgJgQXPqkjw3P45XUG7IL7REX/kfwR6nesXujhK1xVtsRagvJQSisGFRLqlEg==",
+        "requested": "[7.9.14, )",
+        "resolved": "7.9.14",
+        "contentHash": "KEgSU8dZoQXjbaR+z9o2l1H35jQh5yFywZ/Htmv4ZsTkWXwUBDCTSta/EWUZUuMxgNh/PM2u/W5UOo4TMdwgRA==",
         "dependencies": {
           "System.Reactive": "5.0.0"
         }
@@ -298,8 +298,8 @@
       },
       "LiteDB": {
         "type": "Transitive",
-        "resolved": "5.0.11",
-        "contentHash": "6cL4bOmVCUB0gIK+6qIr68HeqjjHZicPDGQjvJ87mIOvkFsEsJWkIps3yoKNeLpHhJQur++yoQ9Q8gxsdos0xQ=="
+        "resolved": "5.0.12",
+        "contentHash": "HaOjSIGS9BRm7dw42qcHd5NGYl5wdjsFB31pImt3QQNLKUNEmRAr7ADos5VsujwBc9c4otJgb+G6NA4MlzKyAw=="
       },
       "Material.Icons": {
         "type": "Transitive",
@@ -493,8 +493,8 @@
       },
       "Ninject": {
         "type": "Transitive",
-        "resolved": "3.3.4",
-        "contentHash": "CmbWW97FfJuh4LEOVZM/spqXl4KAulRUjqeMwRd5J9rDMQArmIYaDMU3pyzXXHT062tbF0OPIMwI7tSOtprPfg==",
+        "resolved": "3.3.6",
+        "contentHash": "93avazUpbRL3IdwvTQF0DKSQB26TeqwMGhZsQNxi/RLSYewhxBkdGDhwWe9DAIRF1+zKDVMv3XkBk8HobKU6wA==",
         "dependencies": {
           "System.Reflection.Emit.ILGeneration": "4.3.0",
           "System.Reflection.Emit.Lightweight": "4.3.0"
@@ -650,8 +650,8 @@
       },
       "Serilog": {
         "type": "Transitive",
-        "resolved": "2.10.0",
-        "contentHash": "+QX0hmf37a0/OZLxM3wL7V6/ADvC1XihXN4Kq/p6d8lCPfgkRdiuhbWlMaFjR9Av0dy5F0+MBeDmDdRZN/YwQA=="
+        "resolved": "2.11.0",
+        "contentHash": "ysv+hBzTul6Dp+Hvm10FlhJO3yMQcFKSAleus+LpiIzvNstpeV4Z7gGuIZ1OPNfIMulSHOjmLuGAEDKzpnV8ZQ=="
       },
       "Serilog.Sinks.Console": {
         "type": "Transitive",
@@ -1209,8 +1209,8 @@
       },
       "System.Reflection.Metadata": {
         "type": "Transitive",
-        "resolved": "5.0.0",
-        "contentHash": "5NecZgXktdGg34rh1OenY1rFNDCI8xSjFr+Z4OU4cU06AQHUdRnIIEeWENu3Wl4YowbzkymAIMvi3WyK9U53pQ=="
+        "resolved": "1.6.0",
+        "contentHash": "COC1aiAJjCoA5GBF+QKL2uLqEBew4JsCkQmoHKbN3TlOZKa2fKLz5CpiRQKDz0RsAOEGsVKqOD5bomsXq/4STQ=="
       },
       "System.Reflection.Primitives": {
         "type": "Transitive",
@@ -1629,16 +1629,16 @@
           "EmbedIO": "3.4.3",
           "HidSharp": "2.1.0",
           "Humanizer.Core": "2.14.1",
-          "LiteDB": "5.0.11",
+          "LiteDB": "5.0.12",
           "McMaster.NETCore.Plugins": "1.4.0",
           "Newtonsoft.Json": "13.0.1",
-          "Ninject": "3.3.4",
+          "Ninject": "3.3.6",
           "Ninject.Extensions.ChildKernel": "3.3.0",
           "Ninject.Extensions.Conventions": "3.3.0",
           "RGB.NET.Core": "1.0.0-prerelease.46",
           "RGB.NET.Layout": "1.0.0-prerelease.46",
           "RGB.NET.Presets": "1.0.0-prerelease.46",
-          "Serilog": "2.10.0",
+          "Serilog": "2.11.0",
           "Serilog.Sinks.Console": "4.0.1",
           "Serilog.Sinks.Debug": "2.0.0",
           "Serilog.Sinks.File": "5.0.0",
@@ -1646,15 +1646,14 @@
           "System.Buffers": "4.5.1",
           "System.IO.FileSystem.AccessControl": "5.0.0",
           "System.Numerics.Vectors": "4.5.0",
-          "System.Reflection.Metadata": "5.0.0",
           "System.ValueTuple": "4.5.0"
         }
       },
       "artemis.storage": {
         "type": "Project",
         "dependencies": {
-          "LiteDB": "5.0.11",
-          "Serilog": "2.10.0"
+          "LiteDB": "5.0.12",
+          "Serilog": "2.11.0"
         }
       }
     }
