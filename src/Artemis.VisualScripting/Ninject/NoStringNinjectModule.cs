@@ -38,17 +38,6 @@ namespace Artemis.VisualScripting.Ninject
 
             // Evaluator
             Bind<INoStringEvaluator>().To<NoStringEvaluator>().InSingletonScope();
-
-            // If needed
-            InjectUserDefinedFunctions();
-        }
-
-        private void InjectUserDefinedFunctions()
-        {
-            IFunctionReader? functionReader = (IFunctionReader?) Kernel?.GetService(typeof(IFunctionReader));
-            if (functionReader == null)
-                throw new Exception($"Could not get service of type {nameof(IFunctionReader)}.");
-            NoStringFunctionsInitializer.InitializeFunctions(functionReader, typeof(NoStringNinjectModule));
         }
     }
 }

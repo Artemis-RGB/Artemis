@@ -41,16 +41,16 @@
         <PackageReference Include="EmbedIO" Version="3.4.3" />
         <PackageReference Include="HidSharp" Version="2.1.0" />
         <PackageReference Include="Humanizer.Core" Version="2.14.1" />
-        <PackageReference Include="LiteDB" Version="5.0.11" />
+        <PackageReference Include="LiteDB" Version="5.0.12" />
         <PackageReference Include="McMaster.NETCore.Plugins" Version="1.4.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="Ninject" Version="3.3.4" />
+        <PackageReference Include="Ninject" Version="3.3.6" />
         <PackageReference Include="Ninject.Extensions.ChildKernel" Version="3.3.0" />
         <PackageReference Include="Ninject.Extensions.Conventions" Version="3.3.0" />
         <PackageReference Include="RGB.NET.Core" Version="1.0.0-prerelease.46" />
         <PackageReference Include="RGB.NET.Layout" Version="1.0.0-prerelease.46" />
         <PackageReference Include="RGB.NET.Presets" Version="1.0.0-prerelease.46" />
-        <PackageReference Include="Serilog" Version="2.10.0" />
+        <PackageReference Include="Serilog" Version="2.11.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
         <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
@@ -58,9 +58,8 @@
         <PackageReference Include="System.Buffers" Version="4.5.1" />
         <PackageReference Include="System.IO.FileSystem.AccessControl" Version="5.0.0" />
         <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-        <PackageReference Include="System.Reflection.Metadata" Version="5.0.0" />
         <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-        <PackageReference Include="Unclassified.NetRevisionTask" Version="0.4.1">
+        <PackageReference Include="Unclassified.NetRevisionTask" Version="0.4.3">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
