@@ -1,9 +1,6 @@
-using System;
-using System.Collections;
+using Artemis.Core;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
-using Humanizer;
 
 namespace Artemis.UI.Linux.Providers.Input
 {
@@ -12,82 +9,81 @@ namespace Artemis.UI.Linux.Providers.Input
     /// </summary>
     public class LinuxInputDevice
     {
-        public string InputId { get; }
-        public string? Bus { get; }
-        public string? Vendor { get; }
-        public string? Product { get; }
-        public string? Version { get; }
-        public string? Name { get; }
-        public string? Phys { get; }
-        public string? Sysfs { get; }
-        public string? Uniq { get; }
-        public string[]? Handlers { get; }
-        public bool IsMouse => Handlers.Any(h => h.Contains("mouse"));
-        public bool IsKeyboard => Handlers.Any(h => h.Contains("kbd"));
-        public bool IsGamePad => Handlers.Any(h => h.Contains("js"));
-        public string EventPath => $"/dev/input/{Handlers.First(h => h.Contains("event"))}";
+        public LinuxInputId InputId { get; }
+        public string Name { get; }
+        public string[] Handlers { get; }
+        public string EventPath { get; }
+        public LinuxDeviceType DeviceType { get; }
 
         public LinuxInputDevice(IEnumerable<string> lines)
         {
             foreach (string line in lines)
             {
-                char dataType = line.First();
-                string data = line.Substring(3);
                 //get the first character in each line and set the according property with relevant data
+
+                char dataType = line[0];
+                string data = line[3..];
                 switch (dataType)
                 {
                     case 'I':
-                        InputId = data;
-                        foreach (string component in data.Split(" "))
-                        {
-                            string?[] parts = component.Split('=');
-                            switch (parts[0])
-                            {
-                                case "Bus":
-                                    Bus = parts[1];
-                                    break;
-                                case "Vendor":
-                                    Vendor = parts[1];
-                                    break;
-                                case "Product":
-                                    Product = parts[1];
-                                    break;
-                                case "Version":
-                                    Version = parts[1];
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
+                        InputId = new LinuxInputId(data);
                         break;
                     case 'N':
-                        Name = data.Replace("\"", "")
-                                   .Replace("Name=", "");
-                        break;
-                    case 'P':
-                        Phys = data.Replace("Phys=", "");
-                        break;
-                    case 'S':
-                        Sysfs = data.Replace("Sysfs=", "");
+                        Name = data.Replace("\"", "").Replace("Name=", "");
                         break;
                     case 'H':
                         Handlers = data.Replace("Handlers=", "").Split(" ");
-                        break;
-                    case 'U':
-                        Uniq = data.Replace("Uniq=", "");
+
+                        if (Handlers?.Any(h => h.Contains("mouse")) == true)
+                            DeviceType = LinuxDeviceType.Mouse;
+                        else if (Handlers?.Any(h => h.Contains("kbd")) == true)
+                            DeviceType = LinuxDeviceType.Keyboard;
+                        else if (Handlers?.Any(h => h.Contains("js")) == true)
+                            DeviceType = LinuxDeviceType.Gamepad;
+
+                        var evt = Handlers!.First(h => h.Contains("event"));
+
+                        EventPath = $"/dev/input/{evt}";
                         break;
                     default:
                         //do we need any more of this data?
                         break;
                 }
             }
+
+            if (InputId is null || Name is null || Handlers is null || EventPath is null)
+            {
+                throw new ArtemisLinuxInputProviderException("Linux device definition did not contain necessary data");
+            }
         }
-        
+
         #region Overrides of Object
 
         /// <inheritdoc />
         public override string ToString() => $"{Name} - {EventPath}";
 
         #endregion
+
+        public class LinuxInputId
+        {
+            public string Bus { get; }
+            public string Vendor { get; }
+            public string Product { get; }
+            public string Version { get; }
+
+            public LinuxInputId(string line)
+            {
+                var components = line.Split(" ")
+                    .Select(c => c.Split('='))
+                    .ToDictionary(c => c[0], c => c[1]);
+
+                Bus = components["Bus"];
+                Vendor = components["Vendor"];
+                Product = components["Product"];
+                Version = components["Version"];
+            }
+
+            public override string ToString() => $"Bus={Bus} Vendor={Vendor} Product={Product} Version={Version}";
+        }
     }
 }

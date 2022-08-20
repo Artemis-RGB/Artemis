@@ -8,11 +8,11 @@ namespace Artemis.UI.Linux.Providers.Input
     public static class LinuxInputDeviceFinder
     {
         private const string DEVICES_FILE = "/proc/bus/input/devices";
-        
+
         public static IEnumerable<LinuxInputDevice> Find()
         {
             return File.ReadAllLines(DEVICES_FILE)
-                .PartitionBy(s => s == "") //split on empty lines 
+                .PartitionBy(s => s?.Length == 0) //split on empty lines 
                 .Select(lineGroup => new LinuxInputDevice(lineGroup));
         }
         
@@ -33,10 +33,10 @@ namespace Artemis.UI.Linux.Providers.Input
                 return groupNumber;
             };
             return a
-                .Select(x => new { Value = x, GroupNumber = getGroupNumber(predicate(x))} )
+                .Select(x => new { Value = x, GroupNumber = getGroupNumber(predicate(x)) })
                 .Where(x => x.GroupNumber != null)
                 .GroupBy(x => x.GroupNumber)
-                .Select(g => g.Select(x => x.Value));       
+                .Select(g => g.Select(x => x.Value));
         }
     }
 }

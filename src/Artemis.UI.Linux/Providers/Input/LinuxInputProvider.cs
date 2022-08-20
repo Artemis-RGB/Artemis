@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Linux.Utilities;
 using Serilog;
@@ -20,7 +21,7 @@ namespace Artemis.UI.Linux.Providers.Input
 
             foreach (LinuxInputDevice deviceDefinition in LinuxInputDeviceFinder.Find())
             {
-                LinuxInputDeviceReader? reader = new LinuxInputDeviceReader(deviceDefinition);
+                LinuxInputDeviceReader? reader = new(deviceDefinition);
                 reader.InputEvent += OnInputEvent;
                 _readers.Add(reader);
             }
@@ -30,68 +31,103 @@ namespace Artemis.UI.Linux.Providers.Input
         {
             if (sender is not LinuxInputDeviceReader reader)
                 return;
-
-            if (reader.InputDevice.IsKeyboard)
+            switch (reader.InputDevice.DeviceType)
             {
-                HandleKeyboardData(reader.InputDevice, e);
-            }
-            else if (reader.InputDevice.IsMouse)
-            {
-                HandleMouseData(reader.InputDevice, e);
-            }
-            else if (reader.InputDevice.IsGamePad)
-            {
-                //TODO: handle game pad input?
+                case LinuxDeviceType.Keyboard:
+                    HandleKeyboardData(reader.InputDevice, e);
+                    break;
+                case LinuxDeviceType.Mouse:
+                    HandleMouseData(reader.InputDevice, e);
+                    break;
+                case LinuxDeviceType.Gamepad:
+                    break;
             }
         }
 
-        private void HandleKeyboardData(LinuxInputDevice keyboard, LinuxInputEventArgs e)
+        private void HandleKeyboardData(LinuxInputDevice keyboard, LinuxInputEventArgs args)
         {
-            switch (e.Type)
+            switch (args.Type)
             {
                 case LinuxInputEventType.KEY:
-                    KeyboardKey key = InputUtilities.KeyFromKeyCode((LinuxKeyboardKeyCodes) e.Code);
-                    bool isDown = e.Value != 0;
+                    KeyboardKey key = InputUtilities.KeyFromKeyCode((LinuxKeyboardKeyCodes)args.Code);
+                    bool isDown = args.Value != 0;
 
-                    _logger.Verbose($"Keyboard Key: {(LinuxKeyboardKeyCodes) e.Code} | Down: {isDown}");
-                    
-                    //TODO: identify
+                    _logger.Verbose($"Keyboard Key: {(LinuxKeyboardKeyCodes)args.Code} | Down: {isDown}");
 
-                    OnKeyboardDataReceived(null, key, isDown);
+                    var identifier = keyboard.InputId;
+
+                    OnIdentifierReceived(identifier, InputDeviceType.Keyboard);
+
+                    ArtemisDevice? device = null;
+
+                    try
+                    {
+                        device = _inputService.GetDeviceByIdentifier(this, identifier, InputDeviceType.Keyboard);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.Warning(e, "Failed to retrieve input device by its identifier");
+                    }
+
+                    OnKeyboardDataReceived(device, key, isDown);
                     break;
                 default:
-                    _logger.Verbose($"Unknown keyboard event type: {e.Type}");
+                    _logger.Verbose($"Unknown keyboard event type: {args.Type}");
                     break;
             }
         }
 
-        private void HandleMouseData(LinuxInputDevice mouse, LinuxInputEventArgs e)
+        private void HandleMouseData(LinuxInputDevice mouse, LinuxInputEventArgs args)
         {
-            switch (e.Type)
+            var identifier = mouse.InputId;
+
+            OnIdentifierReceived(identifier, InputDeviceType.Mouse);
+
+            ArtemisDevice? device = null;
+
+            try
+            {
+                device = _inputService.GetDeviceByIdentifier(this, identifier, InputDeviceType.Mouse);
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "Failed to retrieve input device by its identifier");
+            }
+
+            switch (args.Type)
             {
                 case LinuxInputEventType.KEY:
-                    bool isDown = e.Value != 0;
-                    MouseButton button = InputUtilities.MouseButtonFromButtonCode((LinuxKeyboardKeyCodes)e.Code);
+                    bool isDown = args.Value != 0;
+                    MouseButton button = InputUtilities.MouseButtonFromButtonCode((LinuxKeyboardKeyCodes)args.Code);
 
-                    _logger.Verbose($"Mouse Button: {(LinuxKeyboardKeyCodes) e.Code} | Down: {isDown}");
+                    _logger.Verbose($"Mouse Button: {(LinuxKeyboardKeyCodes)args.Code} | Down: {isDown}");
 
-                    //TODO: identify
-
-                    OnMouseButtonDataReceived(null, button, isDown);
+                    OnMouseButtonDataReceived(device, button, isDown);
                     break;
 
-                case LinuxInputEventType.ABS:
-                    LinuxAbsoluteAxis absoluteAxis = (LinuxAbsoluteAxis) e.Code;
-                    _logger.Verbose($"Absolute mouse: axis={absoluteAxis} | value={e.Value}");
-                    break;
                 case LinuxInputEventType.REL:
-                    LinuxRelativeAxis relativeAxis = (LinuxRelativeAxis) e.Code;
-                    _logger.Verbose($"Relative mouse: axis={relativeAxis} | value={e.Value}");
+                    LinuxRelativeAxis relativeAxis = (LinuxRelativeAxis)args.Code;
 
-                    //TODO: handle mouse movement
+                    _logger.Verbose($"Relative mouse: axis={relativeAxis} | value={args.Value}");
+
+                    switch (relativeAxis)
+                    {
+                        case LinuxRelativeAxis.REL_WHEEL:
+                            OnMouseScrollDataReceived(device, MouseScrollDirection.Vertical, args.Value);
+                            break;
+                        case LinuxRelativeAxis.REL_HWHEEL:
+                            OnMouseScrollDataReceived(device, MouseScrollDirection.Horizontal, args.Value);
+                            break;
+                        case LinuxRelativeAxis.REL_X:
+                            OnMouseMoveDataReceived(device, 0, 0, args.Value, 0);
+                            break;
+                        case LinuxRelativeAxis.REL_Y:
+                            OnMouseMoveDataReceived(device, 0, 0, 0, args.Value);
+                            break;
+                    }
                     break;
                 default:
-                    _logger.Verbose($"Unknown mouse event type: {e.Type}");
+                    _logger.Verbose($"Unknown mouse event type: {args.Type}");
                     break;
             }
         }
