@@ -53,6 +53,32 @@ namespace Artemis.UI.Shared.Services
             return window;
         }
 
+        public async Task<T> ShowDialogAsync<T>(params (string name, object value)[] parameters)
+        {
+            IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.name, kv.value)).Cast<IParameter>().ToArray();
+            T viewModel = _kernel.Get<T>(paramsArray)!;
+            await ShowDialogAsync(viewModel);
+            return viewModel;
+        }
+
+        public async Task ShowDialogAsync(object viewModel)
+        {
+            Window? parent = GetCurrentWindow();
+
+            string name = viewModel.GetType().FullName!.Split('`')[0].Replace("ViewModel", "View");
+            Type? type = viewModel.GetType().Assembly.GetType(name);
+
+            if (type == null)
+                throw new ArtemisSharedUIException($"Failed to find a window named {name}.");
+
+            if (!type.IsAssignableTo(typeof(Window)))
+                throw new ArtemisSharedUIException($"Type {name} is not a window.");
+
+            Window window = (Window) Activator.CreateInstance(type)!;
+            window.DataContext = viewModel;
+            await window.ShowDialog(parent);
+        }
+
         public async Task<TResult> ShowDialogAsync<TViewModel, TResult>(params (string name, object? value)[] parameters) where TViewModel : DialogViewModelBase<TResult>
         {
             IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.name, kv.value)).Cast<IParameter>().ToArray();
@@ -119,7 +145,7 @@ namespace Artemis.UI.Shared.Services
                 throw new ArtemisSharedUIException("Can't show a content dialog without any windows being shown.");
             return new ContentDialogBuilder(_kernel, currentWindow);
         }
-        
+
         public OpenFolderDialogBuilder CreateOpenFolderDialog()
         {
             Window? currentWindow = GetCurrentWindow();

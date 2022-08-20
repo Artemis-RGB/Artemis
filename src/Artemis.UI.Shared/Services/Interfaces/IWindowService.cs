@@ -32,6 +32,20 @@ namespace Artemis.UI.Shared.Services
         void ShowExceptionDialog(string title, Exception exception);
 
         /// <summary>
+        ///     Creates a view model instance of type <typeparamref name="TViewModel" /> and shows its corresponding View as a
+        ///     dialog
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of view model to create</typeparam>
+        /// <returns>The created view model</returns>
+        Task<TViewModel> ShowDialogAsync<TViewModel>(params (string name, object value)[] parameters);
+
+        /// <summary>
+        ///     Given a ViewModel, show its corresponding View as a dialog
+        /// </summary>
+        /// <param name="viewModel">ViewModel to show the View for</param>
+        Task ShowDialogAsync(object viewModel);
+        
+        /// <summary>
         ///     Given an existing ViewModel, show its corresponding View as a Dialog
         /// </summary>
         /// <typeparam name="TResult">The return type</typeparam>

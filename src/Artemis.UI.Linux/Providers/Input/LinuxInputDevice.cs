@@ -41,7 +41,7 @@ namespace Artemis.UI.Linux.Providers.Input
                         else if (Handlers?.Any(h => h.Contains("js")) == true)
                             DeviceType = LinuxDeviceType.Gamepad;
 
-                        var evt = Handlers!.First(h => h.Contains("event"));
+                        string evt = Handlers!.First(h => h.Contains("event"));
 
                         EventPath = $"/dev/input/{evt}";
                         break;
@@ -73,7 +73,7 @@ namespace Artemis.UI.Linux.Providers.Input
 
             public LinuxInputId(string line)
             {
-                var components = line.Split(" ")
+                Dictionary<string, string> components = line.Split(" ")
                     .Select(c => c.Split('='))
                     .ToDictionary(c => c[0], c => c[1]);
 

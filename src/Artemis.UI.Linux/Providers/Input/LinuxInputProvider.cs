@@ -54,7 +54,7 @@ namespace Artemis.UI.Linux.Providers.Input
 
                     _logger.Verbose($"Keyboard Key: {(LinuxKeyboardKeyCodes)args.Code} | Down: {isDown}");
 
-                    var identifier = keyboard.InputId;
+                    LinuxInputDevice.LinuxInputId identifier = keyboard.InputId;
 
                     OnIdentifierReceived(identifier, InputDeviceType.Keyboard);
 
@@ -79,7 +79,7 @@ namespace Artemis.UI.Linux.Providers.Input
 
         private void HandleMouseData(LinuxInputDevice mouse, LinuxInputEventArgs args)
         {
-            var identifier = mouse.InputId;
+            LinuxInputDevice.LinuxInputId identifier = mouse.InputId;
 
             OnIdentifierReceived(identifier, InputDeviceType.Mouse);
 
