@@ -30,5 +30,21 @@ namespace Artemis.UI.Linux.Providers.Input
         ABS_VOLUME = 0x20,
 
         ABS_MISC = 0x28,
+
+        ABS_MT_SLOT = 0x2f,	/* MT slot being modified */
+        ABS_MT_TOUCH_MAJOR = 0x30,	/* Major axis of touching ellipse */
+        ABS_MT_TOUCH_MINOR = 0x31,	/* Minor axis (omit if circular) */
+        ABS_MT_WIDTH_MAJOR = 0x32,	/* Major axis of approaching ellipse */
+        ABS_MT_WIDTH_MINOR = 0x33,	/* Minor axis (omit if circular) */
+        ABS_MT_ORIENTATION = 0x34,	/* Ellipse orientation */
+        ABS_MT_POSITION_X = 0x35,	/* Center X touch position */
+        ABS_MT_POSITION_Y = 0x36,	/* Center Y touch position */
+        ABS_MT_TOOL_TYPE = 0x37,	/* Type of touching device */
+        ABS_MT_BLOB_ID = 0x38,	/* Group a set of packets as a blob */
+        ABS_MT_TRACKING_ID = 0x39,	/* Unique ID of initiated contact */
+        ABS_MT_PRESSURE = 0x3a,	/* Pressure on contact area */
+        ABS_MT_DISTANCE = 0x3b,	/* Contact hover distance */
+        ABS_MT_TOOL_X = 0x3c,	/* Center X tool position */
+        ABS_MT_TOOL_Y = 0x3d,	/* Center Y tool position */
     }
 }

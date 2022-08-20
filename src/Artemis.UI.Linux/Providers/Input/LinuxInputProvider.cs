@@ -52,7 +52,7 @@ namespace Artemis.UI.Linux.Providers.Input
                     KeyboardKey key = InputUtilities.KeyFromKeyCode((LinuxKeyboardKeyCodes)args.Code);
                     bool isDown = args.Value != 0;
 
-                    _logger.Verbose($"Keyboard Key: {(LinuxKeyboardKeyCodes)args.Code} | Down: {isDown}");
+                    //_logger.Verbose($"Keyboard Key: {(LinuxKeyboardKeyCodes)args.Code} | Down: {isDown}");
 
                     LinuxInputDevice.LinuxInputId identifier = keyboard.InputId;
 
@@ -72,7 +72,7 @@ namespace Artemis.UI.Linux.Providers.Input
                     OnKeyboardDataReceived(device, key, isDown);
                     break;
                 default:
-                    _logger.Verbose($"Unknown keyboard event type: {args.Type}");
+                    //_logger.Verbose($"Unknown keyboard event type: {args.Type}");
                     break;
             }
         }
@@ -100,7 +100,7 @@ namespace Artemis.UI.Linux.Providers.Input
                     bool isDown = args.Value != 0;
                     MouseButton button = InputUtilities.MouseButtonFromButtonCode((LinuxKeyboardKeyCodes)args.Code);
 
-                    _logger.Verbose($"Mouse Button: {(LinuxKeyboardKeyCodes)args.Code} | Down: {isDown}");
+                    //_logger.Verbose($"Mouse Button: {(LinuxKeyboardKeyCodes)args.Code} | Down: {isDown}");
 
                     OnMouseButtonDataReceived(device, button, isDown);
                     break;
@@ -108,7 +108,7 @@ namespace Artemis.UI.Linux.Providers.Input
                 case LinuxInputEventType.REL:
                     LinuxRelativeAxis relativeAxis = (LinuxRelativeAxis)args.Code;
 
-                    _logger.Verbose($"Relative mouse: axis={relativeAxis} | value={args.Value}");
+                    //_logger.Verbose($"Relative mouse: axis={relativeAxis} | value={args.Value}");
 
                     switch (relativeAxis)
                     {
@@ -126,8 +126,26 @@ namespace Artemis.UI.Linux.Providers.Input
                             break;
                     }
                     break;
+                case LinuxInputEventType.ABS:
+                    LinuxAbsoluteAxis absoluteAxis = (LinuxAbsoluteAxis)args.Code;
+
+                    //_logger.Verbose($"Absolute mouse: axis={absoluteAxis} | value={args.Value}");
+
+                    switch (absoluteAxis)
+                    {
+                        case LinuxAbsoluteAxis.ABS_X:
+                            OnMouseMoveDataReceived(device, args.Value, 0, 0, 0);
+                            break;
+                        case LinuxAbsoluteAxis.ABS_Y:
+                            OnMouseMoveDataReceived(device, 0, args.Value, 0, 0);
+                            break;
+                    }
+                    break;
+                case LinuxInputEventType.SYN:
+                    //ignore
+                    break;
                 default:
-                    _logger.Verbose($"Unknown mouse event type: {args.Type}");
+                    //_logger.Verbose($"Unknown mouse event type: {args.Type}");
                     break;
             }
         }
