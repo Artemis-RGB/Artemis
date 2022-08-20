@@ -81,7 +81,7 @@ public class VisualEditorView : ReactiveUserControl<VisualEditorViewModel>
 
     private void AutoFit(bool skipTransitions)
     {
-        if (ViewModel == null)
+        if (ViewModel == null || !ViewModel.Devices.Any())
             return;
 
         double left = ViewModel.Devices.Select(d => d.Rectangle.Left).Min();
