@@ -122,7 +122,7 @@
 			</Border>
 
 			<!-- Update settings -->
-			<StackPanel  IsVisible="{CompiledBinding IsUpdatingSupported}">
+			<StackPanel IsVisible="{CompiledBinding IsUpdatingSupported}">
 				<TextBlock Classes="h4" Margin="0 15">
 					Updating
 				</TextBlock>

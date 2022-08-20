@@ -32,6 +32,7 @@ namespace Artemis.UI.Screens.Settings
         private readonly IWindowService _windowService;
         private readonly IUpdateService _updateService;
         private readonly IAutoRunProvider? _autoRunProvider;
+        private bool _startupWizardOpen;
 
         public GeneralTabViewModel(IKernel kernel,
             ISettingsService settingsService,
@@ -156,7 +157,6 @@ namespace Artemis.UI.Screens.Settings
             Utilities.OpenFolder(Constants.LogsFolder);
         }
 
-
         private async Task ExecuteCheckForUpdate(CancellationToken cancellationToken)
         {
             await _updateService.ManualUpdate();
@@ -164,7 +164,9 @@ namespace Artemis.UI.Screens.Settings
 
         private async Task ExecuteShowSetupWizard()
         {
+            _startupWizardOpen = true;
             await _windowService.ShowDialogAsync<StartupWizardViewModel, bool>();
+            _startupWizardOpen = false;
         }
 
         private void ExecuteShowDebugger()
@@ -179,7 +181,7 @@ namespace Artemis.UI.Screens.Settings
 
         private async Task ApplyAutoRun()
         {
-            if (_autoRunProvider == null)
+            if (_autoRunProvider == null || _startupWizardOpen)
                 return;
 
             try
@@ -202,7 +204,7 @@ namespace Artemis.UI.Screens.Settings
 
         private async void UIAutoRunDelayOnSettingChanged(object? sender, EventArgs e)
         {
-            if (_autoRunProvider == null || !UIAutoRun.Value)
+            if (_autoRunProvider == null || !UIAutoRun.Value || _startupWizardOpen)
                 return;
 
             try

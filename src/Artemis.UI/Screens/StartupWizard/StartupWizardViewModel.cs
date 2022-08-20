@@ -1,31 +1,44 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reflection;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Plugins;
+using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Providers;
+using Artemis.UI.Shared.Services;
+using Ninject;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.StartupWizard;
 
 public class StartupWizardViewModel : DialogViewModelBase<bool>
 {
+    private readonly IAutoRunProvider? _autoRunProvider;
     private readonly IRgbService _rgbService;
     private readonly ISettingsService _settingsService;
+    private readonly IUpdateService _updateService;
+    private readonly IWindowService _windowService;
     private int _currentStep;
     private bool _showContinue;
-    private bool _showGoBack;
     private bool _showFinish;
+    private bool _showGoBack;
 
-    public StartupWizardViewModel(ISettingsService settingsService, IRgbService rgbService, IPluginManagementService pluginManagementService, ISettingsVmFactory settingsVmFactory)
+    public StartupWizardViewModel(IKernel kernel, ISettingsService settingsService, IRgbService rgbService, IPluginManagementService pluginManagementService, IWindowService windowService,
+        IUpdateService updateService, ISettingsVmFactory settingsVmFactory)
     {
         _settingsService = settingsService;
         _rgbService = rgbService;
+        _windowService = windowService;
+        _updateService = updateService;
+        _autoRunProvider = kernel.TryGet<IAutoRunProvider>();
 
         Continue = ReactiveCommand.Create(ExecuteContinue);
         GoBack = ReactiveCommand.Create(ExecuteGoBack);
@@ -43,9 +56,22 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
 
         CurrentStep = 1;
         SetupButtons();
+
+        this.WhenActivated(d =>
+        {
+            UIAutoRun.SettingChanged += UIAutoRunOnSettingChanged;
+            UIAutoRunDelay.SettingChanged += UIAutoRunDelayOnSettingChanged;
+
+            Disposable.Create(() =>
+            {
+                UIAutoRun.SettingChanged -= UIAutoRunOnSettingChanged;
+                UIAutoRunDelay.SettingChanged -= UIAutoRunDelayOnSettingChanged;
+
+                _settingsService.SaveAllSettings();
+            }).DisposeWith(d);
+        });
     }
 
-    
     public ReactiveCommand<Unit, Unit> Continue { get; }
     public ReactiveCommand<Unit, Unit> GoBack { get; }
     public ReactiveCommand<Unit, Unit> SkipOrFinishWizard { get; }
@@ -53,11 +79,15 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
 
     public string Version { get; }
     public ObservableCollection<PluginViewModel> DeviceProviders { get; }
-    
+
+    public bool IsAutoRunSupported => _autoRunProvider != null;
+    public bool IsUpdatingSupported => _updateService.UpdatingSupported;
+
     public PluginSetting<bool> UIAutoRun => _settingsService.GetSetting("UI.AutoRun", false);
     public PluginSetting<int> UIAutoRunDelay => _settingsService.GetSetting("UI.AutoRunDelay", 15);
     public PluginSetting<bool> UIShowOnStartup => _settingsService.GetSetting("UI.ShowOnStartup", true);
     public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.CheckForUpdates", true);
+    public PluginSetting<bool> UIAutoUpdate => _settingsService.GetSetting("UI.AutoUpdate", false);
 
     public int CurrentStep
     {
@@ -88,12 +118,20 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
         if (CurrentStep > 1)
             CurrentStep--;
 
+        // Skip the settings step if none of it's contents are supported
+        if (CurrentStep == 4 && !IsAutoRunSupported && !IsUpdatingSupported)
+            CurrentStep--;
+
         SetupButtons();
     }
 
     private void ExecuteContinue()
     {
         if (CurrentStep < 5)
+            CurrentStep++;
+
+        // Skip the settings step if none of it's contents are supported
+        if (CurrentStep == 4 && !IsAutoRunSupported && !IsUpdatingSupported)
             CurrentStep++;
 
         SetupButtons();
@@ -122,5 +160,43 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
         _rgbService.AutoArrangeDevices();
 
         ExecuteContinue();
+    }
+
+    private async Task ApplyAutoRun()
+    {
+        if (_autoRunProvider == null)
+            return;
+
+        try
+        {
+            if (UIAutoRun.Value)
+                await _autoRunProvider.EnableAutoRun(false, UIAutoRunDelay.Value);
+            else
+                await _autoRunProvider.DisableAutoRun();
+        }
+        catch (Exception exception)
+        {
+            _windowService.ShowExceptionDialog("Failed to apply auto-run", exception);
+        }
+    }
+
+    private async void UIAutoRunOnSettingChanged(object? sender, EventArgs e)
+    {
+        await ApplyAutoRun();
+    }
+
+    private async void UIAutoRunDelayOnSettingChanged(object? sender, EventArgs e)
+    {
+        if (_autoRunProvider == null || !UIAutoRun.Value)
+            return;
+
+        try
+        {
+            await _autoRunProvider.EnableAutoRun(true, UIAutoRunDelay.Value);
+        }
+        catch (Exception exception)
+        {
+            _windowService.ShowExceptionDialog("Failed to apply auto-run", exception);
+        }
     }
 }

@@ -17,8 +17,8 @@
 
         <Button Grid.Row="1" Grid.Column="0" Command="{CompiledBinding SkipOrFinishWizard}" IsVisible="{CompiledBinding !ShowFinish}">Skip &amp; close</Button>
         <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Spacing="5" Margin="0 15 0 0">
-            <Button Command="{CompiledBinding GoBack}" IsVisible="{CompiledBinding ShowGoBack}">Back</Button>
-            <Button Command="{CompiledBinding Continue}" IsVisible="{CompiledBinding ShowContinue}" Width="80">Continue</Button>
+            <Button Command="{CompiledBinding GoBack}" IsEnabled="{CompiledBinding ShowGoBack}">Back</Button>
+            <Button Command="{CompiledBinding Continue}" IsVisible="{CompiledBinding !ShowFinish}" IsEnabled="{CompiledBinding ShowContinue}" Width="80">Continue</Button>
             <Button Command="{CompiledBinding SkipOrFinishWizard}" IsVisible="{CompiledBinding ShowFinish}" Width="80">Finish</Button>
         </StackPanel>
     </Grid>
