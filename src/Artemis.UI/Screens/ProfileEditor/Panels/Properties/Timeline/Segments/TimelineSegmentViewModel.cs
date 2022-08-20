@@ -28,7 +28,7 @@ public abstract class TimelineSegmentViewModel : ActivatableViewModelBase
     private ObservableAsPropertyHelper<bool>? _showAddEnd;
     private ObservableAsPropertyHelper<bool>? _showAddMain;
     private ObservableAsPropertyHelper<bool>? _showAddStart;
-    private ReactiveCommand<Unit, Unit> _removeSegment;
+    private ReactiveCommand<Unit, Unit>? _removeSegment;
 
     protected TimelineSegmentViewModel(IProfileEditorService profileEditorService, IWindowService windowService)
     {
@@ -102,7 +102,7 @@ public abstract class TimelineSegmentViewModel : ActivatableViewModelBase
 
     public ReactiveCommand<Unit, Unit> EditTime { get; }
 
-    public ReactiveCommand<Unit, Unit> RemoveSegment
+    public ReactiveCommand<Unit, Unit>? RemoveSegment
     {
         get => _removeSegment;
         set => RaiseAndSetIfChanged(ref _removeSegment, value);

@@ -67,7 +67,6 @@ namespace Artemis.UI.Screens.Root
                 registrationService.RegisterBuiltInDataModelDisplays();
                 registrationService.RegisterBuiltInDataModelInputs();
                 registrationService.RegisterBuiltInPropertyEditors();
-                registrationService.RegisterBuiltInNodeTypes();
             });
         }
 
@@ -156,23 +155,26 @@ namespace Artemis.UI.Screens.Root
         /// <inheritdoc />
         public void OpenMainWindow()
         {
-            if (_lifeTime.MainWindow == null)
+            Dispatcher.UIThread.Post(() =>
             {
-                SidebarViewModel = _sidebarVmFactory.SidebarViewModel(this);
-                _lifeTime.MainWindow = new MainWindow {DataContext = this};
-                _lifeTime.MainWindow.Show();
-                _lifeTime.MainWindow.Closing += CurrentMainWindowOnClosing;
-            }
+                if (_lifeTime.MainWindow == null)
+                {
+                    SidebarViewModel = _sidebarVmFactory.SidebarViewModel(this);
+                    _lifeTime.MainWindow = new MainWindow {DataContext = this};
+                    _lifeTime.MainWindow.Show();
+                    _lifeTime.MainWindow.Closing += CurrentMainWindowOnClosing;
+                }
 
-            _lifeTime.MainWindow.WindowState = WindowState.Normal;
-            _lifeTime.MainWindow.Activate();
-            OnMainWindowOpened();
+                _lifeTime.MainWindow.WindowState = WindowState.Normal;
+                _lifeTime.MainWindow.Activate();
+                OnMainWindowOpened();    
+            });
         }
 
         /// <inheritdoc />
         public void CloseMainWindow()
         {
-            _lifeTime.MainWindow?.Close();
+            Dispatcher.UIThread.Post(() => { _lifeTime.MainWindow?.Close(); });
         }
 
         /// <inheritdoc />

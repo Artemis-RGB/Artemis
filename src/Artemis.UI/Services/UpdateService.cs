@@ -54,7 +54,7 @@ public class UpdateService : IUpdateService
 
     private async void WindowServiceOnMainWindowOpened(object? sender, EventArgs e)
     {
-        // await AutoUpdate();
+        await AutoUpdate();
     }
 
     private async Task AutoUpdate()

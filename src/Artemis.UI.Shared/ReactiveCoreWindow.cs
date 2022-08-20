@@ -63,7 +63,7 @@ namespace Artemis.UI.Shared
             TransparencyBackgroundFallback = Brushes.Transparent;
             TransparencyLevelHint = WindowTransparencyLevel.Mica;
 
-            Color2 color = this.TryFindResource("SolidBackgroundFillColorBase", out object? value) ? (Color) value : new Color2(32, 32, 32);
+            Color2 color = this.TryFindResource("SolidBackgroundFillColorBase", out object? value) ? (Color) value! : new Color2(32, 32, 32);
             color = color.LightenPercent(-0.5f);
             Background = new ImmutableSolidColorBrush(color, 0.82);
         }

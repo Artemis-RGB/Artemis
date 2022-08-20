@@ -10,7 +10,6 @@ namespace Artemis.UI.DefaultTypes.PropertyInput;
 
 public class ColorGradientPropertyInputViewModel : PropertyInputViewModel<ColorGradient>
 {
-    private ColorGradient _colorGradient = null!;
     private List<ColorGradientStop>? _originalStops;
 
     public ColorGradientPropertyInputViewModel(LayerProperty<ColorGradient> layerProperty, IProfileEditorService profileEditorService, IPropertyInputService propertyInputService)

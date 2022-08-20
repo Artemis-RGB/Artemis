@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Controllers;
 using Artemis.UI.DefaultTypes.PropertyInput;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.DefaultTypes.DataModel.Display;
@@ -25,6 +26,7 @@ public class RegistrationService : IRegistrationService
     private readonly IPropertyInputService _propertyInputService;
     private readonly INodeService _nodeService;
     private readonly IDataModelUIService _dataModelUIService;
+    private readonly IWebServerService _webServerService;
     private bool _registeredBuiltInPropertyEditors;
 
     public RegistrationService(IKernel kernel,
@@ -33,6 +35,7 @@ public class RegistrationService : IRegistrationService
         IProfileEditorService profileEditorService,
         INodeService nodeService,
         IDataModelUIService dataModelUIService,
+        IWebServerService webServerService,
         IDeviceLayoutService deviceLayoutService // here to make sure it is instantiated
     )
     {
@@ -41,8 +44,11 @@ public class RegistrationService : IRegistrationService
         _propertyInputService = propertyInputService;
         _nodeService = nodeService;
         _dataModelUIService = dataModelUIService;
+        _webServerService = webServerService;
 
         CreateCursorResources();
+        RegisterBuiltInNodeTypes();
+        RegisterControllers();
     }
 
     private void CreateCursorResources()
@@ -87,6 +93,7 @@ public class RegistrationService : IRegistrationService
 
     public void RegisterControllers()
     {
+        _webServerService.AddController<RemoteController>(Constants.CorePlugin.Features.First().Instance!);
     }
 
     public void RegisterBuiltInNodeTypes()

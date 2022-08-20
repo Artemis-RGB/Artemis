@@ -15,14 +15,10 @@ public class DebugViewModel : ActivatableViewModelBase, IScreen
 {
     private ViewModelBase _selectedItem;
 
-    public DebugViewModel(IDebugService debugService,
-        RenderDebugViewModel render,
-        DataModelDebugViewModel dataModel,
-        PerformanceDebugViewModel performance,
-        LogsDebugViewModel logs)
+    public DebugViewModel(IDebugService debugService, RenderDebugViewModel render, DataModelDebugViewModel dataModel, PerformanceDebugViewModel performance, LogsDebugViewModel logs)
     {
         Items = new ObservableCollection<ViewModelBase> {render, dataModel, performance, logs};
-        SelectedItem = render;
+        _selectedItem = render;
 
         this.WhenActivated(d => Disposable.Create(debugService.ClearDebugger).DisposeWith(d));
     }

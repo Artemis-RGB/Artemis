@@ -27,11 +27,11 @@ public class ProfileEditorViewModel : MainScreenViewModel
     private ObservableAsPropertyHelper<ProfileEditorHistory?>? _history;
     private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
     private ObservableAsPropertyHelper<bool>? _suspendedEditing;
-    private StatusBarViewModel _statusBarViewModel;
-    private DisplayConditionScriptViewModel _displayConditionScriptViewModel;
-    private PropertiesViewModel _propertiesViewModel;
-    private ProfileTreeViewModel _profileTreeViewModel;
-    private VisualEditorViewModel _visualEditorViewModel;
+    private StatusBarViewModel? _statusBarViewModel;
+    private DisplayConditionScriptViewModel? _displayConditionScriptViewModel;
+    private PropertiesViewModel? _propertiesViewModel;
+    private ProfileTreeViewModel? _profileTreeViewModel;
+    private VisualEditorViewModel? _visualEditorViewModel;
 
     /// <inheritdoc />
     public ProfileEditorViewModel(IScreen hostScreen,
@@ -79,31 +79,31 @@ public class ProfileEditorViewModel : MainScreenViewModel
         ToggleAutoSuspend = ReactiveCommand.Create(ExecuteToggleAutoSuspend);
     }
 
-    public VisualEditorViewModel VisualEditorViewModel
+    public VisualEditorViewModel? VisualEditorViewModel
     {
         get => _visualEditorViewModel;
         set => RaiseAndSetIfChanged(ref _visualEditorViewModel, value);
     }
 
-    public ProfileTreeViewModel ProfileTreeViewModel
+    public ProfileTreeViewModel? ProfileTreeViewModel
     {
         get => _profileTreeViewModel;
         set => RaiseAndSetIfChanged(ref _profileTreeViewModel, value);
     }
 
-    public PropertiesViewModel PropertiesViewModel
+    public PropertiesViewModel? PropertiesViewModel
     {
         get => _propertiesViewModel;
         set => RaiseAndSetIfChanged(ref _propertiesViewModel, value);
     }
 
-    public DisplayConditionScriptViewModel DisplayConditionScriptViewModel
+    public DisplayConditionScriptViewModel? DisplayConditionScriptViewModel
     {
         get => _displayConditionScriptViewModel;
         set => RaiseAndSetIfChanged(ref _displayConditionScriptViewModel, value);
     }
 
-    public StatusBarViewModel StatusBarViewModel
+    public StatusBarViewModel? StatusBarViewModel
     {
         get => _statusBarViewModel;
         set => RaiseAndSetIfChanged(ref _statusBarViewModel, value);

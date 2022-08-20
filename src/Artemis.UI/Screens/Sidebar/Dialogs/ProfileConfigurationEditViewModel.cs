@@ -134,7 +134,7 @@ namespace Artemis.UI.Screens.Sidebar
         public ReactiveCommand<Unit, Unit> Confirm { get; }
         public ReactiveCommand<Unit, Unit> Import { get; }
         public ReactiveCommand<Unit, Unit> Delete { get; }
-        public new ReactiveCommand<Unit, Unit> Cancel { get; }
+        public ReactiveCommand<Unit, Unit> Cancel { get; }
 
         private async Task ExecuteImport()
         {

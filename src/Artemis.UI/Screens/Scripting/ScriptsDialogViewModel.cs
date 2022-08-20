@@ -42,6 +42,7 @@ public class ScriptsDialogViewModel : DialogViewModelBase<object?>
         AddScriptConfiguration = ReactiveCommand.CreateFromTask(ExecuteAddScriptConfiguration, Observable.Return(ScriptingProviders.Any()));
         this.WhenAnyValue(vm => vm.SelectedScript).Subscribe(s => SetupScriptEditor(s?.ScriptConfiguration));
 
+        _scriptConfigurations = new ReadOnlyObservableCollection<ScriptConfigurationViewModel>(new ObservableCollection<ScriptConfigurationViewModel>());
         // TODO: When not bound to a profile, base the contents of the UI on the ScriptingService
     }
 
@@ -64,7 +65,7 @@ public class ScriptsDialogViewModel : DialogViewModelBase<object?>
                 .Subscribe()
                 .DisposeWith(d);
 
-            ScriptConfigurations = scriptConfigurationViewModels;
+            _scriptConfigurations = scriptConfigurationViewModels;
             SelectedScript = ScriptConfigurations.FirstOrDefault();
             Disposable.Create(() => profileService.SaveProfile(Profile, false)).DisposeWith(d);
         });

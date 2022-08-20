@@ -83,7 +83,7 @@ namespace Artemis.UI.Windows.Providers.Input
             }
         }
 
-        private void TaskManagerTimerOnElapsed(object sender, ElapsedEventArgs e)
+        private void TaskManagerTimerOnElapsed(object? sender, ElapsedEventArgs e)
         {
             int processId = WindowUtilities.GetActiveProcessId();
             if (processId == _lastProcessId)
