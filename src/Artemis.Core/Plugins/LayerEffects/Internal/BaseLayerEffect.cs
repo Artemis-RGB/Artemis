@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
 namespace Artemis.Core.LayerEffects
@@ -6,12 +7,10 @@ namespace Artemis.Core.LayerEffects
     /// <summary>
     ///     For internal use only, please use <see cref="LayerEffect{T}" /> instead
     /// </summary>
-    public abstract class BaseLayerEffect : BreakableModel, IDisposable
+    public abstract class BaseLayerEffect : BreakableModel, IDisposable, IStorageModel
     {
         private ILayerEffectConfigurationDialog? _configurationDialog;
         private LayerEffectDescriptor _descriptor;
-        private bool _suspended;
-        private Guid _entityId;
         private bool _hasBeenRenamed;
         private string _name;
         private int _order;
@@ -24,16 +23,13 @@ namespace Artemis.Core.LayerEffects
             _profileElement = null!;
             _descriptor = null!;
             _name = null!;
+            LayerEffectEntity = null!;
         }
 
         /// <summary>
-        ///     Gets the unique ID of this effect
+        /// Gets the 
         /// </summary>
-        public Guid EntityId
-        {
-            get => _entityId;
-            internal set => SetAndNotify(ref _entityId, value);
-        }
+        public LayerEffectEntity LayerEffectEntity { get; internal set; }
 
         /// <summary>
         ///     Gets the profile element (such as layer or folder) this effect is applied to
@@ -51,15 +47,6 @@ namespace Artemis.Core.LayerEffects
         {
             get => _name;
             set => SetAndNotify(ref _name, value);
-        }
-
-        /// <summary>
-        ///     Gets or sets the suspended state, if suspended the effect is skipped in render and update
-        /// </summary>
-        public bool Suspended
-        {
-            get => _suspended;
-            set => SetAndNotify(ref _suspended, value);
         }
 
         /// <summary>
@@ -107,14 +94,17 @@ namespace Artemis.Core.LayerEffects
         /// <summary>
         ///     Gets a reference to the layer property group without knowing it's type
         /// </summary>
-        public virtual LayerPropertyGroup? BaseProperties => null;
-
-        internal string PropertyRootPath => $"LayerEffect.{EntityId}.{GetType().Name}.";
+        public virtual LayerEffectPropertyGroup? BaseProperties => null;
 
         /// <summary>
         ///     Gets a boolean indicating whether the layer effect is enabled or not
         /// </summary>
         public bool Enabled { get; private set; }
+
+        /// <summary>
+        ///     Gets a boolean indicating whether the layer effect is suspended or not
+        /// </summary>
+        public bool Suspended => BaseProperties is not {PropertiesInitialized: true} || !BaseProperties.IsEnabled;
 
         #region IDisposable
 
@@ -227,5 +217,26 @@ namespace Artemis.Core.LayerEffects
         public override string BrokenDisplayName => Name;
 
         #endregion
+
+        /// <inheritdoc />
+        public void Load()
+        {
+            HasBeenRenamed = LayerEffectEntity.HasBeenRenamed;
+            Name = HasBeenRenamed ? LayerEffectEntity.Name : Descriptor.DisplayName;
+            Order = LayerEffectEntity.Order;
+        }
+
+        /// <inheritdoc />
+        public void Save()
+        {
+            LayerEffectEntity.ProviderId = Descriptor.Provider.Id;
+            LayerEffectEntity.EffectType = GetType().FullName;
+            LayerEffectEntity.Name = Name;
+            LayerEffectEntity.HasBeenRenamed = HasBeenRenamed;
+            LayerEffectEntity.Order = Order;
+
+            BaseProperties?.ApplyToEntity();
+            LayerEffectEntity.PropertyGroup = BaseProperties?.PropertyGroupEntity;
+        }
     }
 }

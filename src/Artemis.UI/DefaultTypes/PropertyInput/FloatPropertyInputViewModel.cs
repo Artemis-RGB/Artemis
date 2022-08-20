@@ -1,40 +1,29 @@
-﻿using Artemis.Core;
-using Artemis.UI.Shared;
-using Artemis.UI.Shared.Services;
-using FluentValidation;
-using Stylet;
+﻿using System;
+using Artemis.Core;
+using Artemis.UI.Shared.Services.ProfileEditor;
+using Artemis.UI.Shared.Services.PropertyInput;
+using ReactiveUI.Validation.Extensions;
 
-namespace Artemis.UI.DefaultTypes.PropertyInput
+namespace Artemis.UI.DefaultTypes.PropertyInput;
+
+public class FloatPropertyInputViewModel : PropertyInputViewModel<float>
 {
-    public class FloatPropertyInputViewModel : PropertyInputViewModel<float>
+    public FloatPropertyInputViewModel(LayerProperty<float> layerProperty, IProfileEditorService profileEditorService, IPropertyInputService propertyInputService)
+        : base(layerProperty, profileEditorService, propertyInputService)
     {
-        private readonly DataBindingRegistration<float, float> _registration;
-
-        public FloatPropertyInputViewModel(LayerProperty<float> layerProperty, IProfileEditorService profileEditorService, IModelValidator<FloatPropertyInputViewModel> validator)
-            : base(layerProperty, profileEditorService, validator)
+        if (LayerProperty.PropertyDescription.MinInputValue.IsNumber())
         {
-            _registration = layerProperty.GetDataBindingRegistration<float>("Value");
+            Min = Convert.ToSingle(LayerProperty.PropertyDescription.MinInputValue);
+            this.ValidationRule(vm => vm.InputValue, i => i >= Min, $"Value must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
         }
 
-        public bool IsEnabled => _registration.DataBinding == null;
-
-        protected override void OnDataBindingsChanged()
+        if (LayerProperty.PropertyDescription.MaxInputValue.IsNumber())
         {
-            NotifyOfPropertyChange(nameof(IsEnabled));
+            Max = Convert.ToSingle(LayerProperty.PropertyDescription.MaxInputValue);
+            this.ValidationRule(vm => vm.InputValue, i => i <= Max, $"Value must be smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
         }
     }
 
-    public class FloatPropertyInputViewModelValidator : AbstractValidator<FloatPropertyInputViewModel>
-    {
-        public FloatPropertyInputViewModelValidator()
-        {
-            RuleFor(vm => vm.InputValue)
-                .LessThanOrEqualTo(vm => (float) vm.LayerProperty.PropertyDescription.MaxInputValue)
-                .When(vm => vm.LayerProperty.PropertyDescription.MaxInputValue is float);
-
-            RuleFor(vm => vm.InputValue)
-                .GreaterThanOrEqualTo(vm => (float) vm.LayerProperty.PropertyDescription.MinInputValue)
-                .When(vm => vm.LayerProperty.PropertyDescription.MinInputValue is float);
-        }
-    }
+    public float Min { get; } = float.MinValue;
+    public float Max { get; } = float.MaxValue;
 }

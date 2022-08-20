@@ -3,13 +3,11 @@
     /// <inheritdoc />
     public class FloatRangeLayerProperty : LayerProperty<FloatRange>
     {
-        internal FloatRangeLayerProperty()
+        /// <inheritdoc />
+        protected override void OnInitialize()
         {
-            RegisterDataBindingProperty(() => CurrentValue.Start, value => CurrentValue.Start = value, new FloatDataBindingConverter<FloatRange>(), "Start");
-            RegisterDataBindingProperty(() => CurrentValue.End, value => CurrentValue.End = value, new FloatDataBindingConverter<FloatRange>(), "End");
-
-            CurrentValueSet += OnCurrentValueSet;
-            DefaultValue = new FloatRange();
+            DataBinding.RegisterDataBindingProperty(() => CurrentValue.Start, value => CurrentValue = new FloatRange(value, CurrentValue.End), "Start");
+            DataBinding.RegisterDataBindingProperty(() => CurrentValue.End, value => CurrentValue = new FloatRange(CurrentValue.Start, value), "End");
         }
 
         /// <inheritdoc />
@@ -18,15 +16,9 @@
             float startDiff = NextKeyframe!.Value.Start - CurrentKeyframe!.Value.Start;
             float endDiff = NextKeyframe!.Value.End - CurrentKeyframe!.Value.End;
             CurrentValue = new FloatRange(
-                (int) (CurrentKeyframe!.Value.Start + startDiff * keyframeProgressEased),
-                (int) (CurrentKeyframe!.Value.End + endDiff * keyframeProgressEased)
+                (float) (CurrentKeyframe!.Value.Start + startDiff * keyframeProgressEased),
+                (float) (CurrentKeyframe!.Value.End + endDiff * keyframeProgressEased)
             );
-        }
-
-        private void OnCurrentValueSet(object? sender, LayerPropertyEventArgs e)
-        {
-            // Don't allow the int range to be null
-            BaseValue ??= DefaultValue ?? new FloatRange();
         }
     }
 }

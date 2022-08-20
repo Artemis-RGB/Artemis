@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Reflection;
 using Artemis.Core;
-using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
-using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
+using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
+using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using Ninject.Extensions.Factory;
 
 namespace Artemis.UI.Ninject.InstanceProviders
@@ -15,7 +15,7 @@ namespace Artemis.UI.Ninject.InstanceProviders
                 return base.GetType(methodInfo, arguments);
 
             // Find LayerProperty type
-            Type layerPropertyType = arguments[0].GetType();
+            Type? layerPropertyType = arguments[0].GetType();
             while (layerPropertyType != null && (!layerPropertyType.IsGenericType || layerPropertyType.GetGenericTypeDefinition() != typeof(LayerProperty<>)))
                 layerPropertyType = layerPropertyType.BaseType;
             if (layerPropertyType == null)

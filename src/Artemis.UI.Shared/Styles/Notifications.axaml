@@ -1,0 +1,27 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="StackPanel.notification-container">
+        <Setter Property="Spacing" Value="-25" />
+    </Style>
+
+    <Style Selector="StackPanel.notification-container controls|InfoBar">
+        <Setter Property="MaxHeight" Value="0" />
+        <Style.Animations>
+            <Animation Duration="0:0:0.2" Easing="CubicEaseOut" FillMode="Forward">
+                <KeyFrame Cue="0%">
+                    <Setter Property="MaxHeight" Value="0" />
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="MaxHeight" Value="600" />
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+</Styles>

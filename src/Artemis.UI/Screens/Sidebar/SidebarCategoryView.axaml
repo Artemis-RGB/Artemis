@@ -1,0 +1,204 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.Sidebar"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:idd="clr-namespace:Avalonia.Xaml.Interactions.DragAndDrop;assembly=Avalonia.Xaml.Interactions"
+             xmlns:sb="clr-namespace:Artemis.UI.Screens.Sidebar.Behaviors"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:b="clr-namespace:Artemis.UI.Behaviors"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Sidebar.SidebarCategoryView"
+             x:DataType="local:SidebarCategoryViewModel">
+    <UserControl.Resources>
+        <converters:ColorOpacityConverter x:Key="ColorOpacityConverter" />
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector=":is(Button).category-button">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="Grid#ContainerGrid:pointerover :is(Button).category-button">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+
+        <Style Selector="avalonia|MaterialIcon.chevron-collapsed">
+            <Setter Property="RenderTransform" Value="rotate(180deg)" />
+        </Style>
+        <Style Selector="TextBlock.fadable.suspended">
+            <Setter Property="Opacity" Value="0.33" />
+        </Style>
+        <Style Selector="Border.fadable">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+        <Style Selector="Border.fadable.suspended">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+        <Style Selector=".sidebar-listbox > ListBoxItem">
+            <Setter Property="Padding" Value="6 0" />
+        </Style>
+
+        <!-- Dragging -->
+        <Style Selector="ListBox.sidebar-listbox">
+            <Style.Resources>
+                <sb:SidebarCategoryViewDropHandler x:Key="SidebarCategoryViewDropHandler" />
+            </Style.Resources>
+            <Setter Property="(i:Interaction.Behaviors)">
+                <i:BehaviorCollectionTemplate>
+                    <i:BehaviorCollection>
+                        <idd:ContextDropBehavior Handler="{StaticResource SidebarCategoryViewDropHandler}" />
+                    </i:BehaviorCollection>
+                </i:BehaviorCollectionTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="ListBox.sidebar-listbox ListBoxItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="(i:Interaction.Behaviors)">
+                <i:BehaviorCollectionTemplate>
+                    <i:BehaviorCollection>
+                        <b:SimpleContextDragBehavior />
+                    </i:BehaviorCollection>
+                </i:BehaviorCollectionTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="ListBox.sidebar-listbox ListBoxItem:dragging-before">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,30">
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.0" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.05" />
+                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.05" />
+                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.25" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style Selector="ListBox.sidebar-listbox ListBoxItem:dragging-after">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,32">
+                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.75" />
+                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.95" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.95" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="1" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+    <Grid x:Name="ContainerGrid" Margin="0 8 0 0" RowDefinitions="Auto,*" >
+        <Grid.ContextFlyout>
+            <MenuFlyout>
+                <MenuItem Header="View properties" Command="{CompiledBinding EditCategory}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Cog" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Suspend" Command="{CompiledBinding ToggleSuspended}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding IsSuspended}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="-" />
+                <MenuItem Header="Move up" Command="{CompiledBinding MoveUp}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="ArrowUp" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Move down" Command="{CompiledBinding MoveDown}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="ArrowDown" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuFlyout>
+        </Grid.ContextFlyout>
+        <Grid Grid.Row="0" Background="Transparent" Margin="0 0 6 0" ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto">
+            <avalonia:MaterialIcon Classes.chevron-collapsed="{CompiledBinding !IsCollapsed}"
+                                   Kind="ChevronUp"
+                                   Grid.Column="0"
+                                   Margin="5 0"
+                                   PointerReleased="InputElement_OnPointerReleased"
+                                   Background="Transparent">
+                <avalonia:MaterialIcon.Transitions>
+                    <Transitions>
+                        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" />
+                    </Transitions>
+                </avalonia:MaterialIcon.Transitions>
+            </avalonia:MaterialIcon>
+
+            <Panel Grid.Column="1" HorizontalAlignment="Left">
+                <TextBlock Classes="fadable"
+                           Classes.suspended="{CompiledBinding IsSuspended}"
+                           Padding="0 5"
+                           FontWeight="SemiBold"
+                           FontSize="13"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left"
+                           Text="{CompiledBinding ProfileCategory.Name, FallbackValue='Profile name'}"
+                           TextTrimming="CharacterEllipsis"
+                           PointerReleased="InputElement_OnPointerReleased"
+                           Background="Transparent">
+                    <TextBlock.Transitions>
+                        <Transitions>
+                            <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
+                        </Transitions>
+                    </TextBlock.Transitions>
+                </TextBlock>
+
+                <Border Classes="fadable"
+                        Classes.suspended="{CompiledBinding IsSuspended}"
+                        HorizontalAlignment="Stretch"
+                        BorderBrush="White"
+                        BorderThickness="0.5"
+                        Height="1">
+                    <Border.Transitions>
+                        <Transitions>
+                            <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
+                        </Transitions>
+                    </Border.Transitions>
+                </Border>
+            </Panel>
+
+            <Button Classes="category-button icon-button icon-button-small"
+                    Grid.Column="2"
+                    ToolTip.Tip="Edit category"
+                    HorizontalAlignment="Right"
+                    Command="{CompiledBinding EditCategory}"
+                    Margin="0 0 2 0">
+                <avalonia:MaterialIcon Kind="Cog" />
+            </Button>
+            <Button Classes="icon-button icon-button-small"
+                    Command="{CompiledBinding ToggleSuspended}"
+                    Grid.Column="3"
+                    ToolTip.Tip="Suspend/resume profile"
+                    Margin="0 0 2 0">
+                <Panel>
+                    <avalonia:MaterialIcon Kind="EyeOff" IsVisible="{CompiledBinding IsSuspended}" />
+                    <avalonia:MaterialIcon Kind="Eye" IsVisible="{CompiledBinding !IsSuspended}" />
+                </Panel>
+            </Button>
+            <Button Classes="category-button icon-button icon-button-small"
+                    Grid.Column="4"
+                    ToolTip.Tip="Add profile"
+                    HorizontalAlignment="Right"
+                    Command="{CompiledBinding AddProfile}"
+                    Margin="0 0 2 0">
+                <avalonia:MaterialIcon Kind="Plus" />
+            </Button>
+        </Grid>
+
+        <Border Grid.Row="1">
+            <ListBox Name="SidebarListBox"
+                     Classes="sidebar-listbox"
+                     Items="{CompiledBinding ProfileConfigurations}"
+                     SelectedItem="{CompiledBinding SelectedProfileConfiguration}"
+                     MinHeight="10"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Disabled">
+            </ListBox>
+        </Border>
+    </Grid>
+</UserControl>

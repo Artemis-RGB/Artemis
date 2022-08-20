@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:startupWizard="clr-namespace:Artemis.UI.Screens.StartupWizard"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Artemis.UI.Screens.StartupWizard.StartupWizardView"
+        x:DataType="startupWizard:StartupWizardViewModel"
+        Icon="/Assets/Images/Logo/application.ico"
+        Title="Artemis | Startup wizard"
+        Width="1000"
+        Height="735"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="15" RowDefinitions="*,Auto" ColumnDefinitions="Auto,*">
+        <controls:Frame Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Name="Frame" />
+
+        <Button Grid.Row="1" Grid.Column="0" Command="{CompiledBinding SkipOrFinishWizard}" IsVisible="{CompiledBinding !ShowFinish}">Skip &amp; close</Button>
+        <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Spacing="5" Margin="0 15 0 0">
+            <Button Command="{CompiledBinding GoBack}" IsEnabled="{CompiledBinding ShowGoBack}">Back</Button>
+            <Button Command="{CompiledBinding Continue}" IsVisible="{CompiledBinding !ShowFinish}" IsEnabled="{CompiledBinding ShowContinue}" Width="80">Continue</Button>
+            <Button Command="{CompiledBinding SkipOrFinishWizard}" IsVisible="{CompiledBinding ShowFinish}" Width="80">Finish</Button>
+        </StackPanel>
+    </Grid>
+
+</Window>

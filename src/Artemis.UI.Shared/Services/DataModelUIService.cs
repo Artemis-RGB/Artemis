@@ -5,8 +5,9 @@ using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
+using Artemis.UI.Shared.DataModelVisualization;
+using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Artemis.UI.Shared.DefaultTypes.DataModel.Display;
-using Artemis.UI.Shared.Input;
 using Ninject;
 using Ninject.Parameters;
 
@@ -15,15 +16,13 @@ namespace Artemis.UI.Shared.Services
     internal class DataModelUIService : IDataModelUIService
     {
         private readonly IDataModelService _dataModelService;
-        private readonly IDataModelVmFactory _dataModelVmFactory;
         private readonly IKernel _kernel;
         private readonly List<DataModelVisualizationRegistration> _registeredDataModelDisplays;
         private readonly List<DataModelVisualizationRegistration> _registeredDataModelEditors;
 
-        public DataModelUIService(IDataModelService dataModelService, IDataModelVmFactory dataModelVmFactory, IKernel kernel)
+        public DataModelUIService(IDataModelService dataModelService, IKernel kernel)
         {
             _dataModelService = dataModelService;
-            _dataModelVmFactory = dataModelVmFactory;
             _kernel = kernel;
             _registeredDataModelEditors = new List<DataModelVisualizationRegistration>();
             _registeredDataModelDisplays = new List<DataModelVisualizationRegistration>();
@@ -38,7 +37,7 @@ namespace Artemis.UI.Shared.Services
         public DataModelPropertiesViewModel GetMainDataModelVisualization()
         {
             DataModelPropertiesViewModel viewModel = new(null, null, null);
-            foreach (DataModel dataModelExpansion in _dataModelService.GetDataModels().Where(d => d.IsExpansion).OrderBy(d => d.DataModelDescription.Name))
+            foreach (DataModel dataModelExpansion in _dataModelService.GetDataModels().Where(d => d.IsExpansion || d.Module.IsActivated).OrderBy(d => d.DataModelDescription.Name))
                 viewModel.Children.Add(new DataModelPropertiesViewModel(dataModelExpansion, viewModel, new DataModelPath(dataModelExpansion)));
 
             // Update to populate children
@@ -227,22 +226,7 @@ namespace Artemis.UI.Shared.Services
                 return null;
             }
         }
-
-        public DataModelDynamicViewModel GetDynamicSelectionViewModel(Module? module)
-        {
-            return _dataModelVmFactory.DataModelDynamicViewModel(module == null ? new List<Module>() : new List<Module> {module});
-        }
-
-        public DataModelDynamicViewModel GetDynamicSelectionViewModel(List<Module> modules)
-        {
-            return _dataModelVmFactory.DataModelDynamicViewModel(modules);
-        }
-
-        public DataModelStaticViewModel GetStaticInputViewModel(Type targetType, DataModelPropertyAttribute targetDescription)
-        {
-            return _dataModelVmFactory.DataModelStaticViewModel(targetType, targetDescription);
-        }
-
+        
         private DataModelInputViewModel InstantiateDataModelInputViewModel(DataModelVisualizationRegistration registration, DataModelPropertyAttribute? description, object? initialValue)
         {
             // This assumes the type can be converted, that has been checked when the VM was created

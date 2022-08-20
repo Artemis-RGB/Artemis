@@ -16,7 +16,7 @@ namespace Artemis.Core
         /// <returns>The RGB.NET color</returns>
         public static Color ToRgbColor(this SKColor color)
         {
-            return new(color.Alpha, color.Red, color.Green, color.Blue);
+            return new Color(color.Alpha, color.Red, color.Green, color.Blue);
         }
 
         /// <summary>
@@ -49,12 +49,25 @@ namespace Artemis.Core
         /// <returns>The sum of the two colors</returns>
         public static SKColor Sum(this SKColor a, SKColor b)
         {
-            return new(
+            return new SKColor(
                 ClampToByte(a.Red + b.Red),
                 ClampToByte(a.Green + b.Green),
                 ClampToByte(a.Blue + b.Blue),
                 ClampToByte(a.Alpha + b.Alpha)
             );
+        }
+
+        /// <summary>
+        ///     Darkens the color by the specified amount
+        /// </summary>
+        /// <param name="c">The color to darken</param>
+        /// <param name="amount">The brightness of the new color</param>
+        /// <returns>The darkened color</returns>
+        public static SKColor Darken(this SKColor c, float amount)
+        {
+            c.ToHsl(out float h, out float s, out float l);
+            l *= 1f - amount;
+            return SKColor.FromHsl(h, s, l);
         }
 
         private static byte ClampToByte(float value)

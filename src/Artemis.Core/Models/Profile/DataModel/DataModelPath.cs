@@ -72,9 +72,12 @@ namespace Artemis.Core
             SubscribeToDataModelStore();
         }
 
-        internal DataModelPath(DataModel? target, DataModelPathEntity entity)
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DataModelPath" /> class based on a <see cref="DataModelPathEntity" />
+        /// </summary>
+        /// <param name="entity"></param>
+        public DataModelPath(DataModelPathEntity entity)
         {
-            Target = target;
             Path = entity.Path;
             Entity = entity;
 
@@ -110,7 +113,10 @@ namespace Artemis.Core
         /// </summary>
         public IReadOnlyCollection<DataModelPathSegment> Segments => _segments.ToList().AsReadOnly();
 
-        internal DataModelPathEntity Entity { get; }
+        /// <summary>
+        ///     Gets the entity used for persistent storage
+        /// </summary>
+        public DataModelPathEntity Entity { get; }
 
         internal Func<object, object>? Accessor { get; private set; }
 
@@ -171,6 +177,52 @@ namespace Artemis.Core
         public override string ToString()
         {
             return string.IsNullOrWhiteSpace(Path) ? "this" : Path;
+        }
+
+        /// <summary>
+        ///     Occurs whenever the path becomes invalid
+        /// </summary>
+        public event EventHandler? PathInvalidated;
+
+        /// <summary>
+        ///     Occurs whenever the path becomes valid
+        /// </summary>
+        public event EventHandler? PathValidated;
+
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _disposed = true;
+
+                DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
+                DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
+
+                Invalidate();
+            }
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="PathInvalidated" /> event
+        /// </summary>
+        protected virtual void OnPathValidated()
+        {
+            PathValidated?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="PathValidated" /> event
+        /// </summary>
+        protected virtual void OnPathInvalidated()
+        {
+            PathInvalidated?.Invoke(this, EventArgs.Empty);
         }
 
         internal void Invalidate()
@@ -262,27 +314,24 @@ namespace Artemis.Core
             DataModelStore.DataModelAdded += DataModelStoreOnDataModelAdded;
             DataModelStore.DataModelRemoved += DataModelStoreOnDataModelRemoved;
         }
-        
-        #region IDisposable
 
-        /// <summary>
-        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">
-        ///     <see langword="true" /> to release both managed and unmanaged resources;
-        ///     <see langword="false" /> to release only unmanaged resources.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
+        private void DataModelStoreOnDataModelAdded(object? sender, DataModelStoreEvent e)
         {
-            if (disposing)
-            {
-                _disposed = true;
+            if (e.Registration.DataModel.Module.Id != Entity.DataModelId)
+                return;
 
-                DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
-                DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
+            Invalidate();
+            Target = e.Registration.DataModel;
+            Initialize();
+        }
 
-                Invalidate();
-            }
+        private void DataModelStoreOnDataModelRemoved(object? sender, DataModelStoreEvent e)
+        {
+            if (e.Registration.DataModel.Module.Id != Entity.DataModelId)
+                return;
+
+            Invalidate();
+            Target = null;
         }
 
         /// <inheritdoc />
@@ -291,8 +340,6 @@ namespace Artemis.Core
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
-        #endregion
 
         #region Storage
 
@@ -314,67 +361,32 @@ namespace Artemis.Core
 
             Entity.Path = Path;
             Entity.DataModelId = DataModelId;
+        }
 
-            Entity.WrapperType = Target switch
-            {
-                ListPredicateWrapperDataModel _ => PathWrapperType.List,
-                EventPredicateWrapperDataModel _ => PathWrapperType.Event,
-                _ => PathWrapperType.None
-            };
+        #region Equality members
+
+        /// <inheritdoc cref="Equals(object)"/>>
+        protected bool Equals(DataModelPath other)
+        {
+            return ReferenceEquals(Target, other.Target) && Path == other.Path;
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((DataModelPath) obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Target, Path);
         }
 
         #endregion
-
-        #region Event handlers
-
-        private void DataModelStoreOnDataModelAdded(object? sender, DataModelStoreEvent e)
-        {
-            if (e.Registration.DataModel.Module.Id != Entity.DataModelId)
-                return;
-
-            Invalidate();
-            Target = e.Registration.DataModel;
-            Initialize();
-        }
-
-        private void DataModelStoreOnDataModelRemoved(object? sender, DataModelStoreEvent e)
-        {
-            if (e.Registration.DataModel.Module.Id != Entity.DataModelId)
-                return;
-
-            Invalidate();
-            Target = null;
-        }
-
-        #endregion
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs whenever the path becomes invalid
-        /// </summary>
-        public event EventHandler? PathInvalidated;
-
-        /// <summary>
-        ///     Occurs whenever the path becomes valid
-        /// </summary>
-        public event EventHandler? PathValidated;
-
-        /// <summary>
-        ///     Invokes the <see cref="PathInvalidated" /> event
-        /// </summary>
-        protected virtual void OnPathValidated()
-        {
-            PathValidated?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="PathValidated" /> event
-        /// </summary>
-        protected virtual void OnPathInvalidated()
-        {
-            PathInvalidated?.Invoke(this, EventArgs.Empty);
-        }
 
         #endregion
     }

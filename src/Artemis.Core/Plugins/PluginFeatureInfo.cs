@@ -91,7 +91,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     The name of the plugin
+        ///     The name of the feature
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string Name
@@ -101,7 +101,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     A short description of the plugin
+        ///     A short description of the feature
         /// </summary>
         [JsonProperty]
         public string? Description
@@ -122,10 +122,11 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Marks the feature to always be enabled as long as the plugin is enabled and cannot be disabled
+        ///     Marks the feature to always be enabled as long as the plugin is enabled and cannot be disabled.
+        ///     <para>Note: always <see langword="true"/> if this is the plugin's only feature</para>
         /// </summary>
         [JsonProperty]
-        public bool AlwaysEnabled { get; }
+        public bool AlwaysEnabled { get; internal set; }
 
         /// <summary>
         ///     Gets a boolean indicating whether the feature is enabled in persistent storage
@@ -151,7 +152,7 @@ namespace Artemis.Core
             {
                 if (Icon == null)
                     return null;
-                return Icon.EndsWith(".svg") ? Plugin.ResolveRelativePath(Icon) : Icon;
+                return Icon.Contains('.') ? Plugin.ResolveRelativePath(Icon) : Icon;
             }
         }
 
@@ -167,9 +168,12 @@ namespace Artemis.Core
         public List<PluginPrerequisite> Prerequisites { get; } = new();
 
         /// <inheritdoc />
+        public IEnumerable<PluginPrerequisite> PlatformPrerequisites => Prerequisites.Where(p => p.AppliesToPlatform());
+
+        /// <inheritdoc />
         public bool ArePrerequisitesMet()
         {
-            return Prerequisites.All(p => p.IsMet());
+            return PlatformPrerequisites.All(p => p.IsMet());
         }
     }
 }

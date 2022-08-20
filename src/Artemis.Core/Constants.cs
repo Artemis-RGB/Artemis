@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using Artemis.Core.JsonConverters;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Core;
@@ -15,6 +16,11 @@ namespace Artemis.Core
     public static class Constants
     {
         /// <summary>
+        ///     The Artemis.Core assembly
+        /// </summary>
+        public static readonly Assembly CoreAssembly = typeof(Constants).Assembly;
+
+        /// <summary>
         ///     The full path to the Artemis application folder
         /// </summary>
         public static readonly string ApplicationFolder = Path.GetDirectoryName(typeof(Constants).Assembly.Location)!;
@@ -25,9 +31,29 @@ namespace Artemis.Core
         public static readonly string ExecutablePath = Utilities.GetCurrentLocation();
 
         /// <summary>
+        ///     The base path for Artemis application data folder
+        /// </summary>
+        public static readonly string BaseFolder = Environment.GetFolderPath(OperatingSystem.IsWindows() ? Environment.SpecialFolder.CommonApplicationData : Environment.SpecialFolder.LocalApplicationData);
+
+        /// <summary>
         ///     The full path to the Artemis data folder
         /// </summary>
-        public static readonly string DataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Artemis");
+        public static readonly string DataFolder = Path.Combine(BaseFolder, "Artemis");
+
+        /// <summary>
+        ///     The full path to the Artemis logs folder
+        /// </summary>
+        public static readonly string LogsFolder = Path.Combine(DataFolder, "Logs");
+
+        /// <summary>
+        ///     The full path to the Artemis plugins folder
+        /// </summary>
+        public static readonly string PluginsFolder = Path.Combine(DataFolder, "Plugins");
+
+        /// <summary>
+        ///     The full path to the Artemis user layouts folder
+        /// </summary>
+        public static readonly string LayoutsFolder = Path.Combine(DataFolder, "User Layouts");
         
         /// <summary>
         ///     The plugin info used by core components of Artemis
@@ -62,13 +88,13 @@ namespace Artemis.Core
 
         internal static JsonSerializerSettings JsonConvertSettings = new()
         {
-            Converters = new List<JsonConverter> {new SKColorConverter(), new ForgivingIntConverter()}
+            Converters = new List<JsonConverter> {new SKColorConverter(), new NumericJsonConverter(), new ForgivingIntConverter()}
         };
 
         internal static JsonSerializerSettings JsonConvertTypedSettings = new()
         {
             TypeNameHandling = TypeNameHandling.All,
-            Converters = new List<JsonConverter> {new SKColorConverter(), new ForgivingIntConverter()}
+            Converters = new List<JsonConverter> {new SKColorConverter(), new NumericJsonConverter(), new ForgivingIntConverter()}
         };
 
         /// <summary>

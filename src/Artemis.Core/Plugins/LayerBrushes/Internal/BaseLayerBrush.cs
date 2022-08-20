@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
 namespace Artemis.Core.LayerBrushes
@@ -24,6 +26,7 @@ namespace Artemis.Core.LayerBrushes
             // Both are set right after construction to keep the constructor of inherited classes clean
             _layer = null!;
             _descriptor = null!;
+            LayerBrushEntity = null!;
         }
 
         /// <summary>
@@ -34,6 +37,11 @@ namespace Artemis.Core.LayerBrushes
             get => _layer;
             internal set => SetAndNotify(ref _layer, value);
         }
+
+        /// <summary>
+        ///     Gets the brush entity this brush uses for persistent storage
+        /// </summary>
+        public LayerBrushEntity LayerBrushEntity { get; internal set; }
 
         /// <summary>
         ///     Gets the descriptor of this brush
@@ -185,6 +193,13 @@ namespace Artemis.Core.LayerBrushes
         public override string BrokenDisplayName => Descriptor.DisplayName;
 
         #endregion
+
+        internal void Save()
+        {
+            // No need to update the type or provider ID, they're set once by the LayerBrushDescriptors CreateInstance and can't change
+            BaseProperties?.ApplyToEntity();
+            LayerBrushEntity.PropertyGroup = BaseProperties?.PropertyGroupEntity;
+        }
     }
 
     /// <summary>

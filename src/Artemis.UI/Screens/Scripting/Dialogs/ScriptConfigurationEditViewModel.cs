@@ -1,53 +1,40 @@
-﻿using System.Threading.Tasks;
+﻿using System.Reactive;
 using Artemis.Core.ScriptingProviders;
-using Artemis.UI.Shared.Services;
-using FluentValidation;
-using Stylet;
+using Artemis.UI.Shared;
+using FluentAvalonia.UI.Controls;
+using ReactiveUI;
+using ReactiveUI.Validation.Extensions;
 
-namespace Artemis.UI.Screens.Scripting.Dialogs
+namespace Artemis.UI.Screens.Scripting.Dialogs;
+
+public class ScriptConfigurationEditViewModel : ContentDialogViewModelBase
 {
-    public class ScriptConfigurationEditViewModel : DialogViewModelBase
+    private string? _scriptName;
+
+    public ScriptConfigurationEditViewModel(ScriptConfiguration scriptConfiguration)
     {
-        private string _name;
-
-        public ScriptConfigurationEditViewModel(IModelValidator<ScriptConfigurationEditViewModel> validator, ScriptConfiguration scriptConfiguration) : base(validator)
-        {
-            ScriptConfiguration = scriptConfiguration;
-            _name = ScriptConfiguration.Name;
-        }
-
-        public ScriptConfiguration ScriptConfiguration { get; }
-
-        public string Name
-        {
-            get => _name;
-            set => SetAndNotify(ref _name, value);
-        }
-
-        public async Task Accept()
-        {
-            await ValidateAsync();
-
-            if (HasErrors)
-                return;
-
-            ScriptConfiguration.Name = Name;
-            if (Session is {IsEnded: false})
-                Session.Close(nameof(Accept));
-        }
-
-        public void Delete()
-        {
-            if (Session is {IsEnded: false})
-                Session.Close(nameof(Delete));
-        }
+        ScriptConfiguration = scriptConfiguration;
+        Submit = ReactiveCommand.Create(ExecuteSubmit, ValidationContext.Valid);
+        ScriptName = ScriptConfiguration.Name;
+        
+        this.ValidationRule(vm => vm.ScriptName, s => !string.IsNullOrWhiteSpace(s), "Script name cannot be empty.");
     }
 
-    public class ProfileElementScriptConfigurationEditViewModelValidator : AbstractValidator<ScriptConfigurationEditViewModel>
+    public ScriptConfiguration ScriptConfiguration { get; }
+    public ReactiveCommand<Unit, Unit> Submit { get; }
+
+    public string? ScriptName
     {
-        public ProfileElementScriptConfigurationEditViewModelValidator()
-        {
-            RuleFor(m => m.Name).NotEmpty().WithMessage("Script name may not be empty");
-        }
+        get => _scriptName;
+        set => RaiseAndSetIfChanged(ref _scriptName, value);
+    }
+
+    private void ExecuteSubmit()
+    {
+        if (ScriptName == null)
+            return;
+
+        ScriptConfiguration.Name = ScriptName;
+        ContentDialog?.Hide(ContentDialogResult.Primary);
     }
 }

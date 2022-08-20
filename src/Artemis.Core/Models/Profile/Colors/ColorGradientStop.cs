@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using System;
+using SkiaSharp;
 
 namespace Artemis.Core
 {
@@ -7,6 +8,34 @@ namespace Artemis.Core
     /// </summary>
     public class ColorGradientStop : CorePropertyChanged
     {
+        #region Equality members
+
+        /// <inheritdoc cref="object.Equals(object)" />
+        protected bool Equals(ColorGradientStop other)
+        {
+            return _color.Equals(other._color) && _position.Equals(other._position);
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != GetType())
+                return false;
+            return Equals((ColorGradientStop) obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_color, _position);
+        }
+
+        #endregion
+
         private SKColor _color;
         private float _position;
 

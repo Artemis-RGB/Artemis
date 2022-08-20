@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using Artemis.Core.Services;
-using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.MainWindow;
 using EmbedIO;
 using EmbedIO.Routing;
 using EmbedIO.WebApi;
@@ -10,18 +10,18 @@ namespace Artemis.UI.Controllers
     public class RemoteController : WebApiController
     {
         private readonly ICoreService _coreService;
-        private readonly IWindowService _windowService;
+        private readonly IMainWindowService _mainWindowService;
 
-        public RemoteController(ICoreService coreService, IWindowService windowService)
+        public RemoteController(ICoreService coreService, IMainWindowService mainWindowService)
         {
             _coreService = coreService;
-            _windowService = windowService;
+            _mainWindowService = mainWindowService;
         }
 
         [Route(HttpVerbs.Post, "/remote/bring-to-foreground")]
         public void PostBringToForeground()
         {
-            _windowService.OpenMainWindow();
+            _mainWindowService.OpenMainWindow();
         }
 
         [Route(HttpVerbs.Post, "/remote/restart")]

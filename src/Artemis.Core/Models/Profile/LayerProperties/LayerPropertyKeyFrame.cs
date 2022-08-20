@@ -57,6 +57,7 @@ namespace Artemis.Core
             {
                 SetAndNotify(ref _position, value);
                 LayerProperty.SortKeyframes();
+                LayerProperty.ReapplyUpdate();
             }
         }
 
@@ -66,7 +67,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public KeyframeEntity GetKeyframeEntity()
         {
-            return new()
+            return new KeyframeEntity
             {
                 Value = CoreJson.SerializeObject(Value),
                 Position = Position,
@@ -78,6 +79,12 @@ namespace Artemis.Core
         public void Remove()
         {
             LayerProperty.RemoveKeyframe(this);
+        }
+
+        /// <inheritdoc />
+        public ILayerPropertyKeyframe CreateCopy()
+        {
+            return new LayerPropertyKeyframe<T>(Value, Position, EasingFunction, LayerProperty);
         }
     }
 }

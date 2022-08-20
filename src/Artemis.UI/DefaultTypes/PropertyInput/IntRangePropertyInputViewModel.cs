@@ -1,82 +1,59 @@
 ﻿using System;
 using Artemis.Core;
-using Artemis.UI.Shared;
-using Artemis.UI.Shared.Services;
-using FluentValidation;
-using Stylet;
+using Artemis.UI.Shared.Services.ProfileEditor;
+using Artemis.UI.Shared.Services.PropertyInput;
+using ReactiveUI;
+using ReactiveUI.Validation.Extensions;
 
-namespace Artemis.UI.DefaultTypes.PropertyInput
+namespace Artemis.UI.DefaultTypes.PropertyInput;
+
+public class IntRangePropertyInputViewModel : PropertyInputViewModel<IntRange>
 {
-    public class IntRangePropertyInputViewModel : PropertyInputViewModel<IntRange>
+    public IntRangePropertyInputViewModel(LayerProperty<IntRange> layerProperty, IProfileEditorService profileEditorService, IPropertyInputService propertyInputService)
+        : base(layerProperty, profileEditorService, propertyInputService)
     {
-        private readonly DataBindingRegistration<IntRange, int> _startRegistration;
-        private readonly DataBindingRegistration<IntRange, int> _endRegistration;
+        this.ValidationRule(vm => vm.Start, start => start <= End, "Start value must be less than the end value.");
+        this.ValidationRule(vm => vm.End, end => end >= Start, "End value must be greater than the start value.");
 
-        public IntRangePropertyInputViewModel(LayerProperty<IntRange> layerProperty,
-            IProfileEditorService profileEditorService,
-            IModelValidator<IntRangePropertyInputViewModel> validator) : base(layerProperty, profileEditorService, validator)
+        if (LayerProperty.PropertyDescription.MinInputValue.IsNumber())
         {
-            _startRegistration = layerProperty.GetDataBindingRegistration<int>("Start");
-            _endRegistration = layerProperty.GetDataBindingRegistration<int>("End");
+            Min = Convert.ToInt32(LayerProperty.PropertyDescription.MinInputValue);
+            this.ValidationRule(vm => vm.Start, i => i >= Min, $"Start value must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
         }
 
-        public int Start
+        if (LayerProperty.PropertyDescription.MaxInputValue.IsNumber())
         {
-            get => InputValue?.Start ?? 0;
-            set
-            {
-                if (InputValue == null)
-                    InputValue = new IntRange(value, value + 1);
-                else
-                    InputValue.Start = value;
-
-                NotifyOfPropertyChange(nameof(Start));
-            }
-        }
-
-        public int End
-        {
-            get => InputValue?.End ?? 0;
-            set
-            {
-                if (InputValue == null)
-                    InputValue = new IntRange(value - 1, value);
-                else
-                    InputValue.End = value;
-
-                NotifyOfPropertyChange(nameof(End));
-            }
-        }
-
-        public bool IsStartEnabled => _startRegistration.DataBinding == null;
-        public bool IsEndEnabled => _endRegistration.DataBinding == null;
-
-        protected override void OnInputValueChanged()
-        {
-            NotifyOfPropertyChange(nameof(Start));
-            NotifyOfPropertyChange(nameof(End));
-        }
-
-        protected override void OnDataBindingsChanged()
-        {
-            NotifyOfPropertyChange(nameof(IsStartEnabled));
-            NotifyOfPropertyChange(nameof(IsEndEnabled));
+            Max = Convert.ToInt32(LayerProperty.PropertyDescription.MaxInputValue);
+            this.ValidationRule(vm => vm.End, i => i < Max, $"End value must be smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
         }
     }
 
-    public class IntRangePropertyInputViewModelValidator : AbstractValidator<IntRangePropertyInputViewModel>
+    public int Start
     {
-        public IntRangePropertyInputViewModelValidator()
+        get => InputValue.Start;
+        set
         {
-            RuleFor(vm => vm.Start).LessThanOrEqualTo(vm => vm.End);
-            RuleFor(vm => vm.End).GreaterThanOrEqualTo(vm => vm.Start);
-
-            RuleFor(vm => vm.Start)
-                .GreaterThanOrEqualTo(vm => Convert.ToInt32(vm.LayerProperty.PropertyDescription.MinInputValue))
-                .When(vm => vm.LayerProperty.PropertyDescription.MinInputValue.IsNumber());
-            RuleFor(vm => vm.End)
-                .LessThanOrEqualTo(vm => Convert.ToInt32(vm.LayerProperty.PropertyDescription.MaxInputValue))
-                .When(vm => vm.LayerProperty.PropertyDescription.MaxInputValue.IsNumber());
+            InputValue = new IntRange(value, InputValue.End);
+            this.RaisePropertyChanged(nameof(Start));
         }
+    }
+
+    public int End
+    {
+        get => InputValue.End;
+        set
+        {
+            InputValue = new IntRange(InputValue.Start, value);
+            this.RaisePropertyChanged(nameof(End));
+        }
+    }
+
+    public int Min { get; } = int.MinValue;
+    public int Max { get; } = int.MaxValue;
+
+    protected override void OnInputValueChanged()
+    {
+        this.RaisePropertyChanged(nameof(Start));
+        this.RaisePropertyChanged(nameof(End));
     }
 }

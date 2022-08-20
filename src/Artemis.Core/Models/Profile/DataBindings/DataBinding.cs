@@ -1,67 +1,47 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Artemis.Storage.Entities.Profile.DataBindings;
 
 namespace Artemis.Core
 {
     /// <inheritdoc />
-    public class DataBinding<TLayerProperty, TProperty> : IDataBinding
+    public class DataBinding<TLayerProperty> : IDataBinding
     {
-        private TProperty _currentValue = default!;
+        private readonly List<IDataBindingProperty> _properties = new();
         private bool _disposed;
-        private TimeSpan _easingProgress;
-        private TProperty _lastAppliedValue = default!;
-        private TProperty _previousValue = default!;
-        private bool _reapplyValue;
+        private bool _isEnabled;
+        private DataBindingNodeScript<TLayerProperty> _script;
 
-        internal DataBinding(DataBindingRegistration<TLayerProperty, TProperty> dataBindingRegistration)
+        internal DataBinding(LayerProperty<TLayerProperty> layerProperty)
         {
-            LayerProperty = dataBindingRegistration.LayerProperty;
-            Entity = new DataBindingEntity();
+            LayerProperty = layerProperty;
 
-            ApplyRegistration(dataBindingRegistration);
+            Entity = new DataBindingEntity();
+            _script = new DataBindingNodeScript<TLayerProperty>(GetScriptName(), "The value to put into the data binding", this, LayerProperty.ProfileElement.Profile);
+
             Save();
-            ApplyDataBindingMode();
         }
 
         internal DataBinding(LayerProperty<TLayerProperty> layerProperty, DataBindingEntity entity)
         {
             LayerProperty = layerProperty;
+
             Entity = entity;
+            _script = new DataBindingNodeScript<TLayerProperty>(GetScriptName(), "The value to put into the data binding", this, LayerProperty.ProfileElement.Profile);
 
             // Load will add children so be initialized before that
             Load();
-            ApplyDataBindingMode();
         }
-
-        /// <summary>
-        ///     Gets the data binding registration this data binding is based upon
-        /// </summary>
-        public DataBindingRegistration<TLayerProperty, TProperty>? Registration { get; private set; }
 
         /// <summary>
         ///     Gets the layer property this data binding targets
         /// </summary>
         public LayerProperty<TLayerProperty> LayerProperty { get; }
 
-        /// <summary>
-        ///     Gets the converter used to apply this data binding to the <see cref="LayerProperty" />
-        /// </summary>
-        public DataBindingConverter<TLayerProperty, TProperty>? Converter { get; private set; }
-
-        /// <summary>
-        ///     Gets the data binding mode
-        /// </summary>
-        public IDataBindingMode<TLayerProperty, TProperty>? DataBindingMode { get; private set; }
-
-        /// <summary>
-        ///     Gets or sets the easing time of the data binding
-        /// </summary>
-        public TimeSpan EasingTime { get; set; }
-
-        /// <summary>
-        ///     Gets ors ets the easing function of the data binding
-        /// </summary>
-        public Easings.Functions EasingFunction { get; set; }
+        /// <inheritdoc />
+        public INodeScript Script => _script;
 
         /// <summary>
         ///     Gets the data binding entity this data binding uses for persistent storage
@@ -69,38 +49,52 @@ namespace Artemis.Core
         public DataBindingEntity Entity { get; }
 
         /// <summary>
-        ///     Gets the current value of the data binding
+        ///     Updates the pending values of this data binding
         /// </summary>
-        /// <param name="baseValue">The base value of the property the data binding is applied to</param>
-        /// <returns></returns>
-        public TProperty GetValue(TProperty baseValue)
+        public void Update()
         {
             if (_disposed)
                 throw new ObjectDisposedException("DataBinding");
 
-            if (Converter == null || DataBindingMode == null)
-                return baseValue;
+            if (!IsEnabled)
+                return;
 
-            TProperty value = DataBindingMode.GetValue(baseValue);
+            // TODO: Update the 'base value' node
 
-            // If no easing is to be applied simple return whatever the current value is
-            if (EasingTime == TimeSpan.Zero || !Converter.SupportsInterpolate)
-                return value;
-
-            // If the value changed, update the current and previous values used for easing
-            if (!Equals(value, _currentValue))
-                ResetEasing(value);
-
-            // Apply interpolation between the previous and current value
-            return GetInterpolatedValue();
+            Script.Run();
         }
 
         /// <summary>
-        ///     Returns the type of the target property of this data binding
+        ///     Registers a data binding property so that is available to the data binding system
         /// </summary>
-        public Type? GetTargetType()
+        /// <typeparam name="TProperty">The type of the layer property</typeparam>
+        /// <param name="getter">The function to call to get the value of the property</param>
+        /// <param name="setter">The action to call to set the value of the property</param>
+        /// <param name="displayName">The display name of the data binding property</param>
+        public DataBindingProperty<TProperty> RegisterDataBindingProperty<TProperty>(Func<TProperty> getter, Action<TProperty?> setter, string displayName)
         {
-            return Registration?.Getter.Method.ReturnType;
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+            if (Properties.Any(d => d.DisplayName == displayName))
+                throw new ArtemisCoreException($"A data binding property named '{displayName}' is already registered.");
+
+            DataBindingProperty<TProperty> property = new(getter, setter, displayName);
+            _properties.Add(property);
+
+            OnDataBindingPropertyRegistered();
+            return property;
+        }
+
+        /// <summary>
+        ///     Removes all data binding properties so they are no longer available to the data binding system
+        /// </summary>
+        public void ClearDataBindingProperties()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+
+            _properties.Clear();
+            OnDataBindingPropertiesCleared();
         }
 
         /// <summary>
@@ -115,80 +109,69 @@ namespace Artemis.Core
             if (disposing)
             {
                 _disposed = true;
+                _isEnabled = false;
 
-                if (Registration != null)
-                    Registration.DataBinding = null;
-                DataBindingMode?.Dispose();
+                Script.Dispose();
             }
-        }
-
-        private void ResetEasing(TProperty value)
-        {
-            _previousValue = GetInterpolatedValue();
-            _currentValue = value;
-            _easingProgress = TimeSpan.Zero;
-        }
-
-        private void ApplyRegistration(DataBindingRegistration<TLayerProperty, TProperty> dataBindingRegistration)
-        {
-            if (dataBindingRegistration == null)
-                throw new ArgumentNullException(nameof(dataBindingRegistration));
-
-            dataBindingRegistration.DataBinding = this;
-            Converter = dataBindingRegistration.Converter;
-            Registration = dataBindingRegistration;
-
-            if (GetTargetType()!.IsValueType)
-            {
-                if (_currentValue == null)
-                    _currentValue = default!;
-                if (_previousValue == null)
-                    _previousValue = default!;
-            }
-
-            Converter?.Initialize(this);
-        }
-
-        private TProperty GetInterpolatedValue()
-        {
-            if (_easingProgress == EasingTime || Converter == null || !Converter.SupportsInterpolate)
-                return _currentValue;
-
-            double easingAmount = _easingProgress.TotalSeconds / EasingTime.TotalSeconds;
-            return Converter.Interpolate(_previousValue, _currentValue, Easings.Interpolate(easingAmount, EasingFunction));
         }
 
         /// <summary>
-        ///     Updates the smoothing progress of the data binding
+        ///     Invokes the <see cref="DataBindingPropertyRegistered" /> event
         /// </summary>
-        /// <param name="timeline">The timeline to apply during update</param>
-        public void Update(Timeline timeline)
+        protected virtual void OnDataBindingPropertyRegistered()
         {
-            // Don't update data bindings if there is no delta, otherwise this creates an inconsistency between
-            // data bindings with easing and data bindings without easing (the ones with easing will seemingly not update)
-            if (timeline.Delta == TimeSpan.Zero || timeline.IsOverridden)
-                return;
+            DataBindingPropertyRegistered?.Invoke(this, new DataBindingEventArgs(this));
+        }
 
-            UpdateWithDelta(timeline.Delta);
+        /// <summary>
+        ///     Invokes the <see cref="DataBindingPropertiesCleared" /> event
+        /// </summary>
+        protected virtual void OnDataBindingPropertiesCleared()
+        {
+            DataBindingPropertiesCleared?.Invoke(this, new DataBindingEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DataBindingEnabled" /> event
+        /// </summary>
+        protected virtual void OnDataBindingEnabled(DataBindingEventArgs e)
+        {
+            DataBindingEnabled?.Invoke(this, e);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DataBindingDisabled" /> event
+        /// </summary>
+        protected virtual void OnDataBindingDisabled(DataBindingEventArgs e)
+        {
+            DataBindingDisabled?.Invoke(this, e);
+        }
+
+        private string GetScriptName()
+        {
+            return LayerProperty.PropertyDescription.Name ?? LayerProperty.Path;
         }
 
         /// <inheritdoc />
-        public void UpdateWithDelta(TimeSpan delta)
+        public ILayerProperty BaseLayerProperty => LayerProperty;
+
+        /// <inheritdoc />
+        public bool IsEnabled
         {
-            if (_disposed)
-                throw new ObjectDisposedException("DataBinding");
+            get => _isEnabled;
+            set
+            {
+                _isEnabled = value;
 
-            // Data bindings cannot go back in time like brushes
-            if (delta < TimeSpan.Zero)
-                delta = TimeSpan.Zero;
-
-            _easingProgress = _easingProgress.Add(delta);
-            if (_easingProgress > EasingTime)
-                _easingProgress = EasingTime;
-
-            // Tell Apply() to apply a new value next call
-            _reapplyValue = false;
+                if (_isEnabled)
+                    OnDataBindingEnabled(new DataBindingEventArgs(this));
+                else
+                    OnDataBindingDisabled(new DataBindingEventArgs(this));
+            }
         }
+
+        /// <inheritdoc />
+        public ReadOnlyCollection<IDataBindingProperty> Properties => _properties.AsReadOnly();
 
         /// <inheritdoc />
         public void Apply()
@@ -196,22 +179,10 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DataBinding");
 
-            if (Converter == null)
+            if (!IsEnabled)
                 return;
 
-            // If Update() has not been called, reapply the previous value
-            if (_reapplyValue)
-            {
-                Converter.ApplyValue(_lastAppliedValue);
-                return;
-            }
-
-            TProperty converterValue = Converter.GetValue();
-            TProperty value = GetValue(converterValue);
-            Converter.ApplyValue(value);
-
-            _lastAppliedValue = value;
-            _reapplyValue = true;
+            _script.DataBindingExitNode.ApplyToDataBinding();
         }
 
         /// <inheritdoc />
@@ -221,56 +192,17 @@ namespace Artemis.Core
             GC.SuppressFinalize(this);
         }
 
-        #region Mode management
+        /// <inheritdoc />
+        public event EventHandler<DataBindingEventArgs>? DataBindingPropertyRegistered;
 
-        /// <summary>
-        ///     Changes the data binding mode of the data binding to the specified <paramref name="dataBindingMode" />
-        /// </summary>
-        public void ChangeDataBindingMode(DataBindingModeType dataBindingMode)
-        {
-            switch (dataBindingMode)
-            {
-                case DataBindingModeType.Direct:
-                    Entity.DataBindingMode = new DirectDataBindingEntity();
-                    break;
-                case DataBindingModeType.Conditional:
-                    Entity.DataBindingMode = new ConditionalDataBindingEntity();
-                    break;
-                default:
-                    Entity.DataBindingMode = null;
-                    break;
-            }
+        /// <inheritdoc />
+        public event EventHandler<DataBindingEventArgs>? DataBindingPropertiesCleared;
 
-            ApplyDataBindingMode();
-        }
+        /// <inheritdoc />
+        public event EventHandler<DataBindingEventArgs>? DataBindingEnabled;
 
-        /// <summary>
-        ///     Replaces the current data binding mode with one based on the provided data binding mode entity
-        /// </summary>
-        /// <param name="dataBindingModeEntity">The data binding mode entity to base the new data binding mode upon</param>
-        public void ApplyDataBindingEntity(IDataBindingModeEntity dataBindingModeEntity)
-        {
-            Entity.DataBindingMode = dataBindingModeEntity;
-            ApplyDataBindingMode();
-        }
-
-        private void ApplyDataBindingMode()
-        {
-            DataBindingMode?.Dispose();
-            DataBindingMode = null;
-
-            switch (Entity.DataBindingMode)
-            {
-                case DirectDataBindingEntity directDataBindingEntity:
-                    DataBindingMode = new DirectDataBinding<TLayerProperty, TProperty>(this, directDataBindingEntity);
-                    break;
-                case ConditionalDataBindingEntity conditionalDataBindingEntity:
-                    DataBindingMode = new ConditionalDataBinding<TLayerProperty, TProperty>(this, conditionalDataBindingEntity);
-                    break;
-            }
-        }
-
-        #endregion
+        /// <inheritdoc />
+        public event EventHandler<DataBindingEventArgs>? DataBindingDisabled;
 
         #region Storage
 
@@ -280,15 +212,16 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DataBinding");
 
-            // General
-            DataBindingRegistration<TLayerProperty, TProperty>? registration = LayerProperty.GetDataBindingRegistration<TProperty>(Entity.Identifier);
-            if (registration != null)
-                ApplyRegistration(registration);
+            IsEnabled = Entity.IsEnabled;
+        }
 
-            EasingTime = Entity.EasingTime;
-            EasingFunction = (Easings.Functions) Entity.EasingFunction;
-
-            DataBindingMode?.Load();
+        /// <inheritdoc />
+        public void LoadNodeScript()
+        {
+            _script.Dispose();
+            _script = Entity.NodeScript != null
+                ? new DataBindingNodeScript<TLayerProperty>(GetScriptName(), "The value to put into the data binding", this, Entity.NodeScript, LayerProperty.ProfileElement.Profile)
+                : new DataBindingNodeScript<TLayerProperty>(GetScriptName(), "The value to put into the data binding", this, LayerProperty.ProfileElement.Profile);
         }
 
         /// <inheritdoc />
@@ -297,40 +230,16 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DataBinding");
 
-            if (!LayerProperty.Entity.DataBindingEntities.Contains(Entity))
-                LayerProperty.Entity.DataBindingEntities.Add(Entity);
-
-            // Don't save an invalid state
-            if (Registration != null)
-                Entity.Identifier = Registration.DisplayName;
-
-            Entity.EasingTime = EasingTime;
-            Entity.EasingFunction = (int) EasingFunction;
-
-            DataBindingMode?.Save();
+            Entity.IsEnabled = IsEnabled;
+            if (_script.ExitNodeConnected || _script.Nodes.Count() > 1)
+            {
+                _script.Save();
+                Entity.NodeScript = _script.Entity;
+            }
+            else
+                Entity.NodeScript = null;
         }
 
         #endregion
-    }
-
-    /// <summary>
-    ///     A mode that determines how the data binding is applied to the layer property
-    /// </summary>
-    public enum DataBindingModeType
-    {
-        /// <summary>
-        ///     Disables the data binding
-        /// </summary>
-        None,
-
-        /// <summary>
-        ///     Replaces the layer property value with the data binding value
-        /// </summary>
-        Direct,
-
-        /// <summary>
-        ///     Replaces the layer property value with the data binding value
-        /// </summary>
-        Conditional
     }
 }

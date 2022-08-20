@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Artemis.UI": {
-      "commandName": "Project",
-      "commandLineArgs": "--force-elevation --disable-forced-shutdown --pcmr"
-    }
-  }
-}

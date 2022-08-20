@@ -1,0 +1,111 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:startupWizard="clr-namespace:Artemis.UI.Screens.StartupWizard"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:behaviors="clr-namespace:Artemis.UI.Shared.Behaviors;assembly=Artemis.UI.Shared"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.StartupWizard.Steps.SettingsStep"
+             x:DataType="startupWizard:StartupWizardViewModel">
+    <Border Classes="card" VerticalAlignment="Top">
+        <StackPanel>
+            <TextBlock>
+                Artemis comes with a variety of settings you can change to tweak everything to your liking.
+            </TextBlock>
+            <TextBlock>
+                Below you can find a few relevant settings, many more can be changed later on the settings page.
+            </TextBlock>
+
+            <!-- Auto-run settings -->
+            <StackPanel IsVisible="{CompiledBinding IsAutoRunSupported}">
+                <TextBlock Classes="h4" Margin="0 15">
+                    Auto-run
+                </TextBlock>
+                <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
+                    <StackPanel>
+                        <StackPanel IsVisible="{CompiledBinding IsAutoRunSupported}">
+                            <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock>Auto-run on startup</TextBlock>
+                                </StackPanel>
+                                <ToggleSwitch Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" IsChecked="{CompiledBinding UIAutoRun.Value}" MinWidth="0" Margin="0 -10" />
+                            </Grid>
+                            <Separator Classes="card-separator" />
+
+                            <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock>Hide window on auto-run</TextBlock>
+                                </StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                    <ToggleSwitch IsChecked="{CompiledBinding !UIShowOnStartup.Value}" IsEnabled="{CompiledBinding UIAutoRun.Value}" MinWidth="0" Margin="0 -10" />
+                                </StackPanel>
+                            </Grid>
+                            <Separator Classes="card-separator" />
+
+                            <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock>Startup delay</TextBlock>
+                                    <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                        Set the amount of seconds to wait before auto-running Artemis.
+                                    </TextBlock>
+                                    <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                        If some devices don't work because Artemis starts before the manufacturer's software, try increasing this value.
+                                    </TextBlock>
+                                </StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
+                                    <controls:NumberBox IsEnabled="{CompiledBinding UIAutoRun.Value}" Width="120">
+                                        <Interaction.Behaviors>
+                                            <behaviors:LostFocusNumberBoxBindingBehavior Value="{CompiledBinding UIAutoRunDelay.Value}" />
+                                        </Interaction.Behaviors>
+                                    </controls:NumberBox>
+                                    <TextBlock VerticalAlignment="Center" TextAlignment="Right" Width="30">sec</TextBlock>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Update settings -->
+            <StackPanel IsVisible="{CompiledBinding IsUpdatingSupported}">
+                <TextBlock Classes="h4" Margin="0 15">
+                    Updating
+                </TextBlock>
+                <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
+                    <StackPanel>
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock>
+                                    Check for updates
+                                </TextBlock>
+                                <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                    If enabled, we'll check for updates on startup and periodically while running.
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                <ToggleSwitch IsChecked="{CompiledBinding UICheckForUpdates.Value}" MinWidth="0" />
+                            </StackPanel>
+                        </Grid>
+                        <Separator Classes="card-separator" />
+
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock>
+                                    Auto-install updates
+                                </TextBlock>
+                                <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                    If enabled, new updates will automatically be installed.
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                <ToggleSwitch IsEnabled="{CompiledBinding UICheckForUpdates.Value}" IsChecked="{CompiledBinding UIAutoUpdate.Value}" MinWidth="0" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

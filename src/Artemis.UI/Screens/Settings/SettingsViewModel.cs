@@ -1,17 +1,26 @@
-﻿using Stylet;
+﻿using System.Collections.ObjectModel;
+using Artemis.UI.Shared;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.Settings
 {
     public class SettingsViewModel : MainScreenViewModel
     {
-        public SettingsViewModel(SettingsTabsViewModel settingsTabsViewModel)
+        public SettingsViewModel(IScreen hostScreen,
+            GeneralTabViewModel generalTabViewModel,
+            PluginsTabViewModel pluginsTabViewModel,
+            DevicesTabViewModel devicesTabViewModel,
+            AboutTabViewModel aboutTabViewModel) : base(hostScreen, "settings")
         {
-            DisplayName = "Settings";
-
-            settingsTabsViewModel.ConductWith(this);
-            ActiveItem = settingsTabsViewModel;
+            SettingTabs = new ObservableCollection<ActivatableViewModelBase>
+            {
+                generalTabViewModel,
+                pluginsTabViewModel,
+                devicesTabViewModel,
+                aboutTabViewModel
+            };
         }
 
-        public SettingsTabsViewModel ActiveItem { get; }
+        public ObservableCollection<ActivatableViewModelBase> SettingTabs { get; }
     }
 }

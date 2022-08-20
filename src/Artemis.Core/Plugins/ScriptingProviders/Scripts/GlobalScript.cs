@@ -38,7 +38,7 @@ namespace Artemis.Core.ScriptingProviders
         /// <inheritdoc />
         internal override void InternalCleanup()
         {
-            ScriptingService?.InternalGlobalScripts.Remove(this);
+            ScriptingService?.RemoveScript(ScriptConfiguration);
         }
 
         #endregion

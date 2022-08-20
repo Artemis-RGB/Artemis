@@ -1,18 +1,19 @@
-﻿using Artemis.UI.Ninject.Factories;
+﻿using Artemis.Core.Services;
+using Artemis.UI.Screens.StartupWizard;
+using Artemis.UI.Shared.Services;
+using Avalonia.Threading;
+using ReactiveUI;
 
-namespace Artemis.UI.Screens.Home
+namespace Artemis.UI.Screens.Home;
+
+public class HomeViewModel : MainScreenViewModel
 {
-    public class HomeViewModel : MainScreenViewModel
+    public HomeViewModel(IScreen hostScreen, ISettingsService settingsService, IWindowService windowService) : base(hostScreen, "home")
     {
-        public HomeViewModel(IHeaderVmFactory headerVmFactory)
-        {
-            DisplayName = "Home";
-            HeaderViewModel = headerVmFactory.SimpleHeaderViewModel(DisplayName);
-        }
+        DisplayName = "Home";
 
-        public void OpenUrl(string url)
-        {
-            Core.Utilities.OpenUrl(url);
-        }
+        // Show the startup wizard if it hasn't been completed
+        if (!settingsService.GetSetting("UI.SetupWizardCompleted", false).Value)
+            Dispatcher.UIThread.InvokeAsync(async () => await windowService.ShowDialogAsync<StartupWizardViewModel, bool>());
     }
 }

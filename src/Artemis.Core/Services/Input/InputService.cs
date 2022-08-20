@@ -25,7 +25,11 @@ namespace Artemis.Core.Services
         public void Dispose()
         {
             while (_inputProviders.Any())
-                RemoveInputProvider(_inputProviders.First());
+            {
+                InputProvider provider = _inputProviders.First();
+                RemoveInputProvider(provider);
+                provider.Dispose();
+            }
         }
 
         #endregion
@@ -86,14 +90,17 @@ namespace Artemis.Core.Services
 
         public void StopIdentify()
         {
+            if (_identifyingDevice == null)
+                return;
+            
             _logger.Debug("Stop identifying device {device}", _identifyingDevice);
-
             _identifyingDevice = null;
             _rgbService.SaveDevices();
 
             BustIdentifierCache();
         }
 
+        // TODO: Move the OnIdentifierReceived logic into here and get rid of OnIdentifierReceived, this and OnIdentifierReceived are always called in combination with each other
         public ArtemisDevice? GetDeviceByIdentifier(InputProvider provider, object identifier, InputDeviceType type)
         {
             if (provider == null) throw new ArgumentNullException(nameof(provider));
@@ -296,7 +303,7 @@ namespace Artemis.Core.Services
 
         public void ReleaseAll()
         {
-            foreach (var (device, keys) in _pressedKeys.ToList())
+            foreach ((ArtemisDevice? device, HashSet<KeyboardKey>? keys) in _pressedKeys.ToList())
             {
                 foreach (KeyboardKey keyboardKey in keys)
                 {

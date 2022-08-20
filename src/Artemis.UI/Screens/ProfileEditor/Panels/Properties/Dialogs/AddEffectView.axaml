@@ -1,0 +1,64 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:layerEffects="clr-namespace:Artemis.Core.LayerEffects;assembly=Artemis.Core"
+             xmlns:dialogs="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Dialogs"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Dialogs.AddEffectView"
+             x:DataType="dialogs:AddEffectViewModel"
+             Width="500">
+    <Grid RowDefinitions="Auto,*">
+        <TextBox Name="SearchBox" Text="{CompiledBinding SearchText}" Margin="0 0 0 15" Watermark="Search" />
+        <ListBox Name="EffectDescriptorsList"
+                 Grid.Row="1"
+                 Items="{CompiledBinding LayerEffectDescriptors}"
+                 IsVisible="{CompiledBinding LayerEffectDescriptors.Count}"
+                 Height="300">
+
+            <ListBox.DataTemplates>
+                <DataTemplate DataType="{x:Type layerEffects:LayerEffectDescriptor}">
+                    <Grid RowDefinitions="Auto,*"
+                          ColumnDefinitions="Auto,Auto"
+                          Background="Transparent"
+                          PointerReleased="InputElement_OnPointerReleased"
+                          Margin="0 4"
+                          VerticalAlignment="Center">
+                        <shared:ArtemisIcon Grid.Column="0"
+                                            Grid.RowSpan="2"
+                                            Icon="{CompiledBinding Icon}"
+                                            Width="24"
+                                            Height="24"
+                                            VerticalAlignment="Center"
+                                            Margin="0 0 15 0" />
+                        <TextBlock Grid.Column="1"
+                                   Grid.Row="0"
+                                   Classes="BodyStrongTextBlockStyle"
+                                   Text="{CompiledBinding DisplayName}"
+                                   VerticalAlignment="Bottom"
+                                   Width="450"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Grid.Column="1"
+                                   Grid.Row="1"
+                                   Foreground="{DynamicResource TextFillColorSecondary}"
+                                   Text="{CompiledBinding Description}"
+                                   VerticalAlignment="Top"
+                                   Width="450"
+                                   TextWrapping="Wrap" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.DataTemplates>
+        </ListBox>
+        <Grid Grid.Row="1" Height="300">
+            <StackPanel VerticalAlignment="Center"
+                        Spacing="20"
+                        IsVisible="{CompiledBinding !LayerEffectDescriptors.Count}">
+                <avalonia:MaterialIcon Kind="CloseCircle" Width="32" Height="32" />
+                <TextBlock Classes="h5" TextAlignment="Center">None of the effects match your search</TextBlock>
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</UserControl>

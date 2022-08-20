@@ -22,7 +22,7 @@ namespace Artemis.Core.Ninject
 
             Kernel.Components.Remove<IMissingBindingResolver, SelfBindingResolver>();
 
-            Kernel.Bind<Plugin>().ToConstant(Plugin);
+            Kernel.Bind<Plugin>().ToConstant(Plugin).InTransientScope();
 
             // Bind plugin service interfaces
             Kernel.Bind(x =>

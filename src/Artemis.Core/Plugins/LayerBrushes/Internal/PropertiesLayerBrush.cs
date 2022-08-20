@@ -1,11 +1,12 @@
 ﻿using System;
+using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.LayerBrushes
 {
     /// <summary>
     ///     For internal use only, please use <see cref="LayerBrush{T}" /> or <see cref="PerLedLayerBrush{T}" /> or instead
     /// </summary>
-    public abstract class PropertiesLayerBrush<T> : BaseLayerBrush where T : LayerPropertyGroup
+    public abstract class PropertiesLayerBrush<T> : BaseLayerBrush where T : LayerPropertyGroup, new()
     {
         private T _properties = null!;
 
@@ -34,13 +35,10 @@ namespace Artemis.Core.LayerBrushes
 
         internal void InitializeProperties()
         {
-            Properties = Activator.CreateInstance<T>();
-            Properties.GroupDescription = new PropertyGroupDescriptionAttribute {Name = Descriptor.DisplayName, Description = Descriptor.Description};
-            Properties.LayerBrush = this;
-            Properties.Initialize(Layer, "LayerBrush.", Descriptor.Provider);
+            Properties = new T();
+            PropertyGroupDescriptionAttribute groupDescription = new() {Identifier = "Brush", Name = Descriptor.DisplayName, Description = Descriptor.Description};
+            Properties.Initialize(Layer, null, groupDescription, LayerBrushEntity.PropertyGroup);
             PropertiesInitialized = true;
-
-            EnableLayerBrush();
         }
     }
 }

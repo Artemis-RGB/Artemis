@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
@@ -19,14 +19,44 @@ namespace Artemis.Core
         PropertyDescriptionAttribute PropertyDescription { get; }
 
         /// <summary>
+        ///     Gets the profile element (such as layer or folder) this property is applied to
+        /// </summary>
+        RenderProfileElement ProfileElement { get; }
+
+        /// <summary>
         ///     The parent group of this layer property, set after construction
         /// </summary>
         LayerPropertyGroup LayerPropertyGroup { get; }
 
         /// <summary>
-        ///     Gets the unique path of the property on the layer
+        ///     Gets or sets whether the property is hidden in the UI
+        /// </summary>
+        public bool IsHidden { get; set; }
+
+        /// <summary>
+        ///     Gets the data binding of this property
+        /// </summary>
+        IDataBinding BaseDataBinding { get; }
+
+        /// <summary>
+        ///     Gets a boolean indicating whether the layer has any data binding properties
+        /// </summary>
+        public bool HasDataBinding { get; }
+
+        /// <summary>
+        ///     Gets a boolean indicating whether data bindings are supported on this type of property
+        /// </summary>
+        public bool DataBindingsSupported { get; }
+        
+        /// <summary>
+        ///     Gets the unique path of the property on the render element
         /// </summary>
         string Path { get; }
+
+        /// <summary>
+        ///     Gets a read-only list of all the keyframes on this layer property
+        /// </summary>
+        ReadOnlyCollection<ILayerPropertyKeyframe> UntypedKeyframes { get; }
 
         /// <summary>
         ///     Gets the type of the property
@@ -45,19 +75,14 @@ namespace Artemis.Core
         ///         <see cref="LayerProperty{T}" />
         ///     </para>
         /// </summary>
-        void Initialize(RenderProfileElement profileElement, LayerPropertyGroup group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description, string path);
+        void Initialize(RenderProfileElement profileElement, LayerPropertyGroup group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description);
 
         /// <summary>
-        ///     Returns a list off all data binding registrations
+        ///     Attempts to create a keyframe for this property from the provided entity
         /// </summary>
-        List<IDataBindingRegistration> GetAllDataBindingRegistrations();
-
-        /// <summary>
-        ///     Attempts to load and add the provided keyframe entity to the layer property
-        /// </summary>
-        /// <param name="keyframeEntity">The entity representing the keyframe to add</param>
+        /// <param name="keyframeEntity">The entity representing the keyframe to create</param>
         /// <returns>If succeeded the resulting keyframe, otherwise <see langword="null" /></returns>
-        ILayerPropertyKeyframe? AddKeyframeEntity(KeyframeEntity keyframeEntity);
+        ILayerPropertyKeyframe? CreateKeyframeFromEntity(KeyframeEntity keyframeEntity);
 
         /// <summary>
         ///     Overrides the property value with the default value
@@ -69,6 +94,26 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="timeline">The timeline to apply to the property</param>
         void Update(Timeline timeline);
+
+
+        /// <summary>
+        /// Updates just the data binding instead of the entire layer
+        /// </summary>
+        void UpdateDataBinding();
+
+        /// <summary>
+        /// Removes a keyframe from the layer property without knowing it's type.
+        /// <para>Prefer <see cref="LayerProperty{T}.RemoveKeyframe"/>.</para>
+        /// </summary>
+        /// <param name="keyframe"></param>
+        void RemoveUntypedKeyframe(ILayerPropertyKeyframe keyframe);
+
+        /// <summary>
+        /// Adds a keyframe to the layer property without knowing it's type.
+        /// <para>Prefer <see cref="LayerProperty{T}.AddKeyframe"/>.</para>
+        /// </summary>
+        /// <param name="keyframe"></param>
+        void AddUntypedKeyframe(ILayerPropertyKeyframe keyframe);
 
         /// <summary>
         ///     Occurs when the layer property is disposed
@@ -98,31 +143,11 @@ namespace Artemis.Core
         /// <summary>
         ///     Occurs when a new keyframe was added to the layer property
         /// </summary>
-        public event EventHandler<LayerPropertyEventArgs>? KeyframeAdded;
+        public event EventHandler<LayerPropertyKeyframeEventArgs>? KeyframeAdded;
 
         /// <summary>
         ///     Occurs when a keyframe was removed from the layer property
         /// </summary>
-        public event EventHandler<LayerPropertyEventArgs>? KeyframeRemoved;
-
-        /// <summary>
-        ///     Occurs when a data binding property has been added
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertyRegistered;
-
-        /// <summary>
-        ///     Occurs when all data binding properties have been removed
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertiesCleared;
-
-        /// <summary>
-        ///     Occurs when a data binding has been enabled
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingEnabled;
-
-        /// <summary>
-        ///     Occurs when a data binding has been disabled
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingDisabled;
+        public event EventHandler<LayerPropertyKeyframeEventArgs>? KeyframeRemoved;
     }
 }

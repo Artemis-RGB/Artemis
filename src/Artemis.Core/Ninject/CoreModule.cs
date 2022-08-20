@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Artemis.Core.Services;
+﻿using Artemis.Core.Services;
 using Artemis.Storage;
 using Artemis.Storage.Migrations.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;
@@ -79,7 +78,7 @@ namespace Artemis.Core.Ninject
 
         private bool HasAccessToProtectedService(IRequest r)
         {
-            return r.ParentRequest != null && !r.ParentRequest.Service.Assembly.Location.StartsWith(Path.Combine(Constants.DataFolder, "plugins"));
+            return r.ParentRequest != null && !r.ParentRequest.Service.Assembly.Location.StartsWith(Constants.PluginsFolder);
         }
     }
 }

@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:settings="clr-namespace:Artemis.UI.Screens.Settings"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:plugins="clr-namespace:Artemis.UI.Screens.Plugins"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Settings.PluginsTabView"
+             x:DataType="settings:PluginsTabViewModel">
+    <Grid RowDefinitions="Auto,*">
+        <Grid Grid.Row="0" Grid.Column="0" MaxWidth="900" Margin="0 10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MinWidth="165" MaxWidth="400" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBox Classes="clearButton" Text="{CompiledBinding SearchPluginInput}" Watermark="Search plugins" Margin="0 0 10 0" />
+
+            <StackPanel Spacing="5" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+                <controls:HyperlinkButton VerticalAlignment="Top" NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/plugins">
+                    Get more plugins
+                </controls:HyperlinkButton>
+                <Button Classes="accent" Command="{CompiledBinding ImportPlugin}">Import plugin</Button>
+            </StackPanel>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
+            <ItemsRepeater Items="{CompiledBinding Plugins}" MaxWidth="900" VerticalAlignment="Center">
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="plugins:PluginSettingsViewModel">
+                        <ContentControl Content="{CompiledBinding}" Height="200"/>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

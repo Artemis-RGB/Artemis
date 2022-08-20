@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Artemis.Core;
 using Artemis.UI.Shared.Services;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.DataModelVisualization
 {
     /// <summary>
     ///     Represents a layer brush registered through

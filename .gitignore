@@ -196,3 +196,5 @@ FakesAssemblies/
 src/Artemis\.Storage/Storage\.db
 !src/Artemis.UI/screens/Settings/Debug
 docfx/docfx_project/_site/
+
+src/.idea/

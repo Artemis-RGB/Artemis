@@ -8,7 +8,6 @@
         internal LayerBrushReferenceLayerProperty()
         {
             KeyframesSupported = false;
-            DataBindingsSupported = false;
         }
 
         /// <summary>

@@ -1,0 +1,90 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:visualScripting="clr-namespace:Artemis.UI.Screens.VisualScripting"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:skiaSharp="clr-namespace:SkiaSharp;assembly=SkiaSharp"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.VisualScripting.CableView"
+             x:DataType="visualScripting:CableViewModel"
+             ClipToBounds="False"
+             IsVisible="{CompiledBinding Connected}">
+    <UserControl.Resources>
+        <converters:ColorToSolidColorBrushConverter x:Key="ColorToSolidColorBrushConverter" />
+        <shared:SKColorToStringConverter x:Key="SKColorToStringConverter" />
+        <shared:SKColorToColorConverter x:Key="SKColorToColorConverter" />
+    </UserControl.Resources>
+    <Canvas PointerEnter="OnPointerEnter"
+            PointerLeave="OnPointerLeave">
+        <Path Name="CablePath"
+              Stroke="{CompiledBinding CableColor, Converter={StaticResource ColorToSolidColorBrushConverter}}"
+              StrokeThickness="4"
+              StrokeLineCap="Round">
+            <Path.Transitions>
+                <Transitions>
+                    <ThicknessTransition Property="Margin" Duration="200"></ThicknessTransition>
+                </Transitions>
+            </Path.Transitions>
+            <Path.Data>
+                <PathGeometry>
+                    <PathGeometry.Figures>
+                        <PathFigure IsClosed="False">
+                            <PathFigure.Segments>
+                                <BezierSegment />
+                            </PathFigure.Segments>
+                        </PathFigure>
+                    </PathGeometry.Figures>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
+        <Border Name="ValueBorder"
+                Background="{DynamicResource ContentDialogBackground}"
+                BorderBrush="{CompiledBinding CableColor, Converter={StaticResource ColorToSolidColorBrushConverter}}"
+                BorderThickness="2"
+                CornerRadius="3"
+                Padding="4"
+                Canvas.Left="{CompiledBinding ValuePoint.X}"
+                Canvas.Top="{CompiledBinding ValuePoint.Y}"
+                IsVisible="{CompiledBinding DisplayValue}">
+            <ContentControl Content="{CompiledBinding FromViewModel.Pin.PinValue}">
+                <ContentControl.DataTemplates>
+                    <DataTemplate DataType="skiaSharp:SKColor">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBlock x:Name="HexDisplay"
+                                       Text="{CompiledBinding Converter={StaticResource SKColorToStringConverter}}"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Stretch" 
+                                       FontFamily="Consolas"/>
+                            <Border Margin="5 0 0 0"
+                                    VerticalAlignment="Bottom"
+                                    HorizontalAlignment="Right"
+                                    BorderThickness="1"
+                                    MinWidth="18"
+                                    MinHeight="18"
+                                    Background="{DynamicResource CheckerboardBrush}"
+                                    BorderBrush="{DynamicResource ColorPickerButtonOutline}"
+                                    CornerRadius="4"
+                                    ClipToBounds="True">
+								<Border CornerRadius="4">
+									<Border.Background>
+										<SolidColorBrush Color="{Binding Converter={StaticResource SKColorToColorConverter}}" />
+									</Border.Background>
+								</Border>
+                            </Border>
+                        </StackPanel>
+                    </DataTemplate>
+                    <DataTemplate DataType="core:Numeric">
+                        <TextBlock Text="{Binding}" FontFamily="Consolas"/>
+                    </DataTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontFamily="Consolas"/>
+                    </DataTemplate>
+                </ContentControl.DataTemplates>
+            </ContentControl>
+        </Border>
+    </Canvas>
+</UserControl>

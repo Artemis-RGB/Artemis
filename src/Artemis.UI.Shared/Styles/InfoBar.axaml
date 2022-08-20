@@ -1,0 +1,32 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+			<StackPanel >
+                <controls:InfoBar Classes="notification-info-bar" Title="Test title" Message="Test message" IsOpen="True" Severity="Informational"/>
+                <controls:InfoBar Classes="notification-info-bar" Title="Test title" Message="Test message" IsOpen="True" Severity="Success"/>
+                <controls:InfoBar Classes="notification-info-bar" Title="Test title" Message="Test message" IsOpen="True" Severity="Warning"/>
+                <controls:InfoBar Classes="notification-info-bar" Title="Test title" Message="Test message" IsOpen="True" Severity="Error"/>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="controls|InfoBar.notification-info-bar">
+        <Setter Property="Opacity" Value="0" />
+        <Setter Property="MaxWidth" Value="600" />
+        <Setter Property="Margin" Value="15"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="controls|InfoBar.notification-info-bar[IsOpen=True]">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="controls|InfoBar.notification-info-bar:informational /template/ Border#ContentRoot">
+        <Setter Property="Background" Value="#ff3c3c3c" />
+    </Style>
+</Styles>

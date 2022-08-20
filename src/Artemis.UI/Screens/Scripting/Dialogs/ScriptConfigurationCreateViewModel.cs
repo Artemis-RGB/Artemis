@@ -1,57 +1,52 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reactive;
 using Artemis.Core.ScriptingProviders;
 using Artemis.Core.Services;
-using Artemis.UI.Shared.Services;
-using FluentValidation;
-using Stylet;
+using Artemis.UI.Shared;
+using FluentAvalonia.UI.Controls;
+using ReactiveUI;
+using ReactiveUI.Validation.Extensions;
 
-namespace Artemis.UI.Screens.Scripting.Dialogs
+namespace Artemis.UI.Screens.Scripting.Dialogs;
+
+public class ScriptConfigurationCreateViewModel : ContentDialogViewModelBase
 {
-    public class ScriptConfigurationCreateViewModel : DialogViewModelBase
+    private string? _scriptName;
+    private ScriptingProvider _selectedScriptingProvider;
+
+    public ScriptConfigurationCreateViewModel(IScriptingService scriptingService)
     {
-        private string _name;
-        private ScriptingProvider _selectedScriptingProvider;
-
-        public ScriptConfigurationCreateViewModel(IModelValidator<ScriptConfigurationCreateViewModel> validator, IPluginManagementService pluginManagementService) : base(validator)
-        {
-            _name = "My script";
-
-            ScriptingProviders = new BindableCollection<ScriptingProvider>(pluginManagementService.GetFeaturesOfType<ScriptingProvider>());
-            HasScriptingProviders = ScriptingProviders.Count > 0;
-        }
-
-        public BindableCollection<ScriptingProvider> ScriptingProviders { get; }
-        public bool HasScriptingProviders { get; }
-
-        public string Name
-        {
-            get => _name;
-            set => SetAndNotify(ref _name, value);
-        }
-
-        public ScriptingProvider SelectedScriptingProvider
-        {
-            get => _selectedScriptingProvider;
-            set => SetAndNotify(ref _selectedScriptingProvider, value);
-        }
-
-        public async Task Accept()
-        {
-            await ValidateAsync();
-
-            if (HasErrors)
-                return;
-
-            Session.Close(new ScriptConfiguration(SelectedScriptingProvider, Name));
-        }
+        ScriptingProviders = new List<ScriptingProvider>(scriptingService.ScriptingProviders);
+        Submit = ReactiveCommand.Create(ExecuteSubmit, ValidationContext.Valid);
+        _selectedScriptingProvider = ScriptingProviders.First();
+        
+        this.ValidationRule(vm => vm.ScriptName, s => !string.IsNullOrWhiteSpace(s), "Script name cannot be empty.");
     }
 
-    public class ProfileElementScriptConfigurationCreateViewModelValidator : AbstractValidator<ScriptConfigurationCreateViewModel>
+    public ScriptConfiguration? ScriptConfiguration { get; private set; }
+    public List<ScriptingProvider> ScriptingProviders { get; }
+
+    public string? ScriptName
     {
-        public ProfileElementScriptConfigurationCreateViewModelValidator()
-        {
-            RuleFor(m => m.Name).NotEmpty().WithMessage("Script name may not be empty");
-            RuleFor(m => m.SelectedScriptingProvider).NotNull().WithMessage("Scripting provider is required");
-        }
+        get => _scriptName;
+        set => RaiseAndSetIfChanged(ref _scriptName, value);
+    }
+
+    public ScriptingProvider SelectedScriptingProvider
+    {
+        get => _selectedScriptingProvider;
+        set => RaiseAndSetIfChanged(ref _selectedScriptingProvider, value);
+    }
+
+    public ReactiveCommand<Unit, Unit> Submit { get; }
+
+    private void ExecuteSubmit()
+    {
+        if (ScriptName == null)
+            return;
+
+        ScriptConfiguration = new ScriptConfiguration(SelectedScriptingProvider, ScriptName, ScriptType.Profile);
+        ContentDialog?.Hide(ContentDialogResult.Primary);
     }
 }

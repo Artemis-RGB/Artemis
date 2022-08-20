@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
-using Artemis.Core.ScriptingProviders;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
 using RGB.NET.Core;
@@ -17,6 +16,7 @@ namespace Artemis.Core
     /// </summary>
     public sealed class Layer : RenderProfileElement
     {
+        private readonly List<Layer> _renderCopies;
         private LayerGeneralProperties _general;
         private BaseLayerBrush? _layerBrush;
         private LayerShape? _layerShape;
@@ -29,16 +29,17 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="parent">The parent of the layer</param>
         /// <param name="name">The name of the layer</param>
-        public Layer(ProfileElement parent, string name) : base(parent.Profile)
+        public Layer(ProfileElement parent, string name) : base(parent, parent.Profile)
         {
             LayerEntity = new LayerEntity();
             EntityId = Guid.NewGuid();
 
-            Parent = parent ?? throw new ArgumentNullException(nameof(parent));
             Profile = Parent.Profile;
             Name = name;
             Suspended = false;
 
+            // TODO: move to top
+            _renderCopies = new List<Layer>();
             _general = new LayerGeneralProperties();
             _transform = new LayerTransformProperties();
 
@@ -47,7 +48,6 @@ namespace Artemis.Core
 
             Adapter = new LayerAdapter(this);
             Initialize();
-            Parent.AddChild(this, 0);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Artemis.Core
         /// <param name="profile">The profile the layer belongs to</param>
         /// <param name="parent">The parent of the layer</param>
         /// <param name="layerEntity">The entity of the layer</param>
-        public Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity) : base(parent.Profile)
+        public Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity) : base(parent, parent.Profile)
         {
             LayerEntity = layerEntity;
             EntityId = layerEntity.Id;
@@ -64,6 +64,8 @@ namespace Artemis.Core
             Profile = profile;
             Parent = parent;
 
+            // TODO: move to top
+            _renderCopies = new List<Layer>();
             _general = new LayerGeneralProperties();
             _transform = new LayerTransformProperties();
 
@@ -73,6 +75,37 @@ namespace Artemis.Core
             Adapter = new LayerAdapter(this);
             Load();
             Initialize();
+        }
+
+        /// <summary>
+        ///     Creates a new instance of the <see cref="Layer" /> class by copying the provided <paramref name="source"/>.
+        /// </summary>
+        /// <param name="source">The layer to copy</param>
+        private Layer(Layer source) : base(source, source.Profile)
+        {
+            LayerEntity = source.LayerEntity;
+
+            Profile = source.Profile;
+            Parent = source;
+
+            // TODO: move to top
+            _renderCopies = new List<Layer>();
+            _general = new LayerGeneralProperties();
+            _transform = new LayerTransformProperties();
+
+            _leds = new List<ArtemisLed>();
+            Leds = new ReadOnlyCollection<ArtemisLed>(_leds);
+
+            Adapter = new LayerAdapter(this);
+            Load();
+            Initialize();
+
+            Timeline.JumpToStart();
+            AddLeds(source.Leds);
+            Enable();
+
+            // After loading using the source entity create a new entity so the next call to Save won't mess with the source, just in case.
+            LayerEntity = new LayerEntity();
         }
 
         /// <summary>
@@ -97,7 +130,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the general properties of the layer
         /// </summary>
-        [PropertyGroupDescription(Name = "General", Description = "A collection of general properties")]
+        [PropertyGroupDescription(Identifier = "General", Name = "General", Description = "A collection of general properties")]
         public LayerGeneralProperties General
         {
             get => _general;
@@ -107,7 +140,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the transform properties of the layer
         /// </summary>
-        [PropertyGroupDescription(Name = "Transform", Description = "A collection of transformation properties")]
+        [PropertyGroupDescription(Identifier = "Transform", Name = "Transform", Description = "A collection of transformation properties")]
         public LayerTransformProperties Transform
         {
             get => _transform;
@@ -147,10 +180,8 @@ namespace Artemis.Core
             if (LayerBrush?.BaseProperties != null)
                 result.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties());
             foreach (BaseLayerEffect layerEffect in LayerEffects)
-            {
                 if (layerEffect.BaseProperties != null)
                     result.AddRange(layerEffect.BaseProperties.GetAllLayerProperties());
-            }
 
             return result;
         }
@@ -170,6 +201,19 @@ namespace Artemis.Core
         ///     Occurs when the layer brush of this layer has been updated
         /// </summary>
         public event EventHandler? LayerBrushUpdated;
+
+        #region Overrides of BreakableModel
+
+        /// <inheritdoc />
+        public override IEnumerable<IBreakableModel> GetBrokenHierarchy()
+        {
+            if (LayerBrush?.BrokenState != null)
+                yield return LayerBrush;
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.BrokenState != null))
+                yield return baseLayerEffect;
+        }
+
+        #endregion
 
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
@@ -200,19 +244,20 @@ namespace Artemis.Core
             LayerBrushStore.LayerBrushRemoved += LayerBrushStoreOnLayerBrushRemoved;
 
             // Layers have two hardcoded property groups, instantiate them
-            Attribute generalAttribute = Attribute.GetCustomAttribute(
+            PropertyGroupDescriptionAttribute generalAttribute = (PropertyGroupDescriptionAttribute) Attribute.GetCustomAttribute(
                 GetType().GetProperty(nameof(General))!,
                 typeof(PropertyGroupDescriptionAttribute)
             )!;
-            Attribute transformAttribute = Attribute.GetCustomAttribute(
+            PropertyGroupDescriptionAttribute transformAttribute = (PropertyGroupDescriptionAttribute) Attribute.GetCustomAttribute(
                 GetType().GetProperty(nameof(Transform))!,
                 typeof(PropertyGroupDescriptionAttribute)
             )!;
 
-            General.GroupDescription = (PropertyGroupDescriptionAttribute) generalAttribute;
-            General.Initialize(this, "General.", Constants.CorePluginFeature);
-            Transform.GroupDescription = (PropertyGroupDescriptionAttribute) transformAttribute;
-            Transform.Initialize(this, "Transform.", Constants.CorePluginFeature);
+            LayerEntity.GeneralPropertyGroup ??= new PropertyGroupEntity {Identifier = generalAttribute.Identifier};
+            LayerEntity.TransformPropertyGroup ??= new PropertyGroupEntity {Identifier = transformAttribute.Identifier};
+
+            General.Initialize(this, null, generalAttribute, LayerEntity.GeneralPropertyGroup);
+            Transform.Initialize(this, null, transformAttribute, LayerEntity.TransformPropertyGroup);
 
             General.ShapeType.CurrentValueSet += ShapeTypeOnCurrentValueSet;
             ApplyShapeType();
@@ -233,8 +278,7 @@ namespace Artemis.Core
                 return;
 
             LayerBrushReference? current = General.BrushReference.CurrentValue;
-            if (e.Registration.PluginFeature.Id == current?.LayerBrushProviderId &&
-                e.Registration.LayerBrushDescriptor.LayerBrushType.Name == current.BrushType)
+            if (e.Registration.PluginFeature.Id == current?.LayerBrushProviderId && e.Registration.LayerBrushDescriptor.LayerBrushType.Name == current.BrushType)
                 ActivateLayerBrush();
         }
 
@@ -252,7 +296,6 @@ namespace Artemis.Core
             Suspended = LayerEntity.Suspended;
             Order = LayerEntity.Order;
 
-            ExpandedPropertyGroups.AddRange(LayerEntity.ExpandedPropertyGroups);
             LoadRenderElement();
             Adapter.Load();
         }
@@ -269,12 +312,16 @@ namespace Artemis.Core
             LayerEntity.Suspended = Suspended;
             LayerEntity.Name = Name;
             LayerEntity.ProfileId = Profile.EntityId;
-            LayerEntity.ExpandedPropertyGroups.Clear();
-            LayerEntity.ExpandedPropertyGroups.AddRange(ExpandedPropertyGroups);
 
             General.ApplyToEntity();
             Transform.ApplyToEntity();
-            LayerBrush?.BaseProperties?.ApplyToEntity();
+
+            // Don't override the old value of LayerBrush if the current value is null, this avoid losing settings of an unavailable brush
+            if (LayerBrush != null)
+            {
+                LayerBrush.Save();
+                LayerEntity.LayerBrush = LayerBrush.LayerBrushEntity;
+            }
 
             // LEDs
             LayerEntity.Leds.Clear();
@@ -324,109 +371,80 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
+            if (Timeline.IsOverridden)
+            {
+                Timeline.ClearOverride();
+                return;
+            }
+
             UpdateDisplayCondition();
             UpdateTimeline(deltaTime);
 
             if (ShouldBeEnabled)
                 Enable();
-            else if (Timeline.IsFinished)
+            else if (Suspended || (Timeline.IsFinished && !_renderCopies.Any()))
                 Disable();
+
+            if (Timeline.Delta == TimeSpan.Zero)
+                return;
+
+            General.Update(Timeline);
+            Transform.Update(Timeline);
+            LayerBrush?.InternalUpdate(Timeline);
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+            {
+                if (!baseLayerEffect.Suspended)
+                    baseLayerEffect.InternalUpdate(Timeline);
+            }
+
+            // Remove render copies that finished their timeline and update the rest
+            for (int index = 0; index < _renderCopies.Count; index++)
+            {
+                Layer child = _renderCopies[index];
+                if (!child.Timeline.IsFinished)
+                {
+                    child.Update(deltaTime);
+                }
+                else
+                {
+                    _renderCopies.Remove(child);
+                    child.Dispose();
+                    index--;
+                }
+            }
         }
 
         /// <inheritdoc />
-        public override void Reset()
-        {
-            UpdateDisplayCondition();
-
-            if (DisplayConditionMet)
-                Timeline.JumpToStart();
-            else
-                Timeline.JumpToEnd();
-        }
-
-        /// <inheritdoc />
-        public override void Render(SKCanvas canvas, SKPointI basePosition)
+        public override void Render(SKCanvas canvas, SKPointI basePosition, ProfileElement? editorFocus)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
-            // Ensure the layer is ready
-            if (!Enabled || Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized)
+            if (editorFocus != null && editorFocus != this)
                 return;
+
+            RenderLayer(canvas, basePosition);
+            RenderCopies(canvas, basePosition);
+        }
+
+        private void RenderLayer(SKCanvas canvas, SKPointI basePosition)
+        {
+            // Ensure the layer is ready
+            if (!Enabled || Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized || !Leds.Any())
+                return;
+
             // Ensure the brush is ready
             if (LayerBrush == null || LayerBrush?.BaseProperties?.PropertiesInitialized == false)
                 return;
 
-            RenderTimeline(Timeline, canvas, basePosition);
-            foreach (Timeline extraTimeline in Timeline.ExtraTimelines.ToList())
-                RenderTimeline(extraTimeline, canvas, basePosition);
-            Timeline.ClearDelta();
-        }
-
-        /// <inheritdoc />
-        public override void Enable()
-        {
-            if (Enabled)
-                return;
-
-            bool tryOrBreak = TryOrBreak(() => LayerBrush?.InternalEnable(), "Failed to enable layer brush");
-            if (!tryOrBreak)
-                return;
-
-            tryOrBreak = TryOrBreak(() =>
-            {
-                foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
-                    baseLayerEffect.InternalEnable();
-            }, "Failed to enable one or more effects");
-            if (!tryOrBreak)
-                return;
-
-            Enabled = true;
-        }
-
-        /// <inheritdoc />
-        public override void Disable()
-        {
-            if (!Enabled)
-                return;
-
-            LayerBrush?.InternalDisable();
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
-                baseLayerEffect.InternalDisable();
-
-            Enabled = false;
-        }
-
-        private void ApplyTimeline(Timeline timeline)
-        {
-            if (timeline.Delta == TimeSpan.Zero)
-                return;
-
-            General.Update(timeline);
-            Transform.Update(timeline);
-            LayerBrush?.InternalUpdate(timeline);
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                baseLayerEffect.InternalUpdate(timeline);
-        }
-
-        private void RenderTimeline(Timeline timeline, SKCanvas canvas, SKPointI basePosition)
-        {
-            if (Path == null || LayerBrush == null)
-                throw new ArtemisCoreException("The layer is not yet ready for rendering");
-
-            if (!Leds.Any() || timeline.IsFinished)
-                return;
-
-            ApplyTimeline(timeline);
-
-            if (LayerBrush?.BrushType != LayerBrushType.Regular)
+            if (Timeline.IsFinished || LayerBrush?.BrushType != LayerBrushType.Regular)
                 return;
 
             SKPaint layerPaint = new() {FilterQuality = SKFilterQuality.Low};
             try
             {
-                canvas.Save();
+                using SKAutoCanvasRestore _ = new(canvas);
                 canvas.Translate(Bounds.Left - basePosition.X, Bounds.Top - basePosition.Y);
                 using SKPath clipPath = new(Path);
                 clipPath.Transform(SKMatrix.CreateTranslation(Bounds.Left * -1, Bounds.Top * -1));
@@ -472,37 +490,89 @@ namespace Artemis.Core
             }
             finally
             {
-                canvas.Restore();
                 layerPaint.DisposeSelfAndProperties();
+            }
+
+            Timeline.ClearDelta();
+        }
+
+        private void RenderCopies(SKCanvas canvas, SKPointI basePosition)
+        {
+            for (int i = _renderCopies.Count - 1; i >= 0; i--)
+                _renderCopies[i].Render(canvas, basePosition, null);
+        }
+
+        /// <inheritdoc />
+        public override void Enable()
+        {
+            // No checks here, the brush and effects will do their own checks to ensure they never enable twice
+            bool tryOrBreak = TryOrBreak(() => LayerBrush?.InternalEnable(), "Failed to enable layer brush");
+            if (!tryOrBreak)
+                return;
+
+            tryOrBreak = TryOrBreak(() =>
+            {
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                    baseLayerEffect.InternalEnable();
+            }, "Failed to enable one or more effects");
+            if (!tryOrBreak)
+                return;
+
+            Enabled = true;
+        }
+
+        /// <inheritdoc />
+        public override void Disable()
+        {
+            // No checks here, the brush and effects will do their own checks to ensure they never disable twice
+            LayerBrush?.InternalDisable();
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                baseLayerEffect.InternalDisable();
+
+            Enabled = false;
+        }
+
+        /// <inheritdoc />
+        public override void OverrideTimelineAndApply(TimeSpan position)
+        {
+            DisplayCondition.OverrideTimeline(position);
+
+            General.Update(Timeline);
+            Transform.Update(Timeline);
+            LayerBrush?.InternalUpdate(Timeline);
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
+                baseLayerEffect.InternalUpdate(Timeline);
+        }
+
+        /// <inheritdoc />
+        public override void Reset()
+        {
+            UpdateDisplayCondition();
+
+            if (DisplayConditionMet)
+                Timeline.JumpToStart();
+            else
+                Timeline.JumpToEnd();
+
+            while (_renderCopies.Any())
+            {
+                _renderCopies[0].Dispose();
+                _renderCopies.RemoveAt(0);
             }
         }
 
-        private void DelegateRendering(SKCanvas canvas, SKPath renderPath, SKRect bounds, SKPaint layerPaint)
+        /// <summary>
+        ///     Creates a copy of this layer and renders it alongside this layer for as long as its timeline lasts.
+        /// </summary>
+        /// <param name="max">The total maximum of render copies to keep</param>
+        public void CreateRenderCopy(int max)
         {
-            if (LayerBrush == null)
-                throw new ArtemisCoreException("The layer is not yet ready for rendering");
+            if (_renderCopies.Count >= max)
+                return;
 
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                baseLayerEffect.InternalPreProcess(canvas, bounds, layerPaint);
-
-            try
-            {
-                canvas.SaveLayer(layerPaint);
-                canvas.ClipPath(renderPath);
-
-                // Restore the blend mode before doing the actual render
-                layerPaint.BlendMode = SKBlendMode.SrcOver;
-
-                LayerBrush.InternalRender(canvas, bounds, layerPaint);
-
-                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                    baseLayerEffect.InternalPostProcess(canvas, bounds, layerPaint);
-            }
-
-            finally
-            {
-                canvas.Restore();
-            }
+            Layer copy = new(this);
+            _renderCopies.Add(copy);
         }
 
         internal void CalculateRenderProperties()
@@ -511,7 +581,9 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Layer");
 
             if (!Leds.Any())
+            {
                 Path = new SKPath();
+            }
             else
             {
                 SKPath path = new() {FillType = SKPathFillType.Winding};
@@ -532,26 +604,58 @@ namespace Artemis.Core
             OnRenderPropertiesUpdated();
         }
 
-        internal SKPoint GetLayerAnchorPosition(bool applyTranslation, bool zeroBased)
+        internal SKPoint GetLayerAnchorPosition(bool applyTranslation, bool zeroBased, SKRect? customBounds = null)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
+            SKRect bounds = customBounds ?? Bounds;
             SKPoint positionProperty = Transform.Position.CurrentValue;
 
-            // Start at the center of the shape
-            SKPoint position = zeroBased
-                ? new SKPointI(Bounds.MidX - Bounds.Left, Bounds.MidY - Bounds.Top)
-                : new SKPointI(Bounds.MidX, Bounds.MidY);
+            // Start at the top left of the shape
+            SKPoint position = zeroBased ? new SKPoint(0, 0) : new SKPoint(bounds.Left, bounds.Top);
 
             // Apply translation
             if (applyTranslation)
             {
-                position.X += positionProperty.X * Bounds.Width;
-                position.Y += positionProperty.Y * Bounds.Height;
+                position.X += positionProperty.X * bounds.Width;
+                position.Y += positionProperty.Y * bounds.Height;
             }
 
             return position;
+        }
+
+        private void DelegateRendering(SKCanvas canvas, SKPath renderPath, SKRect bounds, SKPaint layerPaint)
+        {
+            if (LayerBrush == null)
+                throw new ArtemisCoreException("The layer is not yet ready for rendering");
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+            {
+                if (!baseLayerEffect.Suspended)
+                    baseLayerEffect.InternalPreProcess(canvas, bounds, layerPaint);
+            }
+            
+            try
+            {
+                canvas.SaveLayer(layerPaint);
+                canvas.ClipPath(renderPath);
+
+                // Restore the blend mode before doing the actual render
+                layerPaint.BlendMode = SKBlendMode.SrcOver;
+
+                LayerBrush.InternalRender(canvas, bounds, layerPaint);
+
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                {
+                    if (!baseLayerEffect.Suspended)
+                        baseLayerEffect.InternalPostProcess(canvas, bounds, layerPaint);
+                }
+            }
+            finally
+            {
+                canvas.Restore();
+            }
         }
 
         /// <summary>
@@ -564,8 +668,9 @@ namespace Artemis.Core
         /// <param name="includeTranslation">Whether translation should be included</param>
         /// <param name="includeScale">Whether the scale should be included</param>
         /// <param name="includeRotation">Whether the rotation should be included</param>
+        /// <param name="customBounds">Optional custom bounds to base the anchor on</param>
         /// <returns>The transformation matrix containing the current transformation settings</returns>
-        public SKMatrix GetTransformMatrix(bool zeroBased, bool includeTranslation, bool includeScale, bool includeRotation)
+        public SKMatrix GetTransformMatrix(bool zeroBased, bool includeTranslation, bool includeScale, bool includeRotation, SKRect? customBounds = null)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
@@ -573,15 +678,16 @@ namespace Artemis.Core
             if (Path == null)
                 return SKMatrix.Empty;
 
+            SKRect bounds = customBounds ?? Bounds;
             SKSize sizeProperty = Transform.Scale.CurrentValue;
             float rotationProperty = Transform.Rotation.CurrentValue;
 
-            SKPoint anchorPosition = GetLayerAnchorPosition(true, zeroBased);
+            SKPoint anchorPosition = GetLayerAnchorPosition(true, zeroBased, bounds);
             SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
 
-            // Translation originates from the unscaled center of the shape and is tied to the anchor
-            float x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
-            float y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
+            // Translation originates from the top left of the shape and is tied to the anchor
+            float x = anchorPosition.X - (zeroBased ? 0 : bounds.Left) - anchorProperty.X * bounds.Width;
+            float y = anchorPosition.Y - (zeroBased ? 0 : bounds.Top) - anchorProperty.Y * bounds.Height;
 
             SKMatrix transform = SKMatrix.Empty;
 
@@ -690,53 +796,46 @@ namespace Artemis.Core
         #region Brush management
 
         /// <summary>
-        ///     Changes the current layer brush to the brush described in the provided <paramref name="descriptor" />
+        ///     Changes the current layer brush to the provided layer brush and activates it
         /// </summary>
-        public void ChangeLayerBrush(LayerBrushDescriptor descriptor)
+        public void ChangeLayerBrush(BaseLayerBrush? layerBrush)
         {
-            if (descriptor == null)
-                throw new ArgumentNullException(nameof(descriptor));
+            BaseLayerBrush? oldLayerBrush = LayerBrush;
+
+            General.BrushReference.SetCurrentValue(layerBrush != null ? new LayerBrushReference(layerBrush.Descriptor) : null, null);
+            LayerBrush = layerBrush;
+
+            oldLayerBrush?.InternalDisable();
 
             if (LayerBrush != null)
-            {
-                BaseLayerBrush brush = LayerBrush;
-                LayerBrush = null;
-                brush.Dispose();
-            }
-
-            // Ensure the brush reference matches the brush
-            LayerBrushReference? current = General.BrushReference.BaseValue;
-            if (!descriptor.MatchesLayerBrushReference(current))
-                General.BrushReference.BaseValue = new LayerBrushReference(descriptor);
-
-            ActivateLayerBrush();
-        }
-
-        /// <summary>
-        ///     Removes the current layer brush from the layer
-        /// </summary>
-        public void RemoveLayerBrush()
-        {
-            if (LayerBrush == null)
-                return;
-
-            BaseLayerBrush brush = LayerBrush;
-            DeactivateLayerBrush();
-            LayerEntity.PropertyEntities.RemoveAll(p => p.FeatureId == brush.ProviderId && p.Path.StartsWith("LayerBrush."));
+                ActivateLayerBrush();
+            else
+                OnLayerBrushUpdated();
         }
 
         internal void ActivateLayerBrush()
         {
             try
             {
-                LayerBrushReference? current = General.BrushReference.CurrentValue;
-                if (current == null)
+                if (LayerBrush == null)
+                {
+                    // If the brush is null, try to instantiate it
+                    LayerBrushReference? brushReference = General.BrushReference.CurrentValue;
+                    if (brushReference?.LayerBrushProviderId != null && brushReference.BrushType != null)
+                        ChangeLayerBrush(LayerBrushStore.Get(brushReference.LayerBrushProviderId, brushReference.BrushType)?.LayerBrushDescriptor.CreateInstance(this, LayerEntity.LayerBrush));
+                    // If that's not possible there's nothing to do
                     return;
+                }
 
-                LayerBrushDescriptor? descriptor = current.LayerBrushProviderId != null && current.BrushType != null
-                    ? LayerBrushStore.Get(current.LayerBrushProviderId, current.BrushType)?.LayerBrushDescriptor
-                    : null;
-                descriptor?.CreateInstance(this);
+                General.ShapeType.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
+                General.BlendMode.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
+                Transform.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
+                if (LayerBrush != null)
+                {
+                    if (!LayerBrush.Enabled)
+                        LayerBrush.InternalEnable();
+                    LayerBrush?.Update(0);
+                }
 
                 OnLayerBrushUpdated();
                 ClearBrokenState("Failed to initialize layer brush");
@@ -752,24 +851,11 @@ namespace Artemis.Core
             if (LayerBrush == null)
                 return;
 
-            BaseLayerBrush brush = LayerBrush;
+            BaseLayerBrush? brush = LayerBrush;
             LayerBrush = null;
-            brush.Dispose();
+            brush?.Dispose();
 
             OnLayerBrushUpdated();
-        }
-
-        #endregion
-
-        #region Overrides of BreakableModel
-
-        /// <inheritdoc />
-        public override IEnumerable<IBreakableModel> GetBrokenHierarchy()
-        {
-            if (LayerBrush?.BrokenState != null)
-                yield return LayerBrush;
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.BrokenState != null))
-                yield return baseLayerEffect;
         }
 
         #endregion

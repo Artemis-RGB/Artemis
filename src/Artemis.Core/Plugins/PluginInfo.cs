@@ -24,7 +24,7 @@ namespace Artemis.Core
         private Plugin _plugin = null!;
         private Version _version = null!;
         private bool _requiresAdmin;
-
+        private PluginPlatform? _platforms;
 
         internal PluginInfo()
         {
@@ -142,7 +142,17 @@ namespace Artemis.Core
             get => _requiresAdmin;
             internal set => SetAndNotify(ref _requiresAdmin, value);
         }
-        
+
+        /// <summary>
+        /// Gets 
+        /// </summary>
+        [JsonProperty]
+        public PluginPlatform? Platforms
+        {
+            get => _platforms;
+            internal set => _platforms = value;
+        }
+
         /// <summary>
         ///     Gets the plugin this info is associated with
         /// </summary>
@@ -161,9 +171,14 @@ namespace Artemis.Core
             {
                 if (Icon == null)
                     return null;
-                return Icon.EndsWith(".svg") ? Plugin.ResolveRelativePath(Icon) : Icon;
+                return Icon.Contains('.') ? Plugin.ResolveRelativePath(Icon) : Icon;
             }
         }
+        
+        /// <summary>
+        /// Gets a boolean indicating whether this plugin is compatible with the current operating system
+        /// </summary>
+        public bool IsCompatible => Platforms.MatchesCurrentOperatingSystem();
 
         internal string PreferredPluginDirectory => $"{Main.Split(".dll")[0].Replace("/", "").Replace("\\", "")}-{Guid.ToString().Substring(0, 8)}";
 
@@ -175,11 +190,14 @@ namespace Artemis.Core
 
         /// <inheritdoc />
         public List<PluginPrerequisite> Prerequisites { get; } = new();
+        
+        /// <inheritdoc />
+        public IEnumerable<PluginPrerequisite> PlatformPrerequisites => Prerequisites.Where(p => p.AppliesToPlatform());
 
         /// <inheritdoc />
         public bool ArePrerequisitesMet()
         {
-            return Prerequisites.All(p => p.IsMet());
+            return PlatformPrerequisites.All(p => p.IsMet());
         }
     }
 }

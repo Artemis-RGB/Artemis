@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections;
-using System.Windows.Documents;
+using System.Collections.ObjectModel;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.UI.Shared.Services;
-using Stylet;
+using ReactiveUI;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.DataModelVisualization.Shared
 {
     /// <summary>
     ///     Represents a view model that visualizes a list data model property
@@ -16,14 +16,14 @@ namespace Artemis.UI.Shared
         private string _countDisplay;
         private Type? _displayValueType;
         private IEnumerable? _list;
-        private BindableCollection<DataModelVisualizationViewModel> _listChildren;
+        private ObservableCollection<DataModelVisualizationViewModel> _listChildren;
         private int _listCount;
 
         internal DataModelListViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath)
             : base(dataModel, parent, dataModelPath)
         {
             _countDisplay = "0 items";
-            _listChildren = new BindableCollection<DataModelVisualizationViewModel>();
+            _listChildren = new ObservableCollection<DataModelVisualizationViewModel>();
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Artemis.UI.Shared
         public IEnumerable? List
         {
             get => _list;
-            private set => SetAndNotify(ref _list, value);
+            private set => this.RaiseAndSetIfChanged(ref _list, value);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Artemis.UI.Shared
         public int ListCount
         {
             get => _listCount;
-            private set => SetAndNotify(ref _listCount, value);
+            private set => this.RaiseAndSetIfChanged(ref _listCount, value);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Artemis.UI.Shared
         public Type? DisplayValueType
         {
             get => _displayValueType;
-            set => SetAndNotify(ref _displayValueType, value);
+            set => this.RaiseAndSetIfChanged(ref _displayValueType, value);
         }
 
         /// <summary>
@@ -59,16 +59,16 @@ namespace Artemis.UI.Shared
         public string CountDisplay
         {
             get => _countDisplay;
-            set => SetAndNotify(ref _countDisplay, value);
+            set => this.RaiseAndSetIfChanged(ref _countDisplay, value);
         }
 
         /// <summary>
         ///     Gets a list of child view models that visualize the elements in the list
         /// </summary>
-        public BindableCollection<DataModelVisualizationViewModel> ListChildren
+        public ObservableCollection<DataModelVisualizationViewModel> ListChildren
         {
             get => _listChildren;
-            private set => SetAndNotify(ref _listChildren, value);
+            private set => this.RaiseAndSetIfChanged(ref _listChildren, value);
         }
 
         /// <inheritdoc />
@@ -97,22 +97,15 @@ namespace Artemis.UI.Shared
                     ListChildren.Add(child);
                 }
                 else
-                {
                     child = ListChildren[index];
-                }
 
-                if (child is DataModelListPropertiesViewModel dataModelListClassViewModel)
-                {
-                    dataModelListClassViewModel.DisplayValue = item;
-                    dataModelListClassViewModel.Index = index;
-                }
-                else if (child is DataModelListPropertyViewModel dataModelListPropertyViewModel)
+                if (child is DataModelListItemViewModel dataModelListPropertyViewModel)
                 {
                     dataModelListPropertyViewModel.DisplayValue = item;
                     dataModelListPropertyViewModel.Index = index;
+                    dataModelListPropertyViewModel.Update(dataModelUIService, configuration);
                 }
 
-                child.Update(dataModelUIService, configuration);
                 index++;
             }
 
@@ -134,16 +127,10 @@ namespace Artemis.UI.Shared
         {
             // If a display VM was found, prefer to use that in any case
             DataModelDisplayViewModel? typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(listType, PropertyDescription);
-            if (typeViewModel != null)
-                return new DataModelListPropertyViewModel(listType, typeViewModel, name);
-            // For primitives, create a property view model, it may be null that is fine
-            if (listType.IsPrimitive || listType.IsEnum || listType == typeof(string))
-                return new DataModelListPropertyViewModel(listType, name);
-            // For other value types create a child view model
-            if (listType.IsClass || listType.IsStruct())
-                return new DataModelListPropertiesViewModel(listType, name);
 
-            return null;
+            return typeViewModel != null
+                ? new DataModelListItemViewModel(listType, typeViewModel, name)
+                : new DataModelListItemViewModel(listType, name);
         }
     }
 }

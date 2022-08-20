@@ -1,0 +1,124 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:sidebar="clr-namespace:Artemis.UI.Screens.Sidebar"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Sidebar.SidebarProfileConfigurationView"
+             x:DataType="sidebar:SidebarProfileConfigurationViewModel"
+             Background="Transparent">
+    <UserControl.ContextFlyout>
+        <MenuFlyout>
+            <MenuItem Header="View properties" Command="{CompiledBinding EditProfile}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Cog" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Suspend" Command="{CompiledBinding ToggleSuspended}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding ProfileConfiguration.IsSuspended}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Suspend all">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Pause" />
+                </MenuItem.Icon>
+                <MenuItem Header="Above" Command="{CompiledBinding SuspendAll}" CommandParameter="above" />
+                <MenuItem Header="Below" Command="{CompiledBinding SuspendAll}" CommandParameter="below" />
+            </MenuItem>
+            <MenuItem Header="Resume all">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Play" />
+                </MenuItem.Icon>
+                <MenuItem Header="Above" Command="{CompiledBinding ResumeAll}" CommandParameter="above" />
+                <MenuItem Header="Below" Command="{CompiledBinding ResumeAll}" CommandParameter="below" />
+            </MenuItem>
+            <MenuItem Header="-" />
+            <MenuItem Header="Export" Command="{CompiledBinding ExportProfile}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Export" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Duplicate" Command="{CompiledBinding DuplicateProfile}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="ContentDuplicate" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="-" />
+            <MenuItem Header="Delete" Command="{CompiledBinding DeleteProfile}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Trash" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuFlyout>
+    </UserControl.ContextFlyout>
+    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+        <shared:ProfileConfigurationIcon Grid.Column="0"
+                                         x:Name="ProfileIcon"
+                                         VerticalAlignment="Center"
+                                         ConfigurationIcon="{CompiledBinding ProfileConfiguration.Icon}"
+                                         Width="20"
+                                         Height="20" 
+                                         Margin="0 0 5 0">
+            <shared:ProfileConfigurationIcon.Transitions>
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
+                </Transitions>
+            </shared:ProfileConfigurationIcon.Transitions>
+        </shared:ProfileConfigurationIcon>
+
+        <Panel Grid.Column="1" HorizontalAlignment="Left">
+            <TextBlock Classes="fadable"
+                       Classes.suspended="{CompiledBinding IsDisabled}"
+                       Padding="0 5"
+                       FontWeight="SemiBold"
+                       FontSize="13"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       Text="{CompiledBinding ProfileConfiguration.Name, FallbackValue='Profile name'}"
+                       TextTrimming="CharacterEllipsis"
+                       Background="Transparent">
+                <TextBlock.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
+                    </Transitions>
+                </TextBlock.Transitions>
+            </TextBlock>
+
+            <Border Classes="fadable"
+                    Classes.suspended="{CompiledBinding ProfileConfiguration.IsSuspended}"
+                    HorizontalAlignment="Stretch"
+                    BorderBrush="White"
+                    BorderThickness="0.5"
+                    Height="1">
+                <Border.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
+                    </Transitions>
+                </Border.Transitions>
+            </Border>
+        </Panel>
+
+        <Button Command="{CompiledBinding EditProfile}"
+                Classes="icon-button icon-button-small"
+                Grid.Column="2"
+                ToolTip.Tip="View properties"
+                HorizontalAlignment="Right"
+                Margin="0 0 2 0">
+            <avalonia:MaterialIcon Kind="Cog" />
+        </Button>
+        <Button Classes="icon-button icon-button-small"
+                Command="{CompiledBinding ToggleSuspended}"
+                Grid.Column="3"
+                ToolTip.Tip="Suspend/resume profile">
+            <Panel>
+                <avalonia:MaterialIcon Kind="EyeOff" IsVisible="{CompiledBinding ProfileConfiguration.IsSuspended}" />
+                <avalonia:MaterialIcon Kind="Eye" IsVisible="{CompiledBinding !ProfileConfiguration.IsSuspended}" />
+            </Panel>
+        </Button>
+    </Grid>
+</UserControl>

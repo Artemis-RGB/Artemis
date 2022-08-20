@@ -1,0 +1,51 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
+        x:Class="Artemis.UI.Shared.Services.ExceptionDialogView"
+        Title="{Binding Title}"
+        ExtendClientAreaToDecorationsHint="True"
+        Width="800"
+        Height="800"
+        WindowStartupLocation="CenterOwner">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Margin="10" Grid.Row="1" IsHitTestVisible="False" Text="{Binding Title}" />
+
+        <StackPanel Grid.Row="2" Margin="20">
+            <TextBlock Classes="h3">Awww :(</TextBlock>
+            <TextBlock>
+                It looks like Artemis ran into an unhandled exception. If this keeps happening feel free to hit us up on Discord.
+            </TextBlock>
+        </StackPanel>
+
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" RowDefinitions="*,Auto">
+            <ScrollViewer Grid.Row="0" Grid.ColumnSpan="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="20 0">
+                <TextBox Text="{Binding Exception, Mode=OneTime}"
+                         AcceptsReturn="True"
+                         IsReadOnly="True"
+                         FontFamily="Consolas"
+                         FontSize="12"
+                         BorderThickness="0" />
+            </ScrollViewer>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" Margin="15" VerticalAlignment="Center">
+                When reporting errors please don't take a screenshot of the error, instead copy the text, thanks!
+            </TextBlock>
+            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="15">
+                <Button Command="{Binding CopyException}" Classes="AppBarButton" Width="150" Margin="0 0 5 0">
+                    Copy exception
+                </Button>
+                <Button Command="{Binding Close}" Width="150" Margin="5 0 0 0">
+                    Close
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

@@ -39,7 +39,7 @@ namespace Artemis.UI.Shared.LayerEffects
         public int DialogHeight { get; set; } = 800;
 
         /// <summary>
-        ///     The type of view model the tab contains
+        ///     The type of view model the dialog contains
         /// </summary>
         public abstract Type Type { get; }
     }

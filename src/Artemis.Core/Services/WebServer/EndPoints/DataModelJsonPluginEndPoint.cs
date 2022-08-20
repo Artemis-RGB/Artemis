@@ -12,7 +12,7 @@ namespace Artemis.Core.Services
     ///     <see cref="object" /> or <see langword="null" />.
     ///     <para>Note: Both will be deserialized and serialized respectively using JSON.</para>
     /// </summary>
-    public class DataModelJsonPluginEndPoint<T> : PluginEndPoint where T : DataModel
+    public class DataModelJsonPluginEndPoint<T> : PluginEndPoint where T : DataModel, new()
     {
         private readonly Module<T> _module;
 

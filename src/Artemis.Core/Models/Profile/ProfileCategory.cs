@@ -24,14 +24,14 @@ namespace Artemis.Core
         {
             _name = name;
             Entity = new ProfileCategoryEntity();
-            ProfileConfigurations = new(_profileConfigurations);
+            ProfileConfigurations = new ReadOnlyCollection<ProfileConfiguration>(_profileConfigurations);
         }
 
         internal ProfileCategory(ProfileCategoryEntity entity)
         {
             _name = null!;
             Entity = entity;
-            ProfileConfigurations = new(_profileConfigurations);
+            ProfileConfigurations = new ReadOnlyCollection<ProfileConfiguration>(_profileConfigurations);
 
             Load();
         }
@@ -98,7 +98,10 @@ namespace Artemis.Core
             configuration.Category.RemoveProfileConfiguration(configuration);
 
             if (targetIndex != null)
-                _profileConfigurations.Insert(Math.Clamp(targetIndex.Value, 0, _profileConfigurations.Count), configuration);
+            {
+                targetIndex = Math.Clamp(targetIndex.Value, 0, _profileConfigurations.Count);
+                _profileConfigurations.Insert(targetIndex.Value, configuration);
+            }
             else
                 _profileConfigurations.Add(configuration);
             configuration.Category = this;
@@ -116,7 +119,8 @@ namespace Artemis.Core
 
         internal void RemoveProfileConfiguration(ProfileConfiguration configuration)
         {
-            if (!_profileConfigurations.Remove(configuration)) return;
+            if (!_profileConfigurations.Remove(configuration)) 
+                return;
 
             for (int index = 0; index < _profileConfigurations.Count; index++)
                 _profileConfigurations[index].Order = index;

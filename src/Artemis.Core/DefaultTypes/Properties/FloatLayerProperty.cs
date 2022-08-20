@@ -5,7 +5,12 @@
     {
         internal FloatLayerProperty()
         {
-            RegisterDataBindingProperty(() => CurrentValue, value => CurrentValue = value, new FloatDataBindingConverter(), "Value");
+        }
+
+        /// <inheritdoc />
+        protected override void OnInitialize()
+        {
+            DataBinding.RegisterDataBindingProperty(() => CurrentValue, value => CurrentValue = value, "Value");
         }
 
         /// <summary>

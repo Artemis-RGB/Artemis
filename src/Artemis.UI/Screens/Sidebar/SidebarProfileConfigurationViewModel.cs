@@ -1,164 +1,155 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Events;
-using Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.ProfileEditor;
 using Newtonsoft.Json;
-using Ookii.Dialogs.Wpf;
-using Stylet;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar
 {
-    public class SidebarProfileConfigurationViewModel : Screen
+    public class SidebarProfileConfigurationViewModel : ActivatableViewModelBase
     {
-        private readonly IDialogService _dialogService;
-        private readonly IEventAggregator _eventAggregator;
+        private readonly SidebarViewModel _sidebarViewModel;
         private readonly IProfileService _profileService;
+        private readonly IProfileEditorService _profileEditorService;
+        private readonly IWindowService _windowService;
+        private ObservableAsPropertyHelper<bool>? _isDisabled;
 
-        public SidebarProfileConfigurationViewModel(ProfileConfiguration profileConfiguration,
+        public SidebarProfileConfigurationViewModel(SidebarViewModel sidebarViewModel,
+            ProfileConfiguration profileConfiguration,
             IProfileService profileService,
-            IDialogService dialogService,
-            IEventAggregator eventAggregator)
+            IProfileEditorService profileEditorService,
+            IWindowService windowService)
         {
+            _sidebarViewModel = sidebarViewModel;
             _profileService = profileService;
-            _dialogService = dialogService;
-            _eventAggregator = eventAggregator;
+            _profileEditorService = profileEditorService;
+            _windowService = windowService;
+
             ProfileConfiguration = profileConfiguration;
+            EditProfile = ReactiveCommand.CreateFromTask(ExecuteEditProfile);
+            ToggleSuspended = ReactiveCommand.Create(ExecuteToggleSuspended);
+            ResumeAll = ReactiveCommand.Create<string>(ExecuteResumeAll);
+            SuspendAll = ReactiveCommand.Create<string>(ExecuteSuspendAll);
+            DeleteProfile = ReactiveCommand.CreateFromTask(ExecuteDeleteProfile);
+            ExportProfile = ReactiveCommand.CreateFromTask(ExecuteExportProfile);
+            DuplicateProfile = ReactiveCommand.Create(ExecuteDuplicateProfile);
+
+            this.WhenActivated(d => _isDisabled = ProfileConfiguration.WhenAnyValue(c => c.Profile)
+                .Select(p => p == null)
+                .ToProperty(this, vm => vm.IsDisabled)
+                .DisposeWith(d));
+            _profileService.LoadProfileConfigurationIcon(ProfileConfiguration);
         }
 
         public ProfileConfiguration ProfileConfiguration { get; }
+        public ReactiveCommand<Unit, Unit> EditProfile { get; }
+        public ReactiveCommand<Unit, Unit> ToggleSuspended { get; }
+        public ReactiveCommand<string, Unit> ResumeAll { get; }
+        public ReactiveCommand<string, Unit> SuspendAll { get; }
+        public ReactiveCommand<Unit, Unit> DeleteProfile { get; }
+        public ReactiveCommand<Unit, Unit> ExportProfile { get; }
+        public ReactiveCommand<Unit, Unit> DuplicateProfile { get; }
 
-        public bool IsProfileActive => ProfileConfiguration.Profile != null;
+        public bool IsDisabled => _isDisabled?.Value ?? false;
 
-        public bool IsSuspended
+        private async Task ExecuteEditProfile()
         {
-            get => ProfileConfiguration.IsSuspended;
-            set
+            ProfileConfiguration? edited = await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(
+                ("profileCategory", ProfileConfiguration.Category),
+                ("profileConfiguration", ProfileConfiguration)
+            );
+
+            if (edited != null)
+                _sidebarViewModel.UpdateProfileCategories();
+        }
+
+        private void ExecuteToggleSuspended()
+        {
+            ProfileConfiguration.IsSuspended = !ProfileConfiguration.IsSuspended;
+            _profileService.SaveProfileCategory(ProfileConfiguration.Category);
+        }
+
+        private void ExecuteResumeAll(string direction)
+        {
+            int index = ProfileConfiguration.Category.ProfileConfigurations.IndexOf(ProfileConfiguration);
+            if (direction == "above")
             {
-                ProfileConfiguration.IsSuspended = value;
-                _profileService.SaveProfileCategory(ProfileConfiguration.Category);
+                for (int i = 0; i < index; i++)
+                    ProfileConfiguration.Category.ProfileConfigurations[i].IsSuspended = false;
             }
-        }
-
-        public async Task ViewProperties()
-        {
-            object result = await _dialogService.ShowDialog<ProfileEditViewModel>(new Dictionary<string, object>
+            else
             {
-                {"profileConfiguration", ProfileConfiguration},
-                {"isNew", false}
-            });
-
-            if (result is nameof(ProfileEditViewModel.Delete))
-                await Delete();
-        }
-
-        public void SuspendAbove(string action)
-        {
-            foreach (ProfileConfiguration profileConfiguration in ProfileConfiguration.Category.ProfileConfigurations.OrderBy(p => p.Order).TakeWhile(c => c != ProfileConfiguration))
-            {
-                if (profileConfiguration != ProfileConfiguration)
-                    profileConfiguration.IsSuspended = action == "suspend";
+                for (int i = index + 1; i < ProfileConfiguration.Category.ProfileConfigurations.Count; i++)
+                    ProfileConfiguration.Category.ProfileConfigurations[i].IsSuspended = false;
             }
+
+            _profileService.SaveProfileCategory(ProfileConfiguration.Category);
         }
 
-        public void SuspendBelow(string action)
+        private void ExecuteSuspendAll(string direction)
         {
-            foreach (ProfileConfiguration profileConfiguration in ProfileConfiguration.Category.ProfileConfigurations.OrderBy(p => p.Order).SkipWhile(c => c != ProfileConfiguration))
+            int index = ProfileConfiguration.Category.ProfileConfigurations.IndexOf(ProfileConfiguration);
+            if (direction == "above")
             {
-                if (profileConfiguration != ProfileConfiguration)
-                    profileConfiguration.IsSuspended = action == "suspend";
+                for (int i = 0; i < index; i++)
+                    ProfileConfiguration.Category.ProfileConfigurations[i].IsSuspended = true;
             }
+            else
+            {
+                for (int i = index + 1; i < ProfileConfiguration.Category.ProfileConfigurations.Count; i++)
+                    ProfileConfiguration.Category.ProfileConfigurations[i].IsSuspended = true;
+            }
+
+            _profileService.SaveProfileCategory(ProfileConfiguration.Category);
         }
 
-        public async Task Export()
+        private async Task ExecuteDeleteProfile()
         {
-            string filename = new string(ProfileConfiguration.Name.Select(ch => Path.GetInvalidFileNameChars().Contains(ch) ? '_' : ch).ToArray()) + ".json";
-            VistaSaveFileDialog dialog = new()
-            {
-                Filter = "Artemis Profile|*.json",
-                Title = "Export Artemis profile",
-                FileName = filename
-            };
-            bool? result = dialog.ShowDialog();
-            if (result != true)
+            if (!await _windowService.ShowConfirmContentDialog("Delete profile", "Are you sure you want to permanently delete this profile?"))
                 return;
 
-            ProfileConfigurationExportModel profileConfigurationExportModel = _profileService.ExportProfile(ProfileConfiguration);
-            string json = JsonConvert.SerializeObject(profileConfigurationExportModel, IProfileService.ExportSettings);
-
-            string path = Path.ChangeExtension(dialog.FileName, ".json");
-            await File.WriteAllTextAsync(path, json);
+            if (ProfileConfiguration.IsBeingEdited)
+                _profileEditorService.ChangeCurrentProfileConfiguration(null);
+            _profileService.RemoveProfileConfiguration(ProfileConfiguration);
         }
 
-        public void Duplicate()
+        private async Task ExecuteExportProfile()
+        {
+            // Might not cover everything but then the dialog will complain and that's good enough
+            string fileName = Path.GetInvalidFileNameChars().Aggregate(ProfileConfiguration.Name, (current, c) => current.Replace(c, '-'));
+            string? result = await _windowService.CreateSaveFileDialog()
+                .HavingFilter(f => f.WithExtension("json").WithName("Artemis profile"))
+                .WithInitialFileName(fileName)
+                .ShowAsync();
+
+            if (result == null)
+                return;
+
+            ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
+            string json = JsonConvert.SerializeObject(export, IProfileService.ExportSettings);
+            try
+            {
+                await File.WriteAllTextAsync(result, json);
+            }
+            catch (Exception e)
+            {
+                _windowService.ShowExceptionDialog("Failed to export profile", e);
+            }
+        }
+
+        private void ExecuteDuplicateProfile()
         {
             ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
             _profileService.ImportProfile(ProfileConfiguration.Category, export, true, false, "copy");
         }
-
-        public void Copy()
-        {
-            JsonClipboard.SetObject(_profileService.ExportProfile(ProfileConfiguration));
-        }
-
-        public void Paste()
-        {
-            ProfileConfigurationExportModel profileConfiguration = JsonClipboard.GetData<ProfileConfigurationExportModel>();
-            if (profileConfiguration == null)
-                return;
-
-            _profileService.ImportProfile(ProfileConfiguration.Category, profileConfiguration, true, false, "copy");
-        }
-
-        public async Task Delete()
-        {
-            if (await _dialogService.ShowConfirmDialog("Delete profile", "Are you sure you want to delete this profile?\r\nThis cannot be undone."))
-            {
-                // Close the editor first by heading to Home if the profile is being edited
-                if (ProfileConfiguration.IsBeingEdited)
-                    _eventAggregator.Publish(new RequestSelectSidebarItemEvent("Home"));
-
-                _profileService.RemoveProfileConfiguration(ProfileConfiguration);
-            }
-        }
-
-        #region Overrides of Screen
-
-        /// <inheritdoc />
-        protected override void OnActivate()
-        {
-            _profileService.LoadProfileConfigurationIcon(ProfileConfiguration);
-            ProfileConfiguration.PropertyChanged += ProfileConfigurationOnPropertyChanged;
-            NotifyOfPropertyChange(nameof(IsProfileActive));
-
-            base.OnActivate();
-        }
-
-        /// <inheritdoc />
-        protected override void OnDeactivate()
-        {
-            ProfileConfiguration.PropertyChanged -= ProfileConfigurationOnPropertyChanged;
-            base.OnDeactivate();
-        }
-
-        #endregion
-
-        #region Event handlers
-
-        private void ProfileConfigurationOnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(ProfileConfiguration.Profile))
-                NotifyOfPropertyChange(nameof(IsProfileActive));
-            if (e.PropertyName == nameof(ProfileConfiguration.IsSuspended))
-                NotifyOfPropertyChange(nameof(IsSuspended));
-        }
-
-        #endregion
     }
 }

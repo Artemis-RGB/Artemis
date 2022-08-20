@@ -51,7 +51,7 @@ namespace Artemis.Core.Services
         /// <param name="module">The module whose datamodel to apply the received JSON to</param>
         /// <param name="endPointName">The name of the end point, must be unique</param>
         /// <returns>The resulting end point</returns>
-        DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(Module<T> module, string endPointName) where T : DataModel;
+        DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(Module<T> module, string endPointName) where T : DataModel, new();
 
         /// <summary>
         ///     Adds a new endpoint for the given plugin feature receiving an a <see cref="string" />.
@@ -102,6 +102,16 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <typeparam name="T">The type of Web API controller to remove</typeparam>
         void RemoveController<T>() where T : WebApiController;
+        
+        /// <summary>
+        ///     Adds a new EmbedIO module and restarts the web server
+        /// </summary>
+        void AddModule(PluginFeature feature, Func<IWebModule> create);
+        
+        /// <summary>
+        ///     Removes a EmbedIO module and restarts the web server
+        /// </summary>
+        void RemoveModule(Func<IWebModule> create);
 
         /// <summary>
         ///     Adds a new EmbedIO module and restarts the web server

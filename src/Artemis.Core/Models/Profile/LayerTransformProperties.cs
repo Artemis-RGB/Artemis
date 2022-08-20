@@ -12,13 +12,13 @@ namespace Artemis.Core
         /// <summary>
         ///     The point at which the shape is attached to its position
         /// </summary>
-        [PropertyDescription(Description = "The point at which the shape is attached to its position", InputStepSize = 0.001f)]
+        [PropertyDescription(Description = "The point at which the shape is attached to its position", InputAffix = "%", InputStepSize = 0.001f)]
         public SKPointLayerProperty AnchorPoint { get; set; }
 
         /// <summary>
         ///     The position of the shape
         /// </summary>
-        [PropertyDescription(Description = "The position of the shape", InputStepSize = 0.001f)]
+        [PropertyDescription(Description = "The position of the shape", InputAffix = "%", InputStepSize = 0.001f)]
         public SKPointLayerProperty Position { get; set; }
 
         /// <summary>
@@ -30,19 +30,21 @@ namespace Artemis.Core
         /// <summary>
         ///     The rotation of the shape in degree
         /// </summary>
-        [PropertyDescription(Description = "The rotation of the shape in degrees", InputAffix = "°")]
+        [PropertyDescription(Description = "The rotation of the shape in degrees", InputAffix = "°",  InputStepSize = 0.5f)]
         public FloatLayerProperty Rotation { get; set; }
 
         /// <summary>
         ///     The opacity of the shape
         /// </summary>
-        [PropertyDescription(Description = "The opacity of the shape", InputAffix = "%", MinInputValue = 0f, MaxInputValue = 100f)]
+        [PropertyDescription(Description = "The opacity of the shape", InputAffix = "%", MinInputValue = 0f, MaxInputValue = 100f, InputStepSize = 0.1f)]
         public FloatLayerProperty Opacity { get; set; }
 
         /// <inheritdoc />
         protected override void PopulateDefaults()
         {
             Scale.DefaultValue = new SKSize(100, 100);
+            AnchorPoint.DefaultValue = new SKPoint(0.5f, 0.5f);
+            Position.DefaultValue = new SKPoint(0.5f, 0.5f);
             Opacity.DefaultValue = 100;
         }
 

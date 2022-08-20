@@ -451,7 +451,7 @@ namespace Artemis.Core
                 });
 
             DeviceEntity.InputMappings.Clear();
-            foreach (var (original, mapped) in InputMappings)
+            foreach ((ArtemisLed? original, ArtemisLed? mapped) in InputMappings)
                 DeviceEntity.InputMappings.Add(new InputMappingEntity {OriginalLedId = (int) original.RgbLed.Id, MappedLedId = (int) mapped.RgbLed.Id});
 
             DeviceEntity.Categories.Clear();

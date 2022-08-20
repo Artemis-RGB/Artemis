@@ -6,7 +6,7 @@ namespace Artemis.Core.LayerBrushes
     ///     Represents a brush that renders on a layer
     /// </summary>
     /// <typeparam name="T">The type of brush properties</typeparam>
-    public abstract class LayerBrush<T> : PropertiesLayerBrush<T> where T : LayerPropertyGroup
+    public abstract class LayerBrush<T> : PropertiesLayerBrush<T> where T : LayerPropertyGroup, new()
     {
         /// <summary>
         ///     Creates a new instance of the <see cref="LayerBrush{T}" /> class

@@ -1,0 +1,91 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:plugins="clr-namespace:Artemis.UI.Screens.Plugins"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Plugins.PluginFeatureView"
+             x:DataType="plugins:PluginFeatureViewModel">
+    <Grid ColumnDefinitions="30,*,Auto">
+        <Grid.ContextFlyout>
+            <MenuFlyout>
+                <MenuItem Header="Install prerequisites" Command="{CompiledBinding InstallPrerequisites}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="CheckAll" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Remove prerequisites" Command="{CompiledBinding RemovePrerequisites}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Delete" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuFlyout>
+        </Grid.ContextFlyout>
+
+        <!-- Icon column -->
+        <shared:ArtemisIcon Grid.Column="0"
+                            Icon="{CompiledBinding FeatureInfo.ResolvedIcon}"
+                            Fill="False"
+                            Width="20"
+                            Height="20"
+                            IsVisible="{CompiledBinding LoadException, Converter={x:Static ObjectConverters.IsNull}}" />
+
+        <Button Grid.Column="0"
+                Classes="AppBarButton icon-button"
+                IsVisible="{CompiledBinding LoadException, Converter={x:Static ObjectConverters.IsNotNull}}"
+                Foreground="#E74C4C"
+                ToolTip.Tip="An exception occurred while enabling this feature, click to view"
+                Command="{Binding ViewLoadException}">
+            <avalonia:MaterialIcon Kind="AlertCircle" />
+        </Button>
+
+        <!-- Display name column -->
+        <TextBlock Grid.Column="1"
+                   Text="{CompiledBinding FeatureInfo.Name}"
+                   TextWrapping="Wrap"
+                   VerticalAlignment="Center"
+                   ToolTip.Tip="{CompiledBinding FeatureInfo.Description}" />
+
+        <!-- Enable toggle column -->
+        <StackPanel Grid.Column="2"
+                    HorizontalAlignment="Right"
+                    IsVisible="{CompiledBinding !Enabling}"
+                    Orientation="Horizontal"
+                    ToolTip.Tip="This feature cannot be disabled without disabling the whole plugin">
+            <avalonia:MaterialIcon Kind="ShieldHalfFull"
+                                   ToolTip.Tip="Plugin requires admin rights"
+                                   VerticalAlignment="Center"
+                                   Margin="0 0 5 0"
+                                   IsVisible="{CompiledBinding ShowShield}" />
+
+            <CheckBox IsChecked="{CompiledBinding IsEnabled}" IsEnabled="{CompiledBinding CanToggleEnabled}">
+                Enable feature
+            </CheckBox>
+
+            <Button Classes="icon-button" Margin="5 0 0 0" IsVisible="{CompiledBinding CanInstallPrerequisites}">
+                <Button.Flyout>
+                    <MenuFlyout Placement="Bottom" >
+                        <MenuItem Header="Install prerequisites" Command="{CompiledBinding InstallPrerequisites}">
+                            <MenuItem.Icon>
+                                <avalonia:MaterialIcon Kind="CheckAll" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Remove prerequisites" Command="{CompiledBinding RemovePrerequisites}">
+                            <MenuItem.Icon>
+                                <avalonia:MaterialIcon Kind="Delete" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuFlyout>
+                </Button.Flyout>
+                <avalonia:MaterialIcon Kind="DotsVertical"></avalonia:MaterialIcon>
+            </Button>
+
+        </StackPanel>
+        <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="7" IsVisible="{CompiledBinding Enabling}">
+            <ProgressBar Value="0" IsIndeterminate="True" />
+        </StackPanel>
+
+    </Grid>
+</UserControl>

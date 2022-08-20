@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Artemis.Core.Modules;
-using Stylet;
+using ReactiveUI;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.DataModelVisualization
 {
     /// <summary>
     ///     Represents a <see cref="DataModel" /> display view model
@@ -10,8 +10,7 @@ namespace Artemis.UI.Shared
     /// <typeparam name="T">The type of the data model</typeparam>
     public abstract class DataModelDisplayViewModel<T> : DataModelDisplayViewModel
     {
-        [AllowNull]
-        private T _displayValue = default!;
+        [AllowNull] private T _displayValue = default!;
 
         /// <summary>
         ///     Gets or sets value that the view model must display
@@ -22,7 +21,8 @@ namespace Artemis.UI.Shared
             get => _displayValue;
             set
             {
-                if (!SetAndNotify(ref _displayValue, value)) return;
+                if (Equals(value, _displayValue)) return;
+                RaiseAndSetIfChanged(ref _displayValue, value);
                 OnDisplayValueUpdated();
             }
         }
@@ -46,7 +46,7 @@ namespace Artemis.UI.Shared
     /// <summary>
     ///     For internal use only, implement <see cref="DataModelDisplayViewModel{T}" /> instead.
     /// </summary>
-    public abstract class DataModelDisplayViewModel : PropertyChangedBase
+    public abstract class DataModelDisplayViewModel : ViewModelBase
     {
         private DataModelPropertyAttribute? _propertyDescription;
 
@@ -56,7 +56,7 @@ namespace Artemis.UI.Shared
         public DataModelPropertyAttribute? PropertyDescription
         {
             get => _propertyDescription;
-            internal set => SetAndNotify(ref _propertyDescription, value);
+            internal set => RaiseAndSetIfChanged(ref _propertyDescription, value);
         }
 
         /// <summary>

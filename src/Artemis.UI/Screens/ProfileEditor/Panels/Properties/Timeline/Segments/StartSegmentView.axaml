@@ -1,0 +1,69 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:segments="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="18"
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments.StartSegmentView"
+             x:DataType="segments:StartSegmentViewModel">
+    <UserControl.Styles>
+        <StyleInclude Source="/Screens/ProfileEditor/Panels/Properties/Timeline/Segments/Segment.axaml" />
+    </UserControl.Styles>
+    <Border Classes="segment-container">
+        <Grid Name="SegmentGrid"
+              Background="{DynamicResource ControlFillColorDefaultBrush}"
+              Width="{CompiledBinding Width}"
+              ColumnDefinitions="*,Auto,Auto">
+            <Grid.ContextFlyout>
+                <MenuFlyout>
+                    <MenuItem Header="Edit length" Command="{CompiledBinding EditTime}">
+                        <MenuItem.Icon>
+                            <avalonia:MaterialIcon Kind="Edit" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Remove segment" Command="{Binding RemoveSegment}">
+                        <MenuItem.Icon>
+                            <avalonia:MaterialIcon Kind="Remove" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuFlyout>
+            </Grid.ContextFlyout>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Name="SegmentTitle"
+                           FontSize="13"
+                           ToolTip.Tip="This segment is played when a layer starts displaying because it's conditions are met">
+                    Start
+                </TextBlock>
+                <Button Name="SegmentClose"
+                        Classes="AppBarButton icon-button icon-button-small"
+                        ToolTip.Tip="Remove this segment"
+                        Command="{Binding RemoveSegment}">
+                    <avalonia:MaterialIcon Kind="CloseCircle" />
+                </Button>
+            </StackPanel>
+
+            <Button Grid.Column="1"
+                    Name="AddMainSegment"
+                    Classes="AppBarButton icon-button icon-button-small"
+                    ToolTip.Tip="Add main segment"
+                    Command="{Binding AddMainSegment}"
+                    IsVisible="{CompiledBinding ShowAddMain}">
+                <avalonia:MaterialIcon Kind="PlusCircle" />
+            </Button>
+
+            <Rectangle Name="KeyframeDragVisual"
+                       Grid.Column="2"
+                       Classes="resize-visual" />
+            <Rectangle Name="KeyframeDragAnchor"
+                       Grid.Column="2"
+                       Classes="resize-anchor"
+                       PointerPressed="KeyframeDragAnchor_OnPointerPressed"
+                       PointerMoved="KeyframeDragAnchor_OnPointerMoved"
+                       PointerReleased="KeyframeDragAnchor_OnPointerReleased"
+                       ToolTip.Tip="{CompiledBinding EndTimestamp}" />
+        </Grid>
+    </Border>
+
+</UserControl>

@@ -1,0 +1,29 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:root="clr-namespace:Artemis.UI.Screens.Root"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Artemis.UI.Screens.Root.SplashView"
+        x:DataType="root:SplashViewModel"
+        Icon="/Assets/Images/Logo/application.ico"
+        Title="Artemis 2.0"
+        Height="450"
+        Width="400"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="450">
+    <Grid RowDefinitions="250,50,Auto,*" IsHitTestVisible="False">
+        <Image Grid.Column="0" Stretch="Uniform" Width="200" Height="150" Source="/Assets/Images/Logo/bow.png" VerticalAlignment="Bottom"/>
+        <TextBlock Grid.Row="1"
+                   Classes="h5"
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Bottom"
+                   TextWrapping="Wrap">
+            Artemis is initializing...
+        </TextBlock>
+        <TextBlock Grid.Row="2" Classes="subtitle" HorizontalAlignment="Center" Text="{CompiledBinding Status}" />
+        <ProgressBar Grid.Row="3" IsIndeterminate="True" Margin="16 0" />
+    </Grid>
+</Window>

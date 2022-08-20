@@ -66,7 +66,7 @@ namespace Artemis.Core.Services
             float bestDarkMutedScore = 0;
 
             //ugly but at least we only loop through the enumerable once ¯\_(ツ)_/¯
-            foreach (var color in colors)
+            foreach (SKColor color in colors)
             {
                 static void SetIfBetterScore(ref float bestScore, ref SKColor bestColor, SKColor newColor, ColorType type, bool ignoreLimits)
                 {
@@ -86,7 +86,7 @@ namespace Artemis.Core.Services
                 SetIfBetterScore(ref bestDarkMutedScore, ref bestDarkMutedColor, color, ColorType.DarkMuted, ignoreLimits);
             }
 
-            return new()
+            return new ColorSwatch
             {
                 Vibrant = bestVibrantColor,
                 LightVibrant = bestLightVibrantColor,

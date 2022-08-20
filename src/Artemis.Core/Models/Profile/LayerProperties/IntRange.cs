@@ -5,18 +5,10 @@ namespace Artemis.Core
     /// <summary>
     ///     Represents a range between two signed integers
     /// </summary>
-    public class IntRange
+    public readonly struct IntRange
     {
         private readonly Random _rand;
-
-        /// <summary>
-        ///     Creates a new instance of the <see cref="IntRange" /> class
-        /// </summary>
-        public IntRange()
-        {
-            _rand = new Random();
-        }
-
+        
         /// <summary>
         ///     Creates a new instance of the <see cref="IntRange" /> class
         /// </summary>
@@ -31,14 +23,14 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets or sets the start value of the range
+        ///     Gets the start value of the range
         /// </summary>
-        public int Start { get; set; }
+        public int Start { get; }
 
         /// <summary>
-        ///     Gets or sets the end value of the range
+        ///     Gets the end value of the range
         /// </summary>
-        public int End { get; set; }
+        public int End { get; }
 
         /// <summary>
         ///     Determines whether the given value is in this range

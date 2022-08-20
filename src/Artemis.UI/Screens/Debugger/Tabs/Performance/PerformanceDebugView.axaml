@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Debugger.Performance.PerformanceDebugView">
+    <Grid RowDefinitions="Auto,Auto,*">
+        <StackPanel Grid.Row="0">
+            <TextBlock Classes="h3">Performance</TextBlock>
+            <TextBlock TextWrapping="Wrap">
+                On this page you can see how much CPU time different plugin features are taking. If you are having performance issues, below you can find out which plugin might be the culprit.
+            </TextBlock>
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock TextWrapping="Wrap" Classes="subtitle" Margin="0 10">
+                    These performance stats are rather basic, for advanced performance profiling check out the wiki.
+                </TextBlock>
+                <controls:HyperlinkButton Grid.Column="1" NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/plugins/profiling">
+                    JetBrains Profiling Guide
+                </controls:HyperlinkButton>
+            </Grid>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10 0">
+            <TextBlock Text="FPS: " />
+            <TextBlock FontWeight="Bold" Text="{Binding CurrentFps}" />
+            <TextBlock Text=" at " />
+            <TextBlock Text="{Binding RenderWidth}" />
+            <TextBlock Text="x" />
+            <TextBlock Text="{Binding RenderHeight}" />
+            <TextBlock Text=" - Renderer: " />
+            <TextBlock Text="{Binding Renderer}" />
+        </StackPanel>
+
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <ItemsControl Items="{Binding Items}" Margin="0 0 10 0" />
+        </ScrollViewer>
+    </Grid>
+
+</UserControl>

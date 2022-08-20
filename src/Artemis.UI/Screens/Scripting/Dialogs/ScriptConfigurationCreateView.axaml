@@ -1,0 +1,35 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:dialogs="clr-namespace:Artemis.UI.Screens.Scripting.Dialogs"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Scripting.Dialogs.ScriptConfigurationCreateView"
+             x:DataType="dialogs:ScriptConfigurationCreateViewModel">
+    <Panel>
+        <StackPanel IsVisible="{CompiledBinding ScriptingProviders.Count}">
+            <TextBlock Classes="label" Margin="0 5">Script name</TextBlock>
+            <TextBox Watermark="Name" Text="{CompiledBinding ScriptName}" />
+            <TextBlock Classes="label" Margin="0 5">Script type</TextBlock>
+            <ComboBox SelectedItem="{CompiledBinding SelectedScriptingProvider}" Items="{CompiledBinding ScriptingProviders}" HorizontalAlignment="Stretch">
+                <ComboBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </ComboBox.ItemsPanel>
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <shared:ArtemisIcon Icon="{CompiledBinding Info.ResolvedIcon}" Width="16" Height="16" Margin="0 0 5 0" />
+                            <TextBlock Text="{CompiledBinding LanguageName}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+        <TextBlock IsVisible="{CompiledBinding !ScriptingProviders.Count}">
+            You don't have any scripting providers installed or enabled, therefore you cannot use scripts.
+        </TextBlock>
+    </Panel>
+</UserControl>

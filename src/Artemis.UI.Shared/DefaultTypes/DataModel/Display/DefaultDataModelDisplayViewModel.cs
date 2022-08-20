@@ -1,4 +1,8 @@
 ﻿using System;
+using Artemis.Core;
+using Artemis.UI.Shared.DataModelVisualization;
+using Newtonsoft.Json;
+using ReactiveUI;
 
 namespace Artemis.UI.Shared.DefaultTypes.DataModel.Display
 {
@@ -8,33 +12,33 @@ namespace Artemis.UI.Shared.DefaultTypes.DataModel.Display
     /// </summary>
     internal class DefaultDataModelDisplayViewModel : DataModelDisplayViewModel<object>
     {
-        private bool _showNull;
-        private bool _showToString;
+        private readonly JsonSerializerSettings _serializerSettings;
+        private string _display;
 
-        internal DefaultDataModelDisplayViewModel()
+        public DefaultDataModelDisplayViewModel()
         {
-            ShowNull = true;
+            _serializerSettings = new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                PreserveReferencesHandling = PreserveReferencesHandling.None
+            };
+            _display = "null";
         }
 
-        public bool ShowToString
+        public string Display
         {
-            get => _showToString;
-            private set => SetAndNotify(ref _showToString, value);
+            get => _display;
+            set => RaiseAndSetIfChanged(ref _display, value);
         }
-
-        public bool ShowNull
-        {
-            get => _showNull;
-            set => SetAndNotify(ref _showNull, value);
-        }
-
+        
         protected override void OnDisplayValueUpdated()
         {
             if (DisplayValue is Enum enumDisplayValue)
-                DisplayValue = EnumUtilities.HumanizeValue(enumDisplayValue);
-
-            ShowToString = DisplayValue != null;
-            ShowNull = DisplayValue == null;
+                Display = EnumUtilities.HumanizeValue(enumDisplayValue);
+            else if (DisplayValue is not string)
+                Display = JsonConvert.SerializeObject(DisplayValue, _serializerSettings);
+            else
+                Display = DisplayValue?.ToString() ?? "null";
         }
     }
 }

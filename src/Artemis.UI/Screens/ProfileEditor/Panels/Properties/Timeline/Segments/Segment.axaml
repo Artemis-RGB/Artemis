@@ -1,0 +1,27 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="ContentControl.segment-content-control" />
+
+    <Style Selector="Border.segment-container">
+        <Setter Property="Height" Value="17" />
+    </Style>
+
+    <Style Selector="Rectangle.resize-visual">
+        <Setter Property="Fill" Value="{DynamicResource SystemAccentColorLight2}" />
+        <Setter Property="Width" Value="4" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+    </Style>
+
+    <Style Selector="Rectangle.resize-anchor">
+        <Setter Property="Fill" Value="Transparent" />
+        <Setter Property="Width" Value="10" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="Cursor" Value="SizeWestEast" />
+    </Style>
+</Styles>

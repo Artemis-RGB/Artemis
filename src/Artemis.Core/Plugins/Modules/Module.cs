@@ -12,7 +12,7 @@ namespace Artemis.Core.Modules
     /// <summary>
     ///     Allows you to add new data to the Artemis data model
     /// </summary>
-    public abstract class Module<T> : Module where T : DataModel
+    public abstract class Module<T> : Module where T : DataModel, new()
     {
         /// <summary>
         ///     The data model driving this module
@@ -79,7 +79,7 @@ namespace Artemis.Core.Modules
 
         internal override void InternalEnable()
         {
-            DataModel = Activator.CreateInstance<T>();
+            DataModel = new T();
             DataModel.Module = this;
             DataModel.DataModelDescription = GetDataModelDescription();
             base.InternalEnable();
@@ -114,16 +114,19 @@ namespace Artemis.Core.Modules
         private readonly List<(DefaultCategoryName, string)> _defaultProfilePaths = new();
         private readonly List<(DefaultCategoryName, string)> _pendingDefaultProfilePaths = new();
 
-        protected Module()
-        {
-            DefaultProfilePaths = new ReadOnlyCollection<(DefaultCategoryName, string)>(_defaultProfilePaths);
-            HiddenProperties = new(HiddenPropertiesList);
-        }
-
         /// <summary>
         ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
         /// </summary>
         protected internal readonly List<PropertyInfo> HiddenPropertiesList = new();
+
+        /// <summary>
+        ///     The base constructor of the <see cref="Module" /> class.
+        /// </summary>
+        protected Module()
+        {
+            DefaultProfilePaths = new ReadOnlyCollection<(DefaultCategoryName, string)>(_defaultProfilePaths);
+            HiddenProperties = new ReadOnlyCollection<PropertyInfo>(HiddenPropertiesList);
+        }
 
         /// <summary>
         ///     Gets a read only collection of default profile paths
@@ -237,7 +240,7 @@ namespace Artemis.Core.Modules
         /// <returns></returns>
         public virtual DataModelPropertyAttribute GetDataModelDescription()
         {
-            return new() {Name = Info.Name, Description = Info.Description};
+            return new DataModelPropertyAttribute {Name = Info.Name, Description = Info.Description};
         }
 
         /// <summary>
@@ -307,7 +310,7 @@ namespace Artemis.Core.Modules
         /// <inheritdoc />
         internal override void InternalEnable()
         {
-            foreach ((DefaultCategoryName categoryName, var path) in _pendingDefaultProfilePaths)
+            foreach ((DefaultCategoryName categoryName, string? path) in _pendingDefaultProfilePaths)
                 AddDefaultProfile(categoryName, path);
             _pendingDefaultProfilePaths.Clear();
 

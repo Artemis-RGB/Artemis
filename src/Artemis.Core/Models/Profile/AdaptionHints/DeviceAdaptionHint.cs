@@ -8,8 +8,13 @@ namespace Artemis.Core
     /// <summary>
     ///     Represents a hint that adapts layers to a certain type of devices
     /// </summary>
-    public class DeviceAdaptionHint : IAdaptionHint
+    public class DeviceAdaptionHint : CorePropertyChanged, IAdaptionHint
     {
+        private RGBDeviceType _deviceType;
+        private int _skip;
+        private bool _limitAmount;
+        private int _amount;
+
         /// <summary>
         ///     Creates a new instance of the <see cref="DeviceAdaptionHint" /> class
         /// </summary>
@@ -28,22 +33,38 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the type of devices LEDs will be applied to
         /// </summary>
-        public RGBDeviceType DeviceType { get; set; }
+        public RGBDeviceType DeviceType
+        {
+            get => _deviceType;
+            set => SetAndNotify(ref _deviceType, value);
+        }
 
         /// <summary>
         ///     Gets or sets the amount of devices to skip
         /// </summary>
-        public int Skip { get; set; }
+        public int Skip
+        {
+            get => _skip;
+            set => SetAndNotify(ref _skip, value);
+        }
 
         /// <summary>
         ///     Gets or sets a boolean indicating whether a limited amount of devices should be used
         /// </summary>
-        public bool LimitAmount { get; set; }
+        public bool LimitAmount
+        {
+            get => _limitAmount;
+            set => SetAndNotify(ref _limitAmount, value);
+        }
 
         /// <summary>
         ///     Gets or sets the amount of devices to limit to if <see cref="LimitAmount" /> is <see langword="true" />
         /// </summary>
-        public int Amount { get; set; }
+        public int Amount
+        {
+            get => _amount;
+            set => SetAndNotify(ref _amount, value);
+        }
 
         #region Implementation of IAdaptionHint
 

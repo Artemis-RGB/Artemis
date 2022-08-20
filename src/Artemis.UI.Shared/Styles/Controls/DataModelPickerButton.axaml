@@ -1,0 +1,58 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:dataModelPicker="clr-namespace:Artemis.UI.Shared.DataModelPicker"
+        xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.Controls.GradientPicker">
+    <Design.PreviewWith>
+        <Border Padding="20" Width="200">
+            <StackPanel Spacing="5">
+                <dataModelPicker:DataModelPickerButton />
+                <gradientPicker:GradientPickerButton />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="FlyoutPresenter.data-model-picker-presenter">
+        <Setter Property="MaxWidth" Value="1200" />
+        <Setter Property="MaxHeight" Value="1200" />
+        <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
+    </Style>
+
+    <Style Selector="dataModelPicker|DataModelPickerButton">
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
+        <Setter Property="MinHeight" Value="{DynamicResource TextControlThemeMinHeight}" />
+        <Setter Property="MinWidth" Value="{DynamicResource TextControlThemeMinWidth}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <controls:Button Name="MainButton"
+                                 CornerRadius="{TemplateBinding CornerRadius}"
+                                 BorderBrush="{TemplateBinding BorderBrush}"
+                                 VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                 HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                 Width="{TemplateBinding Width}"
+                                 Height="{TemplateBinding Height}"
+                                 HorizontalContentAlignment="Stretch">
+                    <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
+                        <TextBlock Name="MainButtonLabel"
+                                   Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   TextAlignment="Left"
+                                   TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Name="ChevronTextBlock"
+                                   Grid.Column="1"
+                                   FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                   FontSize="13"
+                                   Text="&#xE70D;"
+                                   VerticalAlignment="Center"
+                                   TextAlignment="Right"
+                                   Padding="2 2 2 0"
+                                   Margin="5 0" />
+                    </Grid>
+                </controls:Button>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

@@ -1,0 +1,152 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:paz="clr-namespace:Avalonia.Controls.PanAndZoom;assembly=Avalonia.Controls.PanAndZoom"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:surfaceEditor="clr-namespace:Artemis.UI.Screens.SurfaceEditor"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.SurfaceEditor.SurfaceEditorView"
+             x:DataType="surfaceEditor:SurfaceEditorViewModel">
+    <UserControl.Resources>
+        <VisualBrush x:Key="LargeCheckerboardBrush" TileMode="Tile" Stretch="Uniform" SourceRect="0,0,20,20">
+            <VisualBrush.Visual>
+                <Canvas Width="20" Height="20">
+                    <Rectangle Width="10" Height="10" Fill="Black" Opacity="0.15" />
+                    <Rectangle Width="10" Height="10" Canvas.Left="10" />
+                    <Rectangle Width="10" Height="10" Canvas.Top="10" />
+                    <Rectangle Width="10" Height="10" Canvas.Left="10" Canvas.Top="10" Fill="Black" Opacity="0.15" />
+                </Canvas>
+            </VisualBrush.Visual>
+        </VisualBrush>
+        <MenuFlyout x:Key="DeviceMenuFlyout">
+            <MenuItem Header="Identify" Command="{Binding $parent[surfaceEditor:SurfaceEditorView].DataContext.IdentifyDevice}" CommandParameter="{Binding Device}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="AlarmLight" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="-" />
+            <MenuItem Header="Bring to Front" Command="{Binding $parent[surfaceEditor:SurfaceEditorView].DataContext.BringToFront}" CommandParameter="{Binding Device}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="ArrangeBringToFront" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Bring Forward" Command="{Binding $parent[surfaceEditor:SurfaceEditorView].DataContext.BringForward}" CommandParameter="{Binding Device}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="ArrangeBringForward" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Send to Back" Command="{Binding $parent[surfaceEditor:SurfaceEditorView].DataContext.SendToBack}" CommandParameter="{Binding Device}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="ArrangeSendToBack" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Send Backward" Command="{Binding $parent[surfaceEditor:SurfaceEditorView].DataContext.SendBackward}" CommandParameter="{Binding Device}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="ArrangeSendBackward" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="-" />
+            <MenuItem Header="Identify input"
+                      Command="{Binding DetectInput}"
+                      ToolTip.Tip="Teach Artemis which keypresses and/or button presses belong to this device">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="GestureDoubleTap" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="View properties" Command="{Binding $parent[surfaceEditor:SurfaceEditorView].DataContext.ViewProperties}" CommandParameter="{Binding Device}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Gear" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuFlyout>
+    </UserControl.Resources>
+    <Grid Margin="0 0 15 15" ColumnDefinitions="*,400">
+        <Border Grid.Column="0" Classes="card-condensed">
+            <paz:ZoomBorder Name="ZoomBorder"
+                            Stretch="None"
+                            ClipToBounds="True"
+                            Focusable="True"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch"
+                            Background="{StaticResource LargeCheckerboardBrush}"
+                            ZoomChanged="ZoomBorder_OnZoomChanged"
+                            PointerReleased="ZoomBorder_OnPointerReleased">
+                <Grid Name="ContainerGrid" Background="Transparent">
+                    <Grid.Transitions>
+                        <Transitions>
+                            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut" />
+                        </Transitions>
+                    </Grid.Transitions>
+                    <ItemsControl Name="DeviceContainer" Items="{CompiledBinding SurfaceDeviceViewModels}" ClipToBounds="False">
+                        <ItemsControl.Styles>
+                            <Style Selector="ContentPresenter">
+                                <Setter Property="Canvas.Left" Value="{Binding Device.X}" />
+                                <Setter Property="Canvas.Top" Value="{Binding Device.Y}" />
+                            </Style>
+                        </ItemsControl.Styles>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{Binding}" ContextFlyout="{StaticResource DeviceMenuFlyout}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <shared:SelectionRectangle Name="SelectionRectangle"
+                                               InputElement="{Binding #ZoomBorder}"
+                                               SelectionUpdated="SelectionRectangle_OnSelectionUpdated"
+                                               BorderBrush="{DynamicResource SystemAccentColor}"
+                                               BorderRadius="8"
+                                               BorderThickness="1"
+                                               ZoomRatio="{Binding $parent[ZoomBorder].ZoomX}">
+                        <shared:SelectionRectangle.Background>
+                            <SolidColorBrush Color="{DynamicResource SystemAccentColorLight1}" Opacity="0.2" />
+                        </shared:SelectionRectangle.Background>
+                    </shared:SelectionRectangle>
+
+                    <Border Name="SurfaceBounds"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Left"
+                            Width="{Binding MaxTextureSize}"
+                            Height="{Binding MaxTextureSize}"
+                            BorderThickness="2"
+                            BorderBrush="{DynamicResource SystemAccentColorLight1}"
+                            BorderDashArray="6,2"
+                            Opacity="0.5" />
+                </Grid>
+            </paz:ZoomBorder>
+        </Border>
+        
+        <Border Grid.Column="1" Classes="card-condensed" Margin="15 0 0 0">
+            <Grid RowDefinitions="*,Auto,Auto" ColumnDefinitions="*,*">
+                <ListBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Items="{CompiledBinding ListDeviceViewModels}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl Content="{Binding}" ContextFlyout="{StaticResource DeviceMenuFlyout}"></ContentControl>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <CheckBox Grid.Row="1"
+                          Grid.Column="0"
+                          IsChecked="{CompiledBinding ColorDevices}"
+                          ToolTip.Tip="Draws a random color on each device allowing you to identify them">
+                    Color overlay devices
+                </CheckBox>
+                <CheckBox Grid.Row="1"
+                          Grid.Column="1"
+                          IsChecked="{CompiledBinding ColorFirstLedOnly}"
+                          IsEnabled="{CompiledBinding ColorDevices}"
+                          ToolTip.Tip="Draws the overlay only on the first LED of each device">
+                    Overlay first LED only
+                </CheckBox>
+                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="0 10 0 0" Command="{CompiledBinding AutoArrange}">Auto-arrange</Button>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Artemis.Core
 {
@@ -12,6 +11,11 @@ namespace Artemis.Core
         ///     Gets a list of prerequisites for this plugin
         /// </summary>
         List<PluginPrerequisite> Prerequisites { get; }
+        
+        /// <summary>
+        ///     Gets a list of prerequisites of the current platform for this plugin
+        /// </summary>
+        IEnumerable<PluginPrerequisite> PlatformPrerequisites { get; }
 
         /// <summary>
         ///     Determines whether the prerequisites of this plugin are met

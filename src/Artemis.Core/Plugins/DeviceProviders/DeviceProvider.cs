@@ -88,7 +88,7 @@ namespace Artemis.Core.DeviceProviders
         /// <returns>The resulting Artemis layout</returns>
         public virtual ArtemisLayout LoadUserLayout(ArtemisDevice device)
         {
-            string layoutDir = Path.Combine(Constants.DataFolder, "user layouts");
+            string layoutDir = Constants.LayoutsFolder;
             string filePath = Path.Combine(
                 layoutDir,
                 device.RgbDevice.DeviceInfo.Manufacturer,

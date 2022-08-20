@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:builders="clr-namespace:Artemis.UI.Shared.Services.Builders;assembly=Artemis.UI.Shared"
+             xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:attachedProperties="clr-namespace:Artemis.UI.Shared.AttachedProperties;assembly=Artemis.UI.Shared"
+             xmlns:workshop="clr-namespace:Artemis.UI.Screens.Workshop"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.Controls.GradientPicker;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800"
+             x:Class="Artemis.UI.Screens.Workshop.WorkshopView"
+             x:DataType="workshop:WorkshopViewModel">
+    <Border Classes="router-container">
+        <ScrollViewer>
+            <StackPanel Margin="12" Spacing="5">
+                <Border Classes="card">
+                    <StackPanel Spacing="5">
+                        <TextBlock Classes="h4">Notification tests</TextBlock>
+                        <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Informational}">
+                            Notification test (default)
+                        </Button>
+                        <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Warning}">
+                            Notification test (warning)
+                        </Button>
+                        <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Error}">
+                            Notification test (error)
+                        </Button>
+                        <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Success}">
+                            Notification test (success)
+                        </Button>
+
+                        <shared:HotkeyBox Watermark="Some hotkey" Width="250" HorizontalAlignment="Left" />
+
+                        <controls1:NumberBox
+                            attachedProperties:NumberBoxAssist.PrefixText="$"
+                            attachedProperties:NumberBoxAssist.SuffixText="%">
+                        </controls1:NumberBox>
+
+                        <TextBox
+                            attachedProperties:TextBoxAssist.PrefixText="$"
+                            attachedProperties:TextBoxAssist.SuffixText="%">
+                        </TextBox>
+                        
+                        <TextBlock Classes="h4" Text="{CompiledBinding TestValue}"/>
+                        <controls:DraggableNumberBox Value="{CompiledBinding TestValue}"/>
+                        <controls:DraggableNumberBox Value="{CompiledBinding TestValue}" Classes="condensed"/>
+
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <Border Classes="card" Cursor="{CompiledBinding Cursor}">
+                                <TextBlock Text="{CompiledBinding SelectedCursor}"></TextBlock>
+                            </Border>
+                            <shared:EnumComboBox Value="{CompiledBinding SelectedCursor}"></shared:EnumComboBox>
+                        </StackPanel>
+
+                        <Button Command="{Binding CreateRandomGradient}">
+                            Create random gradient
+                        </Button>
+                        <gradientPicker:GradientPickerButton ColorGradient="{CompiledBinding ColorGradient}" IsCompact="True" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>

@@ -1,18 +1,17 @@
 ﻿using System;
 using Artemis.Core;
-using Artemis.UI.Shared;
-using Artemis.UI.Shared.Services;
-using Stylet;
+using Artemis.UI.Shared.Services.ProfileEditor;
+using Artemis.UI.Shared.Services.PropertyInput;
 
-namespace Artemis.UI.DefaultTypes.PropertyInput
+namespace Artemis.UI.DefaultTypes.PropertyInput;
+
+public class EnumPropertyInputViewModel<T> : PropertyInputViewModel<T> where T : Enum
 {
-    public class EnumPropertyInputViewModel<T> : PropertyInputViewModel<T> where T : Enum
+    public EnumPropertyInputViewModel(LayerProperty<T> layerProperty, IProfileEditorService profileEditorService, IPropertyInputService propertyInputService)
+        : base(layerProperty, profileEditorService, propertyInputService)
     {
-        public EnumPropertyInputViewModel(LayerProperty<T> layerProperty, IProfileEditorService profileEditorService) : base(layerProperty, profileEditorService)
-        {
-            EnumValues = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(T)));
-        }
-
-        public BindableCollection<ValueDescription> EnumValues { get; }
+        // TODO: Test if WhenActivated works here
     }
+
+    public Type EnumType => typeof(T);
 }

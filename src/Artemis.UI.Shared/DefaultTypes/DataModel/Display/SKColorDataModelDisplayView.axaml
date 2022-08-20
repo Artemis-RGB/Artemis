@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:display="clr-namespace:Artemis.UI.Shared.DefaultTypes.DataModel.Display"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Shared.DefaultTypes.DataModel.Display.SKColorDataModelDisplayView"
+             x:DataType="display:SKColorDataModelDisplayViewModel">
+	<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <TextBlock x:Name="HexDisplay"
+                   Text="{CompiledBinding DisplayValue, Converter={StaticResource SKColorToStringConverter}}"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Stretch" />
+        <Border Margin="5 0 0 0"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Right"
+                BorderThickness="1"
+                MinWidth="18"
+                MinHeight="18"
+                Background="{DynamicResource CheckerboardBrush}"
+                BorderBrush="{DynamicResource ColorPickerButtonOutline}"
+                CornerRadius="4"
+                ClipToBounds="True">
+            <Border CornerRadius="4">
+                <Border.Background>
+                    <SolidColorBrush Color="{CompiledBinding DisplayValue, Converter={StaticResource SKColorToColorConverter}}" />
+                </Border.Background>
+            </Border>
+        </Border>
+    </StackPanel>
+</UserControl>

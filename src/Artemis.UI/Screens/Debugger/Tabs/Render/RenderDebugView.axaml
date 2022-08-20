@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Debugger.Render.RenderDebugView">
+    <StackPanel>
+        <TextBlock Classes="h3">Render</TextBlock>
+        <TextBlock TextWrapping="Wrap">
+            On this page you can view what Artemis renders to devices in real time. Artemis will overlay this image on your devices, taking the average of each pixel covering a LED, resulting the image appearing on your devices.
+        </TextBlock>
+        <TextBlock TextWrapping="Wrap" Classes="subtitle" Margin="0 10">
+            Please note that having this window open can have a performance impact on your system.
+        </TextBlock>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <TextBlock Text="FPS: " />
+            <TextBlock FontWeight="Bold" Text="{Binding CurrentFps}" />
+            <TextBlock Text=" at " />
+            <TextBlock Text="{Binding RenderWidth}" />
+            <TextBlock Text="x" />
+            <TextBlock Text="{Binding RenderHeight}" />
+            <TextBlock Text=" - Renderer: " />
+            <TextBlock Text="{Binding Renderer}" />
+        </StackPanel>
+
+        <Border Classes="card" Padding="10">
+            <ZoomBorder Name="ZoomBorder"
+                        Stretch="None"
+                        ClipToBounds="True"
+                        Focusable="True"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch">
+                <Image Name="Visualization" Source="{Binding CurrentFrame}">
+                    <Image.Transitions>
+                        <Transitions>
+                            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut" />
+                        </Transitions>
+                    </Image.Transitions>
+                </Image>
+            </ZoomBorder>
+        </Border>
+    </StackPanel>
+</UserControl>

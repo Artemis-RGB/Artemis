@@ -11,7 +11,6 @@ namespace Artemis.Core.Services
     internal class ProcessMonitorService : IProcessMonitorService
     {
         private readonly ILogger _logger;
-        private readonly Timer _processScanTimer;
         private readonly ProcessComparer _comparer;
         private Process[] _lastScannedProcesses;
 
@@ -19,16 +18,15 @@ namespace Artemis.Core.Services
         {
             _logger = logger;
             _lastScannedProcesses = Process.GetProcesses();
-            _processScanTimer = new Timer(1000);
-            _processScanTimer.Elapsed += OnTimerElapsed;
-            _processScanTimer.Start();
+            Timer processScanTimer = new(1000);
+            processScanTimer.Elapsed += OnTimerElapsed;
+            processScanTimer.Start();
             _comparer = new ProcessComparer();
 
             ProcessActivationRequirement.ProcessMonitorService = this;
         }
 
         public event EventHandler<ProcessEventArgs>? ProcessStarted;
-
         public event EventHandler<ProcessEventArgs>? ProcessStopped;
 
         public IEnumerable<Process> GetRunningProcesses()
@@ -36,7 +34,7 @@ namespace Artemis.Core.Services
             return _lastScannedProcesses;
         }
 
-        private void OnTimerElapsed(object sender, ElapsedEventArgs e)
+        private void OnTimerElapsed(object? sender, ElapsedEventArgs e)
         {
             Process[] newProcesses = Process.GetProcesses();
             foreach (Process startedProcess in newProcesses.Except(_lastScannedProcesses, _comparer))
@@ -64,7 +62,7 @@ namespace Artemis.Core.Services
             return x.Id == y.Id && x.ProcessName == y.ProcessName && x.SessionId == y.SessionId;
         }
 
-        public int GetHashCode(Process obj)
+        public int GetHashCode(Process? obj)
         {
             if (obj == null) return 0;
             return obj.Id;

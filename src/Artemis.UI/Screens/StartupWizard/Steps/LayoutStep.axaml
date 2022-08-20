@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:startupWizard="clr-namespace:Artemis.UI.Screens.StartupWizard"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.StartupWizard.Steps.LayoutStep"
+             x:DataType="startupWizard:StartupWizardViewModel">
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto" ColumnDefinitions="*,*">
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Classes="card">
+            <StackPanel>
+                <TextBlock TextWrapping="Wrap">
+                    Artemis uses "spatial awareness" to create realistic effects across multiple devices.
+                </TextBlock>
+                <TextBlock TextWrapping="Wrap">
+                    In order to do this correctly, we need to know where your devices are located on your desk. Select one of the two presets below, after the setup wizard finishes you can tweak this in detail in the surface editor.
+                </TextBlock>
+            </StackPanel>
+        </Border>
+        
+        <Button Grid.Row="1"
+                Grid.Column="0"
+                Command="{CompiledBinding SelectLayout}"
+                CommandParameter="left"
+                HorizontalAlignment="Right"
+                Margin="0 0 10 0"
+                Width="280"
+                Height="280"
+                IsEnabled="False">
+            <StackPanel>
+                <avalonia:MaterialIcon Kind="HandBackLeft" Width="150" Height="150" HorizontalAlignment="Center" />
+                <TextBlock TextAlignment="Center" Classes="h4" Margin="0 10 0 0">
+                    Left-handed preset (NYI)
+                </TextBlock>
+                <TextBlock TextAlignment="Center" Classes="subtitle" TextWrapping="Wrap">
+                    A preset with the mouse on the left side of the keyboard
+                </TextBlock>
+            </StackPanel>
+        </Button>
+
+        <Button Grid.Row="1"
+                Grid.Column="1"
+                Command="{CompiledBinding SelectLayout}"
+                CommandParameter="right"
+                HorizontalAlignment="Left"
+                Margin="10 0 0 0"
+                Width="280"
+                Height="280">
+            <StackPanel>
+                <avalonia:MaterialIcon Kind="HandBackRight" Width="150" Height="150" HorizontalAlignment="Center" />
+                <TextBlock TextAlignment="Center" Classes="h4" Margin="0 10 0 0">
+                    Right-handed preset
+                </TextBlock>
+                <TextBlock TextAlignment="Center" Classes="subtitle" TextWrapping="Wrap">
+                    A preset with the mouse on the right side of the keyboard
+                </TextBlock>
+            </StackPanel>
+        </Button>
+    </Grid>
+
+</UserControl>

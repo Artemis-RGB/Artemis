@@ -30,9 +30,6 @@ namespace Artemis.Core.Services
 
         public ProfileService(ILogger logger,
             IRgbService rgbService,
-            // TODO: Move these two
-            IConditionOperatorService conditionOperatorService,
-            IDataBindingService dataBindingService,
             IProfileCategoryRepository profileCategoryRepository,
             IPluginManagementService pluginManagementService,
             IInputService inputService,
@@ -193,6 +190,7 @@ namespace Artemis.Core.Services
 
         public bool HotkeysEnabled { get; set; }
         public bool RenderForEditor { get; set; }
+        public ProfileElement? EditorFocus { get; set; }
 
         public void UpdateProfiles(double deltaTime)
         {
@@ -224,8 +222,8 @@ namespace Artemis.Core.Services
                         try
                         {
                             // Make sure the profile is active or inactive according to the parameters above
-                            if (shouldBeActive && profileConfiguration.Profile == null)
-                                ActivateProfile(profileConfiguration);
+                            if (shouldBeActive && profileConfiguration.Profile == null && profileConfiguration.BrokenState != "Failed to activate profile")
+                                profileConfiguration.TryOrBreak(() => ActivateProfile(profileConfiguration), "Failed to activate profile");
                             else if (!shouldBeActive && profileConfiguration.Profile != null)
                                 DeactivateProfile(profileConfiguration);
 
@@ -250,7 +248,7 @@ namespace Artemis.Core.Services
                 ProfileConfiguration? editedProfileConfiguration = _profileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(p => p.IsBeingEdited);
                 if (editedProfileConfiguration != null)
                 {
-                    editedProfileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
+                    editedProfileConfiguration.Profile?.Render(canvas, SKPointI.Empty, RenderForEditor ? EditorFocus : null);
                     return;
                 }
 
@@ -268,7 +266,7 @@ namespace Artemis.Core.Services
                             ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
                             // Ensure all criteria are met before rendering
                             if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && profileConfiguration.ActivationConditionMet)
-                                profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
+                                profileConfiguration.Profile?.Render(canvas, SKPointI.Empty, null);
                         }
                         catch (Exception e)
                         {
@@ -307,10 +305,10 @@ namespace Artemis.Core.Services
         {
             if (profileConfiguration.Icon.IconType == ProfileConfigurationIconType.MaterialIcon)
                 return;
-            if (profileConfiguration.Icon.FileIcon != null)
-                return;
-
-            profileConfiguration.Icon.FileIcon = _profileCategoryRepository.GetProfileIconStream(profileConfiguration.Entity.FileIconId);
+          
+            using Stream? stream = _profileCategoryRepository.GetProfileIconStream(profileConfiguration.Entity.FileIconId);
+            if (stream != null)
+                profileConfiguration.Icon.SetIconByStream(profileConfiguration.Entity.IconOriginalFileName, stream);
         }
 
         public void SaveProfileConfigurationIcon(ProfileConfiguration profileConfiguration)
@@ -318,10 +316,11 @@ namespace Artemis.Core.Services
             if (profileConfiguration.Icon.IconType == ProfileConfigurationIconType.MaterialIcon)
                 return;
 
-            if (profileConfiguration.Icon.FileIcon != null)
+            using Stream? stream = profileConfiguration.Icon.GetIconStream();
+            if (stream != null && profileConfiguration.Icon.OriginalFileName != null)
             {
-                profileConfiguration.Icon.FileIcon.Position = 0;
-                _profileCategoryRepository.SaveProfileIconStream(profileConfiguration.Entity, profileConfiguration.Icon.FileIcon);
+                profileConfiguration.Entity.IconOriginalFileName = profileConfiguration.Icon.OriginalFileName;
+                _profileCategoryRepository.SaveProfileIconStream(profileConfiguration.Entity, stream);
             }
         }
 
@@ -330,7 +329,17 @@ namespace Artemis.Core.Services
             if (profileConfiguration.Profile != null)
                 return profileConfiguration.Profile;
 
-            ProfileEntity profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
+            ProfileEntity profileEntity;
+            try
+            {
+                profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
+            }
+            catch (Exception e)
+            {
+                profileConfiguration.SetBrokenState("Failed to activate profile", e);
+                throw;
+            }
+            
             if (profileEntity == null)
                 throw new ArtemisCoreException($"Cannot find profile named: {profileConfiguration.Name} ID: {profileConfiguration.Entity.ProfileId}");
 
@@ -434,90 +443,24 @@ namespace Artemis.Core.Services
                 _profileCategories.Sort((a, b) => a.Order - b.Order);
             }
         }
-
+        
         public void SaveProfile(Profile profile, bool includeChildren)
         {
-            string memento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
+            _logger.Debug("Updating profile - Saving {Profile}", profile);
             profile.Save();
             if (includeChildren)
             {
-                foreach (Folder folder in profile.GetAllFolders())
-                    folder.Save();
-                foreach (Layer layer in profile.GetAllLayers())
-                    layer.Save();
+                foreach (RenderProfileElement child in profile.GetAllRenderElements())
+                    child.Save();
             }
-
-            // If there are no changes, don't bother saving
-            string updatedMemento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
-            if (memento.Equals(updatedMemento))
-            {
-                _logger.Debug("Updating profile - Skipping save, no changes");
-                return;
-            }
-
-            _logger.Debug("Updating profile - Saving " + profile);
-            profile.RedoStack.Clear();
-            profile.UndoStack.Push(memento);
-
+            
             // At this point the user made actual changes, save that
             profile.IsFreshImport = false;
             profile.ProfileEntity.IsFreshImport = false;
 
             _profileRepository.Save(profile.ProfileEntity);
         }
-
-        public bool UndoSaveProfile(Profile profile)
-        {
-            // Keep the profile from being rendered by locking it
-            lock (profile)
-            {
-                if (profile.UndoStack.Count == 0)
-                {
-                    _logger.Debug("Undo profile update - Failed, undo stack empty");
-                    return false;
-                }
-
-                string top = profile.UndoStack.Pop();
-                string memento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
-                profile.RedoStack.Push(memento);
-                profile.ProfileEntity =
-                    JsonConvert.DeserializeObject<ProfileEntity>(top, IProfileService.MementoSettings)
-                    ?? throw new InvalidOperationException("Failed to deserialize memento");
-
-                profile.Load();
-                profile.PopulateLeds(_rgbService.EnabledDevices);
-            }
-
-            _logger.Debug("Undo profile update - Success");
-            return true;
-        }
-
-        public bool RedoSaveProfile(Profile profile)
-        {
-            // Keep the profile from being rendered by locking it
-            lock (profile)
-            {
-                if (profile.RedoStack.Count == 0)
-                {
-                    _logger.Debug("Redo profile update - Failed, redo empty");
-                    return false;
-                }
-
-                string top = profile.RedoStack.Pop();
-                string memento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
-                profile.UndoStack.Push(memento);
-                profile.ProfileEntity =
-                    JsonConvert.DeserializeObject<ProfileEntity>(top, IProfileService.MementoSettings)
-                    ?? throw new InvalidOperationException("Failed to deserialize memento");
-
-                profile.Load();
-                profile.PopulateLeds(_rgbService.EnabledDevices);
-
-                _logger.Debug("Redo profile update - Success");
-                return true;
-            }
-        }
-
+        
         public ProfileConfigurationExportModel ExportProfile(ProfileConfiguration profileConfiguration)
         {
             // The profile may not be active and in that case lets activate it real quick
@@ -527,7 +470,7 @@ namespace Artemis.Core.Services
             {
                 ProfileConfigurationEntity = profileConfiguration.Entity,
                 ProfileEntity = profile.ProfileEntity,
-                ProfileImage = profileConfiguration.Icon.FileIcon
+                ProfileImage = profileConfiguration.Icon.GetIconStream()
             };
         }
 
@@ -574,12 +517,8 @@ namespace Artemis.Core.Services
                 profileConfiguration = new ProfileConfiguration(category, profileEntity.Name, "Import");
             }
 
-            if (exportModel.ProfileImage != null)
-            {
-                profileConfiguration.Icon.FileIcon = new MemoryStream();
-                exportModel.ProfileImage.Position = 0;
-                exportModel.ProfileImage.CopyTo(profileConfiguration.Icon.FileIcon);
-            }
+            if (exportModel.ProfileImage != null && exportModel.ProfileConfigurationEntity?.IconOriginalFileName != null)
+                profileConfiguration.Icon.SetIconByStream(exportModel.ProfileConfigurationEntity.IconOriginalFileName, exportModel.ProfileImage);
 
             profileConfiguration.Entity.ProfileId = profileEntity.Id;
             category.AddProfileConfiguration(profileConfiguration, 0);
@@ -594,23 +533,16 @@ namespace Artemis.Core.Services
         /// <inheritdoc />
         public void AdaptProfile(Profile profile)
         {
-            string memento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
-
             List<ArtemisDevice> devices = _rgbService.EnabledDevices.ToList();
             foreach (Layer layer in profile.GetAllLayers())
                 layer.Adapter.Adapt(devices);
 
             profile.Save();
 
-            foreach (Folder folder in profile.GetAllFolders())
-                folder.Save();
-            foreach (Layer layer in profile.GetAllLayers())
-                layer.Save();
+            foreach (RenderProfileElement renderProfileElement in profile.GetAllRenderElements())
+                renderProfileElement.Save();
 
             _logger.Debug("Adapt profile - Saving " + profile);
-            profile.RedoStack.Clear();
-            profile.UndoStack.Push(memento);
-
             _profileRepository.Save(profile.ProfileEntity);
         }
 

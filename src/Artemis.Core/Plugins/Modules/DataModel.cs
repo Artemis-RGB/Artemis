@@ -27,8 +27,8 @@ namespace Artemis.Core.Modules
             Module = null!;
             DataModelDescription = null!;
 
-            ActivePaths = new(_activePaths);
-            DynamicChildren = new(_dynamicChildren);
+            ActivePaths = new ReadOnlyCollection<DataModelPath>(_activePaths);
+            DynamicChildren = new ReadOnlyDictionary<string, DynamicChild>(_dynamicChildren);
         }
 
         /// <summary>
@@ -285,34 +285,43 @@ namespace Artemis.Core.Modules
         internal bool IsPropertyInUse(string path, bool includeChildren)
         {
             path = path.ToUpperInvariant();
-            return includeChildren
-                ? _activePathsHashSet.Any(p => p.StartsWith(path, StringComparison.Ordinal))
-                : _activePathsHashSet.Contains(path);
+            lock (_activePaths)
+            {
+                return includeChildren
+                    ? _activePathsHashSet.Any(p => p.StartsWith(path, StringComparison.Ordinal))
+                    : _activePathsHashSet.Contains(path);
+            }
         }
 
         internal void AddDataModelPath(DataModelPath path)
         {
-            if (_activePaths.Contains(path))
-                return;
+            lock (_activePaths)
+            {
+                if (_activePaths.Contains(path))
+                    return;
 
-            _activePaths.Add(path);
+                _activePaths.Add(path);
 
-            // Add to the hashset if this is the first path pointing 
-            string hashPath = path.Path.ToUpperInvariant();
-            if (!_activePathsHashSet.Contains(hashPath))
-                _activePathsHashSet.Add(hashPath);
+                // Add to the hashset if this is the first path pointing 
+                string hashPath = path.Path.ToUpperInvariant();
+                if (!_activePathsHashSet.Contains(hashPath))
+                    _activePathsHashSet.Add(hashPath);
+            }
 
             OnActivePathAdded(new DataModelPathEventArgs(path));
         }
 
         internal void RemoveDataModelPath(DataModelPath path)
         {
-            if (!_activePaths.Remove(path))
-                return;
+            lock (_activePaths)
+            {
+                if (!_activePaths.Remove(path))
+                    return;
 
-            // Remove from the hashset if this was the last path pointing there
-            if (_activePaths.All(p => p.Path != path.Path))
-                _activePathsHashSet.Remove(path.Path.ToUpperInvariant());
+                // Remove from the hashset if this was the last path pointing there
+                if (_activePaths.All(p => p.Path != path.Path))
+                    _activePathsHashSet.Remove(path.Path.ToUpperInvariant());
+            }
 
             OnActivePathRemoved(new DataModelPathEventArgs(path));
         }

@@ -33,7 +33,6 @@ namespace Artemis.Core
         /// <typeparam name="T">The type of the setting, can be any serializable type</typeparam>
         /// <param name="name">The name of the setting</param>
         /// <param name="defaultValue">The default value to use if the setting does not exist yet</param>
-        /// <returns></returns>
         public PluginSetting<T> GetSetting<T>(string name, T? defaultValue = default)
         {
             lock (_settingEntities)
@@ -72,7 +71,7 @@ namespace Artemis.Core
         /// </summary>
         public void SaveAllSettings()
         {
-            foreach (var (_, pluginSetting) in _settingEntities)
+            foreach ((string _, IPluginSetting? pluginSetting) in _settingEntities)
                 pluginSetting.Save();
         }
 

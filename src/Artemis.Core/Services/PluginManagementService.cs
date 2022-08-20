@@ -16,6 +16,7 @@ using McMaster.NETCore.Plugins;
 using Ninject;
 using Ninject.Extensions.ChildKernel;
 using Ninject.Parameters;
+using Ninject.Planning.Bindings.Resolvers;
 using RGB.NET.Core;
 using Serilog;
 
@@ -33,6 +34,7 @@ namespace Artemis.Core.Services
         private readonly IQueuedActionRepository _queuedActionRepository;
         private readonly List<Plugin> _plugins;
         private bool _isElevated;
+        private bool _disposed;
 
         public PluginManagementService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository, IDeviceRepository deviceRepository, IQueuedActionRepository queuedActionRepository)
         {
@@ -48,7 +50,7 @@ namespace Artemis.Core.Services
 
         private void CopyBuiltInPlugin(ZipArchive zipArchive, string targetDirectory)
         {
-            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins", targetDirectory));
+            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.PluginsFolder, targetDirectory));
             bool createLockFile = File.Exists(Path.Combine(pluginDirectory.FullName, "artemis.lock"));
 
             // Remove the old directory if it exists
@@ -68,15 +70,15 @@ namespace Artemis.Core.Services
         public void CopyBuiltInPlugins()
         {
             OnCopyingBuildInPlugins();
-            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins"));
+            DirectoryInfo pluginDirectory = new(Constants.PluginsFolder);
 
             if (Directory.Exists(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.Modules.Overlay-29e3ff97")))
                 Directory.Delete(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.Modules.Overlay-29e3ff97"), true);
             if (Directory.Exists(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.DataModelExpansions.TestData-ab41d601")))
                 Directory.Delete(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.DataModelExpansions.TestData-ab41d601"), true);
-
+            
             // Iterate built-in plugins
-            DirectoryInfo builtInPluginDirectory = new(Path.Combine(Directory.GetCurrentDirectory(), "Plugins"));
+            DirectoryInfo builtInPluginDirectory = new(Path.Combine(Constants.ApplicationFolder, "Plugins"));
             if (!builtInPluginDirectory.Exists)
             {
                 _logger.Warning("No built-in plugins found at {pluginDir}, skipping CopyBuiltInPlugins", builtInPluginDirectory.FullName);
@@ -195,6 +197,7 @@ namespace Artemis.Core.Services
 
         public void Dispose()
         {
+            _disposed = true;
             UnloadPlugins();
         }
 
@@ -221,7 +224,7 @@ namespace Artemis.Core.Services
             UnloadPlugins();
 
             // Load the plugin assemblies into the plugin context
-            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins"));
+            DirectoryInfo pluginDirectory = new(Constants.PluginsFolder);
             foreach (DirectoryInfo subDirectory in pluginDirectory.EnumerateDirectories())
             {
                 try
@@ -259,7 +262,7 @@ namespace Artemis.Core.Services
                 }
             }
 
-            foreach (Plugin plugin in _plugins.Where(p => p.Entity.IsEnabled))
+            foreach (Plugin plugin in _plugins.Where(p => p.Info.IsCompatible && p.Entity.IsEnabled))
             {
                 try
                 {
@@ -291,7 +294,7 @@ namespace Artemis.Core.Services
             }
         }
 
-        public Plugin LoadPlugin(DirectoryInfo directory)
+        public Plugin? LoadPlugin(DirectoryInfo directory)
         {
             _logger.Verbose("Loading plugin from {directory}", directory.FullName);
 
@@ -302,6 +305,9 @@ namespace Artemis.Core.Services
 
             // PluginInfo contains the ID which we need to move on
             PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile))!;
+
+            if (!pluginInfo.IsCompatible)
+                return null;
 
             if (pluginInfo.Guid == Constants.CorePluginInfo.Guid)
                 throw new ArtemisPluginException($"Plugin {pluginInfo} cannot use reserved GUID {pluginInfo.Guid}");
@@ -361,17 +367,25 @@ namespace Artemis.Core.Services
             foreach (Type featureType in featureTypes)
             {
                 // Load the enabled state and if not found, default to true
-                PluginFeatureEntity featureEntity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName) ??
-                                                    new PluginFeatureEntity {IsEnabled = plugin.Info.AutoEnableFeatures, Type = featureType.FullName!};
-                plugin.AddFeature(new PluginFeatureInfo(plugin, featureType, featureEntity, (PluginFeatureAttribute?) Attribute.GetCustomAttribute(featureType, typeof(PluginFeatureAttribute))));
+                PluginFeatureEntity featureEntity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName) ?? new PluginFeatureEntity {Type = featureType.FullName!};
+                PluginFeatureInfo feature = new(plugin, featureType, featureEntity, (PluginFeatureAttribute?) Attribute.GetCustomAttribute(featureType, typeof(PluginFeatureAttribute)));
+
+                // If the plugin only has a single feature, it should always be enabled
+                if (featureTypes.Count == 1)
+                    feature.AlwaysEnabled = true;
+
+                plugin.AddFeature(feature);
             }
 
             if (!featureTypes.Any())
                 _logger.Warning("Plugin {plugin} contains no features", plugin);
 
+            // It is appropriate to call this now that we have the features of this plugin
+            plugin.AutoEnableIfNew();
+
             List<Type> bootstrappers = plugin.Assembly.GetTypes().Where(t => typeof(PluginBootstrapper).IsAssignableFrom(t)).ToList();
             if (bootstrappers.Count > 1)
-                _logger.Warning($"{plugin} has more than one bootstrapper, only initializing {bootstrappers.First().FullName}");
+                _logger.Warning("{Plugin} has more than one bootstrapper, only initializing {FullName}", plugin, bootstrappers.First().FullName);
             if (bootstrappers.Any())
             {
                 plugin.Bootstrapper = (PluginBootstrapper?) Activator.CreateInstance(bootstrappers.First());
@@ -389,6 +403,9 @@ namespace Artemis.Core.Services
 
         public void EnablePlugin(Plugin plugin, bool saveState, bool ignorePluginLock)
         {
+            if (!plugin.Info.IsCompatible)
+                throw new ArtemisPluginException(plugin, $"This plugin only supports the following operating system(s): {plugin.Info.Platforms}");
+
             if (plugin.Assembly == null)
                 throw new ArtemisPluginException(plugin, "Cannot enable a plugin that hasn't successfully been loaded");
 
@@ -410,6 +427,9 @@ namespace Artemis.Core.Services
 
             // Create the Ninject child kernel and load the module
             plugin.Kernel = new ChildKernel(_kernel, new PluginModule(plugin));
+            // The kernel used by Core is unforgiving about missing bindings, no need to be so hard on plugin devs
+            plugin.Kernel.Components.Add<IMissingBindingResolver, SelfBindingResolver>();
+
             OnPluginEnabling(new PluginEventArgs(plugin));
 
             plugin.SetEnabled(true);
@@ -435,14 +455,25 @@ namespace Artemis.Core.Services
                 }
                 catch (Exception e)
                 {
-                    _logger.Warning(new ArtemisPluginException(plugin, "Failed to instantiate feature", e), "Failed to instantiate feature", plugin);
+                    _logger.Warning(new ArtemisPluginException(plugin, "Failed to instantiate feature", e), "Failed to instantiate feature from plugin {plugin}", plugin);
                     featureInfo.LoadException = e;
                 }
             }
 
             // Activate features after they are all loaded
             foreach (PluginFeatureInfo pluginFeature in plugin.Features.Where(f => f.Instance != null && (f.EnabledInStorage || f.AlwaysEnabled)))
-                EnablePluginFeature(pluginFeature.Instance!, false, !ignorePluginLock);
+            {
+                try
+                {
+                    EnablePluginFeature(pluginFeature.Instance!, false, !ignorePluginLock);
+                }
+                catch (Exception)
+                {
+                    if (pluginFeature.AlwaysEnabled)
+                        DisablePlugin(plugin, false);
+                    throw;
+                }
+            }
 
             if (saveState)
             {
@@ -472,6 +503,7 @@ namespace Artemis.Core.Services
             lock (_plugins)
             {
                 _plugins.Remove(plugin);
+                OnPluginUnloaded(new PluginEventArgs(plugin));
             }
         }
 
@@ -504,9 +536,9 @@ namespace Artemis.Core.Services
             OnPluginDisabled(new PluginEventArgs(plugin));
         }
 
-        public Plugin ImportPlugin(string fileName)
+        public Plugin? ImportPlugin(string fileName)
         {
-            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins"));
+            DirectoryInfo pluginDirectory = new(Constants.PluginsFolder);
 
             // Find the metadata file in the zip
             using ZipArchive archive = ZipFile.OpenRead(fileName);
@@ -575,9 +607,9 @@ namespace Artemis.Core.Services
         {
             if (plugin.IsEnabled)
                 throw new ArtemisCoreException("Cannot remove the settings of an enabled plugin");
-            
+
             _pluginRepository.RemoveSettings(plugin.Guid);
-            foreach (DeviceEntity deviceEntity in _deviceRepository.GetAll().Where(e => e.DeviceProvider == plugin.Guid.ToString())) 
+            foreach (DeviceEntity deviceEntity in _deviceRepository.GetAll().Where(e => e.DeviceProvider == plugin.Guid.ToString()))
                 _deviceRepository.Remove(deviceEntity);
 
             plugin.Settings?.ClearSettings();
@@ -598,7 +630,10 @@ namespace Artemis.Core.Services
                 if (!saveState)
                 {
                     OnPluginFeatureEnableFailed(new PluginFeatureEventArgs(pluginFeature));
-                    throw new ArtemisCoreException("Cannot enable a feature that requires elevation without saving it's state.");
+                    if (isAutoEnable)
+                        _logger.Warning("Skipped auto-enabling plugin feature {feature} - {plugin} because it requires elevation but state isn't being saved", pluginFeature, pluginFeature.Plugin);
+                    else
+                        throw new ArtemisCoreException("Cannot enable a feature that requires elevation without saving it's state.");
                 }
 
                 pluginFeature.Entity.IsEnabled = true;
@@ -627,7 +662,7 @@ namespace Artemis.Core.Services
                 if (isAutoEnable)
                 {
                     // Schedule a retry based on the amount of attempts
-                    if (pluginFeature.AutoEnableAttempts < 4)
+                    if (pluginFeature.AutoEnableAttempts < 4 && pluginFeature.Plugin.IsEnabled)
                     {
                         TimeSpan retryDelay = TimeSpan.FromSeconds(pluginFeature.AutoEnableAttempts * 10);
                         _logger.Warning(
@@ -642,7 +677,7 @@ namespace Artemis.Core.Services
                         Task.Run(async () =>
                         {
                             await Task.Delay(retryDelay);
-                            if (!pluginFeature.IsEnabled)
+                            if (!pluginFeature.IsEnabled && !_disposed)
                                 EnablePluginFeature(pluginFeature, saveState, true);
                         });
                     }

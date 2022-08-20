@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:propertyInput="clr-namespace:Artemis.UI.DefaultTypes.PropertyInput"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.DefaultTypes.PropertyInput.SKSizePropertyInputView"
+             x:DataType="propertyInput:SKSizePropertyInputViewModel">
+    <StackPanel Orientation="Horizontal" Spacing="5">
+        <controls:DraggableNumberBox Classes="condensed tooltip-validation-left"
+                                     MinWidth="80"
+                                     Value="{CompiledBinding Height}"
+                                     Prefix="{CompiledBinding Prefix}"
+                                     Suffix="{CompiledBinding Affix}"
+                                     Minimum="{CompiledBinding Min}"
+                                     Maximum="{CompiledBinding Max}"
+                                     LargeChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                                     SimpleNumberFormat="F3"
+                                     VerticalAlignment="Center"
+                                     ToolTip.Tip="Height"
+                                     DragStarted="DraggableNumberBox_OnDragStarted"
+                                     DragFinished="DraggableNumberBox_OnDragFinished" />
+        <TextBlock VerticalAlignment="Center">,</TextBlock>
+        <controls:DraggableNumberBox Classes="condensed tooltip-validation-left"
+                                     MinWidth="80"
+                                     Value="{CompiledBinding Width}"
+                                     Prefix="{CompiledBinding Prefix}"
+                                     Suffix="{CompiledBinding Affix}"
+                                     Minimum="{CompiledBinding Min}"
+                                     Maximum="{CompiledBinding Max}"
+                                     LargeChange="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                                     SimpleNumberFormat="F3"
+                                     VerticalAlignment="Center"
+                                     ToolTip.Tip="Width"
+                                     DragStarted="DraggableNumberBox_OnDragStarted"
+                                     DragFinished="DraggableNumberBox_OnDragFinished" />
+    </StackPanel>
+</UserControl>

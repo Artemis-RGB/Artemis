@@ -1,173 +1,161 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.ScriptingProviders;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Scripting.Dialogs;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
-using Stylet;
+using DynamicData;
+using DynamicData.Binding;
+using FluentAvalonia.UI.Controls;
+using ReactiveUI;
+using ContentDialogButton = Artemis.UI.Shared.Services.Builders.ContentDialogButton;
 
-namespace Artemis.UI.Screens.Scripting
+namespace Artemis.UI.Screens.Scripting;
+
+public class ScriptsDialogViewModel : DialogViewModelBase<object?>
 {
-    public class ScriptsDialogViewModel : Conductor<IScriptEditorViewModel>
+    private readonly IScriptingService _scriptingService;
+    private readonly IWindowService _windowService;
+    private readonly Dictionary<ScriptingProvider, IScriptEditorViewModel> _providerViewModels = new();
+    private ObservableAsPropertyHelper<bool>? _hasScripts;
+    private ScriptConfigurationViewModel? _selectedScript;
+    private IScriptEditorViewModel? _scriptEditorViewModel;
+    private ReadOnlyObservableCollection<ScriptConfigurationViewModel> _scriptConfigurations;
+
+    public ScriptsDialogViewModel(IScriptingService scriptingService, IWindowService windowService, IProfileService profileService, IScriptVmFactory scriptVmFactory)
     {
-        private readonly IScriptingService _scriptingService;
-        private readonly IDialogService _dialogService;
-        private readonly IProfileService _profileService;
-        private readonly IProfileEditorService _profileEditorService;
-        private readonly IScriptVmFactory _scriptVmFactory;
-        private readonly Dictionary<ScriptingProvider, IScriptEditorViewModel> _providerViewModels = new();
-        private ScriptConfigurationViewModel _selectedScript;
+        _scriptingService = scriptingService;
+        _windowService = windowService;
 
-        public ScriptsDialogViewModel(Profile profile,
-            IScriptingService scriptingService,
-            IDialogService dialogService,
-            IProfileService profileService,
-            IProfileEditorService profileEditorService,
-            IScriptVmFactory scriptVmFactory)
+        ScriptType = ScriptType.Global;
+        ScriptingProviders = new List<ScriptingProvider>(scriptingService.ScriptingProviders);
+
+        AddScriptConfiguration = ReactiveCommand.CreateFromTask(ExecuteAddScriptConfiguration, Observable.Return(ScriptingProviders.Any()));
+        this.WhenAnyValue(vm => vm.SelectedScript).Subscribe(s => SetupScriptEditor(s?.ScriptConfiguration));
+
+        _scriptConfigurations = new ReadOnlyObservableCollection<ScriptConfigurationViewModel>(new ObservableCollection<ScriptConfigurationViewModel>());
+        // TODO: When not bound to a profile, base the contents of the UI on the ScriptingService
+    }
+
+    public ScriptsDialogViewModel(Profile profile, IScriptingService scriptingService, IWindowService windowService, IProfileService profileService, IScriptVmFactory scriptVmFactory)
+        : this(scriptingService, windowService, profileService, scriptVmFactory)
+    {
+        ScriptType = ScriptType.Profile;
+        Profile = profile;
+
+        this.WhenActivated(d =>
         {
-            _scriptingService = scriptingService;
-            _dialogService = dialogService;
-            _profileService = profileService;
-            _profileEditorService = profileEditorService;
-            _scriptVmFactory = scriptVmFactory;
+            _hasScripts = Profile.ScriptConfigurations.ToObservableChangeSet()
+                .Count()
+                .Select(c => c > 0)
+                .ToProperty(this, vm => vm.HasScripts)
+                .DisposeWith(d);
+            Profile.ScriptConfigurations.ToObservableChangeSet()
+                .Transform(c => scriptVmFactory.ScriptConfigurationViewModel(Profile, c))
+                .Bind(out ReadOnlyObservableCollection<ScriptConfigurationViewModel> scriptConfigurationViewModels)
+                .Subscribe()
+                .DisposeWith(d);
 
-            DisplayName = "Artemis | Profile Scripts";
-            ScriptType = ScriptType.Profile;
-            Profile = profile ?? throw new ArgumentNullException(nameof(profile));
-
-            ScriptConfigurations.AddRange(Profile.ScriptConfigurations.Select(scriptVmFactory.ScriptConfigurationViewModel));
-            ScriptConfigurations.CollectionChanged += ItemsOnCollectionChanged;
-        }
-
-        public ScriptType ScriptType { get; }
-        public Profile Profile { get; } 
-        public BindableCollection<ScriptConfigurationViewModel> ScriptConfigurations { get; } = new();
-        public bool HasScripts => ScriptConfigurations.Any();
-
-        public ScriptConfigurationViewModel SelectedScript
-        {
-            get => _selectedScript;
-            set
-            {
-                if (!SetAndNotify(ref _selectedScript, value)) return;
-                SetupScriptEditor(_selectedScript?.ScriptConfiguration);
-            }
-        }
-
-        private void SetupScriptEditor(ScriptConfiguration scriptConfiguration)
-        {
-            if (scriptConfiguration == null)
-            {
-                ActiveItem = null;
-                return;
-            }
-
-            // The script is null if the provider is missing
-            if (scriptConfiguration.Script == null)
-            {
-                ActiveItem = null;
-                return;
-            }
-
-            if (!_providerViewModels.TryGetValue(scriptConfiguration.Script.ScriptingProvider, out IScriptEditorViewModel viewModel))
-            {
-                viewModel = scriptConfiguration.Script.ScriptingProvider.CreateScriptEditor(ScriptType);
-                _providerViewModels.Add(scriptConfiguration.Script.ScriptingProvider, viewModel);
-            }
-
-            ActiveItem = viewModel;
-            ActiveItem.ChangeScript(scriptConfiguration.Script);
-        }
-        
-        private void ItemsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            NotifyOfPropertyChange(nameof(HasScripts));
-        }
-
-        public async Task AddScriptConfiguration()
-        {
-            object result = await _dialogService.ShowDialogAt<ScriptConfigurationCreateViewModel>("ScriptsDialog");
-            if (result is not ScriptConfiguration scriptConfiguration)
-                return;
-
-            if (Profile != null)
-            {
-                Profile.ScriptConfigurations.Add(scriptConfiguration);
-                _scriptingService.CreateScriptInstance(Profile, scriptConfiguration);
-            }
-
-            ScriptConfigurationViewModel viewModel = _scriptVmFactory.ScriptConfigurationViewModel(scriptConfiguration);
-            ScriptConfigurations.Add(viewModel);
-            SelectedScript = viewModel;
-        }
-
-        public async Task ViewProperties(ScriptConfigurationViewModel scriptConfigurationViewModel)
-        {
-            object result = await _dialogService.ShowDialogAt<ScriptConfigurationEditViewModel>(
-                "ScriptsDialog",
-                new Dictionary<string, object> {{"scriptConfiguration", scriptConfigurationViewModel.ScriptConfiguration}}
-            );
-
-            if (result is nameof(ScriptConfigurationEditViewModel.Delete))
-                await Delete(scriptConfigurationViewModel);
-        }
-
-        private async Task Delete(ScriptConfigurationViewModel scriptConfigurationViewModel)
-        {
-            bool result = await _dialogService.ShowConfirmDialogAt(
-                "ScriptsDialog",
-                "Delete script",
-                $"Are you sure you want to delete '{scriptConfigurationViewModel.ScriptConfiguration.Name}'?"
-            );
-            if (!result)
-                return;
-
-            switch (scriptConfigurationViewModel.Script)
-            {
-                case GlobalScript:
-                    _scriptingService.DeleteScript(scriptConfigurationViewModel.ScriptConfiguration);
-                    break;
-                case ProfileScript profileScript:
-                    profileScript.Profile.ScriptConfigurations.Remove(scriptConfigurationViewModel.ScriptConfiguration);
-                    break;
-            }
-
-            scriptConfigurationViewModel.ScriptConfiguration.DiscardPendingChanges();
-            scriptConfigurationViewModel.ScriptConfiguration.Script?.Dispose();
-
-            SelectedScript = null;
-            ScriptConfigurations.Remove(scriptConfigurationViewModel);
-        }
-
-        #region Overrides of Screen
-
-        /// <inheritdoc />
-        protected override void OnInitialActivate()
-        {
+            _scriptConfigurations = scriptConfigurationViewModels;
             SelectedScript = ScriptConfigurations.FirstOrDefault();
-            base.OnInitialActivate();
-        }
+            Disposable.Create(() => profileService.SaveProfile(Profile, false)).DisposeWith(d);
+        });
+    }
 
-        /// <inheritdoc />
-        protected override void OnClose()
+    public ScriptType ScriptType { get; }
+    public List<ScriptingProvider> ScriptingProviders { get; }
+    public Profile? Profile { get; }
+    public bool HasScripts => _hasScripts?.Value ?? false;
+
+    public ReadOnlyObservableCollection<ScriptConfigurationViewModel> ScriptConfigurations
+    {
+        get => _scriptConfigurations;
+        set => RaiseAndSetIfChanged(ref _scriptConfigurations, value);
+    }
+
+    public ScriptConfigurationViewModel? SelectedScript
+    {
+        get => _selectedScript;
+        set => RaiseAndSetIfChanged(ref _selectedScript, value);
+    }
+
+    public IScriptEditorViewModel? ScriptEditorViewModel
+    {
+        get => _scriptEditorViewModel;
+        set => RaiseAndSetIfChanged(ref _scriptEditorViewModel, value);
+    }
+
+    public ReactiveCommand<Unit, Unit> AddScriptConfiguration { get; }
+
+
+    private void SetupScriptEditor(ScriptConfiguration? scriptConfiguration)
+    {
+        if (scriptConfiguration == null)
         {
-            if (Profile != null)
-            {
-                if (_profileEditorService.SelectedProfile == Profile)
-                    _profileEditorService.SaveSelectedProfileConfiguration();
-                else
-                    _profileService.SaveProfile(Profile, false);
-            }
-
-            ScriptConfigurations.CollectionChanged -= ItemsOnCollectionChanged;
-            base.OnClose();
+            ScriptEditorViewModel = null;
+            return;
         }
 
-        #endregion
+        // The script is null if the provider is missing
+        if (scriptConfiguration.Script == null)
+        {
+            ScriptEditorViewModel = null;
+            return;
+        }
+
+        if (!_providerViewModels.TryGetValue(scriptConfiguration.Script.ScriptingProvider, out IScriptEditorViewModel? viewModel))
+        {
+            viewModel = scriptConfiguration.Script.ScriptingProvider.CreateScriptEditor(ScriptType);
+            _providerViewModels.Add(scriptConfiguration.Script.ScriptingProvider, viewModel);
+        }
+
+        ScriptEditorViewModel = viewModel;
+        ScriptEditorViewModel.ChangeScript(scriptConfiguration.Script);
+    }
+
+    private async Task ExecuteAddScriptConfiguration()
+    {
+        await _windowService.CreateContentDialog()
+            .WithTitle("Add script")
+            .WithViewModel(out ScriptConfigurationCreateViewModel vm)
+            .WithCloseButtonText("Cancel")
+            .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Submit))
+            .WithDefaultButton(ContentDialogButton.Primary)
+            .ShowAsync();
+
+        if (vm.ScriptConfiguration == null)
+            return;
+
+        // Add the script to the profile and instantiate it
+        if (Profile != null)
+            _scriptingService.AddScript(vm.ScriptConfiguration, Profile);
+        else
+            _scriptingService.AddScript(vm.ScriptConfiguration);
+
+        // Select the new script
+        SelectedScript = ScriptConfigurations.LastOrDefault();
+    }
+
+    public async Task<bool> CanClose()
+    {
+        if (!ScriptConfigurations.Any(s => s.ScriptConfiguration.HasChanges))
+            return true;
+        
+        bool result = await _windowService.ShowConfirmContentDialog("Discard changes", "One or more scripts still have pending changes, do you want to discard them?");
+        if (!result)
+            return false;
+        
+        foreach (ScriptConfigurationViewModel scriptConfigurationViewModel in ScriptConfigurations)
+            scriptConfigurationViewModel.ScriptConfiguration.DiscardPendingChanges();
+        return true;
     }
 }

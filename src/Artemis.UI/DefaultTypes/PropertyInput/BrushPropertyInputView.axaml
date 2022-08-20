@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:layerBrushes="clr-namespace:Artemis.Core.LayerBrushes;assembly=Artemis.Core"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:propertyInput="clr-namespace:Artemis.UI.DefaultTypes.PropertyInput"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.DefaultTypes.PropertyInput.BrushPropertyInputView"
+             x:DataType="propertyInput:BrushPropertyInputViewModel">
+
+	<UserControl.Styles>
+		<Style Selector="ComboBox.brush /template/ ContentControl#ContentPresenter">
+			<Setter Property="ContentTemplate">
+				<Setter.Value>
+					<DataTemplate DataType="{x:Type layerBrushes:LayerBrushDescriptor}">
+						<StackPanel Orientation="Horizontal">
+							<avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Height="20" Width="20" VerticalAlignment="Center" Margin="0 0 5 0"/>
+							<TextBlock Text="{CompiledBinding DisplayName}" VerticalAlignment="Center" />
+						</StackPanel>
+					</DataTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</UserControl.Styles>
+        <ComboBox Classes="brush condensed"
+                  Width="200"
+                  VerticalAlignment="Center"
+                  Items="{CompiledBinding Descriptors}"
+                  SelectedItem="{CompiledBinding SelectedDescriptor}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type layerBrushes:LayerBrushDescriptor}">
+                    <Grid ColumnDefinitions="30,*" RowDefinitions="Auto,Auto">
+                        <avalonia:MaterialIcon Grid.Row="0"
+                                               Grid.RowSpan="2"
+                                               Kind="{Binding Icon}"
+                                               Height="20"
+                                               Width="20"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Left" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{CompiledBinding DisplayName}" TextWrapping="Wrap" MaxWidth="350" />
+                        <TextBlock Classes="subtitle" Grid.Row="1" Grid.Column="1" Text="{CompiledBinding Description}" TextWrapping="Wrap" MaxWidth="350" />
+                    </Grid>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+</UserControl>

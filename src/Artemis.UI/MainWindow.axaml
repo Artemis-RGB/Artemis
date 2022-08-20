@@ -1,0 +1,28 @@
+<controls:CoreWindow xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                     x:Class="Artemis.UI.MainWindow"
+                     Icon="/Assets/Images/Logo/application.ico"
+                     Title="Artemis 2.0"
+                     WindowStartupLocation="CenterScreen">
+    <Panel Name="RootPanel">
+        <Border Name="DragHandle" Background="Transparent" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+        <DockPanel>
+            <ContentControl Name="SidebarContentControl" Content="{Binding SidebarViewModel}" DockPanel.Dock="Left" Width="240">
+                <ContentControl.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Width" Duration="0:0:0.2" Easing="CubicEaseOut"></DoubleTransition>
+                    </Transitions>
+                </ContentControl.Transitions>
+            </ContentControl>
+            <Border Name="TitleBar" DockPanel.Dock="Top">
+                <ContentControl Content="{Binding TitleBarViewModel}" />
+            </Border>
+            <ContentControl Content="{Binding}" />
+        </DockPanel>
+        <StackPanel Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+    </Panel>
+</controls:CoreWindow>

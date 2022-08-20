@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Artemis.Core.Ninject;
 using Artemis.Core.ScriptingProviders;
 using Artemis.Storage;
@@ -23,28 +21,31 @@ namespace Artemis.Core.Services
     internal class CoreService : ICoreService
     {
         internal static IKernel? Kernel;
-
         private readonly Stopwatch _frameStopWatch;
         private readonly ILogger _logger;
         private readonly PluginSetting<LogEventLevel> _loggingLevel;
+        private readonly IModuleService _moduleService;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly IProfileService _profileService;
-        private readonly IModuleService _moduleService;
-        private readonly IScriptingService _scriptingService;
         private readonly IRgbService _rgbService;
+        private readonly IScriptingService _scriptingService;
         private readonly List<Exception> _updateExceptions = new();
+
+        private int _frames;
         private DateTime _lastExceptionLog;
+        private DateTime _lastFrameRateSample;
 
         // ReSharper disable UnusedParameter.Local
         public CoreService(IKernel kernel,
             ILogger logger,
-            StorageMigrationService _, // injected to ensure migration runs early
+            StorageMigrationService _1, // injected to ensure migration runs early
             ISettingsService settingsService,
             IPluginManagementService pluginManagementService,
             IRgbService rgbService,
             IProfileService profileService,
             IModuleService moduleService,
-            IScriptingService scriptingService)
+            IScriptingService scriptingService,
+            IProcessMonitorService _2)
         {
             Kernel = kernel;
             Constants.CorePlugin.Kernel = kernel;
@@ -151,6 +152,15 @@ namespace Artemis.Core.Services
             {
                 _rgbService.CloseRender();
                 _frameStopWatch.Stop();
+                _frames++;
+
+                if ((DateTime.Now - _lastFrameRateSample).TotalSeconds >= 1)
+                {
+                    FrameRate = _frames;
+                    _frames = 0;
+                    _lastFrameRateSample = DateTime.Now;
+                }
+
                 FrameTime = _frameStopWatch.Elapsed;
 
                 LogUpdateExceptions();
@@ -181,6 +191,7 @@ namespace Artemis.Core.Services
             Initialized?.Invoke(this, EventArgs.Empty);
         }
 
+        public int FrameRate { get; private set; }
         public TimeSpan FrameTime { get; private set; }
         public bool ProfileRenderingDisabled { get; set; }
         public List<string> StartupArguments { get; set; }
@@ -217,12 +228,11 @@ namespace Artemis.Core.Services
             Version? hidSharpVersion = Assembly.GetAssembly(typeof(HidDevice))!.GetName().Version;
             _logger.Debug("Forcing plugins to use HidSharp {hidSharpVersion}", hidSharpVersion);
 
-            DeserializationLogger.Initialize(Kernel!);
-
             // Initialize the services
             _pluginManagementService.CopyBuiltInPlugins();
             _pluginManagementService.LoadPlugins(StartupArguments, IsElevated);
 
+            _rgbService.ApplyPreferredGraphicsContext(StartupArguments.Contains("--force-software-render"));
             _rgbService.SetRenderPaused(false);
             OnInitialized();
         }

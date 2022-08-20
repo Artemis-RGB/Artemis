@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Debugger.Logs.LogsDebugView">
+    <StackPanel>
+        <TextBlock Classes="h3">Logs</TextBlock>
+        <TextBlock TextWrapping="Wrap">
+            On this page you can view Artemis's logs in real-time. Logging can come from Artemis itself, plugins and scripts.
+        </TextBlock>
+
+        <TextBlock Margin="0 20 0 0">TODO as there's no FlowDocumentScrollViewer in Avalonia and I'm too lazy to come up with an alternative.</TextBlock>
+        <TextBlock Classes="subtitle">#feelsbadman</TextBlock>
+    </StackPanel>
+</UserControl>

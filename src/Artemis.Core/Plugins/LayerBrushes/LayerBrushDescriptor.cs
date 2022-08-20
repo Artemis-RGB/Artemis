@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.Storage.Entities.Profile;
 using Ninject;
 
 namespace Artemis.Core.LayerBrushes
@@ -57,23 +58,18 @@ namespace Artemis.Core.LayerBrushes
         /// <summary>
         ///     Creates an instance of the described brush and applies it to the layer
         /// </summary>
-        internal void CreateInstance(Layer layer)
+        public BaseLayerBrush CreateInstance(Layer layer, LayerBrushEntity? entity)
         {
-            if (layer == null) throw new ArgumentNullException(nameof(layer));
-            if (layer.LayerBrush != null)
-                throw new ArtemisCoreException("Layer already has an instantiated layer brush");
+            if (layer == null)
+                throw new ArgumentNullException(nameof(layer));
 
             BaseLayerBrush brush = (BaseLayerBrush) Provider.Plugin.Kernel!.Get(LayerBrushType);
             brush.Layer = layer;
             brush.Descriptor = this;
+            brush.LayerBrushEntity = entity ?? new LayerBrushEntity { ProviderId = Provider.Id, BrushType = LayerBrushType.FullName };
+           
             brush.Initialize();
-            brush.Update(0);
-
-            layer.LayerBrush = brush;
-            layer.OnLayerBrushUpdated();
-
-            if (layer.ShouldBeEnabled)
-                brush.InternalEnable();
+            return brush;
         }
     }
 }

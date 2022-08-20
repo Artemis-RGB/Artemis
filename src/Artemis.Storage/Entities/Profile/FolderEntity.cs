@@ -11,7 +11,6 @@ namespace Artemis.Storage.Entities.Profile
         {
             PropertyEntities = new List<PropertyEntity>();
             LayerEffects = new List<LayerEffectEntity>();
-            ExpandedPropertyGroups = new List<string>();
         }
 
         public int Order { get; set; }

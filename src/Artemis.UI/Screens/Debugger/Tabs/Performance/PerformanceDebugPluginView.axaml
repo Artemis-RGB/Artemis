@@ -1,0 +1,18 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Debugger.Performance.PerformanceDebugPluginView">
+    <Border Classes="card-condensed" Margin="0 5">
+        <StackPanel>
+            <Grid ColumnDefinitions="40,*">
+                <shared:ArtemisIcon Grid.Column="0" Icon="{Binding Plugin.Info.ResolvedIcon}" Width="24" Height="24" />
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" Classes="h5" Text="{Binding Plugin.Info.Name}" />
+            </Grid>
+
+            <ItemsControl Items="{Binding Profilers}" />
+        </StackPanel>
+    </Border>
+</UserControl>

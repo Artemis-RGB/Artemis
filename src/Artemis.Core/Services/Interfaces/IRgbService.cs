@@ -40,7 +40,7 @@ namespace Artemis.Core.Services
         ///     Gets a boolean indicating whether the render pipeline is open
         /// </summary>
         bool RenderOpen { get; }
-        
+
         /// <summary>
         ///     Gets or sets a boolean indicating whether to flush the RGB.NET LEDs during next update
         /// </summary>
@@ -55,6 +55,12 @@ namespace Artemis.Core.Services
         ///     Closes the render pipeline
         /// </summary>
         void CloseRender();
+
+        /// <summary>
+        ///     Applies the current value of the <c>Core.PreferredGraphicsContext</c> setting to the graphics context.
+        /// </summary>
+        /// <param name="forceSoftware">A boolean to indicate whether or not to force the graphics context to software mode.</param>
+        void ApplyPreferredGraphicsContext(bool forceSoftware);
 
         /// <summary>
         ///     Updates the graphics context to the provided <paramref name="managedGraphicsContext"></paramref>.
@@ -139,10 +145,10 @@ namespace Artemis.Core.Services
         void DisableDevice(ArtemisDevice device);
 
         /// <summary>
-        /// Pauses or resumes rendering, method won't return until the current frame finished rendering
+        ///     Pauses or resumes rendering, method won't return until the current frame finished rendering
         /// </summary>
         /// <param name="paused"></param>
-        /// <returns><see langword="true"/> if the pause state was changed; otherwise <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the pause state was changed; otherwise <see langword="false" />.</returns>
         bool SetRenderPaused(bool paused);
 
         /// <summary>

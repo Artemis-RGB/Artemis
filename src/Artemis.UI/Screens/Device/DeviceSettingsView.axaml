@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Device.DeviceSettingsView">
+    <Border Classes="card" Padding="0" Width="200" ClipToBounds="True" Margin="5">
+        <Grid RowDefinitions="140,*,Auto">
+            <Rectangle Grid.Row="0" Fill="{DynamicResource CheckerboardBrush}"/>
+            <shared:DeviceVisualizer VerticalAlignment="Center"
+                                     HorizontalAlignment="Center"
+                                     Margin="5"
+                                     ShowColors="False"
+                                     Device="{Binding Device}"
+                                     Grid.Row="0" />
+            <Button Grid.Row="0"
+                    Classes="icon-button icon-button-large"
+                    VerticalAlignment="Bottom"
+                    HorizontalAlignment="Right"
+                    Margin="5"
+                    ToolTip.Tip="Identify"
+                    Command="{Binding IdentifyDevice}">
+                <avalonia:MaterialIcon Kind="AlarmLight" />
+            </Button>
+            <StackPanel Grid.Row="1" Margin="8 24 8 0">
+                <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.Model}" />
+                <StackPanel>
+                    <TextBlock TextWrapping="Wrap" Classes="subtitle" Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer, Mode=OneWay}" />
+                    <TextBlock TextWrapping="Wrap" Classes="subtitle" Text="{Binding Device.DeviceType, Mode=OneWay}" />
+                </StackPanel>
+            </StackPanel>
+
+            <Grid Grid.Row="2" Margin="10" ColumnDefinitions="25,*">
+                <CheckBox IsChecked="{Binding IsDeviceEnabled}" />
+
+				<controls:SplitButton Grid.Column="1" Content="Properties" Command="{Binding ViewProperties}" HorizontalAlignment="Right">
+					<controls:SplitButton.Flyout>
+						<MenuFlyout Placement="Bottom">
+							<MenuItem Header="Open plugin directory" Command="{Binding OpenPluginDirectory}">
+								<MenuItem.Icon>
+									<avalonia:MaterialIcon Kind="FolderOpen" />
+								</MenuItem.Icon>
+							</MenuItem>
+							<MenuItem Header="Identity input" Command="{Binding DetectInput}">
+								<MenuItem.Icon>
+									<avalonia:MaterialIcon Kind="GestureDoubleTap" />
+								</MenuItem.Icon>
+							</MenuItem>
+                        </MenuFlyout>
+					</controls:SplitButton.Flyout>
+				</controls:SplitButton>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

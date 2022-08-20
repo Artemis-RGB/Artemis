@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties"
+             xmlns:timeline="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Timeline"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.TimelineView"
+             x:DataType="timeline:TimelineViewModel">
+    <UserControl.Resources>
+    </UserControl.Resources>
+    <Grid Background="Transparent" PointerReleased="InputElement_OnPointerReleased" Focusable="True" MinWidth="{Binding MinWidth}">
+        <Grid.KeyBindings>
+            <KeyBinding Command="{CompiledBinding CopySelectedKeyframes}" Gesture="Ctrl+C" />
+            <KeyBinding Command="{CompiledBinding DuplicateSelectedKeyframes}" Gesture="Ctrl+D" />
+            <KeyBinding Command="{CompiledBinding PasteKeyframes}" Gesture="Ctrl+V" />
+            <KeyBinding Command="{CompiledBinding DeleteSelectedKeyframes}" Gesture="Delete" />
+        </Grid.KeyBindings>
+        <ItemsControl Items="{CompiledBinding PropertyGroupViewModels}">
+            <ItemsControl.ItemTemplate>
+                <TreeDataTemplate DataType="{x:Type local:PropertyGroupViewModel}" ItemsSource="{CompiledBinding Children}">
+                    <ContentControl Content="{CompiledBinding TimelineGroupViewModel}" />
+                </TreeDataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <shared:SelectionRectangle Name="SelectionRectangle"
+                                   InputElement="{CompiledBinding $parent}"
+                                   BorderBrush="{DynamicResource SystemAccentColor}"
+                                   BorderRadius="8"
+                                   BorderThickness="1"
+                                   SelectionFinished="SelectionRectangle_OnSelectionFinished">
+            <shared:SelectionRectangle.Background>
+                <SolidColorBrush Color="{DynamicResource SystemAccentColorLight1}" Opacity="0.2" />
+            </shared:SelectionRectangle.Background>
+        </shared:SelectionRectangle>
+    </Grid>
+
+
+</UserControl>

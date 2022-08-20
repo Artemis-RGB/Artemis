@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,6 +38,11 @@ namespace Artemis.Core
         /// </summary>
         public string Target { get; }
 
+        /// <summary>
+        /// Gets or sets an optional list of files to extract, if <see langword="null"/> all files will be extracted.
+        /// </summary>
+        public List<string>? FilesToExtract { get; set; }
+
         /// <inheritdoc />
         public override async Task Execute(CancellationToken cancellationToken)
         {
@@ -50,10 +57,15 @@ namespace Artemis.Core
             {
                 ZipArchive archive = new(fileStream);
                 long count = 0;
-                foreach (ZipArchiveEntry entry in archive.Entries)
+
+                List<ZipArchiveEntry> entries = new(archive.Entries);
+                if (FilesToExtract != null)
+                    entries = entries.Where(e => FilesToExtract.Contains(e.FullName)).ToList();
+
+                foreach (ZipArchiveEntry entry in entries)
                 {
                     await using Stream unzippedEntryStream = entry.Open();
-                    Progress.Report((count, archive.Entries.Count));
+                    Progress.Report((count, entries.Count));
                     if (entry.Length > 0)
                     {
                         string path = Path.Combine(Target, entry.FullName);

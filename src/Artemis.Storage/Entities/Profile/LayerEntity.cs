@@ -14,7 +14,6 @@ namespace Artemis.Storage.Entities.Profile
             AdaptionHints = new List<IAdaptionHintEntity>();
             PropertyEntities = new List<PropertyEntity>();
             LayerEffects = new List<LayerEffectEntity>();
-            ExpandedPropertyGroups = new List<string>();
         }
 
         public int Order { get; set; }
@@ -24,9 +23,12 @@ namespace Artemis.Storage.Entities.Profile
         public List<LedEntity> Leds { get; set; }
         public List<IAdaptionHintEntity> AdaptionHints { get; set; }
 
+        public PropertyGroupEntity GeneralPropertyGroup { get; set; }
+        public PropertyGroupEntity TransformPropertyGroup { get; set; }
+        public LayerBrushEntity LayerBrush { get; set; }
+
         [BsonRef("ProfileEntity")]
         public ProfileEntity Profile { get; set; }
-
         public Guid ProfileId { get; set; }
     }
 }

@@ -1,12 +1,11 @@
 ﻿using Artemis.Core.ScriptingProviders;
-using Stylet;
 
 namespace Artemis.UI.Shared.ScriptingProviders
 {
     /// <summary>
     ///     Represents a Stylet view model containing a script editor
     /// </summary>
-    public class ScriptEditorViewModel : Screen, IScriptEditorViewModel
+    public class ScriptEditorViewModel : ActivatableViewModelBase, IScriptEditorViewModel
     {
         private Script? _script;
 
@@ -42,7 +41,7 @@ namespace Artemis.UI.Shared.ScriptingProviders
         public Script? Script
         {
             get => _script;
-            internal set => SetAndNotify(ref _script, value);
+            internal set => RaiseAndSetIfChanged(ref _script, value);
         }
 
         /// <inheritdoc />

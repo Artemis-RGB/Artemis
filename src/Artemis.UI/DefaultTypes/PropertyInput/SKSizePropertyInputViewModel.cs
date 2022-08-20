@@ -1,73 +1,54 @@
 ﻿using System;
 using Artemis.Core;
-using Artemis.UI.Shared;
-using Artemis.UI.Shared.Services;
-using FluentValidation;
+using Artemis.UI.Shared.Services.ProfileEditor;
+using Artemis.UI.Shared.Services.PropertyInput;
+using ReactiveUI;
+using ReactiveUI.Validation.Extensions;
 using SkiaSharp;
-using Stylet;
 
 // using PropertyChanged;
 
-namespace Artemis.UI.DefaultTypes.PropertyInput
+namespace Artemis.UI.DefaultTypes.PropertyInput;
+
+public class SKSizePropertyInputViewModel : PropertyInputViewModel<SKSize>
 {
-    public class SKSizePropertyInputViewModel : PropertyInputViewModel<SKSize>
+    public SKSizePropertyInputViewModel(LayerProperty<SKSize> layerProperty, IProfileEditorService profileEditorService, IPropertyInputService propertyInputService)
+        : base(layerProperty, profileEditorService, propertyInputService)
     {
-        private readonly DataBindingRegistration<SKSize, float> _heightRegistration;
-        private readonly DataBindingRegistration<SKSize, float> _widthRegistration;
-
-        public SKSizePropertyInputViewModel(LayerProperty<SKSize> layerProperty, IProfileEditorService profileEditorService,
-            IModelValidator<SKSizePropertyInputViewModel> validator) : base(layerProperty, profileEditorService, validator)
+        if (LayerProperty.PropertyDescription.MinInputValue.IsNumber())
         {
-            _widthRegistration = layerProperty.GetDataBindingRegistration<float>("Width");
-            _heightRegistration = layerProperty.GetDataBindingRegistration<float>("Height");
+            Min = Convert.ToSingle(LayerProperty.PropertyDescription.MinInputValue);
+            this.ValidationRule(vm => vm.Width, i => i >= Min, $"Width must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
+            this.ValidationRule(vm => vm.Height, i => i >= Min, $"Height must be equal to or greater than {LayerProperty.PropertyDescription.MinInputValue}.");
         }
 
-        // Since SKSize is immutable we need to create properties that replace the SKSize entirely
-        public float Width
+        if (LayerProperty.PropertyDescription.MaxInputValue.IsNumber())
         {
-            get => InputValue.Width;
-            set => InputValue = new SKSize(value, Height);
-        }
-
-        public float Height
-        {
-            get => InputValue.Height;
-            set => InputValue = new SKSize(Width, value);
-        }
-
-        public bool IsWidthEnabled => _widthRegistration.DataBinding == null;
-        public bool IsHeightEnabled => _heightRegistration.DataBinding == null;
-
-        protected override void OnInputValueChanged()
-        {
-            NotifyOfPropertyChange(nameof(Width));
-            NotifyOfPropertyChange(nameof(Height));
-        }
-
-        protected override void OnDataBindingsChanged()
-        {
-            NotifyOfPropertyChange(nameof(IsWidthEnabled));
-            NotifyOfPropertyChange(nameof(IsHeightEnabled));
+            Max = Convert.ToSingle(LayerProperty.PropertyDescription.MaxInputValue);
+            this.ValidationRule(vm => vm.Width, i => i <= Max, $"Width must be equal to or smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
+            this.ValidationRule(vm => vm.Height, i => i <= Max, $"Height must be equal to or smaller than {LayerProperty.PropertyDescription.MaxInputValue}.");
         }
     }
 
-    public class SKSizePropertyInputViewModelValidator : AbstractValidator<SKSizePropertyInputViewModel>
+    // Since SKSize is immutable we need to create properties that replace the SKSize entirely
+    public float Width
     {
-        public SKSizePropertyInputViewModelValidator()
-        {
-            RuleFor(vm => vm.Width)
-                .LessThanOrEqualTo(vm => Convert.ToSingle(vm.LayerProperty.PropertyDescription.MaxInputValue))
-                .When(vm => vm.LayerProperty.PropertyDescription.MaxInputValue.IsNumber());
-            RuleFor(vm => vm.Width)
-                .GreaterThanOrEqualTo(vm => Convert.ToSingle(vm.LayerProperty.PropertyDescription.MinInputValue))
-                .When(vm => vm.LayerProperty.PropertyDescription.MinInputValue.IsNumber());
+        get => InputValue.Width;
+        set => InputValue = new SKSize(value, Height);
+    }
 
-            RuleFor(vm => vm.Height)
-                .LessThanOrEqualTo(vm => Convert.ToSingle(vm.LayerProperty.PropertyDescription.MaxInputValue))
-                .When(vm => vm.LayerProperty.PropertyDescription.MaxInputValue.IsNumber());
-            RuleFor(vm => vm.Height)
-                .GreaterThanOrEqualTo(vm => Convert.ToSingle(vm.LayerProperty.PropertyDescription.MinInputValue))
-                .When(vm => vm.LayerProperty.PropertyDescription.MinInputValue.IsNumber());
-        }
+    public float Height
+    {
+        get => InputValue.Height;
+        set => InputValue = new SKSize(Width, value);
+    }
+
+    public float Min { get; } = float.MinValue;
+    public float Max { get; } = float.MaxValue;
+    
+    protected override void OnInputValueChanged()
+    {
+        this.RaisePropertyChanged(nameof(Width));
+        this.RaisePropertyChanged(nameof(Height));
     }
 }

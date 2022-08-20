@@ -1,0 +1,124 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:plugins="clr-namespace:Artemis.UI.Screens.Plugins"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Plugins.PluginView"
+             x:DataType="plugins:PluginViewModel">
+    <Grid RowDefinitions="*,Auto">
+        <Grid Grid.Row="0" RowDefinitions="Auto,Auto,*" ColumnDefinitions="80,*, Auto">
+            <shared:ArtemisIcon Icon="{CompiledBinding Plugin.Info.ResolvedIcon}"
+                                Fill="False"
+                                Width="48"
+                                Height="48"
+                                Margin="0 5 0 0"
+                                Grid.Row="0"
+                                Grid.RowSpan="3"
+                                VerticalAlignment="Top" />
+
+            <TextBlock Grid.Column="1" Grid.Row="0" Classes="h5 no-margin" Text="{CompiledBinding Plugin.Info.Name}" />
+
+            <ItemsControl Grid.Column="2" Grid.Row="0" IsVisible="{CompiledBinding Platforms.Count}" Items="{CompiledBinding Platforms}" HorizontalAlignment="Right">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="5" Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+
+            <TextBlock Grid.Column="1"
+                       Grid.ColumnSpan="2"
+                       Grid.Row="1"
+                       Classes="subtitle"
+                       Text="{CompiledBinding Plugin.Info.Author}"
+                       IsVisible="{CompiledBinding Plugin.Info.Author, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            <TextBlock Grid.Column="1"
+                       Grid.ColumnSpan="2"
+                       Grid.Row="2"
+                       TextWrapping="Wrap"
+                       Margin="0 5"
+                       Text="{CompiledBinding Plugin.Info.Description}" />
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+            <StackPanel Orientation="Horizontal">
+                <controls:SplitButton Content="Settings" Command="{CompiledBinding OpenSettings}">
+                    <controls:SplitButton.Flyout>
+                        <MenuFlyout Placement="Bottom" Opening="FlyoutBase_OnOpening">
+                            <MenuItem Header="Open plugin directory" Command="{CompiledBinding OpenPluginDirectory}">
+                                <MenuItem.Icon>
+                                    <avalonia:MaterialIcon Kind="FolderOpen" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Reload plugin" Command="{CompiledBinding Reload}">
+                                <MenuItem.Icon>
+                                    <avalonia:MaterialIcon Kind="Reload" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Install prerequisites" Command="{CompiledBinding InstallPrerequisites}">
+                                <MenuItem.Icon>
+                                    <avalonia:MaterialIcon Kind="CheckAll" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Remove prerequisites" Command="{CompiledBinding RemovePrerequisites}">
+                                <MenuItem.Icon>
+                                    <avalonia:MaterialIcon Kind="Delete" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Clear plugin settings" Command="{CompiledBinding RemoveSettings}">
+                                <MenuItem.Icon>
+                                    <avalonia:MaterialIcon Kind="DatabaseRemove" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Remove plugin" Command="{CompiledBinding Remove}">
+                                <MenuItem.Icon>
+                                    <avalonia:MaterialIcon Kind="DeleteForever" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </MenuFlyout>
+                    </controls:SplitButton.Flyout>
+                </controls:SplitButton>
+
+                <controls:HyperlinkButton Classes="icon-button icon-button-large"
+                                          Margin="5 0"
+                                          IsVisible="{CompiledBinding Plugin.Info.Website, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                          NavigateUri="{CompiledBinding Plugin.Info.Website}">
+                    <avalonia:MaterialIcon Kind="Web" />
+                </controls:HyperlinkButton>
+                <controls:HyperlinkButton Classes="icon-button icon-button-large"
+                                          Margin="5 0"
+                                          IsVisible="{CompiledBinding Plugin.Info.Repository, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                          NavigateUri="{CompiledBinding Plugin.Info.Repository}">
+                    <avalonia:MaterialIcon Kind="Git" />
+                </controls:HyperlinkButton>
+            </StackPanel>
+
+            <CheckBox Name="EnabledToggle"
+                      Grid.Row="0"
+                      Grid.Column="1"
+                      HorizontalAlignment="Right"
+                      IsVisible="{CompiledBinding !Enabling}"
+                      IsChecked="{CompiledBinding IsEnabled, Mode=OneWay}"
+                      IsEnabled="{CompiledBinding Plugin.Info.IsCompatible}">
+                <StackPanel x:Name="EnableText" Orientation="Horizontal">
+                    <TextBlock>Enable plugin</TextBlock>
+                    <avalonia:MaterialIcon Kind="ShieldHalfFull"
+                                           Margin="5 0 0 0"
+                                           ToolTip.Tip="Plugin requires admin rights"
+                                           IsVisible="{CompiledBinding Plugin.Info.RequiresAdmin}" />
+                </StackPanel>
+            </CheckBox>
+
+            <ProgressBar Grid.Row="0"
+                         Grid.Column="1"
+                         HorizontalAlignment="Right"
+                         IsVisible="{CompiledBinding Enabling}"
+                         IsIndeterminate="True" />
+        </Grid>
+    </Grid>
+</UserControl>

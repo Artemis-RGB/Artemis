@@ -1,0 +1,38 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:sharedControls="clr-namespace:Artemis.UI.Shared.Controls"
+             xmlns:attachedProperties="clr-namespace:Artemis.UI.Shared.AttachedProperties"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Shared.Controls.DraggableNumberBox">
+    <UserControl.Styles>
+        <Styles>
+            <Style Selector="sharedControls|DraggableNumberBox:not(:focus-within)">
+                <Setter Property="Cursor" Value="{DynamicResource DragHorizontalCursor}" />
+            </Style>
+
+            <Style Selector="sharedControls|DraggableNumberBox:focus-within Rectangle#DragCollider">
+                <Setter Property="IsHitTestVisible" Value="False" />
+            </Style>
+            <Style Selector="sharedControls|DraggableNumberBox:not(:focus-within) controls|NumberBox#NumberBox">
+                <Setter Property="IsHitTestVisible" Value="False" />
+            </Style>
+        </Styles>
+    </UserControl.Styles>
+
+    <Panel>
+        <controls:NumberBox Name="NumberBox"
+                            AcceptsExpression="True"
+                            LargeChange="{Binding $parent[sharedControls:DraggableNumberBox].LargeChange}"
+                            SmallChange="{Binding $parent[sharedControls:DraggableNumberBox].SmallChange}"
+                            SimpleNumberFormat="{Binding $parent[sharedControls:DraggableNumberBox].SimpleNumberFormat}"
+                            attachedProperties:NumberBoxAssist.PrefixText="{Binding $parent[sharedControls:DraggableNumberBox].Prefix}"
+                            attachedProperties:NumberBoxAssist.SuffixText="{Binding $parent[sharedControls:DraggableNumberBox].Suffix}"
+                            HorizontalAlignment="{Binding $parent[sharedControls:DraggableNumberBox].HorizontalAlignment}" 
+                            ValueChanged="NumberBox_OnValueChanged"/>
+        <Rectangle Name="DragCollider" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Fill="Transparent"></Rectangle>
+    </Panel>
+
+</UserControl>

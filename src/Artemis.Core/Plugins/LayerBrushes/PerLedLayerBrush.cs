@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using System;
+using SkiaSharp;
 
 namespace Artemis.Core.LayerBrushes
 {
@@ -6,7 +7,7 @@ namespace Artemis.Core.LayerBrushes
     ///     Represents a brush that renders on a per-layer basis
     /// </summary>
     /// <typeparam name="T">The type of brush properties</typeparam>
-    public abstract class PerLedLayerBrush<T> : PropertiesLayerBrush<T> where T : LayerPropertyGroup
+    public abstract class PerLedLayerBrush<T> : PropertiesLayerBrush<T> where T : LayerPropertyGroup, new()
     {
         /// <summary>
         ///     Creates a new instance of the <see cref="PerLedLayerBrush{T}" /> class
@@ -35,7 +36,6 @@ namespace Artemis.Core.LayerBrushes
                 canvas.SetMatrix(canvas.TotalMatrix.PreConcat(Layer.GetTransformMatrix(true, false, false, true).Invert()));
 
             using SKPath pointsPath = new();
-            using SKPaint ledPaint = new();
             foreach (ArtemisLed artemisLed in Layer.Leds)
             {
                 pointsPath.AddPoly(new[]
@@ -53,24 +53,25 @@ namespace Artemis.Core.LayerBrushes
 
             TryOrBreak(() =>
             {
+                
+                  
                 for (int index = 0; index < Layer.Leds.Count; index++)
                 {
                     ArtemisLed artemisLed = Layer.Leds[index];
                     SKPoint renderPoint = points[index * 2 + 1];
                     if (!float.IsFinite(renderPoint.X) || !float.IsFinite(renderPoint.Y))
                         continue;
-
+                  
                     // Let the brush determine the color
-                    ledPaint.Color = GetColor(artemisLed, renderPoint);
-
+                    paint.Color = GetColor(artemisLed, renderPoint);
                     SKRect ledRectangle = SKRect.Create(
                         artemisLed.AbsoluteRectangle.Left - Layer.Bounds.Left,
                         artemisLed.AbsoluteRectangle.Top - Layer.Bounds.Top,
                         artemisLed.AbsoluteRectangle.Width,
                         artemisLed.AbsoluteRectangle.Height
                     );
-
-                    canvas.DrawRect(ledRectangle, ledPaint);
+                    
+                    canvas.DrawRect(ledRectangle, paint);
                 }
             }, "Failed to render");
         }

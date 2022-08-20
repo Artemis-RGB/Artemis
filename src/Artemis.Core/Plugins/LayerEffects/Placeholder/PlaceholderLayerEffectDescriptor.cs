@@ -4,11 +4,7 @@
     {
         public static LayerEffectDescriptor Create(string missingProviderId)
         {
-            LayerEffectDescriptor descriptor = new("Missing effect", "This effect could not be loaded", "FileQuestion", null, Constants.EffectPlaceholderPlugin)
-            {
-                PlaceholderFor = missingProviderId
-            };
-
+            LayerEffectDescriptor descriptor = new(missingProviderId, Constants.EffectPlaceholderPlugin);
             return descriptor;
         }
     }

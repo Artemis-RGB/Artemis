@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.VisualScripting.Nodes.Operators.Screens.EnumEqualsNodeCustomView">
+    <ComboBox IsEnabled="{Binding EnumValues.Count}"
+              Items="{Binding EnumValues}"
+              SelectedItem="{Binding CurrentValue}"
+              VirtualizationMode="Simple"
+              PlaceholderText="Select a value"
+              Classes="condensed"
+              VerticalAlignment="Center">
+        <ComboBox.ItemsPanel>
+            <ItemsPanelTemplate>
+                <VirtualizingStackPanel />
+            </ItemsPanelTemplate>
+        </ComboBox.ItemsPanel>
+        <ComboBox.ItemTemplate>
+            <DataTemplate>
+                <TextBlock Text="{Binding [1]}" />
+            </DataTemplate>
+        </ComboBox.ItemTemplate>
+    </ComboBox>
+</UserControl>

@@ -1,10 +1,9 @@
 ﻿using System;
 using Artemis.UI.Shared.Services;
-using MaterialDesignThemes.Wpf;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.Ninject
 {
     /// <summary>
     ///     The main <see cref="NinjectModule" /> of the Artemis Shared UI toolkit that binds all services
@@ -26,17 +25,6 @@ namespace Artemis.UI.Shared
                     .InheritedFrom<IArtemisSharedUIService>()
                     .BindAllInterfaces()
                     .Configure(c => c.InSingletonScope());
-            });
-
-            Kernel.Bind<ISnackbarMessageQueue>().ToConstant(new SnackbarMessageQueue(TimeSpan.FromSeconds(5))).InSingletonScope();
-
-            // Bind UI factories
-            Kernel.Bind(x =>
-            {
-                x.FromThisAssembly()
-                    .SelectAllInterfaces()
-                    .InheritedFrom<ISharedVmFactory>()
-                    .BindToFactory();
             });
         }
     }

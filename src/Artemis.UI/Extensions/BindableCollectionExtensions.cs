@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using Stylet;
 
 namespace Artemis.UI.Extensions
 {
-    public static class BindableCollectionExtensions
+    public static class ObservableCollectionExtensions
     {
-        public static void Sort<T>(this BindableCollection<T> collection, Func<T, object> order)
+        public static void Sort<T>(this ObservableCollection<T> collection, Func<T, object> order)
         {
             List<T> ordered = collection.OrderBy(order).ToList();
             for (int index = 0; index < ordered.Count; index++)

@@ -9,7 +9,7 @@ namespace Artemis.Core
     /// <summary>
     ///     Represents a hint that adapts layers to a certain region of keyboards
     /// </summary>
-    public class KeyboardSectionAdaptionHint : IAdaptionHint
+    public class KeyboardSectionAdaptionHint : CorePropertyChanged, IAdaptionHint
     {
         private static readonly Dictionary<KeyboardSection, List<LedId>> RegionLedIds = new()
         {
@@ -17,6 +17,8 @@ namespace Artemis.Core
             {KeyboardSection.LedStrips, Enum.GetValues<LedId>().Where(l => l >= LedId.LedStripe1 && l <= LedId.LedStripe128).ToList()},
             {KeyboardSection.Extra, Enum.GetValues<LedId>().Where(l => l >= LedId.Keyboard_Custom1 && l <= LedId.Keyboard_Custom64).ToList()}
         };
+
+        private KeyboardSection _section;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="KeyboardSectionAdaptionHint" /> class
@@ -33,7 +35,11 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the section this hint will apply LEDs to
         /// </summary>
-        public KeyboardSection Section { get; set; }
+        public KeyboardSection Section
+        {
+            get => _section;
+            set => SetAndNotify(ref _section, value);
+        }
 
         #region Implementation of IAdaptionHint
 

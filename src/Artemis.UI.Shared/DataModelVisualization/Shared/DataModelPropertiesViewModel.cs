@@ -2,8 +2,9 @@
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.UI.Shared.Services;
+using ReactiveUI;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.DataModelVisualization.Shared
 {
     /// <summary>
     ///     Represents a view model that visualizes a class (POCO) data model property containing child properties
@@ -24,7 +25,7 @@ namespace Artemis.UI.Shared
         public Type? DisplayValueType
         {
             get => _displayValueType;
-            private set => SetAndNotify(ref _displayValueType, value);
+            private set => this.RaiseAndSetIfChanged(ref _displayValueType, value);
         }
 
         /// <summary>
@@ -33,7 +34,7 @@ namespace Artemis.UI.Shared
         public object? DisplayValue
         {
             get => _displayValue;
-            private set => SetAndNotify(ref _displayValue, value);
+            private set => this.RaiseAndSetIfChanged(ref _displayValue, value);
         }
 
         /// <inheritdoc />

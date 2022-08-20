@@ -22,16 +22,13 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="parent">The parent of the folder</param>
         /// <param name="name">The name of the folder</param>
-        public Folder(ProfileElement parent, string name) : base(parent.Profile)
+        public Folder(ProfileElement parent, string name) : base(parent, parent.Profile)
         {
             FolderEntity = new FolderEntity();
             EntityId = Guid.NewGuid();
 
-            Parent = parent ?? throw new ArgumentNullException(nameof(parent));
             Profile = Parent.Profile;
             Name = name;
-
-            Parent.AddChild(this);
         }
 
         /// <summary>
@@ -40,13 +37,12 @@ namespace Artemis.Core
         /// <param name="profile">The profile the folder belongs to</param>
         /// <param name="parent">The parent of the folder</param>
         /// <param name="folderEntity">The entity of the folder</param>
-        public Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity) : base(parent.Profile)
+        public Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity) : base(parent, parent.Profile)
         {
             FolderEntity = folderEntity;
             EntityId = folderEntity.Id;
 
             Profile = profile;
-            Parent = parent;
             Name = folderEntity.Name;
             IsExpanded = folderEntity.IsExpanded;
             Suspended = folderEntity.Suspended;
@@ -98,6 +94,12 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException("Folder");
 
+            if (Timeline.IsOverridden)
+            {
+                Timeline.ClearOverride();
+                return;
+            }
+
             UpdateDisplayCondition();
             UpdateTimeline(deltaTime);
 
@@ -105,6 +107,9 @@ namespace Artemis.Core
                 Enable();
             else if (Timeline.IsFinished)
                 Disable();
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
+                baseLayerEffect.InternalUpdate(Timeline);
 
             foreach (ProfileElement child in Children)
                 child.Update(deltaTime);
@@ -119,6 +124,9 @@ namespace Artemis.Core
                 Timeline.JumpToStart();
             else
                 Timeline.JumpToEnd();
+            
+            foreach (ProfileElement child in Children)
+                child.Reset();
         }
 
         /// <inheritdoc />
@@ -168,7 +176,7 @@ namespace Artemis.Core
         #region Rendering
 
         /// <inheritdoc />
-        public override void Render(SKCanvas canvas, SKPointI basePosition)
+        public override void Render(SKCanvas canvas, SKPointI basePosition, ProfileElement? editorFocus)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Folder");
@@ -180,41 +188,45 @@ namespace Artemis.Core
             // No point rendering if all children are disabled
             if (!Children.Any(c => c is RenderProfileElement {Enabled: true}))
                 return;
+            
+            // If the editor focus is on this folder, discard further focus for children to effectively focus the entire folder and all descendants
+            if (editorFocus == this)
+                editorFocus = null;
 
-            lock (Timeline)
+            SKPaint layerPaint = new() {FilterQuality = SKFilterQuality.Low};
+            try
             {
-                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended)) 
-                    baseLayerEffect.InternalUpdate(Timeline);
-
-                SKPaint layerPaint = new() {FilterQuality = SKFilterQuality.Low};
-                try
+                SKRectI rendererBounds = SKRectI.Create(0, 0, Bounds.Width, Bounds.Height);
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
                 {
-                    SKRectI rendererBounds = SKRectI.Create(0, 0, Bounds.Width, Bounds.Height);
-                    foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
+                    if (!baseLayerEffect.Suspended)
                         baseLayerEffect.InternalPreProcess(canvas, rendererBounds, layerPaint);
+                }
 
-                    // No point rendering if the alpha was set to zero by one of the effects
-                    if (layerPaint.Color.Alpha == 0)
-                        return;
+                // No point rendering if the alpha was set to zero by one of the effects
+                if (layerPaint.Color.Alpha == 0)
+                    return;
 
-                    canvas.SaveLayer(layerPaint);
-                    canvas.Translate(Bounds.Left - basePosition.X, Bounds.Top - basePosition.Y);
+                canvas.SaveLayer(layerPaint);
+                canvas.Translate(Bounds.Left - basePosition.X, Bounds.Top - basePosition.Y);
 
-                    // Iterate the children in reverse because the first layer must be rendered last to end up on top
-                    for (int index = Children.Count - 1; index > -1; index--)
-                        Children[index].Render(canvas, new SKPointI(Bounds.Left, Bounds.Top));
+                // Iterate the children in reverse because the first layer must be rendered last to end up on top
+                for (int index = Children.Count - 1; index > -1; index--)
+                    Children[index].Render(canvas, new SKPointI(Bounds.Left, Bounds.Top), editorFocus);
 
-                    foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                {
+                    if (!baseLayerEffect.Suspended)
                         baseLayerEffect.InternalPostProcess(canvas, rendererBounds, layerPaint);
                 }
-                finally
-                {
-                    canvas.Restore();
-                    layerPaint.DisposeSelfAndProperties();
-                }
-
-                Timeline.ClearDelta();
             }
+            finally
+            {
+                canvas.Restore();
+                layerPaint.DisposeSelfAndProperties();
+            }
+
+            Timeline.ClearDelta();
         }
 
         #endregion
@@ -222,17 +234,10 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void Enable()
         {
-            if (Enabled)
-                return;
-
+            // No checks here, effects will do their own checks to ensure they never enable twice
+            // Also not enabling children, they'll enable themselves during their own Update
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
                 baseLayerEffect.InternalEnable();
-
-            foreach (ProfileElement profileElement in Children)
-            {
-                if (profileElement is RenderProfileElement renderProfileElement && renderProfileElement.ShouldBeEnabled)
-                    renderProfileElement.Enable();
-            }
 
             Enabled = true;
         }
@@ -240,12 +245,11 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void Disable()
         {
-            if (!Enabled)
-                return;
-
+            // No checks here, effects will do their own checks to ensure they never disable twice
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
                 baseLayerEffect.InternalDisable();
 
+            // Disabling children since their Update won't get called with their parent disabled
             foreach (ProfileElement profileElement in Children)
             {
                 if (profileElement is RenderProfileElement renderProfileElement)
@@ -253,6 +257,14 @@ namespace Artemis.Core
             }
 
             Enabled = false;
+        }
+
+        /// <inheritdoc />
+        public override void OverrideTimelineAndApply(TimeSpan position)
+        {
+            DisplayCondition.OverrideTimeline(position);
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
+                baseLayerEffect.InternalUpdate(Timeline); ;
         }
 
         /// <summary>
@@ -295,7 +307,6 @@ namespace Artemis.Core
 
         internal override void Load()
         {
-            ExpandedPropertyGroups.AddRange(FolderEntity.ExpandedPropertyGroups);
             Reset();
 
             // Load child folders
@@ -306,7 +317,7 @@ namespace Artemis.Core
                 ChildrenList.Add(new Layer(Profile, this, childLayer));
 
             // Ensure order integrity, should be unnecessary but no one is perfect specially me
-            ChildrenList.Sort((a,b) => a.Order.CompareTo(b.Order));
+            ChildrenList.Sort((a, b) => a.Order.CompareTo(b.Order));
             for (int index = 0; index < ChildrenList.Count; index++)
                 ChildrenList[index].Order = index + 1;
 
@@ -327,8 +338,6 @@ namespace Artemis.Core
             FolderEntity.Suspended = Suspended;
 
             FolderEntity.ProfileId = Profile.EntityId;
-            FolderEntity.ExpandedPropertyGroups.Clear();
-            FolderEntity.ExpandedPropertyGroups.AddRange(ExpandedPropertyGroups);
 
             SaveRenderElement();
         }

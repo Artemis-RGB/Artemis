@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:startupWizard="clr-namespace:Artemis.UI.Screens.StartupWizard"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.StartupWizard.Steps.DevicesStep"
+             x:DataType="startupWizard:StartupWizardViewModel">
+    <Border Classes="card">
+        <Grid RowDefinitions="Auto,*,Auto,Auto">
+            <StackPanel Grid.Row="0">
+                <TextBlock TextWrapping="Wrap">
+                    Devices are supported through the use of device providers.
+                </TextBlock>
+                <TextBlock TextWrapping="Wrap">
+                    In the list below you can enable device providers for each brand you own by checking "Enable feature".
+                </TextBlock>
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1" Margin="0 15">
+                <ItemsControl Items="{CompiledBinding DeviceProviders}" Margin="-4 0 8 0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="2" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Classes="card-condensed" Margin="4">
+                                <ContentControl Content="{Binding}"></ContentControl>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+
+            <TextBlock Grid.Row="2" Foreground="#FFB9A40A" TextWrapping="Wrap">
+                Note: To avoid possible instability it's recommended to disable the device providers of brands you don't own.
+            </TextBlock>
+        </Grid>
+    </Border>
+</UserControl>

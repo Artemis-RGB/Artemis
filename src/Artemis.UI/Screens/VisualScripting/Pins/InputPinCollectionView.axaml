@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:pins="clr-namespace:Artemis.UI.Screens.VisualScripting.Pins"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.VisualScripting.Pins.InputPinCollectionView"
+             x:DataType="pins:PinCollectionViewModel">
+    <StackPanel>
+        <Button Classes="icon-button icon-button-small pin-collection-button"
+                ToolTip.Tip="Add new pin" 
+                Command="{CompiledBinding AddPin}">
+            <avalonia:MaterialIcon Kind="Add"></avalonia:MaterialIcon>
+        </Button>
+        <ItemsControl Items="{CompiledBinding PinViewModels}" Margin="4 0">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="pins:PinViewModel">
+                    <StackPanel Orientation="Horizontal">
+                        <ContentControl Content="{CompiledBinding}"></ContentControl>
+						<Button Classes="icon-button icon-button-small"
+                                Margin="2 2 0 0"
+                                ToolTip.Tip="Remove pin"
+                                Command="{CompiledBinding RemovePin}"
+                                CommandParameter="{CompiledBinding Pin}">
+                            <avalonia:MaterialIcon Kind="Close"></avalonia:MaterialIcon>
+                        </Button>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+	</StackPanel>
+</UserControl>

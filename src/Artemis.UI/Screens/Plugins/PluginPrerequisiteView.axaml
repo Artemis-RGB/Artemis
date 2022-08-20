@@ -1,0 +1,27 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:plugins="clr-namespace:Artemis.UI.Screens.Plugins"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Plugins.PluginPrerequisiteView"
+             x:DataType="plugins:PluginPrerequisiteViewModel">
+    <StackPanel>
+        <TextBlock TextWrapping="Wrap" Text="{CompiledBinding PluginPrerequisite.Name, Mode=OneWay}" />
+        <TextBlock Classes="subtitle" TextWrapping="Wrap" Text="{CompiledBinding PluginPrerequisite.Description, Mode=OneWay}" Margin="0 0 0 15" />
+
+        <StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding ActiveAction, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <TextBlock Text="Step " />
+            <TextBlock Text="{CompiledBinding ActiveStepNumber, Mode=OneWay}" />
+            <TextBlock Text="/" />
+            <TextBlock Text="{CompiledBinding Actions.Count, Mode=OneWay}" />
+            <TextBlock Text=" - " />
+            <TextBlock Text="{CompiledBinding ActiveAction.Action.Name, Mode=OneWay, FallbackValue=''}" />
+        </StackPanel>
+        <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}" TextWrapping="Wrap" IsVisible="{CompiledBinding Actions.Count}">
+
+        </TextBlock>
+        <TextBlock Classes="h4" TextWrapping="Wrap" Text="{CompiledBinding ActiveAction.Action.Name, Mode=OneWay}" IsVisible="{CompiledBinding !Actions.Count}" />
+        <ContentControl Content="{CompiledBinding ActiveAction}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+    </StackPanel>
+</UserControl>

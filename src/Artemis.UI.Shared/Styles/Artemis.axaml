@@ -1,0 +1,45 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Styles.Resources>
+        <VisualBrush x:Key="CheckerboardBrush" TileMode="Tile" Stretch="Uniform" DestinationRect="0,0,12,12">
+            <VisualBrush.Visual>
+                <Canvas Width="12" Height="12">
+                    <Rectangle Width="6" Height="6" Fill="Black" Opacity="0.15" />
+                    <Rectangle Width="6" Height="6" Canvas.Left="6" />
+                    <Rectangle Width="6" Height="6" Canvas.Top="6" />
+                    <Rectangle Width="6" Height="6" Canvas.Left="6" Canvas.Top="6" Fill="Black" Opacity="0.15" />
+                </Canvas>
+            </VisualBrush.Visual>
+        </VisualBrush>
+    </Styles.Resources>
+
+    <!-- Custom controls -->
+    <StyleInclude Source="/Styles/Controls/GradientPicker.axaml" />
+    <StyleInclude Source="/Styles/Controls/GradientPickerButton.axaml" />
+    <StyleInclude Source="/Styles/Controls/DataModelPicker.axaml" />
+    <StyleInclude Source="/Styles/Controls/DataModelPickerButton.axaml" />
+
+    <!-- Custom styles -->
+    <StyleInclude Source="/Styles/Border.axaml" />
+    <StyleInclude Source="/Styles/Button.axaml" />
+    <StyleInclude Source="/Styles/Condensed.axaml" />
+    <StyleInclude Source="/Styles/ColorPickerButton.axaml" />
+    <StyleInclude Source="/Styles/TextBlock.axaml" />
+    <StyleInclude Source="/Styles/Sidebar.axaml" />
+    <StyleInclude Source="/Styles/InfoBar.axaml" />
+    <StyleInclude Source="/Styles/TextBox.axaml" />
+    <StyleInclude Source="/Styles/Notifications.axaml" />
+    <StyleInclude Source="/Styles/NumberBox.axaml" />
+    <StyleInclude Source="/Styles/TreeView.axaml" />
+
+    <!-- <Style Selector="Window:windows:windows10 /template/ Border#RootBorder"> -->
+    <!--     ~1~ This will show if custom accent color setting is used in Settings page@1@ -->
+    <!--     <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}" /> -->
+    <!--     <Setter Property="BorderThickness" Value="0 1 0 0" /> -->
+    <!-- </Style> -->
+    <!-- -->
+    <!-- <Style Selector="Window[IsActive=False]:windows:windows10 /template/ Border#RootBorder"> -->
+    <!--     <Setter Property="BorderBrush" Value="#3d3d3d" /> -->
+    <!--     <Setter Property="BorderThickness" Value="0 1 0 0" /> -->
+    <!-- </Style> -->
+</Styles>

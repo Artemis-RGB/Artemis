@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 
 namespace Artemis.Core.LayerBrushes
 {
@@ -17,7 +18,7 @@ namespace Artemis.Core.LayerBrushes
         protected LayerBrushProvider()
         {
             _layerBrushDescriptors = new List<LayerBrushDescriptor>();
-            LayerBrushDescriptors = new(_layerBrushDescriptors);
+            LayerBrushDescriptors = new ReadOnlyCollection<LayerBrushDescriptor>(_layerBrushDescriptors);
             Disabled += OnDisabled;
         }
 
@@ -42,7 +43,7 @@ namespace Artemis.Core.LayerBrushes
             if (!IsEnabled)
                 throw new ArtemisPluginException(Plugin, "Can only add a layer brush descriptor when the plugin is enabled");
 
-            if (icon.ToLower().EndsWith(".svg"))
+            if (icon.Contains('.'))
                 icon = Plugin.ResolveRelativePath(icon);
             LayerBrushDescriptor descriptor = new(displayName, description, icon, typeof(T), this);
             _layerBrushDescriptors.Add(descriptor);

@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Platforms>x64</Platforms>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="0.10.18" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.18" />
+        <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.18" />
+        <PackageReference Include="Ninject" Version="3.3.6" />
+        <PackageReference Include="NoStringEvaluating" Version="2.4.0" />
+        <PackageReference Include="ReactiveUI" Version="17.1.50" />
+        <PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />
+        <PackageReference Include="ScreenCapture.NET" Version="1.2.0" />
+        <PackageReference Include="SkiaSharp" Version="2.88.1-preview.108" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
+        <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Nodes\Easing\Screens\EasingTypeNodeEasingView.axaml.cs">
+            <DependentUpon>EasingTypeNodeEasingView.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Nodes\Static\Screens\StaticStringValueNodeCustomView.axaml.cs">
+            <DependentUpon>StaticStringValueNodeCustomView.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Nodes\DataModel\Screens\DataModelNodeCustomView.axaml.cs">
+            <DependentUpon>DataModelNodeCustomView.axaml</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
+</Project>

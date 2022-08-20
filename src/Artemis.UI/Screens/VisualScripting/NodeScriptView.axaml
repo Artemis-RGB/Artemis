@@ -1,0 +1,99 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:paz="clr-namespace:Avalonia.Controls.PanAndZoom;assembly=Avalonia.Controls.PanAndZoom"
+             xmlns:visualScripting="clr-namespace:Artemis.UI.Screens.VisualScripting"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.VisualScripting.NodeScriptView"
+             x:DataType="visualScripting:NodeScriptViewModel"
+             IsHitTestVisible="{CompiledBinding !IsPreview}">
+    <UserControl.Styles>
+        <Style Selector="FlyoutPresenter.node-picker-flyout">
+            <Setter Property="MaxWidth" Value="1000"></Setter>
+        </Style>
+    </UserControl.Styles>
+    <UserControl.Resources>
+        <VisualBrush x:Key="LargeCheckerboardBrush" TileMode="Tile" Stretch="Uniform" SourceRect="0,0,20,20">
+            <VisualBrush.Visual>
+                <Canvas Width="20" Height="20">
+                    <Rectangle Width="10" Height="10" Fill="Black" Opacity="0.15" />
+                    <Rectangle Width="10" Height="10" Canvas.Left="10" />
+                    <Rectangle Width="10" Height="10" Canvas.Top="10" />
+                    <Rectangle Width="10" Height="10" Canvas.Left="10" Canvas.Top="10" Fill="Black" Opacity="0.15" />
+                </Canvas>
+            </VisualBrush.Visual>
+        </VisualBrush>
+    </UserControl.Resources>
+    <UserControl.KeyBindings>
+        <KeyBinding Command="{CompiledBinding ClearSelection}" Gesture="Escape" />
+        <KeyBinding Command="{CompiledBinding DeleteSelected}" Gesture="Delete" />
+        <KeyBinding Command="{CompiledBinding DuplicateSelected}" Gesture="Ctrl+D" />
+        <KeyBinding Command="{CompiledBinding History.Undo}" Gesture="Ctrl+Z" />
+        <KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y" />
+    </UserControl.KeyBindings>
+    <paz:ZoomBorder Name="ZoomBorder"
+                    Stretch="None"
+                    Focusable="True"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    Background="{StaticResource LargeCheckerboardBrush}"
+                    ZoomChanged="ZoomBorder_OnZoomChanged"
+                    MaxZoomX="1"
+                    MaxZoomY="1"
+                    EnableConstrains="True"
+                    PointerReleased="ZoomBorder_OnPointerReleased">
+        <paz:ZoomBorder.ContextFlyout>
+            <Flyout FlyoutPresenterClasses="node-picker-flyout">
+                <ContentControl Content="{CompiledBinding NodePickerViewModel}" />
+            </Flyout>
+        </paz:ZoomBorder.ContextFlyout>
+        <Grid Name="ContainerGrid" Background="Transparent" ClipToBounds="False" Focusable="True">
+            <Grid.Transitions>
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut" />
+                </Transitions>
+            </Grid.Transitions>
+
+            <!-- Drag cable, if any -->
+            <ContentControl Content="{CompiledBinding DragViewModel}" ClipToBounds="False" />
+
+            <!-- Cables -->
+            <ItemsControl Items="{CompiledBinding CableViewModels}" ClipToBounds="False">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+
+            <!-- Nodes -->
+            <ItemsControl Name="NodesContainer" Items="{CompiledBinding NodeViewModels}" ClipToBounds="False">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.Styles>
+                    <Style Selector="ItemsControl#NodesContainer > ContentPresenter">
+                        <Setter Property="Canvas.Left" Value="{Binding Node.X}" />
+                        <Setter Property="Canvas.Top" Value="{Binding Node.Y}" />
+                    </Style>
+                </ItemsControl.Styles>
+            </ItemsControl>
+
+            <shared:SelectionRectangle Name="SelectionRectangle"
+                                       InputElement="{Binding #ZoomBorder}"
+                                       SelectionUpdated="SelectionRectangle_OnSelectionUpdated"
+                                       SelectionFinished="SelectionRectangle_OnSelectionFinished"
+                                       BorderBrush="{DynamicResource SystemAccentColor}"
+                                       BorderRadius="8">
+                <shared:SelectionRectangle.Background>
+                    <SolidColorBrush Color="{DynamicResource SystemAccentColorLight1}" Opacity="0.2"></SolidColorBrush>
+                </shared:SelectionRectangle.Background>
+            </shared:SelectionRectangle>
+        </Grid>
+    </paz:ZoomBorder>
+
+</UserControl>

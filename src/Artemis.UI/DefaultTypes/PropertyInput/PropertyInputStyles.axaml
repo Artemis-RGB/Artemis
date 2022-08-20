@@ -1,0 +1,52 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Design.PreviewWith>
+        <Border Padding="20" Width="600" Height="200">
+            <StackPanel Spacing="10">
+                <TextBox Classes="tooltip-validation-left" Text="Sample" VerticalAlignment="Top">
+                    <DataValidationErrors.Error>
+                        <system:Exception/>
+                    </DataValidationErrors.Error>
+                </TextBox>
+                <controls:NumberBox Classes="tooltip-validation-left" Text="Sample" VerticalAlignment="Top">
+                    <DataValidationErrors.Error>
+                        <system:Exception/>
+                    </DataValidationErrors.Error>
+                </controls:NumberBox>
+			</StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="DataValidationErrors">
+		<Style.Resources>
+			<ControlTemplate x:Key="TooltipDataValidationLeftContentTemplate" TargetType="DataValidationErrors">
+                <DockPanel LastChildFill="True">
+                    <ContentControl Content="{Binding (DataValidationErrors.Errors)}"
+                                    ContentTemplate="{TemplateBinding ErrorTemplate}"
+                                    DataContext="{TemplateBinding Owner}"
+                                    DockPanel.Dock="Left"
+                                    IsVisible="{Binding (DataValidationErrors.HasErrors)}" />
+                    <ContentPresenter Name="PART_ContentPresenter"
+                                      Padding="{TemplateBinding Padding}"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                      Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}" />
+                </DockPanel>
+            </ControlTemplate>
+		</Style.Resources>
+    </Style>
+
+    <Style Selector="TextBox.tooltip-validation-left DataValidationErrors">
+        <Setter Property="Template" Value="{DynamicResource TooltipDataValidationLeftContentTemplate}" />
+        <Setter Property="ErrorTemplate" Value="{DynamicResource TooltipDataValidationErrorTemplate}" />
+    </Style>
+
+    <Style Selector="controls|NumberBox.tooltip-validation-left /template/ TextBox DataValidationErrors">
+        <Setter Property="Template" Value="{DynamicResource TooltipDataValidationLeftContentTemplate}" />
+        <Setter Property="ErrorTemplate" Value="{DynamicResource TooltipDataValidationErrorTemplate}" />
+    </Style>
+</Styles>

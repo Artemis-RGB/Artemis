@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:propertyInput="clr-namespace:Artemis.UI.DefaultTypes.PropertyInput"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="450"
+             x:Class="Artemis.UI.DefaultTypes.PropertyInput.SKColorPropertyInputView"
+             x:DataType="propertyInput:SKColorPropertyInputViewModel">
+    <UserControl.Resources>
+        <shared:SKColorToStringConverter x:Key="SKColorToStringConverter" />
+        <shared:SKColorToColorConverter x:Key="SKColorToColorConverter" />
+    </UserControl.Resources>
+    <Grid Height="24" ColumnDefinitions="*">
+        <TextBox Classes="condensed"
+                 Text="{CompiledBinding InputValue, Converter={StaticResource SKColorToStringConverter}}"
+                 Padding="2 2 30 2">
+        </TextBox>
+        <controls:ColorPickerButton Classes="contained-color-picker-button"
+                                    Color="{CompiledBinding InputValue, Converter={StaticResource SKColorToColorConverter}}"
+                                    ShowAcceptDismissButtons="False"
+                                    FlyoutOpened="ColorPickerButton_OnFlyoutOpened"
+                                    FlyoutClosed="ColorPickerButton_OnFlyoutClosed" />
+    </Grid>
+</UserControl>

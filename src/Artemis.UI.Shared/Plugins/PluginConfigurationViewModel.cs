@@ -1,12 +1,12 @@
-﻿using Artemis.Core;
-using Stylet;
+﻿using System;
+using Artemis.Core;
 
 namespace Artemis.UI.Shared
 {
     /// <summary>
     ///     Represents a view model for a plugin configuration window
     /// </summary>
-    public abstract class PluginConfigurationViewModel : Screen, IPluginConfigurationViewModel
+    public abstract class PluginConfigurationViewModel : ValidatableViewModelBase, IPluginConfigurationViewModel
     {
         /// <summary>
         ///     Creates a new instance of the <see cref="PluginConfigurationViewModel" /> class
@@ -18,18 +18,29 @@ namespace Artemis.UI.Shared
         }
 
         /// <summary>
-        ///     Creates a new instance of the <see cref="PluginConfigurationViewModel" /> class with a validator
-        /// </summary>
-        /// <param name="plugin"></param>
-        /// <param name="validator"></param>
-        protected PluginConfigurationViewModel(Plugin plugin, IModelValidator validator) : base(validator)
-        {
-            Plugin = plugin;
-        }
-
-        /// <summary>
         ///     Gets the plugin this configuration view model is associated with
         /// </summary>
         public Plugin Plugin { get; }
+
+        /// <summary>
+        ///     Closes the window hosting the view model
+        /// </summary>
+        public void Close()
+        {
+            CloseRequested?.Invoke(this, EventArgs.Empty);
+            OnCloseRequested();
+        }
+
+        /// <summary>
+        ///     Called when the the window hosting the view model should close
+        /// </summary>
+        public virtual void OnCloseRequested()
+        {
+        }
+
+        /// <summary>
+        ///     Occurs when the the window hosting the view model should close
+        /// </summary>
+        public event EventHandler? CloseRequested;
     }
 }

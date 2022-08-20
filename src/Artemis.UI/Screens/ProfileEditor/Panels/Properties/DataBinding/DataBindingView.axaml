@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:dataBinding="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.DataBinding"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.DataBinding.DataBindingView"
+             x:DataType="dataBinding:DataBindingViewModel">
+    <Grid RowDefinitions="48,*">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,*" Background="{DynamicResource ControlFillColorDefaultBrush}">
+            <TextBlock Grid.Column="0"
+                       Classes="h5"
+                       VerticalAlignment="Center"
+                       Text="{CompiledBinding LayerProperty.PropertyDescription.Name}"
+                       Margin="10 0" />
+            <ToggleSwitch Grid.Column="1"
+                          OnContent="Data binding enabled"
+                          OffContent="Data binding disabled"
+                          VerticalAlignment="Center"
+                          IsChecked="{CompiledBinding DataBindingEnabled}" />
+            <Button Grid.Column="2"
+                    Classes="icon-button"
+                    ToolTip.Tip="Open editor"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Right"
+                    Margin="10"
+                    Command="{Binding OpenEditor}">
+                <avalonia:MaterialIcon Kind="OpenInNew" />
+            </Button>
+        </Grid>
+
+        <ContentControl Grid.Row="1"
+                        IsVisible="{CompiledBinding NodeScriptViewModel, Converter={x:Static ObjectConverters.IsNotNull}}"
+                        Content="{CompiledBinding NodeScriptViewModel}" />
+
+        <StackPanel Grid.Row="1"
+                    VerticalAlignment="Center"
+                    IsVisible="{CompiledBinding NodeScriptViewModel, Converter={x:Static ObjectConverters.IsNull}}">
+            <TextBlock TextAlignment="Center" Classes="h5">To use data bindings enable them in with the toggle above.</TextBlock>
+            <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Foreground="{DynamicResource TextFillColorSecondary}">
+                When you enable data bindings you can no longer use keyframes or normal values for this property.
+            </TextBlock>
+            <controls:HyperlinkButton HorizontalAlignment="Center"
+                                      NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/profiles/data-bindings"
+                                      Margin="0 10">
+                Learn more
+            </controls:HyperlinkButton>
+        </StackPanel>
+    </Grid>
+</UserControl>

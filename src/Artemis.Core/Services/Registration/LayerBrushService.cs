@@ -46,5 +46,13 @@ namespace Artemis.Core.Services
             defaultReference.Value.BrushType ??= "SolidBrush";
             return LayerBrushStore.Get(defaultReference.Value.LayerBrushProviderId, defaultReference.Value.BrushType)?.LayerBrushDescriptor;
         }
+
+        /// <inheritdoc />
+        public void ApplyDefaultBrush(Layer layer)
+        {
+            LayerBrushDescriptor? brush = GetDefaultLayerBrush();
+            if (brush != null)
+                layer.ChangeLayerBrush(brush.CreateInstance(layer, null));
+        }
     }
 }

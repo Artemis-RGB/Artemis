@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -11,6 +12,7 @@ namespace Artemis.Core
     /// </summary>
     public abstract class ProfileElement : BreakableModel, IDisposable
     {
+        internal readonly List<ProfileElement> ChildrenList;
         private Guid _entityId;
         private string? _name;
         private int _order;
@@ -18,13 +20,11 @@ namespace Artemis.Core
         private Profile _profile;
         private bool _suspended;
 
-        internal readonly List<ProfileElement> ChildrenList;
-
         internal ProfileElement(Profile profile)
         {
             _profile = profile;
             ChildrenList = new List<ProfileElement>();
-            Children = new(ChildrenList);
+            Children = new ReadOnlyCollection<ProfileElement>(ChildrenList);
         }
 
         /// <summary>
@@ -91,6 +91,13 @@ namespace Artemis.Core
         /// </summary>
         public bool Disposed { get; protected set; }
 
+        #region Overrides of BreakableModel
+
+        /// <inheritdoc />
+        public override string BrokenDisplayName => Name ?? GetType().Name;
+
+        #endregion
+
         /// <summary>
         ///     Updates the element
         /// </summary>
@@ -98,9 +105,12 @@ namespace Artemis.Core
         public abstract void Update(double deltaTime);
 
         /// <summary>
-        ///     Renders the element
+        /// Renders the element
         /// </summary>
-        public abstract void Render(SKCanvas canvas, SKPointI basePosition);
+        /// <param name="canvas">The canvas to render upon.</param>
+        /// <param name="basePosition">The base position to use to translate relative positions to absolute positions.</param>
+        /// <param name="editorFocus">An optional element to focus on while rendering (other elements will not render).</param>
+        public abstract void Render(SKCanvas canvas, SKPointI basePosition, ProfileElement? editorFocus);
 
         /// <summary>
         ///     Resets the internal state of the element
@@ -113,12 +123,76 @@ namespace Artemis.Core
             return $"{nameof(EntityId)}: {EntityId}, {nameof(Order)}: {Order}, {nameof(Name)}: {Name}";
         }
 
-        #region Overrides of BreakableModel
+        /// <summary>
+        ///     Occurs when a child was added to the <see cref="Children" /> list
+        /// </summary>
+        public event EventHandler<ProfileElementEventArgs>? ChildAdded;
+
+        /// <summary>
+        ///     Occurs when a child was removed from the <see cref="Children" /> list
+        /// </summary>
+        public event EventHandler<ProfileElementEventArgs>? ChildRemoved;
+
+        /// <summary>
+        ///     Occurs when a child was added to the <see cref="Children" /> list of this element or any of it's descendents.
+        /// </summary>
+        public event EventHandler<ProfileElementEventArgs>? DescendentAdded;
+
+        /// <summary>
+        ///     Occurs when a child was removed from the <see cref="Children" /> list of this element or any of it's descendents.
+        /// </summary>
+        public event EventHandler<ProfileElementEventArgs>? DescendentRemoved;
+
+        /// <summary>
+        ///     Invokes the <see cref="ChildAdded" /> event
+        /// </summary>
+        protected virtual void OnChildAdded(ProfileElement child)
+        {
+            ChildAdded?.Invoke(this, new ProfileElementEventArgs(child));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="ChildRemoved" /> event
+        /// </summary>
+        protected virtual void OnChildRemoved(ProfileElement child)
+        {
+            ChildRemoved?.Invoke(this, new ProfileElementEventArgs(child));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DescendentAdded" /> event
+        /// </summary>
+        protected virtual void OnDescendentAdded(ProfileElement child)
+        {
+            DescendentAdded?.Invoke(this, new ProfileElementEventArgs(child));
+            Parent?.OnDescendentAdded(child);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DescendentRemoved" /> event
+        /// </summary>
+        protected virtual void OnDescendentRemoved(ProfileElement child)
+        {
+            DescendentRemoved?.Invoke(this, new ProfileElementEventArgs(child));
+            Parent?.OnDescendentRemoved(child);
+        }
+
+        /// <summary>
+        ///     Disposes the profile element
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+            }
+        }
 
         /// <inheritdoc />
-        public override string BrokenDisplayName => Name ?? GetType().Name;
-
-        #endregion
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         #region Hierarchy
 
@@ -132,6 +206,14 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
+            ProfileElement? current = this;
+            while (current != null)
+            {
+                if (ReferenceEquals(child, this))
+                    throw new ArtemisCoreException("Cannot make an element a child of itself");
+                current = current.Parent;
+            }
+
             lock (ChildrenList)
             {
                 if (ChildrenList.Contains(child))
@@ -139,7 +221,9 @@ namespace Artemis.Core
 
                 // Add to the end of the list
                 if (order == null)
+                {
                     ChildrenList.Add(child);
+                }
                 // Insert at the given index
                 else
                 {
@@ -154,7 +238,8 @@ namespace Artemis.Core
                 StreamlineOrder();
             }
 
-            OnChildAdded();
+            OnChildAdded(child);
+            OnDescendentAdded(child);
         }
 
         /// <summary>
@@ -174,13 +259,35 @@ namespace Artemis.Core
                 child.Parent = null;
             }
 
-            OnChildRemoved();
+            OnChildRemoved(child);
+            OnDescendentRemoved(child);
         }
 
         private void StreamlineOrder()
         {
             for (int index = 0; index < ChildrenList.Count; index++)
-                ChildrenList[index].Order = index;
+                ChildrenList[index].Order = index + 1;
+        }
+
+        /// <summary>
+        ///     Returns a flattened list of all child render elements
+        /// </summary>
+        /// <returns></returns>
+        public List<RenderProfileElement> GetAllRenderElements()
+        {
+            if (Disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
+            List<RenderProfileElement> elements = new();
+            foreach (RenderProfileElement childElement in Children.Where(c => c is RenderProfileElement).Cast<RenderProfileElement>())
+            {
+                // Add all folders in this element
+                elements.Add(childElement);
+                // Add all folders in folders inside this element
+                elements.AddRange(childElement.GetAllRenderElements());
+            }
+
+            return elements;
         }
 
         /// <summary>
@@ -225,63 +332,50 @@ namespace Artemis.Core
             return layers;
         }
 
+        /// <summary>
+        ///     Returns a name for a new layer according to any other layers with a default name similar to creating new folders in
+        ///     Explorer
+        /// </summary>
+        /// <returns>The resulting name i.e. <c>New layer</c> or <c>New layer (2)</c></returns>
+        public string GetNewLayerName(string baseName = "New layer")
+        {
+            if (!Children.Any(c => c is Layer && c.Name == baseName))
+                return baseName;
+
+            int current = 2;
+            while (true)
+            {
+                if (Children.Where(c => c is Layer).All(c => c.Name != $"{baseName} ({current})"))
+                    return $"{baseName} ({current})";
+                current++;
+            }
+        }
+
+        /// <summary>
+        ///     Returns a name for a new folder according to any other folders with a default name similar to creating new folders
+        ///     in Explorer
+        /// </summary>
+        /// <returns>The resulting name i.e. <c>New folder</c> or <c>New folder (2)</c></returns>
+        public string GetNewFolderName(string baseName = "New folder")
+        {
+            if (!Children.Any(c => c is Folder && c.Name == baseName))
+                return baseName;
+
+            int current = 2;
+            while (true)
+            {
+                if (Children.Where(c => c is Folder).All(c => c.Name != $"{baseName} ({current})"))
+                    return $"{baseName} ({current})";
+                current++;
+            }
+        }
+
         #endregion
 
         #region Storage
 
         internal abstract void Load();
         internal abstract void Save();
-
-        #endregion
-        
-        #region IDisposable
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        ///     Disposes the profile element
-        /// </summary>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-            }
-        }
-
-        #endregion
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs when a child was added to the <see cref="Children" /> list
-        /// </summary>
-        public event EventHandler? ChildAdded;
-
-        /// <summary>
-        ///     Occurs when a child was removed from the <see cref="Children" /> list
-        /// </summary>
-        public event EventHandler? ChildRemoved;
-
-        /// <summary>
-        ///     Invokes the <see cref="ChildAdded" /> event
-        /// </summary>
-        protected virtual void OnChildAdded()
-        {
-            ChildAdded?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="ChildRemoved" /> event
-        /// </summary>
-        protected virtual void OnChildRemoved()
-        {
-            ChildRemoved?.Invoke(this, EventArgs.Empty);
-        }
 
         #endregion
     }

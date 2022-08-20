@@ -19,8 +19,8 @@ namespace Artemis.Core
         public static void PrepareFirstLaunch()
         {
             CreateAccessibleDirectory(Constants.DataFolder);
-            CreateAccessibleDirectory(Path.Combine(Constants.DataFolder, "plugins"));
-            CreateAccessibleDirectory(Path.Combine(Constants.DataFolder, "user layouts"));
+            CreateAccessibleDirectory(Constants.PluginsFolder);
+            CreateAccessibleDirectory(Constants.LayoutsFolder);
         }
 
         /// <summary>
@@ -44,6 +44,9 @@ namespace Artemis.Core
         /// <param name="extraArgs">A list of extra arguments to pass to Artemis when restarting</param>
         public static void Restart(bool elevate, TimeSpan delay, params string[] extraArgs)
         {
+            if (!OperatingSystem.IsWindows() && elevate)
+                throw new ArtemisCoreException("Elevation on non-Windows platforms is not supported.");
+
             OnRestartRequested(new RestartEventArgs(elevate, delay, extraArgs.ToList()));
         }
 
@@ -90,6 +93,32 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        ///     Occurs when the core has requested an application shutdown
+        /// </summary>
+        public static event EventHandler? ShutdownRequested;
+
+        /// <summary>
+        ///     Occurs when the core has requested an application restart
+        /// </summary>
+        public static event EventHandler<RestartEventArgs>? RestartRequested;
+
+        /// <summary>
+        ///     Opens the provided folder in the user's file explorer
+        /// </summary>
+        /// <param name="path">The full path of the folder to open</param>
+        public static void OpenFolder(string path)
+        {
+            if (OperatingSystem.IsWindows())
+                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", path);
+            else if (OperatingSystem.IsMacOS())
+                Process.Start("open", path);
+            else if (OperatingSystem.IsLinux())
+                Process.Start("xdg-open", path);
+            else
+                throw new PlatformNotSupportedException("Can't open folders on this platform");
+        }
+
+        /// <summary>
         ///     Gets the current application location
         /// </summary>
         /// <returns></returns>
@@ -101,6 +130,11 @@ namespace Artemis.Core
         private static void OnRestartRequested(RestartEventArgs e)
         {
             RestartRequested?.Invoke(null, e);
+        }
+
+        private static void OnShutdownRequested()
+        {
+            ShutdownRequested?.Invoke(null, EventArgs.Empty);
         }
 
         #region Scaling
@@ -118,30 +152,11 @@ namespace Artemis.Core
                 return SKRectI.Create(roundX, roundY, roundWidth, roundHeight);
 
             return SKRectI.Create(
-                roundX - (roundX % RenderScaleMultiplier),
-                roundY - (roundY % RenderScaleMultiplier),
-                roundWidth - (roundWidth % RenderScaleMultiplier),
-                roundHeight - (roundHeight % RenderScaleMultiplier)
+                roundX - roundX % RenderScaleMultiplier,
+                roundY - roundY % RenderScaleMultiplier,
+                roundWidth - roundWidth % RenderScaleMultiplier,
+                roundHeight - roundHeight % RenderScaleMultiplier
             );
-        }
-
-        #endregion
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs when the core has requested an application shutdown
-        /// </summary>
-        public static event EventHandler? ShutdownRequested;
-
-        /// <summary>
-        ///     Occurs when the core has requested an application restart
-        /// </summary>
-        public static event EventHandler<RestartEventArgs>? RestartRequested;
-
-        private static void OnShutdownRequested()
-        {
-            ShutdownRequested?.Invoke(null, EventArgs.Empty);
         }
 
         #endregion

@@ -1,34 +1,70 @@
-﻿using System.Windows.Media;
-using Stylet;
+﻿using System.Reactive;
+using System.Reactive.Linq;
+using Artemis.Core;
+using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Builders;
+using Avalonia.Input;
+using ReactiveUI;
+using SkiaSharp;
 
-namespace Artemis.UI.Screens.Workshop
+namespace Artemis.UI.Screens.Workshop;
+
+public class WorkshopViewModel : MainScreenViewModel
 {
-    public class WorkshopViewModel : MainScreenViewModel
+    private readonly ObservableAsPropertyHelper<Cursor> _cursor;
+    private readonly INotificationService _notificationService;
+
+    private ColorGradient _colorGradient = new()
     {
-        private Color _testColor;
-        private bool _testPopupOpen;
+        new ColorGradientStop(new SKColor(0xFFFF6D00), 0f),
+        new ColorGradientStop(new SKColor(0xFFFE6806), 0.2f),
+        new ColorGradientStop(new SKColor(0xFFEF1788), 0.4f),
+        new ColorGradientStop(new SKColor(0xFFEF1788), 0.6f),
+        new ColorGradientStop(new SKColor(0xFF00FCCC), 0.8f),
+        new ColorGradientStop(new SKColor(0xFF00FCCC), 1f)
+    };
 
-        public WorkshopViewModel()
-        {
-            DisplayName = "Workshop";
-        }
+    private StandardCursorType _selectedCursor;
+    private double _testValue;
 
-        public Color TestColor
-        {
-            get => _testColor;
-            set => SetAndNotify(ref _testColor, value);
-        }
+    public WorkshopViewModel(IScreen hostScreen, INotificationService notificationService) : base(hostScreen, "workshop")
+    {
+        _notificationService = notificationService;
+        _cursor = this.WhenAnyValue(vm => vm.SelectedCursor).Select(c => new Cursor(c)).ToProperty(this, vm => vm.Cursor);
 
-        public bool TestPopupOpen
-        {
-            get => _testPopupOpen;
-            set => SetAndNotify(ref _testPopupOpen, value);
-        }
+        DisplayName = "Workshop";
+        ShowNotification = ReactiveCommand.Create<NotificationSeverity>(ExecuteShowNotification);
+    }
 
-        public void UpdateValues()
-        {
-            TestPopupOpen = !TestPopupOpen;
-            TestColor = Color.FromRgb(5, 174, 255);
-        }
+    public ReactiveCommand<NotificationSeverity, Unit> ShowNotification { get; set; }
+
+    public StandardCursorType SelectedCursor
+    {
+        get => _selectedCursor;
+        set => RaiseAndSetIfChanged(ref _selectedCursor, value);
+    }
+
+    public Cursor Cursor => _cursor.Value;
+
+    public ColorGradient ColorGradient
+    {
+        get => _colorGradient;
+        set => RaiseAndSetIfChanged(ref _colorGradient, value);
+    }
+
+    public double TestValue
+    {
+        get => _testValue;
+        set => RaiseAndSetIfChanged(ref _testValue, value);
+    }
+
+    public void CreateRandomGradient()
+    {
+        ColorGradient = ColorGradient.GetRandom(6);
+    }
+
+    private void ExecuteShowNotification(NotificationSeverity severity)
+    {
+        _notificationService.CreateNotification().WithTitle("Test title").WithMessage("Test message").WithSeverity(severity).Show();
     }
 }
