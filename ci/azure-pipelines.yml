@@ -60,22 +60,6 @@ jobs:
           fileType: "json"
           targetFiles: "**/buildinfo.json"
 
-      # Copy Artemis Core binaries to where plugin projects expect them
-      - task: CopyFiles@2
-        displayName: "Plugins - Prepare Artemis Core binaries"
-        inputs:
-          SourceFolder: "$(Build.ArtifactStagingDirectory)/windows-build"
-          Contents: "**"
-          TargetFolder: "Artemis/src/Artemis.Core/bin/net6.0"
-
-      # Copy Artemis Shared UI binaries to where plugin projects expect them
-      - task: CopyFiles@2
-        displayName: "Plugins - Prepare Artemis Shared UI binaries"
-        inputs:
-          SourceFolder: "$(Build.ArtifactStagingDirectory)/windows-build"
-          Contents: "**"
-          TargetFolder: "Artemis/src/Artemis.UI.Shared/bin/net6.0"
-
       - task: PowerShell@2
         displayName: "Plugins - Insert build number into plugin.json"
         inputs:
