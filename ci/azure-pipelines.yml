@@ -4,124 +4,134 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
 trigger:
-- master
+  - master
 pr: none
 
 resources:
   repositories:
-  - repository: Plugins
-    type: github
-    endpoint: github.com_SpoinkyNL
-    name: Artemis-RGB/Artemis.Plugins
-    ref: master
+    - repository: Plugins
+      type: github
+      endpoint: github.com_SpoinkyNL
+      name: Artemis-RGB/Artemis.Plugins
+      ref: master
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: "windows-latest"
 
 variables:
-  artemisSolution: '**/Artemis.sln'
-  pluginProjects: '**/Artemis.Plugins.*.csproj'
+  artemisSolution: "**/Artemis.sln"
+  pluginProjects: "**/Artemis.Plugins.*.csproj"
   BuildId: $(Build.BuildId)
   BuildNumber: $(Build.BuildNumber)
   SourceBranch: $(Build.SourceBranch)
   SourceVersion: $(Build.SourceVersion)
-  
-steps:
-- checkout: self
-  path: s/Artemis
-- checkout: Plugins
-  path: s/Artemis.Plugins
 
-- task: DotNetCoreCLI@2
-  displayName: 'Artemis - Publish'
-  inputs:
-    command: 'publish'
-    publishWebProjects: false
-    projects: '$(artemisSolution)'
-    arguments: '--runtime win-x64 --self-contained false --configuration Release --output $(Build.ArtifactStagingDirectory)/build /nowarn:cs1591'
-    zipAfterPublish: false
-    modifyOutputPath: false
+jobs: 
+  - job: Windows
+    steps:
+      - checkout: self
+        path: s/Artemis
+      - checkout: Plugins
+        path: s/Artemis.Plugins
 
-- task: PowerShell@2
-  displayName: 'Artemis - Create buildinfo.json'
-  inputs:
-    targetType: 'inline'
-    script: |
-      $OFS = "`r`n"
-       SET-Content -Path 'buildinfo.json' -Value ('{' + $OFS + '    "BuildId": 0,' + $OFS + '    "BuildNumber": 0.0,' + $OFS + '    "SourceBranch": "",' + $OFS + '    "SourceVersion": ""' + $OFS + '}')
-    workingDirectory: '$(Build.ArtifactStagingDirectory)/build'
+      - task: DotNetCoreCLI@2
+        displayName: "Artemis - Publish"
+        inputs:
+          command: "publish"
+          publishWebProjects: false
+          projects: "$(artemisSolution)"
+          arguments: '.\Artemis.UI.Windows\Artemis.UI.Windows.csproj --configuration Release --runtime win10-x64 --output $(Build.ArtifactStagingDirectory)/build /nowarn:cs1591'
+          zipAfterPublish: false
+          modifyOutputPath: false
 
-- task: FileTransform@1
-  displayName: 'Artemis - Populate buildinfo.json'
-  inputs:
-    folderPath: '$(Build.ArtifactStagingDirectory)/build'
-    fileType: 'json'
-    targetFiles: '**/buildinfo.json'
+      - task: PowerShell@2
+        displayName: "Artemis - Create buildinfo.json"
+        inputs:
+          targetType: "inline"
+          script: |
+            $OFS = "`r`n"
+            SET-Content -Path 'buildinfo.json' -Value ('{' + $OFS + '    "BuildId": 0,' + $OFS + '    "BuildNumber": 0.0,' + $OFS + '    "SourceBranch": "",' + $OFS + '    "SourceVersion": ""' + $OFS + '}')
+          workingDirectory: "$(Build.ArtifactStagingDirectory)/build"
 
-# Copy Artemis binaries to where plugin projects expect them
-- task: CopyFiles@2
-  displayName: 'Plugins - Prepare Artemis binaries'
-  inputs:
-    SourceFolder: '$(Build.ArtifactStagingDirectory)/build'
-    Contents: '**'
-    TargetFolder: 'Artemis/src/Artemis.UI/bin/net5.0-windows'
+      - task: FileTransform@1
+        displayName: "Artemis - Populate buildinfo.json"
+        inputs:
+          folderPath: "$(Build.ArtifactStagingDirectory)/build"
+          fileType: "json"
+          targetFiles: "**/buildinfo.json"
 
-- task: PowerShell@2
-  displayName: 'Plugins - Insert build number into plugin.json'
-  inputs:
-    targetType: 'inline'
-    script: |
-      Get-ChildItem -Recurse -Filter plugin.json  | 
-      Foreach-Object {
-          $buidNumber = "1.0.1." + $Env:BUILD_BUILDID;
-          $a = Get-Content $_.FullName | ConvertFrom-Json
-          $a.Version = $buidNumber;
-          $a | ConvertTo-Json | Set-Content $_.FullName
-      }
-    workingDirectory: 'Artemis.Plugins'
+      # Copy Artemis Core binaries to where plugin projects expect them
+      - task: CopyFiles@2
+        displayName: "Plugins - Prepare Artemis Core binaries"
+        inputs:
+          SourceFolder: "$(Build.ArtifactStagingDirectory)/build"
+          Contents: "**"
+          TargetFolder: "Artemis/src/Artemis.Core/bin/net6.0"
 
-- task: DotNetCoreCLI@2
-  displayName: 'Plugins - Publish'
-  inputs:
-    command: 'publish'
-    publishWebProjects: false
-    arguments: '--runtime win-x64 --configuration Release --self-contained false --output $(Build.ArtifactStagingDirectory)/build/Plugins'
-    projects: '$(pluginProjects)'
-    zipAfterPublish: true
+      # Copy Artemis Shared UI binaries to where plugin projects expect them
+      - task: CopyFiles@2
+        displayName: "Plugins - Prepare Artemis Shared UI binaries"
+        inputs:
+          SourceFolder: "$(Build.ArtifactStagingDirectory)/build"
+          Contents: "**"
+          TargetFolder: "Artemis/src/Artemis.UI.Shared/bin/net6.0"
 
-- task: PublishPipelineArtifact@1
-  displayName: 'Upload build to Azure Pipelines'
-  inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)/build'
-    artifact: 'Artemis build'
-    publishLocation: 'pipeline'
+      - task: PowerShell@2
+        displayName: "Plugins - Insert build number into plugin.json"
+        inputs:
+          targetType: "inline"
+          script: |
+            Get-ChildItem -Recurse -Filter plugin.json  | 
+            Foreach-Object {
+                $buidNumber = "1.0.1." + $Env:BUILD_BUILDID;
+                $a = Get-Content $_.FullName | ConvertFrom-Json
+                $a.Version = $buidNumber;
+                $a | ConvertTo-Json | Set-Content $_.FullName
+            }
+          workingDirectory: "Artemis.Plugins"
 
-- task: ArchiveFiles@2
-  displayName: 'ZIP binaries'
-  inputs:
-    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/build'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/archive/artemis-build.zip'
-    replaceExistingArchive: true
+      - task: DotNetCoreCLI@2
+        displayName: "Plugins - Publish"
+        inputs:
+          command: "publish"
+          publishWebProjects: false
+          arguments: "--configuration Release --runtime win10-x64 --output $(Build.ArtifactStagingDirectory)/build/Plugins"
+          projects: "$(pluginProjects)"
+          zipAfterPublish: true
 
-- task: PowerShell@2
-  displayName: 'Calculate ZIP hash'
-  inputs:
-    targetType: 'inline'
-    script: '(Get-FileHash .\artemis-build.zip).Hash | Out-File -FilePath .\hash.txt'
-    workingDirectory: '$(Build.ArtifactStagingDirectory)/archive'
+      - task: PublishPipelineArtifact@1
+        displayName: "Upload build to Azure Pipelines"
+        inputs:
+          targetPath: "$(Build.ArtifactStagingDirectory)/build"
+          artifact: "Artemis build"
+          publishLocation: "pipeline"
 
-- task: FtpUpload@2
-  displayName: 'Upload binaries to FTP'
-  inputs:
-    credentialsOption: 'inputs'
-    serverUrl: 'ftp://artemis-rgb.com'
-    username: 'devops'
-    password: '$(ftp_password)'
-    rootDirectory: '$(Build.ArtifactStagingDirectory)/archive'
-    filePatterns: '**'
-    remoteDirectory: '/builds.artemis-rgb.com/binaries/$(Build.SourceBranchName)/$(Build.BuildNumber)'
-    clean: false
-    preservePaths: true
-    trustSSL: false
+      - task: ArchiveFiles@2
+        displayName: "ZIP binaries"
+        inputs:
+          rootFolderOrFile: "$(Build.ArtifactStagingDirectory)/build"
+          includeRootFolder: false
+          archiveType: "zip"
+          archiveFile: "$(Build.ArtifactStagingDirectory)/archive/artemis-build-windows.zip"
+          replaceExistingArchive: true
+
+      - task: PowerShell@2
+        displayName: "Calculate ZIP hash"
+        inputs:
+          targetType: "inline"
+          script: '(Get-FileHash .\artemis-build-windows.zip).Hash | Out-File -FilePath .\hash-windows.txt'
+          workingDirectory: "$(Build.ArtifactStagingDirectory)/archive"
+
+      - task: FtpUpload@2
+        displayName: "Upload binaries to FTP"
+        inputs:
+          credentialsOption: "inputs"
+          serverUrl: "ftp://artemis-rgb.com"
+          username: "devops"
+          password: "$(ftp_password)"
+          rootDirectory: "$(Build.ArtifactStagingDirectory)/archive"
+          filePatterns: "**"
+          remoteDirectory: "/builds.artemis-rgb.com/binaries/$(Build.SourceBranchName)/$(Build.BuildNumber)"
+          clean: false
+          preservePaths: true
+          trustSSL: false

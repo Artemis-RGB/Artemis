@@ -8,7 +8,8 @@
         <OutputPath>bin</OutputPath>
         <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
         <AssemblyTitle>Artemis 2</AssemblyTitle>
-        <ApplicationIcon>..\Artemis.UI\Assets\Images\Logo\application.ico</ApplicationIcon>	    
+        <ApplicationIcon>..\Artemis.UI\Assets\Images\Logo\application.ico</ApplicationIcon>
+        <PublishReadyToRun>true</PublishReadyToRun>
     </PropertyGroup>
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
