@@ -19,7 +19,7 @@ pool:
   vmImage: "windows-latest"
 
 variables:
-  artemisSolution: "**/Artemis.sln"
+  windowsProject: "**/Artemis.UI.Windows/Artemis.UI.Windows.csproj"
   pluginProjects: "**/Artemis.Plugins.*.csproj"
   BuildId: $(Build.BuildId)
   BuildNumber: $(Build.BuildNumber)
@@ -39,8 +39,8 @@ jobs:
         inputs:
           command: "publish"
           publishWebProjects: false
-          projects: "$(artemisSolution)"
-          arguments: '.\Artemis.UI.Windows\Artemis.UI.Windows.csproj --configuration Release --runtime win10-x64 --output $(Build.ArtifactStagingDirectory)/build /nowarn:cs1591'
+          projects: "$(windowsProject)"
+          arguments: '--configuration Release --runtime win10-x64 --output $(Build.ArtifactStagingDirectory)/windows-build /nowarn:cs1591'
           zipAfterPublish: false
           modifyOutputPath: false
 
@@ -51,12 +51,12 @@ jobs:
           script: |
             $OFS = "`r`n"
             SET-Content -Path 'buildinfo.json' -Value ('{' + $OFS + '    "BuildId": 0,' + $OFS + '    "BuildNumber": 0.0,' + $OFS + '    "SourceBranch": "",' + $OFS + '    "SourceVersion": ""' + $OFS + '}')
-          workingDirectory: "$(Build.ArtifactStagingDirectory)/build"
+          workingDirectory: "$(Build.ArtifactStagingDirectory)/windows-build"
 
       - task: FileTransform@1
         displayName: "Artemis - Populate buildinfo.json"
         inputs:
-          folderPath: "$(Build.ArtifactStagingDirectory)/build"
+          folderPath: "$(Build.ArtifactStagingDirectory)/windows-build"
           fileType: "json"
           targetFiles: "**/buildinfo.json"
 
@@ -64,7 +64,7 @@ jobs:
       - task: CopyFiles@2
         displayName: "Plugins - Prepare Artemis Core binaries"
         inputs:
-          SourceFolder: "$(Build.ArtifactStagingDirectory)/build"
+          SourceFolder: "$(Build.ArtifactStagingDirectory)/windows-build"
           Contents: "**"
           TargetFolder: "Artemis/src/Artemis.Core/bin/net6.0"
 
@@ -72,7 +72,7 @@ jobs:
       - task: CopyFiles@2
         displayName: "Plugins - Prepare Artemis Shared UI binaries"
         inputs:
-          SourceFolder: "$(Build.ArtifactStagingDirectory)/build"
+          SourceFolder: "$(Build.ArtifactStagingDirectory)/windows-build"
           Contents: "**"
           TargetFolder: "Artemis/src/Artemis.UI.Shared/bin/net6.0"
 
@@ -95,21 +95,21 @@ jobs:
         inputs:
           command: "publish"
           publishWebProjects: false
-          arguments: "--configuration Release --runtime win10-x64 --output $(Build.ArtifactStagingDirectory)/build/Plugins"
+          arguments: "--configuration Release --runtime win10-x64 --output $(Build.ArtifactStagingDirectory)/windows-build/Plugins"
           projects: "$(pluginProjects)"
           zipAfterPublish: true
 
       - task: PublishPipelineArtifact@1
         displayName: "Upload build to Azure Pipelines"
         inputs:
-          targetPath: "$(Build.ArtifactStagingDirectory)/build"
+          targetPath: "$(Build.ArtifactStagingDirectory)/windows-build"
           artifact: "Artemis build"
           publishLocation: "pipeline"
 
       - task: ArchiveFiles@2
         displayName: "ZIP binaries"
         inputs:
-          rootFolderOrFile: "$(Build.ArtifactStagingDirectory)/build"
+          rootFolderOrFile: "$(Build.ArtifactStagingDirectory)/windows-build"
           includeRootFolder: false
           archiveType: "zip"
           archiveFile: "$(Build.ArtifactStagingDirectory)/archive/artemis-build-windows.zip"
