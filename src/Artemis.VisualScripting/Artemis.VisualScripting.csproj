@@ -16,7 +16,6 @@
         <PackageReference Include="NoStringEvaluating" Version="2.4.0" />
         <PackageReference Include="ReactiveUI" Version="17.1.50" />
         <PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />
-        <PackageReference Include="ScreenCapture.NET" Version="1.2.0" />
         <PackageReference Include="SkiaSharp" Version="2.88.1-preview.108" />
     </ItemGroup>
 
@@ -26,6 +25,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Compile Update="Nodes\Color\Screens\QuantizeNodeCustomView.axaml.cs">
+          <DependentUpon>QuantizeNodeCustomView.axaml</DependentUpon>
+        </Compile>
         <Compile Update="Nodes\Easing\Screens\EasingTypeNodeEasingView.axaml.cs">
             <DependentUpon>EasingTypeNodeEasingView.axaml</DependentUpon>
         </Compile>

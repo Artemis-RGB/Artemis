@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:screens="clr-namespace:Artemis.VisualScripting.Nodes.Color.Screens"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.VisualScripting.Nodes.Color.Screens.QuantizeNodeCustomView"
+             x:DataType="screens:QuantizeNodeCustomViewModel">
+  <StackPanel Orientation="Vertical" VerticalAlignment="Top" Margin="16,4,0,4">
+    <StackPanel Orientation="Horizontal">
+      <TextBlock Text="Palette Size" VerticalAlignment="Center" Margin="0,0,0,4" Width="70" FontSize="11"  />
+      <ComboBox Classes="condensed" Width="75" Items="{CompiledBinding PaletteSizes}" SelectedItem="{CompiledBinding PaletteSize}"
+                ToolTip.Tip="The number of colors the image is compressed to before selecting the final colors." />
+    </StackPanel>
+
+    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+      <TextBlock Text="Ignore Limits" VerticalAlignment="Center" Margin="0,0,0,4" Width="70" FontSize="11"  />
+      <CheckBox Classes="condensed" IsChecked="{CompiledBinding IgnoreLimits}"
+                ToolTip.Tip="Ignore hard limits on whether a color is considered for each category.&#10;&#13;If disabled some of the results may be empty." />
+    </StackPanel>
+  </StackPanel>
+</UserControl>
