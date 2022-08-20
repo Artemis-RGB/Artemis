@@ -1,67 +1,186 @@
-﻿using SkiaSharp;
-using System.Collections.Generic;
+﻿using System;
+using SkiaSharp;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+using System.Numerics;
 
-namespace Artemis.Core.Services
+namespace Artemis.Core.Services;
+
+internal class ColorCube
 {
-    internal class ColorCube
+    #region Properties & Fields
+
+    private readonly int _from;
+    private readonly int _length;
+    private SortTarget _currentOrder = SortTarget.None;
+
+    #endregion
+
+    #region Constructors
+
+    public ColorCube(in Span<SKColor> fullColorList, int from, int length, SortTarget preOrdered)
     {
-        private readonly List<SKColor> _colors;
+        this._from = from;
+        this._length = length;
 
-        internal ColorCube(IEnumerable<SKColor> colors)
+        OrderColors(fullColorList.Slice(from, length), preOrdered);
+    }
+
+    #endregion
+
+    #region Methods
+
+    private void OrderColors(in Span<SKColor> colors, SortTarget preOrdered)
+    {
+        if (colors.Length < 2) return;
+        ColorRanges colorRanges = GetColorRanges(colors);
+
+        if ((colorRanges.RedRange > colorRanges.GreenRange) && (colorRanges.RedRange > colorRanges.BlueRange))
         {
-            if (colors.Count() < 2)
-            {
-                _colors = colors.ToList();
-                return;
-            }
+            if (preOrdered != SortTarget.Red)
+                RadixLikeSortRed.Sort(colors);
 
-            int redRange = colors.Max(c => c.Red) - colors.Min(c => c.Red);
-            int greenRange = colors.Max(c => c.Green) - colors.Min(c => c.Green);
-            int blueRange = colors.Max(c => c.Blue) - colors.Min(c => c.Blue);
-
-            if (redRange > greenRange && redRange > blueRange)
-                _colors = colors.OrderBy(a => a.Red).ToList();
-            else if (greenRange > blueRange)
-                _colors = colors.OrderBy(a => a.Green).ToList();
-            else
-                _colors = colors.OrderBy(a => a.Blue).ToList();
+            _currentOrder = SortTarget.Red;
         }
-
-        internal bool TrySplit([NotNullWhen(returnValue: true)] out ColorCube? a, [NotNullWhen(returnValue: true)] out ColorCube? b)
+        else if (colorRanges.GreenRange > colorRanges.BlueRange)
         {
-            if (_colors.Count < 2)
-            {
-                a = null;
-                b = null;
-                return false;
-            }
+            if (preOrdered != SortTarget.Green)
+                RadixLikeSortGreen.Sort(colors);
 
-            int median = _colors.Count / 2;
-
-            a = new ColorCube(_colors.GetRange(0, median));
-            b = new ColorCube(_colors.GetRange(median, _colors.Count - median));
-
-            return true;
+            _currentOrder = SortTarget.Green;
         }
-
-        internal SKColor GetAverageColor()
+        else
         {
-            int r = 0, g = 0, b = 0;
+            if (preOrdered != SortTarget.Blue)
+                RadixLikeSortBlue.Sort(colors);
 
-            for (int i = 0; i < _colors.Count; i++)
-            {
-                r += _colors[i].Red;
-                g += _colors[i].Green;
-                b += _colors[i].Blue;
-            }
-
-            return new SKColor(
-                (byte)(r / _colors.Count),
-                (byte)(g / _colors.Count),
-                (byte)(b / _colors.Count)
-            );
+            _currentOrder = SortTarget.Blue;
         }
     }
+
+    private ColorRanges GetColorRanges(in Span<SKColor> colors)
+    {
+        if (colors.Length < 70)
+        {
+            byte redMin = byte.MaxValue;
+            byte redMax = byte.MinValue;
+            byte greenMin = byte.MaxValue;
+            byte greenMax = byte.MinValue;
+            byte blueMin = byte.MaxValue;
+            byte blueMax = byte.MinValue;
+
+            foreach (SKColor color in colors)
+            {
+                if (color.Red < redMin) redMin = color.Red;
+                if (color.Red > redMax) redMax = color.Red;
+                if (color.Green < greenMin) greenMin = color.Green;
+                if (color.Green > greenMax) greenMax = color.Green;
+                if (color.Blue < blueMin) blueMin = color.Blue;
+                if (color.Blue > blueMax) blueMax = color.Blue;
+            }
+
+            return new ColorRanges((byte)(redMax - redMin), (byte)(greenMax - greenMin), (byte)(blueMax - blueMin));
+        }
+        else
+        {
+            int elementsPerVector = Vector<byte>.Count / 3;
+            int chunks = colors.Length / elementsPerVector;
+            int missingElements = colors.Length - (chunks * elementsPerVector);
+
+            Vector<byte> max = Vector<byte>.Zero;
+            Vector<byte> min = new(byte.MaxValue);
+
+            Span<byte> chunkData = stackalloc byte[Vector<byte>.Count];
+            int dataIndex = 0;
+            for (int i = 0; i < chunks; i++)
+            {
+                int chunkDataIndex = 0;
+                for (int j = 0; j < elementsPerVector; j++)
+                {
+                    SKColor color = colors[dataIndex];
+                    chunkData[chunkDataIndex] = color.Red;
+                    ++chunkDataIndex;
+                    chunkData[chunkDataIndex] = color.Green;
+                    ++chunkDataIndex;
+                    chunkData[chunkDataIndex] = color.Blue;
+                    ++chunkDataIndex;
+                    ++dataIndex;
+                }
+
+                Vector<byte> chunkVector = new(chunkData);
+                max = Vector.Max(max, chunkVector);
+                min = Vector.Min(min, chunkVector);
+            }
+
+            byte redMin = byte.MaxValue;
+            byte redMax = byte.MinValue;
+            byte greenMin = byte.MaxValue;
+            byte greenMax = byte.MinValue;
+            byte blueMin = byte.MaxValue;
+            byte blueMax = byte.MinValue;
+
+            int vectorEntries = elementsPerVector * 3;
+            for (int i = 0; i < vectorEntries; i += 3)
+            {
+                if (min[i] < redMin) redMin = min[i];
+                if (max[i] > redMax) redMax = max[i];
+                if (min[i + 1] < greenMin) greenMin = min[i + 1];
+                if (max[i + 1] > greenMax) greenMax = max[i + 1];
+                if (min[i + 2] < blueMin) blueMin = min[i + 2];
+                if (max[i + 2] > blueMax) blueMax = max[i + 2];
+            }
+
+            for (int i = 0; i < missingElements; i++)
+            {
+                SKColor color = colors[dataIndex];
+                if (color.Red < redMin) redMin = color.Red;
+                if (color.Red > redMax) redMax = color.Red;
+                if (color.Green < greenMin) greenMin = color.Green;
+                if (color.Green > greenMax) greenMax = color.Green;
+                if (color.Blue < blueMin) blueMin = color.Blue;
+                if (color.Blue > blueMax) blueMax = color.Blue;
+
+                ++dataIndex;
+            }
+
+            return new ColorRanges((byte)(redMax - redMin), (byte)(greenMax - greenMin), (byte)(blueMax - blueMin));
+        }
+    }
+
+    internal bool TrySplit(in Span<SKColor> fullColorList, [NotNullWhen(returnValue: true)] out ColorCube? a, [NotNullWhen(returnValue: true)] out ColorCube? b)
+    {
+        Span<SKColor> colors = fullColorList.Slice(_from, _length);
+
+        if (colors.Length < 2)
+        {
+            a = null;
+            b = null;
+            return false;
+        }
+
+        int median = colors.Length / 2;
+
+        a = new ColorCube(fullColorList, _from, median, _currentOrder);
+        b = new ColorCube(fullColorList, _from + median, colors.Length - median, _currentOrder);
+
+        return true;
+    }
+
+    internal SKColor GetAverageColor(in Span<SKColor> fullColorList)
+    {
+        Span<SKColor> colors = fullColorList.Slice(_from, _length);
+
+        int r = 0, g = 0, b = 0;
+        foreach (SKColor color in colors)
+        {
+            r += color.Red;
+            g += color.Green;
+            b += color.Blue;
+        }
+
+        return new SKColor((byte)(r / colors.Length),
+                           (byte)(g / colors.Length),
+                           (byte)(b / colors.Length));
+    }
+
+    #endregion
 }
