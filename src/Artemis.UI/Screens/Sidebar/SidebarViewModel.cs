@@ -48,7 +48,9 @@ namespace Artemis.UI.Screens.Sidebar
             SidebarScreens = new ObservableCollection<SidebarScreenViewModel>
             {
                 new SidebarScreenViewModel<HomeViewModel>(MaterialIconKind.Home, "Home"),
+                #if DEBUG
                 new SidebarScreenViewModel<WorkshopViewModel>(MaterialIconKind.TestTube, "Workshop"),
+                #endif
                 new SidebarScreenViewModel<SurfaceEditorViewModel>(MaterialIconKind.Devices, "Surface Editor"),
                 new SidebarScreenViewModel<SettingsViewModel>(MaterialIconKind.Cog, "Settings")
             };
