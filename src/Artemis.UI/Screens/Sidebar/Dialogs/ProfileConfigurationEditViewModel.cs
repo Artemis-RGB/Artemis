@@ -165,12 +165,19 @@ namespace Artemis.UI.Screens.Sidebar
                 return;
             }
 
-            // Remove the temporary profile configuration
-            _profileService.RemoveProfileConfiguration(_profileConfiguration);
-            // Import the new profile configuration
-            _profileService.ImportProfile(_profileCategory, profileConfigurationExportModel);
-
-            Close(_profileConfiguration);
+            try
+            {
+                ProfileConfiguration profileConfiguration = _profileService.ImportProfile(_profileCategory, profileConfigurationExportModel);
+                
+                // Remove the temporary profile configuration
+                _profileService.RemoveProfileConfiguration(_profileConfiguration);
+                
+                Close(profileConfiguration);
+            }
+            catch (Exception e)
+            {
+                _windowService.ShowExceptionDialog("Import profile failed", e);
+            }
         }
 
         private async Task ExecuteDelete()
