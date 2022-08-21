@@ -21,6 +21,7 @@ public class SurfaceEditorViewModel : MainScreenViewModel
     private readonly IDeviceService _deviceService;
     private readonly IDeviceVmFactory _deviceVmFactory;
     private readonly IRgbService _rgbService;
+    private readonly ISurfaceVmFactory _surfaceVmFactory;
     private readonly ISettingsService _settingsService;
     private readonly IWindowService _windowService;
     private bool _colorDevices;
@@ -39,6 +40,7 @@ public class SurfaceEditorViewModel : MainScreenViewModel
         IDeviceService deviceService) : base(hostScreen, "surface-editor")
     {
         _rgbService = rgbService;
+        _surfaceVmFactory = surfaceVmFactory;
         _settingsService = settingsService;
         _deviceVmFactory = deviceVmFactory;
         _windowService = windowService;
@@ -59,8 +61,36 @@ public class SurfaceEditorViewModel : MainScreenViewModel
         this.WhenActivated(d =>
         {
             coreService.FrameRendering += CoreServiceOnFrameRendering;
-            Disposable.Create(() => coreService.FrameRendering -= CoreServiceOnFrameRendering).DisposeWith(d);
+            _rgbService.DeviceAdded += RgbServiceOnDeviceAdded;
+            _rgbService.DeviceRemoved += RgbServiceOnDeviceRemoved;
+            Disposable.Create(() =>
+            {
+                coreService.FrameRendering -= CoreServiceOnFrameRendering;
+                _rgbService.DeviceAdded -= RgbServiceOnDeviceAdded;
+                _rgbService.DeviceRemoved -= RgbServiceOnDeviceRemoved;
+            }).DisposeWith(d);
         });
+    }
+
+    private void RgbServiceOnDeviceAdded(object? sender, DeviceEventArgs e)
+    {
+        if (!e.Device.IsEnabled)
+            return;
+
+        SurfaceDeviceViewModels.Add(_surfaceVmFactory.SurfaceDeviceViewModel(e.Device, this));
+        ListDeviceViewModels.Add(_surfaceVmFactory.ListDeviceViewModel(e.Device, this));
+        SurfaceDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
+        ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
+    }
+
+    private void RgbServiceOnDeviceRemoved(object? sender, DeviceEventArgs e)
+    {
+        SurfaceDeviceViewModel? surfaceVm = SurfaceDeviceViewModels.FirstOrDefault(vm => vm.Device == e.Device);
+        ListDeviceViewModel? listVm = ListDeviceViewModels.FirstOrDefault(vm => vm.Device == e.Device);
+        if (surfaceVm != null)
+            SurfaceDeviceViewModels.Remove(surfaceVm);
+        if (listVm != null)
+            ListDeviceViewModels.Remove(listVm);
     }
 
     public bool ColorDevices
