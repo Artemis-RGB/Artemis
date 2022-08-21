@@ -686,14 +686,6 @@
         "resolved": "4.3.0",
         "contentHash": "VB5cn/7OzUfzdnC8tqAIMQciVLiq2epm2NrAm1E9OjNRyG4lVhfR61SMcLizejzQP8R8Uf/0l5qOIbUEi+RdEg=="
       },
-      "ScreenCapture.NET": {
-        "type": "Transitive",
-        "resolved": "1.2.0",
-        "contentHash": "RMc7uC9zyuNf3snIgN2xxVTdKWQvrJXDCV96UA2ZOnyPsmzcitLQPL5yqZamFHu2zKN8cMBPjuGbDeKAIPAp5g==",
-        "dependencies": {
-          "Vortice.Direct3D11": "1.9.143"
-        }
-      },
       "Serilog": {
         "type": "Transitive",
         "resolved": "2.11.0",
@@ -721,19 +713,6 @@
         "contentHash": "uwV5hdhWPwUH1szhO8PJpFiahqXmzPzJT/sOijH/kFgUx+cyoDTMM8MHD0adw9+Iem6itoibbUXHYslzXsLEAg==",
         "dependencies": {
           "Serilog": "2.10.0"
-        }
-      },
-      "SharpGen.Runtime": {
-        "type": "Transitive",
-        "resolved": "2.0.0-beta.9",
-        "contentHash": "FFbM9kkmV79tp02etSmqBeUxxtQkvIcn1WTP4kTHSBo/UfHNjtj64fTPnWuscLuY9cL8QX/HsTlCT9xYpLf/Eg=="
-      },
-      "SharpGen.Runtime.COM": {
-        "type": "Transitive",
-        "resolved": "2.0.0-beta.9",
-        "contentHash": "pmmx1mFo/OImruk5xZWyeE0Bk8WJUYzAwvtQCxblQVccX9z1+3q1hidmZizy2c/Gwyc4PGSWf/PX/fJyh+G+9A==",
-        "dependencies": {
-          "SharpGen.Runtime": "2.0.0-beta.9"
         }
       },
       "SkiaSharp": {
@@ -1699,39 +1678,6 @@
         "resolved": "3.0.0",
         "contentHash": "noPwJJl1Q9uparXy1ogtkmyAPGNfSGb0BLT1292nFH1jdMKje6o2kvvrQUvF9Xklj+IoiAI0UzF6Aqxlvo10lw=="
       },
-      "Vortice.Direct3D11": {
-        "type": "Transitive",
-        "resolved": "1.9.143",
-        "contentHash": "SQVysqxCpR6wFJqt+xUgFu9qpETdjxtx3+dIPQJKhb1qOLfG6XsSWMWlEafckxbPhmYKPpWrDtl5sAvcvX7VRg==",
-        "dependencies": {
-          "SharpGen.Runtime": "2.0.0-beta.9",
-          "Vortice.DXGI": "1.9.143"
-        }
-      },
-      "Vortice.DirectX": {
-        "type": "Transitive",
-        "resolved": "1.9.143",
-        "contentHash": "/SFvwNWMW6Gosv05yR+eEKaKkM51QYzlnmYHhbj0p4XwH5Mh2M1+rpJx4fmOFNIIirNtmGz5GTcMzWrjwPHQNQ==",
-        "dependencies": {
-          "SharpGen.Runtime": "2.0.0-beta.9",
-          "SharpGen.Runtime.COM": "2.0.0-beta.9",
-          "Vortice.Mathematics": "1.3.21"
-        }
-      },
-      "Vortice.DXGI": {
-        "type": "Transitive",
-        "resolved": "1.9.143",
-        "contentHash": "MxEUVfD4+zCyXKr+OojMmHhHbSuListllOslLFklG10rHRliJExB39lcXQlaQ8qo5Z8rxF7bLc/hEI4CmWocaw==",
-        "dependencies": {
-          "SharpGen.Runtime": "2.0.0-beta.9",
-          "Vortice.DirectX": "1.9.143"
-        }
-      },
-      "Vortice.Mathematics": {
-        "type": "Transitive",
-        "resolved": "1.3.21",
-        "contentHash": "PuRnsIgtb86dPIA9q97zhTnDjjaJQClW4qhK9TKVX+dY2KRIQSR/JnOnmYWlRZVajCSxVFgzVt+5JNcNhAOoYQ=="
-      },
       "artemis.core": {
         "type": "Project",
         "dependencies": {
@@ -1821,7 +1767,6 @@
           "NoStringEvaluating": "2.4.0",
           "ReactiveUI": "17.1.50",
           "ReactiveUI.Validation": "2.2.1",
-          "ScreenCapture.NET": "1.2.0",
           "SkiaSharp": "2.88.1-preview.108"
         }
       }
