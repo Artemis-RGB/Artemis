@@ -127,10 +127,16 @@ namespace Artemis.UI.Screens.Root
 
         public void OpenScreen(string displayName)
         {
+            // The window will open on the UI thread at some point, respond to that to select the chosen screen
+            MainWindowOpened += OnEventHandler;
             OpenMainWindow();
 
-            // At this point there is a sidebar VM because the main window was opened
-            SidebarViewModel!.SelectedSidebarScreen = SidebarViewModel.SidebarScreens.FirstOrDefault(s => s.DisplayName == displayName);
+            void OnEventHandler(object? sender, EventArgs args)
+            {
+                if (SidebarViewModel != null)
+                    SidebarViewModel.SelectedSidebarScreen = SidebarViewModel.SidebarScreens.FirstOrDefault(s => s.DisplayName == displayName);
+                MainWindowOpened -= OnEventHandler;
+            }
         }
 
         public async Task OpenDebugger()
@@ -167,7 +173,7 @@ namespace Artemis.UI.Screens.Root
 
                 _lifeTime.MainWindow.WindowState = WindowState.Normal;
                 _lifeTime.MainWindow.Activate();
-                OnMainWindowOpened();    
+                OnMainWindowOpened();
             });
         }
 

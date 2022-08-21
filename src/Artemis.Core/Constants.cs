@@ -33,7 +33,9 @@ namespace Artemis.Core
         /// <summary>
         ///     The base path for Artemis application data folder
         /// </summary>
-        public static readonly string BaseFolder = Environment.GetFolderPath(OperatingSystem.IsWindows() ? Environment.SpecialFolder.CommonApplicationData : Environment.SpecialFolder.LocalApplicationData);
+        public static readonly string BaseFolder = Environment.GetFolderPath(OperatingSystem.IsWindows() 
+            ? Environment.SpecialFolder.CommonApplicationData 
+            : Environment.SpecialFolder.LocalApplicationData);
 
         /// <summary>
         ///     The full path to the Artemis data folder
@@ -54,6 +56,11 @@ namespace Artemis.Core
         ///     The full path to the Artemis user layouts folder
         /// </summary>
         public static readonly string LayoutsFolder = Path.Combine(DataFolder, "User Layouts");
+
+        /// <summary>
+        ///     The current API version for plugins
+        /// </summary>
+        public static readonly Version PluginApi = new Version(1, 0);
         
         /// <summary>
         ///     The plugin info used by core components of Artemis

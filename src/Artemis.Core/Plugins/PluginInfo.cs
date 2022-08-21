@@ -25,6 +25,7 @@ namespace Artemis.Core
         private Version _version = null!;
         private bool _requiresAdmin;
         private PluginPlatform? _platforms;
+        private Version? _api;
 
         internal PluginInfo()
         {
@@ -150,7 +151,17 @@ namespace Artemis.Core
         public PluginPlatform? Platforms
         {
             get => _platforms;
-            internal set => _platforms = value;
+            internal set => SetAndNotify(ref _platforms , value);
+        }
+
+        /// <summary>
+        ///     Gets the API version the plugin was built for
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public Version? Api
+        {
+            get => _api;
+            internal set => SetAndNotify(ref _api, value);
         }
 
         /// <summary>
@@ -176,9 +187,9 @@ namespace Artemis.Core
         }
         
         /// <summary>
-        /// Gets a boolean indicating whether this plugin is compatible with the current operating system
+        /// Gets a boolean indicating whether this plugin is compatible with the current operating system and API version
         /// </summary>
-        public bool IsCompatible => Platforms.MatchesCurrentOperatingSystem();
+        public bool IsCompatible => Platforms.MatchesCurrentOperatingSystem() && Api != null && Api >= Constants.PluginApi;
 
         internal string PreferredPluginDirectory => $"{Main.Split(".dll")[0].Replace("/", "").Replace("\\", "")}-{Guid.ToString().Substring(0, 8)}";
 
