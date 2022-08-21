@@ -9,11 +9,11 @@ namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 /// </summary>
 public class UpdateLayerProperty<T> : IProfileEditorCommand
 {
+    private readonly bool _hasKeyframe;
     private readonly LayerProperty<T> _layerProperty;
     private readonly T _newValue;
     private readonly T _originalValue;
     private readonly TimeSpan? _time;
-    private readonly bool _hasKeyframe;
     private LayerPropertyKeyframe<T>? _newKeyframe;
 
     /// <summary>
@@ -65,7 +65,9 @@ public class UpdateLayerProperty<T> : IProfileEditorCommand
             DisplayName = $"Add {_layerProperty.PropertyDescription.Name ?? "property"} keyframe";
         }
         else
+        {
             _layerProperty.SetCurrentValue(_newValue, _time);
+        }
     }
 
     /// <inheritdoc />

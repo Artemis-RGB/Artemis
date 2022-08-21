@@ -1,40 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Artemis.Core.Modules;
 
-namespace Artemis.Core.Services
+namespace Artemis.Core.Services;
+
+/// <summary>
+///     A service that allows you to register and retrieve data models
+/// </summary>
+public interface IDataModelService : IArtemisService
 {
     /// <summary>
-    ///     A service that allows you to register and retrieve data models
+    ///     Add a data model to so that it is available to conditions and data bindings
     /// </summary>
-    public interface IDataModelService : IArtemisService
-    {
-        /// <summary>
-        ///     Add a data model to so that it is available to conditions and data bindings
-        /// </summary>
-        /// <param name="dataModel"></param>
-        DataModelRegistration RegisterDataModel(DataModel dataModel);
+    /// <param name="dataModel"></param>
+    DataModelRegistration RegisterDataModel(DataModel dataModel);
 
-        /// <summary>
-        ///     Remove a previously added data model so that it is no longer available
-        /// </summary>
-        void RemoveDataModel(DataModelRegistration registration);
+    /// <summary>
+    ///     Remove a previously added data model so that it is no longer available
+    /// </summary>
+    void RemoveDataModel(DataModelRegistration registration);
 
-        /// <summary>
-        ///     Returns a list of all registered data models
-        /// </summary>
-        List<DataModel> GetDataModels();
+    /// <summary>
+    ///     Returns a list of all registered data models
+    /// </summary>
+    List<DataModel> GetDataModels();
 
-        /// <summary>
-        ///     If found, returns the registered data model of type <typeparamref name="T" />
-        /// </summary>
-        /// <typeparam name="T">The type of the data model to find</typeparam>
-        T? GetDataModel<T>() where T : DataModel;
+    /// <summary>
+    ///     If found, returns the registered data model of type <typeparamref name="T" />
+    /// </summary>
+    /// <typeparam name="T">The type of the data model to find</typeparam>
+    T? GetDataModel<T>() where T : DataModel;
 
-        /// <summary>
-        ///     If found, returns the data model of the provided plugin
-        /// </summary>
-        /// <param name="pluginFeature">The plugin to find the data model of</param>
-        DataModel? GetPluginDataModel(PluginFeature pluginFeature);
-    }
+    /// <summary>
+    ///     If found, returns the data model of the provided plugin
+    /// </summary>
+    /// <param name="pluginFeature">The plugin to find the data model of</param>
+    DataModel? GetPluginDataModel(PluginFeature pluginFeature);
 }

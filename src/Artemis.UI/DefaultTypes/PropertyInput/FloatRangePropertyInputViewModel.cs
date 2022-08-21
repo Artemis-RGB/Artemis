@@ -47,7 +47,7 @@ public class FloatRangePropertyInputViewModel : PropertyInputViewModel<FloatRang
             this.RaisePropertyChanged(nameof(End));
         }
     }
-    
+
     public float Min { get; } = float.MinValue;
     public float Max { get; } = float.MaxValue;
 

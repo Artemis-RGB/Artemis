@@ -8,9 +8,9 @@ namespace Artemis.UI.Shared.Services.NodeEditor.Commands;
 /// </summary>
 public class ConnectPins : INodeEditorCommand
 {
+    private readonly List<IPin>? _originalConnections;
     private readonly IPin _source;
     private readonly IPin _target;
-    private readonly List<IPin>? _originalConnections;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="ConnectPins" /> class.
@@ -42,7 +42,7 @@ public class ConnectPins : INodeEditorCommand
     public void Undo()
     {
         _target.DisconnectFrom(_source);
-        
+
         if (_originalConnections == null)
             return;
         foreach (IPin pin in _originalConnections)

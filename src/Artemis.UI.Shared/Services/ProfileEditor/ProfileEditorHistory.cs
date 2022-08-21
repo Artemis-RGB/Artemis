@@ -48,7 +48,8 @@ public class ProfileEditorHistory
     public IObservable<bool> CanRedo => _canRedo.AsObservable().DistinctUntilChanged();
 
     /// <summary>
-    ///     Gets a reactive command that can be executed to execute an instance of a <see cref="IProfileEditorCommand" /> and puts it in history.
+    ///     Gets a reactive command that can be executed to execute an instance of a <see cref="IProfileEditorCommand" /> and
+    ///     puts it in history.
     /// </summary>
     public ReactiveCommand<IProfileEditorCommand, Unit> Execute { get; }
 

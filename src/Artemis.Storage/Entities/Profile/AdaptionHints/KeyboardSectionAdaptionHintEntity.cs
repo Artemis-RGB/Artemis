@@ -1,7 +1,6 @@
-﻿namespace Artemis.Storage.Entities.Profile.AdaptionHints
+﻿namespace Artemis.Storage.Entities.Profile.AdaptionHints;
+
+public class KeyboardSectionAdaptionHintEntity : IAdaptionHintEntity
 {
-    public class KeyboardSectionAdaptionHintEntity : IAdaptionHintEntity
-    {
-        public int Section { get; set; }
-    }
+    public int Section { get; set; }
 }

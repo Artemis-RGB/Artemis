@@ -4,7 +4,7 @@ using Artemis.Core;
 namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 
 /// <summary>
-/// Represents a profile editor command that can be used to add a profile element.
+///     Represents a profile editor command that can be used to add a profile element.
 /// </summary>
 public class AddProfileElement : IProfileEditorCommand, IDisposable
 {
@@ -14,7 +14,7 @@ public class AddProfileElement : IProfileEditorCommand, IDisposable
     private bool _isAdded;
 
     /// <summary>
-    /// Creates a new instance of the <see cref="AddProfileElement"/> class.
+    ///     Creates a new instance of the <see cref="AddProfileElement" /> class.
     /// </summary>
     public AddProfileElement(RenderProfileElement subject, ProfileElement target, int index)
     {

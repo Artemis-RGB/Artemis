@@ -28,10 +28,10 @@ public class TextBoxAssist : AvaloniaObject
     {
         element.SetValue(SuffixTextProperty, value);
 
-        if (!string.IsNullOrWhiteSpace(value) && !((TextBox)element).Classes.Contains("suffixed"))
-            ((TextBox)element).Classes.Add("suffixed");
+        if (!string.IsNullOrWhiteSpace(value) && !((TextBox) element).Classes.Contains("suffixed"))
+            ((TextBox) element).Classes.Add("suffixed");
         else
-            ((TextBox)element).Classes.Remove("suffixed");
+            ((TextBox) element).Classes.Remove("suffixed");
     }
 
     /// <summary>
@@ -49,10 +49,10 @@ public class TextBoxAssist : AvaloniaObject
     {
         element.SetValue(PrefixTextProperty, value);
 
-        if (!string.IsNullOrWhiteSpace(value) && !((TextBox)element).Classes.Contains("prefixed"))
-            ((TextBox)element).Classes.Add("prefixed");
+        if (!string.IsNullOrWhiteSpace(value) && !((TextBox) element).Classes.Contains("prefixed"))
+            ((TextBox) element).Classes.Add("prefixed");
         else
-            ((TextBox)element).Classes.Remove("prefixed");
+            ((TextBox) element).Classes.Remove("prefixed");
     }
 
     /// <summary>

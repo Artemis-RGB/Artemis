@@ -12,9 +12,9 @@ public class ChangeLayerBrush : IProfileEditorCommand, IDisposable
     private readonly Layer _layer;
     private readonly LayerBrushDescriptor _layerBrushDescriptor;
     private readonly BaseLayerBrush? _previousBrush;
+    private bool _executed;
 
     private BaseLayerBrush? _newBrush;
-    private bool _executed;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="ChangeLayerBrush" /> class.
@@ -24,6 +24,15 @@ public class ChangeLayerBrush : IProfileEditorCommand, IDisposable
         _layer = layer;
         _layerBrushDescriptor = layerBrushDescriptor;
         _previousBrush = _layer.LayerBrush;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (_executed)
+            _previousBrush?.Dispose();
+        else
+            _newBrush?.Dispose();
     }
 
     #region Implementation of IProfileEditorCommand
@@ -38,7 +47,7 @@ public class ChangeLayerBrush : IProfileEditorCommand, IDisposable
         _newBrush ??= _layerBrushDescriptor.CreateInstance(_layer, null);
         // Change the brush to the new brush
         _layer.ChangeLayerBrush(_newBrush);
-        
+
         _executed = true;
     }
 
@@ -47,19 +56,6 @@ public class ChangeLayerBrush : IProfileEditorCommand, IDisposable
     {
         _layer.ChangeLayerBrush(_previousBrush);
         _executed = false;
-    }
-
-    #endregion
-
-    #region IDisposable
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        if (_executed)
-            _previousBrush?.Dispose();
-        else
-            _newBrush?.Dispose();
     }
 
     #endregion

@@ -8,8 +8,8 @@ namespace Artemis.VisualScripting.Nodes.Mathematics;
 [Node("Math Expression", "Outputs the result of a math expression.", "Mathematics", InputType = typeof(Numeric), OutputType = typeof(Numeric))]
 public class MathExpressionNode : Node<string, MathExpressionNodeCustomViewModel>
 {
-    private readonly INoStringEvaluator _evaluator;
     private readonly IFormulaChecker _checker;
+    private readonly INoStringEvaluator _evaluator;
     private readonly PinsVariablesContainer _variables;
 
     #region Constructors
@@ -29,6 +29,45 @@ public class MathExpressionNode : Node<string, MathExpressionNodeCustomViewModel
     }
 
     #endregion
+
+    public bool IsSyntaxValid(string? s)
+    {
+        if (s == null)
+            return true;
+
+        if (!_checker.CheckSyntax(s).Ok)
+            return false;
+
+        try
+        {
+            _evaluator.CalcNumber(s, _variables);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public string GetSyntaxErrors(string? s)
+    {
+        if (s == null)
+            return "";
+
+        CheckFormulaResult? syntaxCheck = _checker.CheckSyntax(s);
+        if (!syntaxCheck.Ok)
+            return string.Join(",", syntaxCheck.Mistakes);
+
+        try
+        {
+            _evaluator.CalcNumber(s, _variables);
+            return "";
+        }
+        catch (Exception e)
+        {
+            return e.Message;
+        }
+    }
 
     #region Properties & Fields
 
@@ -78,43 +117,4 @@ public class MathExpressionNode : Node<string, MathExpressionNodeCustomViewModel
     }
 
     #endregion
-
-    public bool IsSyntaxValid(string? s)
-    {
-        if (s == null)
-            return true;
-
-        if (!_checker.CheckSyntax(s).Ok)
-            return false;
-
-        try
-        {
-            _evaluator.CalcNumber(s, _variables);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    public string GetSyntaxErrors(string? s)
-    {
-        if (s == null)
-            return "";
-
-        CheckFormulaResult? syntaxCheck = _checker.CheckSyntax(s);
-        if (!syntaxCheck.Ok)
-            return string.Join(",", syntaxCheck.Mistakes);
-
-        try
-        {
-            _evaluator.CalcNumber(s, _variables);
-            return "";
-        }
-        catch (Exception e)
-        {
-            return e.Message;
-        }
-    }
 }

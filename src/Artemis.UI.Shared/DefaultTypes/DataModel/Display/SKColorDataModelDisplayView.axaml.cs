@@ -1,26 +1,24 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using SkiaSharp;
 
-namespace Artemis.UI.Shared.DefaultTypes.DataModel.Display
+namespace Artemis.UI.Shared.DefaultTypes.DataModel.Display;
+
+/// <summary>
+///     Represents a data model display view used to display <see cref="SKColor" /> values.
+/// </summary>
+public class SKColorDataModelDisplayView : UserControl
 {
     /// <summary>
-    ///     Represents a data model display view used to display <see cref="SKColor" /> values.
+    ///     Creates a new instance of the <see cref="SKColorDataModelDisplayView" /> class.
     /// </summary>
-    public partial class SKColorDataModelDisplayView : UserControl
+    public SKColorDataModelDisplayView()
     {
-        /// <summary>
-        ///     Creates a new instance of the <see cref="SKColorDataModelDisplayView"/> class.
-        /// </summary>
-        public SKColorDataModelDisplayView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }

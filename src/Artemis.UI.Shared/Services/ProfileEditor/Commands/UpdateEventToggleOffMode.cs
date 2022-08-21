@@ -8,8 +8,8 @@ namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 public class UpdateEventToggleOffMode : IProfileEditorCommand
 {
     private readonly EventCondition _eventCondition;
-    private readonly EventToggleOffMode _value;
     private readonly EventToggleOffMode _oldValue;
+    private readonly EventToggleOffMode _value;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="UpdateEventOverlapMode" /> class.

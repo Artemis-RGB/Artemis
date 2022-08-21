@@ -45,7 +45,7 @@ public class SKSizePropertyInputViewModel : PropertyInputViewModel<SKSize>
 
     public float Min { get; } = float.MinValue;
     public float Max { get; } = float.MaxValue;
-    
+
     protected override void OnInputValueChanged()
     {
         this.RaisePropertyChanged(nameof(Width));

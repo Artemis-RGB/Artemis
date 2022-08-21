@@ -64,14 +64,12 @@ public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushRefe
 
         _profileEditorService.ExecuteCommand(new ChangeLayerBrush(layer, SelectedDescriptor));
         if (layer.LayerBrush?.Presets != null && layer.LayerBrush.Presets.Any())
-        {
             Dispatcher.UIThread.InvokeAsync(() => _windowService.CreateContentDialog()
                 .WithTitle("Select preset")
                 .WithViewModel(out LayerBrushPresetViewModel _, ("layerBrush", layer.LayerBrush))
                 .WithDefaultButton(ContentDialogButton.Close)
                 .WithCloseButtonText("Use defaults")
                 .ShowAsync());
-        }
     }
 
     #region Overrides of PropertyInputViewModel<LayerBrushReference>

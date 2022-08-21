@@ -1,14 +1,13 @@
 ﻿using System;
 
-namespace Artemis.UI.Shared.Events
-{
-    internal class DialogClosedEventArgs<TResult> : EventArgs
-    {
-        public TResult Result { get; }
+namespace Artemis.UI.Shared.Events;
 
-        public DialogClosedEventArgs(TResult result)
-        {
-            Result = result;
-        }
+internal class DialogClosedEventArgs<TResult> : EventArgs
+{
+    public DialogClosedEventArgs(TResult result)
+    {
+        Result = result;
     }
+
+    public TResult Result { get; }
 }

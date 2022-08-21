@@ -1,5 +1,4 @@
 using System;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -8,9 +7,9 @@ using Avalonia.Threading;
 
 namespace Artemis.UI.Screens.Plugins;
 
-public partial class PluginView : ReactiveUserControl<PluginViewModel>
+public class PluginView : ReactiveUserControl<PluginViewModel>
 {
-    private CheckBox _enabledToggle;
+    private readonly CheckBox _enabledToggle;
 
     public PluginView()
     {
@@ -23,7 +22,7 @@ public partial class PluginView : ReactiveUserControl<PluginViewModel>
     {
         AvaloniaXamlLoader.Load(this);
     }
-    
+
     private void EnabledToggleOnClick(object? sender, RoutedEventArgs e)
     {
         Dispatcher.UIThread.Post(() => ViewModel?.UpdateEnabled(!ViewModel.Plugin.IsEnabled));

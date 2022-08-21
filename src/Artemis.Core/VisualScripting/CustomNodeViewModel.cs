@@ -1,20 +1,19 @@
 ﻿using System;
 
-namespace Artemis.Core
+namespace Artemis.Core;
+
+/// <summary>
+///     Represents a custom view model for a <see cref="INode" />
+/// </summary>
+public interface ICustomNodeViewModel
 {
     /// <summary>
-    ///     Represents a custom view model for a <see cref="INode" />
+    ///     Gets the node the view models belongs to
     /// </summary>
-    public interface ICustomNodeViewModel
-    {
-        /// <summary>
-        ///     Gets the node the view models belongs to
-        /// </summary>
-        public INode Node { get; }
+    public INode Node { get; }
 
-        /// <summary>
-        ///     Occurs whenever the node was modified by the view model
-        /// </summary>
-        event EventHandler NodeModified;
-    }
+    /// <summary>
+    ///     Occurs whenever the node was modified by the view model
+    /// </summary>
+    event EventHandler NodeModified;
 }

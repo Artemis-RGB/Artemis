@@ -1,27 +1,26 @@
-﻿namespace Artemis.Core
+﻿namespace Artemis.Core;
+
+/// <summary>
+///     A special layer property used to configure the selected layer brush
+/// </summary>
+public class LayerBrushReferenceLayerProperty : LayerProperty<LayerBrushReference?>
 {
-    /// <summary>
-    ///     A special layer property used to configure the selected layer brush
-    /// </summary>
-    public class LayerBrushReferenceLayerProperty : LayerProperty<LayerBrushReference?>
+    internal LayerBrushReferenceLayerProperty()
     {
-        internal LayerBrushReferenceLayerProperty()
-        {
-            KeyframesSupported = false;
-        }
+        KeyframesSupported = false;
+    }
 
-        /// <summary>
-        ///     Implicitly converts an <see cref="LayerBrushReferenceLayerProperty" /> to an <see cref="LayerBrushReference" />
-        /// </summary>
-        public static implicit operator LayerBrushReference?(LayerBrushReferenceLayerProperty p)
-        {
-            return p.CurrentValue;
-        }
+    /// <summary>
+    ///     Implicitly converts an <see cref="LayerBrushReferenceLayerProperty" /> to an <see cref="LayerBrushReference" />
+    /// </summary>
+    public static implicit operator LayerBrushReference?(LayerBrushReferenceLayerProperty p)
+    {
+        return p.CurrentValue;
+    }
 
-        /// <inheritdoc />
-        protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
-        {
-            throw new ArtemisCoreException("Layer brush references do not support keyframes.");
-        }
+    /// <inheritdoc />
+    protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
+    {
+        throw new ArtemisCoreException("Layer brush references do not support keyframes.");
     }
 }

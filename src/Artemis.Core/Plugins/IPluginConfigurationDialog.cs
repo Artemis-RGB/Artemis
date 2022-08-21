@@ -1,15 +1,14 @@
 ﻿using System;
 
-namespace Artemis.Core
+namespace Artemis.Core;
+
+/// <summary>
+///     Represents a configuration dialog for a <see cref="Plugin" />
+/// </summary>
+public interface IPluginConfigurationDialog
 {
     /// <summary>
-    ///     Represents a configuration dialog for a <see cref="Plugin" />
+    ///     The type of view model the tab contains
     /// </summary>
-    public interface IPluginConfigurationDialog
-    {
-        /// <summary>
-        ///     The type of view model the tab contains
-        /// </summary>
-        Type Type { get; }
-    }
+    Type Type { get; }
 }

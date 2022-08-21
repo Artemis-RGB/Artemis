@@ -15,136 +15,135 @@ using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using ContentDialogButton = Artemis.UI.Shared.Services.Builders.ContentDialogButton;
 
-namespace Artemis.UI.Screens.Plugins
+namespace Artemis.UI.Screens.Plugins;
+
+public class PluginPrerequisitesInstallDialogViewModel : ContentDialogViewModelBase
 {
-    public class PluginPrerequisitesInstallDialogViewModel : ContentDialogViewModelBase
+    private PluginPrerequisiteViewModel? _activePrerequisite;
+    private bool _canInstall;
+    private bool _showFailed;
+    private bool _showInstall = true;
+    private bool _showIntro = true;
+    private bool _showProgress;
+    private CancellationTokenSource? _tokenSource;
+
+    public PluginPrerequisitesInstallDialogViewModel(List<IPrerequisitesSubject> subjects, IPrerequisitesVmFactory prerequisitesVmFactory)
     {
-        private PluginPrerequisiteViewModel? _activePrerequisite;
-        private bool _canInstall;
-        private bool _showFailed;
-        private bool _showInstall = true;
-        private bool _showIntro = true;
-        private bool _showProgress;
-        private CancellationTokenSource? _tokenSource;
+        Prerequisites = new ObservableCollection<PluginPrerequisiteViewModel>();
+        foreach (PluginPrerequisite prerequisite in subjects.SelectMany(prerequisitesSubject => prerequisitesSubject.PlatformPrerequisites))
+            Prerequisites.Add(prerequisitesVmFactory.PluginPrerequisiteViewModel(prerequisite, false));
+        Install = ReactiveCommand.CreateFromTask(ExecuteInstall, this.WhenAnyValue(vm => vm.CanInstall));
 
-        public PluginPrerequisitesInstallDialogViewModel(List<IPrerequisitesSubject> subjects, IPrerequisitesVmFactory prerequisitesVmFactory)
+        Dispatcher.UIThread.Post(() => CanInstall = Prerequisites.Any(p => !p.PluginPrerequisite.IsMet()), DispatcherPriority.Background);
+        this.WhenActivated(d =>
         {
-            Prerequisites = new ObservableCollection<PluginPrerequisiteViewModel>();
-            foreach (PluginPrerequisite prerequisite in subjects.SelectMany(prerequisitesSubject => prerequisitesSubject.PlatformPrerequisites))
-                Prerequisites.Add(prerequisitesVmFactory.PluginPrerequisiteViewModel(prerequisite, false));
-            Install = ReactiveCommand.CreateFromTask(ExecuteInstall, this.WhenAnyValue(vm => vm.CanInstall));
-
-            Dispatcher.UIThread.Post(() => CanInstall = Prerequisites.Any(p => !p.PluginPrerequisite.IsMet()), DispatcherPriority.Background);
-            this.WhenActivated(d =>
+            Disposable.Create(() =>
             {
-                Disposable.Create(() =>
-                {
-                    _tokenSource?.Cancel();
-                    _tokenSource?.Dispose();
-                    _tokenSource = null;
-                }).DisposeWith(d);
-            });
-        }
+                _tokenSource?.Cancel();
+                _tokenSource?.Dispose();
+                _tokenSource = null;
+            }).DisposeWith(d);
+        });
+    }
 
-        public ReactiveCommand<Unit, Unit> Install { get; }
-        public ObservableCollection<PluginPrerequisiteViewModel> Prerequisites { get; }
+    public ReactiveCommand<Unit, Unit> Install { get; }
+    public ObservableCollection<PluginPrerequisiteViewModel> Prerequisites { get; }
 
-        public PluginPrerequisiteViewModel? ActivePrerequisite
+    public PluginPrerequisiteViewModel? ActivePrerequisite
+    {
+        get => _activePrerequisite;
+        set => RaiseAndSetIfChanged(ref _activePrerequisite, value);
+    }
+
+    public bool ShowProgress
+    {
+        get => _showProgress;
+        set => RaiseAndSetIfChanged(ref _showProgress, value);
+    }
+
+    public bool ShowIntro
+    {
+        get => _showIntro;
+        set => RaiseAndSetIfChanged(ref _showIntro, value);
+    }
+
+    public bool ShowFailed
+    {
+        get => _showFailed;
+        set => RaiseAndSetIfChanged(ref _showFailed, value);
+    }
+
+    public bool ShowInstall
+    {
+        get => _showInstall;
+        set => RaiseAndSetIfChanged(ref _showInstall, value);
+    }
+
+    public bool CanInstall
+    {
+        get => _canInstall;
+        set => RaiseAndSetIfChanged(ref _canInstall, value);
+    }
+
+    public static async Task Show(IWindowService windowService, List<IPrerequisitesSubject> subjects)
+    {
+        await windowService.CreateContentDialog()
+            .WithTitle("Plugin prerequisites")
+            .WithViewModel(out PluginPrerequisitesInstallDialogViewModel vm, ("subjects", subjects))
+            .WithCloseButtonText("Cancel")
+            .HavingPrimaryButton(b => b.WithText("Install").WithCommand(vm.Install))
+            .WithDefaultButton(ContentDialogButton.Primary)
+            .ShowAsync();
+    }
+
+    private async Task ExecuteInstall()
+    {
+        ContentDialogClosingDeferral? deferral = null;
+        if (ContentDialog != null)
+            ContentDialog.Closing += (_, args) => deferral = args.GetDeferral();
+
+        CanInstall = false;
+        ShowFailed = false;
+        ShowIntro = false;
+        ShowProgress = true;
+
+        _tokenSource?.Dispose();
+        _tokenSource = new CancellationTokenSource();
+
+        try
         {
-            get => _activePrerequisite;
-            set => RaiseAndSetIfChanged(ref _activePrerequisite, value);
-        }
-
-        public bool ShowProgress
-        {
-            get => _showProgress;
-            set => RaiseAndSetIfChanged(ref _showProgress, value);
-        }
-
-        public bool ShowIntro
-        {
-            get => _showIntro;
-            set => RaiseAndSetIfChanged(ref _showIntro, value);
-        }
-
-        public bool ShowFailed
-        {
-            get => _showFailed;
-            set => RaiseAndSetIfChanged(ref _showFailed, value);
-        }
-
-        public bool ShowInstall
-        {
-            get => _showInstall;
-            set => RaiseAndSetIfChanged(ref _showInstall, value);
-        }
-
-        public bool CanInstall
-        {
-            get => _canInstall;
-            set => RaiseAndSetIfChanged(ref _canInstall, value);
-        }
-
-        private async Task ExecuteInstall()
-        {
-            ContentDialogClosingDeferral? deferral = null;
-            if (ContentDialog != null)
-                ContentDialog.Closing += (_, args) => deferral = args.GetDeferral();
-
-            CanInstall = false;
-            ShowFailed = false;
-            ShowIntro = false;
-            ShowProgress = true;
-
-            _tokenSource?.Dispose();
-            _tokenSource = new CancellationTokenSource();
-
-            try
+            foreach (PluginPrerequisiteViewModel pluginPrerequisiteViewModel in Prerequisites)
             {
-                foreach (PluginPrerequisiteViewModel pluginPrerequisiteViewModel in Prerequisites)
+                pluginPrerequisiteViewModel.IsMet = pluginPrerequisiteViewModel.PluginPrerequisite.IsMet();
+                if (pluginPrerequisiteViewModel.IsMet)
+                    continue;
+
+                ActivePrerequisite = pluginPrerequisiteViewModel;
+                await ActivePrerequisite.Install(_tokenSource.Token);
+
+                if (!ActivePrerequisite.IsMet)
                 {
-                    pluginPrerequisiteViewModel.IsMet = pluginPrerequisiteViewModel.PluginPrerequisite.IsMet();
-                    if (pluginPrerequisiteViewModel.IsMet)
-                        continue;
-
-                    ActivePrerequisite = pluginPrerequisiteViewModel;
-                    await ActivePrerequisite.Install(_tokenSource.Token);
-
-                    if (!ActivePrerequisite.IsMet)
-                    {
-                        CanInstall = true;
-                        ShowFailed = true;
-                        ShowProgress = false;
-                        return;
-                    }
-
-                    // Wait after the task finished for the user to process what happened
-                    if (pluginPrerequisiteViewModel != Prerequisites.Last())
-                        await Task.Delay(250);
-                    else
-                        await Task.Delay(1000);
+                    CanInstall = true;
+                    ShowFailed = true;
+                    ShowProgress = false;
+                    return;
                 }
 
-                if (deferral != null)
-                    deferral.Complete();
+                // Wait after the task finished for the user to process what happened
+                if (pluginPrerequisiteViewModel != Prerequisites.Last())
+                    await Task.Delay(250);
                 else
-                    ContentDialog?.Hide(ContentDialogResult.Primary);
+                    await Task.Delay(1000);
             }
-            catch (OperationCanceledException)
-            {
-                // ignored
-            }
-        }
 
-        public static async Task Show(IWindowService windowService, List<IPrerequisitesSubject> subjects)
+            if (deferral != null)
+                deferral.Complete();
+            else
+                ContentDialog?.Hide(ContentDialogResult.Primary);
+        }
+        catch (OperationCanceledException)
         {
-            await windowService.CreateContentDialog()
-                .WithTitle("Plugin prerequisites")
-                .WithViewModel(out PluginPrerequisitesInstallDialogViewModel vm, ("subjects", subjects))
-                .WithCloseButtonText("Cancel")
-                .HavingPrimaryButton(b => b.WithText("Install").WithCommand(vm.Install))
-                .WithDefaultButton(ContentDialogButton.Primary)
-                .ShowAsync();
+            // ignored
         }
     }
 }

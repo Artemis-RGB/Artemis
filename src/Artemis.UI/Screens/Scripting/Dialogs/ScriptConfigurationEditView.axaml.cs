@@ -1,12 +1,11 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Scripting.Dialogs;
 
-public partial class ScriptConfigurationEditView : ReactiveUserControl<ScriptConfigurationEditViewModel>
+public class ScriptConfigurationEditView : ReactiveUserControl<ScriptConfigurationEditViewModel>
 {
     public ScriptConfigurationEditView()
     {

@@ -4,47 +4,46 @@ using Artemis.Core.Services;
 using Artemis.Storage.Repositories.Interfaces;
 using Ninject.Activation;
 
-namespace Artemis.Core.Ninject
+namespace Artemis.Core.Ninject;
+
+// TODO: Investigate if this can't just be set as a constant on the plugin child kernel
+internal class PluginSettingsProvider : Provider<PluginSettings>
 {
-    // TODO: Investigate if this can't just be set as a constant on the plugin child kernel
-    internal class PluginSettingsProvider : Provider<PluginSettings>
+    private static readonly List<PluginSettings> PluginSettings = new();
+    private readonly IPluginManagementService _pluginManagementService;
+    private readonly IPluginRepository _pluginRepository;
+
+    public PluginSettingsProvider(IPluginRepository pluginRepository, IPluginManagementService pluginManagementService)
     {
-        private static readonly List<PluginSettings> PluginSettings = new();
-        private readonly IPluginRepository _pluginRepository;
-        private readonly IPluginManagementService _pluginManagementService;
+        _pluginRepository = pluginRepository;
+        _pluginManagementService = pluginManagementService;
+    }
 
-        public PluginSettingsProvider(IPluginRepository pluginRepository, IPluginManagementService pluginManagementService)
+    protected override PluginSettings CreateInstance(IContext context)
+    {
+        IRequest parentRequest = context.Request.ParentRequest;
+        if (parentRequest == null)
+            throw new ArtemisCoreException("PluginSettings couldn't be injected, failed to get the injection parent request");
+
+        // First try by PluginInfo parameter
+        Plugin? plugin = parentRequest.Parameters.FirstOrDefault(p => p.Name == "Plugin")?.GetValue(context, null) as Plugin;
+        // Fall back to assembly based detection
+        if (plugin == null)
+            plugin = _pluginManagementService.GetPluginByAssembly(parentRequest.Service.Assembly);
+
+        if (plugin == null)
+            throw new ArtemisCoreException("PluginSettings can only be injected with the PluginInfo parameter provided " +
+                                           "or into a class defined in a plugin assembly");
+
+        lock (PluginSettings)
         {
-            _pluginRepository = pluginRepository;
-            _pluginManagementService = pluginManagementService;
-        }
+            PluginSettings? existingSettings = PluginSettings.FirstOrDefault(p => p.Plugin == plugin);
+            if (existingSettings != null)
+                return existingSettings;
 
-        protected override PluginSettings CreateInstance(IContext context)
-        {
-            IRequest parentRequest = context.Request.ParentRequest;
-            if (parentRequest == null)
-                throw new ArtemisCoreException("PluginSettings couldn't be injected, failed to get the injection parent request");
-
-            // First try by PluginInfo parameter
-            Plugin? plugin = parentRequest.Parameters.FirstOrDefault(p => p.Name == "Plugin")?.GetValue(context, null) as Plugin;
-            // Fall back to assembly based detection
-            if (plugin == null)
-                plugin = _pluginManagementService.GetPluginByAssembly(parentRequest.Service.Assembly);
-            
-            if (plugin == null)
-                throw new ArtemisCoreException("PluginSettings can only be injected with the PluginInfo parameter provided " +
-                                               "or into a class defined in a plugin assembly");
-
-            lock (PluginSettings)
-            {
-                PluginSettings? existingSettings = PluginSettings.FirstOrDefault(p => p.Plugin == plugin);
-                if (existingSettings != null)
-                    return existingSettings;
-
-                PluginSettings? settings = new(plugin, _pluginRepository);
-                PluginSettings.Add(settings);
-                return settings;
-            }
+            PluginSettings? settings = new(plugin, _pluginRepository);
+            PluginSettings.Add(settings);
+            return settings;
         }
     }
 }

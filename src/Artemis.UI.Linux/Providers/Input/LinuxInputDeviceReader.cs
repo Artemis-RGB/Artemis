@@ -4,56 +4,56 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Artemis.UI.Linux.Providers.Input
+namespace Artemis.UI.Linux.Providers.Input;
+
+internal class LinuxInputDeviceReader
 {
-    internal class LinuxInputDeviceReader
+    private readonly byte[] _buffer;
+    private readonly CancellationTokenSource _cts;
+    private readonly FileStream _stream;
+    private readonly Task _task;
+
+    public LinuxInputDeviceReader(LinuxInputDevice inputDevice)
     {
-        private readonly FileStream _stream;
-        private readonly Task _task;
-        private readonly CancellationTokenSource _cts;
-        private readonly byte[] _buffer;
-        internal event EventHandler<LinuxInputEventArgs>? InputEvent;
+        InputDevice = inputDevice;
 
-        public LinuxInputDevice InputDevice { get; }
+        _buffer = new byte[Marshal.SizeOf<LinuxInputEventArgs>()];
+        _stream = new FileStream(InputDevice.EventPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 2048, FileOptions.Asynchronous);
+        _cts = new CancellationTokenSource();
+        _task = Task.Run(Read, _cts.Token);
+    }
 
-        public LinuxInputDeviceReader(LinuxInputDevice inputDevice)
+    public LinuxInputDevice InputDevice { get; }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+
+        _stream.Flush();
+        _stream.Dispose();
+
+        //_task.Wait(); //TODO: fix this, it hangs
+        _cts.Dispose();
+    }
+
+    internal event EventHandler<LinuxInputEventArgs>? InputEvent;
+
+    private async Task Read()
+    {
+        while (!_cts.IsCancellationRequested)
         {
-            InputDevice = inputDevice;
-
-            _buffer = new byte[Marshal.SizeOf<LinuxInputEventArgs>()];
-            _stream = new FileStream(InputDevice.EventPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 2048, FileOptions.Asynchronous);
-            _cts = new CancellationTokenSource();
-            _task = Task.Run(Read, _cts.Token);
-        }
-
-        private async Task Read()
-        {
-            while (!_cts.IsCancellationRequested)
+            try
             {
-                try
-                {
-                    int readBytes = await _stream.ReadAsync(_buffer, _cts.Token);
-                    if (readBytes == 0)
-                        continue;
+                int readBytes = await _stream.ReadAsync(_buffer, _cts.Token);
+                if (readBytes == 0)
+                    continue;
 
-                    InputEvent?.Invoke(this, MemoryMarshal.Read<LinuxInputEventArgs>(_buffer));
-                }
-                catch
-                {
-                    // ignored
-                }
+                InputEvent?.Invoke(this, MemoryMarshal.Read<LinuxInputEventArgs>(_buffer));
             }
-        }
-
-        public void Dispose()
-        {
-            _cts.Cancel();
-            
-            _stream.Flush();
-            _stream.Dispose();
-
-            //_task.Wait(); //TODO: fix this, it hangs
-            _cts.Dispose();
+            catch
+            {
+                // ignored
+            }
         }
     }
 }

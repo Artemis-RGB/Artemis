@@ -6,7 +6,7 @@ namespace Artemis.UI.Screens.VisualScripting.Pins;
 
 public class InputPinViewModel : PinViewModel
 {
-    public InputPinViewModel(IPin inputPin, NodeScriptViewModel nodeScriptViewModel, INodeService nodeService, INodeEditorService nodeEditorService) 
+    public InputPinViewModel(IPin inputPin, NodeScriptViewModel nodeScriptViewModel, INodeService nodeService, INodeEditorService nodeEditorService)
         : base(inputPin, nodeScriptViewModel, nodeService, nodeEditorService)
     {
     }

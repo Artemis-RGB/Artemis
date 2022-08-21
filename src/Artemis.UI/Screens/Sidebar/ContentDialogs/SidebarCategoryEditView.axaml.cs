@@ -3,19 +3,18 @@ using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Sidebar
-{
-    public class SidebarCategoryEditView : ReactiveUserControl<SidebarCategoryEditViewModel>
-    {
-        public SidebarCategoryEditView()
-        {
-            InitializeComponent();
-            this.WhenActivated(_ => this.ClearAllDataValidationErrors());
-        }
+namespace Artemis.UI.Screens.Sidebar;
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+public class SidebarCategoryEditView : ReactiveUserControl<SidebarCategoryEditViewModel>
+{
+    public SidebarCategoryEditView()
+    {
+        InitializeComponent();
+        this.WhenActivated(_ => this.ClearAllDataValidationErrors());
+    }
+
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }

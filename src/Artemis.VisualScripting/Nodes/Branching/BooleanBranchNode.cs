@@ -20,6 +20,22 @@ public class BooleanBranchNode : Node
         FalseInput.PinDisconnected += InputPinDisconnected;
     }
 
+    public InputPin<bool> BooleanInput { get; set; }
+    public InputPin TrueInput { get; set; }
+    public InputPin FalseInput { get; set; }
+
+    public OutputPin Output { get; set; }
+
+    #region Overrides of Node
+
+    /// <inheritdoc />
+    public override void Evaluate()
+    {
+        Output.Value = BooleanInput.Value ? TrueInput.Value : FalseInput.Value;
+    }
+
+    #endregion
+
     private void InputPinConnected(object? sender, SingleValueEventArgs<IPin> e)
     {
         if (TrueInput.ConnectedTo.Any() && !FalseInput.ConnectedTo.Any())
@@ -40,20 +56,4 @@ public class BooleanBranchNode : Node
         FalseInput.ChangeType(type);
         Output.ChangeType(type);
     }
-
-    public InputPin<bool> BooleanInput { get; set; }
-    public InputPin TrueInput { get; set; }
-    public InputPin FalseInput { get; set; }
-
-    public OutputPin Output { get; set; }
-
-    #region Overrides of Node
-
-    /// <inheritdoc />
-    public override void Evaluate()
-    {
-        Output.Value = BooleanInput.Value ? TrueInput.Value : FalseInput.Value;
-    }
-
-    #endregion
 }

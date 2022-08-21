@@ -5,10 +5,10 @@ using System.Linq;
 using System.Reactive;
 using System.Reflection;
 using System.Text;
-using System.Windows;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.UI.Shared.Services;
+using Avalonia;
 using ReactiveUI;
 
 namespace Artemis.UI.Shared.DataModelVisualization.Shared;
@@ -37,8 +37,8 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
 
         CopyPath = ReactiveCommand.CreateFromTask(async () =>
         {
-            if (Avalonia.Application.Current?.Clipboard != null && Path != null)
-                await Avalonia.Application.Current.Clipboard.SetTextAsync(Path);
+            if (Application.Current?.Clipboard != null && Path != null)
+                await Application.Current.Clipboard.SetTextAsync(Path);
         });
 
         if (parent == null)
@@ -47,7 +47,7 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
             PropertyDescription = DataModelPath?.GetPropertyDescription() ?? DataModel?.DataModelDescription;
     }
 
-    public ReactiveCommand<Unit,Unit> CopyPath { get; }
+    public ReactiveCommand<Unit, Unit> CopyPath { get; }
 
     /// <summary>
     ///     Gets a boolean indicating whether this view model is at the root of the data model
@@ -197,11 +197,11 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
 
         if (looseMatch)
             IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(type) ||
-                                                             t == typeof(Enum) && type.IsEnum ||
-                                                             t == typeof(IEnumerable<>) && type.IsGenericEnumerable() ||
-                                                             type.IsGenericType && t == type.GetGenericTypeDefinition());
+                                                             (t == typeof(Enum) && type.IsEnum) ||
+                                                             (t == typeof(IEnumerable<>) && type.IsGenericEnumerable()) ||
+                                                             (type.IsGenericType && t == type.GetGenericTypeDefinition()));
         else
-            IsMatchingFilteredTypes = filteredTypes.Any(t => t == type || t == typeof(Enum) && type.IsEnum);
+            IsMatchingFilteredTypes = filteredTypes.Any(t => t == type || (t == typeof(Enum) && type.IsEnum));
     }
 
     /// <summary>
@@ -362,11 +362,11 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
         if (typeViewModel != null)
             return new DataModelPropertyViewModel(DataModel, this, dataModelPath) {DisplayViewModel = typeViewModel, Depth = depth};
         // For primitives, create a property view model, it may be null that is fine
-        if (propertyType.IsPrimitive || propertyType.IsEnum || propertyType == typeof(string) || propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+        if (propertyType.IsPrimitive || propertyType.IsEnum || propertyType == typeof(string) || (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Nullable<>)))
             return new DataModelPropertyViewModel(DataModel, this, dataModelPath) {Depth = depth};
         if (propertyType.IsGenericEnumerable())
             return new DataModelListViewModel(DataModel, this, dataModelPath) {Depth = depth};
-        if (propertyType == typeof(DataModelEvent) || propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(DataModelEvent<>))
+        if (propertyType == typeof(DataModelEvent) || (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(DataModelEvent<>)))
             return new DataModelEventViewModel(DataModel, this, dataModelPath) {Depth = depth};
         // For other value types create a child view model
         if (propertyType.IsClass || propertyType.IsStruct())

@@ -240,6 +240,7 @@ public class TreeItemDragBehavior : Behavior<IControl>
                     else
                         return;
                 }
+
                 e.Pointer.Capture(AssociatedObject);
             }
 

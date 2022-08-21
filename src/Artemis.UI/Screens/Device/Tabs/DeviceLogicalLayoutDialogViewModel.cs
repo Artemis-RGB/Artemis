@@ -9,6 +9,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
+using ContentDialogButton = Artemis.UI.Shared.Services.Builders.ContentDialogButton;
 
 namespace Artemis.UI.Screens.Device;
 
@@ -25,15 +26,15 @@ public class DeviceLogicalLayoutDialogViewModel : ContentDialogViewModelBase
         Device = device;
         ApplyLogicalLayout = ReactiveCommand.Create(ExecuteApplyLogicalLayout, this.WhenAnyValue(vm => vm.SelectedRegion).Select(r => r != null));
         Regions = new ObservableCollection<RegionInfo>(CultureInfo.GetCultures(CultureTypes.SpecificCultures)
-            .Where(c => c.LCID != LOCALE_INVARIANT && 
-                        c.LCID != LOCALE_NEUTRAL && 
-                        c.LCID != LOCALE_CUSTOM_DEFAULT && 
+            .Where(c => c.LCID != LOCALE_INVARIANT &&
+                        c.LCID != LOCALE_NEUTRAL &&
+                        c.LCID != LOCALE_CUSTOM_DEFAULT &&
                         !c.CultureTypes.HasFlag(CultureTypes.UserCustomCulture))
             .Select(c => new RegionInfo(c.LCID))
             .GroupBy(r => r.EnglishName)
             .Select(g => g.First())
             .OrderBy(r => r.EnglishName));
-        
+
         // Default to US/international
         SelectedRegion = Regions.FirstOrDefault(r => r.TwoLetterISORegionName == "US");
     }
@@ -49,6 +50,19 @@ public class DeviceLogicalLayoutDialogViewModel : ContentDialogViewModelBase
         set => RaiseAndSetIfChanged(ref _selectedRegion, value);
     }
 
+    public static async Task<bool> SelectLogicalLayout(IWindowService windowService, ArtemisDevice device)
+    {
+        await windowService.CreateContentDialog()
+            .WithTitle("Select logical layout")
+            .WithViewModel(out DeviceLogicalLayoutDialogViewModel vm, ("device", device))
+            .WithCloseButtonText("Cancel")
+            .WithDefaultButton(ContentDialogButton.Primary)
+            .HavingPrimaryButton(b => b.WithText("Select").WithCommand(vm.ApplyLogicalLayout))
+            .ShowAsync();
+
+        return vm.Applied;
+    }
+
     private void ExecuteApplyLogicalLayout()
     {
         if (SelectedRegion == null)
@@ -58,18 +72,4 @@ public class DeviceLogicalLayoutDialogViewModel : ContentDialogViewModelBase
         Applied = true;
         ContentDialog?.Hide(ContentDialogResult.Primary);
     }
-    
-    public static async Task<bool> SelectLogicalLayout(IWindowService windowService, ArtemisDevice device)
-    {
-        await windowService.CreateContentDialog()
-            .WithTitle("Select logical layout")
-            .WithViewModel(out DeviceLogicalLayoutDialogViewModel vm, ("device", device))
-            .WithCloseButtonText("Cancel")
-            .WithDefaultButton(Shared.Services.Builders.ContentDialogButton.Primary)
-            .HavingPrimaryButton(b => b.WithText("Select").WithCommand(vm.ApplyLogicalLayout))
-            .ShowAsync();
-
-        return vm.Applied;
-    }
-
 }

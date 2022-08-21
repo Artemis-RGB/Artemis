@@ -1,6 +1,4 @@
-﻿using System;
-using Artemis.Core;
-using Artemis.UI.Shared.Services.ProfileEditor;
+﻿using Artemis.Core;
 
 namespace Artemis.UI.Shared.Services.NodeEditor;
 

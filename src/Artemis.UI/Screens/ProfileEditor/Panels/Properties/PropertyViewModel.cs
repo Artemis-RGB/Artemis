@@ -4,17 +4,16 @@ using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
-using Artemis.UI.Shared;
 using DynamicData;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties;
 
 public class PropertyViewModel : PropertyViewModelBase, IDisposable
 {
+    private readonly SourceList<ILayerPropertyKeyframe> _keyframes;
     private bool _isExpanded;
     private bool _isHighlighted;
     private bool _isVisible;
-    private readonly SourceList<ILayerPropertyKeyframe> _keyframes;
 
     public PropertyViewModel(ILayerProperty layerProperty, IPropertyVmFactory propertyVmFactory)
     {

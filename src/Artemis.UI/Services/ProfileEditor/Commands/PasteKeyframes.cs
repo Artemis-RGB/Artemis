@@ -12,11 +12,9 @@ namespace Artemis.UI.Services.ProfileEditor.Commands;
 /// </summary>
 public class PasteKeyframes : IProfileEditorCommand
 {
-    private readonly RenderProfileElement _profileElement;
     private readonly List<KeyframeClipboardModel> _keyframes;
+    private readonly RenderProfileElement _profileElement;
     private readonly TimeSpan _startPosition;
-
-    public List<ILayerPropertyKeyframe>? PastedKeyframes { get; set; }
 
     public PasteKeyframes(RenderProfileElement profileElement, List<KeyframeClipboardModel> keyframes, TimeSpan startPosition)
     {
@@ -25,25 +23,7 @@ public class PasteKeyframes : IProfileEditorCommand
         _startPosition = startPosition;
     }
 
-    /// <inheritdoc />
-    public string DisplayName => "Paste keyframes";
-
-    /// <inheritdoc />
-    public void Execute()
-    {
-        PastedKeyframes ??= CreateKeyframes();
-        foreach (ILayerPropertyKeyframe layerPropertyKeyframe in PastedKeyframes)
-            layerPropertyKeyframe.UntypedLayerProperty.AddUntypedKeyframe(layerPropertyKeyframe);
-    }
-
-    /// <inheritdoc />
-    public void Undo()
-    {
-        if (PastedKeyframes == null)
-            return;
-        foreach (ILayerPropertyKeyframe layerPropertyKeyframe in PastedKeyframes)
-            layerPropertyKeyframe.UntypedLayerProperty.RemoveUntypedKeyframe(layerPropertyKeyframe);
-    }
+    public List<ILayerPropertyKeyframe>? PastedKeyframes { get; set; }
 
     private List<ILayerPropertyKeyframe> CreateKeyframes()
     {
@@ -65,5 +45,25 @@ public class PasteKeyframes : IProfileEditorCommand
             layerPropertyKeyframe.Position += positionOffset;
 
         return result;
+    }
+
+    /// <inheritdoc />
+    public string DisplayName => "Paste keyframes";
+
+    /// <inheritdoc />
+    public void Execute()
+    {
+        PastedKeyframes ??= CreateKeyframes();
+        foreach (ILayerPropertyKeyframe layerPropertyKeyframe in PastedKeyframes)
+            layerPropertyKeyframe.UntypedLayerProperty.AddUntypedKeyframe(layerPropertyKeyframe);
+    }
+
+    /// <inheritdoc />
+    public void Undo()
+    {
+        if (PastedKeyframes == null)
+            return;
+        foreach (ILayerPropertyKeyframe layerPropertyKeyframe in PastedKeyframes)
+            layerPropertyKeyframe.UntypedLayerProperty.RemoveUntypedKeyframe(layerPropertyKeyframe);
     }
 }

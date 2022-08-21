@@ -16,7 +16,6 @@ using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
 using Artemis.UI.Screens.Scripting;
-using Artemis.UI.Screens.Scripting.Dialogs;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Screens.SurfaceEditor;

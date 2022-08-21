@@ -2,29 +2,28 @@
 using EmbedIO.WebApi;
 using Ninject;
 
-namespace Artemis.Core.Services
+namespace Artemis.Core.Services;
+
+internal class WebApiControllerRegistration<T> : WebApiControllerRegistration where T : WebApiController
 {
-    internal class WebApiControllerRegistration<T> : WebApiControllerRegistration where T : WebApiController
+    public WebApiControllerRegistration(PluginFeature feature) : base(feature, typeof(T))
     {
-        public WebApiControllerRegistration(PluginFeature feature) : base(feature, typeof(T))
-        {
-            Factory = () => feature.Plugin.Kernel!.Get<T>();
-        }
-
-        public Func<T> Factory { get; set; }
-        public override object UntypedFactory => Factory;
+        Factory = () => feature.Plugin.Kernel!.Get<T>();
     }
 
-    internal abstract class WebApiControllerRegistration
-    {
-        protected WebApiControllerRegistration(PluginFeature feature, Type controllerType)
-        {
-            Feature = feature;
-            ControllerType = controllerType;
-        }
+    public Func<T> Factory { get; set; }
+    public override object UntypedFactory => Factory;
+}
 
-        public abstract object UntypedFactory { get; }
-        public Type ControllerType { get; set; }
-        public PluginFeature Feature { get; }
+internal abstract class WebApiControllerRegistration
+{
+    protected WebApiControllerRegistration(PluginFeature feature, Type controllerType)
+    {
+        Feature = feature;
+        ControllerType = controllerType;
     }
+
+    public abstract object UntypedFactory { get; }
+    public Type ControllerType { get; set; }
+    public PluginFeature Feature { get; }
 }

@@ -16,7 +16,7 @@ public class IntPropertyInputView : ReactiveUserControl<IntPropertyInputViewMode
     {
         AvaloniaXamlLoader.Load(this);
     }
-    
+
     private void DraggableNumberBox_OnDragStarted(DraggableNumberBox sender, EventArgs args)
     {
         ViewModel?.StartPreview();

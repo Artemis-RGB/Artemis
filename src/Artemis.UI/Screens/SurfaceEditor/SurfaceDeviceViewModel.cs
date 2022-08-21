@@ -35,12 +35,12 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
         DetectInput = ReactiveCommand.CreateFromTask(ExecuteDetectInput, this.WhenAnyValue(vm => vm.CanDetectInput));
     }
 
-    public ReactiveCommand<Unit,Unit> DetectInput { get; }
-    
+    public ReactiveCommand<Unit, Unit> DetectInput { get; }
+
     public ArtemisDevice Device { get; }
     public SurfaceEditorViewModel SurfaceEditorViewModel { get; }
     public bool CanDetectInput => Device.DeviceType == RGBDeviceType.Keyboard || Device.DeviceType == RGBDeviceType.Mouse;
-    
+
     public bool IsSelected
     {
         get => _isSelected;
@@ -107,7 +107,7 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
 
         return !own.Any(o => others.Any(l => l.IntersectsWith(o)));
     }
-    
+
     private async Task ExecuteDetectInput()
     {
         if (!CanDetectInput)

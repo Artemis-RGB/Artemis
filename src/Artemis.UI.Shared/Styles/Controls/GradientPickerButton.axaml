@@ -31,8 +31,8 @@
         <Setter Property="Template">
             <ControlTemplate>
 
-                <controls:Button Grid.Column="0"
-                                 Name="MainButton"
+                <controls:Button
+                    Name="MainButton"
                                  Padding="0 0 12 0"
                                  CornerRadius="{TemplateBinding CornerRadius}"
                                  HorizontalAlignment="Stretch"

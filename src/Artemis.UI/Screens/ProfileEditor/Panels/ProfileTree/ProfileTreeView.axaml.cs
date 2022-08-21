@@ -18,13 +18,13 @@ public class ProfileTreeView : ReactiveUserControl<ProfileTreeViewModel>
     private Image? _dragAdorner;
     private Point _dragStartPosition;
     private Point _elementDragOffset;
-    private TreeView _treeView;
+    private readonly TreeView _treeView;
 
     public ProfileTreeView()
     {
         InitializeComponent();
         _treeView = this.Get<TreeView>("ProfileTreeView");
-        
+
         AddHandler(DragDrop.DragEnterEvent, HandleDragEnterEvent, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
         AddHandler(DragDrop.DragOverEvent, HandleDragOver, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
         AddHandler(PointerEnterEvent, HandlePointerEnter, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);

@@ -2,40 +2,39 @@
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
 
-namespace Artemis.UI.Services
+namespace Artemis.UI.Services;
+
+public class DebugService : IDebugService
 {
-    public class DebugService : IDebugService
+    private readonly IWindowService _windowService;
+    private DebugViewModel? _debugViewModel;
+
+    public DebugService(IWindowService windowService)
     {
-        private readonly IWindowService _windowService;
-        private DebugViewModel? _debugViewModel;
+        _windowService = windowService;
+    }
 
-        public DebugService(IWindowService windowService)
-        {
-            _windowService = windowService;
-        }
+    private void BringDebuggerToForeground()
+    {
+        if (_debugViewModel != null)
+            _debugViewModel.Activate();
+    }
 
-        public void ClearDebugger()
-        {
-            _debugViewModel = null;
-        }
+    private void CreateDebugger()
+    {
+        _debugViewModel = _windowService.ShowWindow<DebugViewModel>();
+    }
 
-        private void BringDebuggerToForeground()
-        {
-            if (_debugViewModel != null)
-                _debugViewModel.Activate();
-        }
+    public void ClearDebugger()
+    {
+        _debugViewModel = null;
+    }
 
-        private void CreateDebugger()
-        {
-            _debugViewModel = _windowService.ShowWindow<DebugViewModel>();
-        }
-
-        public void ShowDebugger()
-        {
-            if (_debugViewModel != null)
-                BringDebuggerToForeground();
-            else
-                CreateDebugger();
-        }
+    public void ShowDebugger()
+    {
+        if (_debugViewModel != null)
+            BringDebuggerToForeground();
+        else
+            CreateDebugger();
     }
 }

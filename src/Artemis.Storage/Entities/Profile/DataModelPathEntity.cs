@@ -1,10 +1,7 @@
-﻿using System;
+﻿namespace Artemis.Storage.Entities.Profile;
 
-namespace Artemis.Storage.Entities.Profile
+public class DataModelPathEntity
 {
-    public class DataModelPathEntity
-    {
-        public string Path { get; set; }
-        public string DataModelId { get; set; }
-    }
+    public string Path { get; set; }
+    public string DataModelId { get; set; }
 }

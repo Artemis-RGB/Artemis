@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
-using Artemis.Core;
 using Artemis.Core.LayerBrushes;
-using Artemis.Core.LayerEffects;
-using Artemis.Core.Services;
 using Artemis.UI.Shared;
-using Artemis.UI.Shared.Services.ProfileEditor;
-using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using DynamicData;
 using ReactiveUI;
 
@@ -48,7 +43,7 @@ public class LayerBrushPresetViewModel : ContentDialogViewModelBase
         preset.Apply();
         ContentDialog?.Hide();
     }
-    
+
     private Func<ILayerBrushPreset, bool> CreatePredicate(string? search)
     {
         if (string.IsNullOrWhiteSpace(search))

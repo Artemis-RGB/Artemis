@@ -1,24 +1,23 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Artemis.UI.Shared.DefaultTypes.DataModel.Display
+namespace Artemis.UI.Shared.DefaultTypes.DataModel.Display;
+
+/// <summary>
+///     Represents a default data model display view.
+/// </summary>
+public class DefaultDataModelDisplayView : UserControl
 {
     /// <summary>
-    ///     Represents a default data model display view.
+    ///     Creates a new instance of the <see cref="DefaultDataModelDisplayView" /> class.
     /// </summary>
-    public class DefaultDataModelDisplayView : UserControl
+    public DefaultDataModelDisplayView()
     {
-        /// <summary>
-        ///     Creates a new instance of the <see cref="DefaultDataModelDisplayView" /> class.
-        /// </summary>
-        public DefaultDataModelDisplayView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }

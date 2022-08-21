@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Artemis.Core;
+﻿using Artemis.Core;
 using Artemis.Core.Events;
 using Artemis.Storage.Entities.Profile;
 using Artemis.VisualScripting.Nodes.DataModel.Screens;
@@ -12,9 +11,9 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
     private int _currentIndex;
     private Type _currentType;
     private DataModelPath? _dataModelPath;
-    private bool _updating;
-    private DateTime _lastTrigger;
     private object? _lastPathValue;
+    private DateTime _lastTrigger;
+    private bool _updating;
 
     public DataModelEventNode() : base("Data Model-Event", "Responds to a data model event trigger")
     {

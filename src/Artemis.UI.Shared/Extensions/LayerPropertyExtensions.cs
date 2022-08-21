@@ -10,7 +10,7 @@ namespace Artemis.UI.Shared.Extensions;
 public static class LayerPropertyExtensions
 {
     /// <summary>
-    /// Returns an observable sequence of layer property values starting with the current value.
+    ///     Returns an observable sequence of layer property values starting with the current value.
     /// </summary>
     /// <param name="layerProperty">The layer property to create the sequence of.</param>
     /// <typeparam name="T">The value type of the layer property.</typeparam>

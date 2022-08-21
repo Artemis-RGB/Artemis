@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Artemis.Core;
 
 namespace Artemis.UI.Shared.Services.NodeEditor.Commands;
@@ -9,9 +8,9 @@ namespace Artemis.UI.Shared.Services.NodeEditor.Commands;
 /// </summary>
 public class DeleteNode : INodeEditorCommand, IDisposable
 {
+    private readonly NodeConnectionStore _connections;
     private readonly INode _node;
     private readonly INodeScript _nodeScript;
-    private readonly NodeConnectionStore _connections;
     private bool _isRemoved;
 
     /// <summary>

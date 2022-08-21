@@ -83,14 +83,10 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     {
         List<SKColor> result = new();
         if (timesToRepeat == 0)
-        {
             result = this.Select(c => c.Color).ToList();
-        }
         else
-        {
             for (int i = 0; i <= timesToRepeat; i++)
                 result.AddRange(this.Select(c => c.Color));
-        }
 
         if (seamless && !IsSeamless())
             result.Add(result[0]);
@@ -413,8 +409,10 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
             return false;
 
         for (int i = 0; i < Count; i++)
+        {
             if (!Equals(this[i], other[i]))
                 return false;
+        }
 
         return true;
     }

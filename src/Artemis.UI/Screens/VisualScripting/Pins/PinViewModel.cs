@@ -19,10 +19,10 @@ namespace Artemis.UI.Screens.VisualScripting.Pins;
 public abstract class PinViewModel : ActivatableViewModelBase
 {
     private readonly INodeService _nodeService;
-    private ReactiveCommand<IPin, Unit>? _removePin;
-    private Point _position;
-    private Color _pinColor;
     private Color _darkenedPinColor;
+    private Color _pinColor;
+    private Point _position;
+    private ReactiveCommand<IPin, Unit>? _removePin;
 
     protected PinViewModel(IPin pin, NodeScriptViewModel nodeScriptViewModel, INodeService nodeService, INodeEditorService nodeEditorService)
     {
@@ -30,7 +30,7 @@ public abstract class PinViewModel : ActivatableViewModelBase
 
         Pin = pin;
         DisconnectPin = ReactiveCommand.Create(() => nodeEditorService.ExecuteCommand(nodeScriptViewModel.NodeScript, new DisconnectPins(Pin)));
-        
+
         SourceList<IPin> connectedPins = new();
         this.WhenActivated(d =>
         {
@@ -45,13 +45,6 @@ public abstract class PinViewModel : ActivatableViewModelBase
 
         Connections = connectedPins.Connect().AsObservableList();
         connectedPins.AddRange(Pin.ConnectedTo);
-    }
-
-    private void UpdatePinColor()
-    {
-        TypeColorRegistration registration = _nodeService.GetTypeColorRegistration(Pin.Type);
-        PinColor = registration.Color.ToColor();
-        DarkenedPinColor = registration.DarkenedColor.ToColor();
     }
 
     public IObservableList<IPin> Connections { get; }
@@ -90,5 +83,12 @@ public abstract class PinViewModel : ActivatableViewModelBase
             return false;
 
         return Pin.IsTypeCompatible(pinViewModel.Pin.Type);
+    }
+
+    private void UpdatePinColor()
+    {
+        TypeColorRegistration registration = _nodeService.GetTypeColorRegistration(Pin.Type);
+        PinColor = registration.Color.ToColor();
+        DarkenedPinColor = registration.DarkenedColor.ToColor();
     }
 }

@@ -98,7 +98,7 @@ public class UpdateService : IUpdateService
 
     public bool SuspendAutoUpdate { get; set; }
     public bool UpdatingSupported => _updateProvider != null;
-    
+
     public async Task ManualUpdate()
     {
         if (_updateProvider == null || !_mainWindowService.IsMainWindowOpen)

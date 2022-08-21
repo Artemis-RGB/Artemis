@@ -18,16 +18,16 @@ namespace Artemis.UI.Screens.SurfaceEditor;
 
 public class SurfaceEditorViewModel : MainScreenViewModel
 {
+    private readonly IDeviceService _deviceService;
+    private readonly IDeviceVmFactory _deviceVmFactory;
     private readonly IRgbService _rgbService;
     private readonly ISettingsService _settingsService;
-    private readonly IDeviceVmFactory _deviceVmFactory;
     private readonly IWindowService _windowService;
-    private readonly IDeviceService _deviceService;
-    private List<SurfaceDeviceViewModel>? _initialSelection;
-    private bool _saving;
-    private bool _colorFirstLedOnly;
     private bool _colorDevices;
+    private bool _colorFirstLedOnly;
+    private List<SurfaceDeviceViewModel>? _initialSelection;
     private double _overlayOpacity;
+    private bool _saving;
 
     public SurfaceEditorViewModel(IScreen hostScreen,
         ICoreService coreService,
@@ -176,7 +176,7 @@ public class SurfaceEditorViewModel : MainScreenViewModel
         // Fill the entire canvas with a black backdrop
         paint.Color = SKColors.Black.WithAlpha(alpha);
         e.Canvas.DrawRect(e.Canvas.LocalClipBounds, paint);
-        
+
         // Draw a rectangle for each LED
         foreach (ListDeviceViewModel listDeviceViewModel in ListDeviceViewModels)
         {
@@ -185,7 +185,7 @@ public class SurfaceEditorViewModel : MainScreenViewModel
             for (int index = 0; index < leds.Count; index++)
             {
                 ArtemisLed artemisLed = leds[index];
-                if (ColorFirstLedOnly && index == 0 || !ColorFirstLedOnly)
+                if ((ColorFirstLedOnly && index == 0) || !ColorFirstLedOnly)
                 {
                     paint.Color = listDeviceViewModel.Color.WithAlpha(alpha);
                     e.Canvas.DrawRect(artemisLed.AbsoluteRectangle, paint);

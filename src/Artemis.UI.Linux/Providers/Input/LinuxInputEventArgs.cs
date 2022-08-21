@@ -1,15 +1,14 @@
 // ReSharper disable UnusedMember.Global
 
 #pragma warning disable CS0649
-namespace Artemis.UI.Linux.Providers.Input
+namespace Artemis.UI.Linux.Providers.Input;
+
+// https://www.kernel.org/doc/Documentation/input/input.txt
+internal readonly struct LinuxInputEventArgs
 {
-    // https://www.kernel.org/doc/Documentation/input/input.txt
-    internal readonly struct LinuxInputEventArgs
-    {
-        internal readonly long TimeSeconds;
-        internal readonly long TimeMicroseconds;
-        internal readonly LinuxInputEventType Type;
-        internal readonly short Code;
-        internal readonly int Value;
-    }
+    internal readonly long TimeSeconds;
+    internal readonly long TimeMicroseconds;
+    internal readonly LinuxInputEventType Type;
+    internal readonly short Code;
+    internal readonly int Value;
 }

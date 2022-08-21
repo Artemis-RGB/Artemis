@@ -1,13 +1,12 @@
 using Artemis.Core.LayerBrushes;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Tree.Dialogs;
 
-public partial class LayerBrushPresetView : ReactiveUserControl<LayerBrushPresetViewModel>
+public class LayerBrushPresetView : ReactiveUserControl<LayerBrushPresetViewModel>
 {
     public LayerBrushPresetView()
     {

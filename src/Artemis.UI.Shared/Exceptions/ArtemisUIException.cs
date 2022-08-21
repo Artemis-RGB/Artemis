@@ -1,22 +1,21 @@
 ﻿using System;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared;
+
+/// <summary>
+///     Represents errors that occur within the Artemis Shared UI library
+/// </summary>
+public class ArtemisSharedUIException : Exception
 {
-    /// <summary>
-    ///     Represents errors that occur within the Artemis Shared UI library
-    /// </summary>
-    public class ArtemisSharedUIException : Exception
+    internal ArtemisSharedUIException()
     {
-        internal ArtemisSharedUIException()
-        {
-        }
+    }
 
-        internal ArtemisSharedUIException(string message) : base(message)
-        {
-        }
+    internal ArtemisSharedUIException(string message) : base(message)
+    {
+    }
 
-        internal ArtemisSharedUIException(string message, Exception inner) : base(message, inner)
-        {
-        }
+    internal ArtemisSharedUIException(string message, Exception inner) : base(message, inner)
+    {
     }
 }

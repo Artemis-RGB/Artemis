@@ -7,9 +7,9 @@ namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 /// </summary>
 public class ResetLayerProperty<T> : IProfileEditorCommand
 {
+    private readonly bool _keyframesEnabled;
     private readonly LayerProperty<T> _layerProperty;
     private readonly T _originalBaseValue;
-    private readonly bool _keyframesEnabled;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="ResetLayerProperty{T}" /> class.
@@ -37,13 +37,13 @@ public class ResetLayerProperty<T> : IProfileEditorCommand
         if (_keyframesEnabled)
             _layerProperty.KeyframesEnabled = false;
 
-        _layerProperty.SetCurrentValue(CoreJson.DeserializeObject<T>(json)!, null);
+        _layerProperty.SetCurrentValue(CoreJson.DeserializeObject<T>(json)!);
     }
 
     /// <inheritdoc />
     public void Undo()
     {
-        _layerProperty.SetCurrentValue(_originalBaseValue, null);
+        _layerProperty.SetCurrentValue(_originalBaseValue);
         if (_keyframesEnabled)
             _layerProperty.KeyframesEnabled = true;
     }

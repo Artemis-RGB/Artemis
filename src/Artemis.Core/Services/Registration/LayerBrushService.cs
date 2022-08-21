@@ -3,56 +3,55 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.LayerBrushes;
 
-namespace Artemis.Core.Services
+namespace Artemis.Core.Services;
+
+internal class LayerBrushService : ILayerBrushService
 {
-    internal class LayerBrushService : ILayerBrushService
+    private readonly ISettingsService _settingsService;
+
+    public LayerBrushService(ISettingsService settingsService)
     {
-        private readonly ISettingsService _settingsService;
+        _settingsService = settingsService;
+    }
 
-        public LayerBrushService(ISettingsService settingsService)
+    public LayerBrushRegistration RegisterLayerBrush(LayerBrushDescriptor descriptor)
+    {
+        if (descriptor == null)
+            throw new ArgumentNullException(nameof(descriptor));
+
+        return LayerBrushStore.Add(descriptor);
+    }
+
+    public void RemoveLayerBrush(LayerBrushRegistration registration)
+    {
+        if (registration == null)
+            throw new ArgumentNullException(nameof(registration));
+        LayerBrushStore.Remove(registration);
+    }
+
+    public List<LayerBrushDescriptor> GetLayerBrushes()
+    {
+        return LayerBrushStore.GetAll().Select(r => r.LayerBrushDescriptor).ToList();
+    }
+
+    public LayerBrushDescriptor? GetDefaultLayerBrush()
+    {
+        PluginSetting<LayerBrushReference> defaultReference = _settingsService.GetSetting("ProfileEditor.DefaultLayerBrushDescriptor", new LayerBrushReference
         {
-            _settingsService = settingsService;
-        }
+            LayerBrushProviderId = "Artemis.Plugins.LayerBrushes.Color.ColorBrushProvider-92a9d6ba",
+            BrushType = "SolidBrush"
+        });
 
-        public LayerBrushRegistration RegisterLayerBrush(LayerBrushDescriptor descriptor)
-        {
-            if (descriptor == null)
-                throw new ArgumentNullException(nameof(descriptor));
+        defaultReference.Value.LayerBrushProviderId ??= "Artemis.Plugins.LayerBrushes.Color.ColorBrushProvider-92a9d6ba";
+        defaultReference.Value.BrushType ??= "SolidBrush";
+        return LayerBrushStore.Get(defaultReference.Value.LayerBrushProviderId, defaultReference.Value.BrushType)?.LayerBrushDescriptor;
+    }
 
-            return LayerBrushStore.Add(descriptor);
-        }
-
-        public void RemoveLayerBrush(LayerBrushRegistration registration)
-        {
-            if (registration == null)
-                throw new ArgumentNullException(nameof(registration));
-            LayerBrushStore.Remove(registration);
-        }
-
-        public List<LayerBrushDescriptor> GetLayerBrushes()
-        {
-            return LayerBrushStore.GetAll().Select(r => r.LayerBrushDescriptor).ToList();
-        }
-
-        public LayerBrushDescriptor? GetDefaultLayerBrush()
-        {
-            PluginSetting<LayerBrushReference> defaultReference = _settingsService.GetSetting("ProfileEditor.DefaultLayerBrushDescriptor", new LayerBrushReference
-            {
-                LayerBrushProviderId = "Artemis.Plugins.LayerBrushes.Color.ColorBrushProvider-92a9d6ba",
-                BrushType = "SolidBrush"
-            });
-
-            defaultReference.Value.LayerBrushProviderId ??= "Artemis.Plugins.LayerBrushes.Color.ColorBrushProvider-92a9d6ba";
-            defaultReference.Value.BrushType ??= "SolidBrush";
-            return LayerBrushStore.Get(defaultReference.Value.LayerBrushProviderId, defaultReference.Value.BrushType)?.LayerBrushDescriptor;
-        }
-
-        /// <inheritdoc />
-        public void ApplyDefaultBrush(Layer layer)
-        {
-            LayerBrushDescriptor? brush = GetDefaultLayerBrush();
-            if (brush != null)
-                layer.ChangeLayerBrush(brush.CreateInstance(layer, null));
-        }
+    /// <inheritdoc />
+    public void ApplyDefaultBrush(Layer layer)
+    {
+        LayerBrushDescriptor? brush = GetDefaultLayerBrush();
+        if (brush != null)
+            layer.ChangeLayerBrush(brush.CreateInstance(layer, null));
     }
 }

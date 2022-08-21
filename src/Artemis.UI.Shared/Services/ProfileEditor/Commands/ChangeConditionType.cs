@@ -8,9 +8,9 @@ namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 /// </summary>
 public class ChangeConditionType : IProfileEditorCommand, IDisposable
 {
-    private readonly RenderProfileElement _profileElement;
     private readonly ICondition _condition;
     private readonly ICondition _oldCondition;
+    private readonly RenderProfileElement _profileElement;
     private bool _executed;
 
     /// <summary>
@@ -24,7 +24,16 @@ public class ChangeConditionType : IProfileEditorCommand, IDisposable
         _condition = condition;
         _oldCondition = _profileElement.DisplayCondition;
     }
-    
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (_executed)
+            _oldCondition?.Dispose();
+        else
+            _condition?.Dispose();
+    }
+
     /// <inheritdoc />
     public string DisplayName => "Change element display condition type";
 
@@ -40,14 +49,5 @@ public class ChangeConditionType : IProfileEditorCommand, IDisposable
     {
         _profileElement.DisplayCondition = _oldCondition;
         _executed = false;
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        if (_executed)
-            _oldCondition?.Dispose();
-        else
-            _condition?.Dispose();
     }
 }

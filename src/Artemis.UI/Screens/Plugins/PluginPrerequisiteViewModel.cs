@@ -8,120 +8,119 @@ using Artemis.Core;
 using Artemis.UI.Shared;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Plugins
+namespace Artemis.UI.Screens.Plugins;
+
+public class PluginPrerequisiteViewModel : ActivatableViewModelBase
 {
-    public class PluginPrerequisiteViewModel : ActivatableViewModelBase
+    private readonly ObservableAsPropertyHelper<int> _activeStepNumber;
+    private readonly ObservableAsPropertyHelper<bool> _busy;
+    private readonly bool _uninstall;
+
+    private PluginPrerequisiteActionViewModel? _activeAction;
+
+    private bool _installing;
+    private bool _isMet;
+    private bool _uninstalling;
+
+    public PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall)
     {
-        private readonly ObservableAsPropertyHelper<int> _activeStepNumber;
-        private readonly ObservableAsPropertyHelper<bool> _busy;
-        private readonly bool _uninstall;
+        _uninstall = uninstall;
 
-        private PluginPrerequisiteActionViewModel? _activeAction;
+        PluginPrerequisite = pluginPrerequisite;
+        Actions = new ObservableCollection<PluginPrerequisiteActionViewModel>(!_uninstall
+            ? PluginPrerequisite.InstallActions.Select(a => new PluginPrerequisiteActionViewModel(a))
+            : PluginPrerequisite.UninstallActions.Select(a => new PluginPrerequisiteActionViewModel(a)));
 
-        private bool _installing;
-        private bool _isMet;
-        private bool _uninstalling;
+        _busy = this.WhenAnyValue(x => x.Installing, x => x.Uninstalling, (i, u) => i || u).ToProperty(this, x => x.Busy);
+        _activeStepNumber = this.WhenAnyValue(x => x.ActiveAction, a => Actions.IndexOf(a!) + 1).ToProperty(this, x => x.ActiveStepNumber);
 
-        public PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall)
+        this.WhenActivated(d =>
         {
-            _uninstall = uninstall;
+            PluginPrerequisite.PropertyChanged += PluginPrerequisiteOnPropertyChanged;
+            Disposable.Create(() => PluginPrerequisite.PropertyChanged -= PluginPrerequisiteOnPropertyChanged).DisposeWith(d);
+        });
 
-            PluginPrerequisite = pluginPrerequisite;
-            Actions = new ObservableCollection<PluginPrerequisiteActionViewModel>(!_uninstall
-                ? PluginPrerequisite.InstallActions.Select(a => new PluginPrerequisiteActionViewModel(a))
-                : PluginPrerequisite.UninstallActions.Select(a => new PluginPrerequisiteActionViewModel(a)));
+        // Could be slow so take it off of the UI thread
+        Task.Run(() => IsMet = PluginPrerequisite.IsMet());
+    }
 
-            _busy = this.WhenAnyValue(x => x.Installing, x => x.Uninstalling, (i, u) => i || u).ToProperty(this, x => x.Busy);
-            _activeStepNumber = this.WhenAnyValue(x => x.ActiveAction, a => Actions.IndexOf(a!) + 1).ToProperty(this, x => x.ActiveStepNumber);
+    public ObservableCollection<PluginPrerequisiteActionViewModel> Actions { get; }
 
-            this.WhenActivated(d =>
-            {
-                PluginPrerequisite.PropertyChanged += PluginPrerequisiteOnPropertyChanged;
-                Disposable.Create(() => PluginPrerequisite.PropertyChanged -= PluginPrerequisiteOnPropertyChanged).DisposeWith(d);
-            });
+    public PluginPrerequisiteActionViewModel? ActiveAction
+    {
+        get => _activeAction;
+        set => RaiseAndSetIfChanged(ref _activeAction, value);
+    }
 
-            // Could be slow so take it off of the UI thread
-            Task.Run(() => IsMet = PluginPrerequisite.IsMet());
-        }
+    public PluginPrerequisite PluginPrerequisite { get; }
 
-        public ObservableCollection<PluginPrerequisiteActionViewModel> Actions { get; }
+    public bool Installing
+    {
+        get => _installing;
+        set => RaiseAndSetIfChanged(ref _installing, value);
+    }
 
-        public PluginPrerequisiteActionViewModel? ActiveAction
+    public bool Uninstalling
+    {
+        get => _uninstalling;
+        set => RaiseAndSetIfChanged(ref _uninstalling, value);
+    }
+
+    public bool IsMet
+    {
+        get => _isMet;
+        set => RaiseAndSetIfChanged(ref _isMet, value);
+    }
+
+    public bool Busy => _busy.Value;
+    public int ActiveStepNumber => _activeStepNumber.Value;
+
+    public async Task Install(CancellationToken cancellationToken)
+    {
+        if (Busy)
+            return;
+
+        Installing = true;
+        try
         {
-            get => _activeAction;
-            set => RaiseAndSetIfChanged(ref _activeAction, value);
+            await PluginPrerequisite.Install(cancellationToken);
         }
-
-        public PluginPrerequisite PluginPrerequisite { get; }
-
-        public bool Installing
+        finally
         {
-            get => _installing;
-            set => RaiseAndSetIfChanged(ref _installing, value);
+            Installing = false;
+            IsMet = PluginPrerequisite.IsMet();
         }
+    }
 
-        public bool Uninstalling
+    public async Task Uninstall(CancellationToken cancellationToken)
+    {
+        if (Busy)
+            return;
+
+        Uninstalling = true;
+        try
         {
-            get => _uninstalling;
-            set => RaiseAndSetIfChanged(ref _uninstalling, value);
+            await PluginPrerequisite.Uninstall(cancellationToken);
         }
-
-        public bool IsMet
+        finally
         {
-            get => _isMet;
-            set => RaiseAndSetIfChanged(ref _isMet, value);
+            Uninstalling = false;
+            IsMet = PluginPrerequisite.IsMet();
         }
+    }
 
-        public bool Busy => _busy.Value;
-        public int ActiveStepNumber => _activeStepNumber.Value;
+    private void PluginPrerequisiteOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(PluginPrerequisite.CurrentAction))
+            ActivateCurrentAction();
+    }
 
-        public async Task Install(CancellationToken cancellationToken)
-        {
-            if (Busy)
-                return;
+    private void ActivateCurrentAction()
+    {
+        PluginPrerequisiteActionViewModel? activeAction = Actions.FirstOrDefault(i => i.Action == PluginPrerequisite.CurrentAction);
+        if (activeAction == null)
+            return;
 
-            Installing = true;
-            try
-            {
-                await PluginPrerequisite.Install(cancellationToken);
-            }
-            finally
-            {
-                Installing = false;
-                IsMet = PluginPrerequisite.IsMet();
-            }
-        }
-
-        public async Task Uninstall(CancellationToken cancellationToken)
-        {
-            if (Busy)
-                return;
-
-            Uninstalling = true;
-            try
-            {
-                await PluginPrerequisite.Uninstall(cancellationToken);
-            }
-            finally
-            {
-                Uninstalling = false;
-                IsMet = PluginPrerequisite.IsMet();
-            }
-        }
-
-        private void PluginPrerequisiteOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(PluginPrerequisite.CurrentAction))
-                ActivateCurrentAction();
-        }
-
-        private void ActivateCurrentAction()
-        {
-            PluginPrerequisiteActionViewModel? activeAction = Actions.FirstOrDefault(i => i.Action == PluginPrerequisite.CurrentAction);
-            if (activeAction == null)
-                return;
-
-            ActiveAction = activeAction;
-        }
+        ActiveAction = activeAction;
     }
 }

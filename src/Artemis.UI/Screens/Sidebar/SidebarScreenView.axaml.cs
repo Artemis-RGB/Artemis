@@ -1,18 +1,17 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Artemis.UI.Screens.Sidebar
-{
-    public partial class SidebarScreenView : UserControl
-    {
-        public SidebarScreenView()
-        {
-            InitializeComponent();
-        }
+namespace Artemis.UI.Screens.Sidebar;
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+public class SidebarScreenView : UserControl
+{
+    public SidebarScreenView()
+    {
+        InitializeComponent();
+    }
+
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }

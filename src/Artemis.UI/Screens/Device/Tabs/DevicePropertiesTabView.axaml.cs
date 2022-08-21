@@ -2,23 +2,22 @@ using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Device
+namespace Artemis.UI.Screens.Device;
+
+public class DevicePropertiesTabView : ReactiveUserControl<DevicePropertiesTabViewModel>
 {
-    public partial class DevicePropertiesTabView : ReactiveUserControl<DevicePropertiesTabViewModel>
+    public DevicePropertiesTabView()
     {
-        public DevicePropertiesTabView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
+    }
 
-        private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
-        {
-            ViewModel?.BrowseCustomLayout();
-        }
+    private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        ViewModel?.BrowseCustomLayout();
     }
 }

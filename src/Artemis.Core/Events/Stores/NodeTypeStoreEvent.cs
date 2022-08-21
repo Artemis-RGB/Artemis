@@ -1,12 +1,11 @@
-﻿namespace Artemis.Core
-{
-    internal class NodeTypeStoreEvent
-    {
-        public NodeTypeStoreEvent(NodeTypeRegistration typeRegistration)
-        {
-            TypeRegistration = typeRegistration;
-        }
+﻿namespace Artemis.Core;
 
-        public NodeTypeRegistration TypeRegistration { get; }
+internal class NodeTypeStoreEvent
+{
+    public NodeTypeStoreEvent(NodeTypeRegistration typeRegistration)
+    {
+        TypeRegistration = typeRegistration;
     }
+
+    public NodeTypeRegistration TypeRegistration { get; }
 }

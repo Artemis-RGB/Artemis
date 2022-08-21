@@ -1,5 +1,4 @@
 ﻿using Artemis.Core.Providers;
-using Artemis.Core.Services;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Windows.Providers;
 using Ninject.Modules;

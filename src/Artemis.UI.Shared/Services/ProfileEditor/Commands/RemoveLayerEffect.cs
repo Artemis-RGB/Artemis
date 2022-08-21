@@ -5,21 +5,28 @@ using Artemis.Core.LayerEffects;
 namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 
 /// <summary>
-/// Represents a profile editor command that can be used to remove a layer effect from a profile element.
+///     Represents a profile editor command that can be used to remove a layer effect from a profile element.
 /// </summary>
 public class RemoveLayerEffect : IProfileEditorCommand, IDisposable
 {
-    private readonly RenderProfileElement _renderProfileElement;
     private readonly BaseLayerEffect _layerEffect;
+    private readonly RenderProfileElement _renderProfileElement;
     private bool _executed;
 
     /// <summary>
-    /// Creates a new instance of the <see cref="RemoveLayerEffect"/> class.
+    ///     Creates a new instance of the <see cref="RemoveLayerEffect" /> class.
     /// </summary>
     public RemoveLayerEffect(BaseLayerEffect layerEffect)
     {
         _renderProfileElement = layerEffect.ProfileElement;
         _layerEffect = layerEffect;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (_executed)
+            _layerEffect.Dispose();
     }
 
     /// <inheritdoc />
@@ -37,12 +44,5 @@ public class RemoveLayerEffect : IProfileEditorCommand, IDisposable
     {
         _renderProfileElement.AddLayerEffect(_layerEffect);
         _executed = false;
-    }
-    
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        if (_executed)
-            _layerEffect.Dispose();
     }
 }

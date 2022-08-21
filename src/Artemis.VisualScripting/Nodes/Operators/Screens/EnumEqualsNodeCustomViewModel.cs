@@ -8,7 +8,6 @@ using Artemis.UI.Shared.VisualScripting;
 using Avalonia.Controls.Mixins;
 using Avalonia.Threading;
 using DynamicData;
-using FluentAvalonia.Core;
 using Humanizer;
 using ReactiveUI;
 
@@ -43,6 +42,18 @@ public class EnumEqualsNodeCustomViewModel : CustomNodeViewModel
         });
     }
 
+    public ObservableCollection<(long, string)> EnumValues { get; } = new();
+
+    public (long, string) CurrentValue
+    {
+        get => EnumValues.FirstOrDefault(v => v.Item1 == _node.Storage);
+        set
+        {
+            if (!Equals(_node.Storage, value.Item1))
+                _nodeEditorService.ExecuteCommand(Script, new UpdateStorage<long>(_node, value.Item1));
+        }
+    }
+
     private void AddEnumValues(Type type)
     {
         Dispatcher.UIThread.Post(() =>
@@ -55,17 +66,5 @@ public class EnumEqualsNodeCustomViewModel : CustomNodeViewModel
 
             this.RaisePropertyChanged(nameof(CurrentValue));
         }, DispatcherPriority.Background);
-    }
-
-    public ObservableCollection<(long, string)> EnumValues { get; } = new();
-
-    public (long, string) CurrentValue
-    {
-        get => EnumValues.FirstOrDefault(v => v.Item1 == _node.Storage);
-        set
-        {
-            if (!Equals(_node.Storage, value.Item1))
-                _nodeEditorService.ExecuteCommand(Script, new UpdateStorage<long>(_node, value.Item1));
-        }
     }
 }

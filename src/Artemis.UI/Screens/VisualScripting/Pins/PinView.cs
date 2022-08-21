@@ -9,8 +9,8 @@ namespace Artemis.UI.Screens.VisualScripting.Pins;
 
 public class PinView : ReactiveUserControl<PinViewModel>
 {
-    private bool _dragging;
     private Canvas? _container;
+    private bool _dragging;
     private Border? _pinPoint;
 
     protected void InitializePin(Border pinPoint)

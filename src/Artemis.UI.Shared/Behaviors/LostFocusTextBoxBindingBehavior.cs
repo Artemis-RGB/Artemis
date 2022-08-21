@@ -13,7 +13,7 @@ namespace Artemis.UI.Shared.Behaviors;
 public class LostFocusTextBoxBindingBehavior : Behavior<TextBox>
 {
     /// <summary>
-    /// Gets or sets the value of the binding.
+    ///     Gets or sets the value of the binding.
     /// </summary>
     public static readonly StyledProperty<string> TextProperty = AvaloniaProperty.Register<LostFocusTextBoxBindingBehavior, string>(
         "Text", defaultBindingMode: BindingMode.TwoWay);
@@ -24,7 +24,7 @@ public class LostFocusTextBoxBindingBehavior : Behavior<TextBox>
     }
 
     /// <summary>
-    /// Gets or sets the value of the binding.
+    ///     Gets or sets the value of the binding.
     /// </summary>
     public string Text
     {

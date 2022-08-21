@@ -29,7 +29,7 @@ public class PerformanceDebugViewModel : ActivatableViewModelBase
         _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Normal, (_, _) => Update());
 
         DisplayName = "Performance";
-        
+
         this.WhenActivated(disposables =>
         {
             Observable.FromEventPattern<PluginFeatureEventArgs>(x => pluginManagementService.PluginFeatureEnabled += x, x => pluginManagementService.PluginFeatureEnabled -= x)

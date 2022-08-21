@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -21,11 +20,11 @@ namespace Artemis.UI.Services;
 
 public class RegistrationService : IRegistrationService
 {
-    private readonly IKernel _kernel;
-    private readonly IInputService _inputService;
-    private readonly IPropertyInputService _propertyInputService;
-    private readonly INodeService _nodeService;
     private readonly IDataModelUIService _dataModelUIService;
+    private readonly IInputService _inputService;
+    private readonly IKernel _kernel;
+    private readonly INodeService _nodeService;
+    private readonly IPropertyInputService _propertyInputService;
     private readonly IWebServerService _webServerService;
     private bool _registeredBuiltInPropertyEditors;
 

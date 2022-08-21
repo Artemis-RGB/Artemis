@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Linq;
 using Artemis.Core;
@@ -25,13 +24,13 @@ public class NodeViewModel : ActivatableViewModelBase
     private ReactiveCommand<Unit, Unit>? _deleteNode;
     private double _dragOffsetX;
     private double _dragOffsetY;
-    private bool _isSelected;
-    private double _startX;
-    private double _startY;
-
-    private ObservableAsPropertyHelper<bool>? _isStaticNode;
     private ObservableAsPropertyHelper<bool>? _hasInputPins;
     private ObservableAsPropertyHelper<bool>? _hasOutputPins;
+    private bool _isSelected;
+
+    private ObservableAsPropertyHelper<bool>? _isStaticNode;
+    private double _startX;
+    private double _startY;
 
     public NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node, INodeVmFactory nodeVmFactory, INodeEditorService nodeEditorService)
     {

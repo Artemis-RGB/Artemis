@@ -10,9 +10,9 @@ namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 public class UpdateEventConditionPath : IProfileEditorCommand, IDisposable
 {
     private readonly EventCondition _eventCondition;
-    private readonly DataModelPath? _value;
     private readonly DataModelPath? _oldValue;
     private readonly NodeConnectionStore? _store;
+    private readonly DataModelPath? _value;
     private bool _executed;
 
     /// <summary>
@@ -27,6 +27,15 @@ public class UpdateEventConditionPath : IProfileEditorCommand, IDisposable
         INode? startNode = eventCondition.GetStartNode();
         if (startNode != null)
             _store = new NodeConnectionStore(startNode);
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (_executed)
+            _oldValue?.Dispose();
+        else
+            _value?.Dispose();
     }
 
     /// <inheritdoc />
@@ -57,17 +66,4 @@ public class UpdateEventConditionPath : IProfileEditorCommand, IDisposable
 
         _executed = false;
     }
-
-    #region IDisposable
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        if (_executed)
-            _oldValue?.Dispose();
-        else
-            _value?.Dispose();
-    }
-
-    #endregion
 }

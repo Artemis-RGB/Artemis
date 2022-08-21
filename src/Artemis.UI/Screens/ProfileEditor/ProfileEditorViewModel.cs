@@ -24,13 +24,13 @@ public class ProfileEditorViewModel : MainScreenViewModel
     private readonly IProfileEditorService _profileEditorService;
     private readonly ISettingsService _settingsService;
     private readonly SourceList<IToolViewModel> _tools;
+    private DisplayConditionScriptViewModel? _displayConditionScriptViewModel;
     private ObservableAsPropertyHelper<ProfileEditorHistory?>? _history;
     private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
-    private ObservableAsPropertyHelper<bool>? _suspendedEditing;
-    private StatusBarViewModel? _statusBarViewModel;
-    private DisplayConditionScriptViewModel? _displayConditionScriptViewModel;
-    private PropertiesViewModel? _propertiesViewModel;
     private ProfileTreeViewModel? _profileTreeViewModel;
+    private PropertiesViewModel? _propertiesViewModel;
+    private StatusBarViewModel? _statusBarViewModel;
+    private ObservableAsPropertyHelper<bool>? _suspendedEditing;
     private VisualEditorViewModel? _visualEditorViewModel;
 
     /// <inheritdoc />
@@ -144,7 +144,7 @@ public class ProfileEditorViewModel : MainScreenViewModel
 
         if (!changed.IsSelected || !changed.IsExclusive)
             return;
-        
+
         // Disable all others if the changed one is selected and exclusive
         _tools.Edit(list =>
         {

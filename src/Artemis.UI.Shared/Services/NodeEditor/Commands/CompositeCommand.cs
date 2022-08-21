@@ -9,8 +9,8 @@ namespace Artemis.UI.Shared.Services.NodeEditor.Commands;
 /// </summary>
 public class CompositeCommand : INodeEditorCommand, IDisposable
 {
-    private bool _ignoreNextExecute;
     private readonly List<INodeEditorCommand> _commands;
+    private bool _ignoreNextExecute;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="CompositeCommand" /> class.
@@ -45,8 +45,10 @@ public class CompositeCommand : INodeEditorCommand, IDisposable
     public void Dispose()
     {
         foreach (INodeEditorCommand NodeEditorCommand in _commands)
+        {
             if (NodeEditorCommand is IDisposable disposable)
                 disposable.Dispose();
+        }
     }
 
     #region Implementation of INodeEditorCommand

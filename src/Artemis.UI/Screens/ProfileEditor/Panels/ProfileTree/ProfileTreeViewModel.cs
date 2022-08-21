@@ -7,7 +7,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
@@ -17,11 +16,11 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
 public class ProfileTreeViewModel : TreeItemViewModel
 {
-    private TreeItemViewModel? _selectedChild;
-    private ObservableAsPropertyHelper<bool>? _focusNone;
     private ObservableAsPropertyHelper<bool>? _focusFolder;
+    private ObservableAsPropertyHelper<bool>? _focusNone;
     private ObservableAsPropertyHelper<bool>? _focusSelection;
     private ObservableAsPropertyHelper<bool>? _keyBindingsEnabled;
+    private TreeItemViewModel? _selectedChild;
 
     public ProfileTreeViewModel(IWindowService windowService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
         : base(null, null, windowService, profileEditorService, profileEditorVmFactory)
@@ -67,7 +66,7 @@ public class ProfileTreeViewModel : TreeItemViewModel
     public bool FocusFolder => _focusFolder?.Value ?? false;
     public bool FocusSelection => _focusSelection?.Value ?? false;
     public bool KeyBindingsEnabled => _keyBindingsEnabled?.Value ?? false;
-    
+
     public TreeItemViewModel? SelectedChild
     {
         get => _selectedChild;

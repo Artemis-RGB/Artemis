@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Artemis.Core;
 
@@ -7,7 +8,7 @@ namespace Artemis.Core;
 ///     Specifies OS platforms a plugin may support.
 /// </summary>
 [Flags]
-[JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+[JsonConverter(typeof(StringEnumConverter))]
 public enum PluginPlatform
 {
     /// <summary>The Windows platform.</summary>

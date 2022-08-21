@@ -1,19 +1,17 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Artemis.UI.Screens.Root
-{
-    public partial class DefaultTitleBarView : UserControl
-    {
-        public DefaultTitleBarView()
-        {
-            InitializeComponent();
-        }
+namespace Artemis.UI.Screens.Root;
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+public class DefaultTitleBarView : UserControl
+{
+    public DefaultTitleBarView()
+    {
+        InitializeComponent();
+    }
+
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }

@@ -7,9 +7,9 @@ namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 /// </summary>
 public class UpdateStaticPlayMode : IProfileEditorCommand
 {
+    private readonly StaticPlayMode _oldValue;
     private readonly StaticCondition _staticCondition;
     private readonly StaticPlayMode _value;
-    private readonly StaticPlayMode _oldValue;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="UpdateEventTriggerMode" /> class.

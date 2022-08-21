@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Artemis.Core;
 using Artemis.UI.Shared;
-using RGB.NET.Core;
 
 namespace Artemis.UI.Screens.Device;
 

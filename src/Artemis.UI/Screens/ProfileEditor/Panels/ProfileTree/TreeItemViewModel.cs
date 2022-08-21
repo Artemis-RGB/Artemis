@@ -28,11 +28,11 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
     private RenderProfileElement? _currentProfileElement;
     private bool _isExpanded;
     private bool _isFlyoutOpen;
+    private ObservableAsPropertyHelper<bool>? _isFocused;
     private ProfileElement? _profileElement;
     private string? _renameValue;
     private bool _renaming;
     private TimeSpan _time;
-    private ObservableAsPropertyHelper<bool>? _isFocused;
 
     protected TreeItemViewModel(TreeItemViewModel? parent,
         ProfileElement? profileElement,
@@ -56,7 +56,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
         Copy = ReactiveCommand.CreateFromTask(ExecuteCopy);
         Paste = ReactiveCommand.CreateFromTask(ExecutePaste, this.WhenAnyValue(vm => vm.CanPaste));
         AbsorbCommand = ReactiveCommand.Create(() => true);
-        
+
         this.WhenActivated(d =>
         {
             _isFocused = ProfileEditorService.FocusMode
@@ -74,7 +74,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
         this.WhenAnyValue(vm => vm.IsFlyoutOpen).Subscribe(UpdateCanPaste);
     }
 
-    public ReactiveCommand<Unit,bool> AbsorbCommand { get; }
+    public ReactiveCommand<Unit, bool> AbsorbCommand { get; }
 
     public bool IsFocused => _isFocused?.Value ?? false;
 
@@ -297,10 +297,8 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
         if (focusMode == ProfileEditorFocusMode.Selection)
             return currentProfileElement == ProfileElement;
         if (focusMode == ProfileEditorFocusMode.Folder && currentProfileElement?.Parent != null)
-        {
             // Any direct parent or direct siblings cause focus
             return currentProfileElement.Parent == ProfileElement?.Parent || currentProfileElement.Parent.GetAllRenderElements().Any(e => e == ProfileElement);
-        }
 
         return false;
     }

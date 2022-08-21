@@ -1,19 +1,18 @@
 ﻿using System;
 
-namespace Artemis.UI.Exceptions
+namespace Artemis.UI.Exceptions;
+
+public class ArtemisUIException : Exception
 {
-    public class ArtemisUIException : Exception
+    public ArtemisUIException()
     {
-        public ArtemisUIException()
-        {
-        }
+    }
 
-        public ArtemisUIException(string message) : base(message)
-        {
-        }
+    public ArtemisUIException(string message) : base(message)
+    {
+    }
 
-        public ArtemisUIException(string message, Exception inner) : base(message, inner)
-        {
-        }
+    public ArtemisUIException(string message, Exception inner) : base(message, inner)
+    {
     }
 }

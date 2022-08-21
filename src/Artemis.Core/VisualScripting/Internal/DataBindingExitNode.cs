@@ -1,79 +1,73 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Artemis.Core.Internal
+namespace Artemis.Core.Internal;
+
+internal class DataBindingExitNode<TLayerProperty> : Node, IExitNode
 {
-    internal class DataBindingExitNode<TLayerProperty> : Node, IExitNode
+    private readonly Dictionary<IDataBindingProperty, InputPin> _propertyPins = new();
+    private readonly Dictionary<IDataBindingProperty, object> _propertyValues = new();
+
+    public DataBindingExitNode(DataBinding<TLayerProperty> dataBinding) : base(dataBinding.LayerProperty.PropertyDescription.Name ?? "", "")
     {
-        private readonly Dictionary<IDataBindingProperty, InputPin> _propertyPins = new();
-        private readonly Dictionary<IDataBindingProperty, object> _propertyValues = new();
+        DataBinding = dataBinding;
+        DataBinding.DataBindingPropertiesCleared += DataBindingOnDataBindingPropertiesCleared;
+        DataBinding.DataBindingPropertyRegistered += DataBindingOnDataBindingPropertyRegistered;
+        Id = IExitNode.NodeId;
 
-        public DataBinding<TLayerProperty> DataBinding { get; }
+        CreateInputPins();
+    }
 
-        public DataBindingExitNode(DataBinding<TLayerProperty> dataBinding) : base(dataBinding.LayerProperty.PropertyDescription.Name ?? "", "")
+    public DataBinding<TLayerProperty> DataBinding { get; }
+
+    public void ApplyToDataBinding()
+    {
+        foreach ((IDataBindingProperty? property, object? pendingValue) in _propertyValues)
+            property.SetValue(pendingValue);
+    }
+
+    private void ClearInputPins()
+    {
+        while (Pins.Any())
+            RemovePin((Pin) Pins.First());
+
+        _propertyPins.Clear();
+        _propertyValues.Clear();
+    }
+
+    private void CreateInputPins()
+    {
+        ClearInputPins();
+
+        foreach (IDataBindingProperty property in DataBinding.Properties)
         {
-            DataBinding = dataBinding;
-            DataBinding.DataBindingPropertiesCleared += DataBindingOnDataBindingPropertiesCleared;
-            DataBinding.DataBindingPropertyRegistered += DataBindingOnDataBindingPropertyRegistered;
-            Id = IExitNode.NodeId;
-            
-            CreateInputPins();
+            _propertyPins.Add(property, Numeric.IsTypeCompatible(property.ValueType)
+                ? CreateInputPin(typeof(Numeric), property.DisplayName)
+                : CreateInputPin(property.ValueType, property.DisplayName)
+            );
         }
+    }
 
-        public override bool IsExitNode => true;
+    private void DataBindingOnDataBindingPropertyRegistered(object? sender, DataBindingEventArgs e)
+    {
+        CreateInputPins();
+    }
 
-        public override void Evaluate()
+    private void DataBindingOnDataBindingPropertiesCleared(object? sender, DataBindingEventArgs e)
+    {
+        ClearInputPins();
+    }
+
+    public override bool IsExitNode => true;
+
+    public override void Evaluate()
+    {
+        foreach ((IDataBindingProperty? property, InputPin? inputPin) in _propertyPins)
         {
-            foreach ((IDataBindingProperty? property, InputPin? inputPin) in _propertyPins)
-            {
-                if (inputPin.ConnectedTo.Any())
-                    _propertyValues[property] = inputPin.Value!;
-                else
-                    _propertyValues.Remove(property);
-            }
+            if (inputPin.ConnectedTo.Any())
+                _propertyValues[property] = inputPin.Value!;
+            else
+                _propertyValues.Remove(property);
         }
-        
-        public void ApplyToDataBinding()
-        {
-            foreach ((IDataBindingProperty? property, object? pendingValue) in _propertyValues)
-                property.SetValue(pendingValue);
-        }
-
-        private void ClearInputPins()
-        {
-            while (Pins.Any())
-                RemovePin((Pin) Pins.First());
-
-            _propertyPins.Clear();
-            _propertyValues.Clear();
-        }
-
-        private void CreateInputPins()
-        {
-            ClearInputPins();
-
-            foreach (IDataBindingProperty property in DataBinding.Properties)
-            {
-                _propertyPins.Add(property, Numeric.IsTypeCompatible(property.ValueType)
-                    ? CreateInputPin(typeof(Numeric), property.DisplayName)
-                    : CreateInputPin(property.ValueType, property.DisplayName)
-                );
-            }
-        }
-
-        #region Event handlers
-
-        private void DataBindingOnDataBindingPropertyRegistered(object? sender, DataBindingEventArgs e)
-        {
-            CreateInputPins();
-        }
-
-        private void DataBindingOnDataBindingPropertiesCleared(object? sender, DataBindingEventArgs e)
-        {
-            ClearInputPins();
-        }
-
-        #endregion
     }
 }

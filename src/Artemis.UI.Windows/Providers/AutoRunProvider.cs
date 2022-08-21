@@ -64,7 +64,9 @@ public class AutoRunProvider : IAutoRunProvider
 
         string xmlPath = Path.GetTempFileName();
         await using (Stream fileStream = new FileStream(xmlPath, FileMode.Create))
+        {
             await document.SaveAsync(fileStream, SaveOptions.None, CancellationToken.None);
+        }
 
         Process schtasks = new()
         {
@@ -106,7 +108,7 @@ public class AutoRunProvider : IAutoRunProvider
     public async Task EnableAutoRun(bool recreate, int autoRunDelay)
     {
         // if (Constants.BuildInfo.IsLocalBuild)
-            // return;
+        // return;
 
         // Create or remove the task if necessary
         bool taskCreated = false;

@@ -1,8 +1,7 @@
-﻿namespace Artemis.UI.Services.Interfaces
+﻿namespace Artemis.UI.Services.Interfaces;
+
+public interface IDebugService : IArtemisUIService
 {
-    public interface IDebugService : IArtemisUIService
-    {
-        void ShowDebugger();
-        void ClearDebugger();
-    }
+    void ShowDebugger();
+    void ClearDebugger();
 }

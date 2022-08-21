@@ -1,17 +1,15 @@
 ﻿using System;
-using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Storage.Entities.Profile;
 using Avalonia;
 using Avalonia.Input;
-using Newtonsoft.Json;
 
 namespace Artemis.UI.Extensions;
 
 /// <summary>
-/// Provides static extension methods for UI related profile element tasks.
+///     Provides static extension methods for UI related profile element tasks.
 /// </summary>
 public static class ProfileElementExtensions
 {

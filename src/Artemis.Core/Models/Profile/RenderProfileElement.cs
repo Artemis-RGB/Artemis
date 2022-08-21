@@ -182,7 +182,7 @@ public abstract class RenderProfileElement : ProfileElement
         get => _bounds;
         private set => SetAndNotify(ref _bounds, value);
     }
-    
+
     #endregion
 
     #region State
@@ -256,7 +256,7 @@ public abstract class RenderProfileElement : ProfileElement
         foreach (BaseLayerEffect baseLayerEffect in _layerEffects)
             baseLayerEffect.Dispose();
         _layerEffects.Clear();
-        
+
         foreach (LayerEffectEntity layerEffectEntity in RenderElementEntity.LayerEffects.OrderBy(e => e.Order))
             LoadLayerEffect(layerEffectEntity);
     }
@@ -276,7 +276,7 @@ public abstract class RenderProfileElement : ProfileElement
             descriptor = PlaceholderLayerEffectDescriptor.Create(layerEffectEntity.ProviderId);
             layerEffect = descriptor.CreateInstance(this, layerEffectEntity);
         }
-        
+
         _layerEffects.Add(layerEffect);
     }
 
@@ -285,7 +285,7 @@ public abstract class RenderProfileElement : ProfileElement
         int index = _layerEffects.IndexOf(layerEffect);
         if (index == -1)
             return;
-        
+
         LayerEffectDescriptor descriptor = PlaceholderLayerEffectDescriptor.Create(layerEffect.ProviderId);
         BaseLayerEffect placeholder = descriptor.CreateInstance(this, layerEffect.LayerEffectEntity);
         _layerEffects[index] = placeholder;
@@ -298,17 +298,17 @@ public abstract class RenderProfileElement : ProfileElement
         int index = _layerEffects.IndexOf(placeholder);
         if (index == -1)
             return;
-        
+
         LayerEffectDescriptor? descriptor = LayerEffectStore.Get(placeholder.OriginalEntity.ProviderId, placeholder.PlaceholderFor)?.LayerEffectDescriptor;
         if (descriptor == null)
             throw new ArtemisCoreException("Can't replace a placeholder effect because the real effect isn't available.");
-        
+
         BaseLayerEffect layerEffect = descriptor.CreateInstance(this, placeholder.OriginalEntity);
         _layerEffects[index] = layerEffect;
         placeholder.Dispose();
         OnLayerEffectsUpdated();
     }
-    
+
     private void OrderEffects()
     {
         int index = 0;
@@ -320,7 +320,7 @@ public abstract class RenderProfileElement : ProfileElement
 
         _layerEffects.Sort((a, b) => a.Order.CompareTo(b.Order));
     }
-    
+
     private void LayerEffectStoreOnLayerEffectRemoved(object? sender, LayerEffectStoreEvent e)
     {
         // Find effects that just got disabled and replace them with placeholders
@@ -328,7 +328,7 @@ public abstract class RenderProfileElement : ProfileElement
 
         if (!affectedLayerEffects.Any())
             return;
-        
+
         foreach (BaseLayerEffect baseLayerEffect in affectedLayerEffects)
             ReplaceLayerEffectWithPlaceholder(baseLayerEffect);
         OnLayerEffectsUpdated();
@@ -344,7 +344,7 @@ public abstract class RenderProfileElement : ProfileElement
 
         if (!affectedPlaceholders.Any())
             return;
-        
+
         foreach (PlaceholderLayerEffect placeholderLayerEffect in affectedPlaceholders)
             ReplacePlaceholderWithLayerEffect(placeholderLayerEffect);
         OnLayerEffectsUpdated();

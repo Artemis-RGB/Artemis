@@ -1,13 +1,7 @@
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using Artemis.Core;
-using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Generators;
 using Avalonia.Input;
-using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactions.DragAndDrop;
 
@@ -15,6 +9,30 @@ namespace Artemis.UI.Screens.Sidebar.Behaviors;
 
 public class SidebarCategoryViewDropHandler : DropHandlerBase
 {
+    public override bool Validate(object? sender, DragEventArgs e, object? sourceContext, object? targetContext, object? state)
+    {
+        if (sender is ItemsControl itemsControl)
+            foreach (ItemContainerInfo? item in itemsControl.ItemContainerGenerator.Containers)
+                SetDraggingPseudoClasses(item.ContainerControl, false, false);
+
+        if (e.Source is IControl && sender is ListBox listBox)
+            return Validate(listBox, e, sourceContext, targetContext, false);
+
+        return false;
+    }
+
+    public override bool Execute(object? sender, DragEventArgs e, object? sourceContext, object? targetContext, object? state)
+    {
+        if (sender is ItemsControl itemsControl)
+            foreach (ItemContainerInfo? item in itemsControl.ItemContainerGenerator.Containers)
+                SetDraggingPseudoClasses(item.ContainerControl, false, false);
+
+        if (e.Source is IControl && sender is ListBox listBox)
+            return Validate(listBox, e, sourceContext, targetContext, true);
+
+        return false;
+    }
+
     private bool Validate(ListBox listBox, DragEventArgs e, object? sourceContext, object? targetContext, bool bExecute)
     {
         if (sourceContext is not SidebarProfileConfigurationViewModel sourceItem || targetContext is not SidebarCategoryViewModel vm ||
@@ -33,7 +51,7 @@ public class SidebarCategoryViewDropHandler : DropHandlerBase
             if (targetVisual != null)
             {
                 Point positionInTarget = e.GetPosition(targetVisual);
-                if (positionInTarget.Y > (targetVisual.Bounds.Height / 2))
+                if (positionInTarget.Y > targetVisual.Bounds.Height / 2)
                     before = false;
             }
         }
@@ -61,38 +79,6 @@ public class SidebarCategoryViewDropHandler : DropHandlerBase
         }
 
         return true;
-    }
-
-    public override bool Validate(object? sender, DragEventArgs e, object? sourceContext, object? targetContext, object? state)
-    {
-        if (sender is ItemsControl itemsControl)
-        {
-            foreach (ItemContainerInfo? item in itemsControl.ItemContainerGenerator.Containers)
-                SetDraggingPseudoClasses(item.ContainerControl, false, false);
-        }
-
-        if (e.Source is IControl && sender is ListBox listBox)
-        {
-            return Validate(listBox, e, sourceContext, targetContext, false);
-        }
-
-        return false;
-    }
-
-    public override bool Execute(object? sender, DragEventArgs e, object? sourceContext, object? targetContext, object? state)
-    {
-        if (sender is ItemsControl itemsControl)
-        {
-            foreach (ItemContainerInfo? item in itemsControl.ItemContainerGenerator.Containers)
-                SetDraggingPseudoClasses(item.ContainerControl, false, false);
-        }
-
-        if (e.Source is IControl && sender is ListBox listBox)
-        {
-            return Validate(listBox, e, sourceContext, targetContext, true);
-        }
-
-        return false;
     }
 
     private void SetDraggingPseudoClasses(IControl control, bool dragging, bool before)

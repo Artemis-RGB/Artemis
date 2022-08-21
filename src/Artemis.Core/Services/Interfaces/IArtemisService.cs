@@ -1,9 +1,8 @@
-﻿namespace Artemis.Core.Services
+﻿namespace Artemis.Core.Services;
+
+/// <summary>
+///     A singleton service
+/// </summary>
+public interface IArtemisService
 {
-    /// <summary>
-    ///     A singleton service
-    /// </summary>
-    public interface IArtemisService
-    {
-    }
 }

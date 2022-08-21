@@ -4,18 +4,18 @@ using Artemis.Core;
 namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 
 /// <summary>
-/// Represents a profile editor command that can be used to remove a profile element.
+///     Represents a profile editor command that can be used to remove a profile element.
 /// </summary>
 public class RemoveProfileElement : IProfileEditorCommand, IDisposable
 {
     private readonly int _index;
     private readonly RenderProfileElement _subject;
     private readonly ProfileElement _target;
-    private bool _isRemoved;
     private readonly bool _wasEnabled;
+    private bool _isRemoved;
 
     /// <summary>
-    /// Creates a new instance of the <see cref="RemoveProfileElement"/> class.
+    ///     Creates a new instance of the <see cref="RemoveProfileElement" /> class.
     /// </summary>
     public RemoveProfileElement(RenderProfileElement subject)
     {
