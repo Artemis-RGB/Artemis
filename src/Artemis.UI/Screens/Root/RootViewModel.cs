@@ -158,6 +158,9 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
     public bool IsMainWindowOpen => _lifeTime.MainWindow != null;
 
     /// <inheritdoc />
+    public bool IsMainWindowFocused { get; private set; }
+
+    /// <inheritdoc />
     public void OpenMainWindow()
     {
         Dispatcher.UIThread.Post(() =>
@@ -181,12 +184,30 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
     {
         Dispatcher.UIThread.Post(() => { _lifeTime.MainWindow?.Close(); });
     }
+    
+    public void Focused()
+    {
+        IsMainWindowFocused = true;
+        OnMainWindowFocused();
+    }
+
+    public void Unfocused()
+    {
+        IsMainWindowFocused = false;
+        OnMainWindowUnfocused();
+    }
 
     /// <inheritdoc />
     public event EventHandler? MainWindowOpened;
 
     /// <inheritdoc />
     public event EventHandler? MainWindowClosed;
+    
+    /// <inheritdoc />
+    public event EventHandler? MainWindowFocused;
+
+    /// <inheritdoc />
+    public event EventHandler? MainWindowUnfocused;
 
     protected virtual void OnMainWindowOpened()
     {
@@ -196,6 +217,16 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
     protected virtual void OnMainWindowClosed()
     {
         MainWindowClosed?.Invoke(this, EventArgs.Empty);
+    }
+    
+    protected virtual void OnMainWindowFocused()
+    {
+        MainWindowFocused?.Invoke(this, EventArgs.Empty);
+    }
+
+    protected virtual void OnMainWindowUnfocused()
+    {
+        MainWindowUnfocused?.Invoke(this, EventArgs.Empty);
     }
 
     #endregion

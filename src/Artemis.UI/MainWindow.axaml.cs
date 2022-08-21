@@ -16,6 +16,8 @@ public class MainWindow : ReactiveCoreWindow<RootViewModel>
     public MainWindow()
     {
         Opened += OnOpened;
+        Activated += OnActivated;
+        Deactivated += OnDeactivated;
         InitializeComponent();
         _rootPanel = this.Get<Panel>("RootPanel");
         _sidebarContentControl = this.Get<ContentControl>("SidebarContentControl");
@@ -41,6 +43,16 @@ public class MainWindow : ReactiveCoreWindow<RootViewModel>
             coreAppTitleBar.TitleBar.ExtendViewIntoTitleBar = true;
             SetTitleBar(this.Get<Border>("DragHandle"));
         }
+    }
+    
+    private void OnActivated(object? sender, EventArgs e)
+    {
+        ViewModel.Focused();
+    }
+
+    private void OnDeactivated(object? sender, EventArgs e)
+    {
+        ViewModel.Unfocused();
     }
 
     private void InitializeComponent()

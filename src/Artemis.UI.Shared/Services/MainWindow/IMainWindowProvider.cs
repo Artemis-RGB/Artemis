@@ -15,6 +15,11 @@ public interface IMainWindowProvider
     bool IsMainWindowOpen { get; }
 
     /// <summary>
+    ///     Gets a boolean indicating whether the main window is currently focused
+    /// </summary>
+    bool IsMainWindowFocused { get; }
+
+    /// <summary>
     ///     Opens the main window
     /// </summary>
     void OpenMainWindow();
@@ -33,4 +38,14 @@ public interface IMainWindowProvider
     ///     Occurs when the main window has been closed
     /// </summary>
     public event EventHandler? MainWindowClosed;
+
+    /// <summary>
+    ///     Occurs when the main window has been focused
+    /// </summary>
+    public event EventHandler? MainWindowFocused;
+
+    /// <summary>
+    ///     Occurs when the main window has been unfocused
+    /// </summary>
+    public event EventHandler? MainWindowUnfocused;
 }

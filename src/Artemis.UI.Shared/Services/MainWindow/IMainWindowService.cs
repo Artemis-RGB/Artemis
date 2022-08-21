@@ -37,4 +37,14 @@ public interface IMainWindowService : IArtemisSharedUIService
     ///     Occurs when the main window has been closed
     /// </summary>
     public event EventHandler? MainWindowClosed;
+    
+    /// <summary>
+    ///     Occurs when the main window has been focused
+    /// </summary>
+    public event EventHandler? MainWindowFocused;
+
+    /// <summary>
+    ///     Occurs when the main window has been unfocused
+    /// </summary>
+    public event EventHandler? MainWindowUnfocused;
 }

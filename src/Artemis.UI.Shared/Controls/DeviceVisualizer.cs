@@ -321,7 +321,7 @@ public class DeviceVisualizer : Control
             {
                 // ignored
             }
-        }, DispatcherPriority.Background);
+        });
     }
 
     /// <inheritdoc />

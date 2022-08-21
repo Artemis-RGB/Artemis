@@ -34,7 +34,7 @@ public class VisualEditorViewModel : ActivatableViewModelBase
             .Bind(out ReadOnlyObservableCollection<IVisualizerViewModel> visualizers)
             .Subscribe();
 
-        Devices = new ObservableCollection<ArtemisDevice>(rgbService.EnabledDevices);
+        Devices = new ObservableCollection<ArtemisDevice>(rgbService.EnabledDevices.OrderBy(d => d.ZIndex));
         Visualizers = visualizers;
 
         this.WhenActivated(d =>
