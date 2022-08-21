@@ -15,6 +15,16 @@ internal class MainWindowService : IMainWindowService
     {
         MainWindowClosed?.Invoke(this, EventArgs.Empty);
     }
+    
+    protected virtual void OnMainWindowFocused()
+    {
+        MainWindowFocused?.Invoke(this, EventArgs.Empty);
+    }
+
+    protected virtual void OnMainWindowUnfocused()
+    {
+        MainWindowUnfocused?.Invoke(this, EventArgs.Empty);
+    }
 
     private void SyncWithManager()
     {
@@ -43,6 +53,16 @@ internal class MainWindowService : IMainWindowService
     {
         SyncWithManager();
     }
+    
+    private void HandleMainWindowFocused(object? sender, EventArgs e)
+    {
+        OnMainWindowFocused();
+    }
+
+    private void HandleMainWindowUnfocused(object? sender, EventArgs e)
+    {
+        OnMainWindowUnfocused();
+    }
 
     public bool IsMainWindowOpen { get; private set; }
 
@@ -54,12 +74,16 @@ internal class MainWindowService : IMainWindowService
         {
             _mainWindowManager.MainWindowOpened -= HandleMainWindowOpened;
             _mainWindowManager.MainWindowClosed -= HandleMainWindowClosed;
+            _mainWindowManager.MainWindowFocused -= HandleMainWindowFocused;
+            _mainWindowManager.MainWindowUnfocused -= HandleMainWindowUnfocused;
         }
 
         _mainWindowManager = mainWindowProvider;
         _mainWindowManager.MainWindowOpened += HandleMainWindowOpened;
         _mainWindowManager.MainWindowClosed += HandleMainWindowClosed;
-
+        _mainWindowManager.MainWindowFocused += HandleMainWindowFocused;
+        _mainWindowManager.MainWindowUnfocused += HandleMainWindowUnfocused;
+        
         // Sync up with the new manager's state
         SyncWithManager();
     }
@@ -76,4 +100,7 @@ internal class MainWindowService : IMainWindowService
 
     public event EventHandler? MainWindowOpened;
     public event EventHandler? MainWindowClosed;
+
+    public event EventHandler? MainWindowFocused;
+    public event EventHandler? MainWindowUnfocused;
 }

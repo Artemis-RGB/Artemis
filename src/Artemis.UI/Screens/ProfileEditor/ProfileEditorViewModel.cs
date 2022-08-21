@@ -11,6 +11,7 @@ using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Properties;
 using Artemis.UI.Screens.ProfileEditor.StatusBar;
 using Artemis.UI.Screens.ProfileEditor.VisualEditor;
+using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Threading;
 using DynamicData;
@@ -23,6 +24,7 @@ public class ProfileEditorViewModel : MainScreenViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
     private readonly ISettingsService _settingsService;
+    private readonly IMainWindowService _mainWindowService;
     private readonly SourceList<IToolViewModel> _tools;
     private DisplayConditionScriptViewModel? _displayConditionScriptViewModel;
     private ObservableAsPropertyHelper<ProfileEditorHistory?>? _history;
@@ -43,11 +45,13 @@ public class ProfileEditorViewModel : MainScreenViewModel
         PropertiesViewModel propertiesViewModel,
         DisplayConditionScriptViewModel displayConditionScriptViewModel,
         StatusBarViewModel statusBarViewModel,
-        IEnumerable<IToolViewModel> toolViewModels)
+        IEnumerable<IToolViewModel> toolViewModels,
+        IMainWindowService mainWindowService)
         : base(hostScreen, "profile-editor")
     {
         _profileEditorService = profileEditorService;
         _settingsService = settingsService;
+        _mainWindowService = mainWindowService;
 
         _tools = new SourceList<IToolViewModel>();
         _tools.AddRange(toolViewModels);
@@ -65,7 +69,16 @@ public class ProfileEditorViewModel : MainScreenViewModel
             _profileConfiguration = profileEditorService.ProfileConfiguration.ToProperty(this, vm => vm.ProfileConfiguration).DisposeWith(d);
             _history = profileEditorService.History.ToProperty(this, vm => vm.History).DisposeWith(d);
             _suspendedEditing = profileEditorService.SuspendedEditing.ToProperty(this, vm => vm.SuspendedEditing).DisposeWith(d);
+            
+            mainWindowService.MainWindowFocused += MainWindowServiceOnMainWindowFocused;
+            mainWindowService.MainWindowUnfocused += MainWindowServiceOnMainWindowUnfocused;
 
+            Disposable.Create(() =>
+            {
+                mainWindowService.MainWindowFocused -= MainWindowServiceOnMainWindowFocused;
+                mainWindowService.MainWindowUnfocused -= MainWindowServiceOnMainWindowUnfocused;
+            }).DisposeWith(d);
+            
             // Slow and steady wins the race (and doesn't lock up the entire UI)
             Dispatcher.UIThread.Post(() => StatusBarViewModel = statusBarViewModel, DispatcherPriority.Loaded);
             Dispatcher.UIThread.Post(() => VisualEditorViewModel = visualEditorViewModel, DispatcherPriority.Loaded);
@@ -151,5 +164,17 @@ public class ProfileEditorViewModel : MainScreenViewModel
             foreach (IToolViewModel toolViewModel in list.Where(t => t.IsExclusive && t != changed))
                 toolViewModel.IsSelected = false;
         });
+    }
+    
+    private void MainWindowServiceOnMainWindowFocused(object? sender, EventArgs e)
+    {
+        if (_settingsService.GetSetting("ProfileEditor.AutoSuspend", true).Value)
+            _profileEditorService.ChangeSuspendedEditing(false);
+    }
+
+    private void MainWindowServiceOnMainWindowUnfocused(object? sender, EventArgs e)
+    {
+        if (_settingsService.GetSetting("ProfileEditor.AutoSuspend", true).Value)
+            _profileEditorService.ChangeSuspendedEditing(true);
     }
 }
