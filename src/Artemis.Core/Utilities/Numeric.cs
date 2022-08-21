@@ -38,7 +38,7 @@ namespace Artemis.Core
         /// </summary>
         public Numeric(double value)
         {
-            _value = (float) value;
+            _value = (float)value;
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Artemis.Core
             {
                 float value => value,
                 int value => value,
-                double value => (float) value,
+                double value => (float)value,
                 byte value => value,
                 Numeric value => value,
                 _ => ParseFloatOrDefault(pathValue?.ToString())
@@ -133,7 +133,7 @@ namespace Artemis.Core
 
         public static implicit operator int(Numeric p)
         {
-            return (int) MathF.Round(p._value, MidpointRounding.AwayFromZero);
+            return (int)MathF.Round(p._value, MidpointRounding.AwayFromZero);
         }
 
         public static implicit operator double(Numeric p)
@@ -143,13 +143,18 @@ namespace Artemis.Core
 
         public static implicit operator decimal(Numeric p)
         {
-            return (decimal) p._value;
+            return (decimal)p._value;
         }
 
         public static implicit operator byte(Numeric p)
         {
-            return (byte) Math.Clamp(p._value, 0, 255);
+            return (byte)Math.Clamp(p._value, 0, 255);
         }
+
+        public static implicit operator Numeric(double d) => new(d);
+        public static implicit operator Numeric(float f) => new(f);
+        public static implicit operator Numeric(int i) => new(i);
+        public static implicit operator Numeric(byte b) => new(b);
 
         public static bool operator >(Numeric a, Numeric b)
         {
@@ -284,7 +289,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public byte ToByte(IFormatProvider? provider)
         {
-            return (byte) Math.Clamp(_value, 0, 255);
+            return (byte)Math.Clamp(_value, 0, 255);
         }
 
         /// <inheritdoc />
@@ -302,7 +307,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public decimal ToDecimal(IFormatProvider? provider)
         {
-            return (decimal) _value;
+            return (decimal)_value;
         }
 
         /// <inheritdoc />
@@ -314,25 +319,25 @@ namespace Artemis.Core
         /// <inheritdoc />
         public short ToInt16(IFormatProvider? provider)
         {
-            return (short) MathF.Round(_value, MidpointRounding.AwayFromZero);
+            return (short)MathF.Round(_value, MidpointRounding.AwayFromZero);
         }
 
         /// <inheritdoc />
         public int ToInt32(IFormatProvider? provider)
         {
-            return (int) MathF.Round(_value, MidpointRounding.AwayFromZero);
+            return (int)MathF.Round(_value, MidpointRounding.AwayFromZero);
         }
 
         /// <inheritdoc />
         public long ToInt64(IFormatProvider? provider)
         {
-            return (long) MathF.Round(_value, MidpointRounding.AwayFromZero);
+            return (long)MathF.Round(_value, MidpointRounding.AwayFromZero);
         }
 
         /// <inheritdoc />
         public sbyte ToSByte(IFormatProvider? provider)
         {
-            return (sbyte) Math.Clamp(_value, 0, 255);
+            return (sbyte)Math.Clamp(_value, 0, 255);
         }
 
         /// <inheritdoc />
@@ -356,19 +361,19 @@ namespace Artemis.Core
         /// <inheritdoc />
         public ushort ToUInt16(IFormatProvider? provider)
         {
-            return (ushort) MathF.Round(_value, MidpointRounding.AwayFromZero);
+            return (ushort)MathF.Round(_value, MidpointRounding.AwayFromZero);
         }
 
         /// <inheritdoc />
         public uint ToUInt32(IFormatProvider? provider)
         {
-            return (uint) MathF.Round(_value, MidpointRounding.AwayFromZero);
+            return (uint)MathF.Round(_value, MidpointRounding.AwayFromZero);
         }
 
         /// <inheritdoc />
         public ulong ToUInt64(IFormatProvider? provider)
         {
-            return (ulong) MathF.Round(_value, MidpointRounding.AwayFromZero);
+            return (ulong)MathF.Round(_value, MidpointRounding.AwayFromZero);
         }
 
         #endregion
