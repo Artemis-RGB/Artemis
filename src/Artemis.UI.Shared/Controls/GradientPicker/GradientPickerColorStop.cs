@@ -18,19 +18,6 @@ internal class GradientPickerColorStop : TemplatedControl
     public static readonly StyledProperty<GradientPicker?> GradientPickerProperty =
         AvaloniaProperty.Register<GradientPickerColorStop, GradientPicker?>(nameof(GradientPicker), notifying: Notifying);
 
-    private static void Notifying(IAvaloniaObject sender, bool before)
-    {
-        if (sender is not GradientPickerColorStop self)
-            return;
-
-        if (before && self.GradientPicker != null)
-            self.GradientPicker.PropertyChanged -= self.GradientPickerOnPropertyChanged;
-        else if (self.GradientPicker != null)
-            self.GradientPicker.PropertyChanged += self.GradientPickerOnPropertyChanged;
-
-        self.IsSelected = ReferenceEquals(self.GradientPicker?.SelectedColorStop, self.ColorStop);
-    }
-
     /// <summary>
     ///     Gets or sets the color stop.
     /// </summary>
@@ -50,8 +37,9 @@ internal class GradientPickerColorStop : TemplatedControl
     public static readonly DirectProperty<GradientPickerColorStop, bool> IsSelectedProperty =
         AvaloniaProperty.RegisterDirect<GradientPickerColorStop, bool>(nameof(IsSelected), g => g.IsSelected);
 
-    private bool _isSelected;
     private double _dragOffset;
+
+    private bool _isSelected;
 
     /// <summary>
     ///     Gets or sets the gradient picker.
@@ -97,12 +85,23 @@ internal class GradientPickerColorStop : TemplatedControl
         }
     }
 
+    private static void Notifying(IAvaloniaObject sender, bool before)
+    {
+        if (sender is not GradientPickerColorStop self)
+            return;
+
+        if (before && self.GradientPicker != null)
+            self.GradientPicker.PropertyChanged -= self.GradientPickerOnPropertyChanged;
+        else if (self.GradientPicker != null)
+            self.GradientPicker.PropertyChanged += self.GradientPickerOnPropertyChanged;
+
+        self.IsSelected = ReferenceEquals(self.GradientPicker?.SelectedColorStop, self.ColorStop);
+    }
+
     private void GradientPickerOnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
         if (GradientPicker != null && e.Property == GradientPicker.SelectedColorStopProperty)
-        {
             IsSelected = GradientPicker.SelectedColorStop == ColorStop;
-        }
     }
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)

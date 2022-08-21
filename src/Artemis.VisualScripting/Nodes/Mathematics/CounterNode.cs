@@ -15,6 +15,9 @@ public class CounterNode : Node
         Output = CreateOutputPin<Numeric>();
     }
 
+    public InputPin<Numeric> Time { get; set; }
+    public OutputPin<Numeric> Output { get; set; }
+
     public override void Evaluate()
     {
         DateTime now = DateTime.Now;
@@ -26,7 +29,4 @@ public class CounterNode : Node
         Output.Value = new Numeric(MathF.Round(_progress, 4, MidpointRounding.AwayFromZero));
         _lastEvaluate = now;
     }
-
-    public InputPin<Numeric> Time { get; set; }
-    public OutputPin<Numeric> Output { get; set; }
 }

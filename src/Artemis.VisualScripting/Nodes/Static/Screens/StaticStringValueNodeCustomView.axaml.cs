@@ -1,18 +1,17 @@
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.VisualScripting.Nodes.Static.Screens
-{
-    public partial class StaticStringValueNodeCustomView : ReactiveUserControl<StaticStringValueNodeCustomViewModel>
-    {
-        public StaticStringValueNodeCustomView()
-        {
-            InitializeComponent();
-        }
+namespace Artemis.VisualScripting.Nodes.Static.Screens;
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+public class StaticStringValueNodeCustomView : ReactiveUserControl<StaticStringValueNodeCustomViewModel>
+{
+    public StaticStringValueNodeCustomView()
+    {
+        InitializeComponent();
+    }
+
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }

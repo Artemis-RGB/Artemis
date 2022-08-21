@@ -4,35 +4,33 @@ using System.Reactive.Linq;
 using Artemis.UI.Shared;
 using Avalonia;
 using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Plugins
+namespace Artemis.UI.Screens.Plugins;
+
+public class PluginSettingsWindowView : ReactiveCoreWindow<PluginSettingsWindowViewModel>
 {
-    public class PluginSettingsWindowView : ReactiveCoreWindow<PluginSettingsWindowViewModel>
+    public PluginSettingsWindowView()
     {
-        public PluginSettingsWindowView()
-        {
-            InitializeComponent();
+        InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+        this.AttachDevTools();
 #endif
 
-            this.WhenActivated(disposables =>
-                {
-                    Observable.FromEventPattern(
-                            x => ViewModel!.ConfigurationViewModel.CloseRequested += x,
-                            x => ViewModel!.ConfigurationViewModel.CloseRequested -= x
-                        )
-                        .Subscribe(_ => Close())
-                        .DisposeWith(disposables);
-                }
-            );
-        }
+        this.WhenActivated(disposables =>
+            {
+                Observable.FromEventPattern(
+                        x => ViewModel!.ConfigurationViewModel.CloseRequested += x,
+                        x => ViewModel!.ConfigurationViewModel.CloseRequested -= x
+                    )
+                    .Subscribe(_ => Close())
+                    .DisposeWith(disposables);
+            }
+        );
+    }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }

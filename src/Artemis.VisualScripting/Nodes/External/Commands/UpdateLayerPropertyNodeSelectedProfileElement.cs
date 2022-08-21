@@ -5,12 +5,12 @@ namespace Artemis.VisualScripting.Nodes.External.Commands;
 
 public class UpdateLayerPropertyNodeSelectedProfileElement : INodeEditorCommand
 {
-    private readonly LayerPropertyNode _node;
     private readonly NodeConnectionStore _connections;
+    private readonly LayerPropertyNode _node;
+    private readonly ILayerProperty? _oldLayerProperty;
+    private readonly RenderProfileElement? _oldValue;
 
     private readonly RenderProfileElement? _value;
-    private readonly RenderProfileElement? _oldValue;
-    private readonly ILayerProperty? _oldLayerProperty;
 
     public UpdateLayerPropertyNodeSelectedProfileElement(LayerPropertyNode node, RenderProfileElement? value)
     {

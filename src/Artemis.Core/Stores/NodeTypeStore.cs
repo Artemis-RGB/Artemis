@@ -4,122 +4,117 @@ using System.Linq;
 using Artemis.Storage.Entities.Profile.Nodes;
 using SkiaSharp;
 
-namespace Artemis.Core
+namespace Artemis.Core;
+
+internal class NodeTypeStore
 {
-    internal class NodeTypeStore
+    private static readonly List<NodeTypeRegistration> Registrations = new();
+    private static readonly List<TypeColorRegistration> ColorRegistrations = new();
+
+    public static NodeTypeRegistration Add(NodeData nodeData)
     {
-        private static readonly List<NodeTypeRegistration> Registrations = new();
-        private static readonly List<TypeColorRegistration> ColorRegistrations = new();
+        if (nodeData.Plugin == null)
+            throw new ArtemisCoreException("Cannot add a data binding modifier type that is not associated with a plugin");
 
-        public static NodeTypeRegistration Add(NodeData nodeData)
+        NodeTypeRegistration typeRegistration;
+        lock (Registrations)
         {
-            if (nodeData.Plugin == null)
-                throw new ArtemisCoreException("Cannot add a data binding modifier type that is not associated with a plugin");
+            if (Registrations.Any(r => r.NodeData == nodeData))
+                throw new ArtemisCoreException($"Data binding modifier type store already contains modifier '{nodeData.Name}'");
 
-            NodeTypeRegistration typeRegistration;
-            lock (Registrations)
-            {
-                if (Registrations.Any(r => r.NodeData == nodeData))
-                    throw new ArtemisCoreException($"Data binding modifier type store already contains modifier '{nodeData.Name}'");
-
-                typeRegistration = new NodeTypeRegistration(nodeData, nodeData.Plugin) {IsInStore = true};
-                Registrations.Add(typeRegistration);
-            }
-
-            OnNodeTypeAdded(new NodeTypeStoreEvent(typeRegistration));
-            return typeRegistration;
+            typeRegistration = new NodeTypeRegistration(nodeData, nodeData.Plugin) {IsInStore = true};
+            Registrations.Add(typeRegistration);
         }
 
-        public static void Remove(NodeTypeRegistration typeRegistration)
+        OnNodeTypeAdded(new NodeTypeStoreEvent(typeRegistration));
+        return typeRegistration;
+    }
+
+    public static void Remove(NodeTypeRegistration typeRegistration)
+    {
+        lock (Registrations)
         {
-            lock (Registrations)
-            {
-                if (!Registrations.Contains(typeRegistration))
-                    throw new ArtemisCoreException($"Node type store does not contain modifier type '{typeRegistration.NodeData.Name}'");
+            if (!Registrations.Contains(typeRegistration))
+                throw new ArtemisCoreException($"Node type store does not contain modifier type '{typeRegistration.NodeData.Name}'");
 
-                Registrations.Remove(typeRegistration);
-                typeRegistration.IsInStore = false;
-            }
-
-            OnNodeTypeRemoved(new NodeTypeStoreEvent(typeRegistration));
+            Registrations.Remove(typeRegistration);
+            typeRegistration.IsInStore = false;
         }
 
-        public static IEnumerable<NodeData> GetAll()
+        OnNodeTypeRemoved(new NodeTypeStoreEvent(typeRegistration));
+    }
+
+    public static IEnumerable<NodeData> GetAll()
+    {
+        lock (Registrations)
         {
-            lock (Registrations)
-            {
-                return Registrations.Select(r => r.NodeData).ToList();
-            }
+            return Registrations.Select(r => r.NodeData).ToList();
+        }
+    }
+
+    public static NodeTypeRegistration? Get(NodeEntity entity)
+    {
+        lock (Registrations)
+        {
+            return Registrations.FirstOrDefault(r => r.MatchesEntity(entity));
+        }
+    }
+
+    public static Plugin? GetPlugin(INode node)
+    {
+        lock (Registrations)
+        {
+            return Registrations.FirstOrDefault(r => r.Plugin.GetType().Assembly == node.GetType().Assembly)?.Plugin;
+        }
+    }
+
+    public static TypeColorRegistration AddColor(Type type, SKColor color, Plugin plugin)
+    {
+        TypeColorRegistration typeColorRegistration;
+        lock (ColorRegistrations)
+        {
+            if (ColorRegistrations.Any(r => r.Type == type))
+                throw new ArtemisCoreException($"Node color store already contains a color for '{type.Name}'");
+
+            typeColorRegistration = new TypeColorRegistration(type, color, plugin) {IsInStore = true};
+            ColorRegistrations.Add(typeColorRegistration);
         }
 
-        public static NodeTypeRegistration? Get(NodeEntity entity)
+        return typeColorRegistration;
+    }
+
+    public static void RemoveColor(TypeColorRegistration typeColorRegistration)
+    {
+        lock (ColorRegistrations)
         {
-            lock (Registrations)
-            {
-                return Registrations.FirstOrDefault(r => r.MatchesEntity(entity));
-            }
-        }
+            if (!ColorRegistrations.Contains(typeColorRegistration))
+                throw new ArtemisCoreException($"Node color store does not contain modifier type '{typeColorRegistration.Type.Name}'");
 
-        public static Plugin? GetPlugin(INode node)
+            ColorRegistrations.Remove(typeColorRegistration);
+            typeColorRegistration.IsInStore = false;
+        }
+    }
+
+    public static TypeColorRegistration? GetColor(Type type)
+    {
+        lock (ColorRegistrations)
         {
-            lock (Registrations)
-            {
-                return Registrations.FirstOrDefault(r => r.Plugin.GetType().Assembly == node.GetType().Assembly)?.Plugin;
-            }
+            return ColorRegistrations
+                .OrderByDescending(r => r.Type.ScoreCastability(type))
+                .FirstOrDefault(r => r.Type.ScoreCastability(type) > 0);
         }
+    }
 
-        public static TypeColorRegistration AddColor(Type type, SKColor color, Plugin plugin)
-        {
-            TypeColorRegistration typeColorRegistration;
-            lock (ColorRegistrations)
-            {
-                if (ColorRegistrations.Any(r => r.Type == type))
-                    throw new ArtemisCoreException($"Node color store already contains a color for '{type.Name}'");
+    public static event EventHandler<NodeTypeStoreEvent>? NodeTypeAdded;
+    public static event EventHandler<NodeTypeStoreEvent>? NodeTypeRemoved;
 
-                typeColorRegistration = new TypeColorRegistration(type, color, plugin) {IsInStore = true};
-                ColorRegistrations.Add(typeColorRegistration);
-            }
+    private static void OnNodeTypeAdded(NodeTypeStoreEvent e)
+    {
+        NodeTypeAdded?.Invoke(null, e);
+    }
 
-            return typeColorRegistration;
-        }
-
-        public static void RemoveColor(TypeColorRegistration typeColorRegistration)
-        {
-            lock (ColorRegistrations)
-            {
-                if (!ColorRegistrations.Contains(typeColorRegistration))
-                    throw new ArtemisCoreException($"Node color store does not contain modifier type '{typeColorRegistration.Type.Name}'");
-
-                ColorRegistrations.Remove(typeColorRegistration);
-                typeColorRegistration.IsInStore = false;
-            }
-        }
-
-        public static TypeColorRegistration? GetColor(Type type)
-        {
-            lock (ColorRegistrations)
-            {
-                return ColorRegistrations
-                    .OrderByDescending(r => r.Type.ScoreCastability(type))
-                    .FirstOrDefault(r => r.Type.ScoreCastability(type) > 0);
-            }
-        }
-
-        #region Events
-
-        public static event EventHandler<NodeTypeStoreEvent>? NodeTypeAdded;
-        public static event EventHandler<NodeTypeStoreEvent>? NodeTypeRemoved;
-
-        private static void OnNodeTypeAdded(NodeTypeStoreEvent e)
-        {
-            NodeTypeAdded?.Invoke(null, e);
-        }
-
-        private static void OnNodeTypeRemoved(NodeTypeStoreEvent e)
-        {
-            NodeTypeRemoved?.Invoke(null, e);
-        }
-
-        #endregion
+    private static void OnNodeTypeRemoved(NodeTypeStoreEvent e)
+    {
+        NodeTypeRemoved?.Invoke(null, e);
     }
 }

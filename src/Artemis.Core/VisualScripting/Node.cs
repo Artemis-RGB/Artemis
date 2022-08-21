@@ -179,7 +179,7 @@ public abstract class Node : CorePropertyChanged, INode
     }
 
     /// <summary>
-    ///     Adds an existing <paramref name="pin"/> to the <see cref="Pins" /> collection.
+    ///     Adds an existing <paramref name="pin" /> to the <see cref="Pins" /> collection.
     /// </summary>
     /// <param name="pin">The pin to add</param>
     protected void AddPin(Pin pin)

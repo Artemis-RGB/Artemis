@@ -232,6 +232,13 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         }
     }
 
+    public void RequestAutoFit()
+    {
+        AutoFitRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    public event EventHandler? AutoFitRequested;
+
     private void ExecuteClearSelection()
     {
         ClearNodeSelection();
@@ -250,7 +257,7 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         int nodeCount = NodeViewModels.Count;
         List<INode> nodes = NodeViewModels.Where(vm => vm.IsSelected).Select(vm => vm.Node).ToList();
         using NodeEditorCommandScope scope = _nodeEditorService.CreateCommandScope(NodeScript, "Duplicate nodes");
-        foreach (INode node in  nodes.Where(n => !n.IsDefaultNode && !n.IsExitNode))
+        foreach (INode node in nodes.Where(n => !n.IsDefaultNode && !n.IsExitNode))
             _nodeEditorService.ExecuteCommand(NodeScript, new DuplicateNode(NodeScript, node, false, _nodeService));
 
         // Select only the new nodes
@@ -280,11 +287,4 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         if (toRemove != null)
             _nodeViewModels.Remove(toRemove);
     }
-
-    public void RequestAutoFit()
-    {
-        AutoFitRequested?.Invoke(this, EventArgs.Empty);
-    }
-
-    public event EventHandler? AutoFitRequested;
 }

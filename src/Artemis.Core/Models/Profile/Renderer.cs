@@ -1,118 +1,117 @@
 ﻿using System;
 using SkiaSharp;
 
-namespace Artemis.Core
+namespace Artemis.Core;
+
+internal class Renderer : IDisposable
 {
-    internal class Renderer : IDisposable
+    private bool _disposed;
+    private SKRect _lastBounds;
+    private GRContext? _lastGraphicsContext;
+    private SKRect _lastParentBounds;
+    private bool _valid;
+    public SKSurface? Surface { get; private set; }
+    public SKPaint? Paint { get; private set; }
+    public SKPath? Path { get; private set; }
+    public SKPoint TargetLocation { get; private set; }
+
+    public bool IsOpen { get; private set; }
+
+    /// <summary>
+    ///     Opens the render context using the dimensions of the provided path
+    /// </summary>
+    public void Open(SKPath path, Folder? parent)
     {
-        private bool _valid;
-        private bool _disposed;
-        private SKRect _lastBounds;
-        private SKRect _lastParentBounds;
-        private GRContext? _lastGraphicsContext;
-        public SKSurface? Surface { get; private set; }
-        public SKPaint? Paint { get; private set; }
-        public SKPath? Path { get; private set; }
-        public SKPoint TargetLocation { get; private set; }
+        if (_disposed)
+            throw new ObjectDisposedException("Renderer");
 
-        public bool IsOpen { get; private set; }
+        if (IsOpen)
+            throw new ArtemisCoreException("Cannot open render context because it is already open");
 
-        /// <summary>
-        ///     Opens the render context using the dimensions of the provided path
-        /// </summary>
-        public void Open(SKPath path, Folder? parent)
+        if (path.Bounds != _lastBounds || (parent != null && parent.Bounds != _lastParentBounds) || _lastGraphicsContext != Constants.ManagedGraphicsContext?.GraphicsContext)
+            Invalidate();
+
+        if (!_valid || Surface == null)
         {
-            if (_disposed)
-                throw new ObjectDisposedException("Renderer");
+            SKRect pathBounds = path.Bounds;
+            int width = (int) pathBounds.Width;
+            int height = (int) pathBounds.Height;
 
-            if (IsOpen)
-                throw new ArtemisCoreException("Cannot open render context because it is already open");
+            SKImageInfo imageInfo = new(width, height);
+            if (Constants.ManagedGraphicsContext?.GraphicsContext == null)
+                Surface = SKSurface.Create(imageInfo);
+            else
+                Surface = SKSurface.Create(Constants.ManagedGraphicsContext.GraphicsContext, true, imageInfo);
 
-            if (path.Bounds != _lastBounds || (parent != null && parent.Bounds != _lastParentBounds) || _lastGraphicsContext != Constants.ManagedGraphicsContext?.GraphicsContext)
-                Invalidate();
+            Path = new SKPath(path);
+            Path.Transform(SKMatrix.CreateTranslation(pathBounds.Left * -1, pathBounds.Top * -1));
 
-            if (!_valid || Surface == null)
-            {
-                SKRect pathBounds = path.Bounds;
-                int width = (int) pathBounds.Width;
-                int height = (int) pathBounds.Height;
+            TargetLocation = new SKPoint(pathBounds.Location.X, pathBounds.Location.Y);
+            if (parent != null)
+                TargetLocation -= parent.Bounds.Location;
 
-                SKImageInfo imageInfo = new(width, height);
-                if (Constants.ManagedGraphicsContext?.GraphicsContext == null)
-                    Surface = SKSurface.Create(imageInfo);
-                else
-                    Surface = SKSurface.Create(Constants.ManagedGraphicsContext.GraphicsContext, true, imageInfo);
+            Surface.Canvas.ClipPath(Path);
 
-                Path = new SKPath(path);
-                Path.Transform(SKMatrix.CreateTranslation(pathBounds.Left * -1, pathBounds.Top * -1));
-
-                TargetLocation = new SKPoint(pathBounds.Location.X, pathBounds.Location.Y);
-                if (parent != null)
-                    TargetLocation -= parent.Bounds.Location;
-
-                Surface.Canvas.ClipPath(Path);
-
-                _lastParentBounds = parent?.Bounds ?? new SKRect();
-                _lastBounds = path.Bounds;
-                _lastGraphicsContext = Constants.ManagedGraphicsContext?.GraphicsContext;
-                _valid = true;
-            }
-
-            Paint = new SKPaint();
-
-            Surface.Canvas.Clear();
-            Surface.Canvas.Save();
-
-            IsOpen = true;
+            _lastParentBounds = parent?.Bounds ?? new SKRect();
+            _lastBounds = path.Bounds;
+            _lastGraphicsContext = Constants.ManagedGraphicsContext?.GraphicsContext;
+            _valid = true;
         }
 
-        public void Close()
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("Renderer");
+        Paint = new SKPaint();
 
-            Surface?.Canvas.Restore();
+        Surface.Canvas.Clear();
+        Surface.Canvas.Save();
 
-            // Looks like every part of the paint needs to be disposed :(
-            Paint?.ColorFilter?.Dispose();
-            Paint?.ImageFilter?.Dispose();
-            Paint?.MaskFilter?.Dispose();
-            Paint?.PathEffect?.Dispose();
-            Paint?.Dispose();
+        IsOpen = true;
+    }
 
-            Paint = null;
+    public void Close()
+    {
+        if (_disposed)
+            throw new ObjectDisposedException("Renderer");
 
-            IsOpen = false;
-        }
+        Surface?.Canvas.Restore();
 
-        public void Invalidate()
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("Renderer");
+        // Looks like every part of the paint needs to be disposed :(
+        Paint?.ColorFilter?.Dispose();
+        Paint?.ImageFilter?.Dispose();
+        Paint?.MaskFilter?.Dispose();
+        Paint?.PathEffect?.Dispose();
+        Paint?.Dispose();
 
-            _valid = false;
-        }
+        Paint = null;
 
-        public void Dispose()
-        {
-            if (IsOpen)
-                Close();
+        IsOpen = false;
+    }
 
-            Surface?.Dispose();
-            Paint?.Dispose();
-            Path?.Dispose();
+    public void Invalidate()
+    {
+        if (_disposed)
+            throw new ObjectDisposedException("Renderer");
 
-            Surface = null;
-            Paint = null;
-            Path = null;
+        _valid = false;
+    }
 
-            _disposed = true;
-        }
+    ~Renderer()
+    {
+        if (IsOpen)
+            Close();
+    }
 
-        ~Renderer()
-        {
-            if (IsOpen)
-                Close();
-        }
+    public void Dispose()
+    {
+        if (IsOpen)
+            Close();
+
+        Surface?.Dispose();
+        Paint?.Dispose();
+        Path?.Dispose();
+
+        Surface = null;
+        Paint = null;
+        Path = null;
+
+        _disposed = true;
     }
 }

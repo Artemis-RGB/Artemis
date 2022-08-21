@@ -1,12 +1,10 @@
 using Artemis.UI.Shared.Controls.GradientPicker;
-using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
 namespace Artemis.VisualScripting.Nodes.Color.Screens;
 
-public partial class RampSKColorNodeCustomView : ReactiveUserControl<RampSKColorNodeCustomViewModel>
+public class RampSKColorNodeCustomView : ReactiveUserControl<RampSKColorNodeCustomViewModel>
 {
     public RampSKColorNodeCustomView()
     {

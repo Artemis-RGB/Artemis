@@ -4,7 +4,6 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Xaml.Interactivity;
-using FluentAvalonia.UI.Controls;
 
 namespace Artemis.UI.Shared.Behaviors;
 
@@ -14,7 +13,7 @@ namespace Artemis.UI.Shared.Behaviors;
 public class SliderPointerReleasedBindingBehavior : Behavior<Slider>
 {
     /// <summary>
-    /// Gets or sets the value of the binding.
+    ///     Gets or sets the value of the binding.
     /// </summary>
     public static readonly StyledProperty<double> ValueProperty = AvaloniaProperty.Register<LostFocusTextBoxBindingBehavior, double>(
         nameof(Value), defaultBindingMode: BindingMode.TwoWay);
@@ -25,7 +24,7 @@ public class SliderPointerReleasedBindingBehavior : Behavior<Slider>
     }
 
     /// <summary>
-    /// Gets or sets the value of the binding.
+    ///     Gets or sets the value of the binding.
     /// </summary>
     public double Value
     {

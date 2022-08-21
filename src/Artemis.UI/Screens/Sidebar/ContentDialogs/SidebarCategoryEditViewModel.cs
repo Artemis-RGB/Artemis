@@ -6,55 +6,56 @@ using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
 
-namespace Artemis.UI.Screens.Sidebar
+namespace Artemis.UI.Screens.Sidebar;
+
+public class SidebarCategoryEditViewModel : ContentDialogViewModelBase
 {
-    public class SidebarCategoryEditViewModel : ContentDialogViewModelBase
+    private readonly ProfileCategory? _category;
+    private readonly IProfileService _profileService;
+    private string? _categoryName;
+
+    public SidebarCategoryEditViewModel(IProfileService profileService, ProfileCategory? category)
     {
-        private readonly IProfileService _profileService;
-        private readonly ProfileCategory? _category;
-        private string? _categoryName;
+        _profileService = profileService;
+        _category = category;
 
-        public SidebarCategoryEditViewModel(IProfileService profileService, ProfileCategory? category)
+        if (_category != null)
+            _categoryName = _category.Name;
+
+        Confirm = ReactiveCommand.Create(ExecuteConfirm, ValidationContext.Valid);
+        Delete = ReactiveCommand.Create(ExecuteDelete);
+
+        this.ValidationRule(vm => vm.CategoryName, categoryName => !string.IsNullOrWhiteSpace(categoryName), "You must specify a valid name");
+    }
+
+    public ReactiveCommand<Unit, Unit> Delete { get; set; }
+
+    public string? CategoryName
+    {
+        get => _categoryName;
+        set => RaiseAndSetIfChanged(ref _categoryName, value);
+    }
+
+    public ReactiveCommand<Unit, Unit> Confirm { get; }
+
+    private void ExecuteConfirm()
+    {
+        if (_category != null)
         {
-            _profileService = profileService;
-            _category = category;
-
-            if (_category != null)
-                _categoryName = _category.Name;
-
-            Confirm = ReactiveCommand.Create(ExecuteConfirm, ValidationContext.Valid);
-            Delete = ReactiveCommand.Create(ExecuteDelete);
-
-            this.ValidationRule(vm => vm.CategoryName, categoryName => !string.IsNullOrWhiteSpace(categoryName), "You must specify a valid name");
+            _category.Name = CategoryName!;
+            _profileService.SaveProfileCategory(_category);
+        }
+        else
+        {
+            _profileService.CreateProfileCategory(CategoryName!);
         }
 
-        public ReactiveCommand<Unit, Unit> Delete { get; set; }
+        ContentDialog?.Hide(ContentDialogResult.Primary);
+    }
 
-        public string? CategoryName
-        {
-            get => _categoryName;
-            set => this.RaiseAndSetIfChanged(ref _categoryName, value);
-        }
-
-        public ReactiveCommand<Unit, Unit> Confirm { get; }
-
-        private void ExecuteConfirm()
-        {
-            if (_category != null)
-            {
-                _category.Name = CategoryName!;
-                _profileService.SaveProfileCategory(_category);
-            }
-            else
-                _profileService.CreateProfileCategory(CategoryName!);
-
-            ContentDialog?.Hide(ContentDialogResult.Primary);
-        }
-
-        private void ExecuteDelete()
-        {
-            if (_category != null)
-                _profileService.DeleteProfileCategory(_category);
-        }
+    private void ExecuteDelete()
+    {
+        if (_category != null)
+            _profileService.DeleteProfileCategory(_category);
     }
 }

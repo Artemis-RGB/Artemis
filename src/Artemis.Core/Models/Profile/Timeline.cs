@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core;
@@ -65,7 +62,6 @@ public class Timeline : CorePropertyChanged, IStorageModel
         get => _lastDelta;
         private set => SetAndNotify(ref _lastDelta, value);
     }
-
 
 
     /// <summary>

@@ -13,23 +13,22 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Scripting.Dialogs;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Builders;
 using DynamicData;
 using DynamicData.Binding;
-using FluentAvalonia.UI.Controls;
 using ReactiveUI;
-using ContentDialogButton = Artemis.UI.Shared.Services.Builders.ContentDialogButton;
 
 namespace Artemis.UI.Screens.Scripting;
 
 public class ScriptsDialogViewModel : DialogViewModelBase<object?>
 {
+    private readonly Dictionary<ScriptingProvider, IScriptEditorViewModel> _providerViewModels = new();
     private readonly IScriptingService _scriptingService;
     private readonly IWindowService _windowService;
-    private readonly Dictionary<ScriptingProvider, IScriptEditorViewModel> _providerViewModels = new();
     private ObservableAsPropertyHelper<bool>? _hasScripts;
-    private ScriptConfigurationViewModel? _selectedScript;
-    private IScriptEditorViewModel? _scriptEditorViewModel;
     private ReadOnlyObservableCollection<ScriptConfigurationViewModel> _scriptConfigurations;
+    private IScriptEditorViewModel? _scriptEditorViewModel;
+    private ScriptConfigurationViewModel? _selectedScript;
 
     public ScriptsDialogViewModel(IScriptingService scriptingService, IWindowService windowService, IProfileService profileService, IScriptVmFactory scriptVmFactory)
     {
@@ -96,6 +95,20 @@ public class ScriptsDialogViewModel : DialogViewModelBase<object?>
 
     public ReactiveCommand<Unit, Unit> AddScriptConfiguration { get; }
 
+    public async Task<bool> CanClose()
+    {
+        if (!ScriptConfigurations.Any(s => s.ScriptConfiguration.HasChanges))
+            return true;
+
+        bool result = await _windowService.ShowConfirmContentDialog("Discard changes", "One or more scripts still have pending changes, do you want to discard them?");
+        if (!result)
+            return false;
+
+        foreach (ScriptConfigurationViewModel scriptConfigurationViewModel in ScriptConfigurations)
+            scriptConfigurationViewModel.ScriptConfiguration.DiscardPendingChanges();
+        return true;
+    }
+
 
     private void SetupScriptEditor(ScriptConfiguration? scriptConfiguration)
     {
@@ -143,19 +156,5 @@ public class ScriptsDialogViewModel : DialogViewModelBase<object?>
 
         // Select the new script
         SelectedScript = ScriptConfigurations.LastOrDefault();
-    }
-
-    public async Task<bool> CanClose()
-    {
-        if (!ScriptConfigurations.Any(s => s.ScriptConfiguration.HasChanges))
-            return true;
-        
-        bool result = await _windowService.ShowConfirmContentDialog("Discard changes", "One or more scripts still have pending changes, do you want to discard them?");
-        if (!result)
-            return false;
-        
-        foreach (ScriptConfigurationViewModel scriptConfigurationViewModel in ScriptConfigurations)
-            scriptConfigurationViewModel.ScriptConfiguration.DiscardPendingChanges();
-        return true;
     }
 }

@@ -11,29 +11,28 @@ using Artemis.Core.Services;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using DynamicData;
-using ReactiveUI;
 using Serilog;
 
 namespace Artemis.UI.Shared.Services.ProfileEditor;
 
 internal class ProfileEditorService : IProfileEditorService
 {
+    private readonly BehaviorSubject<ProfileEditorFocusMode> _focusModeSubject = new(ProfileEditorFocusMode.None);
+    private readonly ILayerBrushService _layerBrushService;
     private readonly BehaviorSubject<ILayerProperty?> _layerPropertySubject = new(null);
     private readonly ILogger _logger;
     private readonly IModuleService _moduleService;
-    private readonly IRgbService _rgbService;
-    private readonly ILayerBrushService _layerBrushService;
     private readonly BehaviorSubject<int> _pixelsPerSecondSubject = new(120);
     private readonly BehaviorSubject<bool> _playingSubject = new(false);
     private readonly BehaviorSubject<ProfileConfiguration?> _profileConfigurationSubject = new(null);
     private readonly Dictionary<ProfileConfiguration, ProfileEditorHistory> _profileEditorHistories = new();
     private readonly BehaviorSubject<RenderProfileElement?> _profileElementSubject = new(null);
     private readonly IProfileService _profileService;
+    private readonly IRgbService _rgbService;
+    private readonly SourceList<ILayerPropertyKeyframe> _selectedKeyframes;
     private readonly BehaviorSubject<bool> _suspendedEditingSubject = new(false);
     private readonly BehaviorSubject<bool> _suspendedKeybindingsSubject = new(false);
-    private readonly BehaviorSubject<ProfileEditorFocusMode> _focusModeSubject = new(ProfileEditorFocusMode.None);
     private readonly BehaviorSubject<TimeSpan> _timeSubject = new(TimeSpan.Zero);
-    private readonly SourceList<ILayerPropertyKeyframe> _selectedKeyframes;
     private readonly IWindowService _windowService;
     private ProfileEditorCommandScope? _profileEditorHistoryScope;
 
@@ -82,6 +81,75 @@ internal class ProfileEditorService : IProfileEditorService
 
         // When the main window closes, stop editing
         mainWindowService.MainWindowClosed += (_, _) => ChangeCurrentProfileConfiguration(null);
+    }
+
+    private ProfileEditorHistory? GetHistory(ProfileConfiguration? profileConfiguration)
+    {
+        if (profileConfiguration == null)
+            return null;
+        if (_profileEditorHistories.TryGetValue(profileConfiguration, out ProfileEditorHistory? history))
+            return history;
+
+        ProfileEditorHistory newHistory = new(profileConfiguration);
+        _profileEditorHistories.Add(profileConfiguration, newHistory);
+        return newHistory;
+    }
+
+    private async Task<Unit> AutoSaveProfileAsync()
+    {
+        try
+        {
+            await SaveProfileAsync();
+        }
+        catch (Exception e)
+        {
+            _windowService.ShowExceptionDialog("Failed to auto-save profile", e);
+            _logger.Error(e, "Failed to auto-save profile");
+            throw;
+        }
+
+        return Unit.Default;
+    }
+
+    private void Tick(TimeSpan time)
+    {
+        if (_profileConfigurationSubject.Value?.Profile == null || _suspendedEditingSubject.Value)
+            return;
+
+        TickProfileElement(_profileConfigurationSubject.Value.Profile.GetRootFolder(), time);
+    }
+
+    private void TickProfileElement(ProfileElement profileElement, TimeSpan time)
+    {
+        if (profileElement is not RenderProfileElement renderElement)
+            return;
+
+        if (renderElement.Suspended)
+        {
+            renderElement.Disable();
+        }
+        else
+        {
+            renderElement.Enable();
+            renderElement.OverrideTimelineAndApply(time);
+
+            foreach (ProfileElement child in renderElement.Children)
+                TickProfileElement(child, time);
+        }
+    }
+
+    private void ApplyFocusMode()
+    {
+        if (_suspendedEditingSubject.Value)
+            _profileService.EditorFocus = null;
+
+        _profileService.EditorFocus = _focusModeSubject.Value switch
+        {
+            ProfileEditorFocusMode.None => null,
+            ProfileEditorFocusMode.Folder => _profileElementSubject.Value?.Parent,
+            ProfileEditorFocusMode.Selection => _profileElementSubject.Value,
+            _ => _profileService.EditorFocus
+        };
     }
 
     public IObservable<ProfileConfiguration?> ProfileConfiguration { get; }
@@ -149,7 +217,7 @@ internal class ProfileEditorService : IProfileEditorService
     {
         _selectedKeyframes.Clear();
         _profileElementSubject.OnNext(renderProfileElement);
-        
+
         ApplyFocusMode();
         ChangeCurrentLayerProperty(null);
     }
@@ -377,7 +445,7 @@ internal class ProfileEditorService : IProfileEditorService
         if (_playingSubject.Value)
             _playingSubject.OnNext(false);
     }
-    
+
     #region Commands
 
     public void ExecuteCommand(IProfileEditorCommand command)
@@ -432,73 +500,4 @@ internal class ProfileEditorService : IProfileEditorService
     }
 
     #endregion
-    
-    private ProfileEditorHistory? GetHistory(ProfileConfiguration? profileConfiguration)
-    {
-        if (profileConfiguration == null)
-            return null;
-        if (_profileEditorHistories.TryGetValue(profileConfiguration, out ProfileEditorHistory? history))
-            return history;
-
-        ProfileEditorHistory newHistory = new(profileConfiguration);
-        _profileEditorHistories.Add(profileConfiguration, newHistory);
-        return newHistory;
-    }
-
-    private async Task<Unit> AutoSaveProfileAsync()
-    {
-        try
-        {
-            await SaveProfileAsync();
-        }
-        catch (Exception e)
-        {
-            _windowService.ShowExceptionDialog("Failed to auto-save profile", e);
-            _logger.Error(e, "Failed to auto-save profile");
-            throw;
-        }
-
-        return Unit.Default;
-    }
-
-    private void Tick(TimeSpan time)
-    {
-        if (_profileConfigurationSubject.Value?.Profile == null || _suspendedEditingSubject.Value)
-            return;
-
-        TickProfileElement(_profileConfigurationSubject.Value.Profile.GetRootFolder(), time);
-    }
-
-    private void TickProfileElement(ProfileElement profileElement, TimeSpan time)
-    {
-        if (profileElement is not RenderProfileElement renderElement)
-            return;
-
-        if (renderElement.Suspended)
-        {
-            renderElement.Disable();
-        }
-        else
-        {
-            renderElement.Enable();
-            renderElement.OverrideTimelineAndApply(time);
-
-            foreach (ProfileElement child in renderElement.Children)
-                TickProfileElement(child, time);
-        }
-    }
-
-    private void ApplyFocusMode()
-    {
-        if (_suspendedEditingSubject.Value)
-            _profileService.EditorFocus = null;
-
-        _profileService.EditorFocus = _focusModeSubject.Value switch
-        {
-            ProfileEditorFocusMode.None => null,
-            ProfileEditorFocusMode.Folder => _profileElementSubject.Value?.Parent,
-            ProfileEditorFocusMode.Selection => _profileElementSubject.Value,
-            _ => _profileService.EditorFocus
-        };
-    }
 }

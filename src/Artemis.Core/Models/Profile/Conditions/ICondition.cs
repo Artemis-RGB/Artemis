@@ -30,12 +30,12 @@ public interface ICondition : IDisposable, IStorageModel
     void Update();
 
     /// <summary>
-    /// Updates the timeline according to the provided <paramref name="deltaTime" /> as the display condition sees fit.
+    ///     Updates the timeline according to the provided <paramref name="deltaTime" /> as the display condition sees fit.
     /// </summary>
     void UpdateTimeline(double deltaTime);
 
     /// <summary>
-    /// Overrides the timeline to the provided <paramref name="position"/> as the display condition sees fit.
+    ///     Overrides the timeline to the provided <paramref name="position" /> as the display condition sees fit.
     /// </summary>
     void OverrideTimeline(TimeSpan position);
 }

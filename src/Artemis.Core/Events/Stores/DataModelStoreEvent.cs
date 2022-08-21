@@ -1,12 +1,11 @@
-﻿namespace Artemis.Core
-{
-    internal class DataModelStoreEvent
-    {
-        public DataModelStoreEvent(DataModelRegistration registration)
-        {
-            Registration = registration;
-        }
+﻿namespace Artemis.Core;
 
-        public DataModelRegistration Registration { get; }
+internal class DataModelStoreEvent
+{
+    public DataModelStoreEvent(DataModelRegistration registration)
+    {
+        Registration = registration;
     }
+
+    public DataModelRegistration Registration { get; }
 }

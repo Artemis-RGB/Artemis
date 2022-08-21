@@ -1,8 +1,7 @@
-﻿namespace Artemis.Storage.Entities.Profile
+﻿namespace Artemis.Storage.Entities.Profile;
+
+public class ProfileConfigurationHotkeyEntity
 {
-    public class ProfileConfigurationHotkeyEntity
-    {
-        public int? Key { get; set; }
-        public int? Modifiers { get; set; }
-    }
+    public int? Key { get; set; }
+    public int? Modifiers { get; set; }
 }

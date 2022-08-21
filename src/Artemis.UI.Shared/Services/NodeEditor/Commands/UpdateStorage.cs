@@ -30,6 +30,21 @@ public class UpdateStorage<TStorage> : INodeEditorCommand, IDisposable
         _originalValue = _node.Storage;
     }
 
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (_updatedValue)
+        {
+            if (_originalValue is IDisposable disposable)
+                disposable.Dispose();
+        }
+        else
+        {
+            if (_value is IDisposable disposable)
+                disposable.Dispose();
+        }
+    }
+
     #region Implementation of INodeEditorCommand
 
     /// <inheritdoc />
@@ -47,25 +62,6 @@ public class UpdateStorage<TStorage> : INodeEditorCommand, IDisposable
     {
         _updatedValue = false;
         _node.Storage = _originalValue;
-    }
-
-    #endregion
-
-    #region IDisposable
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        if (_updatedValue)
-        {
-            if (_originalValue is IDisposable disposable)
-                disposable.Dispose();
-        }
-        else
-        {
-            if (_value is IDisposable disposable)
-                disposable.Dispose();
-        }
     }
 
     #endregion

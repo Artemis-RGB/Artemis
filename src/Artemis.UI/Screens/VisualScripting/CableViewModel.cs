@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
@@ -17,18 +16,18 @@ namespace Artemis.UI.Screens.VisualScripting;
 
 public class CableViewModel : ActivatableViewModelBase
 {
-    private readonly NodeScriptViewModel _nodeScriptViewModel;
     private readonly IPin _from;
+    private readonly NodeScriptViewModel _nodeScriptViewModel;
     private readonly IPin _to;
     private ObservableAsPropertyHelper<Color>? _cableColor;
-    private ObservableAsPropertyHelper<Point>? _fromPoint;
-    private ObservableAsPropertyHelper<Point>? _toPoint;
-    private ObservableAsPropertyHelper<Point>? _valuePoint;
     private ObservableAsPropertyHelper<bool>? _connected;
+    private bool _displayValue;
+    private ObservableAsPropertyHelper<Point>? _fromPoint;
 
     private PinViewModel? _fromViewModel;
+    private ObservableAsPropertyHelper<Point>? _toPoint;
     private PinViewModel? _toViewModel;
-    private bool _displayValue;
+    private ObservableAsPropertyHelper<Point>? _valuePoint;
 
     public CableViewModel(NodeScriptViewModel nodeScriptViewModel, IPin from, IPin to, ISettingsService settingsService)
     {
@@ -112,11 +111,6 @@ public class CableViewModel : ActivatableViewModelBase
     public Point ValuePoint => _valuePoint?.Value ?? new Point();
     public Color CableColor => _cableColor?.Value ?? new Color(255, 255, 255, 255);
 
-    private void AlwaysShowValuesOnSettingChanged(object? sender, EventArgs e)
-    {
-        UpdateDisplayValue(false);
-    }
-
     public void UpdateDisplayValue(bool hoveringOver)
     {
         if (_nodeScriptViewModel.IsPreview)
@@ -126,5 +120,10 @@ public class CableViewModel : ActivatableViewModelBase
             DisplayValue = true;
         else
             DisplayValue = AlwaysShowValues.Value && IsFirst;
+    }
+
+    private void AlwaysShowValuesOnSettingChanged(object? sender, EventArgs e)
+    {
+        UpdateDisplayValue(false);
     }
 }

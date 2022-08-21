@@ -4,7 +4,6 @@ using Artemis.Core;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Artemis.UI.Shared.Services.PropertyInput;
-using ReactiveUI;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
 
@@ -16,7 +15,7 @@ public class ColorGradientPropertyInputViewModel : PropertyInputViewModel<ColorG
         : base(layerProperty, profileEditorService, propertyInputService)
     {
     }
-    
+
     #region Overrides of PropertyInputViewModel<ColorGradient>
 
     /// <inheritdoc />
@@ -37,7 +36,7 @@ public class ColorGradientPropertyInputViewModel : PropertyInputViewModel<ColorG
         // If the new stops are equal to the old ones, nothing changes
         if (InputValue == null || _originalStops == null || !HasPreviewChanges())
             return;
-        
+
         ProfileEditorService.ExecuteCommand(new UpdateColorGradient(InputValue, InputValue.ToList(), _originalStops));
         _originalStops = null;
     }
@@ -59,16 +58,18 @@ public class ColorGradientPropertyInputViewModel : PropertyInputViewModel<ColorG
     {
         if (InputValue == null || _originalStops == null)
             return false;
-        
+
         if (InputValue.Count != _originalStops.Count)
             return true;
 
         for (int i = 0; i < InputValue.Count; i++)
+        {
             if (!Equals(InputValue[i], _originalStops[i]))
                 return true;
+        }
 
         return false;
     }
-    
+
     #endregion
 }

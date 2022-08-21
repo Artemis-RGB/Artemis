@@ -45,10 +45,11 @@ public class GradientPickerButton : TemplatedControl
     public static readonly DirectProperty<GradientPickerButton, LinearGradientBrush> LinearGradientBrushProperty =
         AvaloniaProperty.RegisterDirect<GradientPickerButton, LinearGradientBrush>(nameof(LinearGradientBrush), g => g.LinearGradientBrush);
 
-    private ColorGradient? _lastColorGradient;
     private Button? _button;
     private GradientPickerFlyout? _flyout;
     private bool _flyoutActive;
+
+    private ColorGradient? _lastColorGradient;
 
     /// <summary>
     ///     Gets or sets the color gradient.
@@ -178,10 +179,8 @@ public class GradientPickerButton : TemplatedControl
         // Update the display gradient
         GradientStops collection = new();
         if (ColorGradient != null)
-        {
             foreach (ColorGradientStop c in ColorGradient.OrderBy(s => s.Position))
                 collection.Add(new GradientStop(Color.FromArgb(c.Color.Alpha, c.Color.Red, c.Color.Green, c.Color.Blue), c.Position));
-        }
 
         LinearGradientBrush.GradientStops = collection;
     }

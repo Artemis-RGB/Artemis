@@ -49,8 +49,8 @@
 						<Border
                           Margin="{TemplateBinding BorderThickness}">
 							<Grid ColumnDefinitions="Auto,*,Auto" >
-								<ContentPresenter Grid.Column="0" Grid.ColumnSpan="1" Content="{TemplateBinding InnerLeftContent}"/>
-								<DockPanel x:Name="PART_InnerDockPanel" Grid.Column="1" Grid.ColumnSpan="1" Margin="{TemplateBinding Padding}">
+								<ContentPresenter Grid.Column="0" Content="{TemplateBinding InnerLeftContent}"/>
+								<DockPanel x:Name="PART_InnerDockPanel" Grid.Column="1" Margin="{TemplateBinding Padding}">
                                     <TextBlock Name="PART_Prefix"
                                                Text="{TemplateBinding attached:TextBoxAssist.PrefixText}"
                                                IsHitTestVisible="False"
@@ -94,7 +94,7 @@
                                                HorizontalAlignment="Right"
                                                DockPanel.Dock="Right"/>
 								</DockPanel>
-								<ContentPresenter Grid.Column="2" Grid.ColumnSpan="1" Content="{TemplateBinding InnerRightContent}"/>
+								<ContentPresenter Grid.Column="2" Content="{TemplateBinding InnerRightContent}"/>
 							</Grid>
 						</Border>
 					</Panel>

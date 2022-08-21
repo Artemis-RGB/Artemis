@@ -15,8 +15,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 
 public class TimelinePropertyViewModel<T> : ActivatableViewModelBase, ITimelinePropertyViewModel
 {
-    private readonly IProfileEditorService _profileEditorService;
     private readonly SourceList<LayerPropertyKeyframe<T>> _keyframes;
+    private readonly IProfileEditorService _profileEditorService;
     private ObservableAsPropertyHelper<bool>? _keyframesEnabled;
 
     public TimelinePropertyViewModel(LayerProperty<T> layerProperty, PropertyViewModel propertyViewModel, IProfileEditorService profileEditorService)

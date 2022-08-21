@@ -15,8 +15,8 @@ public class DataModelNodeCustomViewModel : CustomNodeViewModel
 {
     private readonly DataModelNode _node;
     private readonly INodeEditorService _nodeEditorService;
-    private ObservableCollection<Module>? _modules;
     private DataModelPath? _dataModelPath;
+    private ObservableCollection<Module>? _modules;
     private bool _updating;
 
     public DataModelNodeCustomViewModel(DataModelNode node, INodeScript script, ISettingsService settingsService, INodeEditorService nodeEditorService) : base(node, script)

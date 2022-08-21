@@ -20,880 +20,879 @@ using Ninject.Planning.Bindings.Resolvers;
 using RGB.NET.Core;
 using Serilog;
 
-namespace Artemis.Core.Services
+namespace Artemis.Core.Services;
+
+/// <summary>
+///     Provides access to plugin loading and unloading
+/// </summary>
+internal class PluginManagementService : IPluginManagementService
 {
-    /// <summary>
-    ///     Provides access to plugin loading and unloading
-    /// </summary>
-    internal class PluginManagementService : IPluginManagementService
+    private readonly IDeviceRepository _deviceRepository;
+    private readonly IKernel _kernel;
+    private readonly ILogger _logger;
+    private readonly IPluginRepository _pluginRepository;
+    private readonly List<Plugin> _plugins;
+    private readonly IQueuedActionRepository _queuedActionRepository;
+    private bool _disposed;
+    private bool _isElevated;
+
+    public PluginManagementService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository, IDeviceRepository deviceRepository, IQueuedActionRepository queuedActionRepository)
     {
-        private readonly IKernel _kernel;
-        private readonly ILogger _logger;
-        private readonly IPluginRepository _pluginRepository;
-        private readonly IDeviceRepository _deviceRepository;
-        private readonly IQueuedActionRepository _queuedActionRepository;
-        private readonly List<Plugin> _plugins;
-        private bool _isElevated;
-        private bool _disposed;
+        _kernel = kernel;
+        _logger = logger;
+        _pluginRepository = pluginRepository;
+        _deviceRepository = deviceRepository;
+        _queuedActionRepository = queuedActionRepository;
+        _plugins = new List<Plugin>();
 
-        public PluginManagementService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository, IDeviceRepository deviceRepository, IQueuedActionRepository queuedActionRepository)
+        ProcessPluginDeletionQueue();
+    }
+
+    private void CopyBuiltInPlugin(ZipArchive zipArchive, string targetDirectory)
+    {
+        DirectoryInfo pluginDirectory = new(Path.Combine(Constants.PluginsFolder, targetDirectory));
+        bool createLockFile = File.Exists(Path.Combine(pluginDirectory.FullName, "artemis.lock"));
+
+        // Remove the old directory if it exists
+        if (Directory.Exists(pluginDirectory.FullName))
+            pluginDirectory.DeleteRecursively();
+        Directory.CreateDirectory(pluginDirectory.FullName);
+
+        zipArchive.ExtractToDirectory(pluginDirectory.FullName, true);
+        if (createLockFile)
+            File.Create(Path.Combine(pluginDirectory.FullName, "artemis.lock")).Close();
+    }
+
+    public bool LoadingPlugins { get; private set; }
+
+    #region Built in plugins
+
+    public void CopyBuiltInPlugins()
+    {
+        OnCopyingBuildInPlugins();
+        DirectoryInfo pluginDirectory = new(Constants.PluginsFolder);
+
+        if (Directory.Exists(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.Modules.Overlay-29e3ff97")))
+            Directory.Delete(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.Modules.Overlay-29e3ff97"), true);
+        if (Directory.Exists(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.DataModelExpansions.TestData-ab41d601")))
+            Directory.Delete(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.DataModelExpansions.TestData-ab41d601"), true);
+
+        // Iterate built-in plugins
+        DirectoryInfo builtInPluginDirectory = new(Path.Combine(Constants.ApplicationFolder, "Plugins"));
+        if (!builtInPluginDirectory.Exists)
         {
-            _kernel = kernel;
-            _logger = logger;
-            _pluginRepository = pluginRepository;
-            _deviceRepository = deviceRepository;
-            _queuedActionRepository = queuedActionRepository;
-            _plugins = new List<Plugin>();
-
-            ProcessPluginDeletionQueue();
+            _logger.Warning("No built-in plugins found at {pluginDir}, skipping CopyBuiltInPlugins", builtInPluginDirectory.FullName);
+            return;
         }
 
-        private void CopyBuiltInPlugin(ZipArchive zipArchive, string targetDirectory)
+        foreach (FileInfo zipFile in builtInPluginDirectory.EnumerateFiles("*.zip"))
         {
-            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.PluginsFolder, targetDirectory));
-            bool createLockFile = File.Exists(Path.Combine(pluginDirectory.FullName, "artemis.lock"));
+            // Find the metadata file in the zip
+            using ZipArchive archive = ZipFile.OpenRead(zipFile.FullName);
+            ZipArchiveEntry? metaDataFileEntry = archive.GetEntry("plugin.json");
+            if (metaDataFileEntry == null)
+                throw new ArtemisPluginException("Couldn't find a plugin.json in " + zipFile.FullName);
 
-            // Remove the old directory if it exists
-            if (Directory.Exists(pluginDirectory.FullName))
-                pluginDirectory.DeleteRecursively();
-            Directory.CreateDirectory(pluginDirectory.FullName);
+            using StreamReader reader = new(metaDataFileEntry.Open());
+            PluginInfo builtInPluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
+            string preferred = builtInPluginInfo.PreferredPluginDirectory;
 
-            zipArchive.ExtractToDirectory(pluginDirectory.FullName, true);
-            if (createLockFile)
-                File.Create(Path.Combine(pluginDirectory.FullName, "artemis.lock")).Close();
-        }
-
-        public bool LoadingPlugins { get; private set; }
-
-        #region Built in plugins
-
-        public void CopyBuiltInPlugins()
-        {
-            OnCopyingBuildInPlugins();
-            DirectoryInfo pluginDirectory = new(Constants.PluginsFolder);
-
-            if (Directory.Exists(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.Modules.Overlay-29e3ff97")))
-                Directory.Delete(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.Modules.Overlay-29e3ff97"), true);
-            if (Directory.Exists(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.DataModelExpansions.TestData-ab41d601")))
-                Directory.Delete(Path.Combine(pluginDirectory.FullName, "Artemis.Plugins.DataModelExpansions.TestData-ab41d601"), true);
-            
-            // Iterate built-in plugins
-            DirectoryInfo builtInPluginDirectory = new(Path.Combine(Constants.ApplicationFolder, "Plugins"));
-            if (!builtInPluginDirectory.Exists)
+            // Find the matching plugin in the plugin folder
+            DirectoryInfo? match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == preferred);
+            if (match == null)
             {
-                _logger.Warning("No built-in plugins found at {pluginDir}, skipping CopyBuiltInPlugins", builtInPluginDirectory.FullName);
-                return;
+                CopyBuiltInPlugin(archive, preferred);
             }
-
-            foreach (FileInfo zipFile in builtInPluginDirectory.EnumerateFiles("*.zip"))
+            else
             {
-                // Find the metadata file in the zip
-                using ZipArchive archive = ZipFile.OpenRead(zipFile.FullName);
-                ZipArchiveEntry? metaDataFileEntry = archive.GetEntry("plugin.json");
-                if (metaDataFileEntry == null)
-                    throw new ArtemisPluginException("Couldn't find a plugin.json in " + zipFile.FullName);
-
-                using StreamReader reader = new(metaDataFileEntry.Open());
-                PluginInfo builtInPluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
-                string preferred = builtInPluginInfo.PreferredPluginDirectory;
-
-                // Find the matching plugin in the plugin folder
-                DirectoryInfo? match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == preferred);
-                if (match == null)
+                string metadataFile = Path.Combine(match.FullName, "plugin.json");
+                if (!File.Exists(metadataFile))
                 {
+                    _logger.Debug("Copying missing built-in plugin {builtInPluginInfo}", builtInPluginInfo);
                     CopyBuiltInPlugin(archive, preferred);
                 }
                 else
                 {
-                    string metadataFile = Path.Combine(match.FullName, "plugin.json");
-                    if (!File.Exists(metadataFile))
+                    PluginInfo pluginInfo;
+                    try
                     {
-                        _logger.Debug("Copying missing built-in plugin {builtInPluginInfo}", builtInPluginInfo);
-                        CopyBuiltInPlugin(archive, preferred);
+                        // Compare versions, copy if the same when debugging
+                        pluginInfo = CoreJson.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile))!;
                     }
-                    else
+                    catch (Exception e)
                     {
-                        PluginInfo pluginInfo;
-                        try
-                        {
-                            // Compare versions, copy if the same when debugging
-                            pluginInfo = CoreJson.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile))!;
-                        }
-                        catch (Exception e)
-                        {
-                            throw new ArtemisPluginException($"Failed read plugin metadata needed to install built-in plugin: {e.Message}", e);
-                        }
+                        throw new ArtemisPluginException($"Failed read plugin metadata needed to install built-in plugin: {e.Message}", e);
+                    }
 
-                        try
+                    try
+                    {
+                        if (builtInPluginInfo.Version > pluginInfo.Version)
                         {
-                            if (builtInPluginInfo.Version > pluginInfo.Version)
-                            {
-                                _logger.Debug("Copying updated built-in plugin from {pluginInfo} to {builtInPluginInfo}", pluginInfo, builtInPluginInfo);
-                                CopyBuiltInPlugin(archive, preferred);
-                            }
+                            _logger.Debug("Copying updated built-in plugin from {pluginInfo} to {builtInPluginInfo}", pluginInfo, builtInPluginInfo);
+                            CopyBuiltInPlugin(archive, preferred);
                         }
-                        catch (Exception e)
-                        {
-                            throw new ArtemisPluginException($"Failed to install built-in plugin: {e.Message}", e);
-                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw new ArtemisPluginException($"Failed to install built-in plugin: {e.Message}", e);
                     }
                 }
             }
         }
+    }
 
-        #endregion
+    #endregion
 
-        public List<Plugin> GetAllPlugins()
+    public List<Plugin> GetAllPlugins()
+    {
+        lock (_plugins)
         {
-            lock (_plugins)
-            {
-                return new List<Plugin>(_plugins);
-            }
+            return new List<Plugin>(_plugins);
         }
+    }
 
-        public List<T> GetFeaturesOfType<T>() where T : PluginFeature
+    public List<T> GetFeaturesOfType<T>() where T : PluginFeature
+    {
+        lock (_plugins)
         {
-            lock (_plugins)
-            {
-                return _plugins.Where(p => p.IsEnabled)
-                    .SelectMany(p => p.Features.Where(f => f.Instance != null && f.Instance.IsEnabled && f.Instance is T))
-                    .Select(f => f.Instance)
-                    .Cast<T>()
-                    .ToList();
-            }
+            return _plugins.Where(p => p.IsEnabled)
+                .SelectMany(p => p.Features.Where(f => f.Instance != null && f.Instance.IsEnabled && f.Instance is T))
+                .Select(f => f.Instance)
+                .Cast<T>()
+                .ToList();
         }
+    }
 
-        public Plugin? GetPluginByAssembly(Assembly? assembly)
-        {
-            if (assembly == null)
-                return null;
-            lock (_plugins)
-            {
-                return _plugins.FirstOrDefault(p => p.Assembly == assembly);
-            }
-        }
-
-        // TODO: move to a more appropriate service
-        public DeviceProvider GetDeviceProviderByDevice(IRGBDevice rgbDevice)
-        {
-            return GetFeaturesOfType<DeviceProvider>().First(d => d.RgbDeviceProvider.Devices.Contains(rgbDevice));
-        }
-
-        public Plugin? GetCallingPlugin()
-        {
-            StackTrace stackTrace = new(); // get call stack
-            StackFrame[] stackFrames = stackTrace.GetFrames(); // get method calls (frames)
-
-            foreach (StackFrame stackFrame in stackFrames)
-            {
-                Assembly? assembly = stackFrame.GetMethod()?.DeclaringType?.Assembly;
-                Plugin? plugin = GetPluginByAssembly(assembly);
-                if (plugin != null)
-                    return plugin;
-            }
-
+    public Plugin? GetPluginByAssembly(Assembly? assembly)
+    {
+        if (assembly == null)
             return null;
+        lock (_plugins)
+        {
+            return _plugins.FirstOrDefault(p => p.Assembly == assembly);
+        }
+    }
+
+    // TODO: move to a more appropriate service
+    public DeviceProvider GetDeviceProviderByDevice(IRGBDevice rgbDevice)
+    {
+        return GetFeaturesOfType<DeviceProvider>().First(d => d.RgbDeviceProvider.Devices.Contains(rgbDevice));
+    }
+
+    public Plugin? GetCallingPlugin()
+    {
+        StackTrace stackTrace = new(); // get call stack
+        StackFrame[] stackFrames = stackTrace.GetFrames(); // get method calls (frames)
+
+        foreach (StackFrame stackFrame in stackFrames)
+        {
+            Assembly? assembly = stackFrame.GetMethod()?.DeclaringType?.Assembly;
+            Plugin? plugin = GetPluginByAssembly(assembly);
+            if (plugin != null)
+                return plugin;
         }
 
-        public void Dispose()
+        return null;
+    }
+
+    public void Dispose()
+    {
+        _disposed = true;
+        UnloadPlugins();
+    }
+
+    #region Plugins
+
+    public void LoadPlugins(List<string> startupArguments, bool isElevated)
+    {
+        if (startupArguments.Contains("--no-plugins"))
         {
-            _disposed = true;
-            UnloadPlugins();
+            _logger.Warning("Artemis launched with --no-plugins, skipping the loading of plugins");
+            return;
         }
 
-        #region Plugins
+        bool ignorePluginLock = startupArguments.Contains("--ignore-plugin-lock");
+        bool stayElevated = startupArguments.Contains("--force-elevation");
+        bool droppedAdmin = startupArguments.Contains("--dropped-admin");
+        if (LoadingPlugins)
+            throw new ArtemisCoreException("Cannot load plugins while a previous load hasn't been completed yet.");
 
-        public void LoadPlugins(List<string> startupArguments, bool isElevated)
+        _isElevated = isElevated;
+        LoadingPlugins = true;
+
+        // Unload all currently loaded plugins first
+        UnloadPlugins();
+
+        // Load the plugin assemblies into the plugin context
+        DirectoryInfo pluginDirectory = new(Constants.PluginsFolder);
+        foreach (DirectoryInfo subDirectory in pluginDirectory.EnumerateDirectories())
         {
-            if (startupArguments.Contains("--no-plugins"))
+            try
             {
-                _logger.Warning("Artemis launched with --no-plugins, skipping the loading of plugins");
-                return;
+                LoadPlugin(subDirectory);
             }
-
-            bool ignorePluginLock = startupArguments.Contains("--ignore-plugin-lock");
-            bool stayElevated = startupArguments.Contains("--force-elevation");
-            bool droppedAdmin = startupArguments.Contains("--dropped-admin");
-            if (LoadingPlugins)
-                throw new ArtemisCoreException("Cannot load plugins while a previous load hasn't been completed yet.");
-
-            _isElevated = isElevated;
-            LoadingPlugins = true;
-
-            // Unload all currently loaded plugins first
-            UnloadPlugins();
-
-            // Load the plugin assemblies into the plugin context
-            DirectoryInfo pluginDirectory = new(Constants.PluginsFolder);
-            foreach (DirectoryInfo subDirectory in pluginDirectory.EnumerateDirectories())
+            catch (Exception e)
             {
-                try
-                {
-                    LoadPlugin(subDirectory);
-                }
-                catch (Exception e)
-                {
-                    _logger.Warning(new ArtemisPluginException("Failed to load plugin", e), "Plugin exception");
-                }
+                _logger.Warning(new ArtemisPluginException("Failed to load plugin", e), "Plugin exception");
             }
+        }
 
-            // ReSharper disable InconsistentlySynchronizedField - It's read-only, idc
-            _logger.Debug("Loaded {count} plugin(s)", _plugins.Count);
+        // ReSharper disable InconsistentlySynchronizedField - It's read-only, idc
+        _logger.Debug("Loaded {count} plugin(s)", _plugins.Count);
 
-            bool adminRequired = _plugins.Any(p => p.Info.RequiresAdmin && p.Entity.IsEnabled && p.HasEnabledFeatures());
-            if (!isElevated && adminRequired)
+        bool adminRequired = _plugins.Any(p => p.Info.RequiresAdmin && p.Entity.IsEnabled && p.HasEnabledFeatures());
+        if (!isElevated && adminRequired)
+        {
+            _logger.Information("Restarting because one or more plugins requires elevation");
+            // No need for a delay this early on, nothing that needs graceful shutdown is happening yet
+            Utilities.Restart(true, TimeSpan.Zero);
+            return;
+        }
+
+        if (isElevated && !adminRequired && !stayElevated)
+        {
+            if (droppedAdmin)
             {
-                _logger.Information("Restarting because one or more plugins requires elevation");
+                _logger.Information("No plugin requires elevation but dropping admin failed before, ignoring");
+            }
+            else
+            {
                 // No need for a delay this early on, nothing that needs graceful shutdown is happening yet
-                Utilities.Restart(true, TimeSpan.Zero);
+                _logger.Information("Restarting because no plugin requires elevation and --force-elevation was not supplied");
+                Utilities.Restart(false, TimeSpan.Zero, "--dropped-admin");
                 return;
             }
-
-            if (isElevated && !adminRequired && !stayElevated)
-            {
-                if (droppedAdmin)
-                    _logger.Information("No plugin requires elevation but dropping admin failed before, ignoring");
-                else
-                {
-                    // No need for a delay this early on, nothing that needs graceful shutdown is happening yet
-                    _logger.Information("Restarting because no plugin requires elevation and --force-elevation was not supplied");
-                    Utilities.Restart(false, TimeSpan.Zero, "--dropped-admin");
-                    return;
-                }
-            }
-
-            foreach (Plugin plugin in _plugins.Where(p => p.Info.IsCompatible && p.Entity.IsEnabled))
-            {
-                try
-                {
-                    EnablePlugin(plugin, false, ignorePluginLock);
-                }
-                catch (ArtemisPluginPrerequisiteException)
-                {
-                    _logger.Warning("Skipped enabling plugin {plugin} because not all prerequisites are met", plugin);
-                }
-            }
-
-            _logger.Debug("Enabled {count} plugin(s)", _plugins.Count(p => p.IsEnabled));
-            // ReSharper restore InconsistentlySynchronizedField
-
-            LoadingPlugins = false;
         }
 
-        public void UnloadPlugins()
+        foreach (Plugin plugin in _plugins.Where(p => p.Info.IsCompatible && p.Entity.IsEnabled))
         {
-            // Unload all plugins
-            // ReSharper disable InconsistentlySynchronizedField - UnloadPlugin will lock it when it has to
-            while (_plugins.Count > 0)
-                UnloadPlugin(_plugins[0]);
-            // ReSharper restore InconsistentlySynchronizedField
-
-            lock (_plugins)
-            {
-                _plugins.Clear();
-            }
-        }
-
-        public Plugin? LoadPlugin(DirectoryInfo directory)
-        {
-            _logger.Verbose("Loading plugin from {directory}", directory.FullName);
-
-            // Load the metadata
-            string metadataFile = Path.Combine(directory.FullName, "plugin.json");
-            if (!File.Exists(metadataFile))
-                _logger.Warning(new ArtemisPluginException("Couldn't find the plugins metadata file at " + metadataFile), "Plugin exception");
-
-            // PluginInfo contains the ID which we need to move on
-            PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile))!;
-
-            if (!pluginInfo.IsCompatible)
-                return null;
-
-            if (pluginInfo.Guid == Constants.CorePluginInfo.Guid)
-                throw new ArtemisPluginException($"Plugin {pluginInfo} cannot use reserved GUID {pluginInfo.Guid}");
-
-            lock (_plugins)
-            {
-                // Ensure the plugin is not already loaded
-                if (_plugins.Any(p => p.Guid == pluginInfo.Guid))
-                    throw new ArtemisCoreException($"Cannot load plugin {pluginInfo} because it is using a GUID already used by another plugin");
-            }
-
-            // Load the entity and fall back on creating a new one
-            Plugin plugin = new(pluginInfo, directory, _pluginRepository.GetPluginByGuid(pluginInfo.Guid));
-            OnPluginLoading(new PluginEventArgs(plugin));
-
-            // Locate the main assembly entry
-            string? mainFile = plugin.ResolveRelativePath(plugin.Info.Main);
-            if (!File.Exists(mainFile))
-                throw new ArtemisPluginException(plugin, "Couldn't find the plugins main entry at " + mainFile);
-            FileInfo[] fileInfos = directory.GetFiles();
-            if (!fileInfos.Any(f => string.Equals(f.Name, plugin.Info.Main, StringComparison.InvariantCulture)))
-                throw new ArtemisPluginException(plugin, "Plugin main entry casing mismatch at " + plugin.Info.Main);
-
-            // Load the plugin, all types implementing Plugin and register them with DI
-            plugin.PluginLoader = PluginLoader.CreateFromAssemblyFile(mainFile!, configure =>
-            {
-                configure.IsUnloadable = true;
-                configure.LoadInMemory = true;
-                configure.PreferSharedTypes = true;
-            });
-
             try
             {
-                plugin.Assembly = plugin.PluginLoader.LoadDefaultAssembly();
+                EnablePlugin(plugin, false, ignorePluginLock);
+            }
+            catch (ArtemisPluginPrerequisiteException)
+            {
+                _logger.Warning("Skipped enabling plugin {plugin} because not all prerequisites are met", plugin);
+            }
+        }
+
+        _logger.Debug("Enabled {count} plugin(s)", _plugins.Count(p => p.IsEnabled));
+        // ReSharper restore InconsistentlySynchronizedField
+
+        LoadingPlugins = false;
+    }
+
+    public void UnloadPlugins()
+    {
+        // Unload all plugins
+        // ReSharper disable InconsistentlySynchronizedField - UnloadPlugin will lock it when it has to
+        while (_plugins.Count > 0)
+            UnloadPlugin(_plugins[0]);
+        // ReSharper restore InconsistentlySynchronizedField
+
+        lock (_plugins)
+        {
+            _plugins.Clear();
+        }
+    }
+
+    public Plugin? LoadPlugin(DirectoryInfo directory)
+    {
+        _logger.Verbose("Loading plugin from {directory}", directory.FullName);
+
+        // Load the metadata
+        string metadataFile = Path.Combine(directory.FullName, "plugin.json");
+        if (!File.Exists(metadataFile))
+            _logger.Warning(new ArtemisPluginException("Couldn't find the plugins metadata file at " + metadataFile), "Plugin exception");
+
+        // PluginInfo contains the ID which we need to move on
+        PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile))!;
+
+        if (!pluginInfo.IsCompatible)
+            return null;
+
+        if (pluginInfo.Guid == Constants.CorePluginInfo.Guid)
+            throw new ArtemisPluginException($"Plugin {pluginInfo} cannot use reserved GUID {pluginInfo.Guid}");
+
+        lock (_plugins)
+        {
+            // Ensure the plugin is not already loaded
+            if (_plugins.Any(p => p.Guid == pluginInfo.Guid))
+                throw new ArtemisCoreException($"Cannot load plugin {pluginInfo} because it is using a GUID already used by another plugin");
+        }
+
+        // Load the entity and fall back on creating a new one
+        Plugin plugin = new(pluginInfo, directory, _pluginRepository.GetPluginByGuid(pluginInfo.Guid));
+        OnPluginLoading(new PluginEventArgs(plugin));
+
+        // Locate the main assembly entry
+        string? mainFile = plugin.ResolveRelativePath(plugin.Info.Main);
+        if (!File.Exists(mainFile))
+            throw new ArtemisPluginException(plugin, "Couldn't find the plugins main entry at " + mainFile);
+        FileInfo[] fileInfos = directory.GetFiles();
+        if (!fileInfos.Any(f => string.Equals(f.Name, plugin.Info.Main, StringComparison.InvariantCulture)))
+            throw new ArtemisPluginException(plugin, "Plugin main entry casing mismatch at " + plugin.Info.Main);
+
+        // Load the plugin, all types implementing Plugin and register them with DI
+        plugin.PluginLoader = PluginLoader.CreateFromAssemblyFile(mainFile!, configure =>
+        {
+            configure.IsUnloadable = true;
+            configure.LoadInMemory = true;
+            configure.PreferSharedTypes = true;
+        });
+
+        try
+        {
+            plugin.Assembly = plugin.PluginLoader.LoadDefaultAssembly();
+        }
+        catch (Exception e)
+        {
+            throw new ArtemisPluginException(plugin, "Failed to load the plugins assembly", e);
+        }
+
+        // Get the Plugin feature from the main assembly and if there is only one, instantiate it
+        List<Type> featureTypes;
+        try
+        {
+            featureTypes = plugin.Assembly.GetTypes().Where(t => typeof(PluginFeature).IsAssignableFrom(t)).ToList();
+        }
+        catch (ReflectionTypeLoadException e)
+        {
+            throw new ArtemisPluginException(
+                plugin,
+                "Failed to initialize the plugin assembly",
+                // ReSharper disable once RedundantEnumerableCastCall - Casting from nullable to non-nullable here
+                new AggregateException(e.LoaderExceptions.Where(le => le != null).Cast<Exception>().ToArray())
+            );
+        }
+
+        foreach (Type featureType in featureTypes)
+        {
+            // Load the enabled state and if not found, default to true
+            PluginFeatureEntity featureEntity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName) ?? new PluginFeatureEntity {Type = featureType.FullName!};
+            PluginFeatureInfo feature = new(plugin, featureType, featureEntity, (PluginFeatureAttribute?) Attribute.GetCustomAttribute(featureType, typeof(PluginFeatureAttribute)));
+
+            // If the plugin only has a single feature, it should always be enabled
+            if (featureTypes.Count == 1)
+                feature.AlwaysEnabled = true;
+
+            plugin.AddFeature(feature);
+        }
+
+        if (!featureTypes.Any())
+            _logger.Warning("Plugin {plugin} contains no features", plugin);
+
+        // It is appropriate to call this now that we have the features of this plugin
+        plugin.AutoEnableIfNew();
+
+        List<Type> bootstrappers = plugin.Assembly.GetTypes().Where(t => typeof(PluginBootstrapper).IsAssignableFrom(t)).ToList();
+        if (bootstrappers.Count > 1)
+            _logger.Warning("{Plugin} has more than one bootstrapper, only initializing {FullName}", plugin, bootstrappers.First().FullName);
+        if (bootstrappers.Any())
+        {
+            plugin.Bootstrapper = (PluginBootstrapper?) Activator.CreateInstance(bootstrappers.First());
+            plugin.Bootstrapper?.InternalOnPluginLoaded(plugin);
+        }
+
+        lock (_plugins)
+        {
+            _plugins.Add(plugin);
+        }
+
+        OnPluginLoaded(new PluginEventArgs(plugin));
+        return plugin;
+    }
+
+    public void EnablePlugin(Plugin plugin, bool saveState, bool ignorePluginLock)
+    {
+        if (!plugin.Info.IsCompatible)
+            throw new ArtemisPluginException(plugin, $"This plugin only supports the following operating system(s): {plugin.Info.Platforms}");
+
+        if (plugin.Assembly == null)
+            throw new ArtemisPluginException(plugin, "Cannot enable a plugin that hasn't successfully been loaded");
+
+        if (plugin.Info.RequiresAdmin && plugin.HasEnabledFeatures() && !_isElevated)
+        {
+            if (!saveState)
+                throw new ArtemisCoreException("Cannot enable a plugin that requires elevation without saving it's state.");
+
+            plugin.Entity.IsEnabled = true;
+            SavePlugin(plugin);
+
+            _logger.Information("Restarting because a newly enabled plugin requires elevation");
+            Utilities.Restart(true, TimeSpan.FromMilliseconds(500));
+            return;
+        }
+
+        if (!plugin.Info.ArePrerequisitesMet())
+            throw new ArtemisPluginPrerequisiteException(plugin.Info, "Cannot enable a plugin whose prerequisites aren't all met");
+
+        // Create the Ninject child kernel and load the module
+        plugin.Kernel = new ChildKernel(_kernel, new PluginModule(plugin));
+        // The kernel used by Core is unforgiving about missing bindings, no need to be so hard on plugin devs
+        plugin.Kernel.Components.Add<IMissingBindingResolver, SelfBindingResolver>();
+
+        OnPluginEnabling(new PluginEventArgs(plugin));
+
+        plugin.SetEnabled(true);
+
+        // Create instances of each feature
+        // Construction should be simple and not contain any logic so failure at this point means the entire plugin fails
+        foreach (PluginFeatureInfo featureInfo in plugin.Features)
+        {
+            try
+            {
+                plugin.Kernel.Bind(featureInfo.FeatureType).ToSelf().InSingletonScope();
+
+                // Include Plugin as a parameter for the PluginSettingsProvider
+                IParameter[] parameters = {new Parameter("Plugin", plugin, false)};
+                PluginFeature instance = (PluginFeature) plugin.Kernel.Get(featureInfo.FeatureType, parameters);
+
+                // Get the PluginFeature attribute which contains extra info on the feature
+                featureInfo.Instance = instance;
+                instance.Info = featureInfo;
+                instance.Plugin = plugin;
+                instance.Profiler = plugin.GetProfiler("Feature - " + featureInfo.Name);
+                instance.Entity = featureInfo.Entity;
             }
             catch (Exception e)
             {
-                throw new ArtemisPluginException(plugin, "Failed to load the plugins assembly", e);
+                _logger.Warning(new ArtemisPluginException(plugin, "Failed to instantiate feature", e), "Failed to instantiate feature from plugin {plugin}", plugin);
+                featureInfo.LoadException = e;
             }
-
-            // Get the Plugin feature from the main assembly and if there is only one, instantiate it
-            List<Type> featureTypes;
-            try
-            {
-                featureTypes = plugin.Assembly.GetTypes().Where(t => typeof(PluginFeature).IsAssignableFrom(t)).ToList();
-            }
-            catch (ReflectionTypeLoadException e)
-            {
-                throw new ArtemisPluginException(
-                    plugin,
-                    "Failed to initialize the plugin assembly",
-                    // ReSharper disable once RedundantEnumerableCastCall - Casting from nullable to non-nullable here
-                    new AggregateException(e.LoaderExceptions.Where(le => le != null).Cast<Exception>().ToArray())
-                );
-            }
-
-            foreach (Type featureType in featureTypes)
-            {
-                // Load the enabled state and if not found, default to true
-                PluginFeatureEntity featureEntity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName) ?? new PluginFeatureEntity {Type = featureType.FullName!};
-                PluginFeatureInfo feature = new(plugin, featureType, featureEntity, (PluginFeatureAttribute?) Attribute.GetCustomAttribute(featureType, typeof(PluginFeatureAttribute)));
-
-                // If the plugin only has a single feature, it should always be enabled
-                if (featureTypes.Count == 1)
-                    feature.AlwaysEnabled = true;
-
-                plugin.AddFeature(feature);
-            }
-
-            if (!featureTypes.Any())
-                _logger.Warning("Plugin {plugin} contains no features", plugin);
-
-            // It is appropriate to call this now that we have the features of this plugin
-            plugin.AutoEnableIfNew();
-
-            List<Type> bootstrappers = plugin.Assembly.GetTypes().Where(t => typeof(PluginBootstrapper).IsAssignableFrom(t)).ToList();
-            if (bootstrappers.Count > 1)
-                _logger.Warning("{Plugin} has more than one bootstrapper, only initializing {FullName}", plugin, bootstrappers.First().FullName);
-            if (bootstrappers.Any())
-            {
-                plugin.Bootstrapper = (PluginBootstrapper?) Activator.CreateInstance(bootstrappers.First());
-                plugin.Bootstrapper?.InternalOnPluginLoaded(plugin);
-            }
-
-            lock (_plugins)
-            {
-                _plugins.Add(plugin);
-            }
-
-            OnPluginLoaded(new PluginEventArgs(plugin));
-            return plugin;
         }
 
-        public void EnablePlugin(Plugin plugin, bool saveState, bool ignorePluginLock)
-        {
-            if (!plugin.Info.IsCompatible)
-                throw new ArtemisPluginException(plugin, $"This plugin only supports the following operating system(s): {plugin.Info.Platforms}");
-
-            if (plugin.Assembly == null)
-                throw new ArtemisPluginException(plugin, "Cannot enable a plugin that hasn't successfully been loaded");
-
-            if (plugin.Info.RequiresAdmin && plugin.HasEnabledFeatures() && !_isElevated)
-            {
-                if (!saveState)
-                    throw new ArtemisCoreException("Cannot enable a plugin that requires elevation without saving it's state.");
-
-                plugin.Entity.IsEnabled = true;
-                SavePlugin(plugin);
-
-                _logger.Information("Restarting because a newly enabled plugin requires elevation");
-                Utilities.Restart(true, TimeSpan.FromMilliseconds(500));
-                return;
-            }
-
-            if (!plugin.Info.ArePrerequisitesMet())
-                throw new ArtemisPluginPrerequisiteException(plugin.Info, "Cannot enable a plugin whose prerequisites aren't all met");
-
-            // Create the Ninject child kernel and load the module
-            plugin.Kernel = new ChildKernel(_kernel, new PluginModule(plugin));
-            // The kernel used by Core is unforgiving about missing bindings, no need to be so hard on plugin devs
-            plugin.Kernel.Components.Add<IMissingBindingResolver, SelfBindingResolver>();
-
-            OnPluginEnabling(new PluginEventArgs(plugin));
-
-            plugin.SetEnabled(true);
-
-            // Create instances of each feature
-            // Construction should be simple and not contain any logic so failure at this point means the entire plugin fails
-            foreach (PluginFeatureInfo featureInfo in plugin.Features)
-            {
-                try
-                {
-                    plugin.Kernel.Bind(featureInfo.FeatureType).ToSelf().InSingletonScope();
-
-                    // Include Plugin as a parameter for the PluginSettingsProvider
-                    IParameter[] parameters = {new Parameter("Plugin", plugin, false)};
-                    PluginFeature instance = (PluginFeature) plugin.Kernel.Get(featureInfo.FeatureType, parameters);
-
-                    // Get the PluginFeature attribute which contains extra info on the feature
-                    featureInfo.Instance = instance;
-                    instance.Info = featureInfo;
-                    instance.Plugin = plugin;
-                    instance.Profiler = plugin.GetProfiler("Feature - " + featureInfo.Name);
-                    instance.Entity = featureInfo.Entity;
-                }
-                catch (Exception e)
-                {
-                    _logger.Warning(new ArtemisPluginException(plugin, "Failed to instantiate feature", e), "Failed to instantiate feature from plugin {plugin}", plugin);
-                    featureInfo.LoadException = e;
-                }
-            }
-
-            // Activate features after they are all loaded
-            foreach (PluginFeatureInfo pluginFeature in plugin.Features.Where(f => f.Instance != null && (f.EnabledInStorage || f.AlwaysEnabled)))
-            {
-                try
-                {
-                    EnablePluginFeature(pluginFeature.Instance!, false, !ignorePluginLock);
-                }
-                catch (Exception)
-                {
-                    if (pluginFeature.AlwaysEnabled)
-                        DisablePlugin(plugin, false);
-                    throw;
-                }
-            }
-
-            if (saveState)
-            {
-                plugin.Entity.IsEnabled = plugin.IsEnabled;
-                SavePlugin(plugin);
-            }
-
-            OnPluginEnabled(new PluginEventArgs(plugin));
-        }
-
-        public void UnloadPlugin(Plugin plugin)
+        // Activate features after they are all loaded
+        foreach (PluginFeatureInfo pluginFeature in plugin.Features.Where(f => f.Instance != null && (f.EnabledInStorage || f.AlwaysEnabled)))
         {
             try
             {
-                DisablePlugin(plugin, false);
+                EnablePluginFeature(pluginFeature.Instance!, false, !ignorePluginLock);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                _logger.Warning(new ArtemisPluginException(plugin, "Exception during DisablePlugin call for UnloadPlugin", e), "Failed to unload plugin");
-            }
-            finally
-            {
-                OnPluginDisabled(new PluginEventArgs(plugin));
-            }
-
-            plugin.Dispose();
-            lock (_plugins)
-            {
-                _plugins.Remove(plugin);
-                OnPluginUnloaded(new PluginEventArgs(plugin));
+                if (pluginFeature.AlwaysEnabled)
+                    DisablePlugin(plugin, false);
+                throw;
             }
         }
 
-        public void DisablePlugin(Plugin plugin, bool saveState)
+        if (saveState)
         {
-            if (!plugin.IsEnabled)
-                return;
+            plugin.Entity.IsEnabled = plugin.IsEnabled;
+            SavePlugin(plugin);
+        }
 
-            foreach (PluginFeatureInfo pluginFeatureInfo in plugin.Features)
-            {
-                if (pluginFeatureInfo.Instance != null && pluginFeatureInfo.Instance.IsEnabled)
-                    DisablePluginFeature(pluginFeatureInfo.Instance, false);
-            }
+        OnPluginEnabled(new PluginEventArgs(plugin));
+    }
 
-            plugin.SetEnabled(false);
-
-            plugin.Kernel?.Dispose();
-            plugin.Kernel = null;
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
-
-            if (saveState)
-            {
-                plugin.Entity.IsEnabled = plugin.IsEnabled;
-                SavePlugin(plugin);
-            }
-
+    public void UnloadPlugin(Plugin plugin)
+    {
+        try
+        {
+            DisablePlugin(plugin, false);
+        }
+        catch (Exception e)
+        {
+            _logger.Warning(new ArtemisPluginException(plugin, "Exception during DisablePlugin call for UnloadPlugin", e), "Failed to unload plugin");
+        }
+        finally
+        {
             OnPluginDisabled(new PluginEventArgs(plugin));
         }
 
-        public Plugin? ImportPlugin(string fileName)
+        plugin.Dispose();
+        lock (_plugins)
         {
-            DirectoryInfo pluginDirectory = new(Constants.PluginsFolder);
+            _plugins.Remove(plugin);
+            OnPluginUnloaded(new PluginEventArgs(plugin));
+        }
+    }
 
-            // Find the metadata file in the zip
-            using ZipArchive archive = ZipFile.OpenRead(fileName);
-            ZipArchiveEntry? metaDataFileEntry = archive.Entries.FirstOrDefault(e => e.Name == "plugin.json");
-            if (metaDataFileEntry == null)
-                throw new ArtemisPluginException("Couldn't find a plugin.json in " + fileName);
+    public void DisablePlugin(Plugin plugin, bool saveState)
+    {
+        if (!plugin.IsEnabled)
+            return;
 
-
-            using StreamReader reader = new(metaDataFileEntry.Open());
-            PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
-            if (!pluginInfo.Main.EndsWith(".dll"))
-                throw new ArtemisPluginException("Main entry in plugin.json must point to a .dll file" + fileName);
-
-            Plugin? existing = _plugins.FirstOrDefault(p => p.Guid == pluginInfo.Guid);
-            if (existing != null)
-            {
-                try
-                {
-                    RemovePlugin(existing, false);
-                }
-                catch (Exception e)
-                {
-                    throw new ArtemisPluginException("A plugin with the same GUID is already loaded, failed to remove old version", e);
-                }
-            }
-
-            string targetDirectory = pluginInfo.PreferredPluginDirectory;
-            if (Directory.Exists(Path.Combine(pluginDirectory.FullName, targetDirectory)))
-                Directory.Delete(Path.Combine(pluginDirectory.FullName, targetDirectory), true);
-
-            // Extract everything in the same archive directory to the unique plugin directory
-            DirectoryInfo directoryInfo = new(Path.Combine(pluginDirectory.FullName, targetDirectory));
-            Utilities.CreateAccessibleDirectory(directoryInfo.FullName);
-            string metaDataDirectory = metaDataFileEntry.FullName.Replace(metaDataFileEntry.Name, "");
-            foreach (ZipArchiveEntry zipArchiveEntry in archive.Entries)
-            {
-                if (zipArchiveEntry.FullName.StartsWith(metaDataDirectory) && !zipArchiveEntry.FullName.EndsWith("/"))
-                {
-                    string target = Path.Combine(directoryInfo.FullName, zipArchiveEntry.FullName.Remove(0, metaDataDirectory.Length));
-                    // Create folders
-                    Utilities.CreateAccessibleDirectory(Path.GetDirectoryName(target)!);
-                    // Extract files
-                    zipArchiveEntry.ExtractToFile(target);
-                }
-            }
-
-            // Load the newly extracted plugin and return the result
-            return LoadPlugin(directoryInfo);
+        foreach (PluginFeatureInfo pluginFeatureInfo in plugin.Features)
+        {
+            if (pluginFeatureInfo.Instance != null && pluginFeatureInfo.Instance.IsEnabled)
+                DisablePluginFeature(pluginFeatureInfo.Instance, false);
         }
 
-        public void RemovePlugin(Plugin plugin, bool removeSettings)
-        {
-            DirectoryInfo directory = plugin.Directory;
-            lock (_plugins)
-            {
-                if (_plugins.Contains(plugin))
-                    UnloadPlugin(plugin);
-            }
+        plugin.SetEnabled(false);
 
-            directory.Delete(true);
-            if (removeSettings)
-                RemovePluginSettings(plugin);
+        plugin.Kernel?.Dispose();
+        plugin.Kernel = null;
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+
+        if (saveState)
+        {
+            plugin.Entity.IsEnabled = plugin.IsEnabled;
+            SavePlugin(plugin);
         }
 
-        public void RemovePluginSettings(Plugin plugin)
-        {
-            if (plugin.IsEnabled)
-                throw new ArtemisCoreException("Cannot remove the settings of an enabled plugin");
+        OnPluginDisabled(new PluginEventArgs(plugin));
+    }
 
-            _pluginRepository.RemoveSettings(plugin.Guid);
-            foreach (DeviceEntity deviceEntity in _deviceRepository.GetAll().Where(e => e.DeviceProvider == plugin.Guid.ToString()))
-                _deviceRepository.Remove(deviceEntity);
+    public Plugin? ImportPlugin(string fileName)
+    {
+        DirectoryInfo pluginDirectory = new(Constants.PluginsFolder);
 
-            plugin.Settings?.ClearSettings();
-        }
+        // Find the metadata file in the zip
+        using ZipArchive archive = ZipFile.OpenRead(fileName);
+        ZipArchiveEntry? metaDataFileEntry = archive.Entries.FirstOrDefault(e => e.Name == "plugin.json");
+        if (metaDataFileEntry == null)
+            throw new ArtemisPluginException("Couldn't find a plugin.json in " + fileName);
 
-        #endregion
 
-        #region Features
+        using StreamReader reader = new(metaDataFileEntry.Open());
+        PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
+        if (!pluginInfo.Main.EndsWith(".dll"))
+            throw new ArtemisPluginException("Main entry in plugin.json must point to a .dll file" + fileName);
 
-        public void EnablePluginFeature(PluginFeature pluginFeature, bool saveState, bool isAutoEnable)
-        {
-            _logger.Verbose("Enabling plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
-
-            OnPluginFeatureEnabling(new PluginFeatureEventArgs(pluginFeature));
-
-            if (pluginFeature.Plugin.Info.RequiresAdmin && !_isElevated)
-            {
-                if (!saveState)
-                {
-                    OnPluginFeatureEnableFailed(new PluginFeatureEventArgs(pluginFeature));
-                    if (isAutoEnable)
-                        _logger.Warning("Skipped auto-enabling plugin feature {feature} - {plugin} because it requires elevation but state isn't being saved", pluginFeature, pluginFeature.Plugin);
-                    else
-                        throw new ArtemisCoreException("Cannot enable a feature that requires elevation without saving it's state.");
-                }
-
-                pluginFeature.Entity.IsEnabled = true;
-                pluginFeature.Plugin.Entity.IsEnabled = true;
-                SavePlugin(pluginFeature.Plugin);
-
-                _logger.Information("Restarting because a newly enabled feature requires elevation");
-                Utilities.Restart(true, TimeSpan.FromMilliseconds(500));
-                return;
-            }
-
-            if (!pluginFeature.Info.ArePrerequisitesMet())
-            {
-                OnPluginFeatureEnableFailed(new PluginFeatureEventArgs(pluginFeature));
-                throw new ArtemisPluginPrerequisiteException(pluginFeature.Info, "Cannot enable a plugin feature whose prerequisites aren't all met");
-            }
-
+        Plugin? existing = _plugins.FirstOrDefault(p => p.Guid == pluginInfo.Guid);
+        if (existing != null)
             try
             {
-                pluginFeature.SetEnabled(true, isAutoEnable);
-                if (saveState)
-                    pluginFeature.Entity.IsEnabled = true;
+                RemovePlugin(existing, false);
             }
             catch (Exception e)
             {
-                if (isAutoEnable)
-                {
-                    // Schedule a retry based on the amount of attempts
-                    if (pluginFeature.AutoEnableAttempts < 4 && pluginFeature.Plugin.IsEnabled)
-                    {
-                        TimeSpan retryDelay = TimeSpan.FromSeconds(pluginFeature.AutoEnableAttempts * 10);
-                        _logger.Warning(
-                            e,
-                            "Plugin feature '{feature} - {plugin}' failed to enable during attempt ({attempt}/3), scheduling a retry in {retryDelay}.",
-                            pluginFeature,
-                            pluginFeature.Plugin,
-                            pluginFeature.AutoEnableAttempts,
-                            retryDelay
-                        );
-
-                        Task.Run(async () =>
-                        {
-                            await Task.Delay(retryDelay);
-                            if (!pluginFeature.IsEnabled && !_disposed)
-                                EnablePluginFeature(pluginFeature, saveState, true);
-                        });
-                    }
-                    else
-                    {
-                        _logger.Warning(e, "Plugin feature '{feature} - {plugin}' failed to enable after 3 attempts, giving up.", pluginFeature, pluginFeature.Plugin);
-                    }
-                }
-                else
-                {
-                    _logger.Warning(e, "Plugin feature '{feature} - {plugin}' failed to enable.", pluginFeature, pluginFeature.Plugin);
-                    throw;
-                }
+                throw new ArtemisPluginException("A plugin with the same GUID is already loaded, failed to remove old version", e);
             }
-            finally
+
+        string targetDirectory = pluginInfo.PreferredPluginDirectory;
+        if (Directory.Exists(Path.Combine(pluginDirectory.FullName, targetDirectory)))
+            Directory.Delete(Path.Combine(pluginDirectory.FullName, targetDirectory), true);
+
+        // Extract everything in the same archive directory to the unique plugin directory
+        DirectoryInfo directoryInfo = new(Path.Combine(pluginDirectory.FullName, targetDirectory));
+        Utilities.CreateAccessibleDirectory(directoryInfo.FullName);
+        string metaDataDirectory = metaDataFileEntry.FullName.Replace(metaDataFileEntry.Name, "");
+        foreach (ZipArchiveEntry zipArchiveEntry in archive.Entries)
+        {
+            if (zipArchiveEntry.FullName.StartsWith(metaDataDirectory) && !zipArchiveEntry.FullName.EndsWith("/"))
             {
-                // On an auto-enable, ensure PluginInfo.Enabled is true even if enable failed, that way a failure on auto-enable does
-                // not affect the user's settings
-                if (saveState)
-                {
-                    if (isAutoEnable)
-                        pluginFeature.Entity.IsEnabled = true;
-
-                    SavePlugin(pluginFeature.Plugin);
-                }
-
-                if (pluginFeature.IsEnabled)
-                {
-                    _logger.Verbose("Successfully enabled plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
-                    OnPluginFeatureEnabled(new PluginFeatureEventArgs(pluginFeature));
-                }
-                else
-                {
-                    OnPluginFeatureEnableFailed(new PluginFeatureEventArgs(pluginFeature));
-                }
+                string target = Path.Combine(directoryInfo.FullName, zipArchiveEntry.FullName.Remove(0, metaDataDirectory.Length));
+                // Create folders
+                Utilities.CreateAccessibleDirectory(Path.GetDirectoryName(target)!);
+                // Extract files
+                zipArchiveEntry.ExtractToFile(target);
             }
         }
 
-        public void DisablePluginFeature(PluginFeature pluginFeature, bool saveState)
+        // Load the newly extracted plugin and return the result
+        return LoadPlugin(directoryInfo);
+    }
+
+    public void RemovePlugin(Plugin plugin, bool removeSettings)
+    {
+        DirectoryInfo directory = plugin.Directory;
+        lock (_plugins)
         {
+            if (_plugins.Contains(plugin))
+                UnloadPlugin(plugin);
+        }
+
+        directory.Delete(true);
+        if (removeSettings)
+            RemovePluginSettings(plugin);
+    }
+
+    public void RemovePluginSettings(Plugin plugin)
+    {
+        if (plugin.IsEnabled)
+            throw new ArtemisCoreException("Cannot remove the settings of an enabled plugin");
+
+        _pluginRepository.RemoveSettings(plugin.Guid);
+        foreach (DeviceEntity deviceEntity in _deviceRepository.GetAll().Where(e => e.DeviceProvider == plugin.Guid.ToString()))
+            _deviceRepository.Remove(deviceEntity);
+
+        plugin.Settings?.ClearSettings();
+    }
+
+    #endregion
+
+    #region Features
+
+    public void EnablePluginFeature(PluginFeature pluginFeature, bool saveState, bool isAutoEnable)
+    {
+        _logger.Verbose("Enabling plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
+
+        OnPluginFeatureEnabling(new PluginFeatureEventArgs(pluginFeature));
+
+        if (pluginFeature.Plugin.Info.RequiresAdmin && !_isElevated)
+        {
+            if (!saveState)
+            {
+                OnPluginFeatureEnableFailed(new PluginFeatureEventArgs(pluginFeature));
+                if (isAutoEnable)
+                    _logger.Warning("Skipped auto-enabling plugin feature {feature} - {plugin} because it requires elevation but state isn't being saved", pluginFeature, pluginFeature.Plugin);
+                else
+                    throw new ArtemisCoreException("Cannot enable a feature that requires elevation without saving it's state.");
+            }
+
+            pluginFeature.Entity.IsEnabled = true;
+            pluginFeature.Plugin.Entity.IsEnabled = true;
+            SavePlugin(pluginFeature.Plugin);
+
+            _logger.Information("Restarting because a newly enabled feature requires elevation");
+            Utilities.Restart(true, TimeSpan.FromMilliseconds(500));
+            return;
+        }
+
+        if (!pluginFeature.Info.ArePrerequisitesMet())
+        {
+            OnPluginFeatureEnableFailed(new PluginFeatureEventArgs(pluginFeature));
+            throw new ArtemisPluginPrerequisiteException(pluginFeature.Info, "Cannot enable a plugin feature whose prerequisites aren't all met");
+        }
+
+        try
+        {
+            pluginFeature.SetEnabled(true, isAutoEnable);
+            if (saveState)
+                pluginFeature.Entity.IsEnabled = true;
+        }
+        catch (Exception e)
+        {
+            if (isAutoEnable)
+            {
+                // Schedule a retry based on the amount of attempts
+                if (pluginFeature.AutoEnableAttempts < 4 && pluginFeature.Plugin.IsEnabled)
+                {
+                    TimeSpan retryDelay = TimeSpan.FromSeconds(pluginFeature.AutoEnableAttempts * 10);
+                    _logger.Warning(
+                        e,
+                        "Plugin feature '{feature} - {plugin}' failed to enable during attempt ({attempt}/3), scheduling a retry in {retryDelay}.",
+                        pluginFeature,
+                        pluginFeature.Plugin,
+                        pluginFeature.AutoEnableAttempts,
+                        retryDelay
+                    );
+
+                    Task.Run(async () =>
+                    {
+                        await Task.Delay(retryDelay);
+                        if (!pluginFeature.IsEnabled && !_disposed)
+                            EnablePluginFeature(pluginFeature, saveState, true);
+                    });
+                }
+                else
+                {
+                    _logger.Warning(e, "Plugin feature '{feature} - {plugin}' failed to enable after 3 attempts, giving up.", pluginFeature, pluginFeature.Plugin);
+                }
+            }
+            else
+            {
+                _logger.Warning(e, "Plugin feature '{feature} - {plugin}' failed to enable.", pluginFeature, pluginFeature.Plugin);
+                throw;
+            }
+        }
+        finally
+        {
+            // On an auto-enable, ensure PluginInfo.Enabled is true even if enable failed, that way a failure on auto-enable does
+            // not affect the user's settings
+            if (saveState)
+            {
+                if (isAutoEnable)
+                    pluginFeature.Entity.IsEnabled = true;
+
+                SavePlugin(pluginFeature.Plugin);
+            }
+
+            if (pluginFeature.IsEnabled)
+            {
+                _logger.Verbose("Successfully enabled plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
+                OnPluginFeatureEnabled(new PluginFeatureEventArgs(pluginFeature));
+            }
+            else
+            {
+                OnPluginFeatureEnableFailed(new PluginFeatureEventArgs(pluginFeature));
+            }
+        }
+    }
+
+    public void DisablePluginFeature(PluginFeature pluginFeature, bool saveState)
+    {
+        try
+        {
+            _logger.Verbose("Disabling plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
+            pluginFeature.SetEnabled(false);
+        }
+        finally
+        {
+            if (saveState)
+            {
+                pluginFeature.Entity.IsEnabled = false;
+                SavePlugin(pluginFeature.Plugin);
+            }
+
+            if (!pluginFeature.IsEnabled)
+            {
+                _logger.Verbose("Successfully disabled plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
+                OnPluginFeatureDisabled(new PluginFeatureEventArgs(pluginFeature));
+            }
+        }
+    }
+
+    #endregion
+
+    #region Queued actions
+
+    public void QueuePluginDeletion(Plugin plugin)
+    {
+        _queuedActionRepository.Add(new QueuedActionEntity
+        {
+            Type = "DeletePlugin",
+            CreatedAt = DateTimeOffset.Now,
+            Parameters = new Dictionary<string, object>
+            {
+                {"pluginGuid", plugin.Guid.ToString()},
+                {"plugin", plugin.ToString()},
+                {"directory", plugin.Directory.FullName}
+            }
+        });
+    }
+
+    public void DequeuePluginDeletion(Plugin plugin)
+    {
+        QueuedActionEntity? queuedActionEntity = _queuedActionRepository.GetByType("DeletePlugin").FirstOrDefault(q => q.Parameters["pluginGuid"].Equals(plugin.Guid.ToString()));
+        if (queuedActionEntity != null)
+            _queuedActionRepository.Remove(queuedActionEntity);
+    }
+
+    private void ProcessPluginDeletionQueue()
+    {
+        foreach (QueuedActionEntity queuedActionEntity in _queuedActionRepository.GetByType("DeletePlugin"))
+        {
+            string? directory = queuedActionEntity.Parameters["directory"].ToString();
             try
             {
-                _logger.Verbose("Disabling plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
-                pluginFeature.SetEnabled(false);
-            }
-            finally
-            {
-                if (saveState)
+                if (Directory.Exists(directory))
                 {
-                    pluginFeature.Entity.IsEnabled = false;
-                    SavePlugin(pluginFeature.Plugin);
+                    _logger.Information("Queued plugin deletion - deleting folder - {plugin}", queuedActionEntity.Parameters["plugin"]);
+                    Directory.Delete(directory!, true);
+                }
+                else
+                {
+                    _logger.Information("Queued plugin deletion - folder already deleted - {plugin}", queuedActionEntity.Parameters["plugin"]);
                 }
 
-                if (!pluginFeature.IsEnabled)
-                {
-                    _logger.Verbose("Successfully disabled plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
-                    OnPluginFeatureDisabled(new PluginFeatureEventArgs(pluginFeature));
-                }
-            }
-        }
-
-        #endregion
-
-        #region Queued actions
-
-        public void QueuePluginDeletion(Plugin plugin)
-        {
-            _queuedActionRepository.Add(new QueuedActionEntity
-            {
-                Type = "DeletePlugin",
-                CreatedAt = DateTimeOffset.Now,
-                Parameters = new Dictionary<string, object>()
-                {
-                    {"pluginGuid", plugin.Guid.ToString()},
-                    {"plugin", plugin.ToString()},
-                    {"directory", plugin.Directory.FullName}
-                }
-            });
-        }
-
-        public void DequeuePluginDeletion(Plugin plugin)
-        {
-            QueuedActionEntity? queuedActionEntity = _queuedActionRepository.GetByType("DeletePlugin").FirstOrDefault(q => q.Parameters["pluginGuid"].Equals(plugin.Guid.ToString()));
-            if (queuedActionEntity != null)
                 _queuedActionRepository.Remove(queuedActionEntity);
-        }
-
-        private void ProcessPluginDeletionQueue()
-        {
-            foreach (QueuedActionEntity queuedActionEntity in _queuedActionRepository.GetByType("DeletePlugin"))
+            }
+            catch (Exception e)
             {
-                string? directory = queuedActionEntity.Parameters["directory"].ToString();
-                try
-                {
-                    if (Directory.Exists(directory))
-                    {
-                        _logger.Information("Queued plugin deletion - deleting folder - {plugin}", queuedActionEntity.Parameters["plugin"]);
-                        Directory.Delete(directory!, true);
-                    }
-                    else
-                    {
-                        _logger.Information("Queued plugin deletion - folder already deleted - {plugin}", queuedActionEntity.Parameters["plugin"]);
-                    }
-
-                    _queuedActionRepository.Remove(queuedActionEntity);
-                }
-                catch (Exception e)
-                {
-                    _logger.Warning(e, "Queued plugin deletion failed - {plugin}", queuedActionEntity.Parameters["plugin"]);
-                }
+                _logger.Warning(e, "Queued plugin deletion failed - {plugin}", queuedActionEntity.Parameters["plugin"]);
             }
         }
-
-        #endregion
-
-        #region Storage
-
-        private void SavePlugin(Plugin plugin)
-        {
-            foreach (PluginFeatureInfo featureInfo in plugin.Features.Where(i => i.Instance != null))
-            {
-                if (plugin.Entity.Features.All(i => i.Type != featureInfo.FeatureType.FullName))
-                    plugin.Entity.Features.Add(featureInfo.Instance!.Entity);
-            }
-
-            _pluginRepository.SavePlugin(plugin.Entity);
-        }
-
-        #endregion
-
-        #region Events
-
-        public event EventHandler? CopyingBuildInPlugins;
-        public event EventHandler<PluginEventArgs>? PluginLoading;
-        public event EventHandler<PluginEventArgs>? PluginLoaded;
-        public event EventHandler<PluginEventArgs>? PluginUnloaded;
-        public event EventHandler<PluginEventArgs>? PluginEnabling;
-        public event EventHandler<PluginEventArgs>? PluginEnabled;
-        public event EventHandler<PluginEventArgs>? PluginDisabled;
-
-        public event EventHandler<PluginFeatureEventArgs>? PluginFeatureEnabling;
-        public event EventHandler<PluginFeatureEventArgs>? PluginFeatureEnabled;
-        public event EventHandler<PluginFeatureEventArgs>? PluginFeatureDisabled;
-        public event EventHandler<PluginFeatureEventArgs>? PluginFeatureEnableFailed;
-
-        protected virtual void OnCopyingBuildInPlugins()
-        {
-            CopyingBuildInPlugins?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnPluginLoading(PluginEventArgs e)
-        {
-            PluginLoading?.Invoke(this, e);
-        }
-
-        protected virtual void OnPluginLoaded(PluginEventArgs e)
-        {
-            PluginLoaded?.Invoke(this, e);
-        }
-
-        protected virtual void OnPluginUnloaded(PluginEventArgs e)
-        {
-            PluginUnloaded?.Invoke(this, e);
-        }
-
-        protected virtual void OnPluginEnabling(PluginEventArgs e)
-        {
-            PluginEnabling?.Invoke(this, e);
-        }
-
-        protected virtual void OnPluginEnabled(PluginEventArgs e)
-        {
-            PluginEnabled?.Invoke(this, e);
-        }
-
-        protected virtual void OnPluginDisabled(PluginEventArgs e)
-        {
-            PluginDisabled?.Invoke(this, e);
-        }
-
-        protected virtual void OnPluginFeatureEnabling(PluginFeatureEventArgs e)
-        {
-            PluginFeatureEnabling?.Invoke(this, e);
-        }
-
-        protected virtual void OnPluginFeatureEnabled(PluginFeatureEventArgs e)
-        {
-            PluginFeatureEnabled?.Invoke(this, e);
-        }
-
-        protected virtual void OnPluginFeatureDisabled(PluginFeatureEventArgs e)
-        {
-            PluginFeatureDisabled?.Invoke(this, e);
-        }
-
-        protected virtual void OnPluginFeatureEnableFailed(PluginFeatureEventArgs e)
-        {
-            PluginFeatureEnableFailed?.Invoke(this, e);
-        }
-
-        #endregion
     }
 
-    /// <summary>
-    ///     Represents a type of plugin management action
-    /// </summary>
-    public enum PluginManagementAction
+    #endregion
+
+    #region Storage
+
+    private void SavePlugin(Plugin plugin)
     {
-        /// <summary>
-        ///     A plugin management action that removes a plugin
-        /// </summary>
-        Delete,
+        foreach (PluginFeatureInfo featureInfo in plugin.Features.Where(i => i.Instance != null))
+        {
+            if (plugin.Entity.Features.All(i => i.Type != featureInfo.FeatureType.FullName))
+                plugin.Entity.Features.Add(featureInfo.Instance!.Entity);
+        }
 
-        // /// <summary>
-        // ///     A plugin management action that updates a plugin
-        // /// </summary>
-        // Update
+        _pluginRepository.SavePlugin(plugin.Entity);
     }
+
+    #endregion
+
+    #region Events
+
+    public event EventHandler? CopyingBuildInPlugins;
+    public event EventHandler<PluginEventArgs>? PluginLoading;
+    public event EventHandler<PluginEventArgs>? PluginLoaded;
+    public event EventHandler<PluginEventArgs>? PluginUnloaded;
+    public event EventHandler<PluginEventArgs>? PluginEnabling;
+    public event EventHandler<PluginEventArgs>? PluginEnabled;
+    public event EventHandler<PluginEventArgs>? PluginDisabled;
+
+    public event EventHandler<PluginFeatureEventArgs>? PluginFeatureEnabling;
+    public event EventHandler<PluginFeatureEventArgs>? PluginFeatureEnabled;
+    public event EventHandler<PluginFeatureEventArgs>? PluginFeatureDisabled;
+    public event EventHandler<PluginFeatureEventArgs>? PluginFeatureEnableFailed;
+
+    protected virtual void OnCopyingBuildInPlugins()
+    {
+        CopyingBuildInPlugins?.Invoke(this, EventArgs.Empty);
+    }
+
+    protected virtual void OnPluginLoading(PluginEventArgs e)
+    {
+        PluginLoading?.Invoke(this, e);
+    }
+
+    protected virtual void OnPluginLoaded(PluginEventArgs e)
+    {
+        PluginLoaded?.Invoke(this, e);
+    }
+
+    protected virtual void OnPluginUnloaded(PluginEventArgs e)
+    {
+        PluginUnloaded?.Invoke(this, e);
+    }
+
+    protected virtual void OnPluginEnabling(PluginEventArgs e)
+    {
+        PluginEnabling?.Invoke(this, e);
+    }
+
+    protected virtual void OnPluginEnabled(PluginEventArgs e)
+    {
+        PluginEnabled?.Invoke(this, e);
+    }
+
+    protected virtual void OnPluginDisabled(PluginEventArgs e)
+    {
+        PluginDisabled?.Invoke(this, e);
+    }
+
+    protected virtual void OnPluginFeatureEnabling(PluginFeatureEventArgs e)
+    {
+        PluginFeatureEnabling?.Invoke(this, e);
+    }
+
+    protected virtual void OnPluginFeatureEnabled(PluginFeatureEventArgs e)
+    {
+        PluginFeatureEnabled?.Invoke(this, e);
+    }
+
+    protected virtual void OnPluginFeatureDisabled(PluginFeatureEventArgs e)
+    {
+        PluginFeatureDisabled?.Invoke(this, e);
+    }
+
+    protected virtual void OnPluginFeatureEnableFailed(PluginFeatureEventArgs e)
+    {
+        PluginFeatureEnableFailed?.Invoke(this, e);
+    }
+
+    #endregion
+}
+
+/// <summary>
+///     Represents a type of plugin management action
+/// </summary>
+public enum PluginManagementAction
+{
+    /// <summary>
+    ///     A plugin management action that removes a plugin
+    /// </summary>
+    Delete
+
+    // /// <summary>
+    // ///     A plugin management action that updates a plugin
+    // /// </summary>
+    // Update
 }

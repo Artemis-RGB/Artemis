@@ -3,53 +3,52 @@ using System.Collections.Generic;
 using System.Linq;
 using Serilog.Events;
 
-namespace Artemis.Core
+namespace Artemis.Core;
+
+/// <summary>
+///     A static store containing the last 500 logging events
+/// </summary>
+public static class LogStore
 {
+    private static readonly LinkedList<LogEvent> LinkedList = new();
+
     /// <summary>
-    ///     A static store containing the last 500 logging events
+    ///     Gets a list containing the last 500 log events.
     /// </summary>
-    public static class LogStore
+    public static List<LogEvent> Events => LinkedList.ToList();
+
+    /// <summary>
+    ///     Occurs when a new <see cref="LogEvent" /> was received.
+    /// </summary>
+    public static event EventHandler<LogEventEventArgs>? EventAdded;
+
+    internal static void Emit(LogEvent logEvent)
     {
-        private static readonly LinkedList<LogEvent> LinkedList = new();
+        LinkedList.AddLast(logEvent);
+        while (LinkedList.Count > 500)
+            LinkedList.RemoveFirst();
 
-        /// <summary>
-        ///     Gets a list containing the last 500 log events.
-        /// </summary>
-        public static List<LogEvent> Events => LinkedList.ToList();
+        OnEventAdded(new LogEventEventArgs(logEvent));
+    }
 
-        /// <summary>
-        ///     Occurs when a new <see cref="LogEvent" /> was received.
-        /// </summary>
-        public static event EventHandler<LogEventEventArgs>? EventAdded;
+    private static void OnEventAdded(LogEventEventArgs e)
+    {
+        EventAdded?.Invoke(null, e);
+    }
+}
 
-        internal static void Emit(LogEvent logEvent)
-        {
-            LinkedList.AddLast(logEvent);
-            while (LinkedList.Count > 500)
-                LinkedList.RemoveFirst();
-
-            OnEventAdded(new LogEventEventArgs(logEvent));
-        }
-
-        private static void OnEventAdded(LogEventEventArgs e)
-        {
-            EventAdded?.Invoke(null, e);
-        }
+/// <summary>
+///     Contains log event related data
+/// </summary>
+public class LogEventEventArgs : EventArgs
+{
+    internal LogEventEventArgs(LogEvent logEvent)
+    {
+        LogEvent = logEvent;
     }
 
     /// <summary>
-    ///     Contains log event related data
+    ///     Gets the log event
     /// </summary>
-    public class LogEventEventArgs : EventArgs
-    {
-        internal LogEventEventArgs(LogEvent logEvent)
-        {
-            LogEvent = logEvent;
-        }
-
-        /// <summary>
-        ///     Gets the log event
-        /// </summary>
-        public LogEvent LogEvent { get; }
-    }
+    public LogEvent LogEvent { get; }
 }

@@ -95,7 +95,6 @@ public class NodePickerViewModel : ActivatableViewModelBase
         node.Y = Math.Round(Position.Y / 10d, 0, MidpointRounding.AwayFromZero) * 10d;
 
         if (TargetPin != null)
-        {
             using (_nodeEditorService.CreateCommandScope(_nodeScript, "Create node for pin"))
             {
                 _nodeEditorService.ExecuteCommand(_nodeScript, new AddNode(_nodeScript, node));
@@ -108,7 +107,6 @@ public class NodePickerViewModel : ActivatableViewModelBase
                 if (source != null)
                     _nodeEditorService.ExecuteCommand(_nodeScript, new ConnectPins(source, TargetPin));
             }
-        }
         else
             _nodeEditorService.ExecuteCommand(_nodeScript, new AddNode(_nodeScript, node));
     }

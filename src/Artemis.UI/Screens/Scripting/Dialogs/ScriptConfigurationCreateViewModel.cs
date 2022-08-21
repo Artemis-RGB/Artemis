@@ -20,7 +20,7 @@ public class ScriptConfigurationCreateViewModel : ContentDialogViewModelBase
         ScriptingProviders = new List<ScriptingProvider>(scriptingService.ScriptingProviders);
         Submit = ReactiveCommand.Create(ExecuteSubmit, ValidationContext.Valid);
         _selectedScriptingProvider = ScriptingProviders.First();
-        
+
         this.ValidationRule(vm => vm.ScriptName, s => !string.IsNullOrWhiteSpace(s), "Script name cannot be empty.");
     }
 

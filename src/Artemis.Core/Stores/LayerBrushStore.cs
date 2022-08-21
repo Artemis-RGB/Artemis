@@ -3,74 +3,69 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.LayerBrushes;
 
-namespace Artemis.Core
+namespace Artemis.Core;
+
+internal class LayerBrushStore
 {
-    internal class LayerBrushStore
+    private static readonly List<LayerBrushRegistration> Registrations = new();
+
+    public static LayerBrushRegistration Add(LayerBrushDescriptor descriptor)
     {
-        private static readonly List<LayerBrushRegistration> Registrations = new();
-
-        public static LayerBrushRegistration Add(LayerBrushDescriptor descriptor)
+        LayerBrushRegistration registration;
+        lock (Registrations)
         {
-            LayerBrushRegistration registration;
-            lock (Registrations)
-            {
-                if (Registrations.Any(r => r.LayerBrushDescriptor == descriptor))
-                    throw new ArtemisCoreException($"Store already contains layer brush '{descriptor.DisplayName}'");
+            if (Registrations.Any(r => r.LayerBrushDescriptor == descriptor))
+                throw new ArtemisCoreException($"Store already contains layer brush '{descriptor.DisplayName}'");
 
-                registration = new LayerBrushRegistration(descriptor, descriptor.Provider) {IsInStore = true};
-                Registrations.Add(registration);
-            }
-
-            OnLayerBrushAdded(new LayerBrushStoreEvent(registration));
-            return registration;
+            registration = new LayerBrushRegistration(descriptor, descriptor.Provider) {IsInStore = true};
+            Registrations.Add(registration);
         }
 
-        public static void Remove(LayerBrushRegistration registration)
+        OnLayerBrushAdded(new LayerBrushStoreEvent(registration));
+        return registration;
+    }
+
+    public static void Remove(LayerBrushRegistration registration)
+    {
+        lock (Registrations)
         {
-            lock (Registrations)
-            {
-                if (!Registrations.Contains(registration))
-                    throw new ArtemisCoreException($"Store does not contain layer brush '{registration.LayerBrushDescriptor.DisplayName}'");
+            if (!Registrations.Contains(registration))
+                throw new ArtemisCoreException($"Store does not contain layer brush '{registration.LayerBrushDescriptor.DisplayName}'");
 
-                Registrations.Remove(registration);
-                registration.IsInStore = false;
-            }
-
-            OnLayerBrushRemoved(new LayerBrushStoreEvent(registration));
+            Registrations.Remove(registration);
+            registration.IsInStore = false;
         }
 
-        public static List<LayerBrushRegistration> GetAll()
+        OnLayerBrushRemoved(new LayerBrushStoreEvent(registration));
+    }
+
+    public static List<LayerBrushRegistration> GetAll()
+    {
+        lock (Registrations)
         {
-            lock (Registrations)
-            {
-                return new List<LayerBrushRegistration>(Registrations);
-            }
+            return new List<LayerBrushRegistration>(Registrations);
         }
+    }
 
-        public static LayerBrushRegistration? Get(string id, string typeName)
+    public static LayerBrushRegistration? Get(string id, string typeName)
+    {
+        lock (Registrations)
         {
-            lock (Registrations)
-            {
-                return Registrations.FirstOrDefault(d => d.PluginFeature.Id == id &&
-                                                         d.LayerBrushDescriptor.LayerBrushType.Name == typeName);
-            }
+            return Registrations.FirstOrDefault(d => d.PluginFeature.Id == id &&
+                                                     d.LayerBrushDescriptor.LayerBrushType.Name == typeName);
         }
+    }
 
-        #region Events
+    public static event EventHandler<LayerBrushStoreEvent>? LayerBrushAdded;
+    public static event EventHandler<LayerBrushStoreEvent>? LayerBrushRemoved;
 
-        public static event EventHandler<LayerBrushStoreEvent>? LayerBrushAdded;
-        public static event EventHandler<LayerBrushStoreEvent>? LayerBrushRemoved;
+    private static void OnLayerBrushAdded(LayerBrushStoreEvent e)
+    {
+        LayerBrushAdded?.Invoke(null, e);
+    }
 
-        private static void OnLayerBrushAdded(LayerBrushStoreEvent e)
-        {
-            LayerBrushAdded?.Invoke(null, e);
-        }
-
-        private static void OnLayerBrushRemoved(LayerBrushStoreEvent e)
-        {
-            LayerBrushRemoved?.Invoke(null, e);
-        }
-
-        #endregion
+    private static void OnLayerBrushRemoved(LayerBrushStoreEvent e)
+    {
+        LayerBrushRemoved?.Invoke(null, e);
     }
 }

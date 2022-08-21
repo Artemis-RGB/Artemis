@@ -20,12 +20,12 @@ public sealed class DataModelPickerFlyout : PickerFlyoutBase
     public DataModelPicker.DataModelPicker DataModelPicker => _picker ??= new DataModelPicker.DataModelPicker();
 
     /// <summary>
-    /// Raised when the Confirmed button is tapped indicating the new Color should be applied
+    ///     Raised when the Confirmed button is tapped indicating the new Color should be applied
     /// </summary>
     public event TypedEventHandler<DataModelPickerFlyout, object>? Confirmed;
 
     /// <summary>
-    /// Raised when the Dismiss button is tapped, indicating the new color should not be applied
+    ///     Raised when the Dismiss button is tapped, indicating the new color should not be applied
     /// </summary>
     public event TypedEventHandler<DataModelPickerFlyout, object>? Dismissed;
 

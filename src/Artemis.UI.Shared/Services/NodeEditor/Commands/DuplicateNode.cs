@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
-using FluentAvalonia.Core;
 
 namespace Artemis.UI.Shared.Services.NodeEditor.Commands;
 
@@ -12,12 +11,12 @@ namespace Artemis.UI.Shared.Services.NodeEditor.Commands;
 /// </summary>
 public class DuplicateNode : INodeEditorCommand, IDisposable
 {
-    private readonly INode _node;
     private readonly bool _copyIncomingConnections;
-    private readonly INodeService _nodeService;
+    private readonly INode _node;
     private readonly INodeScript _nodeScript;
-    private INode? _copy;
+    private readonly INodeService _nodeService;
     private NodeConnectionStore? _connections;
+    private INode? _copy;
 
     private bool _executed;
 
@@ -34,45 +33,6 @@ public class DuplicateNode : INodeEditorCommand, IDisposable
         _node = node;
         _copyIncomingConnections = copyIncomingConnections;
         _nodeService = nodeService;
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        if (!_executed && _copy is IDisposable disposableNode)
-            disposableNode.Dispose();
-    }
-
-    /// <inheritdoc />
-    public string DisplayName => $"Duplicate '{_node.Name}' node";
-
-    /// <inheritdoc />
-    public void Execute()
-    {
-        if (_copy == null)
-        {
-            _copy = CreateCopy();
-            _nodeScript.AddNode(_copy);
-        }
-        else if (_connections != null)
-        {
-            _nodeScript.AddNode(_copy);
-            _connections.Restore();
-        }
-
-        _executed = true;
-    }
-
-    /// <inheritdoc />
-    public void Undo()
-    {
-        if (_copy != null && _connections != null)
-        {
-            _connections.Store();
-            _nodeScript.RemoveNode(_copy);
-        }
-
-        _executed = false;
     }
 
     private INode CreateCopy()
@@ -122,5 +82,44 @@ public class DuplicateNode : INodeEditorCommand, IDisposable
 
         _connections = new NodeConnectionStore(node);
         return node;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (!_executed && _copy is IDisposable disposableNode)
+            disposableNode.Dispose();
+    }
+
+    /// <inheritdoc />
+    public string DisplayName => $"Duplicate '{_node.Name}' node";
+
+    /// <inheritdoc />
+    public void Execute()
+    {
+        if (_copy == null)
+        {
+            _copy = CreateCopy();
+            _nodeScript.AddNode(_copy);
+        }
+        else if (_connections != null)
+        {
+            _nodeScript.AddNode(_copy);
+            _connections.Restore();
+        }
+
+        _executed = true;
+    }
+
+    /// <inheritdoc />
+    public void Undo()
+    {
+        if (_copy != null && _connections != null)
+        {
+            _connections.Store();
+            _nodeScript.RemoveNode(_copy);
+        }
+
+        _executed = false;
     }
 }

@@ -1,23 +1,22 @@
-﻿namespace Artemis.Core
+﻿namespace Artemis.Core;
+
+/// <summary>
+///     Represents a type of data model path
+/// </summary>
+public enum DataModelPathSegmentType
 {
     /// <summary>
-    ///     Represents a type of data model path
+    ///     Represents an invalid data model type that points to a missing data model
     /// </summary>
-    public enum DataModelPathSegmentType
-    {
-        /// <summary>
-        ///     Represents an invalid data model type that points to a missing data model
-        /// </summary>
-        Invalid,
+    Invalid,
 
-        /// <summary>
-        ///     Represents a static data model type that points to a data model defined in code
-        /// </summary>
-        Static,
+    /// <summary>
+    ///     Represents a static data model type that points to a data model defined in code
+    /// </summary>
+    Static,
 
-        /// <summary>
-        ///     Represents a static data model type that points to a data model defined at runtime
-        /// </summary>
-        Dynamic
-    }
+    /// <summary>
+    ///     Represents a static data model type that points to a data model defined at runtime
+    /// </summary>
+    Dynamic
 }

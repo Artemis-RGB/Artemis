@@ -7,9 +7,9 @@ namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 /// </summary>
 public class UpdateStaticStopMode : IProfileEditorCommand
 {
+    private readonly StaticStopMode _oldValue;
     private readonly StaticCondition _staticCondition;
     private readonly StaticStopMode _value;
-    private readonly StaticStopMode _oldValue;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="UpdateEventTriggerMode" /> class.

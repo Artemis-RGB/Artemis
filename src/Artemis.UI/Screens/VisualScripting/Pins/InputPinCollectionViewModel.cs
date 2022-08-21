@@ -8,7 +8,6 @@ public class InputPinCollectionViewModel : PinCollectionViewModel
 {
     private readonly NodeScriptViewModel _nodeScriptViewModel;
     private readonly INodeVmFactory _nodeVmFactory;
-    public IPinCollection InputPinCollection { get; }
 
     public InputPinCollectionViewModel(IPinCollection inputPinCollection, NodeScriptViewModel nodeScriptViewModel, INodeVmFactory nodeVmFactory, INodeEditorService nodeEditorService)
         : base(inputPinCollection, nodeScriptViewModel, nodeEditorService)
@@ -17,7 +16,9 @@ public class InputPinCollectionViewModel : PinCollectionViewModel
         _nodeVmFactory = nodeVmFactory;
         InputPinCollection = inputPinCollection;
     }
-    
+
+    public IPinCollection InputPinCollection { get; }
+
     protected override PinViewModel CreatePinViewModel(IPin pin)
     {
         PinViewModel vm = _nodeVmFactory.InputPinViewModel(pin, _nodeScriptViewModel);

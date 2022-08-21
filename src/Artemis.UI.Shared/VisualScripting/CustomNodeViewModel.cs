@@ -30,21 +30,9 @@ public abstract class CustomNodeViewModel : ReactiveValidationObject, IActivatab
     }
 
     /// <summary>
-    ///     Gets the node the view model is for.
-    /// </summary>
-    public INode Node { get; }
-
-    /// <summary>
     ///     Gets script the node is contained in.
     /// </summary>
     public INodeScript Script { get; }
-
-    #region Implementation of IActivatableViewModel
-
-    /// <inheritdoc />
-    public ViewModelActivator Activator { get; } = new();
-
-    #endregion
 
     /// <summary>
     ///     Invokes the <see cref="NodeModified" /> event
@@ -59,6 +47,18 @@ public abstract class CustomNodeViewModel : ReactiveValidationObject, IActivatab
         if (e.PropertyName == "Storage")
             OnNodeModified();
     }
+
+    #region Implementation of IActivatableViewModel
+
+    /// <inheritdoc />
+    public ViewModelActivator Activator { get; } = new();
+
+    #endregion
+
+    /// <summary>
+    ///     Gets the node the view model is for.
+    /// </summary>
+    public INode Node { get; }
 
     /// <inheritdoc />
     public event EventHandler? NodeModified;

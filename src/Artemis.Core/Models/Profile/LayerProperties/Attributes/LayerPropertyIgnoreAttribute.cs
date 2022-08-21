@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace Artemis.Core
+namespace Artemis.Core;
+
+/// <summary>
+///     Represents an attribute that marks a layer property to be ignored
+/// </summary>
+public class LayerPropertyIgnoreAttribute : Attribute
 {
-    /// <summary>
-    ///     Represents an attribute that marks a layer property to be ignored
-    /// </summary>
-    public class LayerPropertyIgnoreAttribute : Attribute
-    {
-    }
 }

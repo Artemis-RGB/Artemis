@@ -5,10 +5,10 @@ namespace Artemis.VisualScripting.Nodes.External.Commands;
 
 public class UpdateLayerPropertyNodeSelectedLayerProperty : INodeEditorCommand
 {
-    private readonly LayerPropertyNode _node;
-    private readonly ILayerProperty? _value;
-    private readonly ILayerProperty? _oldValue;
     private readonly NodeConnectionStore _connections;
+    private readonly LayerPropertyNode _node;
+    private readonly ILayerProperty? _oldValue;
+    private readonly ILayerProperty? _value;
 
     public UpdateLayerPropertyNodeSelectedLayerProperty(LayerPropertyNode node, ILayerProperty? value)
     {

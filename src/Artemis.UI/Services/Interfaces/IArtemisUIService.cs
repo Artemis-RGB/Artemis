@@ -1,6 +1,5 @@
-﻿namespace Artemis.UI.Services.Interfaces
+﻿namespace Artemis.UI.Services.Interfaces;
+
+public interface IArtemisUIService
 {
-    public interface IArtemisUIService
-    {
-    }
 }

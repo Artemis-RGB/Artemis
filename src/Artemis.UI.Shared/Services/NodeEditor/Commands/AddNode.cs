@@ -8,8 +8,8 @@ namespace Artemis.UI.Shared.Services.NodeEditor.Commands;
 /// </summary>
 public class AddNode : INodeEditorCommand, IDisposable
 {
-    private readonly INodeScript _nodeScript;
     private readonly INode _node;
+    private readonly INodeScript _nodeScript;
     private bool _isRemoved;
 
     /// <summary>
@@ -24,13 +24,20 @@ public class AddNode : INodeEditorCommand, IDisposable
     }
 
     /// <inheritdoc />
+    public void Dispose()
+    {
+        if (_isRemoved && _node is IDisposable disposableNode)
+            disposableNode.Dispose();
+    }
+
+    /// <inheritdoc />
     public string DisplayName => $"Add '{_node.Name}' node";
 
     /// <inheritdoc />
     public void Execute()
     {
         _nodeScript.AddNode(_node);
-       _isRemoved = false;
+        _isRemoved = false;
     }
 
     /// <inheritdoc />
@@ -39,15 +46,4 @@ public class AddNode : INodeEditorCommand, IDisposable
         _nodeScript.RemoveNode(_node);
         _isRemoved = true;
     }
-
-    #region IDisposable
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        if (_isRemoved && _node is IDisposable disposableNode)
-            disposableNode.Dispose();
-    }
-
-    #endregion
 }

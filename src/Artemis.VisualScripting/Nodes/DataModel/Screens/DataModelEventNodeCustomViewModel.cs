@@ -15,9 +15,9 @@ public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
 {
     private readonly DataModelEventNode _node;
     private readonly INodeEditorService _nodeEditorService;
-    private bool _updating;
     private DataModelPath? _dataModelPath;
     private ObservableCollection<Module>? _modules;
+    private bool _updating;
 
     public DataModelEventNodeCustomViewModel(DataModelEventNode node, INodeScript script, ISettingsService settingsService, INodeEditorService nodeEditorService) : base(node, script)
     {

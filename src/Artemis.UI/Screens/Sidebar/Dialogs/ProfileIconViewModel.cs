@@ -1,16 +1,15 @@
 ﻿using Artemis.UI.Shared;
 using Material.Icons;
 
-namespace Artemis.UI.Screens.Sidebar
-{
-    public class ProfileIconViewModel : ViewModelBase
-    {
-        public ProfileIconViewModel(MaterialIconKind icon)
-        {
-            Icon = icon;
-            DisplayName = icon.ToString();
-        }
+namespace Artemis.UI.Screens.Sidebar;
 
-        public MaterialIconKind Icon { get; }
+public class ProfileIconViewModel : ViewModelBase
+{
+    public ProfileIconViewModel(MaterialIconKind icon)
+    {
+        Icon = icon;
+        DisplayName = icon.ToString();
     }
+
+    public MaterialIconKind Icon { get; }
 }

@@ -9,8 +9,8 @@ namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 /// </summary>
 public class CompositeCommand : IProfileEditorCommand, IDisposable
 {
-    private bool _ignoreNextExecute;
     private readonly List<IProfileEditorCommand> _commands;
+    private bool _ignoreNextExecute;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="CompositeCommand" /> class.
@@ -45,8 +45,10 @@ public class CompositeCommand : IProfileEditorCommand, IDisposable
     public void Dispose()
     {
         foreach (IProfileEditorCommand profileEditorCommand in _commands)
+        {
             if (profileEditorCommand is IDisposable disposable)
                 disposable.Dispose();
+        }
     }
 
     #region Implementation of IProfileEditorCommand

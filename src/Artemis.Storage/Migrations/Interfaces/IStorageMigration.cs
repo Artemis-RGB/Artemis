@@ -1,10 +1,9 @@
 ﻿using LiteDB;
 
-namespace Artemis.Storage.Migrations.Interfaces
+namespace Artemis.Storage.Migrations.Interfaces;
+
+public interface IStorageMigration
 {
-    public interface IStorageMigration
-    {
-        int UserVersion { get; }
-        void Apply(LiteRepository repository);
-    }
+    int UserVersion { get; }
+    void Apply(LiteRepository repository);
 }

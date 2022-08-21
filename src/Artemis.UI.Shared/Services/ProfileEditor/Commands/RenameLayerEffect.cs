@@ -1,11 +1,9 @@
-﻿using System;
-using Artemis.Core;
-using Artemis.Core.LayerEffects;
+﻿using Artemis.Core.LayerEffects;
 
 namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 
 /// <summary>
-/// Represents a profile editor command that can be used to rename a layer effect
+///     Represents a profile editor command that can be used to rename a layer effect
 /// </summary>
 public class RenameLayerEffect : IProfileEditorCommand
 {
@@ -15,7 +13,7 @@ public class RenameLayerEffect : IProfileEditorCommand
     private readonly bool _wasRenamed;
 
     /// <summary>
-    /// Creates a new instance of the <see cref="RenameLayerEffect"/> class.
+    ///     Creates a new instance of the <see cref="RenameLayerEffect" /> class.
     /// </summary>
     public RenameLayerEffect(BaseLayerEffect layerEffect, string name)
     {

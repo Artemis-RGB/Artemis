@@ -12,11 +12,6 @@ public class DuplicateKeyframe : IProfileEditorCommand
     private readonly TimeSpan _position;
 
     /// <summary>
-    ///     Gets the duplicated keyframe, only available after the command has been executed.
-    /// </summary>
-    public ILayerPropertyKeyframe? Duplication { get; private set; }
-
-    /// <summary>
     ///     Creates a new instance of the <see cref="DeleteKeyframe" /> class.
     /// </summary>
     /// <param name="keyframe">The keyframe to duplicate.</param>
@@ -26,6 +21,11 @@ public class DuplicateKeyframe : IProfileEditorCommand
         _keyframe = keyframe;
         _position = position;
     }
+
+    /// <summary>
+    ///     Gets the duplicated keyframe, only available after the command has been executed.
+    /// </summary>
+    public ILayerPropertyKeyframe? Duplication { get; private set; }
 
     #region Implementation of IProfileEditorCommand
 

@@ -29,7 +29,7 @@ public abstract class ContentDialogViewModelBase : ValidatableViewModelBase, IDi
     protected virtual void Dispose(bool disposing)
     {
     }
-    
+
     /// <inheritdoc />
     public void Dispose()
     {
@@ -51,7 +51,7 @@ public abstract class DialogViewModelBase<TResult> : ValidatableViewModelBase
     {
         CloseRequested?.Invoke(this, new DialogClosedEventArgs<TResult>(result));
     }
-    
+
     internal event EventHandler<DialogClosedEventArgs<TResult>>? CloseRequested;
 }
 
@@ -70,10 +70,7 @@ public abstract class ValidatableViewModelBase : ReactiveValidationObject, IActi
         get => _displayName;
         set => RaiseAndSetIfChanged(ref _displayName, value);
     }
-    
-    /// <inheritdoc />
-    public ViewModelActivator Activator { get; } = new();
-    
+
     /// <summary>
     ///     RaiseAndSetIfChanged fully implements a Setter for a read-write property on a ReactiveObject, using
     ///     CallerMemberName to raise the notification and the ref to the backing field to set the property.
@@ -100,6 +97,9 @@ public abstract class ValidatableViewModelBase : ReactiveValidationObject, IActi
         this.RaisePropertyChanged(propertyName);
         return newValue;
     }
+
+    /// <inheritdoc />
+    public ViewModelActivator Activator { get; } = new();
 }
 
 /// <summary>

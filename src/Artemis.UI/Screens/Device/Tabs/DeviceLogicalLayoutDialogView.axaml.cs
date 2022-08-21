@@ -5,11 +5,10 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
-using ReactiveUI;
 
 namespace Artemis.UI.Screens.Device;
 
-public partial class DeviceLogicalLayoutDialogView : ReactiveUserControl<DeviceLogicalLayoutDialogViewModel>
+public class DeviceLogicalLayoutDialogView : ReactiveUserControl<DeviceLogicalLayoutDialogViewModel>
 {
     private readonly AutoCompleteBox _autoCompleteBox;
 
@@ -19,7 +18,7 @@ public partial class DeviceLogicalLayoutDialogView : ReactiveUserControl<DeviceL
 
         _autoCompleteBox = this.Get<AutoCompleteBox>("RegionsAutoCompleteBox");
         _autoCompleteBox.ItemFilter += SearchRegions;
-        
+
         Dispatcher.UIThread.InvokeAsync(DelayedAutoFocus);
     }
 

@@ -1,6 +1,5 @@
-﻿namespace Artemis.Storage.Repositories.Interfaces
+﻿namespace Artemis.Storage.Repositories.Interfaces;
+
+public interface IRepository
 {
-    public interface IRepository
-    {
-    }
 }

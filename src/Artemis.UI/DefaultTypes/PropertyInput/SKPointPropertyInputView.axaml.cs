@@ -3,28 +3,27 @@ using Artemis.UI.Shared.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.DefaultTypes.PropertyInput
+namespace Artemis.UI.DefaultTypes.PropertyInput;
+
+public class SKPointPropertyInputView : ReactiveUserControl<SKPointPropertyInputViewModel>
 {
-    public partial class SKPointPropertyInputView : ReactiveUserControl<SKPointPropertyInputViewModel>
+    public SKPointPropertyInputView()
     {
-        public SKPointPropertyInputView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
+    }
 
-        private void DraggableNumberBox_OnDragStarted(DraggableNumberBox sender, EventArgs args)
-        {
-            ViewModel?.StartPreview();
-        }
+    private void DraggableNumberBox_OnDragStarted(DraggableNumberBox sender, EventArgs args)
+    {
+        ViewModel?.StartPreview();
+    }
 
-        private void DraggableNumberBox_OnDragFinished(DraggableNumberBox sender, EventArgs args)
-        {
-            ViewModel?.ApplyPreview();
-        }
+    private void DraggableNumberBox_OnDragFinished(DraggableNumberBox sender, EventArgs args)
+    {
+        ViewModel?.ApplyPreview();
     }
 }

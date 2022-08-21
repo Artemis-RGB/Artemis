@@ -24,11 +24,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineKeyframeViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
+    private bool _canPaste;
+    private bool _isFlyoutOpen;
     private ObservableAsPropertyHelper<bool>? _isSelected;
     private string _timestamp;
     private double _x;
-    private bool _canPaste;
-    private bool _isFlyoutOpen;
 
     public TimelineKeyframeViewModel(LayerPropertyKeyframe<T> layerPropertyKeyframe, IProfileEditorService profileEditorService)
     {
@@ -58,10 +58,6 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
 
     public LayerPropertyKeyframe<T> LayerPropertyKeyframe { get; }
     public ObservableCollection<TimelineEasingViewModel> EasingViewModels { get; }
-    public ReactiveCommand<Unit, Unit> Duplicate { get; }
-    public ReactiveCommand<Unit, Unit> Copy { get; }
-    public ReactiveCommand<Unit, Unit> Paste { get; }
-    public ReactiveCommand<Unit, Unit> Delete { get; }
 
     public double X
     {
@@ -92,6 +88,11 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
         X = _pixelsPerSecond * LayerPropertyKeyframe.Position.TotalSeconds;
         Timestamp = $"{Math.Floor(LayerPropertyKeyframe.Position.TotalSeconds):00}.{LayerPropertyKeyframe.Position.Milliseconds:000}";
     }
+
+    public ReactiveCommand<Unit, Unit> Duplicate { get; }
+    public ReactiveCommand<Unit, Unit> Copy { get; }
+    public ReactiveCommand<Unit, Unit> Paste { get; }
+    public ReactiveCommand<Unit, Unit> Delete { get; }
 
     public bool IsSelected => _isSelected?.Value ?? false;
     public TimeSpan Position => LayerPropertyKeyframe.Position;

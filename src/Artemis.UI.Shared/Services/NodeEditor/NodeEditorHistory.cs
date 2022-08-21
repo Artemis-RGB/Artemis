@@ -33,30 +33,31 @@ public class NodeEditorHistory
     }
 
     /// <summary>
-    /// Gets the node script the history relates to.
+    ///     Gets the node script the history relates to.
     /// </summary>
     public INodeScript NodeScript { get; }
-    
+
     /// <summary>
     ///     Gets an observable sequence containing a boolean value indicating whether history can be undone.
     /// </summary>
     public IObservable<bool> CanUndo => _canUndo.AsObservable().DistinctUntilChanged();
-    
+
     /// <summary>
     ///     Gets an observable sequence containing a boolean value indicating whether history can be redone.
     /// </summary>
     public IObservable<bool> CanRedo => _canRedo.AsObservable().DistinctUntilChanged();
 
     /// <summary>
-    ///     Gets a reactive command that can be executed to execute an instance of a <see cref="INodeEditorCommand" /> and puts it in history.
+    ///     Gets a reactive command that can be executed to execute an instance of a <see cref="INodeEditorCommand" /> and puts
+    ///     it in history.
     /// </summary>
     public ReactiveCommand<INodeEditorCommand, Unit> Execute { get; }
-    
+
     /// <summary>
     ///     Gets a reactive command that can be executed to undo history.
     /// </summary>
     public ReactiveCommand<Unit, INodeEditorCommand?> Undo { get; }
-    
+
     /// <summary>
     ///     Gets a reactive command that can be executed to redo history.
     /// </summary>
@@ -88,8 +89,10 @@ public class NodeEditorHistory
     private void ClearRedo()
     {
         foreach (INodeEditorCommand nodeEditorCommand in _redoCommands)
+        {
             if (nodeEditorCommand is IDisposable disposable)
                 disposable.Dispose();
+        }
 
         _redoCommands.Clear();
     }
@@ -97,8 +100,10 @@ public class NodeEditorHistory
     private void ClearUndo()
     {
         foreach (INodeEditorCommand nodeEditorCommand in _undoCommands)
+        {
             if (nodeEditorCommand is IDisposable disposable)
                 disposable.Dispose();
+        }
 
         _undoCommands.Clear();
     }

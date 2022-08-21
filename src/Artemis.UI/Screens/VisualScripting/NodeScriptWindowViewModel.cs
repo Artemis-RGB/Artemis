@@ -22,8 +22,8 @@ namespace Artemis.UI.Screens.VisualScripting;
 
 public class NodeScriptWindowViewModel : DialogViewModelBase<bool>
 {
-    private readonly INodeService _nodeService;
     private readonly INodeEditorService _nodeEditorService;
+    private readonly INodeService _nodeService;
     private readonly ISettingsService _settingsService;
     private readonly IWindowService _windowService;
 

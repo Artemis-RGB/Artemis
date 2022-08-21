@@ -14,82 +14,78 @@ using Avalonia.Threading;
 using DynamicData;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Settings
+namespace Artemis.UI.Screens.Settings;
+
+public class DevicesTabViewModel : ActivatableViewModelBase
 {
-    public class DevicesTabViewModel : ActivatableViewModelBase
+    private readonly IDeviceVmFactory _deviceVmFactory;
+    private readonly IRgbService _rgbService;
+    private readonly IWindowService _windowService;
+    private bool _confirmedDisable;
+
+    public DevicesTabViewModel(IRgbService rgbService, IWindowService windowService, IDeviceVmFactory deviceVmFactory)
     {
-        private readonly IDeviceVmFactory _deviceVmFactory;
-        private readonly IRgbService _rgbService;
-        private readonly IWindowService _windowService;
-        private bool _confirmedDisable;
+        DisplayName = "Devices";
 
-        public DevicesTabViewModel(IRgbService rgbService, IWindowService windowService, IDeviceVmFactory deviceVmFactory)
+        _rgbService = rgbService;
+        _windowService = windowService;
+        _deviceVmFactory = deviceVmFactory;
+
+        Devices = new ObservableCollection<DeviceSettingsViewModel>();
+        this.WhenActivated(disposables =>
         {
-            DisplayName = "Devices";
+            GetDevices();
 
-            _rgbService = rgbService;
-            _windowService = windowService;
-            _deviceVmFactory = deviceVmFactory;
+            Observable.FromEventPattern<DeviceEventArgs>(x => rgbService.DeviceAdded += x, x => rgbService.DeviceAdded -= x)
+                .Subscribe(d => AddDevice(d.EventArgs.Device))
+                .DisposeWith(disposables);
+            Observable.FromEventPattern<DeviceEventArgs>(x => rgbService.DeviceRemoved += x, x => rgbService.DeviceRemoved -= x)
+                .Subscribe(d => RemoveDevice(d.EventArgs.Device))
+                .DisposeWith(disposables);
+        });
+    }
 
-            Devices = new ObservableCollection<DeviceSettingsViewModel>();
-            this.WhenActivated(disposables =>
-            {
-                GetDevices();
+    public ObservableCollection<DeviceSettingsViewModel> Devices { get; }
 
-                Observable.FromEventPattern<DeviceEventArgs>(x => rgbService.DeviceAdded += x, x => rgbService.DeviceAdded -= x)
-                    .Subscribe(d => AddDevice(d.EventArgs.Device))
-                    .DisposeWith(disposables);
-                Observable.FromEventPattern<DeviceEventArgs>(x => rgbService.DeviceRemoved += x, x => rgbService.DeviceRemoved -= x)
-                    .Subscribe(d => RemoveDevice(d.EventArgs.Device))
-                    .DisposeWith(disposables);
-            });
-        }
+    public async Task<bool> ShowDeviceDisableDialog()
+    {
+        if (_confirmedDisable)
+            return true;
 
-        private void GetDevices()
-        {
-            Devices.Clear();
-            Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                Devices.AddRange(_rgbService.Devices.Select(d => _deviceVmFactory.DeviceSettingsViewModel(d, this)));
-            }, DispatcherPriority.Background);
-        }
+        bool confirmed = await _windowService.ShowConfirmContentDialog(
+            "Disabling device",
+            "Disabling a device will cause it to stop updating. " +
+            "\r\nSome SDKs will even go back to using manufacturer lighting (Artemis restart may be required)."
+        );
+        if (confirmed)
+            _confirmedDisable = true;
 
-        public ObservableCollection<DeviceSettingsViewModel> Devices { get; }
+        return confirmed;
+    }
 
-        public async Task<bool> ShowDeviceDisableDialog()
-        {
-            if (_confirmedDisable)
-                return true;
+    private void GetDevices()
+    {
+        Devices.Clear();
+        Dispatcher.UIThread.InvokeAsync(() => { Devices.AddRange(_rgbService.Devices.Select(d => _deviceVmFactory.DeviceSettingsViewModel(d, this))); }, DispatcherPriority.Background);
+    }
 
-            bool confirmed = await _windowService.ShowConfirmContentDialog(
-                "Disabling device",
-                "Disabling a device will cause it to stop updating. " +
-                "\r\nSome SDKs will even go back to using manufacturer lighting (Artemis restart may be required)."
-            );
-            if (confirmed)
-                _confirmedDisable = true;
+    private void AddDevice(ArtemisDevice device)
+    {
+        // If the device was only enabled, don't add it
+        if (Devices.Any(d => d.Device == device))
+            return;
 
-            return confirmed;
-        }
+        Devices.Add(_deviceVmFactory.DeviceSettingsViewModel(device, this));
+    }
 
-        private void AddDevice(ArtemisDevice device)
-        {
-            // If the device was only enabled, don't add it
-            if (Devices.Any(d => d.Device == device))
-                return;
+    private void RemoveDevice(ArtemisDevice device)
+    {
+        // If the device was only disabled don't remove it
+        if (_rgbService.Devices.Contains(device))
+            return;
 
-            Devices.Add(_deviceVmFactory.DeviceSettingsViewModel(device, this));
-        }
-
-        private void RemoveDevice(ArtemisDevice device)
-        {
-            // If the device was only disabled don't remove it
-            if (_rgbService.Devices.Contains(device))
-                return;
-
-            DeviceSettingsViewModel? viewModel = Devices.FirstOrDefault(i => i.Device == device);
-            if (viewModel != null)
-                Devices.Remove(viewModel);
-        }
+        DeviceSettingsViewModel? viewModel = Devices.FirstOrDefault(i => i.Device == device);
+        if (viewModel != null)
+            Devices.Remove(viewModel);
     }
 }

@@ -1,18 +1,17 @@
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Plugins
-{
-    public partial class PluginFeatureView : ReactiveUserControl<PluginFeatureViewModel>
-    {
-        public PluginFeatureView()
-        {
-            InitializeComponent();
-        }
+namespace Artemis.UI.Screens.Plugins;
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+public class PluginFeatureView : ReactiveUserControl<PluginFeatureViewModel>
+{
+    public PluginFeatureView()
+    {
+        InitializeComponent();
+    }
+
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }

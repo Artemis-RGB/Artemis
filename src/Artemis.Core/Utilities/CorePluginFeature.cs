@@ -2,47 +2,46 @@
 using Artemis.Core.LayerEffects;
 using Artemis.Core.Modules;
 
-namespace Artemis.Core
+namespace Artemis.Core;
+
+/// <summary>
+///     An empty data model plugin feature used by <see cref="Constants.CorePlugin" />
+/// </summary>
+internal class CorePluginFeature : Module
 {
-    /// <summary>
-    ///     An empty data model plugin feature used by <see cref="Constants.CorePlugin" />
-    /// </summary>
-    internal class CorePluginFeature : Module
+    public CorePluginFeature()
     {
-        public CorePluginFeature()
-        {
-            Constants.CorePlugin.AddFeature(new PluginFeatureInfo(Constants.CorePlugin, null, this));
-            IsEnabled = true;
-        }
-
-        public override List<IModuleActivationRequirement>? ActivationRequirements => null;
-
-        public override void Enable()
-        {
-        }
-
-        public override void Disable()
-        {
-        }
-
-        public override void Update(double deltaTime)
-        {
-        }
+        Constants.CorePlugin.AddFeature(new PluginFeatureInfo(Constants.CorePlugin, null, this));
+        IsEnabled = true;
     }
 
-    internal class EffectPlaceholderPlugin : LayerEffectProvider
+    public override List<IModuleActivationRequirement>? ActivationRequirements => null;
+
+    public override void Enable()
     {
-        public EffectPlaceholderPlugin()
-        {
-            IsEnabled = true;
-        }
+    }
 
-        public override void Enable()
-        {
-        }
+    public override void Disable()
+    {
+    }
 
-        public override void Disable()
-        {
-        }
+    public override void Update(double deltaTime)
+    {
+    }
+}
+
+internal class EffectPlaceholderPlugin : LayerEffectProvider
+{
+    public EffectPlaceholderPlugin()
+    {
+        IsEnabled = true;
+    }
+
+    public override void Enable()
+    {
+    }
+
+    public override void Disable()
+    {
     }
 }

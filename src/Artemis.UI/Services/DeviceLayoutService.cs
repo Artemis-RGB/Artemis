@@ -7,7 +7,6 @@ using Artemis.Core.Services;
 using Artemis.UI.Screens.Device;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.MainWindow;
 using Avalonia.Threading;
 using RGB.NET.Core;

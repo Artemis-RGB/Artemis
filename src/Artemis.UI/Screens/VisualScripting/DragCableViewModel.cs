@@ -1,5 +1,4 @@
 ﻿using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Screens.VisualScripting.Pins;
 using Artemis.UI.Shared;
@@ -22,19 +21,13 @@ public class DragCableViewModel : ActivatableViewModelBase
         // If the pin is output, the pin is the from-point and the drag position is the to-point
         if (PinViewModel.Pin.Direction == PinDirection.Output)
         {
-            this.WhenActivated(d =>
-            {
-                _fromPoint = PinViewModel.WhenAnyValue(vm => vm.Position).ToProperty(this, vm => vm.FromPoint).DisposeWith(d);
-            });
+            this.WhenActivated(d => { _fromPoint = PinViewModel.WhenAnyValue(vm => vm.Position).ToProperty(this, vm => vm.FromPoint).DisposeWith(d); });
             _toPoint = this.WhenAnyValue(vm => vm.DragPoint).ToProperty(this, vm => vm.ToPoint);
         }
         // If the pin is input, the pin is the to-point and the drag position is the from-point;
         else
         {
-            this.WhenActivated(d =>
-            {
-                _toPoint = PinViewModel.WhenAnyValue(vm => vm.Position).ToProperty(this, vm => vm.ToPoint).DisposeWith(d);
-            });
+            this.WhenActivated(d => { _toPoint = PinViewModel.WhenAnyValue(vm => vm.Position).ToProperty(this, vm => vm.ToPoint).DisposeWith(d); });
             _fromPoint = this.WhenAnyValue(vm => vm.DragPoint).ToProperty(this, vm => vm.FromPoint);
         }
     }

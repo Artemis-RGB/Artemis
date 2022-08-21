@@ -5,7 +5,7 @@ using Avalonia.Data.Converters;
 namespace Artemis.UI.Shared.Converters;
 
 /// <summary>
-/// Converts any object to string by calling its ToString implementation, seems Avalonia doesn't do this
+///     Converts any object to string by calling its ToString implementation, seems Avalonia doesn't do this
 /// </summary>
 public class ToStringConverter : IValueConverter
 {

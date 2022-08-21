@@ -1,12 +1,11 @@
-﻿namespace Artemis.Core
-{
-    internal class LayerEffectStoreEvent
-    {
-        public LayerEffectStoreEvent(LayerEffectRegistration registration)
-        {
-            Registration = registration;
-        }
+﻿namespace Artemis.Core;
 
-        public LayerEffectRegistration Registration { get; }
+internal class LayerEffectStoreEvent
+{
+    public LayerEffectStoreEvent(LayerEffectRegistration registration)
+    {
+        Registration = registration;
     }
+
+    public LayerEffectRegistration Registration { get; }
 }

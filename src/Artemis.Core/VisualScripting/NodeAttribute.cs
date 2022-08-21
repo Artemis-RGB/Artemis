@@ -1,70 +1,69 @@
 ﻿using System;
 
-namespace Artemis.Core
+namespace Artemis.Core;
+
+/// <summary>
+///     Represents an attribute that can be used to provide metadata on a node
+/// </summary>
+public class NodeAttribute : Attribute
 {
+    #region Properties & Fields
+
     /// <summary>
-    ///     Represents an attribute that can be used to provide metadata on a node
+    ///     Gets the name of the node
     /// </summary>
-    public class NodeAttribute : Attribute
+    public string Name { get; }
+
+    /// <summary>
+    ///     Gets the description of the node
+    /// </summary>
+    public string Description { get; } = string.Empty;
+
+    /// <summary>
+    ///     Gets the category of the node
+    /// </summary>
+    public string Category { get; } = string.Empty;
+
+    /// <summary>
+    ///     Gets  the primary input type of the node
+    /// </summary>
+    public Type? InputType { get; init; }
+
+    /// <summary>
+    ///     Gets the primary output type of the node
+    /// </summary>
+    public Type? OutputType { get; init; }
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    ///     Creates a new instance of the <see cref="NodeAttribute" /> class
+    /// </summary>
+    public NodeAttribute(string name)
     {
-        #region Properties & Fields
-
-        /// <summary>
-        ///     Gets the name of the node
-        /// </summary>
-        public string Name { get; }
-
-        /// <summary>
-        ///     Gets the description of the node
-        /// </summary>
-        public string Description { get; } = string.Empty;
-
-        /// <summary>
-        ///     Gets the category of the node
-        /// </summary>
-        public string Category { get; } = string.Empty;
-
-        /// <summary>
-        ///     Gets  the primary input type of the node
-        /// </summary>
-        public Type? InputType { get; init; }
-
-        /// <summary>
-        ///     Gets the primary output type of the node
-        /// </summary>
-        public Type? OutputType { get; init; }
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        ///     Creates a new instance of the <see cref="NodeAttribute" /> class
-        /// </summary>
-        public NodeAttribute(string name)
-        {
-            Name = name;
-        }
-
-        /// <summary>
-        ///     Creates a new instance of the <see cref="NodeAttribute" /> class
-        /// </summary>
-        public NodeAttribute(string name, string description)
-        {
-            Name = name;
-            Description = description;
-        }
-
-        /// <summary>
-        ///     Creates a new instance of the <see cref="NodeAttribute" /> class
-        /// </summary>
-        public NodeAttribute(string name, string description, string category)
-        {
-            Name = name;
-            Description = description;
-            Category = category;
-        }
-
-        #endregion
+        Name = name;
     }
+
+    /// <summary>
+    ///     Creates a new instance of the <see cref="NodeAttribute" /> class
+    /// </summary>
+    public NodeAttribute(string name, string description)
+    {
+        Name = name;
+        Description = description;
+    }
+
+    /// <summary>
+    ///     Creates a new instance of the <see cref="NodeAttribute" /> class
+    /// </summary>
+    public NodeAttribute(string name, string description, string category)
+    {
+        Name = name;
+        Description = description;
+        Category = category;
+    }
+
+    #endregion
 }

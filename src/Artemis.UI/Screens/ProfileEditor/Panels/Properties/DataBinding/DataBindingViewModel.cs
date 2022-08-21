@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -10,7 +9,6 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia.Threading;
@@ -20,9 +18,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.DataBinding;
 
 public class DataBindingViewModel : ActivatableViewModelBase
 {
+    private readonly PluginSetting<bool> _alwaysApplyDataBindings;
     private readonly IProfileEditorService _profileEditorService;
     private readonly IWindowService _windowService;
-    private readonly PluginSetting<bool> _alwaysApplyDataBindings;
     private ObservableAsPropertyHelper<bool>? _dataBindingEnabled;
     private ObservableAsPropertyHelper<ILayerProperty?>? _layerProperty;
     private ObservableAsPropertyHelper<NodeScriptViewModel?>? _nodeScriptViewModel;

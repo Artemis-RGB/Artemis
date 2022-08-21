@@ -26,15 +26,15 @@ public class MenuBarViewModel : ActivatableViewModelBase
     private readonly IProfileService _profileService;
     private readonly ISettingsService _settingsService;
     private readonly IWindowService _windowService;
+    private ObservableAsPropertyHelper<bool>? _focusFolder;
+    private ObservableAsPropertyHelper<bool>? _focusNone;
+    private ObservableAsPropertyHelper<bool>? _focusSelection;
     private ProfileEditorHistory? _history;
     private ObservableAsPropertyHelper<bool>? _isSuspended;
+    private ObservableAsPropertyHelper<bool>? _keyBindingsEnabled;
     private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
     private ObservableAsPropertyHelper<RenderProfileElement?>? _profileElement;
     private ObservableAsPropertyHelper<bool>? _suspendedEditing;
-    private ObservableAsPropertyHelper<bool>? _focusNone;
-    private ObservableAsPropertyHelper<bool>? _focusFolder;
-    private ObservableAsPropertyHelper<bool>? _focusSelection;
-    private ObservableAsPropertyHelper<bool>? _keyBindingsEnabled;
 
     public MenuBarViewModel(ILogger logger, IProfileEditorService profileEditorService, IProfileService profileService, ISettingsService settingsService, IWindowService windowService)
     {

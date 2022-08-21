@@ -1,18 +1,17 @@
-﻿namespace Artemis.Core
+﻿namespace Artemis.Core;
+
+/// <summary>
+///     Represents a direction in which pin data flows
+/// </summary>
+public enum PinDirection
 {
     /// <summary>
-    ///     Represents a direction in which pin data flows
+    ///     An input direction
     /// </summary>
-    public enum PinDirection
-    {
-        /// <summary>
-        ///     An input direction
-        /// </summary>
-        Input,
+    Input,
 
-        /// <summary>
-        ///     An output direction
-        /// </summary>
-        Output
-    }
+    /// <summary>
+    ///     An output direction
+    /// </summary>
+    Output
 }

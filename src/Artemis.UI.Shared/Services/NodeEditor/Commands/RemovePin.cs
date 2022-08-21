@@ -9,9 +9,9 @@ namespace Artemis.UI.Shared.Services.NodeEditor.Commands;
 /// </summary>
 public class RemovePin : INodeEditorCommand
 {
-    private readonly IPinCollection _pinCollection;
-    private readonly IPin _pin;
     private readonly List<IPin> _originalConnections;
+    private readonly IPin _pin;
+    private readonly IPinCollection _pinCollection;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="RemovePin" /> class.

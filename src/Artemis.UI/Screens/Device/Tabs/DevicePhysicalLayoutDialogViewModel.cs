@@ -21,13 +21,6 @@ public class DevicePhysicalLayoutDialogViewModel : ContentDialogViewModelBase
     public ReactiveCommand<string, Unit> ApplyPhysicalLayout { get; }
     public bool Applied { get; set; }
 
-    private void ExecuteApplyPhysicalLayout(string physicalLayout)
-    {
-        Device.PhysicalLayout = Enum.Parse<KeyboardLayoutType>(physicalLayout);
-        Applied = true;
-        ContentDialog?.Hide(ContentDialogResult.Primary);
-    }
-    
     public static async Task<bool> SelectPhysicalLayout(IWindowService windowService, ArtemisDevice device)
     {
         await windowService.CreateContentDialog()
@@ -37,5 +30,12 @@ public class DevicePhysicalLayoutDialogViewModel : ContentDialogViewModelBase
             .ShowAsync();
 
         return vm.Applied;
+    }
+
+    private void ExecuteApplyPhysicalLayout(string physicalLayout)
+    {
+        Device.PhysicalLayout = Enum.Parse<KeyboardLayoutType>(physicalLayout);
+        Applied = true;
+        ContentDialog?.Hide(ContentDialogResult.Primary);
     }
 }

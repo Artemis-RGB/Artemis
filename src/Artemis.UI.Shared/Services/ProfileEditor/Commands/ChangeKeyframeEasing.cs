@@ -8,12 +8,12 @@ namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 /// </summary>
 public class ChangeKeyframeEasing : IProfileEditorCommand
 {
-    private readonly ILayerPropertyKeyframe _keyframe;
     private readonly Easings.Functions _easingFunction;
+    private readonly ILayerPropertyKeyframe _keyframe;
     private readonly Easings.Functions _originalEasingFunction;
 
     /// <summary>
-    /// Creates a new instance of the <see cref="ChangeKeyframeEasing"/> class.
+    ///     Creates a new instance of the <see cref="ChangeKeyframeEasing" /> class.
     /// </summary>
     public ChangeKeyframeEasing(ILayerPropertyKeyframe keyframe, Easings.Functions easingFunction)
     {

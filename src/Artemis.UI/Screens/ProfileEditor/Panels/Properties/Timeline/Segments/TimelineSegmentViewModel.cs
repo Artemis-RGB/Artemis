@@ -19,16 +19,16 @@ namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments;
 public abstract class TimelineSegmentViewModel : ActivatableViewModelBase
 {
     private static readonly TimeSpan NewSegmentLength = TimeSpan.FromSeconds(2);
+    private readonly Dictionary<ILayerPropertyKeyframe, TimeSpan> _originalKeyframePositions = new();
     private readonly IProfileEditorService _profileEditorService;
     private readonly IWindowService _windowService;
     private TimeSpan _initialLength;
-    private readonly Dictionary<ILayerPropertyKeyframe, TimeSpan> _originalKeyframePositions = new();
     private int _pixelsPerSecond;
     private RenderProfileElement? _profileElement;
+    private ReactiveCommand<Unit, Unit>? _removeSegment;
     private ObservableAsPropertyHelper<bool>? _showAddEnd;
     private ObservableAsPropertyHelper<bool>? _showAddMain;
     private ObservableAsPropertyHelper<bool>? _showAddStart;
-    private ReactiveCommand<Unit, Unit>? _removeSegment;
 
     protected TimelineSegmentViewModel(IProfileEditorService profileEditorService, IWindowService windowService)
     {
@@ -62,28 +62,22 @@ public abstract class TimelineSegmentViewModel : ActivatableViewModelBase
                 .DisposeWith(d);
 
             if (Type == ResizeTimelineSegment.SegmentType.Start)
-            {
                 RemoveSegment = ReactiveCommand.Create(
                     ExecuteRemoveSegment,
                     this.WhenAnyValue(vm => vm.ShowAddMain).CombineLatest(this.WhenAnyValue(vm => vm.ShowAddEnd)).Select(tuple => !tuple.First || !tuple.Second)
                 );
-            }
 
             if (Type == ResizeTimelineSegment.SegmentType.Main)
-            {
                 RemoveSegment = ReactiveCommand.Create(
                     ExecuteRemoveSegment,
                     this.WhenAnyValue(vm => vm.ShowAddEnd).CombineLatest(this.WhenAnyValue(vm => vm.ShowAddStart)).Select(tuple => !tuple.First || !tuple.Second)
                 );
-            }
 
             if (Type == ResizeTimelineSegment.SegmentType.End)
-            {
                 RemoveSegment = ReactiveCommand.Create(
                     ExecuteRemoveSegment,
                     this.WhenAnyValue(vm => vm.ShowAddStart).CombineLatest(this.WhenAnyValue(vm => vm.ShowAddMain)).Select(tuple => !tuple.First || !tuple.Second)
                 );
-            }
         });
     }
 
@@ -167,10 +161,42 @@ public abstract class TimelineSegmentViewModel : ActivatableViewModelBase
         TimeSpan time = TimeSpan.FromMilliseconds(Math.Max(GetTimeFromX(x, snap, round).TotalMilliseconds, 100));
         if (_initialLength == time)
             return;
-        
+
         using ProfileEditorCommandScope scope = _profileEditorService.CreateCommandScope("Resize segment");
         ApplyPendingKeyframeMovement();
         _profileEditorService.ExecuteCommand(new ResizeTimelineSegment(Type, _profileElement, time, _initialLength));
+    }
+
+    protected TimeSpan GetTimeFromX(double x, bool snap, bool round)
+    {
+        TimeSpan time = TimeSpan.FromSeconds(x / _pixelsPerSecond);
+        if (time < TimeSpan.Zero)
+            time = TimeSpan.Zero;
+
+        if (round)
+            time = _profileEditorService.RoundTime(time);
+        if (snap)
+            time = SnapToTimeline(time);
+
+        return time;
+    }
+
+    protected void ShiftKeyframes(IEnumerable<ILayerPropertyKeyframe> keyframes, TimeSpan amount)
+    {
+        foreach (ILayerPropertyKeyframe layerPropertyKeyframe in keyframes)
+        {
+            if (!_originalKeyframePositions.ContainsKey(layerPropertyKeyframe))
+                _originalKeyframePositions[layerPropertyKeyframe] = layerPropertyKeyframe.Position;
+            layerPropertyKeyframe.Position = layerPropertyKeyframe.Position.Add(amount);
+        }
+    }
+
+    protected void ApplyPendingKeyframeMovement()
+    {
+        foreach ((ILayerPropertyKeyframe keyframe, TimeSpan originalPosition) in _originalKeyframePositions)
+            _profileEditorService.ExecuteCommand(new MoveKeyframe(keyframe, keyframe.Position, originalPosition));
+
+        _originalKeyframePositions.Clear();
     }
 
     private void ExecuteRemoveSegment()
@@ -208,38 +234,6 @@ public abstract class TimelineSegmentViewModel : ActivatableViewModelBase
             .WithDefaultButton(ContentDialogButton.Primary)
             .WithCloseButtonText("Cancel")
             .ShowAsync();
-    }
-
-    protected TimeSpan GetTimeFromX(double x, bool snap, bool round)
-    {
-        TimeSpan time = TimeSpan.FromSeconds(x / _pixelsPerSecond);
-        if (time < TimeSpan.Zero)
-            time = TimeSpan.Zero;
-
-        if (round)
-            time = _profileEditorService.RoundTime(time);
-        if (snap)
-            time = SnapToTimeline(time);
-
-        return time;
-    }
-
-    protected void ShiftKeyframes(IEnumerable<ILayerPropertyKeyframe> keyframes, TimeSpan amount)
-    {
-        foreach (ILayerPropertyKeyframe layerPropertyKeyframe in keyframes)
-        {
-            if (!_originalKeyframePositions.ContainsKey(layerPropertyKeyframe))
-                _originalKeyframePositions[layerPropertyKeyframe] = layerPropertyKeyframe.Position;
-            layerPropertyKeyframe.Position = layerPropertyKeyframe.Position.Add(amount);
-        }
-    }
-
-    protected void ApplyPendingKeyframeMovement()
-    {
-        foreach ((ILayerPropertyKeyframe keyframe, TimeSpan originalPosition) in _originalKeyframePositions)
-            _profileEditorService.ExecuteCommand(new MoveKeyframe(keyframe, keyframe.Position, originalPosition));
-
-        _originalKeyframePositions.Clear();
     }
 
     private TimeSpan SnapToTimeline(TimeSpan time)

@@ -15,7 +15,7 @@ public interface IUpdateProvider
     Task<bool> CheckForUpdate(string channel);
 
     /// <summary>
-    ///     Applies any available updates. 
+    ///     Applies any available updates.
     /// </summary>
     /// <param name="channel">The channel to use when checking updates (i.e. master or development)</param>
     /// <param name="silent">Whether or not to update silently.</param>

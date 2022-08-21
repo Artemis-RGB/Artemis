@@ -39,21 +39,6 @@ internal class EventConditionEventStartNode : DefaultNode, IEventConditionNode
             _propertyPins.Add(propertyInfo, CreateOrAddOutputPin(propertyInfo.PropertyType, propertyInfo.Name.Humanize()));
     }
 
-    public override void Evaluate()
-    {
-        if (_dataModelEvent?.LastEventArgumentsUntyped == null)
-            return;
-
-        foreach ((PropertyInfo propertyInfo, OutputPin outputPin) in _propertyPins)
-        {
-            if (outputPin.ConnectedTo.Any())
-            {
-                object value = propertyInfo.GetValue(_dataModelEvent.LastEventArgumentsUntyped) ?? outputPin.Type.GetDefault()!;
-                outputPin.Value = outputPin.IsNumeric ? new Numeric(value) : value;
-            }
-        }
-    }
-
     /// <summary>
     ///     Creates or adds an input pin to the node using a bucket.
     ///     The bucket might grow a bit over time as the user edits the node but pins won't get lost, enabling undo/redo in the
@@ -82,5 +67,20 @@ internal class EventConditionEventStartNode : DefaultNode, IEventConditionNode
         }
 
         return pin;
+    }
+
+    public override void Evaluate()
+    {
+        if (_dataModelEvent?.LastEventArgumentsUntyped == null)
+            return;
+
+        foreach ((PropertyInfo propertyInfo, OutputPin outputPin) in _propertyPins)
+        {
+            if (outputPin.ConnectedTo.Any())
+            {
+                object value = propertyInfo.GetValue(_dataModelEvent.LastEventArgumentsUntyped) ?? outputPin.Type.GetDefault()!;
+                outputPin.Value = outputPin.IsNumeric ? new Numeric(value) : value;
+            }
+        }
     }
 }

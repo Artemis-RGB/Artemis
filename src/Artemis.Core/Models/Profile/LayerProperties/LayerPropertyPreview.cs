@@ -79,7 +79,8 @@ public sealed class LayerPropertyPreview<T> : IDisposable
         }
 
         Property.SetCurrentValue(OriginalValue, Time);
-        return !Equals(OriginalValue, PreviewValue); ;
+        return !Equals(OriginalValue, PreviewValue);
+        ;
     }
 
     /// <summary>

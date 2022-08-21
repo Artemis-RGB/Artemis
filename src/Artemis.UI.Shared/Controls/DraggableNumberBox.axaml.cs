@@ -21,20 +21,6 @@ public class DraggableNumberBox : UserControl
     /// </summary>
     public static readonly StyledProperty<double> ValueProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Value), defaultBindingMode: BindingMode.TwoWay, notifying: ValueChanged);
 
-    private static void ValueChanged(IAvaloniaObject sender, bool before)
-    {
-        if (before)
-            return;
-
-        DraggableNumberBox draggable = (DraggableNumberBox) sender;
-        if (!(Math.Abs(draggable._numberBox.Value - draggable.Value) > 0.00001))
-            return;
-
-        draggable._updating = true;
-        draggable._numberBox.Value = draggable.Value;
-        draggable._updating = false;
-    }
-
     /// <summary>
     ///     Defines the <see cref="Minimum" /> property.
     /// </summary>
@@ -174,6 +160,20 @@ public class DraggableNumberBox : UserControl
     ///     Occurs when the user finishes dragging over the control.
     /// </summary>
     public event TypedEventHandler<DraggableNumberBox, EventArgs>? DragFinished;
+
+    private static void ValueChanged(IAvaloniaObject sender, bool before)
+    {
+        if (before)
+            return;
+
+        DraggableNumberBox draggable = (DraggableNumberBox) sender;
+        if (!(Math.Abs(draggable._numberBox.Value - draggable.Value) > 0.00001))
+            return;
+
+        draggable._updating = true;
+        draggable._numberBox.Value = draggable.Value;
+        draggable._updating = false;
+    }
 
     private void HandleKeyUp(object? sender, KeyEventArgs e)
     {

@@ -18,7 +18,8 @@ public class EasingTypeNodeCustomViewModel : CustomNodeViewModel
         _nodeEditorService = nodeEditorService;
 
         NodeModified += (_, _) => this.RaisePropertyChanged(nameof(SelectedEasingViewModel));
-        EasingViewModels = new ObservableCollection<EasingTypeNodeEasingViewModel>(Enum.GetValues(typeof(Easings.Functions)).Cast<Easings.Functions>().Select(e => new EasingTypeNodeEasingViewModel(e)));
+        EasingViewModels =
+            new ObservableCollection<EasingTypeNodeEasingViewModel>(Enum.GetValues(typeof(Easings.Functions)).Cast<Easings.Functions>().Select(e => new EasingTypeNodeEasingViewModel(e)));
     }
 
     public ObservableCollection<EasingTypeNodeEasingViewModel> EasingViewModels { get; }

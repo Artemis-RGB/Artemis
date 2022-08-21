@@ -8,8 +8,8 @@ namespace Artemis.UI.Shared.Services.NodeEditor.Commands;
 /// </summary>
 public class DisconnectPins : INodeEditorCommand
 {
-    private readonly IPin _pin;
     private readonly List<IPin> _originalConnections;
+    private readonly IPin _pin;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="DisconnectPins" /> class.

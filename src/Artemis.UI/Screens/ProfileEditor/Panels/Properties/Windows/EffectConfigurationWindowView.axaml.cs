@@ -27,7 +27,7 @@ public class EffectConfigurationWindowView : ReactiveCoreWindow<EffectConfigurat
     {
         if (_canClose)
             return;
-        
+
         e.Cancel = true;
         if (ViewModel == null || await ViewModel.CanClose())
         {

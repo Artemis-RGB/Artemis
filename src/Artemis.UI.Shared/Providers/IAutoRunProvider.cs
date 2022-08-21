@@ -10,7 +10,10 @@ public interface IAutoRunProvider
     /// <summary>
     ///     Asynchronously enables auto-run.
     /// </summary>
-    /// <param name="recreate">A boolean indicating whether the auto-run configuration should be recreated (the auto run delay changed)</param>
+    /// <param name="recreate">
+    ///     A boolean indicating whether the auto-run configuration should be recreated (the auto run delay
+    ///     changed)
+    /// </param>
     /// <param name="autoRunDelay">The delay in seconds before the application should start (if supported)</param>
     Task EnableAutoRun(bool recreate, int autoRunDelay);
 

@@ -15,6 +15,10 @@ public class TimelineHeader : Control
     public static readonly StyledProperty<double> VisibleWidthProperty = AvaloniaProperty.Register<TimelineHeader, double>(nameof(VisibleWidth));
     public static readonly StyledProperty<bool> OffsetFirstValueProperty = AvaloniaProperty.Register<TimelineHeader, bool>(nameof(OffsetFirstValue));
 
+    private double _subd1;
+    private double _subd2;
+    private double _subd3;
+
     /// <inheritdoc />
     static TimelineHeader()
     {
@@ -28,10 +32,6 @@ public class TimelineHeader : Control
             OffsetFirstValueProperty
         );
     }
-
-    private double _subd1;
-    private double _subd2;
-    private double _subd3;
 
     public Brush Foreground
     {

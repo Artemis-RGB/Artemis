@@ -37,7 +37,7 @@ public class PropertyGroupViewModel : PropertyViewModelBase, IDisposable
 
         LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
         _isVisible = !LayerPropertyGroup.IsHidden;
-        
+
         PopulateChildren();
     }
 
@@ -52,7 +52,7 @@ public class PropertyGroupViewModel : PropertyViewModelBase, IDisposable
 
         LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
         _isVisible = !LayerPropertyGroup.IsHidden;
-        
+
         PopulateChildren();
     }
 
@@ -67,7 +67,7 @@ public class PropertyGroupViewModel : PropertyViewModelBase, IDisposable
 
         LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
         _isVisible = !LayerPropertyGroup.IsHidden;
-        
+
         PopulateChildren();
     }
 
@@ -115,7 +115,7 @@ public class PropertyGroupViewModel : PropertyViewModelBase, IDisposable
 
         return result;
     }
-    
+
     public List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels(bool expandedOnly)
     {
         List<ITimelineKeyframeViewModel> result = new();
@@ -184,7 +184,7 @@ public class PropertyGroupViewModel : PropertyViewModelBase, IDisposable
             if (viewModelBase is IDisposable disposable)
                 disposable.Dispose();
         }
-        
+
         _keyframeSubscription.Dispose();
     }
 }

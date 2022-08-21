@@ -1,11 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Reactive.Disposables;
-using System.Threading.Tasks;
-using Artemis.Core;
-using Artemis.Core.Events;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Events;
 using Avalonia;
@@ -25,10 +21,10 @@ namespace Artemis.UI.Screens.VisualScripting;
 
 public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
 {
+    private readonly Grid _grid;
     private readonly ItemsControl _nodesContainer;
     private readonly SelectionRectangle _selectionRectangle;
     private readonly ZoomBorder _zoomBorder;
-    private readonly Grid _grid;
 
     public NodeScriptView()
     {
@@ -58,17 +54,17 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
         });
     }
 
+    protected override Size MeasureOverride(Size availableSize)
+    {
+        AutoFitIfPreview();
+        return base.MeasureOverride(availableSize);
+    }
+
     private void ZoomOnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
     {
         // If scroll events aren't handled here the ZoomBorder does some random panning when at the zoom limit
         if (e.Delta.Y > 0 && _zoomBorder.ZoomX >= 1)
             e.Handled = true;
-    }
-
-    protected override Size MeasureOverride(Size availableSize)
-    {
-        AutoFitIfPreview();
-        return base.MeasureOverride(availableSize);
     }
 
     private void ShowPickerAt(Point point)

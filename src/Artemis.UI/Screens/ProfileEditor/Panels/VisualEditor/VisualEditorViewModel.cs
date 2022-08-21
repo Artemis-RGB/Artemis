@@ -74,6 +74,23 @@ public class VisualEditorViewModel : ActivatableViewModelBase
     public ReadOnlyObservableCollection<IVisualizerViewModel> Visualizers { get; }
     public ObservableCollection<ArtemisDevice> Devices { get; }
 
+    public void SetTools(SourceList<IToolViewModel> tools)
+    {
+        tools.Connect()
+            .AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected))
+            .Filter(t => t.IsSelected)
+            .Bind(out ReadOnlyObservableCollection<IToolViewModel> selectedTools)
+            .Subscribe();
+        Tools = selectedTools;
+    }
+
+    public void RequestAutoFit()
+    {
+        AutoFitRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    public event EventHandler? AutoFitRequested;
+
     private void RemoveElement(EventPattern<ProfileElementEventArgs> eventPattern)
     {
         List<IVisualizerViewModel> visualizers = Visualizers.Where(v => v.ProfileElement == eventPattern.EventArgs.ProfileElement).ToList();
@@ -104,21 +121,4 @@ public class VisualEditorViewModel : ActivatableViewModelBase
         visualizerViewModels.Add(_vmFactory.LayerShapeVisualizerViewModel(layer));
         visualizerViewModels.Add(_vmFactory.LayerVisualizerViewModel(layer));
     }
-
-    public void SetTools(SourceList<IToolViewModel> tools)
-    {
-        tools.Connect()
-            .AutoRefreshOnObservable(t => t.WhenAnyValue(vm => vm.IsSelected))
-            .Filter(t => t.IsSelected)
-            .Bind(out ReadOnlyObservableCollection<IToolViewModel> selectedTools)
-            .Subscribe();
-        Tools = selectedTools;
-    }
-
-    public void RequestAutoFit()
-    {
-        AutoFitRequested?.Invoke(this, EventArgs.Empty);
-    }
-
-    public event EventHandler? AutoFitRequested;
 }

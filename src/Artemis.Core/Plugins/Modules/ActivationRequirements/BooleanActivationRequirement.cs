@@ -1,25 +1,24 @@
-﻿namespace Artemis.Core.Modules
+﻿namespace Artemis.Core.Modules;
+
+/// <summary>
+///     Evaluates to true or false by returning the value of ActivationMet
+/// </summary>
+public class BooleanActivationRequirement : IModuleActivationRequirement
 {
     /// <summary>
-    ///     Evaluates to true or false by returning the value of ActivationMet
+    ///     Gets or sets whether the activation requirement is met
     /// </summary>
-    public class BooleanActivationRequirement : IModuleActivationRequirement
+    public bool ActivationMet { get; set; }
+
+    /// <inheritdoc />
+    public bool Evaluate()
     {
-        /// <summary>
-        ///     Gets or sets whether the activation requirement is met
-        /// </summary>
-        public bool ActivationMet { get; set; }
+        return ActivationMet;
+    }
 
-        /// <inheritdoc />
-        public bool Evaluate()
-        {
-            return ActivationMet;
-        }
-
-        /// <inheritdoc />
-        public string GetUserFriendlyDescription()
-        {
-            return "No description available";
-        }
+    /// <inheritdoc />
+    public string GetUserFriendlyDescription()
+    {
+        return "No description available";
     }
 }

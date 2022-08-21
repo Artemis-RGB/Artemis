@@ -19,7 +19,7 @@ using Button = Avalonia.Controls.Button;
 namespace Artemis.UI.Shared.Controls.GradientPicker;
 
 /// <summary>
-/// Represents a gradient picker that can be used to edit a gradient.
+///     Represents a gradient picker that can be used to edit a gradient.
 /// </summary>
 public class GradientPicker : TemplatedControl
 {
@@ -60,18 +60,18 @@ public class GradientPicker : TemplatedControl
         AvaloniaProperty.RegisterDirect<GradientPicker, ICommand>(nameof(DeleteStop), g => g.DeleteStop);
 
     private readonly ICommand _deleteStop;
-    private bool _shiftDown;
+    private ColorPicker? _colorPicker;
     private Button? _flipStops;
     private Border? _gradient;
+    private ColorGradient? _lastColorGradient;
+    private Button? _randomize;
     private Button? _rotateStops;
+    private bool _shiftDown;
     private Button? _spreadStops;
     private Button? _toggleSeamless;
-    private Button? _randomize;
-    private ColorGradient? _lastColorGradient;
-    private ColorPicker? _colorPicker;
 
     /// <summary>
-    /// Creates a new instance of the <see cref="GradientPicker"/> class.
+    ///     Creates a new instance of the <see cref="GradientPicker" /> class.
     /// </summary>
     public GradientPicker()
     {

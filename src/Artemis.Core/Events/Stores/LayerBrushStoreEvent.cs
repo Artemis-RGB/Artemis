@@ -1,12 +1,11 @@
-﻿namespace Artemis.Core
-{
-    internal class LayerBrushStoreEvent
-    {
-        public LayerBrushStoreEvent(LayerBrushRegistration registration)
-        {
-            Registration = registration;
-        }
+﻿namespace Artemis.Core;
 
-        public LayerBrushRegistration Registration { get; }
+internal class LayerBrushStoreEvent
+{
+    public LayerBrushStoreEvent(LayerBrushRegistration registration)
+    {
+        Registration = registration;
     }
+
+    public LayerBrushRegistration Registration { get; }
 }

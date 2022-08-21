@@ -44,7 +44,7 @@ public class DataModelPickerButton : TemplatedControl
         AvaloniaProperty.Register<DataModelPicker, bool>(nameof(HasValue));
 
     /// <summary>
-    /// Gets or sets the desired flyout placement.
+    ///     Gets or sets the desired flyout placement.
     /// </summary>
     public static readonly StyledProperty<FlyoutPlacementMode> PlacementProperty =
         AvaloniaProperty.Register<FlyoutBase, FlyoutPlacementMode>(nameof(Placement));
@@ -82,10 +82,10 @@ public class DataModelPickerButton : TemplatedControl
         AvaloniaProperty.Register<DataModelPicker, bool>(nameof(IsEventPicker));
 
     private bool _attached;
-    private bool _flyoutActive;
     private Button? _button;
-    private TextBlock? _label;
     private DataModelPickerFlyout? _flyout;
+    private bool _flyoutActive;
+    private TextBlock? _label;
 
     static DataModelPickerButton()
     {
@@ -131,7 +131,7 @@ public class DataModelPickerButton : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the desired flyout placement.
+    ///     Gets or sets the desired flyout placement.
     /// </summary>
     public FlyoutPlacementMode Placement
     {

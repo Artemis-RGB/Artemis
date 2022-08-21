@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core;
 
@@ -11,8 +10,8 @@ namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 public class UpdateColorGradient : IProfileEditorCommand
 {
     private readonly ColorGradient _colorGradient;
-    private readonly List<ColorGradientStop> _stops;
     private readonly List<ColorGradientStop> _originalStops;
+    private readonly List<ColorGradientStop> _stops;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="UpdateColorGradient" /> class.

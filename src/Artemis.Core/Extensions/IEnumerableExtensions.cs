@@ -19,35 +19,33 @@
 
 #endregion
 
-using System;
 using System.Collections.Generic;
 
-namespace Artemis.Core
+namespace Artemis.Core;
+
+/// <summary>
+///     A static class providing <see cref="IEnumerable{T}" /> extensions
+/// </summary>
+// ReSharper disable once InconsistentNaming
+public static class IEnumerableExtensions
 {
     /// <summary>
-    ///     A static class providing <see cref="IEnumerable{T}" /> extensions
+    ///     Returns the index of the provided element inside the read only collection
     /// </summary>
-    // ReSharper disable once InconsistentNaming
-    public static class IEnumerableExtensions
+    /// <typeparam name="T">The type of element to find</typeparam>
+    /// <param name="self">The collection to search in</param>
+    /// <param name="elementToFind">The element to find</param>
+    /// <returns>If found, the index of the element to find; otherwise -1</returns>
+    public static int IndexOf<T>(this IReadOnlyCollection<T> self, T elementToFind)
     {
-        /// <summary>
-        ///     Returns the index of the provided element inside the read only collection
-        /// </summary>
-        /// <typeparam name="T">The type of element to find</typeparam>
-        /// <param name="self">The collection to search in</param>
-        /// <param name="elementToFind">The element to find</param>
-        /// <returns>If found, the index of the element to find; otherwise -1</returns>
-        public static int IndexOf<T>(this IReadOnlyCollection<T> self, T elementToFind)
+        int i = 0;
+        foreach (T element in self)
         {
-            int i = 0;
-            foreach (T element in self)
-            {
-                if (Equals(element, elementToFind))
-                    return i;
-                i++;
-            }
-
-            return -1;
+            if (Equals(element, elementToFind))
+                return i;
+            i++;
         }
+
+        return -1;
     }
 }

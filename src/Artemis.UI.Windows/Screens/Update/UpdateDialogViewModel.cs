@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
+using Artemis.Core;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Shared.Services;
@@ -18,9 +19,6 @@ namespace Artemis.UI.Windows.Screens.Update;
 
 public class UpdateDialogViewModel : DialogViewModelBase<bool>
 {
-    private readonly UpdateProvider _updateProvider;
-    private readonly INotificationService _notificationService;
-
     // Based on https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#skipping-ci-for-individual-commits
     private readonly string[] _excludedCommitMessages =
     {
@@ -37,9 +35,12 @@ public class UpdateDialogViewModel : DialogViewModelBase<bool>
         "***NO_CI***"
     };
 
-    private bool _retrievingChanges;
+    private readonly INotificationService _notificationService;
+    private readonly UpdateProvider _updateProvider;
     private bool _hasChanges;
     private string? _latestBuild;
+
+    private bool _retrievingChanges;
 
     public UpdateDialogViewModel(string channel, IUpdateProvider updateProvider, INotificationService notificationService)
     {
@@ -47,7 +48,7 @@ public class UpdateDialogViewModel : DialogViewModelBase<bool>
         _notificationService = notificationService;
 
         Channel = channel;
-        CurrentBuild = Core.Constants.BuildInfo.BuildNumberDisplay;
+        CurrentBuild = Constants.BuildInfo.BuildNumberDisplay;
 
         this.WhenActivated((CompositeDisposable _) => Dispatcher.UIThread.InvokeAsync(GetBuildChanges));
         Install = ReactiveCommand.Create(() => Close(true));
@@ -59,7 +60,7 @@ public class UpdateDialogViewModel : DialogViewModelBase<bool>
 
     public string Channel { get; }
     public string CurrentBuild { get; }
-    
+
     public ObservableCollection<string> Changes { get; } = new();
 
     public bool RetrievingChanges

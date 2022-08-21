@@ -14,15 +14,15 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
 {
     private readonly string _displayName;
     private readonly EventConditionEntity _entity;
-    private IEventConditionNode _startNode;
     private DataModelPath? _eventPath;
-    private NodeScript<bool> _script;
-    private bool _wasMet;
     private DateTime _lastProcessedTrigger;
     private object? _lastProcessedValue;
     private EventOverlapMode _overlapMode;
-    private EventTriggerMode _triggerMode;
+    private NodeScript<bool> _script;
+    private IEventConditionNode _startNode;
     private EventToggleOffMode _toggleOffMode;
+    private EventTriggerMode _triggerMode;
+    private bool _wasMet;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="EventCondition" /> class
@@ -87,7 +87,8 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
     }
 
     /// <summary>
-    ///   Gets or sets the mode for render elements when toggling off the event when using <see cref="EventTriggerMode.Toggle"/>.
+    ///     Gets or sets the mode for render elements when toggling off the event when using
+    ///     <see cref="EventTriggerMode.Toggle" />.
     /// </summary>
     public EventToggleOffMode ToggleOffMode
     {
@@ -119,7 +120,9 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
                 _startNode = eventNode;
             }
             else
+            {
                 eventNode = node;
+            }
 
             IDataModelEvent? dataModelEvent = EventPath?.GetValue() as IDataModelEvent;
             eventNode.CreatePins(dataModelEvent);
@@ -136,11 +139,23 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
                 ReplaceStartNode(valueChangedNode);
             }
             else
+            {
                 valueChangedNode = node;
+            }
 
             valueChangedNode.UpdateOutputPins(EventPath);
         }
+
         Script.Save();
+    }
+
+    /// <summary>
+    ///     Gets the start node of the event script, if any
+    /// </summary>
+    /// <returns>The start node of the event script, if any.</returns>
+    public INode GetStartNode()
+    {
+        return _startNode;
     }
 
     private void ReplaceStartNode(IEventConditionNode newStartNode)
@@ -151,15 +166,6 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
         _startNode = newStartNode;
         if (!Script.Nodes.Contains(_startNode))
             Script.AddNode(_startNode);
-    }
-
-    /// <summary>
-    ///     Gets the start node of the event script, if any
-    /// </summary>
-    /// <returns>The start node of the event script, if any.</returns>
-    public INode GetStartNode()
-    {
-        return _startNode;
     }
 
     private bool Evaluate()
@@ -271,7 +277,7 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
 
         Script = _entity.Script != null
             ? new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", _entity.Script, ProfileElement.Profile)
-            :  new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", ProfileElement.Profile);
+            : new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", ProfileElement.Profile);
         UpdateEventNode();
     }
 
@@ -356,7 +362,8 @@ public enum EventOverlapMode
 }
 
 /// <summary>
-///     Represents a mode for render elements when toggling off the event when using <see cref="EventTriggerMode.Toggle"/>.
+///     Represents a mode for render elements when toggling off the event when using <see cref="EventTriggerMode.Toggle" />
+///     .
 /// </summary>
 public enum EventToggleOffMode
 {

@@ -1,18 +1,17 @@
-﻿namespace Artemis.Core
+﻿namespace Artemis.Core;
+
+/// <summary>
+///     Represents a model that can be loaded and saved to persistent storage
+/// </summary>
+public interface IStorageModel
 {
     /// <summary>
-    /// Represents a model that can be loaded and saved to persistent storage
+    ///     Loads the model from its associated entity
     /// </summary>
-    public interface IStorageModel
-    {
-        /// <summary>
-        ///     Loads the model from its associated entity
-        /// </summary>
-        void Load();
+    void Load();
 
-        /// <summary>
-        ///     Saves the model to its associated entity
-        /// </summary>
-        void Save();
-    }
+    /// <summary>
+    ///     Saves the model to its associated entity
+    /// </summary>
+    void Save();
 }

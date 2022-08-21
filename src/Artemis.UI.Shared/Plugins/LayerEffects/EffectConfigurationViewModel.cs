@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Artemis.Core.LayerEffects;
-using Avalonia.Threading;
 
 namespace Artemis.UI.Shared.LayerEffects;
 

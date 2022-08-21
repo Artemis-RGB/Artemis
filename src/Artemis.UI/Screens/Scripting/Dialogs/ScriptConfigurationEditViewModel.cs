@@ -16,7 +16,7 @@ public class ScriptConfigurationEditViewModel : ContentDialogViewModelBase
         ScriptConfiguration = scriptConfiguration;
         Submit = ReactiveCommand.Create(ExecuteSubmit, ValidationContext.Valid);
         ScriptName = ScriptConfiguration.Name;
-        
+
         this.ValidationRule(vm => vm.ScriptName, s => !string.IsNullOrWhiteSpace(s), "Script name cannot be empty.");
     }
 

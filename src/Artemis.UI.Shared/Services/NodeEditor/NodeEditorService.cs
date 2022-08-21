@@ -5,21 +5,34 @@ using Artemis.UI.Shared.Services.NodeEditor.Commands;
 
 namespace Artemis.UI.Shared.Services.NodeEditor;
 
-/// <inheritdoc cref="INodeEditorService"/>
+/// <inheritdoc cref="INodeEditorService" />
 public class NodeEditorService : INodeEditorService
 {
+    private readonly Dictionary<INodeScript, NodeEditorCommandScope> _nodeEditorCommandScopes = new();
+
+    private readonly Dictionary<INodeScript, NodeEditorHistory> _nodeEditorHistories = new();
     private readonly IWindowService _windowService;
 
     /// <summary>
-    /// Creates a new instance of the <see cref="NodeEditorService"/> class.
+    ///     Creates a new instance of the <see cref="NodeEditorService" /> class.
     /// </summary>
     public NodeEditorService(IWindowService windowService)
     {
         _windowService = windowService;
     }
 
-    private readonly Dictionary<INodeScript, NodeEditorHistory> _nodeEditorHistories = new();
-    private readonly Dictionary<INodeScript, NodeEditorCommandScope> _nodeEditorCommandScopes = new();
+    internal void StopCommandScope(INodeScript nodeScript)
+    {
+        // This might happen if the scope is disposed twice, it's no biggie
+        if (!_nodeEditorCommandScopes.TryGetValue(nodeScript, out NodeEditorCommandScope? scope))
+            return;
+
+        _nodeEditorCommandScopes.Remove(nodeScript);
+
+        // Executing the composite command won't do anything the first time (see last ctor variable)
+        // commands were already executed each time they were added to the scope
+        ExecuteCommand(nodeScript, new CompositeCommand(scope.NodeEditorCommands, scope.Name, true));
+    }
 
     /// <inheritdoc />
     public NodeEditorHistory GetHistory(INodeScript nodeScript)
@@ -38,7 +51,7 @@ public class NodeEditorService : INodeEditorService
         try
         {
             NodeEditorHistory history = GetHistory(nodeScript);
-            
+
             // If a scope is active add the command to it, the scope will execute it immediately
             _nodeEditorCommandScopes.TryGetValue(nodeScript, out NodeEditorCommandScope? scope);
             if (scope != null)
@@ -65,18 +78,5 @@ public class NodeEditorService : INodeEditorService
         NodeEditorCommandScope newScope = new(this, nodeScript, name);
         _nodeEditorCommandScopes.Add(nodeScript, newScope);
         return newScope;
-    }
-
-    internal void StopCommandScope(INodeScript nodeScript)
-    {
-        // This might happen if the scope is disposed twice, it's no biggie
-        if (!_nodeEditorCommandScopes.TryGetValue(nodeScript, out NodeEditorCommandScope? scope))
-            return;
-
-        _nodeEditorCommandScopes.Remove(nodeScript);
-
-        // Executing the composite command won't do anything the first time (see last ctor variable)
-        // commands were already executed each time they were added to the scope
-        ExecuteCommand(nodeScript, new CompositeCommand(scope.NodeEditorCommands, scope.Name, true));
     }
 }

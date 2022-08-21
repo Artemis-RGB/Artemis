@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Artemis.Storage.Entities.Profile;
+﻿namespace Artemis.Storage.Entities.Profile;
 
 public class LayerBrushEntity
 {
