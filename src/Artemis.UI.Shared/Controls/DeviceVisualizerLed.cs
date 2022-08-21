@@ -40,7 +40,7 @@ namespace Artemis.UI.Shared
         public Rect LedRect { get; set; }
         public Geometry? DisplayGeometry { get; private set; }
 
-        public void DrawBitmap(IDrawingContextImpl drawingContext)
+        public void DrawBitmap(IDrawingContextImpl drawingContext, double scale)
         {
             if (Led.Layout?.Image == null || !File.Exists(Led.Layout.Image.LocalPath))
                 return;
@@ -52,7 +52,7 @@ namespace Artemis.UI.Shared
                     bitmap.PlatformImpl,
                     1,
                     new Rect(bitmap.Size),
-                    new Rect(Led.RgbLed.Location.X * 4, Led.RgbLed.Location.Y * 4, Led.RgbLed.Size.Width * 4, Led.RgbLed.Size.Height * 4),
+                    new Rect(Led.RgbLed.Location.X * scale, Led.RgbLed.Location.Y * scale, Led.RgbLed.Size.Width * scale, Led.RgbLed.Size.Height * scale),
                     BitmapInterpolationMode.HighQuality
                 );
             }

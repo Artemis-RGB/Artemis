@@ -72,6 +72,8 @@
                                        Grid.Column="1"
                                        Margin="10 0"
                                        VerticalAlignment="Center"
+                                       Increment="0.1"
+                                       FormatString="F1"
                                        Value="{CompiledBinding Scale}" />
                         <TextBlock Grid.Row="3" Grid.Column="2" VerticalAlignment="Center">times</TextBlock>
 

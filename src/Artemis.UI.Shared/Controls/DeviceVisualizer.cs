@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Shared.Events;
 using Avalonia;
@@ -64,25 +63,22 @@ namespace Artemis.UI.Shared
                 using DrawingContext.PushedState translationPush = drawingContext.PushPreTransform(Matrix.CreateTranslation(0 - _deviceBounds.Left, 0 - _deviceBounds.Top));
                 using DrawingContext.PushedState rotationPush = drawingContext.PushPreTransform(Matrix.CreateRotation(Matrix.ToRadians(Device.Rotation)));
 
-                // Apply device scale
-                using DrawingContext.PushedState scalePush = drawingContext.PushPreTransform(Matrix.CreateScale(Device.Scale, Device.Scale));
-
                 // Render device and LED images 
                 if (_deviceImage != null)
-                {
                     drawingContext.DrawImage(
                         _deviceImage,
                         new Rect(_deviceImage.Size),
                         new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height),
                         RenderOptions.GetBitmapInterpolationMode(this)
                     );
-                }
 
                 if (!ShowColors)
                     return;
 
                 lock (_deviceVisualizerLeds)
                 {
+                    // Apply device scale
+                    using DrawingContext.PushedState scalePush = drawingContext.PushPreTransform(Matrix.CreateScale(Device.Scale, Device.Scale));
                     foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
                         deviceVisualizerLed.RenderGeometry(drawingContext, false);
                 }
@@ -99,7 +95,7 @@ namespace Artemis.UI.Shared
         public event EventHandler<LedClickedEventArgs>? LedClicked;
 
         /// <summary>
-        /// Occurs when the device was clicked but not on a LED.
+        ///     Occurs when the device was clicked but not on a LED.
         /// </summary>
         public event EventHandler<PointerReleasedEventArgs>? Clicked;
 
@@ -291,7 +287,7 @@ namespace Artemis.UI.Shared
 
             // Load the device main image on a background thread
             ArtemisDevice? device = Device;
-            Task.Run(() =>
+            Dispatcher.UIThread.Post(() =>
             {
                 if (device.Layout?.Image == null || !File.Exists(device.Layout.Image.LocalPath))
                 {
@@ -303,15 +299,17 @@ namespace Artemis.UI.Shared
                 try
                 {
                     // Create a bitmap that'll be used to render the device and LED images just once
-                    RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) device.RgbDevice.Size.Width * 4, (int) device.RgbDevice.Size.Height * 4));
+                    // Render 4 times the actual size of the device to make sure things look sharp when zoomed in
+                    RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) device.RgbDevice.ActualSize.Width * 2, (int) device.RgbDevice.ActualSize.Height * 2));
 
                     using IDrawingContextImpl context = renderTargetBitmap.CreateDrawingContext(new ImmediateRenderer(this));
                     using Bitmap bitmap = new(device.Layout.Image.LocalPath);
                     context.DrawBitmap(bitmap.PlatformImpl, 1, new Rect(bitmap.Size), new Rect(renderTargetBitmap.Size), BitmapInterpolationMode.HighQuality);
+
                     lock (_deviceVisualizerLeds)
                     {
                         foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                            deviceVisualizerLed.DrawBitmap(context);
+                            deviceVisualizerLed.DrawBitmap(context, 2 * Device.Scale);
                     }
 
                     _deviceImage?.Dispose();
@@ -319,11 +317,11 @@ namespace Artemis.UI.Shared
 
                     Dispatcher.UIThread.Post(InvalidateMeasure);
                 }
-                catch
+                catch (Exception e)
                 {
                     // ignored
                 }
-            });
+            }, DispatcherPriority.Background);
         }
 
         /// <inheritdoc />
