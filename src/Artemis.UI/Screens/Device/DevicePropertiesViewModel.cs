@@ -14,20 +14,22 @@ namespace Artemis.UI.Screens.Device;
 
 public class DevicePropertiesViewModel : DialogViewModelBase<object>
 {
-    public DevicePropertiesViewModel(ArtemisDevice device, ICoreService coreService, IDeviceVmFactory deviceVmFactory)
+    private readonly IDeviceVmFactory _deviceVmFactory;
+    private ArtemisDevice _device;
+
+    public DevicePropertiesViewModel(ArtemisDevice device, ICoreService coreService, IRgbService rgbService, IDeviceVmFactory deviceVmFactory)
     {
-        Device = device;
+        _deviceVmFactory = deviceVmFactory;
+        _device = device;
+
         SelectedLeds = new ObservableCollection<ArtemisLed>();
         Tabs = new ObservableCollection<ActivatableViewModelBase>();
 
-        Tabs.Add(deviceVmFactory.DevicePropertiesTabViewModel(device));
-        Tabs.Add(deviceVmFactory.DeviceInfoTabViewModel(device));
-        if (Device.DeviceType == RGBDeviceType.Keyboard)
-            Tabs.Add(deviceVmFactory.InputMappingsTabViewModel(device, SelectedLeds));
-        Tabs.Add(deviceVmFactory.DeviceLedsTabViewModel(device, SelectedLeds));
-
+        AddTabs();
         this.WhenActivated(d =>
         {
+            rgbService.DeviceAdded += RgbServiceOnDeviceAdded;
+            rgbService.DeviceRemoved += RgbServiceOnDeviceRemoved;
             coreService.FrameRendering += CoreServiceOnFrameRendering;
             Disposable.Create(() => coreService.FrameRendering -= CoreServiceOnFrameRendering).DisposeWith(d);
         });
@@ -35,11 +37,39 @@ public class DevicePropertiesViewModel : DialogViewModelBase<object>
         ClearSelectedLeds = ReactiveCommand.Create(ExecuteClearSelectedLeds);
     }
 
-    public ArtemisDevice Device { get; }
+    private void RgbServiceOnDeviceAdded(object? sender, DeviceEventArgs e)
+    {
+        if (e.Device.Identifier != Device.Identifier || Device == e.Device)
+            return;
+
+        Device = e.Device;
+        AddTabs();
+    }
+
+    private void RgbServiceOnDeviceRemoved(object? sender, DeviceEventArgs e)
+    {
+        Tabs.Clear();
+        SelectedLeds.Clear();
+    }
+
+    public ArtemisDevice Device
+    {
+        get => _device;
+        set => RaiseAndSetIfChanged(ref _device, value);
+    }
+
     public ObservableCollection<ArtemisLed> SelectedLeds { get; }
     public ObservableCollection<ActivatableViewModelBase> Tabs { get; }
-
     public ReactiveCommand<Unit, Unit> ClearSelectedLeds { get; }
+
+    private void AddTabs()
+    {
+        Tabs.Add(_deviceVmFactory.DevicePropertiesTabViewModel(Device));
+        Tabs.Add(_deviceVmFactory.DeviceInfoTabViewModel(Device));
+        if (Device.DeviceType == RGBDeviceType.Keyboard)
+            Tabs.Add(_deviceVmFactory.InputMappingsTabViewModel(Device, SelectedLeds));
+        Tabs.Add(_deviceVmFactory.DeviceLedsTabViewModel(Device, SelectedLeds));
+    }
 
     private void ExecuteClearSelectedLeds()
     {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using SkiaSharp;
 
 namespace Artemis.Core;
@@ -35,8 +36,10 @@ public class ColorGradientStop : CorePropertyChanged
     public float Position
     {
         get => _position;
-        set => SetAndNotify(ref _position, value);
+        set => SetAndNotify(ref _position, GetUpdatedPosition(value));
     }
+
+    internal ColorGradient? ColorGradient { get; set; }
 
     #region Equality members
 
@@ -62,6 +65,33 @@ public class ColorGradientStop : CorePropertyChanged
     public override int GetHashCode()
     {
         return HashCode.Combine(_color, _position);
+    }
+
+    /// <summary>
+    ///     Gets the position of the given color stop in a safe manner that avoids overlap with other stops.
+    /// </summary>
+    /// <param name="stopPosition">The new position.</param>
+    private float GetUpdatedPosition(float stopPosition)
+    {
+        if (ColorGradient == null)
+            return stopPosition;
+        // Find the first available spot going down
+        while (ColorGradient.Any(s => !ReferenceEquals(s, this) && Math.Abs(s.Position - stopPosition) < 0.001f))
+            stopPosition -= 0.001f;
+
+        // If we ran out of space, try going up
+        if (stopPosition < 0)
+        {
+            stopPosition = 0;
+            while (ColorGradient.Any(s => !ReferenceEquals(s, this) && Math.Abs(s.Position - stopPosition) < 0.001f))
+                stopPosition += 0.001f;
+        }
+
+        // If we ran out of space there too, movement isn't possible
+        if (stopPosition > 1)
+            stopPosition = Position;
+
+        return stopPosition;
     }
 
     #endregion
