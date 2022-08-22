@@ -51,6 +51,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         {
             ColorGradientStop stop = new(colorGradientStop.Color, colorGradientStop.Position);
             stop.PropertyChanged += ItemOnPropertyChanged;
+            stop.ColorGradient = this;
             _stops.Add(stop);
         }
     }
@@ -66,6 +67,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         {
             ColorGradientStop stop = new(colorGradientStop.Color, colorGradientStop.Position);
             stop.PropertyChanged += ItemOnPropertyChanged;
+            stop.ColorGradient = this;
             _stops.Add(stop);
         }
     }
@@ -465,6 +467,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     public void Add(ColorGradientStop item)
     {
         _stops.Add(item);
+        item.ColorGradient = this;
         item.PropertyChanged += ItemOnPropertyChanged;
 
         OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, _stops.IndexOf(item)));

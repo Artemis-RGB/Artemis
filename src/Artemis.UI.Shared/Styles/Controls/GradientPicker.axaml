@@ -4,7 +4,8 @@
         xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
         xmlns:fluent="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters"
-        xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.Controls.GradientPicker">
+        xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.Controls.GradientPicker"
+        xmlns:behaviors="clr-namespace:Artemis.UI.Shared.Behaviors">
     <Styles.Resources>
         <VisualBrush x:Key="LightCheckerboardBrush" TileMode="Tile" Stretch="Uniform" DestinationRect="3,0,10,10">
             <VisualBrush.Visual>
@@ -198,7 +199,11 @@
                                             <Border CornerRadius="4" Margin="-2" Background="{Binding Color, Converter={StaticResource SKColorToBrushConverter}}" />
                                         </Border>
                                         <TextBox Grid.Column="1" Text="{Binding Color, Converter={StaticResource SKColorToStringConverter}}" />
-                                        <NumericUpDown Grid.Column="2" Value="{Binding Position}" FormatString="F3" ShowButtonSpinner="False" Margin="5 0" />
+                                        <NumericUpDown Grid.Column="2" FormatString="F3" ShowButtonSpinner="False" Margin="5 0" Minimum="0" Maximum="1" Increment="0.01">
+                                            <Interaction.Behaviors>
+                                                <behaviors:LostFocusNumericUpDownBindingBehavior Value="{Binding Position}"/>
+                                            </Interaction.Behaviors>
+                                        </NumericUpDown>
                                         <Button Name="DeleteButton"
                                                 Grid.Column="3"
                                                 Classes="icon-button"
