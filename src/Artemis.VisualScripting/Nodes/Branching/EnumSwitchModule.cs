@@ -1,4 +1,5 @@
 ﻿using Artemis.Core;
+using Avalonia.Threading;
 using Humanizer;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace Artemis.VisualScripting.Nodes.Branching
     public class EnumSwitchModule : Node
     {
         private readonly Dictionary<Enum, InputPin> _inputPins;
+        private Type? _currentEnumType;
 
         public OutputPin Output { get; }
 
@@ -31,6 +33,36 @@ namespace Artemis.VisualScripting.Nodes.Branching
 
         public override void Evaluate()
         {
+            var type = GetEnumType();
+            if (type is null)
+            {
+                Output.Value = null;
+                return;
+            }
+
+            if (_currentEnumType != type)
+            {
+                //the user kept the connection but changed the enum to another enum.
+                //we need to reset the pins
+                _currentEnumType = type;
+
+                Dispatcher.UIThread.Post(() =>
+                {
+                    RemoveInputPins();
+
+                    AddInputPins();
+                });
+
+                Output.Value = null;
+                return;
+            }
+
+            if (SwitchValue.Value is null)
+            {
+                Output.Value = null;
+                return;
+            }
+
             if (_inputPins.TryGetValue(SwitchValue.Value, out var pin) && pin.ConnectedTo.Count != 0)
             {
                 Output.Value = pin.Value;
@@ -41,17 +73,9 @@ namespace Artemis.VisualScripting.Nodes.Branching
             }
         }
 
-        private void ChangeType(Type type)
-        {
-            foreach (var input in _inputPins.Values)
-            {
-                input.ChangeType(type);
-            }
-            Output.ChangeType(type);
-        }
-
         private void OnInputPinDisconnected(object? sender, Core.Events.SingleValueEventArgs<IPin> e)
         {
+            //if this is the last pin to disconnect, reset the type.
             if (_inputPins.Values.All(i => i.ConnectedTo.Count == 0))
                 ChangeType(typeof(object));
         }
@@ -68,20 +92,18 @@ namespace Artemis.VisualScripting.Nodes.Branching
             //the user connected an enum to the switch pin.
             //we need to populate the inputs with all enum options.
             //the type of the input pins is variable, the same as the output.
-            var switchType = SwitchValue.ConnectedTo.First().Type;
-            if (!switchType.IsEnum)
-                return;//what
 
-            foreach (var enumValue in Enum.GetValues(switchType).Cast<Enum>())
-            {
-                var pin = CreateOrAddInputPin(typeof(object), enumValue.ToString().Humanize(LetterCasing.Sentence));
-                pin.PinConnected += OnInputPinConnected;
-                pin.PinDisconnected += OnInputPinDisconnected;
-                _inputPins.Add(enumValue, pin);
-            }
+            _currentEnumType = GetEnumType()!;
+
+            AddInputPins();
         }
 
         private void OnSwitchPinDisconnected(object? sender, Core.Events.SingleValueEventArgs<IPin> e)
+        {
+            RemoveInputPins();
+        }
+
+        private void RemoveInputPins()
         {
             foreach (var input in _inputPins.Values)
             {
@@ -91,6 +113,34 @@ namespace Artemis.VisualScripting.Nodes.Branching
             }
 
             _inputPins.Clear();
+        }
+
+        private void AddInputPins()
+        {
+            foreach (var enumValue in Enum.GetValues(_currentEnumType).Cast<Enum>())
+            {
+                var pin = CreateOrAddInputPin(typeof(object), enumValue.ToString().Humanize(LetterCasing.Sentence));
+                pin.PinConnected += OnInputPinConnected;
+                pin.PinDisconnected += OnInputPinDisconnected;
+                _inputPins.Add(enumValue, pin);
+            }
+        }
+
+        private void ChangeType(Type type)
+        {
+            foreach (var input in _inputPins.Values)
+            {
+                input.ChangeType(type);
+            }
+            Output.ChangeType(type);
+        }
+
+        private Type? GetEnumType()
+        {
+            if (SwitchValue.ConnectedTo.Count == 0)
+                return null;
+
+            return SwitchValue.ConnectedTo[0].Type;
         }
     }
 }
