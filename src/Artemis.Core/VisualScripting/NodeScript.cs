@@ -341,8 +341,14 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript, IStorageMod
     private void SavePins(INode node, int collectionId, IEnumerable<IPin> pins)
     {
         int sourcePinId = 0;
-        foreach (IPin sourcePin in pins.Where(p => p.Direction == PinDirection.Input))
+        foreach (IPin sourcePin in pins)
         {
+            if (sourcePin.Direction == PinDirection.Output)
+            {
+                sourcePinId++;
+                continue;
+            }
+            
             foreach (IPin targetPin in sourcePin.ConnectedTo)
             {
                 int targetPinCollectionId = -1;
