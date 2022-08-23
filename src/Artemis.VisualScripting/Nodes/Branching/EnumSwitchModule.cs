@@ -74,7 +74,7 @@ namespace Artemis.VisualScripting.Nodes.Branching
 
             foreach (var enumValue in Enum.GetValues(switchType).Cast<Enum>())
             {
-                var pin = CreateInputPin(typeof(object), enumValue.ToString().Humanize(LetterCasing.Sentence));
+                var pin = CreateOrAddInputPin(typeof(object), enumValue.ToString().Humanize(LetterCasing.Sentence));
                 pin.PinConnected += OnInputPinConnected;
                 pin.PinDisconnected += OnInputPinDisconnected;
                 _inputPins.Add(enumValue, pin);
