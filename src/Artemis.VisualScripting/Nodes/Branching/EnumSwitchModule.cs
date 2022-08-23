@@ -14,9 +14,9 @@ namespace Artemis.VisualScripting.Nodes.Branching
     {
         private readonly Dictionary<Enum, InputPin> _inputPins;
 
-        public OutputPin Output { get; set; }
+        public OutputPin Output { get; }
 
-        public InputPin<Enum> SwitchValue { get; set; }
+        public InputPin<Enum> SwitchValue { get; }
 
         public EnumSwitchModule() : base("Enum Branch", "desc")
         {
@@ -34,6 +34,10 @@ namespace Artemis.VisualScripting.Nodes.Branching
             if (_inputPins.TryGetValue(SwitchValue.Value, out var pin) && pin.ConnectedTo.Count != 0)
             {
                 Output.Value = pin.Value;
+            }
+            else
+            {
+                Output.Value = null;
             }
         }
 
@@ -65,6 +69,8 @@ namespace Artemis.VisualScripting.Nodes.Branching
             //we need to populate the inputs with all enum options.
             //the type of the input pins is variable, the same as the output.
             var switchType = SwitchValue.ConnectedTo.First().Type;
+            if (!switchType.IsEnum)
+                return;//what
 
             foreach (var enumValue in Enum.GetValues(switchType).Cast<Enum>())
             {
@@ -79,6 +85,8 @@ namespace Artemis.VisualScripting.Nodes.Branching
         {
             foreach (var input in _inputPins.Values)
             {
+                input.PinConnected -= OnInputPinConnected;
+                input.PinDisconnected -= OnInputPinDisconnected;
                 RemovePin(input);
             }
 
