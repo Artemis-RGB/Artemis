@@ -48,6 +48,14 @@ public readonly struct Numeric : IComparable<Numeric>, IConvertible
     {
         _value = value;
     }
+    
+    /// <summary>
+    ///     Creates a new instance of <see cref="Numeric" /> from a <see cref="long" />
+    /// </summary>
+    public Numeric(long value)
+    {
+        _value = value;
+    }
 
     /// <summary>
     ///     Creates a new instance of <see cref="Numeric" /> from an <see cref="object" />
@@ -60,6 +68,7 @@ public readonly struct Numeric : IComparable<Numeric>, IConvertible
             int value => value,
             double value => (float) value,
             byte value => value,
+            long value => value,
             Numeric value => value,
             _ => ParseFloatOrDefault(pathValue?.ToString())
         };
@@ -149,6 +158,11 @@ public readonly struct Numeric : IComparable<Numeric>, IConvertible
     public static implicit operator byte(Numeric p)
     {
         return (byte) Math.Clamp(p._value, 0, 255);
+    }
+    
+    public static implicit operator long(Numeric p)
+    {
+        return (long) p._value;
     }
 
     public static bool operator >(Numeric a, Numeric b)
@@ -264,6 +278,7 @@ public readonly struct Numeric : IComparable<Numeric>, IConvertible
                type == typeof(float) ||
                type == typeof(double) ||
                type == typeof(int) ||
+               type == typeof(long) ||
                type == typeof(byte);
     }
 

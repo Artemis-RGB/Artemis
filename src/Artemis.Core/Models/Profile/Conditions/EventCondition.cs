@@ -146,6 +146,8 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
             valueChangedNode.UpdateOutputPins(EventPath);
         }
 
+        if (!Script.Nodes.Contains(_startNode))
+            Script.AddNode(_startNode);
         Script.Save();
     }
 
