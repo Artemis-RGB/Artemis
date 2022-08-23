@@ -1,39 +1,35 @@
-﻿using Artemis.Core;
+﻿using System.Linq.Expressions;
+using System.Reflection;
+using Artemis.Core;
 using Artemis.Core.Events;
+using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
 using Artemis.VisualScripting.Nodes.DataModel.Screens;
+using Humanizer;
 
 namespace Artemis.VisualScripting.Nodes.DataModel;
 
-[Node("Data Model-Event", "Responds to a data model event trigger", "Data Model", OutputType = typeof(object))]
+[Node("Data Model-Event", "Outputs the latest values of a data model event.", "Data Model", OutputType = typeof(object))]
 public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCustomViewModel>, IDisposable
 {
-    private int _currentIndex;
-    private Type _currentType;
+    private readonly Dictionary<Func<DataModelEventArgs, object>, OutputPin> _propertyPins;
     private DataModelPath? _dataModelPath;
-    private object? _lastPathValue;
-    private DateTime _lastTrigger;
-    private bool _updating;
-
-    public DataModelEventNode() : base("Data Model-Event", "Responds to a data model event trigger")
+    private IDataModelEvent? _dataModelEvent;
+    
+    public DataModelEventNode() : base("Data Model-Event", "Outputs the latest values of a data model event.")
     {
-        _currentType = typeof(object);
-
-        CycleValues = CreateInputPinCollection(typeof(object), "", 0);
-        Output = CreateOutputPin(typeof(object));
-
-        CycleValues.PinAdded += CycleValuesOnPinAdded;
-        CycleValues.PinRemoved += CycleValuesOnPinRemoved;
-        CycleValues.Add(CycleValues.CreatePin());
+        _propertyPins = new Dictionary<Func<DataModelEventArgs, object>, OutputPin>();
+        
+        TimeSinceLastTrigger = CreateOutputPin<Numeric>("Time since trigger");
+        TriggerCount = CreateOutputPin<Numeric>("Trigger count");
 
         // Monitor storage for changes
         StorageModified += (_, _) => UpdateDataModelPath();
     }
 
     public INodeScript? Script { get; set; }
-
-    public InputPinCollection CycleValues { get; }
-    public OutputPin Output { get; }
+    public OutputPin<Numeric> TimeSinceLastTrigger { get; }
+    public OutputPin<Numeric> TriggerCount { get; }
 
     public override void Initialize(INodeScript script)
     {
@@ -45,84 +41,53 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
         UpdateDataModelPath();
     }
 
+    private void CreatePins(IDataModelEvent? dataModelEvent)
+    {
+        if (_dataModelEvent == dataModelEvent)
+            return;
+
+        List<IPin> pins = Pins.Skip(2).ToList();
+        while (pins.Any())
+            RemovePin((Pin) pins.First());
+        _propertyPins.Clear();
+
+        _dataModelEvent = dataModelEvent;
+        if (dataModelEvent == null)
+            return;
+
+        foreach (PropertyInfo propertyInfo in dataModelEvent.ArgumentsType.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                     .Where(p => p.CustomAttributes.All(a => a.AttributeType != typeof(DataModelIgnoreAttribute))))
+        {
+            // Expect an IDataModelEvent
+            ParameterExpression eventParameter = Expression.Parameter(typeof(DataModelEventArgs), "event");
+            // Cast it to the actual event type
+            UnaryExpression eventCast = Expression.Convert(eventParameter, propertyInfo.DeclaringType!);
+            // Access the property
+            MemberExpression accessor = Expression.Property(eventCast, propertyInfo);
+            // Cast the property to an object (sadly boxing)
+            UnaryExpression objectCast = Expression.Convert(accessor, typeof(object));
+            // Compile the resulting expression
+            Func<DataModelEventArgs, object> expression = Expression.Lambda<Func<DataModelEventArgs, object>>(objectCast, eventParameter).Compile();
+
+            _propertyPins.Add(expression, CreateOrAddOutputPin(propertyInfo.PropertyType, propertyInfo.Name.Humanize()));
+        }
+    }
+
     public override void Evaluate()
     {
         object? pathValue = _dataModelPath?.GetValue();
-        bool hasTriggered = pathValue is IDataModelEvent dataModelEvent
-            ? EvaluateEvent(dataModelEvent)
-            : EvaluateValue(pathValue);
-
-        if (hasTriggered)
-        {
-            _currentIndex++;
-
-            if (_currentIndex >= CycleValues.Count())
-                _currentIndex = 0;
-        }
-
-        object? outputValue = CycleValues.ElementAt(_currentIndex).PinValue;
-        if (Output.Type.IsInstanceOfType(outputValue))
-            Output.Value = outputValue;
-        else if (Output.Type.IsValueType)
-            Output.Value = Output.Type.GetDefault()!;
-    }
-
-    private bool EvaluateEvent(IDataModelEvent dataModelEvent)
-    {
-        if (dataModelEvent.LastTrigger <= _lastTrigger)
-            return false;
-
-        _lastTrigger = dataModelEvent.LastTrigger;
-        return true;
-    }
-
-    private bool EvaluateValue(object? pathValue)
-    {
-        if (Equals(pathValue, _lastPathValue))
-            return false;
-
-        _lastPathValue = pathValue;
-        return true;
-    }
-
-    private void CycleValuesOnPinAdded(object? sender, SingleValueEventArgs<IPin> e)
-    {
-        e.Value.PinConnected += OnPinConnected;
-        e.Value.PinDisconnected += OnPinDisconnected;
-    }
-
-    private void CycleValuesOnPinRemoved(object? sender, SingleValueEventArgs<IPin> e)
-    {
-        e.Value.PinConnected -= OnPinConnected;
-        e.Value.PinDisconnected -= OnPinDisconnected;
-    }
-
-    private void OnPinDisconnected(object? sender, SingleValueEventArgs<IPin> e)
-    {
-        ProcessPinDisconnected();
-    }
-
-    private void OnPinConnected(object? sender, SingleValueEventArgs<IPin> e)
-    {
-        ProcessPinConnected(e.Value);
-    }
-
-    private void ProcessPinConnected(IPin source)
-    {
-        if (_updating)
+        if (pathValue is not IDataModelEvent dataModelEvent)
             return;
 
-        try
+        TimeSinceLastTrigger.Value = new Numeric(dataModelEvent.TimeSinceLastTrigger.TotalMilliseconds);
+        TriggerCount.Value = new Numeric(dataModelEvent.TriggerCount);
+        
+        foreach ((Func<DataModelEventArgs, object> propertyAccessor, OutputPin outputPin) in _propertyPins)
         {
-            _updating = true;
-
-            // No need to change anything if the types haven't changed
-            if (_currentType != source.Type)
-                ChangeCurrentType(source.Type);
-        }
-        finally
-        {
-            _updating = false;
+            if (!outputPin.ConnectedTo.Any())
+                continue;
+            object value = dataModelEvent.LastEventArgumentsUntyped != null ? propertyAccessor(dataModelEvent.LastEventArgumentsUntyped) : outputPin.Type.GetDefault()!;
+            outputPin.Value = outputPin.IsNumeric ? new Numeric(value) : value;
         }
     }
 
@@ -131,32 +96,10 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
         DataModelPath? old = _dataModelPath;
         _dataModelPath = Storage != null ? new DataModelPath(Storage) : null;
         old?.Dispose();
-    }
 
-    private void ChangeCurrentType(Type type)
-    {
-        CycleValues.ChangeType(type);
-        Output.ChangeType(type);
-
-        _currentType = type;
-    }
-
-    private void ProcessPinDisconnected()
-    {
-        if (_updating)
-            return;
-        try
-        {
-            // If there's still a connected pin, stick to the current type
-            if (CycleValues.Any(v => v.ConnectedTo.Any()))
-                return;
-
-            ChangeCurrentType(typeof(object));
-        }
-        finally
-        {
-            _updating = false;
-        }
+        object? pathValue = _dataModelPath?.GetValue();
+        if (pathValue is IDataModelEvent dataModelEvent)
+            CreatePins(dataModelEvent);
     }
 
     /// <inheritdoc />

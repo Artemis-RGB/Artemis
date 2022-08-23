@@ -32,6 +32,14 @@ public class DisplayValueNodeCustomViewModel : CustomNodeViewModel
 
     private void Update(object? sender, EventArgs e)
     {
-        CurrentValue = _node.Input.Value;
+        try
+        {
+            CurrentValue = _node.Input.Value;
+        }
+        catch (Exception ex)
+        {
+            // Don't crash the timer on exceptions and display the messages as a bit of a nice to have
+            CurrentValue = ex.Message;
+        }
     }
 }

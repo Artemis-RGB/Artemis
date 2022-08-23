@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Ninject;
 using Ninject.Parameters;
 
@@ -15,6 +16,9 @@ public abstract class Node : CorePropertyChanged, INode
     public event EventHandler? Resetting;
 
     #region Properties & Fields
+    
+    private readonly List<OutputPin> _outputPinBucket = new();
+    private readonly List<InputPin> _inputPinBucket = new();
 
     private Guid _id;
 
@@ -158,6 +162,66 @@ public abstract class Node : CorePropertyChanged, INode
         OutputPin pin = new(this, type, name);
         _pins.Add(pin);
         OnPropertyChanged(nameof(Pins));
+        return pin;
+    }
+    
+    /// <summary>
+    ///     Creates or adds an output pin to the node using a bucket.
+    ///     The bucket might grow a bit over time as the user edits the node but pins won't get lost, enabling undo/redo in the
+    ///     editor.
+    /// </summary>
+    protected OutputPin CreateOrAddOutputPin(Type valueType, string displayName)
+    {
+        // Grab the first pin from the bucket that isn't on the node yet
+        OutputPin? pin = _outputPinBucket.FirstOrDefault(p => !Pins.Contains(p));
+
+        if (Numeric.IsTypeCompatible(valueType))
+            valueType = typeof(Numeric);
+
+        // If there is none, create a new one and add it to the bucket
+        if (pin == null)
+        {
+            pin = CreateOutputPin(valueType, displayName);
+            _outputPinBucket.Add(pin);
+        }
+        // If there was a pin in the bucket, update it's type and display name and reuse it
+        else
+        {
+            pin.ChangeType(valueType);
+            pin.Name = displayName;
+            AddPin(pin);
+        }
+
+        return pin;
+    }
+    
+    /// <summary>
+    ///     Creates or adds an input pin to the node using a bucket.
+    ///     The bucket might grow a bit over time as the user edits the node but pins won't get lost, enabling undo/redo in the
+    ///     editor.
+    /// </summary>
+    protected InputPin CreateOrAddInputPin(Type valueType, string displayName)
+    {
+        // Grab the first pin from the bucket that isn't on the node yet
+        InputPin? pin = _inputPinBucket.FirstOrDefault(p => !Pins.Contains(p));
+
+        if (Numeric.IsTypeCompatible(valueType))
+            valueType = typeof(Numeric);
+
+        // If there is none, create a new one and add it to the bucket
+        if (pin == null)
+        {
+            pin = CreateInputPin(valueType, displayName);
+            _inputPinBucket.Add(pin);
+        }
+        // If there was a pin in the bucket, update it's type and display name and reuse it
+        else
+        {
+            pin.ChangeType(valueType);
+            pin.Name = displayName;
+            AddPin(pin);
+        }
+
         return pin;
     }
 

@@ -33,6 +33,10 @@
         <Compile Update="Nodes\DataModel\Screens\DataModelNodeCustomView.axaml.cs">
             <DependentUpon>DataModelNodeCustomView.axaml</DependentUpon>
         </Compile>
+        <Compile Update="Nodes\DataModel\Screens\DataModelEventNodeCustomView.axaml.cs">
+          <DependentUpon>DataModelEventNodeCustomView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 
 </Project>

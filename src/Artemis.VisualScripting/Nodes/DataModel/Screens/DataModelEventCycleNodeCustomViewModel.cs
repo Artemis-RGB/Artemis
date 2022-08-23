@@ -11,17 +11,17 @@ using ReactiveUI;
 
 namespace Artemis.VisualScripting.Nodes.DataModel.Screens;
 
-public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
+public class DataModelEventCycleNodeCustomViewModel : CustomNodeViewModel
 {
-    private readonly DataModelEventNode _node;
+    private readonly DataModelEventCycleNode _cycleNode;
     private readonly INodeEditorService _nodeEditorService;
     private DataModelPath? _dataModelPath;
     private ObservableCollection<Module>? _modules;
     private bool _updating;
 
-    public DataModelEventNodeCustomViewModel(DataModelEventNode node, INodeScript script, ISettingsService settingsService, INodeEditorService nodeEditorService) : base(node, script)
+    public DataModelEventCycleNodeCustomViewModel(DataModelEventCycleNode cycleNode, INodeScript script, ISettingsService settingsService, INodeEditorService nodeEditorService) : base(cycleNode, script)
     {
-        _node = node;
+        _cycleNode = cycleNode;
         _nodeEditorService = nodeEditorService;
 
         ShowFullPaths = settingsService.GetSetting("ProfileEditor.ShowFullPaths", true);
@@ -31,13 +31,13 @@ public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
         this.WhenActivated(d =>
         {
             // Set up extra modules
-            if (_node.Script?.Context is Profile scriptProfile && scriptProfile.Configuration.Module != null)
+            if (_cycleNode.Script?.Context is Profile scriptProfile && scriptProfile.Configuration.Module != null)
                 Modules = new ObservableCollection<Module> {scriptProfile.Configuration.Module};
-            else if (_node.Script?.Context is ProfileConfiguration profileConfiguration && profileConfiguration.Module != null)
+            else if (_cycleNode.Script?.Context is ProfileConfiguration profileConfiguration && profileConfiguration.Module != null)
                 Modules = new ObservableCollection<Module> {profileConfiguration.Module};
 
             // Subscribe to node changes 
-            _node.WhenAnyValue(n => n.Storage).Subscribe(UpdateDataModelPath).DisposeWith(d);
+            _cycleNode.WhenAnyValue(n => n.Storage).Subscribe(UpdateDataModelPath).DisposeWith(d);
             this.WhenAnyValue(vm => vm.DataModelPath).Subscribe(ApplyDataModelPath).DisposeWith(d);
 
             Disposable.Create(() =>
@@ -62,8 +62,6 @@ public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
         get => _dataModelPath;
         set => this.RaiseAndSetIfChanged(ref _dataModelPath, value);
     }
-
-    public List<Type> FilterTypes => new() {typeof(IDataModelEvent)};
 
     private void UpdateDataModelPath(DataModelPathEntity? entity)
     {
@@ -90,13 +88,13 @@ public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
         {
             if (_updating)
                 return;
-            if (path?.Path == _node.Storage?.Path)
+            if (path?.Path == _cycleNode.Storage?.Path)
                 return;
 
             _updating = true;
 
             path?.Save();
-            _nodeEditorService.ExecuteCommand(Script, new UpdateStorage<DataModelPathEntity>(_node, path?.Entity, "event"));
+            _nodeEditorService.ExecuteCommand(Script, new UpdateStorage<DataModelPathEntity>(_cycleNode, path?.Entity, "event"));
         }
         finally
         {

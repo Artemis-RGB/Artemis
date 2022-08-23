@@ -14,7 +14,7 @@ namespace Artemis.UI.Services;
 
 public class UpdateService : IUpdateService
 {
-    private const double UPDATE_CHECK_INTERVAL = 10000; // once per hour
+    private const double UPDATE_CHECK_INTERVAL = 3_600_000; // once per hour
 
     private readonly PluginSetting<bool> _autoUpdate;
     private readonly PluginSetting<bool> _checkForUpdates;

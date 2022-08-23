@@ -21,7 +21,9 @@ public class StringFormatNode : Node
 
     public override void Evaluate()
     {
-        Output.Value = string.Format(Format.Value ?? string.Empty, Values.Values.ToArray());
+        // Convert numerics to floats beforehand to allow string.Format to format them
+        object[] values = Values.Values.Select(v => v is Numeric n ? (float) n : v).ToArray();
+        Output.Value = string.Format(Format.Value ?? string.Empty, values);
     }
 
     #endregion
