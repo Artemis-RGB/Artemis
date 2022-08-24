@@ -10,8 +10,8 @@ public class StringNullOrWhiteSpaceNode : Node
         : base("Null or White Space", "Returns true if null or white space")
     {
         Input1 = CreateInputPin<string>();
-        NullOrWhiteSpaceResult = CreateOutputPin<bool>("White Space");
-        HasContentResult = CreateOutputPin<bool>("Has Content");
+        NullOrWhiteSpaceResult = CreateOutputPin<bool>("true");
+        HasContentResult = CreateOutputPin<bool>("false");
     }
 
     public InputPin<string> Input1 { get; }
