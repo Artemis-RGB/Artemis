@@ -2,12 +2,12 @@
 
 namespace Artemis.VisualScripting.Nodes.Text;
 
-[Node("String Length", "Checks whether the first input is contained in the second input.", 
+[Node("Text Length", "Outputs the length of the input text.", 
     "Text", InputType = typeof(string), OutputType = typeof(Numeric))]
 public class StringLengthNode : Node
 {
     public StringLengthNode()
-        : base("String Length", "Returns string length.")
+        : base("Text Length", "Outputs text length.")
     {
         Input1 = CreateInputPin<string>();
         Result = CreateOutputPin<Numeric>();
@@ -19,6 +19,6 @@ public class StringLengthNode : Node
 
     public override void Evaluate()
     {
-        Result.Value = new Numeric((Input1.Value ?? "").Length);
+        Result.Value = Input1.Value == null ? new Numeric(0) : new Numeric(Input1.Value.Length);
     }
 }
