@@ -107,7 +107,7 @@ public static class InputUtilities
             LinuxKeyboardKeyCodes.KEY_KPENTER => KeyboardKey.NumPadEnter,
             LinuxKeyboardKeyCodes.KEY_RIGHTCTRL => KeyboardKey.RightCtrl,
             LinuxKeyboardKeyCodes.KEY_KPSLASH => KeyboardKey.Divide,
-            LinuxKeyboardKeyCodes.KEY_SYSRQ => KeyboardKey.System, //TODO:?
+            LinuxKeyboardKeyCodes.KEY_SYSRQ => KeyboardKey.PrintScreen,
             LinuxKeyboardKeyCodes.KEY_RIGHTALT => KeyboardKey.RightAlt,
             LinuxKeyboardKeyCodes.KEY_LINEFEED => KeyboardKey.LineFeed,
             LinuxKeyboardKeyCodes.KEY_HOME => KeyboardKey.Home,
@@ -135,7 +135,7 @@ public static class InputUtilities
             // LinuxKeyboardKeyCodes.KEY_YEN => expr,
             LinuxKeyboardKeyCodes.KEY_LEFTMETA => KeyboardKey.LWin,
             LinuxKeyboardKeyCodes.KEY_RIGHTMETA => KeyboardKey.RWin,
-            // LinuxKeyboardKeyCodes.KEY_COMPOSE => ,
+            LinuxKeyboardKeyCodes.KEY_COMPOSE => KeyboardKey.Apps,
             LinuxKeyboardKeyCodes.KEY_STOP => KeyboardKey.MediaStop,
             // LinuxKeyboardKeyCodes.KEY_AGAIN => ,
             // LinuxKeyboardKeyCodes.KEY_PROPS => expr,
