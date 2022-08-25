@@ -103,6 +103,17 @@ namespace Artemis.VisualScripting.Nodes.Branching
             RemoveInputPins();
         }
 
+        private void AddInputPins()
+        {
+            foreach (var enumValue in Enum.GetValues(_currentEnumType!).Cast<Enum>())
+            {
+                var pin = CreateOrAddInputPin(typeof(object), enumValue.ToString().Humanize(LetterCasing.Sentence));
+                pin.PinConnected += OnInputPinConnected;
+                pin.PinDisconnected += OnInputPinDisconnected;
+                _inputPins.Add(enumValue, pin);
+            }
+        }
+
         private void RemoveInputPins()
         {
             foreach (var input in _inputPins.Values)
@@ -113,17 +124,6 @@ namespace Artemis.VisualScripting.Nodes.Branching
             }
 
             _inputPins.Clear();
-        }
-
-        private void AddInputPins()
-        {
-            foreach (var enumValue in Enum.GetValues(_currentEnumType).Cast<Enum>())
-            {
-                var pin = CreateOrAddInputPin(typeof(object), enumValue.ToString().Humanize(LetterCasing.Sentence));
-                pin.PinConnected += OnInputPinConnected;
-                pin.PinDisconnected += OnInputPinDisconnected;
-                _inputPins.Add(enumValue, pin);
-            }
         }
 
         private void ChangeType(Type type)
