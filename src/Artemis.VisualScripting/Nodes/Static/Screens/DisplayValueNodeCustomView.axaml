@@ -6,6 +6,7 @@
              xmlns:skiaSharp="clr-namespace:SkiaSharp;assembly=SkiaSharp"
              xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
              xmlns:converters1="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             xmlns:collections="clr-namespace:System.Collections;assembly=System.Runtime"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.VisualScripting.Nodes.Static.Screens.DisplayValueNodeCustomView"
              x:DataType="screens:DisplayValueNodeCustomViewModel">
@@ -42,6 +43,9 @@
             </DataTemplate>
             <DataTemplate DataType="core:Numeric">
                 <TextBlock Text="{Binding}" FontFamily="Consolas"/>
+            </DataTemplate>
+            <DataTemplate DataType="collections:IList">
+                <TextBlock Text="{Binding Count, StringFormat='List - {0} item(s)'}" FontFamily="Consolas"/>
             </DataTemplate>
             <DataTemplate>
                 <TextBlock Text="{Binding}" FontFamily="Consolas"/>

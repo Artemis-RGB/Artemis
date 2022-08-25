@@ -130,10 +130,10 @@ public abstract class Pin : CorePropertyChanged, IPin
     public bool IsTypeCompatible(Type type, bool forgivingEnumMatching = true)
     {
         return Type == type
+               || (Direction == PinDirection.Input && type.IsAssignableTo(Type))
+               || (Direction == PinDirection.Output && type.IsAssignableFrom(Type))
                || (Direction == PinDirection.Input && Type == typeof(Enum) && type.IsEnum && forgivingEnumMatching)
-               || (Direction == PinDirection.Output && type == typeof(Enum) && Type.IsEnum && forgivingEnumMatching)
-               || (Direction == PinDirection.Input && Type == typeof(object))
-               || (Direction == PinDirection.Output && type == typeof(object));
+               || (Direction == PinDirection.Output && type == typeof(Enum) && Type.IsEnum && forgivingEnumMatching);
     }
 
     /// <summary>
@@ -168,6 +168,6 @@ public abstract class Pin : CorePropertyChanged, IPin
             IsNumeric = type == typeof(Numeric);
         }
     }
-    
+
     #endregion
 }
