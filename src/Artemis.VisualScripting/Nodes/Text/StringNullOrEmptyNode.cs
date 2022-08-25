@@ -10,7 +10,7 @@ public class StringNullOrEmptyNode : Node
         : base("Text is empty", "Outputs true if empty")
     {
         Input1 = CreateInputPin<string>();
-        Output1 = CreateOutputPin<bool>("true");
+        Output1 = CreateOutputPin<bool>();
     }
 
     public InputPin<string> Input1 { get; }
