@@ -9,12 +9,10 @@ using System.Threading.Tasks;
 
 namespace Artemis.VisualScripting.Nodes.Branching
 {
-    [Node("Enum Switch", "Returns a different input based on a switch value", "Operators", InputType = typeof(Enum), OutputType = typeof(object))]
-
+    [Node("Switch (Enum)", "Outputs the input that corresponds to the switch value", "Operators", InputType = typeof(Enum), OutputType = typeof(object))]
     public class EnumSwitchModule : Node
     {
         private readonly Dictionary<Enum, InputPin> _inputPins;
-        private Type? _currentEnumType;
 
         public OutputPin Output { get; }
 
@@ -33,44 +31,25 @@ namespace Artemis.VisualScripting.Nodes.Branching
 
         public override void Evaluate()
         {
-            var type = GetEnumType();
-            if (type is null)
-            {
-                Output.Value = null;
-                return;
-            }
-
-            if (_currentEnumType != type)
-            {
-                //the user kept the connection but changed the enum to another enum.
-                //we need to reset the pins
-                _currentEnumType = type;
-
-                Dispatcher.UIThread.Post(() =>
-                {
-                    RemoveInputPins();
-
-                    AddInputPins();
-                });
-
-                Output.Value = null;
-                return;
-            }
-
             if (SwitchValue.Value is null)
             {
                 Output.Value = null;
                 return;
             }
 
-            if (_inputPins.TryGetValue(SwitchValue.Value, out var pin) && pin.ConnectedTo.Count != 0)
-            {
-                Output.Value = pin.Value;
-            }
-            else
+            if (!_inputPins.TryGetValue(SwitchValue.Value, out InputPin? pin))
             {
                 Output.Value = null;
+                return;
             }
+
+            if (pin.ConnectedTo.Count == 0)
+            {
+                Output.Value = null;
+                return;
+            }
+
+            Output.Value = pin.Value;
         }
 
         private void OnInputPinDisconnected(object? sender, Core.Events.SingleValueEventArgs<IPin> e)
@@ -89,34 +68,26 @@ namespace Artemis.VisualScripting.Nodes.Branching
 
         private void OnSwitchPinConnected(object? sender, Core.Events.SingleValueEventArgs<IPin> e)
         {
-            //the user connected an enum to the switch pin.
-            //we need to populate the inputs with all enum options.
-            //the type of the input pins is variable, the same as the output.
+            if (SwitchValue.ConnectedTo.Count == 0)
+                return;
 
-            _currentEnumType = GetEnumType()!;
+            Type? enumType = SwitchValue.ConnectedTo[0].Type;
 
-            AddInputPins();
+            if (enumType is null)
+                return;
+
+            foreach (Enum? enumValue in Enum.GetValues(enumType).Cast<Enum>())
+            {
+                InputPin pin = CreateOrAddInputPin(typeof(object), enumValue.ToString().Humanize(LetterCasing.Sentence));
+                pin.PinConnected += OnInputPinConnected;
+                pin.PinDisconnected += OnInputPinDisconnected;
+                _inputPins[enumValue] = pin;
+            }
         }
 
         private void OnSwitchPinDisconnected(object? sender, Core.Events.SingleValueEventArgs<IPin> e)
         {
-            RemoveInputPins();
-        }
-
-        private void AddInputPins()
-        {
-            foreach (var enumValue in Enum.GetValues(_currentEnumType!).Cast<Enum>())
-            {
-                var pin = CreateOrAddInputPin(typeof(object), enumValue.ToString().Humanize(LetterCasing.Sentence));
-                pin.PinConnected += OnInputPinConnected;
-                pin.PinDisconnected += OnInputPinDisconnected;
-                _inputPins.Add(enumValue, pin);
-            }
-        }
-
-        private void RemoveInputPins()
-        {
-            foreach (var input in _inputPins.Values)
+            foreach (InputPin input in _inputPins.Values)
             {
                 input.PinConnected -= OnInputPinConnected;
                 input.PinDisconnected -= OnInputPinDisconnected;
@@ -133,14 +104,6 @@ namespace Artemis.VisualScripting.Nodes.Branching
                 input.ChangeType(type);
             }
             Output.ChangeType(type);
-        }
-
-        private Type? GetEnumType()
-        {
-            if (SwitchValue.ConnectedTo.Count == 0)
-                return null;
-
-            return SwitchValue.ConnectedTo[0].Type;
         }
     }
 }
