@@ -4,7 +4,7 @@ using Artemis.VisualScripting.Nodes.List.Screens;
 
 namespace Artemis.VisualScripting.Nodes.List;
 
-[Node("List Operator", "Checks if any/all/no value in the input list matches the input value", "List", InputType = typeof(IEnumerable), OutputType = typeof(bool))]
+[Node("List Operator (Simple)", "Checks if any/all/no value in the input list matches the input value", "List", InputType = typeof(IEnumerable), OutputType = typeof(bool))]
 public class ListOperatorNode : Node<ListOperator, ListOperatorNodeCustomViewModel>
 {
     public ListOperatorNode() : base("List Operator", "Checks if any/all/no value in the input list matches the input value")
