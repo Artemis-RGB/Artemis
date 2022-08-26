@@ -4,8 +4,8 @@
       "src": [
         {
           "files": [
-            "Artemis.Core/Artemis.Core.csproj",
-            "Artemis.UI.Shared/Artemis.UI.Shared.csproj",
+            "Artemis.Core/bin/net6.0/Artemis.Core.dll",
+            "Artemis.UI.Shared/bin/net6.0/Artemis.UI.Shared.dll",
           ],
           "src": "../../src"
         }
