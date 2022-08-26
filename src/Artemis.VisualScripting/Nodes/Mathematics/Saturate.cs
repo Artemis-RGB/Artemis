@@ -17,7 +17,7 @@ public class SaturateNode : Node
     #region Constructors
 
     public SaturateNode()
-        : base("Clamp", "Clamps the value to be in between 0 and 1")
+        : base("Saturate", "Clamps the value to be in between 0 and 1")
     {
         Value = CreateInputPin<Numeric>();
 

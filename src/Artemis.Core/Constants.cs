@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
 using Artemis.Core.JsonConverters;
@@ -89,6 +90,11 @@ public static class Constants
     ///     The plugin used by core components of Artemis
     /// </summary>
     public static readonly Plugin CorePlugin = new(CorePluginInfo, new DirectoryInfo(ApplicationFolder), null);
+
+    /// <summary>
+    ///     Gets the startup arguments provided to the application
+    /// </summary>
+    public static ReadOnlyCollection<string> StartupArguments { get; set; } = null!;
 
     internal static readonly CorePluginFeature CorePluginFeature = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Core")};
     internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Effect Placeholder")};

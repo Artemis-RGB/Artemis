@@ -13,364 +13,379 @@
              x:DataType="settings:GeneralTabViewModel">
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-		<StackPanel Margin="15" MaxWidth="1000">
-			<!-- General settings -->
-			<TextBlock Classes="h4" Margin="0 15">
-				General
-			</TextBlock>
-			<Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
-				<StackPanel>
-					<StackPanel IsVisible="{CompiledBinding IsAutoRunSupported}">
-						<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-							<StackPanel Grid.Column="0">
-								<TextBlock>Auto-run on startup</TextBlock>
-							</StackPanel>
-							<ToggleSwitch Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" IsChecked="{CompiledBinding UIAutoRun.Value}" MinWidth="0" Margin="0 -10"/>
-						</Grid>
-						<Separator Classes="card-separator" />
+        <StackPanel Margin="15" MaxWidth="1000">
+            <!-- General settings -->
+            <TextBlock Classes="h4" Margin="0 15">
+                General
+            </TextBlock>
+            <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
+                <StackPanel>
+                    <StackPanel IsVisible="{CompiledBinding IsAutoRunSupported}">
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock>Auto-run on startup</TextBlock>
+                            </StackPanel>
+                            <ToggleSwitch Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" IsChecked="{CompiledBinding UIAutoRun.Value}" MinWidth="0" Margin="0 -10" OnContent="Yes"
+                                          OffContent="No" />
+                        </Grid>
+                        <Separator Classes="card-separator" />
 
-						<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-							<StackPanel Grid.Column="0">
-								<TextBlock>Hide window on auto-run</TextBlock>
-							</StackPanel>
-							<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-								<ToggleSwitch IsChecked="{CompiledBinding !UIShowOnStartup.Value}" IsEnabled="{CompiledBinding UIAutoRun.Value}" MinWidth="0" Margin="0 -10"/>
-							</StackPanel>
-						</Grid>
-						<Separator Classes="card-separator" />
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock>Hide window on auto-run</TextBlock>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                <ToggleSwitch IsChecked="{CompiledBinding !UIShowOnStartup.Value}" IsEnabled="{CompiledBinding UIAutoRun.Value}" MinWidth="0" Margin="0 -10" OnContent="Yes"
+                                              OffContent="No" />
+                            </StackPanel>
+                        </Grid>
+                        <Separator Classes="card-separator" />
 
-						<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-							<StackPanel Grid.Column="0">
-								<TextBlock>Startup delay</TextBlock>
-								<TextBlock Classes="subtitle" TextWrapping="Wrap">
-									Set the amount of seconds to wait before auto-running Artemis.
-								</TextBlock>
-								<TextBlock Classes="subtitle" TextWrapping="Wrap">
-									If some devices don't work because Artemis starts before the manufacturer's software, try increasing this value.
-								</TextBlock>
-							</StackPanel>
-							<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
-								<controls:NumberBox IsEnabled="{CompiledBinding UIAutoRun.Value}" Width="120">
-									<Interaction.Behaviors>
-										<behaviors:LostFocusNumberBoxBindingBehavior Value="{CompiledBinding UIAutoRunDelay.Value}"/>
-									</Interaction.Behaviors>
-								</controls:NumberBox>
-								<TextBlock VerticalAlignment="Center" TextAlignment="Right" Width="30">sec</TextBlock>
-							</StackPanel>
-						</Grid>
-						<Separator Classes="card-separator" />	
-					</StackPanel>
-					
-					<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-						<StackPanel Grid.Column="0">
-							<TextBlock>
-								Log level
-							</TextBlock>
-							<TextBlock Classes="subtitle" TextWrapping="Wrap">
-								Sets the logging level, a higher logging level will result in more log files.
-							</TextBlock>
-						</StackPanel>
-						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<shared:EnumComboBox Width="150" Value="{CompiledBinding CoreLoggingLevel.Value}" />
-						</StackPanel>
-					</Grid>
-					<Separator Classes="card-separator" />
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock>Startup delay</TextBlock>
+                                <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                    Set the amount of seconds to wait before auto-running Artemis.
+                                </TextBlock>
+                                <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                    If some devices don't work because Artemis starts before the manufacturer's software, try increasing this value.
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
+                                <controls:NumberBox IsEnabled="{CompiledBinding UIAutoRun.Value}" Width="120">
+                                    <Interaction.Behaviors>
+                                        <behaviors:LostFocusNumberBoxBindingBehavior Value="{CompiledBinding UIAutoRunDelay.Value}" />
+                                    </Interaction.Behaviors>
+                                </controls:NumberBox>
+                                <TextBlock VerticalAlignment="Center" TextAlignment="Right" Width="30">sec</TextBlock>
+                            </StackPanel>
+                        </Grid>
+                        <Separator Classes="card-separator" />
+                    </StackPanel>
 
-					<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-						<StackPanel Grid.Column="0" VerticalAlignment="Center">
-							<TextBlock>
-								Logs
-							</TextBlock>
-							<TextBlock Classes="subtitle">
-								Opens the directory where logs are stored.
-							</TextBlock>
-						</StackPanel>
-						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<Button Command="{CompiledBinding ShowLogs}" Width="150" Content="Show logs" />
-						</StackPanel>
-					</Grid>
-				</StackPanel>
-			</Border>
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0">
+                            <TextBlock>
+                                Log level
+                            </TextBlock>
+                            <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                Sets the logging level, a higher logging level will result in more log files.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <shared:EnumComboBox Width="150" Value="{CompiledBinding CoreLoggingLevel.Value}" />
+                        </StackPanel>
+                    </Grid>
+                    <Separator Classes="card-separator" />
 
-			<!-- Web server settings -->
-			<TextBlock Classes="h4" Margin="0 15">
-				Web server
-			</TextBlock>
-			<Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
-				<StackPanel>
-					<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-						<StackPanel Grid.Column="0">
-							<TextBlock>
-								Web server port
-							</TextBlock>
-							<TextBlock Classes="subtitle" TextWrapping="Wrap">
-								Artemis runs a local web server that can be used to externally interact with the application.
-							</TextBlock>
-							<TextBlock Classes="subtitle" TextWrapping="Wrap">
-								This web server can only be accessed by applications running on your own computer, e.g. supported games.
-							</TextBlock>
-						</StackPanel>
-						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<controls:NumberBox Width="150">
-								<Interaction.Behaviors>
-									<behaviors:LostFocusNumberBoxBindingBehavior Value="{CompiledBinding WebServerPort.Value}"/>
-								</Interaction.Behaviors>
-							</controls:NumberBox>
-						</StackPanel>
-					</Grid>
-				</StackPanel>
-			</Border>
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock>
+                                Logs
+                            </TextBlock>
+                            <TextBlock Classes="subtitle">
+                                Opens the directory where logs are stored.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <Button Command="{CompiledBinding ShowLogs}" Width="150" Content="Show logs" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
 
-			<!-- Update settings -->
-			<StackPanel IsVisible="{CompiledBinding IsUpdatingSupported}">
-				<TextBlock Classes="h4" Margin="0 15">
-					Updating
-				</TextBlock>
-				<Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
-					<StackPanel>
-						<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-							<StackPanel Grid.Column="0">
-								<TextBlock>
-									Check for updates
-								</TextBlock>
-								<TextBlock Classes="subtitle" TextWrapping="Wrap">
-									If enabled, we'll check for updates on startup and periodically while running.
-								</TextBlock>
-							</StackPanel>
-							<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-								<ToggleSwitch IsChecked="{CompiledBinding UICheckForUpdates.Value}" MinWidth="0" />
-							</StackPanel>
-						</Grid>
-						<Separator Classes="card-separator" />
-						
-						<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-							<StackPanel Grid.Column="0">
-								<TextBlock>
-									Auto-install updates
-								</TextBlock>
-								<TextBlock Classes="subtitle" TextWrapping="Wrap">
-									If enabled, new updates will automatically be installed.
-								</TextBlock>
-							</StackPanel>
-							<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-								<ToggleSwitch IsEnabled="{CompiledBinding UICheckForUpdates.Value}" IsChecked="{CompiledBinding UIAutoUpdate.Value}" MinWidth="0" />
-							</StackPanel>
-						</Grid>
-						<Separator Classes="card-separator" />
+            <!-- Web server settings -->
+            <TextBlock Classes="h4" Margin="0 15">
+                Web server
+            </TextBlock>
+            <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
+                <StackPanel>
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0">
+                            <TextBlock>Enable web server</TextBlock>
+                            <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                Artemis runs a local web server that can be used to externally interact with the application.
+                            </TextBlock>
+                            <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                This web server can only be accessed by applications running on your own computer, e.g. supported games.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <ToggleSwitch IsChecked="{CompiledBinding WebServerEnabled.Value}" OnContent="Yes" OffContent="No" MinWidth="0" Margin="0 -10" />
+                        </StackPanel>
+                    </Grid>
+                    <Separator Classes="card-separator" />
 
-						<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-							<StackPanel Grid.Column="0" VerticalAlignment="Center">
-								<TextBlock>
-									Update
-								</TextBlock>
-								<TextBlock Classes="subtitle">
-									Use the button on the right to check for updates now.
-								</TextBlock>
-							</StackPanel>
-							<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-								<Button Command="{CompiledBinding CheckForUpdate}" Width="150" Content="Check now" />
-							</StackPanel>
-						</Grid>
-					</StackPanel>
-				</Border>
-			</StackPanel>
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0">
+                            <TextBlock>
+                                Web server port
+                            </TextBlock>
+                            <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                If the webserver does not work you can try changing the port to one that is available.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <controls:NumberBox Width="150">
+                                <Interaction.Behaviors>
+                                    <behaviors:LostFocusNumberBoxBindingBehavior Value="{CompiledBinding WebServerPort.Value}" />
+                                </Interaction.Behaviors>
+                            </controls:NumberBox>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
 
-			<!-- Profile editor settings -->
-			<TextBlock Classes="h4" Margin="0 15">
-				Profile editor
-			</TextBlock>
-			<Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
-				<StackPanel>
-					<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-						<StackPanel Grid.Column="0">
-							<TextBlock>
-								Show condition data model values
-							</TextBlock>
-							<TextBlock Classes="subtitle" TextWrapping="Wrap">
-								While selecting a condition target, show the current values of the data model.
-							</TextBlock>
-						</StackPanel>
-						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<ToggleSwitch IsChecked="{CompiledBinding ProfileEditorShowDataModelValues.Value}" MinWidth="0" />
-						</StackPanel>
-					</Grid>
-					<Separator Classes="card-separator" />
+            <!-- Update settings -->
+            <StackPanel IsVisible="{CompiledBinding IsUpdatingSupported}">
+                <TextBlock Classes="h4" Margin="0 15">
+                    Updating
+                </TextBlock>
+                <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
+                    <StackPanel>
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock>
+                                    Check for updates
+                                </TextBlock>
+                                <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                    If enabled, we'll check for updates on startup and periodically while running.
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                <ToggleSwitch IsChecked="{CompiledBinding UICheckForUpdates.Value}" MinWidth="0" OnContent="Yes" OffContent="No" />
+                            </StackPanel>
+                        </Grid>
+                        <Separator Classes="card-separator" />
 
-					<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-						<StackPanel Grid.Column="0">
-							<TextBlock>
-								Default brush
-							</TextBlock>
-							<TextBlock Classes="subtitle" TextWrapping="Wrap">
-								Sets the default brush that is applied to new layers
-							</TextBlock>
-						</StackPanel>
-						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<StackPanel.Styles>
-								<Style Selector="ComboBox.brush /template/ ContentControl#ContentPresenter">
-									<Setter Property="ContentTemplate">
-										<Setter.Value>
-											<DataTemplate DataType="{x:Type layerBrushes:LayerBrushDescriptor}">
-												<StackPanel Orientation="Horizontal">
-													<avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Height="20" Width="20" VerticalAlignment="Center" Margin="0 0 5 0"/>
-													<TextBlock Text="{CompiledBinding DisplayName}" VerticalAlignment="Center" />
-												</StackPanel>
-											</DataTemplate>
-										</Setter.Value>
-									</Setter>
-								</Style>
-							</StackPanel.Styles>
-							<ComboBox Classes="brush"
-									  Width="200"
-									  HorizontalAlignment="Left"
-									  Items="{CompiledBinding LayerBrushDescriptors}"
-									  SelectedItem="{CompiledBinding SelectedLayerBrushDescriptor}">
-								<ComboBox.ItemTemplate>
-									<DataTemplate DataType="{x:Type layerBrushes:LayerBrushDescriptor}">
-										<Grid ColumnDefinitions="30,*" RowDefinitions="Auto,Auto">
-											<avalonia:MaterialIcon Grid.Row="0"
-																   Grid.RowSpan="2"
-																   Kind="{CompiledBinding Icon}"
-																   Height="20"
-																   Width="20"
-																   VerticalAlignment="Center"
-																   HorizontalAlignment="Left" />
-											<TextBlock Grid.Row="0" Grid.Column="1" Text="{CompiledBinding DisplayName}" TextWrapping="Wrap" MaxWidth="350" />
-											<TextBlock Classes="subtitle" Grid.Row="1" Grid.Column="1" Text="{CompiledBinding Description}" TextWrapping="Wrap" MaxWidth="350" />
-										</Grid>
-									</DataTemplate>
-								</ComboBox.ItemTemplate>
-							</ComboBox>
-						</StackPanel>
-					</Grid>
-				</StackPanel>
-			</Border>
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock>
+                                    Auto-install updates
+                                </TextBlock>
+                                <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                    If enabled, new updates will automatically be installed.
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                <ToggleSwitch IsEnabled="{CompiledBinding UICheckForUpdates.Value}" IsChecked="{CompiledBinding UIAutoUpdate.Value}" MinWidth="0" OnContent="Yes" OffContent="No" />
+                            </StackPanel>
+                        </Grid>
+                        <Separator Classes="card-separator" />
 
-			<!-- Rendering settings -->
-			<TextBlock Classes="h4" Margin="0 15">
-				Rendering
-			</TextBlock>
-			<Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
-				<StackPanel>
-					<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-						<StackPanel Grid.Column="0">
-							<TextBlock>
-								Preferred render method
-							</TextBlock>
-							<TextBlock Classes="subtitle" TextWrapping="Wrap">
-								Software-based rendering is done purely on the CPU while Vulkan uses GPU-acceleration.
-							</TextBlock>
-						</StackPanel>
-						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<ComboBox Width="150"
-									  SelectedItem="{CompiledBinding CorePreferredGraphicsContext.Value}"
-									  Items="{CompiledBinding GraphicsContexts}"/>
-						</StackPanel>
-					</Grid>
-					<Separator Classes="card-separator" />
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock>
+                                    Update
+                                </TextBlock>
+                                <TextBlock Classes="subtitle">
+                                    Use the button on the right to check for updates now.
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                <Button Command="{CompiledBinding CheckForUpdate}" Width="150" Content="Check now" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
 
-					<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-						<StackPanel Grid.Column="0">
-							<TextBlock>
-								Render scale
-							</TextBlock>
-							<TextBlock Classes="subtitle" TextWrapping="Wrap">
-								Sets the resolution Artemis renders at, higher scale means more CPU-usage, especially on large surfaces.
-							</TextBlock>
-						</StackPanel>
-						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<ComboBox Width="150"
-									  SelectedItem="{CompiledBinding SelectedRenderScale}"
-									  Items="{CompiledBinding RenderScales}">
-								<ComboBox.ItemTemplate>
-									<DataTemplate>
-										<TextBlock Text="{CompiledBinding Display}" />
-									</DataTemplate>
-								</ComboBox.ItemTemplate>
-							</ComboBox>
-						</StackPanel>
-					</Grid>
-					<Separator Classes="card-separator" />
+            <!-- Profile editor settings -->
+            <TextBlock Classes="h4" Margin="0 15">
+                Profile editor
+            </TextBlock>
+            <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
+                <StackPanel>
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0">
+                            <TextBlock>
+                                Show condition data model values
+                            </TextBlock>
+                            <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                While selecting a condition target, show the current values of the data model.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <ToggleSwitch IsChecked="{CompiledBinding ProfileEditorShowDataModelValues.Value}" MinWidth="0" OnContent="Yes" OffContent="No" />
+                        </StackPanel>
+                    </Grid>
+                    <Separator Classes="card-separator" />
 
-					<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-						<StackPanel Grid.Column="0">
-							<TextBlock>
-								Target frame rate
-							</TextBlock>
-							<TextBlock Classes="subtitle" TextWrapping="Wrap">
-								Sets the FPS Artemis tries to render at, higher FPS means more CPU-usage but smoother animations.
-							</TextBlock>
-							<TextBlock Classes="subtitle" TextWrapping="Wrap">
-								The options past 45 FPS are mostly useless unless you are using a custom device.
-							</TextBlock>
-						</StackPanel>
-						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<ComboBox Width="150"
-									  SelectedItem="{CompiledBinding SelectedTargetFrameRate}"
-									  Items="{CompiledBinding TargetFrameRates}">
-								<ComboBox.ItemTemplate>
-									<DataTemplate>
-										<TextBlock Text="{CompiledBinding Display}" />
-									</DataTemplate>
-								</ComboBox.ItemTemplate>
-							</ComboBox>
-						</StackPanel>
-					</Grid>
-				</StackPanel>
-			</Border>
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0">
+                            <TextBlock>
+                                Default brush
+                            </TextBlock>
+                            <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                Sets the default brush that is applied to new layers
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <StackPanel.Styles>
+                                <Style Selector="ComboBox.brush /template/ ContentControl#ContentPresenter">
+                                    <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate DataType="{x:Type layerBrushes:LayerBrushDescriptor}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Height="20" Width="20" VerticalAlignment="Center" Margin="0 0 5 0" />
+                                                    <TextBlock Text="{CompiledBinding DisplayName}" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </StackPanel.Styles>
+                            <ComboBox Classes="brush"
+                                      Width="200"
+                                      HorizontalAlignment="Left"
+                                      Items="{CompiledBinding LayerBrushDescriptors}"
+                                      SelectedItem="{CompiledBinding SelectedLayerBrushDescriptor}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type layerBrushes:LayerBrushDescriptor}">
+                                        <Grid ColumnDefinitions="30,*" RowDefinitions="Auto,Auto">
+                                            <avalonia:MaterialIcon Grid.Row="0"
+                                                                   Grid.RowSpan="2"
+                                                                   Kind="{CompiledBinding Icon}"
+                                                                   Height="20"
+                                                                   Width="20"
+                                                                   VerticalAlignment="Center"
+                                                                   HorizontalAlignment="Left" />
+                                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{CompiledBinding DisplayName}" TextWrapping="Wrap" MaxWidth="350" />
+                                            <TextBlock Classes="subtitle" Grid.Row="1" Grid.Column="1" Text="{CompiledBinding Description}" TextWrapping="Wrap" MaxWidth="350" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
 
-			<!-- Tools -->
-			<TextBlock Classes="h4" Margin="0 15">
-				Tools
-			</TextBlock>
-			<Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
-				<StackPanel>
-					<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-						<StackPanel Grid.Column="0" VerticalAlignment="Center">
-							<TextBlock>
-								Setup wizard
-							</TextBlock>
-							<TextBlock Classes="subtitle">
-								Opens the startup wizard usually shown when Artemis first starts.
-							</TextBlock>
-						</StackPanel>
-						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<Button Command="{CompiledBinding ShowSetupWizard}" Width="150" Content="Show wizard" />
-						</StackPanel>
-					</Grid>
-					<Separator Classes="card-separator" />
+            <!-- Rendering settings -->
+            <TextBlock Classes="h4" Margin="0 15">
+                Rendering
+            </TextBlock>
+            <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
+                <StackPanel>
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0">
+                            <TextBlock>
+                                Preferred render method
+                            </TextBlock>
+                            <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                Software-based rendering is done purely on the CPU while Vulkan uses GPU-acceleration.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <ComboBox Width="150"
+                                      SelectedItem="{CompiledBinding CorePreferredGraphicsContext.Value}"
+                                      Items="{CompiledBinding GraphicsContexts}" />
+                        </StackPanel>
+                    </Grid>
+                    <Separator Classes="card-separator" />
 
-					<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-						<StackPanel Grid.Column="0" VerticalAlignment="Center">
-							<TextBlock>
-								Debugger
-							</TextBlock>
-							<TextBlock Classes="subtitle">
-								Use the debugger to see the raw image Artemis is rendering on the surface.
-							</TextBlock>
-						</StackPanel>
-						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<Button Command="{CompiledBinding ShowDebugger}" Width="150" Content="Show debugger" />
-						</StackPanel>
-					</Grid>
-					<Separator Classes="card-separator" />
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0">
+                            <TextBlock>
+                                Render scale
+                            </TextBlock>
+                            <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                Sets the resolution Artemis renders at, higher scale means more CPU-usage, especially on large surfaces.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <ComboBox Width="150"
+                                      SelectedItem="{CompiledBinding SelectedRenderScale}"
+                                      Items="{CompiledBinding RenderScales}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{CompiledBinding Display}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+                    <Separator Classes="card-separator" />
 
-					<Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-						<StackPanel Grid.Column="0" VerticalAlignment="Center">
-							<TextBlock>
-								Application files
-							</TextBlock>
-							<TextBlock Classes="subtitle">
-								Opens the directory where application files like plugins and settings are stored.
-							</TextBlock>
-						</StackPanel>
-						<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-							<Button Command="{CompiledBinding ShowDataFolder}" Width="150" Content="Show app files" />
-						</StackPanel>
-					</Grid>
-				</StackPanel>
-			</Border>
-		</StackPanel>
-	</ScrollViewer>
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0">
+                            <TextBlock>
+                                Target frame rate
+                            </TextBlock>
+                            <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                Sets the FPS Artemis tries to render at, higher FPS means more CPU-usage but smoother animations.
+                            </TextBlock>
+                            <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                The options past 45 FPS are mostly useless unless you are using a custom device.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <ComboBox Width="150"
+                                      SelectedItem="{CompiledBinding SelectedTargetFrameRate}"
+                                      Items="{CompiledBinding TargetFrameRates}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{CompiledBinding Display}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Tools -->
+            <TextBlock Classes="h4" Margin="0 15">
+                Tools
+            </TextBlock>
+            <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
+                <StackPanel>
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock>
+                                Setup wizard
+                            </TextBlock>
+                            <TextBlock Classes="subtitle">
+                                Opens the startup wizard usually shown when Artemis first starts.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <Button Command="{CompiledBinding ShowSetupWizard}" Width="150" Content="Show wizard" />
+                        </StackPanel>
+                    </Grid>
+                    <Separator Classes="card-separator" />
+
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock>
+                                Debugger
+                            </TextBlock>
+                            <TextBlock Classes="subtitle">
+                                Use the debugger to see the raw image Artemis is rendering on the surface.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <Button Command="{CompiledBinding ShowDebugger}" Width="150" Content="Show debugger" />
+                        </StackPanel>
+                    </Grid>
+                    <Separator Classes="card-separator" />
+
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock>
+                                Application files
+                            </TextBlock>
+                            <TextBlock Classes="subtitle">
+                                Opens the directory where application files like plugins and settings are stored.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <Button Command="{CompiledBinding ShowDataFolder}" Width="150" Content="Show app files" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
 
 </UserControl>

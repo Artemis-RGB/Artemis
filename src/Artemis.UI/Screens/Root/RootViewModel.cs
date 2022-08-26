@@ -54,8 +54,7 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
         _defaultTitleBarViewModel = defaultTitleBarViewModel;
         _sidebarVmFactory = sidebarVmFactory;
         _lifeTime = (IClassicDesktopStyleApplicationLifetime) Application.Current!.ApplicationLifetime!;
-
-        coreService.StartupArguments = _lifeTime.Args.ToList();
+        
         mainWindowService.ConfigureMainWindowProvider(this);
 
         DisplayAccordingToSettings();
@@ -99,8 +98,8 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
 
     private void DisplayAccordingToSettings()
     {
-        bool autoRunning = _coreService.StartupArguments.Contains("--autorun");
-        bool minimized = _coreService.StartupArguments.Contains("--minimized");
+        bool autoRunning = Constants.StartupArguments.Contains("--autorun");
+        bool minimized = Constants.StartupArguments.Contains("--minimized");
         bool showOnAutoRun = _settingsService.GetSetting("UI.ShowOnStartup", true).Value;
 
         if ((autoRunning && !showOnAutoRun) || minimized)
