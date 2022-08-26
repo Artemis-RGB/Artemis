@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using Artemis.Core;
 using Artemis.Core.Ninject;
@@ -51,6 +54,8 @@ public static class ArtemisBootstrapper
             throw new ArtemisUIException("UI not yet bootstrapped");
         if (_application.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
             return;
+
+        Constants.StartupArguments = new ReadOnlyCollection<string>(new List<string>(desktop.Args));
 
         // Don't shut down when the last window closes, we might still be active in the tray
         desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;

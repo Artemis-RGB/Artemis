@@ -58,7 +58,6 @@ internal class CoreService : ICoreService
         _scriptingService = scriptingService;
         _loggingLevel = settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Debug);
         _frameStopWatch = new Stopwatch();
-        StartupArguments = new List<string>();
 
         _rgbService.Surface.Updating += SurfaceOnUpdating;
         _loggingLevel.SettingChanged += (sender, args) => ApplyLoggingLevel();
@@ -78,7 +77,7 @@ internal class CoreService : ICoreService
 
     private void ApplyLoggingLevel()
     {
-        string? argument = StartupArguments.FirstOrDefault(a => a.StartsWith("--logging"));
+        string? argument = Constants.StartupArguments.FirstOrDefault(a => a.StartsWith("--logging"));
         if (argument != null)
         {
             // Parse the provided log level
@@ -194,7 +193,6 @@ internal class CoreService : ICoreService
     public int FrameRate { get; private set; }
     public TimeSpan FrameTime { get; private set; }
     public bool ProfileRenderingDisabled { get; set; }
-    public List<string> StartupArguments { get; set; }
     public bool IsElevated { get; set; }
 
     public void Dispose()
@@ -217,7 +215,7 @@ internal class CoreService : ICoreService
             Constants.BuildInfo.BuildNumber,
             Constants.BuildInfo.SourceBranch
         );
-        _logger.Information("Startup arguments: {args}", StartupArguments);
+        _logger.Information("Startup arguments: {args}", Constants.StartupArguments);
         _logger.Information("Elevated permissions: {perms}", IsElevated);
         _logger.Information("Stopwatch high resolution: {perms}", Stopwatch.IsHighResolution);
 
@@ -230,9 +228,9 @@ internal class CoreService : ICoreService
 
         // Initialize the services
         _pluginManagementService.CopyBuiltInPlugins();
-        _pluginManagementService.LoadPlugins(StartupArguments, IsElevated);
+        _pluginManagementService.LoadPlugins(IsElevated);
 
-        _rgbService.ApplyPreferredGraphicsContext(StartupArguments.Contains("--force-software-render"));
+        _rgbService.ApplyPreferredGraphicsContext(Constants.StartupArguments.Contains("--force-software-render"));
         _rgbService.SetRenderPaused(false);
         OnInitialized();
     }

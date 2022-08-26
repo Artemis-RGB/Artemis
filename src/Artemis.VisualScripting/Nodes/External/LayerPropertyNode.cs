@@ -3,7 +3,7 @@ using Artemis.VisualScripting.Nodes.External.Screens;
 
 namespace Artemis.VisualScripting.Nodes.External;
 
-[Node("Layer/Folder Property", "Outputs the property of a selected layer or folder", "External")]
+// [Node("Layer/Folder Property", "Outputs the property of a selected layer or folder", "External")]
 public class LayerPropertyNode : Node<LayerPropertyNodeEntity, LayerPropertyNodeCustomViewModel>
 {
     private readonly object _layerPropertyLock = new();

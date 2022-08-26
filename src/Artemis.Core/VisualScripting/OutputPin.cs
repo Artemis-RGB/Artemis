@@ -84,15 +84,11 @@ public sealed class OutputPin : Pin
     /// <param name="type">The new type of the pin.</param>
     public void ChangeType(Type type)
     {
-        // Disconnect pins incompatible with the new type
-        List<IPin> toDisconnect = ConnectedTo.Where(p => !p.IsTypeCompatible(type)).ToList();
-        foreach (IPin pin in toDisconnect)
-            DisconnectFrom(pin);
+        if (type == _type)
+            return;
 
-        // Change the type
-        SetAndNotify(ref _type, type, nameof(Type));
+        base.ChangeType(type, ref _type);
         Value = type.GetDefault();
-        IsNumeric = type == typeof(Numeric);
     }
 
     #endregion

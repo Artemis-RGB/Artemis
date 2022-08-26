@@ -2,7 +2,7 @@
 
 namespace Artemis.VisualScripting.Nodes.Text;
 
-[Node("Format", "Formats the input string.", "Text", InputType = typeof(object), OutputType = typeof(string))]
+[Node("Format", "Formats the input text.", "Text", InputType = typeof(object), OutputType = typeof(string))]
 public class StringFormatNode : Node
 {
     #region Constructors

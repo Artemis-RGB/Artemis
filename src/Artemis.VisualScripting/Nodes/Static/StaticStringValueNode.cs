@@ -3,13 +3,13 @@ using Artemis.VisualScripting.Nodes.Static.Screens;
 
 namespace Artemis.VisualScripting.Nodes.Static;
 
-[Node("String-Value", "Outputs a configurable static string value.", "Static", OutputType = typeof(string))]
+[Node("Text-Value", "Outputs a configurable static text value.", "Static", OutputType = typeof(string))]
 public class StaticStringValueNode : Node<string, StaticStringValueNodeCustomViewModel>
 {
     #region Constructors
 
     public StaticStringValueNode()
-        : base("String", "Outputs a configurable string value.")
+        : base("Text", "Outputs a configurable text value.")
     {
         Output = CreateOutputPin<string>();
     }

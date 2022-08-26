@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core.Modules;
 using EmbedIO;
@@ -17,15 +18,19 @@ internal class WebServerService : IWebServerService, IDisposable
     private readonly List<WebApiControllerRegistration> _controllers;
     private readonly ILogger _logger;
     private readonly List<WebModuleRegistration> _modules;
+    private readonly PluginSetting<bool> _webServerEnabledSetting;
     private readonly PluginSetting<int> _webServerPortSetting;
+    private CancellationTokenSource? _cts;
 
-    public WebServerService(ILogger logger, ISettingsService settingsService, IPluginManagementService pluginManagementService)
+    public WebServerService(ILogger logger, ICoreService coreService, ISettingsService settingsService, IPluginManagementService pluginManagementService)
     {
         _logger = logger;
         _controllers = new List<WebApiControllerRegistration>();
         _modules = new List<WebModuleRegistration>();
 
+        _webServerEnabledSetting = settingsService.GetSetting("WebServer.Enabled", true);
         _webServerPortSetting = settingsService.GetSetting("WebServer.Port", 9696);
+        _webServerEnabledSetting.SettingChanged += WebServerEnabledSettingOnSettingChanged;
         _webServerPortSetting.SettingChanged += WebServerPortSettingOnSettingChanged;
         pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureDisabled;
 
@@ -33,9 +38,9 @@ internal class WebServerService : IWebServerService, IDisposable
         StartWebServer();
     }
 
-    protected virtual void OnWebServerStarting()
+    private void WebServerEnabledSettingOnSettingChanged(object? sender, EventArgs e)
     {
-        WebServerStarting?.Invoke(this, EventArgs.Empty);
+        StartWebServer();
     }
 
     private void WebServerPortSettingOnSettingChanged(object? sender, EventArgs e)
@@ -72,14 +77,23 @@ internal class WebServerService : IWebServerService, IDisposable
     public WebServer? Server { get; private set; }
     public PluginsModule PluginsModule { get; }
 
-    public event EventHandler? WebServerStarting;
 
     #region Web server managament
 
     private WebServer CreateWebServer()
     {
-        Server?.Dispose();
-        Server = null;
+        if (Server != null)
+        {
+            if (_cts != null)
+            {
+                _cts.Cancel();
+                _cts = null;
+            }
+
+            Server.Dispose();
+            OnWebServerStopped();
+            Server = null;
+        }
 
         WebApiModule apiModule = new("/", JsonNetSerializer);
         PluginsModule.ServerUrl = $"http://localhost:{_webServerPortSetting.Value}/";
@@ -112,8 +126,20 @@ internal class WebServerService : IWebServerService, IDisposable
     private void StartWebServer()
     {
         Server = CreateWebServer();
+
+        if (!_webServerEnabledSetting.Value)
+            return;
+        
+        if (Constants.StartupArguments.Contains("--disable-webserver"))
+        {
+            _logger.Warning("Artemis launched with --disable-webserver, not enabling the webserver");
+            return;
+        }
+
         OnWebServerStarting();
-        Server.Start();
+        _cts = new CancellationTokenSource();
+        Server.Start(_cts.Token);
+        OnWebServerStarted();
     }
 
     #endregion
@@ -274,6 +300,29 @@ internal class WebServerService : IWebServerService, IDisposable
     {
         await context.SendStringAsync(JsonConvert.SerializeObject(httpException, Formatting.Indented), MimeType.Json, Encoding.UTF8);
     }
+
+    #endregion
+
+    #region Events
+
+    protected virtual void OnWebServerStopped()
+    {
+        WebServerStopped?.Invoke(this, EventArgs.Empty);
+    }
+
+    protected virtual void OnWebServerStarting()
+    {
+        WebServerStarting?.Invoke(this, EventArgs.Empty);
+    }
+
+    protected virtual void OnWebServerStarted()
+    {
+        WebServerStarted?.Invoke(this, EventArgs.Empty);
+    }
+
+    public event EventHandler? WebServerStopped;
+    public event EventHandler? WebServerStarting;
+    public event EventHandler? WebServerStarted;
 
     #endregion
 }

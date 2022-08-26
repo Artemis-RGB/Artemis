@@ -38,7 +38,8 @@
                       Grid.Row="1"
                       Items="{CompiledBinding Categories}"
                       IsVisible="{CompiledBinding Categories.Count}"
-                      SelectedItem="{CompiledBinding SelectedNode}">
+                      SelectedItem="{CompiledBinding SelectedNode}"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <TreeView.Styles>
                     <Style Selector="TreeViewItem">
                         <Setter Property="IsExpanded" Value="True" />
@@ -47,8 +48,8 @@
                 <TreeView.DataTemplates>
                     <TreeDataTemplate DataType="{x:Type core:NodeData}">
                         <StackPanel Margin="-15 1 0 1" Background="Transparent" PointerReleased="InputElement_OnPointerReleased">
-                            <TextBlock Classes="BodyStrongTextBlockStyle" Text="{Binding Name}"></TextBlock>
-                            <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding Description}"></TextBlock>
+                            <TextBlock Classes="BodyStrongTextBlockStyle" Text="{Binding Name}" TextWrapping="Wrap"></TextBlock>
+                            <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding Description}" TextWrapping="Wrap"></TextBlock>
                         </StackPanel>
                     </TreeDataTemplate>
                     <TreeDataTemplate ItemsSource="{Binding Items}">

@@ -27,12 +27,7 @@ public interface ICoreService : IArtemisService, IDisposable
     ///     Gets or sets whether profiles are rendered each frame by calling their Render method
     /// </summary>
     bool ProfileRenderingDisabled { get; set; }
-
-    /// <summary>
-    ///     Gets or sets a list of startup arguments
-    /// </summary>
-    List<string> StartupArguments { get; set; }
-
+    
     /// <summary>
     ///     Gets a boolean indicating whether Artemis is running in an elevated environment (admin permissions)
     /// </summary>

@@ -94,18 +94,11 @@ public sealed class InputPin : Pin
     /// <param name="type">The new type of the pin.</param>
     public void ChangeType(Type type)
     {
-        if (_type == type)
+        if (type == _type)
             return;
-
-        // Disconnect pins incompatible with the new type
-        List<IPin> toDisconnect = ConnectedTo.Where(p => !p.IsTypeCompatible(type)).ToList();
-        foreach (IPin pin in toDisconnect)
-            DisconnectFrom(pin);
-
-        // Change the type
-        SetAndNotify(ref _type, type, nameof(Type));
+        
+        base.ChangeType(type, ref _type);
         Value = type.GetDefault();
-        IsNumeric = type == typeof(Numeric);
     }
 
     private void Evaluate()
@@ -117,10 +110,10 @@ public sealed class InputPin : Pin
             else
                 Value = Type.GetDefault()!;
         }
-        else
-        {
+        else if (ConnectedTo.Count > 0)
             Value = ConnectedTo[0].PinValue;
-        }
+        else
+            Value = null;
     }
 
     #endregion

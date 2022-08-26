@@ -10,6 +10,7 @@ using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Avalonia;
 using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
@@ -35,6 +36,11 @@ public class NodePickerViewModel : ActivatableViewModelBase
 
         nodeSourceList.Connect()
             .Filter(nodeFilter)
+            .Sort(SortExpressionComparer<NodeData>
+                .Descending(d => d.Category == "Data Model")
+                .ThenByDescending(d => d.Category == "Static")
+                .ThenByAscending(d => d.Category)
+                .ThenByAscending(d => d.Name))
             .GroupWithImmutableState(n => n.Category)
             .Bind(out ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeData, string>> categories)
             .Subscribe();

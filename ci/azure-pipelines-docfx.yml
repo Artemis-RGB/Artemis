@@ -7,14 +7,6 @@ trigger:
 - master
 pr: none
 
-resources:
-  repositories:
-  - repository: RGBNET
-    type: github
-    endpoint: github.com_SpoinkyNL
-    name: DarthAffe/RGB.NET
-    ref: Development
-
 pool:
   vmImage: 'windows-latest'
 
@@ -28,22 +20,13 @@ variables:
   SourceVersion: $(Build.SourceVersion)
   
 steps:
-- checkout: RGBNET
-  path: s/RGB.NET
 - checkout: self
   path: s/Artemis
 
 - task: DotNetCoreCLI@2
-  displayName: 'RGB.NET - Build'
+  displayName: 'dotnet build Artemis'
   inputs:
     command: 'build'
-    projects: '$(rgbSolution)'
-    arguments: '--configuration Release'
-
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet restore Artemis'
-  inputs:
-    command: 'restore'
     projects: '$(artemisSolution)'
     feedsToUse: 'config'
     nugetConfigPath: '$(Pipeline.Workspace)/s/Artemis/src/NuGet.Config'

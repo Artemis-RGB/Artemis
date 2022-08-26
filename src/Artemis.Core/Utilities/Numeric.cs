@@ -159,7 +159,12 @@ public readonly struct Numeric : IComparable<Numeric>, IConvertible
     {
         return (byte) Math.Clamp(p._value, 0, 255);
     }
-    
+
+    public static implicit operator Numeric(double d) => new(d);
+    public static implicit operator Numeric(float f) => new(f);
+    public static implicit operator Numeric(int i) => new(i);
+    public static implicit operator Numeric(byte b) => new(b);
+
     public static implicit operator long(Numeric p)
     {
         return (long) p._value;

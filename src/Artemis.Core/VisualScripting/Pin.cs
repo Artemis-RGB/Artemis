@@ -127,13 +127,46 @@ public abstract class Pin : CorePropertyChanged, IPin
     }
 
     /// <inheritdoc />
-    public bool IsTypeCompatible(Type type)
+    public bool IsTypeCompatible(Type type, bool forgivingEnumMatching = true)
     {
         return Type == type
-               || (Type == typeof(Enum) && type.IsEnum)
-               || (Type.IsEnum && type == typeof(Enum))
-               || (Direction == PinDirection.Input && Type == typeof(object))
-               || (Direction == PinDirection.Output && type == typeof(object));
+               || (Direction == PinDirection.Input && type.IsAssignableTo(Type))
+               || (Direction == PinDirection.Output && type.IsAssignableFrom(Type))
+               || (Direction == PinDirection.Input && Type == typeof(Enum) && type.IsEnum && forgivingEnumMatching)
+               || (Direction == PinDirection.Output && type == typeof(Enum) && Type.IsEnum && forgivingEnumMatching);
+    }
+
+    /// <summary>
+    ///     Changes the type of this pin, disconnecting any pins that are incompatible with the new type.
+    /// </summary>
+    /// <param name="type">The new type of the pin.</param>
+    /// <param name="currentType">The backing field of the current type of the pin.</param>
+    protected void ChangeType(Type type, ref Type currentType)
+    {
+        // Enums are a special case that disconnect and, if still compatible, reconnect
+        if (type.IsEnum && currentType.IsEnum)
+        {
+            List<IPin> connections = new(ConnectedTo);
+            DisconnectAll();
+
+            // Change the type
+            SetAndNotify(ref currentType, type, nameof(Type));
+            IsNumeric = type == typeof(Numeric);
+
+            foreach (IPin pin in connections.Where(p => p.IsTypeCompatible(type)))
+                ConnectTo(pin);
+        }
+        // Disconnect pins incompatible with the new type
+        else
+        {
+            List<IPin> toDisconnect = ConnectedTo.Where(p => !p.IsTypeCompatible(type, false)).ToList();
+            foreach (IPin pin in toDisconnect)
+                DisconnectFrom(pin);
+
+            // Change the type
+            SetAndNotify(ref currentType, type, nameof(Type));
+            IsNumeric = type == typeof(Numeric);
+        }
     }
 
     #endregion

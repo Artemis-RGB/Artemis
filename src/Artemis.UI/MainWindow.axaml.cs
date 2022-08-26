@@ -47,12 +47,12 @@ public class MainWindow : ReactiveCoreWindow<RootViewModel>
     
     private void OnActivated(object? sender, EventArgs e)
     {
-        ViewModel.Focused();
+        ViewModel?.Focused();
     }
 
     private void OnDeactivated(object? sender, EventArgs e)
     {
-        ViewModel.Unfocused();
+        ViewModel?.Unfocused();
     }
 
     private void InitializeComponent()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using System.Reflection;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Controllers;
@@ -106,6 +107,9 @@ public class RegistrationService : IRegistrationService
         _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(Enum), new SKColor(0xFF1E90FF));
 
         foreach (Type nodeType in typeof(SumNumericsNode).Assembly.GetTypes().Where(t => typeof(INode).IsAssignableFrom(t) && t.IsPublic && !t.IsAbstract && !t.IsInterface))
-            _nodeService.RegisterNodeType(Constants.CorePlugin, nodeType);
+        {
+            if (nodeType.GetCustomAttribute(typeof(NodeAttribute)) != null)
+                _nodeService.RegisterNodeType(Constants.CorePlugin, nodeType);
+        }
     }
 }

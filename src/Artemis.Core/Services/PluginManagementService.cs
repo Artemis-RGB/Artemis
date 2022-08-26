@@ -203,17 +203,17 @@ internal class PluginManagementService : IPluginManagementService
 
     #region Plugins
 
-    public void LoadPlugins(List<string> startupArguments, bool isElevated)
+    public void LoadPlugins(bool isElevated)
     {
-        if (startupArguments.Contains("--no-plugins"))
+        if (Constants.StartupArguments.Contains("--no-plugins"))
         {
             _logger.Warning("Artemis launched with --no-plugins, skipping the loading of plugins");
             return;
         }
 
-        bool ignorePluginLock = startupArguments.Contains("--ignore-plugin-lock");
-        bool stayElevated = startupArguments.Contains("--force-elevation");
-        bool droppedAdmin = startupArguments.Contains("--dropped-admin");
+        bool ignorePluginLock = Constants.StartupArguments.Contains("--ignore-plugin-lock");
+        bool stayElevated = Constants.StartupArguments.Contains("--force-elevation");
+        bool droppedAdmin = Constants.StartupArguments.Contains("--dropped-admin");
         if (LoadingPlugins)
             throw new ArtemisCoreException("Cannot load plugins while a previous load hasn't been completed yet.");
 

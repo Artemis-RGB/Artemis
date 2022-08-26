@@ -26,7 +26,7 @@ public interface IPluginManagementService : IArtemisService, IDisposable
     /// <summary>
     ///     Loads all installed plugins. If plugins already loaded this will reload them all
     /// </summary>
-    void LoadPlugins(List<string> startupArguments, bool isElevated);
+    void LoadPlugins(bool isElevated);
 
     /// <summary>
     ///     Unloads all installed plugins.

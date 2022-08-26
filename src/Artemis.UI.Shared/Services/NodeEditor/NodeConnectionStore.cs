@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core;
 
 namespace Artemis.UI.Shared.Services.NodeEditor;
@@ -30,20 +31,18 @@ public class NodeConnectionStore
     public void Store()
     {
         _pinConnections.Clear();
-        foreach (IPin nodePin in Node.Pins)
-        {
+        
+        // Iterate to save
+        foreach (IPin nodePin in Node.Pins.ToList())
             _pinConnections.Add(nodePin, new List<IPin>(nodePin.ConnectedTo));
-            nodePin.DisconnectAll();
-        }
+        foreach (IPin nodePin in Node.PinCollections.ToList().SelectMany(nodePinCollection => nodePinCollection))
+            _pinConnections.Add(nodePin, new List<IPin>(nodePin.ConnectedTo));
 
-        foreach (IPinCollection nodePinCollection in Node.PinCollections)
-        {
-            foreach (IPin nodePin in nodePinCollection)
-            {
-                _pinConnections.Add(nodePin, new List<IPin>(nodePin.ConnectedTo));
-                nodePin.DisconnectAll();
-            }
-        }
+        // Iterate to disconnect
+        foreach (IPin nodePin in Node.Pins.ToList())
+            nodePin.DisconnectAll();
+        foreach (IPin nodePin in Node.PinCollections.ToList().SelectMany(nodePinCollection => nodePinCollection))
+            nodePin.DisconnectAll();
     }
 
     /// <summary>
@@ -51,23 +50,10 @@ public class NodeConnectionStore
     /// </summary>
     public void Restore()
     {
-        foreach (IPin nodePin in Node.Pins)
+        foreach ((IPin? pin, List<IPin>? connections) in _pinConnections)
         {
-            if (!_pinConnections.TryGetValue(nodePin, out List<IPin>? connections))
-                continue;
             foreach (IPin connection in connections)
-                nodePin.ConnectTo(connection);
-        }
-
-        foreach (IPinCollection nodePinCollection in Node.PinCollections)
-        {
-            foreach (IPin nodePin in nodePinCollection)
-            {
-                if (!_pinConnections.TryGetValue(nodePin, out List<IPin>? connections))
-                    continue;
-                foreach (IPin connection in connections)
-                    nodePin.ConnectTo(connection);
-            }
+                pin.ConnectTo(connection);
         }
 
         _pinConnections.Clear();

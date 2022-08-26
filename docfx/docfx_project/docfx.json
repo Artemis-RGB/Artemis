@@ -4,8 +4,8 @@
       "src": [
         {
           "files": [
-            "Artemis.Core/Artemis.Core.csproj",
-            "Artemis.UI.Shared/Artemis.UI.Shared.csproj",
+            "Artemis.Core/bin/net6.0/Artemis.Core.dll",
+            "Artemis.UI.Shared/bin/net6.0/Artemis.UI.Shared.dll",
           ],
           "src": "../../src"
         }
@@ -20,14 +20,11 @@
     "content": [
       {
         "files": [
-          "api/**.yml",
-          "api/index.md"
+          "api/**.yml"
         ]
       },
       {
         "files": [
-          "articles/**.md",
-          "articles/**/toc.yml",
           "toc.yml",
           "*.md"
         ]
@@ -52,16 +49,24 @@
       }
     ],
     "globalMetadata": {
-      "_appTitle": "Artemis documentation",
-      "_enableSearch": true
+      "_appTitle": "Artemis API Documentation",
+      "_appName": "Artemis",
+      "_appFaviconPath": "images/application.ico",
+      "_appLogoPath": "images/application.ico",
+      "_appFooter": "<a href=\"https://artemis-rgb.com\" style=\"margin: 0 5px;\">\r    <i class=\"bi-globe\" role=\"img\" aria-label=\"GitHub\" style=\"margin: 0 10\"></i>\r</a>\r<a href=\"https://github.com/Artemis-RGB/Artemis\" style=\"margin: 0 5px;\">\r    <i class=\"bi-github\" role=\"img\" aria-label=\"GitHub\"></i>\r</a>\r<a href=\"https://artemis-rgb.com\" style=\"margin: 0 5px;\">\r    <i class=\"bi bi-layout-text-sidebar-reverse\" role=\"img\" aria-label=\"GitHub\"></i>\r</a>\r<a href=\"https://wiki.artemis-rgb.com/\" style=\"margin: 0 5px;\">\r    <i class=\"bi-chat-fill\" role=\"img\" aria-label=\"GitHub\"></i>\r</a>\r<a href=\"https://wiki.artemis-rgb.com/en/donating\" style=\"margin: 0 5px;\">\r    <i class=\"bi-gift-fill\" role=\"img\" aria-label=\"GitHub\"></i>\r</a>",
+      "_copyrightFooter": "Content is available under the PolyForm Noncommercial License, by Artemis RGB.",
+      "_enableSearch": true,
+      "_disableSideFilter": false,
+      "_enableNewTab": true,
+      "_disableContribution": false,
+      "_disableBreadcrumb": false
     },
     "dest": "_site",
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
     "template": [
       "default",
-      "templates/artemis",
-      "templates/material"
+      "templates/singulinkfx"
     ],
     "postProcessors": [],
     "markdownEngineName": "markdig",
