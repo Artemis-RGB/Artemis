@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using Ninject;
 using Ninject.Parameters;
 
@@ -16,7 +17,7 @@ public abstract class Node : CorePropertyChanged, INode
     public event EventHandler? Resetting;
 
     #region Properties & Fields
-    
+
     private readonly List<OutputPin> _outputPinBucket = new();
     private readonly List<InputPin> _inputPinBucket = new();
 
@@ -164,7 +165,7 @@ public abstract class Node : CorePropertyChanged, INode
         OnPropertyChanged(nameof(Pins));
         return pin;
     }
-    
+
     /// <summary>
     ///     Creates or adds an output pin to the node using a bucket.
     ///     The bucket might grow a bit over time as the user edits the node but pins won't get lost, enabling undo/redo in the
@@ -194,7 +195,7 @@ public abstract class Node : CorePropertyChanged, INode
 
         return pin;
     }
-    
+
     /// <summary>
     ///     Creates or adds an input pin to the node using a bucket.
     ///     The bucket might grow a bit over time as the user edits the node but pins won't get lost, enabling undo/redo in the
@@ -447,7 +448,17 @@ public abstract class Node<TStorage, TViewModel> : Node<TStorage> where TViewMod
     /// <param name="nodeScript"></param>
     public virtual TViewModel GetViewModel(NodeScript nodeScript)
     {
-        return Kernel.Get<TViewModel>(new ConstructorArgument("node", this), new ConstructorArgument("script", nodeScript));
+        // Limit to one constructor, there's no need to have more and it complicates things anyway
+        ConstructorInfo[] constructors = typeof(TViewModel).GetConstructors();
+        if (constructors.Length != 1)
+            throw new ArtemisCoreException("Node VMs must have exactly one constructor");
+
+        // Find the ScriptConfiguration parameter, it is required by the base constructor so its there for sure
+        ParameterInfo? configurationParameter = constructors.First().GetParameters().FirstOrDefault(p => GetType().IsAssignableFrom(p.ParameterType));
+
+        if (configurationParameter?.Name == null)
+            throw new ArtemisCoreException($"Couldn't find a valid constructor argument on {typeof(TViewModel).Name} with type {GetType().Name}");
+        return Kernel.Get<TViewModel>(new ConstructorArgument(configurationParameter.Name, this), new ConstructorArgument("script", nodeScript));
     }
 
     /// <param name="nodeScript"></param>
