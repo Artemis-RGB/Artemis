@@ -287,6 +287,12 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
         }
 
         string[] formats = await Application.Current.Clipboard.GetFormatsAsync();
+        //diogotr7: This can be null on Linux sometimes. I'm not sure why.
+        if (formats == null)
+        {
+            CanPaste = false;
+            return;
+        }
         CanPaste = formats.Contains(ProfileElementExtensions.ClipboardDataFormat);
     }
 
