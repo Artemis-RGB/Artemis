@@ -56,10 +56,11 @@ public class SKColorEasingNode : Node
 
     private void Update()
     {
+        float easingTime = EasingTime.Value != 0f ? EasingTime.Value : 1f;
         TimeSpan delta = DateTime.Now - _lastEvaluate;
 
         // In case of odd delta's, keep progress between 0f and 1f
-        _progress = Math.Clamp(_progress + (float) delta.TotalMilliseconds / EasingTime.Value, 0f, 1f);
+        _progress = Math.Clamp(_progress + (float) delta.TotalMilliseconds / easingTime, 0f, 1f);
         _currentValue = _sourceValue.Interpolate(_targetValue, (float) Easings.Interpolate(_progress, EasingFunction.Value));
     }
 }

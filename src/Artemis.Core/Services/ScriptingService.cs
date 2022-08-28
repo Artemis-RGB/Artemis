@@ -121,9 +121,9 @@ internal class ScriptingService : IScriptingService
             throw new ArtemisCoreException("Scripts must have exactly one constructor");
 
         // Find the ScriptConfiguration parameter, it is required by the base constructor so its there for sure
-        ParameterInfo configurationParameter = constructors.First().GetParameters().First(p => value.GetType().IsAssignableFrom(p.ParameterType));
+        ParameterInfo? configurationParameter = constructors.First().GetParameters().FirstOrDefault(p => value.GetType().IsAssignableFrom(p.ParameterType));
 
-        if (configurationParameter.Name == null)
+        if (configurationParameter?.Name == null)
             throw new ArtemisCoreException($"Couldn't find a valid constructor argument on {scriptType.Name} with type {value.GetType().Name}");
         return new ConstructorArgument(configurationParameter.Name, value);
     }
