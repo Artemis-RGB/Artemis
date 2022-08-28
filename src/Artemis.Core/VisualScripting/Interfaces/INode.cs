@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Artemis.Core.Events;
 
 namespace Artemis.Core;
 
@@ -58,6 +59,26 @@ public interface INode : INotifyPropertyChanged
     ///     Called when the node resets
     /// </summary>
     event EventHandler Resetting;
+    
+    /// <summary>
+    ///     Occurs when a pin was added to the node
+    /// </summary>
+    event EventHandler<SingleValueEventArgs<IPin>> PinAdded;
+
+    /// <summary>
+    ///     Occurs when a pin was removed from the node
+    /// </summary>
+    event EventHandler<SingleValueEventArgs<IPin>> PinRemoved;
+    
+    /// <summary>
+    ///     Occurs when a pin collection was added to the node
+    /// </summary>
+    event EventHandler<SingleValueEventArgs<IPinCollection>> PinCollectionAdded;
+
+    /// <summary>
+    ///     Occurs when a pin was removed from the node
+    /// </summary>
+    event EventHandler<SingleValueEventArgs<IPinCollection>> PinCollectionRemoved;
 
     /// <summary>
     ///     Called when the node was loaded from storage or newly created

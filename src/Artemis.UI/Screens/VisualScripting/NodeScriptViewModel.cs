@@ -66,7 +66,8 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         });
         NodeViewModels = nodeViewModels;
 
-        NodeViewModels.ToObservableChangeSet().TransformMany(vm => vm.PinViewModels)
+        NodeViewModels.ToObservableChangeSet()
+            .TransformMany(vm => vm.PinViewModels)
             .Bind(out ReadOnlyObservableCollection<PinViewModel> pinViewModels)
             .Subscribe();
         PinViewModels = pinViewModels;
