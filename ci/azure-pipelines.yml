@@ -87,7 +87,7 @@ jobs:
         displayName: "Upload build to Azure Pipelines"
         inputs:
           targetPath: "$(Build.ArtifactStagingDirectory)/windows-build"
-          artifact: "Artemis build"
+          artifact: "Artemis build - Windows"
           publishLocation: "pipeline"
 
       - task: ArchiveFiles@2
@@ -182,7 +182,7 @@ jobs:
         displayName: "Upload build to Azure Pipelines"
         inputs:
           targetPath: "$(Build.ArtifactStagingDirectory)/linux-build"
-          artifact: "Artemis build"
+          artifact: "Artemis build - Linux"
           publishLocation: "pipeline"
 
       - task: ArchiveFiles@2
