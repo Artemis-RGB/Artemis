@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using Artemis.Core.Events;
 using Ninject;
 using Ninject.Parameters;
 
@@ -15,6 +16,18 @@ public abstract class Node : CorePropertyChanged, INode
 {
     /// <inheritdoc />
     public event EventHandler? Resetting;
+
+    /// <inheritdoc />
+    public event EventHandler<SingleValueEventArgs<IPin>>? PinAdded;
+
+    /// <inheritdoc />
+    public event EventHandler<SingleValueEventArgs<IPin>>? PinRemoved;
+
+    /// <inheritdoc />
+    public event EventHandler<SingleValueEventArgs<IPinCollection>>? PinCollectionAdded;
+
+    /// <inheritdoc />
+    public event EventHandler<SingleValueEventArgs<IPinCollection>>? PinCollectionRemoved;
 
     #region Properties & Fields
 
@@ -120,7 +133,7 @@ public abstract class Node : CorePropertyChanged, INode
     {
         InputPin<T> pin = new(this, name);
         _pins.Add(pin);
-        OnPropertyChanged(nameof(Pins));
+        PinAdded?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
         return pin;
     }
 
@@ -134,7 +147,7 @@ public abstract class Node : CorePropertyChanged, INode
     {
         InputPin pin = new(this, type, name);
         _pins.Add(pin);
-        OnPropertyChanged(nameof(Pins));
+        PinAdded?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
         return pin;
     }
 
@@ -148,7 +161,7 @@ public abstract class Node : CorePropertyChanged, INode
     {
         OutputPin<T> pin = new(this, name);
         _pins.Add(pin);
-        OnPropertyChanged(nameof(Pins));
+        PinAdded?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
         return pin;
     }
 
@@ -162,7 +175,7 @@ public abstract class Node : CorePropertyChanged, INode
     {
         OutputPin pin = new(this, type, name);
         _pins.Add(pin);
-        OnPropertyChanged(nameof(Pins));
+        PinAdded?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
         return pin;
     }
 
@@ -237,7 +250,7 @@ public abstract class Node : CorePropertyChanged, INode
         if (isRemoved)
         {
             pin.DisconnectAll();
-            OnPropertyChanged(nameof(Pins));
+            PinRemoved?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
         }
 
         return isRemoved;
@@ -255,7 +268,7 @@ public abstract class Node : CorePropertyChanged, INode
             return;
 
         _pins.Add(pin);
-        OnPropertyChanged(nameof(Pins));
+        PinAdded?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
     }
 
     /// <summary>
@@ -269,7 +282,7 @@ public abstract class Node : CorePropertyChanged, INode
     {
         InputPinCollection<T> pin = new(this, name, initialCount);
         _pinCollections.Add(pin);
-        OnPropertyChanged(nameof(PinCollections));
+        PinCollectionAdded?.Invoke(this, new SingleValueEventArgs<IPinCollection>(pin));
         return pin;
     }
 
@@ -284,7 +297,7 @@ public abstract class Node : CorePropertyChanged, INode
     {
         InputPinCollection pin = new(this, type, name, initialCount);
         _pinCollections.Add(pin);
-        OnPropertyChanged(nameof(PinCollections));
+        PinCollectionAdded?.Invoke(this, new SingleValueEventArgs<IPinCollection>(pin));
         return pin;
     }
 
@@ -299,7 +312,7 @@ public abstract class Node : CorePropertyChanged, INode
     {
         OutputPinCollection<T> pin = new(this, name, initialCount);
         _pinCollections.Add(pin);
-        OnPropertyChanged(nameof(PinCollections));
+        PinCollectionAdded?.Invoke(this, new SingleValueEventArgs<IPinCollection>(pin));
         return pin;
     }
 
@@ -316,7 +329,7 @@ public abstract class Node : CorePropertyChanged, INode
         {
             foreach (IPin pin in pinCollection)
                 pin.DisconnectAll();
-            OnPropertyChanged(nameof(PinCollections));
+            PinCollectionRemoved?.Invoke(this, new SingleValueEventArgs<IPinCollection>(pinCollection));
         }
 
         return isRemoved;
