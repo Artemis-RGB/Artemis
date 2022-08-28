@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using Artemis.Core;
+using Artemis.Core.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.VisualScripting.Pins;
 using Artemis.UI.Shared;
@@ -99,18 +100,31 @@ public class NodeViewModel : ActivatableViewModelBase
                 .DisposeWith(d);
 
             // Subscribe to pin changes
-            Node.WhenAnyValue(n => n.Pins).Subscribe(p => nodePins.Edit(source =>
+            Observable.FromEventPattern<SingleValueEventArgs<IPin>>(x => Node.PinAdded += x, x => Node.PinAdded -= x)
+                .Subscribe(p => nodePins.Add(p.EventArgs.Value))
+                .DisposeWith(d);
+            Observable.FromEventPattern<SingleValueEventArgs<IPin>>(x => Node.PinRemoved += x, x => Node.PinRemoved -= x)
+                .Subscribe(p => nodePins.Remove(p.EventArgs.Value))
+                .DisposeWith(d);
+            nodePins.Edit(l =>
             {
-                source.Clear();
-                source.AddRange(p);
-            })).DisposeWith(d);
+                l.Clear();
+                l.AddRange(Node.Pins);
+            });
+            
             // Subscribe to pin collection changes
-            Node.WhenAnyValue(n => n.PinCollections).Subscribe(c => nodePinCollections.Edit(source =>
+            Observable.FromEventPattern<SingleValueEventArgs<IPinCollection>>(x => Node.PinCollectionAdded += x, x => Node.PinCollectionAdded -= x)
+                .Subscribe(p => nodePinCollections.Add(p.EventArgs.Value))
+                .DisposeWith(d);
+            Observable.FromEventPattern<SingleValueEventArgs<IPinCollection>>(x => Node.PinCollectionRemoved += x, x => Node.PinCollectionRemoved -= x)
+                .Subscribe(p => nodePinCollections.Remove(p.EventArgs.Value))
+                .DisposeWith(d);
+            nodePinCollections.Edit(l =>
             {
-                source.Clear();
-                source.AddRange(c);
-            })).DisposeWith(d);
-
+                l.Clear();
+                l.AddRange(Node.PinCollections);
+            });
+            
             if (Node is Node coreNode)
                 CustomNodeViewModel = coreNode.GetCustomViewModel(nodeScriptViewModel.NodeScript);
         });

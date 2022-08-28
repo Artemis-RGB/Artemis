@@ -112,7 +112,18 @@ public class LinuxInputProvider : InputProvider
         switch (args.Type)
         {
             case LinuxInputEventType.KEY:
-                bool isDown = args.Value != 0;
+                var key = (LinuxKeyboardKeyCodes)args.Code;
+                if (key == LinuxKeyboardKeyCodes.BTN_TOUCH || 
+                    (key >= LinuxKeyboardKeyCodes.BTN_TOOL_PEN && key <= LinuxKeyboardKeyCodes.BTN_TOOL_QUADTAP))
+                {
+                    //trackpad input, ignore.
+                    return;
+                }
+
+                //0 - up
+                //1 - down
+                //2 - repeat input
+                bool isDown = args.Value == 1;
                 MouseButton button = InputUtilities.MouseButtonFromButtonCode((LinuxKeyboardKeyCodes) args.Code);
 
                 //_logger.Verbose($"Mouse Button: {(LinuxKeyboardKeyCodes)args.Code} | Down: {isDown}");
