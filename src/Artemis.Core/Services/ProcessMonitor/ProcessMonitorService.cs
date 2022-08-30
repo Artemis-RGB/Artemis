@@ -11,17 +11,15 @@ namespace Artemis.Core.Services;
 internal class ProcessMonitorService : IProcessMonitorService
 {
     private readonly ProcessComparer _comparer;
-    private readonly ILogger _logger;
     private Process[] _lastScannedProcesses;
 
-    public ProcessMonitorService(ILogger logger)
+    public ProcessMonitorService()
     {
-        _logger = logger;
+        _comparer = new ProcessComparer();
         _lastScannedProcesses = Process.GetProcesses();
         Timer processScanTimer = new(1000);
         processScanTimer.Elapsed += OnTimerElapsed;
         processScanTimer.Start();
-        _comparer = new ProcessComparer();
 
         ProcessActivationRequirement.ProcessMonitorService = this;
     }
@@ -30,16 +28,9 @@ internal class ProcessMonitorService : IProcessMonitorService
     {
         Process[] newProcesses = Process.GetProcesses();
         foreach (Process startedProcess in newProcesses.Except(_lastScannedProcesses, _comparer))
-        {
             ProcessStarted?.Invoke(this, new ProcessEventArgs(startedProcess));
-            //_logger.Verbose("Started Process: {startedProcess}", startedProcess.ProcessName);
-        }
-
         foreach (Process stoppedProcess in _lastScannedProcesses.Except(newProcesses, _comparer))
-        {
             ProcessStopped?.Invoke(this, new ProcessEventArgs(stoppedProcess));
-            //_logger.Verbose("Stopped Process: {stoppedProcess}", stoppedProcess.ProcessName);
-        }
 
         _lastScannedProcesses = newProcesses;
     }

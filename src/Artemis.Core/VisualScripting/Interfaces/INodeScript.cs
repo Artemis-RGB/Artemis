@@ -8,7 +8,7 @@ namespace Artemis.Core;
 /// <summary>
 ///     Represents a node script
 /// </summary>
-public interface INodeScript : INotifyPropertyChanged, IDisposable
+public interface INodeScript : INotifyPropertyChanged, IDisposable, IStorageModel
 {
     /// <summary>
     ///     Gets the name of the node script.
@@ -66,6 +66,11 @@ public interface INodeScript : INotifyPropertyChanged, IDisposable
     /// </summary>
     /// <param name="node">The node to remove</param>
     void RemoveNode(INode node);
+
+    /// <summary>
+    ///     Loads missing connections between the nodes of this node script from storage
+    /// </summary>
+    void LoadConnections();
 }
 
 /// <summary>

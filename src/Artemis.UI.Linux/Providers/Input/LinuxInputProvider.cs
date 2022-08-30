@@ -33,12 +33,14 @@ public class LinuxInputProvider : InputProvider
     protected override void Dispose(bool disposing)
     {
         if (disposing)
+        {
             for (int i = _readers.Count - 1; i >= 0; i--)
             {
                 _readers[i].InputEvent -= OnInputEvent;
                 _readers[i].Dispose();
                 _readers.RemoveAt(i);
             }
+        }
 
         base.Dispose(disposing);
     }
@@ -49,6 +51,7 @@ public class LinuxInputProvider : InputProvider
     {
         if (sender is not LinuxInputDeviceReader reader)
             return;
+        
         switch (reader.InputDevice.DeviceType)
         {
             case LinuxDeviceType.Keyboard:
@@ -64,40 +67,34 @@ public class LinuxInputProvider : InputProvider
 
     private void HandleKeyboardData(LinuxInputDevice keyboard, LinuxInputEventArgs args)
     {
-        switch (args.Type)
+        if (args.Type != LinuxInputEventType.KEY)
+            return;
+        
+        KeyboardKey key = InputUtilities.KeyFromKeyCode((LinuxKeyboardKeyCodes) args.Code);
+        bool isDown = args.Value != 0;
+
+        //_logger.Verbose($"Keyboard Key: {(LinuxKeyboardKeyCodes)args.Code} | Down: {isDown}");
+
+        LinuxInputDevice.LinuxInputId identifier = keyboard.InputId;
+        OnIdentifierReceived(identifier, InputDeviceType.Keyboard);
+        ArtemisDevice? device = null;
+
+        try
         {
-            case LinuxInputEventType.KEY:
-                KeyboardKey key = InputUtilities.KeyFromKeyCode((LinuxKeyboardKeyCodes) args.Code);
-                bool isDown = args.Value != 0;
-
-                //_logger.Verbose($"Keyboard Key: {(LinuxKeyboardKeyCodes)args.Code} | Down: {isDown}");
-
-                LinuxInputDevice.LinuxInputId identifier = keyboard.InputId;
-
-                OnIdentifierReceived(identifier, InputDeviceType.Keyboard);
-
-                ArtemisDevice? device = null;
-
-                try
-                {
-                    device = _inputService.GetDeviceByIdentifier(this, identifier, InputDeviceType.Keyboard);
-                }
-                catch (Exception e)
-                {
-                    _logger.Warning(e, "Failed to retrieve input device by its identifier");
-                }
-
-                OnKeyboardDataReceived(device, key, isDown);
-                break;
+            device = _inputService.GetDeviceByIdentifier(this, identifier, InputDeviceType.Keyboard);
         }
+        catch (Exception e)
+        {
+            _logger.Warning(e, "Failed to retrieve input device by its identifier");
+        }
+
+        OnKeyboardDataReceived(device, key, isDown);
     }
 
     private void HandleMouseData(LinuxInputDevice mouse, LinuxInputEventArgs args)
     {
         LinuxInputDevice.LinuxInputId identifier = mouse.InputId;
-
         OnIdentifierReceived(identifier, InputDeviceType.Mouse);
-
         ArtemisDevice? device = null;
 
         try
@@ -112,13 +109,11 @@ public class LinuxInputProvider : InputProvider
         switch (args.Type)
         {
             case LinuxInputEventType.KEY:
-                var key = (LinuxKeyboardKeyCodes)args.Code;
-                if (key == LinuxKeyboardKeyCodes.BTN_TOUCH || 
+                LinuxKeyboardKeyCodes key = (LinuxKeyboardKeyCodes) args.Code;
+                if (key == LinuxKeyboardKeyCodes.BTN_TOUCH ||
                     (key >= LinuxKeyboardKeyCodes.BTN_TOOL_PEN && key <= LinuxKeyboardKeyCodes.BTN_TOOL_QUADTAP))
-                {
                     //trackpad input, ignore.
                     return;
-                }
 
                 //0 - up
                 //1 - down

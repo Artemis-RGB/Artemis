@@ -12,7 +12,7 @@ namespace Artemis.Core;
 /// <summary>
 ///     Represents a node script
 /// </summary>
-public abstract class NodeScript : CorePropertyChanged, INodeScript, IStorageModel
+public abstract class NodeScript : CorePropertyChanged, INodeScript
 {
     private void NodeTypeStoreOnNodeTypeChanged(object? sender, NodeTypeStoreEvent e)
     {
@@ -226,9 +226,7 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript, IStorageMod
         return node;
     }
 
-    /// <summary>
-    ///     Loads missing connections between the nodes of this node script from the <see cref="Entity" />
-    /// </summary>
+    /// <inheritdoc />
     public void LoadConnections()
     {
         List<INode> nodes = Nodes.ToList();

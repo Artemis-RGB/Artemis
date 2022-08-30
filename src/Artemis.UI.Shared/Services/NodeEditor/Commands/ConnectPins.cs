@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core;
 
 namespace Artemis.UI.Shared.Services.NodeEditor.Commands;
@@ -8,9 +9,9 @@ namespace Artemis.UI.Shared.Services.NodeEditor.Commands;
 /// </summary>
 public class ConnectPins : INodeEditorCommand
 {
-    private readonly List<IPin>? _originalConnections;
-    private readonly IPin _source;
-    private readonly IPin _target;
+    private readonly IPin _output;
+    private readonly IPin _input;
+    private readonly IPin? _originalConnection;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="ConnectPins" /> class.
@@ -19,10 +20,18 @@ public class ConnectPins : INodeEditorCommand
     /// <param name="target">The target of the connection.</param>
     public ConnectPins(IPin source, IPin target)
     {
-        _source = source;
-        _target = target;
+        if (source.Direction == PinDirection.Output)
+        {
+            _output = source;
+            _input = target;
+        }
+        else
+        {
+            _output = target;
+            _input = source;
+        }
 
-        _originalConnections = _target.Direction == PinDirection.Input ? new List<IPin>(_target.ConnectedTo) : null;
+        _originalConnection = _input.ConnectedTo.FirstOrDefault();
     }
 
     #region Implementation of INodeEditorCommand
@@ -33,20 +42,16 @@ public class ConnectPins : INodeEditorCommand
     /// <inheritdoc />
     public void Execute()
     {
-        if (_target.Direction == PinDirection.Input)
-            _target.DisconnectAll();
-        _source.ConnectTo(_target);
+        _input.DisconnectAll();
+        _output.ConnectTo(_input);
     }
 
     /// <inheritdoc />
     public void Undo()
     {
-        _target.DisconnectFrom(_source);
-
-        if (_originalConnections == null)
-            return;
-        foreach (IPin pin in _originalConnections)
-            _target.ConnectTo(pin);
+        _input.DisconnectAll();
+        if (_originalConnection != null)
+            _input.ConnectTo(_originalConnection);
     }
 
     #endregion

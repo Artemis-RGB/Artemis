@@ -48,9 +48,7 @@ public class DataModelEventCycleNode : Node<DataModelPathEntity, DataModelEventC
     public override void Evaluate()
     {
         object? pathValue = _dataModelPath?.GetValue();
-        bool hasTriggered = pathValue is IDataModelEvent dataModelEvent
-            ? EvaluateEvent(dataModelEvent)
-            : EvaluateValue(pathValue);
+        bool hasTriggered = pathValue is IDataModelEvent dataModelEvent ? EvaluateEvent(dataModelEvent) : EvaluateValue(pathValue);
 
         if (hasTriggered)
         {

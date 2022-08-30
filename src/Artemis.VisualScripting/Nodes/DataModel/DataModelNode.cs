@@ -1,7 +1,6 @@
 ﻿using Artemis.Core;
 using Artemis.Storage.Entities.Profile;
 using Artemis.VisualScripting.Nodes.DataModel.Screens;
-using Avalonia.Threading;
 
 namespace Artemis.VisualScripting.Nodes.DataModel;
 
@@ -61,17 +60,24 @@ public class DataModelNode : Node<DataModelPathEntity, DataModelNodeCustomViewMo
     private void UpdateDataModelPath()
     {
         DataModelPath? old = _dataModelPath;
-        old?.Dispose();
-
         _dataModelPath = Storage != null ? new DataModelPath(Storage) : null;
         if (_dataModelPath != null)
             _dataModelPath.PathValidated += DataModelPathOnPathValidated;
+        
+        if (old != null)
+        {
+            old.PathValidated -= DataModelPathOnPathValidated;
+            old.Dispose();
+        }
+        
         UpdateOutputPin();
     }
 
     private void DataModelPathOnPathValidated(object? sender, EventArgs e)
     {
-        Dispatcher.UIThread.InvokeAsync(UpdateOutputPin);
+        // Update the output pin now that the type is known and attempt to restore the connection that was likely missing
+        UpdateOutputPin();
+        Script?.LoadConnections();
     }
 
     /// <inheritdoc />
