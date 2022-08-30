@@ -25,6 +25,7 @@ public class DataBindingViewModel : ActivatableViewModelBase
     private ObservableAsPropertyHelper<ILayerProperty?>? _layerProperty;
     private ObservableAsPropertyHelper<NodeScriptViewModel?>? _nodeScriptViewModel;
     private bool _playing;
+    private bool _editorOpen;
 
     public DataBindingViewModel(IProfileEditorService profileEditorService, INodeVmFactory nodeVmFactory, IWindowService windowService, ISettingsService settingsService)
     {
@@ -49,11 +50,18 @@ public class DataBindingViewModel : ActivatableViewModelBase
                 .DisposeWith(d);
             _profileEditorService.Playing.CombineLatest(_profileEditorService.SuspendedEditing).Subscribe(tuple => _playing = tuple.First || tuple.Second).DisposeWith(d);
 
-            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(60.0 / 1000), DispatcherPriority.Render, Update);
+            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000), DispatcherPriority.Render, Update);
+            // TODO: Remove in favor of saving each time a node editor command is executed
+            DispatcherTimer saveTimer = new(TimeSpan.FromMinutes(2), DispatcherPriority.Normal, Save);
+
             updateTimer.Start();
+            saveTimer.Start();
+
             Disposable.Create(() =>
             {
                 updateTimer.Stop();
+                saveTimer.Stop();
+
                 _profileEditorService.SaveProfile();
             }).DisposeWith(d);
         });
@@ -74,10 +82,18 @@ public class DataBindingViewModel : ActivatableViewModelBase
 
     public async Task OpenEditor()
     {
-        if (LayerProperty != null && LayerProperty.BaseDataBinding.IsEnabled)
+        if (LayerProperty == null || !LayerProperty.BaseDataBinding.IsEnabled)
+            return;
+
+        try
         {
+            _editorOpen = true;
             await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(("nodeScript", LayerProperty.BaseDataBinding.Script));
             await _profileEditorService.SaveProfileAsync();
+        }
+        finally
+        {
+            _editorOpen = false;
         }
     }
 
@@ -88,5 +104,11 @@ public class DataBindingViewModel : ActivatableViewModelBase
             return;
 
         LayerProperty?.UpdateDataBinding();
+    }
+
+    private void Save(object? sender, EventArgs e)
+    {
+        if (!_editorOpen)
+            _profileEditorService.SaveProfile();
     }
 }

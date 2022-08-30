@@ -12,6 +12,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.NodeEditor.Commands;
+using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia;
 using Avalonia.Threading;
 using DynamicData;
@@ -25,6 +26,7 @@ public class NodeScriptWindowViewModel : DialogViewModelBase<bool>
     private readonly INodeEditorService _nodeEditorService;
     private readonly INodeService _nodeService;
     private readonly ISettingsService _settingsService;
+    private readonly IProfileService _profileService;
     private readonly IWindowService _windowService;
 
     public NodeScriptWindowViewModel(NodeScript nodeScript,
@@ -32,6 +34,7 @@ public class NodeScriptWindowViewModel : DialogViewModelBase<bool>
         INodeEditorService nodeEditorService,
         INodeVmFactory vmFactory,
         ISettingsService settingsService,
+        IProfileService profileService,
         IWindowService windowService)
     {
         NodeScript = nodeScript;
@@ -43,6 +46,7 @@ public class NodeScriptWindowViewModel : DialogViewModelBase<bool>
         _nodeService = nodeService;
         _nodeEditorService = nodeEditorService;
         _settingsService = settingsService;
+        _profileService = profileService;
         _windowService = windowService;
 
         SourceList<NodeData> nodeSourceList = new();
@@ -60,8 +64,17 @@ public class NodeScriptWindowViewModel : DialogViewModelBase<bool>
         this.WhenActivated(d =>
         {
             DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000), DispatcherPriority.Normal, Update);
+            // TODO: Remove in favor of saving each time a node editor command is executed
+            DispatcherTimer saveTimer = new(TimeSpan.FromMinutes(2), DispatcherPriority.Normal, Save);
+            
             updateTimer.Start();
-            Disposable.Create(() => updateTimer.Stop()).DisposeWith(d);
+            saveTimer.Start();
+            
+            Disposable.Create(() =>
+            {
+                updateTimer.Stop();
+                saveTimer.Stop();
+            }).DisposeWith(d);
         });
     }
 
@@ -132,5 +145,11 @@ public class NodeScriptWindowViewModel : DialogViewModelBase<bool>
     private void Update(object? sender, EventArgs e)
     {
         NodeScript.Run();
+    }
+
+    private void Save(object? sender, EventArgs e)
+    {
+        if (NodeScript.Context is Profile profile)
+            _profileService.SaveProfile(profile, true);
     }
 }

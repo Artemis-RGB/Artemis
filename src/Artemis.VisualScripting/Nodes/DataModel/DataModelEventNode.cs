@@ -1,7 +1,6 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
 using Artemis.Core;
-using Artemis.Core.Events;
 using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
 using Artemis.VisualScripting.Nodes.DataModel.Screens;
@@ -41,6 +40,47 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
         UpdateDataModelPath();
     }
 
+    public override void Evaluate()
+    {
+        object? pathValue = _dataModelPath?.GetValue();
+        if (pathValue is not IDataModelEvent dataModelEvent)
+            return;
+
+        TimeSinceLastTrigger.Value = new Numeric(dataModelEvent.TimeSinceLastTrigger.TotalMilliseconds);
+        TriggerCount.Value = new Numeric(dataModelEvent.TriggerCount);
+        
+        foreach ((Func<DataModelEventArgs, object> propertyAccessor, OutputPin outputPin) in _propertyPins)
+        {
+            if (!outputPin.ConnectedTo.Any())
+                continue;
+            object value = dataModelEvent.LastEventArgumentsUntyped != null ? propertyAccessor(dataModelEvent.LastEventArgumentsUntyped) : outputPin.Type.GetDefault()!;
+            outputPin.Value = outputPin.IsNumeric ? new Numeric(value) : value;
+        }
+    }
+
+    private void UpdateDataModelPath()
+    {
+        DataModelPath? old = _dataModelPath;
+        _dataModelPath = Storage != null ? new DataModelPath(Storage) : null;
+        if (_dataModelPath != null)
+            _dataModelPath.PathValidated += DataModelPathOnPathValidated;
+        
+        if (old != null)
+        {
+            old.PathValidated -= DataModelPathOnPathValidated;
+            old.Dispose();
+        }
+        
+        UpdateOutputPins();
+    }
+
+    private void UpdateOutputPins()
+    {
+        object? pathValue = _dataModelPath?.GetValue();
+        if (pathValue is IDataModelEvent dataModelEvent)
+            CreatePins(dataModelEvent);
+    }
+    
     private void CreatePins(IDataModelEvent? dataModelEvent)
     {
         if (_dataModelEvent == dataModelEvent)
@@ -72,34 +112,12 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
             _propertyPins.Add(expression, CreateOrAddOutputPin(propertyInfo.PropertyType, propertyInfo.Name.Humanize()));
         }
     }
-
-    public override void Evaluate()
+    
+    private void DataModelPathOnPathValidated(object? sender, EventArgs e)
     {
-        object? pathValue = _dataModelPath?.GetValue();
-        if (pathValue is not IDataModelEvent dataModelEvent)
-            return;
-
-        TimeSinceLastTrigger.Value = new Numeric(dataModelEvent.TimeSinceLastTrigger.TotalMilliseconds);
-        TriggerCount.Value = new Numeric(dataModelEvent.TriggerCount);
-        
-        foreach ((Func<DataModelEventArgs, object> propertyAccessor, OutputPin outputPin) in _propertyPins)
-        {
-            if (!outputPin.ConnectedTo.Any())
-                continue;
-            object value = dataModelEvent.LastEventArgumentsUntyped != null ? propertyAccessor(dataModelEvent.LastEventArgumentsUntyped) : outputPin.Type.GetDefault()!;
-            outputPin.Value = outputPin.IsNumeric ? new Numeric(value) : value;
-        }
-    }
-
-    private void UpdateDataModelPath()
-    {
-        DataModelPath? old = _dataModelPath;
-        _dataModelPath = Storage != null ? new DataModelPath(Storage) : null;
-        old?.Dispose();
-
-        object? pathValue = _dataModelPath?.GetValue();
-        if (pathValue is IDataModelEvent dataModelEvent)
-            CreatePins(dataModelEvent);
+        // Update the output pin now that the type is known and attempt to restore the connection that was likely missing
+        UpdateOutputPins();
+        Script?.LoadConnections();
     }
 
     /// <inheritdoc />
