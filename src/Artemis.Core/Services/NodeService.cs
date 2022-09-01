@@ -115,7 +115,7 @@ internal class NodeService : INodeService
             }
         }
 
-        node.Initialize(script);
+        node.TryInitialize(script);
         return node;
     }
 

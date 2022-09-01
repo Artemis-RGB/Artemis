@@ -37,25 +37,28 @@
                     ClipToBounds="True"
                     Background="{DynamicResource ContentDialogBackground}">
                 <Border Background="{DynamicResource TaskDialogHeaderBackground}">
-                    <Grid Classes="node-header"
-                          VerticalAlignment="Top"
-                          ColumnDefinitions="*,Auto">
-                        <TextBlock VerticalAlignment="Center"
-                                   Margin="10 0 0 0"
-                                   Text="{CompiledBinding Node.Name}"
-                                   ToolTip.Tip="{CompiledBinding Node.Description}">
-                        </TextBlock>
-                        <Button VerticalAlignment="Center"
+                    <Grid Classes="node-header" VerticalAlignment="Top" ColumnDefinitions="Auto,*,Auto">
+                        <Button Grid.Column="0"
+                                VerticalAlignment="Center"
+                                IsVisible="{CompiledBinding Node.BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
                                 Classes="icon-button icon-button-small"
-                                Grid.Column="1"
-                                Margin="5"
-                                Command="{CompiledBinding DeleteNode}">
+                                Foreground="White"
+                                Background="#E74C4C"
+                                BorderBrush="#E74C4C"
+                                Margin="5 0 0 0"
+                                ToolTip.Tip="{CompiledBinding Node.BrokenState}"
+                                Command="{CompiledBinding ShowBrokenState}">
+                            <avalonia:MaterialIcon Kind="AlertCircle"></avalonia:MaterialIcon>
+                        </Button>
+
+                        <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="10 0 0 0" Text="{CompiledBinding Node.Name}" ToolTip.Tip="{CompiledBinding Node.Description}"/>
+
+                        <Button Grid.Column="2" VerticalAlignment="Center" Classes="icon-button icon-button-small" Margin="5" Command="{CompiledBinding DeleteNode}">
                             <avalonia:MaterialIcon Kind="Close"></avalonia:MaterialIcon>
                         </Button>
                     </Grid>
                 </Border>
             </Border>
-
 
             <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Margin="4">
                 <StackPanel Grid.Column="0" IsVisible="{CompiledBinding HasInputPins}">
@@ -63,9 +66,9 @@
                     <ItemsControl Items="{CompiledBinding InputPinCollectionViewModels}" />
                 </StackPanel>
 
-                <ContentControl Grid.Column="1" 
+                <ContentControl Grid.Column="1"
                                 Name="CustomViewModelContainer"
-                                Content="{CompiledBinding CustomNodeViewModel}" 
+                                Content="{CompiledBinding CustomNodeViewModel}"
                                 IsVisible="{CompiledBinding CustomNodeViewModel, Converter={x:Static ObjectConverters.IsNotNull}}" />
 
                 <StackPanel Grid.Column="2" IsVisible="{CompiledBinding HasOutputPins}">

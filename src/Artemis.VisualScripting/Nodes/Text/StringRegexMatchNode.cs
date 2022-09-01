@@ -8,7 +8,7 @@ public class StringRegexMatchNode : Node
 {
     private string? _lastPattern;
     private Regex? _regex;
-    private bool _broken;
+    private Exception? _exception;
 
     public StringRegexMatchNode() : base("Regex Match", "Checks provided regex pattern matches the input.")
     {
@@ -25,20 +25,27 @@ public class StringRegexMatchNode : Node
     {
         if (Input.Value == null || Pattern.Value == null)
             return;
-        if (_broken && _lastPattern == Pattern.Value)
-            return;
 
+        // If the regex was invalid output false and rethrow the exception
+        if (_lastPattern == Pattern.Value && _exception != null)
+        {
+            Result.Value = false;
+            throw _exception;
+        }
+
+        // If there is no regex yet or the regex changed, recompile
         if (_regex == null || _lastPattern != Pattern.Value)
         {
             try
             {
                 _regex = new Regex(Pattern.Value, RegexOptions.Compiled);
-                _broken = false;
+                _exception = null;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                _broken = true;
-                return;
+                // If there is an exception, save it to keep rethrowing until the regex is fixed
+                _exception = e;
+                throw;
             }
             finally
             {

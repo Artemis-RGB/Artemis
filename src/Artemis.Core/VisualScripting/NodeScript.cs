@@ -101,7 +101,7 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
                 node.Reset();
         }
 
-        ExitNode.Evaluate();
+        ExitNode.TryEvaluate();
     }
 
     /// <inheritdoc />

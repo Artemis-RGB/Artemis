@@ -12,7 +12,7 @@ namespace Artemis.Core;
 /// <summary>
 ///     Represents a kind of node inside a <see cref="NodeScript" />
 /// </summary>
-public abstract class Node : CorePropertyChanged, INode
+public abstract class Node : BreakableModel, INode
 {
     /// <inheritdoc />
     public event EventHandler? Resetting;
@@ -95,6 +95,9 @@ public abstract class Node : CorePropertyChanged, INode
     /// <inheritdoc />
     public IReadOnlyCollection<IPinCollection> PinCollections => new ReadOnlyCollection<IPinCollection>(_pinCollections);
 
+    /// <inheritdoc />
+    public override string BrokenDisplayName => Name;
+    
     #endregion
 
     #region Construtors
@@ -335,12 +338,17 @@ public abstract class Node : CorePropertyChanged, INode
         return isRemoved;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    ///     Called when the node was loaded from storage or newly created
+    /// </summary>
+    /// <param name="script">The script the node is contained in</param>
     public virtual void Initialize(INodeScript script)
     {
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    ///     Evaluates the value of the output pins of this node
+    /// </summary>
     public abstract void Evaluate();
 
     /// <inheritdoc />
@@ -354,6 +362,18 @@ public abstract class Node : CorePropertyChanged, INode
         Resetting?.Invoke(this, EventArgs.Empty);
     }
 
+    /// <inheritdoc />
+    public void TryInitialize(INodeScript script)
+    {
+        TryOrBreak(() => Initialize(script), "Failed to initialize");
+    }
+
+    /// <inheritdoc />
+    public void TryEvaluate()
+    {
+        TryOrBreak(Evaluate, "Failed to evaluate");
+    }
+    
     /// <summary>
     ///     Called whenever the node must show it's custom view model, if <see langword="null" />, no custom view model is used
     /// </summary>
