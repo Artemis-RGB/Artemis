@@ -2,11 +2,20 @@
 using SkiaSharp;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace Artemis.Core.Services;
 
 internal class ColorCube
 {
+    #region Constants
+
+    private const int BYTES_PER_COLOR = 4; // DarthAffe 01.09.2022: Skia stores colors as uint (BGRA)
+    private static readonly int ELEMENTS_PER_VECTOR = Vector<byte>.Count / BYTES_PER_COLOR;
+    private static readonly int BYTES_PER_VECTOR = ELEMENTS_PER_VECTOR * BYTES_PER_COLOR;
+
+    #endregion
+
     #region Properties & Fields
 
     private readonly int _from;
@@ -57,9 +66,63 @@ internal class ColorCube
         }
     }
 
-    private ColorRanges GetColorRanges(in Span<SKColor> colors)
+    private unsafe ColorRanges GetColorRanges(in ReadOnlySpan<SKColor> colors)
     {
-        if (colors.Length < 70)
+        if (Vector.IsHardwareAccelerated && (colors.Length >= Vector<byte>.Count))
+        {
+            int chunks = colors.Length / ELEMENTS_PER_VECTOR;
+            int missingElements = colors.Length - (chunks * ELEMENTS_PER_VECTOR);
+
+            Vector<byte> max = Vector<byte>.Zero;
+            Vector<byte> min = new(byte.MaxValue);
+
+            ReadOnlySpan<byte> colorBytes = MemoryMarshal.AsBytes(colors);
+            fixed (byte* colorPtr = &MemoryMarshal.GetReference(colorBytes))
+            {
+                byte* current = colorPtr;
+                for (int i = 0; i < chunks; i++)
+                {
+                    Vector<byte> currentVector = *(Vector<byte>*)current;
+
+                    max = Vector.Max(max, currentVector);
+                    min = Vector.Min(min, currentVector);
+
+                    current += BYTES_PER_VECTOR;
+                }
+            }
+
+            byte redMin = byte.MaxValue;
+            byte redMax = byte.MinValue;
+            byte greenMin = byte.MaxValue;
+            byte greenMax = byte.MinValue;
+            byte blueMin = byte.MaxValue;
+            byte blueMax = byte.MinValue;
+
+            for (int i = 0; i < BYTES_PER_VECTOR; i += BYTES_PER_COLOR)
+            {
+                if (min[i + 2] < redMin) redMin = min[i + 2];
+                if (max[i + 2] > redMax) redMax = max[i + 2];
+                if (min[i + 1] < greenMin) greenMin = min[i + 1];
+                if (max[i + 1] > greenMax) greenMax = max[i + 1];
+                if (min[i] < blueMin) blueMin = min[i];
+                if (max[i] > blueMax) blueMax = max[i];
+            }
+
+            for (int i = 0; i < missingElements; i++)
+            {
+                SKColor color = colors[^(i + 1)];
+
+                if (color.Red < redMin) redMin = color.Red;
+                if (color.Red > redMax) redMax = color.Red;
+                if (color.Green < greenMin) greenMin = color.Green;
+                if (color.Green > greenMax) greenMax = color.Green;
+                if (color.Blue < blueMin) blueMin = color.Blue;
+                if (color.Blue > blueMax) blueMax = color.Blue;
+            }
+
+            return new ColorRanges((byte)(redMax - redMin), (byte)(greenMax - greenMin), (byte)(blueMax - blueMin));
+        }
+        else
         {
             byte redMin = byte.MaxValue;
             byte redMax = byte.MinValue;
@@ -76,70 +139,6 @@ internal class ColorCube
                 if (color.Green > greenMax) greenMax = color.Green;
                 if (color.Blue < blueMin) blueMin = color.Blue;
                 if (color.Blue > blueMax) blueMax = color.Blue;
-            }
-
-            return new ColorRanges((byte)(redMax - redMin), (byte)(greenMax - greenMin), (byte)(blueMax - blueMin));
-        }
-        else
-        {
-            int elementsPerVector = Vector<byte>.Count / 3;
-            int chunks = colors.Length / elementsPerVector;
-            int missingElements = colors.Length - (chunks * elementsPerVector);
-
-            Vector<byte> max = Vector<byte>.Zero;
-            Vector<byte> min = new(byte.MaxValue);
-
-            Span<byte> chunkData = stackalloc byte[Vector<byte>.Count];
-            int dataIndex = 0;
-            for (int i = 0; i < chunks; i++)
-            {
-                int chunkDataIndex = 0;
-                for (int j = 0; j < elementsPerVector; j++)
-                {
-                    SKColor color = colors[dataIndex];
-                    chunkData[chunkDataIndex] = color.Red;
-                    ++chunkDataIndex;
-                    chunkData[chunkDataIndex] = color.Green;
-                    ++chunkDataIndex;
-                    chunkData[chunkDataIndex] = color.Blue;
-                    ++chunkDataIndex;
-                    ++dataIndex;
-                }
-
-                Vector<byte> chunkVector = new(chunkData);
-                max = Vector.Max(max, chunkVector);
-                min = Vector.Min(min, chunkVector);
-            }
-
-            byte redMin = byte.MaxValue;
-            byte redMax = byte.MinValue;
-            byte greenMin = byte.MaxValue;
-            byte greenMax = byte.MinValue;
-            byte blueMin = byte.MaxValue;
-            byte blueMax = byte.MinValue;
-
-            int vectorEntries = elementsPerVector * 3;
-            for (int i = 0; i < vectorEntries; i += 3)
-            {
-                if (min[i] < redMin) redMin = min[i];
-                if (max[i] > redMax) redMax = max[i];
-                if (min[i + 1] < greenMin) greenMin = min[i + 1];
-                if (max[i + 1] > greenMax) greenMax = max[i + 1];
-                if (min[i + 2] < blueMin) blueMin = min[i + 2];
-                if (max[i + 2] > blueMax) blueMax = max[i + 2];
-            }
-
-            for (int i = 0; i < missingElements; i++)
-            {
-                SKColor color = colors[dataIndex];
-                if (color.Red < redMin) redMin = color.Red;
-                if (color.Red > redMax) redMax = color.Red;
-                if (color.Green < greenMin) greenMin = color.Green;
-                if (color.Green > greenMax) greenMax = color.Green;
-                if (color.Blue < blueMin) blueMin = color.Blue;
-                if (color.Blue > blueMax) blueMax = color.Blue;
-
-                ++dataIndex;
             }
 
             return new ColorRanges((byte)(redMax - redMin), (byte)(greenMax - greenMin), (byte)(blueMax - blueMin));

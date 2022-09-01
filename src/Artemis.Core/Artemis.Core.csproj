@@ -27,6 +27,7 @@
         <NrtShowRevision>true</NrtShowRevision>
         <Nullable>enable</Nullable>
         <AnalysisLevel>latest</AnalysisLevel>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
