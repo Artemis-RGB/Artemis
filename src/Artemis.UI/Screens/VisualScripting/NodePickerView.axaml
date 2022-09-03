@@ -34,33 +34,58 @@
     <Border Classes="picker-container">
         <Grid RowDefinitions="Auto,*">
             <TextBox Name="SearchBox" Text="{CompiledBinding SearchText}" Margin="0 0 0 15" Watermark="Search"></TextBox>
-            <TreeView Name="NodeTree"
-                      Grid.Row="1"
-                      Items="{CompiledBinding Categories}"
-                      IsVisible="{CompiledBinding Categories.Count}"
-                      SelectedItem="{CompiledBinding SelectedNode}"
-                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <TreeView.Styles>
-                    <Style Selector="TreeViewItem">
-                        <Setter Property="IsExpanded" Value="True" />
-                    </Style>
-                </TreeView.Styles>
-                <TreeView.DataTemplates>
-                    <TreeDataTemplate DataType="{x:Type core:NodeData}">
-                        <StackPanel Margin="-15 1 0 1" Background="Transparent" PointerReleased="InputElement_OnPointerReleased">
-                            <TextBlock Classes="BodyStrongTextBlockStyle" Text="{Binding Name}" TextWrapping="Wrap"></TextBlock>
-                            <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding Description}" TextWrapping="Wrap"></TextBlock>
-                        </StackPanel>
-                    </TreeDataTemplate>
-                    <TreeDataTemplate ItemsSource="{Binding Items}">
-                        <TextBlock Text="{Binding Key}"></TextBlock>
-                    </TreeDataTemplate>
-                </TreeView.DataTemplates>
-            </TreeView>
-            <StackPanel Grid.Row="1" VerticalAlignment="Center" Spacing="20" IsVisible="{CompiledBinding !Categories.Count}">
-                <avalonia:MaterialIcon Kind="CloseCircle" Width="64" Height="64"></avalonia:MaterialIcon>
-                <TextBlock Classes="h4" TextAlignment="Center">None of the nodes match your search</TextBlock>
-            </StackPanel>
+            
+            <Grid Grid.Row="1" IsVisible="{CompiledBinding !IsSearching}">
+                <TreeView Name="NodeTree"
+                          Grid.Row="0"
+                          Items="{CompiledBinding Categories}"
+                          SelectedItem="{CompiledBinding SelectedNode}"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <TreeView.Styles>
+                        <Style Selector="TreeViewItem">
+                            <Setter Property="IsExpanded" Value="True" />
+                        </Style>
+                    </TreeView.Styles>
+                    <TreeView.DataTemplates>
+                        <TreeDataTemplate DataType="{x:Type core:NodeData}">
+                            <StackPanel Margin="-15 1 0 1" Background="Transparent" PointerReleased="InputElement_OnPointerReleased">
+                                <TextBlock Classes="BodyStrongTextBlockStyle" Text="{Binding Name}" TextWrapping="Wrap"></TextBlock>
+                                <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding Description}" TextWrapping="Wrap"></TextBlock>
+                            </StackPanel>
+                        </TreeDataTemplate>
+                        <TreeDataTemplate ItemsSource="{Binding Items}">
+                            <TextBlock Text="{Binding Key}"></TextBlock>
+                        </TreeDataTemplate>
+                    </TreeView.DataTemplates>
+                </TreeView>
+                
+                <StackPanel Grid.Row="0" VerticalAlignment="Center" Spacing="20" IsVisible="{CompiledBinding !Categories.Count}">
+                    <avalonia:MaterialIcon Kind="CloseCircle" Width="64" Height="64"></avalonia:MaterialIcon>
+                    <TextBlock Classes="h4" TextAlignment="Center">No compatible nodes found.</TextBlock>
+                </StackPanel>
+            </Grid>
+            
+            <Grid Grid.Row="1" IsVisible="{CompiledBinding IsSearching}">
+                <ListBox Name="NodeList"
+                         Items="{CompiledBinding SortedNodes}"
+                         SelectedItem="{CompiledBinding SelectedNode}"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.DataTemplates>
+                        <DataTemplate DataType="{x:Type core:NodeData}">
+                            <StackPanel Margin="-15 1 0 1" Background="Transparent" PointerReleased="InputElement_OnPointerReleased">
+                                <TextBlock Classes="BodyStrongTextBlockStyle" Text="{Binding Name}" TextWrapping="Wrap"></TextBlock>
+                                <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding Description}" TextWrapping="Wrap"></TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.DataTemplates>
+                </ListBox>
+
+                <StackPanel Grid.Row="0" VerticalAlignment="Center" Spacing="20" IsVisible="{CompiledBinding !SortedNodes.Count}">
+                    <avalonia:MaterialIcon Kind="CloseCircle" Width="64" Height="64"></avalonia:MaterialIcon>
+                    <TextBlock Classes="h4" TextAlignment="Center">None of the nodes match your search.</TextBlock>
+                </StackPanel>
+            </Grid>
+
         </Grid>
     </Border>
 </UserControl>

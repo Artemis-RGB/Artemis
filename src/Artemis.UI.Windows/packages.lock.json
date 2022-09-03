@@ -279,6 +279,11 @@
           "System.Text.Encoding.CodePages": "4.5.1"
         }
       },
+      "FuzzySharp": {
+        "type": "Transitive",
+        "resolved": "2.0.2",
+        "contentHash": "sBKqWxw3g//peYxDZ8JipRlyPbIyBtgzqBVA5GqwHVeqtIrw75maGXAllztf+1aJhchD+drcQIgf2mFho8ZV8A=="
+      },
       "HarfBuzzSharp": {
         "type": "Transitive",
         "resolved": "2.8.2.1-preview.108",
@@ -1784,6 +1789,7 @@
           "DynamicData": "7.9.14",
           "FluentAvaloniaUI": "1.4.1",
           "Flurl.Http": "3.2.4",
+          "FuzzySharp": "2.0.2",
           "Live.Avalonia": "1.3.1",
           "Material.Icons.Avalonia": "1.1.10",
           "RGB.NET.Core": "1.0.0-prerelease.46",

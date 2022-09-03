@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
@@ -11,17 +12,23 @@ using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Avalonia;
 using DynamicData;
 using DynamicData.Binding;
+using FuzzySharp;
+using FuzzySharp.Extractor;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
 public class NodePickerViewModel : ActivatableViewModelBase
 {
+    private readonly ObservableAsPropertyHelper<bool> _isSearching;
     private readonly INodeEditorService _nodeEditorService;
     private readonly NodeScript _nodeScript;
+    private readonly INodeService _nodeService;
 
     private bool _isVisible;
     private Point _position;
+    private List<ExtractedResult<string>>? _scoredByDescription;
+    private List<ExtractedResult<string>>? _scoredByName;
     private string? _searchText;
     private object? _selectedNode;
     private IPin? _targetPin;
@@ -29,22 +36,40 @@ public class NodePickerViewModel : ActivatableViewModelBase
     public NodePickerViewModel(NodeScript nodeScript, INodeService nodeService, INodeEditorService nodeEditorService)
     {
         _nodeScript = nodeScript;
+        _nodeService = nodeService;
         _nodeEditorService = nodeEditorService;
 
         SourceList<NodeData> nodeSourceList = new();
-        IObservable<Func<NodeData, bool>> nodeFilter = this.WhenAnyValue(vm => vm.SearchText, vm => vm.TargetPin).Select(v => CreatePredicate(v.Item1, v.Item2));
+        IObservable<Func<NodeData, bool>> pinFilter = this.WhenAnyValue(vm => vm.TargetPin).Select(CreateTargetPinPredicate);
+        IObservable<Func<NodeData, bool>> scoreFilter = this.WhenAnyValue(vm => vm.SearchText).Select(s => CreateScorePredicate(s));
 
         nodeSourceList.Connect()
-            .Filter(nodeFilter)
+            .Filter(pinFilter)
             .Sort(SortExpressionComparer<NodeData>
                 .Descending(d => d.Category == "Data Model")
                 .ThenByDescending(d => d.Category == "Static")
                 .ThenByAscending(d => d.Category)
-                .ThenByAscending(d => d.Name))
+                .ThenByAscending(d => d.Name)
+                .ThenByAscending(d => d.Description))
             .GroupWithImmutableState(n => n.Category)
             .Bind(out ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeData, string>> categories)
             .Subscribe();
+        nodeSourceList.Connect()
+            .Filter(pinFilter)
+            .Filter(scoreFilter)
+            .AutoRefreshOnObservable(_ => this.WhenAnyValue(vm => vm.SearchText))
+            // Sort on the highest score
+            .Sort(SortExpressionComparer<NodeData>
+                .Descending(data => Math.Max(
+                    _scoredByName?.FirstOrDefault(n => n.Value == data.Name)?.Score ?? -1,
+                    _scoredByDescription?.FirstOrDefault(n => n.Value == data.Description)?.Score ?? -1)
+                ))
+            .Bind(out ReadOnlyObservableCollection<NodeData> sortedNodes)
+            .Subscribe();
         Categories = categories;
+        SortedNodes = sortedNodes;
+
+        _isSearching = this.WhenAnyValue(vm => vm.SearchText).Select(s => !string.IsNullOrWhiteSpace(s)).ToProperty(this, vm => vm.IsSearching);
 
         this.WhenActivated(d =>
         {
@@ -63,6 +88,8 @@ public class NodePickerViewModel : ActivatableViewModelBase
     }
 
     public ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeData, string>> Categories { get; }
+    public ReadOnlyObservableCollection<NodeData> SortedNodes { get; }
+    public bool IsSearching => _isSearching.Value;
 
     public bool IsVisible
     {
@@ -117,10 +144,31 @@ public class NodePickerViewModel : ActivatableViewModelBase
             _nodeEditorService.ExecuteCommand(_nodeScript, new AddNode(_nodeScript, node));
     }
 
-    private Func<NodeData, bool> CreatePredicate(string? text, IPin? targetPin)
+    private Func<NodeData, bool> CreateTargetPinPredicate(IPin? targetPin)
     {
-        if (string.IsNullOrWhiteSpace(text))
-            return data => data.IsCompatibleWithPin(targetPin);
-        return data => data.IsCompatibleWithPin(targetPin) && data.MatchesSearch(text);
+        return data => data.IsCompatibleWithPin(targetPin);
+    }
+
+    private Func<NodeData, bool> CreateScorePredicate(string? search)
+    {
+        if (search == null)
+            return _ => false;
+
+        _scoredByName = Process.ExtractSorted(search, _nodeService.AvailableNodes.Select(d => d.Name)).ToList();
+        _scoredByDescription = Process.ExtractSorted(search, _nodeService.AvailableNodes.Select(d => d.Description)).ToList();
+
+        // Take the top 25% of each
+        double nameCutOff = _scoredByName.Take((int) (_scoredByName.Count / 100.0 * 25)).Average(s => s.Score);
+        double descriptionCutOff = _scoredByDescription.Take((int) (_scoredByName.Count / 100.0 * 25)).Average(s => s.Score);
+        return data =>
+        {
+            int nameScore = _scoredByName.FirstOrDefault(s => s.Value == data.Name)?.Score ?? -1;
+            int descriptionScore = _scoredByDescription.FirstOrDefault(s => s.Value == data.Description)?.Score ?? -1;
+
+            // Use the best score
+            if (nameScore >= descriptionScore)
+                return nameScore >= nameCutOff;
+            return descriptionScore >= descriptionCutOff;
+        };
     }
 }
