@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Artemis.Core.Services;
 
@@ -27,7 +26,7 @@ public interface ICoreService : IArtemisService, IDisposable
     ///     Gets or sets whether profiles are rendered each frame by calling their Render method
     /// </summary>
     bool ProfileRenderingDisabled { get; set; }
-    
+
     /// <summary>
     ///     Gets a boolean indicating whether Artemis is running in an elevated environment (admin permissions)
     /// </summary>

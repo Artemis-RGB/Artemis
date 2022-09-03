@@ -85,7 +85,10 @@ public interface IPin
     ///     Determines whether this pin is compatible with the given type
     /// </summary>
     /// <param name="type">The type to check for compatibility</param>
-    /// <param name="forgivingEnumMatching">A boolean indicating whether or not enums should be exactly equal or just both be enums</param>
+    /// <param name="forgivingEnumMatching">
+    ///     A boolean indicating whether or not enums should be exactly equal or just both be
+    ///     enums
+    /// </param>
     /// <returns><see langword="true" /> if the type is compatible, otherwise <see langword="false" />.</returns>
     public bool IsTypeCompatible(Type type, bool forgivingEnumMatching = true);
 }

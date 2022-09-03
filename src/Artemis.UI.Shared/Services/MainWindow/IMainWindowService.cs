@@ -19,12 +19,12 @@ public interface IMainWindowService : IArtemisSharedUIService
     void ConfigureMainWindowProvider(IMainWindowProvider mainWindowProvider);
 
     /// <summary>
-    ///     Opens the main window if it is not already open
+    ///     Opens the main window if it is not already open, must be called on the UI thread
     /// </summary>
     void OpenMainWindow();
 
     /// <summary>
-    ///     Closes the main window if it is not already closed
+    ///     Closes the main window if it is not already closed, must be called on the UI thread
     /// </summary>
     void CloseMainWindow();
 
@@ -37,7 +37,7 @@ public interface IMainWindowService : IArtemisSharedUIService
     ///     Occurs when the main window has been closed
     /// </summary>
     public event EventHandler? MainWindowClosed;
-    
+
     /// <summary>
     ///     Occurs when the main window has been focused
     /// </summary>

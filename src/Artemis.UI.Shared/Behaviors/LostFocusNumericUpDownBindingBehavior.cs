@@ -4,7 +4,6 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Xaml.Interactivity;
-using FluentAvalonia.UI.Controls;
 
 namespace Artemis.UI.Shared.Behaviors;
 

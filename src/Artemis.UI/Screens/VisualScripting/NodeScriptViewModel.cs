@@ -50,10 +50,10 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         this.WhenActivated(d =>
         {
             Observable.FromEventPattern<SingleValueEventArgs<INode>>(x => NodeScript.NodeAdded += x, x => NodeScript.NodeAdded -= x)
-                .Subscribe(e => HandleNodeAdded(e.EventArgs))
+                .Subscribe(e => _nodeViewModels.Add(_nodeVmFactory.NodeViewModel(this, e.EventArgs.Value)))
                 .DisposeWith(d);
             Observable.FromEventPattern<SingleValueEventArgs<INode>>(x => NodeScript.NodeRemoved += x, x => NodeScript.NodeRemoved -= x)
-                .Subscribe(e => HandleNodeRemoved(e.EventArgs))
+                .Subscribe(e => _nodeViewModels.RemoveMany(_nodeViewModels.Items.Where(n => n.Node == e.EventArgs.Value)))
                 .DisposeWith(d);
         });
 
@@ -275,17 +275,5 @@ public class NodeScriptViewModel : ActivatableViewModelBase
 
     private void ExecutePasteSelected()
     {
-    }
-
-    private void HandleNodeAdded(SingleValueEventArgs<INode> eventArgs)
-    {
-        _nodeViewModels.Add(_nodeVmFactory.NodeViewModel(this, eventArgs.Value));
-    }
-
-    private void HandleNodeRemoved(SingleValueEventArgs<INode> eventArgs)
-    {
-        NodeViewModel? toRemove = NodeViewModels.FirstOrDefault(vm => ReferenceEquals(vm.Node, eventArgs.Value));
-        if (toRemove != null)
-            _nodeViewModels.Remove(toRemove);
     }
 }

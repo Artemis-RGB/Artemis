@@ -2,6 +2,7 @@ using System;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services.MainWindow;
+using Avalonia.Threading;
 using EmbedIO;
 using EmbedIO.Routing;
 using EmbedIO.WebApi;
@@ -22,7 +23,7 @@ public class RemoteController : WebApiController
     [Route(HttpVerbs.Post, "/remote/bring-to-foreground")]
     public void PostBringToForeground()
     {
-        _mainWindowService.OpenMainWindow();
+        Dispatcher.UIThread.Post(() => _mainWindowService.OpenMainWindow());
     }
 
     [Route(HttpVerbs.Post, "/remote/restart")]

@@ -8,7 +8,7 @@ namespace Artemis.Core;
 /// <summary>
 ///     Represents a kind of node inside a <see cref="INodeScript" />
 /// </summary>
-public interface INode : INotifyPropertyChanged
+public interface INode : INotifyPropertyChanged, IBreakableModel
 {
     /// <summary>
     ///     Gets or sets the ID of the node.
@@ -59,7 +59,7 @@ public interface INode : INotifyPropertyChanged
     ///     Called when the node resets
     /// </summary>
     event EventHandler Resetting;
-    
+
     /// <summary>
     ///     Occurs when a pin was added to the node
     /// </summary>
@@ -69,7 +69,7 @@ public interface INode : INotifyPropertyChanged
     ///     Occurs when a pin was removed from the node
     /// </summary>
     event EventHandler<SingleValueEventArgs<IPin>> PinRemoved;
-    
+
     /// <summary>
     ///     Occurs when a pin collection was added to the node
     /// </summary>
@@ -81,15 +81,15 @@ public interface INode : INotifyPropertyChanged
     event EventHandler<SingleValueEventArgs<IPinCollection>> PinCollectionRemoved;
 
     /// <summary>
-    ///     Called when the node was loaded from storage or newly created
+    ///     Attempts to initialize the node.
     /// </summary>
     /// <param name="script">The script the node is contained in</param>
-    void Initialize(INodeScript script);
+    void TryInitialize(INodeScript script);
 
     /// <summary>
-    ///     Evaluates the value of the output pins of this node
+    ///     Attempts to evaluate the value of the output pins of this node
     /// </summary>
-    void Evaluate();
+    void TryEvaluate();
 
     /// <summary>
     ///     Resets the node causing all pins to re-evaluate the next time <see cref="Evaluate" /> is called

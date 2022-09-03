@@ -233,7 +233,7 @@ internal class PluginManagementService : IPluginManagementService
             }
             catch (Exception e)
             {
-                _logger.Warning(new ArtemisPluginException("Failed to load plugin", e), "Plugin exception");
+                _logger.Warning(new ArtemisPluginException($"Failed to load plugin at {subDirectory}", e), "Plugin exception");
             }
         }
 

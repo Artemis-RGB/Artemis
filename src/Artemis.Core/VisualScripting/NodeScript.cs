@@ -14,11 +14,17 @@ namespace Artemis.Core;
 /// </summary>
 public abstract class NodeScript : CorePropertyChanged, INodeScript
 {
-    private void NodeTypeStoreOnNodeTypeChanged(object? sender, NodeTypeStoreEvent e)
+    private void NodeTypeStoreOnNodeTypeAdded(object? sender, NodeTypeStoreEvent e)
     {
-        // Only respond to node changes applicable to the current script
         if (Entity.Nodes.Any(n => e.TypeRegistration.MatchesEntity(n)))
             Load();
+    }
+
+    private void NodeTypeStoreOnNodeTypeRemoved(object? sender, NodeTypeStoreEvent e)
+    {
+        List<INode> nodes = Nodes.Where(n => n.GetType() == e.TypeRegistration.NodeData.Type).ToList();
+        foreach (INode node in nodes)
+            RemoveNode(node);
     }
 
     /// <inheritdoc />
@@ -79,8 +85,8 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
         Entity = new NodeScriptEntity();
         ExitNode = null!;
 
-        NodeTypeStore.NodeTypeAdded += NodeTypeStoreOnNodeTypeChanged;
-        NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeChanged;
+        NodeTypeStore.NodeTypeAdded += NodeTypeStoreOnNodeTypeAdded;
+        NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeRemoved;
     }
 
     internal NodeScript(string name, string description, NodeScriptEntity entity, object? context = null)
@@ -91,8 +97,8 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
         Context = context;
         ExitNode = null!;
 
-        NodeTypeStore.NodeTypeAdded += NodeTypeStoreOnNodeTypeChanged;
-        NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeChanged;
+        NodeTypeStore.NodeTypeAdded += NodeTypeStoreOnNodeTypeAdded;
+        NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeRemoved;
     }
 
     #endregion
@@ -108,7 +114,7 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
                 node.Reset();
         }
 
-        ExitNode.Evaluate();
+        ExitNode.TryEvaluate();
     }
 
     /// <inheritdoc />
@@ -136,8 +142,8 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
     /// <inheritdoc />
     public void Dispose()
     {
-        NodeTypeStore.NodeTypeAdded -= NodeTypeStoreOnNodeTypeChanged;
-        NodeTypeStore.NodeTypeRemoved -= NodeTypeStoreOnNodeTypeChanged;
+        NodeTypeStore.NodeTypeAdded -= NodeTypeStoreOnNodeTypeAdded;
+        NodeTypeStore.NodeTypeRemoved -= NodeTypeStoreOnNodeTypeRemoved;
 
         lock (_nodes)
         {
@@ -346,7 +352,7 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
                 sourcePinId++;
                 continue;
             }
-            
+
             foreach (IPin targetPin in sourcePin.ConnectedTo)
             {
                 int targetPinCollectionId = -1;

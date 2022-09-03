@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace Artemis.Core;
@@ -43,7 +41,7 @@ public sealed class OutputPin<T> : Pin
         get
         {
             if (!IsEvaluated)
-                Node?.Evaluate();
+                Node?.TryEvaluate();
 
             return _value;
         }
@@ -115,7 +113,7 @@ public sealed class OutputPin : Pin
         get
         {
             if (!IsEvaluated)
-                Node?.Evaluate();
+                Node?.TryEvaluate();
 
             return _value;
         }

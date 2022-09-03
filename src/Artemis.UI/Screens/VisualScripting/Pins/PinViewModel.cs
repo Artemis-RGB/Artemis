@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using Artemis.Core;
@@ -38,7 +39,7 @@ public abstract class PinViewModel : ActivatableViewModelBase
                 .Subscribe(e => connectedPins.Add(e.EventArgs.Value))
                 .DisposeWith(d);
             Observable.FromEventPattern<SingleValueEventArgs<IPin>>(x => Pin.PinDisconnected += x, x => Pin.PinDisconnected -= x)
-                .Subscribe(e => connectedPins.Remove(e.EventArgs.Value))
+                .Subscribe(e => connectedPins.RemoveMany(connectedPins.Items.Where(p => p == e.EventArgs.Value)))
                 .DisposeWith(d);
             Pin.WhenAnyValue(p => p.Type).Subscribe(_ => UpdatePinColor()).DisposeWith(d);
         });

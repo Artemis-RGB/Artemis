@@ -8,6 +8,7 @@ using Artemis.Core.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.VisualScripting.Pins;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Avalonia;
@@ -21,9 +22,9 @@ namespace Artemis.UI.Screens.VisualScripting;
 public class NodeViewModel : ActivatableViewModelBase
 {
     private readonly INodeEditorService _nodeEditorService;
+    private readonly IWindowService _windowService;
 
     private ICustomNodeViewModel? _customNodeViewModel;
-    private ReactiveCommand<Unit, Unit>? _deleteNode;
     private double _dragOffsetX;
     private double _dragOffsetY;
     private ObservableAsPropertyHelper<bool>? _hasInputPins;
@@ -34,13 +35,12 @@ public class NodeViewModel : ActivatableViewModelBase
     private double _startX;
     private double _startY;
 
-    public NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node, INodeVmFactory nodeVmFactory, INodeEditorService nodeEditorService)
+    public NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node, INodeVmFactory nodeVmFactory, INodeEditorService nodeEditorService, IWindowService windowService)
     {
         _nodeEditorService = nodeEditorService;
+        _windowService = windowService;
         NodeScriptViewModel = nodeScriptViewModel;
         Node = node;
-
-        DeleteNode = ReactiveCommand.Create(ExecuteDeleteNode, this.WhenAnyValue(vm => vm.IsStaticNode).Select(v => !v));
 
         SourceList<PinViewModel> nodePins = new();
         SourceList<PinCollectionViewModel> nodePinCollections = new();
@@ -61,6 +61,9 @@ public class NodeViewModel : ActivatableViewModelBase
         nodePins.Connect().Merge(nodePinCollections.Connect().TransformMany(c => c.PinViewModels)).Bind(out ReadOnlyObservableCollection<PinViewModel> pins).Subscribe();
 
         PinViewModels = pins;
+
+        DeleteNode = ReactiveCommand.Create(ExecuteDeleteNode, this.WhenAnyValue(vm => vm.IsStaticNode).Select(v => !v));
+        ShowBrokenState = ReactiveCommand.Create(ExecuteShowBrokenState);
 
         this.WhenActivated(d =>
         {
@@ -90,7 +93,7 @@ public class NodeViewModel : ActivatableViewModelBase
                 })
                 .DisposeWith(d);
             Observable.FromEventPattern<SingleValueEventArgs<IPin>>(x => Node.PinRemoved += x, x => Node.PinRemoved -= x)
-                .Subscribe(p => nodePins!.Remove(nodePins.Items.FirstOrDefault(vm => vm.Pin == p.EventArgs.Value)))
+                .Subscribe(p => nodePins.RemoveMany(nodePins.Items.Where(vm => vm.Pin == p.EventArgs.Value)))
                 .DisposeWith(d);
             nodePins.Edit(l =>
             {
@@ -115,7 +118,7 @@ public class NodeViewModel : ActivatableViewModelBase
                 })
                 .DisposeWith(d);
             Observable.FromEventPattern<SingleValueEventArgs<IPinCollection>>(x => Node.PinCollectionRemoved += x, x => Node.PinCollectionRemoved -= x)
-                .Subscribe(p => nodePinCollections!.Remove(nodePinCollections.Items.FirstOrDefault(vm => vm.PinCollection == p.EventArgs.Value)))
+                .Subscribe(p => nodePinCollections.RemoveMany(nodePinCollections.Items.Where(vm => vm.PinCollection == p.EventArgs.Value)))
                 .DisposeWith(d);
             nodePinCollections.Edit(l =>
             {
@@ -152,17 +155,14 @@ public class NodeViewModel : ActivatableViewModelBase
         set => RaiseAndSetIfChanged(ref _customNodeViewModel, value);
     }
 
-    public ReactiveCommand<Unit, Unit>? DeleteNode
-    {
-        get => _deleteNode;
-        set => RaiseAndSetIfChanged(ref _deleteNode, value);
-    }
-
     public bool IsSelected
     {
         get => _isSelected;
         set => RaiseAndSetIfChanged(ref _isSelected, value);
     }
+
+    public ReactiveCommand<Unit, Unit> ShowBrokenState { get; }
+    public ReactiveCommand<Unit, Unit> DeleteNode { get; }
 
     public void StartDrag(Point mouseStartPosition)
     {
@@ -194,5 +194,11 @@ public class NodeViewModel : ActivatableViewModelBase
     private void ExecuteDeleteNode()
     {
         _nodeEditorService.ExecuteCommand(NodeScriptViewModel.NodeScript, new DeleteNode(NodeScriptViewModel.NodeScript, Node));
+    }
+
+    private void ExecuteShowBrokenState()
+    {
+        if (Node.BrokenState != null && Node.BrokenStateException != null)
+            _windowService.ShowExceptionDialog(Node.BrokenState, Node.BrokenStateException);
     }
 }

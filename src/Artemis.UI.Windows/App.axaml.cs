@@ -24,11 +24,6 @@ public class App : Application
     private StandardKernel? _kernel;
     private bool _shutDown;
 
-    // ReSharper disable NotAccessedField.Local
-    private ApplicationStateManager? _applicationStateManager;
-    private Mutex? _artemisMutex;
-    // ReSharper restore NotAccessedField.Local
-
     public override void Initialize()
     {
         // If Artemis is already running, bring it to foreground and stop this process
@@ -110,4 +105,10 @@ public class App : Application
             }
         }
     }
+
+    // ReSharper disable NotAccessedField.Local
+    private ApplicationStateManager? _applicationStateManager;
+
+    private Mutex? _artemisMutex;
+    // ReSharper restore NotAccessedField.Local
 }

@@ -62,9 +62,10 @@ internal class NodeTypeStore
 
     public static Plugin? GetPlugin(INode node)
     {
+        Type nodeType = node.GetType();
         lock (Registrations)
         {
-            return Registrations.FirstOrDefault(r => r.Plugin.GetType().Assembly == node.GetType().Assembly)?.Plugin;
+            return Registrations.FirstOrDefault(r => r.NodeData.Type == nodeType)?.Plugin;
         }
     }
 

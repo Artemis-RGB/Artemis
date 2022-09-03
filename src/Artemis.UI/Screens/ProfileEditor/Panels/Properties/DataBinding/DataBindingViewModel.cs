@@ -22,10 +22,10 @@ public class DataBindingViewModel : ActivatableViewModelBase
     private readonly IProfileEditorService _profileEditorService;
     private readonly IWindowService _windowService;
     private ObservableAsPropertyHelper<bool>? _dataBindingEnabled;
+    private bool _editorOpen;
     private ObservableAsPropertyHelper<ILayerProperty?>? _layerProperty;
     private ObservableAsPropertyHelper<NodeScriptViewModel?>? _nodeScriptViewModel;
     private bool _playing;
-    private bool _editorOpen;
 
     public DataBindingViewModel(IProfileEditorService profileEditorService, INodeVmFactory nodeVmFactory, IWindowService windowService, ISettingsService settingsService)
     {

@@ -48,7 +48,7 @@ public readonly struct Numeric : IComparable<Numeric>, IConvertible
     {
         _value = value;
     }
-    
+
     /// <summary>
     ///     Creates a new instance of <see cref="Numeric" /> from a <see cref="long" />
     /// </summary>
@@ -160,10 +160,25 @@ public readonly struct Numeric : IComparable<Numeric>, IConvertible
         return (byte) Math.Clamp(p._value, 0, 255);
     }
 
-    public static implicit operator Numeric(double d) => new(d);
-    public static implicit operator Numeric(float f) => new(f);
-    public static implicit operator Numeric(int i) => new(i);
-    public static implicit operator Numeric(byte b) => new(b);
+    public static implicit operator Numeric(double d)
+    {
+        return new Numeric(d);
+    }
+
+    public static implicit operator Numeric(float f)
+    {
+        return new Numeric(f);
+    }
+
+    public static implicit operator Numeric(int i)
+    {
+        return new Numeric(i);
+    }
+
+    public static implicit operator Numeric(byte b)
+    {
+        return new Numeric(b);
+    }
 
     public static implicit operator long(Numeric p)
     {

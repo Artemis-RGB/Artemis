@@ -30,7 +30,7 @@ public abstract class PinCollectionViewModel : ActivatableViewModelBase
                 .Subscribe(e => PinViewModels.Add(CreatePinViewModel(e.EventArgs.Value)))
                 .DisposeWith(d);
             Observable.FromEventPattern<SingleValueEventArgs<IPin>>(x => PinCollection.PinRemoved += x, x => PinCollection.PinRemoved -= x)
-                .Subscribe(e => PinViewModels.RemoveMany(PinViewModels.Where(p => p.Pin == e.EventArgs.Value).ToList()))
+                .Subscribe(e => PinViewModels.RemoveMany(PinViewModels.Where(p => p.Pin == e.EventArgs.Value)))
                 .DisposeWith(d);
         });
 

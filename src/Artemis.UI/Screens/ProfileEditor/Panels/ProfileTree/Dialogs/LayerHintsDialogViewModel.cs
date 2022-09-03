@@ -32,7 +32,7 @@ public class LayerHintsDialogViewModel : DialogViewModelBase<bool>
                 .Subscribe(c => AdaptionHints.Add(CreateHintViewModel(c.EventArgs.AdaptionHint)))
                 .DisposeWith(d);
             Observable.FromEventPattern<LayerAdapterHintEventArgs>(x => layer.Adapter.AdapterHintRemoved += x, x => layer.Adapter.AdapterHintRemoved -= x)
-                .Subscribe(c => AdaptionHints.Remove(AdaptionHints.FirstOrDefault(h => h.AdaptionHint == c.EventArgs.AdaptionHint)!))
+                .Subscribe(c => AdaptionHints.RemoveMany(AdaptionHints.Where(h => h.AdaptionHint == c.EventArgs.AdaptionHint)))
                 .DisposeWith(d);
 
             AdaptionHints.AddRange(Layer.Adapter.AdaptionHints.Select(CreateHintViewModel));
