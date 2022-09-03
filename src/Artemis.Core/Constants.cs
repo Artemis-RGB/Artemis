@@ -91,11 +91,6 @@ public static class Constants
     /// </summary>
     public static readonly Plugin CorePlugin = new(CorePluginInfo, new DirectoryInfo(ApplicationFolder), null);
 
-    /// <summary>
-    ///     Gets the startup arguments provided to the application
-    /// </summary>
-    public static ReadOnlyCollection<string> StartupArguments { get; set; } = null!;
-
     internal static readonly CorePluginFeature CorePluginFeature = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Core")};
     internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Effect Placeholder")};
 
@@ -152,6 +147,11 @@ public static class Constants
         typeof(double),
         typeof(decimal)
     };
+
+    /// <summary>
+    ///     Gets the startup arguments provided to the application
+    /// </summary>
+    public static ReadOnlyCollection<string> StartupArguments { get; set; } = null!;
 
     /// <summary>
     ///     Gets the graphics context to be used for rendering by SkiaSharp. Can be set via

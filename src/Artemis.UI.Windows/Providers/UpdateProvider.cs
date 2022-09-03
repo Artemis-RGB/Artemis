@@ -24,8 +24,8 @@ namespace Artemis.UI.Windows.Providers;
 
 public class UpdateProvider : IUpdateProvider, IDisposable
 {
-    private const string ApiUrl = "https://dev.azure.com/artemis-rgb/Artemis/_apis/";
-    private const string InstallerUrl = "https://builds.artemis-rgb.com/binaries/Artemis.Installer.exe";
+    private const string API_URL = "https://dev.azure.com/artemis-rgb/Artemis/_apis/";
+    private const string INSTALLER_URL = "https://builds.artemis-rgb.com/binaries/Artemis.Installer.exe";
 
     private readonly ILogger _logger;
     private readonly IMainWindowService _mainWindowService;
@@ -42,7 +42,7 @@ public class UpdateProvider : IUpdateProvider, IDisposable
 
     public async Task<DevOpsBuild?> GetBuildInfo(int buildDefinition, string? buildNumber = null)
     {
-        Url request = ApiUrl.AppendPathSegments("build", "builds")
+        Url request = API_URL.AppendPathSegments("build", "builds")
             .SetQueryParam("definitions", buildDefinition)
             .SetQueryParam("resultFilter", "succeeded")
             .SetQueryParam("$top", 1)
@@ -143,9 +143,9 @@ public class UpdateProvider : IUpdateProvider, IDisposable
         string installerDirectory = Path.Combine(Constants.DataFolder, "installer");
         string installerPath = Path.Combine(installerDirectory, "Artemis.Installer.exe");
 
-        _logger.Information("UpdateInstaller: Downloading installer from {DownloadUrl}", InstallerUrl);
+        _logger.Information("UpdateInstaller: Downloading installer from {DownloadUrl}", INSTALLER_URL);
         using HttpClient client = new();
-        HttpResponseMessage httpResponseMessage = await client.GetAsync(InstallerUrl);
+        HttpResponseMessage httpResponseMessage = await client.GetAsync(INSTALLER_URL);
         if (!httpResponseMessage.IsSuccessStatusCode)
             throw new ArtemisUIException($"Failed to download installer, status code {httpResponseMessage.StatusCode}");
 

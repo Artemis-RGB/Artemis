@@ -17,10 +17,10 @@ public class WindowsInputProvider : InputProvider
 
     private readonly IInputService _inputService;
     private readonly ILogger _logger;
+    private readonly SpongeWindow _sponge;
     private readonly Timer _taskManagerTimer;
     private DateTime _lastMouseUpdate;
     private int _lastProcessId;
-    private readonly SpongeWindow _sponge;
 
     public WindowsInputProvider(ILogger logger, IInputService inputService)
     {

@@ -293,6 +293,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
             CanPaste = false;
             return;
         }
+
         CanPaste = formats.Contains(ProfileElementExtensions.ClipboardDataFormat);
     }
 

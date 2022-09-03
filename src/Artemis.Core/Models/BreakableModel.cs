@@ -69,16 +69,16 @@ public abstract class BreakableModel : CorePropertyChanged, IBreakableModel
     /// <inheritdoc />
     public void ClearBrokenState(string state)
     {
-        if (state == null) 
+        if (state == null)
             throw new ArgumentNullException(nameof(state));
-        
+
         // If there was no broken state to begin with, done!
         if (BrokenState == null)
             return;
         // Only clear similar broken states
         if (BrokenState != state)
             return;
-        
+
         BrokenState = null;
         BrokenStateException = null;
         OnBrokenStateChanged();

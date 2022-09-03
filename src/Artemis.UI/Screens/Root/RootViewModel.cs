@@ -54,7 +54,7 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
         _defaultTitleBarViewModel = defaultTitleBarViewModel;
         _sidebarVmFactory = sidebarVmFactory;
         _lifeTime = (IClassicDesktopStyleApplicationLifetime) Application.Current!.ApplicationLifetime!;
-        
+
         mainWindowService.ConfigureMainWindowProvider(this);
 
         DisplayAccordingToSettings();
@@ -162,20 +162,17 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
     /// <inheritdoc />
     public void OpenMainWindow()
     {
-        Dispatcher.UIThread.Post(() =>
+        if (_lifeTime.MainWindow == null)
         {
-            if (_lifeTime.MainWindow == null)
-            {
-                SidebarViewModel = _sidebarVmFactory.SidebarViewModel(this);
-                _lifeTime.MainWindow = new MainWindow {DataContext = this};
-                _lifeTime.MainWindow.Show();
-                _lifeTime.MainWindow.Closing += CurrentMainWindowOnClosing;
-            }
+            SidebarViewModel = _sidebarVmFactory.SidebarViewModel(this);
+            _lifeTime.MainWindow = new MainWindow {DataContext = this};
+            _lifeTime.MainWindow.Show();
+            _lifeTime.MainWindow.Closing += CurrentMainWindowOnClosing;
+        }
 
-            _lifeTime.MainWindow.WindowState = WindowState.Normal;
-            _lifeTime.MainWindow.Activate();
-            OnMainWindowOpened();
-        });
+        _lifeTime.MainWindow.WindowState = WindowState.Normal;
+        _lifeTime.MainWindow.Activate();
+        OnMainWindowOpened();
     }
 
     /// <inheritdoc />
@@ -183,7 +180,7 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
     {
         Dispatcher.UIThread.Post(() => { _lifeTime.MainWindow?.Close(); });
     }
-    
+
     public void Focused()
     {
         IsMainWindowFocused = true;
@@ -201,7 +198,7 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
 
     /// <inheritdoc />
     public event EventHandler? MainWindowClosed;
-    
+
     /// <inheritdoc />
     public event EventHandler? MainWindowFocused;
 
@@ -217,7 +214,7 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
     {
         MainWindowClosed?.Invoke(this, EventArgs.Empty);
     }
-    
+
     protected virtual void OnMainWindowFocused()
     {
         MainWindowFocused?.Invoke(this, EventArgs.Empty);

@@ -97,7 +97,7 @@ public abstract class Node : BreakableModel, INode
 
     /// <inheritdoc />
     public override string BrokenDisplayName => Name;
-    
+
     #endregion
 
     #region Construtors
@@ -373,7 +373,7 @@ public abstract class Node : BreakableModel, INode
     {
         TryOrBreak(Evaluate, "Failed to evaluate");
     }
-    
+
     /// <summary>
     ///     Called whenever the node must show it's custom view model, if <see langword="null" />, no custom view model is used
     /// </summary>

@@ -59,7 +59,7 @@ public interface INode : INotifyPropertyChanged, IBreakableModel
     ///     Called when the node resets
     /// </summary>
     event EventHandler Resetting;
-    
+
     /// <summary>
     ///     Occurs when a pin was added to the node
     /// </summary>
@@ -69,7 +69,7 @@ public interface INode : INotifyPropertyChanged, IBreakableModel
     ///     Occurs when a pin was removed from the node
     /// </summary>
     event EventHandler<SingleValueEventArgs<IPin>> PinRemoved;
-    
+
     /// <summary>
     ///     Occurs when a pin collection was added to the node
     /// </summary>

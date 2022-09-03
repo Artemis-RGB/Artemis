@@ -26,6 +26,17 @@ internal class DataBindingExitNode<TLayerProperty> : Node, IExitNode
             property.SetValue(pendingValue);
     }
 
+    public override void Evaluate()
+    {
+        foreach ((IDataBindingProperty? property, InputPin? inputPin) in _propertyPins)
+        {
+            if (inputPin.ConnectedTo.Any())
+                _propertyValues[property] = inputPin.Value!;
+            else
+                _propertyValues.Remove(property);
+        }
+    }
+
     private void ClearInputPins()
     {
         while (Pins.Any())
@@ -59,15 +70,4 @@ internal class DataBindingExitNode<TLayerProperty> : Node, IExitNode
     }
 
     public override bool IsExitNode => true;
-
-    public override void Evaluate()
-    {
-        foreach ((IDataBindingProperty? property, InputPin? inputPin) in _propertyPins)
-        {
-            if (inputPin.ConnectedTo.Any())
-                _propertyValues[property] = inputPin.Value!;
-            else
-                _propertyValues.Remove(property);
-        }
-    }
 }

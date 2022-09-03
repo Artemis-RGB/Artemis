@@ -22,9 +22,9 @@ namespace Artemis.UI.Screens.ProfileEditor;
 
 public class ProfileEditorViewModel : MainScreenViewModel
 {
+    private readonly IMainWindowService _mainWindowService;
     private readonly IProfileEditorService _profileEditorService;
     private readonly ISettingsService _settingsService;
-    private readonly IMainWindowService _mainWindowService;
     private readonly SourceList<IToolViewModel> _tools;
     private DisplayConditionScriptViewModel? _displayConditionScriptViewModel;
     private ObservableAsPropertyHelper<ProfileEditorHistory?>? _history;
@@ -69,7 +69,7 @@ public class ProfileEditorViewModel : MainScreenViewModel
             _profileConfiguration = profileEditorService.ProfileConfiguration.ToProperty(this, vm => vm.ProfileConfiguration).DisposeWith(d);
             _history = profileEditorService.History.ToProperty(this, vm => vm.History).DisposeWith(d);
             _suspendedEditing = profileEditorService.SuspendedEditing.ToProperty(this, vm => vm.SuspendedEditing).DisposeWith(d);
-            
+
             mainWindowService.MainWindowFocused += MainWindowServiceOnMainWindowFocused;
             mainWindowService.MainWindowUnfocused += MainWindowServiceOnMainWindowUnfocused;
 
@@ -78,7 +78,7 @@ public class ProfileEditorViewModel : MainScreenViewModel
                 mainWindowService.MainWindowFocused -= MainWindowServiceOnMainWindowFocused;
                 mainWindowService.MainWindowUnfocused -= MainWindowServiceOnMainWindowUnfocused;
             }).DisposeWith(d);
-            
+
             // Slow and steady wins the race (and doesn't lock up the entire UI)
             Dispatcher.UIThread.Post(() => StatusBarViewModel = statusBarViewModel, DispatcherPriority.Loaded);
             Dispatcher.UIThread.Post(() => VisualEditorViewModel = visualEditorViewModel, DispatcherPriority.Loaded);
@@ -165,7 +165,7 @@ public class ProfileEditorViewModel : MainScreenViewModel
                 toolViewModel.IsSelected = false;
         });
     }
-    
+
     private void MainWindowServiceOnMainWindowFocused(object? sender, EventArgs e)
     {
         if (_settingsService.GetSetting("ProfileEditor.AutoSuspend", true).Value)

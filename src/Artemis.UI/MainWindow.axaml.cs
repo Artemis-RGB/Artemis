@@ -44,7 +44,7 @@ public class MainWindow : ReactiveCoreWindow<RootViewModel>
             SetTitleBar(this.Get<Border>("DragHandle"));
         }
     }
-    
+
     private void OnActivated(object? sender, EventArgs e)
     {
         ViewModel?.Focused();

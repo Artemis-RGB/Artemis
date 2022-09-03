@@ -33,14 +33,12 @@ public class LinuxInputProvider : InputProvider
     protected override void Dispose(bool disposing)
     {
         if (disposing)
-        {
             for (int i = _readers.Count - 1; i >= 0; i--)
             {
                 _readers[i].InputEvent -= OnInputEvent;
                 _readers[i].Dispose();
                 _readers.RemoveAt(i);
             }
-        }
 
         base.Dispose(disposing);
     }
@@ -51,7 +49,7 @@ public class LinuxInputProvider : InputProvider
     {
         if (sender is not LinuxInputDeviceReader reader)
             return;
-        
+
         switch (reader.InputDevice.DeviceType)
         {
             case LinuxDeviceType.Keyboard:
@@ -69,7 +67,7 @@ public class LinuxInputProvider : InputProvider
     {
         if (args.Type != LinuxInputEventType.KEY)
             return;
-        
+
         KeyboardKey key = InputUtilities.KeyFromKeyCode((LinuxKeyboardKeyCodes) args.Code);
         bool isDown = args.Value != 0;
 

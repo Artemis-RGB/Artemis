@@ -38,6 +38,24 @@ internal class WebServerService : IWebServerService, IDisposable
         StartWebServer();
     }
 
+    public event EventHandler? WebServerStopped;
+    public event EventHandler? WebServerStarted;
+
+    protected virtual void OnWebServerStopped()
+    {
+        WebServerStopped?.Invoke(this, EventArgs.Empty);
+    }
+
+    protected virtual void OnWebServerStarting()
+    {
+        WebServerStarting?.Invoke(this, EventArgs.Empty);
+    }
+
+    protected virtual void OnWebServerStarted()
+    {
+        WebServerStarted?.Invoke(this, EventArgs.Empty);
+    }
+
     private void WebServerEnabledSettingOnSettingChanged(object? sender, EventArgs e)
     {
         StartWebServer();
@@ -76,6 +94,7 @@ internal class WebServerService : IWebServerService, IDisposable
 
     public WebServer? Server { get; private set; }
     public PluginsModule PluginsModule { get; }
+    public event EventHandler? WebServerStarting;
 
 
     #region Web server managament
@@ -129,7 +148,7 @@ internal class WebServerService : IWebServerService, IDisposable
 
         if (!_webServerEnabledSetting.Value)
             return;
-        
+
         if (Constants.StartupArguments.Contains("--disable-webserver"))
         {
             _logger.Warning("Artemis launched with --disable-webserver, not enabling the webserver");
@@ -300,29 +319,6 @@ internal class WebServerService : IWebServerService, IDisposable
     {
         await context.SendStringAsync(JsonConvert.SerializeObject(httpException, Formatting.Indented), MimeType.Json, Encoding.UTF8);
     }
-
-    #endregion
-
-    #region Events
-
-    protected virtual void OnWebServerStopped()
-    {
-        WebServerStopped?.Invoke(this, EventArgs.Empty);
-    }
-
-    protected virtual void OnWebServerStarting()
-    {
-        WebServerStarting?.Invoke(this, EventArgs.Empty);
-    }
-
-    protected virtual void OnWebServerStarted()
-    {
-        WebServerStarted?.Invoke(this, EventArgs.Empty);
-    }
-
-    public event EventHandler? WebServerStopped;
-    public event EventHandler? WebServerStarting;
-    public event EventHandler? WebServerStarted;
 
     #endregion
 }

@@ -14,6 +14,19 @@ namespace Artemis.Core;
 /// </summary>
 public abstract class NodeScript : CorePropertyChanged, INodeScript
 {
+    private void NodeTypeStoreOnNodeTypeAdded(object? sender, NodeTypeStoreEvent e)
+    {
+        if (Entity.Nodes.Any(n => e.TypeRegistration.MatchesEntity(n)))
+            Load();
+    }
+
+    private void NodeTypeStoreOnNodeTypeRemoved(object? sender, NodeTypeStoreEvent e)
+    {
+        List<INode> nodes = Nodes.Where(n => n.GetType() == e.TypeRegistration.NodeData.Type).ToList();
+        foreach (INode node in nodes)
+            RemoveNode(node);
+    }
+
     /// <inheritdoc />
     public event EventHandler<SingleValueEventArgs<INode>>? NodeAdded;
 
@@ -374,19 +387,6 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
     }
 
     #endregion
-    
-    private void NodeTypeStoreOnNodeTypeAdded(object? sender, NodeTypeStoreEvent e)
-    {
-        if (Entity.Nodes.Any(n => e.TypeRegistration.MatchesEntity(n)))
-            Load();
-    }
-    
-    private void NodeTypeStoreOnNodeTypeRemoved(object? sender, NodeTypeStoreEvent e)
-    {
-        List<INode> nodes = Nodes.Where(n => n.GetType() == e.TypeRegistration.NodeData.Type).ToList();
-        foreach (INode node in nodes)
-            RemoveNode(node);
-    }
 }
 
 /// <summary>

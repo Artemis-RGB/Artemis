@@ -31,7 +31,7 @@ public class NodeConnectionStore
     public void Store()
     {
         _pinConnections.Clear();
-        
+
         // Iterate to save
         foreach (IPin nodePin in Node.Pins.ToList())
             _pinConnections.Add(nodePin, new List<IPin>(nodePin.ConnectedTo));

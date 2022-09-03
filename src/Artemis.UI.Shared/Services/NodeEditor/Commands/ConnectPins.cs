@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Artemis.Core;
 
 namespace Artemis.UI.Shared.Services.NodeEditor.Commands;
@@ -9,9 +8,9 @@ namespace Artemis.UI.Shared.Services.NodeEditor.Commands;
 /// </summary>
 public class ConnectPins : INodeEditorCommand
 {
-    private readonly IPin _output;
     private readonly IPin _input;
     private readonly IPin? _originalConnection;
+    private readonly IPin _output;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="ConnectPins" /> class.

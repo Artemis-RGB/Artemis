@@ -15,10 +15,10 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
 public class ProfileTreeView : ReactiveUserControl<ProfileTreeViewModel>
 {
+    private readonly TreeView _treeView;
     private Image? _dragAdorner;
     private Point _dragStartPosition;
     private Point _elementDragOffset;
-    private readonly TreeView _treeView;
 
     public ProfileTreeView()
     {

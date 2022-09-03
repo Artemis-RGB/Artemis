@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace Artemis.Core;
@@ -96,7 +94,7 @@ public sealed class InputPin : Pin
     {
         if (type == _type)
             return;
-        
+
         base.ChangeType(type, ref _type);
         Value = type.GetDefault();
     }
@@ -111,9 +109,13 @@ public sealed class InputPin : Pin
                 Value = Type.GetDefault()!;
         }
         else if (ConnectedTo.Count > 0)
+        {
             Value = ConnectedTo[0].PinValue;
+        }
         else
+        {
             Value = null;
+        }
     }
 
     #endregion

@@ -37,6 +37,16 @@ public class DevicePropertiesViewModel : DialogViewModelBase<object>
         ClearSelectedLeds = ReactiveCommand.Create(ExecuteClearSelectedLeds);
     }
 
+    public ArtemisDevice Device
+    {
+        get => _device;
+        set => RaiseAndSetIfChanged(ref _device, value);
+    }
+
+    public ObservableCollection<ArtemisLed> SelectedLeds { get; }
+    public ObservableCollection<ActivatableViewModelBase> Tabs { get; }
+    public ReactiveCommand<Unit, Unit> ClearSelectedLeds { get; }
+
     private void RgbServiceOnDeviceAdded(object? sender, DeviceEventArgs e)
     {
         if (e.Device.Identifier != Device.Identifier || Device == e.Device)
@@ -51,16 +61,6 @@ public class DevicePropertiesViewModel : DialogViewModelBase<object>
         Tabs.Clear();
         SelectedLeds.Clear();
     }
-
-    public ArtemisDevice Device
-    {
-        get => _device;
-        set => RaiseAndSetIfChanged(ref _device, value);
-    }
-
-    public ObservableCollection<ArtemisLed> SelectedLeds { get; }
-    public ObservableCollection<ActivatableViewModelBase> Tabs { get; }
-    public ReactiveCommand<Unit, Unit> ClearSelectedLeds { get; }
 
     private void AddTabs()
     {
