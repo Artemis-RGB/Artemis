@@ -42,7 +42,7 @@ public class TimelinePropertyViewModel<T> : ActivatableViewModelBase, ITimelineP
                 .Subscribe(e => _keyframes.Add((LayerPropertyKeyframe<T>) e.EventArgs.Keyframe))
                 .DisposeWith(d);
             Observable.FromEventPattern<LayerPropertyKeyframeEventArgs>(x => LayerProperty.KeyframeRemoved += x, x => LayerProperty.KeyframeRemoved -= x)
-                .Subscribe(e => _keyframes.Remove((LayerPropertyKeyframe<T>) e.EventArgs.Keyframe))
+                .Subscribe(e => _keyframes.RemoveMany(_keyframes.Items.Where(k => k == e.EventArgs.Keyframe)))
                 .DisposeWith(d);
 
             _keyframes.Edit(k =>

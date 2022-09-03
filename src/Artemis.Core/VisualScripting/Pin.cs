@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Artemis.Core.Events;
 
 namespace Artemis.Core;
@@ -143,30 +144,20 @@ public abstract class Pin : CorePropertyChanged, IPin
     /// <param name="currentType">The backing field of the current type of the pin.</param>
     protected void ChangeType(Type type, ref Type currentType)
     {
-        // Enums are a special case that disconnect and, if still compatible, reconnect
-        if (type.IsEnum && currentType.IsEnum)
-        {
-            List<IPin> connections = new(ConnectedTo);
-            DisconnectAll();
+        if (currentType == type)
+            return;
 
-            // Change the type
-            SetAndNotify(ref currentType, type, nameof(Type));
-            IsNumeric = type == typeof(Numeric);
+        bool changingEnums = type.IsEnum && currentType.IsEnum;
 
-            foreach (IPin pin in connections.Where(p => p.IsTypeCompatible(type)))
-                ConnectTo(pin);
-        }
-        // Disconnect pins incompatible with the new type
-        else
-        {
-            List<IPin> toDisconnect = ConnectedTo.Where(p => !p.IsTypeCompatible(type, false)).ToList();
-            foreach (IPin pin in toDisconnect)
-                DisconnectFrom(pin);
+        List<IPin> connections = new(ConnectedTo);
+        DisconnectAll();
 
-            // Change the type
-            SetAndNotify(ref currentType, type, nameof(Type));
-            IsNumeric = type == typeof(Numeric);
-        }
+        // Change the type
+        SetAndNotify(ref currentType, type, nameof(Type));
+        IsNumeric = type == typeof(Numeric);
+
+        foreach (IPin pin in connections.Where(p => p.IsTypeCompatible(type, changingEnums)))
+            ConnectTo(pin);
     }
 
     #endregion

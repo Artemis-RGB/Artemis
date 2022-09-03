@@ -61,10 +61,10 @@ public class NodeViewModel : ActivatableViewModelBase
         nodePins.Connect().Merge(nodePinCollections.Connect().TransformMany(c => c.PinViewModels)).Bind(out ReadOnlyObservableCollection<PinViewModel> pins).Subscribe();
 
         PinViewModels = pins;
-        
+
         DeleteNode = ReactiveCommand.Create(ExecuteDeleteNode, this.WhenAnyValue(vm => vm.IsStaticNode).Select(v => !v));
         ShowBrokenState = ReactiveCommand.Create(ExecuteShowBrokenState);
-       
+
         this.WhenActivated(d =>
         {
             _isStaticNode = Node.WhenAnyValue(n => n.IsDefaultNode, n => n.IsExitNode)
@@ -93,7 +93,7 @@ public class NodeViewModel : ActivatableViewModelBase
                 })
                 .DisposeWith(d);
             Observable.FromEventPattern<SingleValueEventArgs<IPin>>(x => Node.PinRemoved += x, x => Node.PinRemoved -= x)
-                .Subscribe(p => nodePins!.Remove(nodePins.Items.FirstOrDefault(vm => vm.Pin == p.EventArgs.Value)))
+                .Subscribe(p => nodePins.RemoveMany(nodePins.Items.Where(vm => vm.Pin == p.EventArgs.Value)))
                 .DisposeWith(d);
             nodePins.Edit(l =>
             {
@@ -118,7 +118,7 @@ public class NodeViewModel : ActivatableViewModelBase
                 })
                 .DisposeWith(d);
             Observable.FromEventPattern<SingleValueEventArgs<IPinCollection>>(x => Node.PinCollectionRemoved += x, x => Node.PinCollectionRemoved -= x)
-                .Subscribe(p => nodePinCollections!.Remove(nodePinCollections.Items.FirstOrDefault(vm => vm.PinCollection == p.EventArgs.Value)))
+                .Subscribe(p => nodePinCollections.RemoveMany(nodePinCollections.Items.Where(vm => vm.PinCollection == p.EventArgs.Value)))
                 .DisposeWith(d);
             nodePinCollections.Edit(l =>
             {
@@ -160,8 +160,8 @@ public class NodeViewModel : ActivatableViewModelBase
         get => _isSelected;
         set => RaiseAndSetIfChanged(ref _isSelected, value);
     }
-    
-    public ReactiveCommand<Unit,Unit> ShowBrokenState { get; }
+
+    public ReactiveCommand<Unit, Unit> ShowBrokenState { get; }
     public ReactiveCommand<Unit, Unit> DeleteNode { get; }
 
     public void StartDrag(Point mouseStartPosition)
@@ -195,7 +195,7 @@ public class NodeViewModel : ActivatableViewModelBase
     {
         _nodeEditorService.ExecuteCommand(NodeScriptViewModel.NodeScript, new DeleteNode(NodeScriptViewModel.NodeScript, Node));
     }
-    
+
     private void ExecuteShowBrokenState()
     {
         if (Node.BrokenState != null && Node.BrokenStateException != null)

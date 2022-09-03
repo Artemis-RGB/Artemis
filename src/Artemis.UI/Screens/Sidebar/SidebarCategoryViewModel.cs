@@ -64,7 +64,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
                 .Subscribe(e => profileConfigurations.Add(e.EventArgs.ProfileConfiguration))
                 .DisposeWith(d);
             Observable.FromEventPattern<ProfileConfigurationEventArgs>(x => profileCategory.ProfileConfigurationRemoved += x, x => profileCategory.ProfileConfigurationRemoved -= x)
-                .Subscribe(e => profileConfigurations.Remove(e.EventArgs.ProfileConfiguration))
+                .Subscribe(e => profileConfigurations.RemoveMany(profileConfigurations.Items.Where(c => c == e.EventArgs.ProfileConfiguration)))
                 .DisposeWith(d);
 
             profileEditorService.ProfileConfiguration.Subscribe(p => SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(c => ReferenceEquals(c.ProfileConfiguration, p)))
