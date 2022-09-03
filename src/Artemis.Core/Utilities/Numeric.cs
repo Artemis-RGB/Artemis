@@ -162,22 +162,22 @@ public readonly struct Numeric : IComparable<Numeric>, IConvertible
 
     public static implicit operator Numeric(double d)
     {
-        return new(d);
+        return new Numeric(d);
     }
 
     public static implicit operator Numeric(float f)
     {
-        return new(f);
+        return new Numeric(f);
     }
 
     public static implicit operator Numeric(int i)
     {
-        return new(i);
+        return new Numeric(i);
     }
 
     public static implicit operator Numeric(byte b)
     {
-        return new(b);
+        return new Numeric(b);
     }
 
     public static implicit operator long(Numeric p)
