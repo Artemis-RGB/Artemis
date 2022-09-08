@@ -12,5 +12,6 @@
                                            Modules="{CompiledBinding Modules}"
                                            ShowDataModelValues="{CompiledBinding ShowDataModelValues.Value}"
                                            ShowFullPath="{CompiledBinding ShowFullPaths.Value}"
+                                           FilterTypes="{CompiledBinding NodePinTypes}"
                                            MaxWidth="300"/>
 </UserControl>

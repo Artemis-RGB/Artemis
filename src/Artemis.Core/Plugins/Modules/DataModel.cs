@@ -345,8 +345,8 @@ public abstract class DataModel
     {
         lock (_activePaths)
         {
-            if (_activePaths.Contains(path))
-                return;
+            if (_activePaths.Any(p => ReferenceEquals(p, path)))
+                throw new ArtemisCoreException("Path already present on this data model, initialization done twice?");
 
             _activePaths.Add(path);
 
