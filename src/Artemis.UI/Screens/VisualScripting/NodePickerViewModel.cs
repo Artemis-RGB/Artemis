@@ -41,7 +41,7 @@ public class NodePickerViewModel : ActivatableViewModelBase
 
         SourceList<NodeData> nodeSourceList = new();
         IObservable<Func<NodeData, bool>> pinFilter = this.WhenAnyValue(vm => vm.TargetPin).Select(CreateTargetPinPredicate);
-        IObservable<Func<NodeData, bool>> scoreFilter = this.WhenAnyValue(vm => vm.SearchText).Select(s => CreateScorePredicate(s));
+        IObservable<Func<NodeData, bool>> scoreFilter = this.WhenAnyValue(vm => vm.SearchText).Select(CreateScorePredicate);
 
         nodeSourceList.Connect()
             .Filter(pinFilter)
@@ -61,8 +61,8 @@ public class NodePickerViewModel : ActivatableViewModelBase
             // Sort on the highest score
             .Sort(SortExpressionComparer<NodeData>
                 .Descending(data => Math.Max(
-                    _scoredByName?.FirstOrDefault(n => n.Value == data.Name)?.Score ?? -1,
-                    _scoredByDescription?.FirstOrDefault(n => n.Value == data.Description)?.Score ?? -1)
+                        _scoredByName?.FirstOrDefault(n => n.Value == data.Name)?.Score ?? -1,
+                        _scoredByDescription?.FirstOrDefault(n => n.Value == data.Description)?.Score ?? -1) / 2
                 ))
             .Bind(out ReadOnlyObservableCollection<NodeData> sortedNodes)
             .Subscribe();
@@ -159,11 +159,11 @@ public class NodePickerViewModel : ActivatableViewModelBase
 
         // Take the top 25% of each
         double nameCutOff = _scoredByName.Take((int) (_scoredByName.Count / 100.0 * 25)).Average(s => s.Score);
-        double descriptionCutOff = _scoredByDescription.Take((int) (_scoredByName.Count / 100.0 * 25)).Average(s => s.Score);
+        double descriptionCutOff = _scoredByDescription.Take((int) (_scoredByName.Count / 100.0 * 25)).Average(s => s.Score) / 2;
         return data =>
         {
             int nameScore = _scoredByName.FirstOrDefault(s => s.Value == data.Name)?.Score ?? -1;
-            int descriptionScore = _scoredByDescription.FirstOrDefault(s => s.Value == data.Description)?.Score ?? -1;
+            int descriptionScore = (_scoredByDescription.FirstOrDefault(s => s.Value == data.Description)?.Score ?? -1) / 2;
 
             // Use the best score
             if (nameScore >= descriptionScore)
