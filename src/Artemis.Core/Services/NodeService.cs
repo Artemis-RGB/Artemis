@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -36,6 +37,12 @@ internal class NodeService : INodeService
     #endregion
 
     #region Methods
+
+    /// <inheritdoc />
+    public List<Type> GetRegisteredTypes()
+    {
+        return NodeTypeStore.GetColors().Select(c => c.Type).Distinct().ToList();
+    }
 
     /// <inheritdoc />
     public TypeColorRegistration GetTypeColorRegistration(Type type)
@@ -131,6 +138,12 @@ public interface INodeService : IArtemisService
     ///     Gets all available nodes
     /// </summary>
     IEnumerable<NodeData> AvailableNodes { get; }
+
+    /// <summary>
+    /// Gets all currently available node pin types.
+    /// </summary>
+    /// <returns>A <see cref="List{T}"/> of <see cref="Type"/> containing the currently available node pin types.</returns>
+    List<Type> GetRegisteredTypes();
 
     /// <summary>
     ///     Gets the best matching registration for the provided type

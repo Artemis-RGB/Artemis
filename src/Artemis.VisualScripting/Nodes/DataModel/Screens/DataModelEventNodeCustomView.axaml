@@ -12,7 +12,7 @@
                                            Modules="{CompiledBinding Modules}"
                                            ShowDataModelValues="{CompiledBinding ShowDataModelValues.Value}"
                                            ShowFullPath="{CompiledBinding ShowFullPaths.Value}"
-                                           FilterTypes="{CompiledBinding FilterTypes}"
+                                           FilterTypes="{CompiledBinding NodePinTypes}"
                                            IsEventPicker="True"
                                            VerticalAlignment="Top"
                                            MaxWidth="300"/>

@@ -19,7 +19,7 @@ public class DataModelNodeCustomViewModel : CustomNodeViewModel
     private ObservableCollection<Module>? _modules;
     private bool _updating;
 
-    public DataModelNodeCustomViewModel(DataModelNode node, INodeScript script, ISettingsService settingsService, INodeEditorService nodeEditorService) : base(node, script)
+    public DataModelNodeCustomViewModel(DataModelNode node, INodeScript script, ISettingsService settingsService, INodeEditorService nodeEditorService, INodeService nodeService) : base(node, script)
     {
         _node = node;
         _nodeEditorService = nodeEditorService;
@@ -27,6 +27,10 @@ public class DataModelNodeCustomViewModel : CustomNodeViewModel
         ShowFullPaths = settingsService.GetSetting("ProfileEditor.ShowFullPaths", true);
         ShowDataModelValues = settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
 
+        List<Type> nodePinTypes = nodeService.GetRegisteredTypes();
+        nodePinTypes.AddRange(Constants.NumberTypes);
+        NodePinTypes = new ObservableCollection<Type>(nodePinTypes);
+        
         this.WhenActivated(d =>
         {
             // Set up extra modules
@@ -49,7 +53,8 @@ public class DataModelNodeCustomViewModel : CustomNodeViewModel
 
     public PluginSetting<bool> ShowFullPaths { get; }
     public PluginSetting<bool> ShowDataModelValues { get; }
-
+    public ObservableCollection<Type> NodePinTypes { get; }
+    
     public ObservableCollection<Module>? Modules
     {
         get => _modules;

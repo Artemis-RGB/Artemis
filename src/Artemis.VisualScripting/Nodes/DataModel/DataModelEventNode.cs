@@ -14,7 +14,12 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
     private readonly Dictionary<Func<DataModelEventArgs, object>, OutputPin> _propertyPins;
     private DataModelPath? _dataModelPath;
     private IDataModelEvent? _dataModelEvent;
-    
+    private OutputPin? _oldValuePin;
+    private OutputPin? _newValuePin;
+    private DateTime _lastTrigger;
+    private object? _lastValue;
+    private int _valueChangeCount;
+
     public DataModelEventNode() : base("Data Model-Event", "Outputs the latest values of a data model event.")
     {
         _propertyPins = new Dictionary<Func<DataModelEventArgs, object>, OutputPin>();
@@ -43,18 +48,40 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
     public override void Evaluate()
     {
         object? pathValue = _dataModelPath?.GetValue();
-        if (pathValue is not IDataModelEvent dataModelEvent)
-            return;
-
-        TimeSinceLastTrigger.Value = new Numeric(dataModelEvent.TimeSinceLastTrigger.TotalMilliseconds);
-        TriggerCount.Value = new Numeric(dataModelEvent.TriggerCount);
         
-        foreach ((Func<DataModelEventArgs, object> propertyAccessor, OutputPin outputPin) in _propertyPins)
+        // If the path is a data model event, evaluate the event
+        if (pathValue is IDataModelEvent dataModelEvent)
         {
-            if (!outputPin.ConnectedTo.Any())
-                continue;
-            object value = dataModelEvent.LastEventArgumentsUntyped != null ? propertyAccessor(dataModelEvent.LastEventArgumentsUntyped) : outputPin.Type.GetDefault()!;
-            outputPin.Value = outputPin.IsNumeric ? new Numeric(value) : value;
+            TimeSinceLastTrigger.Value = dataModelEvent.TimeSinceLastTrigger.TotalMilliseconds;
+            TriggerCount.Value = dataModelEvent.TriggerCount;
+
+            foreach ((Func<DataModelEventArgs, object> propertyAccessor, OutputPin outputPin) in _propertyPins)
+            {
+                if (!outputPin.ConnectedTo.Any())
+                    continue;
+                object value = dataModelEvent.LastEventArgumentsUntyped != null ? propertyAccessor(dataModelEvent.LastEventArgumentsUntyped) : outputPin.Type.GetDefault()!;
+                outputPin.Value = outputPin.IsNumeric ? new Numeric(value) : value;
+            }
+        }
+        // If the path is a regular value, evaluate the current value
+        else if (_oldValuePin != null && _newValuePin != null)
+        {
+            if (Equals(_lastValue, pathValue))
+            {
+                TimeSinceLastTrigger.Value = (DateTime.Now - _lastTrigger).TotalMilliseconds;
+                return;
+            }
+           
+            _valueChangeCount++;
+            _lastTrigger = DateTime.Now;
+            
+            _oldValuePin.Value = _lastValue;
+            _newValuePin.Value = pathValue;
+            
+            _lastValue = pathValue;
+
+            TimeSinceLastTrigger.Value = 0;
+            TriggerCount.Value = _valueChangeCount;
         }
     }
 
@@ -78,23 +105,18 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
     {
         object? pathValue = _dataModelPath?.GetValue();
         if (pathValue is IDataModelEvent dataModelEvent)
-            CreatePins(dataModelEvent);
+            CreateEventPins(dataModelEvent);
+        else
+            CreateValuePins();
     }
-    
-    private void CreatePins(IDataModelEvent? dataModelEvent)
+
+    private void CreateEventPins(IDataModelEvent dataModelEvent)
     {
         if (_dataModelEvent == dataModelEvent)
             return;
-
-        List<IPin> pins = Pins.Skip(2).ToList();
-        while (pins.Any())
-            RemovePin((Pin) pins.First());
-        _propertyPins.Clear();
-
+        
+        ClearPins();
         _dataModelEvent = dataModelEvent;
-        if (dataModelEvent == null)
-            return;
-
         foreach (PropertyInfo propertyInfo in dataModelEvent.ArgumentsType.GetProperties(BindingFlags.Instance | BindingFlags.Public)
                      .Where(p => p.CustomAttributes.All(a => a.AttributeType != typeof(DataModelIgnoreAttribute))))
         {
@@ -111,6 +133,31 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
 
             _propertyPins.Add(expression, CreateOrAddOutputPin(propertyInfo.PropertyType, propertyInfo.Name.Humanize()));
         }
+    }
+
+    private void CreateValuePins()
+    {
+        ClearPins();
+
+        Type? propertyType = _dataModelPath?.GetPropertyType();
+        if (propertyType == null)
+            return;
+        
+        _oldValuePin = CreateOrAddOutputPin(propertyType, "Old value");
+        _newValuePin = CreateOrAddOutputPin(propertyType, "New value");
+        _lastValue = null;
+        _valueChangeCount = 0;
+    }
+    
+    private void ClearPins()
+    {
+        List<IPin> pins = Pins.Skip(2).ToList();
+        foreach (IPin pin in pins)
+            RemovePin((Pin) pin);
+        
+        _propertyPins.Clear();
+        _oldValuePin = null;
+        _newValuePin = null;
     }
     
     private void DataModelPathOnPathValidated(object? sender, EventArgs e)
