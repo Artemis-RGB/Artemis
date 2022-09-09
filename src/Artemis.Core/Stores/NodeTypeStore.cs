@@ -96,6 +96,14 @@ internal class NodeTypeStore
         }
     }
 
+    public static List<TypeColorRegistration> GetColors()
+    {
+        lock (ColorRegistrations)
+        {
+            return new List<TypeColorRegistration>(ColorRegistrations);
+        }
+    }
+
     public static TypeColorRegistration? GetColor(Type type)
     {
         lock (ColorRegistrations)

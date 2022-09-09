@@ -19,7 +19,8 @@ public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
     private ObservableCollection<Module>? _modules;
     private bool _updating;
 
-    public DataModelEventNodeCustomViewModel(DataModelEventNode node, INodeScript script, ISettingsService settingsService, INodeEditorService nodeEditorService) : base(node, script)
+    public DataModelEventNodeCustomViewModel(DataModelEventNode node, INodeScript script, ISettingsService settingsService, INodeEditorService nodeEditorService, INodeService nodeService)
+        : base(node, script)
     {
         _node = node;
         _nodeEditorService = nodeEditorService;
@@ -27,6 +28,11 @@ public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
         ShowFullPaths = settingsService.GetSetting("ProfileEditor.ShowFullPaths", true);
         ShowDataModelValues = settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
         Modules = new ObservableCollection<Module>();
+
+        List<Type> nodePinTypes = nodeService.GetRegisteredTypes();
+        nodePinTypes.AddRange(Constants.NumberTypes);
+        nodePinTypes.Add(typeof(IDataModelEvent));
+        NodePinTypes = new ObservableCollection<Type>(nodePinTypes);
 
         this.WhenActivated(d =>
         {
@@ -50,6 +56,7 @@ public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
 
     public PluginSetting<bool> ShowFullPaths { get; }
     public PluginSetting<bool> ShowDataModelValues { get; }
+    public ObservableCollection<Type> NodePinTypes { get; }
 
     public ObservableCollection<Module>? Modules
     {
@@ -62,8 +69,6 @@ public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
         get => _dataModelPath;
         set => this.RaiseAndSetIfChanged(ref _dataModelPath, value);
     }
-
-    public List<Type> FilterTypes => new() {typeof(IDataModelEvent)};
 
     private void UpdateDataModelPath(DataModelPathEntity? entity)
     {

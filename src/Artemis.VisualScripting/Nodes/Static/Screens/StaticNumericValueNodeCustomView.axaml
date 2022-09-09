@@ -12,9 +12,11 @@
     <UserControl.Resources>
         <converters:NumericConverter x:Key="NumericConverter" />
     </UserControl.Resources>
-    <controls:NumberBox VerticalAlignment="Center" MinWidth="75" SimpleNumberFormat="F3" Classes="condensed">
-        <Interaction.Behaviors>
-			<behaviors:LostFocusNumberBoxBindingBehavior Value="{CompiledBinding CurrentValue, Converter={StaticResource NumericConverter}}"/>
-        </Interaction.Behaviors>
+    <controls:NumberBox VerticalAlignment="Center" 
+                        MinWidth="75"
+                        SimpleNumberFormat="F3" 
+                        Classes="condensed" 
+                        AcceptsExpression="True"
+                        Value="{CompiledBinding CurrentValue, Converter={StaticResource NumericConverter}}">
     </controls:NumberBox>
 </UserControl>

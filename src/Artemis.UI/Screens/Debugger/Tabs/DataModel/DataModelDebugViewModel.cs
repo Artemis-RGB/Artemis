@@ -48,7 +48,12 @@ public class DataModelDebugViewModel : ActivatableViewModelBase
 
             GetDataModel();
             _updateTimer.Start();
-            Disposable.Create(() => _updateTimer.Stop()).DisposeWith(disposables);
+            Disposable.Create(() =>
+            {
+                _updateTimer.Stop();
+                MainDataModel?.Dispose();
+                MainDataModel = null;
+            }).DisposeWith(disposables);
         });
     }
 

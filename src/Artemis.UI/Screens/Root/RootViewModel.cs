@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Models;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Services.Interfaces;
@@ -44,7 +45,8 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
         ISidebarVmFactory sidebarVmFactory)
     {
         Router = new RoutingState();
-
+        WindowSizeSetting = settingsService.GetSetting<WindowSize?>("WindowSize");
+        
         _coreService = coreService;
         _settingsService = settingsService;
         _windowService = windowService;
@@ -54,7 +56,7 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
         _defaultTitleBarViewModel = defaultTitleBarViewModel;
         _sidebarVmFactory = sidebarVmFactory;
         _lifeTime = (IClassicDesktopStyleApplicationLifetime) Application.Current!.ApplicationLifetime!;
-
+        
         mainWindowService.ConfigureMainWindowProvider(this);
 
         DisplayAccordingToSettings();
@@ -90,6 +92,7 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
 
     private void CurrentMainWindowOnClosing(object? sender, EventArgs e)
     {
+        WindowSizeSetting.Save();
         _lifeTime.MainWindow = null;
         SidebarViewModel = null;
         Router.NavigateAndReset.Execute(new EmptyViewModel(this, "blank")).Subscribe();
@@ -120,6 +123,8 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
 
     /// <inheritdoc />
     public RoutingState Router { get; }
+
+    public static PluginSetting<WindowSize?>? WindowSizeSetting { get; private set; }
 
     #region Tray commands
 
@@ -170,7 +175,6 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
             _lifeTime.MainWindow.Closing += CurrentMainWindowOnClosing;
         }
 
-        _lifeTime.MainWindow.WindowState = WindowState.Normal;
         _lifeTime.MainWindow.Activate();
         OnMainWindowOpened();
     }
@@ -226,6 +230,11 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
     }
 
     #endregion
+
+    public void SaveWindowBounds(int x, int y, int width, int height)
+    {
+        throw new NotImplementedException();    
+    }
 }
 
 internal class EmptyViewModel : MainScreenViewModel
