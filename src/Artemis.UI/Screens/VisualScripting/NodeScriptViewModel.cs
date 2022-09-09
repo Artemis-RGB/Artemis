@@ -222,7 +222,7 @@ public class NodeScriptViewModel : ActivatableViewModelBase
             {
                 // Borrow the node picker to spawn the node in, even if it's never shown
                 NodePickerViewModel.TargetPin = sourcePinViewModel.Pin;
-                NodePickerViewModel.CreateNode(singleCompatibleNode.First());
+                NodePickerViewModel.CreateNode(new NodeDataViewModel(singleCompatibleNode.First()));
             }
             // Otherwise show the user the picker by requesting it at the drop position
             else

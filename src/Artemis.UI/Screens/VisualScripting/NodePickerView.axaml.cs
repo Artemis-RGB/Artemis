@@ -32,10 +32,10 @@ public class NodePickerView : ReactiveUserControl<NodePickerViewModel>
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (sender is not IDataContextProvider {DataContext: NodeData nodeData} || ViewModel == null)
+        if (sender is not IDataContextProvider {DataContext: NodeDataViewModel vm} || ViewModel == null)
             return;
 
-        ViewModel.CreateNode(nodeData);
+        ViewModel.CreateNode(vm);
         ViewModel.IsVisible = false;
     }
 }

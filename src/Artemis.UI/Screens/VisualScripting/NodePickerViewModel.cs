@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
@@ -23,12 +24,9 @@ public class NodePickerViewModel : ActivatableViewModelBase
     private readonly ObservableAsPropertyHelper<bool> _isSearching;
     private readonly INodeEditorService _nodeEditorService;
     private readonly NodeScript _nodeScript;
-    private readonly INodeService _nodeService;
 
     private bool _isVisible;
     private Point _position;
-    private List<ExtractedResult<string>>? _scoredByDescription;
-    private List<ExtractedResult<string>>? _scoredByName;
     private string? _searchText;
     private object? _selectedNode;
     private IPin? _targetPin;
@@ -36,40 +34,60 @@ public class NodePickerViewModel : ActivatableViewModelBase
     public NodePickerViewModel(NodeScript nodeScript, INodeService nodeService, INodeEditorService nodeEditorService)
     {
         _nodeScript = nodeScript;
-        _nodeService = nodeService;
         _nodeEditorService = nodeEditorService;
 
-        SourceList<NodeData> nodeSourceList = new();
-        IObservable<Func<NodeData, bool>> pinFilter = this.WhenAnyValue(vm => vm.TargetPin).Select(CreateTargetPinPredicate);
-        IObservable<Func<NodeData, bool>> scoreFilter = this.WhenAnyValue(vm => vm.SearchText).Select(CreateScorePredicate);
+        SourceList<NodeDataViewModel> nodeSourceList = new();
+        IObservable<Func<NodeDataViewModel, bool>> pinFilter = this.WhenAnyValue(vm => vm.TargetPin).Select(CreateTargetPinPredicate);
+        nodeSourceList.Connect()
+            // If spawning for a pin, only show compatible nodes
+            .Filter(pinFilter)
+            // Put data model and static on top, then sort by category, name and description
+            .Sort(SortExpressionComparer<NodeDataViewModel>
+                .Descending(d => d.NodeData.Category == "Data Model")
+                .ThenByDescending(d => d.NodeData.Category == "Static")
+                .ThenByAscending(d => d.NodeData.Category)
+                .ThenByAscending(d => d.NodeData.Name)
+                .ThenByAscending(d => d.NodeData.Description))
+            // Group by category
+            .GroupWithImmutableState(d => d.NodeData.Category)
+            .Bind(out ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeDataViewModel, string>> categories)
+            .Subscribe();
+
+        IObservable<Unit> resortObservable = nodeSourceList.Connect()
+            .WhenPropertyChanged(vm => vm.SearchScore)
+            .Throttle(TimeSpan.FromMilliseconds(100))
+            .Select(_ => Unit.Default);
 
         nodeSourceList.Connect()
+            .AutoRefresh(model => model.SearchScore)
+            // If spawning for a pin, only show compatible nodes
             .Filter(pinFilter)
-            .Sort(SortExpressionComparer<NodeData>
-                .Descending(d => d.Category == "Data Model")
-                .ThenByDescending(d => d.Category == "Static")
-                .ThenByAscending(d => d.Category)
-                .ThenByAscending(d => d.Name)
-                .ThenByAscending(d => d.Description))
-            .GroupWithImmutableState(n => n.Category)
-            .Bind(out ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeData, string>> categories)
-            .Subscribe();
-        nodeSourceList.Connect()
-            .Filter(pinFilter)
-            .Filter(scoreFilter)
-            .AutoRefreshOnObservable(_ => this.WhenAnyValue(vm => vm.SearchText))
+            // Limit the search results to the average of the top 33%
+            .Filter(model =>
+            {
+                // Wasteful, I know
+                List<NodeDataViewModel> nodes = nodeSourceList.Items.OrderByDescending(s => s.SearchScore).ToList();
+                return model.SearchScore >= nodes.Take(nodes.Count / 3).Average(i => i.SearchScore);
+            })
             // Sort on the highest score
-            .Sort(SortExpressionComparer<NodeData>
-                .Descending(data => Math.Max(
-                        _scoredByName?.FirstOrDefault(n => n.Value == data.Name)?.Score ?? -1,
-                        _scoredByDescription?.FirstOrDefault(n => n.Value == data.Description)?.Score ?? -1) / 3
-                ))
-            .Bind(out ReadOnlyObservableCollection<NodeData> sortedNodes)
+            .Sort(SortExpressionComparer<NodeDataViewModel>.Descending(data => data.SearchScore).ThenByDescending(d => d.NodeData.Name.Length), resort: resortObservable)
+            .Bind(out ReadOnlyObservableCollection<NodeDataViewModel> sortedNodes)
             .Subscribe();
         Categories = categories;
         SortedNodes = sortedNodes;
 
         _isSearching = this.WhenAnyValue(vm => vm.SearchText).Select(s => !string.IsNullOrWhiteSpace(s)).ToProperty(this, vm => vm.IsSearching);
+
+        this.WhenAnyValue(vm => vm.SearchText).Subscribe(s =>
+        {
+            if (s == null)
+                return;
+
+            List<ExtractedResult<string>> scoredByName = Process.ExtractSorted(s, nodeService.AvailableNodes.Select(d => d.Name)).ToList();
+            List<ExtractedResult<string>> scoredByDescription = Process.ExtractSorted(s, nodeService.AvailableNodes.Select(d => d.Description)).ToList();
+            foreach (NodeDataViewModel viewModel in nodeSourceList.Items)
+                viewModel.SetSearchScore(scoredByName, scoredByDescription);
+        });
 
         this.WhenActivated(d =>
         {
@@ -79,7 +97,7 @@ public class NodePickerViewModel : ActivatableViewModelBase
             nodeSourceList.Edit(list =>
             {
                 list.Clear();
-                list.AddRange(nodeService.AvailableNodes);
+                list.AddRange(nodeService.AvailableNodes.Select(n => new NodeDataViewModel(n)));
             });
 
             IsVisible = true;
@@ -87,8 +105,8 @@ public class NodePickerViewModel : ActivatableViewModelBase
         });
     }
 
-    public ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeData, string>> Categories { get; }
-    public ReadOnlyObservableCollection<NodeData> SortedNodes { get; }
+    public ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeDataViewModel, string>> Categories { get; }
+    public ReadOnlyObservableCollection<NodeDataViewModel> SortedNodes { get; }
     public bool IsSearching => _isSearching.Value;
 
     public bool IsVisible
@@ -121,9 +139,9 @@ public class NodePickerViewModel : ActivatableViewModelBase
         set => RaiseAndSetIfChanged(ref _selectedNode, value);
     }
 
-    public void CreateNode(NodeData data)
+    public void CreateNode(NodeDataViewModel viewModel)
     {
-        INode node = data.CreateNode(_nodeScript, null);
+        INode node = viewModel.NodeData.CreateNode(_nodeScript, null);
         node.X = Math.Round(Position.X / 10d, 0, MidpointRounding.AwayFromZero) * 10d;
         node.Y = Math.Round(Position.Y / 10d, 0, MidpointRounding.AwayFromZero) * 10d;
 
@@ -144,31 +162,8 @@ public class NodePickerViewModel : ActivatableViewModelBase
             _nodeEditorService.ExecuteCommand(_nodeScript, new AddNode(_nodeScript, node));
     }
 
-    private Func<NodeData, bool> CreateTargetPinPredicate(IPin? targetPin)
+    private Func<NodeDataViewModel, bool> CreateTargetPinPredicate(IPin? targetPin)
     {
-        return data => data.IsCompatibleWithPin(targetPin);
-    }
-
-    private Func<NodeData, bool> CreateScorePredicate(string? search)
-    {
-        if (search == null)
-            return _ => false;
-
-        _scoredByName = Process.ExtractSorted(search, _nodeService.AvailableNodes.Select(d => d.Name)).ToList();
-        _scoredByDescription = Process.ExtractSorted(search, _nodeService.AvailableNodes.Select(d => d.Description)).ToList();
-
-        // Take the top 25% of each
-        double nameCutOff = _scoredByName.Take((int) (_scoredByName.Count / 100.0 * 25)).Average(s => s.Score);
-        double descriptionCutOff = _scoredByDescription.Take((int) (_scoredByName.Count / 100.0 * 25)).Average(s => s.Score) / 3;
-        return data =>
-        {
-            int nameScore = _scoredByName.FirstOrDefault(s => s.Value == data.Name)?.Score ?? -1;
-            int descriptionScore = (_scoredByDescription.FirstOrDefault(s => s.Value == data.Description)?.Score ?? -1) / 3;
-
-            // Use the best score
-            if (nameScore >= descriptionScore)
-                return nameScore >= nameCutOff;
-            return descriptionScore >= descriptionCutOff;
-        };
+        return vm => vm.NodeData.IsCompatibleWithPin(targetPin);
     }
 }

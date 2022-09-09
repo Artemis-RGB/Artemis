@@ -47,10 +47,10 @@
                         </Style>
                     </TreeView.Styles>
                     <TreeView.DataTemplates>
-                        <TreeDataTemplate DataType="{x:Type core:NodeData}">
+                        <TreeDataTemplate DataType="{x:Type visualScripting:NodeDataViewModel}">
                             <StackPanel Margin="-15 1 0 1" Background="Transparent" PointerReleased="InputElement_OnPointerReleased">
-                                <TextBlock Classes="BodyStrongTextBlockStyle" Text="{Binding Name}" TextWrapping="Wrap"></TextBlock>
-                                <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding Description}" TextWrapping="Wrap"></TextBlock>
+                                <TextBlock Classes="BodyStrongTextBlockStyle" Text="{Binding NodeData.Name}" TextWrapping="Wrap"></TextBlock>
+                                <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding NodeData.Description}" TextWrapping="Wrap"></TextBlock>
                             </StackPanel>
                         </TreeDataTemplate>
                         <TreeDataTemplate ItemsSource="{Binding Items}">
@@ -73,16 +73,16 @@
                          SelectedItem="{CompiledBinding SelectedNode}"
                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListBox.DataTemplates>
-                        <DataTemplate DataType="{x:Type core:NodeData}">
+                        <DataTemplate DataType="{x:Type visualScripting:NodeDataViewModel}">
                             <StackPanel Margin="1" Background="Transparent" PointerReleased="InputElement_OnPointerReleased">
-                                <TextBlock Classes="BodyStrongTextBlockStyle" Text="{Binding Name}" TextWrapping="Wrap"></TextBlock>
-                                <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding Description}" TextWrapping="Wrap"></TextBlock>
+                                <TextBlock Classes="BodyStrongTextBlockStyle" Text="{Binding NodeData.Name}" TextWrapping="Wrap"></TextBlock>
+                                <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding NodeData.Description}" TextWrapping="Wrap"></TextBlock>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.DataTemplates>
                 </ListBox>
 
-                <StackPanel Grid.Row="0"  VerticalAlignment="Center" Spacing="20" IsVisible="{CompiledBinding !SortedNodes.Count}">
+                <StackPanel Grid.Row="0" VerticalAlignment="Center" Spacing="20" IsVisible="{CompiledBinding !SortedNodes.Count}">
                     <avalonia:MaterialIcon Kind="CloseCircle" Width="64" Height="64"></avalonia:MaterialIcon>
                     <TextBlock Classes="h4" TextAlignment="Center">None of the nodes match your search.</TextBlock>
                 </StackPanel>
