@@ -15,7 +15,8 @@ public class NumericConverter : IValueConverter
         if (value is not Numeric numeric)
             return value;
 
-        return Numeric.IsTypeCompatible(targetType) ? numeric.ToType(targetType, NumberFormatInfo.InvariantInfo) : value;
+        object result = Numeric.IsTypeCompatible(targetType) ? numeric.ToType(targetType, NumberFormatInfo.InvariantInfo) : value;
+        return result;
     }
 
     /// <inheritdoc />
