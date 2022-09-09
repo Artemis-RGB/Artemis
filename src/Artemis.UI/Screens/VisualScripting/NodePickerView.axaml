@@ -34,7 +34,7 @@
     <Border Classes="picker-container">
         <Grid RowDefinitions="Auto,*">
             <TextBox Name="SearchBox" Text="{CompiledBinding SearchText}" Margin="0 0 0 15" Watermark="Search"></TextBox>
-            
+
             <Grid Grid.Row="1" IsVisible="{CompiledBinding !IsSearching}">
                 <TreeView Name="NodeTree"
                           Grid.Row="0"
@@ -58,21 +58,23 @@
                         </TreeDataTemplate>
                     </TreeView.DataTemplates>
                 </TreeView>
-                
+
                 <StackPanel Grid.Row="0" VerticalAlignment="Center" Spacing="20" IsVisible="{CompiledBinding !Categories.Count}">
                     <avalonia:MaterialIcon Kind="CloseCircle" Width="64" Height="64"></avalonia:MaterialIcon>
                     <TextBlock Classes="h4" TextAlignment="Center">No compatible nodes found.</TextBlock>
                 </StackPanel>
             </Grid>
-            
+
             <Grid Grid.Row="1" IsVisible="{CompiledBinding IsSearching}">
-                <ListBox Name="NodeList"
+                <ListBox Grid.Row="0"
+                         IsVisible="{CompiledBinding SortedNodes.Count}"
+                         Name="NodeList"
                          Items="{CompiledBinding SortedNodes}"
                          SelectedItem="{CompiledBinding SelectedNode}"
                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListBox.DataTemplates>
                         <DataTemplate DataType="{x:Type core:NodeData}">
-                            <StackPanel Margin="-15 1 0 1" Background="Transparent" PointerReleased="InputElement_OnPointerReleased">
+                            <StackPanel Margin="1" Background="Transparent" PointerReleased="InputElement_OnPointerReleased">
                                 <TextBlock Classes="BodyStrongTextBlockStyle" Text="{Binding Name}" TextWrapping="Wrap"></TextBlock>
                                 <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding Description}" TextWrapping="Wrap"></TextBlock>
                             </StackPanel>
@@ -80,7 +82,7 @@
                     </ListBox.DataTemplates>
                 </ListBox>
 
-                <StackPanel Grid.Row="0" VerticalAlignment="Center" Spacing="20" IsVisible="{CompiledBinding !SortedNodes.Count}">
+                <StackPanel Grid.Row="0"  VerticalAlignment="Center" Spacing="20" IsVisible="{CompiledBinding !SortedNodes.Count}">
                     <avalonia:MaterialIcon Kind="CloseCircle" Width="64" Height="64"></avalonia:MaterialIcon>
                     <TextBlock Classes="h4" TextAlignment="Center">None of the nodes match your search.</TextBlock>
                 </StackPanel>
