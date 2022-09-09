@@ -45,6 +45,7 @@ public class UpdateProvider : IUpdateProvider, IDisposable
         Url request = API_URL.AppendPathSegments("build", "builds")
             .SetQueryParam("definitions", buildDefinition)
             .SetQueryParam("resultFilter", "succeeded")
+            .SetQueryParam("branchName", "master")
             .SetQueryParam("$top", 1)
             .SetQueryParam("api-version", "6.1-preview.6");
 
