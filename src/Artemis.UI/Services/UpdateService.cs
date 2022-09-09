@@ -103,6 +103,8 @@ namespace Artemis.UI.Services
 
         public async Task<bool> AutoUpdate()
         {
+            return false;
+
             if (Constants.BuildInfo.IsLocalBuild)
                 return false;
             if (!_checkForUpdates.Value || SuspendAutoUpdate)
@@ -121,6 +123,8 @@ namespace Artemis.UI.Services
 
         public async Task<bool> OfferUpdateIfFound()
         {
+            return false;
+
             _logger.Information("Checking for updates");
 
             DevOpsBuild buildInfo = await GetBuildInfo(1);
@@ -148,6 +152,8 @@ namespace Artemis.UI.Services
 
         public async Task<bool> IsUpdateAvailable()
         {
+            return false;
+
             DevOpsBuild buildInfo = await GetBuildInfo(1);
             double buildNumber = double.Parse(buildInfo.BuildNumber, CultureInfo.InvariantCulture);
             return buildNumber > Constants.BuildInfo.BuildNumber;
@@ -155,6 +161,8 @@ namespace Artemis.UI.Services
 
         public async Task ApplyUpdate()
         {
+            return;
+
             _logger.Information("ApplyUpdate: Applying update");
 
             // Ensure the installer is up-to-date, get installer build info

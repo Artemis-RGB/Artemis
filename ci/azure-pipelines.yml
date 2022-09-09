@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
 trigger:
-- master
+- wpf
 pr: none
 
 resources:
@@ -13,7 +13,7 @@ resources:
     type: github
     endpoint: github.com_SpoinkyNL
     name: Artemis-RGB/Artemis.Plugins
-    ref: master
+    ref: wpf
 
 pool:
   vmImage: 'windows-latest'

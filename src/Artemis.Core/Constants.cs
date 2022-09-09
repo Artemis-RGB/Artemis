@@ -27,7 +27,7 @@ namespace Artemis.Core
         /// <summary>
         ///     The full path to the Artemis data folder
         /// </summary>
-        public static readonly string DataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Artemis");
+        public static readonly string DataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Artemis.WPF");
         
         /// <summary>
         ///     The plugin info used by core components of Artemis
