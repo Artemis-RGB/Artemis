@@ -63,7 +63,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
             _disableHotkey = new Hotkey {Key = _profileConfiguration.DisableHotkey.Key, Modifiers = _profileConfiguration.DisableHotkey.Modifiers};
 
         IsNew = profileConfiguration == null;
-        DisplayName = IsNew ? "Artemis | Add profile" : "Artemis | Edit profile";
+        DisplayName = IsNew ? "Artemis | Add profile" : "Artemis | Edit profile properties";
         Modules = new ObservableCollection<ProfileModuleViewModel?>(
             pluginManagementService.GetFeaturesOfType<Module>().Where(m => !m.IsAlwaysAvailable).Select(m => new ProfileModuleViewModel(m))
         );
@@ -75,7 +75,6 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         BrowseBitmapFile = ReactiveCommand.CreateFromTask(ExecuteBrowseBitmapFile);
         OpenConditionEditor = ReactiveCommand.CreateFromTask(ExecuteOpenConditionEditor);
         Confirm = ReactiveCommand.CreateFromTask(ExecuteConfirm);
-        Import = ReactiveCommand.CreateFromTask(ExecuteImport);
         Delete = ReactiveCommand.CreateFromTask(ExecuteDelete);
         Cancel = ReactiveCommand.Create(ExecuteCancel);
 
@@ -135,51 +134,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
     public ReactiveCommand<Unit, Unit> Import { get; }
     public ReactiveCommand<Unit, Unit> Delete { get; }
     public ReactiveCommand<Unit, Unit> Cancel { get; }
-
-    private async Task ExecuteImport()
-    {
-        if (!IsNew)
-            return;
-
-        string[]? result = await _windowService.CreateOpenFileDialog()
-            .HavingFilter(f => f.WithExtension("json").WithName("Artemis profile"))
-            .ShowAsync();
-
-        if (result == null)
-            return;
-
-        string json = await File.ReadAllTextAsync(result[0]);
-        ProfileConfigurationExportModel? profileConfigurationExportModel = null;
-        try
-        {
-            profileConfigurationExportModel = JsonConvert.DeserializeObject<ProfileConfigurationExportModel>(json, IProfileService.ExportSettings);
-        }
-        catch (JsonException e)
-        {
-            _windowService.ShowExceptionDialog("Import profile failed", e);
-        }
-
-        if (profileConfigurationExportModel == null)
-        {
-            await _windowService.ShowConfirmContentDialog("Import profile", "Failed to import this profile, make sure it is a valid Artemis profile.", "Confirm", null);
-            return;
-        }
-
-        try
-        {
-            ProfileConfiguration profileConfiguration = _profileService.ImportProfile(_profileCategory, profileConfigurationExportModel);
-
-            // Remove the temporary profile configuration
-            _profileService.RemoveProfileConfiguration(_profileConfiguration);
-
-            Close(profileConfiguration);
-        }
-        catch (Exception e)
-        {
-            _windowService.ShowExceptionDialog("Import profile failed", e);
-        }
-    }
-
+    
     private async Task ExecuteDelete()
     {
         if (IsNew)

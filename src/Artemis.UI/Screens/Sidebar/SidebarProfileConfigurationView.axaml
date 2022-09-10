@@ -9,13 +9,14 @@
              x:Class="Artemis.UI.Screens.Sidebar.SidebarProfileConfigurationView"
              x:DataType="sidebar:SidebarProfileConfigurationViewModel"
              Background="Transparent">
-    <UserControl.ContextFlyout>
-        <MenuFlyout>
-            <MenuItem Header="View properties" Command="{CompiledBinding EditProfile}">
+    <UserControl.Resources>
+        <MenuFlyout x:Key="ProfileMenuFlyout" Placement="Bottom">
+            <MenuItem Header="Edit properties" Command="{CompiledBinding EditProfile}">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Cog" />
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="-" />
             <MenuItem Header="Suspend" Command="{CompiledBinding ToggleSuspended}">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding ProfileConfiguration.IsSuspended}" />
@@ -53,8 +54,24 @@
                 </MenuItem.Icon>
             </MenuItem>
         </MenuFlyout>
-    </UserControl.ContextFlyout>
-    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector=":is(Button).properties-button">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="Grid#ProfileContainerGrid:pointerover :is(Button).properties-button">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="Grid#ProfileContainerGrid.flyout-open :is(Button).properties-button">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+    </UserControl.Styles>
+    
+    <Grid Name="ProfileContainerGrid"
+          ColumnDefinitions="Auto,*,Auto,Auto" 
+          Background="Transparent" 
+          ContextFlyout="{StaticResource ProfileMenuFlyout}"
+          Classes.flyout-open="{Binding IsOpen, Source={StaticResource ProfileMenuFlyout}}">
         <shared:ProfileConfigurationIcon Grid.Column="0"
                                          x:Name="ProfileIcon"
                                          VerticalAlignment="Center"
@@ -101,11 +118,10 @@
             </Border>
         </Panel>
 
-        <Button Command="{CompiledBinding EditProfile}"
-                Classes="icon-button icon-button-small"
+        <Button Classes="properties-button icon-button icon-button-small"
                 Grid.Column="2"
-                ToolTip.Tip="View properties"
                 HorizontalAlignment="Right"
+                Flyout="{StaticResource ProfileMenuFlyout}"
                 Margin="0 0 2 0">
             <avalonia:MaterialIcon Kind="Cog" />
         </Button>
