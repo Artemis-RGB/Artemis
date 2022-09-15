@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Artemis.Core.Internal;
-using Artemis.Core.VisualScripting.Internal;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 

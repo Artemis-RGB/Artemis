@@ -1,4 +1,4 @@
-﻿namespace Artemis.Core.VisualScripting.Internal;
+﻿namespace Artemis.Core.Internal;
 
 internal interface IEventConditionNode : INode
 {

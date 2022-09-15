@@ -1,5 +1,4 @@
 ﻿using System;
-using Artemis.Core.VisualScripting.Internal;
 
 namespace Artemis.Core.Internal;
 

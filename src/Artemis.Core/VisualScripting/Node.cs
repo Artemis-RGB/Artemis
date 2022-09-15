@@ -132,7 +132,7 @@ public abstract class Node : BreakableModel, INode
     /// <param name="name">The name of the pin</param>
     /// <typeparam name="T">The type of value the pin will hold</typeparam>
     /// <returns>The newly created pin</returns>
-    protected InputPin<T> CreateInputPin<T>(string name = "")
+    public InputPin<T> CreateInputPin<T>(string name = "")
     {
         InputPin<T> pin = new(this, name);
         _pins.Add(pin);
@@ -146,7 +146,7 @@ public abstract class Node : BreakableModel, INode
     /// <param name="type">The type of value the pin will hold</param>
     /// <param name="name">The name of the pin</param>
     /// <returns>The newly created pin</returns>
-    protected InputPin CreateInputPin(Type type, string name = "")
+    public InputPin CreateInputPin(Type type, string name = "")
     {
         InputPin pin = new(this, type, name);
         _pins.Add(pin);
@@ -160,7 +160,7 @@ public abstract class Node : BreakableModel, INode
     /// <param name="name">The name of the pin</param>
     /// <typeparam name="T">The type of value the pin will hold</typeparam>
     /// <returns>The newly created pin</returns>
-    protected OutputPin<T> CreateOutputPin<T>(string name = "")
+    public OutputPin<T> CreateOutputPin<T>(string name = "")
     {
         OutputPin<T> pin = new(this, name);
         _pins.Add(pin);
@@ -174,7 +174,7 @@ public abstract class Node : BreakableModel, INode
     /// <param name="type">The type of value the pin will hold</param>
     /// <param name="name">The name of the pin</param>
     /// <returns>The newly created pin</returns>
-    protected OutputPin CreateOutputPin(Type type, string name = "")
+    public OutputPin CreateOutputPin(Type type, string name = "")
     {
         OutputPin pin = new(this, type, name);
         _pins.Add(pin);
@@ -187,7 +187,7 @@ public abstract class Node : BreakableModel, INode
     ///     The bucket might grow a bit over time as the user edits the node but pins won't get lost, enabling undo/redo in the
     ///     editor.
     /// </summary>
-    protected OutputPin CreateOrAddOutputPin(Type valueType, string displayName)
+    public OutputPin CreateOrAddOutputPin(Type valueType, string displayName)
     {
         // Grab the first pin from the bucket that isn't on the node yet
         OutputPin? pin = _outputPinBucket.FirstOrDefault(p => !Pins.Contains(p));
@@ -217,7 +217,7 @@ public abstract class Node : BreakableModel, INode
     ///     The bucket might grow a bit over time as the user edits the node but pins won't get lost, enabling undo/redo in the
     ///     editor.
     /// </summary>
-    protected InputPin CreateOrAddInputPin(Type valueType, string displayName)
+    public InputPin CreateOrAddInputPin(Type valueType, string displayName)
     {
         // Grab the first pin from the bucket that isn't on the node yet
         InputPin? pin = _inputPinBucket.FirstOrDefault(p => !Pins.Contains(p));
@@ -247,7 +247,7 @@ public abstract class Node : BreakableModel, INode
     /// </summary>
     /// <param name="pin">The pin to remove</param>
     /// <returns><see langword="true" /> if the pin was removed; otherwise <see langword="false" />.</returns>
-    protected bool RemovePin(Pin pin)
+    public bool RemovePin(Pin pin)
     {
         bool isRemoved = _pins.Remove(pin);
         if (isRemoved)
@@ -263,7 +263,7 @@ public abstract class Node : BreakableModel, INode
     ///     Adds an existing <paramref name="pin" /> to the <see cref="Pins" /> collection.
     /// </summary>
     /// <param name="pin">The pin to add</param>
-    protected void AddPin(Pin pin)
+    public void AddPin(Pin pin)
     {
         if (pin.Node != this)
             throw new ArtemisCoreException("Can't add a pin to a node that belongs to a different node than the one it's being added to.");
@@ -281,7 +281,7 @@ public abstract class Node : BreakableModel, INode
     /// <param name="name">The name of the pin collection</param>
     /// <param name="initialCount">The amount of pins to initially add to the collection</param>
     /// <returns>The resulting input pin collection</returns>
-    protected InputPinCollection<T> CreateInputPinCollection<T>(string name = "", int initialCount = 1)
+    public InputPinCollection<T> CreateInputPinCollection<T>(string name = "", int initialCount = 1)
     {
         InputPinCollection<T> pin = new(this, name, initialCount);
         _pinCollections.Add(pin);
@@ -296,7 +296,7 @@ public abstract class Node : BreakableModel, INode
     /// <param name="name">The name of the pin collection</param>
     /// <param name="initialCount">The amount of pins to initially add to the collection</param>
     /// <returns>The resulting input pin collection</returns>
-    protected InputPinCollection CreateInputPinCollection(Type type, string name = "", int initialCount = 1)
+    public InputPinCollection CreateInputPinCollection(Type type, string name = "", int initialCount = 1)
     {
         InputPinCollection pin = new(this, type, name, initialCount);
         _pinCollections.Add(pin);
@@ -311,7 +311,7 @@ public abstract class Node : BreakableModel, INode
     /// <param name="name">The name of the pin collection</param>
     /// <param name="initialCount">The amount of pins to initially add to the collection</param>
     /// <returns>The resulting output pin collection</returns>
-    protected OutputPinCollection<T> CreateOutputPinCollection<T>(string name = "", int initialCount = 1)
+    public OutputPinCollection<T> CreateOutputPinCollection<T>(string name = "", int initialCount = 1)
     {
         OutputPinCollection<T> pin = new(this, name, initialCount);
         _pinCollections.Add(pin);
@@ -325,7 +325,7 @@ public abstract class Node : BreakableModel, INode
     /// </summary>
     /// <param name="pinCollection">The pin collection to remove</param>
     /// <returns><see langword="true" /> if the pin collection was removed; otherwise <see langword="false" />.</returns>
-    protected bool RemovePinCollection(PinCollection pinCollection)
+    public bool RemovePinCollection(PinCollection pinCollection)
     {
         bool isRemoved = _pinCollections.Remove(pinCollection);
         if (isRemoved)

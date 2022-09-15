@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.NodeEditor.Commands;
@@ -20,7 +19,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
-public class NodeScriptWindowViewModel : DialogViewModelBase<bool>
+public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
 {
     private readonly INodeEditorService _nodeEditorService;
     private readonly INodeService _nodeService;
@@ -34,7 +33,7 @@ public class NodeScriptWindowViewModel : DialogViewModelBase<bool>
         INodeVmFactory vmFactory,
         ISettingsService settingsService,
         IProfileService profileService,
-        IWindowService windowService)
+        IWindowService windowService) : base(nodeScript)
     {
         NodeScript = nodeScript;
         NodeScriptViewModel = vmFactory.NodeScriptViewModel(NodeScript, false);
@@ -77,7 +76,6 @@ public class NodeScriptWindowViewModel : DialogViewModelBase<bool>
         });
     }
 
-    public NodeScript NodeScript { get; }
     public NodeScriptViewModel NodeScriptViewModel { get; set; }
 
     public NodeEditorHistory History { get; }
