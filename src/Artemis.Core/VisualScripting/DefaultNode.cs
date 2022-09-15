@@ -1,18 +1,11 @@
 ﻿using System;
 
-namespace Artemis.Core.Internal;
-
-/// <summary>
-///     Represents a kind of node that cannot be deleted inside a <see cref="INode" />.
-/// </summary>
-public interface IDefaultNode : INode
-{
-}
+namespace Artemis.Core;
 
 /// <summary>
 ///     Represents a kind of node that cannot be deleted inside a <see cref="NodeScript" />.
 /// </summary>
-public abstract class DefaultNode : Node, IDefaultNode
+public abstract class DefaultNode : Node
 {
     #region Constructors
 
@@ -20,8 +13,6 @@ public abstract class DefaultNode : Node, IDefaultNode
     protected DefaultNode(Guid id, string name, string description = "") : base(name, description)
     {
         Id = id;
-        Name = name;
-        Description = description;
     }
 
     #endregion

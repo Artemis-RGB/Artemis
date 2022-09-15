@@ -35,7 +35,10 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
 
     #region Properties & Fields
 
-    internal NodeScriptEntity Entity { get; private set; }
+    /// <summary>
+    ///     Gets the entity used to store this script.
+    /// </summary>
+    public NodeScriptEntity Entity { get; private set; }
 
     /// <inheritdoc />
     public string Name { get; }
@@ -410,7 +413,8 @@ public class NodeScript<T> : NodeScript, INodeScript<T>
 
     #region Constructors
 
-    internal NodeScript(string name, string description, NodeScriptEntity entity, object? context = null)
+    /// <inheritdoc />
+    public NodeScript(string name, string description, NodeScriptEntity entity, object? context = null)
         : base(name, description, entity, context)
     {
         ExitNode = new ExitNode<T>(name, description);
