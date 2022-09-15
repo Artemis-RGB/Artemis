@@ -1,11 +1,7 @@
 ﻿using Artemis.Core;
+using Artemis.Core.Events;
 using Artemis.VisualScripting.Nodes.Color.Screens;
 using SkiaSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Collections.Specialized;
 
 namespace Artemis.VisualScripting.Nodes.Color;
@@ -19,11 +15,11 @@ public class ColorGradientNode : Node<ColorGradient, ColorGradientNodeCustomView
         : base("Color Gradient", "Outputs a configurable Color Gradient")
     {
         _inputPins = new();
-        
+
         Output = CreateOutputPin<ColorGradient>();
-        
+
         StorageModified += OnStorageModified;
-        
+
         ComputeInputPins();
     }
 
@@ -63,10 +59,10 @@ public class ColorGradientNode : Node<ColorGradient, ColorGradientNodeCustomView
             return;
 
         ColorGradientStop[] stops = Storage.ToArray();
-        
+
         if (_inputPins.Count != stops.Length)
             return;
-        
+
         for (int i = 0; i < _inputPins.Count; i++)
         {
             //if nothing is connected, leave the stop alone.
@@ -102,9 +98,9 @@ public class ColorGradientNode : Node<ColorGradient, ColorGradientNodeCustomView
             _inputPins.Remove(pin);
         }
     }
-    
+
     #endregion
-    
+
     #region Properties & Fields
 
     private readonly List<InputPin> _inputPins;
@@ -112,4 +108,101 @@ public class ColorGradientNode : Node<ColorGradient, ColorGradientNodeCustomView
     public OutputPin<ColorGradient> Output { get; }
 
     #endregion
+}
+
+[Node("Color Gradient", "Outputs a Color Gradient from colors and positions", OutputType = typeof(ColorGradient))]
+public class ColorGradientFromPinsNode : Node
+{
+    public OutputPin<ColorGradient> Gradient { get; set; }
+    public InputPinCollection<SKColor> Colors { get; set; }
+    public InputPinCollection<Numeric> Positions { get; set; }
+
+    public ColorGradientFromPinsNode() : base("Color Gradient", "Outputs a Color Gradient from colors and positions")
+    {
+        Colors = CreateInputPinCollection<SKColor>("Colors", 0);
+        Positions = CreateInputPinCollection<Numeric>("Positions", 0);
+        Gradient = CreateOutputPin<ColorGradient>("Gradient");
+
+        Colors.PinAdded += OnPinAdded;
+        Colors.PinRemoved += OnPinRemoved;
+        Positions.PinAdded += OnPinAdded;
+        Positions.PinRemoved += OnPinRemoved;
+    }
+
+    private void OnPinRemoved(object? sender, SingleValueEventArgs<IPin> e)
+    {
+        var colorsCount = Colors.Count();
+        var positionsCount = Positions.Count();
+        if (colorsCount == positionsCount)
+            return;
+
+        while (colorsCount > positionsCount)
+        {
+            var pinToRemove = Colors.Last();
+            Colors.Remove(pinToRemove);
+
+            --colorsCount;
+        }
+
+        while (positionsCount > colorsCount)
+        {
+            var pinToRemove = Positions.Last();
+            Positions.Remove(pinToRemove);
+            --positionsCount;
+        }
+
+        RenamePins();
+    }
+
+    private void OnPinAdded(object? sender, SingleValueEventArgs<IPin> e)
+    {
+        var colorsCount = Colors.Count();
+        var positionsCount = Positions.Count();
+        if (colorsCount == positionsCount)
+            return;
+
+        while (colorsCount < positionsCount)
+        {
+            Colors.Add(Colors.CreatePin());
+
+            ++colorsCount;
+        }
+
+        while (positionsCount < colorsCount)
+        {
+            Positions.Add(Positions.CreatePin());
+
+            ++positionsCount;
+        }
+
+        RenamePins();
+    }
+
+    private void RenamePins()
+    {
+        int colors = 0;
+        foreach (var item in Colors)
+        {
+            item.Name = $"Color #{++colors}";
+        }
+
+        int positions = 0;
+        foreach(var item in Positions)
+        {
+            item.Name = $"Position #{++positions}";
+        }
+    }
+
+    public override void Evaluate()
+    {
+        var stops = new List<ColorGradientStop>();
+        var colors = Colors.Pins.ToArray();
+        var positions = Positions.Pins.ToArray();
+        for (int i = 0; i < colors.Length; i++)
+        {
+            stops.Add(new ColorGradientStop(colors[i].Value, positions[i].Value));
+        }
+
+        Gradient.Value = new ColorGradient(stops);
+    }
 }
