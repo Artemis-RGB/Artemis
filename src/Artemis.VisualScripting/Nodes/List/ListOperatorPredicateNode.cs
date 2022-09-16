@@ -9,10 +9,11 @@ namespace Artemis.VisualScripting.Nodes.List;
 public class ListOperatorPredicateNode : Node<ListOperatorEntity, ListOperatorPredicateNodeCustomViewModel>, IDisposable
 {
     private readonly object _scriptLock = new();
-    private ListOperatorPredicateStartNode? _startNode;
+    private ListOperatorPredicateStartNode _startNode;
 
     public ListOperatorPredicateNode() : base("List Operator (Advanced)", "Checks if any/all/no values in the input list match a condition")
     {
+        _startNode = new ListOperatorPredicateStartNode {X = -200};
 
         InputList = CreateInputPin<IList>();
         Output = CreateOutputPin<bool>();
@@ -31,21 +32,8 @@ public class ListOperatorPredicateNode : Node<ListOperatorEntity, ListOperatorPr
         lock (_scriptLock)
         {
             Script = Storage?.Script != null
-                ? new NodeScript<bool>("Is match", "Determines whether the current list item is a match", Storage.Script, script.Context)
-                : new NodeScript<bool>("Is match", "Determines whether the current list item is a match", script.Context);
-
-            // The load action may have created an event node, use that one over the one we have here
-            INode? existingEventNode = Script.Nodes.FirstOrDefault(n => n.Id == ListOperatorPredicateStartNode.NodeId);
-            if (existingEventNode != null)
-                _startNode = (ListOperatorPredicateStartNode) existingEventNode;
-            else
-            {
-                _startNode = new ListOperatorPredicateStartNode {X = -200};
-                Script.AddNode(_startNode);
-            }
-
-            UpdateStartNode();
-            Script.LoadConnections();
+                ? new NodeScript<bool>("Is match", "Determines whether the current list item is a match", Storage.Script, script.Context, new List<DefaultNode> {_startNode})
+                : new NodeScript<bool>("Is match", "Determines whether the current list item is a match", script.Context, new List<DefaultNode> {_startNode});
         }
     }
 
@@ -101,6 +89,7 @@ public class ListOperatorPredicateNode : Node<ListOperatorEntity, ListOperatorPr
         lock (_scriptLock)
         {
             UpdateStartNode();
+            Script?.LoadConnections();
         }
     }
 

@@ -10,12 +10,18 @@ internal class InputService : IInputService
 {
     private readonly ILogger _logger;
     private readonly IRgbService _rgbService;
+    private ArtemisDevice? _firstKeyboard;
+    private ArtemisDevice? _firstMouse;
+    private int _keyboardCount;
+    private int _mouseCount;
 
     public InputService(ILogger logger, IRgbService rgbService)
     {
         _logger = logger;
         _rgbService = rgbService;
 
+        _rgbService.DeviceAdded += RgbServiceOnDevicesModified;
+        _rgbService.DeviceRemoved += RgbServiceOnDevicesModified;
         BustIdentifierCache();
     }
 
@@ -132,8 +138,6 @@ internal class InputService : IInputService
 
     private readonly Dictionary<Tuple<InputProvider, object>, ArtemisDevice> _deviceCache = new();
     private List<ArtemisDevice> _devices = new();
-    private ArtemisDevice? _cachedFallbackKeyboard;
-    private ArtemisDevice? _cachedFallbackMouse;
     private ArtemisDevice? _identifyingDevice;
 
     public void IdentifyDevice(ArtemisDevice device)
@@ -164,13 +168,29 @@ internal class InputService : IInputService
         if (provider == null) throw new ArgumentNullException(nameof(provider));
         if (identifier == null) throw new ArgumentNullException(nameof(identifier));
 
+        // We will almost always only have zero or one of each
+        if (type == InputDeviceType.Keyboard)
+        {
+            if (_keyboardCount == 0)
+                return null;
+            if (_keyboardCount == 1)
+                return _firstKeyboard;
+        }
+
+        if (type == InputDeviceType.Mouse)
+        {
+            if (_mouseCount == 0)
+                return null;
+            if (_mouseCount == 1)
+                return _firstMouse;
+        }
+
         // Try cache first
         ArtemisDevice? cacheMatch = GetDeviceFromCache(provider, identifier);
         if (cacheMatch != null)
             return cacheMatch;
 
-        string providerName = provider.GetType().FullName!;
-        ArtemisDevice? match = _devices.FirstOrDefault(m => m.InputIdentifiers.Any(i => Equals(i.InputProvider, providerName) && Equals(i.Identifier, identifier)));
+        ArtemisDevice? match = _devices.FirstOrDefault(m => m.InputIdentifiers.Any(i => Equals(i.InputProvider, provider.ProviderName) && Equals(i.Identifier, identifier)));
 
         // If a match was found cache it to speed up the next event and return the match
         if (match != null)
@@ -179,34 +199,16 @@ internal class InputService : IInputService
             return match;
         }
 
-        // If there is no match, apply our fallback type
-        if (type == InputDeviceType.None)
-            return null;
         if (type == InputDeviceType.Keyboard)
-        {
-            if (_cachedFallbackKeyboard != null)
-                return _cachedFallbackKeyboard;
-            _cachedFallbackKeyboard = _rgbService.EnabledDevices.FirstOrDefault(d => d.DeviceType == RGBDeviceType.Keyboard);
-            return _cachedFallbackKeyboard;
-        }
-
+            return _firstKeyboard;
         if (type == InputDeviceType.Mouse)
-        {
-            if (_cachedFallbackMouse != null)
-                return _cachedFallbackMouse;
-            _cachedFallbackMouse = _rgbService.EnabledDevices.FirstOrDefault(d => d.DeviceType == RGBDeviceType.Mouse);
-            return _cachedFallbackMouse;
-        }
-
+            return _firstMouse;
         return null;
     }
 
     public void BustIdentifierCache()
     {
         _deviceCache.Clear();
-        _cachedFallbackKeyboard = null;
-        _cachedFallbackMouse = null;
-
         _devices = _rgbService.EnabledDevices.Where(d => d.InputIdentifiers.Any()).ToList();
     }
 
@@ -220,12 +222,7 @@ internal class InputService : IInputService
         _deviceCache.TryGetValue(new Tuple<InputProvider, object>(provider, identifier), out ArtemisDevice? device);
         return device;
     }
-
-    private void SurfaceConfigurationChanged(object? sender, SurfaceConfigurationEventArgs e)
-    {
-        BustIdentifierCache();
-    }
-
+    
     private void InputProviderOnIdentifierReceived(object? sender, InputProviderIdentifierEventArgs e)
     {
         // Don't match if there is no device or if the device type differs from the event device type
@@ -236,14 +233,22 @@ internal class InputService : IInputService
         if (!(sender is InputProvider inputProvider))
             return;
 
-        string providerName = inputProvider.GetType().FullName!;
-
         // Remove existing identification
-        _identifyingDevice.InputIdentifiers.RemoveAll(i => i.InputProvider == providerName);
-        _identifyingDevice.InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(providerName, e.Identifier));
+        _identifyingDevice.InputIdentifiers.RemoveAll(i => i.InputProvider == inputProvider.ProviderName);
+        _identifyingDevice.InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(inputProvider.ProviderName, e.Identifier));
 
         StopIdentify();
         OnDeviceIdentified();
+    }
+
+    private void RgbServiceOnDevicesModified(object? sender, DeviceEventArgs args)
+    {
+        _firstKeyboard = _rgbService.Devices.FirstOrDefault(d => d.DeviceType == RGBDeviceType.Keyboard);
+        _firstMouse = _rgbService.Devices.FirstOrDefault(d => d.DeviceType == RGBDeviceType.Mouse);
+        _keyboardCount = _rgbService.Devices.Count(d => d.DeviceType == RGBDeviceType.Keyboard);
+        _mouseCount = _rgbService.Devices.Count(d => d.DeviceType == RGBDeviceType.Mouse);
+
+        BustIdentifierCache();
     }
 
     #endregion
@@ -378,6 +383,7 @@ internal class InputService : IInputService
     #region Mouse
 
     private readonly HashSet<MouseButton> _pressedButtons = new();
+
 
     private void InputProviderOnMouseButtonDataReceived(object? sender, InputProviderMouseButtonEventArgs e)
     {
