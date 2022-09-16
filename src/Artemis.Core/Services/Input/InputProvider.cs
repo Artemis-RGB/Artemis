@@ -8,6 +8,13 @@ namespace Artemis.Core.Services;
 /// </summary>
 public abstract class InputProvider : IDisposable
 {
+    public InputProvider()
+    {
+        ProviderName = GetType().FullName ?? throw new InvalidOperationException("Input provider must have a type with a name");
+    }
+
+    internal string ProviderName { get; set; }
+
     /// <summary>
     ///     Called when the input service requests a <see cref="KeyboardToggleStatusReceived" /> event
     /// </summary>

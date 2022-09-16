@@ -339,7 +339,7 @@ public abstract class Node : BreakableModel, INode
     }
 
     /// <summary>
-    ///     Called when the node was loaded from storage or newly created
+    ///     Called when the node was loaded from storage or newly created, at this point pin connections aren't reestablished yet.
     /// </summary>
     /// <param name="script">The script the node is contained in</param>
     public virtual void Initialize(INodeScript script)

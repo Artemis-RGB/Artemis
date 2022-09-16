@@ -1,5 +1,7 @@
 using System.Reactive;
+using System.Reactive.Disposables;
 using Artemis.Core;
+using Artemis.Core.Events;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.VisualScripting;
@@ -12,16 +14,36 @@ public class ListOperatorPredicateNodeCustomViewModel : CustomNodeViewModel
     private readonly ListOperatorPredicateNode _node;
     private readonly IWindowService _windowService;
     private ListOperator _operator;
+    private bool _canOpenEditor;
 
     public ListOperatorPredicateNodeCustomViewModel(ListOperatorPredicateNode node, INodeScript script, IWindowService windowService) : base(node, script)
     {
         _node = node;
         _windowService = windowService;
 
-        OpenEditor = ReactiveCommand.CreateFromTask(ExecuteOpenEditor);
+        OpenEditor = ReactiveCommand.CreateFromTask(ExecuteOpenEditor, this.WhenAnyValue(vm => vm.CanOpenEditor));
+        CanOpenEditor = node.InputList.ConnectedTo.Any();
+        
+        this.WhenActivated(d =>
+        {
+            node.InputList.PinConnected += InputListOnPinConnected;
+            node.InputList.PinDisconnected += InputListOnPinDisconnected;
+
+            Disposable.Create(() =>
+            {
+                node.InputList.PinConnected -= InputListOnPinConnected;
+                node.InputList.PinDisconnected -= InputListOnPinDisconnected;
+            }).DisposeWith(d);
+        });
     }
 
     public ReactiveCommand<Unit, Unit> OpenEditor { get; }
+
+    private bool CanOpenEditor
+    {
+        get => _canOpenEditor;
+        set => this.RaiseAndSetIfChanged(ref _canOpenEditor, value);
+    }
 
     public ListOperator Operator
     {
@@ -39,5 +61,15 @@ public class ListOperatorPredicateNodeCustomViewModel : CustomNodeViewModel
 
         _node.Storage ??= new ListOperatorEntity();
         _node.Storage.Script = _node.Script.Entity;
+    }
+
+    private void InputListOnPinDisconnected(object? sender, SingleValueEventArgs<IPin> e)
+    {
+        CanOpenEditor = false;
+    }
+
+    private void InputListOnPinConnected(object? sender, SingleValueEventArgs<IPin> e)
+    {
+        CanOpenEditor = true;
     }
 }

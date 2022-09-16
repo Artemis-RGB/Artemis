@@ -80,7 +80,8 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
     ///     The context of the node script, usually a <see cref="Profile" /> or
     ///     <see cref="ProfileConfiguration" />
     /// </param>
-    protected NodeScript(string name, string description, object? context = null)
+    /// <param name="defaultNodes">A list of default nodes to add to the node script.</param>
+    protected NodeScript(string name, string description, object? context = null, List<DefaultNode>? defaultNodes = null)
     {
         Name = name;
         Description = description;
@@ -90,9 +91,15 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
 
         NodeTypeStore.NodeTypeAdded += NodeTypeStoreOnNodeTypeAdded;
         NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeRemoved;
+
+        if (defaultNodes != null)
+        {
+            foreach (DefaultNode defaultNode in defaultNodes)
+                AddNode(defaultNode);
+        }
     }
 
-    internal NodeScript(string name, string description, NodeScriptEntity entity, object? context = null)
+    internal NodeScript(string name, string description, NodeScriptEntity entity, object? context = null, List<DefaultNode>? defaultNodes = null)
     {
         Name = name;
         Description = description;
@@ -102,6 +109,12 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
 
         NodeTypeStore.NodeTypeAdded += NodeTypeStoreOnNodeTypeAdded;
         NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeRemoved;
+        
+        if (defaultNodes != null)
+        {
+            foreach (DefaultNode defaultNode in defaultNodes)
+                AddNode(defaultNode);
+        }
     }
 
     #endregion
@@ -414,8 +427,8 @@ public class NodeScript<T> : NodeScript, INodeScript<T>
     #region Constructors
 
     /// <inheritdoc />
-    public NodeScript(string name, string description, NodeScriptEntity entity, object? context = null)
-        : base(name, description, entity, context)
+    public NodeScript(string name, string description, NodeScriptEntity entity, object? context = null, List<DefaultNode>? defaultNodes = null)
+        : base(name, description, entity, context, defaultNodes)
     {
         ExitNode = new ExitNode<T>(name, description);
         AddNode(ExitNode);
@@ -424,8 +437,8 @@ public class NodeScript<T> : NodeScript, INodeScript<T>
     }
 
     /// <inheritdoc />
-    public NodeScript(string name, string description, object? context = null)
-        : base(name, description, context)
+    public NodeScript(string name, string description, object? context = null, List<DefaultNode>? defaultNodes = null)
+        : base(name, description, context, defaultNodes)
     {
         ExitNode = new ExitNode<T>(name, description);
         AddNode(ExitNode);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Internal;
 using Artemis.Storage.Entities.Profile.Abstract;
@@ -13,12 +14,12 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
 {
     private readonly string _displayName;
     private readonly EventConditionEntity _entity;
+    private NodeScript<bool> _script;
+    private DefaultNode _startNode;
     private DataModelPath? _eventPath;
     private DateTime _lastProcessedTrigger;
     private object? _lastProcessedValue;
     private EventOverlapMode _overlapMode;
-    private NodeScript<bool> _script;
-    private IEventConditionNode _startNode;
     private EventToggleOffMode _toggleOffMode;
     private EventTriggerMode _triggerMode;
     private bool _wasMet;
@@ -33,7 +34,7 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
         _entity = new EventConditionEntity();
         _displayName = profileElement.GetType().Name;
         _startNode = new EventConditionEventStartNode {X = -300};
-        _script = new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", ProfileElement.Profile);
+        _script = new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", ProfileElement.Profile, new List<DefaultNode> {_startNode});
     }
 
     internal EventCondition(EventConditionEntity entity, RenderProfileElement profileElement)
@@ -93,109 +94,6 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
     {
         get => _toggleOffMode;
         set => SetAndNotify(ref _toggleOffMode, value);
-    }
-
-    /// <summary>
-    ///     Updates the event node, applying the selected event
-    /// </summary>
-    public void UpdateEventNode()
-    {
-        if (EventPath == null)
-            return;
-
-        Type? pathType = EventPath.GetPropertyType();
-        if (pathType == null)
-            return;
-
-        // Create an event node if the path type is a data model event
-        if (pathType.IsAssignableTo(typeof(IDataModelEvent)))
-        {
-            EventConditionEventStartNode eventNode;
-            // Ensure the start node is an event node
-            if (_startNode is not EventConditionEventStartNode node)
-            {
-                eventNode = new EventConditionEventStartNode();
-                ReplaceStartNode(eventNode);
-                _startNode = eventNode;
-            }
-            else
-            {
-                eventNode = node;
-            }
-
-            IDataModelEvent? dataModelEvent = EventPath?.GetValue() as IDataModelEvent;
-            eventNode.CreatePins(dataModelEvent);
-        }
-        // Create a value changed node if the path type is a regular value
-        else
-        {
-            // Ensure the start nod is a value changed node
-            EventConditionValueChangedStartNode valueChangedNode;
-            // Ensure the start node is an event node
-            if (_startNode is not EventConditionValueChangedStartNode node)
-            {
-                valueChangedNode = new EventConditionValueChangedStartNode();
-                ReplaceStartNode(valueChangedNode);
-            }
-            else
-            {
-                valueChangedNode = node;
-            }
-
-            valueChangedNode.UpdateOutputPins(EventPath);
-        }
-
-        if (!Script.Nodes.Contains(_startNode))
-            Script.AddNode(_startNode);
-        Script.Save();
-    }
-
-    /// <summary>
-    ///     Gets the start node of the event script, if any
-    /// </summary>
-    /// <returns>The start node of the event script, if any.</returns>
-    public INode GetStartNode()
-    {
-        return _startNode;
-    }
-
-    private void ReplaceStartNode(IEventConditionNode newStartNode)
-    {
-        if (Script.Nodes.Contains(_startNode))
-            Script.RemoveNode(_startNode);
-
-        _startNode = newStartNode;
-        if (!Script.Nodes.Contains(_startNode))
-            Script.AddNode(_startNode);
-    }
-
-    private bool Evaluate()
-    {
-        if (EventPath == null)
-            return false;
-
-        object? value = EventPath.GetValue();
-        if (_startNode is EventConditionEventStartNode)
-        {
-            if (value is not IDataModelEvent dataModelEvent || dataModelEvent.LastTrigger <= _lastProcessedTrigger)
-                return false;
-
-            _lastProcessedTrigger = dataModelEvent.LastTrigger;
-        }
-        else if (_startNode is EventConditionValueChangedStartNode valueChangedNode)
-        {
-            if (Equals(value, _lastProcessedValue))
-                return false;
-
-            valueChangedNode.UpdateValues(value, _lastProcessedValue);
-            _lastProcessedValue = value;
-        }
-
-        if (!Script.ExitNodeConnected)
-            return true;
-
-        Script.Run();
-        return Script.Result;
     }
 
     /// <inheritdoc />
@@ -263,6 +161,116 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
         Script?.Dispose();
         EventPath?.Dispose();
     }
+    
+        /// <summary>
+    ///     Updates the event node, applying the selected event
+    /// </summary>
+    public void UpdateEventNode(bool updateScript)
+    {
+        if (EventPath == null)
+            return;
+
+        Type? pathType = EventPath.GetPropertyType();
+        if (pathType == null)
+            return;
+
+        // Create an event node if the path type is a data model event
+        if (pathType.IsAssignableTo(typeof(IDataModelEvent)))
+        {
+            EventConditionEventStartNode eventNode;
+            // Ensure the start node is an event node
+            if (_startNode is not EventConditionEventStartNode node)
+            {
+                eventNode = new EventConditionEventStartNode();
+                if (updateScript)
+                    ReplaceStartNode(eventNode);
+                _startNode = eventNode;
+            }
+            else
+            {
+                eventNode = node;
+            }
+
+            IDataModelEvent? dataModelEvent = EventPath?.GetValue() as IDataModelEvent;
+            eventNode.CreatePins(dataModelEvent);
+        }
+        // Create a value changed node if the path type is a regular value
+        else
+        {
+            // Ensure the start nod is a value changed node
+            EventConditionValueChangedStartNode valueChangedNode;
+            // Ensure the start node is an event node
+            if (_startNode is not EventConditionValueChangedStartNode node)
+            {
+                valueChangedNode = new EventConditionValueChangedStartNode();
+                if (updateScript)
+                    ReplaceStartNode(valueChangedNode);
+                _startNode = valueChangedNode;
+            }
+            else
+            {
+                valueChangedNode = node;
+            }
+
+            valueChangedNode.UpdateOutputPins(EventPath);
+        }
+
+        // Script can be null if called before load
+        if (!updateScript)
+            return;
+        if (!Script.Nodes.Contains(_startNode))
+        {
+            Script.AddNode(_startNode);
+            Script.LoadConnections();
+        }
+        Script.Save();
+    }
+
+    /// <summary>
+    ///     Gets the start node of the event script, if any
+    /// </summary>
+    /// <returns>The start node of the event script, if any.</returns>
+    public INode GetStartNode()
+    {
+        return _startNode;
+    }
+
+    private void ReplaceStartNode(DefaultNode newStartNode)
+    {
+        if (Script.Nodes.Contains(_startNode))
+            Script.RemoveNode(_startNode);
+        if (!Script.Nodes.Contains(newStartNode))
+            Script.AddNode(newStartNode);
+    }
+
+    private bool Evaluate()
+    {
+        if (EventPath == null)
+            return false;
+
+        object? value = EventPath.GetValue();
+        if (_startNode is EventConditionEventStartNode)
+        {
+            if (value is not IDataModelEvent dataModelEvent || dataModelEvent.LastTrigger <= _lastProcessedTrigger)
+                return false;
+
+            _lastProcessedTrigger = dataModelEvent.LastTrigger;
+        }
+        else if (_startNode is EventConditionValueChangedStartNode valueChangedNode)
+        {
+            if (Equals(value, _lastProcessedValue))
+                return false;
+
+            valueChangedNode.UpdateValues(value, _lastProcessedValue);
+            _lastProcessedValue = value;
+        }
+
+        if (!Script.ExitNodeConnected)
+            return true;
+
+        Script.Run();
+        return Script.Result;
+    }
 
     #region Storage
 
@@ -275,11 +283,13 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
 
         if (_entity.EventPath != null)
             EventPath = new DataModelPath(_entity.EventPath);
-
+        UpdateEventNode(false);
+        
+        string name = $"Activate {_displayName}";
+        string description = $"Whether or not the event should activate the {_displayName}";
         Script = _entity.Script != null
-            ? new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", _entity.Script, ProfileElement.Profile)
-            : new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", ProfileElement.Profile);
-        UpdateEventNode();
+            ? new NodeScript<bool>(name, description, _entity.Script, ProfileElement.Profile, new List<DefaultNode> {_startNode})
+            : new NodeScript<bool>(name, description, ProfileElement.Profile, new List<DefaultNode> {_startNode});
     }
 
     /// <inheritdoc />
@@ -310,71 +320,9 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
     /// <inheritdoc />
     public void LoadNodeScript()
     {
+        UpdateEventNode(true);
         Script.Load();
-
-        // The load action may have created an event node, use that one over the one we have here
-        INode? existingEventNode = Script.Nodes.FirstOrDefault(n => n.Id == EventConditionEventStartNode.NodeId || n.Id == EventConditionValueChangedStartNode.NodeId);
-        if (existingEventNode != null)
-            _startNode = (IEventConditionNode) existingEventNode;
-
-        UpdateEventNode();
-        Script.LoadConnections();
     }
 
     #endregion
-}
-
-/// <summary>
-///     Represents a mode for render elements to start their timeline when display conditions events are fired.
-/// </summary>
-public enum EventTriggerMode
-{
-    /// <summary>
-    ///     Play the timeline once.
-    /// </summary>
-    Play,
-
-    /// <summary>
-    ///     Toggle repeating the timeline.
-    /// </summary>
-    Toggle
-}
-
-/// <summary>
-///     Represents a mode for render elements to configure the behaviour of events that overlap i.e. trigger again before
-///     the timeline finishes.
-/// </summary>
-public enum EventOverlapMode
-{
-    /// <summary>
-    ///     Stop the current run and restart the timeline
-    /// </summary>
-    Restart,
-
-    /// <summary>
-    ///     Play another copy of the timeline on top of the current run
-    /// </summary>
-    Copy,
-
-    /// <summary>
-    ///     Ignore subsequent event fires until the timeline finishes
-    /// </summary>
-    Ignore
-}
-
-/// <summary>
-///     Represents a mode for render elements when toggling off the event when using <see cref="EventTriggerMode.Toggle" />
-///     .
-/// </summary>
-public enum EventToggleOffMode
-{
-    /// <summary>
-    ///     When the event toggles the condition off, finish the the current run of the main timeline
-    /// </summary>
-    Finish,
-
-    /// <summary>
-    ///     When the event toggles the condition off, skip to the end segment of the timeline
-    /// </summary>
-    SkipToEnd
 }

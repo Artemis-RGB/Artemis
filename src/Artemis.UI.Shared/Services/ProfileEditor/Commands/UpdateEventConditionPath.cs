@@ -49,7 +49,7 @@ public class UpdateEventConditionPath : IProfileEditorCommand, IDisposable
 
         // Change the end node 
         _eventCondition.EventPath = _value;
-        _eventCondition.UpdateEventNode();
+        _eventCondition.UpdateEventNode(true);
 
         _executed = true;
     }
@@ -59,7 +59,7 @@ public class UpdateEventConditionPath : IProfileEditorCommand, IDisposable
     {
         // Change the end node
         _eventCondition.EventPath = _oldValue;
-        _eventCondition.UpdateEventNode();
+        _eventCondition.UpdateEventNode(true);
 
         // Restore old connections
         _store?.Restore();
