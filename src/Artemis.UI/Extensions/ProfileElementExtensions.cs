@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Storage.Entities.Profile;
+using Artemis.UI.Models;
 using Avalonia;
 using Avalonia.Input;
 
@@ -21,7 +22,7 @@ public static class ProfileElementExtensions
             return;
 
         DataObject dataObject = new();
-        string copy = CoreJson.SerializeObject(folder.FolderEntity, true);
+        string copy = CoreJson.SerializeObject(new FolderClipboardModel(folder), true);
         dataObject.Set(ClipboardDataFormat, copy);
         await Application.Current.Clipboard.SetDataObjectAsync(dataObject);
     }
@@ -50,9 +51,8 @@ public static class ProfileElementExtensions
         object? entity = CoreJson.DeserializeObject(Encoding.Unicode.GetString(bytes), true);
         switch (entity)
         {
-            case FolderEntity folderEntity:
-                folderEntity.Id = Guid.NewGuid();
-                return new Folder(parent.Profile, parent, folderEntity);
+            case FolderClipboardModel folderClipboardModel:
+                return folderClipboardModel.Paste(parent.Profile, parent);
             case LayerEntity layerEntity:
                 layerEntity.Id = Guid.NewGuid();
                 return new Layer(parent.Profile, parent, layerEntity);

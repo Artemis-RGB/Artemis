@@ -19,7 +19,6 @@ public class WindowsInputProvider : InputProvider
     private readonly ILogger _logger;
     private readonly SpongeWindow _sponge;
     private readonly Timer _taskManagerTimer;
-    private DateTime _lastMouseUpdate;
     private int _lastProcessId;
 
     public WindowsInputProvider(ILogger logger, IInputService inputService)
@@ -160,8 +159,8 @@ public class WindowsInputProvider : InputProvider
 
     #region Mouse
 
-    private int _mouseDeltaX;
-    private int _mouseDeltaY;
+    private int _previousMouseX;
+    private int _previousMouseY;
 
     private void HandleMouseData(RawInputData data, RawInputMouseData mouseData)
     {
@@ -169,10 +168,8 @@ public class WindowsInputProvider : InputProvider
         // This can create a small inaccuracy of course, but Artemis is not a shooter :')
         if (mouseData.Mouse.Buttons == RawMouseButtonFlags.None)
         {
-            _mouseDeltaX += mouseData.Mouse.LastX;
-            _mouseDeltaY += mouseData.Mouse.LastY;
-            if (DateTime.Now - _lastMouseUpdate < TimeSpan.FromMilliseconds(40))
-                return;
+            _previousMouseX += mouseData.Mouse.LastX;
+            _previousMouseY += mouseData.Mouse.LastY;
         }
 
         ArtemisDevice? device = null;
@@ -193,10 +190,7 @@ public class WindowsInputProvider : InputProvider
         if (mouseData.Mouse.Buttons == RawMouseButtonFlags.None)
         {
             Win32Point cursorPosition = GetCursorPosition();
-            OnMouseMoveDataReceived(device, cursorPosition.X, cursorPosition.Y, _mouseDeltaX, _mouseDeltaY);
-            _mouseDeltaX = 0;
-            _mouseDeltaY = 0;
-            _lastMouseUpdate = DateTime.Now;
+            OnMouseMoveDataReceived(device, cursorPosition.X, cursorPosition.Y, cursorPosition.X - _previousMouseX, cursorPosition.Y - _previousMouseY);
             return;
         }
 

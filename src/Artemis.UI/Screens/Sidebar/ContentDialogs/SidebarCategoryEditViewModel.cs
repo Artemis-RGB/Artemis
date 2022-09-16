@@ -23,12 +23,8 @@ public class SidebarCategoryEditViewModel : ContentDialogViewModelBase
             _categoryName = _category.Name;
 
         Confirm = ReactiveCommand.Create(ExecuteConfirm, ValidationContext.Valid);
-        Delete = ReactiveCommand.Create(ExecuteDelete);
-
         this.ValidationRule(vm => vm.CategoryName, categoryName => !string.IsNullOrWhiteSpace(categoryName), "You must specify a valid name");
     }
-
-    public ReactiveCommand<Unit, Unit> Delete { get; set; }
 
     public string? CategoryName
     {
@@ -51,11 +47,5 @@ public class SidebarCategoryEditViewModel : ContentDialogViewModelBase
         }
 
         ContentDialog?.Hide(ContentDialogResult.Primary);
-    }
-
-    private void ExecuteDelete()
-    {
-        if (_category != null)
-            _profileService.DeleteProfileCategory(_category);
     }
 }

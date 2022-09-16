@@ -16,7 +16,6 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayCondition.ConditionTypes;
 public class EventConditionViewModel : ActivatableViewModelBase
 {
     private readonly EventCondition _eventCondition;
-    private readonly INodeService _nodeService;
     private readonly IProfileEditorService _profileEditorService;
     private readonly ISettingsService _settingsService;
     private readonly ObservableAsPropertyHelper<bool> _showOverlapOptions;
@@ -27,11 +26,10 @@ public class EventConditionViewModel : ActivatableViewModelBase
     private ObservableAsPropertyHelper<int>? _selectedToggleOffMode;
     private ObservableAsPropertyHelper<int>? _selectedTriggerMode;
 
-    public EventConditionViewModel(EventCondition eventCondition, IProfileEditorService profileEditorService, INodeService nodeService, IWindowService windowService, ISettingsService settingsService)
+    public EventConditionViewModel(EventCondition eventCondition, IProfileEditorService profileEditorService, IWindowService windowService, ISettingsService settingsService)
     {
         _eventCondition = eventCondition;
         _profileEditorService = profileEditorService;
-        _nodeService = nodeService;
         _windowService = windowService;
         _settingsService = settingsService;
         _showOverlapOptions = this.WhenAnyValue(vm => vm.SelectedTriggerMode).Select(m => m == 0).ToProperty(this, vm => vm.ShowOverlapOptions);
@@ -45,7 +43,7 @@ public class EventConditionViewModel : ActivatableViewModelBase
             _selectedToggleOffMode = eventCondition.WhenAnyValue(c => c.OverlapMode).Select(m => (int) m).ToProperty(this, vm => vm.SelectedOverlapMode).DisposeWith(d);
         });
 
-        OpenEditor = ReactiveCommand.CreateFromTask(ExecuteOpenEditor);
+        OpenEditor = ReactiveCommand.CreateFromTask(ExecuteOpenEditor, this.WhenAnyValue(vm => vm.EventPath).Select(p => p != null));
     }
 
     public ReactiveCommand<Unit, Unit> OpenEditor { get; }

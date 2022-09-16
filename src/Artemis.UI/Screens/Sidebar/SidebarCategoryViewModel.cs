@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -15,6 +16,7 @@ using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using DynamicData;
 using DynamicData.Binding;
+using Newtonsoft.Json;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
@@ -53,9 +55,11 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
         ToggleCollapsed = ReactiveCommand.Create(ExecuteToggleCollapsed);
         ToggleSuspended = ReactiveCommand.Create(ExecuteToggleSuspended);
         AddProfile = ReactiveCommand.CreateFromTask(ExecuteAddProfile);
-        EditCategory = ReactiveCommand.CreateFromTask(ExecuteEditCategory);
+        ImportProfile = ReactiveCommand.CreateFromTask(ExecuteImportProfile);
         MoveUp = ReactiveCommand.Create(ExecuteMoveUp);
         MoveDown = ReactiveCommand.Create(ExecuteMoveDown);
+        RenameCategory = ReactiveCommand.CreateFromTask(ExecuteRenameCategory);
+        DeleteCategory = ReactiveCommand.CreateFromTask(ExecuteDeleteCategory);
 
         this.WhenActivated(d =>
         {
@@ -67,14 +71,33 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
                 .Subscribe(e => profileConfigurations.RemoveMany(profileConfigurations.Items.Where(c => c == e.EventArgs.ProfileConfiguration)))
                 .DisposeWith(d);
 
-            profileEditorService.ProfileConfiguration.Subscribe(p => SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(c => ReferenceEquals(c.ProfileConfiguration, p)))
+            profileEditorService.ProfileConfiguration
+                .Subscribe(p => SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(c => ReferenceEquals(c.ProfileConfiguration, p)))
                 .DisposeWith(d);
 
             _isCollapsed = ProfileCategory.WhenAnyValue(vm => vm.IsCollapsed).ToProperty(this, vm => vm.IsCollapsed).DisposeWith(d);
             _isSuspended = ProfileCategory.WhenAnyValue(vm => vm.IsSuspended).ToProperty(this, vm => vm.IsSuspended).DisposeWith(d);
 
             // Change the current profile configuration when a new one is selected
-            this.WhenAnyValue(vm => vm.SelectedProfileConfiguration).WhereNotNull().Subscribe(s => profileEditorService.ChangeCurrentProfileConfiguration(s.ProfileConfiguration));
+            this.WhenAnyValue(vm => vm.SelectedProfileConfiguration)
+                .WhereNotNull()
+                .Subscribe(s =>
+                {
+                    try
+                    {
+                        profileEditorService.ChangeCurrentProfileConfiguration(s.ProfileConfiguration);
+                    }
+                    catch (Exception e)
+                    {
+                        if (s.ProfileConfiguration.BrokenState != null && s.ProfileConfiguration.BrokenStateException != null)
+                            _windowService.ShowExceptionDialog(s.ProfileConfiguration.BrokenState, s.ProfileConfiguration.BrokenStateException);
+                        else
+                            _windowService.ShowExceptionDialog(e.Message, e);
+                        
+                        profileEditorService.ChangeCurrentProfileConfiguration(null);
+                        SelectedProfileConfiguration = null;
+                    }
+                });
         });
 
         profileConfigurations.Edit(updater =>
@@ -84,12 +107,14 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
         });
     }
 
+    public ReactiveCommand<Unit, Unit> ImportProfile { get; }
     public ReactiveCommand<Unit, Unit> ToggleCollapsed { get; }
     public ReactiveCommand<Unit, Unit> ToggleSuspended { get; }
     public ReactiveCommand<Unit, Unit> AddProfile { get; }
-    public ReactiveCommand<Unit, Unit> EditCategory { get; }
     public ReactiveCommand<Unit, Unit> MoveUp { get; }
     public ReactiveCommand<Unit, Unit> MoveDown { get; }
+    public ReactiveCommand<Unit, Unit> RenameCategory { get; }
+    public ReactiveCommand<Unit, Unit> DeleteCategory { get; }
 
     public ProfileCategory ProfileCategory { get; }
     public ReadOnlyObservableCollection<SidebarProfileConfigurationViewModel> ProfileConfigurations { get; }
@@ -114,18 +139,23 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
             _profileService.SaveProfileCategory(oldCategory);
     }
 
-    private async Task ExecuteEditCategory()
+    private async Task ExecuteRenameCategory()
     {
         await _windowService.CreateContentDialog()
             .WithTitle("Edit category")
             .WithViewModel(out SidebarCategoryEditViewModel vm, ("category", ProfileCategory))
             .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Confirm))
-            .HavingSecondaryButton(b => b.WithText("Delete").WithCommand(vm.Delete))
             .WithCloseButtonText("Cancel")
             .WithDefaultButton(ContentDialogButton.Primary)
             .ShowAsync();
 
         _sidebarViewModel.UpdateProfileCategories();
+    }
+
+    private async Task ExecuteDeleteCategory()
+    {
+        if (await _windowService.ShowConfirmContentDialog($"Delete {ProfileCategory.Name}", "Do you want to delete this category and all its profiles?"))
+            _profileService.DeleteProfileCategory(ProfileCategory);
     }
 
     private async Task ExecuteAddProfile()
@@ -138,6 +168,42 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
         {
             SidebarProfileConfigurationViewModel viewModel = _vmFactory.SidebarProfileConfigurationViewModel(_sidebarViewModel, result);
             SelectedProfileConfiguration = viewModel;
+        }
+    }
+
+    private async Task ExecuteImportProfile()
+    {
+        string[]? result = await _windowService.CreateOpenFileDialog()
+            .HavingFilter(f => f.WithExtension("json").WithName("Artemis profile"))
+            .ShowAsync();
+
+        if (result == null)
+            return;
+
+        string json = await File.ReadAllTextAsync(result[0]);
+        ProfileConfigurationExportModel? profileConfigurationExportModel = null;
+        try
+        {
+            profileConfigurationExportModel = JsonConvert.DeserializeObject<ProfileConfigurationExportModel>(json, IProfileService.ExportSettings);
+        }
+        catch (JsonException e)
+        {
+            _windowService.ShowExceptionDialog("Import profile failed", e);
+        }
+
+        if (profileConfigurationExportModel == null)
+        {
+            await _windowService.ShowConfirmContentDialog("Import profile", "Failed to import this profile, make sure it is a valid Artemis profile.", "Confirm", null);
+            return;
+        }
+
+        try
+        {
+            _profileService.ImportProfile(ProfileCategory, profileConfigurationExportModel);
+        }
+        catch (Exception e)
+        {
+            _windowService.ShowExceptionDialog("Import profile failed", e);
         }
     }
 

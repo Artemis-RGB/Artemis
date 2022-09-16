@@ -76,18 +76,23 @@ public class PropertiesViewModel : ActivatableViewModelBase
         });
 
         // Subscribe to events of the latest selected profile element - borrowed from https://stackoverflow.com/a/63950940
-        this.WhenAnyValue(vm => vm.ProfileElement)
-            .Select(p => p is Layer l
-                ? Observable.FromEventPattern(x => l.LayerBrushUpdated += x, x => l.LayerBrushUpdated -= x)
-                : Observable.Never<EventPattern<object>>())
-            .Switch()
-            .Subscribe(_ => UpdatePropertyGroups());
-        this.WhenAnyValue(vm => vm.ProfileElement)
-            .Select(p => p != null
-                ? Observable.FromEventPattern(x => p.LayerEffectsUpdated += x, x => p.LayerEffectsUpdated -= x)
-                : Observable.Never<EventPattern<object>>())
-            .Switch()
-            .Subscribe(_ => UpdatePropertyGroups());
+        this.WhenActivated(d =>
+        {
+            this.WhenAnyValue(vm => vm.ProfileElement)
+                .Select(p => p is Layer l
+                    ? Observable.FromEventPattern(x => l.LayerBrushUpdated += x, x => l.LayerBrushUpdated -= x)
+                    : Observable.Never<EventPattern<object>>())
+                .Switch()
+                .Subscribe(_ => UpdatePropertyGroups())
+                .DisposeWith(d);
+            this.WhenAnyValue(vm => vm.ProfileElement)
+                .Select(p => p != null
+                    ? Observable.FromEventPattern(x => p.LayerEffectsUpdated += x, x => p.LayerEffectsUpdated -= x)
+                    : Observable.Never<EventPattern<object>>())
+                .Switch()
+                .Subscribe(_ => UpdatePropertyGroups())
+                .DisposeWith(d);
+        });
         this.WhenAnyValue(vm => vm.ProfileElement).Subscribe(_ => UpdatePropertyGroups());
         this.WhenAnyValue(vm => vm.LayerProperty).Subscribe(_ => UpdateTimelineViewModel());
     }

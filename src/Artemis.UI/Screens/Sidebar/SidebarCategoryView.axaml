@@ -14,15 +14,61 @@
              x:DataType="local:SidebarCategoryViewModel">
     <UserControl.Resources>
         <converters:ColorOpacityConverter x:Key="ColorOpacityConverter" />
+        <MenuFlyout x:Key="CategoryMenuFlyout" Placement="Bottom">
+            <MenuItem Header="Suspend" Command="{CompiledBinding ToggleSuspended}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding IsSuspended}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Move up" Command="{CompiledBinding MoveUp}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="ArrowUp" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Move down" Command="{CompiledBinding MoveDown}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="ArrowDown" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="-" />
+            <MenuItem Header="Rename" Command="{CompiledBinding RenameCategory}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="RenameBox" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Delete" Command="{CompiledBinding DeleteCategory}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="TrashCan" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuFlyout>
+        <MenuFlyout x:Key="PlusMenuFlyout" Placement="Bottom">
+            <MenuItem Header="Create profile" Command="{CompiledBinding AddProfile}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Plus" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Import profile" Command="{CompiledBinding ImportProfile}">
+                <MenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Import" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuFlyout>
     </UserControl.Resources>
     <UserControl.Styles>
-        <Style Selector=":is(Button).category-button">
+        <Style Selector=":is(Button).properties-button">
             <Setter Property="IsVisible" Value="False" />
         </Style>
-        <Style Selector="Grid#ContainerGrid:pointerover :is(Button).category-button">
+        <Style Selector="Grid#ContainerGrid:pointerover :is(Button).properties-button">
             <Setter Property="IsVisible" Value="True" />
         </Style>
-
+        <Style Selector="Grid#ContainerGrid.flyout-open :is(Button).properties-button">
+            <Setter Property="IsVisible" Value="True" />
+        </Style> 
+        <Style Selector="Grid#ContainerGrid.plus-flyout-open :is(Button).properties-button">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        
         <Style Selector="avalonia|MaterialIcon.chevron-collapsed">
             <Setter Property="RenderTransform" Value="rotate(180deg)" />
         </Style>
@@ -89,33 +135,14 @@
             </Setter>
         </Style>
     </UserControl.Styles>
-    <Grid x:Name="ContainerGrid" Margin="0 8 0 0" RowDefinitions="Auto,*" >
-        <Grid.ContextFlyout>
-            <MenuFlyout>
-                <MenuItem Header="View properties" Command="{CompiledBinding EditCategory}">
-                    <MenuItem.Icon>
-                        <avalonia:MaterialIcon Kind="Cog" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Suspend" Command="{CompiledBinding ToggleSuspended}">
-                    <MenuItem.Icon>
-                        <avalonia:MaterialIcon Kind="Check" IsVisible="{CompiledBinding IsSuspended}" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="-" />
-                <MenuItem Header="Move up" Command="{CompiledBinding MoveUp}">
-                    <MenuItem.Icon>
-                        <avalonia:MaterialIcon Kind="ArrowUp" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Move down" Command="{CompiledBinding MoveDown}">
-                    <MenuItem.Icon>
-                        <avalonia:MaterialIcon Kind="ArrowDown" />
-                    </MenuItem.Icon>
-                </MenuItem>
-            </MenuFlyout>
-        </Grid.ContextFlyout>
-        <Grid Grid.Row="0" Background="Transparent" Margin="0 0 6 0" ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto">
+    
+    <Grid Name="ContainerGrid"
+          Margin="0 8 0 0" 
+          RowDefinitions="Auto,*" 
+          ContextFlyout="{StaticResource CategoryMenuFlyout}"
+          Classes.flyout-open="{Binding IsOpen, Source={StaticResource CategoryMenuFlyout}}"
+          Classes.plus-flyout-open="{Binding IsOpen, Source={StaticResource PlusMenuFlyout}}">
+        <Grid Grid.Row="0" Background="Transparent" Margin="0 0 6 0" ColumnDefinitions="Auto,*,Auto,Auto,Auto">
             <avalonia:MaterialIcon Classes.chevron-collapsed="{CompiledBinding !IsCollapsed}"
                                    Kind="ChevronUp"
                                    Grid.Column="0"
@@ -162,43 +189,49 @@
                 </Border>
             </Panel>
 
-            <Button Classes="category-button icon-button icon-button-small"
+            <Button Classes="properties-button icon-button icon-button-small"
                     Grid.Column="2"
-                    ToolTip.Tip="Edit category"
                     HorizontalAlignment="Right"
-                    Command="{CompiledBinding EditCategory}"
+                    Flyout="{StaticResource PlusMenuFlyout}"
+                    Margin="0 0 2 0">
+                <avalonia:MaterialIcon Kind="Plus" />
+            </Button>
+            
+            <Button Classes="properties-button icon-button icon-button-small"
+                    Grid.Column="3"
+                    HorizontalAlignment="Right"
+                    Flyout="{StaticResource CategoryMenuFlyout}"
                     Margin="0 0 2 0">
                 <avalonia:MaterialIcon Kind="Cog" />
             </Button>
             <Button Classes="icon-button icon-button-small"
                     Command="{CompiledBinding ToggleSuspended}"
-                    Grid.Column="3"
-                    ToolTip.Tip="Suspend/resume profile"
+                    Grid.Column="4"
+                    ToolTip.Tip="Suspend/resume category"
                     Margin="0 0 2 0">
                 <Panel>
                     <avalonia:MaterialIcon Kind="EyeOff" IsVisible="{CompiledBinding IsSuspended}" />
                     <avalonia:MaterialIcon Kind="Eye" IsVisible="{CompiledBinding !IsSuspended}" />
                 </Panel>
             </Button>
-            <Button Classes="category-button icon-button icon-button-small"
-                    Grid.Column="4"
-                    ToolTip.Tip="Add profile"
-                    HorizontalAlignment="Right"
-                    Command="{CompiledBinding AddProfile}"
-                    Margin="0 0 2 0">
-                <avalonia:MaterialIcon Kind="Plus" />
-            </Button>
         </Grid>
 
-        <Border Grid.Row="1">
+        <Panel Grid.Row="1">
             <ListBox Name="SidebarListBox"
                      Classes="sidebar-listbox"
                      Items="{CompiledBinding ProfileConfigurations}"
                      SelectedItem="{CompiledBinding SelectedProfileConfiguration}"
-                     MinHeight="10"
+                     MinHeight="35"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      ScrollViewer.VerticalScrollBarVisibility="Disabled">
             </ListBox>
-        </Border>
+            <TextBlock IsVisible="{CompiledBinding !ProfileConfigurations.Count}" 
+                       Margin="12 0 0 0"
+                       FontSize="13"
+                       VerticalAlignment="Center" 
+                       HorizontalAlignment="Left"
+                       IsHitTestVisible="False"
+                       Classes="subtitle">Empty category</TextBlock>
+        </Panel>
     </Grid>
 </UserControl>

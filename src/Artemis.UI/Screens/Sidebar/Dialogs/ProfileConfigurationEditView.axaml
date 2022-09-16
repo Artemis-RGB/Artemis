@@ -76,18 +76,20 @@
 
                         <StackPanel Orientation="Horizontal"
                                     IsVisible="{CompiledBinding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.BitmapImage}}">
-                                                       
-                            <Border IsVisible="{CompiledBinding ProfileConfiguration.Icon.Fill}" Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="78" Height="78">
+
+                            <Border IsVisible="{CompiledBinding ProfileConfiguration.Icon.Fill}" Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}"
+                                    Width="78" Height="78">
                                 <Border Name="FillPreview" Background="{DynamicResource TextFillColorPrimary}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10">
                                     <Border.OpacityMask>
                                         <ImageBrush Source="{CompiledBinding SelectedBitmapSource}" BitmapInterpolationMode="HighQuality" />
                                     </Border.OpacityMask>
                                 </Border>
                             </Border>
-                            <Border IsVisible="{CompiledBinding !ProfileConfiguration.Icon.Fill}" Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="78" Height="78">
+                            <Border IsVisible="{CompiledBinding !ProfileConfiguration.Icon.Fill}" Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}"
+                                    Width="78" Height="78">
                                 <Image Source="{CompiledBinding SelectedBitmapSource}" Margin="10" />
                             </Border>
-                            
+
                             <Button Command="{CompiledBinding BrowseBitmapFile}"
                                     VerticalAlignment="Bottom"
                                     Margin="10 0"
@@ -96,7 +98,7 @@
                             </Button>
                             <CheckBox VerticalAlignment="Bottom" IsChecked="{CompiledBinding ProfileConfiguration.Icon.Fill}">Fill</CheckBox>
                         </StackPanel>
-                        
+
                         <StackPanel Orientation="Horizontal"
                                     IsVisible="{CompiledBinding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.MaterialIcon}}">
                             <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="78" Height="78">
@@ -169,8 +171,8 @@
                         <Border CornerRadius="5" ClipToBounds="True">
                             <ContentControl Content="{CompiledBinding VisualEditorViewModel}" Height="150" />
                         </Border>
-                        <Border Background="Black" Opacity="0.5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CornerRadius="5"/>
-                        
+                        <Border Background="Black" Opacity="0.5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CornerRadius="5" />
+
                         <Button DockPanel.Dock="Bottom"
                                 ToolTip.Tip="Open editor"
                                 HorizontalAlignment="Center"
@@ -185,12 +187,11 @@
             </StackPanel>
         </ScrollViewer>
 
-        <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,Auto" HorizontalAlignment="Right">
-            <Button Grid.Column="0" Classes="accent" Command="{CompiledBinding Confirm}">Confirm</Button>
-            <Button Grid.Column="1" Margin="5" Command="{CompiledBinding Import}" IsVisible="{CompiledBinding IsNew}">Import</Button>
-            <Button Grid.Column="1" Margin="5" Command="{CompiledBinding Delete}" IsVisible="{CompiledBinding !IsNew}">Delete</Button>
-            <Button Grid.Column="2" Command="{CompiledBinding Cancel}">Cancel</Button>
-        </Grid>
+        <StackPanel Grid.Row="1" Spacing="5" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Command="{CompiledBinding Confirm}" Classes="accent">Confirm</Button>
+            <Button Command="{CompiledBinding Delete}" IsVisible="{CompiledBinding !IsNew}">Delete</Button>
+            <Button Command="{CompiledBinding Cancel}">Cancel</Button>
+        </StackPanel>
     </Grid>
 
 </controls1:CoreWindow>
