@@ -21,7 +21,7 @@
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <shared:ArtemisIcon Icon="{CompiledBinding Info.ResolvedIcon}" Width="16" Height="16" Margin="0 0 5 0" />
+                            <shared:ArtemisIcon Icon="{CompiledBinding Plugin.Info.ResolvedIcon}" Width="16" Height="16" Margin="0 0 5 0" />
                             <TextBlock Text="{CompiledBinding LanguageName}" />
                         </StackPanel>
                     </DataTemplate>

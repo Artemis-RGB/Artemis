@@ -56,6 +56,9 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
         // If the path is a regular value, evaluate the current value
         else if (_oldValuePin != null && _newValuePin != null)
         {
+            if (_newValuePin.IsNumeric)
+                pathValue = new Numeric(pathValue);
+            
             if (Equals(_lastValue, pathValue))
             {
                 TimeSinceLastTrigger.Value = (DateTime.Now - _lastTrigger).TotalMilliseconds;
@@ -118,6 +121,9 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
         Type? propertyType = _dataModelPath?.GetPropertyType();
         if (propertyType == null)
             return;
+
+        if (Numeric.IsTypeCompatible(propertyType))
+            propertyType = typeof(Numeric);
 
         _oldValuePin = CreateOrAddOutputPin(propertyType, "Old value");
         _newValuePin = CreateOrAddOutputPin(propertyType, "New value");

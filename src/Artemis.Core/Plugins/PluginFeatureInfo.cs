@@ -31,20 +31,7 @@ public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
 
         Name = attribute?.Name ?? featureType.Name.Humanize(LetterCasing.Title);
         Description = attribute?.Description;
-        Icon = attribute?.Icon;
         AlwaysEnabled = attribute?.AlwaysEnabled ?? false;
-
-        if (Icon != null) return;
-        if (typeof(DeviceProvider).IsAssignableFrom(featureType))
-            Icon = "Devices";
-        else if (typeof(Module).IsAssignableFrom(featureType))
-            Icon = "VectorRectangle";
-        else if (typeof(LayerBrushProvider).IsAssignableFrom(featureType))
-            Icon = "Brush";
-        else if (typeof(LayerEffectProvider).IsAssignableFrom(featureType))
-            Icon = "AutoAwesome";
-        else
-            Icon = "Plugin";
     }
 
     internal PluginFeatureInfo(Plugin plugin, PluginFeatureAttribute? attribute, PluginFeature instance)
@@ -56,19 +43,8 @@ public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
 
         Name = attribute?.Name ?? instance.GetType().Name.Humanize(LetterCasing.Title);
         Description = attribute?.Description;
-        Icon = attribute?.Icon;
         AlwaysEnabled = attribute?.AlwaysEnabled ?? false;
         Instance = instance;
-
-        if (Icon != null) return;
-        Icon = Instance switch
-        {
-            DeviceProvider => "Devices",
-            Module => "VectorRectangle",
-            LayerBrushProvider => "Brush",
-            LayerEffectProvider => "AutoAwesome",
-            _ => "Plugin"
-        };
     }
 
     /// <summary>
@@ -111,17 +87,6 @@ public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
     }
 
     /// <summary>
-    ///     The plugins display icon that's shown in the settings see <see href="https://materialdesignicons.com" /> for
-    ///     available icons
-    /// </summary>
-    [JsonProperty]
-    public string? Icon
-    {
-        get => _icon;
-        set => SetAndNotify(ref _icon, value);
-    }
-
-    /// <summary>
     ///     Marks the feature to always be enabled as long as the plugin is enabled and cannot be disabled.
     ///     <para>Note: always <see langword="true" /> if this is the plugin's only feature</para>
     /// </summary>
@@ -142,20 +107,7 @@ public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
         get => _instance;
         internal set => SetAndNotify(ref _instance, value);
     }
-
-    /// <summary>
-    ///     Gets a string representing either a full path pointing to an svg or the markdown icon
-    /// </summary>
-    public string? ResolvedIcon
-    {
-        get
-        {
-            if (Icon == null)
-                return null;
-            return Icon.Contains('.') ? Plugin.ResolveRelativePath(Icon) : Icon;
-        }
-    }
-
+    
     internal PluginFeatureEntity Entity { get; }
 
     /// <inheritdoc />

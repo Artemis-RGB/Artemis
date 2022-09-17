@@ -23,7 +23,7 @@
                                 <shared:ArtemisIcon Grid.Row="0"
                                                     Grid.Column="0"
                                                     Grid.RowSpan="2"
-                                                    Icon="{CompiledBinding ScriptConfiguration.Script.ScriptingProvider.Info.ResolvedIcon, FallbackValue=QuestionMark}"
+                                                    Icon="{CompiledBinding ScriptConfiguration.Script.ScriptingProvider.Plugin.Info.ResolvedIcon, FallbackValue=QuestionMark}"
                                                     Width="32 "
                                                     Height="32"
                                                     Margin="0 0 10 0"
