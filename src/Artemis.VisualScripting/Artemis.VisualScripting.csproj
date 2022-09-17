@@ -37,6 +37,9 @@
           <DependentUpon>DataModelEventNodeCustomView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
+        <Compile Update="Nodes\Color\Screens\ColorGradientNodeCustomView.axaml.cs">
+          <DependentUpon>ColorGradientNodeCustomView.axaml</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 </Project>

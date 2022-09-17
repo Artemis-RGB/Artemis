@@ -15,8 +15,8 @@ public class ColorGradientNodeCustomViewModel : CustomNodeViewModel
     {
         _node = node;
         _nodeEditorService = nodeEditorService;
-
-        Gradient = _node.Storage ?? new ColorGradient();
+        
+        Gradient = _node.Gradient;
     }
 
     public ColorGradient Gradient { get; }

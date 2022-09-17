@@ -7,10 +7,9 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.VisualScripting.Nodes.Color.Screens.ColorGradientNodeCustomView"
              x:DataType="screens:ColorGradientNodeCustomViewModel">
-    <gradientPicker:GradientPickerButton Width="110"
-                                         Classes="condensed"
+    <gradientPicker:GradientPickerButton Classes="condensed"
                                          ColorGradient="{CompiledBinding Gradient}"
-                                         VerticalAlignment="Top" 
+                                         VerticalAlignment="Top"
                                          FlyoutOpened="GradientPickerButton_OnFlyoutOpened"
-                                         FlyoutClosed="GradientPickerButton_OnFlyoutClosed"/>
+                                         FlyoutClosed="GradientPickerButton_OnFlyoutClosed" />
 </UserControl>

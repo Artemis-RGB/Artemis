@@ -26,14 +26,14 @@ public class ColorGradientFromPinsNode : Node
 
     private void OnPinRemoved(object? sender, SingleValueEventArgs<IPin> e)
     {
-        var colorsCount = Colors.Count();
-        var positionsCount = Positions.Count();
+        int colorsCount = Colors.Count();
+        int positionsCount = Positions.Count();
         if (colorsCount == positionsCount)
             return;
 
         while (colorsCount > positionsCount)
         {
-            var pinToRemove = Colors.Last();
+            IPin pinToRemove = Colors.Last();
             Colors.Remove(pinToRemove);
 
             --colorsCount;
@@ -41,7 +41,7 @@ public class ColorGradientFromPinsNode : Node
 
         while (positionsCount > colorsCount)
         {
-            var pinToRemove = Positions.Last();
+            IPin pinToRemove = Positions.Last();
             Positions.Remove(pinToRemove);
             --positionsCount;
         }
@@ -51,8 +51,8 @@ public class ColorGradientFromPinsNode : Node
 
     private void OnPinAdded(object? sender, SingleValueEventArgs<IPin> e)
     {
-        var colorsCount = Colors.Count();
-        var positionsCount = Positions.Count();
+        int colorsCount = Colors.Count();
+        int positionsCount = Positions.Count();
         if (colorsCount == positionsCount)
             return;
 
@@ -76,13 +76,13 @@ public class ColorGradientFromPinsNode : Node
     private void RenamePins()
     {
         int colors = 0;
-        foreach (var item in Colors)
+        foreach (IPin item in Colors)
         {
             item.Name = $"Color #{++colors}";
         }
 
         int positions = 0;
-        foreach(var item in Positions)
+        foreach (IPin item in Positions)
         {
             item.Name = $"Position #{++positions}";
         }
@@ -90,9 +90,9 @@ public class ColorGradientFromPinsNode : Node
 
     public override void Evaluate()
     {
-        var stops = new List<ColorGradientStop>();
-        var colors = Colors.Pins.ToArray();
-        var positions = Positions.Pins.ToArray();
+        List<ColorGradientStop> stops = new List<ColorGradientStop>();
+        InputPin<SKColor>[] colors = Colors.Pins.ToArray();
+        InputPin<Numeric>[] positions = Positions.Pins.ToArray();
         for (int i = 0; i < colors.Length; i++)
         {
             stops.Add(new ColorGradientStop(colors[i].Value, positions[i].Value));
