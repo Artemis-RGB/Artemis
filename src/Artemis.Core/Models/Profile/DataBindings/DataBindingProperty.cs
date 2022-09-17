@@ -35,7 +35,7 @@ public class DataBindingProperty<TProperty> : IDataBindingProperty
     }
 
     /// <inheritdoc />
-    public void SetValue(object? value)
+    public void SetValue(object value)
     {
         // Numeric has a bunch of conversion, this seems the cheapest way to use them :)
         switch (value)

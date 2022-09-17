@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
 using Artemis.Core.Events;
-using Ninject;
-using Ninject.Parameters;
 
 namespace Artemis.Core;
 
@@ -339,7 +336,8 @@ public abstract class Node : BreakableModel, INode
     }
 
     /// <summary>
-    ///     Called when the node was loaded from storage or newly created, at this point pin connections aren't reestablished yet.
+    ///     Called when the node was loaded from storage or newly created, at this point pin connections aren't reestablished
+    ///     yet.
     /// </summary>
     /// <param name="script">The script the node is contained in</param>
     public virtual void Initialize(INodeScript script)
@@ -375,16 +373,6 @@ public abstract class Node : BreakableModel, INode
     }
 
     /// <summary>
-    ///     Called whenever the node must show it's custom view model, if <see langword="null" />, no custom view model is used
-    /// </summary>
-    /// <param name="nodeScript"></param>
-    /// <returns>The custom view model, if <see langword="null" />, no custom view model is used</returns>
-    public virtual ICustomNodeViewModel? GetCustomViewModel(NodeScript nodeScript)
-    {
-        return null;
-    }
-
-    /// <summary>
     ///     Serializes the <see cref="Storage" /> object into a string
     /// </summary>
     /// <returns>The serialized object</returns>
@@ -402,102 +390,4 @@ public abstract class Node : BreakableModel, INode
     }
 
     #endregion
-}
-
-/// <summary>
-///     Represents a kind of node inside a <see cref="NodeScript" /> containing storage value of type
-///     <typeparamref name="TStorage" />.
-/// </summary>
-/// <typeparam name="TStorage">The type of value the node stores</typeparam>
-public abstract class Node<TStorage> : Node
-{
-    private TStorage? _storage;
-
-    /// <inheritdoc />
-    protected Node()
-    {
-    }
-
-    /// <inheritdoc />
-    protected Node(string name, string description) : base(name, description)
-    {
-    }
-
-    /// <summary>
-    ///     Gets or sets the storage object of this node, this is saved across sessions
-    /// </summary>
-    public TStorage? Storage
-    {
-        get => _storage;
-        set
-        {
-            if (SetAndNotify(ref _storage, value))
-                StorageModified?.Invoke(this, EventArgs.Empty);
-        }
-    }
-
-    /// <summary>
-    ///     Occurs whenever the storage of this node was modified.
-    /// </summary>
-    public event EventHandler? StorageModified;
-
-    /// <inheritdoc />
-    public override string SerializeStorage()
-    {
-        return CoreJson.SerializeObject(Storage, true);
-    }
-
-    /// <inheritdoc />
-    public override void DeserializeStorage(string serialized)
-    {
-        Storage = CoreJson.DeserializeObject<TStorage>(serialized) ?? default(TStorage);
-    }
-}
-
-/// <summary>
-///     Represents a kind of node inside a <see cref="NodeScript" /> containing storage value of type
-///     <typeparamref name="TStorage" /> and a view model of type <typeparamref name="TViewModel" />.
-/// </summary>
-/// <typeparam name="TStorage">The type of value the node stores</typeparam>
-/// <typeparam name="TViewModel">The type of view model the node uses</typeparam>
-public abstract class Node<TStorage, TViewModel> : Node<TStorage> where TViewModel : ICustomNodeViewModel
-{
-    /// <inheritdoc />
-    protected Node()
-    {
-    }
-
-    /// <inheritdoc />
-    protected Node(string name, string description) : base(name, description)
-    {
-    }
-
-    [Inject]
-    internal IKernel Kernel { get; set; } = null!;
-
-    /// <summary>
-    ///     Called when a view model is required
-    /// </summary>
-    /// <param name="nodeScript"></param>
-    public virtual TViewModel GetViewModel(NodeScript nodeScript)
-    {
-        // Limit to one constructor, there's no need to have more and it complicates things anyway
-        ConstructorInfo[] constructors = typeof(TViewModel).GetConstructors();
-        if (constructors.Length != 1)
-            throw new ArtemisCoreException("Node VMs must have exactly one constructor");
-
-        // Find the ScriptConfiguration parameter, it is required by the base constructor so its there for sure
-        ParameterInfo? configurationParameter = constructors.First().GetParameters().FirstOrDefault(p => GetType().IsAssignableFrom(p.ParameterType));
-
-        if (configurationParameter?.Name == null)
-            throw new ArtemisCoreException($"Couldn't find a valid constructor argument on {typeof(TViewModel).Name} with type {GetType().Name}");
-        return Kernel.Get<TViewModel>(new ConstructorArgument(configurationParameter.Name, this), new ConstructorArgument("script", nodeScript));
-    }
-
-    /// <param name="nodeScript"></param>
-    /// <inheritdoc />
-    public override ICustomNodeViewModel? GetCustomViewModel(NodeScript nodeScript)
-    {
-        return GetViewModel(nodeScript);
-    }
 }
