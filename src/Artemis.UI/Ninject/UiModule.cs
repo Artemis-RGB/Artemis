@@ -2,8 +2,10 @@
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Ninject.InstanceProviders;
 using Artemis.UI.Screens;
+using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Platform;
 using Avalonia.Shared.PlatformSupport;
@@ -57,6 +59,7 @@ public class UIModule : NinjectModule
                 .BindToFactory();
         });
 
+        Kernel.Bind<NodeScriptWindowViewModelBase>().To<NodeScriptWindowViewModel>();
         Kernel.Bind<IPropertyVmFactory>().ToFactory(() => new LayerPropertyViewModelInstanceProvider());
 
         // Bind all UI services as singletons

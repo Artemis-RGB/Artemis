@@ -71,14 +71,33 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
                 .Subscribe(e => profileConfigurations.RemoveMany(profileConfigurations.Items.Where(c => c == e.EventArgs.ProfileConfiguration)))
                 .DisposeWith(d);
 
-            profileEditorService.ProfileConfiguration.Subscribe(p => SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(c => ReferenceEquals(c.ProfileConfiguration, p)))
+            profileEditorService.ProfileConfiguration
+                .Subscribe(p => SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(c => ReferenceEquals(c.ProfileConfiguration, p)))
                 .DisposeWith(d);
 
             _isCollapsed = ProfileCategory.WhenAnyValue(vm => vm.IsCollapsed).ToProperty(this, vm => vm.IsCollapsed).DisposeWith(d);
             _isSuspended = ProfileCategory.WhenAnyValue(vm => vm.IsSuspended).ToProperty(this, vm => vm.IsSuspended).DisposeWith(d);
 
             // Change the current profile configuration when a new one is selected
-            this.WhenAnyValue(vm => vm.SelectedProfileConfiguration).WhereNotNull().Subscribe(s => profileEditorService.ChangeCurrentProfileConfiguration(s.ProfileConfiguration));
+            this.WhenAnyValue(vm => vm.SelectedProfileConfiguration)
+                .WhereNotNull()
+                .Subscribe(s =>
+                {
+                    try
+                    {
+                        profileEditorService.ChangeCurrentProfileConfiguration(s.ProfileConfiguration);
+                    }
+                    catch (Exception e)
+                    {
+                        if (s.ProfileConfiguration.BrokenState != null && s.ProfileConfiguration.BrokenStateException != null)
+                            _windowService.ShowExceptionDialog(s.ProfileConfiguration.BrokenState, s.ProfileConfiguration.BrokenStateException);
+                        else
+                            _windowService.ShowExceptionDialog(e.Message, e);
+                        
+                        profileEditorService.ChangeCurrentProfileConfiguration(null);
+                        SelectedProfileConfiguration = null;
+                    }
+                });
         });
 
         profileConfigurations.Edit(updater =>
@@ -88,10 +107,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
         });
     }
 
-
-
     public ReactiveCommand<Unit, Unit> ImportProfile { get; }
-
     public ReactiveCommand<Unit, Unit> ToggleCollapsed { get; }
     public ReactiveCommand<Unit, Unit> ToggleSuspended { get; }
     public ReactiveCommand<Unit, Unit> AddProfile { get; }
@@ -154,7 +170,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
             SelectedProfileConfiguration = viewModel;
         }
     }
-    
+
     private async Task ExecuteImportProfile()
     {
         string[]? result = await _windowService.CreateOpenFileDialog()

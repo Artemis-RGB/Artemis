@@ -5,11 +5,17 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.Core.DeviceProviders;
+using Artemis.Core.LayerBrushes;
+using Artemis.Core.LayerEffects;
+using Artemis.Core.Modules;
+using Artemis.Core.ScriptingProviders;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Avalonia.Threading;
+using Material.Icons;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Plugins;
@@ -90,6 +96,42 @@ public class PluginFeatureViewModel : ActivatableViewModelBase
     public bool CanRemovePrerequisites => FeatureInfo.PlatformPrerequisites.Any(p => p.UninstallActions.Any());
     public bool IsPopupEnabled => CanInstallPrerequisites || CanRemovePrerequisites;
 
+    public MaterialIconKind FeatureIcon
+    {
+        get
+        {
+            if (FeatureInfo.FeatureType.IsAssignableTo(typeof(DeviceProvider)))
+                return MaterialIconKind.Devices;
+            if (FeatureInfo.FeatureType.IsAssignableTo(typeof(Module)))
+                return MaterialIconKind.VectorRectangle;
+            if (FeatureInfo.FeatureType.IsAssignableTo(typeof(LayerBrushProvider)))
+                return MaterialIconKind.Brush;
+            if (FeatureInfo.FeatureType.IsAssignableTo(typeof(LayerEffectProvider)))
+                return MaterialIconKind.AutoAwesome;
+            if (FeatureInfo.FeatureType.IsAssignableTo(typeof(ScriptingProvider)))
+                return MaterialIconKind.Code;
+            return MaterialIconKind.Extension;
+        }
+    }
+    
+    public string FeatureType 
+    {
+        get
+        {
+            if (FeatureInfo.FeatureType.IsAssignableTo(typeof(DeviceProvider)))
+                return "Device Provider";
+            if (FeatureInfo.FeatureType.IsAssignableTo(typeof(Module)))
+                return "Module";
+            if (FeatureInfo.FeatureType.IsAssignableTo(typeof(LayerBrushProvider)))
+                return "Layer Brush";
+            if (FeatureInfo.FeatureType.IsAssignableTo(typeof(LayerEffectProvider)))
+                return "Layer Effect";
+            if (FeatureInfo.FeatureType.IsAssignableTo(typeof(ScriptingProvider)))
+                return "Scripting Provider";
+            return "Miscellaneous feature";
+        }
+    }
+    
     private void ExecuteShowLogsFolder()
     {
         try

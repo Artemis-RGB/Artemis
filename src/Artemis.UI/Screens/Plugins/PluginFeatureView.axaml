@@ -25,12 +25,12 @@
         </Grid.ContextFlyout>
 
         <!-- Icon column -->
-        <shared:ArtemisIcon Grid.Column="0"
-                            Icon="{CompiledBinding FeatureInfo.ResolvedIcon}"
-                            Fill="False"
-                            Width="20"
-                            Height="20"
-                            IsVisible="{CompiledBinding LoadException, Converter={x:Static ObjectConverters.IsNull}}" />
+        <avalonia:MaterialIcon Grid.Column="0"
+                               ToolTip.Tip="{CompiledBinding FeatureType}"
+                               Kind="{CompiledBinding FeatureIcon}"
+                               Width="20"
+                               Height="20"
+                               IsVisible="{CompiledBinding LoadException, Converter={x:Static ObjectConverters.IsNull}}" />
 
         <Button Grid.Column="0"
                 Classes="AppBarButton icon-button"

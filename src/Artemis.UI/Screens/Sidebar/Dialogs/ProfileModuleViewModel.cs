@@ -10,7 +10,7 @@ public class ProfileModuleViewModel : ViewModelBase
     {
         Module = module;
         Name = module.Info.Name;
-        Icon = module.Info.ResolvedIcon ?? MaterialIconKind.QuestionMark.ToString();
+        Icon = module.Plugin.Info.ResolvedIcon ?? MaterialIconKind.QuestionMark.ToString();
         Description = module.Info.Description;
     }
 

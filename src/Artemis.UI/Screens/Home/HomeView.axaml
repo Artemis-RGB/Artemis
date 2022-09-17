@@ -70,7 +70,7 @@
 							<Grid Margin="8" RowDefinitions="*,*">
 								<controls:HyperlinkButton Grid.Row="0" NavigateUri="https://github.com/Artemis-RGB/Artemis">
 									<StackPanel Orientation="Horizontal">
-										<avalonia:MaterialIcon Kind="Gift" />
+										<avalonia:MaterialIcon Kind="Github" />
 										<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">GitHub</TextBlock>
 									</StackPanel>
 								</controls:HyperlinkButton>
