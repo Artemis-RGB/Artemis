@@ -102,7 +102,7 @@ public class ColorGradientNode : Node<ColorGradient, ColorGradientNodeCustomView
         if (e.Action == NotifyCollectionChangedAction.Move)
             return;
 
-        DisconnectAllInputPins();
+        // DisconnectAllInputPins();
         ComputeInputPins();
     }
 }
