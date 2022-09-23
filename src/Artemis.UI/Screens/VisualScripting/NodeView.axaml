@@ -51,7 +51,7 @@
                             <avalonia:MaterialIcon Kind="AlertCircle"></avalonia:MaterialIcon>
                         </Button>
 
-                        <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="10 0 0 0" Text="{CompiledBinding Node.Name}" ToolTip.Tip="{CompiledBinding Node.Description}"/>
+                        <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="10 0 0 0" Text="{CompiledBinding Node.Name}" ToolTip.Tip="{CompiledBinding Node.Description}" />
 
                         <Button Grid.Column="2" VerticalAlignment="Center" Classes="icon-button icon-button-small" Margin="5" Command="{CompiledBinding DeleteNode}">
                             <avalonia:MaterialIcon Kind="Close"></avalonia:MaterialIcon>
@@ -60,21 +60,36 @@
                 </Border>
             </Border>
 
-            <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Margin="4">
-                <StackPanel Grid.Column="0" IsVisible="{CompiledBinding HasInputPins}">
+            <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*,Auto" Margin="4">
+                <ContentControl Grid.Row="0"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="3"
+                                Margin="5"
+                                Content="{CompiledBinding CustomNodeViewModel}"
+                                IsVisible="{CompiledBinding DisplayCustomViewModelAbove}" />
+
+                <StackPanel Grid.Row="1" Grid.Column="0" IsVisible="{CompiledBinding HasInputPins}">
                     <ItemsControl Items="{CompiledBinding InputPinViewModels}" Margin="4 0" />
                     <ItemsControl Items="{CompiledBinding InputPinCollectionViewModels}" />
                 </StackPanel>
 
-                <ContentControl Grid.Column="1"
-                                Name="CustomViewModelContainer"
+                <ContentControl Grid.Row="1"
+                                Grid.Column="1"
                                 Content="{CompiledBinding CustomNodeViewModel}"
-                                IsVisible="{CompiledBinding CustomNodeViewModel, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                VerticalAlignment="{CompiledBinding CustomViewModelVerticalAlignment}"
+                                IsVisible="{CompiledBinding DisplayCustomViewModelBetween}" />
 
-                <StackPanel Grid.Column="2" IsVisible="{CompiledBinding HasOutputPins}">
+                <StackPanel Grid.Row="1" Grid.Column="2" IsVisible="{CompiledBinding HasOutputPins}">
                     <ItemsControl Items="{CompiledBinding OutputPinViewModels}" Margin="4 0" />
                     <ItemsControl Items="{CompiledBinding OutputPinCollectionViewModels}" />
                 </StackPanel>
+
+                <ContentControl Grid.Row="2"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="3"
+                                Margin="5"
+                                Content="{CompiledBinding CustomNodeViewModel}"
+                                IsVisible="{CompiledBinding DisplayCustomViewModelBelow}" />
             </Grid>
         </Grid>
     </Border>

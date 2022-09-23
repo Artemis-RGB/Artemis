@@ -29,7 +29,22 @@ public class PlaybackViewModel : ActivatableViewModelBase
     {
         _profileEditorService = profileEditorService;
         _settingsService = settingsService;
-        _repeatTimeline = true;
+
+        if (_settingsService.GetSetting("ProfileEditor.RepeatTimeline", true).Value)
+        {
+            _repeating = true;
+            _repeatTimeline = true;
+        }
+        else if (_settingsService.GetSetting("ProfileEditor.RepeatSegment", false).Value)
+        {
+            _repeating = true;
+            _repeatSegment = true;
+        }
+        else
+        {
+            _repeating = false;
+            _repeatTimeline = true;
+        }
 
         this.WhenActivated(d =>
         {
@@ -42,7 +57,12 @@ public class PlaybackViewModel : ActivatableViewModelBase
             _lastUpdate = DateTime.MinValue;
             DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(60.0 / 1000), DispatcherPriority.Render, Update);
             updateTimer.Start();
-            Disposable.Create(() => updateTimer.Stop()).DisposeWith(d);
+            Disposable.Create(() =>
+            {
+                updateTimer.Stop();
+                _settingsService.GetSetting("ProfileEditor.RepeatTimeline", true).Value = _repeating && _repeatTimeline;
+                _settingsService.GetSetting("ProfileEditor.RepeatSegment", false).Value = _repeating && _repeatSegment;
+            }).DisposeWith(d);
         });
 
         PlayFromStart = ReactiveCommand.Create(ExecutePlayFromStart, this.WhenAnyValue(vm => vm.KeyBindingsEnabled));

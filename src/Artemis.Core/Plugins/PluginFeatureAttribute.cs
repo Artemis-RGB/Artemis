@@ -22,6 +22,7 @@ public class PluginFeatureAttribute : Attribute
     ///     The plugins display icon that's shown in the settings see <see href="https://materialdesignicons.com" /> for
     ///     available icons
     /// </summary>
+    [Obsolete("Feature icons are no longer shown in the UI.")]
     public string? Icon { get; set; }
 
     /// <summary>

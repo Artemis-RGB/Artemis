@@ -46,9 +46,6 @@ public class GradientPickerButton : TemplatedControl
         AvaloniaProperty.RegisterDirect<GradientPickerButton, LinearGradientBrush>(nameof(LinearGradientBrush), g => g.LinearGradientBrush);
 
     private Button? _button;
-    private GradientPickerFlyout? _flyout;
-    private bool _flyoutActive;
-
     private ColorGradient? _lastColorGradient;
 
     /// <summary>
@@ -150,27 +147,23 @@ public class GradientPickerButton : TemplatedControl
 
     private void OnButtonClick(object? sender, RoutedEventArgs e)
     {
-        if (_flyout == null || ColorGradient == null)
+        if (ColorGradient == null)
             return;
 
-        // Logic here is taken from Fluent Avalonia's ColorPicker which also reuses the same control since it's large
-        _flyout.GradientPicker.ColorGradient = ColorGradient;
-        _flyout.GradientPicker.IsCompact = IsCompact;
-        _flyout.GradientPicker.StorageProvider = StorageProvider;
+        GradientPickerFlyout flyout = new();
+        flyout.FlyoutPresenterClasses.Add("gradient-picker-presenter");
+        flyout.GradientPicker.ColorGradient = ColorGradient;
+        flyout.GradientPicker.IsCompact = IsCompact;
+        flyout.GradientPicker.StorageProvider = StorageProvider;
 
-        _flyout.ShowAt(this);
-        _flyoutActive = true;
-
+        flyout.Closed += FlyoutOnClosed;
+        flyout.ShowAt(this);
         FlyoutOpened?.Invoke(this, EventArgs.Empty);
-    }
 
-
-    private void OnFlyoutClosed(object? sender, EventArgs e)
-    {
-        if (_flyoutActive)
+        void FlyoutOnClosed(object? closedSender, EventArgs closedEventArgs)
         {
+            flyout.Closed -= FlyoutOnClosed;
             FlyoutClosed?.Invoke(this, EventArgs.Empty);
-            _flyoutActive = false;
         }
     }
 
@@ -191,22 +184,12 @@ public class GradientPickerButton : TemplatedControl
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         Subscribe();
-
-        if (_flyout == null)
-        {
-            _flyout = new GradientPickerFlyout();
-            _flyout.FlyoutPresenterClasses.Add("gradient-picker-presenter");
-        }
-
-        _flyout.Closed += OnFlyoutClosed;
     }
 
     /// <inheritdoc />
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         Unsubscribe();
-        if (_flyout != null)
-            _flyout.Closed -= OnFlyoutClosed;
     }
 
     #endregion

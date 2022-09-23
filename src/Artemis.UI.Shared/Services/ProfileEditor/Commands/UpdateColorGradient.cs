@@ -19,7 +19,7 @@ public class UpdateColorGradient : IProfileEditorCommand
     public UpdateColorGradient(ColorGradient colorGradient, List<ColorGradientStop> stops, List<ColorGradientStop>? originalStops)
     {
         _colorGradient = colorGradient;
-        _stops = stops;
+        _stops = stops.Select(s => new ColorGradientStop(s.Color, s.Position)).ToList();
         _originalStops = originalStops ?? _colorGradient.Select(s => new ColorGradientStop(s.Color, s.Position)).ToList();
     }
 
@@ -31,18 +31,36 @@ public class UpdateColorGradient : IProfileEditorCommand
     /// <inheritdoc />
     public void Execute()
     {
-        _colorGradient.Clear();
-        foreach (ColorGradientStop colorGradientStop in _stops)
-            _colorGradient.Add(colorGradientStop);
+        ApplyStops(_stops);
     }
 
     /// <inheritdoc />
     public void Undo()
     {
-        _colorGradient.Clear();
-        foreach (ColorGradientStop colorGradientStop in _originalStops)
-            _colorGradient.Add(colorGradientStop);
+        ApplyStops(_originalStops);
     }
 
     #endregion
+
+    private void ApplyStops(List<ColorGradientStop> stops)
+    {
+        while (_colorGradient.Count > stops.Count)
+            _colorGradient.RemoveAt(_colorGradient.Count - 1);
+
+        for (int index = 0; index < stops.Count; index++)
+        {
+            ColorGradientStop colorGradientStop = stops[index];
+            // Add missing color gradients
+            if (index >= _colorGradient.Count)
+            {
+                _colorGradient.Add(new ColorGradientStop(colorGradientStop.Color, colorGradientStop.Position));
+            }
+            // Update existing color gradients
+            else
+            {
+                _colorGradient[index].Color = colorGradientStop.Color;
+                _colorGradient[index].Position = colorGradientStop.Position;
+            }
+        }
+    }
 }
