@@ -23,7 +23,7 @@ public class RampSKColorNode : Node<ColorGradient, RampSKColorNodeCustomViewMode
 
     public override void Evaluate()
     {
-        Output.Value = Storage?.GetColor(Input.Value) ?? SKColor.Empty;
+        Output.Value = Storage?.GetColor(Input.Value % 1.0) ?? SKColor.Empty;
     }
 
     #endregion

@@ -55,10 +55,10 @@
                     <DataTemplate DataType="skiaSharp:SKColor">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                             <TextBlock x:Name="HexDisplay"
-                                       Text="{CompiledBinding Converter={StaticResource SKColorToStringConverter}}"
+                                       Text="{CompiledBinding Converter={StaticResource SKColorToStringConverter}, Mode=OneWay}"
                                        VerticalAlignment="Center"
-                                       HorizontalAlignment="Stretch" 
-                                       FontFamily="Consolas"/>
+                                       HorizontalAlignment="Stretch"
+                                       FontFamily="Consolas" />
                             <Border Margin="5 0 0 0"
                                     VerticalAlignment="Bottom"
                                     HorizontalAlignment="Right"
@@ -69,22 +69,25 @@
                                     BorderBrush="{DynamicResource ColorPickerButtonOutline}"
                                     CornerRadius="4"
                                     ClipToBounds="True">
-								<Border CornerRadius="4">
-									<Border.Background>
-										<SolidColorBrush Color="{Binding Converter={StaticResource SKColorToColorConverter}}" />
-									</Border.Background>
-								</Border>
+                                <Border CornerRadius="4">
+                                    <Border.Background>
+                                        <SolidColorBrush Color="{Binding Converter={StaticResource SKColorToColorConverter}, Mode=OneWay}" />
+                                    </Border.Background>
+                                </Border>
                             </Border>
                         </StackPanel>
                     </DataTemplate>
+                    <DataTemplate DataType="core:ColorGradient">
+                        <TextBlock Text="Color gradient" FontFamily="Consolas" />
+                    </DataTemplate>
                     <DataTemplate DataType="core:Numeric">
-                        <TextBlock Text="{Binding}" FontFamily="Consolas"/>
+                        <TextBlock Text="{Binding Mode=OneWay}" FontFamily="Consolas" />
                     </DataTemplate>
                     <DataTemplate DataType="collections:IList">
-                        <TextBlock Text="{Binding Count, StringFormat='List - {0} item(s)'}" FontFamily="Consolas"/>
+                        <TextBlock Text="{Binding Count, StringFormat='List - {0} item(s)', Mode=OneWay}" FontFamily="Consolas" />
                     </DataTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" FontFamily="Consolas"/>
+                        <TextBlock Text="{Binding Mode=OneWay}" FontFamily="Consolas" />
                     </DataTemplate>
                 </ContentControl.DataTemplates>
             </ContentControl>

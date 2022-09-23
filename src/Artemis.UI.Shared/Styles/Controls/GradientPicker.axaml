@@ -73,7 +73,6 @@
 
     <Style Selector="gradientPicker|GradientPicker">
         <Style.Resources>
-            <converters:ColorGradientToGradientStopsConverter x:Key="ColorGradientToGradientStopsConverter" />
             <converters:SKColorToColorConverter x:Key="SKColorToColorConverter" />
             <converters:SKColorToBrushConverter x:Key="SKColorToBrushConverter" />
             <converters:SKColorToStringConverter x:Key="SKColorToStringConverter" />
@@ -89,7 +88,7 @@
                             Background="{DynamicResource LightCheckerboardBrush}"
                             Margin="5 0">
                         <Border Background="{TemplateBinding LinearGradientBrush}">
-                            <ItemsControl Name="GradientStops" Items="{TemplateBinding ColorGradient}" ClipToBounds="False">
+                            <ItemsControl Name="GradientStops" Items="{TemplateBinding EditingColorGradient}" ClipToBounds="False">
                                 <ItemsControl.Styles>
                                     <Style Selector="ItemsControl#GradientStops > ContentPresenter">
                                         <Setter Property="Canvas.Left">
@@ -105,9 +104,9 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="core:ColorGradientStop">
                                         <gradientPicker:GradientPickerColorStop ColorStop="{Binding}"
-                                                                          PositionReference="{Binding $parent[Border]}"
-                                                                          Classes="gradient-handle"
-                                                                          GradientPicker="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gradientPicker:GradientPicker}}}">
+                                                                                PositionReference="{Binding $parent[Border]}"
+                                                                                Classes="gradient-handle"
+                                                                                GradientPicker="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gradientPicker:GradientPicker}}}">
                                         </gradientPicker:GradientPickerColorStop>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -135,7 +134,7 @@
                                   Grid.Column="0"
                                   Grid.ColumnSpan="2"
                                   VerticalAlignment="Center"
-                                  Items="{TemplateBinding ColorGradient}"
+                                  Items="{TemplateBinding EditingColorGradient}"
                                   ClipToBounds="False"
                                   Margin="5 0">
                         <ItemsControl.Styles>
@@ -180,9 +179,10 @@
                     </Border>
 
                     <Grid Grid.Row="2" Grid.Column="1" RowDefinitions="*,Auto">
-                        <ListBox Grid.Row="0"
+                        <ListBox Name="GradientColors"
+                                 Grid.Row="0"
                                  MaxHeight="280"
-                                 Items="{TemplateBinding ColorGradient}"
+                                 Items="{TemplateBinding EditingColorGradient}"
                                  SelectedItem="{TemplateBinding SelectedColorStop, Mode=TwoWay}"
                                  Padding="10 0 15 0">
                             <ListBox.ItemTemplate>
@@ -201,7 +201,7 @@
                                         <TextBox Grid.Column="1" Text="{Binding Color, Converter={StaticResource SKColorToStringConverter}}" />
                                         <NumericUpDown Grid.Column="2" FormatString="F3" ShowButtonSpinner="False" Margin="5 0" Minimum="0" Maximum="1" Increment="0.01">
                                             <Interaction.Behaviors>
-                                                <behaviors:LostFocusNumericUpDownBindingBehavior Value="{Binding Position}"/>
+                                                <behaviors:LostFocusNumericUpDownBindingBehavior Value="{Binding Position}" />
                                             </Interaction.Behaviors>
                                         </NumericUpDown>
                                         <Button Name="DeleteButton"

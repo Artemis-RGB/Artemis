@@ -129,7 +129,7 @@ public class ArtemisIcon : UserControl
     ///     theme
     /// </summary>
     public static readonly StyledProperty<bool> FillProperty =
-        AvaloniaProperty.Register<ArtemisIcon, bool>(nameof(Icon), true, notifying: IconChanging);
+        AvaloniaProperty.Register<ArtemisIcon, bool>(nameof(Icon), false, notifying: IconChanging);
 
     /// <summary>
     ///     Gets or sets a boolean indicating whether or not the icon should be filled in with the primary text color of the

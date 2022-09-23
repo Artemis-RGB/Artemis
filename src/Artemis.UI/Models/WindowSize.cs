@@ -49,15 +49,16 @@ public class WindowSize
 
         try
         {
+            // The -8 seems to be a FluentAvalonia thing?
             _applying = true;
             if (IsMaximized)
             {
-                window.Position = new PixelPoint(MaximizedLeft, MaximizedTop);
+                window.Position = new PixelPoint(Math.Max(-8, MaximizedLeft), Math.Max(-8, MaximizedTop));
                 window.WindowState = WindowState.Maximized;
             }
             else
             {
-                window.Position = new PixelPoint(Left, Top);
+                window.Position = new PixelPoint(Math.Max(-8, Left), Math.Max(-8, Top));
                 window.Height = Height;
                 window.Width = Width;
                 window.WindowState = WindowState.Normal;

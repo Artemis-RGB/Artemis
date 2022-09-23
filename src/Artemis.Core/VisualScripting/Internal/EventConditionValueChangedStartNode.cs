@@ -1,9 +1,8 @@
 ﻿using System;
-using Artemis.Core.VisualScripting.Internal;
 
 namespace Artemis.Core.Internal;
 
-internal class EventConditionValueChangedStartNode : DefaultNode, IEventConditionNode
+internal class EventConditionValueChangedStartNode : DefaultNode
 {
     internal static readonly Guid NodeId = new("F9A270DB-A231-4800-BAB3-DC1F96856756");
     private object? _newValue;
