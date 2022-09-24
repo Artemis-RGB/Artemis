@@ -43,6 +43,11 @@
                         </DataTemplate>
                     </MenuItem.DataTemplates>
                 </MenuItem>
+                <MenuItem Header="Auto-arrange" Command="{CompiledBinding AutoArrange}">
+                    <MenuItem.Icon>
+                        <avalonia:MaterialIcon Kind="Sort" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
                 <MenuItem Header="Export Script" Command="{CompiledBinding Export}">
                     <MenuItem.Icon>

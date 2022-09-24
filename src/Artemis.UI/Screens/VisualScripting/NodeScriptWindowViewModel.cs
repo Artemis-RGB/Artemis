@@ -26,6 +26,7 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
     private readonly IProfileService _profileService;
     private readonly ISettingsService _settingsService;
     private readonly IWindowService _windowService;
+    private bool _pauseUpdate;
 
     public NodeScriptWindowViewModel(NodeScript nodeScript,
         INodeService nodeService,
@@ -56,6 +57,7 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
         Categories = categories;
 
         CreateNode = ReactiveCommand.Create<NodeData>(ExecuteCreateNode);
+        AutoArrange = ReactiveCommand.CreateFromTask(ExecuteAutoArrange);
         Export = ReactiveCommand.CreateFromTask(ExecuteExport);
         Import = ReactiveCommand.CreateFromTask(ExecuteImport);
 
@@ -83,6 +85,7 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
     public ReactiveCommand<string, Unit> OpenUri { get; set; }
     public ReadOnlyObservableCollection<IGrouping<NodeData, string>> Categories { get; }
     public ReactiveCommand<NodeData, Unit> CreateNode { get; }
+    public ReactiveCommand<Unit, Unit> AutoArrange { get; }
     public ReactiveCommand<Unit, Unit> Export { get; }
     public ReactiveCommand<Unit, Unit> Import { get; }
 
@@ -108,6 +111,27 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
         _nodeEditorService.ExecuteCommand(NodeScript, new AddNode(NodeScript, node));
     }
 
+    private async Task ExecuteAutoArrange()
+    {
+        try
+        {
+            if (!NodeScript.ExitNodeConnected)
+            {
+                await _windowService.ShowConfirmContentDialog("Cannot auto-arrange", "The exit node must be connected in order to perform auto-arrange.", "Close", null);
+                return;
+            }
+
+            _pauseUpdate = true;
+            _nodeEditorService.ExecuteCommand(NodeScript, new OrganizeScript(NodeScript));
+            await Task.Delay(200);
+            NodeScriptViewModel.RequestAutoFit();
+        }
+        finally
+        {
+            _pauseUpdate = false;
+        }
+    }
+
     private async Task ExecuteExport()
     {
         // Might not cover everything but then the dialog will complain and that's good enough
@@ -131,17 +155,26 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
         if (result == null)
             return;
 
-        string json = await File.ReadAllTextAsync(result[0]);
-        _nodeService.ImportScript(json, NodeScript);
-        History.Clear();
+        try
+        {
+            _pauseUpdate = true;
+            string json = await File.ReadAllTextAsync(result[0]);
+            _nodeService.ImportScript(json, NodeScript);
+            History.Clear();
 
-        await Task.Delay(200);
-        NodeScriptViewModel.RequestAutoFit();
+            await Task.Delay(200);
+            NodeScriptViewModel.RequestAutoFit();
+        }
+        finally
+        {
+            _pauseUpdate = false;
+        }
     }
 
     private void Update(object? sender, EventArgs e)
     {
-        NodeScript.Run();
+        if (!_pauseUpdate)
+            NodeScript.Run();
     }
 
     private void Save(object? sender, EventArgs e)

@@ -19,7 +19,7 @@ public static class NodeScriptExtension
             levels[currentLevelNode] = 0; // DarthAffe 13.09.2022: Init-exit nodes as zero
 
         int currentLevel = 1;
-        while (currentLevelNodes.Count > 0)
+        while (currentLevelNodes.Count > 0 && currentLevel < 1000)
         {
             List<INode> nextLevelNodes = currentLevelNodes.SelectMany(node => node.Pins
                                                                                   .Where(x => x.Direction == PinDirection.Input)
