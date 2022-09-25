@@ -93,10 +93,8 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
         NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeRemoved;
 
         if (defaultNodes != null)
-        {
             foreach (DefaultNode defaultNode in defaultNodes)
                 AddNode(defaultNode);
-        }
     }
 
     internal NodeScript(string name, string description, NodeScriptEntity entity, object? context = null, List<DefaultNode>? defaultNodes = null)
@@ -109,12 +107,10 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
 
         NodeTypeStore.NodeTypeAdded += NodeTypeStoreOnNodeTypeAdded;
         NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeRemoved;
-        
+
         if (defaultNodes != null)
-        {
             foreach (DefaultNode defaultNode in defaultNodes)
                 AddNode(defaultNode);
-        }
     }
 
     #endregion

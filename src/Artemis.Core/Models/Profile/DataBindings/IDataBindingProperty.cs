@@ -27,5 +27,5 @@ public interface IDataBindingProperty
     ///     Sets the value of the property this registration points to
     /// </summary>
     /// <param name="value">A value matching the type of <see cref="ValueType" /></param>
-    void SetValue(object? value);
+    void SetValue(object value);
 }

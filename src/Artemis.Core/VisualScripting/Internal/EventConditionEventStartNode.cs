@@ -15,8 +15,7 @@ internal class EventConditionEventStartNode : DefaultNode
 
     public void SetDataModelEvent(IDataModelEvent? dataModelEvent)
     {
-        
-    } 
+    }
 
     public void CreatePins(IDataModelEvent? dataModelEvent)
     {

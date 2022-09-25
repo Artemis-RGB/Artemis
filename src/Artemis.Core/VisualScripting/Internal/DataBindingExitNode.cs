@@ -23,7 +23,10 @@ internal class DataBindingExitNode<TLayerProperty> : Node, IExitNode
     public void ApplyToDataBinding()
     {
         foreach ((IDataBindingProperty? property, object? pendingValue) in _propertyValues)
-            property.SetValue(pendingValue);
+        {
+            if (pendingValue != null)
+                property.SetValue(pendingValue);
+        }
     }
 
     public override void Evaluate()

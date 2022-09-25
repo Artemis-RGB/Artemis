@@ -59,22 +59,29 @@ public class GradientPicker : TemplatedControl
     public static readonly DirectProperty<GradientPicker, ICommand> DeleteStopProperty =
         AvaloniaProperty.RegisterDirect<GradientPicker, ICommand>(nameof(DeleteStop), g => g.DeleteStop);
 
+    /// <summary>
+    /// Gets the color gradient currently being edited, for internal use only
+    /// </summary>
+    public static readonly DirectProperty<GradientPicker, ColorGradient> EditingColorGradientProperty =
+        AvaloniaProperty.RegisterDirect<GradientPicker, ColorGradient>(nameof(EditingColorGradient), g => g.EditingColorGradient);
+
     private readonly ICommand _deleteStop;
     private ColorPicker? _colorPicker;
     private Button? _flipStops;
     private Border? _gradient;
-    private ColorGradient? _lastColorGradient;
     private Button? _randomize;
     private Button? _rotateStops;
     private bool _shiftDown;
     private Button? _spreadStops;
     private Button? _toggleSeamless;
+    private ColorGradient _colorGradient = null!;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="GradientPicker" /> class.
     /// </summary>
     public GradientPicker()
     {
+        EditingColorGradient = ColorGradient.GetUnicornBarf();
         _deleteStop = ReactiveCommand.Create<ColorGradientStop>(s =>
         {
             if (ColorGradient.Count <= 2)
@@ -143,6 +150,15 @@ public class GradientPicker : TemplatedControl
         get => _deleteStop;
         private init => SetAndRaise(DeleteStopProperty, ref _deleteStop, value);
     }
+    
+    /// <summary>
+    /// Gets the color gradient backing the editor, this is a copy of <see cref="ColorGradient"/>.
+    /// </summary>
+    public ColorGradient EditingColorGradient
+    {
+        get => _colorGradient;
+        private set => SetAndRaise(EditingColorGradientProperty, ref _colorGradient, value);
+    }
 
     /// <inheritdoc />
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -167,7 +183,7 @@ public class GradientPicker : TemplatedControl
         _flipStops = e.NameScope.Find<Button>("FlipStops");
         _rotateStops = e.NameScope.Find<Button>("RotateStops");
         _randomize = e.NameScope.Find<Button>("Randomize");
-
+        
         if (_gradient != null)
             _gradient.PointerPressed += GradientOnPointerPressed;
         if (_spreadStops != null)
@@ -188,7 +204,7 @@ public class GradientPicker : TemplatedControl
     /// <inheritdoc />
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        Subscribe();
+        ApplyToField();
 
         KeyUp += OnKeyUp;
         KeyDown += OnKeyDown;
@@ -197,60 +213,72 @@ public class GradientPicker : TemplatedControl
     /// <inheritdoc />
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        Unsubscribe();
+        ApplyToProperty();
         KeyUp -= OnKeyUp;
         KeyDown -= OnKeyDown;
 
         _shiftDown = false;
     }
 
+
     private static void ColorGradientChanged(IAvaloniaObject sender, bool before)
     {
-        (sender as GradientPicker)?.Subscribe();
+        (sender as GradientPicker)?.ApplyToField();
     }
 
     private static void StorageProviderChanged(IAvaloniaObject sender, bool before)
     {
     }
 
-    private void Subscribe()
+    private void ApplyToField()
     {
-        Unsubscribe();
-
-        ColorGradient.CollectionChanged += ColorGradientOnCollectionChanged;
-        ColorGradient.StopChanged += ColorGradientOnStopChanged;
-        SelectedColorStop = ColorGradient.FirstOrDefault();
-
+        EditingColorGradient = new ColorGradient(ColorGradient);
+        EditingColorGradient.CollectionChanged += ColorGradientOnCollectionChanged;
+        EditingColorGradient.StopChanged += ColorGradientOnStopChanged;
+        SelectedColorStop = EditingColorGradient.FirstOrDefault();
         UpdateGradient();
-
-        _lastColorGradient = ColorGradient;
     }
 
-    private void Unsubscribe()
+    private void ApplyToProperty()
     {
-        if (_lastColorGradient == null)
-            return;
+        // Remove extra color gradients
+        while (ColorGradient.Count > EditingColorGradient.Count)
+            ColorGradient.RemoveAt(ColorGradient.Count - 1);
 
-        _lastColorGradient.CollectionChanged -= ColorGradientOnCollectionChanged;
-        _lastColorGradient.StopChanged -= ColorGradientOnStopChanged;
-        _lastColorGradient = null;
+        for (int index = 0; index < EditingColorGradient.Count; index++)
+        {
+            ColorGradientStop colorGradientStop = EditingColorGradient[index];
+            // Add missing color gradients
+            if (index >= ColorGradient.Count)
+            {
+                ColorGradient.Add(new ColorGradientStop(colorGradientStop.Color, colorGradientStop.Position));
+            }
+            // Update existing color gradients
+            else
+            {
+                ColorGradient[index].Color = colorGradientStop.Color;
+                ColorGradient[index].Position = colorGradientStop.Position;
+            }
+        }
     }
 
     private void ColorGradientOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         UpdateGradient();
+        ApplyToProperty();
     }
 
     private void ColorGradientOnStopChanged(object? sender, EventArgs e)
     {
         UpdateGradient();
+        ApplyToProperty();
     }
 
     private void UpdateGradient()
     {
         // Update the display gradient
         GradientStops collection = new();
-        foreach (ColorGradientStop c in ColorGradient.OrderBy(s => s.Position))
+        foreach (ColorGradientStop c in EditingColorGradient.OrderBy(s => s.Position))
             collection.Add(new GradientStop(Color.FromArgb(c.Color.Alpha, c.Color.Red, c.Color.Green, c.Color.Blue), c.Position));
 
         LinearGradientBrush.GradientStops = collection;
@@ -263,8 +291,8 @@ public class GradientPicker : TemplatedControl
 
         float position = (float) (e.GetPosition(_gradient).X / _gradient.Bounds.Width);
 
-        ColorGradientStop newStop = new(ColorGradient.GetColor(position), position);
-        ColorGradient.Add(newStop);
+        ColorGradientStop newStop = new(EditingColorGradient.GetColor(position), position);
+        EditingColorGradient.Add(newStop);
         SelectedColorStop = newStop;
     }
 
@@ -279,50 +307,50 @@ public class GradientPicker : TemplatedControl
         if (e.Key is Key.LeftShift or Key.RightShift)
             _shiftDown = false;
 
-        if (e.Key != Key.Delete || SelectedColorStop == null || ColorGradient.Count <= 2)
+        if (e.Key != Key.Delete || SelectedColorStop == null || EditingColorGradient.Count <= 2)
             return;
 
-        int index = ColorGradient.IndexOf(SelectedColorStop);
-        ColorGradient.Remove(SelectedColorStop);
-        if (index > ColorGradient.Count - 1)
+        int index = EditingColorGradient.IndexOf(SelectedColorStop);
+        EditingColorGradient.Remove(SelectedColorStop);
+        if (index > EditingColorGradient.Count - 1)
             index--;
 
-        SelectedColorStop = ColorGradient.ElementAtOrDefault(index);
+        SelectedColorStop = EditingColorGradient.ElementAtOrDefault(index);
         e.Handled = true;
     }
 
     private void SpreadStopsOnClick(object? sender, RoutedEventArgs e)
     {
-        ColorGradient.SpreadStops();
+        EditingColorGradient.SpreadStops();
     }
 
     private void ToggleSeamlessOnClick(object? sender, RoutedEventArgs e)
     {
-        if (SelectedColorStop == null || ColorGradient.Count < 2)
+        if (SelectedColorStop == null || EditingColorGradient.Count < 2)
             return;
 
-        ColorGradient.ToggleSeamless();
+        EditingColorGradient.ToggleSeamless();
     }
 
     private void FlipStopsOnClick(object? sender, RoutedEventArgs e)
     {
-        if (SelectedColorStop == null || ColorGradient.Count < 2)
+        if (SelectedColorStop == null || EditingColorGradient.Count < 2)
             return;
 
-        ColorGradient.FlipStops();
+        EditingColorGradient.FlipStops();
     }
 
     private void RotateStopsOnClick(object? sender, RoutedEventArgs e)
     {
-        if (SelectedColorStop == null || ColorGradient.Count < 2)
+        if (SelectedColorStop == null || EditingColorGradient.Count < 2)
             return;
 
-        ColorGradient.RotateStops(_shiftDown);
+        EditingColorGradient.RotateStops(_shiftDown);
     }
 
     private void RandomizeOnClick(object? sender, RoutedEventArgs e)
     {
-        ColorGradient.Randomize(6);
-        SelectedColorStop = ColorGradient.First();
+        EditingColorGradient.Randomize(6);
+        SelectedColorStop = EditingColorGradient.First();
     }
 }

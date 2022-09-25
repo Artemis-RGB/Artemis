@@ -105,6 +105,7 @@ public class RegistrationService : IRegistrationService
         _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(SKColor), new SKColor(0xFFAD3EED));
         _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(IList), new SKColor(0xFFED3E61));
         _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(Enum), new SKColor(0xFF1E90FF));
+        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(ColorGradient), new SKColor(0xFF00B2A9));
 
         foreach (Type nodeType in typeof(SumNumericsNode).Assembly.GetTypes().Where(t => typeof(INode).IsAssignableFrom(t) && t.IsPublic && !t.IsAbstract && !t.IsInterface))
         {
