@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -197,8 +198,14 @@ public class NodeScriptViewModel : ActivatableViewModelBase
             DragViewModel = new DragCableViewModel(sourcePinViewModel);
 
         DragViewModel.DragPoint = position;
+        if (targetPinVmModel == null)
+            return true;
+        if (!targetPinVmModel.IsCompatibleWith(sourcePinViewModel))
+            return false;
 
-        return targetPinVmModel == null || targetPinVmModel.IsCompatibleWith(sourcePinViewModel);
+        return sourcePinViewModel.Pin.Direction == PinDirection.Output
+            ? !targetPinVmModel.Pin.Node.IsInLoop(sourcePinViewModel.Pin.Node)
+            : !sourcePinViewModel.Pin.Node.IsInLoop(targetPinVmModel.Pin.Node);
     }
 
     public void FinishPinDrag(PinViewModel sourcePinViewModel, PinViewModel? targetPinVmModel, Point position)
@@ -211,7 +218,10 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         // If dropped on top of a compatible pin, connect to it
         if (targetPinVmModel != null && targetPinVmModel.IsCompatibleWith(sourcePinViewModel))
         {
-            _nodeEditorService.ExecuteCommand(NodeScript, new ConnectPins(sourcePinViewModel.Pin, targetPinVmModel.Pin));
+            if (sourcePinViewModel.Pin.Direction == PinDirection.Output && !targetPinVmModel.Pin.Node.IsInLoop(sourcePinViewModel.Pin.Node))
+                _nodeEditorService.ExecuteCommand(NodeScript, new ConnectPins(sourcePinViewModel.Pin, targetPinVmModel.Pin));
+            else if (sourcePinViewModel.Pin.Direction == PinDirection.Input && !sourcePinViewModel.Pin.Node.IsInLoop(targetPinVmModel.Pin.Node))
+                _nodeEditorService.ExecuteCommand(NodeScript, new ConnectPins(sourcePinViewModel.Pin, targetPinVmModel.Pin));
         }
         // If not dropped on a pin allow the user to create a new node
         else if (targetPinVmModel == null)

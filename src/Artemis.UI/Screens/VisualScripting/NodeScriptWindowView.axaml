@@ -16,6 +16,7 @@
     <Window.KeyBindings>
         <KeyBinding Command="{CompiledBinding History.Undo}" Gesture="Ctrl+Z" />
         <KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y" />
+        <KeyBinding Command="{CompiledBinding AutoArrange}" Gesture="Ctrl+F" />
     </Window.KeyBindings>
     <Grid Margin="15" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,*">
         <Menu Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Top" Margin="-10 -10 -10 0">
@@ -43,7 +44,7 @@
                         </DataTemplate>
                     </MenuItem.DataTemplates>
                 </MenuItem>
-                <MenuItem Header="Auto-arrange" Command="{CompiledBinding AutoArrange}">
+                <MenuItem Header="Auto-arrange" Command="{CompiledBinding AutoArrange}" InputGesture="Ctrl+F">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="Sort" />
                     </MenuItem.Icon>

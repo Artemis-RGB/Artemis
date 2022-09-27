@@ -3,10 +3,17 @@ using System.Linq;
 
 namespace Artemis.Core;
 
+/// <summary>
+///     Provides extension methods for node scripts.
+/// </summary>
 public static class NodeScriptExtension
 {
     #region Methods
 
+    /// <summary>
+    ///     Organize a node script, attempting to lay out nodes in a logical manner.
+    /// </summary>
+    /// <param name="nodeScript">The node script to organize.</param>
     public static void Organize(this NodeScript nodeScript)
     {
         const double SPACING_HORIZONTAL = 160;
@@ -22,20 +29,22 @@ public static class NodeScriptExtension
         while (currentLevelNodes.Count > 0 && currentLevel < 1000)
         {
             List<INode> nextLevelNodes = currentLevelNodes.SelectMany(node => node.Pins
-                                                                                  .Where(x => x.Direction == PinDirection.Input)
-                                                                                  .SelectMany(x => x.ConnectedTo)
-                                                                                  .Select(x => x.Node)
-                                                                                  .Concat(node.PinCollections
-                                                                                              .Where(x => x.Direction == PinDirection.Input)
-                                                                                              .SelectMany(x => x)
-                                                                                              .SelectMany(x => x.ConnectedTo)
-                                                                                              .Select(x => x.Node)))
-                                                          .Distinct()
-                                                          .ToList();
+                    .Where(x => x.Direction == PinDirection.Input)
+                    .SelectMany(x => x.ConnectedTo)
+                    .Select(x => x.Node)
+                    .Concat(node.PinCollections
+                        .Where(x => x.Direction == PinDirection.Input)
+                        .SelectMany(x => x)
+                        .SelectMany(x => x.ConnectedTo)
+                        .Select(x => x.Node)))
+                .Distinct()
+                .ToList();
 
             foreach (INode nextLevelNode in nextLevelNodes)
+            {
                 if (currentLevel > levels[nextLevelNode])
                     levels[nextLevelNode] = currentLevel;
+            }
 
             currentLevelNodes = nextLevelNodes;
             currentLevel++;
@@ -60,7 +69,7 @@ public static class NodeScriptExtension
         foreach (IGrouping<int, INode> levelGroup in levels.GroupBy(x => x.Value, x => x.Key).OrderBy(x => x.Key))
         {
             List<INode> nodes = levelGroup.ToList();
-            double levelHeight = nodes.Sum(x => x.EstimateHeight()) + ((nodes.Count - 1) * SPACING_VERTICAL);
+            double levelHeight = nodes.Sum(x => x.EstimateHeight()) + (nodes.Count - 1) * SPACING_VERTICAL;
             double levelWidth = nodes.Max(x => x.EstimateWidth());
             double positionY = -(levelHeight / 2.0);
 
@@ -81,7 +90,7 @@ public static class NodeScriptExtension
         }
 
         if (unusedNodes != null)
-            LayoutLevel(unusedNodes, level0Width + (SPACING_HORIZONTAL / 2.0), unusedPosY);
+            LayoutLevel(unusedNodes, level0Width + SPACING_HORIZONTAL / 2.0, unusedPosY);
     }
 
     #endregion
