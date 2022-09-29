@@ -198,3 +198,4 @@ src/Artemis\.Storage/Storage\.db
 docfx/docfx_project/_site/
 
 src/.idea/
+packages.lock.json
