@@ -1,7 +1,7 @@
 name: Non-master build
 
 on: 
-  pull_request:
+  workflow_dispatch:
   push:
     branches-ignore:
       - master

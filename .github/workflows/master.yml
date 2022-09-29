@@ -1,6 +1,7 @@
 name: Master - Build, Nuget, Ftp
 
 on: 
+  workflow_dispatch:
   push:
     branches:
       - master
@@ -92,7 +93,14 @@ jobs:
               (Get-FileHash -Algorithm MD5 "ftp/$($_.Name).zip").Hash | Out-File -FilePath "ftp/$($_.Name).md5" -Verbose
           }
         shell: pwsh
-      - name: Upload to FTP
+      - name: Prepare Build Info
+        run: |
+          New-Item -ItemType "Directory" -Path info/
+          $buildId = ${{ needs.version.outputs.version-suffix }}.Split(".", 2)[1]
+          $sha = ${{ github.sha }}
+          Set-Content -Path info/latest.json -Value "{ `"buildId`": `"$buildId`", `"sha`": `"$sha`" }"
+        shell: pwsh
+      - name: Upload builds to FTP
         uses: dennisameling/ftp-upload-action@v1
         with:
           server: artemis-rgb.com
@@ -101,6 +109,15 @@ jobs:
           secure: false
           local_dir: ftp/
           server_dir: /builds.artemis-rgb.com/binaries/gh-actions/${{ needs.version.outputs.version-suffix }}/
+      - name: Upload Build Info to FTP
+        uses: dennisameling/ftp-upload-action@v1
+        with:
+          server: artemis-rgb.com
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          secure: false
+          local_dir: info/
+          server_dir: /builds.artemis-rgb.com/binaries
 
   nuget:
     name: Publish Nuget Packages

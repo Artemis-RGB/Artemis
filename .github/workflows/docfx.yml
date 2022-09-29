@@ -1,6 +1,7 @@
 name: Master - DocFX
 
 on: 
+  workflow_dispatch:
   push:
     branches:
       - master
