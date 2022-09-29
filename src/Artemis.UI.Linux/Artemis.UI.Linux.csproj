@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
@@ -6,7 +6,8 @@
         <PlatformTarget>x64</PlatformTarget>
         <Platforms>x64</Platforms>
         <OutputPath>bin</OutputPath>
-        <AssemblyTitle>Artemis 2</AssemblyTitle>
+        <AssemblyTitle>Artemis</AssemblyTitle>
+        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
         <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>        
     </PropertyGroup>
     <ItemGroup>
