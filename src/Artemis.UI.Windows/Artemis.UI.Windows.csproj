@@ -3,11 +3,10 @@
         <OutputType>WinExe</OutputType>
         <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <PlatformTarget>x64</PlatformTarget>
         <Platforms>x64</Platforms>
         <OutputPath>bin</OutputPath>
         <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
-        <AssemblyTitle>Artemis 2</AssemblyTitle>
+        <AssemblyTitle>Artemis</AssemblyTitle>
         <ApplicationIcon>..\Artemis.UI\Assets\Images\Logo\application.ico</ApplicationIcon>
     </PropertyGroup>
     <ItemGroup>
@@ -27,7 +26,7 @@
         <None Remove="Assets\Cursors\aero_rotate_tl.cur" />
         <None Remove="Assets\Cursors\aero_rotate_tr.cur" />
         <None Include="..\Artemis.UI\Assets\Images\Logo\application.ico">
-          <Link>application.ico</Link>
+            <Link>application.ico</Link>
         </None>
     </ItemGroup>
     <ItemGroup>

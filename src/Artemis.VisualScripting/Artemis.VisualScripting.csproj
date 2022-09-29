@@ -23,23 +23,4 @@
         <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-        <Compile Update="Nodes\Easing\Screens\EasingTypeNodeEasingView.axaml.cs">
-            <DependentUpon>EasingTypeNodeEasingView.axaml</DependentUpon>
-        </Compile>
-        <Compile Update="Nodes\Static\Screens\StaticStringValueNodeCustomView.axaml.cs">
-            <DependentUpon>StaticStringValueNodeCustomView.axaml</DependentUpon>
-        </Compile>
-        <Compile Update="Nodes\DataModel\Screens\DataModelNodeCustomView.axaml.cs">
-            <DependentUpon>DataModelNodeCustomView.axaml</DependentUpon>
-        </Compile>
-        <Compile Update="Nodes\DataModel\Screens\DataModelEventNodeCustomView.axaml.cs">
-          <DependentUpon>DataModelEventNodeCustomView.axaml</DependentUpon>
-          <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Nodes\Color\Screens\ColorGradientNodeCustomView.axaml.cs">
-          <DependentUpon>ColorGradientNodeCustomView.axaml</DependentUpon>
-        </Compile>
-    </ItemGroup>
-
 </Project>

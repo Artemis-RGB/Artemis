@@ -8,35 +8,21 @@
         <Copyright>Copyright © Robert Beekman - 2020</Copyright>
         <OutputPath>bin\</OutputPath>
         <Platforms>x64</Platforms>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-        <PlatformTarget>x64</PlatformTarget>
-        <DocumentationFile>bin\Artemis.Core.xml</DocumentationFile>
-        <NoWarn></NoWarn>
-        <WarningLevel>5</WarningLevel>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PackageId>ArtemisRGB.Core</PackageId>
+        <!-- API Version -->
+        <VersionPrefix>1.0.0.0</VersionPrefix>
     </PropertyGroup>
 
-    <PropertyGroup>
-        <NrtRevisionFormat>1.0-{chash:6}</NrtRevisionFormat>
-        <NrtResolveSimpleAttributes>true</NrtResolveSimpleAttributes>
-        <NrtResolveInformationalAttribute>true</NrtResolveInformationalAttribute>
-        <NrtResolveCopyright>true</NrtResolveCopyright>
-        <NrtTagMatch>v[0-9]*</NrtTagMatch>
-        <NrtRemoveTagV>true</NrtRemoveTagV>
-        <NrtRequiredVcs>git</NrtRequiredVcs>
-        <NrtShowRevision>true</NrtShowRevision>
-        <Nullable>enable</Nullable>
-        <AnalysisLevel>latest</AnalysisLevel>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-        <DocumentationFile>bin\Artemis.Core.xml</DocumentationFile>
-    </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj">
-            <Private>false</Private>
-        </ProjectReference>
+        <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj"/>
+        <ProjectReference Condition="'$(BuildingNuget)' == 'True'" Update="..\Artemis.Storage\Artemis.Storage.csproj" PrivateAssets="All"/>
+        <_PackageFiles Include="$(OutputPath)\Artemis.Storage.dll">
+            <BuildAction>None</BuildAction>
+            <PackagePath>lib\$(TargetFramework)</PackagePath>
+        </_PackageFiles>
     </ItemGroup>
+
     <ItemGroup>
         <PackageReference Include="EmbedIO" Version="3.4.3" />
         <PackageReference Include="HidSharp" Version="2.1.0" />
@@ -59,20 +45,10 @@
         <PackageReference Include="System.IO.FileSystem.AccessControl" Version="5.0.0" />
         <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
         <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-        <PackageReference Include="Unclassified.NetRevisionTask" Version="0.4.3">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-    </ItemGroup>
-    <ItemGroup>
-        <None Update="Resources\intro-profile.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="DefaultLayouts\**">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
+        <None Include="Resources/intro-profile.json" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="DefaultLayouts/**" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 </Project>
