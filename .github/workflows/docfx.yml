@@ -1,0 +1,34 @@
+name: Master - DocFX
+
+on: 
+  push:
+    branches:
+      - master
+
+jobs:
+  docfx:
+    name: Build DocFX Documentation
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
+      - name: Setup DocFX
+        run: choco install docfx -y
+      - name: Build Core
+        run: dotnet build src/Artemis.Core/Artemis.Core.csproj
+      - name: Build UI.Shared
+        run: dotnet build src/Artemis.UI.Shared/Artemis.UI.Shared.csproj
+      - name: Build DocFX
+        run: docfx.exe docfx/docfx_project/docfx.json
+      - name: Upload to FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.3.2
+        with:
+          server: artemis-rgb.com
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: docfx/docfx_project/_site/
+          server-dir: /httpdocs/docs_test/

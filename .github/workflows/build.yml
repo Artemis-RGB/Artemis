@@ -1,0 +1,36 @@
+name: Non-master build
+
+on: 
+  pull_request:
+  push:
+    branches-ignore:
+      - master
+
+jobs:
+  build:
+    name: Windows Build
+    runs-on: windows-latest
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
+      - name: Checkout Artemis
+        uses: actions/checkout@v3
+        with:
+          path: Artemis
+      - name: Checkout Plugins
+        uses: actions/checkout@v3
+        with:
+          repository: Artemis-RGB/Artemis.Plugins
+          path: Artemis.Plugins
+      - name: Publish Artemis
+        run: dotnet publish --configuration Release --runtime win-x64 --output build/win-x64 --self-contained Artemis/src/Artemis.UI.Windows/Artemis.UI.Windows.csproj
+      - name: Publish Plugins
+        run: |
+          New-Item -ItemType "Directory" -Path build/win-x64/Plugins/
+          Get-ChildItem -File -Recurse -Filter *.csproj Artemis.Plugins/src/ | 
+          Foreach-Object -Parallel {
+              dotnet publish --configuration Release --runtime win-x64 --output build-plugins/$($_.BaseName) --no-self-contained $($_.FullName);
+          }
+        shell: pwsh

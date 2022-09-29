@@ -1,0 +1,121 @@
+name: Master - Build, Nuget, Ftp
+
+on: 
+  push:
+    branches:
+      - master
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version-suffix: ${{ steps.get-version.outputs.version-suffix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get Version String
+        id: get-version
+        shell: pwsh
+        run: |
+          $MidnightUtc = [DateTime]::UtcNow.Date
+          $BranchName = "${{ github.ref_name }}".replace('/','-').replace('.','-')
+          $NumberOfCommitsToday = (git log --after=$($MidnightUtc.ToString("o")) --oneline | Measure-Object -Line).Lines
+          $VersionSuffix = "$BranchName.$($MidnightUtc.ToString("yyyyMMdd")).$NumberOfCommitsToday"
+          Write-Output "::set-output name=version-suffix::$VersionSuffix"
+  
+  build:
+    needs: version
+    strategy:
+      matrix: 
+        include:
+          - os: windows-latest
+            rid: win-x64
+            csproj: Windows
+
+          - os: ubuntu-latest
+            rid: linux-x64
+            csproj: Linux
+
+          - os: macos-latest
+            rid: osx-x64
+            csproj: MacOS
+    name: ${{ matrix.csproj }} Build
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Artemis
+        uses: actions/checkout@v3
+        with:
+          path: Artemis
+      - name: Checkout Plugins
+        uses: actions/checkout@v3
+        with:
+          repository: Artemis-RGB/Artemis.Plugins
+          path: Artemis.Plugins
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
+      - name: Publish Artemis
+        run: dotnet publish --configuration Release -p:VersionSuffix=${{ needs.version.outputs.version-suffix }} --runtime ${{ matrix.rid }} --output build/${{ matrix.rid }} --self-contained Artemis/src/Artemis.UI.${{ matrix.csproj }}/Artemis.UI.${{ matrix.csproj }}.csproj
+      - name: Publish Plugins
+        run: |
+          New-Item -ItemType "Directory" -Path build/${{ matrix.rid }}/Plugins/
+          Get-ChildItem -File -Recurse -Filter *.csproj Artemis.Plugins/src/ | 
+          Foreach-Object -Parallel {
+              dotnet publish --configuration Release --runtime ${{ matrix.rid }} --output build-plugins/$($_.BaseName) --no-self-contained $($_.FullName);
+              Compress-Archive -Path "build-plugins/$($_.BaseName)" -DestinationPath "build/${{ matrix.rid }}/Plugins/$($_.BaseName).zip";
+          }
+        shell: pwsh
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: artemis-build-${{ matrix.rid }}
+          path: build/${{ matrix.rid }}
+
+  ftp:
+    name: Ftp Upload
+    runs-on: ubuntu-latest
+    needs: [version, build]
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+      - name: Zip and Hash artifacts
+        run: |
+          New-Item -ItemType "Directory" -Path ftp/
+          Get-ChildItem -Directory artifacts |
+          Foreach-Object -Parallel {
+              Compress-Archive -Path "artifacts/$($_.Name)" -DestinationPath "ftp/$($_.Name).zip" -Verbose
+              (Get-FileHash -Algorithm MD5 "ftp/$($_.Name).zip").Hash | Out-File -FilePath "ftp/$($_.Name).md5" -Verbose
+          }
+        shell: pwsh
+      - name: Upload to FTP
+        uses: dennisameling/ftp-upload-action@v1
+        with:
+          server: artemis-rgb.com
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          secure: false
+          local_dir: ftp/
+          server_dir: /builds.artemis-rgb.com/binaries/gh-actions/${{ needs.version.outputs.version-suffix }}/
+
+  nuget:
+    name: Publish Nuget Packages
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Pack Artemis.Core
+        run: dotnet pack -c Release -p:VersionSuffix=${{ needs.version.outputs.version-suffix }} -p:BuildingNuget=True src/Artemis.Core/Artemis.Core.csproj
+      - name: Pack Artemis.UI.Shared
+        run: dotnet pack -c Release -p:VersionSuffix=${{ needs.version.outputs.version-suffix }} src/Artemis.UI.Shared/Artemis.UI.Shared.csproj
+      - name: Push Nugets
+        run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
