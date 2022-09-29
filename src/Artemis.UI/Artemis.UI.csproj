@@ -3,18 +3,16 @@
         <OutputType>Library</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <OutputPath>bin\</OutputPath>
-        <PlatformTarget>x64</PlatformTarget>
+        <OutputPath>bin/</OutputPath>
         <Platforms>x64</Platforms>
     </PropertyGroup>
+    
     <ItemGroup>
-        <AvaloniaResource Include="Assets\**" />
+        <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
+        <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
+        <ProjectReference Include="..\Artemis.VisualScripting\Artemis.VisualScripting.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <None Remove="Artemis.UI.Avalonia.csproj.DotSettings" />
-        <None Remove="Artemis.UI.csproj.DotSettings" />
-        <None Remove="Assets\Images\Logo\application.ico" />
-    </ItemGroup>
+
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="0.10.18" />
         <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="10.14.0" />
@@ -36,56 +34,8 @@
         <PackageReference Include="SkiaSharp" Version="2.88.1-preview.108" />
         <PackageReference Include="Splat.Ninject" Version="14.4.1" />
     </ItemGroup>
+
     <ItemGroup>
-        <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
-        <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
-        <ProjectReference Include="..\Artemis.VisualScripting\Artemis.VisualScripting.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <Content Include="Assets\Images\Logo\bow-white.ico" />
-        <Content Include="Assets\Images\Logo\bow.ico" />
-    </ItemGroup>
-    <ItemGroup>
-        <Resource Include="Assets\Images\Logo\bow-black.ico" />
-        <Resource Include="Assets\Images\Logo\bow-white.ico" />
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Update="DefaultTypes\PropertyInput\StringPropertyInputView.axaml.cs">
-            <DependentUpon>StringPropertyInputView.xaml</DependentUpon>
-        </Compile>
-        <Compile Update="Screens\ProfileEditor\Panels\Properties\PropertiesView.axaml.cs">
-            <DependentUpon>PropertiesView.axaml</DependentUpon>
-        </Compile>
-        <Compile Update="Screens\ProfileEditor\Panels\VisualEditor\Visualizers\LayerShapeVisualizerView.axaml.cs">
-            <DependentUpon>LayerShapeVisualizerView.axaml</DependentUpon>
-        </Compile>
-        <Compile Update="Screens\VisualScripting\DragCableView.axaml.cs">
-            <DependentUpon>DragCableView.axaml</DependentUpon>
-        </Compile>
-        <Compile Update="Screens\VisualScripting\NodeScriptWindowView.axaml.cs">
-            <DependentUpon>NodeScriptWindowView.axaml</DependentUpon>
-        </Compile>
-        <Compile Update="Screens\ProfileEditor\Panels\Properties\Tree\ContentDialogs\LayerEffectRenameView.axaml.cs">
-            <DependentUpon>LayerEffectRenameView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Screens\ProfileEditor\Panels\Properties\Tree\ContentDialogs\SidebarCategoryEditView.axaml.cs">
-            <DependentUpon>SidebarCategoryEditView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Screens\Scripting\Dialogs\ScriptConfigurationEditView.axaml.cs">
-            <DependentUpon>ScriptConfigurationEditView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-    </ItemGroup>
-    <ItemGroup>
-        <AvaloniaXaml Update="DefaultTypes\PropertyInput\StringPropertyInputView.axaml">
-            <Generator>MSBuild:Compile</Generator>
-        </AvaloniaXaml>
-    </ItemGroup>
-    <ItemGroup>
-      <Reference Include="SkiaSharp">
-        <HintPath>..\..\..\..\Users\Robert\.nuget\packages\skiasharp\2.88.1-preview.1\lib\netstandard2.0\SkiaSharp.dll</HintPath>
-      </Reference>
+        <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
 </Project>
