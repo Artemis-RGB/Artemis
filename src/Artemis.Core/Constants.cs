@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -61,7 +61,7 @@ public static class Constants
     /// <summary>
     ///     The current API version for plugins
     /// </summary>
-    public static readonly Version PluginApi = new(1, 0);
+    public static readonly Version PluginApi = CoreAssembly.GetName().Version!;
 
     /// <summary>
     ///     The plugin info used by core components of Artemis
