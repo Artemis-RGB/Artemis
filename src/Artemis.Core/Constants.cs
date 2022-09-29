@@ -61,7 +61,7 @@ public static class Constants
     /// <summary>
     ///     The current API version for plugins
     /// </summary>
-    public static readonly Version PluginApi = new(1, 0);
+    public static readonly Version PluginApi = CoreAssembly.GetName().Version!;
 
     /// <summary>
     ///     The plugin info used by core components of Artemis
@@ -73,18 +73,9 @@ public static class Constants
 
     /// <summary>
     ///     The build information related to the currently running Artemis build
-    ///     <para>Information is retrieved from <c>buildinfo.json</c></para>
+    ///     <para>Information is set by the CI pipeline.</para>
     /// </summary>
-    public static readonly BuildInfo BuildInfo = File.Exists(Path.Combine(ApplicationFolder, "buildinfo.json"))
-        ? JsonConvert.DeserializeObject<BuildInfo>(File.ReadAllText(Path.Combine(ApplicationFolder, "buildinfo.json")))!
-        : new BuildInfo
-        {
-            IsLocalBuild = true,
-            BuildId = 1337,
-            BuildNumber = 1337,
-            SourceBranch = "local",
-            SourceVersion = "local"
-        };
+    public static readonly BuildInfo BuildInfo = new(CoreAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>());
 
     /// <summary>
     ///     The plugin used by core components of Artemis

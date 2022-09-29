@@ -45,8 +45,7 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
         SkipOrFinishWizard = ReactiveCommand.Create(ExecuteSkipOrFinishWizard);
         SelectLayout = ReactiveCommand.Create<string>(ExecuteSelectLayout);
 
-        AssemblyInformationalVersionAttribute? versionAttribute = typeof(StartupWizardViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-        Version = $"Version {versionAttribute?.InformationalVersion} build {Constants.BuildInfo.BuildNumberDisplay}";
+        Version = $"Build {Constants.BuildInfo.BuildNumberDisplay}";
 
         // Take all compatible plugins that have an always-enabled device provider
         DeviceProviders = new ObservableCollection<PluginViewModel>(pluginManagementService.GetAllPlugins()

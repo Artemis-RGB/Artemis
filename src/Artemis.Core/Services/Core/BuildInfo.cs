@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-using Newtonsoft.Json;
+using System.Reflection;
 
 namespace Artemis.Core.Services.Core;
 
@@ -9,16 +9,9 @@ namespace Artemis.Core.Services.Core;
 public class BuildInfo
 {
     /// <summary>
-    ///     Gets the unique ID of this build
-    /// </summary>
-    [JsonProperty]
-    public int BuildId { get; internal set; }
-
-    /// <summary>
     ///     Gets the build number. This contains the date and the build count for that day.
     ///     <para>Per example <c>20210108.4</c></para>
     /// </summary>
-    [JsonProperty]
     public double BuildNumber { get; internal set; }
 
     /// <summary>
@@ -30,17 +23,55 @@ public class BuildInfo
     /// <summary>
     ///     Gets the branch of the triggering repo the build was created for.
     /// </summary>
-    [JsonProperty]
     public string SourceBranch { get; internal set; } = null!;
-
-    /// <summary>
-    ///     Gets the commit ID used to create this build
-    /// </summary>
-    [JsonProperty]
-    public string SourceVersion { get; internal set; } = null!;
 
     /// <summary>
     ///     Gets a boolean indicating whether the current build is a local build
     /// </summary>
     public bool IsLocalBuild { get; internal set; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BuildInfo"/> class.
+    /// </summary>
+    /// <param name="attribute">The attribute to extract version information from.</param>
+    public BuildInfo(AssemblyInformationalVersionAttribute? attribute)
+    {
+        void SetLocalBuildInformation()
+        {
+            BuildNumber = -1;
+            SourceBranch = "local";
+            IsLocalBuild = true;
+        }
+
+        if (attribute is null)
+        {
+            SetLocalBuildInformation();
+            return;
+        }
+
+        string version = attribute.InformationalVersion;
+        string pluginApiVersion = Constants.PluginApi.ToString();
+        if (version == pluginApiVersion)
+        {
+            SetLocalBuildInformation();
+            return;
+        }
+
+        try
+        {
+            //1.0.0-master.20220920.3 -> master.20220920.3
+            string versionMetadata = version.Remove(0, pluginApiVersion.Length + 1);
+
+            //master | 20220920.3
+            string[] parts = versionMetadata.Split('.', 2);
+
+            SourceBranch = parts[0];
+            BuildNumber = double.Parse(parts[1]);
+            IsLocalBuild = false;
+        }
+        catch
+        {
+            SetLocalBuildInformation();
+        }
+    }
 }

@@ -208,10 +208,8 @@ internal class CoreService : ICoreService
         if (IsInitialized)
             throw new ArtemisCoreException("Cannot initialize the core as it is already initialized.");
 
-        AssemblyInformationalVersionAttribute? versionAttribute = typeof(CoreService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
         _logger.Information(
-            "Initializing Artemis Core version {version}, build {buildNumber} branch {branch}.",
-            versionAttribute?.InformationalVersion,
+            "Initializing Artemis Core , build {buildNumber} branch {branch}.",
             Constants.BuildInfo.BuildNumber,
             Constants.BuildInfo.SourceBranch
         );
