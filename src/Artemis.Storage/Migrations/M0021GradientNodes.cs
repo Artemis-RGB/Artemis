@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Nodes;
@@ -63,13 +64,13 @@ public class M0021GradientNodes : IStorageMigration
     public void Apply(LiteRepository repository)
     {
         // Find all color gradient data bindings, there's no really good way to do this so infer it from the value
-        ILiteCollection<ProfileEntity> collection = repository.Database.GetCollection<ProfileEntity>();
-        foreach (ProfileEntity profileEntity in collection.FindAll())
+        List<ProfileEntity> profiles = repository.Query<ProfileEntity>().ToList();
+        foreach (ProfileEntity profileEntity in profiles)
         {
             foreach (LayerEntity layer in profileEntity.Layers)
                 MigrateDataBinding(layer.LayerBrush.PropertyGroup);
 
-            collection.Update(profileEntity);
+            repository.Update(profileEntity);
         }
     }
 

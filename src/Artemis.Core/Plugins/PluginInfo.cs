@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Artemis.Core.JsonConverters;
 using Newtonsoft.Json;
 
 namespace Artemis.Core;
@@ -158,6 +159,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     ///     Gets the API version the plugin was built for
     /// </summary>
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+    [JsonConverter(typeof(ForgivingVersionConverter))]
     public Version? Api
     {
         get => _api;

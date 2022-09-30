@@ -1,0 +1,45 @@
+name: Publish Nuget packages
+
+on: 
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version-suffix: ${{ steps.get-version.outputs.version-suffix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get Version String
+        id: get-version
+        shell: pwsh
+        run: |
+          $MidnightUtc = [DateTime]::UtcNow.Date
+          $BranchName = "${{ github.ref_name }}".replace('/','-').replace('.','-')
+          $NumberOfCommitsToday = (git log --after=$($MidnightUtc.ToString("o")) --oneline | Measure-Object -Line).Lines
+          $VersionSuffix = "$BranchName.$($MidnightUtc.ToString("yyyyMMdd")).$NumberOfCommitsToday"
+          Write-Output "::set-output name=version-suffix::$VersionSuffix"
+
+  nuget:
+    name: Publish Nuget Packages
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Pack Artemis.Core
+        run: dotnet pack -c Release -p:VersionSuffix=${{ needs.version.outputs.version-suffix }} -p:BuildingNuget=True src/Artemis.Core/Artemis.Core.csproj
+      - name: Pack Artemis.UI.Shared
+        run: dotnet pack -c Release -p:VersionSuffix=${{ needs.version.outputs.version-suffix }} src/Artemis.UI.Shared/Artemis.UI.Shared.csproj
+      - name: Push Nugets
+        run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
