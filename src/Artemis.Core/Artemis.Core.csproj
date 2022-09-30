@@ -17,6 +17,12 @@
     <ItemGroup>
         <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj"/>
         <ProjectReference Condition="'$(BuildingNuget)' == 'True'" Update="..\Artemis.Storage\Artemis.Storage.csproj" PrivateAssets="All"/>
+        
+        <!-- 
+         Include Artemis.Storage directly in the NuGet package instead of expecting it as an external dependency
+         https://github.com/NuGet/Home/issues/3891#issuecomment-309792369
+         https://github.com/NuGet/Home/pull/11708
+        -->
         <_PackageFiles Include="$(OutputPath)\Artemis.Storage.dll">
             <BuildAction>None</BuildAction>
             <PackagePath>lib\$(TargetFramework)</PackagePath>
