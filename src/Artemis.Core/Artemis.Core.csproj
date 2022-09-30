@@ -10,8 +10,7 @@
         <Platforms>x64</Platforms>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageId>ArtemisRGB.Core</PackageId>
-        <!-- API Version -->
-        <VersionPrefix>1.0.0.0</VersionPrefix>
+        <PluginApiVersion>1</PluginApiVersion>
     </PropertyGroup>
 
     <ItemGroup>

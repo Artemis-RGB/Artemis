@@ -61,7 +61,7 @@ public static class Constants
     /// <summary>
     ///     The current API version for plugins
     /// </summary>
-    public static readonly Version PluginApi = CoreAssembly.GetName().Version!;
+    public static readonly int PluginApiVersion = CoreAssembly.GetName().Version.Major;
 
     /// <summary>
     ///     The plugin info used by core components of Artemis
