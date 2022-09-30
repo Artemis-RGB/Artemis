@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Artemis.Core.JsonConverters;
 using Artemis.Core.Services;
@@ -61,7 +62,8 @@ public static class Constants
     /// <summary>
     ///     The current API version for plugins
     /// </summary>
-    public static readonly int PluginApiVersion = CoreAssembly.GetName().Version.Major;
+    public static readonly int PluginApiVersion = int.Parse(CoreAssembly.GetCustomAttributes<AssemblyMetadataAttribute>()
+                                                              .First(a => a.Key == "PluginApiVersion").Value);
 
     /// <summary>
     ///     The plugin info used by core components of Artemis
