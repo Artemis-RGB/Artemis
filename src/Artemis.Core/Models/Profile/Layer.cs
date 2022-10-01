@@ -16,12 +16,13 @@ namespace Artemis.Core;
 /// </summary>
 public sealed class Layer : RenderProfileElement
 {
-    private readonly List<Layer> _renderCopies;
-    private LayerGeneralProperties _general;
+    private readonly List<Layer> _renderCopies = new();
+    private LayerGeneralProperties _general = new();
+    private LayerTransformProperties _transform = new();
     private BaseLayerBrush? _layerBrush;
     private LayerShape? _layerShape;
-    private List<ArtemisLed> _leds;
-    private LayerTransformProperties _transform;
+    private List<ArtemisLed> _leds = new();
+    private List<LedEntity> _missingLeds = new();
 
     /// <summary>
     ///     Creates a new instance of the <see cref="Layer" /> class and adds itself to the child collection of the provided
@@ -37,16 +38,9 @@ public sealed class Layer : RenderProfileElement
         Profile = Parent.Profile;
         Name = name;
         Suspended = false;
-
-        // TODO: move to top
-        _renderCopies = new List<Layer>();
-        _general = new LayerGeneralProperties();
-        _transform = new LayerTransformProperties();
-
-        _leds = new List<ArtemisLed>();
         Leds = new ReadOnlyCollection<ArtemisLed>(_leds);
-
         Adapter = new LayerAdapter(this);
+        
         Initialize();
     }
 
@@ -63,16 +57,9 @@ public sealed class Layer : RenderProfileElement
 
         Profile = profile;
         Parent = parent;
-
-        // TODO: move to top
-        _renderCopies = new List<Layer>();
-        _general = new LayerGeneralProperties();
-        _transform = new LayerTransformProperties();
-
-        _leds = new List<ArtemisLed>();
         Leds = new ReadOnlyCollection<ArtemisLed>(_leds);
-
         Adapter = new LayerAdapter(this);
+        
         Load();
         Initialize();
     }
@@ -327,6 +314,7 @@ public sealed class Layer : RenderProfileElement
 
         // LEDs
         LayerEntity.Leds.Clear();
+        StoreMissingLeds();
         foreach (ArtemisLed artemisLed in Leds)
         {
             LedEntity ledEntity = new()
@@ -786,11 +774,18 @@ public sealed class Layer : RenderProfileElement
                                                                   a.RgbLed.Id.ToString() == ledEntity.LedName);
             if (match != null)
                 leds.Add(match);
+            else
+                _missingLeds.Add(ledEntity);
         }
 
         _leds = leds;
         Leds = new ReadOnlyCollection<ArtemisLed>(_leds);
         CalculateRenderProperties();
+    }
+
+    private void StoreMissingLeds()
+    {
+        LayerEntity.Leds.AddRange(_missingLeds.Except(LayerEntity.Leds, LedEntity.LedEntityComparer));
     }
 
     #endregion
