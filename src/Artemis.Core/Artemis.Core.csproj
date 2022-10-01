@@ -11,6 +11,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageId>ArtemisRGB.Core</PackageId>
         <PluginApiVersion>1</PluginApiVersion>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,8 +20,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj"/>
-        <ProjectReference Condition="'$(BuildingNuget)' == 'True'" Update="..\Artemis.Storage\Artemis.Storage.csproj" PrivateAssets="All"/>
+        <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj" />
+        <ProjectReference Condition="'$(BuildingNuget)' == 'True'" Update="..\Artemis.Storage\Artemis.Storage.csproj" PrivateAssets="All" />
         
         <!-- 
          Include Artemis.Storage directly in the NuGet package instead of expecting it as an external dependency
