@@ -11,7 +11,7 @@
     </UserControl.Styles>
     <Grid RowDefinitions="60,Auto,Auto,*,Auto,Auto">
         <Grid Grid.Row="0" IsHitTestVisible="False" ColumnDefinitions="Auto,*">
-            <Image Grid.Column="0" Margin="12" Source="/Assets/Images/Logo/bow.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+            <Image Grid.Column="0" Margin="12" Source="/Assets/Images/Logo/bow.png" RenderOptions.BitmapInterpolationMode="HighQuality" />
             <TextBlock Grid.Column="1"
                        FontSize="24"
                        VerticalAlignment="Center"
@@ -46,6 +46,8 @@
                                       Width="44"
                                       Height="44"
                                       ToolTip.Tip="View website"
+                                      ToolTip.Placement="Top"
+                                      ToolTip.VerticalOffset="-5"
                                       NavigateUri="https://artemis-rgb.com">
                 <avalonia:MaterialIcon Kind="Web" Width="20" Height="20" />
             </controls:HyperlinkButton>
@@ -53,6 +55,8 @@
                                       Width="44"
                                       Height="44"
                                       ToolTip.Tip="View GitHub repository"
+                                      ToolTip.Placement="Top"
+                                      ToolTip.VerticalOffset="-5"
                                       NavigateUri="https://github.com/Artemis-RGB/Artemis">
                 <avalonia:MaterialIcon Kind="Github" Width="20" Height="20" />
             </controls:HyperlinkButton>
@@ -60,6 +64,8 @@
                                       Width="44"
                                       Height="44"
                                       ToolTip.Tip="View Wiki"
+                                      ToolTip.Placement="Top"
+                                      ToolTip.VerticalOffset="-5"
                                       NavigateUri="https://wiki.artemis-rgb.com">
                 <avalonia:MaterialIcon Kind="BookOpenOutline" Width="20" Height="20" />
             </controls:HyperlinkButton>
@@ -67,6 +73,8 @@
                                       Width="44"
                                       Height="44"
                                       ToolTip.Tip="Join our Discord"
+                                      ToolTip.Placement="Top"
+                                      ToolTip.VerticalOffset="-5"
                                       NavigateUri="https://discord.gg/S3MVaC9">
                 <avalonia:MaterialIcon Kind="Chat" Width="20" Height="20" />
             </controls:HyperlinkButton>
@@ -74,6 +82,8 @@
                                       Width="44"
                                       Height="44"
                                       ToolTip.Tip="View donation options"
+                                      ToolTip.Placement="Top"
+                                      ToolTip.VerticalOffset="-5"
                                       NavigateUri="https://wiki.artemis-rgb.com/en/donating">
                 <avalonia:MaterialIcon Kind="Gift" Width="20" Height="20" />
             </controls:HyperlinkButton>
