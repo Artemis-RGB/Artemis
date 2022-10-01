@@ -314,7 +314,7 @@ public sealed class Layer : RenderProfileElement
 
         // LEDs
         LayerEntity.Leds.Clear();
-        StoreMissingLeds();
+        SaveMissingLeds();
         foreach (ArtemisLed artemisLed in Leds)
         {
             LedEntity ledEntity = new()
@@ -783,7 +783,7 @@ public sealed class Layer : RenderProfileElement
         CalculateRenderProperties();
     }
 
-    private void StoreMissingLeds()
+    private void SaveMissingLeds()
     {
         LayerEntity.Leds.AddRange(_missingLeds.Except(LayerEntity.Leds, LedEntity.LedEntityComparer));
     }
