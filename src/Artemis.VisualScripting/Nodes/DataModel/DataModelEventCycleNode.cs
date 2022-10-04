@@ -15,7 +15,7 @@ public class DataModelEventCycleNode : Node<DataModelPathEntity, DataModelEventC
     private DateTime _lastTrigger;
     private bool _updating;
 
-    public DataModelEventCycleNode() : base("Data Model-Event Value Cycle", "Cycles through provided values each time the select event fires.")
+    public DataModelEventCycleNode()
     {
         _currentType = typeof(object);
 

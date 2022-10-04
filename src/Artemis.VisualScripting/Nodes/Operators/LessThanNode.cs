@@ -9,7 +9,6 @@ public class LessThanNode : Node
     #region Constructors
 
     public LessThanNode()
-        : base("Less than", "Checks if the first input is less than the second.")
     {
         Input1 = CreateInputPin<object>();
         Input2 = CreateInputPin<object>();

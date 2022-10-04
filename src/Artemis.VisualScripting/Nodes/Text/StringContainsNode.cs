@@ -6,7 +6,6 @@ namespace Artemis.VisualScripting.Nodes.Text;
 public class StringContainsNode : Node
 {
     public StringContainsNode()
-        : base("Contains", "Checks whether the first input is contained in the second input.")
     {
         Input1 = CreateInputPin<string>();
         Input2 = CreateInputPin<string>();

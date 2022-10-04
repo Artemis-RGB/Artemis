@@ -8,7 +8,6 @@ public class StringFormatNode : Node
     #region Constructors
 
     public StringFormatNode()
-        : base("Format", "Formats the input string.")
     {
         Format = CreateInputPin<string>("Format");
         Values = CreateInputPinCollection<object>("Values");

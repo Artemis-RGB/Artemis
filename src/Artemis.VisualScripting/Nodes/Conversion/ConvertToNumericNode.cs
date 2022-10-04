@@ -8,7 +8,6 @@ public class ConvertToNumericNode : Node
     #region Constructors
 
     public ConvertToNumericNode()
-        : base("To Numeric", "Converts the input to a numeric.")
     {
         Input = CreateInputPin<object>();
         Output = CreateOutputPin<Numeric>();

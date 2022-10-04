@@ -8,7 +8,6 @@ public class OrNode : Node
     #region Constructors
 
     public OrNode()
-        : base("Or", "Checks if any inputs are true.")
     {
         Input = CreateInputPinCollection<bool>();
         Result = CreateOutputPin<bool>();

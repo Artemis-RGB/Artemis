@@ -18,7 +18,6 @@ public class FlipFlopNode : Node
     #region Constructors
 
     public FlipFlopNode()
-        : base("FlipFlop", "Inverts the output when the input changes from false to true")
     {
         Input = CreateInputPin<bool>();
         Output = CreateOutputPin<bool>();

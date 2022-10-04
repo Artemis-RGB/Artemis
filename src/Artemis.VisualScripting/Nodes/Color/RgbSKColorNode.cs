@@ -18,7 +18,6 @@ public class RgbSKColorNode : Node
     #region Constructors
 
     public RgbSKColorNode()
-        : base("RGB Color", "Creates a color from red, green and blue values")
     {
         R = CreateInputPin<Numeric>("R");
         G = CreateInputPin<Numeric>("G");

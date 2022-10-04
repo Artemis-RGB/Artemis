@@ -11,8 +11,9 @@ public class ListOperatorPredicateNode : Node<ListOperatorEntity, ListOperatorPr
     private readonly object _scriptLock = new();
     private ListOperatorPredicateStartNode _startNode;
 
-    public ListOperatorPredicateNode() : base("List Operator (Advanced)", "Checks if any/all/no values in the input list match a condition")
+    public ListOperatorPredicateNode()
     {
+        Name = "List Operator";
         _startNode = new ListOperatorPredicateStartNode {X = -200};
 
         InputList = CreateInputPin<IList>();

@@ -20,8 +20,8 @@ public class LerpSKColorNode : Node
     #region Constructors
 
     public LerpSKColorNode()
-        : base("Lerp", "Interpolates linear between the two values A and B")
     {
+        Name = "Lerp";
         A = CreateInputPin<SKColor>("A");
         B = CreateInputPin<SKColor>("B");
         T = CreateInputPin<Numeric>("T");

@@ -12,7 +12,7 @@ public class SKColorEasingNode : Node
     private SKColor _sourceValue;
     private SKColor _targetValue;
 
-    public SKColorEasingNode() : base("Color Easing", "Outputs an eased color value")
+    public SKColorEasingNode()
     {
         Input = CreateInputPin<SKColor>();
         EasingTime = CreateInputPin<Numeric>("delay");

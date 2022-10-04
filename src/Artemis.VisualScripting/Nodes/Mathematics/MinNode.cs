@@ -8,7 +8,6 @@ public class MinNumericsNode : Node
     #region Constructors
 
     public MinNumericsNode()
-        : base("Min", "Outputs the smallest of the connected numeric values.")
     {
         Values = CreateInputPinCollection<Numeric>("Values", 2);
         Min = CreateOutputPin<Numeric>("Min");

@@ -16,7 +16,7 @@ public class DataModelEventNode : Node<DataModelPathEntity, DataModelEventNodeCu
     private OutputPin? _oldValuePin;
     private int _valueChangeCount;
 
-    public DataModelEventNode() : base("Data Model-Event", "Outputs the latest values of a data model event.")
+    public DataModelEventNode()
     {
         _objectOutputPins = new ObjectOutputPins(this);
 

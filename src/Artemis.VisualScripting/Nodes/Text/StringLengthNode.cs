@@ -7,7 +7,6 @@ namespace Artemis.VisualScripting.Nodes.Text;
 public class StringLengthNode : Node
 {
     public StringLengthNode()
-        : base("Text Length", "Outputs text length.")
     {
         Input1 = CreateInputPin<string>();
         Result = CreateOutputPin<Numeric>();

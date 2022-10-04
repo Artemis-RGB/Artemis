@@ -19,7 +19,6 @@ public class LerpNode : Node
     #region Constructors
 
     public LerpNode()
-        : base("Lerp", "Interpolates linear between the two values A and B")
     {
         A = CreateInputPin<Numeric>("A");
         B = CreateInputPin<Numeric>("B");

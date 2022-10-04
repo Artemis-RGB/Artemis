@@ -9,8 +9,8 @@ public class StaticNumericValueNode : Node<Numeric, StaticNumericValueNodeCustom
     #region Constructors
 
     public StaticNumericValueNode()
-        : base("Numeric", "Outputs a configurable numeric value.")
     {
+        Name = "Numeric";
         Output = CreateOutputPin<Numeric>();
     }
 
