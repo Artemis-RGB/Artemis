@@ -13,7 +13,6 @@ public class ListOperatorPredicateNode : Node<ListOperatorEntity, ListOperatorPr
 
     public ListOperatorPredicateNode()
     {
-        Name = "List Operator";
         _startNode = new ListOperatorPredicateStartNode {X = -200};
 
         InputList = CreateInputPin<IList>();
