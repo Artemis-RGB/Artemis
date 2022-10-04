@@ -46,7 +46,7 @@ public abstract class Node : BreakableModel, INode
     public string Name
     {
         get => _name;
-        protected set => SetAndNotify(ref _name, value);
+        set => SetAndNotify(ref _name, value);
     }
 
     private string _description;
@@ -55,7 +55,7 @@ public abstract class Node : BreakableModel, INode
     public string Description
     {
         get => _description;
-        protected set => SetAndNotify(ref _description, value);
+        set => SetAndNotify(ref _description, value);
     }
 
     private double _x;
@@ -77,6 +77,13 @@ public abstract class Node : BreakableModel, INode
     }
 
     /// <inheritdoc />
+    public string HelpUrl
+    {
+        get => _helpUrl;
+        set => SetAndNotify(ref _helpUrl, value);
+    }
+
+    /// <inheritdoc />
     public virtual bool IsExitNode => false;
 
     /// <inheritdoc />
@@ -88,6 +95,7 @@ public abstract class Node : BreakableModel, INode
     public IReadOnlyCollection<IPin> Pins => new ReadOnlyCollection<IPin>(_pins);
 
     private readonly List<IPinCollection> _pinCollections = new();
+    private string _helpUrl;
 
     /// <inheritdoc />
     public IReadOnlyCollection<IPinCollection> PinCollections => new ReadOnlyCollection<IPinCollection>(_pinCollections);
@@ -106,6 +114,7 @@ public abstract class Node : BreakableModel, INode
     {
         _name = string.Empty;
         _description = string.Empty;
+        _helpUrl = string.Empty;
         _id = Guid.NewGuid();
     }
 
@@ -116,6 +125,7 @@ public abstract class Node : BreakableModel, INode
     {
         _name = name;
         _description = description;
+        _helpUrl = string.Empty;
         _id = Guid.NewGuid();
     }
 

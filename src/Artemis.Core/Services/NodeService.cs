@@ -75,8 +75,9 @@ internal class NodeService : INodeService
         string name = nodeAttribute?.Name ?? nodeType.Name;
         string description = nodeAttribute?.Description ?? string.Empty;
         string category = nodeAttribute?.Category ?? string.Empty;
-
-        NodeData nodeData = new(plugin, nodeType, name, description, category, nodeAttribute?.InputType, nodeAttribute?.OutputType, (s, e) => CreateNode(s, e, nodeType));
+        string helpUrl = nodeAttribute?.HelpUrl ?? string.Empty;
+        
+        NodeData nodeData = new(plugin, nodeType, name, description, category, helpUrl, nodeAttribute?.InputType, nodeAttribute?.OutputType, (s, e) => CreateNode(s, e, nodeType));
         return NodeTypeStore.Add(nodeData);
     }
 

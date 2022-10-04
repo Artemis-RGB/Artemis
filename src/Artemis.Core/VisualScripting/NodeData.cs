@@ -1,5 +1,6 @@
 ﻿using System;
 using Artemis.Storage.Entities.Profile.Nodes;
+using Castle.Core.Internal;
 
 namespace Artemis.Core;
 
@@ -10,13 +11,14 @@ public class NodeData
 {
     #region Constructors
 
-    internal NodeData(Plugin plugin, Type type, string name, string description, string category, Type? inputType, Type? outputType, Func<INodeScript, NodeEntity?, INode> create)
+    internal NodeData(Plugin plugin, Type type, string name, string description, string category, string helpUrl, Type? inputType, Type? outputType, Func<INodeScript, NodeEntity?, INode> create)
     {
         Plugin = plugin;
         Type = type;
         Name = name;
         Description = description;
         Category = category;
+        HelpUrl = helpUrl;
         InputType = inputType;
         OutputType = outputType;
         _create = create;
@@ -34,7 +36,15 @@ public class NodeData
     /// <returns>The returning node of type <see cref="Type" /></returns>
     public INode CreateNode(INodeScript script, NodeEntity? entity)
     {
-        return _create(script, entity);
+        INode node = _create(script, entity);
+        if (string.IsNullOrWhiteSpace(node.Name))
+            node.Name = Name;
+        if (string.IsNullOrWhiteSpace(node.Description))
+            node.Description = Description;
+        if (string.IsNullOrWhiteSpace(node.HelpUrl))
+            node.HelpUrl = HelpUrl;
+
+        return node;
     }
 
     #endregion
@@ -100,6 +110,11 @@ public class NodeData
     ///     Gets the category of the node this data represents
     /// </summary>
     public string Category { get; }
+
+    /// <summary>
+    ///     Gets the help URL of the node this data represents
+    /// </summary>
+    public string HelpUrl { get; }
 
     /// <summary>
     ///     Gets the primary input type of the node this data represents
