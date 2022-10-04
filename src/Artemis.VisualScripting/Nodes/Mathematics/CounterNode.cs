@@ -9,7 +9,6 @@ public class CounterNode : Node
     private float _progress;
 
     public CounterNode()
-        : base("Counter", "Counts from 0.0 to 1.0 at a configurable rate.")
     {
         Time = CreateInputPin<Numeric>("Time (ms)");
         Output = CreateOutputPin<Numeric>();

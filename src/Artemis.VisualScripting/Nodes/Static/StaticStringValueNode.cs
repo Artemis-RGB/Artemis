@@ -9,8 +9,8 @@ public class StaticStringValueNode : Node<string, StaticStringValueNodeCustomVie
     #region Constructors
 
     public StaticStringValueNode()
-        : base("Text", "Outputs a configurable text value.")
     {
+        Name = "Text";
         Output = CreateOutputPin<string>();
     }
 

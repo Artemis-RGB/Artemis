@@ -8,7 +8,6 @@ public class EqualsNode : Node
     #region Constructors
 
     public EqualsNode()
-        : base("Equals", "Checks if the two inputs are equals.")
     {
         Input1 = CreateInputPin<object>();
         Input2 = CreateInputPin<object>();

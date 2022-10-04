@@ -8,7 +8,6 @@ public class XorNode : Node
     #region Constructors
 
     public XorNode()
-        : base("Exclusive Or", "Checks if one of the inputs is true.")
     {
         Input = CreateInputPinCollection<bool>();
         Result = CreateOutputPin<bool>();

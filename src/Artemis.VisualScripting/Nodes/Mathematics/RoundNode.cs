@@ -5,7 +5,7 @@ namespace Artemis.VisualScripting.Nodes.Mathematics;
 [Node("Round", "Outputs a rounded numeric value.", "Mathematics", InputType = typeof(Numeric), OutputType = typeof(Numeric))]
 public class RoundNode : Node
 {
-    public RoundNode() : base("Round", "Outputs a rounded numeric value.")
+    public RoundNode()
     {
         Input = CreateInputPin<Numeric>();
         Output = CreateOutputPin<Numeric>();

@@ -9,7 +9,7 @@ public class DataModelNode : Node<DataModelPathEntity, DataModelNodeCustomViewMo
 {
     private DataModelPath? _dataModelPath;
 
-    public DataModelNode() : base("Data Model", "Outputs a selectable data model value")
+    public DataModelNode()
     {
         Output = CreateOutputPin(typeof(object));
         StorageModified += (_, _) => UpdateDataModelPath();

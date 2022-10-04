@@ -25,7 +25,6 @@ public class DelayNode : Node
     #region Constructors
 
     public DelayNode()
-        : base("Delay", "Delays the resolution of the input pin(s) for the given time after each update")
     {
         Delay = CreateInputPin<Numeric>("Delay");
         Input = CreateInputPinCollection(typeof(object), initialCount: 0);

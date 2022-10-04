@@ -6,7 +6,7 @@ namespace Artemis.VisualScripting.Nodes.Easing;
 [Node("Easing Type", "Outputs a selectable easing type.", "Easing", OutputType = typeof(Easings.Functions))]
 public class EasingTypeNode : Node<Easings.Functions, EasingTypeNodeCustomViewModel>
 {
-    public EasingTypeNode() : base("Easing Type", "Outputs a selectable easing type.")
+    public EasingTypeNode()
     {
         Output = CreateOutputPin<Easings.Functions>();
     }

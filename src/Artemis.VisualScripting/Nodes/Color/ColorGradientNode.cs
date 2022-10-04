@@ -10,8 +10,9 @@ public class ColorGradientNode : Node<ColorGradient, ColorGradientNodeCustomView
 {
     private readonly List<InputPin> _inputPins;
 
-    public ColorGradientNode() : base("Color Gradient", "Outputs a color gradient with the given colors")
+    public ColorGradientNode()
     {
+        Name = "Color Gradient";
         _inputPins = new List<InputPin>();
 
         Gradient = ColorGradient.GetUnicornBarf();

@@ -10,7 +10,7 @@ public class StringRegexMatchNode : Node
     private Regex? _regex;
     private Exception? _exception;
 
-    public StringRegexMatchNode() : base("Regex Match", "Checks provided regex pattern matches the input.")
+    public StringRegexMatchNode()
     {
         Pattern = CreateInputPin<string>("Pattern");
         Input = CreateInputPin<string>("Input");

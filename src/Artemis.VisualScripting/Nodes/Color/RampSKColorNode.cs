@@ -10,7 +10,6 @@ public class RampSKColorNode : Node<ColorGradient, RampSKColorNodeCustomViewMode
     #region Constructors
 
     public RampSKColorNode()
-        : base("Color Ramp", "Maps values to colors with the use of a gradient.")
     {
         Input = CreateInputPin<Numeric>();
         Output = CreateOutputPin<SKColor>();

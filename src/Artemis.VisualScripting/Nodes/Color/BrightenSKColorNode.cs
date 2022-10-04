@@ -6,7 +6,7 @@ namespace Artemis.VisualScripting.Nodes.Color;
 [Node("Brighten Color", "Brightens a color by a specified amount in percent", "Color", InputType = typeof(SKColor), OutputType = typeof(SKColor))]
 public class BrightenSKColorNode : Node
 {
-    public BrightenSKColorNode() : base("Brighten Color", "Brightens a color by a specified amount in percent")
+    public BrightenSKColorNode()
     {
         Input = CreateInputPin<SKColor>("Color");
         Percentage = CreateInputPin<Numeric>("%");

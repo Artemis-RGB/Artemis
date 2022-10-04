@@ -25,7 +25,6 @@ public class LatchNode : Node
     #region Constructors
 
     public LatchNode()
-        : base("Latch", "Only passes the input to the output as long as the control-pin is true. If the control pin is false the last passed value is provided.")
     {
         Control = CreateInputPin<bool>("Control");
         Input = CreateInputPinCollection(typeof(object), initialCount: 0);

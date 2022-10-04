@@ -6,7 +6,7 @@ namespace Artemis.VisualScripting.Nodes.Color;
 [Node("Desaturate Color", "Desaturates a color by a specified amount in percent", "Color", InputType = typeof(SKColor), OutputType = typeof(SKColor))]
 public class DesaturateSKColorNode : Node
 {
-    public DesaturateSKColorNode() : base("Desaturate Color", "Desaturates a color by a specified amount in percent")
+    public DesaturateSKColorNode()
     {
         Input = CreateInputPin<SKColor>("Color");
         Percentage = CreateInputPin<Numeric>("%");
