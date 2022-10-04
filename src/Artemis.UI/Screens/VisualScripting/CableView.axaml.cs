@@ -8,6 +8,7 @@ using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using Avalonia.Rendering;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
@@ -29,9 +30,9 @@ public class CableView : ReactiveUserControl<CableViewModel>
         {
             _valueBorder.GetObservable(BoundsProperty).Subscribe(rect => _valueBorder.RenderTransform = new TranslateTransform(rect.Width / 2 * -1, rect.Height / 2 * -1)).DisposeWith(d);
 
-            ViewModel.WhenAnyValue(vm => vm.FromPoint).Subscribe(_ => Update()).DisposeWith(d);
-            ViewModel.WhenAnyValue(vm => vm.ToPoint).Subscribe(_ => Update()).DisposeWith(d);
-            Update();
+            ViewModel.WhenAnyValue(vm => vm.FromPoint).Subscribe(_ => Update(true)).DisposeWith(d);
+            ViewModel.WhenAnyValue(vm => vm.ToPoint).Subscribe(_ => Update(false)).DisposeWith(d);
+            Update(true);
         });
     }
 
@@ -40,10 +41,12 @@ public class CableView : ReactiveUserControl<CableViewModel>
         AvaloniaXamlLoader.Load(this);
     }
 
-    private void Update()
+    private void Update(bool from)
     {
         // Workaround for https://github.com/AvaloniaUI/Avalonia/issues/4748
-        _cablePath.Margin = _cablePath.Margin != new Thickness(0, 0, 0, 0) ? new Thickness(0, 0, 0, 0) : new Thickness(1, 1, 0, 0);
+        _cablePath.Margin = new Thickness(_cablePath.Margin.Left + 1, _cablePath.Margin.Top + 1, 0, 0);
+        if (_cablePath.Margin.Left > 2)
+            _cablePath.Margin = new Thickness(0, 0, 0, 0);
 
         PathFigure pathFigure = ((PathGeometry) _cablePath.Data).Figures.First();
         BezierSegment segment = (BezierSegment) pathFigure.Segments!.First();
@@ -51,6 +54,11 @@ public class CableView : ReactiveUserControl<CableViewModel>
         segment.Point1 = new Point(ViewModel.FromPoint.X + CABLE_OFFSET, ViewModel.FromPoint.Y);
         segment.Point2 = new Point(ViewModel.ToPoint.X - CABLE_OFFSET, ViewModel.ToPoint.Y);
         segment.Point3 = new Point(ViewModel.ToPoint.X, ViewModel.ToPoint.Y);
+
+        Canvas.SetLeft(_valueBorder, ViewModel.FromPoint.X + (ViewModel.ToPoint.X - ViewModel.FromPoint.X) / 2);
+        Canvas.SetTop(_valueBorder, ViewModel.FromPoint.Y + (ViewModel.ToPoint.Y - ViewModel.FromPoint.Y) / 2);
+        
+        _cablePath.InvalidateVisual();
     }
 
     private void OnPointerEnter(object? sender, PointerEventArgs e)

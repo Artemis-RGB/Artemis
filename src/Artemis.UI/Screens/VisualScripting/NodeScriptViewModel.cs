@@ -6,9 +6,12 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Text;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Events;
 using Artemis.Core.Services;
+using Artemis.UI.Models;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.VisualScripting.Pins;
 using Artemis.UI.Shared;
@@ -16,6 +19,7 @@ using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Avalonia;
 using Avalonia.Controls.Mixins;
+using Avalonia.Input;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
@@ -24,6 +28,8 @@ namespace Artemis.UI.Screens.VisualScripting;
 
 public class NodeScriptViewModel : ActivatableViewModelBase
 {
+    public const string CLIPBOARD_DATA_FORMAT = "Artemis.Nodes";
+    
     private readonly INodeEditorService _nodeEditorService;
     private readonly INodeService _nodeService;
     private readonly SourceList<NodeViewModel> _nodeViewModels;
@@ -33,6 +39,7 @@ public class NodeScriptViewModel : ActivatableViewModelBase
     private DragCableViewModel? _dragViewModel;
     private List<NodeViewModel>? _initialNodeSelection;
     private Matrix _panMatrix;
+    private Point _pastePosition;
 
     public NodeScriptViewModel(NodeScript nodeScript, bool isPreview, INodeVmFactory nodeVmFactory, INodeService nodeService, INodeEditorService nodeEditorService)
     {
@@ -86,8 +93,8 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         ClearSelection = ReactiveCommand.Create(ExecuteClearSelection);
         DeleteSelected = ReactiveCommand.Create(ExecuteDeleteSelected);
         DuplicateSelected = ReactiveCommand.Create(ExecuteDuplicateSelected);
-        CopySelected = ReactiveCommand.Create(ExecuteCopySelected);
-        PasteSelected = ReactiveCommand.Create(ExecutePasteSelected);
+        CopySelected = ReactiveCommand.CreateFromTask(ExecuteCopySelected);
+        PasteSelected = ReactiveCommand.CreateFromTask(ExecutePasteSelected);
     }
 
     public NodeScript NodeScript { get; }
@@ -116,6 +123,12 @@ public class NodeScriptViewModel : ActivatableViewModelBase
     {
         get => _panMatrix;
         set => RaiseAndSetIfChanged(ref _panMatrix, value);
+    }
+
+    public Point PastePosition
+    {
+        get => _pastePosition;
+        set => RaiseAndSetIfChanged(ref _pastePosition, value);
     }
 
     public void DeleteSelectedNodes()
@@ -279,11 +292,39 @@ public class NodeScriptViewModel : ActivatableViewModelBase
         }
     }
 
-    private void ExecuteCopySelected()
+    private async Task ExecuteCopySelected()
     {
+        if (Application.Current?.Clipboard == null)
+            return;
+
+        List<INode> nodes = NodeViewModels.Where(vm => vm.IsSelected).Select(vm => vm.Node).Where(n => !n.IsDefaultNode && !n.IsExitNode).ToList();
+        DataObject dataObject = new();
+        string copy = CoreJson.SerializeObject(new NodesClipboardModel(NodeScript, nodes), true);
+        dataObject.Set(CLIPBOARD_DATA_FORMAT, copy);
+        await Application.Current.Clipboard.SetDataObjectAsync(dataObject);   
     }
 
-    private void ExecutePasteSelected()
+    private async Task ExecutePasteSelected()
     {
+        if (Application.Current?.Clipboard == null)
+            return;
+
+        byte[]? bytes = (byte[]?) await Application.Current.Clipboard.GetDataAsync(CLIPBOARD_DATA_FORMAT);
+        if (bytes == null!)
+            return;
+
+        NodesClipboardModel? nodesClipboardModel = CoreJson.DeserializeObject<NodesClipboardModel>(Encoding.Unicode.GetString(bytes), true);
+        if (nodesClipboardModel == null)
+            return;
+        
+        List<INode> nodes = nodesClipboardModel.Paste(NodeScript, PastePosition.X, PastePosition.Y);
+        
+        using NodeEditorCommandScope scope = _nodeEditorService.CreateCommandScope(NodeScript, "Paste nodes");
+        foreach (INode node in nodes)
+            _nodeEditorService.ExecuteCommand(NodeScript, new AddNode(NodeScript, node));
+
+        // Select only the new nodes
+        foreach (NodeViewModel nodeViewModel in NodeViewModels)
+            nodeViewModel.IsSelected = nodes.Contains(nodeViewModel.Node);
     }
 }
