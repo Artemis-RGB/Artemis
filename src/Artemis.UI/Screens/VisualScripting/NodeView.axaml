@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:visualScripting="clr-namespace:Artemis.UI.Screens.VisualScripting"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="150"
              x:Class="Artemis.UI.Screens.VisualScripting.NodeView"
              x:DataType="visualScripting:NodeViewModel">
@@ -37,7 +38,7 @@
                     ClipToBounds="True"
                     Background="{DynamicResource ContentDialogBackground}">
                 <Border Background="{DynamicResource TaskDialogHeaderBackground}">
-                    <Grid Classes="node-header" VerticalAlignment="Top" ColumnDefinitions="Auto,*,Auto">
+                    <Grid Classes="node-header" VerticalAlignment="Top" ColumnDefinitions="Auto,*,Auto,Auto">
                         <Button Grid.Column="0"
                                 VerticalAlignment="Center"
                                 IsVisible="{CompiledBinding Node.BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
@@ -53,7 +54,17 @@
 
                         <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="10 0 0 0" Text="{CompiledBinding Node.Name}" ToolTip.Tip="{CompiledBinding Node.Description}" />
 
-                        <Button Grid.Column="2" VerticalAlignment="Center" Classes="icon-button icon-button-small" Margin="5" Command="{CompiledBinding DeleteNode}">
+      
+                        <controls:HyperlinkButton Grid.Column="2" 
+                                                  IsVisible="{CompiledBinding Node.HelpUrl, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                  VerticalAlignment="Center" 
+                                                  Classes="icon-button icon-button-small"
+                                                  Margin="5 5 -3 5"
+                                                  ToolTip.Tip="View node help" 
+                                                  NavigateUri="{CompiledBinding Node.HelpUrl}">
+                            <avalonia:MaterialIcon Kind="Help" />
+                        </controls:HyperlinkButton>
+                        <Button Grid.Column="3" VerticalAlignment="Center" Classes="icon-button icon-button-small" Margin="5" Command="{CompiledBinding DeleteNode}">
                             <avalonia:MaterialIcon Kind="Close"></avalonia:MaterialIcon>
                         </Button>
                     </Grid>
