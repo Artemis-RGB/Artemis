@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
@@ -27,7 +28,6 @@ public class CableViewModel : ActivatableViewModelBase
     private PinViewModel? _fromViewModel;
     private ObservableAsPropertyHelper<Point>? _toPoint;
     private PinViewModel? _toViewModel;
-    private ObservableAsPropertyHelper<Point>? _valuePoint;
 
     public CableViewModel(NodeScriptViewModel nodeScriptViewModel, IPin from, IPin to, ISettingsService settingsService)
     {
@@ -63,12 +63,7 @@ public class CableViewModel : ActivatableViewModelBase
                 .Switch()
                 .ToProperty(this, vm => vm.ToPoint)
                 .DisposeWith(d);
-            _valuePoint = this.WhenAnyValue(vm => vm.FromPoint, vm => vm.ToPoint).Select(tuple => new Point(
-                    tuple.Item1.X + (tuple.Item2.X - tuple.Item1.X) / 2,
-                    tuple.Item1.Y + (tuple.Item2.Y - tuple.Item1.Y) / 2
-                )).ToProperty(this, vm => vm.ValuePoint)
-                .DisposeWith(d);
-
+            
             // Not a perfect solution but this makes sure the cable never renders at 0,0 (can happen when the cable spawns before the pin ever rendered)
             _connected = this.WhenAnyValue(vm => vm.FromPoint, vm => vm.ToPoint)
                 .Select(tuple => tuple.Item1 != new Point(0, 0) && tuple.Item2 != new Point(0, 0))
@@ -104,11 +99,10 @@ public class CableViewModel : ActivatableViewModelBase
     }
 
     public bool Connected => _connected?.Value ?? false;
-    public bool IsFirst => _from.ConnectedTo[0] == _to;
+    public bool IsFirst => _from.ConnectedTo.FirstOrDefault() == _to;
 
     public Point FromPoint => _fromPoint?.Value ?? new Point();
     public Point ToPoint => _toPoint?.Value ?? new Point();
-    public Point ValuePoint => _valuePoint?.Value ?? new Point();
     public Color CableColor => _cableColor?.Value ?? new Color(255, 255, 255, 255);
 
     public void UpdateDisplayValue(bool hoveringOver)

@@ -4,6 +4,22 @@ namespace Artemis.Storage.Entities.Profile.Nodes;
 
 public class NodeConnectionEntity
 {
+    public NodeConnectionEntity()
+    {
+    }
+
+    public NodeConnectionEntity(NodeConnectionEntity nodeConnectionEntity)
+    {
+        SourceType = nodeConnectionEntity.SourceType;
+        SourceNode = nodeConnectionEntity.SourceNode;
+        TargetNode = nodeConnectionEntity.TargetNode;
+        SourcePinCollectionId = nodeConnectionEntity.SourcePinCollectionId;
+        SourcePinId = nodeConnectionEntity.SourcePinId;
+        TargetType = nodeConnectionEntity.TargetType;
+        TargetPinCollectionId = nodeConnectionEntity.TargetPinCollectionId;
+        TargetPinId = nodeConnectionEntity.TargetPinId;
+    }
+
     public string SourceType { get; set; }
     public Guid SourceNode { get; set; }
     public Guid TargetNode { get; set; }
