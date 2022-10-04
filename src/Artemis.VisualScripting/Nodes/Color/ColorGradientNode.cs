@@ -12,7 +12,6 @@ public class ColorGradientNode : Node<ColorGradient, ColorGradientNodeCustomView
 
     public ColorGradientNode()
     {
-        Name = "Color Gradient";
         _inputPins = new List<InputPin>();
 
         Gradient = ColorGradient.GetUnicornBarf();

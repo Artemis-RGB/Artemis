@@ -9,7 +9,6 @@ public class ListOperatorNode : Node<ListOperator, ListOperatorNodeCustomViewMod
 {
     public ListOperatorNode()
     {
-        Name = "List Operator";
         InputList = CreateInputPin<IList>();
         InputValue = CreateInputPin<object>();
 
