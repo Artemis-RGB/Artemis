@@ -11,7 +11,7 @@ public class NumericEasingNode : Node
     private float _sourceValue;
     private float _targetValue;
 
-    public NumericEasingNode() : base("Numeric Easing", "Outputs an eased numeric value")
+    public NumericEasingNode()
     {
         Input = CreateInputPin<Numeric>();
         EasingTime = CreateInputPin<Numeric>("delay");

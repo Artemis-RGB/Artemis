@@ -8,7 +8,6 @@ public class AndNode : Node
     #region Constructors
 
     public AndNode()
-        : base("And", "Checks if all inputs are true.")
     {
         Input = CreateInputPinCollection<bool>();
         Result = CreateOutputPin<bool>();

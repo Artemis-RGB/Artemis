@@ -6,7 +6,7 @@ namespace Artemis.VisualScripting.Nodes.Color;
 [Node("HSL Color", "Creates a color from hue, saturation and lightness values", "Color", InputType = typeof(Numeric), OutputType = typeof(SKColor))]
 public class HslSKColorNode : Node
 {
-    public HslSKColorNode() : base("HSL Color", "Creates a color from hue, saturation and lightness values")
+    public HslSKColorNode()
     {
         H = CreateInputPin<Numeric>("H");
         S = CreateInputPin<Numeric>("S");

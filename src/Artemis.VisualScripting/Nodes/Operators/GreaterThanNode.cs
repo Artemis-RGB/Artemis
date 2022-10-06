@@ -9,7 +9,6 @@ public class GreaterThanNode : Node
     #region Constructors
 
     public GreaterThanNode()
-        : base("Greater than", "Checks if the first input is greater than the second.")
     {
         Input1 = CreateInputPin<object>();
         Input2 = CreateInputPin<object>();

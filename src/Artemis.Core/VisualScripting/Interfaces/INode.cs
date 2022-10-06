@@ -18,12 +18,12 @@ public interface INode : INotifyPropertyChanged, IBreakableModel
     /// <summary>
     ///     Gets the name of the node
     /// </summary>
-    string Name { get; }
+    string Name { get; set; }
 
     /// <summary>
     ///     Gets the description of the node
     /// </summary>
-    string Description { get; }
+    string Description { get; set; }
 
     /// <summary>
     ///     Gets a boolean indicating whether the node is the exit node of the script
@@ -44,6 +44,11 @@ public interface INode : INotifyPropertyChanged, IBreakableModel
     ///     Gets or sets the Y-position of the node
     /// </summary>
     public double Y { get; set; }
+    
+    /// <summary>
+    ///     Gets or sets the help URL of the node
+    /// </summary>
+    string HelpUrl { get; set; }
 
     /// <summary>
     ///     Gets a read-only collection of the pins on this node

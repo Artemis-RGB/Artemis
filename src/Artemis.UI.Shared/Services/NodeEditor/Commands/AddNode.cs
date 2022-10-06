@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Artemis.Core;
 
 namespace Artemis.UI.Shared.Services.NodeEditor.Commands;
@@ -36,7 +37,8 @@ public class AddNode : INodeEditorCommand, IDisposable
     /// <inheritdoc />
     public void Execute()
     {
-        _nodeScript.AddNode(_node);
+        if (!_nodeScript.Nodes.Contains(_node))
+            _nodeScript.AddNode(_node);
         _isRemoved = false;
     }
 

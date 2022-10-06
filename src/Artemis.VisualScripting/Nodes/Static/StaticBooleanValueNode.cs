@@ -9,8 +9,8 @@ public class StaticBooleanValueNode : Node<bool, StaticBooleanValueNodeCustomVie
     #region Constructors
 
     public StaticBooleanValueNode()
-        : base("Boolean", "Outputs a configurable static boolean value.")
     {
+        Name = "Boolean";
         Output = CreateOutputPin<bool>();
     }
 

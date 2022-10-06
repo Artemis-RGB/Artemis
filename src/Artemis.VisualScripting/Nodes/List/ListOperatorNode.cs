@@ -7,7 +7,7 @@ namespace Artemis.VisualScripting.Nodes.List;
 [Node("List Operator (Simple)", "Checks if any/all/no values in the input list match the input value", "List", InputType = typeof(IEnumerable), OutputType = typeof(bool))]
 public class ListOperatorNode : Node<ListOperator, ListOperatorNodeCustomViewModel>
 {
-    public ListOperatorNode() : base("List Operator (Simple)", "Checks if any/all/no values in the input list match the input value")
+    public ListOperatorNode()
     {
         InputList = CreateInputPin<IList>();
         InputValue = CreateInputPin<object>();

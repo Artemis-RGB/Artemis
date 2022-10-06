@@ -9,8 +9,8 @@ public class SumSKColorsNode : Node
     #region Constructors
 
     public SumSKColorsNode()
-        : base("Sum", "Sums the connected color values.")
     {
+        Name = "Sum";
         Values = CreateInputPinCollection<SKColor>("Values", 2);
         Sum = CreateOutputPin<SKColor>("Sum");
     }

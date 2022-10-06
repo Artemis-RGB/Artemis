@@ -8,7 +8,6 @@ public class NegateNode : Node
     #region Constructors
 
     public NegateNode()
-        : base("Negate", "Negates the boolean.")
     {
         Input = CreateInputPin<bool>();
         Output = CreateOutputPin<bool>();

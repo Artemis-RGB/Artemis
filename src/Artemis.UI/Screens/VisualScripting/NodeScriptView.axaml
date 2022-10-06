@@ -30,6 +30,8 @@
         <KeyBinding Command="{CompiledBinding ClearSelection}" Gesture="Escape" />
         <KeyBinding Command="{CompiledBinding DeleteSelected}" Gesture="Delete" />
         <KeyBinding Command="{CompiledBinding DuplicateSelected}" Gesture="Ctrl+D" />
+        <KeyBinding Command="{CompiledBinding CopySelected}" Gesture="Ctrl+C" />
+        <KeyBinding Command="{CompiledBinding PasteSelected}" Gesture="Ctrl+V" />
         <KeyBinding Command="{CompiledBinding History.Undo}" Gesture="Ctrl+Z" />
         <KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y" />
     </UserControl.KeyBindings>

@@ -6,7 +6,7 @@ namespace Artemis.VisualScripting.Nodes.Operators;
 [Node("Enum Equals", "Determines the equality between an input and a selected enum value", "Operators", InputType = typeof(Enum), OutputType = typeof(bool))]
 public class EnumEqualsNode : Node<long, EnumEqualsNodeCustomViewModel>
 {
-    public EnumEqualsNode() : base("Enum Equals", "Determines the equality between an input and a selected enum value")
+    public EnumEqualsNode()
     {
         InputPin = CreateInputPin<Enum>();
         OutputPin = CreateOutputPin<bool>();

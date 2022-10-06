@@ -8,7 +8,6 @@ public class SumNumericsNode : Node
     #region Constructors
 
     public SumNumericsNode()
-        : base("Sum", "Sums the connected numeric values.")
     {
         Values = CreateInputPinCollection<Numeric>("Values", 2);
         Sum = CreateOutputPin<Numeric>("Sum");

@@ -10,13 +10,18 @@
         <Platforms>x64</Platforms>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageId>ArtemisRGB.Core</PackageId>
-        <!-- API Version -->
-        <VersionPrefix>1.0.0.0</VersionPrefix>
+        <PluginApiVersion>1</PluginApiVersion>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj"/>
-        <ProjectReference Condition="'$(BuildingNuget)' == 'True'" Update="..\Artemis.Storage\Artemis.Storage.csproj" PrivateAssets="All"/>
+        <!--Used to embed the above PluginApiVersion property into the assembly as metadata-->
+        <AssemblyMetadata Include="PluginApiVersion" Value="$(PluginApiVersion)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj" />
+        <ProjectReference Condition="'$(BuildingNuget)' == 'True'" Update="..\Artemis.Storage\Artemis.Storage.csproj" PrivateAssets="All" />
         
         <!-- 
          Include Artemis.Storage directly in the NuGet package instead of expecting it as an external dependency

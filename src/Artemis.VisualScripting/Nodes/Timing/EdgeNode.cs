@@ -17,7 +17,6 @@ public class EdgeNode : Node
     #region Constructors
 
     public EdgeNode()
-        : base("Edge", "Outputs true on each edge when the input changes")
     {
         Input = CreateInputPin<bool>();
         Output = CreateOutputPin<bool>();

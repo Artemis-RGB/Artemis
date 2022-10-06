@@ -6,7 +6,7 @@ namespace Artemis.VisualScripting.Nodes.Branching;
 [Node("Branch", "Forwards one of two values depending on an input boolean", "Branching", InputType = typeof(object), OutputType = typeof(object))]
 public class BooleanBranchNode : Node
 {
-    public BooleanBranchNode() : base("Branch", "Forwards one of two values depending on an input boolean")
+    public BooleanBranchNode()
     {
         BooleanInput = CreateInputPin<bool>();
         TrueInput = CreateInputPin(typeof(object), "True");

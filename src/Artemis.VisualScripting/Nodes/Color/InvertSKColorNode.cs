@@ -6,7 +6,7 @@ namespace Artemis.VisualScripting.Nodes.Color;
 [Node("Invert Color", "Inverts a color by a specified amount in percent", "Color", InputType = typeof(SKColor), OutputType = typeof(SKColor))]
 public class InvertSKColorNode : Node
 {
-    public InvertSKColorNode() : base("Invert Color", "Inverts a color")
+    public InvertSKColorNode()
     {
         Input = CreateInputPin<SKColor>();
         Output = CreateOutputPin<SKColor>();

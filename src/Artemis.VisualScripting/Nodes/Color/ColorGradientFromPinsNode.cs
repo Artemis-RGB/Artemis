@@ -11,7 +11,7 @@ public class ColorGradientFromPinsNode : Node
     public InputPinCollection<SKColor> Colors { get; set; }
     public InputPinCollection<Numeric> Positions { get; set; }
 
-    public ColorGradientFromPinsNode() : base("Color Gradient", "Outputs a Color Gradient from colors and positions")
+    public ColorGradientFromPinsNode()
     {
         Colors = CreateInputPinCollection<SKColor>("Colors", 0);
         Positions = CreateInputPinCollection<Numeric>("Positions", 0);

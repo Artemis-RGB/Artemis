@@ -19,7 +19,6 @@ public class ClampNode : Node
     #region Constructors
 
     public ClampNode()
-        : base("Clamp", "Clamps the value to be in between min and max")
     {
         Value = CreateInputPin<Numeric>("Value");
         Min = CreateInputPin<Numeric>("Min");

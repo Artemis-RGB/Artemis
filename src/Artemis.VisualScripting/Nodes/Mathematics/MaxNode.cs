@@ -8,7 +8,6 @@ public class MaxNumericsNode : Node
     #region Constructors
 
     public MaxNumericsNode()
-        : base("Max", "Outputs the largest of the connected numeric values.")
     {
         Values = CreateInputPinCollection<Numeric>("Values", 2);
         Max = CreateOutputPin<Numeric>("Max");

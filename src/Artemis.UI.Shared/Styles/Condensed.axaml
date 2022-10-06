@@ -45,7 +45,7 @@
 
     <!-- Add Styles Here -->
     <Style Selector="TextBox.condensed">
-        <Setter Property="Padding" Value="2" />
+        <Setter Property="Padding" Value="6 1" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="MinHeight" Value="24" />
     </Style>

@@ -19,7 +19,6 @@ public class RangeNode : Node
     #region Constructors
 
     public RangeNode()
-        : base("Range", "Selects the best integer value in the given range by the given percentage")
     {
         Min = CreateInputPin<Numeric>("Min");
         Max = CreateInputPin<Numeric>("Max");

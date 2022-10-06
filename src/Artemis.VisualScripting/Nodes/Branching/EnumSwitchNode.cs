@@ -9,7 +9,7 @@ public class EnumSwitchNode : Node
 {
     private readonly Dictionary<Enum, InputPin> _inputPins;
 
-    public EnumSwitchNode() : base("Enum Branch", "desc")
+    public EnumSwitchNode()
     {
         _inputPins = new Dictionary<Enum, InputPin>();
 

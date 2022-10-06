@@ -25,6 +25,11 @@ public class NodeAttribute : Attribute
     public string Category { get; } = string.Empty;
 
     /// <summary>
+    /// Gets the help URL of the node
+    /// </summary>
+    public string HelpUrl { get; init; } = string.Empty;
+
+    /// <summary>
     ///     Gets  the primary input type of the node
     /// </summary>
     public Type? InputType { get; init; }
@@ -63,6 +68,17 @@ public class NodeAttribute : Attribute
         Name = name;
         Description = description;
         Category = category;
+    }
+
+    /// <summary>
+    ///     Creates a new instance of the <see cref="NodeAttribute" /> class
+    /// </summary>
+    public NodeAttribute(string name, string description, string category, string helpUrl)
+    {
+        Name = name;
+        Description = description;
+        Category = category;
+        HelpUrl = helpUrl;
     }
 
     #endregion

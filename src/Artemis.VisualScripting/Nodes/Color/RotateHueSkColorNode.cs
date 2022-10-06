@@ -6,7 +6,7 @@ namespace Artemis.VisualScripting.Nodes.Color;
 [Node("Rotate Color Hue", "Rotates the hue of a color by a specified amount in degrees", "Color", InputType = typeof(SKColor), OutputType = typeof(SKColor))]
 public class RotateHueSKColorNode : Node
 {
-    public RotateHueSKColorNode() : base("Rotate Color Hue", "Rotates the hue of a color by a specified amount in degrees")
+    public RotateHueSKColorNode()
     {
         Input = CreateInputPin<SKColor>("Color");
         Amount = CreateInputPin<Numeric>("Amount");

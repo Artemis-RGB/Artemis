@@ -10,7 +10,7 @@ jobs:
   version:
     runs-on: ubuntu-latest
     outputs:
-      version-suffix: ${{ steps.get-version.outputs.version-suffix }}
+      version-number: ${{ steps.get-version.outputs.version-number }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -22,9 +22,12 @@ jobs:
         run: |
           $MidnightUtc = [DateTime]::UtcNow.Date
           $BranchName = "${{ github.ref_name }}".replace('/','-').replace('.','-')
+          $ApiVersion = (Select-Xml -Path 'src/Artemis.Core/Artemis.Core.csproj' -XPath '//PluginApiVersion').Node.InnerText
           $NumberOfCommitsToday = (git log --after=$($MidnightUtc.ToString("o")) --oneline | Measure-Object -Line).Lines
-          $VersionSuffix = "$BranchName.$($MidnightUtc.ToString("yyyyMMdd")).$NumberOfCommitsToday"
-          Write-Output "::set-output name=version-suffix::$VersionSuffix"
+          $VersionNumber = "$ApiVersion.$($MidnightUtc.ToString("yyyy.MMdd")).$NumberOfCommitsToday"
+          # If we're not in master, add the branch name to the version so it counts as prerelease 
+          if ($BranchName -ne "master") { $VersionNumber += "-$BranchName" }
+          Write-Output "::set-output name=version-number::$VersionNumber"
 
   nuget:
     name: Publish Nuget Packages
@@ -38,8 +41,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Pack Artemis.Core
-        run: dotnet pack -c Release -p:VersionSuffix=${{ needs.version.outputs.version-suffix }} -p:BuildingNuget=True src/Artemis.Core/Artemis.Core.csproj
+        run: dotnet pack -c Release -p:Version=${{ needs.version.outputs.version-number }} -p:BuildingNuget=True src/Artemis.Core/Artemis.Core.csproj
       - name: Pack Artemis.UI.Shared
-        run: dotnet pack -c Release -p:VersionSuffix=${{ needs.version.outputs.version-suffix }} src/Artemis.UI.Shared/Artemis.UI.Shared.csproj
+        run: dotnet pack -c Release -p:Version=${{ needs.version.outputs.version-number }} src/Artemis.UI.Shared/Artemis.UI.Shared.csproj
       - name: Push Nugets
         run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

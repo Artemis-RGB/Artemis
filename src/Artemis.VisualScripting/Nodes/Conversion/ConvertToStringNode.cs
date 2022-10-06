@@ -2,13 +2,12 @@
 
 namespace Artemis.VisualScripting.Nodes.Conversion;
 
-[Node("To String", "Converts the input to a string.", "Conversion", InputType = typeof(object), OutputType = typeof(string))]
+[Node("To Text", "Converts the input to text.", "Conversion", InputType = typeof(object), OutputType = typeof(string))]
 public class ConvertToStringNode : Node
 {
     #region Constructors
 
     public ConvertToStringNode()
-        : base("To String", "Converts the input to a string.")
     {
         Input = CreateInputPin<object>();
         String = CreateOutputPin<string>();

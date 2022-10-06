@@ -16,7 +16,6 @@ public class RandomNumericValueNode : Node
     #region Constructors
 
     public RandomNumericValueNode()
-        : base("Random", "Generates a random value between 0 and 1")
     {
         Output = CreateOutputPin<Numeric>();
     }

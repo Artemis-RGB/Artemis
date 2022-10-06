@@ -7,7 +7,6 @@ namespace Artemis.VisualScripting.Nodes.Text;
 public class StringNullOrEmptyNode : Node
 {
     public StringNullOrEmptyNode()
-        : base("Text is empty", "Outputs true if empty")
     {
         Input1 = CreateInputPin<string>();
         Output1 = CreateOutputPin<bool>();

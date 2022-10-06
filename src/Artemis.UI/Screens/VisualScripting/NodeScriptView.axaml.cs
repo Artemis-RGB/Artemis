@@ -14,6 +14,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using DynamicData.Binding;
 using ReactiveUI;
 
@@ -39,6 +40,8 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
 
         _zoomBorder.AddHandler(PointerReleasedEvent, CanvasOnPointerReleased, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
         _zoomBorder.AddHandler(PointerWheelChangedEvent, ZoomOnPointerWheelChanged, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+        _zoomBorder.AddHandler(PointerMovedEvent, ZoomOnPointerMoved, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+        
         this.WhenActivated(d =>
         {
             ViewModel!.AutoFitRequested += ViewModelOnAutoFitRequested;
@@ -67,6 +70,12 @@ public class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
             e.Handled = true;
     }
 
+    private void ZoomOnPointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (ViewModel != null)
+            ViewModel.PastePosition = e.GetPosition(_grid);
+    }
+    
     private void ShowPickerAt(Point point)
     {
         if (ViewModel == null)

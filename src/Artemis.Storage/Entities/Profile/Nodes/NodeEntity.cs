@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Artemis.Storage.Entities.Profile.Nodes;
 
@@ -8,6 +9,22 @@ public class NodeEntity
     public NodeEntity()
     {
         PinCollections = new List<NodePinCollectionEntity>();
+    }
+
+    public NodeEntity(NodeEntity nodeEntity)
+    {
+        Id = nodeEntity.Id;
+        Type = nodeEntity.Type;
+        PluginId = nodeEntity.PluginId;
+
+        Name = nodeEntity.Name;
+        Description = nodeEntity.Description;
+        IsExitNode = nodeEntity.IsExitNode;
+        X = nodeEntity.X;
+        Y = nodeEntity.Y;
+        Storage = nodeEntity.Storage;
+
+        PinCollections = nodeEntity.PinCollections.Select(p => new NodePinCollectionEntity(p)).ToList();
     }
 
     public Guid Id { get; set; }

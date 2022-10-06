@@ -25,7 +25,6 @@ public class SequencerNode : Node
     #region Constructors
 
     public SequencerNode()
-        : base("Sequencer", "Advances on input every time the control has a rising edge (change to true)")
     {
         _currentType = typeof(object);
 
