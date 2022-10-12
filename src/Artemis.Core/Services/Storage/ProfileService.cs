@@ -53,16 +53,6 @@ internal class ProfileService : IProfileService
         UpdateModules();
     }
 
-    protected virtual void OnProfileActivated(ProfileConfigurationEventArgs e)
-    {
-        ProfileActivated?.Invoke(this, e);
-    }
-
-    protected virtual void OnProfileDeactivated(ProfileConfigurationEventArgs e)
-    {
-        ProfileDeactivated?.Invoke(this, e);
-    }
-
     private void InputServiceOnKeyboardKeyUp(object? sender, ArtemisKeyboardKeyEventArgs e)
     {
         if (!HotkeysEnabled)
@@ -386,13 +376,16 @@ internal class ProfileService : IProfileService
 
     public ProfileCategory CreateProfileCategory(string name)
     {
+        ProfileCategory profileCategory;
         lock (_profileRepository)
         {
-            ProfileCategory profileCategory = new(name);
+            profileCategory = new ProfileCategory(name, _profileCategories.Count + 1);
             _profileCategories.Add(profileCategory);
             SaveProfileCategory(profileCategory);
-            return profileCategory;
         }
+
+        OnProfileCategoryAdded(new ProfileCategoryEventArgs(profileCategory));
+        return profileCategory;
     }
 
     public void DeleteProfileCategory(ProfileCategory profileCategory)
@@ -406,6 +399,8 @@ internal class ProfileService : IProfileService
             _profileCategories.Remove(profileCategory);
             _profileCategoryRepository.Remove(profileCategory.Entity);
         }
+        
+        OnProfileCategoryRemoved(new ProfileCategoryEventArgs(profileCategory));
     }
 
     public ProfileConfiguration CreateProfileConfiguration(ProfileCategory category, string name, string icon)
@@ -543,6 +538,32 @@ internal class ProfileService : IProfileService
         _profileRepository.Save(profile.ProfileEntity);
     }
 
+    #region Events
+
     public event EventHandler<ProfileConfigurationEventArgs>? ProfileActivated;
     public event EventHandler<ProfileConfigurationEventArgs>? ProfileDeactivated;
+    public event EventHandler<ProfileCategoryEventArgs>? ProfileCategoryAdded;
+    public event EventHandler<ProfileCategoryEventArgs>? ProfileCategoryRemoved;
+
+    protected virtual void OnProfileActivated(ProfileConfigurationEventArgs e)
+    {
+        ProfileActivated?.Invoke(this, e);
+    }
+
+    protected virtual void OnProfileDeactivated(ProfileConfigurationEventArgs e)
+    {
+        ProfileDeactivated?.Invoke(this, e);
+    }
+
+    protected virtual void OnProfileCategoryAdded(ProfileCategoryEventArgs e)
+    {
+        ProfileCategoryAdded?.Invoke(this, e);
+    }
+
+    protected virtual void OnProfileCategoryRemoved(ProfileCategoryEventArgs e)
+    {
+        ProfileCategoryRemoved?.Invoke(this, e);
+    }
+
+    #endregion
 }

@@ -24,17 +24,18 @@ namespace Artemis.UI.Screens.Sidebar;
 public class SidebarCategoryViewModel : ActivatableViewModelBase
 {
     private readonly IProfileService _profileService;
-    private readonly SidebarViewModel _sidebarViewModel;
     private readonly ISidebarVmFactory _vmFactory;
     private readonly IWindowService _windowService;
     private ObservableAsPropertyHelper<bool>? _isCollapsed;
     private ObservableAsPropertyHelper<bool>? _isSuspended;
     private SidebarProfileConfigurationViewModel? _selectedProfileConfiguration;
 
-    public SidebarCategoryViewModel(SidebarViewModel sidebarViewModel, ProfileCategory profileCategory, IProfileService profileService, IWindowService windowService,
-        IProfileEditorService profileEditorService, ISidebarVmFactory vmFactory)
+    public SidebarCategoryViewModel(ProfileCategory profileCategory, 
+        IProfileService profileService, 
+        IWindowService windowService, 
+        IProfileEditorService profileEditorService,
+        ISidebarVmFactory vmFactory)
     {
-        _sidebarViewModel = sidebarViewModel;
         _profileService = profileService;
         _windowService = windowService;
         _vmFactory = vmFactory;
@@ -47,7 +48,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
         profileConfigurations.Connect()
             .Filter(profileConfigurationsFilter)
             .Sort(SortExpressionComparer<ProfileConfiguration>.Ascending(c => c.Order))
-            .Transform(c => _vmFactory.SidebarProfileConfigurationViewModel(_sidebarViewModel, c))
+            .Transform(c => _vmFactory.SidebarProfileConfigurationViewModel(c))
             .Bind(out ReadOnlyObservableCollection<SidebarProfileConfigurationViewModel> profileConfigurationViewModels)
             .Subscribe();
         ProfileConfigurations = profileConfigurationViewModels;
@@ -93,7 +94,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
                             _windowService.ShowExceptionDialog(s.ProfileConfiguration.BrokenState, s.ProfileConfiguration.BrokenStateException);
                         else
                             _windowService.ShowExceptionDialog(e.Message, e);
-                        
+
                         profileEditorService.ChangeCurrentProfileConfiguration(null);
                         SelectedProfileConfiguration = null;
                     }
@@ -148,8 +149,6 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
             .WithCloseButtonText("Cancel")
             .WithDefaultButton(ContentDialogButton.Primary)
             .ShowAsync();
-
-        _sidebarViewModel.UpdateProfileCategories();
     }
 
     private async Task ExecuteDeleteCategory()
@@ -166,7 +165,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
         );
         if (result != null)
         {
-            SidebarProfileConfigurationViewModel viewModel = _vmFactory.SidebarProfileConfigurationViewModel(_sidebarViewModel, result);
+            SidebarProfileConfigurationViewModel viewModel = _vmFactory.SidebarProfileConfigurationViewModel(result);
             SelectedProfileConfiguration = viewModel;
         }
     }
@@ -230,8 +229,6 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
         ProfileCategory.Order--;
         _profileService.SaveProfileCategory(categories[index - 1]);
         _profileService.SaveProfileCategory(ProfileCategory);
-
-        _sidebarViewModel.UpdateProfileCategories();
     }
 
     private void ExecuteMoveDown()
@@ -245,7 +242,5 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
         ProfileCategory.Order++;
         _profileService.SaveProfileCategory(categories[index + 1]);
         _profileService.SaveProfileCategory(ProfileCategory);
-
-        _sidebarViewModel.UpdateProfileCategories();
     }
 }

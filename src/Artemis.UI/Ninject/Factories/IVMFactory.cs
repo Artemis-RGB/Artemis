@@ -50,8 +50,8 @@ public interface ISettingsVmFactory : IVmFactory
 public interface ISidebarVmFactory : IVmFactory
 {
     SidebarViewModel? SidebarViewModel(IScreen hostScreen);
-    SidebarCategoryViewModel SidebarCategoryViewModel(SidebarViewModel sidebarViewModel, ProfileCategory profileCategory);
-    SidebarProfileConfigurationViewModel SidebarProfileConfigurationViewModel(SidebarViewModel sidebarViewModel, ProfileConfiguration profileConfiguration);
+    SidebarCategoryViewModel SidebarCategoryViewModel(ProfileCategory profileCategory);
+    SidebarProfileConfigurationViewModel SidebarProfileConfigurationViewModel(ProfileConfiguration profileConfiguration);
 }
 
 public interface ISurfaceVmFactory : IVmFactory

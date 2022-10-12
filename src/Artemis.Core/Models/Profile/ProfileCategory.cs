@@ -20,9 +20,11 @@ public class ProfileCategory : CorePropertyChanged, IStorageModel
     ///     Creates a new instance of the <see cref="ProfileCategory" /> class
     /// </summary>
     /// <param name="name">The name of the category</param>
-    internal ProfileCategory(string name)
+    /// <param name="order">The order of the category</param>
+    internal ProfileCategory(string name, int order)
     {
         _name = name;
+        _order = order;
         Entity = new ProfileCategoryEntity();
         ProfileConfigurations = new ReadOnlyCollection<ProfileConfiguration>(_profileConfigurations);
     }

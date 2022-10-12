@@ -19,17 +19,11 @@ public class SidebarProfileConfigurationViewModel : ActivatableViewModelBase
 {
     private readonly IProfileEditorService _profileEditorService;
     private readonly IProfileService _profileService;
-    private readonly SidebarViewModel _sidebarViewModel;
     private readonly IWindowService _windowService;
     private ObservableAsPropertyHelper<bool>? _isDisabled;
 
-    public SidebarProfileConfigurationViewModel(SidebarViewModel sidebarViewModel,
-        ProfileConfiguration profileConfiguration,
-        IProfileService profileService,
-        IProfileEditorService profileEditorService,
-        IWindowService windowService)
+    public SidebarProfileConfigurationViewModel(ProfileConfiguration profileConfiguration, IProfileService profileService, IProfileEditorService profileEditorService, IWindowService windowService)
     {
-        _sidebarViewModel = sidebarViewModel;
         _profileService = profileService;
         _profileEditorService = profileEditorService;
         _windowService = windowService;
@@ -63,13 +57,10 @@ public class SidebarProfileConfigurationViewModel : ActivatableViewModelBase
 
     private async Task ExecuteEditProfile()
     {
-        ProfileConfiguration? edited = await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(
+        await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(
             ("profileCategory", ProfileConfiguration.Category),
             ("profileConfiguration", ProfileConfiguration)
         );
-
-        if (edited != null)
-            _sidebarViewModel.UpdateProfileCategories();
     }
 
     private void ExecuteToggleSuspended()
