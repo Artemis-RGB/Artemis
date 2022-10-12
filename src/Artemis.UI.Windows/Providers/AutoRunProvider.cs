@@ -107,8 +107,8 @@ public class AutoRunProvider : IAutoRunProvider
     /// <inheritdoc />
     public async Task EnableAutoRun(bool recreate, int autoRunDelay)
     {
-        // if (Constants.BuildInfo.IsLocalBuild)
-        // return;
+        if (Constants.BuildInfo.IsLocalBuild)
+            return;
 
         // Create or remove the task if necessary
         bool taskCreated = false;
