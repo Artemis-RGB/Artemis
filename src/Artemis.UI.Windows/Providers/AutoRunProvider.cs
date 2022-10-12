@@ -14,6 +14,8 @@ namespace Artemis.UI.Windows.Providers;
 
 public class AutoRunProvider : IAutoRunProvider
 {
+    private readonly string _autorunName = $"Artemis 2 autorun {Environment.UserName}";
+    private readonly string _oldAutorunName = "Artemis 2 autorun";
     private readonly IAssetLoader _assetLoader;
 
     public AutoRunProvider(IAssetLoader assetLoader)
@@ -21,7 +23,7 @@ public class AutoRunProvider : IAutoRunProvider
         _assetLoader = assetLoader;
     }
 
-    private async Task<bool> IsAutoRunTaskCreated()
+    private async Task<bool> IsAutoRunTaskCreated(string autorunName)
     {
         Process schtasks = new()
         {
@@ -30,7 +32,7 @@ public class AutoRunProvider : IAutoRunProvider
                 WindowStyle = ProcessWindowStyle.Hidden,
                 UseShellExecute = true,
                 FileName = Path.Combine(Environment.SystemDirectory, "schtasks.exe"),
-                Arguments = "/TN \"Artemis 2 autorun\""
+                Arguments = $"/TN \"{autorunName}\""
             }
         };
 
@@ -39,7 +41,7 @@ public class AutoRunProvider : IAutoRunProvider
         return schtasks.ExitCode == 0;
     }
 
-    private async Task CreateAutoRunTask(TimeSpan autoRunDelay)
+    private async Task CreateAutoRunTask(TimeSpan autoRunDelay, string autorunName)
     {
         await using Stream taskFile = _assetLoader.Open(new Uri("avares://Artemis.UI.Windows/Assets/autorun.xml"));
 
@@ -53,6 +55,8 @@ public class AutoRunProvider : IAutoRunProvider
 
         task.Descendants().First(d => d.Name.LocalName == "Triggers").Descendants().First(d => d.Name.LocalName == "LogonTrigger").Descendants().First(d => d.Name.LocalName == "Delay")
             .SetValue(autoRunDelay);
+        task.Descendants().First(d => d.Name.LocalName == "Triggers").Descendants().First(d => d.Name.LocalName == "LogonTrigger").Descendants().First(d => d.Name.LocalName == "UserId")
+            .SetValue(WindowsIdentity.GetCurrent().Name);
 
         task.Descendants().First(d => d.Name.LocalName == "Principals").Descendants().First(d => d.Name.LocalName == "Principal").Descendants().First(d => d.Name.LocalName == "UserId")
             .SetValue(WindowsIdentity.GetCurrent().User!.Value);
@@ -76,7 +80,7 @@ public class AutoRunProvider : IAutoRunProvider
                 UseShellExecute = true,
                 Verb = "runas",
                 FileName = Path.Combine(Environment.SystemDirectory, "schtasks.exe"),
-                Arguments = $"/Create /XML \"{xmlPath}\" /tn \"Artemis 2 autorun\" /F"
+                Arguments = $"/Create /XML \"{xmlPath}\" /tn \"{autorunName}\" /F"
             }
         };
 
@@ -86,7 +90,7 @@ public class AutoRunProvider : IAutoRunProvider
         File.Delete(xmlPath);
     }
 
-    private async Task RemoveAutoRunTask()
+    private async Task RemoveAutoRunTask(string autorunName)
     {
         Process schtasks = new()
         {
@@ -96,7 +100,7 @@ public class AutoRunProvider : IAutoRunProvider
                 UseShellExecute = true,
                 Verb = "runas",
                 FileName = Path.Combine(Environment.SystemDirectory, "schtasks.exe"),
-                Arguments = "/Delete /TN \"Artemis 2 autorun\" /f"
+                Arguments = $"/Delete /TN \"{autorunName}\" /f"
             }
         };
 
@@ -107,22 +111,31 @@ public class AutoRunProvider : IAutoRunProvider
     /// <inheritdoc />
     public async Task EnableAutoRun(bool recreate, int autoRunDelay)
     {
-        // if (Constants.BuildInfo.IsLocalBuild)
-        // return;
+        if (Constants.BuildInfo.IsLocalBuild)
+            return;
+
+        await CleanupOldAutorun();
 
         // Create or remove the task if necessary
         bool taskCreated = false;
         if (!recreate)
-            taskCreated = await IsAutoRunTaskCreated();
+            taskCreated = await IsAutoRunTaskCreated(_autorunName);
         if (!taskCreated)
-            await CreateAutoRunTask(TimeSpan.FromSeconds(autoRunDelay));
+            await CreateAutoRunTask(TimeSpan.FromSeconds(autoRunDelay), _autorunName);
     }
 
     /// <inheritdoc />
     public async Task DisableAutoRun()
     {
-        bool taskCreated = await IsAutoRunTaskCreated();
+        bool taskCreated = await IsAutoRunTaskCreated(_autorunName);
         if (taskCreated)
-            await RemoveAutoRunTask();
+            await RemoveAutoRunTask(_autorunName);
+    }
+
+    private async Task CleanupOldAutorun()
+    {
+        bool taskCreated = await IsAutoRunTaskCreated(_oldAutorunName);
+        if (taskCreated)
+            await RemoveAutoRunTask(_oldAutorunName);
     }
 }

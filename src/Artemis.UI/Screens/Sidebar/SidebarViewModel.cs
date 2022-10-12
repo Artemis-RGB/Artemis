@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -15,35 +17,38 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
+using Avalonia.Threading;
+using DynamicData;
+using DynamicData.Binding;
 using Material.Icons;
 using Ninject;
 using ReactiveUI;
-using RGB.NET.Core;
 
 namespace Artemis.UI.Screens.Sidebar;
 
 public class SidebarViewModel : ActivatableViewModelBase
 {
     private readonly IScreen _hostScreen;
+    private readonly IKernel _kernel;
     private readonly IProfileEditorService _profileEditorService;
-    private readonly IProfileService _profileService;
-    private readonly IRgbService _rgbService;
-    private readonly ISidebarVmFactory _sidebarVmFactory;
+    private readonly IProfileEditorVmFactory _profileEditorVmFactory;
     private readonly IWindowService _windowService;
-    private ArtemisDevice? _headerDevice;
-
     private SidebarScreenViewModel? _selectedSidebarScreen;
+    private ReadOnlyObservableCollection<SidebarCategoryViewModel> _sidebarCategories = new(new ObservableCollection<SidebarCategoryViewModel>());
 
-
-    public SidebarViewModel(IScreen hostScreen, IKernel kernel, IProfileService profileService, IRgbService rgbService, IWindowService windowService,
-        IProfileEditorService profileEditorService, ISidebarVmFactory sidebarVmFactory, IProfileEditorVmFactory profileEditorVmFactory)
+    public SidebarViewModel(IScreen hostScreen,
+        IKernel kernel,
+        IProfileService profileService,
+        IWindowService windowService,
+        IProfileEditorService profileEditorService,
+        ISidebarVmFactory sidebarVmFactory,
+        IProfileEditorVmFactory profileEditorVmFactory)
     {
         _hostScreen = hostScreen;
-        _profileService = profileService;
-        _rgbService = rgbService;
+        _kernel = kernel;
         _windowService = windowService;
         _profileEditorService = profileEditorService;
-        _sidebarVmFactory = sidebarVmFactory;
+        _profileEditorVmFactory = profileEditorVmFactory;
 
         SidebarScreens = new ObservableCollection<SidebarScreenViewModel>
         {
@@ -55,45 +60,52 @@ public class SidebarViewModel : ActivatableViewModelBase
             new SidebarScreenViewModel<SettingsViewModel>(MaterialIconKind.Cog, "Settings")
         };
 
-        UpdateProfileCategories();
-        UpdateHeaderDevice();
+        AddCategory = ReactiveCommand.CreateFromTask(ExecuteAddCategory);
 
-        this.WhenActivated(disposables =>
+        SourceList<ProfileCategory> profileCategories = new();
+
+        this.WhenActivated(d =>
         {
-            this.WhenAnyObservable(vm => vm._hostScreen.Router.CurrentViewModel)
-                .WhereNotNull()
+            this.WhenAnyObservable(vm => vm._hostScreen.Router.CurrentViewModel).WhereNotNull()
                 .Subscribe(c => SelectedSidebarScreen = SidebarScreens.FirstOrDefault(s => s.ScreenType == c.GetType()))
-                .DisposeWith(disposables);
+                .DisposeWith(d);
 
-            this.WhenAnyValue(vm => vm.SelectedSidebarScreen)
-                .WhereNotNull()
-                .Subscribe(s =>
-                {
-                    _hostScreen.Router.Navigate.Execute(s.CreateInstance(kernel, _hostScreen));
-                    profileEditorService.ChangeCurrentProfileConfiguration(null);
-                });
+            this.WhenAnyValue(vm => vm.SelectedSidebarScreen).WhereNotNull().Subscribe(NavigateToScreen);
+            this.WhenAnyObservable(vm => vm._profileEditorService.ProfileConfiguration).Subscribe(NavigateToProfile).DisposeWith(d);
 
-            this.WhenAnyObservable(vm => vm._profileEditorService.ProfileConfiguration)
-                .Subscribe(profile =>
-                {
-                    if (profile == null && _hostScreen.Router.GetCurrentViewModel() is ProfileEditorViewModel)
-                        SelectedSidebarScreen = SidebarScreens.FirstOrDefault();
-                    else if (profile != null && _hostScreen.Router.GetCurrentViewModel() is not ProfileEditorViewModel)
-                        _hostScreen.Router.Navigate.Execute(profileEditorVmFactory.ProfileEditorViewModel(_hostScreen));
-                })
-                .DisposeWith(disposables);
+            Observable.FromEventPattern<ProfileCategoryEventArgs>(x => profileService.ProfileCategoryAdded += x, x => profileService.ProfileCategoryAdded -= x)
+                .Subscribe(e => profileCategories.Add(e.EventArgs.ProfileCategory))
+                .DisposeWith(d);
+            Observable.FromEventPattern<ProfileCategoryEventArgs>(x => profileService.ProfileCategoryRemoved += x, x => profileService.ProfileCategoryRemoved -= x)
+                .Subscribe(e => profileCategories.Remove(e.EventArgs.ProfileCategory))
+                .DisposeWith(d);
 
+            profileCategories.Edit(c =>
+            {
+                c.Clear();
+                c.AddRange(profileService.ProfileCategories);
+            });
+
+            profileCategories.Connect()
+                .AutoRefresh(p => p.Order)
+                .Sort(SortExpressionComparer<ProfileCategory>.Ascending(p => p.Order))
+                .Transform(sidebarVmFactory.SidebarCategoryViewModel)
+                .ObserveOn(AvaloniaScheduler.Instance)
+                .Bind(out ReadOnlyObservableCollection<SidebarCategoryViewModel> categoryViewModels)
+                .Subscribe()
+                .DisposeWith(d);
+
+            SidebarCategories = categoryViewModels;
             SelectedSidebarScreen = SidebarScreens.First();
         });
     }
 
     public ObservableCollection<SidebarScreenViewModel> SidebarScreens { get; }
-    public ObservableCollection<SidebarCategoryViewModel> SidebarCategories { get; } = new();
 
-    public ArtemisDevice? HeaderDevice
+    public ReadOnlyObservableCollection<SidebarCategoryViewModel> SidebarCategories
     {
-        get => _headerDevice;
-        set => RaiseAndSetIfChanged(ref _headerDevice, value);
+        get => _sidebarCategories;
+        set => RaiseAndSetIfChanged(ref _sidebarCategories, value);
     }
 
     public SidebarScreenViewModel? SelectedSidebarScreen
@@ -102,14 +114,9 @@ public class SidebarViewModel : ActivatableViewModelBase
         set => RaiseAndSetIfChanged(ref _selectedSidebarScreen, value);
     }
 
-    public SidebarCategoryViewModel AddProfileCategoryViewModel(ProfileCategory profileCategory)
-    {
-        SidebarCategoryViewModel viewModel = _sidebarVmFactory.SidebarCategoryViewModel(this, profileCategory);
-        SidebarCategories.Add(viewModel);
-        return viewModel;
-    }
+    public ReactiveCommand<Unit, Unit> AddCategory { get; }
 
-    public async Task AddCategory()
+    private async Task ExecuteAddCategory()
     {
         await _windowService.CreateContentDialog()
             .WithTitle("Add new category")
@@ -118,19 +125,19 @@ public class SidebarViewModel : ActivatableViewModelBase
             .WithCloseButtonText("Cancel")
             .WithDefaultButton(ContentDialogButton.Primary)
             .ShowAsync();
-
-        UpdateProfileCategories();
     }
 
-    public void UpdateProfileCategories()
+    private void NavigateToProfile(ProfileConfiguration? profile)
     {
-        SidebarCategories.Clear();
-        foreach (ProfileCategory profileCategory in _profileService.ProfileCategories.OrderBy(p => p.Order))
-            AddProfileCategoryViewModel(profileCategory);
+        if (profile == null && _hostScreen.Router.GetCurrentViewModel() is ProfileEditorViewModel)
+            SelectedSidebarScreen = SidebarScreens.FirstOrDefault();
+        else if (profile != null && _hostScreen.Router.GetCurrentViewModel() is not ProfileEditorViewModel)
+            _hostScreen.Router.Navigate.Execute(_profileEditorVmFactory.ProfileEditorViewModel(_hostScreen));
     }
 
-    private void UpdateHeaderDevice()
+    private void NavigateToScreen(SidebarScreenViewModel sidebarScreenViewModel)
     {
-        HeaderDevice = _rgbService.Devices.FirstOrDefault(d => d.DeviceType == RGBDeviceType.Keyboard && d.Layout is {IsValid: true});
+        _hostScreen.Router.Navigate.Execute(sidebarScreenViewModel.CreateInstance(_kernel, _hostScreen));
+        _profileEditorService.ChangeCurrentProfileConfiguration(null);
     }
 }

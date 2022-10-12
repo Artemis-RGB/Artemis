@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -16,6 +16,8 @@ namespace Artemis.UI.Windows;
 
 public class ApplicationStateManager
 {
+    private const int SM_SHUTTINGDOWN = 0x2000;
+    
     public ApplicationStateManager(IKernel kernel, string[] startupArguments)
     {
         StartupArguments = startupArguments;
@@ -100,7 +102,8 @@ public class ApplicationStateManager
 
     private void RunForcedShutdownIfEnabled()
     {
-        if (StartupArguments.Contains("--disable-forced-shutdown"))
+        // Don't run a forced shutdown if Windows itself is shutting down, the new PowerShell process will fail
+        if (GetSystemMetrics(SM_SHUTTINGDOWN) != 0 || StartupArguments.Contains("--disable-forced-shutdown"))
             return;
 
         ProcessStartInfo info = new()
@@ -112,4 +115,7 @@ public class ApplicationStateManager
         };
         Process.Start(info);
     }
+    
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern int GetSystemMetrics(int nIndex);
 }

@@ -4,8 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:sidebar="clr-namespace:Artemis.UI.Screens.Sidebar"
              mc:Ignorable="d" d:DesignWidth="240" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Sidebar.SidebarView">
+             x:Class="Artemis.UI.Screens.Sidebar.SidebarView"
+             x:DataType="sidebar:SidebarViewModel">
     <UserControl.Styles>
         <StyleInclude Source="avares://Avalonia.Xaml.Interactions/Draggable/Styles.axaml" />
     </UserControl.Styles>
@@ -24,18 +26,18 @@
         <ListBox Classes="sidebar-listbox"
                  Grid.Row="1"
                  Margin="10 2"
-                 Items="{Binding SidebarScreens}"
-                 SelectedItem="{Binding SelectedSidebarScreen}" />
+                 Items="{CompiledBinding SidebarScreens}"
+                 SelectedItem="{CompiledBinding SelectedSidebarScreen}" />
         <Separator Grid.Row="2" Margin="8" Height="1" Background="#FF6c6c6c" />
 
         <!-- Categories -->
         <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <ItemsControl Margin="10 2" Items="{Binding SidebarCategories}" Classes="profile-categories" />
+                <ItemsControl Margin="10 2" Items="{CompiledBinding SidebarCategories}" Classes="profile-categories" />
                 <Button Content="Add new category"
                         Margin="10"
                         HorizontalAlignment="Stretch"
-                        Command="{Binding AddCategory}" />
+                        Command="{CompiledBinding AddCategory}" />
             </StackPanel>
         </ScrollViewer>
 

@@ -1,4 +1,5 @@
-﻿using System.Reactive;
+﻿using System.Linq;
+using System.Reactive;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
@@ -23,7 +24,8 @@ public class SidebarCategoryEditViewModel : ContentDialogViewModelBase
             _categoryName = _category.Name;
 
         Confirm = ReactiveCommand.Create(ExecuteConfirm, ValidationContext.Valid);
-        this.ValidationRule(vm => vm.CategoryName, categoryName => !string.IsNullOrWhiteSpace(categoryName), "You must specify a valid name");
+        this.ValidationRule(vm => vm.CategoryName, categoryName => !string.IsNullOrWhiteSpace(categoryName?.Trim()), "You must specify a valid name");
+        this.ValidationRule(vm => vm.CategoryName, categoryName => profileService.ProfileCategories.All(c => c.Name != categoryName?.Trim()), "You must specify a unique name");
     }
 
     public string? CategoryName
@@ -38,12 +40,12 @@ public class SidebarCategoryEditViewModel : ContentDialogViewModelBase
     {
         if (_category != null)
         {
-            _category.Name = CategoryName!;
+            _category.Name = CategoryName!.Trim();
             _profileService.SaveProfileCategory(_category);
         }
         else
         {
-            _profileService.CreateProfileCategory(CategoryName!);
+            _profileService.CreateProfileCategory(CategoryName!.Trim());
         }
 
         ContentDialog?.Hide(ContentDialogResult.Primary);
