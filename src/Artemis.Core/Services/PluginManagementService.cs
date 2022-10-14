@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using System.Threading.Tasks;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.Ninject;
@@ -334,13 +335,16 @@ internal class PluginManagementService : IPluginManagementService
             throw new ArtemisPluginException(plugin, "Plugin main entry casing mismatch at " + plugin.Info.Main);
 
         // Load the plugin, all types implementing Plugin and register them with DI
-        plugin.PluginLoader = PluginLoader.CreateFromAssemblyFile(mainFile!, configure =>
+        plugin.PluginLoader = PluginLoader.CreateFromAssemblyFile(mainFile, configure =>
         {
             configure.IsUnloadable = true;
             configure.LoadInMemory = true;
             configure.PreferSharedTypes = true;
+            
+            // Resolving failed, try a loaded assembly but ignoring the version
+            configure.DefaultContext.Resolving += (context, assemblyName) => context.Assemblies.FirstOrDefault(a => a.GetName().Name == assemblyName.Name);
         });
-
+        
         try
         {
             plugin.Assembly = plugin.PluginLoader.LoadDefaultAssembly();
@@ -402,7 +406,7 @@ internal class PluginManagementService : IPluginManagementService
         OnPluginLoaded(new PluginEventArgs(plugin));
         return plugin;
     }
-
+    
     public void EnablePlugin(Plugin plugin, bool saveState, bool ignorePluginLock)
     {
         if (!plugin.Info.IsCompatible)
