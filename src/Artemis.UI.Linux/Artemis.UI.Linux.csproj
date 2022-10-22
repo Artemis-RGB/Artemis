@@ -27,4 +27,13 @@
         <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
         <ProjectReference Include="..\Artemis.UI\Artemis.UI.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Assets/artemis.png" CopyToPublishDirectory="PreserveNewest">
+            <LinuxPath>/usr/share/icons/artemis.png</LinuxPath>
+        </Content>
+        <Content Include="Assets/artemis.desktop" CopyToPublishDirectory="PreserveNewest">
+            <LinuxPath>/usr/share/applications/artemis.desktop</LinuxPath>
+        </Content>
+    </ItemGroup>
 </Project>

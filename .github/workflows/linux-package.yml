@@ -1,0 +1,46 @@
+name: Build Artemis deb package
+
+on: 
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/linux-ci
+
+jobs:
+  package:
+    name: Package deb
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Artemis
+        uses: actions/checkout@v3
+        with:
+          path: Artemis
+      - name: Checkout Plugins
+        uses: actions/checkout@v3
+        with:
+          repository: Artemis-RGB/Artemis.Plugins
+          path: Artemis.Plugins
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
+      - name: Install dotnet deb
+        run: dotnet tool install --global dotnet-deb
+      - name: Publish Artemis
+        run: dotnet publish --configuration Release --runtime linux-x64 --self-contained Artemis/src/Artemis.UI.Linux/Artemis.UI.Linux.csproj
+      - name: Publish Plugins
+        run: |
+          New-Item -ItemType "Directory" -Path Artemis/src/Artemis.UI.Linux/bin/linux-x64/publish/Plugins
+          Get-ChildItem -File -Recurse -Filter *.csproj Artemis.Plugins/src/ | 
+          Foreach-Object -Parallel {
+              dotnet publish --configuration Release --runtime linux-x64 --output build-plugins/$($_.BaseName) --no-self-contained $($_.FullName);
+              Compress-Archive -Path "build-plugins/$($_.BaseName)" -DestinationPath "Artemis/src/Artemis.UI.Linux/bin/linux-x64/publish/Plugins/$($_.BaseName).zip";
+          }
+        shell: pwsh
+      - name: Build deb
+        run: dotnet deb -r linux-x64 Artemis/src/Artemis.UI.Linux/Artemis.UI.Linux.csproj
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Artemis.UI.Linux.1.0.0.linux-x64.deb
+          path: Artemis/src/Artemis.UI.Linux/bin/linux-x64/Artemis.UI.Linux.1.0.0.linux-x64.deb

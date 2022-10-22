@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Artemis
+Type=Application
+Exec=/usr/share/Artemis.UI.Linux/Artemis.UI.Linux
+Icon=/usr/share/icons/artemis.png
+Categories=Tools
