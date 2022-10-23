@@ -363,6 +363,28 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     }
 
     /// <summary>
+    ///     Resizes gradient stop list to specified amount. Added colors will be black with no opacity.
+    /// </summary>
+    /// <param name="targetValueLength">New gradient stop size</param>
+    public void Resize(int targetValueLength)
+    {
+        if (_stops.Count > targetValueLength)
+        {
+            _stops.RemoveRange(targetValueLength, _stops.Count - targetValueLength);
+            Sort();
+        }
+        else
+        {
+            for (int index = _stops.Count; index < targetValueLength; index++)
+            {
+                SKColor skColor = SKColor.FromHsv(0, 0, 0, 0);
+                float position = 1f / (targetValueLength - 1f) * index;
+                Add(new ColorGradientStop(skColor, position));
+            }
+        }
+    }
+
+    /// <summary>
     ///     Occurs when any of the stops has changed in some way
     /// </summary>
     public event EventHandler? StopChanged;
