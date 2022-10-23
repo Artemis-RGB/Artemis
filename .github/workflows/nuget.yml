@@ -27,7 +27,7 @@ jobs:
           $VersionNumber = "$ApiVersion.$($MidnightUtc.ToString("yyyy.MMdd")).$NumberOfCommitsToday"
           # If we're not in master, add the branch name to the version so it counts as prerelease 
           if ($BranchName -ne "master") { $VersionNumber += "-$BranchName" }
-          Write-Output "::set-output name=version-number::$VersionNumber"
+          "version-number=$VersionNumber" >> $Env:GITHUB_OUTPUT
 
   nuget:
     name: Publish Nuget Packages

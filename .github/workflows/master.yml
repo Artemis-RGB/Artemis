@@ -1,0 +1,121 @@
+name: Master - Build & Upload to Ftp
+
+on: 
+  workflow_dispatch:
+  push:
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version-number: ${{ steps.get-version.outputs.version-number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get Version String
+        id: get-version
+        shell: pwsh
+        run: |
+          $MidnightUtc = [DateTime]::UtcNow.Date
+          $BranchName = "${{ github.ref_name }}".replace('/','-').replace('.','-')
+          $ApiVersion = (Select-Xml -Path 'src/Artemis.Core/Artemis.Core.csproj' -XPath '//PluginApiVersion').Node.InnerText
+          $NumberOfCommitsToday = (git log --after=$($MidnightUtc.ToString("o")) --oneline | Measure-Object -Line).Lines
+          $VersionNumber = "$ApiVersion.$($MidnightUtc.ToString("yyyy.MMdd")).$NumberOfCommitsToday"
+          # If we're not in master, add the branch name to the version so it counts as prerelease 
+          if ($BranchName -ne "master") { $VersionNumber += "-$BranchName" }
+          "version-number=$VersionNumber" >> $Env:GITHUB_OUTPUT
+  
+  build:
+    needs: version
+    strategy:
+      matrix: 
+        include:
+          - os: windows-latest
+            rid: win-x64
+            csproj: Windows
+
+          - os: ubuntu-latest
+            rid: linux-x64
+            csproj: Linux
+
+          - os: macos-latest
+            rid: osx-x64
+            csproj: MacOS
+    name: ${{ matrix.csproj }} Build
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Artemis
+        uses: actions/checkout@v3
+        with:
+          path: Artemis
+      - name: Checkout Plugins
+        uses: actions/checkout@v3
+        with:
+          repository: Artemis-RGB/Artemis.Plugins
+          path: Artemis.Plugins
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
+      - name: Publish Artemis
+        run: dotnet publish --configuration Release -p:Version=${{ needs.version.outputs.version-number }} --runtime ${{ matrix.rid }} --output build/${{ matrix.rid }} --self-contained Artemis/src/Artemis.UI.${{ matrix.csproj }}/Artemis.UI.${{ matrix.csproj }}.csproj
+      - name: Publish Plugins
+        run: |
+          New-Item -ItemType "Directory" -Path build/${{ matrix.rid }}/Plugins/
+          Get-ChildItem -File -Recurse -Filter *.csproj Artemis.Plugins/src/ | 
+          Foreach-Object -Parallel {
+              dotnet publish --configuration Release --runtime ${{ matrix.rid }} --output build-plugins/$($_.BaseName) --no-self-contained $($_.FullName);
+              Compress-Archive -Path "build-plugins/$($_.BaseName)" -DestinationPath "build/${{ matrix.rid }}/Plugins/$($_.BaseName).zip";
+          }
+        shell: pwsh
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: artemis-build-${{ matrix.rid }}
+          path: build/${{ matrix.rid }}
+
+  ftp:
+    name: Ftp Upload
+    runs-on: ubuntu-latest
+    needs: [version, build]
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+      - name: Zip and Hash artifacts
+        run: |
+          New-Item -ItemType "Directory" -Path ftp/
+          Get-ChildItem -Directory artifacts |
+          Foreach-Object -Parallel {
+              Compress-Archive -Path "artifacts/$($_.Name)" -DestinationPath "ftp/$($_.Name).zip" -Verbose
+              (Get-FileHash -Algorithm MD5 "ftp/$($_.Name).zip").Hash | Out-File -FilePath "ftp/$($_.Name).md5" -Verbose
+          }
+        shell: pwsh
+      - name: Upload builds to FTP
+        uses: dennisameling/ftp-upload-action@v1
+        with:
+          server: artemis-rgb.com
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          secure: false
+          local_dir: ftp/
+          server_dir: /builds.artemis-rgb.com/binaries/gh-actions/${{ needs.version.outputs.version-number }}/
+      # - name: Prepare Build Info
+      #   run: |
+      #     New-Item -ItemType "Directory" -Path info/
+      #     $buildId = ${{ needs.version.outputs.version-number }}.Split(".", 2)[1]
+      #     $sha = ${{ github.sha }}
+      #     Set-Content -Path info/latest.json -Value "{ `"BuildId`": $buildId, `"CommitSha`": `"$sha`" }"
+      #   shell: pwsh
+      # - name: Upload Build Info to FTP
+      #   uses: dennisameling/ftp-upload-action@v1
+      #   with:
+      #     server: artemis-rgb.com
+      #     username: ${{ secrets.FTP_USER }}
+      #     password: ${{ secrets.FTP_PASSWORD }}
+      #     secure: false
+      #     local_dir: info/
+      #     server_dir: /builds.artemis-rgb.com/binaries/
