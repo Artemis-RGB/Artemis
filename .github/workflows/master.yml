@@ -73,7 +73,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: artemis-build-${{ matrix.rid }}
+          name: artemis-${{ matrix.rid }}-${{ needs.version.outputs.version-number }}
           path: build/${{ matrix.rid }}
 
   ftp:
