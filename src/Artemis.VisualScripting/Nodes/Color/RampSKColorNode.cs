@@ -22,7 +22,13 @@ public class RampSKColorNode : Node<ColorGradient, RampSKColorNodeCustomViewMode
 
     public override void Evaluate()
     {
-        Output.Value = Storage?.GetColor(Input.Value % 1.0) ?? SKColor.Empty;
+        // Wrap the input between 0 and 1
+        // 1 % 1 = 0, 2 % 1 = 0 etc. but we want that to be 1 but 0 should stay 0, call me stupid but this works and makes sense
+        float value = Input.Value % 1;
+        if (value == 0 && Input.Value != 0)
+            value = 1;
+        
+        Output.Value = Storage?.GetColor(value) ?? SKColor.Empty;
     }
 
     #endregion

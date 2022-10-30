@@ -237,7 +237,7 @@ public class LayerProperty<T> : CorePropertyChanged, ILayerProperty
     }
 
     /// <summary>
-    ///     Gets or sets the base value of this layer property without any keyframes applied
+    ///     Gets or sets the base value of this layer property without any keyframes or data bindings applied
     /// </summary>
     public T BaseValue
     {

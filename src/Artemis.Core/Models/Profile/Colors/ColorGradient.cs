@@ -468,6 +468,8 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     {
         _stops.Add(item);
         item.ColorGradient = this;
+        // Update the position, reapplying the overlap-check in Position's setter
+        item.Position = item.Position;
         item.PropertyChanged += ItemOnPropertyChanged;
 
         OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, _stops.IndexOf(item)));
@@ -624,4 +626,36 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     }
 
     #endregion
+
+    public ColorGradient Interpolate(ColorGradient targetValue, float progress)
+    {
+        ColorGradient interpolated = new(this);
+        
+        // Add new stops
+        if (targetValue.Count > interpolated.Count)
+        {
+            // Prefer the stops on a vacant position
+            foreach (ColorGradientStop stop in targetValue.Take(targetValue.Count - interpolated.Count))
+                interpolated.Add(new ColorGradientStop(GetColor(stop.Position), stop.Position));
+        } 
+        // Interpolate stops
+        int index = 0;
+        foreach (ColorGradientStop stop in interpolated.ToList())
+        {
+            if (index < targetValue.Count)
+            {
+                ColorGradientStop targetStop = targetValue[index];
+                stop.Interpolate(targetStop, progress);
+            }
+            // Interpolate stops not on the target gradient
+            else
+            {
+                stop.Color = stop.Color.Interpolate(targetValue.GetColor(stop.Position), progress);
+            }
+            
+            index++;
+        }
+
+        return interpolated;
+    }
 }
