@@ -95,4 +95,10 @@ public class ColorGradientStop : CorePropertyChanged
     }
 
     #endregion
+
+    public void Interpolate(ColorGradientStop targetValue, float progress)
+    {
+        Color = Color.Interpolate(targetValue.Color, progress);
+        Position = Position + ((targetValue.Position - Position) * progress);
+    }
 }
