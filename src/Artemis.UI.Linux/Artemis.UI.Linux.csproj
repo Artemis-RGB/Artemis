@@ -8,7 +8,8 @@
         <OutputPath>bin</OutputPath>
         <AssemblyTitle>Artemis</AssemblyTitle>
         <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
-        <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>        
+        <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />

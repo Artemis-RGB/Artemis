@@ -8,6 +8,7 @@
         <OutputPath>bin</OutputPath>
         <AssemblyTitle>Artemis</AssemblyTitle>
         <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
