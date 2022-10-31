@@ -41,7 +41,7 @@ public class LayerTreeItemViewModel : TreeItemViewModel
         copy.Id = Guid.NewGuid();
         copy.Name = Layer.Parent.GetNewFolderName(copy.Name + " - copy");
 
-        Layer copied = new(Layer.Profile, Layer.Parent, copy);
+        Layer copied = new(Layer.Profile, Layer.Parent, copy, true);
         ProfileEditorService.ExecuteCommand(new AddProfileElement(copied, Layer.Parent, Layer.Order - 1));
         Layer.Profile.PopulateLeds(_rgbService.EnabledDevices);
     }

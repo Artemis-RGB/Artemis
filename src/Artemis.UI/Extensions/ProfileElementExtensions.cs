@@ -55,7 +55,7 @@ public static class ProfileElementExtensions
                 return folderClipboardModel.Paste(parent.Profile, parent);
             case LayerEntity layerEntity:
                 layerEntity.Id = Guid.NewGuid();
-                return new Layer(parent.Profile, parent, layerEntity);
+                return new Layer(parent.Profile, parent, layerEntity, true);
             default:
                 return null;
         }
