@@ -64,7 +64,7 @@ public class ScriptsDialogViewModel : DialogViewModelBase<object?>
                 .Subscribe()
                 .DisposeWith(d);
 
-            _scriptConfigurations = scriptConfigurationViewModels;
+            ScriptConfigurations = scriptConfigurationViewModels;
             SelectedScript = ScriptConfigurations.FirstOrDefault();
             Disposable.Create(() => profileService.SaveProfile(Profile, false)).DisposeWith(d);
         });

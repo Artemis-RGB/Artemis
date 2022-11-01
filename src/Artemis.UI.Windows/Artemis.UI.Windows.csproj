@@ -8,6 +8,7 @@
         <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
         <AssemblyTitle>Artemis</AssemblyTitle>
         <ApplicationIcon>..\Artemis.UI\Assets\Images\Logo\application.ico</ApplicationIcon>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />

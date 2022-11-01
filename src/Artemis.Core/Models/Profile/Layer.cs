@@ -50,7 +50,8 @@ public sealed class Layer : RenderProfileElement
     /// <param name="profile">The profile the layer belongs to</param>
     /// <param name="parent">The parent of the layer</param>
     /// <param name="layerEntity">The entity of the layer</param>
-    public Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity) : base(parent, parent.Profile)
+    /// <param name="loadNodeScript">A boolean indicating whether or not to attempt to load the node script straight away</param>
+    public Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity, bool loadNodeScript = false) : base(parent, parent.Profile)
     {
         LayerEntity = layerEntity;
         EntityId = layerEntity.Id;
@@ -62,6 +63,8 @@ public sealed class Layer : RenderProfileElement
         
         Load();
         Initialize();
+        if (loadNodeScript)
+            LoadNodeScript();
     }
 
     /// <summary>

@@ -87,12 +87,12 @@ public class GradientPicker : TemplatedControl
             if (ColorGradient.Count <= 2)
                 return;
 
-            int index = ColorGradient.IndexOf(s);
-            ColorGradient.Remove(s);
-            if (index > ColorGradient.Count - 1)
+            int index = EditingColorGradient.IndexOf(s);
+            EditingColorGradient.Remove(s);
+            if (index > EditingColorGradient.Count - 1)
                 index--;
 
-            SelectedColorStop = ColorGradient.ElementAtOrDefault(index);
+            SelectedColorStop = EditingColorGradient.ElementAtOrDefault(index);
         });
     }
 
@@ -309,13 +309,8 @@ public class GradientPicker : TemplatedControl
 
         if (e.Key != Key.Delete || SelectedColorStop == null || EditingColorGradient.Count <= 2)
             return;
-
-        int index = EditingColorGradient.IndexOf(SelectedColorStop);
-        EditingColorGradient.Remove(SelectedColorStop);
-        if (index > EditingColorGradient.Count - 1)
-            index--;
-
-        SelectedColorStop = EditingColorGradient.ElementAtOrDefault(index);
+        
+        DeleteStop.Execute(SelectedColorStop);
         e.Handled = true;
     }
 
