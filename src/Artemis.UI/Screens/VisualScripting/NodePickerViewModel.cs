@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -35,15 +36,15 @@ public class NodePickerViewModel : ActivatableViewModelBase
         IObservable<Func<NodeData, bool>> nodeFilter = this.WhenAnyValue(vm => vm.SearchText, vm => vm.TargetPin).Select(v => CreatePredicate(v.Item1, v.Item2));
 
         nodeSourceList.Connect()
-            .Filter(nodeFilter)
-            .Sort(SortExpressionComparer<NodeData>
-                .Descending(d => d.Category == "Data Model")
-                .ThenByDescending(d => d.Category == "Static")
-                .ThenByAscending(d => d.Category)
-                .ThenByAscending(d => d.Name))
-            .GroupWithImmutableState(n => n.Category)
-            .Bind(out ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeData, string>> categories)
-            .Subscribe();
+           .Filter(nodeFilter)
+           .Sort(SortExpressionComparer<NodeData>
+               .Descending(d => d.Category == "Data Model")
+               .ThenByDescending(d => d.Category == "Static")
+               .ThenByAscending(d => d.Category)
+               .ThenByAscending(d => d.Name))
+           .GroupWithImmutableState(n => n.Category)
+           .Bind(out ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeData, string>> categories)
+           .Subscribe();
         Categories = categories;
 
         this.WhenActivated(d =>
@@ -78,7 +79,13 @@ public class NodePickerViewModel : ActivatableViewModelBase
 
     public string? SearchText
     {
-        get => _searchText;
+        get
+        {
+
+            return _searchText;
+
+        }
+
         set => RaiseAndSetIfChanged(ref _searchText, value);
     }
 
@@ -119,6 +126,7 @@ public class NodePickerViewModel : ActivatableViewModelBase
 
     private Func<NodeData, bool> CreatePredicate(string? text, IPin? targetPin)
     {
+        Debug.WriteLine(text);
         if (string.IsNullOrWhiteSpace(text))
             return data => data.IsCompatibleWithPin(targetPin);
         return data => data.IsCompatibleWithPin(targetPin) && data.MatchesSearch(text);
