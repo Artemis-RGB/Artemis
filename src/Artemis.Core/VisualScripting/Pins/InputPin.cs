@@ -26,6 +26,8 @@ public sealed class InputPin<T> : Pin
     {
         if (ConnectedTo.Count > 0 && ConnectedTo[0].PinValue is T value)
             Value = value;
+        else
+            Value = default;
     }
 
     #endregion
