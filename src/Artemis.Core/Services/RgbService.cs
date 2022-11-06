@@ -170,11 +170,13 @@ internal class RgbService : IRgbService
 
     public void AddDeviceProvider(IRGBDeviceProvider deviceProvider)
     {
+        _logger.Verbose("[AddDeviceProvider] Pausing rendering to add {DeviceProvider}", deviceProvider.GetType().Name);
         bool changedRenderPaused = SetRenderPaused(true);
 
         try
         {
             List<ArtemisDevice> toRemove = _devices.Where(a => deviceProvider.Devices.Any(d => a.RgbDevice == d)).ToList();
+            _logger.Verbose("[AddDeviceProvider] Removing {Count} old device(s)", toRemove.Count);
             Surface.Detach(toRemove.Select(d => d.RgbDevice));
             foreach (ArtemisDevice device in toRemove)
                 RemoveDevice(device);
@@ -189,8 +191,10 @@ internal class RgbService : IRgbService
                     _logger.Warning(e.Exception, "Device provider {deviceProvider} threw non-critical exception", deviceProvider.GetType().Name);
             }
 
+            _logger.Verbose("[AddDeviceProvider] Initializing device provider");
             deviceProvider.Exception += DeviceProviderOnException;
             deviceProvider.Initialize();
+            _logger.Verbose("[AddDeviceProvider] Attaching devices of device provider");
             Surface.Attach(deviceProvider.Devices);
             deviceProvider.Exception -= DeviceProviderOnException;
             if (providerExceptions.Count == 1)
@@ -220,7 +224,10 @@ internal class RgbService : IRgbService
         }
         finally
         {
+            _logger.Verbose("[AddDeviceProvider] Updating the LED group");
             UpdateLedGroup();
+            
+            _logger.Verbose("[AddDeviceProvider] Resuming rendering after adding {DeviceProvider}", deviceProvider.GetType().Name);
             if (changedRenderPaused)
                 SetRenderPaused(false);
         }
@@ -228,11 +235,13 @@ internal class RgbService : IRgbService
 
     public void RemoveDeviceProvider(IRGBDeviceProvider deviceProvider)
     {
+        _logger.Verbose("[RemoveDeviceProvider] Pausing rendering to remove {DeviceProvider}", deviceProvider.GetType().Name);
         bool changedRenderPaused = SetRenderPaused(true);
 
         try
         {
             List<ArtemisDevice> toRemove = _devices.Where(a => deviceProvider.Devices.Any(d => a.RgbDevice == d)).ToList();
+            _logger.Verbose("[RemoveDeviceProvider] Removing {Count} old device(s)", toRemove.Count);
             Surface.Detach(toRemove.Select(d => d.RgbDevice));
             foreach (ArtemisDevice device in toRemove)
                 RemoveDevice(device);
@@ -246,7 +255,10 @@ internal class RgbService : IRgbService
         }
         finally
         {
+            _logger.Verbose("[RemoveDeviceProvider] Updating the LED group");
             UpdateLedGroup();
+            
+            _logger.Verbose("[RemoveDeviceProvider] Resuming rendering after adding {DeviceProvider}", deviceProvider.GetType().Name);
             if (changedRenderPaused)
                 SetRenderPaused(false);
         }
