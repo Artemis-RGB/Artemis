@@ -26,18 +26,20 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
     private readonly IProfileService _profileService;
     private readonly ISidebarVmFactory _vmFactory;
     private readonly IWindowService _windowService;
+    private readonly IProfileEditorService _profileEditorService;
     private ObservableAsPropertyHelper<bool>? _isCollapsed;
     private ObservableAsPropertyHelper<bool>? _isSuspended;
     private SidebarProfileConfigurationViewModel? _selectedProfileConfiguration;
 
-    public SidebarCategoryViewModel(ProfileCategory profileCategory, 
-        IProfileService profileService, 
-        IWindowService windowService, 
+    public SidebarCategoryViewModel(ProfileCategory profileCategory,
+        IProfileService profileService,
+        IWindowService windowService,
         IProfileEditorService profileEditorService,
         ISidebarVmFactory vmFactory)
     {
         _profileService = profileService;
         _windowService = windowService;
+        _profileEditorService = profileEditorService;
         _vmFactory = vmFactory;
 
         ProfileCategory = profileCategory;
@@ -154,7 +156,11 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
     private async Task ExecuteDeleteCategory()
     {
         if (await _windowService.ShowConfirmContentDialog($"Delete {ProfileCategory.Name}", "Do you want to delete this category and all its profiles?"))
+        {
+            if (ProfileCategory.ProfileConfigurations.Any(c => c.IsBeingEdited))
+                _profileEditorService.ChangeCurrentProfileConfiguration(null);
             _profileService.DeleteProfileCategory(ProfileCategory);
+        }
     }
 
     private async Task ExecuteAddProfile()
@@ -171,7 +177,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
     }
 
     private async Task ExecuteImportProfile()
-    {
+    { 
         string[]? result = await _windowService.CreateOpenFileDialog()
             .HavingFilter(f => f.WithExtension("json").WithName("Artemis profile"))
             .ShowAsync();
@@ -225,10 +231,9 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
         if (index <= 0)
             return;
 
-        categories[index - 1].Order++;
-        ProfileCategory.Order--;
-        _profileService.SaveProfileCategory(categories[index - 1]);
-        _profileService.SaveProfileCategory(ProfileCategory);
+        categories.Remove(ProfileCategory);
+        categories.Insert(index - 1, ProfileCategory);
+        ApplyCategoryOrder(categories);
     }
 
     private void ExecuteMoveDown()
@@ -238,9 +243,19 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
         if (index >= categories.Count - 1)
             return;
 
-        categories[index + 1].Order--;
-        ProfileCategory.Order++;
-        _profileService.SaveProfileCategory(categories[index + 1]);
-        _profileService.SaveProfileCategory(ProfileCategory);
+        categories.Remove(ProfileCategory);
+        categories.Insert(index + 1, ProfileCategory);
+        ApplyCategoryOrder(categories);
+    }
+
+    private void ApplyCategoryOrder(List<ProfileCategory> categories)
+    {
+        for (int i = 0; i < categories.Count; i++)
+        {
+            if (categories[i].Order == i + 1)
+                continue;
+            categories[i].Order = i + 1;
+            _profileService.SaveProfileCategory(categories[i]);
+        }
     }
 }
