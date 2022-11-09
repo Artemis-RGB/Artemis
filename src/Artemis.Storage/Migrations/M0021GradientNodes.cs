@@ -67,7 +67,7 @@ public class M0021GradientNodes : IStorageMigration
         List<ProfileEntity> profiles = repository.Query<ProfileEntity>().ToList();
         foreach (ProfileEntity profileEntity in profiles)
         {
-            foreach (LayerEntity layer in profileEntity.Layers)
+            foreach (LayerEntity layer in profileEntity.Layers.Where(le => le.LayerBrush != null))
                 MigrateDataBinding(layer.LayerBrush.PropertyGroup);
 
             repository.Update(profileEntity);
