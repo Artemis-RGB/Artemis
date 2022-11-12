@@ -432,5 +432,30 @@ public static class NumericExtensions
         return new Numeric(sum);
     }
 
+    /// <summary>
+    ///     Subtracts the numerics in the provided collection
+    /// </summary>
+    /// <returns>The remainder of all numerics subtracted from one another in the collection</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static Numeric Subtract(this IEnumerable<Numeric> source)
+    {
+        if (source == null) throw new ArgumentNullException(nameof(source));
+
+        float subtraction = 0f;
+        bool first = true;
+        foreach (float v in source)
+        {
+            if (first)
+            {
+                subtraction = v;
+                first = false;
+            }
+            else
+                subtraction -= v;
+        }
+
+        return new Numeric(subtraction);
+    }
+    
     #endregion
 }

@@ -94,11 +94,17 @@ public class ColorGradientStop : CorePropertyChanged
         return stopPosition;
     }
 
-    #endregion
-
+    /// <summary>
+    ///     Interpolates a color gradient stop between the this stop and the provided <paramref name="targetValue"/>.
+    /// </summary>
+    /// <param name="targetValue">The second stop.</param>
+    /// <param name="progress">A value between 0 and 1.</param>
+    /// <returns>The interpolated color gradient stop.</returns>
     public void Interpolate(ColorGradientStop targetValue, float progress)
     {
         Color = Color.Interpolate(targetValue.Color, progress);
-        Position = Position + ((targetValue.Position - Position) * progress);
+        Position += (targetValue.Position - Position) * progress;
     }
+
+    #endregion
 }

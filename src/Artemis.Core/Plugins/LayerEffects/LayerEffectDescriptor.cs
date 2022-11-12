@@ -19,9 +19,9 @@ public class LayerEffectDescriptor
         Provider = provider ?? throw new ArgumentNullException(nameof(provider));
     }
 
-    internal LayerEffectDescriptor(string placeholderFor, LayerEffectProvider provider)
+    private LayerEffectDescriptor(LayerEffectProvider provider)
     {
-        PlaceholderFor = placeholderFor ?? throw new ArgumentNullException(nameof(placeholderFor));
+        IsPlaceholder = true;
         Provider = provider ?? throw new ArgumentNullException(nameof(provider));
         DisplayName = "Missing effect";
         Description = "This effect could not be loaded";
@@ -55,16 +55,21 @@ public class LayerEffectDescriptor
     public LayerEffectProvider Provider { get; }
 
     /// <summary>
-    ///     Gets the GUID this descriptor is acting as a placeholder for. If null, this descriptor is not a placeholder
+    /// Gets a boolean indicating whether this descriptor is a placeholder descriptor.
     /// </summary>
-    public string? PlaceholderFor { get; }
+    public bool IsPlaceholder { get; }
+    
+    internal static LayerEffectDescriptor CreatePlaceholder(LayerEffectProvider provider)
+    {
+        return new LayerEffectDescriptor(provider);
+    }
 
     /// <summary>
     ///     Creates an instance of the described effect and applies it to the render element
     /// </summary>
     public BaseLayerEffect CreateInstance(RenderProfileElement renderElement, LayerEffectEntity? entity)
     {
-        if (PlaceholderFor != null)
+        if (IsPlaceholder)
         {
             if (entity == null)
                 throw new ArtemisCoreException("Cannot create a placeholder for a layer effect that wasn't loaded from an entity");
@@ -97,10 +102,10 @@ public class LayerEffectDescriptor
 
     private BaseLayerEffect CreatePlaceHolderInstance(RenderProfileElement renderElement, LayerEffectEntity entity)
     {
-        if (PlaceholderFor == null)
+        if (!IsPlaceholder)
             throw new ArtemisCoreException("Cannot create a placeholder instance using a layer effect descriptor that is not a placeholder for anything");
 
-        PlaceholderLayerEffect effect = new(entity, PlaceholderFor)
+        PlaceholderLayerEffect effect = new(entity)
         {
             ProfileElement = renderElement,
             Descriptor = this

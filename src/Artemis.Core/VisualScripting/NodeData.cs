@@ -78,10 +78,17 @@ public class NodeData
     /// </returns>
     public bool MatchesSearch(string text)
     {
-        text = text.Trim();
-        return Name.Contains(text, StringComparison.InvariantCultureIgnoreCase) ||
-               Description.Contains(text, StringComparison.InvariantCultureIgnoreCase) ||
-               Category.Contains(text, StringComparison.InvariantCultureIgnoreCase);
+        string rawText = text.Trim();
+        text = text.Trim().TrimStart('!');
+
+        if (rawText.StartsWith("!!"))
+            return Name.Equals(text, StringComparison.InvariantCultureIgnoreCase);
+        else if (rawText.StartsWith("!"))
+            return Name.StartsWith(text, StringComparison.InvariantCultureIgnoreCase);
+        else
+            return Name.Contains(text, StringComparison.InvariantCultureIgnoreCase) ||
+                   Description.Contains(text, StringComparison.InvariantCultureIgnoreCase) ||
+                   Category.Contains(text, StringComparison.InvariantCultureIgnoreCase);
     }
 
     #region Properties & Fields

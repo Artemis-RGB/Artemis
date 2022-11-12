@@ -2,9 +2,9 @@
 
 internal static class PlaceholderLayerEffectDescriptor
 {
-    public static LayerEffectDescriptor Create(string missingProviderId)
+    public static LayerEffectDescriptor Create()
     {
-        LayerEffectDescriptor descriptor = new(missingProviderId, Constants.EffectPlaceholderPlugin);
+        LayerEffectDescriptor descriptor = LayerEffectDescriptor.CreatePlaceholder(Constants.EffectPlaceholderPlugin);
         return descriptor;
     }
 }

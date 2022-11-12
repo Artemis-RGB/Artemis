@@ -164,12 +164,7 @@ public abstract class BaseLayerEffect : BreakableModel, IDisposable, IStorageMod
     // Not only is this needed to initialize properties on the layer effects, it also prevents implementing anything
     // but LayerEffect<T> outside the core
     internal abstract void Initialize();
-
-    internal virtual string GetEffectTypeName()
-    {
-        return GetType().Name;
-    }
-
+    
     internal void InternalUpdate(Timeline timeline)
     {
         BaseProperties?.Update(timeline);
@@ -220,20 +215,23 @@ public abstract class BaseLayerEffect : BreakableModel, IDisposable, IStorageMod
     /// <inheritdoc />
     public void Load()
     {
-        HasBeenRenamed = LayerEffectEntity.HasBeenRenamed;
         Name = HasBeenRenamed ? LayerEffectEntity.Name : Descriptor.DisplayName;
+        HasBeenRenamed = LayerEffectEntity.HasBeenRenamed;
         Order = LayerEffectEntity.Order;
     }
 
     /// <inheritdoc />
     public void Save()
     {
-        LayerEffectEntity.ProviderId = Descriptor.Provider.Id;
-        LayerEffectEntity.EffectType = GetType().FullName;
         LayerEffectEntity.Name = Name;
         LayerEffectEntity.HasBeenRenamed = HasBeenRenamed;
         LayerEffectEntity.Order = Order;
 
+        if (Descriptor.IsPlaceholder)
+            return;
+
+        LayerEffectEntity.ProviderId = Descriptor.Provider.Id;
+        LayerEffectEntity.EffectType = GetType().FullName;
         BaseProperties?.ApplyToEntity();
         LayerEffectEntity.PropertyGroup = BaseProperties?.PropertyGroupEntity;
     }
