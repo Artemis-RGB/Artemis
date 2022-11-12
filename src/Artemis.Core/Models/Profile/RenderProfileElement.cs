@@ -273,7 +273,7 @@ public abstract class RenderProfileElement : ProfileElement
         // If no descriptor was found and there was no existing placeholder, create a placeholder
         else
         {
-            descriptor = PlaceholderLayerEffectDescriptor.Create(layerEffectEntity.ProviderId);
+            descriptor = PlaceholderLayerEffectDescriptor.Create();
             layerEffect = descriptor.CreateInstance(this, layerEffectEntity);
         }
 
@@ -286,7 +286,7 @@ public abstract class RenderProfileElement : ProfileElement
         if (index == -1)
             return;
 
-        LayerEffectDescriptor descriptor = PlaceholderLayerEffectDescriptor.Create(layerEffect.ProviderId);
+        LayerEffectDescriptor descriptor = PlaceholderLayerEffectDescriptor.Create();
         BaseLayerEffect placeholder = descriptor.CreateInstance(this, layerEffect.LayerEffectEntity);
         _layerEffects[index] = placeholder;
         layerEffect.Dispose();
@@ -299,7 +299,7 @@ public abstract class RenderProfileElement : ProfileElement
         if (index == -1)
             return;
 
-        LayerEffectDescriptor? descriptor = LayerEffectStore.Get(placeholder.OriginalEntity.ProviderId, placeholder.PlaceholderFor)?.LayerEffectDescriptor;
+        LayerEffectDescriptor? descriptor = LayerEffectStore.Get(placeholder.OriginalEntity.ProviderId, placeholder.OriginalEntity.EffectType)?.LayerEffectDescriptor;
         if (descriptor == null)
             throw new ArtemisCoreException("Can't replace a placeholder effect because the real effect isn't available.");
 
@@ -324,7 +324,7 @@ public abstract class RenderProfileElement : ProfileElement
     private void LayerEffectStoreOnLayerEffectRemoved(object? sender, LayerEffectStoreEvent e)
     {
         // Find effects that just got disabled and replace them with placeholders
-        List<BaseLayerEffect> affectedLayerEffects = _layerEffects.Where(ef => ef.ProviderId == e.Registration.PluginFeature.Id).ToList();
+        List<BaseLayerEffect> affectedLayerEffects = _layerEffects.Where(e.Registration.Matches).ToList();
 
         if (!affectedLayerEffects.Any())
             return;
@@ -338,7 +338,7 @@ public abstract class RenderProfileElement : ProfileElement
     {
         // Find placeholders that just got enabled and replace them with real effects
         List<PlaceholderLayerEffect> affectedPlaceholders = LayerEffects
-            .Where(l => l is PlaceholderLayerEffect ph && ph.OriginalEntity.ProviderId == e.Registration.PluginFeature.Id)
+            .Where(l => l is PlaceholderLayerEffect ph && e.Registration.Matches(ph))
             .Cast<PlaceholderLayerEffect>()
             .ToList();
 

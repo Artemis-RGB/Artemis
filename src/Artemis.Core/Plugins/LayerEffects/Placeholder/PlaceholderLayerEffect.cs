@@ -8,18 +8,15 @@ namespace Artemis.Core.LayerEffects.Placeholder;
 /// </summary>
 internal class PlaceholderLayerEffect : LayerEffect<PlaceholderProperties>
 {
-    internal PlaceholderLayerEffect(LayerEffectEntity originalEntity, string placeholderFor)
+    internal PlaceholderLayerEffect(LayerEffectEntity originalEntity)
     {
         OriginalEntity = originalEntity;
-        PlaceholderFor = placeholderFor;
 
         LayerEffectEntity = originalEntity;
         Order = OriginalEntity.Order;
         Name = OriginalEntity.Name;
         HasBeenRenamed = OriginalEntity.HasBeenRenamed;
     }
-
-    public string PlaceholderFor { get; }
 
     internal LayerEffectEntity OriginalEntity { get; }
 
@@ -46,11 +43,6 @@ internal class PlaceholderLayerEffect : LayerEffect<PlaceholderProperties>
     /// <inheritdoc />
     public override void PostProcess(SKCanvas canvas, SKRect bounds, SKPaint paint)
     {
-    }
-
-    internal override string GetEffectTypeName()
-    {
-        return OriginalEntity.EffectType;
     }
 }
 

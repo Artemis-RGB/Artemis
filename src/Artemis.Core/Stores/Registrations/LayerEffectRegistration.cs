@@ -1,5 +1,6 @@
 ﻿using System;
 using Artemis.Core.LayerEffects;
+using Artemis.Core.LayerEffects.Placeholder;
 
 namespace Artemis.Core;
 
@@ -36,5 +37,26 @@ public class LayerEffectRegistration
         PluginFeature.Disabled -= OnDisabled;
         if (IsInStore)
             LayerEffectStore.Remove(this);
+    }
+
+    /// <summary>
+    ///     Determines whether the provided placeholder matches this event.
+    /// </summary>
+    /// <param name="placeholder">The placeholder to check</param>
+    /// <returns><see langword="true" /> if the placeholder is for the provided layer effect registration, otherwise <see langword="false" />.</returns>
+    internal bool Matches(PlaceholderLayerEffect placeholder)
+    {
+        return placeholder.OriginalEntity.ProviderId == PluginFeature.Id &&
+               placeholder.OriginalEntity.EffectType == LayerEffectDescriptor.LayerEffectType?.FullName;
+    }
+
+    /// <summary>
+    ///     Determines whether the provided layer effect matches this event.
+    /// </summary>
+    /// <param name="layerEffect">The layer effect to check</param>
+    /// <returns><see langword="true" /> if the placeholder is for the provided layer effect registration, otherwise <see langword="false" />.</returns>
+    internal bool Matches(BaseLayerEffect layerEffect)
+    {
+        return layerEffect.Descriptor == LayerEffectDescriptor;
     }
 }
