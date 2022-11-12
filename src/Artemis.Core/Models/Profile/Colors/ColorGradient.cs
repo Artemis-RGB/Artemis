@@ -13,7 +13,7 @@ namespace Artemis.Core;
 /// </summary>
 public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionChanged
 {
-    private static readonly SKColor[] FastLedRainbow =
+    private static readonly SKColor[] FAST_LED_RAINBOW =
     {
         new(0xFFFF0000), // Red
         new(0xFFFF9900), // Orange
@@ -27,7 +27,24 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     };
 
     private readonly List<ColorGradientStop> _stops;
+    private SKColor[] _colors = Array.Empty<SKColor>();
+    private float[] _positions = Array.Empty<float>();
+    private bool _dirty = true;
     private bool _updating;
+
+    /// <summary>
+    /// Gets an array containing the colors of the color gradient.
+    /// <para/>
+    /// Note: Making changes to this array will not be reflected on the gradient, is is essentially read-only.
+    /// </summary>
+    public SKColor[] Colors => GetColors();
+
+    /// <summary>
+    /// Gets an array containing the positions of colors of the color gradient.
+    /// <para/>
+    /// Note: Making changes to this array will not be reflected on the gradient, is is essentially read-only.
+    /// </summary>
+    public float[] Positions => GetPositions();
 
     /// <summary>
     ///     Creates a new instance of the <see cref="ColorGradient" /> class
@@ -81,8 +98,12 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     ///     last color
     /// </param>
     /// <returns>An array containing each color in the gradient</returns>
+    [Obsolete("Use the Colors property instead", true)]
     public SKColor[] GetColorsArray(int timesToRepeat = 0, bool seamless = false)
     {
+        if (timesToRepeat == 0 && !seamless)
+            return Colors;
+
         List<SKColor> result = new();
         if (timesToRepeat == 0)
             result = this.Select(c => c.Color).ToList();
@@ -105,8 +126,12 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     ///     last color
     /// </param>
     /// <returns>An array containing a position for each color between 0.0 and 1.0</returns>
+    [Obsolete("Use the Positions property instead", true)]
     public float[] GetPositionsArray(int timesToRepeat = 0, bool seamless = false)
     {
+        if (timesToRepeat == 0 && seamless)
+            return Positions;
+
         List<float> result = new();
         if (timesToRepeat == 0)
         {
@@ -147,8 +172,12 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     ///     A boolean indicating whether to make the gradient seamless by adding the first color behind the
     ///     last color
     /// </param>
+    [Obsolete("Use GetColor(float position) instead.", true)]
     public SKColor GetColor(float position, int timesToRepeat = 0, bool seamless = false)
     {
+        if (timesToRepeat == 0 && !seamless)
+            return GetColor(position);
+
         if (!this.Any())
             return new SKColor(255, 255, 255);
 
@@ -194,30 +223,38 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     }
 
     /// <summary>
-    ///     Gets a new ColorGradient with colors looping through the HSV-spectrum
+    ///     Gets a color at any position between 0.0 and 1.0 using interpolation
     /// </summary>
-    public static ColorGradient GetUnicornBarf()
+    /// <param name="position">A position between 0.0 and 1.0</param>
+    public SKColor GetColor(float position)
     {
-        ColorGradient gradient = new();
-        for (int index = 0; index < FastLedRainbow.Length; index++)
-        {
-            SKColor skColor = FastLedRainbow[index];
-            float position = 1f / (FastLedRainbow.Length - 1f) * index;
-            gradient.Add(new ColorGradientStop(skColor, position));
-        }
+        if (_stops.Count == 0)
+            return SKColors.Transparent;
 
-        return gradient;
-    }
+        if (_stops.Count == 1)
+            return _stops[0].Color;
 
-    /// <summary>
-    ///     Gets a new ColorGradient with random colors from the HSV-spectrum
-    /// </summary>
-    /// <param name="stops">The amount of stops to add</param>
-    public ColorGradient GetRandom(int stops)
-    {
-        ColorGradient gradient = new();
-        gradient.Randomize(stops);
-        return gradient;
+        if (position <= 0)
+            return _stops[0].Color;
+
+        if (position >= 1)
+            return _stops[^1].Color;
+
+        //find the first stop after the position
+        int stop2Index = _stops.FindIndex(s => s.Position >= position);
+        //if the position is before the first stop, return that color
+        if (stop2Index == 0)
+            return _stops[0].Color;
+
+        //interpolate between that one and the one before
+        int stop1Index = stop2Index - 1;
+
+        ColorGradientStop stop1 = _stops[stop1Index];
+        ColorGradientStop stop2 = _stops[stop2Index];
+
+        //calculate how far between the 2 stops we want to interpolate
+        float positionBetween = (position - stop1.Position) / (stop2.Position - stop1.Position);
+        return stop1.Color.Interpolate(stop2.Color, positionBetween);
     }
 
     /// <summary>
@@ -243,7 +280,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         finally
         {
             _updating = false;
-            Sort();
+            Update();
         }
     }
 
@@ -289,7 +326,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         finally
         {
             _updating = false;
-            Sort();
+            Update();
         }
     }
 
@@ -307,7 +344,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         finally
         {
             _updating = false;
-            Sort();
+            Update();
         }
     }
 
@@ -332,7 +369,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         finally
         {
             _updating = false;
-            Sort();
+            Update();
         }
     }
 
@@ -358,8 +395,74 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         finally
         {
             _updating = false;
-            Sort();
+            Update();
         }
+    }
+    
+    /// <summary>
+    ///     Interpolates a color gradient between the this gradient and the provided <paramref name="targetValue"/>.
+    /// </summary>
+    /// <param name="targetValue">The second color gradient.</param>
+    /// <param name="progress">A value between 0 and 1.</param>
+    /// <returns>The interpolated color gradient.</returns>
+    public ColorGradient Interpolate(ColorGradient targetValue, float progress)
+    {
+        ColorGradient interpolated = new(this);
+
+        // Add new stops
+        if (targetValue.Count > interpolated.Count)
+        {
+            // Prefer the stops on a vacant position
+            foreach (ColorGradientStop stop in targetValue.Take(targetValue.Count - interpolated.Count))
+                interpolated.Add(new ColorGradientStop(GetColor(stop.Position), stop.Position));
+        }
+
+        // Interpolate stops
+        int index = 0;
+        foreach (ColorGradientStop stop in interpolated.ToList())
+        {
+            if (index < targetValue.Count)
+            {
+                ColorGradientStop targetStop = targetValue[index];
+                stop.Interpolate(targetStop, progress);
+            }
+            // Interpolate stops not on the target gradient
+            else
+            {
+                stop.Color = stop.Color.Interpolate(targetValue.GetColor(stop.Position), progress);
+            }
+
+            index++;
+        }
+
+        return interpolated;
+    }
+
+    /// <summary>
+    ///     Gets a new ColorGradient with colors looping through the HSV-spectrum
+    /// </summary>
+    public static ColorGradient GetUnicornBarf()
+    {
+        ColorGradient gradient = new();
+        for (int index = 0; index < FAST_LED_RAINBOW.Length; index++)
+        {
+            SKColor skColor = FAST_LED_RAINBOW[index];
+            float position = 1f / (FAST_LED_RAINBOW.Length - 1f) * index;
+            gradient.Add(new ColorGradientStop(skColor, position));
+        }
+
+        return gradient;
+    }
+
+    /// <summary>
+    ///     Gets a new ColorGradient with random colors from the HSV-spectrum
+    /// </summary>
+    /// <param name="stops">The amount of stops to add</param>
+    public static ColorGradient GetRandom(int stops)
+    {
+        ColorGradient gradient = new();
+        gradient.Randomize(stops);
+        return gradient;
     }
 
     /// <summary>
@@ -367,8 +470,21 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     /// </summary>
     public event EventHandler? StopChanged;
 
-    internal void Sort()
+    private void ItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        Update();
+        OnStopChanged();
+    }
+
+    private void OnStopChanged()
+    {
+        StopChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void Update()
+    {
+        _dirty = true;
+
         if (_updating)
             return;
 
@@ -387,15 +503,24 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         }
     }
 
-    private void ItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private float[] GetPositions()
     {
-        Sort();
-        OnStopChanged();
+        if (!_dirty)
+            return _positions;
+
+        _colors = this.Select(s => s.Color).ToArray();
+        _positions = this.Select(s => s.Position).ToArray();
+        return _positions;
     }
 
-    private void OnStopChanged()
+    private SKColor[] GetColors()
     {
-        StopChanged?.Invoke(this, EventArgs.Empty);
+        if (!_dirty)
+            return _colors;
+
+        _colors = this.Select(s => s.Color).ToArray();
+        _positions = this.Select(s => s.Position).ToArray();
+        return _colors;
     }
 
     #region Equality members
@@ -473,7 +598,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         item.PropertyChanged += ItemOnPropertyChanged;
 
         OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, _stops.IndexOf(item)));
-        Sort();
+        Update();
     }
 
     /// <inheritdoc />
@@ -583,7 +708,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     {
         _stops.Insert(index, item);
         item.PropertyChanged += ItemOnPropertyChanged;
-        Sort();
+        Update();
         OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, _stops.IndexOf(item)));
     }
 
@@ -608,7 +733,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
             oldValue.PropertyChanged -= ItemOnPropertyChanged;
             _stops[index] = value;
             _stops[index].PropertyChanged += ItemOnPropertyChanged;
-            Sort();
+            Update();
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, oldValue));
         }
     }
@@ -626,36 +751,4 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     }
 
     #endregion
-
-    public ColorGradient Interpolate(ColorGradient targetValue, float progress)
-    {
-        ColorGradient interpolated = new(this);
-        
-        // Add new stops
-        if (targetValue.Count > interpolated.Count)
-        {
-            // Prefer the stops on a vacant position
-            foreach (ColorGradientStop stop in targetValue.Take(targetValue.Count - interpolated.Count))
-                interpolated.Add(new ColorGradientStop(GetColor(stop.Position), stop.Position));
-        } 
-        // Interpolate stops
-        int index = 0;
-        foreach (ColorGradientStop stop in interpolated.ToList())
-        {
-            if (index < targetValue.Count)
-            {
-                ColorGradientStop targetStop = targetValue[index];
-                stop.Interpolate(targetStop, progress);
-            }
-            // Interpolate stops not on the target gradient
-            else
-            {
-                stop.Color = stop.Color.Interpolate(targetValue.GetColor(stop.Position), progress);
-            }
-            
-            index++;
-        }
-
-        return interpolated;
-    }
 }
