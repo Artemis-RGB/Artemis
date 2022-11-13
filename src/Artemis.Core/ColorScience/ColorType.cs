@@ -1,11 +1,8 @@
-﻿using System;
-
-namespace Artemis.Core.Services;
+﻿namespace Artemis.Core.ColorScience;
 
 /// <summary>
 ///     The types of relevant colors in an image.
 /// </summary>
-[Obsolete("Use Artemis.Core.ColorScience instead.")]
 public enum ColorType
 {
     /// <summary>

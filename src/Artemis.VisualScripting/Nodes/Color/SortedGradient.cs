@@ -1,4 +1,5 @@
 ﻿using Artemis.Core;
+using Artemis.Core.ColorScience;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace Artemis.VisualScripting.Nodes.Color
                 return;
             }
 
-            ColorUtilities.Sort(colors, SKColors.White);
+            ColorSorter.Sort(colors, SKColors.Black);
 
             var gradient = new ColorGradient();
             for (int i = 0; i < colors.Length; i++)

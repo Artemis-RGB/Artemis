@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SkiaSharp;
 
 namespace Artemis.Core.Services;
@@ -6,6 +7,7 @@ namespace Artemis.Core.Services;
 /// <summary>
 ///     A service providing a pallette of colors in a bitmap based on vibrant.js
 /// </summary>
+[Obsolete("Use Artemis.Core.ColorScience instead.")]
 public interface IColorQuantizerService : IArtemisService
 {
     /// <summary>
@@ -15,6 +17,7 @@ public interface IColorQuantizerService : IArtemisService
     /// <param name="colors">The colors to quantize.</param>
     /// <param name="amount">The number of colors that should be calculated. Must be a power of two.</param>
     /// <returns>The quantized colors.</returns>
+    [Obsolete("Use Artemis.Core.ColorScience instead.")]
     public SKColor[] Quantize(IEnumerable<SKColor> colors, int amount);
 
     /// <summary>
@@ -31,6 +34,7 @@ public interface IColorQuantizerService : IArtemisService
     ///     <see cref="SKColor.Empty" /> if this is false
     /// </param>
     /// <returns>The color found</returns>
+    [Obsolete("Use Artemis.Core.ColorScience instead.")]
     public SKColor FindColorVariation(IEnumerable<SKColor> colors, ColorType type, bool ignoreLimits = false);
 
     /// <summary>
@@ -42,5 +46,6 @@ public interface IColorQuantizerService : IArtemisService
     ///     <see cref="SKColor.Empty" /> if this is false
     /// </param>
     /// <returns>A swatch containing all color variations</returns>
+    [Obsolete("Use Artemis.Core.ColorScience instead.")]
     public ColorSwatch FindAllColorVariations(IEnumerable<SKColor> colors, bool ignoreLimits = false);
 }
