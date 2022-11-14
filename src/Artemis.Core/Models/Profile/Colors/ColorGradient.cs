@@ -245,6 +245,10 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         //if the position is before the first stop, return that color
         if (stop2Index == 0)
             return _stops[0].Color;
+        
+        //if the position is after the last stop, return that color
+        if (stop2Index == -1)
+            return _stops[^1].Color;
 
         //interpolate between that one and the one before
         int stop1Index = stop2Index - 1;
