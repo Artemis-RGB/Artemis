@@ -167,9 +167,9 @@ public static class ColorQuantizer
     /// <param name="bitmap">The image to process</param>
     public static ColorGradient GetGradientFromImage(SKBitmap bitmap)
     {
-        var colors = Quantize(bitmap.Pixels, 256);
-        var swatch = FindAllColorVariations(colors);
-        var swatchArray = new SKColor[]
+        SKColor[] colors = QuantizeSplit(bitmap.Pixels, 8);
+        ColorSwatch swatch = FindAllColorVariations(colors);
+        SKColor[] swatchArray = new SKColor[]
         {
             swatch.Muted,
             swatch.Vibrant,
@@ -181,7 +181,7 @@ public static class ColorQuantizer
 
         ColorSorter.Sort(swatchArray, SKColors.Black);
 
-        var gradient = new ColorGradient();
+        ColorGradient gradient = new ColorGradient();
 
         for (int i = 0; i < swatchArray.Length; i++)
         {

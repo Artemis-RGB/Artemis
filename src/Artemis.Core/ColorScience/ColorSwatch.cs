@@ -5,12 +5,12 @@ namespace Artemis.Core.ColorScience;
 /// <summary>
 ///     Swatch containing the known useful color variations.
 /// </summary>
-public readonly struct ColorSwatch
+public readonly record struct ColorSwatch
 {
     /// <summary>
     ///     The <see cref="ColorType.Vibrant" /> component.
     /// </summary>
-    public readonly SKColor Vibrant { get; init; }
+    public SKColor Vibrant { get; init; }
 
     /// <summary>
     ///     The <see cref="ColorType.LightVibrant" /> component.
