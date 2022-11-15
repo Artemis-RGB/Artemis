@@ -39,13 +39,13 @@ namespace Artemis.VisualScripting.Nodes.Color
 
         public override void Evaluate()
         {
-            var gradient = new ColorGradient();
+            ColorGradient gradient = new ColorGradient();
 
             for (int i = 0; i < Length.Value; i++)
             {
-                var r = Math.Sin(Frequency1.Value * i + Phase1.Value) * Width.Value + Center.Value;
-                var g = Math.Sin(Frequency2.Value * i + Phase2.Value) * Width.Value + Center.Value;
-                var b = Math.Sin(Frequency3.Value * i + Phase3.Value) * Width.Value + Center.Value;
+                Numeric r = Math.Sin(Frequency1.Value * i + Phase1.Value) * Width.Value + Center.Value;
+                Numeric g = Math.Sin(Frequency2.Value * i + Phase2.Value) * Width.Value + Center.Value;
+                Numeric b = Math.Sin(Frequency3.Value * i + Phase3.Value) * Width.Value + Center.Value;
                 gradient.Add(new ColorGradientStop(new SKColor((byte)r, (byte)g, (byte)b), i / Length.Value));
             }
 
