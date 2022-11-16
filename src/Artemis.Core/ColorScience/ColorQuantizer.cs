@@ -21,7 +21,7 @@ public static class ColorQuantizer
             throw new ArgumentException("Must be power of two", nameof(amount));
 
         int splits = 0;
-        for (int i = 0; i < sizeof(int); i++)
+        for (int i = 0; i < 32; i++)
             if ((1 << i) == amount)
             {
                 splits = i;
