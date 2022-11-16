@@ -1,6 +1,7 @@
 ﻿using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace Artemis.Core.ColorScience;
 
@@ -17,17 +18,10 @@ public static class ColorQuantizer
     /// <returns><paramref name="amount"/> colors.</returns>
     public static SKColor[] Quantize(in Span<SKColor> colors, int amount)
     {
-        if ((amount & (amount - 1)) != 0)
+        if (BitOperations.IsPow2(amount))
             throw new ArgumentException("Must be power of two", nameof(amount));
 
-        int splits = 0;
-        for (int i = 0; i < 32; i++)
-            if ((1 << i) == amount)
-            {
-                splits = i;
-                break;
-            }
-
+        int splits = BitOperations.Log2((uint)amount);
         return QuantizeSplit(colors, splits);
     }
 
