@@ -14,32 +14,28 @@ internal static class RadixLikeSortGreen
         foreach (SKColor t in span)
             counts[t.Green]++;
 
-        SKColor[][] bucketsArray = ArrayPool<SKColor[]>.Shared.Rent(256);
-        Span<SKColor[]> buckets = bucketsArray.AsSpan(0, 256);
-        for (int i = 0; i < counts.Length; i++)
-            buckets[i] = ArrayPool<SKColor>.Shared.Rent(counts[i]);
-
+        SKColor[] bucketsArray = ArrayPool<SKColor>.Shared.Rent(span.Length);
+        Span<SKColor> buckets = bucketsArray.AsSpan().Slice(0, span.Length);
         Span<int> currentBucketIndex = stackalloc int[256];
+
+        int offset = 0;
+        for (int i = 0; i < counts.Length; i++)
+        {
+            currentBucketIndex[i] = offset;
+            offset += counts[i];
+        }
+
         foreach (SKColor color in span)
         {
             int index = color.Green;
-            SKColor[] bucket = buckets[index];
             int bucketIndex = currentBucketIndex[index];
             currentBucketIndex[index]++;
-            bucket[bucketIndex] = color;
+            buckets[bucketIndex] = color;
         }
 
-        int newIndex = 0;
-        for (int i = 0; i < buckets.Length; i++)
-        {
-            Span<SKColor> bucket = buckets[i].AsSpan(0, counts[i]);
-            bucket.CopyTo(span.Slice(newIndex));
-            newIndex += bucket.Length;
+        buckets.CopyTo(span);
 
-            ArrayPool<SKColor>.Shared.Return(buckets[i]);
-        }
-
-        ArrayPool<SKColor[]>.Shared.Return(bucketsArray);
+        ArrayPool<SKColor>.Shared.Return(bucketsArray);
     }
 
     #endregion

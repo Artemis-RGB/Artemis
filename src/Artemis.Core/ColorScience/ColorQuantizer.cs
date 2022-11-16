@@ -20,26 +20,15 @@ public static class ColorQuantizer
         if ((amount & (amount - 1)) != 0)
             throw new ArgumentException("Must be power of two", nameof(amount));
 
-        Queue<ColorCube> cubes = new(amount);
-        cubes.Enqueue(new ColorCube(colors, 0, colors.Length, SortTarget.None));
-
-        while (cubes.Count < amount)
-        {
-            ColorCube cube = cubes.Dequeue();
-
-            if (cube.TrySplit(colors, out ColorCube? a, out ColorCube? b))
+        int splits = 0;
+        for (int i = 0; i < sizeof(int); i++)
+            if ((1 << i) == amount)
             {
-                cubes.Enqueue(a);
-                cubes.Enqueue(b);
+                splits = i;
+                break;
             }
-        }
 
-        SKColor[] result = new SKColor[cubes.Count];
-        int i = 0;
-        foreach (ColorCube colorCube in cubes)
-            result[i++] = colorCube.GetAverageColor(colors);
-
-        return result;
+        return QuantizeSplit(colors, splits);
     }
 
     /// <summary>
@@ -50,6 +39,8 @@ public static class ColorQuantizer
     /// <returns>Up to (2 ^ <paramref name="splits"/>) number of colors.</returns>
     public static SKColor[] QuantizeSplit(in Span<SKColor> colors, int splits)
     {
+        if (colors.Length < (1 << splits)) throw new ArgumentException($"The color array must at least contain ({(1 << splits)}) to perform {splits} splits.");
+
         Span<ColorCube> cubes = new ColorCube[1 << splits];
         cubes[0] = new ColorCube(colors, 0, colors.Length, SortTarget.None);
 
@@ -60,7 +51,7 @@ public static class ColorQuantizer
             Span<ColorCube> currentCubes = cubes.Slice(0, currentCubeCount);
             for (int j = 0; j < currentCubes.Length; j++)
             {
-                currentCubes[j].TrySplit(colors, out ColorCube a, out ColorCube b);
+                currentCubes[j].Split(colors, out ColorCube a, out ColorCube b);
                 currentCubes[j] = a;
                 cubes[++currentIndex] = b;
             }
@@ -181,12 +172,10 @@ public static class ColorQuantizer
 
         ColorSorter.Sort(swatchArray, SKColors.Black);
 
-        ColorGradient gradient = new ColorGradient();
+        ColorGradient gradient = new();
 
         for (int i = 0; i < swatchArray.Length; i++)
-        {
-            gradient.Add(new(swatchArray[i], (float)i / (swatchArray.Length - 1)));
-        }
+            gradient.Add(new ColorGradientStop(swatchArray[i], (float)i / (swatchArray.Length - 1)));
 
         return gradient;
     }

@@ -1,6 +1,5 @@
 ﻿using SkiaSharp;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
@@ -145,23 +144,15 @@ internal class ColorCube
         }
     }
 
-    internal bool TrySplit(in Span<SKColor> fullColorList, [NotNullWhen(returnValue: true)] out ColorCube? a, [NotNullWhen(returnValue: true)] out ColorCube? b)
+
+    internal void Split(in Span<SKColor> fullColorList, out ColorCube a, out ColorCube b)
     {
         Span<SKColor> colors = fullColorList.Slice(_from, _length);
-
-        if (colors.Length < 2)
-        {
-            a = null;
-            b = null;
-            return false;
-        }
 
         int median = colors.Length / 2;
 
         a = new ColorCube(fullColorList, _from, median, _currentOrder);
         b = new ColorCube(fullColorList, _from + median, colors.Length - median, _currentOrder);
-
-        return true;
     }
 
     internal SKColor GetAverageColor(in ReadOnlySpan<SKColor> fullColorList)
