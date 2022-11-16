@@ -18,7 +18,7 @@ public static class ColorQuantizer
     /// <returns><paramref name="amount"/> colors.</returns>
     public static SKColor[] Quantize(in Span<SKColor> colors, int amount)
     {
-        if (BitOperations.IsPow2(amount))
+        if (!BitOperations.IsPow2(amount))
             throw new ArgumentException("Must be power of two", nameof(amount));
 
         int splits = BitOperations.Log2((uint)amount);
