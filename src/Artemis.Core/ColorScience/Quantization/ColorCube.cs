@@ -45,21 +45,21 @@ internal class ColorCube
         if ((colorRanges.RedRange > colorRanges.GreenRange) && (colorRanges.RedRange > colorRanges.BlueRange))
         {
             if (preOrdered != SortTarget.Red)
-                RadixLikeSortRed.Sort(colors);
+                QuantizerSort.SortRed(colors);
 
             _currentOrder = SortTarget.Red;
         }
         else if (colorRanges.GreenRange > colorRanges.BlueRange)
         {
             if (preOrdered != SortTarget.Green)
-                RadixLikeSortGreen.Sort(colors);
+                QuantizerSort.SortGreen(colors);
 
             _currentOrder = SortTarget.Green;
         }
         else
         {
             if (preOrdered != SortTarget.Blue)
-                RadixLikeSortBlue.Sort(colors);
+                QuantizerSort.SortBlue(colors);
 
             _currentOrder = SortTarget.Blue;
         }

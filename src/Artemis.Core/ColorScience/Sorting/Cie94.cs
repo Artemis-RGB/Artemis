@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Artemis.Core.ColorScience;
 
+//HACK DarthAffe 17.11.2022: Due to the high amount of inlined code this is not supposed to be used outside the ColorSorter!
 internal static class Cie94
 {
     const float KL = 1.0f;
