@@ -4,6 +4,7 @@ using System.Buffers;
 
 namespace Artemis.Core.ColorScience;
 
+//HACK DarthAffe 17.11.2022: Sorting is a really hot path in the quantizer, therefore abstracting this into cleaner code (one method with parameter or something like that) sadly has a well measurable performance impact.
 internal static class QuantizerSort
 {
     #region Methods
