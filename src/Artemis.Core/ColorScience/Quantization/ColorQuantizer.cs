@@ -29,7 +29,7 @@ public static class ColorQuantizer
     /// Quantizes a span of colors, splitting the average <paramref name="splits"/> number of times.
     /// </summary>
     /// <param name="colors">The colors to quantize</param>
-    /// <param name="splits">How many colors to return. Must be a power of two.</param>
+    /// <param name="splits">How many splits to execute. Each split doubles the number of colors returned.</param>
     /// <returns>Up to (2 ^ <paramref name="splits"/>) number of colors.</returns>
     public static SKColor[] QuantizeSplit(in Span<SKColor> colors, int splits)
     {
