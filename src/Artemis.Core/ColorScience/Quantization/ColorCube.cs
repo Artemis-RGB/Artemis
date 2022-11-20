@@ -1,6 +1,7 @@
 ﻿using SkiaSharp;
 using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Artemis.Core.ColorScience;
@@ -19,7 +20,7 @@ internal readonly struct ColorRanges
     }
 }
 
-internal class ColorCube
+internal readonly struct ColorCube
 {
     private const int BYTES_PER_COLOR = 4;
     private static readonly int ELEMENTS_PER_VECTOR = Vector<byte>.Count / BYTES_PER_COLOR;
@@ -27,19 +28,16 @@ internal class ColorCube
 
     private readonly int _from;
     private readonly int _length;
-    private SortTarget _currentOrder = SortTarget.None;
+    private readonly SortTarget _currentOrder = SortTarget.None;
 
     public ColorCube(in Span<SKColor> fullColorList, int from, int length, SortTarget preOrdered)
     {
         this._from = from;
         this._length = length;
 
-        OrderColors(fullColorList.Slice(from, length), preOrdered);
-    }
+        if (length < 2) return;
 
-    private void OrderColors(in Span<SKColor> colors, SortTarget preOrdered)
-    {
-        if (colors.Length < 2) return;
+        Span<SKColor> colors = fullColorList.Slice(from, length);
         ColorRanges colorRanges = GetColorRanges(colors);
 
         if ((colorRanges.RedRange > colorRanges.GreenRange) && (colorRanges.RedRange > colorRanges.BlueRange))
@@ -65,29 +63,21 @@ internal class ColorCube
         }
     }
 
-    private unsafe ColorRanges GetColorRanges(in ReadOnlySpan<SKColor> colors)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private ColorRanges GetColorRanges(in ReadOnlySpan<SKColor> colors)
     {
         if (Vector.IsHardwareAccelerated && (colors.Length >= Vector<byte>.Count))
         {
             int chunks = colors.Length / ELEMENTS_PER_VECTOR;
-            int missingElements = colors.Length - (chunks * ELEMENTS_PER_VECTOR);
+            int vectorElements = (chunks * ELEMENTS_PER_VECTOR);
+            int missingElements = colors.Length - vectorElements;
 
             Vector<byte> max = Vector<byte>.Zero;
             Vector<byte> min = new(byte.MaxValue);
-
-            ReadOnlySpan<byte> colorBytes = MemoryMarshal.AsBytes(colors);
-            fixed (byte* colorPtr = &MemoryMarshal.GetReference(colorBytes))
+            foreach (Vector<byte> currentVector in MemoryMarshal.Cast<SKColor, Vector<byte>>(colors[..vectorElements]))
             {
-                byte* current = colorPtr;
-                for (int i = 0; i < chunks; i++)
-                {
-                    Vector<byte> currentVector = *(Vector<byte>*)current;
-
-                    max = Vector.Max(max, currentVector);
-                    min = Vector.Min(min, currentVector);
-
-                    current += BYTES_PER_VECTOR;
-                }
+                max = Vector.Max(max, currentVector);
+                min = Vector.Min(min, currentVector);
             }
 
             byte redMin = byte.MaxValue;
@@ -144,7 +134,7 @@ internal class ColorCube
         }
     }
 
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void Split(in Span<SKColor> fullColorList, out ColorCube a, out ColorCube b)
     {
         Span<SKColor> colors = fullColorList.Slice(_from, _length);
@@ -155,6 +145,7 @@ internal class ColorCube
         b = new ColorCube(fullColorList, _from + median, colors.Length - median, _currentOrder);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal SKColor GetAverageColor(in ReadOnlySpan<SKColor> fullColorList)
     {
         ReadOnlySpan<SKColor> colors = fullColorList.Slice(_from, _length);
