@@ -9,94 +9,112 @@ internal static class QuantizerSort
 {
     #region Methods
 
-    public static void SortRed(in Span<SKColor> span)
+    public static void SortRed(in Span<SKColor> colors)
     {
         Span<int> counts = stackalloc int[256];
-        foreach (SKColor t in span)
+        foreach (SKColor t in colors)
             counts[t.Red]++;
 
-        SKColor[] bucketsArray = ArrayPool<SKColor>.Shared.Rent(span.Length);
-        Span<SKColor> buckets = bucketsArray.AsSpan().Slice(0, span.Length);
-        Span<int> currentBucketIndex = stackalloc int[256];
+        SKColor[] bucketsArray = ArrayPool<SKColor>.Shared.Rent(colors.Length);
 
-        int offset = 0;
-        for (int i = 0; i < counts.Length; i++)
+        try
         {
-            currentBucketIndex[i] = offset;
-            offset += counts[i];
-        }
+            Span<SKColor> buckets = bucketsArray.AsSpan().Slice(0, colors.Length);
+            Span<int> currentBucketIndex = stackalloc int[256];
 
-        foreach (SKColor color in span)
+            int offset = 0;
+            for (int i = 0; i < counts.Length; i++)
+            {
+                currentBucketIndex[i] = offset;
+                offset += counts[i];
+            }
+
+            foreach (SKColor color in colors)
+            {
+                int index = color.Red;
+                int bucketIndex = currentBucketIndex[index];
+                currentBucketIndex[index]++;
+                buckets[bucketIndex] = color;
+            }
+
+            buckets.CopyTo(colors);
+        }
+        finally
         {
-            int index = color.Red;
-            int bucketIndex = currentBucketIndex[index];
-            currentBucketIndex[index]++;
-            buckets[bucketIndex] = color;
+            ArrayPool<SKColor>.Shared.Return(bucketsArray);
         }
-
-        buckets.CopyTo(span);
-
-        ArrayPool<SKColor>.Shared.Return(bucketsArray);
     }
 
-    public static void SortGreen(in Span<SKColor> span)
+    public static void SortGreen(in Span<SKColor> colors)
     {
         Span<int> counts = stackalloc int[256];
-        foreach (SKColor t in span)
+        foreach (SKColor t in colors)
             counts[t.Green]++;
 
-        SKColor[] bucketsArray = ArrayPool<SKColor>.Shared.Rent(span.Length);
-        Span<SKColor> buckets = bucketsArray.AsSpan().Slice(0, span.Length);
-        Span<int> currentBucketIndex = stackalloc int[256];
+        SKColor[] bucketsArray = ArrayPool<SKColor>.Shared.Rent(colors.Length);
 
-        int offset = 0;
-        for (int i = 0; i < counts.Length; i++)
+        try
         {
-            currentBucketIndex[i] = offset;
-            offset += counts[i];
-        }
+            Span<SKColor> buckets = bucketsArray.AsSpan().Slice(0, colors.Length);
+            Span<int> currentBucketIndex = stackalloc int[256];
 
-        foreach (SKColor color in span)
+            int offset = 0;
+            for (int i = 0; i < counts.Length; i++)
+            {
+                currentBucketIndex[i] = offset;
+                offset += counts[i];
+            }
+
+            foreach (SKColor color in colors)
+            {
+                int index = color.Green;
+                int bucketIndex = currentBucketIndex[index];
+                currentBucketIndex[index]++;
+                buckets[bucketIndex] = color;
+            }
+
+            buckets.CopyTo(colors);
+        }
+        finally
         {
-            int index = color.Green;
-            int bucketIndex = currentBucketIndex[index];
-            currentBucketIndex[index]++;
-            buckets[bucketIndex] = color;
+            ArrayPool<SKColor>.Shared.Return(bucketsArray);
         }
-
-        buckets.CopyTo(span);
-
-        ArrayPool<SKColor>.Shared.Return(bucketsArray);
     }
 
-    public static void SortBlue(in Span<SKColor> span)
+    public static void SortBlue(in Span<SKColor> colors)
     {
         Span<int> counts = stackalloc int[256];
-        foreach (SKColor t in span)
+        foreach (SKColor t in colors)
             counts[t.Blue]++;
 
-        SKColor[] bucketsArray = ArrayPool<SKColor>.Shared.Rent(span.Length);
-        Span<SKColor> buckets = bucketsArray.AsSpan().Slice(0, span.Length);
-        Span<int> currentBucketIndex = stackalloc int[256];
+        SKColor[] bucketsArray = ArrayPool<SKColor>.Shared.Rent(colors.Length);
 
-        int offset = 0;
-        for (int i = 0; i < counts.Length; i++)
+        try
         {
-            currentBucketIndex[i] = offset;
-            offset += counts[i];
-        }
+            Span<SKColor> buckets = bucketsArray.AsSpan().Slice(0, colors.Length);
+            Span<int> currentBucketIndex = stackalloc int[256];
 
-        foreach (SKColor color in span)
+            int offset = 0;
+            for (int i = 0; i < counts.Length; i++)
+            {
+                currentBucketIndex[i] = offset;
+                offset += counts[i];
+            }
+
+            foreach (SKColor color in colors)
+            {
+                int index = color.Blue;
+                int bucketIndex = currentBucketIndex[index];
+                currentBucketIndex[index]++;
+                buckets[bucketIndex] = color;
+            }
+
+            buckets.CopyTo(colors);
+        }
+        finally
         {
-            int index = color.Blue;
-            int bucketIndex = currentBucketIndex[index];
-            currentBucketIndex[index]++;
-            buckets[bucketIndex] = color;
+            ArrayPool<SKColor>.Shared.Return(bucketsArray);
         }
-
-        buckets.CopyTo(span);
-
-        ArrayPool<SKColor>.Shared.Return(bucketsArray);
     }
 
     #endregion

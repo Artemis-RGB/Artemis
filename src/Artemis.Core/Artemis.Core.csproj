@@ -12,7 +12,6 @@
         <PackageId>ArtemisRGB.Core</PackageId>
         <PluginApiVersion>1</PluginApiVersion>
         <Nullable>enable</Nullable>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>

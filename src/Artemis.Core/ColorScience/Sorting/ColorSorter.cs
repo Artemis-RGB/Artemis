@@ -66,9 +66,15 @@ namespace Artemis.Core.ColorScience
             else
             {
                 SortColor[] sortColorArray = ArrayPool<SortColor>.Shared.Rent(colors.Length);
-                Span<SortColor> sortColors = sortColorArray.AsSpan(0, colors.Length);
-                Sort(colors, sortColors, referenceColor);
-                ArrayPool<SortColor>.Shared.Return(sortColorArray);
+                try
+                {
+                    Span<SortColor> sortColors = sortColorArray.AsSpan(0, colors.Length);
+                    Sort(colors, sortColors, referenceColor);
+                }
+                finally
+                {
+                    ArrayPool<SortColor>.Shared.Return(sortColorArray);
+                }
             }
         }
 
