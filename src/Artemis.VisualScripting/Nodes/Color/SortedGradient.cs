@@ -23,7 +23,7 @@ namespace Artemis.VisualScripting.Nodes.Color
 
         public override void Evaluate()
         {
-            var colors = Inputs.Values.ToArray();
+            SKColor[] colors = Inputs.Values.ToArray();
 
             if (colors.Length == 0)
             {
@@ -33,10 +33,10 @@ namespace Artemis.VisualScripting.Nodes.Color
 
             ColorSorter.Sort(colors, SKColors.Black);
 
-            var gradient = new ColorGradient();
+            ColorGradient gradient = new();
             for (int i = 0; i < colors.Length; i++)
             {
-                gradient.Add(new(colors[i], (float)i / (colors.Length - 1)));
+                gradient.Add(new ColorGradientStop(colors[i], (float)i / (colors.Length - 1)));
             }
 
             Output.Value = gradient;
