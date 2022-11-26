@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using Artemis.Core.ColorScience;
 using SkiaSharp;
 
 namespace Artemis.Core;
@@ -411,7 +412,29 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
             Update();
         }
     }
-    
+
+    public void Sort()
+    {
+        {
+            try
+            {
+                _updating = true;
+                var colors = GetColors().ToArray();
+                ColorSorter.Sort(colors, colors[0]);
+
+                for (int i = 0; i < colors.Length; i++)
+                {
+                    _stops[i].Color = colors[i];
+                }
+            }
+            finally
+            {
+                _updating = false;
+                Update();
+            }
+        }
+    }
+
     /// <summary>
     ///     Interpolates a color gradient between the this gradient and the provided <paramref name="targetValue"/>.
     /// </summary>

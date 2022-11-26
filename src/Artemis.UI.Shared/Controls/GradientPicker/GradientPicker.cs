@@ -74,6 +74,7 @@ public class GradientPicker : TemplatedControl
     private bool _shiftDown;
     private Button? _spreadStops;
     private Button? _toggleSeamless;
+    private Button? _sort;
     private ColorGradient _colorGradient = null!;
 
     /// <summary>
@@ -175,6 +176,8 @@ public class GradientPicker : TemplatedControl
             _rotateStops.Click -= RotateStopsOnClick;
         if (_randomize != null)
             _randomize.Click -= RandomizeOnClick;
+        if (_sort != null)
+            _sort.Click -= SortOnClick;
 
         _colorPicker = e.NameScope.Find<ColorPicker>("ColorPicker");
         _gradient = e.NameScope.Find<Border>("Gradient");
@@ -183,7 +186,8 @@ public class GradientPicker : TemplatedControl
         _flipStops = e.NameScope.Find<Button>("FlipStops");
         _rotateStops = e.NameScope.Find<Button>("RotateStops");
         _randomize = e.NameScope.Find<Button>("Randomize");
-        
+        _sort = e.NameScope.Find<Button>("Sort");
+
         if (_gradient != null)
             _gradient.PointerPressed += GradientOnPointerPressed;
         if (_spreadStops != null)
@@ -196,6 +200,8 @@ public class GradientPicker : TemplatedControl
             _rotateStops.Click += RotateStopsOnClick;
         if (_randomize != null)
             _randomize.Click += RandomizeOnClick;
+        if (_sort != null)
+            _sort.Click += SortOnClick;
 
         base.OnApplyTemplate(e);
     }
@@ -347,5 +353,13 @@ public class GradientPicker : TemplatedControl
     {
         EditingColorGradient.Randomize(6);
         SelectedColorStop = EditingColorGradient.First();
+    }
+
+    private void SortOnClick(object? sender, RoutedEventArgs e)
+    {
+        if(EditingColorGradient.Count < 2)
+            return;
+
+        EditingColorGradient.Sort();
     }
 }
