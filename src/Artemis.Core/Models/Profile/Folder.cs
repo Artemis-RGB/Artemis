@@ -99,19 +99,26 @@ public sealed class Folder : RenderProfileElement
             return;
         }
 
-        UpdateDisplayCondition();
-        UpdateTimeline(deltaTime);
+        try
+        {
+            UpdateDisplayCondition();
+            UpdateTimeline(deltaTime);
 
-        if (ShouldBeEnabled)
-            Enable();
-        else if (Timeline.IsFinished)
-            Disable();
+            if (ShouldBeEnabled)
+                Enable();
+            else if (Timeline.IsFinished)
+                Disable();
 
-        foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-            baseLayerEffect.InternalUpdate(Timeline);
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
+                baseLayerEffect.InternalUpdate(Timeline);
 
-        foreach (ProfileElement child in Children)
-            child.Update(deltaTime);
+            foreach (ProfileElement child in Children)
+                child.Update(deltaTime);
+        }
+        finally
+        {
+            Timeline.ClearDelta();
+        }
     }
 
     /// <inheritdoc />
@@ -224,8 +231,6 @@ public sealed class Folder : RenderProfileElement
             canvas.Restore();
             layerPaint.DisposeSelfAndProperties();
         }
-
-        Timeline.ClearDelta();
     }
 
     #endregion
@@ -233,8 +238,10 @@ public sealed class Folder : RenderProfileElement
     /// <inheritdoc />
     public override void Enable()
     {
-        // No checks here, effects will do their own checks to ensure they never enable twice
-        // Also not enabling children, they'll enable themselves during their own Update
+        if (!Enabled)
+            return;
+        
+        // Not enabling children, they'll enable themselves during their own Update
         foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
             baseLayerEffect.InternalEnable();
 
@@ -244,7 +251,9 @@ public sealed class Folder : RenderProfileElement
     /// <inheritdoc />
     public override void Disable()
     {
-        // No checks here, effects will do their own checks to ensure they never disable twice
+        if (!Enabled)
+            return;
+        
         foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
             baseLayerEffect.InternalDisable();
 
