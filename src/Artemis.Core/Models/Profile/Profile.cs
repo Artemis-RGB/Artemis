@@ -8,15 +8,6 @@ using SkiaSharp;
 
 namespace Artemis.Core;
 
-
-internal enum FadingStatus
-{
-    Enabled,
-    FadingIn,
-    FadingOut,
-    Disabled
-}
-
 /// <summary>
 ///     Represents a profile containing folders and layers
 /// </summary>
@@ -27,15 +18,14 @@ public sealed class Profile : ProfileElement
     private readonly ObservableCollection<ProfileScript> _scripts;
     private bool _isFreshImport;
     private ProfileElement? _lastSelectedProfileElement;
-    private double _opacity;
 
     internal Profile(ProfileConfiguration configuration, ProfileEntity profileEntity) : base(null!)
     {
         _scripts = new ObservableCollection<ProfileScript>();
         _scriptConfigurations = new ObservableCollection<ScriptConfiguration>();
-        _opacity = 0d;
         
-        FadingStatus = FadingStatus.FadingIn;
+        Opacity = 0d;
+        ShouldBeEnabled = true;
         Configuration = configuration;
         Profile = this;
         ProfileEntity = profileEntity;
@@ -93,7 +83,9 @@ public sealed class Profile : ProfileElement
 
     internal List<Exception> Exceptions { get; }
 
-    internal FadingStatus FadingStatus { get; private set; }
+    internal bool ShouldBeEnabled { get; private set; }
+
+    internal double Opacity { get; private set; }
 
     /// <inheritdoc />
     public override void Update(double deltaTime)
@@ -113,14 +105,11 @@ public sealed class Profile : ProfileElement
                 profileScript.OnProfileUpdated(deltaTime);
 
             const double OPACITY_PER_SECOND = 1;
-            if (FadingStatus == FadingStatus.FadingIn)
-                _opacity = Math.Clamp(_opacity + OPACITY_PER_SECOND * deltaTime, 0d, 1d);
-            if (FadingStatus == FadingStatus.FadingOut)
-                _opacity = Math.Clamp(_opacity - OPACITY_PER_SECOND * deltaTime, 0d, 1d);
-            if (_opacity == 0d)
-                FadingStatus = FadingStatus.Disabled;
-            if (_opacity == 1d)
-                FadingStatus = FadingStatus.Enabled;
+            
+            if (ShouldBeEnabled && Opacity < 1)
+                Opacity = Math.Clamp(Opacity + OPACITY_PER_SECOND * deltaTime, 0d, 1d);
+            if (!ShouldBeEnabled && Opacity > 0)
+                Opacity = Math.Clamp(Opacity - OPACITY_PER_SECOND * deltaTime, 0d, 1d);
         }
     }
 
@@ -136,8 +125,8 @@ public sealed class Profile : ProfileElement
                 profileScript.OnProfileRendering(canvas, canvas.LocalClipBounds);
 
             using var opacityPaint = new SKPaint();
-            if (Configuration.FadeInAndOut && FadingStatus != FadingStatus.Enabled)
-                opacityPaint.Color = new SKColor(0, 0, 0, (byte)(255d * Easings.CubicEaseInOut(_opacity)));
+            if (Configuration.FadeInAndOut && Opacity != 1)
+                opacityPaint.Color = new SKColor(0, 0, 0, (byte)(255d * Easings.CubicEaseInOut(Opacity)));
 
             canvas.SaveLayer(opacityPaint);
 
@@ -205,7 +194,7 @@ public sealed class Profile : ProfileElement
         if (Disposed)
             throw new ObjectDisposedException("Profile");
 
-        FadingStatus = FadingStatus.FadingOut;
+        ShouldBeEnabled = false;
     }
 
     #region Overrides of BreakableModel

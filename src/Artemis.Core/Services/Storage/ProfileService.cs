@@ -215,9 +215,11 @@ internal class ProfileService : IProfileService
                             profileConfiguration.TryOrBreak(() => ActivateProfile(profileConfiguration), "Failed to activate profile");
                         else if (!shouldBeActive && profileConfiguration.Profile != null)
                         {
-                            if (!profileConfiguration.FadeInAndOut || profileConfiguration.Profile.FadingStatus == FadingStatus.Disabled)
+                            if (!profileConfiguration.FadeInAndOut)
                                 DeactivateProfile(profileConfiguration);
-                            else if (profileConfiguration.Profile.FadingStatus == FadingStatus.Enabled)
+                            else if (!profileConfiguration.Profile.ShouldBeEnabled && profileConfiguration.Profile.Opacity <= 0)
+                                DeactivateProfile(profileConfiguration);
+                            else if (profileConfiguration.Profile.ShouldBeEnabled && profileConfiguration.Profile.Opacity >= 1)
                                 RequestDeactivation(profileConfiguration);
                         }
 
@@ -259,7 +261,7 @@ internal class ProfileService : IProfileService
                     {
                         ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
                         // Ensure all criteria are met before rendering
-                        if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && (profileConfiguration.ActivationConditionMet || profileConfiguration.Profile?.FadingStatus == FadingStatus.FadingOut))
+                        if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && (profileConfiguration.ActivationConditionMet || (profileConfiguration.Profile?.ShouldBeEnabled == false && profileConfiguration.Profile?.Opacity >= 0)))
                             profileConfiguration.Profile?.Render(canvas, SKPointI.Empty, null);
                     }
                     catch (Exception e)
