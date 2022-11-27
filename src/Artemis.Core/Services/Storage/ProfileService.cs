@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -213,13 +213,15 @@ internal class ProfileService : IProfileService
                         // Make sure the profile is active or inactive according to the parameters above
                         if (shouldBeActive && profileConfiguration.Profile == null && profileConfiguration.BrokenState != "Failed to activate profile")
                             profileConfiguration.TryOrBreak(() => ActivateProfile(profileConfiguration), "Failed to activate profile");
+                        if (shouldBeActive && profileConfiguration.Profile != null && !profileConfiguration.Profile.ShouldDisplay)
+                            profileConfiguration.Profile.ShouldDisplay = true;
                         else if (!shouldBeActive && profileConfiguration.Profile != null)
                         {
                             if (!profileConfiguration.FadeInAndOut)
                                 DeactivateProfile(profileConfiguration);
-                            else if (!profileConfiguration.Profile.ShouldBeEnabled && profileConfiguration.Profile.Opacity <= 0)
+                            else if (!profileConfiguration.Profile.ShouldDisplay && profileConfiguration.Profile.Opacity <= 0)
                                 DeactivateProfile(profileConfiguration);
-                            else if (profileConfiguration.Profile.ShouldBeEnabled && profileConfiguration.Profile.Opacity >= 1)
+                            else if (profileConfiguration.Profile.Opacity > 0)
                                 RequestDeactivation(profileConfiguration);
                         }
 
@@ -261,7 +263,7 @@ internal class ProfileService : IProfileService
                     {
                         ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
                         // Ensure all criteria are met before rendering
-                        if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && (profileConfiguration.ActivationConditionMet || (profileConfiguration.Profile?.ShouldBeEnabled == false && profileConfiguration.Profile?.Opacity >= 0)))
+                        if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && (profileConfiguration.ActivationConditionMet || (profileConfiguration.Profile?.ShouldDisplay == false && profileConfiguration.Profile?.Opacity >= 0)))
                             profileConfiguration.Profile?.Render(canvas, SKPointI.Empty, null);
                     }
                     catch (Exception e)
@@ -323,7 +325,10 @@ internal class ProfileService : IProfileService
     public Profile ActivateProfile(ProfileConfiguration profileConfiguration)
     {
         if (profileConfiguration.Profile != null)
+        {
+            profileConfiguration.Profile.ShouldDisplay = true;
             return profileConfiguration.Profile;
+        }
 
         ProfileEntity profileEntity;
         try
@@ -375,7 +380,7 @@ internal class ProfileService : IProfileService
         if (profileConfiguration.Profile == null)
             return;
 
-        profileConfiguration.Profile.FadeOut();
+        profileConfiguration.Profile.ShouldDisplay = false;
     }
 
     public void DeleteProfile(ProfileConfiguration profileConfiguration)

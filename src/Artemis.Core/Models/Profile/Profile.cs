@@ -25,7 +25,7 @@ public sealed class Profile : ProfileElement
         _scriptConfigurations = new ObservableCollection<ScriptConfiguration>();
         
         Opacity = 0d;
-        ShouldBeEnabled = true;
+        ShouldDisplay = true;
         Configuration = configuration;
         Profile = this;
         ProfileEntity = profileEntity;
@@ -83,7 +83,7 @@ public sealed class Profile : ProfileElement
 
     internal List<Exception> Exceptions { get; }
 
-    internal bool ShouldBeEnabled { get; private set; }
+    internal bool ShouldDisplay { get; set; }
 
     internal double Opacity { get; private set; }
 
@@ -106,9 +106,9 @@ public sealed class Profile : ProfileElement
 
             const double OPACITY_PER_SECOND = 1;
             
-            if (ShouldBeEnabled && Opacity < 1)
+            if (ShouldDisplay && Opacity < 1)
                 Opacity = Math.Clamp(Opacity + OPACITY_PER_SECOND * deltaTime, 0d, 1d);
-            if (!ShouldBeEnabled && Opacity > 0)
+            if (!ShouldDisplay && Opacity > 0)
                 Opacity = Math.Clamp(Opacity - OPACITY_PER_SECOND * deltaTime, 0d, 1d);
         }
     }
@@ -184,17 +184,6 @@ public sealed class Profile : ProfileElement
 
         foreach (Layer layer in GetAllLayers())
             layer.PopulateLeds(devices);
-    }
-
-    /// <summary>
-    ///     Starts the fade out process.
-    /// </summary>
-    public void FadeOut()
-    {
-        if (Disposed)
-            throw new ObjectDisposedException("Profile");
-
-        ShouldBeEnabled = false;
     }
 
     #region Overrides of BreakableModel
