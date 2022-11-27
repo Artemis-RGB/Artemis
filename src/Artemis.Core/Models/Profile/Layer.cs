@@ -505,7 +505,7 @@ public sealed class Layer : RenderProfileElement
     {
         if (Enabled)
             return;
-        
+
         bool tryOrBreak = TryOrBreak(() => LayerBrush?.InternalEnable(), "Failed to enable layer brush");
         if (!tryOrBreak)
             return;
@@ -839,11 +839,10 @@ public sealed class Layer : RenderProfileElement
             General.ShapeType.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
             General.BlendMode.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
             Transform.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
-            if (LayerBrush != null)
+            if (LayerBrush != null && Enabled)
             {
-                if (!LayerBrush.Enabled)
-                    LayerBrush.InternalEnable();
-                LayerBrush?.Update(0);
+                LayerBrush.InternalEnable();
+                LayerBrush.Update(0);
             }
 
             OnLayerBrushUpdated();

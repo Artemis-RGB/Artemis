@@ -238,7 +238,7 @@ public sealed class Folder : RenderProfileElement
     /// <inheritdoc />
     public override void Enable()
     {
-        if (!Enabled)
+        if (Enabled)
             return;
         
         // Not enabling children, they'll enable themselves during their own Update

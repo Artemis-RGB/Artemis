@@ -223,6 +223,14 @@ public abstract class RenderProfileElement : ProfileElement
 
         // Make sure the layer effect is tied to this element
         layerEffect.ProfileElement = this;
+
+        // If the element is enabled, enable the effect before adding it
+        if (Enabled)
+        {
+            layerEffect.InternalEnable();
+            layerEffect.Update(0);
+        }
+
         _layerEffects.Add(layerEffect);
 
         // Update the order on the effects
@@ -245,6 +253,9 @@ public abstract class RenderProfileElement : ProfileElement
 
         // Remove the effect from the layer
         _layerEffects.Remove(layerEffect);
+
+        // Disable the effect after removing it
+        layerEffect.InternalDisable();
 
         // Update the order on the remaining effects
         OrderEffects();
