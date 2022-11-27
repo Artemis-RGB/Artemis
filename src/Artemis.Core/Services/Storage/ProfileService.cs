@@ -214,7 +214,12 @@ internal class ProfileService : IProfileService
                         if (shouldBeActive && profileConfiguration.Profile == null && profileConfiguration.BrokenState != "Failed to activate profile")
                             profileConfiguration.TryOrBreak(() => ActivateProfile(profileConfiguration), "Failed to activate profile");
                         else if (!shouldBeActive && profileConfiguration.Profile != null)
-                            DeactivateProfile(profileConfiguration);
+                        {
+                            if (!profileConfiguration.FadeInAndOut || profileConfiguration.Profile.FadingStatus == FadingStatus.Disabled)
+                                DeactivateProfile(profileConfiguration);
+                            else if (profileConfiguration.Profile.FadingStatus == FadingStatus.Enabled)
+                                RequestDeactivation(profileConfiguration);
+                        }
 
                         profileConfiguration.Profile?.Update(deltaTime);
                     }
@@ -254,7 +259,7 @@ internal class ProfileService : IProfileService
                     {
                         ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
                         // Ensure all criteria are met before rendering
-                        if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && profileConfiguration.ActivationConditionMet)
+                        if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && (profileConfiguration.ActivationConditionMet || profileConfiguration.Profile?.FadingStatus == FadingStatus.FadingOut))
                             profileConfiguration.Profile?.Render(canvas, SKPointI.Empty, null);
                     }
                     catch (Exception e)
@@ -359,6 +364,16 @@ internal class ProfileService : IProfileService
         profile.Dispose();
 
         OnProfileDeactivated(new ProfileConfigurationEventArgs(profileConfiguration));
+    }
+
+    public void RequestDeactivation(ProfileConfiguration profileConfiguration)
+    {
+        if (profileConfiguration.IsBeingEdited)
+            throw new ArtemisCoreException("Cannot disable a profile that is being edited, that's rude");
+        if (profileConfiguration.Profile == null)
+            return;
+
+        profileConfiguration.Profile.FadeOut();
     }
 
     public void DeleteProfile(ProfileConfiguration profileConfiguration)

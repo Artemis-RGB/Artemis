@@ -25,4 +25,6 @@ public class ProfileConfigurationEntity
 
     public Guid ProfileCategoryId { get; set; }
     public Guid ProfileId { get; set; }
+
+    public bool FadeInAndOut { get; set; }
 }

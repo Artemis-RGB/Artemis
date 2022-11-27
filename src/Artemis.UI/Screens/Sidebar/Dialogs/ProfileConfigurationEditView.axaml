@@ -127,6 +127,9 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                         </StackPanel>
+
+                        <CheckBox VerticalAlignment="Bottom" IsChecked="{CompiledBinding FadeInAndOut}" ToolTip.Tip="Smoothly animates in and out when the profile activation conditions change.">Fade when enabling and disabling</CheckBox>
+
                     </StackPanel>
                 </Border>
 
