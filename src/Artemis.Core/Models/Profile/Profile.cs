@@ -125,7 +125,7 @@ public sealed class Profile : ProfileElement
                 profileScript.OnProfileRendering(canvas, canvas.LocalClipBounds);
 
             using var opacityPaint = new SKPaint();
-            if (Configuration.FadeInAndOut && Opacity != 1)
+            if (Configuration.FadeInAndOut && Opacity < 1)
                 opacityPaint.Color = new SKColor(0, 0, 0, (byte)(255d * Easings.CubicEaseInOut(Opacity)));
 
             canvas.SaveLayer(opacityPaint);

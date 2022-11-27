@@ -263,7 +263,8 @@ internal class ProfileService : IProfileService
                     {
                         ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
                         // Ensure all criteria are met before rendering
-                        if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && (profileConfiguration.ActivationConditionMet || (profileConfiguration.Profile?.ShouldDisplay == false && profileConfiguration.Profile?.Opacity >= 0)))
+                        bool fadingOut = profileConfiguration.Profile?.ShouldDisplay == false && profileConfiguration.Profile?.Opacity > 0;
+                        if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && (profileConfiguration.ActivationConditionMet || fadingOut))
                             profileConfiguration.Profile?.Render(canvas, SKPointI.Empty, null);
                     }
                     catch (Exception e)
