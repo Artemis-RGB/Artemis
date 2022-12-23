@@ -63,7 +63,7 @@ public class ArtemisLedLayout
 
         // Prefer a matching layout or else a default layout (that has no name)
         LayoutCustomLedDataLogicalLayout logicalLayout = LayoutCustomLedData.LogicalLayouts
-            .OrderBy(l => l.Name == artemisDevice.LogicalLayout)
+            .OrderByDescending(l => l.Name == artemisDevice.LogicalLayout)
             .ThenBy(l => l.Name == null)
             .First();
 
