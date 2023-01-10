@@ -83,6 +83,7 @@ jobs:
     steps:
       - name: post thing
         if: needs.build.result == 'success'
+        shell: pwsh
         run: |
           $tokenUri = "https://identity.artemis-rgb.com/connect/token"
 
