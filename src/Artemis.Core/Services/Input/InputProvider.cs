@@ -8,7 +8,10 @@ namespace Artemis.Core.Services;
 /// </summary>
 public abstract class InputProvider : IDisposable
 {
-    public InputProvider()
+    /// <summary>
+    /// Creates a new instance of the <see cref="InputProvider"/> class.
+    /// </summary>
+    protected InputProvider()
     {
         ProviderName = GetType().FullName ?? throw new InvalidOperationException("Input provider must have a type with a name");
     }

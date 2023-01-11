@@ -117,7 +117,7 @@ public class LayerPropertyNode : Node<LayerPropertyNodeEntity, LayerPropertyNode
     ///     The bucket might grow a bit over time as the user edits the node but pins won't get lost, enabling undo/redo in the
     ///     editor.
     /// </summary>
-    private void CreateOrAddOutputPin(Type valueType, string displayName)
+    private new void CreateOrAddOutputPin(Type valueType, string displayName)
     {
         // Grab the first pin from the bucket that isn't on the node yet
         OutputPin? pin = _pinBucket.FirstOrDefault(p => !Pins.Contains(p));

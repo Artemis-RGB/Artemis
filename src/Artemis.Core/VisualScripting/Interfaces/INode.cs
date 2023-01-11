@@ -97,7 +97,7 @@ public interface INode : INotifyPropertyChanged, IBreakableModel
     void TryEvaluate();
 
     /// <summary>
-    ///     Resets the node causing all pins to re-evaluate the next time <see cref="Evaluate" /> is called
+    ///     Resets the node causing all pins to re-evaluate the next time <see cref="TryEvaluate" /> is called
     /// </summary>
     void Reset();
 }

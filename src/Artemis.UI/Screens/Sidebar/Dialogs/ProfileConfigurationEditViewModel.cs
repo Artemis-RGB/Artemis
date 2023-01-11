@@ -139,7 +139,6 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
     public ReactiveCommand<Unit, Unit> OpenConditionEditor { get; }
     public ReactiveCommand<Unit, Unit> BrowseBitmapFile { get; }
     public ReactiveCommand<Unit, Unit> Confirm { get; }
-    public ReactiveCommand<Unit, Unit> Import { get; }
     public ReactiveCommand<Unit, Unit> Delete { get; }
     public ReactiveCommand<Unit, Unit> Cancel { get; }
     
