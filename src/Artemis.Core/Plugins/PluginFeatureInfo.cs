@@ -18,7 +18,6 @@ namespace Artemis.Core;
 public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
 {
     private string? _description;
-    private string? _icon;
     private PluginFeature? _instance;
     private Exception? _loadException;
     private string _name = null!;

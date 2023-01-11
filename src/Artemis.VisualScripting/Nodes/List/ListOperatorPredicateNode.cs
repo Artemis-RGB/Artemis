@@ -9,7 +9,7 @@ namespace Artemis.VisualScripting.Nodes.List;
 public class ListOperatorPredicateNode : Node<ListOperatorEntity, ListOperatorPredicateNodeCustomViewModel>, IDisposable
 {
     private readonly object _scriptLock = new();
-    private ListOperatorPredicateStartNode _startNode;
+    private readonly ListOperatorPredicateStartNode _startNode;
 
     public ListOperatorPredicateNode()
     {
@@ -65,7 +65,7 @@ public class ListOperatorPredicateNode : Node<ListOperatorEntity, ListOperatorPr
 
     private bool EvaluateItem(object item)
     {
-        if (Script == null || _startNode == null)
+        if (Script == null)
             return false;
 
         _startNode.Item = item;
@@ -100,7 +100,6 @@ public class ListOperatorPredicateNode : Node<ListOperatorEntity, ListOperatorPr
     {
         Script?.Dispose();
         Script = null;
-        _startNode = null;
     }
 
     #endregion

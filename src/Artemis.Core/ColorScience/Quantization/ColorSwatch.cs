@@ -1,11 +1,11 @@
 ﻿using SkiaSharp;
 
-namespace Artemis.Core.Services;
+namespace Artemis.Core.ColorScience;
 
 /// <summary>
 ///     Swatch containing the known useful color variations.
 /// </summary>
-public struct ColorSwatch
+public readonly record struct ColorSwatch
 {
     /// <summary>
     ///     The <see cref="ColorType.Vibrant" /> component.

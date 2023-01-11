@@ -40,7 +40,7 @@ public sealed class Layer : RenderProfileElement
         Suspended = false;
         Leds = new ReadOnlyCollection<ArtemisLed>(_leds);
         Adapter = new LayerAdapter(this);
-        
+
         Initialize();
     }
 
@@ -60,7 +60,7 @@ public sealed class Layer : RenderProfileElement
         Parent = parent;
         Leds = new ReadOnlyCollection<ArtemisLed>(_leds);
         Adapter = new LayerAdapter(this);
-        
+
         Load();
         Initialize();
         if (loadNodeScript)
@@ -370,41 +370,48 @@ public sealed class Layer : RenderProfileElement
             return;
         }
 
-        UpdateDisplayCondition();
-        UpdateTimeline(deltaTime);
-
-        if (ShouldBeEnabled)
-            Enable();
-        else if (Suspended || (Timeline.IsFinished && !_renderCopies.Any()))
-            Disable();
-
-        if (Timeline.Delta == TimeSpan.Zero)
-            return;
-
-        General.Update(Timeline);
-        Transform.Update(Timeline);
-        LayerBrush?.InternalUpdate(Timeline);
-
-        foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+        try
         {
-            if (!baseLayerEffect.Suspended)
-                baseLayerEffect.InternalUpdate(Timeline);
+            UpdateDisplayCondition();
+            UpdateTimeline(deltaTime);
+
+            if (ShouldBeEnabled)
+                Enable();
+            else if (Suspended || (Timeline.IsFinished && !_renderCopies.Any()))
+                Disable();
+
+            if (!Enabled || Timeline.Delta == TimeSpan.Zero)
+                return;
+
+            General.Update(Timeline);
+            Transform.Update(Timeline);
+            LayerBrush?.InternalUpdate(Timeline);
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+            {
+                if (!baseLayerEffect.Suspended)
+                    baseLayerEffect.InternalUpdate(Timeline);
+            }
+
+            // Remove render copies that finished their timeline and update the rest
+            for (int index = 0; index < _renderCopies.Count; index++)
+            {
+                Layer child = _renderCopies[index];
+                if (!child.Timeline.IsFinished)
+                {
+                    child.Update(deltaTime);
+                }
+                else
+                {
+                    _renderCopies.Remove(child);
+                    child.Dispose();
+                    index--;
+                }
+            }
         }
-
-        // Remove render copies that finished their timeline and update the rest
-        for (int index = 0; index < _renderCopies.Count; index++)
+        finally
         {
-            Layer child = _renderCopies[index];
-            if (!child.Timeline.IsFinished)
-            {
-                child.Update(deltaTime);
-            }
-            else
-            {
-                _renderCopies.Remove(child);
-                child.Dispose();
-                index--;
-            }
+            Timeline.ClearDelta();
         }
     }
 
@@ -485,8 +492,6 @@ public sealed class Layer : RenderProfileElement
         {
             layerPaint.DisposeSelfAndProperties();
         }
-
-        Timeline.ClearDelta();
     }
 
     private void RenderCopies(SKCanvas canvas, SKPointI basePosition)
@@ -498,7 +503,9 @@ public sealed class Layer : RenderProfileElement
     /// <inheritdoc />
     public override void Enable()
     {
-        // No checks here, the brush and effects will do their own checks to ensure they never enable twice
+        if (Enabled)
+            return;
+
         bool tryOrBreak = TryOrBreak(() => LayerBrush?.InternalEnable(), "Failed to enable layer brush");
         if (!tryOrBreak)
             return;
@@ -517,7 +524,9 @@ public sealed class Layer : RenderProfileElement
     /// <inheritdoc />
     public override void Disable()
     {
-        // No checks here, the brush and effects will do their own checks to ensure they never disable twice
+        if (!Enabled)
+            return;
+
         LayerBrush?.InternalDisable();
         foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
             baseLayerEffect.InternalDisable();
@@ -830,11 +839,10 @@ public sealed class Layer : RenderProfileElement
             General.ShapeType.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
             General.BlendMode.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
             Transform.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
-            if (LayerBrush != null)
+            if (LayerBrush != null && Enabled)
             {
-                if (!LayerBrush.Enabled)
-                    LayerBrush.InternalEnable();
-                LayerBrush?.Update(0);
+                LayerBrush.InternalEnable();
+                LayerBrush.Update(0);
             }
 
             OnLayerBrushUpdated();

@@ -62,8 +62,8 @@ public static class Constants
     /// <summary>
     ///     The current API version for plugins
     /// </summary>
-    public static readonly int PluginApiVersion = int.Parse(CoreAssembly.GetCustomAttributes<AssemblyMetadataAttribute>()
-                                                              .First(a => a.Key == "PluginApiVersion").Value);
+    public static readonly int PluginApiVersion = int.Parse(CoreAssembly.GetCustomAttributes<AssemblyMetadataAttribute>().First(a => a.Key == "PluginApiVersion").Value ?? 
+                                                            throw new InvalidOperationException("Cannot find PluginApiVersion metadata in assembly"));
 
     /// <summary>
     ///     The plugin info used by core components of Artemis

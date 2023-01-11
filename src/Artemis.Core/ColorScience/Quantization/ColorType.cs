@@ -1,4 +1,4 @@
-﻿namespace Artemis.Core.Services;
+﻿namespace Artemis.Core.ColorScience;
 
 /// <summary>
 ///     The types of relevant colors in an image.

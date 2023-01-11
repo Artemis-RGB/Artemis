@@ -10,9 +10,9 @@ namespace Artemis.Core.JsonConverters
     /// </summary>
     internal class ForgivingVersionConverter : VersionConverter
     {
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
-            object obj = base.ReadJson(reader, objectType, existingValue, serializer);
+            object? obj = base.ReadJson(reader, objectType, existingValue, serializer);
             if (obj is not Version v)
                 return obj;
 

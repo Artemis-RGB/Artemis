@@ -30,6 +30,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
     private readonly IWindowService _windowService;
     private Hotkey? _disableHotkey;
     private Hotkey? _enableHotkey;
+    private bool _fadeInAndOut;
     private ProfileConfigurationHotkeyMode _hotkeyMode;
     private ProfileConfigurationIconType _iconType;
     private ObservableCollection<ProfileIconViewModel>? _materialIcons;
@@ -57,6 +58,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         _profileName = _profileConfiguration.Name;
         _iconType = _profileConfiguration.Icon.IconType;
         _hotkeyMode = _profileConfiguration.HotkeyMode;
+        _fadeInAndOut = _profileConfiguration.FadeInAndOut;
         if (_profileConfiguration.EnableHotkey != null)
             _enableHotkey = new Hotkey {Key = _profileConfiguration.EnableHotkey.Key, Modifiers = _profileConfiguration.EnableHotkey.Modifiers};
         if (_profileConfiguration.DisableHotkey != null)
@@ -117,6 +119,12 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         set => RaiseAndSetIfChanged(ref _disableHotkey, value);
     }
 
+    public bool FadeInAndOut
+    {
+        get => _fadeInAndOut;
+        set => RaiseAndSetIfChanged(ref _fadeInAndOut, value);
+    }
+
     public ObservableCollection<ProfileModuleViewModel?> Modules { get; }
 
     public ProfileModuleViewModel? SelectedModule
@@ -131,7 +139,6 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
     public ReactiveCommand<Unit, Unit> OpenConditionEditor { get; }
     public ReactiveCommand<Unit, Unit> BrowseBitmapFile { get; }
     public ReactiveCommand<Unit, Unit> Confirm { get; }
-    public ReactiveCommand<Unit, Unit> Import { get; }
     public ReactiveCommand<Unit, Unit> Delete { get; }
     public ReactiveCommand<Unit, Unit> Cancel { get; }
     
@@ -155,6 +162,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         ProfileConfiguration.HotkeyMode = HotkeyMode;
         ProfileConfiguration.EnableHotkey = EnableHotkey;
         ProfileConfiguration.DisableHotkey = DisableHotkey;
+        ProfileConfiguration.FadeInAndOut = FadeInAndOut;
 
         await SaveIcon();
 
