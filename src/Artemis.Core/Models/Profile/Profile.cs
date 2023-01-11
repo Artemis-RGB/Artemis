@@ -123,17 +123,25 @@ public sealed class Profile : ProfileElement
 
             foreach (ProfileScript profileScript in Scripts)
                 profileScript.OnProfileRendering(canvas, canvas.LocalClipBounds);
-
-            using var opacityPaint = new SKPaint();
-            if (Configuration.FadeInAndOut && Opacity < 1)
+            
+            SKPaint? opacityPaint = null;
+            bool applyOpacityLayer = Configuration.FadeInAndOut && Opacity < 1;
+            
+            if (applyOpacityLayer)
+            {
+                opacityPaint = new SKPaint();
                 opacityPaint.Color = new SKColor(0, 0, 0, (byte)(255d * Easings.CubicEaseInOut(Opacity)));
-
-            canvas.SaveLayer(opacityPaint);
+                canvas.SaveLayer(opacityPaint);
+            }
 
             foreach (ProfileElement profileElement in Children)
                 profileElement.Render(canvas, basePosition, editorFocus);
 
-            canvas.Restore();
+            if (applyOpacityLayer)
+            {
+                canvas.Restore();
+                opacityPaint?.Dispose();
+            }
 
             foreach (ProfileScript profileScript in Scripts)
                 profileScript.OnProfileRendered(canvas, canvas.LocalClipBounds);
