@@ -21,6 +21,7 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
     private bool _isBeingEdited;
     private bool _isMissingModule;
     private bool _isSuspended;
+    private bool _fadeInAndOut;
     private Module? _module;
 
     private string _name;
@@ -161,6 +162,15 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
     }
 
     /// <summary>
+    ///    Gets or sets a boolean indicating whether this profile should fade in and out when enabling or disabling
+    /// </summary>
+    public bool FadeInAndOut 
+    { 
+        get => _fadeInAndOut;
+        set => SetAndNotify(ref _fadeInAndOut, value);
+    }
+
+    /// <summary>
     ///     Gets or sets the module this profile uses
     /// </summary>
     public Module? Module
@@ -272,6 +282,7 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
         IsSuspended = Entity.IsSuspended;
         ActivationBehaviour = (ActivationBehaviour) Entity.ActivationBehaviour;
         HotkeyMode = (ProfileConfigurationHotkeyMode) Entity.HotkeyMode;
+        FadeInAndOut = Entity.FadeInAndOut;
         Order = Entity.Order;
 
         Icon.Load();
@@ -294,6 +305,7 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
         Entity.ActivationBehaviour = (int) ActivationBehaviour;
         Entity.HotkeyMode = (int) HotkeyMode;
         Entity.ProfileCategoryId = Category.Entity.Id;
+        Entity.FadeInAndOut = FadeInAndOut;
         Entity.Order = Order;
 
         Icon.Save();

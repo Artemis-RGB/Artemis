@@ -23,7 +23,9 @@ public sealed class Profile : ProfileElement
     {
         _scripts = new ObservableCollection<ProfileScript>();
         _scriptConfigurations = new ObservableCollection<ScriptConfiguration>();
-
+        
+        Opacity = 0d;
+        ShouldDisplay = true;
         Configuration = configuration;
         Profile = this;
         ProfileEntity = profileEntity;
@@ -81,6 +83,10 @@ public sealed class Profile : ProfileElement
 
     internal List<Exception> Exceptions { get; }
 
+    internal bool ShouldDisplay { get; set; }
+
+    internal double Opacity { get; private set; }
+
     /// <inheritdoc />
     public override void Update(double deltaTime)
     {
@@ -97,6 +103,13 @@ public sealed class Profile : ProfileElement
 
             foreach (ProfileScript profileScript in Scripts)
                 profileScript.OnProfileUpdated(deltaTime);
+
+            const double OPACITY_PER_SECOND = 1;
+            
+            if (ShouldDisplay && Opacity < 1)
+                Opacity = Math.Clamp(Opacity + OPACITY_PER_SECOND * deltaTime, 0d, 1d);
+            if (!ShouldDisplay && Opacity > 0)
+                Opacity = Math.Clamp(Opacity - OPACITY_PER_SECOND * deltaTime, 0d, 1d);
         }
     }
 
@@ -110,9 +123,25 @@ public sealed class Profile : ProfileElement
 
             foreach (ProfileScript profileScript in Scripts)
                 profileScript.OnProfileRendering(canvas, canvas.LocalClipBounds);
+            
+            SKPaint? opacityPaint = null;
+            bool applyOpacityLayer = Configuration.FadeInAndOut && Opacity < 1;
+            
+            if (applyOpacityLayer)
+            {
+                opacityPaint = new SKPaint();
+                opacityPaint.Color = new SKColor(0, 0, 0, (byte)(255d * Easings.CubicEaseInOut(Opacity)));
+                canvas.SaveLayer(opacityPaint);
+            }
 
             foreach (ProfileElement profileElement in Children)
                 profileElement.Render(canvas, basePosition, editorFocus);
+
+            if (applyOpacityLayer)
+            {
+                canvas.Restore();
+                opacityPaint?.Dispose();
+            }
 
             foreach (ProfileScript profileScript in Scripts)
                 profileScript.OnProfileRendered(canvas, canvas.LocalClipBounds);
