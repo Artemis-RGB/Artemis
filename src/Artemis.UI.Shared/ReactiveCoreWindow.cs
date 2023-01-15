@@ -19,6 +19,9 @@ namespace Artemis.UI.Shared;
 /// <typeparam name="TViewModel">ViewModel type.</typeparam>
 public class ReactiveCoreWindow<TViewModel> : CoreWindow, IViewFor<TViewModel> where TViewModel : class
 {
+    /// <summary>
+    ///     The ViewModel.
+    /// </summary>
     public static readonly StyledProperty<TViewModel?> ViewModelProperty = AvaloniaProperty
         .Register<ReactiveCoreWindow<TViewModel>, TViewModel?>(nameof(ViewModel));
 

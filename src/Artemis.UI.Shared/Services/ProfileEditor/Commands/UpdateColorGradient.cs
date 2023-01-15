@@ -5,7 +5,7 @@ using Artemis.Core;
 namespace Artemis.UI.Shared.Services.ProfileEditor.Commands;
 
 /// <summary>
-///     Represents a profile editor command that can be used to update a layer property of type <typeparamref name="T" />.
+///     Represents a profile editor command that can be used to update a color gradient.
 /// </summary>
 public class UpdateColorGradient : IProfileEditorCommand
 {

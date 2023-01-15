@@ -18,7 +18,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared;
 /// </summary>
 public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposable
 {
-    private const int MaxDepth = 4;
+    private const int MAX_DEPTH = 4;
     private ObservableCollection<DataModelVisualizationViewModel> _children;
     private DataModel? _dataModel;
     private bool _isMatchingFilteredTypes;
@@ -47,6 +47,9 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
             PropertyDescription = DataModelPath?.GetPropertyDescription() ?? DataModel?.DataModelDescription;
     }
 
+    /// <summary>
+    /// Copies the path of the data model to the clipboard.
+    /// </summary>
     public ReactiveCommand<Unit, Unit> CopyPath { get; }
 
     /// <summary>
@@ -337,7 +340,7 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
     {
         if (DataModel == null)
             throw new ArtemisSharedUIException("Cannot create a data model visualization child VM for a parent without a data model");
-        if (depth > MaxDepth)
+        if (depth > MAX_DEPTH)
             return null;
 
         DataModelPath dataModelPath = new(DataModel, path);

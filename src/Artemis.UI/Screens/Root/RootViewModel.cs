@@ -92,7 +92,7 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
 
     private void CurrentMainWindowOnClosing(object? sender, EventArgs e)
     {
-        WindowSizeSetting.Save();
+        WindowSizeSetting?.Save();
         _lifeTime.MainWindow = null;
         SidebarViewModel = null;
         Router.NavigateAndReset.Execute(new EmptyViewModel(this, "blank")).Subscribe();

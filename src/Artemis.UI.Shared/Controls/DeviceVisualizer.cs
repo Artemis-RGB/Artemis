@@ -317,7 +317,7 @@ public class DeviceVisualizer : Control
 
                 Dispatcher.UIThread.Post(InvalidateMeasure);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // ignored
             }
