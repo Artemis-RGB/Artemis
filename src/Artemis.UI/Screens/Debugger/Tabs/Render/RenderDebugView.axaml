@@ -30,7 +30,9 @@
                         ClipToBounds="True"
                         Focusable="True"
                         VerticalAlignment="Stretch"
-                        HorizontalAlignment="Stretch">
+                        HorizontalAlignment="Stretch"
+                        EnablePan="False"
+                        EnableZoom="False">
                 <Image Name="Visualization" Source="{Binding CurrentFrame}">
                     <Image.Transitions>
                         <Transitions>
