@@ -50,8 +50,13 @@ public class LogsDebugViewModel : ActivatableViewModelBase
     private void RemoveOldestLine()
     {
         var firstNewLine = Document.Text.IndexOf('\n');
-        if (firstNewLine == 0)
+        if (firstNewLine == -1)
+        {
+            //this should never happen.
+            //just in case let's return
+            //instead of throwing
             return;
+        }      
         
         Document.Remove(0, firstNewLine + 1);
     }
