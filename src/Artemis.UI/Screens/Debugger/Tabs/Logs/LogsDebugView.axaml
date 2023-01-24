@@ -8,7 +8,8 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Debugger.Logs.LogsDebugView"
              x:DataType="logs:LogsDebugViewModel">
-  <aedit:TextEditor Document="{ CompiledBinding Document }"
+  <aedit:TextEditor Name="log"
+                    Document="{ CompiledBinding Document }"
                     IsReadOnly="True"
                     FontFamily="Consolas"
                     FontSize="12"

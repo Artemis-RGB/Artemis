@@ -2,9 +2,11 @@
 using Artemis.UI.Shared;
 using Avalonia.Threading;
 using AvaloniaEdit.Document;
+using ReactiveUI;
 using Serilog.Events;
 using Serilog.Formatting.Display;
 using System.IO;
+using System.Reactive.Disposables;
 
 namespace Artemis.UI.Screens.Debugger.Logs;
 
@@ -28,6 +30,14 @@ public class LogsDebugViewModel : ActivatableViewModelBase
             AddLogEvent(logEvent);
         
         LogStore.EventAdded += OnLogEventAdded;
+
+        this.WhenActivated(disp =>
+        {
+            Disposable.Create(() =>
+            {
+                LogStore.EventAdded -= OnLogEventAdded;
+            }).DisposeWith(disp);
+        });
     }
 
     private void OnLogEventAdded(object? sender, LogEventEventArgs e)
@@ -42,7 +52,8 @@ public class LogsDebugViewModel : ActivatableViewModelBase
     {
         using StringWriter writer = new();
         _formatter.Format(logEvent, writer);
-        Document.Insert(Document.TextLength, writer.ToString());
+        var line = writer.ToString();
+        Document.Insert(Document.TextLength, '\n' + line.TrimEnd('\r', '\n'));
         while (Document.LineCount > MAX_ENTRIES)
             RemoveOldestLine();
     }
