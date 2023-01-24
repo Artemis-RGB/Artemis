@@ -1,35 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Services;
 using Artemis.Storage.Repositories.Interfaces;
-using Ninject.Activation;
+using DryIoc;
 
-namespace Artemis.Core.Ninject;
+namespace Artemis.Core.DryIoc.Factories;
 
 // TODO: Investigate if this can't just be set as a constant on the plugin child kernel
-internal class PluginSettingsProvider : Provider<PluginSettings>
+internal class PluginSettingsFactory : IPluginSettingsFactory
 {
     private static readonly List<PluginSettings> PluginSettings = new();
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IPluginRepository _pluginRepository;
 
-    public PluginSettingsProvider(IPluginRepository pluginRepository, IPluginManagementService pluginManagementService)
+    public PluginSettingsFactory(IPluginRepository pluginRepository, IPluginManagementService pluginManagementService)
     {
         _pluginRepository = pluginRepository;
         _pluginManagementService = pluginManagementService;
     }
 
-    protected override PluginSettings CreateInstance(IContext context)
+    public PluginSettings CreatePluginSettings(Type type)
     {
-        IRequest parentRequest = context.Request.ParentRequest;
-        if (parentRequest == null)
-            throw new ArtemisCoreException("PluginSettings couldn't be injected, failed to get the injection parent request");
-
-        // First try by PluginInfo parameter
-        Plugin? plugin = parentRequest.Parameters.FirstOrDefault(p => p.Name == "Plugin")?.GetValue(context, null) as Plugin;
-        // Fall back to assembly based detection
-        if (plugin == null)
-            plugin = _pluginManagementService.GetPluginByAssembly(parentRequest.Service.Assembly);
+        Plugin? plugin = _pluginManagementService.GetPluginByAssembly(type.Assembly);
 
         if (plugin == null)
             throw new ArtemisCoreException("PluginSettings can only be injected with the PluginInfo parameter provided " +
@@ -46,4 +39,9 @@ internal class PluginSettingsProvider : Provider<PluginSettings>
             return settings;
         }
     }
+}
+
+internal interface IPluginSettingsFactory
+{
+    PluginSettings CreatePluginSettings(Type type);
 }

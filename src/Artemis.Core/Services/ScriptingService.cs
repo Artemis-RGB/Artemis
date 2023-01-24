@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
 using Artemis.Core.ScriptingProviders;
-using Ninject;
-using Ninject.Parameters;
+using DryIoc;
 
 namespace Artemis.Core.Services;
 
@@ -51,10 +49,7 @@ internal class ScriptingService : IScriptingService
             if (provider == null)
                 throw new ArtemisCoreException($"Can't create script instance as there is no matching scripting provider found for the script ({scriptConfiguration.ScriptingProviderId}).");
 
-            script = (GlobalScript) provider.Plugin.Kernel!.Get(
-                provider.GlobalScriptType,
-                CreateScriptConstructorArgument(provider.GlobalScriptType, scriptConfiguration)
-            );
+            script = (GlobalScript) provider.Plugin.Container!.Resolve(provider.GlobalScriptType, args: new object[] {scriptConfiguration});
 
             script.ScriptingProvider = provider;
             script.ScriptingService = this;
@@ -82,11 +77,7 @@ internal class ScriptingService : IScriptingService
             if (provider == null)
                 throw new ArtemisCoreException($"Can't create script instance as there is no matching scripting provider found for the script ({scriptConfiguration.ScriptingProviderId}).");
 
-            script = (ProfileScript) provider.Plugin.Kernel!.Get(
-                provider.ProfileScriptType,
-                CreateScriptConstructorArgument(provider.ProfileScriptType, profile),
-                CreateScriptConstructorArgument(provider.ProfileScriptType, scriptConfiguration)
-            );
+            script = (ProfileScript) provider.Plugin.Container!.Resolve(provider.ProfileScriptType, args: new object[] {profile, scriptConfiguration});
 
             script.ScriptingProvider = provider;
             scriptConfiguration.Script = script;
@@ -111,21 +102,6 @@ internal class ScriptingService : IScriptingService
 
             throw new ArtemisCoreException("Failed to initialize profile script", e);
         }
-    }
-
-    private ConstructorArgument CreateScriptConstructorArgument(Type scriptType, object value)
-    {
-        // Limit to one constructor, there's no need to have more and it complicates things anyway
-        ConstructorInfo[] constructors = scriptType.GetConstructors();
-        if (constructors.Length != 1)
-            throw new ArtemisCoreException("Scripts must have exactly one constructor");
-
-        // Find the ScriptConfiguration parameter, it is required by the base constructor so its there for sure
-        ParameterInfo? configurationParameter = constructors.First().GetParameters().FirstOrDefault(p => value.GetType().IsAssignableFrom(p.ParameterType));
-
-        if (configurationParameter?.Name == null)
-            throw new ArtemisCoreException($"Couldn't find a valid constructor argument on {scriptType.Name} with type {value.GetType().Name}");
-        return new ConstructorArgument(configurationParameter.Name, value);
     }
 
     private void InitializeProfileScripts(Profile profile)

@@ -44,10 +44,10 @@ internal class DataModelUIService : IDataModelUIService
         };
 
         // If this ever happens something is likely wrong with the plugin unload detection
-        if (registration.Plugin.Kernel == null)
+        if (registration.Plugin.Container == null)
             throw new ArtemisSharedUIException("Cannot InstantiateDataModelInputViewModel for a registration by an uninitialized plugin");
 
-        DataModelInputViewModel viewModel = (DataModelInputViewModel) registration.Plugin.Kernel.Get(registration.ViewModelType, parameters);
+        DataModelInputViewModel viewModel = (DataModelInputViewModel) registration.Plugin.Container.Get(registration.ViewModelType, parameters);
         viewModel.CompatibleConversionTypes = registration.CompatibleConversionTypes;
         return viewModel;
     }
@@ -207,10 +207,10 @@ internal class DataModelUIService : IDataModelUIService
             if (match != null)
             {
                 // If this ever happens something is likely wrong with the plugin unload detection
-                if (match.Plugin.Kernel == null)
+                if (match.Plugin.Container == null)
                     throw new ArtemisSharedUIException("Cannot GetDataModelDisplayViewModel for a registration by an uninitialized plugin");
 
-                result = (DataModelDisplayViewModel) match.Plugin.Kernel.Get(match.ViewModelType);
+                result = (DataModelDisplayViewModel) match.Plugin.Container.Get(match.ViewModelType);
             }
             else if (!fallBackToDefault)
             {

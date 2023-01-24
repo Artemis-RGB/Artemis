@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Ninject;
 using RGB.NET.Core;
-using Serilog;
 
 namespace Artemis.Core.DeviceProviders;
 
@@ -26,14 +24,7 @@ public abstract class DeviceProvider : PluginFeature
     ///     The RGB.NET device provider backing this Artemis device provider
     /// </summary>
     public IRGBDeviceProvider RgbDeviceProvider { get; }
-
-    /// <summary>
-    ///     TODO: Make internal while still injecting.
-    ///     A logger used by the device provider internally, ignore this
-    /// </summary>
-    [Inject]
-    public ILogger? Logger { get; set; }
-
+    
     /// <summary>
     ///     A boolean indicating whether this device provider detects the physical layout of connected keyboards.
     ///     <para>

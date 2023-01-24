@@ -92,7 +92,7 @@ public class TreeGroupViewModel : ActivatableViewModelBase
             ParameterInfo brushParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerBrush).IsAssignableFrom(p.ParameterType));
             ConstructorArgument argument = new(brushParameter.Name!, LayerBrush);
             BrushConfigurationViewModel viewModel =
-                (BrushConfigurationViewModel) LayerBrush.Descriptor.Provider.Plugin.Kernel!.Get(configurationViewModel.Type, argument);
+                (BrushConfigurationViewModel) LayerBrush.Descriptor.Provider.Plugin.Container!.Get(configurationViewModel.Type, argument);
 
             _brushConfigurationWindowViewModel = new BrushConfigurationWindowViewModel(viewModel, configurationViewModel);
             await _windowService.ShowDialogAsync(_brushConfigurationWindowViewModel);
@@ -122,7 +122,7 @@ public class TreeGroupViewModel : ActivatableViewModelBase
             ParameterInfo effectParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerEffect).IsAssignableFrom(p.ParameterType));
             ConstructorArgument argument = new(effectParameter.Name!, LayerEffect);
             EffectConfigurationViewModel viewModel =
-                (EffectConfigurationViewModel) LayerEffect.Descriptor.Provider.Plugin.Kernel!.Get(configurationViewModel.Type, argument);
+                (EffectConfigurationViewModel) LayerEffect.Descriptor.Provider.Plugin.Container!.Get(configurationViewModel.Type, argument);
 
             _effectConfigurationWindowViewModel = new EffectConfigurationWindowViewModel(viewModel, configurationViewModel);
             await _windowService.ShowDialogAsync(_effectConfigurationWindowViewModel);

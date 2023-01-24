@@ -10,7 +10,7 @@ using Artemis.UI.Windows.Utilities;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
-using Ninject;
+using DryIoc;
 
 namespace Artemis.UI.Windows;
 
@@ -18,7 +18,7 @@ public class ApplicationStateManager
 {
     private const int SM_SHUTTINGDOWN = 0x2000;
     
-    public ApplicationStateManager(IKernel kernel, string[] startupArguments)
+    public ApplicationStateManager(IContainer container, string[] startupArguments)
     {
         StartupArguments = startupArguments;
         IsElevated = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
@@ -33,12 +33,12 @@ public class ApplicationStateManager
                 RunForcedShutdownIfEnabled();
 
                 // Dispose plugins before disposing the kernel because plugins might access services during dispose
-                kernel.Get<IPluginManagementService>().Dispose();
-                kernel.Dispose();
+                container.Resolve<IPluginManagementService>().Dispose();
+                container.Dispose();
             };
 
         // Inform the Core about elevation status
-        kernel.Get<ICoreService>().IsElevated = IsElevated;
+        container.Resolve<ICoreService>().IsElevated = IsElevated;
     }
 
     public string[] StartupArguments { get; }

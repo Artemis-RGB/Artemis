@@ -1,8 +1,7 @@
 using System.Linq;
 using System.Reflection;
 using Artemis.Core;
-using Ninject;
-using Ninject.Parameters;
+using DryIoc;
 
 /// <summary>
 ///     Represents a kind of node inside a <see cref="NodeScript" /> containing storage value of type
@@ -22,9 +21,6 @@ public abstract class Node<TStorage, TViewModel> : Node<TStorage>, ICustomViewMo
     {
     }
 
-    [Inject]
-    internal IKernel Kernel { get; set; } = null!;
-
     /// <summary>
     ///     Called when a view model is required
     /// </summary>
@@ -41,7 +37,7 @@ public abstract class Node<TStorage, TViewModel> : Node<TStorage>, ICustomViewMo
 
         if (configurationParameter?.Name == null)
             throw new ArtemisCoreException($"Couldn't find a valid constructor argument on {typeof(TViewModel).Name} with type {GetType().Name}");
-        return Kernel.Get<TViewModel>(new ConstructorArgument(configurationParameter.Name, this), new ConstructorArgument("script", nodeScript));
+        return Container.Resolve<TViewModel>(args: new object[] {this, nodeScript});
     }
 
     /// <summary>

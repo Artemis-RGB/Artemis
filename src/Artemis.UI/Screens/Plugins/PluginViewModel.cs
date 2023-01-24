@@ -209,7 +209,7 @@ public class PluginViewModel : ActivatableViewModelBase
 
         try
         {
-            PluginConfigurationViewModel? viewModel = Plugin.Kernel!.Get(Plugin.ConfigurationDialog.Type) as PluginConfigurationViewModel;
+            PluginConfigurationViewModel? viewModel = Plugin.Container!.Get(Plugin.ConfigurationDialog.Type) as PluginConfigurationViewModel;
             if (viewModel == null)
                 throw new ArtemisUIException($"The type of a plugin configuration dialog must inherit {nameof(PluginConfigurationViewModel)}");
 

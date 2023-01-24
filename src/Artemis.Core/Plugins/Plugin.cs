@@ -7,8 +7,8 @@ using System.Linq;
 using System.Reflection;
 using Artemis.Core.DeviceProviders;
 using Artemis.Storage.Entities.Plugins;
+using DryIoc;
 using McMaster.NETCore.Plugins;
-using Ninject;
 
 namespace Artemis.Core;
 
@@ -90,7 +90,7 @@ public class Plugin : CorePropertyChanged, IDisposable
     /// <summary>
     ///     The Ninject kernel of the plugin
     /// </summary>
-    public IKernel? Kernel { get; internal set; }
+    public IContainer? Container { get; internal set; }
 
     /// <summary>
     ///     The PluginLoader backing this plugin
@@ -166,15 +166,14 @@ public class Plugin : CorePropertyChanged, IDisposable
 
     /// <summary>
     ///     Gets an instance of the specified service using the plugins dependency injection container.
-    ///     <para>Note: To use parameters reference Ninject and use <see cref="Kernel" /> directly.</para>
     /// </summary>
     /// <typeparam name="T">The service to resolve.</typeparam>
     /// <returns>An instance of the service.</returns>
-    public T Get<T>()
+    public T Resolve<T>()
     {
-        if (Kernel == null)
-            throw new ArtemisPluginException("Cannot use Get<T> before the plugin finished loading");
-        return Kernel.Get<T>();
+        if (Container == null)
+            throw new ArtemisPluginException("Cannot use Resolve<T> before the plugin finished loading");
+        return Container.Resolve<T>();
     }
 
     /// <inheritdoc />
@@ -218,7 +217,7 @@ public class Plugin : CorePropertyChanged, IDisposable
                 feature.Instance?.Dispose();
             SetEnabled(false);
 
-            Kernel?.Dispose();
+            Container?.Dispose();
             PluginLoader?.Dispose();
 
             GC.Collect();

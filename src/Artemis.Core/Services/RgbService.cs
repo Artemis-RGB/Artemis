@@ -9,7 +9,7 @@ using Artemis.Core.Services.Models;
 using Artemis.Core.SkiaSharp;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
-using Ninject;
+using DryIoc;
 using RGB.NET.Core;
 using Serilog;
 
@@ -23,7 +23,7 @@ internal class RgbService : IRgbService
     private readonly IDeviceRepository _deviceRepository;
     private readonly List<ArtemisDevice> _devices;
     private readonly List<ArtemisDevice> _enabledDevices;
-    private readonly IKernel _kernel;
+    private readonly IContainer _container;
     private readonly ILogger _logger;
     private readonly IPluginManagementService _pluginManagementService;
     private readonly PluginSetting<string> _preferredGraphicsContext;
@@ -35,10 +35,10 @@ internal class RgbService : IRgbService
     private ListLedGroup? _surfaceLedGroup;
     private SKTexture? _texture;
 
-    public RgbService(ILogger logger, IKernel kernel, ISettingsService settingsService, IPluginManagementService pluginManagementService, IDeviceRepository deviceRepository)
+    public RgbService(ILogger logger, IContainer container, ISettingsService settingsService, IPluginManagementService pluginManagementService, IDeviceRepository deviceRepository)
     {
         _logger = logger;
-        _kernel = kernel;
+        _container = container;
         _settingsService = settingsService;
         _pluginManagementService = pluginManagementService;
         _deviceRepository = deviceRepository;
@@ -372,7 +372,8 @@ internal class RgbService : IRgbService
             return;
         }
 
-        List<IGraphicsContextProvider> providers = _kernel.Get<List<IGraphicsContextProvider>>();
+
+        List<IGraphicsContextProvider> providers = _container.ResolveMany<IGraphicsContextProvider>().ToList();
         if (!providers.Any())
         {
             _logger.Warning("No graphics context provider found, defaulting to software rendering");

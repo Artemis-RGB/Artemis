@@ -113,7 +113,7 @@ internal class PropertyInputService : IPropertyInputService
         ConstructorArgument parameter = new("layerProperty", layerProperty);
         // ReSharper disable once InconsistentlySynchronizedField
         // When you've just spent the last 2 hours trying to figure out a deadlock and reach this line, I'm so, so sorry. I thought this would be fine.
-        IKernel kernel = registration?.Plugin.Kernel ?? _kernel;
+        IKernel kernel = registration?.Plugin.Container ?? _kernel;
         return (PropertyInputViewModel<T>) kernel.Get(viewModelType, parameter);
     }
 }

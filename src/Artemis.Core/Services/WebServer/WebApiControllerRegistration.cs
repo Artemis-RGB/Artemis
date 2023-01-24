@@ -1,6 +1,6 @@
 ﻿using System;
+using DryIoc;
 using EmbedIO.WebApi;
-using Ninject;
 
 namespace Artemis.Core.Services;
 
@@ -8,7 +8,7 @@ internal class WebApiControllerRegistration<T> : WebApiControllerRegistration wh
 {
     public WebApiControllerRegistration(PluginFeature feature) : base(feature, typeof(T))
     {
-        Factory = () => feature.Plugin.Kernel!.Get<T>();
+        Factory = () => feature.Plugin.Container!.Resolve<T>();
     }
 
     public Func<T> Factory { get; set; }

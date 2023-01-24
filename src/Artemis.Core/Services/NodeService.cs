@@ -5,8 +5,8 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using Artemis.Storage.Entities.Profile.Nodes;
+using DryIoc;
 using Newtonsoft.Json;
-using Ninject;
 using SkiaSharp;
 
 namespace Artemis.Core.Services;
@@ -19,13 +19,13 @@ internal class NodeService : INodeService
 
     #endregion
 
-    private readonly IKernel _kernel;
+    private readonly IContainer _container;
 
     #region Constructors
 
-    public NodeService(IKernel kernel)
+    public NodeService(IContainer container)
     {
-        _kernel = kernel;
+        _container = container;
     }
 
     #endregion
@@ -106,8 +106,10 @@ internal class NodeService : INodeService
 
     private INode CreateNode(INodeScript script, NodeEntity? entity, Type nodeType)
     {
-        INode node = _kernel.Get(nodeType) as INode ?? throw new InvalidOperationException($"Node {nodeType} is not an INode");
-
+        INode node = _container.Resolve(nodeType) as INode ?? throw new InvalidOperationException($"Node {nodeType} is not an INode");
+        if (node is Node concreteNode)
+            concreteNode.Container = _container;
+        
         if (entity != null)
         {
             node.X = entity.X;

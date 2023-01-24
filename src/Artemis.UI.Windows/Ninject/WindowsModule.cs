@@ -1,22 +1,19 @@
-﻿using Artemis.Core.Providers;
+﻿using Artemis.Core.DryIoc;
+using Artemis.Core.Providers;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Windows.Providers;
-using Ninject.Modules;
+using DryIoc;
 
 namespace Artemis.UI.Windows.Ninject;
 
-public class WindowsModule : NinjectModule
+public class WindowsModule : IModule
 {
-    #region Overrides of NinjectModule
-
     /// <inheritdoc />
-    public override void Load()
+    public void Load(IRegistrator builder)
     {
-        Kernel!.Bind<ICursorProvider>().To<CursorProvider>().InSingletonScope();
-        Kernel!.Bind<IGraphicsContextProvider>().To<GraphicsContextProvider>().InSingletonScope();
-        Kernel!.Bind<IUpdateProvider>().To<UpdateProvider>().InSingletonScope();
-        Kernel!.Bind<IAutoRunProvider>().To<AutoRunProvider>();
+        builder.Register<ICursorProvider, CursorProvider>(Reuse.Singleton);
+        builder.Register<IGraphicsContextProvider, GraphicsContextProvider>(Reuse.Singleton);
+        builder.Register<IUpdateProvider, UpdateProvider>(Reuse.Singleton);
+        builder.Register<IAutoRunProvider, AutoRunProvider>();
     }
-
-    #endregion
 }

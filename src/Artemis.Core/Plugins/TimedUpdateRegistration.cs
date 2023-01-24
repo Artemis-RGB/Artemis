@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
-using Ninject;
+using DryIoc;
 using Serilog;
 
 namespace Artemis.Core;
@@ -11,7 +11,7 @@ namespace Artemis.Core;
 /// <summary>
 ///     Represents a registration for a timed plugin update
 /// </summary>
-public class TimedUpdateRegistration : IDisposable
+public sealed class TimedUpdateRegistration : IDisposable
 {
     private readonly object _lock = new();
     private readonly ILogger _logger;
@@ -21,9 +21,9 @@ public class TimedUpdateRegistration : IDisposable
 
     internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Action<double> action, string? name)
     {
-        if (CoreService.Kernel == null)
+        if (CoreService.Container == null)
             throw new ArtemisCoreException("Cannot create a TimedUpdateRegistration before initializing the Core");
-        _logger = CoreService.Kernel.Get<ILogger>();
+        _logger = CoreService.Container.Resolve<ILogger>();
 
         Feature = feature;
         Interval = interval;
@@ -38,9 +38,9 @@ public class TimedUpdateRegistration : IDisposable
 
     internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Func<double, Task> asyncAction, string? name)
     {
-        if (CoreService.Kernel == null)
+        if (CoreService.Container == null)
             throw new ArtemisCoreException("Cannot create a TimedUpdateRegistration before initializing the Core");
-        _logger = CoreService.Kernel.Get<ILogger>();
+        _logger = CoreService.Container.Resolve<ILogger>();
 
         Feature = feature;
         Interval = interval;
@@ -125,31 +125,11 @@ public class TimedUpdateRegistration : IDisposable
     }
 
     /// <inheritdoc />
-    public sealed override string ToString()
+    public override string ToString()
     {
         if (Interval.TotalSeconds >= 1)
             return $"{Name} ({Interval.TotalSeconds} sec)";
         return $"{Name} ({Interval.TotalMilliseconds} ms)";
-    }
-
-    /// <summary>
-    ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
-    /// </summary>
-    /// <param name="disposing">
-    ///     <see langword="true" /> to release both managed and unmanaged resources;
-    ///     <see langword="false" /> to release only unmanaged resources.
-    /// </param>
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            Stop();
-
-            Feature.Enabled -= FeatureOnEnabled;
-            Feature.Disabled -= FeatureOnDisabled;
-
-            _disposed = true;
-        }
     }
 
     private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
@@ -204,9 +184,12 @@ public class TimedUpdateRegistration : IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-        Dispose(true);
-        Feature.Profiler.ClearMeasurements(ToString());
+        Stop();
 
-        GC.SuppressFinalize(this);
+        Feature.Enabled -= FeatureOnEnabled;
+        Feature.Disabled -= FeatureOnDisabled;
+
+        _disposed = true;
+        Feature.Profiler.ClearMeasurements(ToString());
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using Artemis.Core.LayerEffects.Placeholder;
 using Artemis.Storage.Entities.Profile;
-using Ninject;
+using DryIoc;
 
 namespace Artemis.Core.LayerEffects;
 
@@ -80,7 +80,7 @@ public class LayerEffectDescriptor
         if (LayerEffectType == null)
             throw new ArtemisCoreException("Cannot create an instance of a layer effect because this descriptor is not a placeholder but is still missing its LayerEffectType");
 
-        BaseLayerEffect effect = (BaseLayerEffect) Provider.Plugin.Kernel!.Get(LayerEffectType);
+        BaseLayerEffect effect = (BaseLayerEffect) Provider.Plugin.Container!.Resolve(LayerEffectType);
         effect.ProfileElement = renderElement;
         effect.Descriptor = this;
         if (entity != null)
