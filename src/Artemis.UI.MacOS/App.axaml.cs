@@ -2,19 +2,19 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using Ninject;
+using DryIoc;
 using ReactiveUI;
 
 namespace Artemis.UI.MacOS;
 
 public class App : Application
 {
-    private StandardKernel? _kernel;
+    private IContainer? _container;
 
     public override void Initialize()
     {
-        _kernel = ArtemisBootstrapper.Bootstrap(this);
-        Program.CreateLogger(_kernel);
+        _container = ArtemisBootstrapper.Bootstrap(this);
+        Program.CreateLogger(_container);
         RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
         AvaloniaXamlLoader.Load(this);
     }

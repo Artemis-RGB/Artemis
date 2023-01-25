@@ -5,7 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using Ninject;
+using DryIoc;
 using ReactiveUI;
 
 namespace Artemis.UI.Linux;
@@ -13,12 +13,12 @@ namespace Artemis.UI.Linux;
 public class App : Application
 {
     private ApplicationStateManager? _applicationStateManager;
-    private StandardKernel? _kernel;
+    private IContainer? _container;
 
     public override void Initialize()
     {
-        _kernel = ArtemisBootstrapper.Bootstrap(this);
-        Program.CreateLogger(_kernel);
+        _container = ArtemisBootstrapper.Bootstrap(this);
+        Program.CreateLogger(_container);
         RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
         AvaloniaXamlLoader.Load(this);
 
@@ -32,15 +32,15 @@ public class App : Application
 
         ArtemisBootstrapper.Initialize();
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            _applicationStateManager = new ApplicationStateManager(_kernel!, desktop.Args);
+            _applicationStateManager = new ApplicationStateManager(_container!, desktop.Args);
     }
 
     private void RegisterProviders()
     {
-        IInputService inputService = _kernel.Get<IInputService>();
+        IInputService inputService = _container.Resolve<IInputService>();
         try
         {
-            inputService.AddInputProvider(_kernel.Get<LinuxInputProvider>());
+            inputService.AddInputProvider(_container.Resolve<LinuxInputProvider>());
         }
         catch
         {

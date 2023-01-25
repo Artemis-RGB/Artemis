@@ -18,10 +18,10 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Threading;
+using DryIoc;
 using DynamicData;
 using DynamicData.Binding;
 using Material.Icons;
-using Ninject;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
@@ -29,7 +29,7 @@ namespace Artemis.UI.Screens.Sidebar;
 public class SidebarViewModel : ActivatableViewModelBase
 {
     private readonly IScreen _hostScreen;
-    private readonly IKernel _kernel;
+    private readonly IContainer _container;
     private readonly IProfileEditorService _profileEditorService;
     private readonly IProfileEditorVmFactory _profileEditorVmFactory;
     private readonly IWindowService _windowService;
@@ -37,7 +37,7 @@ public class SidebarViewModel : ActivatableViewModelBase
     private ReadOnlyObservableCollection<SidebarCategoryViewModel> _sidebarCategories = new(new ObservableCollection<SidebarCategoryViewModel>());
 
     public SidebarViewModel(IScreen hostScreen,
-        IKernel kernel,
+        IContainer container,
         IProfileService profileService,
         IWindowService windowService,
         IProfileEditorService profileEditorService,
@@ -45,7 +45,7 @@ public class SidebarViewModel : ActivatableViewModelBase
         IProfileEditorVmFactory profileEditorVmFactory)
     {
         _hostScreen = hostScreen;
-        _kernel = kernel;
+        _container = container;
         _windowService = windowService;
         _profileEditorService = profileEditorService;
         _profileEditorVmFactory = profileEditorVmFactory;
@@ -137,7 +137,7 @@ public class SidebarViewModel : ActivatableViewModelBase
 
     private void NavigateToScreen(SidebarScreenViewModel sidebarScreenViewModel)
     {
-        _hostScreen.Router.Navigate.Execute(sidebarScreenViewModel.CreateInstance(_kernel, _hostScreen));
+        _hostScreen.Router.Navigate.Execute(sidebarScreenViewModel.CreateInstance(_container, _hostScreen));
         _profileEditorService.ChangeCurrentProfileConfiguration(null);
     }
 }

@@ -16,8 +16,8 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Shared.Services;
 using Avalonia.Threading;
+using DryIoc;
 using DynamicData;
-using Ninject;
 using ReactiveUI;
 using Serilog.Events;
 
@@ -33,7 +33,7 @@ public class GeneralTabViewModel : ActivatableViewModelBase
     private readonly IWindowService _windowService;
     private bool _startupWizardOpen;
 
-    public GeneralTabViewModel(IKernel kernel,
+    public GeneralTabViewModel(IContainer container,
         ISettingsService settingsService,
         IPluginManagementService pluginManagementService,
         IDebugService debugService,
@@ -45,10 +45,10 @@ public class GeneralTabViewModel : ActivatableViewModelBase
         _debugService = debugService;
         _windowService = windowService;
         _updateService = updateService;
-        _autoRunProvider = kernel.TryGet<IAutoRunProvider>();
+        _autoRunProvider = container.Resolve<IAutoRunProvider>();
 
         List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
-        List<IGraphicsContextProvider> graphicsContextProviders = kernel.Get<List<IGraphicsContextProvider>>();
+        List<IGraphicsContextProvider> graphicsContextProviders = container.Resolve<List<IGraphicsContextProvider>>();
         LayerBrushDescriptors = new ObservableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
         GraphicsContexts = new ObservableCollection<string> {"Software"};
         GraphicsContexts.AddRange(graphicsContextProviders.Select(p => p.GraphicsContextName));
