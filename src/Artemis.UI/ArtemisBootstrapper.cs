@@ -5,9 +5,12 @@ using System.Reactive;
 using Artemis.Core;
 using Artemis.Core.DryIoc;
 using Artemis.UI.Exceptions;
+using Artemis.UI.Ninject;
 using Artemis.UI.Screens.Root;
 using Artemis.UI.Shared.DataModelPicker;
+using Artemis.UI.Shared.Ninject;
 using Artemis.UI.Shared.Services;
+using Artemis.VisualScripting.DryIoc;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -29,12 +32,12 @@ public static class ArtemisBootstrapper
         Utilities.PrepareFirstLaunch();
 
         _application = application;
-        _container = new Container();
+        _container = new Container(rules => rules.WithAutoConcreteTypeResolution());
 
         new CoreModule().Load(_container);
-        // _kernel.Load<UIModule>();
-        // _kernel.Load<SharedUIModule>();
-        // _kernel.Load<NoStringNinjectModule>();
+        new UIModule().Load(_container);
+        new SharedUIModule().Load(_container);
+        new NoStringDryIocModule().Load(_container);
         foreach (IModule module in modules)
             module.Load(_container);
 

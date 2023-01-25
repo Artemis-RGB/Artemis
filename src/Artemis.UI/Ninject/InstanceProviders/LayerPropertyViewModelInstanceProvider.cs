@@ -1,31 +1,38 @@
 ﻿using System;
 using System.Reflection;
 using Artemis.Core;
+using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.ProfileEditor.Properties;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
-using Ninject.Extensions.Factory;
 
 namespace Artemis.UI.Ninject.InstanceProviders;
 
-public class LayerPropertyViewModelInstanceProvider : StandardInstanceProvider
+public class PropertyVmFactory : IPropertyVmFactory
 {
-    protected override Type GetType(MethodInfo methodInfo, object[] arguments)
+    public ITimelinePropertyViewModel TimelinePropertyViewModel(ILayerProperty layerProperty, PropertyViewModel propertyViewModel)
     {
-        if (methodInfo.ReturnType != typeof(ITreePropertyViewModel) && methodInfo.ReturnType != typeof(ITimelinePropertyViewModel))
-            return base.GetType(methodInfo, arguments);
-
         // Find LayerProperty type
-        Type? layerPropertyType = arguments[0].GetType();
+        Type? layerPropertyType = layerProperty.GetType();
         while (layerPropertyType != null && (!layerPropertyType.IsGenericType || layerPropertyType.GetGenericTypeDefinition() != typeof(LayerProperty<>)))
             layerPropertyType = layerPropertyType.BaseType;
         if (layerPropertyType == null)
-            return base.GetType(methodInfo, arguments);
+            return null;
 
-        if (methodInfo.ReturnType == typeof(ITreePropertyViewModel))
-            return typeof(TreePropertyViewModel<>).MakeGenericType(layerPropertyType.GetGenericArguments());
-        if (methodInfo.ReturnType == typeof(ITimelinePropertyViewModel))
-            return typeof(TimelinePropertyViewModel<>).MakeGenericType(layerPropertyType.GetGenericArguments());
+        var genericType = typeof(TimelinePropertyViewModel<>).MakeGenericType(layerPropertyType.GetGenericArguments());
+        return (ITimelinePropertyViewModel)Activator.CreateInstance(genericType);
+    }
 
-        return base.GetType(methodInfo, arguments);
+    public ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, PropertyViewModel propertyViewModel)
+    {
+        // Find LayerProperty type
+        Type? layerPropertyType = layerProperty.GetType();
+        while (layerPropertyType != null && (!layerPropertyType.IsGenericType || layerPropertyType.GetGenericTypeDefinition() != typeof(LayerProperty<>)))
+            layerPropertyType = layerPropertyType.BaseType;
+        if (layerPropertyType == null)
+            return null;
+
+        var genericType = typeof(TreePropertyViewModel<>).MakeGenericType(layerPropertyType.GetGenericArguments());
+        return (ITreePropertyViewModel)Activator.CreateInstance(genericType);
     }
 }

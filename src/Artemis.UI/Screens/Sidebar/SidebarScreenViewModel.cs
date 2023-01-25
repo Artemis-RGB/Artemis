@@ -1,8 +1,7 @@
 ﻿using System;
 using Artemis.UI.Shared;
+using DryIoc;
 using Material.Icons;
-using Ninject;
-using Ninject.Parameters;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
@@ -15,9 +14,9 @@ public class SidebarScreenViewModel<T> : SidebarScreenViewModel where T : MainSc
 
     public override Type ScreenType => typeof(T);
 
-    public override MainScreenViewModel CreateInstance(IKernel kernel, IScreen screen)
+    public override MainScreenViewModel CreateInstance(IContainer kernel, IScreen screen)
     {
-        return kernel.Get<T>(new ConstructorArgument("hostScreen", screen));
+        return kernel.Resolve<T>(new object[] { screen });
     }
 }
 
@@ -32,5 +31,5 @@ public abstract class SidebarScreenViewModel : ViewModelBase
     public MaterialIconKind Icon { get; }
 
     public abstract Type ScreenType { get; }
-    public abstract MainScreenViewModel CreateInstance(IKernel kernel, IScreen screen);
+    public abstract MainScreenViewModel CreateInstance(IContainer kernel, IScreen screen);
 }

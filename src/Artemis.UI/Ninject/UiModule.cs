@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Artemis.Core.DryIoc;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Ninject.InstanceProviders;
 using Artemis.UI.Screens;
@@ -9,67 +9,28 @@ using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Platform;
 using Avalonia.Shared.PlatformSupport;
-using Ninject.Extensions.Conventions;
-using Ninject.Extensions.Factory;
-using Ninject.Modules;
-using Ninject.Planning.Bindings.Resolvers;
+using DryIoc;
 
 namespace Artemis.UI.Ninject;
 
-public class UIModule : NinjectModule
+public class UIModule : IModule
 {
-    public override void Load()
+    public void Load(IRegistrator builder)
     {
-        if (Kernel == null)
-            throw new ArgumentNullException("Kernel shouldn't be null here.");
+        var thisAssembly = typeof(UIModule).Assembly;
 
-        Kernel.Components.Add<IMissingBindingResolver, SelfBindingResolver>();
-        Kernel.Bind<IAssetLoader>().ToConstant(new AssetLoader());
+        builder.RegisterInstance(new AssetLoader(), IfAlreadyRegistered.Throw);
+        builder.Register<IAssetLoader, AssetLoader>(Reuse.Singleton);
+        builder.RegisterMany(new[] { thisAssembly }, type => type.IsAssignableTo<ViewModelBase>());
+        builder.RegisterMany(new[] { thisAssembly }, type => type.IsAssignableTo<MainScreenViewModel>());
+        //builder.RegisterMany(new[] { thisAssembly }, type => type.IsInterface && type.GetInterfaces().Contains(typeof(IVmFactory)));
+        builder.RegisterMany<IVmFactory>(nonPublicServiceTypes: true, serviceTypeCondition: t => t.GetGenericDefinitionOrNull);
+        builder.RegisterMany(new[] { thisAssembly }, type => type.IsAssignableTo<IToolViewModel>());
+        
 
-        Kernel.Bind(x =>
-        {
-            x.FromThisAssembly()
-                .SelectAllClasses()
-                .InheritedFrom<ViewModelBase>()
-                .BindToSelf();
-        });
+        builder.Register<NodeScriptWindowViewModelBase, NodeScriptWindowViewModel>(Reuse.Singleton);
+        builder.Register<IPropertyVmFactory, PropertyVmFactory>(Reuse.Singleton);
 
-        Kernel.Bind(x =>
-        {
-            x.FromThisAssembly()
-                .SelectAllClasses()
-                .InheritedFrom<MainScreenViewModel>()
-                .BindAllBaseClasses();
-        });
-
-        Kernel.Bind(x =>
-        {
-            x.FromThisAssembly()
-                .SelectAllClasses()
-                .InheritedFrom<IToolViewModel>()
-                .BindAllInterfaces();
-        });
-
-        // Bind UI factories
-        Kernel.Bind(x =>
-        {
-            x.FromThisAssembly()
-                .SelectAllInterfaces()
-                .InheritedFrom<IVmFactory>()
-                .BindToFactory();
-        });
-
-        Kernel.Bind<NodeScriptWindowViewModelBase>().To<NodeScriptWindowViewModel>();
-        Kernel.Bind<IPropertyVmFactory>().ToFactory(() => new LayerPropertyViewModelInstanceProvider());
-
-        // Bind all UI services as singletons
-        Kernel.Bind(x =>
-        {
-            x.FromThisAssembly()
-                .SelectAllClasses()
-                .InheritedFrom<IArtemisUIService>()
-                .BindAllInterfaces()
-                .Configure(c => c.InSingletonScope());
-        });
+        builder.RegisterMany(new[] { thisAssembly }, type => type.IsAssignableTo<IArtemisUIService>(), Reuse.Singleton);
     }
 }

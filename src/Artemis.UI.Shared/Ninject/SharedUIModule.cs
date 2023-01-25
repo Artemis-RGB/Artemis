@@ -1,30 +1,21 @@
 ﻿using System;
+using Artemis.Core.DryIoc;
+using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
-using Ninject.Extensions.Conventions;
-using Ninject.Modules;
+using DryIoc;
 
 namespace Artemis.UI.Shared.Ninject;
 
 /// <summary>
-///     The main <see cref="NinjectModule" /> of the Artemis Shared UI toolkit that binds all services
+///     The main <see cref="IModule" /> of the Artemis Shared UI toolkit that binds all services
 /// </summary>
-public class SharedUIModule : NinjectModule
+public class SharedUIModule : IModule
 {
     /// <inheritdoc />
-    public override void Load()
+    public void Load(IRegistrator builder)
     {
-        if (Kernel == null)
-            throw new ArgumentNullException("Kernel shouldn't be null here.");
-
-        // Bind all shared UI services as singletons
-        Kernel.Bind(x =>
-        {
-            x.FromAssemblyContaining<IArtemisSharedUIService>()
-                .IncludingNonPublicTypes()
-                .SelectAllClasses()
-                .InheritedFrom<IArtemisSharedUIService>()
-                .BindAllInterfaces()
-                .Configure(c => c.InSingletonScope());
-        });
+        var artemisShared = typeof(IArtemisSharedUIService).GetAssembly();
+        
+        builder.RegisterMany(new[] { artemisShared }, type => type.IsAssignableTo<IArtemisSharedUIService>(), Reuse.Singleton);
     }
 }

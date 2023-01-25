@@ -8,22 +8,21 @@ using Artemis.Core.Services;
 using Artemis.UI.Shared.DataModelVisualization;
 using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Artemis.UI.Shared.DefaultTypes.DataModel.Display;
-using Ninject;
-using Ninject.Parameters;
+using DryIoc;
 
 namespace Artemis.UI.Shared.Services;
 
 internal class DataModelUIService : IDataModelUIService
 {
     private readonly IDataModelService _dataModelService;
-    private readonly IKernel _kernel;
+    private readonly IContainer _container;
     private readonly List<DataModelVisualizationRegistration> _registeredDataModelDisplays;
     private readonly List<DataModelVisualizationRegistration> _registeredDataModelEditors;
 
-    public DataModelUIService(IDataModelService dataModelService, IKernel kernel)
+    public DataModelUIService(IDataModelService dataModelService, IContainer container)
     {
         _dataModelService = dataModelService;
-        _kernel = kernel;
+        _container = container;
         _registeredDataModelEditors = new List<DataModelVisualizationRegistration>();
         _registeredDataModelDisplays = new List<DataModelVisualizationRegistration>();
 
@@ -37,17 +36,11 @@ internal class DataModelUIService : IDataModelUIService
         if (initialValue != null && initialValue.GetType() != registration.SupportedType)
             initialValue = Convert.ChangeType(initialValue, registration.SupportedType);
 
-        IParameter[] parameters =
-        {
-            new ConstructorArgument("targetDescription", description),
-            new ConstructorArgument("initialValue", initialValue)
-        };
-
         // If this ever happens something is likely wrong with the plugin unload detection
         if (registration.Plugin.Container == null)
             throw new ArtemisSharedUIException("Cannot InstantiateDataModelInputViewModel for a registration by an uninitialized plugin");
 
-        DataModelInputViewModel viewModel = (DataModelInputViewModel) registration.Plugin.Container.Get(registration.ViewModelType, parameters);
+        DataModelInputViewModel viewModel = (DataModelInputViewModel) registration.Plugin.Container.Resolve(registration.ViewModelType, new object[] { description, initialValue });
         viewModel.CompatibleConversionTypes = registration.CompatibleConversionTypes;
         return viewModel;
     }
@@ -133,7 +126,7 @@ internal class DataModelUIService : IDataModelUIService
                 return existing;
             }
 
-            _kernel.Bind(viewModelType).ToSelf();
+            _container.Register(viewModelType);
 
             // Create the registration
             DataModelVisualizationRegistration registration = new(this, RegistrationType.Input, plugin, supportedType, viewModelType)
@@ -162,7 +155,7 @@ internal class DataModelUIService : IDataModelUIService
                 return existing;
             }
 
-            _kernel.Bind(viewModelType).ToSelf();
+            _container.Register(viewModelType);
             DataModelVisualizationRegistration registration = new(this, RegistrationType.Display, plugin, supportedType, viewModelType);
             _registeredDataModelDisplays.Add(registration);
             return registration;
@@ -178,7 +171,7 @@ internal class DataModelUIService : IDataModelUIService
                 registration.Unsubscribe();
                 _registeredDataModelEditors.Remove(registration);
 
-                _kernel.Unbind(registration.ViewModelType);
+                _container.Unregister(registration.ViewModelType);
             }
         }
     }
@@ -192,7 +185,7 @@ internal class DataModelUIService : IDataModelUIService
                 registration.Unsubscribe();
                 _registeredDataModelDisplays.Remove(registration);
 
-                _kernel.Unbind(registration.ViewModelType);
+                _container.Unregister(registration.ViewModelType);
             }
         }
     }
@@ -210,7 +203,7 @@ internal class DataModelUIService : IDataModelUIService
                 if (match.Plugin.Container == null)
                     throw new ArtemisSharedUIException("Cannot GetDataModelDisplayViewModel for a registration by an uninitialized plugin");
 
-                result = (DataModelDisplayViewModel) match.Plugin.Container.Get(match.ViewModelType);
+                result = (DataModelDisplayViewModel) match.Plugin.Container.Resolve(match.ViewModelType);
             }
             else if (!fallBackToDefault)
             {
@@ -218,7 +211,7 @@ internal class DataModelUIService : IDataModelUIService
             }
             else
             {
-                result = _kernel.Get<DefaultDataModelDisplayViewModel>();
+                result = _container.Resolve<DefaultDataModelDisplayViewModel>();
             }
 
             if (result != null)
