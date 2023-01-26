@@ -2,6 +2,7 @@
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Ninject.InstanceProviders;
 using Artemis.UI.Screens;
+using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
@@ -22,11 +23,9 @@ public class UIModule : IModule
         builder.RegisterInstance(new AssetLoader(), IfAlreadyRegistered.Throw);
         builder.Register<IAssetLoader, AssetLoader>(Reuse.Singleton);
         builder.RegisterMany(new[] { thisAssembly }, type => type.IsAssignableTo<ViewModelBase>());
-        builder.RegisterMany(new[] { thisAssembly }, type => type.IsAssignableTo<MainScreenViewModel>());
-        //builder.RegisterMany(new[] { thisAssembly }, type => type.IsInterface && type.GetInterfaces().Contains(typeof(IVmFactory)));
-        builder.RegisterMany<IVmFactory>(nonPublicServiceTypes: true, serviceTypeCondition: t => t.GetGenericDefinitionOrNull);
-        builder.RegisterMany(new[] { thisAssembly }, type => type.IsAssignableTo<IToolViewModel>());
-        
+        //builder.RegisterMany(new[] { thisAssembly }, type => type.IsAssignableTo<MainScreenViewModel>());
+        //builder.RegisterMany(new[] { thisAssembly }, type => type.IsAssignableTo<IToolViewModel>());
+        builder.RegisterMany(new[] { thisAssembly }, type => type.IsAssignableTo<IVmFactory>() && type != typeof(PropertyVmFactory));
 
         builder.Register<NodeScriptWindowViewModelBase, NodeScriptWindowViewModel>(Reuse.Singleton);
         builder.Register<IPropertyVmFactory, PropertyVmFactory>(Reuse.Singleton);

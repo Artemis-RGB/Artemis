@@ -16,6 +16,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using DryIoc;
 using ReactiveUI;
+using Splat.DryIoc;
 
 namespace Artemis.UI;
 
@@ -32,7 +33,8 @@ public static class ArtemisBootstrapper
         Utilities.PrepareFirstLaunch();
 
         _application = application;
-        _container = new Container(rules => rules.WithAutoConcreteTypeResolution());
+        _container = new Container(rules => rules.WithAutoConcreteTypeResolution()
+                                                 .WithoutThrowOnRegisteringDisposableTransient());
 
         new CoreModule().Load(_container);
         new UIModule().Load(_container);
@@ -40,6 +42,8 @@ public static class ArtemisBootstrapper
         new NoStringDryIocModule().Load(_container);
         foreach (IModule module in modules)
             module.Load(_container);
+
+        _container.UseDryIocDependencyResolver();
 
         return _container;
     }
