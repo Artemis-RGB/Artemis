@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Reflection;
 using Artemis.Core.DryIoc.Factories;
 using Artemis.Core.Services;
@@ -6,6 +7,7 @@ using Artemis.Storage;
 using Artemis.Storage.Migrations.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;
 using DryIoc;
+using Serilog;
 
 namespace Artemis.Core.DryIoc;
 
@@ -30,12 +32,13 @@ public class CoreModule : IModule
         builder.RegisterMany(new[] {storageAssembly}, type => type.IsAssignableTo<IRepository>(), Reuse.Singleton);
 
         // Bind migrations
-        builder.RegisterMany(new[] {storageAssembly}, type => type.IsAssignableTo<IStorageMigration>());
+        builder.RegisterMany(new[] { storageAssembly }, type => type.IsAssignableTo<IStorageMigration>(), Reuse.Singleton, nonPublicServiceTypes: true);
 
         builder.Register<IPluginSettingsFactory, PluginSettingsFactory>(Reuse.Singleton);
-        builder.Register<IPluginSettingsFactory, PluginSettingsFactory>(Reuse.Singleton);
-        builder.Register(made: Made.Of(r => ServiceInfo.Of<IPluginSettingsFactory>(), factory => factory.CreatePluginSettings(Arg.Index<Type>(0))));
-        builder.Register(made: Made.Of(r => ServiceInfo.Of<ILoggerFactory>(), factory => factory.CreateLogger(Arg.Index<Type>(0))));
+        //builder.Register(made: Made.Of(r => ServiceInfo.Of<IPluginSettingsFactory>(), factory => factory.CreatePluginSettings(Arg.Index<Type>(0))));
+        builder.Register<ILoggerFactory, LoggerFactory>(Reuse.Singleton);
+        builder.Register<ILogger>(made: Made.Of(r => ServiceInfo.Of<ILoggerFactory>(), f => f.CreateLogger(Arg.Index<Type>(0)), r => r.Parent.ImplementationType));
+        //builder.Register<ILogger>(made: Made.Of(r => ServiceInfo.Of<ILoggerFactory>(), (f) => f.CreateLogger(Arg.)));
     }
 
     private bool HasAccessToProtectedService(Request request)

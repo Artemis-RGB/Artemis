@@ -11,7 +11,7 @@ using Artemis.UI.Shared.Services;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
-using Ninject;
+using DryIoc;
 
 namespace Artemis.UI.Linux;
 
@@ -22,23 +22,23 @@ public class ApplicationStateManager
     // ReSharper disable once NotAccessedField.Local - Kept in scope to ensure it does not get released
     private Mutex? _artemisMutex;
 
-    public ApplicationStateManager(IKernel kernel, string[] startupArguments)
+    public ApplicationStateManager(IContainer container, string[] startupArguments)
     {
-        _windowService = kernel.Get<IWindowService>();
+        _windowService = container.Resolve<IWindowService>();
         StartupArguments = startupArguments;
 
         Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
         Core.Utilities.RestartRequested += UtilitiesOnRestartRequested;
 
-        // On OS shutdown dispose the kernel just so device providers get a chance to clean up
+        // On OS shutdown dispose the IOC container just so device providers get a chance to clean up
         if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
             controlledApplicationLifetime.Exit += (_, _) =>
             {
                 RunForcedShutdownIfEnabled();
 
-                // Dispose plugins before disposing the kernel because plugins might access services during dispose
-                kernel.Get<IPluginManagementService>().Dispose();
-                kernel.Dispose();
+                // Dispose plugins before disposing the IOC container because plugins might access services during dispose
+                container.Resolve<IPluginManagementService>().Dispose();
+                container.Dispose();
             };
     }
 

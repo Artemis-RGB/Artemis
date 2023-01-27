@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Threading;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Windows.Ninject;
+using Artemis.UI.Windows.DryIoc;
 using Artemis.UI.Windows.Providers.Input;
 using Avalonia;
 using Avalonia.Controls;
