@@ -14,9 +14,9 @@ public class SidebarScreenViewModel<T> : SidebarScreenViewModel where T : MainSc
 
     public override Type ScreenType => typeof(T);
 
-    public override MainScreenViewModel CreateInstance(IContainer kernel, IScreen screen)
+    public override MainScreenViewModel CreateInstance(IContainer container, IScreen screen)
     {
-        return kernel.Resolve<T>(new object[] { screen });
+        return container.Resolve<T>(new object[] { screen });
     }
 }
 
@@ -31,5 +31,5 @@ public abstract class SidebarScreenViewModel : ViewModelBase
     public MaterialIconKind Icon { get; }
 
     public abstract Type ScreenType { get; }
-    public abstract MainScreenViewModel CreateInstance(IContainer kernel, IScreen screen);
+    public abstract MainScreenViewModel CreateInstance(IContainer container, IScreen screen);
 }

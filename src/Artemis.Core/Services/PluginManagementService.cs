@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Artemis.Core.DeviceProviders;
+using Artemis.Core.DryIoc;
 using Artemis.Storage.Entities.General;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Entities.Surface;
@@ -427,7 +428,17 @@ internal class PluginManagementService : IPluginManagementService
             throw new ArtemisPluginPrerequisiteException(plugin.Info, "Cannot enable a plugin whose prerequisites aren't all met");
 
         // Create a child container for the plugin, be a bit more forgiving about concrete types
-        plugin.Container = _container.CreateChild(newRules: _container.Rules.WithConcreteTypeDynamicRegistrations().WithAutoConcreteTypeResolution());
+        plugin.Container = _container.CreateChild(newRules: _container.Rules.WithConcreteTypeDynamicRegistrations());
+        try
+        {
+            new PluginModule(plugin).Load(plugin.Container);
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Failed to register plugin services for plugin {plugin}, skipping enabling", plugin);
+            return;
+        }
+      
         OnPluginEnabling(new PluginEventArgs(plugin));
 
         plugin.SetEnabled(true);
@@ -439,7 +450,6 @@ internal class PluginManagementService : IPluginManagementService
             try
             {
                 plugin.Container.Register(featureInfo.FeatureType, reuse: Reuse.Singleton);
-                plugin.Container.RegisterInstance(plugin);
                 PluginFeature instance = (PluginFeature) plugin.Container.Resolve(featureInfo.FeatureType);
 
                 // Get the PluginFeature attribute which contains extra info on the feature

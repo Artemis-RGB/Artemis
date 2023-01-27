@@ -88,7 +88,7 @@ public class Plugin : CorePropertyChanged, IDisposable
     public PluginBootstrapper? Bootstrapper { get; internal set; }
 
     /// <summary>
-    ///     The Ninject kernel of the plugin
+    ///     The IOC container of the plugin
     /// </summary>
     public IContainer? Container { get; internal set; }
 
@@ -177,7 +177,7 @@ public class Plugin : CorePropertyChanged, IDisposable
     }
 
     /// <summary>
-    /// Registers service of <typeparamref name="TService"/> type implemented by <typeparamref name="TImplementation"/> type.
+    ///     Registers service of <typeparamref name="TService" /> type implemented by <typeparamref name="TImplementation" /> type.
     /// </summary>
     /// <param name="scope">The scope in which the service should live, if you are not sure leave it on singleton.</param>
     /// <typeparam name="TService">The service to register.</typeparam>
@@ -195,7 +195,7 @@ public class Plugin : CorePropertyChanged, IDisposable
     }
 
     /// <summary>
-    /// Registers implementation type <typeparamref name="TImplementation"/> with itself as service type.
+    ///     Registers implementation type <typeparamref name="TImplementation" /> with itself as service type.
     /// </summary>
     /// <param name="scope">The scope in which the service should live, if you are not sure leave it on singleton.</param>
     /// <typeparam name="TImplementation">The implementation of the service to register.</typeparam>
@@ -376,9 +376,24 @@ public class Plugin : CorePropertyChanged, IDisposable
     }
 }
 
+/// <summary>
+///     Represents a scope in which a plugin service is injected by the IOC container.
+/// </summary>
 public enum PluginServiceScope
 {
+    /// <summary>
+    ///     Services in this scope are never reused, a new instance is injected each time.
+    /// </summary>
     Transient,
+
+    /// <summary>
+    ///     Services in this scope are reused for as long as the plugin lives, the same instance is injected each time.
+    /// </summary>
     Singleton,
+
+    /// <summary>
+    ///     Services in this scope are reused within a container scope, this is an advanced setting you shouldn't need.
+    ///     <para>To learn more see <a href="https://github.com/dadhi/DryIoc/blob/master/docs/DryIoc.Docs/ReuseAndScopes.md#reusescoped">the DryIoc docs</a>.</para>
+    /// </summary>
     Scoped
 }

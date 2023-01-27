@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Services;
 using Artemis.Storage.Repositories.Interfaces;
-using DryIoc;
 
 namespace Artemis.Core.DryIoc.Factories;
 
-// TODO: Investigate if this can't just be set as a constant on the plugin child kernel
 internal class PluginSettingsFactory : IPluginSettingsFactory
 {
     private static readonly List<PluginSettings> PluginSettings = new();

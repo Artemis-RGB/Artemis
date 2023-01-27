@@ -30,13 +30,13 @@ public class ApplicationStateManager
         Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
         Core.Utilities.RestartRequested += UtilitiesOnRestartRequested;
 
-        // On OS shutdown dispose the kernel just so device providers get a chance to clean up
+        // On OS shutdown dispose the IOC container just so device providers get a chance to clean up
         if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
             controlledApplicationLifetime.Exit += (_, _) =>
             {
                 RunForcedShutdownIfEnabled();
 
-                // Dispose plugins before disposing the kernel because plugins might access services during dispose
+                // Dispose plugins before disposing the IOC container because plugins might access services during dispose
                 container.Resolve<IPluginManagementService>().Dispose();
                 container.Dispose();
             };

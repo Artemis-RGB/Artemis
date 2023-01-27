@@ -10,7 +10,7 @@ using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.Core.Services;
-using Artemis.UI.Ninject.Factories;
+using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.ProfileEditor.Playback;
 using Artemis.UI.Screens.ProfileEditor.Properties.DataBinding;
 using Artemis.UI.Screens.ProfileEditor.Properties.Dialogs;

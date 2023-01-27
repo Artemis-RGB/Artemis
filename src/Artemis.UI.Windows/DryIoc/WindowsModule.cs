@@ -4,7 +4,7 @@ using Artemis.UI.Shared.Providers;
 using Artemis.UI.Windows.Providers;
 using DryIoc;
 
-namespace Artemis.UI.Windows.Ninject;
+namespace Artemis.UI.Windows.DryIoc;
 
 public class WindowsModule : IModule
 {

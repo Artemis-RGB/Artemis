@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Reflection;
 using Artemis.Core;
-using Artemis.UI.Ninject.Factories;
+using Artemis.UI.DryIoc.Factories;
+using Artemis.UI.Exceptions;
 using Artemis.UI.Screens.ProfileEditor.Properties;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using DryIoc;
-using ReactiveUI;
 
-namespace Artemis.UI.Ninject.InstanceProviders;
+namespace Artemis.UI.DryIoc.InstanceProviders;
 
 public class PropertyVmFactory : IPropertyVmFactory
 {
@@ -26,9 +25,9 @@ public class PropertyVmFactory : IPropertyVmFactory
         while (layerPropertyType != null && (!layerPropertyType.IsGenericType || layerPropertyType.GetGenericTypeDefinition() != typeof(LayerProperty<>)))
             layerPropertyType = layerPropertyType.BaseType;
         if (layerPropertyType == null)
-            return null;
+            throw new ArtemisUIException("Could not find the LayerProperty type");
 
-        var genericType = typeof(TimelinePropertyViewModel<>).MakeGenericType(layerPropertyType.GetGenericArguments());
+        Type? genericType = typeof(TimelinePropertyViewModel<>).MakeGenericType(layerPropertyType.GetGenericArguments());
         return (ITimelinePropertyViewModel)_container.Resolve(genericType, new object[] { layerProperty, propertyViewModel });
     }
 
@@ -39,9 +38,9 @@ public class PropertyVmFactory : IPropertyVmFactory
         while (layerPropertyType != null && (!layerPropertyType.IsGenericType || layerPropertyType.GetGenericTypeDefinition() != typeof(LayerProperty<>)))
             layerPropertyType = layerPropertyType.BaseType;
         if (layerPropertyType == null)
-            return null;
+            throw new ArtemisUIException("Could not find the LayerProperty type");
 
-        var genericType = typeof(TreePropertyViewModel<>).MakeGenericType(layerPropertyType.GetGenericArguments());
+        Type? genericType = typeof(TreePropertyViewModel<>).MakeGenericType(layerPropertyType.GetGenericArguments());
 
         return (ITreePropertyViewModel)_container.Resolve(genericType, new object[] { layerProperty, propertyViewModel });
     }

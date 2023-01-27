@@ -6,7 +6,7 @@ using System.Reflection;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
-using Artemis.UI.Ninject.Factories;
+using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;

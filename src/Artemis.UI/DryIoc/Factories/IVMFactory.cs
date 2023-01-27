@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Reactive;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
@@ -25,7 +24,7 @@ using Artemis.UI.Screens.VisualScripting.Pins;
 using DryIoc;
 using ReactiveUI;
 
-namespace Artemis.UI.Ninject.Factories;
+namespace Artemis.UI.DryIoc.Factories;
 
 public interface IVmFactory
 {
@@ -108,7 +107,7 @@ public class SettingsVmFactory : ISettingsVmFactory
     
     public PluginViewModel PluginViewModel(Plugin plugin, ReactiveCommand<Unit, Unit>? reload)
     {
-        return _container.Resolve<PluginViewModel>(new object[] { plugin, reload });
+        return _container.Resolve<PluginViewModel>(new object?[] { plugin, reload });
     }
     
     public PluginFeatureViewModel PluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo, bool showShield)
@@ -211,7 +210,7 @@ public class ProfileEditorVmFactory : IProfileEditorVmFactory
 
     public FolderTreeItemViewModel FolderTreeItemViewModel(TreeItemViewModel? parent, Folder folder)
     {
-        return _container.Resolve<FolderTreeItemViewModel>(new object[] { parent, folder });
+        return _container.Resolve<FolderTreeItemViewModel>(new object?[] { parent, folder });
     }
 
     public LayerShapeVisualizerViewModel LayerShapeVisualizerViewModel(Layer layer)
@@ -221,7 +220,7 @@ public class ProfileEditorVmFactory : IProfileEditorVmFactory
 
     public LayerTreeItemViewModel LayerTreeItemViewModel(TreeItemViewModel? parent, Layer layer)
     {
-        return _container.Resolve<LayerTreeItemViewModel>(new object[] { parent, layer });
+        return _container.Resolve<LayerTreeItemViewModel>(new object?[] { parent, layer });
     }
 
     public LayerVisualizerViewModel LayerVisualizerViewModel(Layer layer)

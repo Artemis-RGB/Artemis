@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.Services;
-using Artemis.UI.Ninject.Factories;
+using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
