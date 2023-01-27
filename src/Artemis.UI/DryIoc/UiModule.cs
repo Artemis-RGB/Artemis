@@ -34,8 +34,6 @@ public class UIModule : IModule
         
         builder.RegisterMany(new[] { thisAssembly }, type => type.IsAssignableTo<IVmFactory>() && type != typeof(PropertyVmFactory));
 
-        builder.RegisterMany(new[] { thisAssembly }, type => type.Name.EndsWith("View"), Reuse.Transient);
-
         builder.Register<NodeScriptWindowViewModelBase, NodeScriptWindowViewModel>(Reuse.Singleton);
         builder.Register<IPropertyVmFactory, PropertyVmFactory>(Reuse.Singleton);
 

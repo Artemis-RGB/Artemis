@@ -33,7 +33,7 @@ public static class ArtemisBootstrapper
         Utilities.PrepareFirstLaunch();
 
         _application = application;
-        _container = new Container(rules => rules.WithAutoConcreteTypeResolution()
+        _container = new Container(rules => rules.WithConcreteTypeDynamicRegistrations()
                                                  .WithoutThrowOnRegisteringDisposableTransient());
 
         new CoreModule().Load(_container);

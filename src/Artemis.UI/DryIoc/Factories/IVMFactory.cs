@@ -316,25 +316,6 @@ public interface IPropertyVmFactory
     ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, PropertyViewModel propertyViewModel);
     ITimelinePropertyViewModel TimelinePropertyViewModel(ILayerProperty layerProperty, PropertyViewModel propertyViewModel);
 }
-//public class PropertyVmFactory : IPropertyVmFactory
-//{
-//    private readonly IContainer _container;
-
-//    public PropertyVmFactory(IContainer container)
-//    {
-//        _container = container;
-//    }
-
-//    public ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, PropertyViewModel propertyViewModel)
-//    {
-//        return _container.Resolve<ITreePropertyViewModel>(new object[] { layerProperty, propertyViewModel });
-//    }
-
-//    public ITimelinePropertyViewModel TimelinePropertyViewModel(ILayerProperty layerProperty, PropertyViewModel propertyViewModel)
-//    {
-//        return _container.Resolve<ITimelinePropertyViewModel>(new object[] { layerProperty, propertyViewModel });
-//    }
-//}
 
 public interface INodeVmFactory : IVmFactory
 {

@@ -6,6 +6,7 @@ using Artemis.UI.Screens.ProfileEditor.Properties;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using DryIoc;
+using ReactiveUI;
 
 namespace Artemis.UI.Ninject.InstanceProviders;
 
@@ -28,7 +29,7 @@ public class PropertyVmFactory : IPropertyVmFactory
             return null;
 
         var genericType = typeof(TimelinePropertyViewModel<>).MakeGenericType(layerPropertyType.GetGenericArguments());
-        return _container.Resolve(genericType) as ITimelinePropertyViewModel;
+        return (ITimelinePropertyViewModel)_container.Resolve(genericType, new object[] { layerProperty, propertyViewModel });
     }
 
     public ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, PropertyViewModel propertyViewModel)
@@ -42,6 +43,6 @@ public class PropertyVmFactory : IPropertyVmFactory
 
         var genericType = typeof(TreePropertyViewModel<>).MakeGenericType(layerPropertyType.GetGenericArguments());
 
-        return _container.Resolve(genericType) as ITreePropertyViewModel;
+        return (ITreePropertyViewModel)_container.Resolve(genericType, new object[] { layerProperty, propertyViewModel });
     }
 }
