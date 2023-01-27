@@ -176,6 +176,41 @@ public class Plugin : CorePropertyChanged, IDisposable
         return Container.Resolve<T>();
     }
 
+    /// <summary>
+    /// Registers service of <typeparamref name="TService"/> type implemented by <typeparamref name="TImplementation"/> type.
+    /// </summary>
+    /// <param name="scope">The scope in which the service should live, if you are not sure leave it on singleton.</param>
+    /// <typeparam name="TService">The service to register.</typeparam>
+    /// <typeparam name="TImplementation">The implementation of the service to register.</typeparam>
+    public void Register<TService, TImplementation>(PluginServiceScope scope = PluginServiceScope.Singleton) where TImplementation : TService
+    {
+        IReuse reuse = scope switch
+        {
+            PluginServiceScope.Transient => Reuse.Transient,
+            PluginServiceScope.Singleton => Reuse.Singleton,
+            PluginServiceScope.Scoped => Reuse.Scoped,
+            _ => throw new ArgumentOutOfRangeException(nameof(scope), scope, null)
+        };
+        Container.Register<TService, TImplementation>(reuse);
+    }
+
+    /// <summary>
+    /// Registers implementation type <typeparamref name="TImplementation"/> with itself as service type.
+    /// </summary>
+    /// <param name="scope">The scope in which the service should live, if you are not sure leave it on singleton.</param>
+    /// <typeparam name="TImplementation">The implementation of the service to register.</typeparam>
+    public void Register<TImplementation>(PluginServiceScope scope = PluginServiceScope.Singleton)
+    {
+        IReuse reuse = scope switch
+        {
+            PluginServiceScope.Transient => Reuse.Transient,
+            PluginServiceScope.Singleton => Reuse.Singleton,
+            PluginServiceScope.Scoped => Reuse.Scoped,
+            _ => throw new ArgumentOutOfRangeException(nameof(scope), scope, null)
+        };
+        Container.Register<TImplementation>(reuse);
+    }
+
     /// <inheritdoc />
     public override string ToString()
     {
@@ -339,4 +374,11 @@ public class Plugin : CorePropertyChanged, IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+}
+
+public enum PluginServiceScope
+{
+    Transient,
+    Singleton,
+    Scoped
 }

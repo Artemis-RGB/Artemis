@@ -426,8 +426,8 @@ internal class PluginManagementService : IPluginManagementService
         if (!plugin.Info.ArePrerequisitesMet())
             throw new ArtemisPluginPrerequisiteException(plugin.Info, "Cannot enable a plugin whose prerequisites aren't all met");
 
-        // Create the Ninject child kernel and load the module
-        plugin.Container = _container.CreateChild(newRules: _container.Rules.WithConcreteTypeDynamicRegistrations());
+        // Create a child container for the plugin, be a bit more forgiving about concrete types
+        plugin.Container = _container.CreateChild(newRules: _container.Rules.WithConcreteTypeDynamicRegistrations().WithAutoConcreteTypeResolution());
         OnPluginEnabling(new PluginEventArgs(plugin));
 
         plugin.SetEnabled(true);
@@ -439,6 +439,7 @@ internal class PluginManagementService : IPluginManagementService
             try
             {
                 plugin.Container.Register(featureInfo.FeatureType, reuse: Reuse.Singleton);
+                plugin.Container.RegisterInstance(plugin);
                 PluginFeature instance = (PluginFeature) plugin.Container.Resolve(featureInfo.FeatureType);
 
                 // Get the PluginFeature attribute which contains extra info on the feature
