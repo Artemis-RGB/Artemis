@@ -54,7 +54,7 @@ public class DeviceLogicalLayoutDialogViewModel : ContentDialogViewModelBase
     {
         await windowService.CreateContentDialog()
             .WithTitle("Select logical layout")
-            .WithViewModel(out DeviceLogicalLayoutDialogViewModel vm, ("device", device))
+            .WithViewModel(out DeviceLogicalLayoutDialogViewModel vm, device)
             .WithCloseButtonText("Cancel")
             .WithDefaultButton(ContentDialogButton.Primary)
             .HavingPrimaryButton(b => b.WithText("Select").WithCommand(vm.ApplyLogicalLayout))

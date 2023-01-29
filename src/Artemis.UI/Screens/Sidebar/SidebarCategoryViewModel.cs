@@ -146,7 +146,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
     {
         await _windowService.CreateContentDialog()
             .WithTitle("Edit category")
-            .WithViewModel(out SidebarCategoryEditViewModel vm, ("category", ProfileCategory))
+            .WithViewModel(out SidebarCategoryEditViewModel vm, ProfileCategory)
             .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Confirm))
             .WithCloseButtonText("Cancel")
             .WithDefaultButton(ContentDialogButton.Primary)

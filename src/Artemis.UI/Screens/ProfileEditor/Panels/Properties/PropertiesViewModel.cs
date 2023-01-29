@@ -124,7 +124,7 @@ public class PropertiesViewModel : ActivatableViewModelBase
 
         await _windowService.CreateContentDialog()
             .WithTitle("Add layer effect")
-            .WithViewModel(out AddEffectViewModel _, ("renderProfileElement", ProfileElement))
+            .WithViewModel(out AddEffectViewModel _, ProfileElement)
             .WithCloseButtonText("Cancel")
             .ShowAsync();
     }

@@ -194,6 +194,10 @@ internal class PluginManagementService : IPluginManagementService
 
     public void Dispose()
     {
+        // Disposal happens manually before container disposal but the container doesn't know that so a 2nd call will be made
+        if (_disposed)
+            return;
+        
         _disposed = true;
         UnloadPlugins();
     }
@@ -336,11 +340,11 @@ internal class PluginManagementService : IPluginManagementService
             configure.IsUnloadable = true;
             configure.LoadInMemory = true;
             configure.PreferSharedTypes = true;
-            
+
             // Resolving failed, try a loaded assembly but ignoring the version
             configure.DefaultContext.Resolving += (context, assemblyName) => context.Assemblies.FirstOrDefault(a => a.GetName().Name == assemblyName.Name);
         });
-        
+
         try
         {
             plugin.Assembly = plugin.PluginLoader.LoadDefaultAssembly();
@@ -402,7 +406,7 @@ internal class PluginManagementService : IPluginManagementService
         OnPluginLoaded(new PluginEventArgs(plugin));
         return plugin;
     }
-    
+
     public void EnablePlugin(Plugin plugin, bool saveState, bool ignorePluginLock)
     {
         if (!plugin.Info.IsCompatible)
@@ -438,7 +442,7 @@ internal class PluginManagementService : IPluginManagementService
             _logger.Error(e, "Failed to register plugin services for plugin {plugin}, skipping enabling", plugin);
             return;
         }
-      
+
         OnPluginEnabling(new PluginEventArgs(plugin));
 
         plugin.SetEnabled(true);

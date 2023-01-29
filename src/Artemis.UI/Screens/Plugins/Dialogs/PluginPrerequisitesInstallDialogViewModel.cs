@@ -89,7 +89,7 @@ public class PluginPrerequisitesInstallDialogViewModel : ContentDialogViewModelB
     {
         await windowService.CreateContentDialog()
             .WithTitle("Plugin prerequisites")
-            .WithViewModel(out PluginPrerequisitesInstallDialogViewModel vm, ("subjects", subjects))
+            .WithViewModel(out PluginPrerequisitesInstallDialogViewModel vm, subjects)
             .WithCloseButtonText("Cancel")
             .HavingPrimaryButton(b => b.WithText("Install").WithCommand(vm.Install))
             .WithDefaultButton(ContentDialogButton.Primary)

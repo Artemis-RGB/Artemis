@@ -74,7 +74,7 @@ public class PluginPrerequisitesUninstallDialogViewModel : ContentDialogViewMode
     {
         await windowService.CreateContentDialog()
             .WithTitle("Plugin prerequisites")
-            .WithViewModel(out PluginPrerequisitesUninstallDialogViewModel vm, ("subjects", subjects))
+            .WithViewModel(out PluginPrerequisitesUninstallDialogViewModel vm, subjects)
             .WithCloseButtonText(cancelLabel)
             .HavingPrimaryButton(b => b.WithText("Uninstall").WithCommand(vm.Uninstall))
             .WithDefaultButton(ContentDialogButton.Primary)

@@ -52,7 +52,7 @@ public class App : Application
     private void RegisterProviders(IContainer container)
     {
         IInputService inputService = container.Resolve<IInputService>();
-        inputService.AddInputProvider(container.Resolve<WindowsInputProvider>());
+        inputService.AddInputProvider(container.Resolve<InputProvider>(serviceKey: WindowsInputProvider.Id));
     }
 
     private bool FocusExistingInstance()

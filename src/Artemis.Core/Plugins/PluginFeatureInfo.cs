@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.DeviceProviders;
-using Artemis.Core.LayerBrushes;
-using Artemis.Core.LayerEffects;
-using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Plugins;
 using Humanizer;
 using Newtonsoft.Json;

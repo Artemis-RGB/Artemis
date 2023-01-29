@@ -88,7 +88,7 @@ public class Plugin : CorePropertyChanged, IDisposable
     public PluginBootstrapper? Bootstrapper { get; internal set; }
 
     /// <summary>
-    ///     The IOC container of the plugin
+    ///     Gets the IOC container of the plugin, only use this for advanced IOC operations, otherwise see <see cref="Resolve"/> and <see cref="Resolve{T}"/>
     /// </summary>
     public IContainer? Container { get; internal set; }
 
@@ -165,15 +165,31 @@ public class Plugin : CorePropertyChanged, IDisposable
     }
 
     /// <summary>
-    ///     Gets an instance of the specified service using the plugins dependency injection container.
+    ///     Gets an instance of the specified service using the plugins dependency injection container.    
     /// </summary>
+    /// <param name="arguments">Arguments to supply to the service.</param>
     /// <typeparam name="T">The service to resolve.</typeparam>
     /// <returns>An instance of the service.</returns>
-    public T Resolve<T>()
+    /// <seealso cref="Resolve"/>
+    public T Resolve<T>(params object?[] arguments)
     {
         if (Container == null)
             throw new ArtemisPluginException("Cannot use Resolve<T> before the plugin finished loading");
-        return Container.Resolve<T>();
+        return Container.Resolve<T>(args: arguments);
+    }
+
+    /// <summary>
+    ///     Gets an instance of the specified service using the plugins dependency injection container.     
+    /// </summary>
+    /// <param name="type">The type of service to resolve.</param>
+    /// <param name="arguments">Arguments to supply to the service.</param>
+    /// <returns>An instance of the service.</returns>
+    /// <seealso cref="Resolve{T}"/>
+    public object Resolve(Type type, params object?[] arguments)
+    {
+        if (Container == null)
+            throw new ArtemisPluginException("Cannot use Resolve before the plugin finished loading");
+        return Container.Resolve(type, args: arguments);
     }
 
     /// <summary>

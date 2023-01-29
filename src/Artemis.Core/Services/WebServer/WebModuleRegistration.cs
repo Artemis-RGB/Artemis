@@ -27,7 +27,7 @@ internal class WebModuleRegistration
         if (Create != null)
             return Create();
         if (WebModuleType != null)
-            return (IWebModule) Feature.Plugin.Container!.Resolve(WebModuleType);
+            return (IWebModule) Feature.Plugin.Resolve(WebModuleType);
         throw new ArtemisCoreException("WebModuleRegistration doesn't have a create function nor a web module type :(");
     }
 }

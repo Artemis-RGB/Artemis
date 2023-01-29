@@ -5,7 +5,7 @@ namespace Artemis.Core.Services;
 /// <summary>
 ///     A service that initializes the Core and manages the render loop
 /// </summary>
-public interface ICoreService : IArtemisService, IDisposable
+public interface ICoreService : IArtemisService
 {
     /// <summary>
     ///     Gets whether the or not the core has been initialized

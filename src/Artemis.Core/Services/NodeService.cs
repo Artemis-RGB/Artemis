@@ -15,7 +15,7 @@ internal class NodeService : INodeService
 {
     #region Constants
 
-    private static readonly Type TYPE_NODE = typeof(INode);
+    private static readonly Type TypeNode = typeof(INode);
 
     #endregion
 
@@ -69,7 +69,7 @@ internal class NodeService : INodeService
         if (plugin == null) throw new ArgumentNullException(nameof(plugin));
         if (nodeType == null) throw new ArgumentNullException(nameof(nodeType));
 
-        if (!TYPE_NODE.IsAssignableFrom(nodeType)) throw new ArgumentException("Node has to be a base type of the Node-Type.", nameof(nodeType));
+        if (!TypeNode.IsAssignableFrom(nodeType)) throw new ArgumentException("Node has to be a base type of the Node-Type.", nameof(nodeType));
 
         NodeAttribute? nodeAttribute = nodeType.GetCustomAttribute<NodeAttribute>();
         string name = nodeAttribute?.Name ?? nodeType.Name;

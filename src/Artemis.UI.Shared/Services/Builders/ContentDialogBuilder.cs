@@ -128,12 +128,11 @@ public class ContentDialogBuilder
     /// </summary>
     /// <typeparam name="T">The type of the view model to host.</typeparam>
     /// <param name="viewModel">The resulting view model.</param>
-    /// <param name="parameters">Optional parameters to pass to the constructor of the view model, case and order sensitive.</param>
+    /// <param name="parameters">Optional parameters to pass to the constructor of the view model.</param>
     /// <returns>The builder that can be used to further build the dialog.</returns>
-    public ContentDialogBuilder WithViewModel<T>(out T viewModel, params (string name, object? value)[] parameters) where T : ContentDialogViewModelBase
+    public ContentDialogBuilder WithViewModel<T>(out T viewModel, params object?[] parameters) where T : ContentDialogViewModelBase
     {
-        object?[] paramsArray = parameters.Select(kv => kv.value).ToArray();
-        viewModel = _container.Resolve<T>(paramsArray);
+        viewModel = _container.Resolve<T>(parameters);
         viewModel.ContentDialog = _contentDialog;
         _contentDialog.Content = viewModel;
 

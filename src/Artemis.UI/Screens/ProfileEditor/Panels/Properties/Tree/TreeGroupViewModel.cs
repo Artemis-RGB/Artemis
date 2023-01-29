@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reflection;
@@ -136,7 +135,7 @@ public class TreeGroupViewModel : ActivatableViewModelBase
 
         await _windowService.CreateContentDialog()
             .WithTitle("Rename layer effect")
-            .WithViewModel(out LayerEffectRenameViewModel vm, ("layerEffect", LayerEffect))
+            .WithViewModel(out LayerEffectRenameViewModel vm, LayerEffect)
             .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Confirm))
             .WithCloseButtonText("Cancel")
             .WithDefaultButton(ContentDialogButton.Primary)

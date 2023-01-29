@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.ScriptingProviders;
-using DryIoc;
 
 namespace Artemis.Core.Services;
 
@@ -49,8 +48,7 @@ internal class ScriptingService : IScriptingService
             if (provider == null)
                 throw new ArtemisCoreException($"Can't create script instance as there is no matching scripting provider found for the script ({scriptConfiguration.ScriptingProviderId}).");
 
-            script = (GlobalScript) provider.Plugin.Container!.Resolve(provider.GlobalScriptType, args: new object[] {scriptConfiguration});
-
+            script = (GlobalScript) provider.Plugin.Resolve(provider.GlobalScriptType, scriptConfiguration);
             script.ScriptingProvider = provider;
             script.ScriptingService = this;
             scriptConfiguration.Script = script;
@@ -77,8 +75,7 @@ internal class ScriptingService : IScriptingService
             if (provider == null)
                 throw new ArtemisCoreException($"Can't create script instance as there is no matching scripting provider found for the script ({scriptConfiguration.ScriptingProviderId}).");
 
-            script = (ProfileScript) provider.Plugin.Container!.Resolve(provider.ProfileScriptType, args: new object[] {profile, scriptConfiguration});
-
+            script = (ProfileScript) provider.Plugin.Resolve(provider.ProfileScriptType, profile, scriptConfiguration);
             script.ScriptingProvider = provider;
             scriptConfiguration.Script = script;
             provider.InternalScripts.Add(script);

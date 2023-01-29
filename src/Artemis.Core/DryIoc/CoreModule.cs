@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Reflection;
 using Artemis.Core.DryIoc.Factories;
 using Artemis.Core.Services;
@@ -7,7 +6,6 @@ using Artemis.Storage;
 using Artemis.Storage.Migrations.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;
 using DryIoc;
-using Serilog;
 
 namespace Artemis.Core.DryIoc;
 
@@ -35,14 +33,16 @@ public class CoreModule : IModule
         builder.RegisterMany(new[] { storageAssembly }, type => type.IsAssignableTo<IStorageMigration>(), Reuse.Singleton, nonPublicServiceTypes: true);
 
         builder.Register<IPluginSettingsFactory, PluginSettingsFactory>(Reuse.Singleton);
-        //builder.Register(made: Made.Of(r => ServiceInfo.Of<IPluginSettingsFactory>(), factory => factory.CreatePluginSettings(Arg.Index<Type>(0))));
+        builder.Register(made: Made.Of(_ => ServiceInfo.Of<IPluginSettingsFactory>(), factory => factory.CreatePluginSettings(Arg.Index<Type>(0)), r => r.Parent.ImplementationType));
         builder.Register<ILoggerFactory, LoggerFactory>(Reuse.Singleton);
-        builder.Register<ILogger>(made: Made.Of(r => ServiceInfo.Of<ILoggerFactory>(), f => f.CreateLogger(Arg.Index<Type>(0)), r => r.Parent.ImplementationType));
-        //builder.Register<ILogger>(made: Made.Of(r => ServiceInfo.Of<ILoggerFactory>(), (f) => f.CreateLogger(Arg.)));
+        builder.Register(made: Made.Of(_ => ServiceInfo.Of<ILoggerFactory>(), f => f.CreateLogger(Arg.Index<Type>(0)), r => r.Parent.ImplementationType));
     }
 
     private bool HasAccessToProtectedService(Request request)
     {
-        return request.Parent.ImplementationType != null && !request.Parent.ImplementationType.Assembly.Location.StartsWith(Constants.PluginsFolder);
+        // Plugin assembly locations may not be set for some reason, that case it's also not allowed >:(
+        return request.Parent.ImplementationType != null && 
+               !string.IsNullOrWhiteSpace(request.Parent.ImplementationType.Assembly.Location) && 
+               !request.Parent.ImplementationType.Assembly.Location.StartsWith(Constants.PluginsFolder);
     }
 }

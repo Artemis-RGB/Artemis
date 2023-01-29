@@ -115,7 +115,7 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
 
         await _windowService.CreateContentDialog()
             .WithTitle($"{Device.RgbDevice.DeviceInfo.DeviceName} - Detect input")
-            .WithViewModel<DeviceDetectInputViewModel>(out DeviceDetectInputViewModel? viewModel, ("device", Device))
+            .WithViewModel<DeviceDetectInputViewModel>(out DeviceDetectInputViewModel viewModel, Device)
             .WithCloseButtonText("Cancel")
             .ShowAsync();
 

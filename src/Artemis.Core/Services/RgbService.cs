@@ -20,31 +20,36 @@ namespace Artemis.Core.Services;
 /// </summary>
 internal class RgbService : IRgbService
 {
-    private readonly IDeviceRepository _deviceRepository;
-    private readonly List<ArtemisDevice> _devices;
-    private readonly List<ArtemisDevice> _enabledDevices;
-    private readonly IContainer _container;
     private readonly ILogger _logger;
     private readonly IPluginManagementService _pluginManagementService;
+    private readonly IDeviceRepository _deviceRepository;
+    private readonly LazyEnumerable<IGraphicsContextProvider> _graphicsContextProviders;
+    
     private readonly PluginSetting<string> _preferredGraphicsContext;
     private readonly PluginSetting<double> _renderScaleSetting;
-    private readonly ISettingsService _settingsService;
     private readonly PluginSetting<int> _targetFrameRateSetting;
+    
+    private readonly List<ArtemisDevice> _devices;
+    private readonly List<ArtemisDevice> _enabledDevices;
     private readonly SKTextureBrush _textureBrush = new(null) {CalculationMode = RenderMode.Absolute};
     private Dictionary<Led, ArtemisLed> _ledMap;
     private ListLedGroup? _surfaceLedGroup;
     private SKTexture? _texture;
 
-    public RgbService(ILogger logger, IContainer container, ISettingsService settingsService, IPluginManagementService pluginManagementService, IDeviceRepository deviceRepository)
+    public RgbService(ILogger logger,
+        ISettingsService settingsService,
+        IPluginManagementService pluginManagementService,
+        IDeviceRepository deviceRepository,
+        LazyEnumerable<IGraphicsContextProvider> graphicsContextProviders)
     {
         _logger = logger;
-        _container = container;
-        _settingsService = settingsService;
         _pluginManagementService = pluginManagementService;
         _deviceRepository = deviceRepository;
+        _graphicsContextProviders = graphicsContextProviders;
+        
         _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 30);
         _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.25);
-        _preferredGraphicsContext = _settingsService.GetSetting("Core.PreferredGraphicsContext", "Software");
+        _preferredGraphicsContext = settingsService.GetSetting("Core.PreferredGraphicsContext", "Software");
 
         Surface = new RGBSurface();
         Utilities.RenderScaleMultiplier = (int) (1 / _renderScaleSetting.Value);
@@ -226,7 +231,7 @@ internal class RgbService : IRgbService
         {
             _logger.Verbose("[AddDeviceProvider] Updating the LED group");
             UpdateLedGroup();
-            
+
             _logger.Verbose("[AddDeviceProvider] Resuming rendering after adding {DeviceProvider}", deviceProvider.GetType().Name);
             if (changedRenderPaused)
                 SetRenderPaused(false);
@@ -257,7 +262,7 @@ internal class RgbService : IRgbService
         {
             _logger.Verbose("[RemoveDeviceProvider] Updating the LED group");
             UpdateLedGroup();
-            
+
             _logger.Verbose("[RemoveDeviceProvider] Resuming rendering after adding {DeviceProvider}", deviceProvider.GetType().Name);
             if (changedRenderPaused)
                 SetRenderPaused(false);
@@ -373,7 +378,7 @@ internal class RgbService : IRgbService
         }
 
 
-        List<IGraphicsContextProvider> providers = _container.ResolveMany<IGraphicsContextProvider>().ToList();
+        List<IGraphicsContextProvider> providers = _graphicsContextProviders.ToList();
         if (!providers.Any())
         {
             _logger.Warning("No graphics context provider found, defaulting to software rendering");

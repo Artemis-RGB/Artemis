@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Reflection;
 using Artemis.Core;
 using DryIoc;
 

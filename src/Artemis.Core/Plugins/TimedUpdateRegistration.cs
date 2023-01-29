@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Timers;
+using Artemis.Core.DryIoc.Factories;
 using Artemis.Core.Modules;
-using Artemis.Core.Services;
-using DryIoc;
 using Serilog;
 
 namespace Artemis.Core;
@@ -21,9 +20,7 @@ public sealed class TimedUpdateRegistration : IDisposable
 
     internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Action<double> action, string? name)
     {
-        if (CoreService.Container == null)
-            throw new ArtemisCoreException("Cannot create a TimedUpdateRegistration before initializing the Core");
-        _logger = CoreService.Container.Resolve<ILogger>();
+        _logger = LoggerFactory.Logger.ForContext<TimedUpdateRegistration>();
 
         Feature = feature;
         Interval = interval;
@@ -38,9 +35,7 @@ public sealed class TimedUpdateRegistration : IDisposable
 
     internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Func<double, Task> asyncAction, string? name)
     {
-        if (CoreService.Container == null)
-            throw new ArtemisCoreException("Cannot create a TimedUpdateRegistration before initializing the Core");
-        _logger = CoreService.Container.Resolve<ILogger>();
+        _logger = LoggerFactory.Logger.ForContext<TimedUpdateRegistration>();
 
         Feature = feature;
         Interval = interval;

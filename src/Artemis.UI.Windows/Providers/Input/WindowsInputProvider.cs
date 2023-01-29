@@ -37,6 +37,8 @@ public class WindowsInputProvider : InputProvider
         RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, _sponge.Handle.Handle);
     }
 
+    public static Guid Id { get; set; } = new("6737b204-ffb1-4cd9-8776-9fb851db303a");
+
 
     #region Overrides of InputProvider
 

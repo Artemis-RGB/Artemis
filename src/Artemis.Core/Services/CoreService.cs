@@ -20,7 +20,6 @@ namespace Artemis.Core.Services;
 /// </summary>
 internal class CoreService : ICoreService
 {
-    internal static IContainer? Container;
     private readonly Stopwatch _frameStopWatch;
     private readonly ILogger _logger;
     private readonly PluginSetting<LogEventLevel> _loggingLevel;
@@ -47,7 +46,6 @@ internal class CoreService : ICoreService
         IScriptingService scriptingService,
         IProcessMonitorService _2)
     {
-        Container = container;
         Constants.CorePlugin.Container = container;
 
         _logger = logger;
@@ -194,12 +192,6 @@ internal class CoreService : ICoreService
     public TimeSpan FrameTime { get; private set; }
     public bool ProfileRenderingDisabled { get; set; }
     public bool IsElevated { get; set; }
-
-    public void Dispose()
-    {
-        // Dispose services
-        _pluginManagementService.Dispose();
-    }
 
     public bool IsInitialized { get; set; }
 

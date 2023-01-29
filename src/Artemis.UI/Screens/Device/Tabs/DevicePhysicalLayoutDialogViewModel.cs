@@ -25,7 +25,7 @@ public class DevicePhysicalLayoutDialogViewModel : ContentDialogViewModelBase
     {
         await windowService.CreateContentDialog()
             .WithTitle("Select physical layout")
-            .WithViewModel(out DevicePhysicalLayoutDialogViewModel vm, ("device", device))
+            .WithViewModel(out DevicePhysicalLayoutDialogViewModel vm, device)
             .WithCloseButtonText("Cancel")
             .ShowAsync();
 

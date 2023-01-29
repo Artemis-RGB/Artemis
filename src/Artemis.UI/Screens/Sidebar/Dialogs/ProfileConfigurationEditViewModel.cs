@@ -16,7 +16,6 @@ using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Material.Icons;
-using Newtonsoft.Json;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;

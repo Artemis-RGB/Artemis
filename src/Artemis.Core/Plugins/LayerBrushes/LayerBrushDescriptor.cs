@@ -1,6 +1,5 @@
 ﻿using System;
 using Artemis.Storage.Entities.Profile;
-using DryIoc;
 
 namespace Artemis.Core.LayerBrushes;
 
@@ -63,7 +62,7 @@ public class LayerBrushDescriptor
         if (layer == null)
             throw new ArgumentNullException(nameof(layer));
 
-        BaseLayerBrush brush = (BaseLayerBrush) Provider.Plugin.Container!.Resolve(LayerBrushType);
+        BaseLayerBrush brush = (BaseLayerBrush) Provider.Plugin.Resolve(LayerBrushType);
         brush.Layer = layer;
         brush.Descriptor = this;
         brush.LayerBrushEntity = entity ?? new LayerBrushEntity {ProviderId = Provider.Id, BrushType = LayerBrushType.FullName};

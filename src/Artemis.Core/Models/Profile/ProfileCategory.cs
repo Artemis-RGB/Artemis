@@ -10,6 +10,11 @@ namespace Artemis.Core;
 /// </summary>
 public class ProfileCategory : CorePropertyChanged, IStorageModel
 {
+    /// <summary>
+    /// Represents an empty profile category.
+    /// </summary>
+    public static ProfileCategory Empty = new("Empty", -1);
+    
     private readonly List<ProfileConfiguration> _profileConfigurations = new();
     private bool _isCollapsed;
     private bool _isSuspended;

@@ -10,7 +10,7 @@ internal class LoggerFactory : ILoggerFactory
 {
     internal static readonly LoggingLevelSwitch LoggingLevelSwitch = new(LogEventLevel.Verbose);
 
-    private static readonly ILogger Logger = new LoggerConfiguration()
+    internal static readonly ILogger Logger = new LoggerConfiguration()
         .Enrich.FromLogContext()
         .WriteTo.File(Path.Combine(Constants.LogsFolder, "Artemis log-.log"),
             rollingInterval: RollingInterval.Day,
