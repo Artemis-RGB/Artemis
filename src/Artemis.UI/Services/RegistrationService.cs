@@ -53,7 +53,7 @@ public class RegistrationService : IRegistrationService
 
     private void CreateCursorResources()
     {
-        ICursorProvider? cursorProvider = _container.Resolve<ICursorProvider>();
+        ICursorProvider? cursorProvider = _container.Resolve<ICursorProvider>(IfUnresolved.ReturnDefault);
         if (cursorProvider == null)
             return;
 

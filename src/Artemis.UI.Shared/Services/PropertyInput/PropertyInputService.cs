@@ -71,6 +71,7 @@ internal class PropertyInputService : IPropertyInputService
                 _registeredPropertyEditors.Remove(registration);
 
                 _container.Unregister(registration.ViewModelType);
+                _container.ClearCache(registration.ViewModelType);
             }
         }
     }

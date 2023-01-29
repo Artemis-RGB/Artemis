@@ -28,7 +28,7 @@ public class UpdateService : IUpdateService
         _mainWindowService = mainWindowService;
 
         if (!Constants.BuildInfo.IsLocalBuild)
-            _updateProvider = container.Resolve<IUpdateProvider>();
+            _updateProvider = container.Resolve<IUpdateProvider>(IfUnresolved.ReturnDefault);
 
         _checkForUpdates = settingsService.GetSetting("UI.CheckForUpdates", true);
         _autoUpdate = settingsService.GetSetting("UI.AutoUpdate", false);

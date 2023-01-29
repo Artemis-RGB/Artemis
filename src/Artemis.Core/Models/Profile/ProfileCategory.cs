@@ -13,7 +13,7 @@ public class ProfileCategory : CorePropertyChanged, IStorageModel
     /// <summary>
     /// Represents an empty profile category.
     /// </summary>
-    public static ProfileCategory Empty = new("Empty", -1);
+    public static readonly ProfileCategory Empty = new("Empty", -1);
     
     private readonly List<ProfileConfiguration> _profileConfigurations = new();
     private bool _isCollapsed;

@@ -165,10 +165,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
 
     private async Task ExecuteAddProfile()
     {
-        ProfileConfiguration? result = await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(
-            ("profileCategory", ProfileCategory),
-            ("profileConfiguration", null)
-        );
+        ProfileConfiguration? result = await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(ProfileCategory, ProfileConfiguration.Empty);
         if (result != null)
         {
             SidebarProfileConfigurationViewModel viewModel = _vmFactory.SidebarProfileConfigurationViewModel(result);

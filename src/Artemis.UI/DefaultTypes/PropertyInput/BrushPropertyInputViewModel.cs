@@ -59,7 +59,7 @@ public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushRefe
     /// <inheritdoc />
     protected override void ApplyInputValue()
     {
-        if (LayerProperty.ProfileElement is not Layer layer || SelectedDescriptor == null)
+        if (LayerProperty.ProfileElement is not Layer layer || layer.LayerBrush == null || SelectedDescriptor == null)
             return;
 
         _profileEditorService.ExecuteCommand(new ChangeLayerBrush(layer, SelectedDescriptor));

@@ -88,7 +88,7 @@ public class DataBindingViewModel : ActivatableViewModelBase
         try
         {
             _editorOpen = true;
-            await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(("nodeScript", LayerProperty.BaseDataBinding.Script));
+            await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(LayerProperty.BaseDataBinding.Script);
             await _profileEditorService.SaveProfileAsync();
         }
         finally

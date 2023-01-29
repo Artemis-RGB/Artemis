@@ -35,12 +35,8 @@ internal class DataModelUIService : IDataModelUIService
         // This assumes the type can be converted, that has been checked when the VM was created
         if (initialValue != null && initialValue.GetType() != registration.SupportedType)
             initialValue = Convert.ChangeType(initialValue, registration.SupportedType);
-
-        // If this ever happens something is likely wrong with the plugin unload detection
-        if (registration.Plugin.Container == null)
-            throw new ArtemisSharedUIException("Cannot InstantiateDataModelInputViewModel for a registration by an uninitialized plugin");
-
-        DataModelInputViewModel viewModel = (DataModelInputViewModel) registration.Plugin.Container.Resolve(registration.ViewModelType, new object[] { description, initialValue });
+        
+        DataModelInputViewModel viewModel = (DataModelInputViewModel) registration.Plugin.Resolve(registration.ViewModelType, description, initialValue);
         viewModel.CompatibleConversionTypes = registration.CompatibleConversionTypes;
         return viewModel;
     }
@@ -126,7 +122,7 @@ internal class DataModelUIService : IDataModelUIService
                 return existing;
             }
 
-            _container.Register(viewModelType);
+            _container.Register(viewModelType, ifAlreadyRegistered: IfAlreadyRegistered.Replace);
 
             // Create the registration
             DataModelVisualizationRegistration registration = new(this, RegistrationType.Input, plugin, supportedType, viewModelType)
@@ -172,6 +168,7 @@ internal class DataModelUIService : IDataModelUIService
                 _registeredDataModelEditors.Remove(registration);
 
                 _container.Unregister(registration.ViewModelType);
+                _container.ClearCache(registration.ViewModelType);
             }
         }
     }
@@ -186,6 +183,7 @@ internal class DataModelUIService : IDataModelUIService
                 _registeredDataModelDisplays.Remove(registration);
 
                 _container.Unregister(registration.ViewModelType);
+                _container.ClearCache(registration.ViewModelType);
             }
         }
     }
@@ -198,21 +196,11 @@ internal class DataModelUIService : IDataModelUIService
 
             DataModelVisualizationRegistration? match = _registeredDataModelDisplays.FirstOrDefault(d => d.SupportedType == propertyType);
             if (match != null)
-            {
-                // If this ever happens something is likely wrong with the plugin unload detection
-                if (match.Plugin.Container == null)
-                    throw new ArtemisSharedUIException("Cannot GetDataModelDisplayViewModel for a registration by an uninitialized plugin");
-
-                result = (DataModelDisplayViewModel) match.Plugin.Container.Resolve(match.ViewModelType);
-            }
+                result = (DataModelDisplayViewModel) match.Plugin.Resolve(match.ViewModelType);
             else if (!fallBackToDefault)
-            {
                 result = null;
-            }
             else
-            {
                 result = _container.Resolve<DefaultDataModelDisplayViewModel>();
-            }
 
             if (result != null)
                 result.PropertyDescription = description;

@@ -42,7 +42,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
 
     public ProfileConfigurationEditViewModel(
         ProfileCategory profileCategory,
-        ProfileConfiguration? profileConfiguration,
+        ProfileConfiguration profileConfiguration,
         IWindowService windowService,
         IProfileService profileService,
         IProfileEditorService profileEditorService,
@@ -53,7 +53,10 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         _windowService = windowService;
         _profileService = profileService;
         _profileEditorService = profileEditorService;
-        _profileConfiguration = profileConfiguration ?? profileService.CreateProfileConfiguration(profileCategory, "New profile", Enum.GetValues<MaterialIconKind>().First().ToString());
+        
+        _profileConfiguration = profileConfiguration == ProfileConfiguration.Empty 
+            ? profileService.CreateProfileConfiguration(profileCategory, "New profile", Enum.GetValues<MaterialIconKind>().First().ToString()) 
+            : profileConfiguration;
         _profileName = _profileConfiguration.Name;
         _iconType = _profileConfiguration.Icon.IconType;
         _hotkeyMode = _profileConfiguration.HotkeyMode;
@@ -63,11 +66,9 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         if (_profileConfiguration.DisableHotkey != null)
             _disableHotkey = new Hotkey {Key = _profileConfiguration.DisableHotkey.Key, Modifiers = _profileConfiguration.DisableHotkey.Modifiers};
 
-        IsNew = profileConfiguration == null;
+        IsNew = profileConfiguration == ProfileConfiguration.Empty;
         DisplayName = IsNew ? "Artemis | Add profile" : "Artemis | Edit profile properties";
-        Modules = new ObservableCollection<ProfileModuleViewModel?>(
-            pluginManagementService.GetFeaturesOfType<Module>().Where(m => !m.IsAlwaysAvailable).Select(m => new ProfileModuleViewModel(m))
-        );
+        Modules = new ObservableCollection<ProfileModuleViewModel?>(pluginManagementService.GetFeaturesOfType<Module>().Where(m => !m.IsAlwaysAvailable).Select(m => new ProfileModuleViewModel(m)));
         Modules.Insert(0, null);
         _selectedModule = Modules.FirstOrDefault(m => m?.Module == _profileConfiguration.Module);
 
@@ -257,7 +258,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
 
     private async Task ExecuteOpenConditionEditor()
     {
-        await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(("nodeScript", ProfileConfiguration.ActivationCondition));
+        await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(ProfileConfiguration.ActivationCondition);
     }
 
     #endregion

@@ -17,7 +17,6 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
-using DryIoc;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Tree;
@@ -86,9 +85,7 @@ public class TreeGroupViewModel : ActivatableViewModelBase
             if (constructors.Length != 1)
                 throw new ArtemisUIException("Brush configuration dialogs must have exactly one constructor");
 
-            BrushConfigurationViewModel viewModel =
-                (BrushConfigurationViewModel) LayerBrush.Descriptor.Provider.Plugin.Container!.Resolve(configurationViewModel.Type, args: new object[] { LayerBrush });
-
+            BrushConfigurationViewModel viewModel = (BrushConfigurationViewModel) LayerBrush.Descriptor.Provider.Plugin.Resolve(configurationViewModel.Type, LayerBrush);
             _brushConfigurationWindowViewModel = new BrushConfigurationWindowViewModel(viewModel, configurationViewModel);
             await _windowService.ShowDialogAsync(_brushConfigurationWindowViewModel);
 
@@ -113,9 +110,7 @@ public class TreeGroupViewModel : ActivatableViewModelBase
             if (constructors.Length != 1)
                 throw new ArtemisUIException("Effect configuration dialogs must have exactly one constructor");
 
-            EffectConfigurationViewModel viewModel =
-                (EffectConfigurationViewModel) LayerEffect.Descriptor.Provider.Plugin.Container!.Resolve(configurationViewModel.Type, args: new object[] { LayerEffect });
-
+            EffectConfigurationViewModel viewModel = (EffectConfigurationViewModel) LayerEffect.Descriptor.Provider.Plugin.Resolve(configurationViewModel.Type, LayerEffect);
             _effectConfigurationWindowViewModel = new EffectConfigurationWindowViewModel(viewModel, configurationViewModel);
             await _windowService.ShowDialogAsync(_effectConfigurationWindowViewModel);
 

@@ -40,7 +40,7 @@ public class App : Application
         IInputService inputService = _container.Resolve<IInputService>();
         try
         {
-            inputService.AddInputProvider(_container.Resolve<LinuxInputProvider>());
+            inputService.AddInputProvider(_container.Resolve<InputProvider>(LinuxInputProvider.Id));
         }
         catch
         {

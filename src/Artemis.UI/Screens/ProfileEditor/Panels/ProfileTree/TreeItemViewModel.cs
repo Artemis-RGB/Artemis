@@ -274,7 +274,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
         if (ProfileElement is not Layer layer)
             return;
 
-        await _windowService.ShowDialogAsync<LayerHintsDialogViewModel, bool>(("layer", layer));
+        await _windowService.ShowDialogAsync<LayerHintsDialogViewModel, bool>(layer);
         await ProfileEditorService.SaveProfileAsync();
     }
 

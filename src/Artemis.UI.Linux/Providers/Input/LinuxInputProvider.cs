@@ -26,6 +26,8 @@ public class LinuxInputProvider : InputProvider
             _readers.Add(reader);
         }
     }
+    
+    public static Guid Id { get; } = new("72a6fe5c-b11e-4886-bd48-b3ff5d9006c1");
 
     #region Overrides of InputProvider
 

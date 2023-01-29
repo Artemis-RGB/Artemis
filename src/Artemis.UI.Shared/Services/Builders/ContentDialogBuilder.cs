@@ -130,7 +130,7 @@ public class ContentDialogBuilder
     /// <param name="viewModel">The resulting view model.</param>
     /// <param name="parameters">Optional parameters to pass to the constructor of the view model.</param>
     /// <returns>The builder that can be used to further build the dialog.</returns>
-    public ContentDialogBuilder WithViewModel<T>(out T viewModel, params object?[] parameters) where T : ContentDialogViewModelBase
+    public ContentDialogBuilder WithViewModel<T>(out T viewModel, params object[] parameters) where T : ContentDialogViewModelBase
     {
         viewModel = _container.Resolve<T>(parameters);
         viewModel.ContentDialog = _contentDialog;

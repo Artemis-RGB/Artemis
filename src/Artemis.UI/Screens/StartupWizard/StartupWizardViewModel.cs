@@ -38,7 +38,7 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
         _rgbService = rgbService;
         _windowService = windowService;
         _updateService = updateService;
-        _autoRunProvider = container.Resolve<IAutoRunProvider>();
+        _autoRunProvider = container.Resolve<IAutoRunProvider>(IfUnresolved.ReturnDefault);
 
         Continue = ReactiveCommand.Create(ExecuteContinue);
         GoBack = ReactiveCommand.Create(ExecuteGoBack);

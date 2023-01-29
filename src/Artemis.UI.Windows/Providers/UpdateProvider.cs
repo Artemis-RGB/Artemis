@@ -201,7 +201,7 @@ public class UpdateProvider : IUpdateProvider, IDisposable
     {
         if (windowOpen)
         {
-            bool update = await _windowService.ShowDialogAsync<UpdateDialogViewModel, bool>(("channel", channel));
+            bool update = await _windowService.ShowDialogAsync<UpdateDialogViewModel, bool>(channel);
             if (update)
                 await RunInstaller(channel, false);
         }

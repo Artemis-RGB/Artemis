@@ -45,7 +45,7 @@ public class GeneralTabViewModel : ActivatableViewModelBase
         _debugService = debugService;
         _windowService = windowService;
         _updateService = updateService;
-        _autoRunProvider = container.Resolve<IAutoRunProvider>();
+        _autoRunProvider = container.Resolve<IAutoRunProvider>(IfUnresolved.ReturnDefault);
 
         List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
         List<IGraphicsContextProvider> graphicsContextProviders = container.Resolve<List<IGraphicsContextProvider>>();

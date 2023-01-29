@@ -21,10 +21,12 @@ internal class WindowService : IWindowService
         _container = container;
     }
 
-    public T ShowWindow<T>(params (string name, object value)[] parameters)
+    public T ShowWindow<T>(params object[] parameters)
     {
-        object?[] paramsArray = parameters.Select(kv => kv.value).ToArray();
-        T viewModel = _container.Resolve<T>(paramsArray)!;
+        T viewModel = _container.Resolve<T>(parameters);
+        if (viewModel == null)
+            throw new ArtemisSharedUIException($"Failed to show window for VM of type {typeof(T).Name}, could not create instance.");
+        
         ShowWindow(viewModel);
         return viewModel;
     }
@@ -52,10 +54,12 @@ internal class WindowService : IWindowService
         return window;
     }
 
-    public async Task<T> ShowDialogAsync<T>(params (string name, object value)[] parameters)
+    public async Task<T> ShowDialogAsync<T>(params object[] parameters)
     {
-        object?[] paramsArray = parameters.Select(kv => kv.value).ToArray();
-        T viewModel = _container.Resolve<T>(paramsArray)!;
+        T viewModel = _container.Resolve<T>(parameters);
+        if (viewModel == null)
+            throw new ArtemisSharedUIException($"Failed to show window for VM of type {typeof(T).Name}, could not create instance.");
+        
         await ShowDialogAsync(viewModel);
         return viewModel;
     }
@@ -78,10 +82,12 @@ internal class WindowService : IWindowService
         await window.ShowDialog(parent);
     }
 
-    public async Task<TResult> ShowDialogAsync<TViewModel, TResult>(params (string name, object? value)[] parameters) where TViewModel : DialogViewModelBase<TResult>
+    public async Task<TResult> ShowDialogAsync<TViewModel, TResult>(params object[] parameters) where TViewModel : DialogViewModelBase<TResult>
     {
-        object?[] paramsArray = parameters.Select(kv =>  kv.value).ToArray();
-        TViewModel viewModel = _container.Resolve<TViewModel>(paramsArray)!;
+        TViewModel viewModel = _container.Resolve<TViewModel>(parameters);
+        if (viewModel == null)
+            throw new ArtemisSharedUIException($"Failed to show window for VM of type {typeof(TViewModel).Name}, could not create instance.");
+        
         return await ShowDialogAsync(viewModel);
     }
 
