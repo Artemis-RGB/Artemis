@@ -1,7 +1,7 @@
 using System;
 using Avalonia;
 using Avalonia.ReactiveUI;
-using Ninject;
+using DryIoc;
 using Serilog;
 
 namespace Artemis.UI.Windows;
@@ -41,8 +41,8 @@ internal class Program
             .UseReactiveUI();
     }
 
-    public static void CreateLogger(IKernel kernel)
+    public static void CreateLogger(IContainer container)
     {
-        Logger = kernel.Get<ILogger>().ForContext<Program>();
+        Logger = container.Resolve<ILogger>().ForContext<Program>();
     }
 }

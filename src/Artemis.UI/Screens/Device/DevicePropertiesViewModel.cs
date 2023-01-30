@@ -4,7 +4,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Ninject.Factories;
+using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Shared;
 using ReactiveUI;
 using RGB.NET.Core;

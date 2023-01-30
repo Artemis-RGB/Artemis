@@ -51,7 +51,7 @@ public class StaticConditionViewModel : ActivatableViewModelBase
 
     private async Task ExecuteOpenEditor()
     {
-        await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(("nodeScript", _staticCondition.Script));
+        await _windowService.ShowDialogAsync<NodeScriptWindowViewModel, bool>(_staticCondition.Script);
         await _profileEditorService.SaveProfileAsync();
     }
 }

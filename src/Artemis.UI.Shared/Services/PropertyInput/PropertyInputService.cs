@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core;
-using Ninject;
-using Ninject.Parameters;
+using DryIoc;
 
 namespace Artemis.UI.Shared.Services.PropertyInput;
 
 internal class PropertyInputService : IPropertyInputService
 {
-    private readonly IKernel _kernel;
+    private readonly IContainer _container;
     private readonly List<PropertyInputRegistration> _registeredPropertyEditors;
 
-    public PropertyInputService(IKernel kernel)
+    public PropertyInputService(IContainer container)
     {
-        _kernel = kernel;
+        _container = container;
         _registeredPropertyEditors = new List<PropertyInputRegistration>();
         RegisteredPropertyEditors = new ReadOnlyCollection<PropertyInputRegistration>(_registeredPropertyEditors);
     }
@@ -55,7 +54,7 @@ internal class PropertyInputService : IPropertyInputService
                 return existing;
             }
 
-            _kernel.Bind(viewModelType).ToSelf();
+            _container.Register(viewModelType);
             PropertyInputRegistration registration = new(this, plugin, supportedType, viewModelType);
             _registeredPropertyEditors.Add(registration);
             return registration;
@@ -71,7 +70,8 @@ internal class PropertyInputService : IPropertyInputService
                 registration.Unsubscribe();
                 _registeredPropertyEditors.Remove(registration);
 
-                _kernel.Unbind(registration.ViewModelType);
+                _container.Unregister(registration.ViewModelType);
+                _container.ClearCache(registration.ViewModelType);
             }
         }
     }
@@ -110,10 +110,9 @@ internal class PropertyInputService : IPropertyInputService
         if (viewModelType == null)
             return null;
 
-        ConstructorArgument parameter = new("layerProperty", layerProperty);
         // ReSharper disable once InconsistentlySynchronizedField
         // When you've just spent the last 2 hours trying to figure out a deadlock and reach this line, I'm so, so sorry. I thought this would be fine.
-        IKernel kernel = registration?.Plugin.Kernel ?? _kernel;
-        return (PropertyInputViewModel<T>) kernel.Get(viewModelType, parameter);
+        IContainer container = registration?.Plugin.Container ?? _container;
+        return (PropertyInputViewModel<T>) container.Resolve(viewModelType, args: new object[] { layerProperty });
     }
 }

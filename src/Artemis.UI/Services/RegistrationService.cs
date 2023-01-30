@@ -14,7 +14,7 @@ using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.PropertyInput;
 using Artemis.VisualScripting.Nodes.Mathematics;
 using Avalonia;
-using Ninject;
+using DryIoc;
 using SkiaSharp;
 
 namespace Artemis.UI.Services;
@@ -23,13 +23,13 @@ public class RegistrationService : IRegistrationService
 {
     private readonly IDataModelUIService _dataModelUIService;
     private readonly IInputService _inputService;
-    private readonly IKernel _kernel;
+    private readonly IContainer _container;
     private readonly INodeService _nodeService;
     private readonly IPropertyInputService _propertyInputService;
     private readonly IWebServerService _webServerService;
     private bool _registeredBuiltInPropertyEditors;
 
-    public RegistrationService(IKernel kernel,
+    public RegistrationService(IContainer container,
         IInputService inputService,
         IPropertyInputService propertyInputService,
         IProfileEditorService profileEditorService,
@@ -39,7 +39,7 @@ public class RegistrationService : IRegistrationService
         IDeviceLayoutService deviceLayoutService // here to make sure it is instantiated
     )
     {
-        _kernel = kernel;
+        _container = container;
         _inputService = inputService;
         _propertyInputService = propertyInputService;
         _nodeService = nodeService;
@@ -53,7 +53,7 @@ public class RegistrationService : IRegistrationService
 
     private void CreateCursorResources()
     {
-        ICursorProvider? cursorProvider = _kernel.TryGet<ICursorProvider>();
+        ICursorProvider? cursorProvider = _container.Resolve<ICursorProvider>(IfUnresolved.ReturnDefault);
         if (cursorProvider == null)
             return;
 

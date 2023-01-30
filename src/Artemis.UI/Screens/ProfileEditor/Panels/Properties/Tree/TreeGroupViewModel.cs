@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reflection;
@@ -18,8 +17,6 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
-using Ninject;
-using Ninject.Parameters;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Tree;
@@ -88,12 +85,7 @@ public class TreeGroupViewModel : ActivatableViewModelBase
             if (constructors.Length != 1)
                 throw new ArtemisUIException("Brush configuration dialogs must have exactly one constructor");
 
-            // Find the BaseLayerBrush parameter, it is required by the base constructor so its there for sure
-            ParameterInfo brushParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerBrush).IsAssignableFrom(p.ParameterType));
-            ConstructorArgument argument = new(brushParameter.Name!, LayerBrush);
-            BrushConfigurationViewModel viewModel =
-                (BrushConfigurationViewModel) LayerBrush.Descriptor.Provider.Plugin.Kernel!.Get(configurationViewModel.Type, argument);
-
+            BrushConfigurationViewModel viewModel = (BrushConfigurationViewModel) LayerBrush.Descriptor.Provider.Plugin.Resolve(configurationViewModel.Type, LayerBrush);
             _brushConfigurationWindowViewModel = new BrushConfigurationWindowViewModel(viewModel, configurationViewModel);
             await _windowService.ShowDialogAsync(_brushConfigurationWindowViewModel);
 
@@ -118,12 +110,7 @@ public class TreeGroupViewModel : ActivatableViewModelBase
             if (constructors.Length != 1)
                 throw new ArtemisUIException("Effect configuration dialogs must have exactly one constructor");
 
-            // Find the BaseLayerEffect parameter, it is required by the base constructor so its there for sure
-            ParameterInfo effectParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerEffect).IsAssignableFrom(p.ParameterType));
-            ConstructorArgument argument = new(effectParameter.Name!, LayerEffect);
-            EffectConfigurationViewModel viewModel =
-                (EffectConfigurationViewModel) LayerEffect.Descriptor.Provider.Plugin.Kernel!.Get(configurationViewModel.Type, argument);
-
+            EffectConfigurationViewModel viewModel = (EffectConfigurationViewModel) LayerEffect.Descriptor.Provider.Plugin.Resolve(configurationViewModel.Type, LayerEffect);
             _effectConfigurationWindowViewModel = new EffectConfigurationWindowViewModel(viewModel, configurationViewModel);
             await _windowService.ShowDialogAsync(_effectConfigurationWindowViewModel);
 
@@ -143,7 +130,7 @@ public class TreeGroupViewModel : ActivatableViewModelBase
 
         await _windowService.CreateContentDialog()
             .WithTitle("Rename layer effect")
-            .WithViewModel(out LayerEffectRenameViewModel vm, ("layerEffect", LayerEffect))
+            .WithViewModel(out LayerEffectRenameViewModel vm, LayerEffect)
             .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Confirm))
             .WithCloseButtonText("Cancel")
             .WithDefaultButton(ContentDialogButton.Primary)

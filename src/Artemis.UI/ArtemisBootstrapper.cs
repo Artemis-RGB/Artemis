@@ -3,53 +3,54 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using Artemis.Core;
-using Artemis.Core.Ninject;
+using Artemis.Core.DryIoc;
+using Artemis.UI.DryIoc;
 using Artemis.UI.Exceptions;
-using Artemis.UI.Ninject;
 using Artemis.UI.Screens.Root;
 using Artemis.UI.Shared.DataModelPicker;
-using Artemis.UI.Shared.Ninject;
+using Artemis.UI.Shared.DryIoc;
 using Artemis.UI.Shared.Services;
-using Artemis.VisualScripting.Ninject;
+using Artemis.VisualScripting.DryIoc;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Ninject;
-using Ninject.Modules;
+using DryIoc;
 using ReactiveUI;
-using Splat.Ninject;
+using Splat.DryIoc;
 
 namespace Artemis.UI;
 
 public static class ArtemisBootstrapper
 {
-    private static StandardKernel? _kernel;
+    private static Container? _container;
     private static Application? _application;
 
-    public static StandardKernel Bootstrap(Application application, params INinjectModule[] modules)
+    public static IContainer Bootstrap(Application application, params IModule[] modules)
     {
-        if (_application != null || _kernel != null)
+        if (_application != null || _container != null)
             throw new ArtemisUIException("UI already bootstrapped");
 
         Utilities.PrepareFirstLaunch();
 
         _application = application;
-        _kernel = new StandardKernel();
-        _kernel.Settings.InjectNonPublic = true;
+        _container = new Container(rules => rules.WithConcreteTypeDynamicRegistrations()
+                                                 .WithoutThrowOnRegisteringDisposableTransient());
 
-        _kernel.Load<CoreModule>();
-        _kernel.Load<UIModule>();
-        _kernel.Load<SharedUIModule>();
-        _kernel.Load<NoStringNinjectModule>();
-        _kernel.Load(modules);
-        _kernel.UseNinjectDependencyResolver();
+        new CoreModule().Load(_container);
+        new UIModule().Load(_container);
+        new SharedUIModule().Load(_container);
+        new NoStringDryIocModule().Load(_container);
+        foreach (IModule module in modules)
+            module.Load(_container);
 
-        return _kernel;
+        _container.UseDryIocDependencyResolver();
+
+        return _container;
     }
 
     public static void Initialize()
     {
-        if (_application == null || _kernel == null)
+        if (_application == null || _container == null)
             throw new ArtemisUIException("UI not yet bootstrapped");
         if (_application.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
             return;
@@ -59,16 +60,16 @@ public static class ArtemisBootstrapper
         // Don't shut down when the last window closes, we might still be active in the tray
         desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
         // Create the root view model that drives the UI
-        RootViewModel rootViewModel = _kernel.Get<RootViewModel>();
+        RootViewModel rootViewModel = _container.Resolve<RootViewModel>();
         // Apply the root view model to the data context of the application so that tray icon commands work
         _application.DataContext = rootViewModel;
 
         RxApp.DefaultExceptionHandler = Observer.Create<Exception>(DisplayUnhandledException);
-        DataModelPicker.DataModelUIService = _kernel.Get<IDataModelUIService>();
+        DataModelPicker.DataModelUIService = _container.Resolve<IDataModelUIService>();
     }
 
     private static void DisplayUnhandledException(Exception exception)
     {
-        _kernel?.Get<IWindowService>().ShowExceptionDialog("Exception", exception);
+        _container?.Resolve<IWindowService>().ShowExceptionDialog("Exception", exception);
     }
 }

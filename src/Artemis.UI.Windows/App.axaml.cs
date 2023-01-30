@@ -7,21 +7,21 @@ using System.Net.Http;
 using System.Threading;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Windows.Ninject;
+using Artemis.UI.Windows.DryIoc;
 using Artemis.UI.Windows.Providers.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using Ninject;
+using DryIoc;
 using ReactiveUI;
 
 namespace Artemis.UI.Windows;
 
 public class App : Application
 {
-    private StandardKernel? _kernel;
+    private IContainer? _container;
     private bool _shutDown;
 
     public override void Initialize()
@@ -33,8 +33,8 @@ public class App : Application
             Environment.Exit(1);
         }
 
-        _kernel = ArtemisBootstrapper.Bootstrap(this, new WindowsModule());
-        Program.CreateLogger(_kernel);
+        _container = ArtemisBootstrapper.Bootstrap(this, new WindowsModule());
+        Program.CreateLogger(_container);
         RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
         AvaloniaXamlLoader.Load(this);
     }
@@ -45,14 +45,14 @@ public class App : Application
             return;
 
         ArtemisBootstrapper.Initialize();
-        _applicationStateManager = new ApplicationStateManager(_kernel!, desktop.Args);
-        RegisterProviders(_kernel!);
+        _applicationStateManager = new ApplicationStateManager(_container!, desktop.Args);
+        RegisterProviders(_container!);
     }
 
-    private void RegisterProviders(StandardKernel standardKernel)
+    private void RegisterProviders(IContainer container)
     {
-        IInputService inputService = standardKernel.Get<IInputService>();
-        inputService.AddInputProvider(standardKernel.Get<WindowsInputProvider>());
+        IInputService inputService = container.Resolve<IInputService>();
+        inputService.AddInputProvider(container.Resolve<InputProvider>(serviceKey: WindowsInputProvider.Id));
     }
 
     private bool FocusExistingInstance()

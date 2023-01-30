@@ -6,26 +6,27 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
+using DryIoc;
 using FluentAvalonia.UI.Controls;
-using Ninject;
-using Ninject.Parameters;
 
 namespace Artemis.UI.Shared.Services;
 
 internal class WindowService : IWindowService
 {
-    private readonly IKernel _kernel;
+    private readonly IContainer _container;
     private bool _exceptionDialogOpen;
 
-    public WindowService(IKernel kernel)
+    public WindowService(IContainer container)
     {
-        _kernel = kernel;
+        _container = container;
     }
 
-    public T ShowWindow<T>(params (string name, object value)[] parameters)
+    public T ShowWindow<T>(params object[] parameters)
     {
-        IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.name, kv.value)).Cast<IParameter>().ToArray();
-        T viewModel = _kernel.Get<T>(paramsArray)!;
+        T viewModel = _container.Resolve<T>(parameters);
+        if (viewModel == null)
+            throw new ArtemisSharedUIException($"Failed to show window for VM of type {typeof(T).Name}, could not create instance.");
+        
         ShowWindow(viewModel);
         return viewModel;
     }
@@ -53,10 +54,12 @@ internal class WindowService : IWindowService
         return window;
     }
 
-    public async Task<T> ShowDialogAsync<T>(params (string name, object value)[] parameters)
+    public async Task<T> ShowDialogAsync<T>(params object[] parameters)
     {
-        IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.name, kv.value)).Cast<IParameter>().ToArray();
-        T viewModel = _kernel.Get<T>(paramsArray)!;
+        T viewModel = _container.Resolve<T>(parameters);
+        if (viewModel == null)
+            throw new ArtemisSharedUIException($"Failed to show window for VM of type {typeof(T).Name}, could not create instance.");
+        
         await ShowDialogAsync(viewModel);
         return viewModel;
     }
@@ -79,10 +82,12 @@ internal class WindowService : IWindowService
         await window.ShowDialog(parent);
     }
 
-    public async Task<TResult> ShowDialogAsync<TViewModel, TResult>(params (string name, object? value)[] parameters) where TViewModel : DialogViewModelBase<TResult>
+    public async Task<TResult> ShowDialogAsync<TViewModel, TResult>(params object[] parameters) where TViewModel : DialogViewModelBase<TResult>
     {
-        IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.name, kv.value)).Cast<IParameter>().ToArray();
-        TViewModel viewModel = _kernel.Get<TViewModel>(paramsArray)!;
+        TViewModel viewModel = _container.Resolve<TViewModel>(parameters);
+        if (viewModel == null)
+            throw new ArtemisSharedUIException($"Failed to show window for VM of type {typeof(TViewModel).Name}, could not create instance.");
+        
         return await ShowDialogAsync(viewModel);
     }
 
@@ -129,7 +134,7 @@ internal class WindowService : IWindowService
         {
             try
             {
-                await ShowDialogAsync(new ExceptionDialogViewModel(title, exception, _kernel.Get<INotificationService>()));
+                await ShowDialogAsync(new ExceptionDialogViewModel(title, exception, _container.Resolve<INotificationService>()));
             }
             finally
             {
@@ -143,7 +148,7 @@ internal class WindowService : IWindowService
         Window? currentWindow = GetCurrentWindow();
         if (currentWindow == null)
             throw new ArtemisSharedUIException("Can't show a content dialog without any windows being shown.");
-        return new ContentDialogBuilder(_kernel, currentWindow);
+        return new ContentDialogBuilder(_container, currentWindow);
     }
 
     public OpenFolderDialogBuilder CreateOpenFolderDialog()

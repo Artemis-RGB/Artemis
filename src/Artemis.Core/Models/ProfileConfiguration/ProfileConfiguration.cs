@@ -11,6 +11,11 @@ namespace Artemis.Core;
 /// </summary>
 public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
 {
+    /// <summary>
+    /// Represents an empty profile.
+    /// </summary>
+    public static readonly ProfileConfiguration Empty = new(ProfileCategory.Empty, "Empty", "Empty");
+    
     private ActivationBehaviour _activationBehaviour;
     private bool _activationConditionMet;
     private ProfileCategory _category;

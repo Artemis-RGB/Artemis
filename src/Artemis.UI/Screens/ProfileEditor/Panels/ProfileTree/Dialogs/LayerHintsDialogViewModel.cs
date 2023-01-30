@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Ninject.Factories;
+using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints;
 using Artemis.UI.Shared;
 using Avalonia.Controls.Mixins;

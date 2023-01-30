@@ -8,7 +8,6 @@ using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
-using Avalonia.Rendering;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;

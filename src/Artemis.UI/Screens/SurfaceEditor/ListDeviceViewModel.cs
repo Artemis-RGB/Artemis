@@ -57,7 +57,7 @@ public class ListDeviceViewModel : ViewModelBase
 
         await _windowService.CreateContentDialog()
             .WithTitle($"{Device.RgbDevice.DeviceInfo.DeviceName} - Detect input")
-            .WithViewModel<DeviceDetectInputViewModel>(out DeviceDetectInputViewModel? viewModel, ("device", Device))
+            .WithViewModel(out DeviceDetectInputViewModel viewModel, Device)
             .WithCloseButtonText("Cancel")
             .ShowAsync();
 

@@ -7,7 +7,7 @@ using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.UI.Ninject.Factories;
+using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Avalonia.Threading;
@@ -89,7 +89,7 @@ public class PluginPrerequisitesInstallDialogViewModel : ContentDialogViewModelB
     {
         await windowService.CreateContentDialog()
             .WithTitle("Plugin prerequisites")
-            .WithViewModel(out PluginPrerequisitesInstallDialogViewModel vm, ("subjects", subjects))
+            .WithViewModel(out PluginPrerequisitesInstallDialogViewModel vm, subjects)
             .WithCloseButtonText("Cancel")
             .HavingPrimaryButton(b => b.WithText("Install").WithCommand(vm.Install))
             .WithDefaultButton(ContentDialogButton.Primary)

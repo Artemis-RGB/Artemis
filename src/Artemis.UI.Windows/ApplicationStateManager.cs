@@ -10,7 +10,7 @@ using Artemis.UI.Windows.Utilities;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
-using Ninject;
+using DryIoc;
 
 namespace Artemis.UI.Windows;
 
@@ -18,7 +18,7 @@ public class ApplicationStateManager
 {
     private const int SM_SHUTTINGDOWN = 0x2000;
     
-    public ApplicationStateManager(IKernel kernel, string[] startupArguments)
+    public ApplicationStateManager(IContainer container, string[] startupArguments)
     {
         StartupArguments = startupArguments;
         IsElevated = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
@@ -26,19 +26,19 @@ public class ApplicationStateManager
         Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
         Core.Utilities.RestartRequested += UtilitiesOnRestartRequested;
 
-        // On Windows shutdown dispose the kernel just so device providers get a chance to clean up
+        // On Windows shutdown dispose the IOC container just so device providers get a chance to clean up
         if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
             controlledApplicationLifetime.Exit += (_, _) =>
             {
                 RunForcedShutdownIfEnabled();
 
-                // Dispose plugins before disposing the kernel because plugins might access services during dispose
-                kernel.Get<IPluginManagementService>().Dispose();
-                kernel.Dispose();
+                // Dispose plugins before disposing the IOC container because plugins might access services during dispose
+                container.Resolve<IPluginManagementService>().Dispose();
+                container.Dispose();
             };
 
         // Inform the Core about elevation status
-        kernel.Get<ICoreService>().IsElevated = IsElevated;
+        container.Resolve<ICoreService>().IsElevated = IsElevated;
     }
 
     public string[] StartupArguments { get; }

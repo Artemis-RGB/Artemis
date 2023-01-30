@@ -7,7 +7,7 @@ using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Shared.Services.MainWindow;
 using Avalonia.Threading;
-using Ninject;
+using DryIoc;
 using Serilog;
 
 namespace Artemis.UI.Services;
@@ -22,13 +22,13 @@ public class UpdateService : IUpdateService
     private readonly IMainWindowService _mainWindowService;
     private readonly IUpdateProvider? _updateProvider;
 
-    public UpdateService(ILogger logger, IKernel kernel, ISettingsService settingsService, IMainWindowService mainWindowService)
+    public UpdateService(ILogger logger, IContainer container, ISettingsService settingsService, IMainWindowService mainWindowService)
     {
         _logger = logger;
         _mainWindowService = mainWindowService;
 
         if (!Constants.BuildInfo.IsLocalBuild)
-            _updateProvider = kernel.TryGet<IUpdateProvider>();
+            _updateProvider = container.Resolve<IUpdateProvider>(IfUnresolved.ReturnDefault);
 
         _checkForUpdates = settingsService.GetSetting("UI.CheckForUpdates", true);
         _autoUpdate = settingsService.GetSetting("UI.AutoUpdate", false);
