@@ -1,4 +1,6 @@
 using System;
+using Artemis.Core;
+using Artemis.Storage;
 using Avalonia;
 using Avalonia.ReactiveUI;
 using DryIoc;
@@ -18,6 +20,7 @@ internal class Program
     {
         try
         {
+            StorageManager.CreateBackup(Constants.DataFolder);
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
         catch (Exception e)
