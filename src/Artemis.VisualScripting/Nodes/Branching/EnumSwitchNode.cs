@@ -66,6 +66,9 @@ public class EnumSwitchNode : Node
             return;
 
         Type enumType = SwitchValue.ConnectedTo[0].Type;
+        if (!enumType.IsEnum)
+            return;
+
         foreach (Enum enumValue in Enum.GetValues(enumType).Cast<Enum>())
         {
             InputPin pin = CreateOrAddInputPin(typeof(object), enumValue.ToString().Humanize(LetterCasing.Sentence));
