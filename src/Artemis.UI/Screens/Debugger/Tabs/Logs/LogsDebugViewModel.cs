@@ -29,10 +29,10 @@ public class LogsDebugViewModel : ActivatableViewModelBase
         foreach(var logEvent in LogStore.Events)
             AddLogEvent(logEvent);
         
-        LogStore.EventAdded += OnLogEventAdded;
-
         this.WhenActivated(disp =>
-        {
+        {        
+            LogStore.EventAdded += OnLogEventAdded;
+
             Disposable.Create(() =>
             {
                 LogStore.EventAdded -= OnLogEventAdded;
