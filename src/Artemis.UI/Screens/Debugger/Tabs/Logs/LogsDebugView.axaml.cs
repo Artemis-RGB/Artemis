@@ -28,10 +28,10 @@ public class LogsDebugView : ReactiveUserControl<LogsDebugViewModel>
         _textEditor = this.FindControl<TextEditor>("log");
     }
 
-    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    protected override void OnInitialized()
     {
-        base.OnAttachedToVisualTree(e);
-        _textEditor?.ScrollToEnd();
+        base.OnInitialized();
+        Dispatcher.UIThread.Post(() => _textEditor.ScrollToEnd(), DispatcherPriority.ApplicationIdle);
     }
 
     private void OnTextChanged(object? sender, EventArgs e)
@@ -61,7 +61,7 @@ public class LogsDebugView : ReactiveUserControl<LogsDebugViewModel>
         //mess with anything.
         if (_lineCount == 0 || linesAdded + graceDistance >  outOfScreenLines)
         {
-            _textEditor.ScrollToEnd();
+            Dispatcher.UIThread.Post(() => _textEditor.ScrollToEnd(), DispatcherPriority.ApplicationIdle);
             _lineCount = _textEditor.LineCount;
         }
     }
