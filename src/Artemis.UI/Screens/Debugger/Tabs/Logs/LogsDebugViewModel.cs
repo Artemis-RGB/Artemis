@@ -26,7 +26,7 @@ public class LogsDebugViewModel : ActivatableViewModelBase
             "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff}] [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}"
         );
 
-        foreach(var logEvent in LogStore.Events)
+        foreach(LogEvent logEvent in LogStore.Events)
             AddLogEvent(logEvent);
         
         this.WhenActivated(disp =>
@@ -52,7 +52,7 @@ public class LogsDebugViewModel : ActivatableViewModelBase
     {
         using StringWriter writer = new();
         _formatter.Format(logEvent, writer);
-        var line = writer.ToString();
+        string line = writer.ToString();
         Document.Insert(Document.TextLength, '\n' + line.TrimEnd('\r', '\n'));
         while (Document.LineCount > MAX_ENTRIES)
             RemoveOldestLine();
@@ -60,7 +60,7 @@ public class LogsDebugViewModel : ActivatableViewModelBase
 
     private void RemoveOldestLine()
     {
-        var firstNewLine = Document.Text.IndexOf('\n');
+        int firstNewLine = Document.Text.IndexOf('\n');
         if (firstNewLine == -1)
         {
             //this should never happen.
