@@ -33,8 +33,6 @@ internal class WindowService : IWindowService
 
     public Window ShowWindow(object viewModel)
     {
-        Window? parent = GetCurrentWindow();
-
         string name = viewModel.GetType().FullName!.Split('`')[0].Replace("ViewModel", "View");
         Type? type = viewModel.GetType().Assembly.GetType(name);
 
@@ -46,10 +44,7 @@ internal class WindowService : IWindowService
 
         Window window = (Window) Activator.CreateInstance(type)!;
         window.DataContext = viewModel;
-        if (parent != null)
-            window.Show(parent);
-        else
-            window.Show();
+        window.Show();
 
         return window;
     }

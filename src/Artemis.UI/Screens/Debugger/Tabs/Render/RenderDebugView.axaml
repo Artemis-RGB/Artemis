@@ -25,20 +25,13 @@
         </StackPanel>
 
         <Border Classes="card" Padding="10">
-            <ZoomBorder Name="ZoomBorder"
-                        Stretch="None"
-                        ClipToBounds="True"
-                        Focusable="True"
-                        VerticalAlignment="Stretch"
-                        HorizontalAlignment="Stretch">
-                <Image Name="Visualization" Source="{Binding CurrentFrame}">
-                    <Image.Transitions>
-                        <Transitions>
-                            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut" />
-                        </Transitions>
-                    </Image.Transitions>
-                </Image>
-            </ZoomBorder>
+          <Image Name="Visualization" Source="{Binding CurrentFrame}">
+            <Image.Transitions>
+              <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut" />
+              </Transitions>
+            </Image.Transitions>
+          </Image>
         </Border>
     </StackPanel>
 </UserControl>
