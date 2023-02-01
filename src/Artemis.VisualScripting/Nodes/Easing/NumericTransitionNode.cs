@@ -2,8 +2,8 @@
 
 namespace Artemis.VisualScripting.Nodes.Easing;
 
-[Node("Numeric Easing", "Outputs an eased numeric value", "Easing", InputType = typeof(Numeric), OutputType = typeof(Numeric))]
-public class NumericEasingNode : Node
+[Node("Numeric Transition", "Outputs an eased numeric value", "Easing", InputType = typeof(Numeric), OutputType = typeof(Numeric))]
+public class NumericTransitionNode : Node
 {
     private float _currentValue;
     private DateTime _lastEvaluate = DateTime.MinValue;
@@ -11,7 +11,7 @@ public class NumericEasingNode : Node
     private float _sourceValue;
     private float _targetValue;
 
-    public NumericEasingNode()
+    public NumericTransitionNode()
     {
         Input = CreateInputPin<Numeric>();
         EasingTime = CreateInputPin<Numeric>("delay");
