@@ -2,8 +2,7 @@
 
 namespace Artemis.VisualScripting.Nodes.Mathematics;
 
-[Node("Normalize", "Normalizes the number into range between 0-1",
-    "Mathematics", InputType = typeof(Numeric), OutputType = typeof(Numeric))]
+[Node("Normalize", "Normalizes the number into range between 0-1", "Mathematics", InputType = typeof(Numeric), OutputType = typeof(Numeric))]
 public class NormalizeNode : Node
 {
     public InputPin<Numeric> Input { get; }

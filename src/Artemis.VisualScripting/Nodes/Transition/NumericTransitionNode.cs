@@ -1,8 +1,8 @@
 ﻿using Artemis.Core;
 
-namespace Artemis.VisualScripting.Nodes.Easing;
+namespace Artemis.VisualScripting.Nodes.Transition;
 
-[Node("Numeric Transition", "Outputs an eased numeric value", "Easing", InputType = typeof(Numeric), OutputType = typeof(Numeric))]
+[Node("Numeric Transition", "Outputs smoothly transitioned changes to the input numeric value", "Transition", InputType = typeof(Numeric), OutputType = typeof(Numeric))]
 public class NumericTransitionNode : Node
 {
     private float _currentValue;
@@ -14,8 +14,8 @@ public class NumericTransitionNode : Node
     public NumericTransitionNode()
     {
         Input = CreateInputPin<Numeric>();
-        EasingTime = CreateInputPin<Numeric>("delay");
-        EasingFunction = CreateInputPin<Easings.Functions>("function");
+        EasingTime = CreateInputPin<Numeric>("Delay");
+        EasingFunction = CreateInputPin<Easings.Functions>("Function");
 
         Output = CreateOutputPin<Numeric>();
     }

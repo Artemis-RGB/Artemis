@@ -3,11 +3,11 @@ using Artemis.UI.Shared;
 using Avalonia;
 using Humanizer;
 
-namespace Artemis.VisualScripting.Nodes.Easing.Screens;
+namespace Artemis.VisualScripting.Nodes.Transition.Screens;
 
-public class EasingTypeNodeEasingViewModel : ViewModelBase
+public class EasingFunctionViewModel : ViewModelBase
 {
-    public EasingTypeNodeEasingViewModel(Easings.Functions easingFunction)
+    public EasingFunctionViewModel(Easings.Functions easingFunction)
     {
         EasingFunction = easingFunction;
         Description = easingFunction.Humanize();

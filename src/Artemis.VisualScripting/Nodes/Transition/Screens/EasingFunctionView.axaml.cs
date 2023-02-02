@@ -1,11 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Artemis.VisualScripting.Nodes.Easing.Screens;
+namespace Artemis.VisualScripting.Nodes.Transition.Screens;
 
-public class EasingTypeNodeEasingView : UserControl
+public class EasingFunctionView : UserControl
 {
-    public EasingTypeNodeEasingView()
+    public EasingFunctionView()
     {
         InitializeComponent();
     }

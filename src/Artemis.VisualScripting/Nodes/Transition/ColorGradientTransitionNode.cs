@@ -1,9 +1,9 @@
 ﻿using Artemis.Core;
 
-namespace Artemis.VisualScripting.Nodes.Easing;
+namespace Artemis.VisualScripting.Nodes.Transition;
 
-[Node("Color Gradient Easing", "Outputs an eased color gradient value", "Easing", InputType = typeof(ColorGradient), OutputType = typeof(ColorGradient))]
-public class ColorGradientEasingNode : Node
+[Node("Color Gradient Transition", "Outputs smoothly transitioned changes to the input color gradient", "Transition", InputType = typeof(ColorGradient), OutputType = typeof(ColorGradient))]
+public class ColorGradientTransitionNode : Node
 {
     private DateTime _lastEvaluate = DateTime.MinValue;
     private float _progress;
@@ -11,11 +11,11 @@ public class ColorGradientEasingNode : Node
     private ColorGradient? _sourceValue;
     private ColorGradient? _targetValue;
 
-    public ColorGradientEasingNode()
+    public ColorGradientTransitionNode()
     {
         Input = CreateInputPin<ColorGradient>();
-        EasingTime = CreateInputPin<Numeric>("delay");
-        EasingFunction = CreateInputPin<Easings.Functions>("function");
+        EasingTime = CreateInputPin<Numeric>("Delay");
+        EasingFunction = CreateInputPin<Easings.Functions>("Function");
 
         Output = CreateOutputPin<ColorGradient>();
     }

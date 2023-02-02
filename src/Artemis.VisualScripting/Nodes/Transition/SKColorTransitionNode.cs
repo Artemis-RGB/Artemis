@@ -1,10 +1,10 @@
 ﻿using Artemis.Core;
 using SkiaSharp;
 
-namespace Artemis.VisualScripting.Nodes.Easing;
+namespace Artemis.VisualScripting.Nodes.Transition;
 
-[Node("Color Easing", "Outputs an eased color value", "Easing", InputType = typeof(SKColor), OutputType = typeof(SKColor))]
-public class SKColorEasingNode : Node
+[Node("Color Transition", "Outputs smoothly transitioned changes to the input color", "Transition", InputType = typeof(SKColor), OutputType = typeof(SKColor))]
+public class SKColorTransitionNode : Node
 {
     private SKColor _currentValue;
     private DateTime _lastEvaluate = DateTime.MinValue;
@@ -12,11 +12,11 @@ public class SKColorEasingNode : Node
     private SKColor _sourceValue;
     private SKColor _targetValue;
 
-    public SKColorEasingNode()
+    public SKColorTransitionNode()
     {
         Input = CreateInputPin<SKColor>();
-        EasingTime = CreateInputPin<Numeric>("delay");
-        EasingFunction = CreateInputPin<Easings.Functions>("function");
+        EasingTime = CreateInputPin<Numeric>("Delay");
+        EasingFunction = CreateInputPin<Easings.Functions>("Function");
 
         Output = CreateOutputPin<SKColor>();
     }

@@ -1,9 +1,8 @@
 ﻿using Artemis.Core;
 
-namespace Artemis.VisualScripting.Nodes.Easing;
+namespace Artemis.VisualScripting.Nodes.Mathematics;
 
-[Node("Numeric Easing", "Interpolates a value from 0-1 to 0-1 with the given function",
-    "Mathematics", InputType = typeof(Numeric), OutputType = typeof(Numeric))]
+[Node("Numeric Easing", "Interpolates a value from 0-1 to 0-1 with the given function", "Mathematics", InputType = typeof(Numeric), OutputType = typeof(Numeric))]
 public class NumericEasingNode : Node
 {
     public InputPin<Numeric> Input { get; }
@@ -15,7 +14,7 @@ public class NumericEasingNode : Node
     public NumericEasingNode()
     {
         Input = CreateInputPin<Numeric>("Input");
-        EasingFunction = CreateInputPin<Easings.Functions>("EasingFunction");
+        EasingFunction = CreateInputPin<Easings.Functions>("Function");
 
         Result = CreateOutputPin<Numeric>();
     }
