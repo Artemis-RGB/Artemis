@@ -14,8 +14,14 @@
         <shared:ToStringConverter x:Key="ToStringConverter" />
     </UserControl.Resources>
     <DataGrid Items="{CompiledBinding LedViewModels}" CanUserSortColumns="True" AutoGenerateColumns="False">
-        <DataGrid.Columns>
-            <DataGridCheckBoxColumn Binding="{Binding IsSelected, Mode=TwoWay}" CanUserSort="False" CanUserReorder="False" Header="Highlight" />
+        <DataGrid.Columns >
+            <DataGridTemplateColumn CanUserSort="False" CanUserReorder="False" Header="Highlight"> 
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
             <DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.Id, Converter={StaticResource LedIdToStringConverter}, Mode=OneWay}" Header="LED ID" Width="Auto" />
             <DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.Color, Converter={StaticResource ToStringConverter}, Mode=OneWay}" Header="Color (ARGB)" Width="Auto" CanUserSort="False" />
             <DataGridTextColumn Binding="{Binding ArtemisLed.Layout.Image, Converter={StaticResource UriToFileNameConverter}, Mode=OneWay}" Header="Image file" CanUserSort="False" />

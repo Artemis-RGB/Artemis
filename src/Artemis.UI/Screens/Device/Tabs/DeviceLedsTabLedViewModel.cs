@@ -24,7 +24,10 @@ public class DeviceLedsTabLedViewModel : ViewModelBase
         get => _isSelected;
         set
         {
-            if (!RaiseAndSetIfChanged(ref _isSelected, value))
+            bool oldValue = _isSelected;
+            bool newValue = RaiseAndSetIfChanged(ref _isSelected, value);
+            
+            if (newValue == oldValue)
                 return;
             Apply();
         }
