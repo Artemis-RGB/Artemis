@@ -415,23 +415,25 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
 
     public void Sort()
     {
+        try
         {
-            try
-            {
-                _updating = true;
-                var colors = GetColors().ToArray();
-                ColorSorter.Sort(colors, colors[0]);
+            _updating = true;
+            
+            Span<SKColor> colorsToSort = stackalloc SKColor[Count];
+            for (int i = 0; i < Count; i++)
+                colorsToSort[i] = _stops[i].Color;
+            
+            ColorSorter.Sort(colorsToSort, colorsToSort[0]);
 
-                for (int i = 0; i < colors.Length; i++)
-                {
-                    _stops[i].Color = colors[i];
-                }
-            }
-            finally
+            for (int i = 0; i < colorsToSort.Length; i++)
             {
-                _updating = false;
-                Update();
+                _stops[i].Color = colorsToSort[i];
             }
+        }
+        finally
+        {
+            _updating = false;
+            Update();
         }
     }
 
