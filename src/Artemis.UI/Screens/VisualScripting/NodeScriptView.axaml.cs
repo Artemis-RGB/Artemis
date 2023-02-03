@@ -14,7 +14,6 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
-using Avalonia.VisualTree;
 using DynamicData.Binding;
 using ReactiveUI;
 

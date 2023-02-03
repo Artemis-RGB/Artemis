@@ -9,7 +9,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Ninject.Factories;
+using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
@@ -146,7 +146,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
     {
         await _windowService.CreateContentDialog()
             .WithTitle("Edit category")
-            .WithViewModel(out SidebarCategoryEditViewModel vm, ("category", ProfileCategory))
+            .WithViewModel(out SidebarCategoryEditViewModel vm, ProfileCategory)
             .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Confirm))
             .WithCloseButtonText("Cancel")
             .WithDefaultButton(ContentDialogButton.Primary)
@@ -165,10 +165,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
 
     private async Task ExecuteAddProfile()
     {
-        ProfileConfiguration? result = await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(
-            ("profileCategory", ProfileCategory),
-            ("profileConfiguration", null)
-        );
+        ProfileConfiguration? result = await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(ProfileCategory, ProfileConfiguration.Empty);
         if (result != null)
         {
             SidebarProfileConfigurationViewModel viewModel = _vmFactory.SidebarProfileConfigurationViewModel(result);

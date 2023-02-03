@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -11,8 +10,8 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Events;
 using Artemis.Core.Services;
+using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Models;
-using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.VisualScripting.Pins;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.NodeEditor;

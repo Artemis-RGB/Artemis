@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using Artemis.Core.Ninject;
+using Artemis.Core.DryIoc.Factories;
 using Artemis.Core.ScriptingProviders;
 using Artemis.Storage;
+using DryIoc;
 using HidSharp;
-using Ninject;
 using RGB.NET.Core;
 using Serilog;
 using Serilog.Events;
@@ -20,7 +20,6 @@ namespace Artemis.Core.Services;
 /// </summary>
 internal class CoreService : ICoreService
 {
-    internal static IKernel? Kernel;
     private readonly Stopwatch _frameStopWatch;
     private readonly ILogger _logger;
     private readonly PluginSetting<LogEventLevel> _loggingLevel;
@@ -36,7 +35,7 @@ internal class CoreService : ICoreService
     private DateTime _lastFrameRateSample;
 
     // ReSharper disable UnusedParameter.Local
-    public CoreService(IKernel kernel,
+    public CoreService(IContainer container,
         ILogger logger,
         StorageMigrationService _1, // injected to ensure migration runs early
         ISettingsService settingsService,
@@ -47,8 +46,7 @@ internal class CoreService : ICoreService
         IScriptingService scriptingService,
         IProcessMonitorService _2)
     {
-        Kernel = kernel;
-        Constants.CorePlugin.Kernel = kernel;
+        Constants.CorePlugin.Container = container;
 
         _logger = logger;
         _pluginManagementService = pluginManagementService;
@@ -85,19 +83,19 @@ internal class CoreService : ICoreService
             if (parts.Length == 2 && Enum.TryParse(typeof(LogEventLevel), parts[1], true, out object? logLevelArgument))
             {
                 _logger.Information("Setting logging level to {loggingLevel} from startup argument", (LogEventLevel) logLevelArgument!);
-                LoggerProvider.LoggingLevelSwitch.MinimumLevel = (LogEventLevel) logLevelArgument;
+                LoggerFactory.LoggingLevelSwitch.MinimumLevel = (LogEventLevel) logLevelArgument;
             }
             else
             {
                 _logger.Warning("Failed to set log level from startup argument {argument}", argument);
                 _logger.Information("Setting logging level to {loggingLevel}", _loggingLevel.Value);
-                LoggerProvider.LoggingLevelSwitch.MinimumLevel = _loggingLevel.Value;
+                LoggerFactory.LoggingLevelSwitch.MinimumLevel = _loggingLevel.Value;
             }
         }
         else
         {
             _logger.Information("Setting logging level to {loggingLevel}", _loggingLevel.Value);
-            LoggerProvider.LoggingLevelSwitch.MinimumLevel = _loggingLevel.Value;
+            LoggerFactory.LoggingLevelSwitch.MinimumLevel = _loggingLevel.Value;
         }
     }
 
@@ -194,12 +192,6 @@ internal class CoreService : ICoreService
     public TimeSpan FrameTime { get; private set; }
     public bool ProfileRenderingDisabled { get; set; }
     public bool IsElevated { get; set; }
-
-    public void Dispose()
-    {
-        // Dispose services
-        _pluginManagementService.Dispose();
-    }
 
     public bool IsInitialized { get; set; }
 

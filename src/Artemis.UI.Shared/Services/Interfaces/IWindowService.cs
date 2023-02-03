@@ -16,7 +16,7 @@ public interface IWindowService : IArtemisSharedUIService
     /// </summary>
     /// <typeparam name="TViewModel">The type of view model to create</typeparam>
     /// <returns>The created view model</returns>
-    TViewModel ShowWindow<TViewModel>(params (string name, object value)[] parameters);
+    TViewModel ShowWindow<TViewModel>(params object[] parameters);
 
     /// <summary>
     ///     Given a ViewModel, show its corresponding View as a window
@@ -37,7 +37,7 @@ public interface IWindowService : IArtemisSharedUIService
     /// </summary>
     /// <typeparam name="TViewModel">The type of view model to create</typeparam>
     /// <returns>The created view model</returns>
-    Task<TViewModel> ShowDialogAsync<TViewModel>(params (string name, object value)[] parameters);
+    Task<TViewModel> ShowDialogAsync<TViewModel>(params object[] parameters);
 
     /// <summary>
     ///     Given a ViewModel, show its corresponding View as a dialog
@@ -60,7 +60,7 @@ public interface IWindowService : IArtemisSharedUIService
     /// <typeparam name="TViewModel">The view model type</typeparam>
     /// <typeparam name="TResult">The return type</typeparam>
     /// <returns>A task containing the return value of type <typeparamref name="TResult" /></returns>
-    Task<TResult> ShowDialogAsync<TViewModel, TResult>(params (string name, object? value)[] parameters) where TViewModel : DialogViewModelBase<TResult>;
+    Task<TResult> ShowDialogAsync<TViewModel, TResult>(params object[] parameters) where TViewModel : DialogViewModelBase<TResult>;
 
     /// <summary>
     ///     Shows a content dialog asking the user to confirm an action

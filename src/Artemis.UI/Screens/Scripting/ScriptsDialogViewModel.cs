@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.ScriptingProviders;
 using Artemis.Core.Services;
-using Artemis.UI.Ninject.Factories;
+using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.Scripting.Dialogs;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;

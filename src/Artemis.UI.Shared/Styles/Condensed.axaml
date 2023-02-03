@@ -39,6 +39,9 @@
 
 				<dataModelPicker:DataModelPickerButton></dataModelPicker:DataModelPickerButton>
 				<dataModelPicker:DataModelPickerButton Classes="condensed"></dataModelPicker:DataModelPickerButton>
+                
+                <controls1:HotkeyBox></controls1:HotkeyBox>
+                <controls1:HotkeyBox Classes="condensed"></controls1:HotkeyBox>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -106,6 +109,12 @@
     
     <Style Selector="Button.condensed">
         <Setter Property="Padding" Value="1" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="MinHeight" Value="24" />
+    </Style>
+
+    <Style Selector="controls1|HotkeyBox.condensed > TextBox#DisplayTextBox">
+        <Setter Property="Padding" Value="6 0" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="MinHeight" Value="24" />
     </Style>

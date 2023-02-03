@@ -12,7 +12,6 @@ public class LayerEntity : RenderElementEntity
     {
         Leds = new List<LedEntity>();
         AdaptionHints = new List<IAdaptionHintEntity>();
-        PropertyEntities = new List<PropertyEntity>();
         LayerEffects = new List<LayerEffectEntity>();
     }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using Artemis.Core;
-using Artemis.UI.Ninject.Factories;
+using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using DynamicData;

@@ -16,7 +16,10 @@ public class Hotkey : CorePropertyChanged, IStorageModel
         Entity = new ProfileConfigurationHotkeyEntity();
     }
 
-    internal Hotkey(ProfileConfigurationHotkeyEntity entity)
+    /// <summary>
+    ///     Creates a new instance of <see cref="Hotkey" /> based on the provided entity
+    /// </summary>
+    public Hotkey(ProfileConfigurationHotkeyEntity entity)
     {
         Entity = entity;
         Load();
@@ -32,7 +35,10 @@ public class Hotkey : CorePropertyChanged, IStorageModel
     /// </summary>
     public KeyboardModifierKey? Modifiers { get; set; }
 
-    internal ProfileConfigurationHotkeyEntity Entity { get; }
+    /// <summary>
+    /// Gets the entity used to store this hotkey
+    /// </summary>
+    public ProfileConfigurationHotkeyEntity Entity { get; }
 
     /// <summary>
     ///     Determines whether the provided <see cref="ArtemisKeyboardKeyEventArgs" /> match the hotkey

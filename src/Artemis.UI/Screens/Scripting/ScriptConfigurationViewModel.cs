@@ -44,7 +44,7 @@ public class ScriptConfigurationViewModel : ActivatableViewModelBase
     {
         ContentDialogResult contentDialogResult = await _windowService.CreateContentDialog()
             .WithTitle("Edit script")
-            .WithViewModel(out ScriptConfigurationEditViewModel vm, ("scriptConfiguration", scriptConfiguration))
+            .WithViewModel(out ScriptConfigurationEditViewModel vm, scriptConfiguration)
             .WithCloseButtonText("Cancel")
             .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Submit))
             .HavingSecondaryButton(b => b.WithText("Delete"))

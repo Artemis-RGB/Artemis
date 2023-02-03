@@ -57,10 +57,7 @@ public class SidebarProfileConfigurationViewModel : ActivatableViewModelBase
 
     private async Task ExecuteEditProfile()
     {
-        await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(
-            ("profileCategory", ProfileConfiguration.Category),
-            ("profileConfiguration", ProfileConfiguration)
-        );
+        await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(ProfileConfiguration.Category, ProfileConfiguration);
     }
 
     private void ExecuteToggleSuspended()

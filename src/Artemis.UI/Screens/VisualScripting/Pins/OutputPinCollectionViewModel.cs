@@ -1,5 +1,5 @@
 ﻿using Artemis.Core;
-using Artemis.UI.Ninject.Factories;
+using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Shared.Services.NodeEditor;
 
 namespace Artemis.UI.Screens.VisualScripting.Pins;

@@ -1,7 +1,9 @@
 using System;
+using Artemis.Core;
+using Artemis.Storage;
 using Avalonia;
 using Avalonia.ReactiveUI;
-using Ninject;
+using DryIoc;
 using Serilog;
 
 namespace Artemis.UI.MacOS;
@@ -18,6 +20,7 @@ internal class Program
     {
         try
         {
+            StorageManager.CreateBackup(Constants.DataFolder);
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
         catch (Exception e)
@@ -33,8 +36,8 @@ internal class Program
         return AppBuilder.Configure<App>().UsePlatformDetect().LogToTrace().UseReactiveUI();
     }
 
-    public static void CreateLogger(IKernel kernel)
+    public static void CreateLogger(IContainer container)
     {
-        Logger = kernel.Get<ILogger>().ForContext<Program>();
+        Logger = container.Resolve<ILogger>().ForContext<Program>();
     }
 }

@@ -8,6 +8,7 @@ using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using FluentAvalonia.Core;
 using Humanizer;
 using Material.Icons;
 
@@ -47,7 +48,8 @@ public class HotkeyBox : UserControl
         Hotkey.Key = (KeyboardKey?) e.Key;
         Hotkey.Modifiers = (KeyboardModifierKey?) e.KeyModifiers;
         UpdateDisplayTextBox();
-
+        HotkeyChanged?.Invoke(this, EventArgs.Empty);
+        
         e.Handled = true;
     }
 
@@ -132,6 +134,15 @@ public class HotkeyBox : UserControl
         get => GetValue(UseFloatingWatermarkProperty);
         set => SetValue(UseFloatingWatermarkProperty, value);
     }
+
+    #endregion
+
+    #region Events
+
+    /// <summary>
+    ///     Occurs when the hotkey changes.
+    /// </summary>
+    public event TypedEventHandler<HotkeyBox, EventArgs>? HotkeyChanged;
 
     #endregion
 }

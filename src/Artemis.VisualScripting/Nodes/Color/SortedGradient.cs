@@ -1,17 +1,13 @@
 ﻿using Artemis.Core;
 using Artemis.Core.ColorScience;
 using SkiaSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Artemis.VisualScripting.Nodes.Color
 {
     [Node("Sorted Gradient", "Generates a sorted gradient from the given colors", "Color", InputType = typeof(SKColor), OutputType = typeof(ColorGradient))]
     public class SortedGradientNode : Node
     {
+        private int lastComputedColorGroup;
         public InputPinCollection<SKColor> Inputs { get; }
         public OutputPin<ColorGradient> Output { get; }
 
@@ -19,10 +15,15 @@ namespace Artemis.VisualScripting.Nodes.Color
         {
             Inputs = CreateInputPinCollection<SKColor>();
             Output = CreateOutputPin<ColorGradient>();
+            lastComputedColorGroup = 0;
         }
 
         public override void Evaluate()
         {
+            int newHash = GetInputColorHash();
+            if (newHash == lastComputedColorGroup)
+                return;
+            
             SKColor[] colors = Inputs.Values.ToArray();
 
             if (colors.Length == 0)
@@ -40,6 +41,17 @@ namespace Artemis.VisualScripting.Nodes.Color
             }
 
             Output.Value = gradient;
+            lastComputedColorGroup = newHash;
+        }
+        
+        private int GetInputColorHash()
+        {
+            int hash = 0;
+            
+            foreach (SKColor color in Inputs.Values)
+                hash = HashCode.Combine(hash, color.GetHashCode());
+
+            return hash;
         }
     }
 }

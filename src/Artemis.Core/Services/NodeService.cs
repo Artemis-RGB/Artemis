@@ -5,8 +5,8 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using Artemis.Storage.Entities.Profile.Nodes;
+using DryIoc;
 using Newtonsoft.Json;
-using Ninject;
 using SkiaSharp;
 
 namespace Artemis.Core.Services;
@@ -15,17 +15,17 @@ internal class NodeService : INodeService
 {
     #region Constants
 
-    private static readonly Type TYPE_NODE = typeof(INode);
+    private static readonly Type TypeNode = typeof(INode);
 
     #endregion
 
-    private readonly IKernel _kernel;
+    private readonly IContainer _container;
 
     #region Constructors
 
-    public NodeService(IKernel kernel)
+    public NodeService(IContainer container)
     {
-        _kernel = kernel;
+        _container = container;
     }
 
     #endregion
@@ -69,7 +69,7 @@ internal class NodeService : INodeService
         if (plugin == null) throw new ArgumentNullException(nameof(plugin));
         if (nodeType == null) throw new ArgumentNullException(nameof(nodeType));
 
-        if (!TYPE_NODE.IsAssignableFrom(nodeType)) throw new ArgumentException("Node has to be a base type of the Node-Type.", nameof(nodeType));
+        if (!TypeNode.IsAssignableFrom(nodeType)) throw new ArgumentException("Node has to be a base type of the Node-Type.", nameof(nodeType));
 
         NodeAttribute? nodeAttribute = nodeType.GetCustomAttribute<NodeAttribute>();
         string name = nodeAttribute?.Name ?? nodeType.Name;
@@ -106,8 +106,10 @@ internal class NodeService : INodeService
 
     private INode CreateNode(INodeScript script, NodeEntity? entity, Type nodeType)
     {
-        INode node = _kernel.Get(nodeType) as INode ?? throw new InvalidOperationException($"Node {nodeType} is not an INode");
-
+        INode node = _container.Resolve(nodeType) as INode ?? throw new InvalidOperationException($"Node {nodeType} is not an INode");
+        if (node is Node concreteNode)
+            concreteNode.Container = _container;
+        
         if (entity != null)
         {
             node.X = entity.X;

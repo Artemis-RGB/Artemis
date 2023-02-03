@@ -7,7 +7,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Ninject.Factories;
+using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.Home;
 using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.Settings;
@@ -18,10 +18,10 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Threading;
+using DryIoc;
 using DynamicData;
 using DynamicData.Binding;
 using Material.Icons;
-using Ninject;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
@@ -29,7 +29,7 @@ namespace Artemis.UI.Screens.Sidebar;
 public class SidebarViewModel : ActivatableViewModelBase
 {
     private readonly IScreen _hostScreen;
-    private readonly IKernel _kernel;
+    private readonly IContainer _container;
     private readonly IProfileEditorService _profileEditorService;
     private readonly IProfileEditorVmFactory _profileEditorVmFactory;
     private readonly IWindowService _windowService;
@@ -37,7 +37,7 @@ public class SidebarViewModel : ActivatableViewModelBase
     private ReadOnlyObservableCollection<SidebarCategoryViewModel> _sidebarCategories = new(new ObservableCollection<SidebarCategoryViewModel>());
 
     public SidebarViewModel(IScreen hostScreen,
-        IKernel kernel,
+        IContainer container,
         IProfileService profileService,
         IWindowService windowService,
         IProfileEditorService profileEditorService,
@@ -45,7 +45,7 @@ public class SidebarViewModel : ActivatableViewModelBase
         IProfileEditorVmFactory profileEditorVmFactory)
     {
         _hostScreen = hostScreen;
-        _kernel = kernel;
+        _container = container;
         _windowService = windowService;
         _profileEditorService = profileEditorService;
         _profileEditorVmFactory = profileEditorVmFactory;
@@ -120,7 +120,7 @@ public class SidebarViewModel : ActivatableViewModelBase
     {
         await _windowService.CreateContentDialog()
             .WithTitle("Add new category")
-            .WithViewModel(out SidebarCategoryEditViewModel vm, ("category", null))
+            .WithViewModel(out SidebarCategoryEditViewModel vm, ProfileCategory.Empty)
             .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Confirm))
             .WithCloseButtonText("Cancel")
             .WithDefaultButton(ContentDialogButton.Primary)
@@ -137,7 +137,7 @@ public class SidebarViewModel : ActivatableViewModelBase
 
     private void NavigateToScreen(SidebarScreenViewModel sidebarScreenViewModel)
     {
-        _hostScreen.Router.Navigate.Execute(sidebarScreenViewModel.CreateInstance(_kernel, _hostScreen));
+        _hostScreen.Router.Navigate.Execute(sidebarScreenViewModel.CreateInstance(_container, _hostScreen));
         _profileEditorService.ChangeCurrentProfileConfiguration(null);
     }
 }
