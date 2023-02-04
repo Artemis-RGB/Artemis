@@ -33,7 +33,7 @@ public class App : Application
             Environment.Exit(1);
         }
 
-        _container = ArtemisBootstrapper.Bootstrap(this, new WindowsModule());
+        _container = ArtemisBootstrapper.Bootstrap(this, c => c.RegisterProviders());
         Program.CreateLogger(_container);
         RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
         AvaloniaXamlLoader.Load(this);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.DryIoc;
 using Artemis.UI.DryIoc;
@@ -11,6 +12,8 @@ using Artemis.UI.Shared.DataModelPicker;
 using Artemis.UI.Shared.DryIoc;
 using Artemis.UI.Shared.Services;
 using Artemis.VisualScripting.DryIoc;
+using Artemis.WebClient.Updating;
+using Artemis.WebClient.Updating.DryIoc;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -25,7 +28,7 @@ public static class ArtemisBootstrapper
     private static Container? _container;
     private static Application? _application;
 
-    public static IContainer Bootstrap(Application application, params IModule[] modules)
+    public static IContainer Bootstrap(Application application, Action<IContainer>? configureServices = null)
     {
         if (_application != null || _container != null)
             throw new ArtemisUIException("UI already bootstrapped");
@@ -33,18 +36,19 @@ public static class ArtemisBootstrapper
         Utilities.PrepareFirstLaunch();
 
         _application = application;
-        _container = new Container(rules => rules.WithConcreteTypeDynamicRegistrations()
-                                                 .WithoutThrowOnRegisteringDisposableTransient());
+        _container = new Container(rules => rules
+            .WithMicrosoftDependencyInjectionRules()
+            .WithConcreteTypeDynamicRegistrations()
+            .WithoutThrowOnRegisteringDisposableTransient());
 
-        new CoreModule().Load(_container);
-        new UIModule().Load(_container);
-        new SharedUIModule().Load(_container);
-        new NoStringDryIocModule().Load(_container);
-        foreach (IModule module in modules)
-            module.Load(_container);
+        _container.RegisterCore();
+        _container.RegisterUI();
+        _container.RegisterSharedUI();
+        _container.RegisterUpdatingClient();
+        _container.RegisterNoStringEvaluating();
+        configureServices?.Invoke(_container);
 
         _container.UseDryIocDependencyResolver();
-
         return _container;
     }
 
