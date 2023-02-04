@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.MacOS", "Artemis
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.VisualScripting", "Artemis.VisualScripting\Artemis.VisualScripting.csproj", "{412B921A-26F5-4AE6-8B32-0C19BE54F421}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.WebClient.Updating", "Artemis.WebClient.Updating\Artemis.WebClient.Updating.csproj", "{7C8C6F50-0CC8-45B3-B608-A7218C005E4B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -57,6 +59,10 @@ Global
 		{412B921A-26F5-4AE6-8B32-0C19BE54F421}.Debug|x64.Build.0 = Debug|x64
 		{412B921A-26F5-4AE6-8B32-0C19BE54F421}.Release|x64.ActiveCfg = Release|x64
 		{412B921A-26F5-4AE6-8B32-0C19BE54F421}.Release|x64.Build.0 = Release|x64
+		{7C8C6F50-0CC8-45B3-B608-A7218C005E4B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7C8C6F50-0CC8-45B3-B608-A7218C005E4B}.Debug|x64.Build.0 = Debug|Any CPU
+		{7C8C6F50-0CC8-45B3-B608-A7218C005E4B}.Release|x64.ActiveCfg = Release|Any CPU
+		{7C8C6F50-0CC8-45B3-B608-A7218C005E4B}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

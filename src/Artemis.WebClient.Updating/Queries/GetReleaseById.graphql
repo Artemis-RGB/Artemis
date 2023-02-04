@@ -1,0 +1,16 @@
+query GetReleaseById {
+    release(id: "63b71dd69a5bb32a0a81a410") {
+        branch
+        commit
+        version
+        artifacts {
+            platform
+            artifactId
+            fileInfo {
+                md5Hash
+                downloadSize
+                downloads
+            }
+        }
+    }
+}

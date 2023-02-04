@@ -1,0 +1,262 @@
+﻿# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+"The `@defer` directive may be provided for fragment spreads and inline fragments to inform the executor to delay the execution of the current fragment to indicate deprioritization of the current fragment. A query with `@defer` directive will cause the request to potentially return multiple responses, where non-deferred data is delivered in the initial response and data deferred is delivered in a subsequent response. `@include` and `@skip` take precedence over `@defer`."
+directive @defer(
+    "Deferred when true."
+    if: Boolean,
+    "If this argument label has a value other than null, it will be passed on to the result of this defer directive. This label is intended to give client applications a way to identify to which fragment a deferred result belongs to."
+    label: String
+) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+"The `@stream` directive may be provided for a field of `List` type so that the backend can leverage technology such as asynchronous iterators to provide a partial list in the initial response, and additional list items in subsequent responses. `@include` and `@skip` take precedence over `@stream`."
+directive @stream(
+    "Streamed when true."
+    if: Boolean,
+    "The initial elements that shall be send down to the consumer."
+    initialCount: Int! = 0,
+    "If this argument label has a value other than null, it will be passed on to the result of this stream directive. This label is intended to give client applications a way to identify to which fragment a streamed result belongs to."
+    label: String
+) on FIELD
+
+directive @authorize(
+    "Defines when when the resolver shall be executed.By default the resolver is executed after the policy has determined that the current user is allowed to access the field."
+    apply: ApplyPolicy! = BEFORE_RESOLVER,
+    "The name of the authorization policy that determines access to the annotated resource."
+    policy: String,
+    "Roles that are allowed to access the annotated resource."
+    roles: [String!]
+) on SCHEMA | OBJECT | FIELD_DEFINITION
+
+type ArtemisChannel {
+    branch: String!
+    releases: Int!
+}
+
+type Artifact {
+    artifactId: Long!
+    deltaFileInfo: ArtifactFileInfo!
+    fileInfo: ArtifactFileInfo!
+    fileName(deltaFile: Boolean!): String!
+    platform: Platform!
+}
+
+type ArtifactFileInfo {
+    downloadSize: Long!
+    downloads: Long!
+    md5Hash: String
+}
+
+type Mutation {
+    updateReleaseChangelog(input: UpdateReleaseChangelogInput!): UpdateReleaseChangelogPayload!
+}
+
+type Query {
+    channelByBranch(branch: String!): ArtemisChannel
+    channels: [ArtemisChannel!]!
+    nextRelease(branch: String!, platform: Platform!, version: String!): Release
+    release(id: String!): Release
+    releaseStatistics(order: [ReleaseStatisticSortInput!], where: ReleaseStatisticFilterInput): [ReleaseStatistic!]!
+    releases(order: [ReleaseSortInput!], where: ReleaseFilterInput): [Release!]!
+}
+
+type Release {
+    artifacts: [Artifact!]!
+    branch: String!
+    changelog: String!
+    commit: String!
+    createdAt: DateTime!
+    id: String!
+    isDraft: Boolean!
+    previousRelease: String
+    version: String!
+    workflowRunId: Long!
+}
+
+type ReleaseStatistic {
+    count: Int!
+    lastReportedUsage: DateTime!
+    linuxCount: Int!
+    oSXCount: Int!
+    releaseId: String!
+    windowsCount: Int!
+}
+
+type UpdateReleaseChangelogPayload {
+    release: Release
+}
+
+enum ApplyPolicy {
+    AFTER_RESOLVER
+    BEFORE_RESOLVER
+}
+
+enum Platform {
+    LINUX
+    OSX
+    WINDOWS
+}
+
+enum SortEnumType {
+    ASC
+    DESC
+}
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime
+
+"The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1."
+scalar Long
+
+input ArtifactFileInfoFilterInput {
+    and: [ArtifactFileInfoFilterInput!]
+    downloadSize: ComparableInt64OperationFilterInput
+    downloads: ComparableInt64OperationFilterInput
+    md5Hash: StringOperationFilterInput
+    or: [ArtifactFileInfoFilterInput!]
+}
+
+input ArtifactFilterInput {
+    and: [ArtifactFilterInput!]
+    artifactId: ComparableInt64OperationFilterInput
+    deltaFileInfo: ArtifactFileInfoFilterInput
+    fileInfo: ArtifactFileInfoFilterInput
+    or: [ArtifactFilterInput!]
+    platform: PlatformOperationFilterInput
+}
+
+input BooleanOperationFilterInput {
+    eq: Boolean
+    neq: Boolean
+}
+
+input ComparableDateTimeOffsetOperationFilterInput {
+    eq: DateTime
+    gt: DateTime
+    gte: DateTime
+    in: [DateTime!]
+    lt: DateTime
+    lte: DateTime
+    neq: DateTime
+    ngt: DateTime
+    ngte: DateTime
+    nin: [DateTime!]
+    nlt: DateTime
+    nlte: DateTime
+}
+
+input ComparableInt32OperationFilterInput {
+    eq: Int
+    gt: Int
+    gte: Int
+    in: [Int!]
+    lt: Int
+    lte: Int
+    neq: Int
+    ngt: Int
+    ngte: Int
+    nin: [Int!]
+    nlt: Int
+    nlte: Int
+}
+
+input ComparableInt64OperationFilterInput {
+    eq: Long
+    gt: Long
+    gte: Long
+    in: [Long!]
+    lt: Long
+    lte: Long
+    neq: Long
+    ngt: Long
+    ngte: Long
+    nin: [Long!]
+    nlt: Long
+    nlte: Long
+}
+
+input ListFilterInputTypeOfArtifactFilterInput {
+    all: ArtifactFilterInput
+    any: Boolean
+    none: ArtifactFilterInput
+    some: ArtifactFilterInput
+}
+
+input PlatformOperationFilterInput {
+    eq: Platform
+    in: [Platform!]
+    neq: Platform
+    nin: [Platform!]
+}
+
+input ReleaseFilterInput {
+    and: [ReleaseFilterInput!]
+    artifacts: ListFilterInputTypeOfArtifactFilterInput
+    branch: StringOperationFilterInput
+    changelog: StringOperationFilterInput
+    commit: StringOperationFilterInput
+    createdAt: ComparableDateTimeOffsetOperationFilterInput
+    id: StringOperationFilterInput
+    isDraft: BooleanOperationFilterInput
+    or: [ReleaseFilterInput!]
+    previousRelease: StringOperationFilterInput
+    version: StringOperationFilterInput
+    workflowRunId: ComparableInt64OperationFilterInput
+}
+
+input ReleaseSortInput {
+    branch: SortEnumType
+    changelog: SortEnumType
+    commit: SortEnumType
+    createdAt: SortEnumType
+    id: SortEnumType
+    isDraft: SortEnumType
+    previousRelease: SortEnumType
+    version: SortEnumType
+    workflowRunId: SortEnumType
+}
+
+input ReleaseStatisticFilterInput {
+    and: [ReleaseStatisticFilterInput!]
+    count: ComparableInt32OperationFilterInput
+    lastReportedUsage: ComparableDateTimeOffsetOperationFilterInput
+    linuxCount: ComparableInt32OperationFilterInput
+    oSXCount: ComparableInt32OperationFilterInput
+    or: [ReleaseStatisticFilterInput!]
+    releaseId: StringOperationFilterInput
+    windowsCount: ComparableInt32OperationFilterInput
+}
+
+input ReleaseStatisticSortInput {
+    count: SortEnumType
+    lastReportedUsage: SortEnumType
+    linuxCount: SortEnumType
+    oSXCount: SortEnumType
+    releaseId: SortEnumType
+    windowsCount: SortEnumType
+}
+
+input StringOperationFilterInput {
+    and: [StringOperationFilterInput!]
+    contains: String
+    endsWith: String
+    eq: String
+    in: [String]
+    ncontains: String
+    nendsWith: String
+    neq: String
+    nin: [String]
+    nstartsWith: String
+    or: [StringOperationFilterInput!]
+    startsWith: String
+}
+
+input UpdateReleaseChangelogInput {
+    changelog: String!
+    id: String!
+    isDraft: Boolean!
+}
