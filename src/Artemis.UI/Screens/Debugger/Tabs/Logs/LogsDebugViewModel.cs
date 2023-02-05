@@ -48,8 +48,11 @@ public class LogsDebugViewModel : ActivatableViewModelBase
         });
     }
 
-    private void AddLogEvent(LogEvent logEvent)
+    private void AddLogEvent(LogEvent? logEvent)
     {
+        if (logEvent is null)
+            return;
+
         using StringWriter writer = new();
         _formatter.Format(logEvent, writer);
         string line = writer.ToString();
