@@ -1,16 +1,30 @@
-query GetReleaseById {
-    release(id: "63b71dd69a5bb32a0a81a410") {
+query GetReleaseById($id: String!) {
+    release(id: $id) {
         branch
         commit
         version
+        previousRelease
         artifacts {
             platform
             artifactId
             fileInfo {
-                md5Hash
-                downloadSize
-                downloads
+                ...fileInfo
+            }
+            deltaFileInfo {
+                ...fileInfo
             }
         }
+    }
+}
+
+fragment fileInfo on ArtifactFileInfo {
+    md5Hash
+    downloadSize
+}
+
+query GetNextRelease($currentVersion: String!, $branch: String!, $platform: Platform!) {
+    nextRelease(version: $currentVersion, branch: $branch, platform: $platform) {
+        id
+        version
     }
 }

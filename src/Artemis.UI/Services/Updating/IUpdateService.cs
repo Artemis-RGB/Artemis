@@ -12,7 +12,7 @@ public interface IUpdateService : IArtemisUIService
     /// <summary>
     ///     Gets or sets a boolean indicating whether auto-updating is suspended.
     /// </summary>
-    bool SuspendAutoUpdate { get; set; }
+    bool SuspendAutoCheck { get; set; }
 
     /// <summary>
     ///     Manually checks for updates and offers to install it if found.
