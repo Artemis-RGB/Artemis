@@ -31,8 +31,8 @@
         <PackageReference Include="Material.Icons.Avalonia" Version="1.1.10" />
         <PackageReference Include="ReactiveUI" Version="17.1.50" />
         <PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />
-        <PackageReference Include="RGB.NET.Core" Version="1.0.0" />
-        <PackageReference Include="RGB.NET.Layout" Version="1.0.0" />
+        <PackageReference Include="RGB.NET.Core" Version="2.0.0-prerelease.12" />
+        <PackageReference Include="RGB.NET.Layout" Version="2.0.0-prerelease.12" />
         <PackageReference Include="SkiaSharp" Version="2.88.1-preview.108" />
         <PackageReference Include="Splat.DryIoc" Version="14.6.1" />
     </ItemGroup>

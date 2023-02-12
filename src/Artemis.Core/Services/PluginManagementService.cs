@@ -435,7 +435,7 @@ internal class PluginManagementService : IPluginManagementService
         plugin.Container = _container.CreateChild(newRules: _container.Rules.WithConcreteTypeDynamicRegistrations());
         try
         {
-            new PluginModule(plugin).Load(plugin.Container);
+            plugin.Container.RegisterPlugin(plugin);
         }
         catch (Exception e)
         {

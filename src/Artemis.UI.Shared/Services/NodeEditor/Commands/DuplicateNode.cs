@@ -56,7 +56,7 @@ public class DuplicateNode : INodeEditorCommand, IDisposable
             if (targetCollection == null)
                 continue;
             while (targetCollection.Count() < sourceCollection.Count())
-                targetCollection.CreatePin();
+                targetCollection.Add(targetCollection.CreatePin());
         }
 
         // Copy the storage

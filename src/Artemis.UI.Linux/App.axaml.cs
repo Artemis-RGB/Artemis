@@ -1,4 +1,5 @@
 using Artemis.Core.Services;
+using Artemis.UI.Linux.DryIoc;
 using Artemis.UI.Linux.Providers.Input;
 using Avalonia;
 using Avalonia.Controls;
@@ -17,7 +18,7 @@ public class App : Application
 
     public override void Initialize()
     {
-        _container = ArtemisBootstrapper.Bootstrap(this);
+        _container = ArtemisBootstrapper.Bootstrap(this, c => c.RegisterProviders());
         Program.CreateLogger(_container);
         RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
         AvaloniaXamlLoader.Load(this);
