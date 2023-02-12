@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace Artemis.VisualScripting.Nodes.Color;
 
-[Node("Color to Hsv", "Outputs H, S and L values from a color", "Color", InputType = typeof(SKColor), OutputType = typeof(Numeric))]
+[Node("Color to HSV", "Outputs H, S and L values from a color", "Color", InputType = typeof(SKColor), OutputType = typeof(Numeric))]
 public class SkColorHsv : Node
 {
     
