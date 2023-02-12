@@ -1,8 +1,5 @@
-using System.Linq;
-using System.Reflection;
 using Artemis.Core;
-using Ninject;
-using Ninject.Parameters;
+using DryIoc;
 
 /// <summary>
 ///     Represents a kind of node inside a <see cref="NodeScript" /> containing storage value of type
@@ -22,26 +19,13 @@ public abstract class Node<TStorage, TViewModel> : Node<TStorage>, ICustomViewMo
     {
     }
 
-    [Inject]
-    internal IKernel Kernel { get; set; } = null!;
-
     /// <summary>
     ///     Called when a view model is required
     /// </summary>
     /// <param name="nodeScript"></param>
     public virtual TViewModel GetViewModel(NodeScript nodeScript)
     {
-        // Limit to one constructor, there's no need to have more and it complicates things anyway
-        ConstructorInfo[] constructors = typeof(TViewModel).GetConstructors();
-        if (constructors.Length != 1)
-            throw new ArtemisCoreException("Node VMs must have exactly one constructor");
-
-        // Find the ScriptConfiguration parameter, it is required by the base constructor so its there for sure
-        ParameterInfo? configurationParameter = constructors.First().GetParameters().FirstOrDefault(p => GetType().IsAssignableFrom(p.ParameterType));
-
-        if (configurationParameter?.Name == null)
-            throw new ArtemisCoreException($"Couldn't find a valid constructor argument on {typeof(TViewModel).Name} with type {GetType().Name}");
-        return Kernel.Get<TViewModel>(new ConstructorArgument(configurationParameter.Name, this), new ConstructorArgument("script", nodeScript));
+        return Container.Resolve<TViewModel>(args: new object[] {this, nodeScript});
     }
 
     /// <summary>

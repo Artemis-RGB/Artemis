@@ -5,7 +5,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.Core.Events;
-using Artemis.UI.Ninject.Factories;
+using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.VisualScripting.Pins;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;

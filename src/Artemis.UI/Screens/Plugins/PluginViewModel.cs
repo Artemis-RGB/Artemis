@@ -13,8 +13,8 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using DryIoc;
 using Material.Icons;
-using Ninject;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Plugins;
@@ -209,8 +209,7 @@ public class PluginViewModel : ActivatableViewModelBase
 
         try
         {
-            PluginConfigurationViewModel? viewModel = Plugin.Kernel!.Get(Plugin.ConfigurationDialog.Type) as PluginConfigurationViewModel;
-            if (viewModel == null)
+            if (Plugin.Resolve(Plugin.ConfigurationDialog.Type) is not PluginConfigurationViewModel viewModel)
                 throw new ArtemisUIException($"The type of a plugin configuration dialog must inherit {nameof(PluginConfigurationViewModel)}");
 
             _window = _windowService.ShowWindow(new PluginSettingsWindowViewModel(viewModel));

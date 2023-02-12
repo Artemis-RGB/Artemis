@@ -3,9 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Controls;
+using DryIoc;
 using FluentAvalonia.UI.Controls;
-using Ninject;
-using Ninject.Parameters;
 using ReactiveUI;
 
 namespace Artemis.UI.Shared.Services.Builders;
@@ -16,13 +15,13 @@ namespace Artemis.UI.Shared.Services.Builders;
 public class ContentDialogBuilder
 {
     private readonly ContentDialog _contentDialog;
-    private readonly IKernel _kernel;
+    private readonly IContainer _container;
     private readonly Window _parent;
     private ContentDialogViewModelBase? _viewModel;
 
-    internal ContentDialogBuilder(IKernel kernel, Window parent)
+    internal ContentDialogBuilder(IContainer container, Window parent)
     {
-        _kernel = kernel;
+        _container = container;
         _parent = parent;
         _contentDialog = new ContentDialog
         {
@@ -129,12 +128,11 @@ public class ContentDialogBuilder
     /// </summary>
     /// <typeparam name="T">The type of the view model to host.</typeparam>
     /// <param name="viewModel">The resulting view model.</param>
-    /// <param name="parameters">Optional parameters to pass to the constructor of the view model, case and order sensitive.</param>
+    /// <param name="parameters">Optional parameters to pass to the constructor of the view model.</param>
     /// <returns>The builder that can be used to further build the dialog.</returns>
-    public ContentDialogBuilder WithViewModel<T>(out T viewModel, params (string name, object? value)[] parameters) where T : ContentDialogViewModelBase
+    public ContentDialogBuilder WithViewModel<T>(out T viewModel, params object[] parameters) where T : ContentDialogViewModelBase
     {
-        IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.name, kv.value)).Cast<IParameter>().ToArray();
-        viewModel = _kernel.Get<T>(paramsArray);
+        viewModel = _container.Resolve<T>(parameters);
         viewModel.ContentDialog = _contentDialog;
         _contentDialog.Content = viewModel;
 

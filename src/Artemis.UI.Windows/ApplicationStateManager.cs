@@ -10,35 +10,36 @@ using Artemis.UI.Windows.Utilities;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
-using Ninject;
+using DryIoc;
 
 namespace Artemis.UI.Windows;
 
 public class ApplicationStateManager
 {
     private const int SM_SHUTTINGDOWN = 0x2000;
-    
-    public ApplicationStateManager(IKernel kernel, string[] startupArguments)
+
+    public ApplicationStateManager(IContainer container, string[] startupArguments)
     {
         StartupArguments = startupArguments;
         IsElevated = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
 
         Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
         Core.Utilities.RestartRequested += UtilitiesOnRestartRequested;
+        Core.Utilities.UpdateRequested += UtilitiesOnUpdateRequested;
 
-        // On Windows shutdown dispose the kernel just so device providers get a chance to clean up
+        // On Windows shutdown dispose the IOC container just so device providers get a chance to clean up
         if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
             controlledApplicationLifetime.Exit += (_, _) =>
             {
                 RunForcedShutdownIfEnabled();
 
-                // Dispose plugins before disposing the kernel because plugins might access services during dispose
-                kernel.Get<IPluginManagementService>().Dispose();
-                kernel.Dispose();
+                // Dispose plugins before disposing the IOC container because plugins might access services during dispose
+                container.Resolve<IPluginManagementService>().Dispose();
+                container.Dispose();
             };
 
         // Inform the Core about elevation status
-        kernel.Get<ICoreService>().IsElevated = IsElevated;
+        container.Resolve<ICoreService>().IsElevated = IsElevated;
     }
 
     public string[] StartupArguments { get; }
@@ -91,6 +92,33 @@ public class ApplicationStateManager
             Dispatcher.UIThread.Post(() => controlledApplicationLifetime.Shutdown());
     }
 
+    private void UtilitiesOnUpdateRequested(object? sender, UpdateEventArgs e)
+    {
+        List<string> argsList = new(StartupArguments);
+        if (e.Silent)
+            argsList.Add("--autorun");
+
+        // Retain startup arguments after update by providing them to the script
+        string script = $"\"{Path.Combine(Constants.DataFolder, "updating", "pending", "scripts", "update.ps1")}\"";
+        string source = $"-sourceDirectory \"{Path.Combine(Constants.DataFolder, "updating", "pending")}\"";
+        string destination = $"-destinationDirectory \"{Constants.ApplicationFolder}\"";
+        string args = argsList.Any() ? $"-artemisArgs \"{string.Join(',', argsList)}\"" : "";
+
+        // Run the PowerShell script included in the new version, that way any changes made to the script are used
+        ProcessStartInfo info = new()
+        {
+            Arguments = $"-File {script} {source} {destination} {args}",
+            WindowStyle = ProcessWindowStyle.Hidden,
+            CreateNoWindow = true,
+            FileName = "PowerShell.exe"
+        };
+        Process.Start(info);
+
+        // Lets try a graceful shutdown, PowerShell will kill if needed
+        if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
+            Dispatcher.UIThread.Post(() => controlledApplicationLifetime.Shutdown());
+    }
+
     private void UtilitiesOnShutdownRequested(object? sender, EventArgs e)
     {
         // Use PowerShell to kill the process after 8 sec just in case
@@ -115,7 +143,7 @@ public class ApplicationStateManager
         };
         Process.Start(info);
     }
-    
+
     [System.Runtime.InteropServices.DllImport("user32.dll")]
     private static extern int GetSystemMetrics(int nIndex);
 }

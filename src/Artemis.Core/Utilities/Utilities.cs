@@ -51,6 +51,15 @@ public static class Utilities
     }
 
     /// <summary>
+    ///     Applies a pending update
+    /// </summary>
+    /// <param name="silent">A boolean indicating whether to silently update or not.</param>
+    public static void ApplyUpdate(bool silent)
+    {
+        OnUpdateRequested(new UpdateEventArgs(silent));
+    }
+
+    /// <summary>
     ///     Opens the provided URL in the default web browser
     /// </summary>
     /// <param name="url">The URL to open</param>
@@ -96,11 +105,16 @@ public static class Utilities
     ///     Occurs when the core has requested an application shutdown
     /// </summary>
     public static event EventHandler? ShutdownRequested;
-
+    
     /// <summary>
     ///     Occurs when the core has requested an application restart
     /// </summary>
     public static event EventHandler<RestartEventArgs>? RestartRequested;
+    
+    /// <summary>
+    ///     Occurs when the core has requested a pending application update to be applied
+    /// </summary>
+    public static event EventHandler<UpdateEventArgs>? UpdateRequested;
 
     /// <summary>
     ///     Opens the provided folder in the user's file explorer
@@ -135,6 +149,11 @@ public static class Utilities
     private static void OnShutdownRequested()
     {
         ShutdownRequested?.Invoke(null, EventArgs.Empty);
+    }
+    
+    private static void OnUpdateRequested(UpdateEventArgs e)
+    {
+        UpdateRequested?.Invoke(null, e);
     }
 
     #region Scaling

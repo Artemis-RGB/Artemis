@@ -9,7 +9,6 @@ public abstract class RenderElementEntity
     public Guid ParentId { get; set; }
 
     public List<LayerEffectEntity> LayerEffects { get; set; }
-    public List<PropertyEntity> PropertyEntities { get; set; }
 
     public IConditionEntity DisplayCondition { get; set; }
     public TimelineEntity Timeline { get; set; }

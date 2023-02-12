@@ -1,0 +1,191 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:avalonia="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
+        xmlns:mdc="clr-namespace:Markdown.Avalonia.Controls;assembly=Markdown.Avalonia"
+        xmlns:mde="clr-namespace:Markdown.Avalonia.Extensions;assembly=Markdown.Avalonia"
+        xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <avalonia:MarkdownScrollViewer Classes="Test">
+                <avalonia:MarkdownScrollViewer.Styles>
+                    <Style Selector="ctxt|CTextBlock">
+                        <Style.Setters>
+                            <Setter Property="FontSize" Value="{mde:Multiply ControlContentThemeFontSize, 1}" />
+                            <Setter Property="Margin" Value="0,5" />
+                        </Style.Setters>
+                    </Style>
+                    <Style Selector="TextBlock">
+                        <Style.Setters>
+                            <Setter Property="FontSize" Value="{mde:Multiply ControlContentThemeFontSize, 1}" />
+                        </Style.Setters>
+                    </Style>
+
+                    <Style Selector="ctxt|CTextBlock.Heading1">
+                        <Style.Setters>
+                            <Setter Property="FontSize" Value="{mde:Multiply ControlContentThemeFontSize, 3.2}" />
+                            <Setter Property="Foreground" Value="{mde:Alpha TextFillColorPrimaryBrush}" />
+                            <Setter Property="FontWeight" Value="Light" />
+                        </Style.Setters>
+                    </Style>
+
+                    <Style Selector="ctxt|CTextBlock.Heading2">
+                        <Style.Setters>
+                            <Setter Property="FontSize" Value="{mde:Multiply ControlContentThemeFontSize, 1.6}" />
+                            <Setter Property="Foreground" Value="{mde:Alpha TextFillColorPrimaryBrush}" />
+                            <Setter Property="FontWeight" Value="Light" />
+                        </Style.Setters>
+                    </Style>
+
+                    <Style Selector="ctxt|CTextBlock.Heading3">
+                        <Style.Setters>
+                            <Setter Property="FontSize" Value="{mde:Multiply ControlContentThemeFontSize, 1.6}" />
+                            <Setter Property="Foreground" Value="{mde:Alpha TextFillColorPrimaryBrush, 0.7}" />
+                            <Setter Property="FontWeight" Value="Light" />
+                        </Style.Setters>
+                    </Style>
+
+                    <Style Selector="ctxt|CTextBlock.Heading4">
+                        <Style.Setters>
+                            <Setter Property="FontSize" Value="{mde:Multiply ControlContentThemeFontSize, 1.2}" />
+                            <Setter Property="Foreground" Value="{mde:Alpha TextFillColorPrimaryBrush, 0.7}" />
+                            <Setter Property="FontWeight" Value="Light" />
+                        </Style.Setters>
+                    </Style>
+
+                    <Style Selector="ctxt|CHyperlink">
+                        <Style.Setters>
+                            <Setter Property="IsUnderline" Value="true" />
+                            <Setter Property="Foreground" Value="{StaticResource SystemAccentColor}" />
+                        </Style.Setters>
+                    </Style>
+                    <Style Selector="ctxt|CHyperlink:pointerover">
+                        <Setter Property="Foreground" Value="{mde:Complementary SystemAccentColor}" />
+                    </Style>
+
+                    <Style Selector="Border.Table">
+                        <Style.Setters>
+                            <Setter Property="Margin" Value="5" />
+                            <Setter Property="BorderThickness" Value="0,0,1,1" />
+                            <Setter Property="BorderBrush" Value="{mde:Alpha TextFillColorPrimaryBrush, 0.7}" />
+                        </Style.Setters>
+                    </Style>
+
+                    <Style Selector="Grid.Table > Border">
+                        <Style.Setters>
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="BorderThickness" Value="1,1,0,0" />
+                            <Setter Property="BorderBrush" Value="{mde:Alpha TextFillColorPrimaryBrush, 0.7}" />
+                            <Setter Property="Padding" Value="2" />
+                        </Style.Setters>
+                    </Style>
+
+                    <Style Selector="Border.TableHeader">
+                        <Style.Setters>
+                            <Setter Property="Background" Value="{mde:Alpha TextFillColorPrimaryBrush, 0.3}" />
+                        </Style.Setters>
+                    </Style>
+                    <Style Selector="Border.TableHeader ctxt|CTextBlock">
+                        <Style.Setters>
+                            <Setter Property="FontWeight" Value="DemiBold" />
+                        </Style.Setters>
+                    </Style>
+
+                    <Style Selector="Border.EvenTableRow">
+                        <Style.Setters>
+                            <Setter Property="Background" Value="{mde:Alpha ControlFillColorDefaultBrush, 0.9}" />
+                        </Style.Setters>
+                    </Style>
+
+                    <Style Selector="Border.CodeBlock">
+                        <Style.Setters>
+                            <Setter Property="BorderBrush" Value="{mde:Alpha TextFillColorPrimaryBrush, 0.2}" />
+                            <Setter Property="BorderThickness" Value="0,5,0,5" />
+                            <Setter Property="Margin" Value="5,0,5,0" />
+                            <Setter Property="Background" Value="{mde:Alpha ControlFillColorDefaultBrush, 0.9}" />
+                        </Style.Setters>
+                    </Style>
+                    <Style Selector="TextBlock.CodeBlock">
+                        <Style.Setters>
+                            <Setter Property="FontFamily" Value="menlo,monaco,consolas,droid sans mono,inconsolata,courier new,monospace,dejavu sans mono" />
+                            <Setter Property="Foreground" Value="{mde:DivideColor Blue, TextFillColorPrimary, 0.4}" />
+                        </Style.Setters>
+                    </Style>
+                    <Style Selector="Border.NoContainer">
+                        <Style.Setters>
+                            <Setter Property="BorderBrush" Value="Red" />
+                        </Style.Setters>
+                    </Style>
+
+                    <Style Selector="ctxt|CCode">
+                        <Style.Setters>
+                            <Setter Property="Foreground" Value="{mde:DivideColor Blue, TextFillColorPrimary, 0.4}" />
+                            <Setter Property="Background" Value="{mde:Alpha ControlFillColorDefaultBrush, 0.9}" />
+                        </Style.Setters>
+                    </Style>
+
+                    <Style Selector="Border.Note">
+                        <Style.Setters>
+                            <Setter Property="Margin" Value="5,0,5,0" />
+                            <Setter Property="BorderBrush" Value="{mde:Alpha TextFillColorPrimaryBrush, 0.2}" />
+                            <Setter Property="BorderThickness" Value="3,3,3,3" />
+                            <Setter Property="Background" Value="{mde:Alpha ControlFillColorDefaultBrush, 0.9}" />
+                        </Style.Setters>
+                    </Style>
+                    <Style Selector="ctxt|CTextBlock.Note">
+                        <Style.Setters>
+                            <Setter Property="Margin" Value="10, 5" />
+                        </Style.Setters>
+                    </Style>
+
+                    <Style Selector="Grid.List">
+                        <Style.Setters>
+                            <Setter Property="Margin" Value="15,0,0,0" />
+                        </Style.Setters>
+                    </Style>
+                    <Style Selector="ctxt|CTextBlock.ListMarker">
+                        <Style.Setters>
+                            <Setter Property="Margin" Value="0,5,5,5" />
+                        </Style.Setters>
+                    </Style>
+
+                    <Style Selector="Border.Blockquote">
+                        <Style.Setters>
+                            <Setter Property="BorderBrush" Value="{mde:Alpha TextFillColorPrimaryBrush, 0.2}" />
+                            <Setter Property="BorderThickness" Value="5,0,0,0" />
+                        </Style.Setters>
+                    </Style>
+
+                    <Style Selector="StackPanel.Blockquote">
+                        <Style.Setters>
+                            <Setter Property="Margin" Value="10, 5" />
+                        </Style.Setters>
+                    </Style>
+
+                    <Style Selector="mdc|Rule">
+                        <Style.Setters>
+                            <Setter Property="Margin" Value="0,3" />
+                        </Style.Setters>
+                    </Style>
+                </avalonia:MarkdownScrollViewer.Styles>
+                ## Core
+                * Cleaned up ProfileService render condition
+                * Core - Added fading in and out of profiles
+                * Core - Apply opacity layer only when fading
+                * Core - Fixed when condition stops being true mid-fade
+                * Core - Removed FadingStatus enum
+
+                # General
+                - Meta - Fixed warnings
+                - Meta - Update RGB.NET
+
+                # Plugins
+                - Plugins - Ignore version when loading shared assemblies
+
+                # UI
+                - Sidebar - Improved category reordering code
+            </avalonia:MarkdownScrollViewer>
+        </Border>
+    </Design.PreviewWith>
+
+
+</Styles>

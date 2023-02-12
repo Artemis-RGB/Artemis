@@ -56,7 +56,7 @@ public class ListOperatorPredicateNodeCustomViewModel : CustomNodeViewModel
         if (_node.Script == null)
             return;
 
-        await _windowService.ShowDialogAsync<NodeScriptWindowViewModelBase, bool>(("nodeScript", _node.Script));
+        await _windowService.ShowDialogAsync<NodeScriptWindowViewModelBase, bool>(_node.Script);
         _node.Script.Save();
 
         _node.Storage ??= new ListOperatorEntity();

@@ -11,10 +11,12 @@
         <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
         <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
         <ProjectReference Include="..\Artemis.VisualScripting\Artemis.VisualScripting.csproj" />
+        <ProjectReference Include="..\Artemis.WebClient.Updating\Artemis.WebClient.Updating.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="0.10.18" />
+        <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.10.12.2" />
         <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="10.14.0" />
         <PackageReference Include="Avalonia.Controls.Skia" Version="0.10.16" />
         <PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
@@ -22,17 +24,20 @@
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.18" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.18" />
         <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.18" />
+        <PackageReference Include="DryIoc.dll" Version="5.3.1" />
         <PackageReference Include="DynamicData" Version="7.9.14" />
         <PackageReference Include="FluentAvaloniaUI" Version="1.4.1" />
         <PackageReference Include="Flurl.Http" Version="3.2.4" />
         <PackageReference Include="Live.Avalonia" Version="1.3.1" />
+        <PackageReference Include="Markdown.Avalonia.Tight" Version="0.10.13" />
         <PackageReference Include="Material.Icons.Avalonia" Version="1.1.10" />
+        <PackageReference Include="Octopus.Octodiff" Version="2.0.100" />
         <PackageReference Include="ReactiveUI" Version="17.1.50" />
         <PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />
         <PackageReference Include="RGB.NET.Core" Version="1.0.0" />
         <PackageReference Include="RGB.NET.Layout" Version="1.0.0" />
         <PackageReference Include="SkiaSharp" Version="2.88.1-preview.108" />
-        <PackageReference Include="Splat.Ninject" Version="14.4.1" />
+        <PackageReference Include="Splat.DryIoc" Version="14.6.1" />
     </ItemGroup>
 
     <ItemGroup>

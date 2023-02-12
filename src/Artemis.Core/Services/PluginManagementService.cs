@@ -5,19 +5,15 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Loader;
 using System.Threading.Tasks;
 using Artemis.Core.DeviceProviders;
-using Artemis.Core.Ninject;
+using Artemis.Core.DryIoc;
 using Artemis.Storage.Entities.General;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
+using DryIoc;
 using McMaster.NETCore.Plugins;
-using Ninject;
-using Ninject.Extensions.ChildKernel;
-using Ninject.Parameters;
-using Ninject.Planning.Bindings.Resolvers;
 using RGB.NET.Core;
 using Serilog;
 
@@ -29,7 +25,7 @@ namespace Artemis.Core.Services;
 internal class PluginManagementService : IPluginManagementService
 {
     private readonly IDeviceRepository _deviceRepository;
-    private readonly IKernel _kernel;
+    private readonly IContainer _container;
     private readonly ILogger _logger;
     private readonly IPluginRepository _pluginRepository;
     private readonly List<Plugin> _plugins;
@@ -37,9 +33,9 @@ internal class PluginManagementService : IPluginManagementService
     private bool _disposed;
     private bool _isElevated;
 
-    public PluginManagementService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository, IDeviceRepository deviceRepository, IQueuedActionRepository queuedActionRepository)
+    public PluginManagementService(IContainer container, ILogger logger, IPluginRepository pluginRepository, IDeviceRepository deviceRepository, IQueuedActionRepository queuedActionRepository)
     {
-        _kernel = kernel;
+        _container = container;
         _logger = logger;
         _pluginRepository = pluginRepository;
         _deviceRepository = deviceRepository;
@@ -88,7 +84,20 @@ internal class PluginManagementService : IPluginManagementService
 
         foreach (FileInfo zipFile in builtInPluginDirectory.EnumerateFiles("*.zip"))
         {
-            // Find the metadata file in the zip
+            try
+            {
+                ExtractBuiltInPlugin(zipFile, pluginDirectory);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Failed to copy built-in plugin from {ZipFile}", zipFile.FullName);
+            }
+        }
+    }
+
+    private void ExtractBuiltInPlugin(FileInfo zipFile, DirectoryInfo pluginDirectory)
+    {
+        // Find the metadata file in the zip
             using ZipArchive archive = ZipFile.OpenRead(zipFile.FullName);
             ZipArchiveEntry? metaDataFileEntry = archive.GetEntry("plugin.json");
             if (metaDataFileEntry == null)
@@ -139,7 +148,6 @@ internal class PluginManagementService : IPluginManagementService
                     }
                 }
             }
-        }
     }
 
     #endregion
@@ -198,6 +206,10 @@ internal class PluginManagementService : IPluginManagementService
 
     public void Dispose()
     {
+        // Disposal happens manually before container disposal but the container doesn't know that so a 2nd call will be made
+        if (_disposed)
+            return;
+        
         _disposed = true;
         UnloadPlugins();
     }
@@ -340,11 +352,11 @@ internal class PluginManagementService : IPluginManagementService
             configure.IsUnloadable = true;
             configure.LoadInMemory = true;
             configure.PreferSharedTypes = true;
-            
+
             // Resolving failed, try a loaded assembly but ignoring the version
             configure.DefaultContext.Resolving += (context, assemblyName) => context.Assemblies.FirstOrDefault(a => a.GetName().Name == assemblyName.Name);
         });
-        
+
         try
         {
             plugin.Assembly = plugin.PluginLoader.LoadDefaultAssembly();
@@ -406,7 +418,7 @@ internal class PluginManagementService : IPluginManagementService
         OnPluginLoaded(new PluginEventArgs(plugin));
         return plugin;
     }
-    
+
     public void EnablePlugin(Plugin plugin, bool saveState, bool ignorePluginLock)
     {
         if (!plugin.Info.IsCompatible)
@@ -431,10 +443,17 @@ internal class PluginManagementService : IPluginManagementService
         if (!plugin.Info.ArePrerequisitesMet())
             throw new ArtemisPluginPrerequisiteException(plugin.Info, "Cannot enable a plugin whose prerequisites aren't all met");
 
-        // Create the Ninject child kernel and load the module
-        plugin.Kernel = new ChildKernel(_kernel, new PluginModule(plugin));
-        // The kernel used by Core is unforgiving about missing bindings, no need to be so hard on plugin devs
-        plugin.Kernel.Components.Add<IMissingBindingResolver, SelfBindingResolver>();
+        // Create a child container for the plugin, be a bit more forgiving about concrete types
+        plugin.Container = _container.CreateChild(newRules: _container.Rules.WithConcreteTypeDynamicRegistrations());
+        try
+        {
+            plugin.Container.RegisterPlugin(plugin);
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Failed to register plugin services for plugin {plugin}, skipping enabling", plugin);
+            return;
+        }
 
         OnPluginEnabling(new PluginEventArgs(plugin));
 
@@ -446,11 +465,8 @@ internal class PluginManagementService : IPluginManagementService
         {
             try
             {
-                plugin.Kernel.Bind(featureInfo.FeatureType).ToSelf().InSingletonScope();
-
-                // Include Plugin as a parameter for the PluginSettingsProvider
-                IParameter[] parameters = {new Parameter("Plugin", plugin, false)};
-                PluginFeature instance = (PluginFeature) plugin.Kernel.Get(featureInfo.FeatureType, parameters);
+                plugin.Container.Register(featureInfo.FeatureType, reuse: Reuse.Singleton);
+                PluginFeature instance = (PluginFeature) plugin.Container.Resolve(featureInfo.FeatureType);
 
                 // Get the PluginFeature attribute which contains extra info on the feature
                 featureInfo.Instance = instance;
@@ -526,8 +542,8 @@ internal class PluginManagementService : IPluginManagementService
 
         plugin.SetEnabled(false);
 
-        plugin.Kernel?.Dispose();
-        plugin.Kernel = null;
+        plugin.Container?.Dispose();
+        plugin.Container = null;
 
         GC.Collect();
         GC.WaitForPendingFinalizers();

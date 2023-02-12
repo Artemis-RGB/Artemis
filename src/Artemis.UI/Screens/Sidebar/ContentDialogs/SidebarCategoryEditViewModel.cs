@@ -15,10 +15,10 @@ public class SidebarCategoryEditViewModel : ContentDialogViewModelBase
     private readonly IProfileService _profileService;
     private string? _categoryName;
 
-    public SidebarCategoryEditViewModel(IProfileService profileService, ProfileCategory? category)
+    public SidebarCategoryEditViewModel(IProfileService profileService, ProfileCategory category)
     {
         _profileService = profileService;
-        _category = category;
+        _category = category == ProfileCategory.Empty ? null : category;
 
         if (_category != null)
             _categoryName = _category.Name;

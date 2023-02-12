@@ -1,6 +1,5 @@
 ﻿using System;
 using Artemis.Storage.Entities.Profile.Nodes;
-using Castle.Core.Internal;
 
 namespace Artemis.Core;
 

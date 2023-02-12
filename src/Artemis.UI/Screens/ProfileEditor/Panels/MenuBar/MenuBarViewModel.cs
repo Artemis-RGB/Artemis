@@ -137,10 +137,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
         if (ProfileConfiguration == null)
             return;
 
-        await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(
-            ("profileCategory", ProfileConfiguration.Category),
-            ("profileConfiguration", ProfileConfiguration)
-        );
+        await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(ProfileConfiguration.Category, ProfileConfiguration);
     }
 
     private async Task ExecuteViewScripts()
@@ -148,7 +145,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
         if (ProfileConfiguration?.Profile == null)
             return;
 
-        await _windowService.ShowDialogAsync<ScriptsDialogViewModel, object?>(("profile", ProfileConfiguration.Profile));
+        await _windowService.ShowDialogAsync<ScriptsDialogViewModel, object?>(ProfileConfiguration.Profile);
         await _profileEditorService.SaveProfileAsync();
     }
 

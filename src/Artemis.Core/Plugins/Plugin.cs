@@ -7,8 +7,8 @@ using System.Linq;
 using System.Reflection;
 using Artemis.Core.DeviceProviders;
 using Artemis.Storage.Entities.Plugins;
+using DryIoc;
 using McMaster.NETCore.Plugins;
-using Ninject;
 
 namespace Artemis.Core;
 
@@ -88,9 +88,9 @@ public class Plugin : CorePropertyChanged, IDisposable
     public PluginBootstrapper? Bootstrapper { get; internal set; }
 
     /// <summary>
-    ///     The Ninject kernel of the plugin
+    ///     Gets the IOC container of the plugin, only use this for advanced IOC operations, otherwise see <see cref="Resolve"/> and <see cref="Resolve{T}"/>
     /// </summary>
-    public IKernel? Kernel { get; internal set; }
+    public IContainer? Container { get; internal set; }
 
     /// <summary>
     ///     The PluginLoader backing this plugin
@@ -165,16 +165,66 @@ public class Plugin : CorePropertyChanged, IDisposable
     }
 
     /// <summary>
-    ///     Gets an instance of the specified service using the plugins dependency injection container.
-    ///     <para>Note: To use parameters reference Ninject and use <see cref="Kernel" /> directly.</para>
+    ///     Gets an instance of the specified service using the plugins dependency injection container.    
     /// </summary>
+    /// <param name="arguments">Arguments to supply to the service.</param>
     /// <typeparam name="T">The service to resolve.</typeparam>
     /// <returns>An instance of the service.</returns>
-    public T Get<T>()
+    /// <seealso cref="Resolve"/>
+    public T Resolve<T>(params object?[] arguments)
     {
-        if (Kernel == null)
-            throw new ArtemisPluginException("Cannot use Get<T> before the plugin finished loading");
-        return Kernel.Get<T>();
+        if (Container == null)
+            throw new ArtemisPluginException("Cannot use Resolve<T> before the plugin finished loading");
+        return Container.Resolve<T>(args: arguments);
+    }
+
+    /// <summary>
+    ///     Gets an instance of the specified service using the plugins dependency injection container.     
+    /// </summary>
+    /// <param name="type">The type of service to resolve.</param>
+    /// <param name="arguments">Arguments to supply to the service.</param>
+    /// <returns>An instance of the service.</returns>
+    /// <seealso cref="Resolve{T}"/>
+    public object Resolve(Type type, params object?[] arguments)
+    {
+        if (Container == null)
+            throw new ArtemisPluginException("Cannot use Resolve before the plugin finished loading");
+        return Container.Resolve(type, args: arguments);
+    }
+
+    /// <summary>
+    ///     Registers service of <typeparamref name="TService" /> type implemented by <typeparamref name="TImplementation" /> type.
+    /// </summary>
+    /// <param name="scope">The scope in which the service should live, if you are not sure leave it on singleton.</param>
+    /// <typeparam name="TService">The service to register.</typeparam>
+    /// <typeparam name="TImplementation">The implementation of the service to register.</typeparam>
+    public void Register<TService, TImplementation>(PluginServiceScope scope = PluginServiceScope.Singleton) where TImplementation : TService
+    {
+        IReuse reuse = scope switch
+        {
+            PluginServiceScope.Transient => Reuse.Transient,
+            PluginServiceScope.Singleton => Reuse.Singleton,
+            PluginServiceScope.Scoped => Reuse.Scoped,
+            _ => throw new ArgumentOutOfRangeException(nameof(scope), scope, null)
+        };
+        Container.Register<TService, TImplementation>(reuse);
+    }
+
+    /// <summary>
+    ///     Registers implementation type <typeparamref name="TImplementation" /> with itself as service type.
+    /// </summary>
+    /// <param name="scope">The scope in which the service should live, if you are not sure leave it on singleton.</param>
+    /// <typeparam name="TImplementation">The implementation of the service to register.</typeparam>
+    public void Register<TImplementation>(PluginServiceScope scope = PluginServiceScope.Singleton)
+    {
+        IReuse reuse = scope switch
+        {
+            PluginServiceScope.Transient => Reuse.Transient,
+            PluginServiceScope.Singleton => Reuse.Singleton,
+            PluginServiceScope.Scoped => Reuse.Scoped,
+            _ => throw new ArgumentOutOfRangeException(nameof(scope), scope, null)
+        };
+        Container.Register<TImplementation>(reuse);
     }
 
     /// <inheritdoc />
@@ -218,7 +268,7 @@ public class Plugin : CorePropertyChanged, IDisposable
                 feature.Instance?.Dispose();
             SetEnabled(false);
 
-            Kernel?.Dispose();
+            Container?.Dispose();
             PluginLoader?.Dispose();
 
             GC.Collect();
@@ -340,4 +390,26 @@ public class Plugin : CorePropertyChanged, IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+}
+
+/// <summary>
+///     Represents a scope in which a plugin service is injected by the IOC container.
+/// </summary>
+public enum PluginServiceScope
+{
+    /// <summary>
+    ///     Services in this scope are never reused, a new instance is injected each time.
+    /// </summary>
+    Transient,
+
+    /// <summary>
+    ///     Services in this scope are reused for as long as the plugin lives, the same instance is injected each time.
+    /// </summary>
+    Singleton,
+
+    /// <summary>
+    ///     Services in this scope are reused within a container scope, this is an advanced setting you shouldn't need.
+    ///     <para>To learn more see <a href="https://github.com/dadhi/DryIoc/blob/master/docs/DryIoc.Docs/ReuseAndScopes.md#reusescoped">the DryIoc docs</a>.</para>
+    /// </summary>
+    Scoped
 }

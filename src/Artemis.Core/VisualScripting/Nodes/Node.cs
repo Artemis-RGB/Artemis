@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Events;
+using DryIoc;
 
 namespace Artemis.Core;
 
@@ -102,6 +103,8 @@ public abstract class Node : BreakableModel, INode
 
     /// <inheritdoc />
     public override string BrokenDisplayName => Name;
+
+    internal IContainer Container { get; set; } = null!;
 
     #endregion
 

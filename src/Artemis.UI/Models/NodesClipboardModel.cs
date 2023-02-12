@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core;
 using Artemis.Storage.Entities.Profile.Nodes;
-using FluentAvalonia.Core;
 
 namespace Artemis.UI.Models;
 

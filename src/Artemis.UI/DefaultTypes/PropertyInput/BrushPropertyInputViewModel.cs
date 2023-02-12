@@ -66,7 +66,7 @@ public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushRefe
         if (layer.LayerBrush?.Presets != null && layer.LayerBrush.Presets.Any())
             Dispatcher.UIThread.InvokeAsync(() => _windowService.CreateContentDialog()
                 .WithTitle("Select preset")
-                .WithViewModel(out LayerBrushPresetViewModel _, ("layerBrush", layer.LayerBrush))
+                .WithViewModel(out LayerBrushPresetViewModel _, layer.LayerBrush)
                 .WithDefaultButton(ContentDialogButton.Close)
                 .WithCloseButtonText("Use defaults")
                 .ShowAsync());

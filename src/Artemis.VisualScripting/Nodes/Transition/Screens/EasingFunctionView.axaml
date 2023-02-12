@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:screens="clr-namespace:Artemis.VisualScripting.Nodes.Transition.Screens"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.VisualScripting.Nodes.Transition.Screens.EasingFunctionView"
+             x:DataType="screens:EasingFunctionViewModel">
+    <StackPanel Orientation="Horizontal" Spacing="5">
+        <Polyline Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                  StrokeThickness="1"
+                  Points="{CompiledBinding EasingPoints}"
+                  Stretch="Uniform"
+                  Width="15"
+                  Height="15"
+                  VerticalAlignment="Center"/>
+        <TextBlock Text="{CompiledBinding Description}" />
+    </StackPanel>
+</UserControl>

@@ -191,6 +191,7 @@
 
                         <StackPanel Grid.Row="0" Grid.Column="0">
                             <TextBlock Classes="library-name">Avalonia</TextBlock>
+                            <TextBlock Classes="library-name">DryIoc</TextBlock>
                             <TextBlock Classes="library-name">FluentAvalonia</TextBlock>
                             <TextBlock Classes="library-name">EmbedIO</TextBlock>
                             <TextBlock Classes="library-name">Furl.Http</TextBlock>
@@ -198,7 +199,6 @@
                             <TextBlock Classes="library-name">LiteDB</TextBlock>
                             <TextBlock Classes="library-name">McMaster.NETCore.Plugins</TextBlock>
                             <TextBlock Classes="library-name">Newtonsoft.Json</TextBlock>
-                            <TextBlock Classes="library-name">Ninject</TextBlock>
                             <TextBlock Classes="library-name">RGB.NET</TextBlock>
                             <TextBlock Classes="library-name">Serilog</TextBlock>
                             <TextBlock Classes="library-name">SkiaSharp</TextBlock>
@@ -207,6 +207,9 @@
                         <StackPanel Grid.Column="1">
                             <controls:HyperlinkButton NavigateUri="https://avaloniaui.net/">
                                 https://avaloniaui.net/
+                            </controls:HyperlinkButton>
+                            <controls:HyperlinkButton NavigateUri="https://github.com/dadhi/DryIoc">
+                                https://github.com/dadhi/DryIoc
                             </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://github.com/amwx/FluentAvalonia">
                                 https://github.com/amwx/FluentAvalonia
@@ -228,9 +231,6 @@
                             </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://www.newtonsoft.com/json">
                                 https://www.newtonsoft.com/json
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton NavigateUri="http://www.ninject.org/">
-                                http://www.ninject.org/
                             </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://github.com/DarthAffe/RGB.NET">
                                 https://github.com/DarthAffe/RGB.NET

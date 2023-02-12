@@ -9,7 +9,6 @@ public class FolderEntity : RenderElementEntity
 {
     public FolderEntity()
     {
-        PropertyEntities = new List<PropertyEntity>();
         LayerEffects = new List<LayerEffectEntity>();
     }
 

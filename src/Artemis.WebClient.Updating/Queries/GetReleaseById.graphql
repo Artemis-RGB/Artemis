@@ -1,0 +1,31 @@
+query GetReleaseById($id: String!) {
+    release(id: $id) {
+        branch
+        commit
+        version
+        previousRelease
+        changelog
+        artifacts {
+            platform
+            artifactId
+            fileInfo {
+                ...fileInfo
+            }
+            deltaFileInfo {
+                ...fileInfo
+            }
+        }
+    }
+}
+
+fragment fileInfo on ArtifactFileInfo {
+    md5Hash
+    downloadSize
+}
+
+query GetNextRelease($currentVersion: String!, $branch: String!, $platform: Platform!) {
+    nextRelease(version: $currentVersion, branch: $branch, platform: $platform) {
+        id
+        version
+    }
+}

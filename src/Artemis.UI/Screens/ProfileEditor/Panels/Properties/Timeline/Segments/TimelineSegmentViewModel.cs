@@ -225,7 +225,7 @@ public abstract class TimelineSegmentViewModel : ActivatableViewModelBase
     {
         await _windowService.CreateContentDialog()
             .WithTitle("Edit segment length")
-            .WithViewModel(out TimelineSegmentEditViewModel vm, ("segmentLength", Length))
+            .WithViewModel(out TimelineSegmentEditViewModel vm, Length)
             .HavingPrimaryButton(b => b.WithText("Save").WithAction(() =>
             {
                 if (_profileElement != null)
