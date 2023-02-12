@@ -11,6 +11,7 @@ using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Shared.Services;
@@ -81,13 +82,12 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
     public ObservableCollection<PluginViewModel> DeviceProviders { get; }
 
     public bool IsAutoRunSupported => _autoRunProvider != null;
-    public bool IsUpdatingSupported => _updateService.UpdatingSupported;
 
     public PluginSetting<bool> UIAutoRun => _settingsService.GetSetting("UI.AutoRun", false);
     public PluginSetting<int> UIAutoRunDelay => _settingsService.GetSetting("UI.AutoRunDelay", 15);
     public PluginSetting<bool> UIShowOnStartup => _settingsService.GetSetting("UI.ShowOnStartup", true);
-    public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.CheckForUpdates", true);
-    public PluginSetting<bool> UIAutoUpdate => _settingsService.GetSetting("UI.AutoUpdate", false);
+    public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.Updating.AutoCheck", true);
+    public PluginSetting<bool> UIAutoUpdate => _settingsService.GetSetting("UI.Updating.AutoInstall", false);
 
     public int CurrentStep
     {
@@ -119,7 +119,7 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
             CurrentStep--;
 
         // Skip the settings step if none of it's contents are supported
-        if (CurrentStep == 4 && !IsAutoRunSupported && !IsUpdatingSupported)
+        if (CurrentStep == 4 && !IsAutoRunSupported)
             CurrentStep--;
 
         SetupButtons();
@@ -131,7 +131,7 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
             CurrentStep++;
 
         // Skip the settings step if none of it's contents are supported
-        if (CurrentStep == 4 && !IsAutoRunSupported && !IsUpdatingSupported)
+        if (CurrentStep == 4 && !IsAutoRunSupported)
             CurrentStep++;
 
         SetupButtons();

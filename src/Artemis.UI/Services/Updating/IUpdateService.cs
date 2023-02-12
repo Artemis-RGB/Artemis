@@ -1,22 +1,11 @@
 using System.Threading.Tasks;
+using Artemis.UI.Services.Interfaces;
 
-namespace Artemis.UI.Services.Interfaces;
+namespace Artemis.UI.Services.Updating;
 
 public interface IUpdateService : IArtemisUIService
 {
-    /// <summary>
-    ///     Gets a boolean indicating whether updating is supported.
-    /// </summary>
-    bool UpdatingSupported { get; }
-
-    /// <summary>
-    ///     Gets or sets a boolean indicating whether auto-updating is suspended.
-    /// </summary>
-    bool SuspendAutoCheck { get; set; }
-
-    /// <summary>
-    ///     Manually checks for updates and offers to install it if found.
-    /// </summary>
-    /// <returns>Whether an update was found, regardless of whether the user chose to install it.</returns>
-    Task ManualUpdate();
+    Task<bool> CheckForUpdate();
+    Task InstallRelease(string releaseId);
+    string? CurrentVersion { get; }
 }

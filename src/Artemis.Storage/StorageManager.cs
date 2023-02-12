@@ -30,7 +30,7 @@ public static class StorageManager
         {
             FileSystemInfo newest = files.OrderByDescending(fi => fi.CreationTime).First();
             FileSystemInfo oldest = files.OrderBy(fi => fi.CreationTime).First();
-            if (DateTime.Now - newest.CreationTime < TimeSpan.FromMinutes(10))
+            if (DateTime.Now - newest.CreationTime < TimeSpan.FromHours(12))
                 return;
 
             oldest.Delete();

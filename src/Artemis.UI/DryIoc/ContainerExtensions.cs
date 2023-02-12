@@ -4,6 +4,7 @@ using Artemis.UI.DryIoc.InstanceProviders;
 using Artemis.UI.Screens;
 using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.ProfileEditor;
@@ -36,6 +37,7 @@ public static class UIContainerExtensions
 
         container.Register<NodeScriptWindowViewModelBase, NodeScriptWindowViewModel>(Reuse.Singleton);
         container.Register<IPropertyVmFactory, PropertyVmFactory>(Reuse.Singleton);
+        container.Register<IUpdateNotificationProvider, SimpleUpdateNotificationProvider>();
 
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IArtemisUIService>(), Reuse.Singleton);
     }

@@ -4,6 +4,7 @@ query GetReleaseById($id: String!) {
         commit
         version
         previousRelease
+        changelog
         artifacts {
             platform
             artifactId

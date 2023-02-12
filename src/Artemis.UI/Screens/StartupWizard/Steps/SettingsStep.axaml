@@ -68,7 +68,7 @@
             </StackPanel>
 
             <!-- Update settings -->
-            <StackPanel IsVisible="{CompiledBinding IsUpdatingSupported}">
+            <StackPanel>
                 <TextBlock Classes="h4" Margin="0 15">
                     Updating
                 </TextBlock>

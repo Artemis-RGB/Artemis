@@ -7,6 +7,7 @@ using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Models;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.MainWindow;

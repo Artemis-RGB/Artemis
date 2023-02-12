@@ -84,7 +84,20 @@ internal class PluginManagementService : IPluginManagementService
 
         foreach (FileInfo zipFile in builtInPluginDirectory.EnumerateFiles("*.zip"))
         {
-            // Find the metadata file in the zip
+            try
+            {
+                ExtractBuiltInPlugin(zipFile, pluginDirectory);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Failed to copy built-in plugin from {ZipFile}", zipFile.FullName);
+            }
+        }
+    }
+
+    private void ExtractBuiltInPlugin(FileInfo zipFile, DirectoryInfo pluginDirectory)
+    {
+        // Find the metadata file in the zip
             using ZipArchive archive = ZipFile.OpenRead(zipFile.FullName);
             ZipArchiveEntry? metaDataFileEntry = archive.GetEntry("plugin.json");
             if (metaDataFileEntry == null)
@@ -135,7 +148,6 @@ internal class PluginManagementService : IPluginManagementService
                     }
                 }
             }
-        }
     }
 
     #endregion

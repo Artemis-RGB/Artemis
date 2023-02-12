@@ -1,16 +1,13 @@
 using System;
-using System.Drawing.Drawing2D;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Extensions;
 using Artemis.WebClient.Updating;
-using NoStringEvaluating.Functions.Math;
 using Octodiff.Core;
 using Octodiff.Diagnostics;
 using Serilog;
@@ -19,19 +16,16 @@ using StrawberryShake;
 namespace Artemis.UI.Services.Updating;
 
 /// <summary>
-/// Represents the installation process of a release
+///     Represents the installation process of a release
 /// </summary>
 public class ReleaseInstaller
 {
-    private readonly string _releaseId;
-    private readonly ILogger _logger;
-    private readonly IUpdatingClient _updatingClient;
-    private readonly HttpClient _httpClient;
-    private readonly Platform _updatePlatform;
     private readonly string _dataFolder;
-
-    public IProgress<float> OverallProgress { get; } = new Progress<float>();
-    public IProgress<float> StepProgress { get; } = new Progress<float>();
+    private readonly HttpClient _httpClient;
+    private readonly ILogger _logger;
+    private readonly string _releaseId;
+    private readonly Platform _updatePlatform;
+    private readonly IUpdatingClient _updatingClient;
 
     public ReleaseInstaller(string releaseId, ILogger logger, IUpdatingClient updatingClient, HttpClient httpClient)
     {
@@ -43,7 +37,7 @@ public class ReleaseInstaller
 
         if (OperatingSystem.IsWindows())
             _updatePlatform = Platform.Windows;
-        if (OperatingSystem.IsLinux())
+        else if (OperatingSystem.IsLinux())
             _updatePlatform = Platform.Linux;
         else if (OperatingSystem.IsMacOS())
             _updatePlatform = Platform.Osx;
@@ -54,9 +48,13 @@ public class ReleaseInstaller
             Directory.CreateDirectory(_dataFolder);
     }
 
+
+    public Progress<float> OverallProgress { get; } = new();
+    public Progress<float> StepProgress { get; } = new();
+
     public async Task InstallAsync(CancellationToken cancellationToken)
     {
-        OverallProgress.Report(0);
+        ((IProgress<float>) OverallProgress).Report(0);
 
         _logger.Information("Retrieving details for release {ReleaseId}", _releaseId);
         IOperationResult<IGetReleaseByIdResult> result = await _updatingClient.GetReleaseById.ExecuteAsync(_releaseId, cancellationToken);
@@ -70,7 +68,7 @@ public class ReleaseInstaller
         if (artifact == null)
             throw new Exception("Found the release but it has no artifact for the current platform");
 
-        OverallProgress.Report(0.1f);
+        ((IProgress<float>) OverallProgress).Report(10);
 
         // Determine whether the last update matches our local version, then we can download the delta
         if (release.PreviousRelease != null && File.Exists(Path.Combine(_dataFolder, $"{release.PreviousRelease}.zip")) && artifact.DeltaFileInfo.DownloadSize != 0)
@@ -84,22 +82,26 @@ public class ReleaseInstaller
         await using MemoryStream stream = new();
         await _httpClient.DownloadDataAsync($"https://updating.artemis-rgb.com/api/artifacts/download/{artifact.ArtifactId}/delta", stream, StepProgress, cancellationToken);
 
-        OverallProgress.Report(0.33f);
+        ((IProgress<float>) OverallProgress).Report(33);
 
         await PatchDelta(stream, previousRelease, cancellationToken);
     }
 
-    private async Task PatchDelta(MemoryStream deltaStream, string previousRelease, CancellationToken cancellationToken)
+    private async Task PatchDelta(Stream deltaStream, string previousRelease, CancellationToken cancellationToken)
     {
         await using FileStream baseStream = File.OpenRead(previousRelease);
         await using FileStream newFileStream = new(Path.Combine(_dataFolder, $"{_releaseId}.zip"), FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
 
         deltaStream.Seek(0, SeekOrigin.Begin);
-        DeltaApplier deltaApplier = new();
-        deltaApplier.Apply(baseStream, new BinaryDeltaReader(deltaStream, new DeltaApplierProgressReporter(StepProgress)), newFileStream);
+
+        await Task.Run(() =>
+        {
+            DeltaApplier deltaApplier = new();
+            deltaApplier.Apply(baseStream, new BinaryDeltaReader(deltaStream, new DeltaApplierProgressReporter(StepProgress)), newFileStream);
+        });
         cancellationToken.ThrowIfCancellationRequested();
-        
-        OverallProgress.Report(0.66f);
+
+        ((IProgress<float>) OverallProgress).Report(66);
         await Extract(newFileStream, cancellationToken);
     }
 
@@ -108,21 +110,28 @@ public class ReleaseInstaller
         await using MemoryStream stream = new();
         await _httpClient.DownloadDataAsync($"https://updating.artemis-rgb.com/api/artifacts/download/{artifact.ArtifactId}", stream, StepProgress, cancellationToken);
 
-        OverallProgress.Report(0.5f);
+        ((IProgress<float>) OverallProgress).Report(50);
+        await Extract(stream, cancellationToken);
     }
 
-    private async Task Extract(FileStream archiveStream, CancellationToken cancellationToken)
+    private async Task Extract(Stream archiveStream, CancellationToken cancellationToken)
     {
         // Ensure the directory is empty
         string extractDirectory = Path.Combine(_dataFolder, "pending");
         if (Directory.Exists(extractDirectory))
             Directory.Delete(extractDirectory, true);
         Directory.CreateDirectory(extractDirectory);
+
+      
+      
+        await Task.Run(() =>
+        {
+            archiveStream.Seek(0, SeekOrigin.Begin);
+            using ZipArchive archive = new(archiveStream);
+            archive.ExtractToDirectory(extractDirectory, false, StepProgress, cancellationToken);
+        });
         
-        archiveStream.Seek(0, SeekOrigin.Begin);
-        using ZipArchive archive = new(archiveStream);
-        archive.ExtractToDirectory(extractDirectory);
-        OverallProgress.Report(1);
+        ((IProgress<float>) OverallProgress).Report(100);
     }
 }
 
@@ -137,6 +146,6 @@ internal class DeltaApplierProgressReporter : IProgressReporter
 
     public void ReportProgress(string operation, long currentPosition, long total)
     {
-        _stepProgress.Report((float) currentPosition / total);
+        _stepProgress.Report(currentPosition / total * 100);
     }
 }
