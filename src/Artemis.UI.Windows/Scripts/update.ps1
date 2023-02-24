@@ -30,15 +30,15 @@ if (!(Test-Path $destinationDirectory)) {
     Write-Error "The destination directory does not exist"
 }
 
-
-# If the destination directory exists, clear it
+# Clear the destination directory but don't remove it, leaving ACL entries in tact
 Write-Host "Cleaning up old version where needed"
 Get-ChildItem $destinationDirectory | Remove-Item -Recurse -Force
 
 # Move the contents of the source directory to the destination directory
 Write-Host "Installing new files"
 Get-ChildItem $sourceDirectory | Move-Item -Destination $destinationDirectory
-
+# Remove the now empty source directory
+Remove-Item $sourceDirectory
 
 Write-Host "Finished! Restarting Artemis"
 Start-Sleep -Seconds 1
