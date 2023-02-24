@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="LiteDB" Version="5.0.12" />
+        <PackageReference Include="LiteDB" Version="5.0.13" />
         <PackageReference Include="Serilog" Version="2.11.0" />
     </ItemGroup>
 </Project>
