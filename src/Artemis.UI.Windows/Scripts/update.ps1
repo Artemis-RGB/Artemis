@@ -4,6 +4,10 @@ param (
     [Parameter(Mandatory=$false)][string]$artemisArgs
 )
 
+Write-Host "Artemis update script v1"
+Write-Host "Please do not close this window, this should not take long"
+Write-Host ""
+
 # Wait up to 10 seconds for the process to shut down
 for ($i=1; $i -le 10; $i++) {
     $process = Get-Process -Name Artemis.UI.Windows -ErrorAction SilentlyContinue
@@ -26,12 +30,17 @@ if (!(Test-Path $destinationDirectory)) {
     Write-Error "The destination directory does not exist"
 }
 
+
 # If the destination directory exists, clear it
+Write-Host "Cleaning up old version where needed"
 Get-ChildItem $destinationDirectory | Remove-Item -Recurse -Force
 
 # Move the contents of the source directory to the destination directory
+Write-Host "Installing new files"
 Get-ChildItem $sourceDirectory | Move-Item -Destination $destinationDirectory
 
+
+Write-Host "Finished! Restarting Artemis"
 Start-Sleep -Seconds 1
 
 # When finished, run the updated version

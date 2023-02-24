@@ -10,6 +10,7 @@ public class SettingsViewModel : MainScreenViewModel
         GeneralTabViewModel generalTabViewModel,
         PluginsTabViewModel pluginsTabViewModel,
         DevicesTabViewModel devicesTabViewModel,
+        ReleasesTabViewModel releasesTabViewModel,
         AboutTabViewModel aboutTabViewModel) : base(hostScreen, "settings")
     {
         SettingTabs = new ObservableCollection<ActivatableViewModelBase>
@@ -17,6 +18,7 @@ public class SettingsViewModel : MainScreenViewModel
             generalTabViewModel,
             pluginsTabViewModel,
             devicesTabViewModel,
+            releasesTabViewModel,
             aboutTabViewModel
         };
     }

@@ -43,4 +43,15 @@
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Screens\Settings\Tabs\ReleasesTabView.axaml.cs">
+        <DependentUpon>UpdatingTabView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Screens\Settings\Updating\ReleaseView.axaml.cs">
+        <DependentUpon>UpdatingTabView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
 </Project>

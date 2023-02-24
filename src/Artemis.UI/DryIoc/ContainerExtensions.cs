@@ -31,14 +31,13 @@ public static class UIContainerExtensions
         container.Register<IAssetLoader, AssetLoader>(Reuse.Singleton);
         
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<ViewModelBase>());
-        container.RegisterMany(thisAssembly, type => type.IsAssignableTo<MainScreenViewModel>(), ifAlreadyRegistered: IfAlreadyRegistered.Replace);
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IToolViewModel>() && type.IsInterface);
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IVmFactory>() && type != typeof(PropertyVmFactory));
 
         container.Register<NodeScriptWindowViewModelBase, NodeScriptWindowViewModel>(Reuse.Singleton);
         container.Register<IPropertyVmFactory, PropertyVmFactory>(Reuse.Singleton);
         container.Register<IUpdateNotificationProvider, SimpleUpdateNotificationProvider>();
-
+        
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IArtemisUIService>(), Reuse.Singleton);
     }
 }

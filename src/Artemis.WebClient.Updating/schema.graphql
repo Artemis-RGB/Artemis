@@ -41,7 +41,6 @@ type Artifact {
     artifactId: Long!
     deltaFileInfo: ArtifactFileInfo!
     fileInfo: ArtifactFileInfo!
-    fileName(deltaFile: Boolean!): String!
     platform: Platform!
 }
 
@@ -55,13 +54,69 @@ type Mutation {
     updateReleaseChangelog(input: UpdateReleaseChangelogInput!): UpdateReleaseChangelogPayload!
 }
 
+"Information about pagination in a connection."
+type PageInfo {
+    "When paginating forwards, the cursor to continue."
+    endCursor: String
+    "Indicates whether more edges exist following the set defined by the clients arguments."
+    hasNextPage: Boolean!
+    "Indicates whether more edges exist prior the set defined by the clients arguments."
+    hasPreviousPage: Boolean!
+    "When paginating backwards, the cursor to continue."
+    startCursor: String
+}
+
+"A connection to a list of items."
+type PublishedReleasesConnection {
+    "A list of edges."
+    edges: [PublishedReleasesEdge!]
+    "A flattened list of the nodes."
+    nodes: [Release!]
+    "Information to aid in pagination."
+    pageInfo: PageInfo!
+    totalCount: Int!
+}
+
+"An edge in a connection."
+type PublishedReleasesEdge {
+    "A cursor for use in pagination."
+    cursor: String!
+    "The item at the end of the edge."
+    node: Release!
+}
+
 type Query {
     channelByBranch(branch: String!): ArtemisChannel
     channels: [ArtemisChannel!]!
-    nextRelease(branch: String!, platform: Platform!, version: String!): Release
+    nextPublishedRelease(branch: String!, platform: Platform!, version: String): Release
+    publishedChannels: [String!]!
+    publishedRelease(id: String!): Release
+    publishedReleases(
+        "Returns the elements in the list that come after the specified cursor."
+        after: String,
+        "Returns the elements in the list that come before the specified cursor."
+        before: String,
+        "Returns the first _n_ elements from the list."
+        first: Int,
+        "Returns the last _n_ elements from the list."
+        last: Int,
+        order: [ReleaseSortInput!],
+        where: ReleaseFilterInput
+    ): PublishedReleasesConnection
     release(id: String!): Release
     releaseStatistics(order: [ReleaseStatisticSortInput!], where: ReleaseStatisticFilterInput): [ReleaseStatistic!]!
-    releases(order: [ReleaseSortInput!], where: ReleaseFilterInput): [Release!]!
+    releases(
+        "Returns the elements in the list that come after the specified cursor."
+        after: String,
+        "Returns the elements in the list that come before the specified cursor."
+        before: String,
+        "Returns the first _n_ elements from the list."
+        first: Int,
+        "Returns the last _n_ elements from the list."
+        last: Int,
+        order: [ReleaseSortInput!],
+        where: ReleaseFilterInput
+    ): ReleasesConnection
 }
 
 type Release {
@@ -84,6 +139,25 @@ type ReleaseStatistic {
     oSXCount: Int!
     releaseId: String!
     windowsCount: Int!
+}
+
+"A connection to a list of items."
+type ReleasesConnection {
+    "A list of edges."
+    edges: [ReleasesEdge!]
+    "A flattened list of the nodes."
+    nodes: [Release!]
+    "Information to aid in pagination."
+    pageInfo: PageInfo!
+    totalCount: Int!
+}
+
+"An edge in a connection."
+type ReleasesEdge {
+    "A cursor for use in pagination."
+    cursor: String!
+    "The item at the end of the edge."
+    node: Release!
 }
 
 type UpdateReleaseChangelogPayload {

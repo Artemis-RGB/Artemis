@@ -4,8 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.Storage.Entities.General;
+using Artemis.Storage.Repositories.Interfaces;
 using Artemis.UI.Screens.Settings.Updating;
-using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.WebClient.Updating;
@@ -14,7 +15,7 @@ using Serilog;
 using StrawberryShake;
 using Timer = System.Timers.Timer;
 
-namespace Artemis.UI.Services;
+namespace Artemis.UI.Services.Updating;
 
 public class UpdateService : IUpdateService
 {
@@ -26,24 +27,24 @@ public class UpdateService : IUpdateService
 
     private readonly ILogger _logger;
     private readonly IMainWindowService _mainWindowService;
+    private readonly IQueuedActionRepository _queuedActionRepository;
     private readonly Lazy<IUpdateNotificationProvider> _updateNotificationProvider;
     private readonly Platform _updatePlatform;
     private readonly IUpdatingClient _updatingClient;
-    private readonly IWindowService _windowService;
 
     private bool _suspendAutoCheck;
 
     public UpdateService(ILogger logger,
         ISettingsService settingsService,
         IMainWindowService mainWindowService,
-        IWindowService windowService,
+        IQueuedActionRepository queuedActionRepository,
         IUpdatingClient updatingClient,
         Lazy<IUpdateNotificationProvider> updateNotificationProvider,
         Func<string, ReleaseInstaller> getReleaseInstaller)
     {
         _logger = logger;
         _mainWindowService = mainWindowService;
-        _windowService = windowService;
+        _queuedActionRepository = queuedActionRepository;
         _updatingClient = updatingClient;
         _updateNotificationProvider = updateNotificationProvider;
         _getReleaseInstaller = getReleaseInstaller;
@@ -65,24 +66,32 @@ public class UpdateService : IUpdateService
         Timer timer = new(UPDATE_CHECK_INTERVAL);
         timer.Elapsed += HandleAutoUpdateEvent;
         timer.Start();
+
+        _channel.Value = "feature/gh-actions";
+        _channel.Save();
+        
+
+        InstallQueuedUpdate();
     }
-   
-    public string? CurrentVersion
+
+    private void InstallQueuedUpdate()
     {
-        get
-        {
-            object[] attributes = typeof(UpdateService).Assembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false);
-            return attributes.Length == 0 ? null : ((AssemblyInformationalVersionAttribute) attributes[0]).InformationalVersion;
-        }
+        if (!_queuedActionRepository.IsTypeQueued("InstallUpdate"))
+            return;
+
+        _queuedActionRepository.ClearByType("InstallUpdate");
+        _logger.Information("Installing queued update");
+        Utilities.ApplyUpdate(false);
     }
 
     private async Task ShowUpdateDialog(string nextReleaseId)
     {
+       
+        
         await Dispatcher.UIThread.InvokeAsync(async () =>
         {
             // Main window is probably already open but this will bring it into focus
             _mainWindowService.OpenMainWindow();
-            await _windowService.ShowDialogAsync<ReleaseAvailableViewModel>(nextReleaseId);
         });
     }
 
@@ -112,19 +121,35 @@ public class UpdateService : IUpdateService
             _logger.Warning(ex, "Auto update failed");
         }
     }
+    
+    public IGetNextRelease_NextPublishedRelease? CachedLatestRelease { get; private set; }
 
+    public string? CurrentVersion
+    {
+        get
+        {
+            object[] attributes = typeof(UpdateService).Assembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false);
+            return attributes.Length == 0 ? null : ((AssemblyInformationalVersionAttribute) attributes[0]).InformationalVersion;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task CacheLatestRelease()
+    {
+        IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(CurrentVersion, _channel.Value, _updatePlatform);
+        CachedLatestRelease = result.Data?.NextPublishedRelease;
+    }
+    
     public async Task<bool> CheckForUpdate()
     {
-        string? currentVersion = CurrentVersion;
-        if (currentVersion == null)
-            return false;
-
-        // IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(currentVersion, _channel.Value, _updatePlatform);
-        IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(currentVersion, "feature/gh-actions", _updatePlatform);
+        IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(CurrentVersion, _channel.Value, _updatePlatform);
         result.EnsureNoErrors();
+        
+        // Update cache
+        CachedLatestRelease = result.Data?.NextPublishedRelease;
 
         // No update was found
-        if (result.Data?.NextRelease == null)
+        if (CachedLatestRelease == null)
             return false;
 
         // Only offer it once per session 
@@ -132,15 +157,15 @@ public class UpdateService : IUpdateService
 
         // If the window is open show the changelog, don't auto-update while the user is busy
         if (_mainWindowService.IsMainWindowOpen)
-            await ShowUpdateDialog(result.Data.NextRelease.Id);
+            await ShowUpdateDialog(CachedLatestRelease.Id);
         else if (!_autoInstall.Value)
-            await ShowUpdateNotification(result.Data.NextRelease.Id);
+            await ShowUpdateNotification(CachedLatestRelease.Id);
         else
-            await AutoInstallUpdate(result.Data.NextRelease.Id);
+            await AutoInstallUpdate(CachedLatestRelease.Id);
 
         return true;
     }
-    
+
     /// <inheritdoc />
     public async Task InstallRelease(string releaseId)
     {
@@ -149,7 +174,19 @@ public class UpdateService : IUpdateService
         {
             // Main window is probably already open but this will bring it into focus
             _mainWindowService.OpenMainWindow();
-            _windowService.ShowWindow<ReleaseInstallerViewModel>(installer);
         });
+    }
+
+    /// <inheritdoc />
+    public void QueueUpdate()
+    {
+        if (!_queuedActionRepository.IsTypeQueued("InstallUpdate"))
+            _queuedActionRepository.Add(new QueuedActionEntity {Type = "InstallUpdate"});
+    }
+
+    /// <inheritdoc />
+    public ReleaseInstaller GetReleaseInstaller(string releaseId)
+    {
+        return _getReleaseInstaller(releaseId);
     }
 }

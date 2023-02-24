@@ -1,49 +1,163 @@
-<controls:CoreWindow xmlns="https://github.com/avaloniaui"
-                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                     xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-                     xmlns:updating="clr-namespace:Artemis.UI.Screens.Settings.Updating"
-                     xmlns:avalonia="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
-                     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-                     xmlns:mdc="clr-namespace:Markdown.Avalonia.Controls;assembly=Markdown.Avalonia"
-                     xmlns:mde="clr-namespace:Markdown.Avalonia.Extensions;assembly=Markdown.Avalonia"
-                     xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia"
-                     x:Class="Artemis.UI.Screens.Settings.Updating.ReleaseAvailableView"
-                     x:DataType="updating:ReleaseAvailableViewModel"
-                     Title="Artemis | Update available"
-                     Width="750"
-                     Height="750"
-                     WindowStartupLocation="CenterOwner">
-    <Grid Margin="15" RowDefinitions="Auto,*,Auto">
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:settings="clr-namespace:Artemis.UI.Screens.Settings"
+             xmlns:updating="clr-namespace:Artemis.UI.Screens.Settings.Updating"
+             xmlns:avalonia="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
+             xmlns:mdc="clr-namespace:Markdown.Avalonia.Controls;assembly=Markdown.Avalonia"
+             xmlns:mde="clr-namespace:Markdown.Avalonia.Extensions;assembly=Markdown.Avalonia"
+             xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia"
+             xmlns:avalonia1="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="1400"
+             x:Class="Artemis.UI.Screens.Settings.Updating.ReleaseView"
+             x:DataType="updating:ReleaseViewModel">
+    <UserControl.Resources>
+        <converters:BytesToStringConverter x:Key="BytesToStringConverter" />
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector=":is(Control).fade-in">
+            <Setter Property="Opacity" Value="0"></Setter>
+        </Style>
+        <Style Selector=":is(Control).fade-in[IsVisible=True]">
+            <Style.Animations>
+                <Animation Duration="0:00:00.250" FillMode="Forward" Easing="CubicEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.0" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1.0" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Grid.info-container">
+            <Setter Property="Margin" Value="10" />
+        </Style>
+        <Style Selector="avalonia1|MaterialIcon.info-icon">
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="Margin" Value="0 3 10 0" />
+        </Style>
+        <Style Selector="TextBlock.info-title">
+            <Setter Property="Margin" Value="0 0 0 5" />
+            <Setter Property="Opacity" Value="0.8" />
+        </Style>
+        <Style Selector="TextBlock.info-body">
+        </Style>
+        <Style Selector="TextBlock.info-link">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight3}" />
+        </Style>
+        <Style Selector="TextBlock.info-link:pointerover">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight1}" />
+        </Style>
+    </UserControl.Styles>
 
-        <TextBlock Grid.Row="0" Classes="h4">
-            A new Artemis update is available! 🥳
-        </TextBlock>
+    <Grid RowDefinitions="Auto,*" IsVisible="{CompiledBinding !Loading}" Classes="fade-in">
+        <Border Grid.Row="0" Classes="card" Margin="0 0 0 10">
+            <StackPanel>
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Classes="h4 no-margin">Release info</TextBlock>
 
-        <StackPanel Grid.Row="1" IsVisible="{CompiledBinding Release, Converter={x:Static ObjectConverters.IsNull}}" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock>Retrieving release...</TextBlock>
-            <ProgressBar IsIndeterminate="True"></ProgressBar>
-        </StackPanel>
+                    <Panel Grid.Column="1" IsVisible="{CompiledBinding InstallationAvailable}">
+                        <!-- Install progress -->
+                        <Grid ColumnDefinitions="*,*"
+                              RowDefinitions="*,*"
+                              IsVisible="{CompiledBinding InstallationInProgress}">
+                            <ProgressBar Grid.Column="0"
+                                         Grid.Row="0"
+                                         Width="300"
+                                         Value="{CompiledBinding ReleaseInstaller.Progress, FallbackValue=0}">
+                            </ProgressBar>
+                            <TextBlock Grid.Column="0"
+                                       Grid.Row="1"
+                                       Classes="subtitle"
+                                       TextAlignment="Right"
+                                       Text="{CompiledBinding ReleaseInstaller.Status, FallbackValue=Installing}" />
+                            <Button Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                                    Classes="accent"
+                                    Margin="15 0 0 0"
+                                    Width="80"
+                                    VerticalAlignment="Center"
+                                    Command="{CompiledBinding CancelInstall}">
+                                Cancel
+                            </Button>
+                        </Grid>
 
-        <Border Grid.Row="1" Classes="card" IsVisible="{CompiledBinding Release, Converter={x:Static ObjectConverters.IsNotNull}}">
-            <Grid RowDefinitions="Auto,*">
-                <StackPanel Grid.Row="0">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="You are currently running version " />
-                        <TextBlock Text="{CompiledBinding CurrentVersion, Mode=OneWay}"></TextBlock>
-                        <TextBlock Text=" while the latest build is " />
-                        <TextBlock Text="{CompiledBinding Release.Version, Mode=OneWay, FallbackValue='Unknown'}"></TextBlock>
-                        <TextBlock Text="." />
-                    </StackPanel>
+                        <Panel IsVisible="{CompiledBinding !InstallationInProgress}" HorizontalAlignment="Right">
+                            <!-- Install button -->
+                            <Button Classes="accent"
+                                    Width="80"
+                                    Command="{CompiledBinding Install}"
+                                    IsVisible="{CompiledBinding !InstallationFinished}">
+                                Install
+                            </Button>
 
-                    <TextBlock Text="Updating Artemis will give you the latest bug(fixes), features and improvements." />
-                    <Separator Classes="card-separator" />
-                </StackPanel>
+                            <!-- Restart button -->
+                            <Grid ColumnDefinitions="*,*" IsVisible="{CompiledBinding InstallationFinished}">
+                                <TextBlock Grid.Column="0"
+                                           Grid.Row="0"
+                                           Classes="subtitle"
+                                           TextAlignment="Right"
+                                           VerticalAlignment="Center">
+                                    Ready, restart to install
+                                </TextBlock>
+                                <Button Grid.Column="1" Grid.Row="0"
+                                        Classes="accent"
+                                        Margin="15 0 0 0"
+                                        Width="80"
+                                        Command="{CompiledBinding Restart}"
+                                        IsVisible="{CompiledBinding InstallationFinished}">
+                                    Restart
+                                </Button>
+                            </Grid>
+                        </Panel>
+                    </Panel>
 
-                <avalonia:MarkdownScrollViewer Grid.Row="1"
-                                               VerticalAlignment="Top"
-                                               Markdown="{CompiledBinding Release.Changelog}">
+                </Grid>
+                <Separator Classes="card-separator" />
+                <Grid Margin="-5 -10" ColumnDefinitions="*,*,*">
+                    <Grid Grid.Column="0" ColumnDefinitions="*,*" RowDefinitions="*,*,*" Classes="info-container" HorizontalAlignment="Left">
+                        <avalonia1:MaterialIcon Kind="Calendar" Grid.Column="0" Grid.RowSpan="2" Classes="info-icon" />
+                        <TextBlock Grid.Column="1" Grid.Row="0" Classes="info-title">Release date</TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Grid.Row="1"
+                                   Classes="info-body"
+                                   Text="{CompiledBinding CreatedAt, StringFormat={}{0:g}, FallbackValue=Loading...}" />
+                    </Grid>
+
+                    <Grid Grid.Column="1" ColumnDefinitions="*,*" RowDefinitions="*,*" Classes="info-container" HorizontalAlignment="Center">
+                        <avalonia1:MaterialIcon Kind="Git" Grid.Column="0" Grid.RowSpan="2" Classes="info-icon" />
+                        <TextBlock Grid.Column="1" Grid.Row="0" Classes="info-title">Source</TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Grid.Row="1"
+                                   Classes="info-body info-link"
+                                   Cursor="Hand"
+                                   PointerReleased="InputElement_OnPointerReleased"
+                                   Text="{CompiledBinding ShortCommit, FallbackValue=Loading...}" />
+                    </Grid>
+
+                    <Grid Grid.Column="2" ColumnDefinitions="*,*" RowDefinitions="*,*" Classes="info-container" HorizontalAlignment="Right">
+                        <avalonia1:MaterialIcon Kind="BoxOutline" Grid.Column="0" Grid.RowSpan="2" Classes="info-icon" />
+                        <TextBlock Grid.Column="1" Grid.Row="0" Classes="info-title">File size</TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Grid.Row="1"
+                                   Classes="info-body"
+                                   Text="{CompiledBinding FileSize, Converter={StaticResource BytesToStringConverter}, Mode=OneWay, FallbackValue=Loading...}" />
+                    </Grid>
+                </Grid>
+
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Classes="card">
+            <Grid RowDefinitions="Auto,Auto,*">
+                <TextBlock Grid.Row="0" Classes="h5 no-margin">Release notes</TextBlock>
+                <Separator Grid.Row="1" Classes="card-separator" />
+
+                <avalonia:MarkdownScrollViewer Grid.Row="2" Markdown="{CompiledBinding Changelog}">
                     <avalonia:MarkdownScrollViewer.Styles>
                         <Style Selector="ctxt|CTextBlock">
                             <Style.Setters>
@@ -207,10 +321,6 @@
                 </avalonia:MarkdownScrollViewer>
             </Grid>
         </Border>
-
-        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="5" Grid.Row="2" Margin="0 15 0 0">
-            <Button Classes="accent" Command="{CompiledBinding Install}" Click="Button_OnClick">Install update</Button>
-            <Button Click="Button_OnClick">Ask later</Button>
-        </StackPanel>
     </Grid>
-</controls:CoreWindow>
+
+</UserControl>
