@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:settings="clr-namespace:Artemis.UI.Screens.Settings"
+             xmlns:updating="clr-namespace:Artemis.UI.Screens.Settings.Updating"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="1400"
+             x:Class="Artemis.UI.Screens.Settings.ReleasesTabView"
+             x:DataType="settings:ReleasesTabViewModel">
+    <Grid ColumnDefinitions="300,*" Margin="0 10">
+        <Border Classes="card-condensed" Grid.Column="0" Margin="0 0 10 0">
+            <ListBox Items="{CompiledBinding ReleaseViewModels}" SelectedItem="{CompiledBinding SelectedReleaseViewModel}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="updating:ReleaseViewModel">
+                        <StackPanel Margin="4">
+                            <TextBlock Text="{CompiledBinding Version}" VerticalAlignment="Center" />
+                            <TextBlock Text="{CompiledBinding CreatedAt, StringFormat={}{0:g}}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+
+        <ContentControl Grid.Column="1" Content="{CompiledBinding SelectedReleaseViewModel}"/>
+    </Grid>
+</UserControl>

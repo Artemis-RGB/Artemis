@@ -58,7 +58,8 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
         _lifeTime = (IClassicDesktopStyleApplicationLifetime) Application.Current!.ApplicationLifetime!;
         
         mainWindowService.ConfigureMainWindowProvider(this);
-
+        mainWindowService.HostScreen = this;
+        
         DisplayAccordingToSettings();
         Router.CurrentViewModel.Subscribe(UpdateTitleBarViewModel);
         Task.Run(() =>
@@ -230,11 +231,6 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
     }
 
     #endregion
-
-    public void SaveWindowBounds(int x, int y, int width, int height)
-    {
-        throw new NotImplementedException();    
-    }
 }
 
 internal class EmptyViewModel : MainScreenViewModel

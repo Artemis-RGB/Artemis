@@ -13,7 +13,7 @@ namespace Artemis.Core.DryIoc;
 /// <summary>
 /// Provides an extension method to register services onto a DryIoc <see cref="IContainer"/>.
 /// </summary>
-public static class CoreContainerExtensions
+public static class ContainerExtensions
 {
     /// <summary>
     /// Registers core services into the container.

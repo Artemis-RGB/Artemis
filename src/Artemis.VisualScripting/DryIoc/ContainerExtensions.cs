@@ -13,7 +13,7 @@ namespace Artemis.VisualScripting.DryIoc;
 /// <summary>
 /// Provides an extension method to register services onto a DryIoc <see cref="IContainer"/>.
 /// </summary>
-public static class UIContainerExtensions
+public static class ContainerExtensions
 {
     /// <summary>
     /// Registers NoStringEvaluating services into the container.

@@ -108,8 +108,6 @@ public class ApplicationStateManager
         ProcessStartInfo info = new()
         {
             Arguments = $"-File {script} {source} {destination} {args}",
-            WindowStyle = ProcessWindowStyle.Hidden,
-            CreateNoWindow = true,
             FileName = "PowerShell.exe"
         };
         Process.Start(info);

@@ -1,0 +1,174 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Grid ColumnDefinitions="*,*">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid Margin="20" Grid.Column="0">
+                <StackPanel>
+                    <TextBlock Classes="h1">This is heading 1</TextBlock>
+                    <TextBlock Classes="h2">This is heading 2</TextBlock>
+                    <TextBlock Classes="h3">This is heading 3</TextBlock>
+                    <TextBlock Classes="h4">This is heading 4</TextBlock>
+                    <TextBlock Classes="h5">This is heading 5</TextBlock>
+                    <TextBlock Classes="h6">This is heading 6</TextBlock>
+                    <TextBlock>This is regular text</TextBlock>
+                    <TextBlock>This is regular text</TextBlock>
+                    <TextBlock>This is regular text</TextBlock>
+                </StackPanel>
+            </Grid>
+            
+            <Grid Margin="20" Grid.Column="1">
+                <StackPanel>
+                    <Border Width="400" Classes="skeleton-text h1"></Border>
+                    <Border Width="400" Classes="skeleton-text h2"></Border>
+                    <Border Width="400" Classes="skeleton-text h3"></Border>
+                    <Border Width="400" Classes="skeleton-text h4"></Border>
+                    <Border Width="400" Classes="skeleton-text h5"></Border>
+                    <Border Width="400" Classes="skeleton-text h6"></Border>
+                    <Border Width="400" Classes="skeleton-text"></Border>
+                    <Border Width="400" Classes="skeleton-text"></Border>
+                    <Border Width="400" Classes="skeleton-text"></Border>
+                </StackPanel>
+                
+                <StackPanel>
+                    <StackPanel.Styles>
+                        <Style Selector="TextBlock">
+                            <Setter Property="Background" Value="#55ff0000"></Setter>
+                        </Style>
+                    </StackPanel.Styles>
+                    <TextBlock Classes="h1">This is heading 1</TextBlock>
+                    <TextBlock Classes="h2">This is heading 2</TextBlock>
+                    <TextBlock Classes="h3">This is heading 3</TextBlock>
+                    <TextBlock Classes="h4">This is heading 4</TextBlock>
+                    <TextBlock Classes="h5">This is heading 5</TextBlock>
+                    <TextBlock Classes="h6">This is heading 6</TextBlock>
+                    <TextBlock>This is regular text</TextBlock>
+                </StackPanel>
+            </Grid>
+            
+            <Grid Margin="20" Grid.Column="0" Row="1">
+                <StackPanel Spacing="2">
+                    <Border Width="400" Classes="skeleton-text h1 no-margin"></Border>
+                    <Border Width="400" Classes="skeleton-text h2 no-margin"></Border>
+                    <Border Width="400" Classes="skeleton-text h3 no-margin"></Border>
+                    <Border Width="400" Classes="skeleton-text h4 no-margin"></Border>
+                    <Border Width="400" Classes="skeleton-text h5 no-margin"></Border>
+                    <Border Width="400" Classes="skeleton-text h6 no-margin"></Border>
+                    <Border Width="400" Classes="skeleton-text no-margin"></Border>
+                    <Border Width="400" Classes="skeleton-text no-margin"></Border>
+                    <Border Width="400" Classes="skeleton-text no-margin"></Border>
+                </StackPanel>
+                
+                <StackPanel Spacing="2">
+                    <StackPanel.Styles>
+                        <Style Selector="TextBlock">
+                            <Setter Property="Background" Value="#55ff0000"></Setter>
+                        </Style>
+                    </StackPanel.Styles>
+                    <TextBlock Classes="h1 no-margin">This is heading 1</TextBlock>
+                    <TextBlock Classes="h2 no-margin">This is heading 2</TextBlock>
+                    <TextBlock Classes="h3 no-margin">This is heading 3</TextBlock>
+                    <TextBlock Classes="h4 no-margin">This is heading 4</TextBlock>
+                    <TextBlock Classes="h5 no-margin">This is heading 5</TextBlock>
+                    <TextBlock Classes="h6 no-margin">This is heading 6</TextBlock>
+                    <TextBlock>This is regular text</TextBlock>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Design.PreviewWith>
+
+    <Styles.Resources>
+        <CornerRadius x:Key="CardCornerRadius">8</CornerRadius>
+    </Styles.Resources>
+
+    <Style Selector="Border.skeleton-text">
+        <Setter Property="Height" Value="17"></Setter>
+        <Setter Property="Margin" Value="0 1" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+
+        <Style.Animations>
+            <Animation Duration="0:0:1.5" IterationCount="Infinite" PlaybackDirection="Normal">
+                <KeyFrame Cue="0%">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <LinearGradientBrush StartPoint="-100%,-100%" EndPoint="0%,0%">
+                                <LinearGradientBrush.GradientStops>
+                                    <GradientStop Offset="0" Color="Gray" />
+                                    <GradientStop Offset="0.4" Color="#595959" />
+                                    <GradientStop Offset="0.6" Color="#595959" />
+                                    <GradientStop Offset="1" Color="Gray" />
+                                </LinearGradientBrush.GradientStops>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <LinearGradientBrush StartPoint="100%,100%" EndPoint="200%,200%">
+                                <LinearGradientBrush.GradientStops>
+                                    <GradientStop Offset="0" Color="Gray" />
+                                    <GradientStop Offset="0.4" Color="#595959" />
+                                    <GradientStop Offset="0.6" Color="#595959" />
+                                    <GradientStop Offset="1" Color="Gray" />
+                                </LinearGradientBrush.GradientStops>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+    
+    <Style Selector="Border.skeleton-text.h1">
+        <Setter Property="Height" Value="65" />
+        <Setter Property="Margin" Value="0 10 0 20" />
+        <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Border.skeleton-text.h2">
+        <Setter Property="Height" Value="44" />
+        <Setter Property="Margin" Value="0 10 0 20" />
+        <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Border.skeleton-text.h3">
+        <Setter Property="Height" Value="33" />
+        <Setter Property="Margin" Value="0 5 0 15" />
+    </Style>
+    <Style Selector="Border.skeleton-text.h4">
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Margin" Value="0 2 0 12" />
+    </Style>
+    <Style Selector="Border.skeleton-text.h5">
+        <Setter Property="Height" Value="20" />
+        <Setter Property="Margin" Value="0 2 0 7" />
+    </Style>
+    <Style Selector="Border.skeleton-text.h6">
+        <Setter Property="Height" Value="15" />
+        <Setter Property="Margin" Value="0 2 0 4" />
+    </Style>
+    
+    <Style Selector="Border.skeleton-text.h1.no-margin">
+        <Setter Property="Margin" Value="0 10 0 10" />
+    </Style>
+    <Style Selector="Border.skeleton-text.h2.no-margin">
+        <Setter Property="Margin" Value="0 10 0 10" />
+    </Style>
+    <Style Selector="Border.skeleton-text.h3.no-margin">
+        <Setter Property="Margin" Value="0 5 0 5" />
+    </Style>
+    <Style Selector="Border.skeleton-text.h4.no-margin">
+        <Setter Property="Margin" Value="0 2 0 2" />
+    </Style>
+    <Style Selector="Border.skeleton-text.h5.no-margin">
+        <Setter Property="Margin" Value="0 2 0 2" />
+    </Style>
+    <Style Selector="Border.skeleton-text.h6.no-margin">
+        <Setter Property="Margin" Value="0 2 0 2" />
+    </Style>
+   
+</Styles>
