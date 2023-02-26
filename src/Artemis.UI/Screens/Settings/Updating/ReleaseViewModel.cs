@@ -159,12 +159,10 @@ public class ReleaseViewModel : ActivatableViewModelBase
             _updateService.QueueUpdate();
             InstallationFinished = true;
         }
-        catch (TaskCanceledException)
-        {
-            // ignored
-        }
         catch (Exception e)
         {
+            if (_installerCts.IsCancellationRequested)
+                return;
             _windowService.ShowExceptionDialog("Failed to install update", e);
         }
         finally

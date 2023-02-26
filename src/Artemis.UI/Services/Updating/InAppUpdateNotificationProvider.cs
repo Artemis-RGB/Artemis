@@ -56,7 +56,7 @@ public class InAppUpdateNotificationProvider : IUpdateNotificationProvider
     }
 
     /// <inheritdoc />
-    public async Task ShowNotification(string releaseId, string releaseVersion)
+    public void ShowNotification(string releaseId, string releaseVersion)
     {
         if (_mainWindowService.IsMainWindowOpen)
             ShowInAppNotification(releaseId, releaseVersion);

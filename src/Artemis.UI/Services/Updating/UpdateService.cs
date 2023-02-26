@@ -84,9 +84,9 @@ public class UpdateService : IUpdateService
         Utilities.ApplyUpdate(false);
     }
 
-    private async Task ShowUpdateNotification(IGetNextRelease_NextPublishedRelease release)
+    private void ShowUpdateNotification(IGetNextRelease_NextPublishedRelease release)
     {
-        await _updateNotificationProvider.Value.ShowNotification(release.Id, release.Version);
+        _updateNotificationProvider.Value.ShowNotification(release.Id, release.Version);
     }
 
     private async Task AutoInstallUpdate(IGetNextRelease_NextPublishedRelease release)
@@ -146,7 +146,7 @@ public class UpdateService : IUpdateService
 
         // If the window is open show the changelog, don't auto-update while the user is busy
         if (!_autoInstall.Value)
-            await ShowUpdateNotification(CachedLatestRelease);
+            ShowUpdateNotification(CachedLatestRelease);
         else
             await AutoInstallUpdate(CachedLatestRelease);
 

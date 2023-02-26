@@ -20,6 +20,7 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
     private readonly Func<IScreen, SettingsViewModel> _getSettingsViewModel;
     private readonly IMainWindowService _mainWindowService;
     private readonly IUpdateService _updateService;
+    private CancellationTokenSource? _cancellationTokenSource;
 
     public WindowsUpdateNotificationProvider(IMainWindowService mainWindowService,
         IUpdateService updateService,
@@ -46,15 +47,15 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
             await InstallRelease(releaseId, releaseVersion);
         else if (action == "view-changes")
             ViewRelease(releaseId);
+        else if (action == "cancel")
+            _cancellationTokenSource?.Cancel();
         else if (action == "restart-for-update")
             _updateService.RestartForUpdate(false);
     }
 
-    public async Task ShowNotification(string releaseId, string releaseVersion)
+    public void ShowNotification(string releaseId, string releaseVersion)
     {
-        new ToastContentBuilder()
-            .AddArgument("releaseId", releaseId)
-            .AddArgument("releaseVersion", releaseVersion)
+        GetBuilderForRelease(releaseId, releaseVersion)
             .AddText("Update available")
             .AddText($"Artemis version {releaseVersion} has been released")
             .AddButton(new ToastButton()
@@ -89,9 +90,7 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
         ReleaseInstaller installer = _getReleaseInstaller(releaseId);
         void InstallerOnPropertyChanged(object? sender, PropertyChangedEventArgs e) => UpdateInstallProgress(releaseId, installer);
 
-        new ToastContentBuilder()
-            .AddArgument("releaseId", releaseId)
-            .AddArgument("releaseVersion", releaseVersion)
+        GetBuilderForRelease(releaseId, releaseVersion)
             .AddAudio(new ToastAudio {Silent = true})
             .AddText("Installing Artemis update")
             .AddVisualChild(new AdaptiveProgressBar()
@@ -104,19 +103,32 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
             .Show(t =>
             {
                 t.Tag = releaseId;
-                t.Data = GetInstallerNotificationData(installer);
+                t.Data = GetDataForInstaller(installer);
             });
 
+        // Wait for Windows animations to catch up to us, we fast!
         await Task.Delay(2000);
+        _cancellationTokenSource = new CancellationTokenSource();
         installer.PropertyChanged += InstallerOnPropertyChanged;
-        await installer.InstallAsync(CancellationToken.None);
-        installer.PropertyChanged -= InstallerOnPropertyChanged;
+        try
+        {
+            await installer.InstallAsync(_cancellationTokenSource.Token);
+        }
+        catch (Exception)
+        {
+            if (_cancellationTokenSource.IsCancellationRequested)
+                return;
+            throw;
+        }
+        finally
+        {
+            installer.PropertyChanged -= InstallerOnPropertyChanged;
+        }
 
+        // Queue an update in case the user interrupts the process after everything has been prepared
         _updateService.QueueUpdate();
-        
-        new ToastContentBuilder()
-            .AddArgument("releaseId", releaseId)
-            .AddArgument("releaseVersion", releaseVersion)
+
+        GetBuilderForRelease(releaseId, releaseVersion)
             .AddAudio(new ToastAudio {Silent = true})
             .AddText("Update ready")
             .AddText($"Artemis version {releaseVersion} is ready to be applied")
@@ -127,10 +139,15 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
 
     private void UpdateInstallProgress(string releaseId, ReleaseInstaller installer)
     {
-        ToastNotificationManagerCompat.CreateToastNotifier().Update(GetInstallerNotificationData(installer), releaseId);
+        ToastNotificationManagerCompat.CreateToastNotifier().Update(GetDataForInstaller(installer), releaseId);
     }
 
-    private NotificationData GetInstallerNotificationData(ReleaseInstaller installer)
+    private ToastContentBuilder GetBuilderForRelease(string releaseId, string releaseVersion)
+    {
+        return new ToastContentBuilder().AddArgument("releaseId", releaseId).AddArgument("releaseVersion", releaseVersion);
+    }
+
+    private NotificationData GetDataForInstaller(ReleaseInstaller installer)
     {
         NotificationData data = new()
         {
