@@ -137,6 +137,10 @@ public class SidebarViewModel : ActivatableViewModelBase
 
     private void NavigateToScreen(SidebarScreenViewModel sidebarScreenViewModel)
     {
+        // If the current screen changed through external means and already matches, don't navigate again
+        if (_hostScreen.Router.GetCurrentViewModel()?.GetType() == sidebarScreenViewModel.ScreenType)
+            return;
+        
         _hostScreen.Router.Navigate.Execute(sidebarScreenViewModel.CreateInstance(_container, _hostScreen));
         _profileEditorService.ChangeCurrentProfileConfiguration(null);
     }

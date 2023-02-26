@@ -36,7 +36,7 @@ public static class UIContainerExtensions
 
         container.Register<NodeScriptWindowViewModelBase, NodeScriptWindowViewModel>(Reuse.Singleton);
         container.Register<IPropertyVmFactory, PropertyVmFactory>(Reuse.Singleton);
-        container.Register<IUpdateNotificationProvider, SimpleUpdateNotificationProvider>();
+        container.Register<IUpdateNotificationProvider, InAppUpdateNotificationProvider>();
         
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IArtemisUIService>(), Reuse.Singleton);
     }

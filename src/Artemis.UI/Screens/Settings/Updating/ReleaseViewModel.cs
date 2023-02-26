@@ -22,7 +22,7 @@ public class ReleaseViewModel : ActivatableViewModelBase
 {
     private readonly ILogger _logger;
     private readonly INotificationService _notificationService;
-    private readonly string _releaseId;
+    private readonly IUpdateService _updateService;
     private readonly Platform _updatePlatform;
     private readonly IUpdatingClient _updatingClient;
     private readonly IWindowService _windowService;
@@ -46,10 +46,10 @@ public class ReleaseViewModel : ActivatableViewModelBase
         IUpdateService updateService,
         IWindowService windowService)
     {
-        _releaseId = releaseId;
         _logger = logger;
         _updatingClient = updatingClient;
         _notificationService = notificationService;
+        _updateService = updateService;
         _windowService = windowService;
 
         if (OperatingSystem.IsWindows())
@@ -61,12 +61,13 @@ public class ReleaseViewModel : ActivatableViewModelBase
         else
             throw new PlatformNotSupportedException("Cannot auto update on the current platform");
 
+        ReleaseId = releaseId;
         Version = version;
         CreatedAt = createdAt;
-        ReleaseInstaller = updateService.GetReleaseInstaller(_releaseId);
+        ReleaseInstaller = updateService.GetReleaseInstaller(ReleaseId);
 
         Install = ReactiveCommand.CreateFromTask(ExecuteInstall);
-        Restart = ReactiveCommand.Create(() => Utilities.ApplyUpdate(false));
+        Restart = ReactiveCommand.Create(ExecuteRestart);
         CancelInstall = ReactiveCommand.Create(() => _installerCts?.Cancel());
 
         this.WhenActivated(d =>
@@ -74,10 +75,17 @@ public class ReleaseViewModel : ActivatableViewModelBase
             // There's no point in running anything but the latest version of the current channel.
             // Perhaps later that won't be true anymore, then we could consider allowing to install
             // older versions with compatible database versions.
-            InstallationAvailable = updateService.CachedLatestRelease?.Id == _releaseId;
+            InstallationAvailable = _updateService.CachedLatestRelease?.Id == ReleaseId;
             RetrieveDetails(d.AsCancellationToken()).ToObservable();
             Disposable.Create(_installerCts, cts => cts?.Cancel()).DisposeWith(d);
         });
+    }
+
+    public string ReleaseId { get; }
+
+    private void ExecuteRestart()
+    {
+        _updateService.RestartForUpdate(false);
     }
 
     public ReactiveCommand<Unit, Unit> Restart { get; set; }
@@ -148,6 +156,7 @@ public class ReleaseViewModel : ActivatableViewModelBase
         {
             InstallationInProgress = true;
             await ReleaseInstaller.InstallAsync(_installerCts.Token);
+            _updateService.QueueUpdate();
             InstallationFinished = true;
         }
         catch (TaskCanceledException)
@@ -173,7 +182,7 @@ public class ReleaseViewModel : ActivatableViewModelBase
         {
             Loading = true;
 
-            IOperationResult<IGetReleaseByIdResult> result = await _updatingClient.GetReleaseById.ExecuteAsync(_releaseId, cancellationToken);
+            IOperationResult<IGetReleaseByIdResult> result = await _updatingClient.GetReleaseById.ExecuteAsync(ReleaseId, cancellationToken);
             IGetReleaseById_PublishedRelease? release = result.Data?.PublishedRelease;
             if (release == null)
                 return;

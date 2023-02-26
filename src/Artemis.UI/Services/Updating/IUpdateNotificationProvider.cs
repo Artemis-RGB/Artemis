@@ -4,5 +4,5 @@ namespace Artemis.UI.Services.Updating;
 
 public interface IUpdateNotificationProvider
 {
-    Task ShowNotification(string releaseId);
+    Task ShowNotification(string releaseId, string releaseVersion);
 }
