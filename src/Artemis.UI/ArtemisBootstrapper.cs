@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive;
@@ -42,6 +42,7 @@ public static class ArtemisBootstrapper
         _container.RegisterCore();
         _container.RegisterUI();
         _container.RegisterSharedUI();
+        _container.RegisterUpdatingClient();
         _container.RegisterNoStringEvaluating();
         configureServices?.Invoke(_container);
 
