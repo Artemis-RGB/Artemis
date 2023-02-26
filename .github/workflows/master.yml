@@ -33,7 +33,7 @@ jobs:
       matrix: 
         include:
           - os: windows-latest
-            rid: win-x64
+            rid: win10-x64
             csproj: Windows
 
           - os: ubuntu-latest
