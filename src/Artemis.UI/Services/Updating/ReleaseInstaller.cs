@@ -30,7 +30,7 @@ public class ReleaseInstaller : CorePropertyChanged
     private readonly IUpdatingClient _updatingClient;
     private readonly Progress<float> _progress = new();
     private Progress<float> _stepProgress = new();
-    private string _status;
+    private string _status = string.Empty;
     private float _progress1;
 
     public ReleaseInstaller(string releaseId, ILogger logger, IUpdatingClient updatingClient, HttpClient httpClient)

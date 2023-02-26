@@ -70,7 +70,9 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
         Dispatcher.UIThread.Post(() =>
         {
             _mainWindowService.OpenMainWindow();
-
+            if (_mainWindowService.HostScreen == null)
+                return;
+            
             // TODO: When proper routing has been implemented, use that here
             // Create a settings VM to navigate to
             SettingsViewModel settingsViewModel = _getSettingsViewModel(_mainWindowService.HostScreen);

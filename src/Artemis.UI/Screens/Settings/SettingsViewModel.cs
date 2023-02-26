@@ -23,6 +23,7 @@ public class SettingsViewModel : MainScreenViewModel
             releasesTabViewModel,
             aboutTabViewModel
         };
+        _selectedTab = generalTabViewModel;
     }
 
     public ObservableCollection<ActivatableViewModelBase> SettingTabs { get; }
