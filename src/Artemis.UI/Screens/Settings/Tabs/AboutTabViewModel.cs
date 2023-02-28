@@ -57,7 +57,7 @@ public class AboutTabViewModel : ActivatableViewModelBase
     private async Task Activate()
     {
         AssemblyInformationalVersionAttribute? versionAttribute = typeof(AboutTabViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-        Version = $"Version {versionAttribute?.InformationalVersion} build {Constants.BuildInfo.BuildNumberDisplay}";
+        Version = $"Version {Constants.CurrentVersion}";
 
         try
         {

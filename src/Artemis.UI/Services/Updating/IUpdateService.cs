@@ -6,7 +6,6 @@ namespace Artemis.UI.Services.Updating;
 
 public interface IUpdateService : IArtemisUIService
 {
-    string? CurrentVersion { get; }
     IGetNextRelease_NextPublishedRelease? CachedLatestRelease { get; }
 
     Task CacheLatestRelease();

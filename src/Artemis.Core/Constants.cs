@@ -62,8 +62,15 @@ public static class Constants
     /// <summary>
     ///     The current API version for plugins
     /// </summary>
-    public static readonly int PluginApiVersion = int.Parse(CoreAssembly.GetCustomAttributes<AssemblyMetadataAttribute>().First(a => a.Key == "PluginApiVersion").Value ?? 
+    public static readonly int PluginApiVersion = int.Parse(CoreAssembly.GetCustomAttributes<AssemblyMetadataAttribute>().FirstOrDefault(a => a.Key == "PluginApiVersion")?.Value ??
                                                             throw new InvalidOperationException("Cannot find PluginApiVersion metadata in assembly"));
+
+    /// <summary>
+    ///     The current version of the application
+    /// </summary>
+    public static readonly string CurrentVersion = CoreAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion != "1.0.0"
+        ? CoreAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion
+        : "1.2023.0212.2-feature-gh-actions";
 
     /// <summary>
     ///     The plugin info used by core components of Artemis
@@ -72,21 +79,6 @@ public static class Constants
     {
         Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core", Version = new Version(2, 0)
     };
-
-    /// <summary>
-    ///     The build information related to the currently running Artemis build
-    ///     <para>Information is retrieved from <c>buildinfo.json</c></para>
-    /// </summary>
-    public static readonly BuildInfo BuildInfo = File.Exists(Path.Combine(ApplicationFolder, "buildinfo.json"))
-        ? JsonConvert.DeserializeObject<BuildInfo>(File.ReadAllText(Path.Combine(ApplicationFolder, "buildinfo.json")))!
-        : new BuildInfo
-        {
-            IsLocalBuild = true,
-            BuildId = 1337,
-            BuildNumber = 1337,
-            SourceBranch = "local",
-            SourceVersion = "local"
-        };
 
     /// <summary>
     ///     The plugin used by core components of Artemis

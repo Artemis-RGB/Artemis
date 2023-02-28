@@ -111,7 +111,7 @@ public class AutoRunProvider : IAutoRunProvider
     /// <inheritdoc />
     public async Task EnableAutoRun(bool recreate, int autoRunDelay)
     {
-        if (Constants.BuildInfo.IsLocalBuild)
+        if (Constants.CurrentVersion == "development")
             return;
 
         await CleanupOldAutorun();

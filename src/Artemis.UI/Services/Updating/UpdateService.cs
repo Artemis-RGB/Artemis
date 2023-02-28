@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -8,7 +7,6 @@ using Artemis.Storage.Entities.General;
 using Artemis.Storage.Repositories.Interfaces;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.WebClient.Updating;
-using Avalonia.Threading;
 using Serilog;
 using StrawberryShake;
 using Timer = System.Timers.Timer;
@@ -113,25 +111,16 @@ public class UpdateService : IUpdateService
 
     public IGetNextRelease_NextPublishedRelease? CachedLatestRelease { get; private set; }
 
-    public string? CurrentVersion
-    {
-        get
-        {
-            object[] attributes = typeof(UpdateService).Assembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false);
-            return attributes.Length == 0 ? null : ((AssemblyInformationalVersionAttribute) attributes[0]).InformationalVersion;
-        }
-    }
-
     /// <inheritdoc />
     public async Task CacheLatestRelease()
     {
-        IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(CurrentVersion, _channel.Value, _updatePlatform);
+        IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(Constants.CurrentVersion, _channel.Value, _updatePlatform);
         CachedLatestRelease = result.Data?.NextPublishedRelease;
     }
 
     public async Task<bool> CheckForUpdate()
     {
-        IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(CurrentVersion, _channel.Value, _updatePlatform);
+        IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(Constants.CurrentVersion, _channel.Value, _updatePlatform);
         result.EnsureNoErrors();
 
         // Update cache

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:settings="clr-namespace:Artemis.UI.Screens.Settings"
              xmlns:updating="clr-namespace:Artemis.UI.Screens.Settings.Updating"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="1400"
              x:Class="Artemis.UI.Screens.Settings.ReleasesTabView"
              x:DataType="settings:ReleasesTabViewModel">
@@ -12,15 +13,29 @@
             <ListBox Items="{CompiledBinding ReleaseViewModels}" SelectedItem="{CompiledBinding SelectedReleaseViewModel}">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="updating:ReleaseViewModel">
-                        <StackPanel Margin="4">
-                            <TextBlock Text="{CompiledBinding Version}" VerticalAlignment="Center" />
-                            <TextBlock Text="{CompiledBinding CreatedAt, StringFormat={}{0:g}}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
-                        </StackPanel>
+                        <Panel>
+                            <Grid Margin="4" IsVisible="{CompiledBinding IsCurrentVersion}" RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{CompiledBinding Version}" VerticalAlignment="Center" IsVisible="{CompiledBinding IsCurrentVersion}" FontWeight="SemiBold" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{CompiledBinding CreatedAt, StringFormat={}{0:g}}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
+                                <avalonia:MaterialIcon  Grid.Row="0" 
+                                                        Grid.Column="1" 
+                                                        Grid.RowSpan="2" 
+                                                        Kind="CheckCircle" 
+                                                        ToolTip.Tip="Currently installed" 
+                                                        Foreground="{DynamicResource SystemAccentColorLight3}"
+                                                        Width="20" 
+                                                        Height="20" />
+                            </Grid>
+                            <StackPanel Margin="4" IsVisible="{CompiledBinding !IsCurrentVersion}">
+                                <TextBlock Text="{CompiledBinding Version}" VerticalAlignment="Center" />
+                                <TextBlock Text="{CompiledBinding CreatedAt, StringFormat={}{0:g}}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
+                            </StackPanel>
+                        </Panel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
         </Border>
 
-        <ContentControl Grid.Column="1" Content="{CompiledBinding SelectedReleaseViewModel}"/>
+        <ContentControl Grid.Column="1" Content="{CompiledBinding SelectedReleaseViewModel}" />
     </Grid>
 </UserControl>

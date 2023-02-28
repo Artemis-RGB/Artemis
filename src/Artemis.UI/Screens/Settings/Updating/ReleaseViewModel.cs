@@ -61,6 +61,7 @@ public class ReleaseViewModel : ActivatableViewModelBase
         else
             throw new PlatformNotSupportedException("Cannot auto update on the current platform");
 
+        
         ReleaseId = releaseId;
         Version = version;
         CreatedAt = createdAt;
@@ -143,6 +144,8 @@ public class ReleaseViewModel : ActivatableViewModelBase
         get => _installationFinished;
         set => RaiseAndSetIfChanged(ref _installationFinished, value);
     }
+
+    public bool IsCurrentVersion => Version == Constants.CurrentVersion;
 
     public void NavigateToSource()
     {

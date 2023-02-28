@@ -25,29 +25,29 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
     private readonly IAutoRunProvider? _autoRunProvider;
     private readonly IRgbService _rgbService;
     private readonly ISettingsService _settingsService;
-    private readonly IUpdateService _updateService;
     private readonly IWindowService _windowService;
     private int _currentStep;
     private bool _showContinue;
     private bool _showFinish;
     private bool _showGoBack;
 
-    public StartupWizardViewModel(IContainer container, ISettingsService settingsService, IRgbService rgbService, IPluginManagementService pluginManagementService, IWindowService windowService,
-        IUpdateService updateService, ISettingsVmFactory settingsVmFactory)
+    public StartupWizardViewModel(IContainer container,
+        ISettingsService settingsService,
+        IRgbService rgbService,
+        IPluginManagementService pluginManagementService,
+        IWindowService windowService,
+        ISettingsVmFactory settingsVmFactory)
     {
         _settingsService = settingsService;
         _rgbService = rgbService;
         _windowService = windowService;
-        _updateService = updateService;
         _autoRunProvider = container.Resolve<IAutoRunProvider>(IfUnresolved.ReturnDefault);
 
         Continue = ReactiveCommand.Create(ExecuteContinue);
         GoBack = ReactiveCommand.Create(ExecuteGoBack);
         SkipOrFinishWizard = ReactiveCommand.Create(ExecuteSkipOrFinishWizard);
         SelectLayout = ReactiveCommand.Create<string>(ExecuteSelectLayout);
-
-        AssemblyInformationalVersionAttribute? versionAttribute = typeof(StartupWizardViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-        Version = $"Version {versionAttribute?.InformationalVersion} build {Constants.BuildInfo.BuildNumberDisplay}";
+        Version = $"Version {Constants.CurrentVersion}";
 
         // Take all compatible plugins that have an always-enabled device provider
         DeviceProviders = new ObservableCollection<PluginViewModel>(pluginManagementService.GetAllPlugins()
