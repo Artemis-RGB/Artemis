@@ -63,7 +63,7 @@ public class LogsDebugViewModel : ActivatableViewModelBase
 
     private void RemoveOldestLine()
     {
-        int firstNewLine = Document.Text.IndexOf('\n');
+        int firstNewLine = Document.IndexOf('\n', 0, Document.TextLength);
         if (firstNewLine == -1)
         {
             //this should never happen.
