@@ -52,7 +52,7 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
         DeviceProviders = new ObservableCollection<PluginViewModel>(pluginManagementService.GetAllPlugins()
             .Where(p => p.Info.IsCompatible && p.Features.Any(f => f.AlwaysEnabled && f.FeatureType.IsAssignableTo(typeof(DeviceProvider))))
             .OrderBy(p => p.Info.Name)
-            .Select(p => settingsVmFactory.PluginViewModel(p, null)));
+            .Select(p => settingsVmFactory.PluginViewModel(p, ReactiveCommand.Create(() => new Unit()))));
 
         CurrentStep = 1;
         SetupButtons();

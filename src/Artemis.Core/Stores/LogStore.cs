@@ -10,12 +10,25 @@ namespace Artemis.Core;
 /// </summary>
 public static class LogStore
 {
+    private static readonly object _lock = new();
+    
     private static readonly LinkedList<LogEvent> LinkedList = new();
 
     /// <summary>
     ///     Gets a list containing the last 500 log events.
     /// </summary>
-    public static List<LogEvent> Events => LinkedList.ToList();
+    public static List<LogEvent> Events
+    {
+        get
+        {
+            List<LogEvent> events;
+            
+            lock (_lock)
+                events = LinkedList.ToList();
+            
+            return events;
+        }
+    }
 
     /// <summary>
     ///     Occurs when a new <see cref="LogEvent" /> was received.
@@ -24,9 +37,13 @@ public static class LogStore
 
     internal static void Emit(LogEvent logEvent)
     {
-        LinkedList.AddLast(logEvent);
-        while (LinkedList.Count > 500)
-            LinkedList.RemoveFirst();
+        lock (_lock)
+        {
+            LinkedList.AddLast(logEvent);
+            while (LinkedList.Count > 500)
+                LinkedList.RemoveFirst();
+        }
+
 
         OnEventAdded(new LogEventEventArgs(logEvent));
     }

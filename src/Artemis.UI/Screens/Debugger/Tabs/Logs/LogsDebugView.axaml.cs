@@ -14,7 +14,7 @@ namespace Artemis.UI.Screens.Debugger.Logs;
 public class LogsDebugView : ReactiveUserControl<LogsDebugViewModel>
 {
     private int _lineCount;
-    private TextEditor _textEditor;
+    private TextEditor? _textEditor;
 
     public LogsDebugView()
     {
@@ -31,7 +31,7 @@ public class LogsDebugView : ReactiveUserControl<LogsDebugViewModel>
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Dispatcher.UIThread.Post(() => _textEditor.ScrollToEnd(), DispatcherPriority.ApplicationIdle);
+        Dispatcher.UIThread.Post(() => _textEditor?.ScrollToEnd(), DispatcherPriority.ApplicationIdle);
     }
 
     private void OnTextChanged(object? sender, EventArgs e)
