@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -18,15 +19,14 @@ public class UpdateService : IUpdateService
     private const double UPDATE_CHECK_INTERVAL = 3_600_000; // once per hour
     private readonly PluginSetting<bool> _autoCheck;
     private readonly PluginSetting<bool> _autoInstall;
-    private readonly PluginSetting<string> _channel;
-    private readonly Func<string, ReleaseInstaller> _getReleaseInstaller;
+    private readonly Platform _updatePlatform;
 
     private readonly ILogger _logger;
     private readonly IMainWindowService _mainWindowService;
     private readonly IQueuedActionRepository _queuedActionRepository;
     private readonly Lazy<IUpdateNotificationProvider> _updateNotificationProvider;
-    private readonly Platform _updatePlatform;
     private readonly IUpdatingClient _updatingClient;
+    private readonly Func<string, ReleaseInstaller> _getReleaseInstaller;
 
     private bool _suspendAutoCheck;
 
@@ -45,6 +45,12 @@ public class UpdateService : IUpdateService
         _updateNotificationProvider = updateNotificationProvider;
         _getReleaseInstaller = getReleaseInstaller;
 
+        string? channelArgument = Constants.StartupArguments.FirstOrDefault(a => a.StartsWith("--channel="));
+        if (channelArgument != null)
+            Channel = channelArgument.Split("=")[1];
+        if (string.IsNullOrWhiteSpace(Channel))
+            Channel = "master";
+
         if (OperatingSystem.IsWindows())
             _updatePlatform = Platform.Windows;
         else if (OperatingSystem.IsLinux())
@@ -53,8 +59,7 @@ public class UpdateService : IUpdateService
             _updatePlatform = Platform.Osx;
         else
             throw new PlatformNotSupportedException("Cannot auto update on the current platform");
-
-        _channel = settingsService.GetSetting("UI.Updating.Channel", "master");
+        
         _autoCheck = settingsService.GetSetting("UI.Updating.AutoCheck", true);
         _autoInstall = settingsService.GetSetting("UI.Updating.AutoInstall", false);
         _autoCheck.SettingChanged += HandleAutoUpdateEvent;
@@ -63,12 +68,13 @@ public class UpdateService : IUpdateService
         timer.Elapsed += HandleAutoUpdateEvent;
         timer.Start();
 
-        _channel.Value = "feature/gh-actions";
-        _channel.Save();
-
-
         InstallQueuedUpdate();
+
+        _logger.Information("Update service initialized for {Channel} channel", Channel);
     }
+
+    public string Channel { get; }
+    public IGetNextRelease_NextPublishedRelease? CachedLatestRelease { get; private set; }
 
     private void InstallQueuedUpdate()
     {
@@ -109,18 +115,16 @@ public class UpdateService : IUpdateService
         }
     }
 
-    public IGetNextRelease_NextPublishedRelease? CachedLatestRelease { get; private set; }
-
     /// <inheritdoc />
     public async Task CacheLatestRelease()
     {
-        IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(Constants.CurrentVersion, _channel.Value, _updatePlatform);
+        IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(Constants.CurrentVersion, Channel, _updatePlatform);
         CachedLatestRelease = result.Data?.NextPublishedRelease;
     }
 
     public async Task<bool> CheckForUpdate()
     {
-        IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(Constants.CurrentVersion, _channel.Value, _updatePlatform);
+        IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(Constants.CurrentVersion, Channel, _updatePlatform);
         result.EnsureNoErrors();
 
         // Update cache

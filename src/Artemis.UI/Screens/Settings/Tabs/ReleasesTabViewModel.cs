@@ -24,6 +24,7 @@ namespace Artemis.UI.Screens.Settings;
 public class ReleasesTabViewModel : ActivatableViewModelBase
 {
     private readonly ILogger _logger;
+    private readonly IUpdateService _updateService;
     private readonly IUpdatingClient _updatingClient;
     private readonly INotificationService _notificationService;
     private readonly SourceList<IGetReleases_PublishedReleases_Nodes> _releases;
@@ -34,6 +35,7 @@ public class ReleasesTabViewModel : ActivatableViewModelBase
     public ReleasesTabViewModel(ILogger logger, IUpdateService updateService, IUpdatingClient updatingClient, IReleaseVmFactory releaseVmFactory, INotificationService notificationService)
     {
         _logger = logger;
+        _updateService = updateService;
         _updatingClient = updatingClient;
         _notificationService = notificationService;
 
@@ -47,15 +49,18 @@ public class ReleasesTabViewModel : ActivatableViewModelBase
 
         DisplayName = "Releases";
         ReleaseViewModels = releaseViewModels;
+        Channel = _updateService.Channel;
         this.WhenActivated(async d =>
         {
-            await updateService.CacheLatestRelease();
+            await _updateService.CacheLatestRelease();
             await GetMoreReleases(d.AsCancellationToken());
             SelectedReleaseViewModel = ReleaseViewModels.FirstOrDefault(r => r.ReleaseId == PreselectId) ?? ReleaseViewModels.FirstOrDefault();
         });
     }
 
+
     public ReadOnlyObservableCollection<ReleaseViewModel> ReleaseViewModels { get; }
+    public string Channel { get; }
     public string? PreselectId { get; set; }
 
     public ReleaseViewModel? SelectedReleaseViewModel
@@ -79,7 +84,7 @@ public class ReleasesTabViewModel : ActivatableViewModelBase
         {
             Loading = true;
 
-            IOperationResult<IGetReleasesResult> result = await _updatingClient.GetReleases.ExecuteAsync("feature/gh-actions", Platform.Windows, 20, _lastPageInfo?.EndCursor, cancellationToken);
+            IOperationResult<IGetReleasesResult> result = await _updatingClient.GetReleases.ExecuteAsync(_updateService.Channel, Platform.Windows, 20, _lastPageInfo?.EndCursor, cancellationToken);
             if (result.Data?.PublishedReleases?.Nodes == null)
                 return;
 
