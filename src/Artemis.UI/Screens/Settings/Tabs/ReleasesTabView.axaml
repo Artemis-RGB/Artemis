@@ -9,6 +9,14 @@
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="1400"
              x:Class="Artemis.UI.Screens.Settings.ReleasesTabView"
              x:DataType="settings:ReleasesTabViewModel">
+    <UserControl.Styles>
+        <Style Selector="avalonia|MaterialIcon.status-icon">
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight1}" />
+        </Style>
+    </UserControl.Styles>
     <Panel>
         <StackPanel VerticalAlignment="Center" MaxWidth="300" Spacing="15" IsVisible="{CompiledBinding Loading}">
             <TextBlock TextAlignment="Center">Loading releases...</TextBlock>
@@ -16,9 +24,10 @@
         </StackPanel>
         <Panel IsVisible="{CompiledBinding !Loading}">
             <StackPanel VerticalAlignment="Center" Spacing="15" IsVisible="{CompiledBinding !ReleaseViewModels.Count}">
-                <TextBlock TextAlignment="Center" 
-                           TextWrapping="Wrap" 
-                           Text="{CompiledBinding Channel, StringFormat='Found no releases for the \'{0}\' channel.'}"></TextBlock>
+                <TextBlock TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           Text="{CompiledBinding Channel, StringFormat='Found no releases for the \'{0}\' channel.'}">
+                </TextBlock>
                 <controls:HyperlinkButton NavigateUri="https://wiki.artemis-rgb.com/en/channels"
                                           HorizontalAlignment="Center">
                     Learn more about channels on the wiki
@@ -31,20 +40,15 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate x:DataType="updating:ReleaseViewModel">
                                 <Panel>
-                                    <Grid Margin="4" IsVisible="{CompiledBinding IsCurrentVersion}" RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{CompiledBinding Version}" VerticalAlignment="Center" IsVisible="{CompiledBinding IsCurrentVersion}"
-                                                   FontWeight="SemiBold" />
+                                    <Grid Margin="4" IsVisible="{CompiledBinding ShowStatusIndicator}" RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{CompiledBinding Version}" VerticalAlignment="Center" FontWeight="SemiBold" />
                                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{CompiledBinding CreatedAt, StringFormat={}{0:g}}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
-                                        <avalonia:MaterialIcon Grid.Row="0"
-                                                               Grid.Column="1"
-                                                               Grid.RowSpan="2"
-                                                               Kind="CheckCircle"
-                                                               ToolTip.Tip="Currently installed"
-                                                               Foreground="{DynamicResource SystemAccentColorLight3}"
-                                                               Width="20"
-                                                               Height="20" />
+                                        <avalonia:MaterialIcon Classes="status-icon" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Kind="CheckCircle" ToolTip.Tip="Current version"
+                                                               IsVisible="{CompiledBinding IsCurrentVersion}" />
+                                        <avalonia:MaterialIcon Classes="status-icon" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Kind="History" ToolTip.Tip="Previous version"
+                                                               IsVisible="{CompiledBinding IsPreviousVersion}" />
                                     </Grid>
-                                    <StackPanel Margin="4" IsVisible="{CompiledBinding !IsCurrentVersion}">
+                                    <StackPanel Margin="4" IsVisible="{CompiledBinding !ShowStatusIndicator}">
                                         <TextBlock Text="{CompiledBinding Version}" VerticalAlignment="Center" />
                                         <TextBlock Text="{CompiledBinding CreatedAt, StringFormat={}{0:g}}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
                                     </StackPanel>

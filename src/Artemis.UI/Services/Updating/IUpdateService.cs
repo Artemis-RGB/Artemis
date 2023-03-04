@@ -7,11 +7,12 @@ namespace Artemis.UI.Services.Updating;
 public interface IUpdateService : IArtemisUIService
 {
     string Channel { get; }
+    string? PreviousVersion { get; }
     IGetNextRelease_NextPublishedRelease? CachedLatestRelease { get; }
 
     Task CacheLatestRelease();
     Task<bool> CheckForUpdate();
-    void QueueUpdate();
+    void QueueUpdate(string version);
 
     ReleaseInstaller GetReleaseInstaller(string releaseId);
     void RestartForUpdate(bool silent);

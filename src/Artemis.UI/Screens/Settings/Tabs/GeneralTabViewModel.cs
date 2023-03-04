@@ -16,6 +16,7 @@ using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Builders;
 using Avalonia.Threading;
 using DryIoc;
 using DynamicData;
@@ -162,14 +163,25 @@ public class GeneralTabViewModel : ActivatableViewModelBase
 
     private async Task ExecuteCheckForUpdate(CancellationToken cancellationToken)
     {
-        // If an update was available a popup was shown, no need to continue
-        if (await _updateService.CheckForUpdate())
-            return;
+        try
+        {
+            // If an update was available a popup was shown, no need to continue
+            if (await _updateService.CheckForUpdate())
+                return;
 
-        _notificationService.CreateNotification()
-            .WithTitle("No update available")
-            .WithMessage("You are running the latest version in your current channel")
-            .Show();
+            _notificationService.CreateNotification()
+                .WithTitle("No update available")
+                .WithMessage("You are running the latest version in your current channel")
+                .Show();
+        }
+        catch (Exception e)
+        {
+            _notificationService.CreateNotification()
+                .WithTitle("Failed to check for update")
+                .WithMessage(e.Message)
+                .WithSeverity(NotificationSeverity.Warning)
+                .Show();
+        }
     }
 
     private async Task ExecuteShowSetupWizard()

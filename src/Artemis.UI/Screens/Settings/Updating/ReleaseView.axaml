@@ -2,7 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:settings="clr-namespace:Artemis.UI.Screens.Settings"
              xmlns:updating="clr-namespace:Artemis.UI.Screens.Settings.Updating"
              xmlns:avalonia="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
              xmlns:mdc="clr-namespace:Markdown.Avalonia.Controls;assembly=Markdown.Avalonia"
@@ -55,7 +54,7 @@
         </Style>
     </UserControl.Styles>
 
-    <Grid RowDefinitions="Auto,*" IsVisible="{CompiledBinding !Loading}" Classes="fade-in">
+    <Grid RowDefinitions="Auto,*" IsVisible="{CompiledBinding Commit, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" Classes="fade-in">
         <Border Grid.Row="0" Classes="card" Margin="0 0 0 10">
             <StackPanel>
                 <Grid ColumnDefinitions="*,Auto">

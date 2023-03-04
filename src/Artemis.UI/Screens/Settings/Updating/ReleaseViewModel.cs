@@ -25,11 +25,10 @@ public class ReleaseViewModel : ActivatableViewModelBase
     private readonly IUpdateService _updateService;
     private readonly Platform _updatePlatform;
     private readonly IUpdatingClient _updatingClient;
-    private readonly IWindowService _windowService;
     private CancellationTokenSource? _installerCts;
-    private string _changelog = string.Empty;
-    private string _commit = string.Empty;
-    private string _shortCommit = string.Empty;
+    private string? _changelog;
+    private string? _commit;
+    private string? _shortCommit;
     private long _fileSize;
     private bool _installationAvailable;
     private bool _installationFinished;
@@ -43,14 +42,12 @@ public class ReleaseViewModel : ActivatableViewModelBase
         ILogger logger,
         IUpdatingClient updatingClient,
         INotificationService notificationService,
-        IUpdateService updateService,
-        IWindowService windowService)
+        IUpdateService updateService)
     {
         _logger = logger;
         _updatingClient = updatingClient;
         _notificationService = notificationService;
         _updateService = updateService;
-        _windowService = windowService;
 
         if (OperatingSystem.IsWindows())
             _updatePlatform = Platform.Windows;
@@ -97,19 +94,19 @@ public class ReleaseViewModel : ActivatableViewModelBase
     public DateTimeOffset CreatedAt { get; }
     public ReleaseInstaller ReleaseInstaller { get; }
 
-    public string Changelog
+    public string? Changelog
     {
         get => _changelog;
         set => RaiseAndSetIfChanged(ref _changelog, value);
     }
 
-    public string Commit
+    public string? Commit
     {
         get => _commit;
         set => RaiseAndSetIfChanged(ref _commit, value);
     }
 
-    public string ShortCommit
+    public string? ShortCommit
     {
         get => _shortCommit;
         set => RaiseAndSetIfChanged(ref _shortCommit, value);
@@ -146,7 +143,9 @@ public class ReleaseViewModel : ActivatableViewModelBase
     }
 
     public bool IsCurrentVersion => Version == Constants.CurrentVersion;
-
+    public bool IsPreviousVersion => Version == _updateService.PreviousVersion;
+    public bool ShowStatusIndicator => IsCurrentVersion || IsPreviousVersion;
+    
     public void NavigateToSource()
     {
         Utilities.OpenUrl($"https://github.com/Artemis-RGB/Artemis/commit/{Commit}");
@@ -159,14 +158,20 @@ public class ReleaseViewModel : ActivatableViewModelBase
         {
             InstallationInProgress = true;
             await ReleaseInstaller.InstallAsync(_installerCts.Token);
-            _updateService.QueueUpdate();
+            _updateService.QueueUpdate(Version);
             InstallationFinished = true;
         }
         catch (Exception e)
         {
             if (_installerCts.IsCancellationRequested)
                 return;
-            _windowService.ShowExceptionDialog("Failed to install update", e);
+            
+            _logger.Warning(e, "Failed to install update through UI");
+            _notificationService.CreateNotification()
+                .WithTitle("Failed to install update")
+                .WithMessage(e.Message)
+                .WithSeverity(NotificationSeverity.Warning)
+                .Show();
         }
         finally
         {

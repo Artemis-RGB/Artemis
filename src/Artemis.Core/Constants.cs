@@ -70,7 +70,7 @@ public static class Constants
     /// </summary>
     public static readonly string CurrentVersion = CoreAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion != "1.0.0"
         ? CoreAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion
-        : "1.2023.0212.2-feature-gh-actions";
+        : "local";
 
     /// <summary>
     ///     The plugin info used by core components of Artemis

@@ -4,8 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.Storage.Entities.General;
-using Artemis.Storage.Repositories.Interfaces;
+using Artemis.Storage.Repositories;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.WebClient.Updating;
 using Serilog;
@@ -22,10 +21,9 @@ public class UpdateService : IUpdateService
     private readonly Platform _updatePlatform;
 
     private readonly ILogger _logger;
-    private readonly IMainWindowService _mainWindowService;
-    private readonly IQueuedActionRepository _queuedActionRepository;
-    private readonly Lazy<IUpdateNotificationProvider> _updateNotificationProvider;
     private readonly IUpdatingClient _updatingClient;
+    private readonly IReleaseRepository _releaseRepository;
+    private readonly Lazy<IUpdateNotificationProvider> _updateNotificationProvider;
     private readonly Func<string, ReleaseInstaller> _getReleaseInstaller;
 
     private bool _suspendAutoCheck;
@@ -33,15 +31,14 @@ public class UpdateService : IUpdateService
     public UpdateService(ILogger logger,
         ISettingsService settingsService,
         IMainWindowService mainWindowService,
-        IQueuedActionRepository queuedActionRepository,
         IUpdatingClient updatingClient,
+        IReleaseRepository releaseRepository,
         Lazy<IUpdateNotificationProvider> updateNotificationProvider,
         Func<string, ReleaseInstaller> getReleaseInstaller)
     {
         _logger = logger;
-        _mainWindowService = mainWindowService;
-        _queuedActionRepository = queuedActionRepository;
         _updatingClient = updatingClient;
+        _releaseRepository = releaseRepository;
         _updateNotificationProvider = updateNotificationProvider;
         _getReleaseInstaller = getReleaseInstaller;
 
@@ -59,33 +56,41 @@ public class UpdateService : IUpdateService
             _updatePlatform = Platform.Osx;
         else
             throw new PlatformNotSupportedException("Cannot auto update on the current platform");
-        
+
         _autoCheck = settingsService.GetSetting("UI.Updating.AutoCheck", true);
         _autoInstall = settingsService.GetSetting("UI.Updating.AutoInstall", false);
         _autoCheck.SettingChanged += HandleAutoUpdateEvent;
-        _mainWindowService.MainWindowOpened += HandleAutoUpdateEvent;
+        mainWindowService.MainWindowOpened += HandleAutoUpdateEvent;
         Timer timer = new(UPDATE_CHECK_INTERVAL);
         timer.Elapsed += HandleAutoUpdateEvent;
         timer.Start();
 
-        InstallQueuedUpdate();
-
         _logger.Information("Update service initialized for {Channel} channel", Channel);
+        ProcessReleaseStatus();
     }
 
     public string Channel { get; }
+    public string? PreviousVersion { get; set; }
     public IGetNextRelease_NextPublishedRelease? CachedLatestRelease { get; private set; }
 
-    private void InstallQueuedUpdate()
+    private void ProcessReleaseStatus()
     {
-        if (!_queuedActionRepository.IsTypeQueued("InstallUpdate"))
+        // If an update is queued, don't bother with anything else
+        string? queued = _releaseRepository.GetQueuedVersion();
+        if (queued != null)
+        {
+            // Remove the queued installation, in case something goes wrong then at least we don't end up in a loop
+            _logger.Information("Installing queued version {Version}", queued);
+            RestartForUpdate(true);
             return;
+        }
+        
+        // If a different version was installed, mark it as such 
+        string? installed = _releaseRepository.GetInstalledVersion();
+        if (installed != Constants.CurrentVersion)
+            _releaseRepository.FinishInstallation(Constants.CurrentVersion);
 
-        // Remove the queued action, in case something goes wrong then at least we don't end up in a loop
-        _queuedActionRepository.ClearByType("InstallUpdate");
-
-        _logger.Information("Installing queued update");
-        Utilities.ApplyUpdate(false);
+        PreviousVersion = _releaseRepository.GetPreviousInstalledVersion();
     }
 
     private void ShowUpdateNotification(IGetNextRelease_NextPublishedRelease release)
@@ -111,15 +116,22 @@ public class UpdateService : IUpdateService
         }
         catch (Exception ex)
         {
-            _logger.Warning(ex, "Auto update failed");
+            _logger.Warning(ex, "Auto update-check failed");
         }
     }
 
     /// <inheritdoc />
     public async Task CacheLatestRelease()
     {
-        IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(Constants.CurrentVersion, Channel, _updatePlatform);
-        CachedLatestRelease = result.Data?.NextPublishedRelease;
+        try
+        {
+            IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(Constants.CurrentVersion, Channel, _updatePlatform);
+            CachedLatestRelease = result.Data?.NextPublishedRelease;
+        }
+        catch (Exception e)
+        {
+            _logger.Warning(e, "Failed to cache latest release");
+        }
     }
 
     public async Task<bool> CheckForUpdate()
@@ -147,18 +159,11 @@ public class UpdateService : IUpdateService
     }
 
     /// <inheritdoc />
-    public void QueueUpdate()
+    public void QueueUpdate(string version)
     {
-        if (!_queuedActionRepository.IsTypeQueued("InstallUpdate"))
-            _queuedActionRepository.Add(new QueuedActionEntity {Type = "InstallUpdate"});
+        _releaseRepository.QueueInstallation(version);
     }
-
-    /// <inheritdoc />
-    public void DequeueUpdate()
-    {
-        _queuedActionRepository.ClearByType("InstallUpdate");
-    }
-
+    
     /// <inheritdoc />
     public ReleaseInstaller GetReleaseInstaller(string releaseId)
     {
@@ -168,7 +173,7 @@ public class UpdateService : IUpdateService
     /// <inheritdoc />
     public void RestartForUpdate(bool silent)
     {
-        DequeueUpdate();
+        _releaseRepository.DequeueInstallation();
         Utilities.ApplyUpdate(silent);
     }
 }
