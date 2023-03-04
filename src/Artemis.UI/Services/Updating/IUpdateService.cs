@@ -12,7 +12,7 @@ public interface IUpdateService : IArtemisUIService
 
     Task CacheLatestRelease();
     Task<bool> CheckForUpdate();
-    void QueueUpdate(string version);
+    void QueueUpdate(string version, string releaseId);
 
     ReleaseInstaller GetReleaseInstaller(string releaseId);
     void RestartForUpdate(bool silent);

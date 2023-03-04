@@ -158,7 +158,7 @@ public class ReleaseViewModel : ActivatableViewModelBase
         {
             InstallationInProgress = true;
             await ReleaseInstaller.InstallAsync(_installerCts.Token);
-            _updateService.QueueUpdate(Version);
+            _updateService.QueueUpdate(Version, ReleaseId);
             InstallationFinished = true;
         }
         catch (Exception e)

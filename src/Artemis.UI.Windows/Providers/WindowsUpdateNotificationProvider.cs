@@ -128,7 +128,7 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
         }
 
         // Queue an update in case the user interrupts the process after everything has been prepared
-        _updateService.QueueUpdate(releaseVersion);
+        _updateService.QueueUpdate(releaseVersion, releaseId);
 
         GetBuilderForRelease(releaseId, releaseVersion)
             .AddAudio(new ToastAudio {Silent = true})

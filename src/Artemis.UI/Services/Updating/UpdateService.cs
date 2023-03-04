@@ -1,9 +1,11 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.Storage.Entities.General;
 using Artemis.Storage.Repositories;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.WebClient.Updating;
@@ -18,13 +20,13 @@ public class UpdateService : IUpdateService
     private const double UPDATE_CHECK_INTERVAL = 3_600_000; // once per hour
     private readonly PluginSetting<bool> _autoCheck;
     private readonly PluginSetting<bool> _autoInstall;
-    private readonly Platform _updatePlatform;
+    private readonly Func<string, ReleaseInstaller> _getReleaseInstaller;
 
     private readonly ILogger _logger;
-    private readonly IUpdatingClient _updatingClient;
     private readonly IReleaseRepository _releaseRepository;
     private readonly Lazy<IUpdateNotificationProvider> _updateNotificationProvider;
-    private readonly Func<string, ReleaseInstaller> _getReleaseInstaller;
+    private readonly Platform _updatePlatform;
+    private readonly IUpdatingClient _updatingClient;
 
     private bool _suspendAutoCheck;
 
@@ -69,28 +71,46 @@ public class UpdateService : IUpdateService
         ProcessReleaseStatus();
     }
 
-    public string Channel { get; }
-    public string? PreviousVersion { get; set; }
-    public IGetNextRelease_NextPublishedRelease? CachedLatestRelease { get; private set; }
-
     private void ProcessReleaseStatus()
     {
         // If an update is queued, don't bother with anything else
-        string? queued = _releaseRepository.GetQueuedVersion();
+        ReleaseEntity? queued = _releaseRepository.GetQueuedVersion();
         if (queued != null)
         {
             // Remove the queued installation, in case something goes wrong then at least we don't end up in a loop
-            _logger.Information("Installing queued version {Version}", queued);
+            _logger.Information("Installing queued version {Version}", queued.Version);
             RestartForUpdate(true);
             return;
         }
-        
+
         // If a different version was installed, mark it as such 
-        string? installed = _releaseRepository.GetInstalledVersion();
-        if (installed != Constants.CurrentVersion)
+        ReleaseEntity? installed = _releaseRepository.GetInstalledVersion();
+        if (installed?.Version != Constants.CurrentVersion)
             _releaseRepository.FinishInstallation(Constants.CurrentVersion);
 
-        PreviousVersion = _releaseRepository.GetPreviousInstalledVersion();
+        PreviousVersion = _releaseRepository.GetPreviousInstalledVersion()?.Version;
+
+        if (!Directory.Exists(Path.Combine(Constants.DataFolder, "updating")))
+            return;
+
+        // Clean up the update folder, leaving only the last ZIP
+        foreach (string file in Directory.GetFiles(Path.Combine(Constants.DataFolder, "updating")))
+        {
+            if (Path.GetExtension(file) != ".zip")
+                continue;
+            if (installed != null && Path.GetFileName(file) == $"{installed.ReleaseId}.zip")
+                continue;
+
+            try
+            {
+                _logger.Debug("Cleaning up old update file at {FilePath}", file);
+                File.Delete(file);
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "Failed to clean up old update file at {FilePath}", file);
+            }
+        }
     }
 
     private void ShowUpdateNotification(IGetNextRelease_NextPublishedRelease release)
@@ -119,6 +139,10 @@ public class UpdateService : IUpdateService
             _logger.Warning(ex, "Auto update-check failed");
         }
     }
+
+    public string Channel { get; }
+    public string? PreviousVersion { get; set; }
+    public IGetNextRelease_NextPublishedRelease? CachedLatestRelease { get; private set; }
 
     /// <inheritdoc />
     public async Task CacheLatestRelease()
@@ -159,11 +183,11 @@ public class UpdateService : IUpdateService
     }
 
     /// <inheritdoc />
-    public void QueueUpdate(string version)
+    public void QueueUpdate(string version, string releaseId)
     {
-        _releaseRepository.QueueInstallation(version);
+        _releaseRepository.QueueInstallation(version, releaseId);
     }
-    
+
     /// <inheritdoc />
     public ReleaseInstaller GetReleaseInstaller(string releaseId)
     {

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Artemis.Storage.Entities.General;
 using Artemis.Storage.Repositories.Interfaces;
 using LiteDB;
@@ -18,25 +17,25 @@ public class ReleaseRepository : IReleaseRepository
         _repository.Database.GetCollection<ReleaseEntity>().EnsureIndex(s => s.Status);
     }
 
-    public string GetQueuedVersion()
+    public ReleaseEntity GetQueuedVersion()
     {
-        return _repository.Query<ReleaseEntity>().Where(r => r.Status == ReleaseEntityStatus.Queued).FirstOrDefault()?.Version;
+        return _repository.Query<ReleaseEntity>().Where(r => r.Status == ReleaseEntityStatus.Queued).FirstOrDefault();
     }
 
-    public string GetInstalledVersion()
+    public ReleaseEntity GetInstalledVersion()
     {
-        return _repository.Query<ReleaseEntity>().Where(r => r.Status == ReleaseEntityStatus.Installed).FirstOrDefault()?.Version;
+        return _repository.Query<ReleaseEntity>().Where(r => r.Status == ReleaseEntityStatus.Installed).FirstOrDefault();
     }
 
-    public string GetPreviousInstalledVersion()
+    public ReleaseEntity GetPreviousInstalledVersion()
     {
-        return _repository.Query<ReleaseEntity>().Where(r => r.Status == ReleaseEntityStatus.Historical).OrderByDescending(r => r.InstalledAt).FirstOrDefault()?.Version;
+        return _repository.Query<ReleaseEntity>().Where(r => r.Status == ReleaseEntityStatus.Historical).OrderByDescending(r => r.InstalledAt).FirstOrDefault();
     }
-    
-    public void QueueInstallation(string version)
+
+    public void QueueInstallation(string version, string releaseId)
     {
         // Mark release as queued and add if missing
-        ReleaseEntity release = _repository.Query<ReleaseEntity>().Where(r => r.Version == version).FirstOrDefault() ?? new ReleaseEntity {Version = version};
+        ReleaseEntity release = _repository.Query<ReleaseEntity>().Where(r => r.Version == version).FirstOrDefault() ?? new ReleaseEntity {Version = version, ReleaseId = releaseId};
         release.Status = ReleaseEntityStatus.Queued;
         _repository.Upsert(release);
     }
@@ -50,10 +49,7 @@ public class ReleaseRepository : IReleaseRepository
         _repository.Upsert(release);
 
         // Mark other releases as historical
-        List<ReleaseEntity> oldReleases = _repository.Query<ReleaseEntity>().Where(r => r.Version != version && r.Status == ReleaseEntityStatus.Installed).ToList();
-        if (!oldReleases.Any())
-            return;
-        
+        List<ReleaseEntity> oldReleases = _repository.Query<ReleaseEntity>().Where(r => r.Version != version && r.Status != ReleaseEntityStatus.Historical).ToList();
         foreach (ReleaseEntity oldRelease in oldReleases)
             oldRelease.Status = ReleaseEntityStatus.Historical;
         _repository.Update<ReleaseEntity>(oldReleases);
@@ -61,16 +57,20 @@ public class ReleaseRepository : IReleaseRepository
 
     public void DequeueInstallation()
     {
-        _repository.DeleteMany<ReleaseEntity>(r => r.Status == ReleaseEntityStatus.Queued);
+        // Mark all queued releases as unknown, until FinishInstallation is called we don't know the status
+        List<ReleaseEntity> queuedReleases = _repository.Query<ReleaseEntity>().Where(r => r.Status == ReleaseEntityStatus.Queued).ToList();
+        foreach (ReleaseEntity queuedRelease in queuedReleases)
+            queuedRelease.Status = ReleaseEntityStatus.Unknown;
+        _repository.Update<ReleaseEntity>(queuedReleases);
     }
 }
 
 public interface IReleaseRepository : IRepository
 {
-    string GetQueuedVersion();
-    string GetInstalledVersion();
-    string GetPreviousInstalledVersion();
-    void QueueInstallation(string version);
+    ReleaseEntity GetQueuedVersion();
+    ReleaseEntity GetInstalledVersion();
+    ReleaseEntity GetPreviousInstalledVersion();
+    void QueueInstallation(string version, string releaseId);
     void FinishInstallation(string version);
     void DequeueInstallation();
 }
