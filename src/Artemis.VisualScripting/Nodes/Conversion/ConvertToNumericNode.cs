@@ -1,4 +1,4 @@
-﻿using Artemis.Core;
+using Artemis.Core;
 
 namespace Artemis.VisualScripting.Nodes.Conversion;
 
@@ -33,6 +33,7 @@ public class ConvertToNumericNode : Node
             double input => new Numeric(input),
             float input => new Numeric(input),
             byte input => new Numeric(input),
+            bool input => new Numeric(input ? 1 : 0),
             _ => TryParse(Input.Value)
         };
     }

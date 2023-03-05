@@ -3,20 +3,20 @@ using SkiaSharp;
 
 namespace Artemis.VisualScripting.Nodes.Color;
 
-[Node("HSL Color", "Creates a color from hue, saturation and lightness numbers", "Color", InputType = typeof(Numeric), OutputType = typeof(SKColor))]
-public class HslSKColorNode : Node
+[Node("HSV Color", "Creates a color from hue, saturation and value numbers", "Color", InputType = typeof(Numeric), OutputType = typeof(SKColor))]
+public class HsvSKColorNode : Node
 {
-    public HslSKColorNode()
+    public HsvSKColorNode()
     {
         H = CreateInputPin<Numeric>("H");
         S = CreateInputPin<Numeric>("S");
-        L = CreateInputPin<Numeric>("L");
+        V = CreateInputPin<Numeric>("V");
         Output = CreateOutputPin<SKColor>();
     }
 
     public InputPin<Numeric> H { get; set; }
     public InputPin<Numeric> S { get; set; }
-    public InputPin<Numeric> L { get; set; }
+    public InputPin<Numeric> V { get; set; }
     public OutputPin<SKColor> Output { get; }
 
     #region Overrides of Node
@@ -24,7 +24,7 @@ public class HslSKColorNode : Node
     /// <inheritdoc />
     public override void Evaluate()
     {
-        Output.Value = SKColor.FromHsl(H.Value, S.Value, L.Value);
+        Output.Value = SKColor.FromHsv(H.Value, S.Value, V.Value);
     }
 
     #endregion
