@@ -20,7 +20,7 @@
         <PackageReference Include="Material.Icons.Avalonia" Version="1.1.10" />
         <PackageReference Include="ReactiveUI" Version="17.1.50" />
         <PackageReference Include="ReactiveUI.Validation" Version="2.2.1" />
-        <PackageReference Include="RGB.NET.Core" Version="2.0.0-prerelease.12" />
+        <PackageReference Include="RGB.NET.Core" Version="2.0.0-prerelease.17" />
         <PackageReference Include="SkiaSharp" Version="2.88.1-preview.108" />
     </ItemGroup>
     <ItemGroup>
