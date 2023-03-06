@@ -7,6 +7,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.Storage.Entities.General;
 using Artemis.Storage.Repositories;
+using Artemis.UI.Exceptions;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.WebClient.Updating;
 using Serilog;
@@ -20,7 +21,7 @@ public class UpdateService : IUpdateService
     private const double UPDATE_CHECK_INTERVAL = 3_600_000; // once per hour
     private readonly PluginSetting<bool> _autoCheck;
     private readonly PluginSetting<bool> _autoInstall;
-    private readonly Func<string, ReleaseInstaller> _getReleaseInstaller;
+    private readonly Func<Guid, ReleaseInstaller> _getReleaseInstaller;
 
     private readonly ILogger _logger;
     private readonly IReleaseRepository _releaseRepository;
@@ -36,7 +37,7 @@ public class UpdateService : IUpdateService
         IUpdatingClient updatingClient,
         IReleaseRepository releaseRepository,
         Lazy<IUpdateNotificationProvider> updateNotificationProvider,
-        Func<string, ReleaseInstaller> getReleaseInstaller)
+        Func<Guid, ReleaseInstaller> getReleaseInstaller)
     {
         _logger = logger;
         _updatingClient = updatingClient;
@@ -66,39 +67,21 @@ public class UpdateService : IUpdateService
         Timer timer = new(UPDATE_CHECK_INTERVAL);
         timer.Elapsed += HandleAutoUpdateEvent;
         timer.Start();
-
-        _logger.Information("Update service initialized for {Channel} channel", Channel);
-        ProcessReleaseStatus();
     }
 
     private void ProcessReleaseStatus()
     {
-        // If an update is queued, don't bother with anything else
-        ReleaseEntity? queued = _releaseRepository.GetQueuedVersion();
-        if (queued != null)
-        {
-            // Remove the queued installation, in case something goes wrong then at least we don't end up in a loop
-            _logger.Information("Installing queued version {Version}", queued.Version);
-            RestartForUpdate(true);
-            return;
-        }
-
-        // If a different version was installed, mark it as such 
-        ReleaseEntity? installed = _releaseRepository.GetInstalledVersion();
-        if (installed?.Version != Constants.CurrentVersion)
-            _releaseRepository.FinishInstallation(Constants.CurrentVersion);
-
+        string currentVersion = Constants.CurrentVersion;
+        _releaseRepository.SaveVersionInstallDate(currentVersion);
         PreviousVersion = _releaseRepository.GetPreviousInstalledVersion()?.Version;
 
-        if (!Directory.Exists(Path.Combine(Constants.DataFolder, "updating")))
+        if (!Directory.Exists(Constants.UpdatingFolder))
             return;
 
         // Clean up the update folder, leaving only the last ZIP
-        foreach (string file in Directory.GetFiles(Path.Combine(Constants.DataFolder, "updating")))
+        foreach (string file in Directory.GetFiles(Constants.UpdatingFolder))
         {
-            if (Path.GetExtension(file) != ".zip")
-                continue;
-            if (installed != null && Path.GetFileName(file) == $"{installed.ReleaseId}.zip")
+            if (Path.GetExtension(file) != ".zip" || Path.GetFileName(file) == $"{currentVersion}.zip")
                 continue;
 
             try
@@ -140,8 +123,13 @@ public class UpdateService : IUpdateService
         }
     }
 
+    /// <inheritdoc />
     public string Channel { get; }
-    public string? PreviousVersion { get; set; }
+
+    /// <inheritdoc />
+    public string? PreviousVersion { get; private set; }
+
+    /// <inheritdoc />
     public IGetNextRelease_NextPublishedRelease? CachedLatestRelease { get; private set; }
 
     /// <inheritdoc />
@@ -158,6 +146,7 @@ public class UpdateService : IUpdateService
         }
     }
 
+    /// <inheritdoc />
     public async Task<bool> CheckForUpdate()
     {
         IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(Constants.CurrentVersion, Channel, _updatePlatform);
@@ -183,13 +172,7 @@ public class UpdateService : IUpdateService
     }
 
     /// <inheritdoc />
-    public void QueueUpdate(string version, string releaseId)
-    {
-        _releaseRepository.QueueInstallation(version, releaseId);
-    }
-
-    /// <inheritdoc />
-    public ReleaseInstaller GetReleaseInstaller(string releaseId)
+    public ReleaseInstaller GetReleaseInstaller(Guid releaseId)
     {
         return _getReleaseInstaller(releaseId);
     }
@@ -197,7 +180,33 @@ public class UpdateService : IUpdateService
     /// <inheritdoc />
     public void RestartForUpdate(bool silent)
     {
-        _releaseRepository.DequeueInstallation();
+        if (!Directory.Exists(Path.Combine(Constants.UpdatingFolder, "pending")))
+            throw new ArtemisUIException("Cannot install update, none is pending.");
+
+        Directory.Move(Path.Combine(Constants.UpdatingFolder, "pending"), Path.Combine(Constants.UpdatingFolder, "installing"));
         Utilities.ApplyUpdate(silent);
+    }
+
+    /// <inheritdoc />
+    public bool Initialize()
+    {
+        // There should never be an installing folder
+        if (Directory.Exists(Path.Combine(Constants.UpdatingFolder, "installing")))
+        {
+            _logger.Warning("Cleaning up leftover installing folder, did an update go wrong?");
+            Directory.Delete(Path.Combine(Constants.UpdatingFolder, "installing"));
+        }
+
+        // If an update is pending, don't bother with anything else
+        if (Directory.Exists(Path.Combine(Constants.UpdatingFolder, "pending")))
+        {
+            _logger.Information("Installing pending update");
+            RestartForUpdate(true);
+            return true;
+        }
+
+        ProcessReleaseStatus();
+        _logger.Information("Update service initialized for {Channel} channel", Channel);
+        return false;
     }
 }

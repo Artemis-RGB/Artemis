@@ -99,8 +99,8 @@ public class ApplicationStateManager
             argsList.Add("--autorun");
 
         // Retain startup arguments after update by providing them to the script
-        string script = $"\"{Path.Combine(Constants.DataFolder, "updating", "pending", "scripts", "update.ps1")}\"";
-        string source = $"-sourceDirectory \"{Path.Combine(Constants.DataFolder, "updating", "pending")}\"";
+        string script = $"\"{Path.Combine(Constants.UpdatingFolder, "installing", "scripts", "update.ps1")}\"";
+        string source = $"-sourceDirectory \"{Path.Combine(Constants.UpdatingFolder, "installing")}\"";
         string destination = $"-destinationDirectory \"{Constants.ApplicationFolder}\"";
         string args = argsList.Any() ? $"-artemisArgs \"{string.Join(',', argsList)}\"" : "";
 

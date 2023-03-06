@@ -64,6 +64,9 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
         Router.CurrentViewModel.Subscribe(UpdateTitleBarViewModel);
         Task.Run(() =>
         {
+            if (_updateService.Initialize())
+                return;
+            
             coreService.Initialize();
             registrationService.RegisterBuiltInDataModelDisplays();
             registrationService.RegisterBuiltInDataModelInputs();

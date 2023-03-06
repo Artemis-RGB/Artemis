@@ -21,6 +21,7 @@ public static class Utilities
         CreateAccessibleDirectory(Constants.DataFolder);
         CreateAccessibleDirectory(Constants.PluginsFolder);
         CreateAccessibleDirectory(Constants.LayoutsFolder);
+        CreateAccessibleDirectory(Constants.UpdatingFolder);
     }
 
     /// <summary>

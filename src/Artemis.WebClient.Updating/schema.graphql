@@ -5,33 +5,6 @@ schema {
     mutation: Mutation
 }
 
-"The `@defer` directive may be provided for fragment spreads and inline fragments to inform the executor to delay the execution of the current fragment to indicate deprioritization of the current fragment. A query with `@defer` directive will cause the request to potentially return multiple responses, where non-deferred data is delivered in the initial response and data deferred is delivered in a subsequent response. `@include` and `@skip` take precedence over `@defer`."
-directive @defer(
-    "Deferred when true."
-    if: Boolean,
-    "If this argument label has a value other than null, it will be passed on to the result of this defer directive. This label is intended to give client applications a way to identify to which fragment a deferred result belongs to."
-    label: String
-) on FRAGMENT_SPREAD | INLINE_FRAGMENT
-
-"The `@stream` directive may be provided for a field of `List` type so that the backend can leverage technology such as asynchronous iterators to provide a partial list in the initial response, and additional list items in subsequent responses. `@include` and `@skip` take precedence over `@stream`."
-directive @stream(
-    "Streamed when true."
-    if: Boolean,
-    "The initial elements that shall be send down to the consumer."
-    initialCount: Int! = 0,
-    "If this argument label has a value other than null, it will be passed on to the result of this stream directive. This label is intended to give client applications a way to identify to which fragment a streamed result belongs to."
-    label: String
-) on FIELD
-
-directive @authorize(
-    "Defines when when the resolver shall be executed.By default the resolver is executed after the policy has determined that the current user is allowed to access the field."
-    apply: ApplyPolicy! = BEFORE_RESOLVER,
-    "The name of the authorization policy that determines access to the annotated resource."
-    policy: String,
-    "Roles that are allowed to access the annotated resource."
-    roles: [String!]
-) on SCHEMA | OBJECT | FIELD_DEFINITION
-
 type ArtemisChannel {
     branch: String!
     releases: Int!
@@ -41,13 +14,23 @@ type Artifact {
     artifactId: Long!
     deltaFileInfo: ArtifactFileInfo!
     fileInfo: ArtifactFileInfo!
+    id: UUID!
     platform: Platform!
 }
 
 type ArtifactFileInfo {
     downloadSize: Long!
     downloads: Long!
+    id: UUID!
     md5Hash: String
+}
+
+"Information about the offset pagination."
+type CollectionSegmentInfo {
+    "Indicates whether more items exist following the set defined by the clients arguments."
+    hasNextPage: Boolean!
+    "Indicates whether more items exist prior the set defined by the clients arguments."
+    hasPreviousPage: Boolean!
 }
 
 type Mutation {
@@ -74,6 +57,7 @@ type PublishedReleasesConnection {
     nodes: [Release!]
     "Information to aid in pagination."
     pageInfo: PageInfo!
+    "Identifies the total count of items in the connection."
     totalCount: Int!
 }
 
@@ -90,7 +74,7 @@ type Query {
     channels: [ArtemisChannel!]!
     nextPublishedRelease(branch: String!, platform: Platform!, version: String): Release
     publishedChannels: [String!]!
-    publishedRelease(id: String!): Release
+    publishedRelease(id: UUID!): Release
     publishedReleases(
         "Returns the elements in the list that come after the specified cursor."
         after: String,
@@ -103,20 +87,9 @@ type Query {
         order: [ReleaseSortInput!],
         where: ReleaseFilterInput
     ): PublishedReleasesConnection
-    release(id: String!): Release
+    release(id: UUID!): Release
     releaseStatistics(order: [ReleaseStatisticSortInput!], where: ReleaseStatisticFilterInput): [ReleaseStatistic!]!
-    releases(
-        "Returns the elements in the list that come after the specified cursor."
-        after: String,
-        "Returns the elements in the list that come before the specified cursor."
-        before: String,
-        "Returns the first _n_ elements from the list."
-        first: Int,
-        "Returns the last _n_ elements from the list."
-        last: Int,
-        order: [ReleaseSortInput!],
-        where: ReleaseFilterInput
-    ): ReleasesConnection
+    releases(order: [ReleaseSortInput!], skip: Int, take: Int, where: ReleaseFilterInput): ReleasesCollectionSegment
 }
 
 type Release {
@@ -125,9 +98,9 @@ type Release {
     changelog: String!
     commit: String!
     createdAt: DateTime!
-    id: String!
+    id: UUID!
     isDraft: Boolean!
-    previousRelease: String
+    previousRelease: Release
     version: String!
     workflowRunId: Long!
 }
@@ -136,28 +109,18 @@ type ReleaseStatistic {
     count: Int!
     lastReportedUsage: DateTime!
     linuxCount: Int!
-    oSXCount: Int!
-    releaseId: String!
+    osxCount: Int!
+    releaseId: UUID!
     windowsCount: Int!
 }
 
-"A connection to a list of items."
-type ReleasesConnection {
-    "A list of edges."
-    edges: [ReleasesEdge!]
-    "A flattened list of the nodes."
-    nodes: [Release!]
+"A segment of a collection."
+type ReleasesCollectionSegment {
+    "A flattened list of the items."
+    items: [Release!]
     "Information to aid in pagination."
-    pageInfo: PageInfo!
+    pageInfo: CollectionSegmentInfo!
     totalCount: Int!
-}
-
-"An edge in a connection."
-type ReleasesEdge {
-    "A cursor for use in pagination."
-    cursor: String!
-    "The item at the end of the edge."
-    node: Release!
 }
 
 type UpdateReleaseChangelogPayload {
@@ -167,6 +130,7 @@ type UpdateReleaseChangelogPayload {
 enum ApplyPolicy {
     AFTER_RESOLVER
     BEFORE_RESOLVER
+    VALIDATION
 }
 
 enum Platform {
@@ -186,19 +150,23 @@ scalar DateTime
 "The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1."
 scalar Long
 
+scalar UUID
+
 input ArtifactFileInfoFilterInput {
     and: [ArtifactFileInfoFilterInput!]
-    downloadSize: ComparableInt64OperationFilterInput
-    downloads: ComparableInt64OperationFilterInput
+    downloadSize: LongOperationFilterInput
+    downloads: LongOperationFilterInput
+    id: UuidOperationFilterInput
     md5Hash: StringOperationFilterInput
     or: [ArtifactFileInfoFilterInput!]
 }
 
 input ArtifactFilterInput {
     and: [ArtifactFilterInput!]
-    artifactId: ComparableInt64OperationFilterInput
+    artifactId: LongOperationFilterInput
     deltaFileInfo: ArtifactFileInfoFilterInput
     fileInfo: ArtifactFileInfoFilterInput
+    id: UuidOperationFilterInput
     or: [ArtifactFilterInput!]
     platform: PlatformOperationFilterInput
 }
@@ -208,49 +176,34 @@ input BooleanOperationFilterInput {
     neq: Boolean
 }
 
-input ComparableDateTimeOffsetOperationFilterInput {
+input DateTimeOperationFilterInput {
     eq: DateTime
     gt: DateTime
     gte: DateTime
-    in: [DateTime!]
+    in: [DateTime]
     lt: DateTime
     lte: DateTime
     neq: DateTime
     ngt: DateTime
     ngte: DateTime
-    nin: [DateTime!]
+    nin: [DateTime]
     nlt: DateTime
     nlte: DateTime
 }
 
-input ComparableInt32OperationFilterInput {
+input IntOperationFilterInput {
     eq: Int
     gt: Int
     gte: Int
-    in: [Int!]
+    in: [Int]
     lt: Int
     lte: Int
     neq: Int
     ngt: Int
     ngte: Int
-    nin: [Int!]
+    nin: [Int]
     nlt: Int
     nlte: Int
-}
-
-input ComparableInt64OperationFilterInput {
-    eq: Long
-    gt: Long
-    gte: Long
-    in: [Long!]
-    lt: Long
-    lte: Long
-    neq: Long
-    ngt: Long
-    ngte: Long
-    nin: [Long!]
-    nlt: Long
-    nlte: Long
 }
 
 input ListFilterInputTypeOfArtifactFilterInput {
@@ -258,6 +211,21 @@ input ListFilterInputTypeOfArtifactFilterInput {
     any: Boolean
     none: ArtifactFilterInput
     some: ArtifactFilterInput
+}
+
+input LongOperationFilterInput {
+    eq: Long
+    gt: Long
+    gte: Long
+    in: [Long]
+    lt: Long
+    lte: Long
+    neq: Long
+    ngt: Long
+    ngte: Long
+    nin: [Long]
+    nlt: Long
+    nlte: Long
 }
 
 input PlatformOperationFilterInput {
@@ -273,13 +241,13 @@ input ReleaseFilterInput {
     branch: StringOperationFilterInput
     changelog: StringOperationFilterInput
     commit: StringOperationFilterInput
-    createdAt: ComparableDateTimeOffsetOperationFilterInput
-    id: StringOperationFilterInput
+    createdAt: DateTimeOperationFilterInput
+    id: UuidOperationFilterInput
     isDraft: BooleanOperationFilterInput
     or: [ReleaseFilterInput!]
-    previousRelease: StringOperationFilterInput
+    previousRelease: ReleaseFilterInput
     version: StringOperationFilterInput
-    workflowRunId: ComparableInt64OperationFilterInput
+    workflowRunId: LongOperationFilterInput
 }
 
 input ReleaseSortInput {
@@ -289,27 +257,27 @@ input ReleaseSortInput {
     createdAt: SortEnumType
     id: SortEnumType
     isDraft: SortEnumType
-    previousRelease: SortEnumType
+    previousRelease: ReleaseSortInput
     version: SortEnumType
     workflowRunId: SortEnumType
 }
 
 input ReleaseStatisticFilterInput {
     and: [ReleaseStatisticFilterInput!]
-    count: ComparableInt32OperationFilterInput
-    lastReportedUsage: ComparableDateTimeOffsetOperationFilterInput
-    linuxCount: ComparableInt32OperationFilterInput
-    oSXCount: ComparableInt32OperationFilterInput
+    count: IntOperationFilterInput
+    lastReportedUsage: DateTimeOperationFilterInput
+    linuxCount: IntOperationFilterInput
     or: [ReleaseStatisticFilterInput!]
-    releaseId: StringOperationFilterInput
-    windowsCount: ComparableInt32OperationFilterInput
+    osxCount: IntOperationFilterInput
+    releaseId: UuidOperationFilterInput
+    windowsCount: IntOperationFilterInput
 }
 
 input ReleaseStatisticSortInput {
     count: SortEnumType
     lastReportedUsage: SortEnumType
     linuxCount: SortEnumType
-    oSXCount: SortEnumType
+    osxCount: SortEnumType
     releaseId: SortEnumType
     windowsCount: SortEnumType
 }
@@ -331,6 +299,21 @@ input StringOperationFilterInput {
 
 input UpdateReleaseChangelogInput {
     changelog: String!
-    id: String!
+    id: UUID!
     isDraft: Boolean!
+}
+
+input UuidOperationFilterInput {
+    eq: UUID
+    gt: UUID
+    gte: UUID
+    in: [UUID]
+    lt: UUID
+    lte: UUID
+    neq: UUID
+    ngt: UUID
+    ngte: UUID
+    nin: [UUID]
+    nlt: UUID
+    nlte: UUID
 }

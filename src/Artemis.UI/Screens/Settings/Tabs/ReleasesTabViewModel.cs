@@ -61,7 +61,7 @@ public class ReleasesTabViewModel : ActivatableViewModelBase
 
     public ReadOnlyObservableCollection<ReleaseViewModel> ReleaseViewModels { get; }
     public string Channel { get; }
-    public string? PreselectId { get; set; }
+    public Guid? PreselectId { get; set; }
 
     public ReleaseViewModel? SelectedReleaseViewModel
     {

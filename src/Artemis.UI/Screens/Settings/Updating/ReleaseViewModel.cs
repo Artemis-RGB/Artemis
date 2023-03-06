@@ -36,7 +36,7 @@ public class ReleaseViewModel : ActivatableViewModelBase
     private bool _loading = true;
     private bool _retrievedDetails;
 
-    public ReleaseViewModel(string releaseId,
+    public ReleaseViewModel(Guid releaseId,
         string version,
         DateTimeOffset createdAt,
         ILogger logger,
@@ -79,7 +79,7 @@ public class ReleaseViewModel : ActivatableViewModelBase
         });
     }
 
-    public string ReleaseId { get; }
+    public Guid ReleaseId { get; }
 
     private void ExecuteRestart()
     {
@@ -158,7 +158,6 @@ public class ReleaseViewModel : ActivatableViewModelBase
         {
             InstallationInProgress = true;
             await ReleaseInstaller.InstallAsync(_installerCts.Token);
-            _updateService.QueueUpdate(Version, ReleaseId);
             InstallationFinished = true;
         }
         catch (Exception e)

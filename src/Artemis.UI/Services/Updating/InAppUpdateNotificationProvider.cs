@@ -23,7 +23,7 @@ public class InAppUpdateNotificationProvider : IUpdateNotificationProvider
         _getSettingsViewModel = getSettingsViewModel;
     }
 
-    private void ShowInAppNotification(string releaseId, string releaseVersion)
+    private void ShowInAppNotification(Guid releaseId, string releaseVersion)
     {
         _notification?.Invoke();
         _notification = _notificationService.CreateNotification()
@@ -35,7 +35,7 @@ public class InAppUpdateNotificationProvider : IUpdateNotificationProvider
             .Show();
     }
 
-    private void ViewRelease(string releaseId)
+    private void ViewRelease(Guid releaseId)
     {
         _notification?.Invoke();
 
@@ -56,7 +56,7 @@ public class InAppUpdateNotificationProvider : IUpdateNotificationProvider
     }
 
     /// <inheritdoc />
-    public void ShowNotification(string releaseId, string releaseVersion)
+    public void ShowNotification(Guid releaseId, string releaseVersion)
     {
         if (_mainWindowService.IsMainWindowOpen)
             ShowInAppNotification(releaseId, releaseVersion);

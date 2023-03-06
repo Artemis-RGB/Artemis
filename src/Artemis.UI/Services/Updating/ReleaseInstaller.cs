@@ -22,24 +22,26 @@ namespace Artemis.UI.Services.Updating;
 /// </summary>
 public class ReleaseInstaller : CorePropertyChanged
 {
-    private readonly string _dataFolder;
     private readonly HttpClient _httpClient;
     private readonly ILogger _logger;
-    private readonly string _releaseId;
+    private readonly Guid _releaseId;
     private readonly Platform _updatePlatform;
     private readonly IUpdatingClient _updatingClient;
     private readonly Progress<float> _progress = new();
+
+    private IGetReleaseById_PublishedRelease _release = null!;
+    private IGetReleaseById_PublishedRelease_Artifacts _artifact = null!;
+
     private Progress<float> _stepProgress = new();
     private string _status = string.Empty;
-    private float _progress1;
+    private float _floatProgress;
 
-    public ReleaseInstaller(string releaseId, ILogger logger, IUpdatingClient updatingClient, HttpClient httpClient)
+    public ReleaseInstaller(Guid releaseId, ILogger logger, IUpdatingClient updatingClient, HttpClient httpClient)
     {
         _releaseId = releaseId;
         _logger = logger;
         _updatingClient = updatingClient;
         _httpClient = httpClient;
-        _dataFolder = Path.Combine(Constants.DataFolder, "updating");
 
         if (OperatingSystem.IsWindows())
             _updatePlatform = Platform.Windows;
@@ -49,9 +51,6 @@ public class ReleaseInstaller : CorePropertyChanged
             _updatePlatform = Platform.Osx;
         else
             throw new PlatformNotSupportedException("Cannot auto update on the current platform");
-
-        if (!Directory.Exists(_dataFolder))
-            Directory.CreateDirectory(_dataFolder);
 
         _progress.ProgressChanged += (_, f) => Progress = f;
     }
@@ -64,8 +63,8 @@ public class ReleaseInstaller : CorePropertyChanged
 
     public float Progress
     {
-        get => _progress1;
-        set => SetAndNotify(ref _progress1, value);
+        get => _floatProgress;
+        set => SetAndNotify(ref _floatProgress, value);
     }
 
     public async Task InstallAsync(CancellationToken cancellationToken)
@@ -79,24 +78,24 @@ public class ReleaseInstaller : CorePropertyChanged
         IOperationResult<IGetReleaseByIdResult> result = await _updatingClient.GetReleaseById.ExecuteAsync(_releaseId, cancellationToken);
         result.EnsureNoErrors();
 
-        IGetReleaseById_PublishedRelease? release = result.Data?.PublishedRelease;
-        if (release == null)
+        _release = result.Data?.PublishedRelease!;
+        if (_release == null)
             throw new Exception($"Could not find release with ID {_releaseId}");
 
-        IGetReleaseById_PublishedRelease_Artifacts? artifact = release.Artifacts.FirstOrDefault(a => a.Platform == _updatePlatform);
-        if (artifact == null)
+        _artifact = _release.Artifacts.FirstOrDefault(a => a.Platform == _updatePlatform)!;
+        if (_artifact == null)
             throw new Exception("Found the release but it has no artifact for the current platform");
 
         ((IProgress<float>) _progress).Report(10);
 
         // Determine whether the last update matches our local version, then we can download the delta
-        if (release.PreviousRelease != null && File.Exists(Path.Combine(_dataFolder, $"{release.PreviousRelease}.zip")) && artifact.DeltaFileInfo.DownloadSize != 0)
-            await DownloadDelta(artifact, Path.Combine(_dataFolder, $"{release.PreviousRelease}.zip"), cancellationToken);
+        if (_release.PreviousRelease != null && File.Exists(Path.Combine(Constants.UpdatingFolder, $"{_release.PreviousRelease.Version}.zip")) && _artifact.DeltaFileInfo.DownloadSize != 0)
+            await DownloadDelta(Path.Combine(Constants.UpdatingFolder, $"{_release.PreviousRelease.Version}.zip"), cancellationToken);
         else
-            await Download(artifact, cancellationToken);
+            await Download(cancellationToken);
     }
 
-    private async Task DownloadDelta(IGetReleaseById_PublishedRelease_Artifacts artifact, string previousRelease, CancellationToken cancellationToken)
+    private async Task DownloadDelta(string previousRelease, CancellationToken cancellationToken)
     {
         // 10 - 50%
         _stepProgress.ProgressChanged += StepProgressOnProgressChanged;
@@ -104,20 +103,20 @@ public class ReleaseInstaller : CorePropertyChanged
 
         Status = "Downloading...";
         await using MemoryStream stream = new();
-        await _httpClient.DownloadDataAsync($"https://updating.artemis-rgb.com/api/artifacts/{artifact.ArtifactId}/delta", stream, _stepProgress, cancellationToken);
+        await _httpClient.DownloadDataAsync($"https://updating.artemis-rgb.com/api/artifacts/{_artifact.ArtifactId}/delta", stream, _stepProgress, cancellationToken);
 
         _stepProgress.ProgressChanged -= StepProgressOnProgressChanged;
-        await PatchDelta(stream, previousRelease, artifact, cancellationToken);
+        await PatchDelta(stream, previousRelease, cancellationToken);
     }
 
-    private async Task PatchDelta(Stream deltaStream, string previousRelease, IGetReleaseById_PublishedRelease_Artifacts artifact, CancellationToken cancellationToken)
+    private async Task PatchDelta(Stream deltaStream, string previousRelease, CancellationToken cancellationToken)
     {
         // 50 - 60%
         _stepProgress.ProgressChanged += StepProgressOnProgressChanged;
         void StepProgressOnProgressChanged(object? sender, float e) => ((IProgress<float>) _progress).Report(50f + e * 0.1f);
 
         Status = "Patching...";
-        await using FileStream newFileStream = new(Path.Combine(_dataFolder, $"{_releaseId}.zip"), FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+        await using FileStream newFileStream = new(Path.Combine(Constants.UpdatingFolder, $"{_release.Version}.zip"), FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
         await using (FileStream baseStream = File.OpenRead(previousRelease))
         {
             deltaStream.Seek(0, SeekOrigin.Begin);
@@ -132,23 +131,23 @@ public class ReleaseInstaller : CorePropertyChanged
 
         _stepProgress.ProgressChanged -= StepProgressOnProgressChanged;
 
-        await ValidateArchive(newFileStream, artifact, cancellationToken);
+        await ValidateArchive(newFileStream, cancellationToken);
         await Extract(newFileStream, cancellationToken);
     }
 
-    private async Task Download(IGetReleaseById_PublishedRelease_Artifacts artifact, CancellationToken cancellationToken)
+    private async Task Download(CancellationToken cancellationToken)
     {
         // 10 - 60%
         _stepProgress.ProgressChanged += StepProgressOnProgressChanged;
         void StepProgressOnProgressChanged(object? sender, float e) => ((IProgress<float>) _progress).Report(10f + e * 0.5f);
 
         Status = "Downloading...";
-        await using FileStream stream = new(Path.Combine(_dataFolder, $"{_releaseId}.zip"), FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
-        await _httpClient.DownloadDataAsync($"https://updating.artemis-rgb.com/api/artifacts/{artifact.ArtifactId}", stream, _stepProgress, cancellationToken);
+        await using FileStream stream = new(Path.Combine(Constants.UpdatingFolder, $"{_release.Version}.zip"), FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+        await _httpClient.DownloadDataAsync($"https://updating.artemis-rgb.com/api/artifacts/{_artifact.ArtifactId}", stream, _stepProgress, cancellationToken);
 
         _stepProgress.ProgressChanged -= StepProgressOnProgressChanged;
 
-        await ValidateArchive(stream, artifact, cancellationToken);
+        await ValidateArchive(stream, cancellationToken);
         await Extract(stream, cancellationToken);
     }
 
@@ -160,7 +159,7 @@ public class ReleaseInstaller : CorePropertyChanged
 
         Status = "Extracting...";
         // Ensure the directory is empty
-        string extractDirectory = Path.Combine(_dataFolder, "pending");
+        string extractDirectory = Path.Combine(Constants.UpdatingFolder, "pending");
         if (Directory.Exists(extractDirectory))
             Directory.Delete(extractDirectory, true);
         Directory.CreateDirectory(extractDirectory);
@@ -176,12 +175,12 @@ public class ReleaseInstaller : CorePropertyChanged
         _stepProgress.ProgressChanged -= StepProgressOnProgressChanged;
     }
 
-    private async Task ValidateArchive(Stream archiveStream, IGetReleaseById_PublishedRelease_Artifacts artifact, CancellationToken cancellationToken)
+    private async Task ValidateArchive(Stream archiveStream, CancellationToken cancellationToken)
     {
         using MD5 md5 = MD5.Create();
         archiveStream.Seek(0, SeekOrigin.Begin);
         string hash = BitConverter.ToString(await md5.ComputeHashAsync(archiveStream, cancellationToken)).Replace("-", "");
-        if (hash != artifact.FileInfo.Md5Hash)
-            throw new ArtemisUIException($"Update file hash mismatch, expected \"{artifact.FileInfo.Md5Hash}\" but got \"{hash}\"");
+        if (hash != _artifact.FileInfo.Md5Hash)
+            throw new ArtemisUIException($"Update file hash mismatch, expected \"{_artifact.FileInfo.Md5Hash}\" but got \"{hash}\"");
     }
 }

@@ -48,6 +48,10 @@ public static class Constants
     ///     The full path to the Artemis logs folder
     /// </summary>
     public static readonly string LogsFolder = Path.Combine(DataFolder, "Logs");
+    /// <summary>
+    ///     The full path to the Artemis logs folder
+    /// </summary>
+    public static readonly string UpdatingFolder = Path.Combine(DataFolder, "updating");
 
     /// <summary>
     ///     The full path to the Artemis plugins folder

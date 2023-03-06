@@ -480,7 +480,7 @@ public class ScriptVmFactory : IScriptVmFactory
 
 public interface IReleaseVmFactory : IVmFactory
 {
-    ReleaseViewModel ReleaseListViewModel(string releaseId, string version, DateTimeOffset createdAt);
+    ReleaseViewModel ReleaseListViewModel(Guid releaseId, string version, DateTimeOffset createdAt);
 }
 public class ReleaseVmFactory : IReleaseVmFactory
 {
@@ -491,7 +491,7 @@ public class ReleaseVmFactory : IReleaseVmFactory
         _container = container;
     }
     
-    public ReleaseViewModel ReleaseListViewModel(string releaseId, string version, DateTimeOffset createdAt)
+    public ReleaseViewModel ReleaseListViewModel(Guid releaseId, string version, DateTimeOffset createdAt)
     {
         return _container.Resolve<ReleaseViewModel>(new object[] { releaseId, version, createdAt });
     }
