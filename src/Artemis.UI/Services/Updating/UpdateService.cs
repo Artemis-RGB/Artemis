@@ -45,12 +45,6 @@ public class UpdateService : IUpdateService
         _updateNotificationProvider = updateNotificationProvider;
         _getReleaseInstaller = getReleaseInstaller;
 
-        string? channelArgument = Constants.StartupArguments.FirstOrDefault(a => a.StartsWith("--channel="));
-        if (channelArgument != null)
-            Channel = channelArgument.Split("=")[1];
-        if (string.IsNullOrWhiteSpace(Channel))
-            Channel = "master";
-
         if (OperatingSystem.IsWindows())
             _updatePlatform = Platform.Windows;
         else if (OperatingSystem.IsLinux())
@@ -124,7 +118,7 @@ public class UpdateService : IUpdateService
     }
 
     /// <inheritdoc />
-    public string Channel { get; }
+    public string Channel { get; private set; } = "master";
 
     /// <inheritdoc />
     public string? PreviousVersion { get; private set; }
@@ -190,6 +184,12 @@ public class UpdateService : IUpdateService
     /// <inheritdoc />
     public bool Initialize()
     {
+        string? channelArgument = Constants.StartupArguments.FirstOrDefault(a => a.StartsWith("--channel="));
+        if (channelArgument != null)
+            Channel = channelArgument.Split("=")[1];
+        if (string.IsNullOrWhiteSpace(Channel))
+            Channel = "master";
+
         // There should never be an installing folder
         if (Directory.Exists(Path.Combine(Constants.UpdatingFolder, "installing")))
         {
