@@ -48,8 +48,11 @@ public class LogsDebugViewModel : ActivatableViewModelBase
         });
     }
 
-    private void AddLogEvent(LogEvent logEvent)
+    private void AddLogEvent(LogEvent? logEvent)
     {
+        if (logEvent is null)
+            return;
+
         using StringWriter writer = new();
         _formatter.Format(logEvent, writer);
         string line = writer.ToString();
@@ -60,7 +63,7 @@ public class LogsDebugViewModel : ActivatableViewModelBase
 
     private void RemoveOldestLine()
     {
-        int firstNewLine = Document.Text.IndexOf('\n');
+        int firstNewLine = Document.IndexOf('\n', 0, Document.TextLength);
         if (firstNewLine == -1)
         {
             //this should never happen.

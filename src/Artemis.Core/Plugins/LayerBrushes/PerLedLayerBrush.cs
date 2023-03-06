@@ -28,6 +28,8 @@ public abstract class PerLedLayerBrush<T> : PropertiesLayerBrush<T> where T : La
     /// <returns>The color the LED will receive</returns>
     public abstract SKColor GetColor(ArtemisLed led, SKPoint renderPoint);
 
+    private readonly SKPoint[] _points = new SKPoint[2];
+    
     internal override void InternalRender(SKCanvas canvas, SKRect bounds, SKPaint paint)
     {
         // We don't want rotation on this canvas because that'll displace the LEDs, translations are applied to the points of each LED instead
@@ -37,25 +39,21 @@ public abstract class PerLedLayerBrush<T> : PropertiesLayerBrush<T> where T : La
         using SKPath pointsPath = new();
         foreach (ArtemisLed artemisLed in Layer.Leds)
         {
-            pointsPath.AddPoly(new[]
-            {
-                new SKPoint(0, 0),
-                new SKPoint(artemisLed.AbsoluteRectangle.Left - Layer.Bounds.Left, artemisLed.AbsoluteRectangle.Top - Layer.Bounds.Top)
-            });
+            _points[0] = new SKPoint(0, 0);
+            _points[1] = new SKPoint(artemisLed.AbsoluteRectangle.Left - Layer.Bounds.Left, artemisLed.AbsoluteRectangle.Top - Layer.Bounds.Top);
+            pointsPath.AddPoly(_points);
         }
 
         // Apply the translation to the points of each LED instead
         if (Layer.General.TransformMode.CurrentValue == LayerTransformMode.Normal && SupportsTransformation)
             pointsPath.Transform(Layer.GetTransformMatrix(true, true, true, true).Invert());
 
-        SKPoint[] points = pointsPath.Points;
-
         TryOrBreak(() =>
         {
             for (int index = 0; index < Layer.Leds.Count; index++)
             {
                 ArtemisLed artemisLed = Layer.Leds[index];
-                SKPoint renderPoint = points[index * 2 + 1];
+                SKPoint renderPoint = pointsPath.GetPoint(index * 2 + 1);
                 if (!float.IsFinite(renderPoint.X) || !float.IsFinite(renderPoint.Y))
                     continue;
 

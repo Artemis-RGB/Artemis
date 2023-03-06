@@ -14,7 +14,7 @@ public class ArtemisPluginLockException : Exception
     private static string CreateExceptionMessage(Exception? innerException)
     {
         return innerException != null
-            ? "Found a lock file, skipping load, see inner exception for last known exception."
-            : "Found a lock file, skipping load.";
+            ? "Found a lock file, skipping automatic load, see inner exception for last known exception. Please manually re-enable the plugin."
+            : "Found a lock file, skipping automatic load. Please manually re-enable the plugin.";
     }
 }

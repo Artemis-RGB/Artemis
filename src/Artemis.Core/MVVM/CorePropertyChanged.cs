@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Artemis.Core.Properties;
 
@@ -26,7 +27,7 @@ public abstract class CorePropertyChanged : INotifyPropertyChanged
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected bool RequiresUpdate<T>(ref T storage, T value)
     {
-        return !Equals(storage, value);
+        return !EqualityComparer<T>.Default.Equals(storage, value);
     }
 
     /// <summary>
