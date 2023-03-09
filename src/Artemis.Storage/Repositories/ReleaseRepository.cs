@@ -15,13 +15,14 @@ public class ReleaseRepository : IReleaseRepository
         _repository.Database.GetCollection<ReleaseEntity>().EnsureIndex(s => s.Version, true);
     }
 
-    public void SaveVersionInstallDate(string version)
+    public bool SaveVersionInstallDate(string version)
     {
         ReleaseEntity release = _repository.Query<ReleaseEntity>().Where(r => r.Version == version).FirstOrDefault();
         if (release != null)
-            return;
+            return false;
 
         _repository.Insert(new ReleaseEntity {Version = version, InstalledAt = DateTimeOffset.UtcNow});
+        return true;
     }
 
     public ReleaseEntity GetPreviousInstalledVersion()
@@ -32,6 +33,6 @@ public class ReleaseRepository : IReleaseRepository
 
 public interface IReleaseRepository : IRepository
 {
-    void SaveVersionInstallDate(string version);
+    bool SaveVersionInstallDate(string version);
     ReleaseEntity GetPreviousInstalledVersion();
 }

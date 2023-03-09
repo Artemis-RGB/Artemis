@@ -66,7 +66,7 @@ public class UpdateService : IUpdateService
     private void ProcessReleaseStatus()
     {
         string currentVersion = Constants.CurrentVersion;
-        _releaseRepository.SaveVersionInstallDate(currentVersion);
+        bool updated = _releaseRepository.SaveVersionInstallDate(currentVersion);
         PreviousVersion = _releaseRepository.GetPreviousInstalledVersion()?.Version;
 
         if (!Directory.Exists(Constants.UpdatingFolder))
@@ -88,6 +88,9 @@ public class UpdateService : IUpdateService
                 _logger.Warning(e, "Failed to clean up old update file at {FilePath}", file);
             }
         }
+        
+        // if (updated)
+            _updateNotificationProvider.Value.ShowInstalledNotification(currentVersion);
     }
 
     private void ShowUpdateNotification(IGetNextRelease_NextPublishedRelease release)
@@ -194,7 +197,15 @@ public class UpdateService : IUpdateService
         if (Directory.Exists(Path.Combine(Constants.UpdatingFolder, "installing")))
         {
             _logger.Warning("Cleaning up leftover installing folder, did an update go wrong?");
-            Directory.Delete(Path.Combine(Constants.UpdatingFolder, "installing"));
+            try
+            {
+                Directory.Delete(Path.Combine(Constants.UpdatingFolder, "installing"), true);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Failed to delete leftover installing folder");
+            }
+            
         }
 
         // If an update is pending, don't bother with anything else

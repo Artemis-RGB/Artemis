@@ -1,17 +1,16 @@
 param (
-    [Parameter(Mandatory=$true)][string]$sourceDirectory,
-    [Parameter(Mandatory=$true)][string]$destinationDirectory,
-    [Parameter(Mandatory=$false)][string]$artemisArgs
+    [Parameter(Mandatory = $true)][string]$sourceDirectory,
+    [Parameter(Mandatory = $true)][string]$destinationDirectory,
+    [Parameter(Mandatory = $false)][string]$artemisArgs
 )
 
 Write-Host "Artemis update script v1"
-Write-Host "Please do not close this window, this should not take long"
-Write-Host ""
 
 # Wait up to 10 seconds for the process to shut down
-for ($i=1; $i -le 10; $i++) {
+for ($i = 1; $i -le 10; $i++) {
     $process = Get-Process -Name Artemis.UI.Windows -ErrorAction SilentlyContinue
-    if (!$process) {
+    if (!$process)
+    {
         break
     }
     Write-Host "Waiting for Artemis to shut down ($i / 10)"
@@ -20,13 +19,15 @@ for ($i=1; $i -le 10; $i++) {
 
 # If the process is still running, kill it
 $process = Get-Process -Name Artemis.UI.Windows -ErrorAction SilentlyContinue
-if ($process) {
+if ($process)
+{
     Stop-Process -Id $process.Id -Force
     Start-Sleep -Seconds 1
 }
 
 # Check if the destination directory exists
-if (!(Test-Path $destinationDirectory)) {
+if (!(Test-Path $destinationDirectory))
+{
     Write-Error "The destination directory does not exist"
 }
 
@@ -44,8 +45,11 @@ Write-Host "Finished! Restarting Artemis"
 Start-Sleep -Seconds 1
 
 # When finished, run the updated version
-if ($artemisArgs) {
+if ($artemisArgs)
+{
     Start-Process -FilePath "$destinationDirectory\Artemis.UI.Windows.exe" -WorkingDirectory $destinationDirectory -ArgumentList $artemisArgs
-} else {
+}
+else
+{
     Start-Process -FilePath "$destinationDirectory\Artemis.UI.Windows.exe" -WorkingDirectory $destinationDirectory
 }

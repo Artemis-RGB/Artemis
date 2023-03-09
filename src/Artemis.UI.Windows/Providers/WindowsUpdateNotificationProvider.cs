@@ -35,30 +35,12 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
         ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompatOnOnActivated;
     }
 
-    private async void ToastNotificationManagerCompatOnOnActivated(ToastNotificationActivatedEventArgsCompat e)
-    {
-        ToastArguments args = ToastArguments.Parse(e.Argument);
-        Guid releaseId = Guid.Parse(args.Get("releaseId"));
-        string releaseVersion = args.Get("releaseVersion");
-        string action = "view-changes";
-        if (args.Contains("action"))
-            action = args.Get("action");
-
-        if (action == "install")
-            await InstallRelease(releaseId, releaseVersion);
-        else if (action == "view-changes")
-            ViewRelease(releaseId);
-        else if (action == "cancel")
-            _cancellationTokenSource?.Cancel();
-        else if (action == "restart-for-update")
-            _updateService.RestartForUpdate(false);
-    }
-
+    /// <inheritdoc />
     public void ShowNotification(Guid releaseId, string releaseVersion)
     {
         GetBuilderForRelease(releaseId, releaseVersion)
             .AddText("Update available")
-            .AddText($"Artemis version {releaseVersion} has been released")
+            .AddText($"Artemis {releaseVersion} has been released")
             .AddButton(new ToastButton()
                 .SetContent("Install")
                 .AddArgument("action", "install").SetAfterActivationBehavior(ToastAfterActivationBehavior.PendingUpdate))
@@ -66,14 +48,24 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
             .Show(t => t.Tag = releaseId.ToString());
     }
 
-    private void ViewRelease(Guid releaseId)
+    /// <inheritdoc />
+    public void ShowInstalledNotification(string installedVersion)
+    {
+        new ToastContentBuilder().AddArgument("releaseVersion", installedVersion)
+            .AddText("Update installed")
+            .AddText($"Artemis {installedVersion} has been installed")
+            .AddButton(new ToastButton().SetContent("View changes").AddArgument("action", "view-changes"))
+            .Show();
+    }
+
+    private void ViewRelease(string releaseVersion)
     {
         Dispatcher.UIThread.Post(() =>
         {
             _mainWindowService.OpenMainWindow();
             if (_mainWindowService.HostScreen == null)
                 return;
-            
+
             // TODO: When proper routing has been implemented, use that here
             // Create a settings VM to navigate to
             SettingsViewModel settingsViewModel = _getSettingsViewModel(_mainWindowService.HostScreen);
@@ -83,7 +75,7 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
             // Navigate to the settings VM
             _mainWindowService.HostScreen.Router.Navigate.Execute(settingsViewModel);
             // Navigate to the release tab
-            releaseTabViewModel.PreselectId = releaseId;
+            releaseTabViewModel.PreselectVersion = releaseVersion;
             settingsViewModel.SelectedTab = releaseTabViewModel;
         });
     }
@@ -128,10 +120,18 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
             installer.PropertyChanged -= InstallerOnPropertyChanged;
         }
 
+        // If the main window is not open the user isn't busy, restart straight away
+        if (!_mainWindowService.IsMainWindowOpen)
+        {
+            _updateService.RestartForUpdate(true);
+            return;
+        }
+
+        // Ask for a restart because the user is actively using Artemis
         GetBuilderForRelease(releaseId, releaseVersion)
             .AddAudio(new ToastAudio {Silent = true})
             .AddText("Update ready")
-            .AddText($"Artemis version {releaseVersion} is ready to be applied")
+            .AddText("Artemis must restart to finish the update")
             .AddButton(new ToastButton().SetContent("Restart Artemis").AddArgument("action", "restart-for-update"))
             .AddButton(new ToastButton().SetContent("Later").AddArgument("action", "postpone-update"))
             .Show(t => t.Tag = releaseId.ToString());
@@ -159,5 +159,25 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
         };
 
         return data;
+    }
+
+    private async void ToastNotificationManagerCompatOnOnActivated(ToastNotificationActivatedEventArgsCompat e)
+    {
+        ToastArguments args = ToastArguments.Parse(e.Argument);
+
+        Guid releaseId = args.Contains("releaseId") ? Guid.Parse(args.Get("releaseId")) : Guid.Empty;
+        string releaseVersion = args.Get("releaseVersion");
+        string action = "view-changes";
+        if (args.Contains("action"))
+            action = args.Get("action");
+
+        if (action == "install")
+            await InstallRelease(releaseId, releaseVersion);
+        else if (action == "view-changes")
+            ViewRelease(releaseVersion);
+        else if (action == "cancel")
+            _cancellationTokenSource?.Cancel();
+        else if (action == "restart-for-update")
+            _updateService.RestartForUpdate(false);
     }
 }

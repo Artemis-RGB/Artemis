@@ -99,18 +99,12 @@ public class ApplicationStateManager
             argsList.Add("--autorun");
 
         // Retain startup arguments after update by providing them to the script
-        string script = $"\"{Path.Combine(Constants.UpdatingFolder, "installing", "scripts", "update.ps1")}\"";
+        string script = Path.Combine(Constants.UpdatingFolder, "installing", "scripts", "update.ps1");
         string source = $"-sourceDirectory \"{Path.Combine(Constants.UpdatingFolder, "installing")}\"";
         string destination = $"-destinationDirectory \"{Constants.ApplicationFolder}\"";
         string args = argsList.Any() ? $"-artemisArgs \"{string.Join(',', argsList)}\"" : "";
 
-        // Run the PowerShell script included in the new version, that way any changes made to the script are used
-        ProcessStartInfo info = new()
-        {
-            Arguments = $"-File {script} {source} {destination} {args}",
-            FileName = "PowerShell.exe"
-        };
-        Process.Start(info);
+        RunScriptWithOutputFile(script, $"{source} {destination} {args}", Path.Combine(Constants.DataFolder, "update-log.txt"));
 
         // Lets try a graceful shutdown, PowerShell will kill if needed
         if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
@@ -138,6 +132,20 @@ public class ApplicationStateManager
             WindowStyle = ProcessWindowStyle.Hidden,
             CreateNoWindow = true,
             FileName = "PowerShell.exe"
+        };
+        Process.Start(info);
+    }
+
+    private void RunScriptWithOutputFile(string script, string arguments, string outputFile)
+    {
+        // Use > for files that are bigger than 200kb to start fresh, otherwise use >> to append
+        string redirectSymbol = File.Exists(outputFile) && new FileInfo(outputFile).Length > 200000 ? ">" : ">>";
+        ProcessStartInfo info = new()
+        {
+            Arguments = $"PowerShell -File \"{script}\" {arguments} {redirectSymbol} \"{outputFile}\"",
+            FileName = "PowerShell.exe",
+            WindowStyle = ProcessWindowStyle.Hidden,
+            CreateNoWindow = true,
         };
         Process.Start(info);
     }

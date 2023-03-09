@@ -54,14 +54,14 @@ public class ReleasesTabViewModel : ActivatableViewModelBase
         {
             await _updateService.CacheLatestRelease();
             await GetMoreReleases(d.AsCancellationToken());
-            SelectedReleaseViewModel = ReleaseViewModels.FirstOrDefault(r => r.ReleaseId == PreselectId) ?? ReleaseViewModels.FirstOrDefault();
+            SelectedReleaseViewModel = ReleaseViewModels.FirstOrDefault(r => r.Version == PreselectVersion) ?? ReleaseViewModels.FirstOrDefault();
         });
     }
 
 
     public ReadOnlyObservableCollection<ReleaseViewModel> ReleaseViewModels { get; }
     public string Channel { get; }
-    public Guid? PreselectId { get; set; }
+    public string? PreselectVersion { get; set; }
 
     public ReleaseViewModel? SelectedReleaseViewModel
     {
