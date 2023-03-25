@@ -100,9 +100,9 @@ public class ApplicationStateManager
 
         // Retain startup arguments after update by providing them to the script
         string script = Path.Combine(Constants.UpdatingFolder, "installing", "scripts", "update.ps1");
-        string source = $"-sourceDirectory \"{Path.Combine(Constants.UpdatingFolder, "installing")}\"";
-        string destination = $"-destinationDirectory \"{Constants.ApplicationFolder}\"";
-        string args = argsList.Any() ? $"-artemisArgs \"{string.Join(',', argsList)}\"" : "";
+        string source = $"-sourceDirectory \"'{Path.Combine(Constants.UpdatingFolder, "installing")}'\"";
+        string destination = $"-destinationDirectory \"'{Constants.ApplicationFolder}'\"";
+        string args = argsList.Any() ? $"-artemisArgs \"'{string.Join(',', argsList)}'\"" : "";
 
         RunScriptWithOutputFile(script, $"{source} {destination} {args}", Path.Combine(Constants.DataFolder, "update-log.txt"));
 
@@ -142,7 +142,7 @@ public class ApplicationStateManager
         string redirectSymbol = File.Exists(outputFile) && new FileInfo(outputFile).Length > 200000 ? ">" : ">>";
         ProcessStartInfo info = new()
         {
-            Arguments = $"PowerShell -ExecutionPolicy Bypass -File \"{script}\" {arguments} {redirectSymbol} \"{outputFile}\"",
+            Arguments = $"-ExecutionPolicy Bypass -File \"{script}\" {arguments} {redirectSymbol} \"{outputFile}\"",
             FileName = "PowerShell.exe",
             WindowStyle = ProcessWindowStyle.Hidden,
             CreateNoWindow = true,
