@@ -47,15 +47,29 @@ internal class PluginManagementService : IPluginManagementService
 
     private void CopyBuiltInPlugin(ZipArchive zipArchive, string targetDirectory)
     {
+        ZipArchiveEntry metaDataFileEntry = zipArchive.Entries.First(e => e.Name == "plugin.json");
         DirectoryInfo pluginDirectory = new(Path.Combine(Constants.PluginsFolder, targetDirectory));
         bool createLockFile = File.Exists(Path.Combine(pluginDirectory.FullName, "artemis.lock"));
 
         // Remove the old directory if it exists
         if (Directory.Exists(pluginDirectory.FullName))
             pluginDirectory.DeleteRecursively();
-        Directory.CreateDirectory(pluginDirectory.FullName);
-
-        zipArchive.ExtractToDirectory(pluginDirectory.FullName, true);
+        
+        // Extract everything in the same archive directory to the unique plugin directory
+        Utilities.CreateAccessibleDirectory(pluginDirectory.FullName);
+        string metaDataDirectory = metaDataFileEntry.FullName.Replace(metaDataFileEntry.Name, "");
+        foreach (ZipArchiveEntry zipArchiveEntry in zipArchive.Entries)
+        {
+            if (zipArchiveEntry.FullName.StartsWith(metaDataDirectory) && !zipArchiveEntry.FullName.EndsWith("/"))
+            {
+                string target = Path.Combine(pluginDirectory.FullName, zipArchiveEntry.FullName.Remove(0, metaDataDirectory.Length));
+                // Create folders
+                Utilities.CreateAccessibleDirectory(Path.GetDirectoryName(target)!);
+                // Extract files
+                zipArchiveEntry.ExtractToFile(target);
+            }
+        }
+        
         if (createLockFile)
             File.Create(Path.Combine(pluginDirectory.FullName, "artemis.lock")).Close();
     }
@@ -82,6 +96,7 @@ internal class PluginManagementService : IPluginManagementService
             return;
         }
 
+
         foreach (FileInfo zipFile in builtInPluginDirectory.EnumerateFiles("*.zip"))
         {
             try
@@ -98,56 +113,57 @@ internal class PluginManagementService : IPluginManagementService
     private void ExtractBuiltInPlugin(FileInfo zipFile, DirectoryInfo pluginDirectory)
     {
         // Find the metadata file in the zip
-            using ZipArchive archive = ZipFile.OpenRead(zipFile.FullName);
-            ZipArchiveEntry? metaDataFileEntry = archive.GetEntry("plugin.json");
-            if (metaDataFileEntry == null)
-                throw new ArtemisPluginException("Couldn't find a plugin.json in " + zipFile.FullName);
+        using ZipArchive archive = ZipFile.OpenRead(zipFile.FullName);
 
-            using StreamReader reader = new(metaDataFileEntry.Open());
-            PluginInfo builtInPluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
-            string preferred = builtInPluginInfo.PreferredPluginDirectory;
+        ZipArchiveEntry? metaDataFileEntry = archive.Entries.FirstOrDefault(e => e.Name == "plugin.json");
+        if (metaDataFileEntry == null)
+            throw new ArtemisPluginException("Couldn't find a plugin.json in " + zipFile.FullName);
 
-            // Find the matching plugin in the plugin folder
-            DirectoryInfo? match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == preferred);
-            if (match == null)
+        using StreamReader reader = new(metaDataFileEntry.Open());
+        PluginInfo builtInPluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
+        string preferred = builtInPluginInfo.PreferredPluginDirectory;
+
+        // Find the matching plugin in the plugin folder
+        DirectoryInfo? match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == preferred);
+        if (match == null)
+        {
+            CopyBuiltInPlugin(archive, preferred);
+        }
+        else
+        {
+            string metadataFile = Path.Combine(match.FullName, "plugin.json");
+            if (!File.Exists(metadataFile))
             {
+                _logger.Debug("Copying missing built-in plugin {builtInPluginInfo}", builtInPluginInfo);
                 CopyBuiltInPlugin(archive, preferred);
             }
             else
             {
-                string metadataFile = Path.Combine(match.FullName, "plugin.json");
-                if (!File.Exists(metadataFile))
+                PluginInfo pluginInfo;
+                try
                 {
-                    _logger.Debug("Copying missing built-in plugin {builtInPluginInfo}", builtInPluginInfo);
-                    CopyBuiltInPlugin(archive, preferred);
+                    // Compare versions, copy if the same when debugging
+                    pluginInfo = CoreJson.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile))!;
                 }
-                else
+                catch (Exception e)
                 {
-                    PluginInfo pluginInfo;
-                    try
-                    {
-                        // Compare versions, copy if the same when debugging
-                        pluginInfo = CoreJson.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile))!;
-                    }
-                    catch (Exception e)
-                    {
-                        throw new ArtemisPluginException($"Failed read plugin metadata needed to install built-in plugin: {e.Message}", e);
-                    }
+                    throw new ArtemisPluginException($"Failed read plugin metadata needed to install built-in plugin: {e.Message}", e);
+                }
 
-                    try
+                try
+                {
+                    if (builtInPluginInfo.Version > pluginInfo.Version)
                     {
-                        if (builtInPluginInfo.Version > pluginInfo.Version)
-                        {
-                            _logger.Debug("Copying updated built-in plugin from {pluginInfo} to {builtInPluginInfo}", pluginInfo, builtInPluginInfo);
-                            CopyBuiltInPlugin(archive, preferred);
-                        }
+                        _logger.Debug("Copying updated built-in plugin from {pluginInfo} to {builtInPluginInfo}", pluginInfo, builtInPluginInfo);
+                        CopyBuiltInPlugin(archive, preferred);
                     }
-                    catch (Exception e)
-                    {
-                        throw new ArtemisPluginException($"Failed to install built-in plugin: {e.Message}", e);
-                    }
+                }
+                catch (Exception e)
+                {
+                    throw new ArtemisPluginException($"Failed to install built-in plugin: {e.Message}", e);
                 }
             }
+        }
     }
 
     #endregion
@@ -209,7 +225,7 @@ internal class PluginManagementService : IPluginManagementService
         // Disposal happens manually before container disposal but the container doesn't know that so a 2nd call will be made
         if (_disposed)
             return;
-        
+
         _disposed = true;
         UnloadPlugins();
     }
@@ -567,7 +583,6 @@ internal class PluginManagementService : IPluginManagementService
         ZipArchiveEntry? metaDataFileEntry = archive.Entries.FirstOrDefault(e => e.Name == "plugin.json");
         if (metaDataFileEntry == null)
             throw new ArtemisPluginException("Couldn't find a plugin.json in " + fileName);
-
 
         using StreamReader reader = new(metaDataFileEntry.Open());
         PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
