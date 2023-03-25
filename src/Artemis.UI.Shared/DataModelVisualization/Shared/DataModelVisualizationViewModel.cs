@@ -194,7 +194,7 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
         }
 
         if (looseMatch)
-            IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(type) ||
+            IsMatchingFilteredTypes = filteredTypes.Any(t => t!.IsCastableFrom(type) ||
                                                              (t == typeof(Enum) && type.IsEnum) ||
                                                              (t == typeof(IEnumerable<>) && type.IsGenericEnumerable()) ||
                                                              (type.IsGenericType && t == type.GetGenericTypeDefinition()));

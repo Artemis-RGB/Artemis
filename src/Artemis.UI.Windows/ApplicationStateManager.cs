@@ -142,7 +142,7 @@ public class ApplicationStateManager
         string redirectSymbol = File.Exists(outputFile) && new FileInfo(outputFile).Length > 200000 ? ">" : ">>";
         ProcessStartInfo info = new()
         {
-            Arguments = $"-ExecutionPolicy Bypass -File \"{script}\" {arguments} {redirectSymbol} \"{outputFile}\"",
+            Arguments = $"PowerShell -ExecutionPolicy Bypass -File \"{script}\" {arguments} {redirectSymbol} \"{outputFile}\"",
             FileName = "PowerShell.exe",
             WindowStyle = ProcessWindowStyle.Hidden,
             CreateNoWindow = true,
