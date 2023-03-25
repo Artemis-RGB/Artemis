@@ -89,7 +89,7 @@ public class UpdateService : IUpdateService
             }
         }
         
-        // if (updated)
+        if (updated)
             _updateNotificationProvider.Value.ShowInstalledNotification(currentVersion);
     }
 

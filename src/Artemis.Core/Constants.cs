@@ -81,7 +81,7 @@ public static class Constants
     /// </summary>
     public static readonly PluginInfo CorePluginInfo = new()
     {
-        Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core", Version = new Version(2, 0)
+        Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core", Version = CurrentVersion
     };
 
     /// <summary>

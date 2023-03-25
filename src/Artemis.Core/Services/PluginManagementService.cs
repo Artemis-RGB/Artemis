@@ -54,7 +54,7 @@ internal class PluginManagementService : IPluginManagementService
         // Remove the old directory if it exists
         if (Directory.Exists(pluginDirectory.FullName))
             pluginDirectory.DeleteRecursively();
-        
+
         // Extract everything in the same archive directory to the unique plugin directory
         Utilities.CreateAccessibleDirectory(pluginDirectory.FullName);
         string metaDataDirectory = metaDataFileEntry.FullName.Replace(metaDataFileEntry.Name, "");
@@ -69,7 +69,7 @@ internal class PluginManagementService : IPluginManagementService
                 zipArchiveEntry.ExtractToFile(target);
             }
         }
-        
+
         if (createLockFile)
             File.Create(Path.Combine(pluginDirectory.FullName, "artemis.lock")).Close();
     }
@@ -137,26 +137,12 @@ internal class PluginManagementService : IPluginManagementService
                 _logger.Debug("Copying missing built-in plugin {builtInPluginInfo}", builtInPluginInfo);
                 CopyBuiltInPlugin(archive, preferred);
             }
-            else
+            else if (metaDataFileEntry.LastWriteTime > File.GetLastWriteTime(metadataFile))
             {
-                PluginInfo pluginInfo;
                 try
                 {
-                    // Compare versions, copy if the same when debugging
-                    pluginInfo = CoreJson.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile))!;
-                }
-                catch (Exception e)
-                {
-                    throw new ArtemisPluginException($"Failed read plugin metadata needed to install built-in plugin: {e.Message}", e);
-                }
-
-                try
-                {
-                    if (builtInPluginInfo.Version > pluginInfo.Version)
-                    {
-                        _logger.Debug("Copying updated built-in plugin from {pluginInfo} to {builtInPluginInfo}", pluginInfo, builtInPluginInfo);
-                        CopyBuiltInPlugin(archive, preferred);
-                    }
+                    _logger.Debug("Copying updated built-in plugin {builtInPluginInfo}", builtInPluginInfo);
+                    CopyBuiltInPlugin(archive, preferred);
                 }
                 catch (Exception e)
                 {
