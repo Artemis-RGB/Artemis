@@ -88,7 +88,7 @@ public class UpdateService : IUpdateService
                 _logger.Warning(e, "Failed to clean up old update file at {FilePath}", file);
             }
         }
-        
+
         if (updated)
             _updateNotificationProvider.Value.ShowInstalledNotification(currentVersion);
     }
@@ -205,15 +205,22 @@ public class UpdateService : IUpdateService
             {
                 _logger.Error(e, "Failed to delete leftover installing folder");
             }
-            
         }
 
         // If an update is pending, don't bother with anything else
         if (Directory.Exists(Path.Combine(Constants.UpdatingFolder, "pending")))
         {
             _logger.Information("Installing pending update");
-            RestartForUpdate(true);
-            return true;
+            try
+            {
+                RestartForUpdate(true);
+                return true;
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "Failed to apply pending update");
+                return false;
+            }
         }
 
         ProcessReleaseStatus();
