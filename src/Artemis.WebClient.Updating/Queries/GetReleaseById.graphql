@@ -1,27 +1,3 @@
-query GetReleases($branch: String!, $platform: Platform!, $take: Int!, $after: String) {
-    publishedReleases(
-        first: $take
-        after: $after
-        where: {
-            and: [
-                { branch: { eq: $branch } }
-                { artifacts: { some: { platform: { eq: $platform } } } }
-            ]
-        }
-    ) {
-        pageInfo {
-            hasNextPage
-            endCursor
-        }        
-        nodes {
-            id
-            version
-            createdAt
-        }
-    }
-}
-
-
 query GetReleaseById($id: UUID!) {
     publishedRelease(id: $id) {
         branch
@@ -48,11 +24,3 @@ fragment fileInfo on ArtifactFileInfo {
     md5Hash
     downloadSize
 }
-
-query GetNextRelease($currentVersion: String, $branch: String!, $platform: Platform!) {
-    nextPublishedRelease(version: $currentVersion, branch: $branch, platform: $platform) {
-        id
-        version
-    }
-}
-
