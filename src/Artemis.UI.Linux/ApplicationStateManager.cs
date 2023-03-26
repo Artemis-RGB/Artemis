@@ -150,7 +150,7 @@ public class ApplicationStateManager
         string script = Path.Combine(Constants.UpdatingFolder, "installing", "Scripts", "update.sh");
         string source = $"\"{Path.Combine(Constants.UpdatingFolder, "installing")}\"";
         string destination = $"\"{Constants.ApplicationFolder}\"";
-        string args = argsList.Any() ? $"\"{string.Join(' ', argsList)}\"" : "";
+        string args = argsList.Any() ? string.Join(' ', argsList) : "";
 
         RunScriptWithOutputFile(script, $"{source} {destination} {args}", Path.Combine(Constants.DataFolder, "update-log.txt"));
 
