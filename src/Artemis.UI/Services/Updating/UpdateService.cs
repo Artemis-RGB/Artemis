@@ -31,6 +31,7 @@ public class UpdateService : IUpdateService
     private readonly IUpdatingClient _updatingClient;
 
     private bool _suspendAutoCheck;
+    private DateTime _lastAutoUpdateCheck;
 
     public UpdateService(ILogger logger,
         ISettingsService settingsService,
@@ -109,6 +110,11 @@ public class UpdateService : IUpdateService
 
     private async void HandleAutoUpdateEvent(object? sender, EventArgs e)
     {
+        // The event can trigger from multiple sources with a timer acting as a fallback, only actual perform an action once per max 59 minutes
+        if (DateTime.UtcNow - _lastAutoUpdateCheck < TimeSpan.FromMinutes(59))
+            return;
+        _lastAutoUpdateCheck = DateTime.UtcNow;
+        
         if (!_autoCheck.Value || _suspendAutoCheck)
             return;
 
@@ -148,6 +154,8 @@ public class UpdateService : IUpdateService
     /// <inheritdoc />
     public async Task<bool> CheckForUpdate()
     {
+        _logger.Information("Performing auto-update check");
+        
         IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(Constants.CurrentVersion, Channel, _updatePlatform);
         result.EnsureNoErrors();
 
@@ -161,12 +169,18 @@ public class UpdateService : IUpdateService
         // Unless auto install is enabled, only offer it once per session 
         if (!_autoInstall.Value)
             _suspendAutoCheck = true;
-
+        
         // If the window is open show the changelog, don't auto-update while the user is busy
         if (_mainWindowService.IsMainWindowOpen || !_autoInstall.Value)
+        {
+            _logger.Information("New update available, offering version {AvailableVersion}", CachedLatestRelease.Version);
             ShowUpdateNotification(CachedLatestRelease);
+        }
         else
+        {
+            _logger.Information("New update available, auto-installing version {AvailableVersion}", CachedLatestRelease.Version);
             await AutoInstallUpdate(CachedLatestRelease);
+        }
 
         return true;
     }
@@ -227,6 +241,10 @@ public class UpdateService : IUpdateService
         }
 
         ProcessReleaseStatus();
+        
+        // Trigger the auto update event so that it doesn't take an hour for the first check to happen
+        HandleAutoUpdateEvent(this, EventArgs.Empty);
+
         _logger.Information("Update service initialized for {Channel} channel", Channel);
         return false;
     }
