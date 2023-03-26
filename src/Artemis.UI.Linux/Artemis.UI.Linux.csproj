@@ -29,5 +29,6 @@
     </ItemGroup>
     <ItemGroup>
         <Content Include="Icons/**" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="Scripts/**" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 </Project>

@@ -29,6 +29,7 @@ public class ApplicationStateManager
 
         Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
         Core.Utilities.RestartRequested += UtilitiesOnRestartRequested;
+        Core.Utilities.UpdateRequested += UtilitiesOnUpdateRequested;
 
         // On OS shutdown dispose the IOC container just so device providers get a chance to clean up
         if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
@@ -137,5 +138,38 @@ public class ApplicationStateManager
             return;
 
         //todo
+    }
+    
+    private void UtilitiesOnUpdateRequested(object? sender, UpdateEventArgs e)
+    {
+        List<string> argsList = new(StartupArguments);
+        if (e.Silent && !argsList.Contains("--minimized"))
+            argsList.Add("--minimized");
+
+        // Retain startup arguments after update by providing them to the script
+        string script = Path.Combine(Constants.UpdatingFolder, "installing", "Scripts", "update.sh");
+        string source = $"\"{Path.Combine(Constants.UpdatingFolder, "installing")}\"";
+        string destination = $"\"{Constants.ApplicationFolder}\"";
+        string args = argsList.Any() ? $"\"'{string.Join(' ', argsList)}'\"" : "";
+
+        RunScriptWithOutputFile(script, $"{source} {destination} {args}", Path.Combine(Constants.DataFolder, "update-log.txt"));
+
+        // Lets try a graceful shutdown, PowerShell will kill if needed
+        if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
+            Dispatcher.UIThread.Post(() => controlledApplicationLifetime.Shutdown());
+    }
+    
+    private void RunScriptWithOutputFile(string script, string arguments, string outputFile)
+    {
+        // Use > for files that are bigger than 200kb to start fresh, otherwise use >> to append
+        string redirectSymbol = File.Exists(outputFile) && new FileInfo(outputFile).Length > 200000 ? ">" : ">>";
+        ProcessStartInfo info = new()
+        {
+            Arguments = $"\"{script}\" {arguments} {redirectSymbol} \"{outputFile}\"",
+            FileName = "/bin/bash",
+            WindowStyle = ProcessWindowStyle.Hidden,
+            CreateNoWindow = true,
+        };
+        Process.Start(info);
     }
 }
