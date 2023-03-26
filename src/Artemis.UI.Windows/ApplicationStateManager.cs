@@ -95,8 +95,8 @@ public class ApplicationStateManager
     private void UtilitiesOnUpdateRequested(object? sender, UpdateEventArgs e)
     {
         List<string> argsList = new(StartupArguments);
-        if (e.Silent)
-            argsList.Add("--autorun");
+        if (e.Silent && !argsList.Contains("--minimized"))
+            argsList.Add("--minimized");
 
         // Retain startup arguments after update by providing them to the script
         string script = Path.Combine(Constants.UpdatingFolder, "installing", "scripts", "update.ps1");

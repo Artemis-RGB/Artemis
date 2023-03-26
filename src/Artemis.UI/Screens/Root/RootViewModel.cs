@@ -46,7 +46,7 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
     {
         Router = new RoutingState();
         WindowSizeSetting = settingsService.GetSetting<WindowSize?>("WindowSize");
-        
+
         _coreService = coreService;
         _settingsService = settingsService;
         _windowService = windowService;
@@ -56,17 +56,17 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
         _defaultTitleBarViewModel = defaultTitleBarViewModel;
         _sidebarVmFactory = sidebarVmFactory;
         _lifeTime = (IClassicDesktopStyleApplicationLifetime) Application.Current!.ApplicationLifetime!;
-        
+
         mainWindowService.ConfigureMainWindowProvider(this);
         mainWindowService.HostScreen = this;
-        
+
         DisplayAccordingToSettings();
         Router.CurrentViewModel.Subscribe(UpdateTitleBarViewModel);
         Task.Run(() =>
         {
             if (_updateService.Initialize())
                 return;
-            
+
             coreService.Initialize();
             registrationService.RegisterBuiltInDataModelDisplays();
             registrationService.RegisterBuiltInDataModelInputs();
@@ -110,14 +110,10 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
         bool showOnAutoRun = _settingsService.GetSetting("UI.ShowOnStartup", true).Value;
 
         if ((autoRunning && !showOnAutoRun) || minimized)
-        {
-            // TODO: Auto-update
-        }
-        else
-        {
-            ShowSplashScreen();
-            _coreService.Initialized += (_, _) => Dispatcher.UIThread.InvokeAsync(OpenMainWindow);
-        }
+            return;
+
+        ShowSplashScreen();
+        _coreService.Initialized += (_, _) => Dispatcher.UIThread.InvokeAsync(OpenMainWindow);
     }
 
     private void ShowSplashScreen()
