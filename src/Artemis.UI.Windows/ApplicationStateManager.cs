@@ -102,7 +102,7 @@ public class ApplicationStateManager
         string script = Path.Combine(Constants.UpdatingFolder, "installing", "scripts", "update.ps1");
         string source = $"-sourceDirectory \"'{Path.Combine(Constants.UpdatingFolder, "installing")}'\"";
         string destination = $"-destinationDirectory \"'{Constants.ApplicationFolder}'\"";
-        string args = argsList.Any() ? $"-artemisArgs \"'{string.Join(',', argsList)}'\"" : "";
+        string args = argsList.Any() ? $"-artemisArgs \"'{string.Join(' ', argsList)}'\"" : "";
 
         RunScriptWithOutputFile(script, $"{source} {destination} {args}", Path.Combine(Constants.DataFolder, "update-log.txt"));
 
