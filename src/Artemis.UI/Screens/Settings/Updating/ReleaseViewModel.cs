@@ -199,6 +199,10 @@ public class ReleaseViewModel : ActivatableViewModelBase
 
             _retrievedDetails = true;
         }
+        catch (TaskCanceledException)
+        {
+            // ignored
+        }
         catch (Exception e)
         {
             _logger.Warning(e, "Failed to retrieve release details");
