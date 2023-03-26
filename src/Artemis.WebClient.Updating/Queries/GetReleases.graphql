@@ -1,0 +1,22 @@
+query GetReleases($branch: String!, $platform: Platform!, $take: Int!, $after: String) {
+    publishedReleases(
+        first: $take
+        after: $after
+        where: {
+            and: [
+                { branch: { eq: $branch } }
+                { artifacts: { some: { platform: { eq: $platform } } } }
+            ]
+        }
+    ) {
+        pageInfo {
+            hasNextPage
+            endCursor
+        }        
+        nodes {
+            id
+            version
+            createdAt
+        }
+    }
+}

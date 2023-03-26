@@ -1,0 +1,109 @@
+name: Master - Build & Upload to Ftp
+
+on: 
+  workflow_dispatch:
+  push:
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version-number: ${{ steps.get-version.outputs.version-number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get Version String
+        id: get-version
+        shell: pwsh
+        run: |
+          $MidnightUtc = [DateTime]::UtcNow.Date
+          $BranchName = "${{ github.ref_name }}".replace('/','-').replace('.','-')
+          $ApiVersion = (Select-Xml -Path 'src/Artemis.Core/Artemis.Core.csproj' -XPath '//PluginApiVersion').Node.InnerText
+          $NumberOfCommitsToday = (git log --after=$($MidnightUtc.ToString("o")) --oneline | Measure-Object -Line).Lines
+          $VersionNumber = "$ApiVersion.$($MidnightUtc.ToString("yyyy.MMdd")).$NumberOfCommitsToday"
+          # If we're not in master, add the branch name to the version so it counts as prerelease 
+          if ($BranchName -ne "master") { $VersionNumber += "-$BranchName" }
+          "version-number=$VersionNumber" >> $Env:GITHUB_OUTPUT
+  
+  build:
+    needs: version
+    strategy:
+      matrix: 
+        include:
+          - os: windows-latest
+            rid: win10-x64
+            csproj: Windows
+
+          - os: ubuntu-latest
+            rid: linux-x64
+            csproj: Linux
+
+          - os: macos-latest
+            rid: osx-x64
+            csproj: MacOS
+    name: ${{ matrix.csproj }} Build
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Artemis
+        uses: actions/checkout@v3
+        with:
+          path: Artemis
+      - name: Checkout Plugins
+        uses: actions/checkout@v3
+        with:
+          repository: Artemis-RGB/Artemis.Plugins
+          path: Artemis.Plugins
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
+      - name: Publish Artemis
+        run: dotnet publish --configuration Release -p:Version=${{ needs.version.outputs.version-number }} --runtime ${{ matrix.rid }} --output build/${{ matrix.rid }} --self-contained Artemis/src/Artemis.UI.${{ matrix.csproj }}/Artemis.UI.${{ matrix.csproj }}.csproj
+      - name: Publish Plugins
+        run: |
+          New-Item -ItemType "Directory" -Path build/${{ matrix.rid }}/Plugins/
+          Get-ChildItem -File -Recurse -Filter *.csproj Artemis.Plugins/src/ | 
+          Foreach-Object -Parallel {
+              dotnet publish --configuration Release --runtime ${{ matrix.rid }} --output build-plugins/$($_.BaseName) --no-self-contained $($_.FullName);
+              Compress-Archive -Path "build-plugins/$($_.BaseName)" -DestinationPath "build/${{ matrix.rid }}/Plugins/$($_.BaseName).zip";
+          }
+        shell: pwsh
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: artemis-${{ matrix.rid }}-${{ needs.version.outputs.version-number }}
+          path: build/${{ matrix.rid }}
+
+  notify:
+    name: Notify Backend of build
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: post thing
+        if: needs.build.result == 'success'
+        shell: pwsh
+        run: |
+          $tokenUri = "https://identity.artemis-rgb.com/connect/token"
+
+          $headers = @{
+              "Content-Type" = "application/x-www-form-urlencoded"
+          }
+
+          $body = @{
+              "grant_type" = "client_credentials"
+              "client_id" = "github.task-runners"
+              "client_secret" = "${{ secrets.UPDATE_SECRET }}"
+              "scope" = "artemis-updating.releases:retrieve"
+          }
+
+          $response = Invoke-RestMethod -Method Post -Uri $tokenUri -Body $body -Headers $headers
+          $accessToken = $response.access_token
+
+          $apiUri = "https://updating.artemis-rgb.com/api/github/retrieve-run/${{ github.run_id }}"
+          $authHeader = @{
+              "Authorization" = "Bearer $accessToken"
+          }
+
+          $updateResponse = Invoke-RestMethod -Method Post -Uri $apiUri -Headers $authHeader

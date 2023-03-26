@@ -1,5 +1,6 @@
 using Artemis.Core.Providers;
 using Artemis.Core.Services;
+using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Windows.Providers;
 using Artemis.UI.Windows.Providers.Input;
@@ -20,8 +21,8 @@ public static class UIContainerExtensions
     {
         container.Register<ICursorProvider, CursorProvider>(Reuse.Singleton);
         container.Register<IGraphicsContextProvider, GraphicsContextProvider>(Reuse.Singleton);
-        container.Register<IUpdateProvider, UpdateProvider>(Reuse.Singleton);
         container.Register<IAutoRunProvider, AutoRunProvider>();
         container.Register<InputProvider, WindowsInputProvider>(serviceKey: WindowsInputProvider.Id);
+        container.Register<IUpdateNotificationProvider, WindowsUpdateNotificationProvider>();
     }
 }

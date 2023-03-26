@@ -1,0 +1,65 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:settings="clr-namespace:Artemis.UI.Screens.Settings"
+             xmlns:updating="clr-namespace:Artemis.UI.Screens.Settings.Updating"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="1400"
+             x:Class="Artemis.UI.Screens.Settings.ReleasesTabView"
+             x:DataType="settings:ReleasesTabViewModel">
+    <UserControl.Styles>
+        <Style Selector="avalonia|MaterialIcon.status-icon">
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight1}" />
+        </Style>
+    </UserControl.Styles>
+    <Panel>
+        <StackPanel VerticalAlignment="Center" MaxWidth="300" Spacing="15" IsVisible="{CompiledBinding Loading}">
+            <TextBlock TextAlignment="Center">Loading releases...</TextBlock>
+            <ProgressBar IsVisible="True"></ProgressBar>
+        </StackPanel>
+        <Panel IsVisible="{CompiledBinding !Loading}">
+            <StackPanel VerticalAlignment="Center" Spacing="15" IsVisible="{CompiledBinding !ReleaseViewModels.Count}">
+                <TextBlock TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           Text="{CompiledBinding Channel, StringFormat='Found no releases for the \'{0}\' channel.'}">
+                </TextBlock>
+                <controls:HyperlinkButton NavigateUri="https://wiki.artemis-rgb.com/en/channels"
+                                          HorizontalAlignment="Center">
+                    Learn more about channels on the wiki
+                </controls:HyperlinkButton>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="300,*" Margin="0 10" IsVisible="{CompiledBinding ReleaseViewModels.Count}">
+                <Border Classes="card-condensed" Grid.Column="0" Margin="0 0 10 0">
+                    <ListBox Items="{CompiledBinding ReleaseViewModels}" SelectedItem="{CompiledBinding SelectedReleaseViewModel}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="updating:ReleaseViewModel">
+                                <Panel>
+                                    <Grid Margin="4" IsVisible="{CompiledBinding ShowStatusIndicator}" RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{CompiledBinding Version}" VerticalAlignment="Center" FontWeight="SemiBold" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{CompiledBinding CreatedAt, StringFormat={}{0:g}}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
+                                        <avalonia:MaterialIcon Classes="status-icon" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Kind="CheckCircle" ToolTip.Tip="Current version"
+                                                               IsVisible="{CompiledBinding IsCurrentVersion}" />
+                                        <avalonia:MaterialIcon Classes="status-icon" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Kind="History" ToolTip.Tip="Previous version"
+                                                               IsVisible="{CompiledBinding IsPreviousVersion}" />
+                                    </Grid>
+                                    <StackPanel Margin="4" IsVisible="{CompiledBinding !ShowStatusIndicator}">
+                                        <TextBlock Text="{CompiledBinding Version}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{CompiledBinding CreatedAt, StringFormat={}{0:g}}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
+                                    </StackPanel>
+                                </Panel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
+
+                <ContentControl Grid.Column="1" Content="{CompiledBinding SelectedReleaseViewModel}" />
+            </Grid>
+        </Panel>
+    </Panel>
+</UserControl>

@@ -6,10 +6,13 @@ namespace Artemis.UI.Screens.Settings;
 
 public class SettingsViewModel : MainScreenViewModel
 {
+    private ActivatableViewModelBase _selectedTab;
+
     public SettingsViewModel(IScreen hostScreen,
         GeneralTabViewModel generalTabViewModel,
         PluginsTabViewModel pluginsTabViewModel,
         DevicesTabViewModel devicesTabViewModel,
+        ReleasesTabViewModel releasesTabViewModel,
         AboutTabViewModel aboutTabViewModel) : base(hostScreen, "settings")
     {
         SettingTabs = new ObservableCollection<ActivatableViewModelBase>
@@ -17,9 +20,17 @@ public class SettingsViewModel : MainScreenViewModel
             generalTabViewModel,
             pluginsTabViewModel,
             devicesTabViewModel,
+            releasesTabViewModel,
             aboutTabViewModel
         };
+        _selectedTab = generalTabViewModel;
     }
 
     public ObservableCollection<ActivatableViewModelBase> SettingTabs { get; }
+
+    public ActivatableViewModelBase SelectedTab
+    {
+        get => _selectedTab;
+        set => RaiseAndSetIfChanged(ref _selectedTab, value);
+    }
 }

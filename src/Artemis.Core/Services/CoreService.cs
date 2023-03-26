@@ -200,23 +200,17 @@ internal class CoreService : ICoreService
         if (IsInitialized)
             throw new ArtemisCoreException("Cannot initialize the core as it is already initialized.");
 
-        AssemblyInformationalVersionAttribute? versionAttribute = typeof(CoreService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-        _logger.Information(
-            "Initializing Artemis Core version {version}, build {buildNumber} branch {branch}.",
-            versionAttribute?.InformationalVersion,
-            Constants.BuildInfo.BuildNumber,
-            Constants.BuildInfo.SourceBranch
-        );
-        _logger.Information("Startup arguments: {args}", Constants.StartupArguments);
-        _logger.Information("Elevated permissions: {perms}", IsElevated);
-        _logger.Information("Stopwatch high resolution: {perms}", Stopwatch.IsHighResolution);
+        _logger.Information("Initializing Artemis Core version {CurrentVersion}", Constants.CurrentVersion);
+        _logger.Information("Startup arguments: {StartupArguments}", Constants.StartupArguments);
+        _logger.Information("Elevated permissions: {IsElevated}", IsElevated);
+        _logger.Information("Stopwatch high resolution: {IsHighResolution}", Stopwatch.IsHighResolution);
 
         ApplyLoggingLevel();
 
         // Don't remove even if it looks useless
         // Just this line should prevent a certain someone from removing HidSharp as an unused dependency as well
         Version? hidSharpVersion = Assembly.GetAssembly(typeof(HidDevice))!.GetName().Version;
-        _logger.Debug("Forcing plugins to use HidSharp {hidSharpVersion}", hidSharpVersion);
+        _logger.Debug("Forcing plugins to use HidSharp {HidSharpVersion}", hidSharpVersion);
 
         // Initialize the services
         _pluginManagementService.CopyBuiltInPlugins();

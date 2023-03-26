@@ -1,0 +1,26 @@
+query GetReleaseById($id: UUID!) {
+    publishedRelease(id: $id) {
+        branch
+        commit
+        version
+        previousRelease {
+            version
+        }
+        changelog
+        artifacts {
+            platform
+            artifactId
+            fileInfo {
+                ...fileInfo
+            }
+            deltaFileInfo {
+                ...fileInfo
+            }
+        }
+    }
+}
+
+fragment fileInfo on ArtifactFileInfo {
+    md5Hash
+    downloadSize
+}

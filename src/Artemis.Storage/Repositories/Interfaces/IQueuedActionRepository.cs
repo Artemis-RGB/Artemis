@@ -9,4 +9,6 @@ public interface IQueuedActionRepository : IRepository
     void Remove(QueuedActionEntity queuedActionEntity);
     List<QueuedActionEntity> GetAll();
     List<QueuedActionEntity> GetByType(string type);
+    bool IsTypeQueued(string type);
+    void ClearByType(string type);
 }

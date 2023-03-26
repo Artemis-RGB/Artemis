@@ -12,9 +12,11 @@ using Artemis.Core.Providers;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.StartupWizard;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Builders;
 using Avalonia.Threading;
 using DryIoc;
 using DynamicData;
@@ -30,6 +32,7 @@ public class GeneralTabViewModel : ActivatableViewModelBase
     private readonly PluginSetting<LayerBrushReference> _defaultLayerBrushDescriptor;
     private readonly ISettingsService _settingsService;
     private readonly IUpdateService _updateService;
+    private readonly INotificationService _notificationService;
     private readonly IWindowService _windowService;
     private bool _startupWizardOpen;
 
@@ -38,13 +41,15 @@ public class GeneralTabViewModel : ActivatableViewModelBase
         IPluginManagementService pluginManagementService,
         IDebugService debugService,
         IWindowService windowService,
-        IUpdateService updateService)
+        IUpdateService updateService,
+        INotificationService notificationService)
     {
         DisplayName = "General";
         _settingsService = settingsService;
         _debugService = debugService;
         _windowService = windowService;
         _updateService = updateService;
+        _notificationService = notificationService;
         _autoRunProvider = container.Resolve<IAutoRunProvider>(IfUnresolved.ReturnDefault);
 
         List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
@@ -88,7 +93,6 @@ public class GeneralTabViewModel : ActivatableViewModelBase
     public ReactiveCommand<Unit, Unit> ShowDataFolder { get; }
 
     public bool IsAutoRunSupported => _autoRunProvider != null;
-    public bool IsUpdatingSupported => _updateService.UpdatingSupported;
 
     public ObservableCollection<LayerBrushDescriptor> LayerBrushDescriptors { get; }
     public ObservableCollection<string> GraphicsContexts { get; }
@@ -142,8 +146,8 @@ public class GeneralTabViewModel : ActivatableViewModelBase
     public PluginSetting<bool> UIAutoRun => _settingsService.GetSetting("UI.AutoRun", false);
     public PluginSetting<int> UIAutoRunDelay => _settingsService.GetSetting("UI.AutoRunDelay", 15);
     public PluginSetting<bool> UIShowOnStartup => _settingsService.GetSetting("UI.ShowOnStartup", true);
-    public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.CheckForUpdates", true);
-    public PluginSetting<bool> UIAutoUpdate => _settingsService.GetSetting("UI.AutoUpdate", false);
+    public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.Updating.AutoCheck", true);
+    public PluginSetting<bool> UIAutoUpdate => _settingsService.GetSetting("UI.Updating.AutoInstall", true);
     public PluginSetting<bool> ProfileEditorShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
     public PluginSetting<LogEventLevel> CoreLoggingLevel => _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information);
     public PluginSetting<string> CorePreferredGraphicsContext => _settingsService.GetSetting("Core.PreferredGraphicsContext", "Software");
@@ -159,7 +163,25 @@ public class GeneralTabViewModel : ActivatableViewModelBase
 
     private async Task ExecuteCheckForUpdate(CancellationToken cancellationToken)
     {
-        await _updateService.ManualUpdate();
+        try
+        {
+            // If an update was available a popup was shown, no need to continue
+            if (await _updateService.CheckForUpdate())
+                return;
+
+            _notificationService.CreateNotification()
+                .WithTitle("No update available")
+                .WithMessage("You are running the latest version in your current channel")
+                .Show();
+        }
+        catch (Exception e)
+        {
+            _notificationService.CreateNotification()
+                .WithTitle("Failed to check for update")
+                .WithMessage(e.Message)
+                .WithSeverity(NotificationSeverity.Warning)
+                .Show();
+        }
     }
 
     private async Task ExecuteShowSetupWizard()

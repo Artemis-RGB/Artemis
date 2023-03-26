@@ -11,6 +11,7 @@ using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Shared.Services;
@@ -24,29 +25,29 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
     private readonly IAutoRunProvider? _autoRunProvider;
     private readonly IRgbService _rgbService;
     private readonly ISettingsService _settingsService;
-    private readonly IUpdateService _updateService;
     private readonly IWindowService _windowService;
     private int _currentStep;
     private bool _showContinue;
     private bool _showFinish;
     private bool _showGoBack;
 
-    public StartupWizardViewModel(IContainer container, ISettingsService settingsService, IRgbService rgbService, IPluginManagementService pluginManagementService, IWindowService windowService,
-        IUpdateService updateService, ISettingsVmFactory settingsVmFactory)
+    public StartupWizardViewModel(IContainer container,
+        ISettingsService settingsService,
+        IRgbService rgbService,
+        IPluginManagementService pluginManagementService,
+        IWindowService windowService,
+        ISettingsVmFactory settingsVmFactory)
     {
         _settingsService = settingsService;
         _rgbService = rgbService;
         _windowService = windowService;
-        _updateService = updateService;
         _autoRunProvider = container.Resolve<IAutoRunProvider>(IfUnresolved.ReturnDefault);
 
         Continue = ReactiveCommand.Create(ExecuteContinue);
         GoBack = ReactiveCommand.Create(ExecuteGoBack);
         SkipOrFinishWizard = ReactiveCommand.Create(ExecuteSkipOrFinishWizard);
         SelectLayout = ReactiveCommand.Create<string>(ExecuteSelectLayout);
-
-        AssemblyInformationalVersionAttribute? versionAttribute = typeof(StartupWizardViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-        Version = $"Version {versionAttribute?.InformationalVersion} build {Constants.BuildInfo.BuildNumberDisplay}";
+        Version = $"Version {Constants.CurrentVersion}";
 
         // Take all compatible plugins that have an always-enabled device provider
         DeviceProviders = new ObservableCollection<PluginViewModel>(pluginManagementService.GetAllPlugins()
@@ -81,13 +82,12 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
     public ObservableCollection<PluginViewModel> DeviceProviders { get; }
 
     public bool IsAutoRunSupported => _autoRunProvider != null;
-    public bool IsUpdatingSupported => _updateService.UpdatingSupported;
 
     public PluginSetting<bool> UIAutoRun => _settingsService.GetSetting("UI.AutoRun", false);
     public PluginSetting<int> UIAutoRunDelay => _settingsService.GetSetting("UI.AutoRunDelay", 15);
     public PluginSetting<bool> UIShowOnStartup => _settingsService.GetSetting("UI.ShowOnStartup", true);
-    public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.CheckForUpdates", true);
-    public PluginSetting<bool> UIAutoUpdate => _settingsService.GetSetting("UI.AutoUpdate", false);
+    public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.Updating.AutoCheck", true);
+    public PluginSetting<bool> UIAutoUpdate => _settingsService.GetSetting("UI.Updating.AutoInstall", true);
 
     public int CurrentStep
     {
@@ -119,7 +119,7 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
             CurrentStep--;
 
         // Skip the settings step if none of it's contents are supported
-        if (CurrentStep == 4 && !IsAutoRunSupported && !IsUpdatingSupported)
+        if (CurrentStep == 4 && !IsAutoRunSupported)
             CurrentStep--;
 
         SetupButtons();
@@ -131,7 +131,7 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
             CurrentStep++;
 
         // Skip the settings step if none of it's contents are supported
-        if (CurrentStep == 4 && !IsAutoRunSupported && !IsUpdatingSupported)
+        if (CurrentStep == 4 && !IsAutoRunSupported)
             CurrentStep++;
 
         SetupButtons();

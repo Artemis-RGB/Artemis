@@ -163,21 +163,16 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
     /// </summary>
     /// <param name="looseMatch">Whether the type may be a loose match, meaning it can be cast or converted</param>
     /// <param name="filteredTypes">The types to filter</param>
-    public void ApplyTypeFilter(bool looseMatch, params Type[]? filteredTypes)
+    public void ApplyTypeFilter(bool looseMatch, params Type?[]? filteredTypes)
     {
         if (filteredTypes != null)
-        {
-            if (filteredTypes.All(t => t == null))
-                filteredTypes = null;
-            else
-                filteredTypes = filteredTypes.Where(t => t != null).ToArray();
-        }
+            filteredTypes = filteredTypes.All(t => t == null) ? null : filteredTypes.Where(t => t != null).ToArray();
 
         // If the VM has children, its own type is not relevant
         if (Children.Any())
         {
             foreach (DataModelVisualizationViewModel child in Children)
-                child?.ApplyTypeFilter(looseMatch, filteredTypes);
+                child.ApplyTypeFilter(looseMatch, filteredTypes);
 
             IsMatchingFilteredTypes = true;
             return;
@@ -199,7 +194,7 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
         }
 
         if (looseMatch)
-            IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(type) ||
+            IsMatchingFilteredTypes = filteredTypes.Any(t => t!.IsCastableFrom(type) ||
                                                              (t == typeof(Enum) && type.IsEnum) ||
                                                              (t == typeof(IEnumerable<>) && type.IsGenericEnumerable()) ||
                                                              (type.IsGenericType && t == type.GetGenericTypeDefinition()));
@@ -287,7 +282,7 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
             foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(t => t.MetadataToken))
             {
                 string childPath = AppendToPath(propertyInfo.Name);
-                if (Children.Any(c => c?.Path != null && c.Path.Equals(childPath)))
+                if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))
                     continue;
                 if (propertyInfo.GetCustomAttribute<DataModelIgnoreAttribute>() != null)
                     continue;
