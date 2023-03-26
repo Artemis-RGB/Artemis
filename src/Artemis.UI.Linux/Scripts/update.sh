@@ -48,13 +48,9 @@ sleep 1
 
 # When finished, start Artemis again
 
-# If the user has specified arguments, pass them to the executable
-if [ -z "$artemisArgs" ]
-then
-    "$destinationDirectory/Artemis.UI.Linux" &
-else
-    "$destinationDirectory/Artemis.UI.Linux" "$artemisArgs" &
-fi
+# quoting here breaks stuff, all arguments count as 1
+# shellcheck disable=SC2086 
+"$destinationDirectory/Artemis.UI.Linux" $artemisArgs &
 
 
 
