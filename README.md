@@ -1,5 +1,5 @@
 # Artemis
-[![Build Status](https://dev.azure.com/artemis-rgb/Artemis/_apis/build/status/Artemis%20Development%20build?repoName=Artemis-RGB%2FArtemis&branchName=master)](https://dev.azure.com/artemis-rgb/Artemis/_build/latest?definitionId=1&repoName=Artemis-RGB%2FArtemis&branchName=master)
+[![Master - Build](https://github.com/Artemis-RGB/Artemis/actions/workflows/master.yml/badge.svg)](https://github.com/Artemis-RGB/Artemis/actions/workflows/master.yml)
 [![GitHub release](https://img.shields.io/github/release/spoinkynl/Artemis.svg)](https://github.com/SpoinkyNL/Artemis/releases)
 [![GitHub license](https://img.shields.io/badge/license-noncommercial-blue.svg)](https://github.com/SpoinkyNL/Artemis/blob/master/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/SpoinkyNL/Artemis.svg)](https://github.com/SpoinkyNL/Artemis/stargazers)

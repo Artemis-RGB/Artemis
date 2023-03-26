@@ -1,4 +1,4 @@
-name: Master - Build & Upload to Ftp
+name: Master - Build
 
 on: 
   workflow_dispatch:
