@@ -24,6 +24,7 @@ public class UpdateService : IUpdateService
     private readonly Func<Guid, ReleaseInstaller> _getReleaseInstaller;
 
     private readonly ILogger _logger;
+    private readonly IMainWindowService _mainWindowService;
     private readonly IReleaseRepository _releaseRepository;
     private readonly Lazy<IUpdateNotificationProvider> _updateNotificationProvider;
     private readonly Platform _updatePlatform;
@@ -40,6 +41,7 @@ public class UpdateService : IUpdateService
         Func<Guid, ReleaseInstaller> getReleaseInstaller)
     {
         _logger = logger;
+        _mainWindowService = mainWindowService;
         _updatingClient = updatingClient;
         _releaseRepository = releaseRepository;
         _updateNotificationProvider = updateNotificationProvider;
@@ -55,7 +57,7 @@ public class UpdateService : IUpdateService
             throw new PlatformNotSupportedException("Cannot auto update on the current platform");
 
         _autoCheck = settingsService.GetSetting("UI.Updating.AutoCheck", true);
-        _autoInstall = settingsService.GetSetting("UI.Updating.AutoInstall", false);
+        _autoInstall = settingsService.GetSetting("UI.Updating.AutoInstall", true);
         _autoCheck.SettingChanged += HandleAutoUpdateEvent;
         mainWindowService.MainWindowOpened += HandleAutoUpdateEvent;
         Timer timer = new(UPDATE_CHECK_INTERVAL);
@@ -102,7 +104,7 @@ public class UpdateService : IUpdateService
     {
         ReleaseInstaller installer = _getReleaseInstaller(release.Id);
         await installer.InstallAsync(CancellationToken.None);
-        Utilities.ApplyUpdate(true);
+        RestartForUpdate(true);
     }
 
     private async void HandleAutoUpdateEvent(object? sender, EventArgs e)
@@ -156,11 +158,12 @@ public class UpdateService : IUpdateService
         if (CachedLatestRelease == null)
             return false;
 
-        // Only offer it once per session 
-        _suspendAutoCheck = true;
+        // Unless auto install is enabled, only offer it once per session 
+        if (!_autoInstall.Value)
+            _suspendAutoCheck = true;
 
         // If the window is open show the changelog, don't auto-update while the user is busy
-        if (!_autoInstall.Value)
+        if (_mainWindowService.IsMainWindowOpen || !_autoInstall.Value)
             ShowUpdateNotification(CachedLatestRelease);
         else
             await AutoInstallUpdate(CachedLatestRelease);
