@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# This script is used to update Artemis on Linux.
-# Arguments:
-#    $1 = sourceDirectory, the directory where the new files are located
-#    $2 = destinationDirectory, the directory where the old files are located
-#    $3 = artemisArgs, the arguments to pass to the Artemis executable
-
 sourceDirectory=$1
 destinationDirectory=$2
 artemisArgs=$3
@@ -45,6 +39,9 @@ mv "$sourceDirectory"/* "$destinationDirectory"
 
 # Remove the now empty source directory
 rmdir "$sourceDirectory"
+
+# Ensure the executable is executable
+chmod +x "$destinationDirectory/Artemis.UI.Linux"
 
 echo "Finished! Restarting Artemis"
 sleep 1
