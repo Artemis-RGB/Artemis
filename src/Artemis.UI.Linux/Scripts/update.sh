@@ -10,11 +10,6 @@ sourceDirectory=$1
 destinationDirectory=$2
 artemisArgs=$3
 
-echo "sourceDirectory $sourceDirectory"
-echo "destinationDirectory $destinationDirectory"
-echo "artemisArgs $artemisArgs"
-exit 0
-
 # Wait for up to 10 seconds for the Artemis process to exit
 i=0
 while [ $i -le 10 ]
@@ -42,7 +37,7 @@ fi
 
 # Clear the destination directory but don't remove it
 echo "Cleaning up old version where needed"
-rm -rf "{$destinationDirectory:?}/"*
+rm -rf "${destinationDirectory:?}/"*
 
 # Move the contents of the source directory to the destination directory
 echo "Installing new files"
@@ -59,9 +54,9 @@ sleep 1
 # If the user has specified arguments, pass them to the executable
 if [ -z "$artemisArgs" ]
 then
-    "$1/Artemis.UI.Linux" &
+    "$destinationDirectory/Artemis.UI.Linux" &
 else
-    "$1/Artemis.UI.Linux" "$artemisArgs" &
+    "$destinationDirectory/Artemis.UI.Linux" "$artemisArgs" &
 fi
 
 
