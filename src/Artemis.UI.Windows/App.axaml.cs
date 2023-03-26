@@ -43,9 +43,9 @@ public class App : Application
     {
         if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop || Design.IsDesignMode || _shutDown)
             return;
-
-        ArtemisBootstrapper.Initialize();
+        
         _applicationStateManager = new ApplicationStateManager(_container!, desktop.Args);
+        ArtemisBootstrapper.Initialize();
         RegisterProviders(_container!);
     }
 

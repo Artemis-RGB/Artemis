@@ -4,6 +4,7 @@ using Artemis.UI.DryIoc.InstanceProviders;
 using Artemis.UI.Screens;
 using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.ProfileEditor;
@@ -30,13 +31,13 @@ public static class ContainerExtensions
         container.Register<IAssetLoader, AssetLoader>(Reuse.Singleton);
         
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<ViewModelBase>());
-        container.RegisterMany(thisAssembly, type => type.IsAssignableTo<MainScreenViewModel>(), ifAlreadyRegistered: IfAlreadyRegistered.Replace);
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IToolViewModel>() && type.IsInterface);
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IVmFactory>() && type != typeof(PropertyVmFactory));
 
         container.Register<NodeScriptWindowViewModelBase, NodeScriptWindowViewModel>(Reuse.Singleton);
         container.Register<IPropertyVmFactory, PropertyVmFactory>(Reuse.Singleton);
-
+        container.Register<IUpdateNotificationProvider, BasicUpdateNotificationProvider>();
+        
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IArtemisUIService>(), Reuse.Singleton);
     }
 }

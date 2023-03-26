@@ -109,22 +109,26 @@ internal class ProfileService : IProfileService
         if (profileConfiguration.HotkeyMode == ProfileConfigurationHotkeyMode.None)
             return;
 
+        bool before = profileConfiguration.IsSuspended;
         foreach (ArtemisKeyboardKeyEventArgs e in _pendingKeyboardEvents)
         {
             if (profileConfiguration.HotkeyMode == ProfileConfigurationHotkeyMode.Toggle)
             {
-                if (profileConfiguration.EnableHotkey != null &&
-                    profileConfiguration.EnableHotkey.MatchesEventArgs(e))
+                if (profileConfiguration.EnableHotkey != null && profileConfiguration.EnableHotkey.MatchesEventArgs(e))
                     profileConfiguration.IsSuspended = !profileConfiguration.IsSuspended;
             }
             else
             {
                 if (profileConfiguration.IsSuspended && profileConfiguration.EnableHotkey != null && profileConfiguration.EnableHotkey.MatchesEventArgs(e))
                     profileConfiguration.IsSuspended = false;
-                if (!profileConfiguration.IsSuspended && profileConfiguration.DisableHotkey != null && profileConfiguration.DisableHotkey.MatchesEventArgs(e))
+                else if (!profileConfiguration.IsSuspended && profileConfiguration.DisableHotkey != null && profileConfiguration.DisableHotkey.MatchesEventArgs(e))
                     profileConfiguration.IsSuspended = true;
             }
         }
+        
+        // If suspension was changed, save the category
+        if (before != profileConfiguration.IsSuspended)
+            SaveProfileCategory(profileConfiguration.Category);
     }
 
     private void CreateDefaultProfileCategories()
@@ -422,7 +426,7 @@ internal class ProfileService : IProfileService
             _profileCategories.Remove(profileCategory);
             _profileCategoryRepository.Remove(profileCategory.Entity);
         }
-        
+
         OnProfileCategoryRemoved(new ProfileCategoryEventArgs(profileCategory));
     }
 

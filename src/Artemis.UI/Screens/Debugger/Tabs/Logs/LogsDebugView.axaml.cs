@@ -49,7 +49,7 @@ public class LogsDebugView : ReactiveUserControl<LogsDebugViewModel>
         //we need this help distance because of rounding.
         //if we scroll slightly above the end, we still want it
         //to scroll down to the new lines.
-        const double graceDistance = 1d;
+        const double GRACE_DISTANCE = 1d;
 
         //if we were at the bottom of the log and
         //if the last log event was 5 lines long
@@ -59,7 +59,7 @@ public class LogsDebugView : ReactiveUserControl<LogsDebugViewModel>
         //if we are more than that out of sync,
         //the user scrolled up and we should not
         //mess with anything.
-        if (_lineCount == 0 || linesAdded + graceDistance >  outOfScreenLines)
+        if (_lineCount == 0 || linesAdded + GRACE_DISTANCE >  outOfScreenLines)
         {
             Dispatcher.UIThread.Post(() => _textEditor.ScrollToEnd(), DispatcherPriority.ApplicationIdle);
             _lineCount = _textEditor.LineCount;

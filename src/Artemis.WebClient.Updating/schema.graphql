@@ -1,0 +1,319 @@
+﻿# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type ArtemisChannel {
+    branch: String!
+    releases: Int!
+}
+
+type Artifact {
+    artifactId: Long!
+    deltaFileInfo: ArtifactFileInfo!
+    fileInfo: ArtifactFileInfo!
+    id: UUID!
+    platform: Platform!
+}
+
+type ArtifactFileInfo {
+    downloadSize: Long!
+    downloads: Long!
+    id: UUID!
+    md5Hash: String
+}
+
+"Information about the offset pagination."
+type CollectionSegmentInfo {
+    "Indicates whether more items exist following the set defined by the clients arguments."
+    hasNextPage: Boolean!
+    "Indicates whether more items exist prior the set defined by the clients arguments."
+    hasPreviousPage: Boolean!
+}
+
+type Mutation {
+    updateReleaseChangelog(input: UpdateReleaseChangelogInput!): UpdateReleaseChangelogPayload!
+}
+
+"Information about pagination in a connection."
+type PageInfo {
+    "When paginating forwards, the cursor to continue."
+    endCursor: String
+    "Indicates whether more edges exist following the set defined by the clients arguments."
+    hasNextPage: Boolean!
+    "Indicates whether more edges exist prior the set defined by the clients arguments."
+    hasPreviousPage: Boolean!
+    "When paginating backwards, the cursor to continue."
+    startCursor: String
+}
+
+"A connection to a list of items."
+type PublishedReleasesConnection {
+    "A list of edges."
+    edges: [PublishedReleasesEdge!]
+    "A flattened list of the nodes."
+    nodes: [Release!]
+    "Information to aid in pagination."
+    pageInfo: PageInfo!
+    "Identifies the total count of items in the connection."
+    totalCount: Int!
+}
+
+"An edge in a connection."
+type PublishedReleasesEdge {
+    "A cursor for use in pagination."
+    cursor: String!
+    "The item at the end of the edge."
+    node: Release!
+}
+
+type Query {
+    channelByBranch(branch: String!): ArtemisChannel
+    channels: [ArtemisChannel!]!
+    nextPublishedRelease(branch: String!, platform: Platform!, version: String): Release
+    publishedChannels: [String!]!
+    publishedRelease(id: UUID!): Release
+    publishedReleases(
+        "Returns the elements in the list that come after the specified cursor."
+        after: String,
+        "Returns the elements in the list that come before the specified cursor."
+        before: String,
+        "Returns the first _n_ elements from the list."
+        first: Int,
+        "Returns the last _n_ elements from the list."
+        last: Int,
+        order: [ReleaseSortInput!],
+        where: ReleaseFilterInput
+    ): PublishedReleasesConnection
+    release(id: UUID!): Release
+    releaseStatistics(order: [ReleaseStatisticSortInput!], where: ReleaseStatisticFilterInput): [ReleaseStatistic!]!
+    releases(order: [ReleaseSortInput!], skip: Int, take: Int, where: ReleaseFilterInput): ReleasesCollectionSegment
+}
+
+type Release {
+    artifacts: [Artifact!]!
+    branch: String!
+    changelog: String!
+    commit: String!
+    createdAt: DateTime!
+    id: UUID!
+    isDraft: Boolean!
+    previousRelease: Release
+    version: String!
+    workflowRunId: Long!
+}
+
+type ReleaseStatistic {
+    count: Int!
+    lastReportedUsage: DateTime!
+    linuxCount: Int!
+    osxCount: Int!
+    releaseId: UUID!
+    windowsCount: Int!
+}
+
+"A segment of a collection."
+type ReleasesCollectionSegment {
+    "A flattened list of the items."
+    items: [Release!]
+    "Information to aid in pagination."
+    pageInfo: CollectionSegmentInfo!
+    totalCount: Int!
+}
+
+type UpdateReleaseChangelogPayload {
+    release: Release
+}
+
+enum ApplyPolicy {
+    AFTER_RESOLVER
+    BEFORE_RESOLVER
+    VALIDATION
+}
+
+enum Platform {
+    LINUX
+    OSX
+    WINDOWS
+}
+
+enum SortEnumType {
+    ASC
+    DESC
+}
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime
+
+"The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1."
+scalar Long
+
+scalar UUID
+
+input ArtifactFileInfoFilterInput {
+    and: [ArtifactFileInfoFilterInput!]
+    downloadSize: LongOperationFilterInput
+    downloads: LongOperationFilterInput
+    id: UuidOperationFilterInput
+    md5Hash: StringOperationFilterInput
+    or: [ArtifactFileInfoFilterInput!]
+}
+
+input ArtifactFilterInput {
+    and: [ArtifactFilterInput!]
+    artifactId: LongOperationFilterInput
+    deltaFileInfo: ArtifactFileInfoFilterInput
+    fileInfo: ArtifactFileInfoFilterInput
+    id: UuidOperationFilterInput
+    or: [ArtifactFilterInput!]
+    platform: PlatformOperationFilterInput
+}
+
+input BooleanOperationFilterInput {
+    eq: Boolean
+    neq: Boolean
+}
+
+input DateTimeOperationFilterInput {
+    eq: DateTime
+    gt: DateTime
+    gte: DateTime
+    in: [DateTime]
+    lt: DateTime
+    lte: DateTime
+    neq: DateTime
+    ngt: DateTime
+    ngte: DateTime
+    nin: [DateTime]
+    nlt: DateTime
+    nlte: DateTime
+}
+
+input IntOperationFilterInput {
+    eq: Int
+    gt: Int
+    gte: Int
+    in: [Int]
+    lt: Int
+    lte: Int
+    neq: Int
+    ngt: Int
+    ngte: Int
+    nin: [Int]
+    nlt: Int
+    nlte: Int
+}
+
+input ListFilterInputTypeOfArtifactFilterInput {
+    all: ArtifactFilterInput
+    any: Boolean
+    none: ArtifactFilterInput
+    some: ArtifactFilterInput
+}
+
+input LongOperationFilterInput {
+    eq: Long
+    gt: Long
+    gte: Long
+    in: [Long]
+    lt: Long
+    lte: Long
+    neq: Long
+    ngt: Long
+    ngte: Long
+    nin: [Long]
+    nlt: Long
+    nlte: Long
+}
+
+input PlatformOperationFilterInput {
+    eq: Platform
+    in: [Platform!]
+    neq: Platform
+    nin: [Platform!]
+}
+
+input ReleaseFilterInput {
+    and: [ReleaseFilterInput!]
+    artifacts: ListFilterInputTypeOfArtifactFilterInput
+    branch: StringOperationFilterInput
+    changelog: StringOperationFilterInput
+    commit: StringOperationFilterInput
+    createdAt: DateTimeOperationFilterInput
+    id: UuidOperationFilterInput
+    isDraft: BooleanOperationFilterInput
+    or: [ReleaseFilterInput!]
+    previousRelease: ReleaseFilterInput
+    version: StringOperationFilterInput
+    workflowRunId: LongOperationFilterInput
+}
+
+input ReleaseSortInput {
+    branch: SortEnumType
+    changelog: SortEnumType
+    commit: SortEnumType
+    createdAt: SortEnumType
+    id: SortEnumType
+    isDraft: SortEnumType
+    previousRelease: ReleaseSortInput
+    version: SortEnumType
+    workflowRunId: SortEnumType
+}
+
+input ReleaseStatisticFilterInput {
+    and: [ReleaseStatisticFilterInput!]
+    count: IntOperationFilterInput
+    lastReportedUsage: DateTimeOperationFilterInput
+    linuxCount: IntOperationFilterInput
+    or: [ReleaseStatisticFilterInput!]
+    osxCount: IntOperationFilterInput
+    releaseId: UuidOperationFilterInput
+    windowsCount: IntOperationFilterInput
+}
+
+input ReleaseStatisticSortInput {
+    count: SortEnumType
+    lastReportedUsage: SortEnumType
+    linuxCount: SortEnumType
+    osxCount: SortEnumType
+    releaseId: SortEnumType
+    windowsCount: SortEnumType
+}
+
+input StringOperationFilterInput {
+    and: [StringOperationFilterInput!]
+    contains: String
+    endsWith: String
+    eq: String
+    in: [String]
+    ncontains: String
+    nendsWith: String
+    neq: String
+    nin: [String]
+    nstartsWith: String
+    or: [StringOperationFilterInput!]
+    startsWith: String
+}
+
+input UpdateReleaseChangelogInput {
+    changelog: String!
+    id: UUID!
+    isDraft: Boolean!
+}
+
+input UuidOperationFilterInput {
+    eq: UUID
+    gt: UUID
+    gte: UUID
+    in: [UUID]
+    lt: UUID
+    lte: UUID
+    neq: UUID
+    ngt: UUID
+    ngte: UUID
+    nin: [UUID]
+    nlt: UUID
+    nlte: UUID
+}

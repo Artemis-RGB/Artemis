@@ -1,10 +1,17 @@
 ﻿using System;
+using ReactiveUI;
 
 namespace Artemis.UI.Shared.Services.MainWindow;
 
 internal class MainWindowService : IMainWindowService
 {
     private IMainWindowProvider? _mainWindowManager;
+
+    /// <inheritdoc />
+    public bool IsMainWindowOpen { get; private set; }
+
+    /// <inheritdoc />
+    public IScreen? HostScreen { get; set; }
 
     protected virtual void OnMainWindowOpened()
     {
@@ -63,8 +70,6 @@ internal class MainWindowService : IMainWindowService
     {
         OnMainWindowUnfocused();
     }
-
-    public bool IsMainWindowOpen { get; private set; }
 
     public void ConfigureMainWindowProvider(IMainWindowProvider mainWindowProvider)
     {

@@ -48,6 +48,10 @@ public static class Constants
     ///     The full path to the Artemis logs folder
     /// </summary>
     public static readonly string LogsFolder = Path.Combine(DataFolder, "Logs");
+    /// <summary>
+    ///     The full path to the Artemis logs folder
+    /// </summary>
+    public static readonly string UpdatingFolder = Path.Combine(DataFolder, "updating");
 
     /// <summary>
     ///     The full path to the Artemis plugins folder
@@ -62,31 +66,23 @@ public static class Constants
     /// <summary>
     ///     The current API version for plugins
     /// </summary>
-    public static readonly int PluginApiVersion = int.Parse(CoreAssembly.GetCustomAttributes<AssemblyMetadataAttribute>().First(a => a.Key == "PluginApiVersion").Value ?? 
+    public static readonly int PluginApiVersion = int.Parse(CoreAssembly.GetCustomAttributes<AssemblyMetadataAttribute>().FirstOrDefault(a => a.Key == "PluginApiVersion")?.Value ??
                                                             throw new InvalidOperationException("Cannot find PluginApiVersion metadata in assembly"));
+
+    /// <summary>
+    ///     The current version of the application
+    /// </summary>
+    public static readonly string CurrentVersion = CoreAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion != "1.0.0"
+        ? CoreAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion
+        : "local";
 
     /// <summary>
     ///     The plugin info used by core components of Artemis
     /// </summary>
     public static readonly PluginInfo CorePluginInfo = new()
     {
-        Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core", Version = new Version(2, 0)
+        Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core", Version = CurrentVersion
     };
-
-    /// <summary>
-    ///     The build information related to the currently running Artemis build
-    ///     <para>Information is retrieved from <c>buildinfo.json</c></para>
-    /// </summary>
-    public static readonly BuildInfo BuildInfo = File.Exists(Path.Combine(ApplicationFolder, "buildinfo.json"))
-        ? JsonConvert.DeserializeObject<BuildInfo>(File.ReadAllText(Path.Combine(ApplicationFolder, "buildinfo.json")))!
-        : new BuildInfo
-        {
-            IsLocalBuild = true,
-            BuildId = 1337,
-            BuildNumber = 1337,
-            SourceBranch = "local",
-            SourceVersion = "local"
-        };
 
     /// <summary>
     ///     The plugin used by core components of Artemis

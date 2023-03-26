@@ -109,7 +109,7 @@
 						<controls:HyperlinkButton Grid.Row="1"
 												  Grid.Column="0"
 												  HorizontalAlignment="Center"
-												  NavigateUri="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=VQBAEJYUFLU4J">
+												  NavigateUri="https://wiki.artemis-rgb.com/en/donating">
 							<StackPanel Orientation="Horizontal">
 								<avalonia:MaterialIcon Kind="Gift" />
 								<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Donate</TextBlock>

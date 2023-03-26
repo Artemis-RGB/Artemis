@@ -25,7 +25,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     private Plugin _plugin = null!;
     private Uri? _repository;
     private bool _requiresAdmin;
-    private Version _version = null!;
+    private string _version = null!;
     private Uri? _website;
 
     internal PluginInfo()
@@ -107,7 +107,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     ///     The version of the plugin
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    public Version Version
+    public string Version
     {
         get => _version;
         internal set => SetAndNotify(ref _version, value);

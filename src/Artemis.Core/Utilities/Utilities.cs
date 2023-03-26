@@ -21,6 +21,7 @@ public static class Utilities
         CreateAccessibleDirectory(Constants.DataFolder);
         CreateAccessibleDirectory(Constants.PluginsFolder);
         CreateAccessibleDirectory(Constants.LayoutsFolder);
+        CreateAccessibleDirectory(Constants.UpdatingFolder);
     }
 
     /// <summary>
@@ -48,6 +49,15 @@ public static class Utilities
             throw new ArtemisCoreException("Elevation on non-Windows platforms is not supported.");
 
         OnRestartRequested(new RestartEventArgs(elevate, delay, extraArgs.ToList()));
+    }
+
+    /// <summary>
+    ///     Applies a pending update
+    /// </summary>
+    /// <param name="silent">A boolean indicating whether to silently update or not.</param>
+    public static void ApplyUpdate(bool silent)
+    {
+        OnUpdateRequested(new UpdateEventArgs(silent));
     }
 
     /// <summary>
@@ -96,11 +106,16 @@ public static class Utilities
     ///     Occurs when the core has requested an application shutdown
     /// </summary>
     public static event EventHandler? ShutdownRequested;
-
+    
     /// <summary>
     ///     Occurs when the core has requested an application restart
     /// </summary>
     public static event EventHandler<RestartEventArgs>? RestartRequested;
+    
+    /// <summary>
+    ///     Occurs when the core has requested a pending application update to be applied
+    /// </summary>
+    public static event EventHandler<UpdateEventArgs>? UpdateRequested;
 
     /// <summary>
     ///     Opens the provided folder in the user's file explorer
@@ -135,6 +150,11 @@ public static class Utilities
     private static void OnShutdownRequested()
     {
         ShutdownRequested?.Invoke(null, EventArgs.Empty);
+    }
+    
+    private static void OnUpdateRequested(UpdateEventArgs e)
+    {
+        UpdateRequested?.Invoke(null, e);
     }
 
     #region Scaling

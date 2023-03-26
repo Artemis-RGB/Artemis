@@ -27,7 +27,8 @@
                   Width="200"
                   VerticalAlignment="Center"
                   Items="{CompiledBinding Descriptors}"
-                  SelectedItem="{CompiledBinding SelectedDescriptor}">
+                  SelectedItem="{CompiledBinding SelectedDescriptor}"
+                  PlaceholderText="Please select a brush">
             <ComboBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type layerBrushes:LayerBrushDescriptor}">
                     <Grid ColumnDefinitions="30,*" RowDefinitions="Auto,Auto">

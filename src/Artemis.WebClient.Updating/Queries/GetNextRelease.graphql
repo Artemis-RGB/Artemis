@@ -1,0 +1,6 @@
+query GetNextRelease($currentVersion: String, $branch: String!, $platform: Platform!) {
+    nextPublishedRelease(version: $currentVersion, branch: $branch, platform: $platform) {
+        id
+        version
+    }
+}

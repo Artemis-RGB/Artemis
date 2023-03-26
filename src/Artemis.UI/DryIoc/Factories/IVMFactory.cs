@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Reactive;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
@@ -17,6 +18,7 @@ using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
 using Artemis.UI.Screens.Scripting;
 using Artemis.UI.Screens.Settings;
+using Artemis.UI.Screens.Settings.Updating;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.VisualScripting;
@@ -473,5 +475,24 @@ public class ScriptVmFactory : IScriptVmFactory
     public ScriptConfigurationViewModel ScriptConfigurationViewModel(Profile profile, ScriptConfiguration scriptConfiguration)
     {
         return _container.Resolve<ScriptConfigurationViewModel>(new object[] { profile, scriptConfiguration });
+    }
+}
+
+public interface IReleaseVmFactory : IVmFactory
+{
+    ReleaseViewModel ReleaseListViewModel(Guid releaseId, string version, DateTimeOffset createdAt);
+}
+public class ReleaseVmFactory : IReleaseVmFactory
+{
+    private readonly IContainer _container;
+
+    public ReleaseVmFactory(IContainer container)
+    {
+        _container = container;
+    }
+    
+    public ReleaseViewModel ReleaseListViewModel(Guid releaseId, string version, DateTimeOffset createdAt)
+    {
+        return _container.Resolve<ReleaseViewModel>(new object[] { releaseId, version, createdAt });
     }
 }
