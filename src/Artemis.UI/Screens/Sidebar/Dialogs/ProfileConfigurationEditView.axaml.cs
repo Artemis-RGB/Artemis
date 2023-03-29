@@ -8,7 +8,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
 
-public class ProfileConfigurationEditView : ReactiveCoreWindow<ProfileConfigurationEditViewModel>
+public class ProfileConfigurationEditView : ReactiveAppWindow<ProfileConfigurationEditViewModel>
 {
     public ProfileConfigurationEditView()
     {

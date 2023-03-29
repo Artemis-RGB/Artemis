@@ -5,7 +5,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
 
-public class ColorGradientPropertyInputView : ReactiveUserControl<ColorGradientPropertyInputViewModel>
+public partial class ColorGradientPropertyInputView : ReactiveUserControl<ColorGradientPropertyInputViewModel>
 {
     public ColorGradientPropertyInputView()
     {

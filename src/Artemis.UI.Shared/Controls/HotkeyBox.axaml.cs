@@ -17,7 +17,7 @@ namespace Artemis.UI.Shared;
 /// <summary>
 ///     Represents a control that can be used to display or edit <see cref="Core.Hotkey" /> instances.
 /// </summary>
-public class HotkeyBox : UserControl
+public partial class HotkeyBox : UserControl
 {
     private readonly TextBox _displayTextBox;
 
@@ -32,11 +32,6 @@ public class HotkeyBox : UserControl
         _displayTextBox.KeyDown += DisplayTextBoxOnKeyDown;
         _displayTextBox.KeyUp += DisplayTextBoxOnKeyUp;
         UpdateDisplayTextBox();
-    }
-
-    private static void HotkeyChanging(IAvaloniaObject sender, bool before)
-    {
-        ((HotkeyBox) sender).UpdateDisplayTextBox();
     }
 
     private void DisplayTextBoxOnKeyDown(object? sender, KeyEventArgs e)
@@ -92,20 +87,17 @@ public class HotkeyBox : UserControl
     ///     Gets or sets the currently displayed icon as either a <see cref="MaterialIconKind" /> or an <see cref="Uri" />
     ///     pointing to an SVG
     /// </summary>
-    public static readonly StyledProperty<Hotkey?> HotkeyProperty =
-        AvaloniaProperty.Register<HotkeyBox, Hotkey?>(nameof(Hotkey), defaultBindingMode: BindingMode.TwoWay, notifying: HotkeyChanging);
+    public static readonly StyledProperty<Hotkey?> HotkeyProperty = AvaloniaProperty.Register<HotkeyBox, Hotkey?>(nameof(Hotkey), defaultBindingMode: BindingMode.TwoWay);
 
     /// <summary>
     ///     Gets or sets the watermark of the hotkey box when it is empty.
     /// </summary>
-    public static readonly StyledProperty<string?> WatermarkProperty =
-        AvaloniaProperty.Register<HotkeyBox, string?>(nameof(Watermark));
+    public static readonly StyledProperty<string?> WatermarkProperty = AvaloniaProperty.Register<HotkeyBox, string?>(nameof(Watermark));
 
     /// <summary>
     ///     Gets or sets a boolean indicating whether the watermark should float above the hotkey box when it is not empty.
     /// </summary>
-    public static readonly StyledProperty<bool> UseFloatingWatermarkProperty =
-        AvaloniaProperty.Register<HotkeyBox, bool>(nameof(UseFloatingWatermark));
+    public static readonly StyledProperty<bool> UseFloatingWatermarkProperty = AvaloniaProperty.Register<HotkeyBox, bool>(nameof(UseFloatingWatermark));
 
     /// <summary>
     ///     Gets or sets the currently displayed icon as either a <see cref="MaterialIconKind" /> or an <see cref="Uri" />
@@ -114,7 +106,11 @@ public class HotkeyBox : UserControl
     public Hotkey? Hotkey
     {
         get => GetValue(HotkeyProperty);
-        set => SetValue(HotkeyProperty, value);
+        set
+        {
+            SetValue(HotkeyProperty, value);
+            UpdateDisplayTextBox();
+        }
     }
 
     /// <summary>

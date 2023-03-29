@@ -15,7 +15,6 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Rendering;
 using Avalonia.Threading;
-using Avalonia.Visuals.Media.Imaging;
 
 namespace Artemis.UI.Shared;
 
@@ -123,7 +122,7 @@ public class DeviceVisualizer : Control
     private Rect MeasureDevice()
     {
         if (Device == null)
-            return Rect.Empty;
+            return new Rect(0, 0, 0, 0);
 
         Rect deviceRect = new(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
         Geometry geometry = new RectangleGeometry(deviceRect);
@@ -171,21 +170,19 @@ public class DeviceVisualizer : Control
     ///     Gets or sets the <see cref="ArtemisDevice" /> to display
     /// </summary>
     public static readonly StyledProperty<ArtemisDevice?> DeviceProperty =
-        AvaloniaProperty.Register<DeviceVisualizer, ArtemisDevice?>(nameof(Device), notifying: DeviceUpdated);
-
-    private static void DeviceUpdated(IAvaloniaObject sender, bool before)
-    {
-        if (!before)
-            ((DeviceVisualizer) sender).SetupForDevice();
-    }
-
+        AvaloniaProperty.Register<DeviceVisualizer, ArtemisDevice?>(nameof(Device));
+    
     /// <summary>
     ///     Gets or sets the <see cref="ArtemisDevice" /> to display
     /// </summary>
     public ArtemisDevice? Device
     {
         get => GetValue(DeviceProperty);
-        set => SetValue(DeviceProperty, value);
+        set
+        {
+            SetValue(DeviceProperty, value);
+            SetupForDevice();
+        }
     }
 
     /// <summary>
@@ -302,9 +299,9 @@ public class DeviceVisualizer : Control
                 // Render 4 times the actual size of the device to make sure things look sharp when zoomed in
                 RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) device.RgbDevice.ActualSize.Width * 2, (int) device.RgbDevice.ActualSize.Height * 2));
 
-                using IDrawingContextImpl context = renderTargetBitmap.CreateDrawingContext(new ImmediateRenderer(this));
+                using DrawingContext context = renderTargetBitmap.CreateDrawingContext();
                 using Bitmap bitmap = new(device.Layout.Image.LocalPath);
-                context.DrawBitmap(bitmap.PlatformImpl, 1, new Rect(bitmap.Size), new Rect(renderTargetBitmap.Size), BitmapInterpolationMode.HighQuality);
+                context.DrawImage(bitmap, new Rect(bitmap.Size), new Rect(renderTargetBitmap.Size), BitmapInterpolationMode.HighQuality);
 
                 lock (_deviceVisualizerLeds)
                 {

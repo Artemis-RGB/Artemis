@@ -11,7 +11,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.StartupWizard;
 
-public class StartupWizardView : ReactiveCoreWindow<StartupWizardViewModel>
+public class StartupWizardView : ReactiveAppWindow<StartupWizardViewModel>
 {
     private readonly Frame _frame;
 

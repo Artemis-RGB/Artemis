@@ -16,7 +16,7 @@ internal class GradientPickerColorStop : TemplatedControl
     ///     Gets or sets the gradient picker.
     /// </summary>
     public static readonly StyledProperty<GradientPicker?> GradientPickerProperty =
-        AvaloniaProperty.Register<GradientPickerColorStop, GradientPicker?>(nameof(GradientPicker), notifying: Notifying);
+        AvaloniaProperty.Register<GradientPickerColorStop, GradientPicker?>(nameof(GradientPicker));
 
     /// <summary>
     ///     Gets or sets the color stop.
@@ -28,8 +28,8 @@ internal class GradientPickerColorStop : TemplatedControl
     ///     Gets or sets the position reference to use when positioning and dragging this color stop.
     ///     <para>If <see langword="null" /> then dragging is not enabled.</para>
     /// </summary>
-    public static readonly StyledProperty<IControl?> PositionReferenceProperty =
-        AvaloniaProperty.Register<GradientPickerColorStop, IControl?>(nameof(PositionReference));
+    public static readonly StyledProperty<Control?> PositionReferenceProperty =
+        AvaloniaProperty.Register<GradientPickerColorStop, Control?>(nameof(PositionReference));
 
     /// <summary>
     ///     Gets the linear gradient brush representing the color gradient.
@@ -47,7 +47,16 @@ internal class GradientPickerColorStop : TemplatedControl
     public GradientPicker? GradientPicker
     {
         get => GetValue(GradientPickerProperty);
-        set => SetValue(GradientPickerProperty, value);
+        set
+        {
+            if (GradientPicker != null)
+                GradientPicker.PropertyChanged -= GradientPickerOnPropertyChanged;
+            SetValue(GradientPickerProperty, value);
+            if (GradientPicker != null)
+                GradientPicker.PropertyChanged += GradientPickerOnPropertyChanged;
+
+            IsSelected = ReferenceEquals(GradientPicker?.SelectedColorStop, ColorStop);
+        }
     }
 
     /// <summary>
@@ -63,7 +72,7 @@ internal class GradientPickerColorStop : TemplatedControl
     ///     Gets or sets the position reference to use when positioning and dragging this color stop.
     ///     <para>If <see langword="null" /> then dragging is not enabled.</para>
     /// </summary>
-    public IControl? PositionReference
+    public Control? PositionReference
     {
         get => GetValue(PositionReferenceProperty);
         set => SetValue(PositionReferenceProperty, value);
@@ -83,19 +92,6 @@ internal class GradientPickerColorStop : TemplatedControl
             else
                 PseudoClasses.Remove(":selected");
         }
-    }
-
-    private static void Notifying(IAvaloniaObject sender, bool before)
-    {
-        if (sender is not GradientPickerColorStop self)
-            return;
-
-        if (before && self.GradientPicker != null)
-            self.GradientPicker.PropertyChanged -= self.GradientPickerOnPropertyChanged;
-        else if (self.GradientPicker != null)
-            self.GradientPicker.PropertyChanged += self.GradientPickerOnPropertyChanged;
-
-        self.IsSelected = ReferenceEquals(self.GradientPicker?.SelectedColorStop, self.ColorStop);
     }
 
     private void GradientPickerOnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)

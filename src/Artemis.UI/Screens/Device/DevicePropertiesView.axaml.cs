@@ -7,7 +7,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.Device;
 
-public class DevicePropertiesView : ReactiveCoreWindow<DevicePropertiesViewModel>
+public class DevicePropertiesView : ReactiveAppWindow<DevicePropertiesViewModel>
 {
     public DevicePropertiesView()
     {

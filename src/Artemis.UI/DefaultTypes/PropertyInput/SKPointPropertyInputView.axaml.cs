@@ -5,7 +5,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
 
-public class SKPointPropertyInputView : ReactiveUserControl<SKPointPropertyInputViewModel>
+public partial class SKPointPropertyInputView : ReactiveUserControl<SKPointPropertyInputViewModel>
 {
     public SKPointPropertyInputView()
     {

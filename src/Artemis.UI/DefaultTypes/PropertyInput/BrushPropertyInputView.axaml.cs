@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
 
-public class BrushPropertyInputView : ReactiveUserControl<BrushPropertyInputViewModel>
+public partial class BrushPropertyInputView : ReactiveUserControl<BrushPropertyInputViewModel>
 {
     public BrushPropertyInputView()
     {

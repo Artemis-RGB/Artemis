@@ -27,7 +27,7 @@ public class GradientPicker : TemplatedControl
     ///     Gets or sets the color gradient.
     /// </summary>
     public static readonly StyledProperty<ColorGradient> ColorGradientProperty =
-        AvaloniaProperty.Register<GradientPicker, ColorGradient>(nameof(ColorGradient), notifying: ColorGradientChanged, defaultValue: ColorGradient.GetUnicornBarf());
+        AvaloniaProperty.Register<GradientPicker, ColorGradient>(nameof(ColorGradient), defaultValue: ColorGradient.GetUnicornBarf());
 
     /// <summary>
     ///     Gets or sets the currently selected color stop.
@@ -45,7 +45,7 @@ public class GradientPicker : TemplatedControl
     ///     Gets or sets a storage provider to use for storing and loading gradients.
     /// </summary>
     public static readonly StyledProperty<IColorGradientStorageProvider?> StorageProviderProperty =
-        AvaloniaProperty.Register<GradientPicker, IColorGradientStorageProvider?>(nameof(StorageProvider), notifying: StorageProviderChanged);
+        AvaloniaProperty.Register<GradientPicker, IColorGradientStorageProvider?>(nameof(StorageProvider));
 
     /// <summary>
     ///     Gets the linear gradient brush representing the color gradient.
@@ -66,7 +66,7 @@ public class GradientPicker : TemplatedControl
         AvaloniaProperty.RegisterDirect<GradientPicker, ColorGradient>(nameof(EditingColorGradient), g => g.EditingColorGradient);
 
     private readonly ICommand _deleteStop;
-    private ColorPicker? _colorPicker;
+    private FAColorPicker? _colorPicker;
     private Button? _flipStops;
     private Border? _gradient;
     private Button? _randomize;
@@ -102,7 +102,11 @@ public class GradientPicker : TemplatedControl
     public ColorGradient ColorGradient
     {
         get => GetValue(ColorGradientProperty);
-        set => SetValue(ColorGradientProperty, value);
+        set
+        {
+            SetValue(ColorGradientProperty, value);
+            ApplyToField();
+        }
     }
 
     /// <summary>
@@ -176,7 +180,7 @@ public class GradientPicker : TemplatedControl
         if (_randomize != null)
             _randomize.Click -= RandomizeOnClick;
 
-        _colorPicker = e.NameScope.Find<ColorPicker>("ColorPicker");
+        _colorPicker = e.NameScope.Find<FAColorPicker>("ColorPicker");
         _gradient = e.NameScope.Find<Border>("Gradient");
         _spreadStops = e.NameScope.Find<Button>("SpreadStops");
         _toggleSeamless = e.NameScope.Find<Button>("ToggleSeamless");
@@ -218,16 +222,6 @@ public class GradientPicker : TemplatedControl
         KeyDown -= OnKeyDown;
 
         _shiftDown = false;
-    }
-
-
-    private static void ColorGradientChanged(IAvaloniaObject sender, bool before)
-    {
-        (sender as GradientPicker)?.ApplyToField();
-    }
-
-    private static void StorageProviderChanged(IAvaloniaObject sender, bool before)
-    {
     }
 
     private void ApplyToField()

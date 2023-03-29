@@ -5,7 +5,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
 
-public class SKSizePropertyInputView : ReactiveUserControl<SKSizePropertyInputViewModel>
+public partial class SKSizePropertyInputView : ReactiveUserControl<SKSizePropertyInputViewModel>
 {
     public SKSizePropertyInputView()
     {

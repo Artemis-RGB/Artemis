@@ -13,7 +13,7 @@ using ReactiveUI;
 
 namespace Artemis.UI;
 
-public class MainWindow : ReactiveCoreWindow<RootViewModel>
+public class MainWindow : ReactiveAppWindow<RootViewModel>
 {
     private readonly Panel _rootPanel;
     private readonly ContentControl _sidebarContentControl;

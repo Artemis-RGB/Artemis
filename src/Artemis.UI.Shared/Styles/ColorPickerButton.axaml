@@ -3,13 +3,13 @@
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
     <Design.PreviewWith>
         <Border Padding="20">
-			<Grid Height="24" ColumnDefinitions="*">
+            <Grid Height="24" ColumnDefinitions="*">
                 <TextBox Classes="condensed"
                          Text="#FFFF0000"
                          Padding="2 2 30 2">
                 </TextBox>
                 <controls:ColorPickerButton Classes="contained-color-picker-button"
-                                            ShowAcceptDismissButtons="False"/>
+                                            ShowAcceptDismissButtons="False" />
             </Grid>
         </Border>
     </Design.PreviewWith>
@@ -27,19 +27,19 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <controls:Button Name="MainButton"
-                                     Padding="0"
-                                     BorderThickness="0"
-                                     CornerRadius="{TemplateBinding CornerRadius}">
+                    <Button Name="MainButton"
+                            Padding="0"
+                            BorderThickness="0"
+                            CornerRadius="{TemplateBinding CornerRadius}">
                         <Border BorderBrush="{DynamicResource ColorPickerButtonOutline}"
                                 BorderThickness="1"
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 MinWidth="18" MinHeight="18"
                                 Background="{TemplateBinding Color, Converter={StaticResource ColorBrushConv}}"
                                 CornerRadius="{TemplateBinding CornerRadius}">
-                            <controls:ColorPicker Name="ColorPicker" IsVisible="False" />
+                            <controls:FAColorPicker Name="ColorPicker" IsVisible="False" />
                         </Border>
-                    </controls:Button>
+                    </Button>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

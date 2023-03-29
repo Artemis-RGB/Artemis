@@ -5,7 +5,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.Scripting;
 
-public class ScriptsDialogView : ReactiveCoreWindow<ScriptsDialogViewModel>
+public class ScriptsDialogView : ReactiveAppWindow<ScriptsDialogViewModel>
 {
     private bool _canClose;
 

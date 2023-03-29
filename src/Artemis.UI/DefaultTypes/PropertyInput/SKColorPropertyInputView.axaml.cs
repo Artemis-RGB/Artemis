@@ -5,7 +5,7 @@ using FluentAvalonia.UI.Controls;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
 
-public class SKColorPropertyInputView : ReactiveUserControl<SKColorPropertyInputViewModel>
+public partial class SKColorPropertyInputView : ReactiveUserControl<SKColorPropertyInputViewModel>
 {
     public SKColorPropertyInputView()
     {

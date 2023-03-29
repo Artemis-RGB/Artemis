@@ -13,13 +13,12 @@ namespace Artemis.UI.Shared;
 /// <summary>
 ///     Represents a combobox that can display the values of an enum.
 /// </summary>
-public class EnumComboBox : UserControl
+public partial class EnumComboBox : UserControl
 {
     /// <summary>
     ///     Gets or sets the currently selected value
     /// </summary>
-    public static readonly StyledProperty<object?> ValueProperty =
-        AvaloniaProperty.Register<EnumComboBox, object?>(nameof(Value), defaultBindingMode: BindingMode.TwoWay, notifying: ValueChanged);
+    public static readonly StyledProperty<object?> ValueProperty = AvaloniaProperty.Register<EnumComboBox, object?>(nameof(Value), defaultBindingMode: BindingMode.TwoWay);
 
     private readonly ObservableCollection<(Enum, string)> _currentValues = new();
     private Type? _currentType;
@@ -40,15 +39,11 @@ public class EnumComboBox : UserControl
     public object? Value
     {
         get => GetValue(ValueProperty);
-        set => SetValue(ValueProperty, value);
-    }
-
-    private static void ValueChanged(IAvaloniaObject sender, bool before)
-    {
-        if (sender is EnumComboBox enumCombo && !before)
+        set
         {
-            enumCombo.UpdateValues();
-            enumCombo.UpdateSelection();
+            SetValue(ValueProperty, value);
+            UpdateValues();
+            UpdateSelection();
         }
     }
 

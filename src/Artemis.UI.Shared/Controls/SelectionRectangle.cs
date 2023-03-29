@@ -40,8 +40,8 @@ public class SelectionRectangle : Control
     /// <summary>
     ///     Defines the <see cref="InputElement" /> property.
     /// </summary>
-    public static readonly StyledProperty<IControl?> InputElementProperty =
-        AvaloniaProperty.Register<SelectionRectangle, IControl?>(nameof(InputElement), notifying: OnInputElementChanged);
+    public static readonly StyledProperty<InputElement?> InputElementProperty =
+        AvaloniaProperty.Register<SelectionRectangle, InputElement?>(nameof(InputElement));
 
     /// <summary>
     ///     Defines the <see cref="ZoomRatio" /> property.
@@ -61,7 +61,7 @@ public class SelectionRectangle : Control
     private Rect? _displayRect;
     private bool _isSelecting;
     private Point _lastPosition;
-    private IControl? _oldInputElement;
+    private InputElement? _oldInputElement;
     private Point _startPosition;
 
     /// <inheritdoc />
@@ -110,10 +110,14 @@ public class SelectionRectangle : Control
     /// <summary>
     ///     Gets or sets the element that captures input for the selection rectangle.
     /// </summary>
-    public IControl? InputElement
+    public InputElement? InputElement
     {
         get => GetValue(InputElementProperty);
-        set => SetValue(InputElementProperty, value);
+        set
+        {
+            SetValue(InputElementProperty, value);
+            SubscribeToInputElement();
+        }
     }
 
     /// <summary>
@@ -162,11 +166,6 @@ public class SelectionRectangle : Control
         SelectionFinished?.Invoke(this, e);
     }
 
-    private static void OnInputElementChanged(IAvaloniaObject sender, bool before)
-    {
-        ((SelectionRectangle) sender).SubscribeToInputElement();
-    }
-
     private void ParentOnPointerMoved(object? sender, PointerEventArgs e)
     {
         // Point moved seems to trigger when the element under the mouse changes?
@@ -185,13 +184,13 @@ public class SelectionRectangle : Control
         {
             e.Pointer.Capture(this);
 
-            _startPosition = e.GetPosition(Parent);
-            _absoluteStartPosition = e.GetPosition(VisualRoot);
+            _startPosition = e.GetPosition(Parent as Visual);
+            _absoluteStartPosition = e.GetPosition(VisualRoot as Visual);
             _displayRect = null;
         }
 
-        Point currentPosition = e.GetPosition(Parent);
-        Point absoluteCurrentPosition = e.GetPosition(VisualRoot);
+        Point currentPosition = e.GetPosition(Parent as Visual);
+        Point absoluteCurrentPosition = e.GetPosition(VisualRoot as Visual);
 
         _displayRect = new Rect(
             new Point(Math.Min(_startPosition.X, currentPosition.X), Math.Min(_startPosition.Y, currentPosition.Y)),

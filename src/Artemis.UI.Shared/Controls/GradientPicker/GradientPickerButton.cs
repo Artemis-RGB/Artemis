@@ -12,7 +12,6 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 using FluentAvalonia.Core;
-using Button = FluentAvalonia.UI.Controls.Button;
 
 namespace Artemis.UI.Shared.Controls.GradientPicker;
 
@@ -25,7 +24,7 @@ public class GradientPickerButton : TemplatedControl
     ///     Gets or sets the color gradient.
     /// </summary>
     public static readonly StyledProperty<ColorGradient?> ColorGradientProperty =
-        AvaloniaProperty.Register<GradientPickerButton, ColorGradient?>(nameof(ColorGradient), notifying: ColorGradientChanged);
+        AvaloniaProperty.Register<GradientPickerButton, ColorGradient?>(nameof(ColorGradient));
 
     /// <summary>
     ///     Gets or sets a boolean indicating whether the gradient picker should be in compact mode or not.
@@ -54,7 +53,11 @@ public class GradientPickerButton : TemplatedControl
     public ColorGradient? ColorGradient
     {
         get => GetValue(ColorGradientProperty);
-        set => SetValue(ColorGradientProperty, value);
+        set
+        {
+            SetValue(ColorGradientProperty, value);
+            Subscribe();
+        }
     }
 
     /// <summary>
@@ -104,12 +107,6 @@ public class GradientPickerButton : TemplatedControl
     }
 
     #endregion
-
-    private static void ColorGradientChanged(IAvaloniaObject sender, bool before)
-    {
-        if (!before)
-            (sender as GradientPickerButton)?.Subscribe();
-    }
 
     private void Subscribe()
     {

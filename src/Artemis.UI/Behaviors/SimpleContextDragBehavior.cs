@@ -106,7 +106,7 @@ public class SimpleContextDragBehavior : Behavior<Control>
         PointerPointProperties properties = e.GetCurrentPoint(AssociatedObject).Properties;
         if (!properties.IsLeftButtonPressed || FocusManager.Instance?.Current is TextBox)
             return;
-        if (e.Source is not IControl control || AssociatedObject?.DataContext != control.DataContext)
+        if (e.Source is not Control control || AssociatedObject?.DataContext != control.DataContext)
             return;
 
         _dragStartPoint = e.GetPosition(null);

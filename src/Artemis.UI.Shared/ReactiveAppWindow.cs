@@ -4,8 +4,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Immutable;
-using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Media;
+using FluentAvalonia.UI.Windowing;
 using ReactiveUI;
 
 namespace Artemis.UI.Shared;
@@ -17,18 +17,18 @@ namespace Artemis.UI.Shared;
 ///     and vice versa.
 /// </summary>
 /// <typeparam name="TViewModel">ViewModel type.</typeparam>
-public class ReactiveCoreWindow<TViewModel> : CoreWindow, IViewFor<TViewModel> where TViewModel : class
+public class ReactiveAppWindow<TViewModel> : AppWindow, IViewFor<TViewModel> where TViewModel : class
 {
     /// <summary>
     ///     The ViewModel.
     /// </summary>
     public static readonly StyledProperty<TViewModel?> ViewModelProperty = AvaloniaProperty
-        .Register<ReactiveCoreWindow<TViewModel>, TViewModel?>(nameof(ViewModel));
+        .Register<ReactiveAppWindow<TViewModel>, TViewModel?>(nameof(ViewModel));
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="ReactiveCoreWindow{TViewModel}" /> class.
+    ///     Initializes a new instance of the <see cref="ReactiveAppWindow{TViewModel}" /> class.
     /// </summary>
-    public ReactiveCoreWindow()
+    public ReactiveAppWindow()
     {
         // This WhenActivated block calls ViewModel's WhenActivated
         // block if the ViewModel implements IActivatableViewModel.

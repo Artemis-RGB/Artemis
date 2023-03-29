@@ -14,12 +14,12 @@ namespace Artemis.UI.Shared.Controls;
 /// <summary>
 ///     Represents a number box that can be mutated by dragging over it horizontally
 /// </summary>
-public class DraggableNumberBox : UserControl
+public partial class DraggableNumberBox : UserControl
 {
     /// <summary>
     ///     Defines the <see cref="Value" /> property.
     /// </summary>
-    public static readonly StyledProperty<double> ValueProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Value), defaultBindingMode: BindingMode.TwoWay, notifying: ValueChanged);
+    public static readonly StyledProperty<double> ValueProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Value), defaultBindingMode: BindingMode.TwoWay);
 
     /// <summary>
     ///     Defines the <see cref="Minimum" /> property.
@@ -85,7 +85,11 @@ public class DraggableNumberBox : UserControl
     public double Value
     {
         get => GetValue(ValueProperty);
-        set => SetValue(ValueProperty, value);
+        set
+        {
+            SetValue(ValueProperty, value);
+            SetNumberBoxValue(value);
+        }
     }
 
     /// <summary>
@@ -160,25 +164,21 @@ public class DraggableNumberBox : UserControl
     ///     Occurs when the user finishes dragging over the control.
     /// </summary>
     public event TypedEventHandler<DraggableNumberBox, EventArgs>? DragFinished;
-
-    private static void ValueChanged(IAvaloniaObject sender, bool before)
+    
+    private void SetNumberBoxValue(double value)
     {
-        if (before)
+        if (!(Math.Abs(_numberBox.Value - Value) > 0.00001))
             return;
 
-        DraggableNumberBox draggable = (DraggableNumberBox) sender;
-        if (!(Math.Abs(draggable._numberBox.Value - draggable.Value) > 0.00001))
-            return;
-
-        draggable._updating = true;
-        draggable._numberBox.Value = draggable.Value;
-        draggable._updating = false;
+        _updating = true;
+        _numberBox.Value = Value;
+        _updating = false;
     }
 
     private void HandleKeyUp(object? sender, KeyEventArgs e)
     {
         if (e.Key == Key.Enter || e.Key == Key.Escape)
-            Parent?.Focus();
+            FocusManager.Instance?.Focus(Parent as IInputElement);
     }
 
     private void InitializeComponent()
@@ -211,7 +211,7 @@ public class DraggableNumberBox : UserControl
         if (!_moved)
         {
             // Let our parent take focus, it would make more sense to take focus ourselves but that hides the collider
-            Parent?.Focus();
+            FocusManager.Instance?.Focus(Parent as IInputElement);
             _moved = true;
             e.Pointer.Capture(this);
             DragStarted?.Invoke(this, EventArgs.Empty);

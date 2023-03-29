@@ -15,7 +15,7 @@ public class LostFocusNumericUpDownBindingBehavior : Behavior<NumericUpDown>
     /// <summary>
     ///     Gets or sets the value of the binding.
     /// </summary>
-    public static readonly StyledProperty<double> ValueProperty = AvaloniaProperty.Register<LostFocusNumericUpDownBindingBehavior, double>(
+    public static readonly StyledProperty<decimal?> ValueProperty = AvaloniaProperty.Register<LostFocusNumericUpDownBindingBehavior, decimal?>(
         nameof(Value), defaultBindingMode: BindingMode.TwoWay);
 
     static LostFocusNumericUpDownBindingBehavior()
@@ -26,7 +26,7 @@ public class LostFocusNumericUpDownBindingBehavior : Behavior<NumericUpDown>
     /// <summary>
     ///     Gets or sets the value of the binding.
     /// </summary>
-    public double Value
+    public decimal? Value
     {
         get => GetValue(ValueProperty);
         set => SetValue(ValueProperty, value);

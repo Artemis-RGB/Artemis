@@ -5,7 +5,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
 
-public class IntPropertyInputView : ReactiveUserControl<IntPropertyInputViewModel>
+public partial class IntPropertyInputView : ReactiveUserControl<IntPropertyInputViewModel>
 {
     public IntPropertyInputView()
     {

@@ -3,13 +3,13 @@ using System.IO;
 using Artemis.Core;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Documents;
 using Avalonia.Layout;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
-using Avalonia.Visuals.Media.Imaging;
 using Material.Icons;
 using Material.Icons.Avalonia;
 
@@ -18,7 +18,7 @@ namespace Artemis.UI.Shared;
 /// <summary>
 ///     Represents a control that can display the icon of a specific <see cref="ProfileConfiguration" />.
 /// </summary>
-public class ProfileConfigurationIcon : UserControl, IDisposable
+public partial class ProfileConfigurationIcon : UserControl, IDisposable
 {
     private Stream? _stream;
 
@@ -72,7 +72,7 @@ public class ProfileConfigurationIcon : UserControl, IDisposable
 
         Content = new Border
         {
-            Background = TextBlock.GetForeground(this),
+            Background = TextElement.GetForeground(this),
             VerticalAlignment = VerticalAlignment.Stretch,
             HorizontalAlignment = HorizontalAlignment.Stretch,
             OpacityMask = new ImageBrush(new Bitmap(stream)) {BitmapInterpolationMode = BitmapInterpolationMode.MediumQuality}
