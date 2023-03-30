@@ -47,8 +47,8 @@
 
         <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
             <StackPanel Orientation="Horizontal">
-                <controls:SplitButton Content="Settings" Command="{CompiledBinding OpenSettings}">
-                    <controls:SplitButton.Flyout>
+                <SplitButton Content="Settings" Command="{CompiledBinding OpenSettings}">
+                    <SplitButton.Flyout>
                         <MenuFlyout Placement="Bottom" Opening="FlyoutBase_OnOpening">
                             <MenuItem Header="Open plugin directory" Command="{CompiledBinding OpenPluginDirectory}">
                                 <MenuItem.Icon>
@@ -81,8 +81,8 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                         </MenuFlyout>
-                    </controls:SplitButton.Flyout>
-                </controls:SplitButton>
+                    </SplitButton.Flyout>
+                </SplitButton>
 
                 <controls:HyperlinkButton Classes="icon-button icon-button-large"
                                           Margin="5 0"

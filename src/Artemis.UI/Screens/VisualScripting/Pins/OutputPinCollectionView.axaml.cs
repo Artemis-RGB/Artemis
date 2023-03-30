@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting.Pins;
 
-public class OutputPinCollectionView : ReactiveUserControl<PinCollectionViewModel>
+public partial class OutputPinCollectionView : ReactiveUserControl<PinCollectionViewModel>
 {
     public OutputPinCollectionView()
     {

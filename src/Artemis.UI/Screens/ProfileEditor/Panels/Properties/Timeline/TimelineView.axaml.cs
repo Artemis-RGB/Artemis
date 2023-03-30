@@ -9,17 +9,15 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
+using Avalonia.VisualTree;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 
-public class TimelineView : ReactiveUserControl<TimelineViewModel>
+public partial class TimelineView : ReactiveUserControl<TimelineViewModel>
 {
-    private readonly SelectionRectangle _selectionRectangle;
-
     public TimelineView()
     {
         InitializeComponent();
-        _selectionRectangle = this.Get<SelectionRectangle>("SelectionRectangle");
     }
 
     private void InitializeComponent()
@@ -34,7 +32,8 @@ public class TimelineView : ReactiveUserControl<TimelineViewModel>
 
         List<TimelineKeyframeView> keyframeViews = this.GetVisualChildrenOfType<TimelineKeyframeView>().Where(k =>
         {
-            Rect hitTestRect = k.TransformedBounds != null ? k.TransformedBounds.Value.Bounds.TransformToAABB(k.TransformedBounds.Value.Transform) : Rect.Empty;
+            TransformedBounds? transformedBounds = k.GetTransformedBounds();
+            Rect hitTestRect = transformedBounds != null ? transformedBounds.Value.Bounds.TransformToAABB(transformedBounds.Value.Transform) : new Rect();
             return e.AbsoluteRectangle.Intersects(hitTestRect);
         }).ToList();
 
@@ -43,7 +42,7 @@ public class TimelineView : ReactiveUserControl<TimelineViewModel>
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (_selectionRectangle.IsSelecting)
+        if (SelectionRectangle.IsSelecting)
             return;
 
         ViewModel?.SelectKeyframes(new List<ITimelineKeyframeViewModel>(), false);

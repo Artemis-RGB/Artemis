@@ -4,7 +4,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Settings.Updating;
 
-public class ReleaseView : ReactiveUserControl<ReleaseViewModel>
+public partial class ReleaseView : ReactiveUserControl<ReleaseViewModel>
 {
     public ReleaseView()
     {

@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Scripting.Dialogs;
 
-public class ScriptConfigurationCreateView : ReactiveUserControl<ScriptConfigurationCreateViewModel>
+public partial class ScriptConfigurationCreateView : ReactiveUserControl<ScriptConfigurationCreateViewModel>
 {
     public ScriptConfigurationCreateView()
     {

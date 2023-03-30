@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Device;
 
-public class DeviceDetectInputView : ReactiveUserControl<DeviceDetectInputViewModel>
+public partial class DeviceDetectInputView : ReactiveUserControl<DeviceDetectInputViewModel>
 {
     public DeviceDetectInputView()
     {

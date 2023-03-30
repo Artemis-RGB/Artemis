@@ -138,8 +138,8 @@ public class TreeItemDragBehavior : Behavior<Control>
 
         if (_itemsControl is not null)
         {
-            for (int i = 0; i < _itemsControl.ItemCount; i++)
-                SetDraggingPseudoClasses(_itemsControl.ContainerFromIndex(i), true);
+            foreach (Control realizedContainer in _itemsControl.GetRealizedContainers())
+                SetDraggingPseudoClasses(realizedContainer, true);
         }
 
         if (_dragStarted)
@@ -147,8 +147,10 @@ public class TreeItemDragBehavior : Behavior<Control>
                 MoveDraggedItem(_itemsControl, _draggedIndex, _targetIndex);
 
         if (_itemsControl is not null)
-            for (int i = 0; i < _itemsControl.ItemCount; i++)
-                SetDraggingPseudoClasses(_itemsControl.ContainerFromIndex(i), false);
+        {
+            foreach (Control realizedContainer in _itemsControl.GetRealizedContainers())
+                SetDraggingPseudoClasses(realizedContainer, false);
+        }
 
         if (_draggedContainer is not null)
             SetDraggingPseudoClasses(_draggedContainer, false);
@@ -166,17 +168,9 @@ public class TreeItemDragBehavior : Behavior<Control>
     {
         if (itemsControl?.Items is null)
             return;
-
-        int i = 0;
-
-        foreach (object? _ in itemsControl.Items)
-        {
-            Control? container = itemsControl.ContainerFromIndex(i);
-            if (container is not null)
-                SetTranslateTransform(container, 0, 0);
-
-            i++;
-        }
+        
+        foreach (Control container in itemsControl.GetRealizedContainers())
+            SetTranslateTransform(container, 0, 0);
     }
 
     private void RemoveTransforms(ItemsControl? itemsControl)
@@ -184,16 +178,8 @@ public class TreeItemDragBehavior : Behavior<Control>
         if (itemsControl?.Items is null)
             return;
 
-        int i = 0;
-
-        foreach (object? _ in itemsControl.Items)
-        {
-            Control? container = itemsControl.ContainerFromIndex(i);
-            if (container is not null)
-                SetTranslateTransform(container, 0, 0);
-
-            i++;
-        }
+        foreach (Control container in itemsControl.GetRealizedContainers())
+            SetTranslateTransform(container, 0, 0);
     }
 
     private void MoveDraggedItem(ItemsControl? itemsControl, int draggedIndex, int targetIndex)
@@ -264,17 +250,11 @@ public class TreeItemDragBehavior : Behavior<Control>
             double draggedDeltaEnd = orientation == Orientation.Horizontal
                 ? draggedBounds.X + delta + draggedBounds.Width
                 : draggedBounds.Y + delta + draggedBounds.Height;
-
-            int i = 0;
-
-            foreach (object? _ in _itemsControl.Items)
+            
+            foreach (Control targetContainer in _itemsControl.GetRealizedContainers())
             {
-                Control? targetContainer = _itemsControl.ContainerFromIndex(i);
-                if (targetContainer?.RenderTransform is null || ReferenceEquals(targetContainer, _draggedContainer))
-                {
-                    i++;
+                if (targetContainer.RenderTransform is null || ReferenceEquals(targetContainer, _draggedContainer))
                     continue;
-                }
 
                 // If the target container has children, there are two options
                 // Move into the top of the container
@@ -287,7 +267,7 @@ public class TreeItemDragBehavior : Behavior<Control>
                     ? targetBounds.X + targetBounds.Width / 2
                     : targetBounds.Y + targetBounds.Height / 2;
 
-                int targetIndex = _itemsControl.ItemContainerGenerator.IndexFromContainer(targetContainer);
+                int targetIndex = _itemsControl.IndexFromContainer(targetContainer);
 
                 if (targetStart > draggedStart && draggedDeltaEnd >= targetMid)
                 {
@@ -316,8 +296,6 @@ public class TreeItemDragBehavior : Behavior<Control>
                     else
                         SetTranslateTransform(targetContainer, 0, 0);
                 }
-
-                i++;
             }
         }
     }

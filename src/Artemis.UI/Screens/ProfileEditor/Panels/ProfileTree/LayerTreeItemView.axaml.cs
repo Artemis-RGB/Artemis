@@ -9,7 +9,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
-public class LayerTreeItemView : ReactiveUserControl<LayerTreeItemViewModel>
+public partial class LayerTreeItemView : ReactiveUserControl<LayerTreeItemViewModel>
 {
     public LayerTreeItemView()
     {
@@ -18,8 +18,8 @@ public class LayerTreeItemView : ReactiveUserControl<LayerTreeItemViewModel>
         {
             ViewModel?.Rename.Subscribe(_ =>
             {
-                this.Get<TextBox>("Input").Focus();
-                this.Get<TextBox>("Input").SelectAll();
+                Input.Focus();
+                Input.SelectAll();
             }).DisposeWith(d);
         });
     }

@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
+using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Mixins;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Controls.Shapes;
 using Avalonia.LogicalTree;
@@ -12,18 +12,13 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
 
-public class LayerShapeVisualizerView : ReactiveUserControl<LayerShapeVisualizerViewModel>
+public partial class LayerShapeVisualizerView : ReactiveUserControl<LayerShapeVisualizerViewModel>
 {
-    private readonly Path _layerVisualizer;
-    private readonly Path _layerVisualizerUnbound;
     private ZoomBorder? _zoomBorder;
 
     public LayerShapeVisualizerView()
     {
         InitializeComponent();
-        _layerVisualizer = this.Get<Path>("LayerVisualizer");
-        _layerVisualizerUnbound = this.Get<Path>("LayerVisualizerUnbound");
-
         this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Selected).Subscribe(_ => UpdateStrokeThickness()).DisposeWith(d));
     }
 
@@ -66,13 +61,13 @@ public class LayerShapeVisualizerView : ReactiveUserControl<LayerShapeVisualizer
 
         if (ViewModel != null && ViewModel.Selected)
         {
-            _layerVisualizer.StrokeThickness = Math.Max(1, 4 / _zoomBorder.ZoomX);
-            _layerVisualizerUnbound.StrokeThickness = Math.Max(1, 4 / _zoomBorder.ZoomX);
+            LayerVisualizer.StrokeThickness = Math.Max(1, 4 / _zoomBorder.ZoomX);
+            LayerVisualizerUnbound.StrokeThickness = Math.Max(1, 4 / _zoomBorder.ZoomX);
         }
         else
         {
-            _layerVisualizer.StrokeThickness = Math.Max(1, 4 / _zoomBorder.ZoomX) / 2;
-            _layerVisualizerUnbound.StrokeThickness = Math.Max(1, 4 / _zoomBorder.ZoomX) / 2;
+            LayerVisualizer.StrokeThickness = Math.Max(1, 4 / _zoomBorder.ZoomX) / 2;
+            LayerVisualizerUnbound.StrokeThickness = Math.Max(1, 4 / _zoomBorder.ZoomX) / 2;
         }
     }
 

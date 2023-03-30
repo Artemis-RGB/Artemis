@@ -6,7 +6,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Dialogs;
 
-public class AddEffectView : ReactiveUserControl<AddEffectViewModel>
+public partial class AddEffectView : ReactiveUserControl<AddEffectViewModel>
 {
     public AddEffectView()
     {

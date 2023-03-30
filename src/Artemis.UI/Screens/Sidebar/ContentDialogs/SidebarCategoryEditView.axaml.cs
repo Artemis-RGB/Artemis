@@ -5,7 +5,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
 
-public class SidebarCategoryEditView : ReactiveUserControl<SidebarCategoryEditViewModel>
+public partial class SidebarCategoryEditView : ReactiveUserControl<SidebarCategoryEditViewModel>
 {
     public SidebarCategoryEditView()
     {

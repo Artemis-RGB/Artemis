@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
-using Avalonia.Controls.Mixins;
 using DynamicData;
 using ReactiveUI;
 

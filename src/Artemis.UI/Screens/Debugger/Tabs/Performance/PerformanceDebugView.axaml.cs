@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Debugger.Performance;
 
-public class PerformanceDebugView : ReactiveUserControl<PerformanceDebugViewModel>
+public partial class PerformanceDebugView : ReactiveUserControl<PerformanceDebugViewModel>
 {
     public PerformanceDebugView()
     {

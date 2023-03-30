@@ -9,7 +9,7 @@ using Avalonia.VisualTree;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
-public class NodeView : ReactiveUserControl<NodeViewModel>
+public partial class NodeView : ReactiveUserControl<NodeViewModel>
 {
     private bool _dragging;
 

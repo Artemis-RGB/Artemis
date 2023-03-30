@@ -6,7 +6,7 @@ using Avalonia.Skia;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools;
 
-public class SelectionAddToolView : ReactiveUserControl<SelectionAddToolViewModel>
+public partial class SelectionAddToolView : ReactiveUserControl<SelectionAddToolViewModel>
 {
     public SelectionAddToolView()
     {

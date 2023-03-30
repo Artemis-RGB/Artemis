@@ -6,7 +6,7 @@ using Avalonia.VisualTree;
 
 namespace Artemis.UI.Screens.ProfileEditor.MenuBar;
 
-public class MenuBarView : ReactiveUserControl<MenuBarViewModel>
+public partial class MenuBarView : ReactiveUserControl<MenuBarViewModel>
 {
     public MenuBarView()
     {

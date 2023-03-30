@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Device;
 
-public class DevicePhysicalLayoutDialogView : ReactiveUserControl<DevicePhysicalLayoutDialogViewModel>
+public partial class DevicePhysicalLayoutDialogView : ReactiveUserControl<DevicePhysicalLayoutDialogViewModel>
 {
     public DevicePhysicalLayoutDialogView()
     {

@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Plugins;
 
-public class PluginSettingsView : ReactiveUserControl<PluginSettingsViewModel>
+public partial class PluginSettingsView : ReactiveUserControl<PluginSettingsViewModel>
 {
     public PluginSettingsView()
     {

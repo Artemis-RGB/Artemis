@@ -9,7 +9,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
-public class FolderTreeItemView : ReactiveUserControl<FolderTreeItemViewModel>
+public partial class FolderTreeItemView : ReactiveUserControl<FolderTreeItemViewModel>
 {
     public FolderTreeItemView()
     {
@@ -18,8 +18,8 @@ public class FolderTreeItemView : ReactiveUserControl<FolderTreeItemViewModel>
         {
             ViewModel?.Rename.Subscribe(_ =>
             {
-                this.Get<TextBox>("Input").Focus();
-                this.Get<TextBox>("Input").SelectAll();
+                Input.Focus();
+                Input.SelectAll();
             }).DisposeWith(d);
         });
     }

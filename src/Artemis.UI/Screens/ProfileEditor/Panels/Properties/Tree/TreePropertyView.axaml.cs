@@ -1,9 +1,8 @@
 using System;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Avalonia.Controls;
-using Avalonia.Controls.Mixins;
-using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
@@ -11,7 +10,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 
-public class TreePropertyView : ReactiveUserControl<ITreePropertyViewModel>
+public partial class TreePropertyView : ReactiveUserControl<ITreePropertyViewModel>
 {
     public TreePropertyView()
     {
@@ -32,6 +31,6 @@ public class TreePropertyView : ReactiveUserControl<ITreePropertyViewModel>
     private void DataBindingToggleButton_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel?.ToggleCurrentLayerProperty();
-        this.Find<ToggleButton>("DataBindingToggleButton").IsChecked = !this.Find<ToggleButton>("DataBindingToggleButton").IsChecked;
+        DataBindingToggleButton.IsChecked = !DataBindingToggleButton.IsChecked;
     }
 }

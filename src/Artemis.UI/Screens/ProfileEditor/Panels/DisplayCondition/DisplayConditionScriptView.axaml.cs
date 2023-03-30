@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayCondition;
 
-public class DisplayConditionScriptView : ReactiveUserControl<DisplayConditionScriptViewModel>
+public partial class DisplayConditionScriptView : ReactiveUserControl<DisplayConditionScriptViewModel>
 {
     public DisplayConditionScriptView()
     {

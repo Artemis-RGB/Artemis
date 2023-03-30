@@ -3,7 +3,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.SurfaceEditor;
 
-public class ListDeviceView : UserControl
+public partial class ListDeviceView : UserControl
 {
     public ListDeviceView()
     {

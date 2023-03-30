@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
@@ -12,22 +13,18 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
-public class CableView : ReactiveUserControl<CableViewModel>
+public partial class CableView : ReactiveUserControl<CableViewModel>
 {
     private const double CABLE_OFFSET = 24 * 4;
-    private readonly Path _cablePath;
-    private readonly Border _valueBorder;
 
     public CableView()
     {
         InitializeComponent();
-        _cablePath = this.Get<Path>("CablePath");
-        _valueBorder = this.Get<Border>("ValueBorder");
 
         // Not using bindings here to avoid a warnings
         this.WhenActivated(d =>
         {
-            _valueBorder.GetObservable(BoundsProperty).Subscribe(rect => _valueBorder.RenderTransform = new TranslateTransform(rect.Width / 2 * -1, rect.Height / 2 * -1)).DisposeWith(d);
+            ValueBorder.GetObservable(BoundsProperty).Subscribe(rect => ValueBorder.RenderTransform = new TranslateTransform(rect.Width / 2 * -1, rect.Height / 2 * -1)).DisposeWith(d);
 
             ViewModel.WhenAnyValue(vm => vm.FromPoint).Subscribe(_ => Update(true)).DisposeWith(d);
             ViewModel.WhenAnyValue(vm => vm.ToPoint).Subscribe(_ => Update(false)).DisposeWith(d);
@@ -43,21 +40,21 @@ public class CableView : ReactiveUserControl<CableViewModel>
     private void Update(bool from)
     {
         // Workaround for https://github.com/AvaloniaUI/Avalonia/issues/4748
-        _cablePath.Margin = new Thickness(_cablePath.Margin.Left + 1, _cablePath.Margin.Top + 1, 0, 0);
-        if (_cablePath.Margin.Left > 2)
-            _cablePath.Margin = new Thickness(0, 0, 0, 0);
+        CablePath.Margin = new Thickness(CablePath.Margin.Left + 1, CablePath.Margin.Top + 1, 0, 0);
+        if (CablePath.Margin.Left > 2)
+            CablePath.Margin = new Thickness(0, 0, 0, 0);
 
-        PathFigure pathFigure = ((PathGeometry) _cablePath.Data).Figures.First();
+        PathFigure pathFigure = ((PathGeometry) CablePath.Data).Figures.First();
         BezierSegment segment = (BezierSegment) pathFigure.Segments!.First();
         pathFigure.StartPoint = ViewModel!.FromPoint;
         segment.Point1 = new Point(ViewModel.FromPoint.X + CABLE_OFFSET, ViewModel.FromPoint.Y);
         segment.Point2 = new Point(ViewModel.ToPoint.X - CABLE_OFFSET, ViewModel.ToPoint.Y);
         segment.Point3 = new Point(ViewModel.ToPoint.X, ViewModel.ToPoint.Y);
 
-        Canvas.SetLeft(_valueBorder, ViewModel.FromPoint.X + (ViewModel.ToPoint.X - ViewModel.FromPoint.X) / 2);
-        Canvas.SetTop(_valueBorder, ViewModel.FromPoint.Y + (ViewModel.ToPoint.Y - ViewModel.FromPoint.Y) / 2);
+        Canvas.SetLeft(ValueBorder, ViewModel.FromPoint.X + (ViewModel.ToPoint.X - ViewModel.FromPoint.X) / 2);
+        Canvas.SetTop(ValueBorder, ViewModel.FromPoint.Y + (ViewModel.ToPoint.Y - ViewModel.FromPoint.Y) / 2);
         
-        _cablePath.InvalidateVisual();
+        CablePath.InvalidateVisual();
     }
 
     private void OnPointerEnter(object? sender, PointerEventArgs e)

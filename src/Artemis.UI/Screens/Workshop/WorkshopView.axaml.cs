@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop;
 
-public class WorkshopView : ReactiveUserControl<WorkshopViewModel>
+public partial class WorkshopView : ReactiveUserControl<WorkshopViewModel>
 {
     public WorkshopView()
     {

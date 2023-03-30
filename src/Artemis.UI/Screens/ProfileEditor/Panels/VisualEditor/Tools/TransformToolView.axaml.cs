@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using Artemis.Core;
 using Artemis.UI.Shared.Extensions;
 using Avalonia;
@@ -21,19 +22,9 @@ using SkiaSharp;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools;
 
-public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
+public partial class TransformToolView : ReactiveUserControl<TransformToolViewModel>
 {
-    private readonly Grid _handleGrid;
     private readonly List<Control> _handles = new();
-    private readonly Panel _resizeBottomCenter;
-    private readonly Panel _resizeBottomLeft;
-    private readonly Panel _resizeBottomRight;
-    private readonly Panel _resizeLeftCenter;
-    private readonly Panel _resizeRightCenter;
-    private readonly Panel _resizeTopCenter;
-    private readonly Panel _resizeTopLeft;
-    private readonly Panel _resizeTopRight;
-
     private SKPoint _dragOffset;
     private ZoomBorder? _zoomBorder;
 
@@ -41,31 +32,21 @@ public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
     {
         InitializeComponent();
 
-        _handleGrid = this.Get<Grid>("HandleGrid");
+        _handles.Add(RotateTopLeft);
+        _handles.Add(RotateTopRight);
+        _handles.Add(RotateBottomRight);
+        _handles.Add(RotateBottomLeft);
 
-        _handles.Add(this.Get<Ellipse>("RotateTopLeft"));
-        _handles.Add(this.Get<Ellipse>("RotateTopRight"));
-        _handles.Add(this.Get<Ellipse>("RotateBottomRight"));
-        _handles.Add(this.Get<Ellipse>("RotateBottomLeft"));
+        _handles.Add(ResizeTopCenter);
+        _handles.Add(ResizeRightCenter);
+        _handles.Add(ResizeBottomCenter);
+        _handles.Add(ResizeLeftCenter);
+        _handles.Add(ResizeTopLeft);
+        _handles.Add(ResizeTopRight);
+        _handles.Add(ResizeBottomRight);
+        _handles.Add(ResizeBottomLeft);
 
-        _resizeTopCenter = this.Get<Panel>("ResizeTopCenter");
-        _handles.Add(_resizeTopCenter);
-        _resizeRightCenter = this.Get<Panel>("ResizeRightCenter");
-        _handles.Add(_resizeRightCenter);
-        _resizeBottomCenter = this.Get<Panel>("ResizeBottomCenter");
-        _handles.Add(_resizeBottomCenter);
-        _resizeLeftCenter = this.Get<Panel>("ResizeLeftCenter");
-        _handles.Add(_resizeLeftCenter);
-        _resizeTopLeft = this.Get<Panel>("ResizeTopLeft");
-        _handles.Add(_resizeTopLeft);
-        _resizeTopRight = this.Get<Panel>("ResizeTopRight");
-        _handles.Add(_resizeTopRight);
-        _resizeBottomRight = this.Get<Panel>("ResizeBottomRight");
-        _handles.Add(_resizeBottomRight);
-        _resizeBottomLeft = this.Get<Panel>("ResizeBottomLeft");
-        _handles.Add(_resizeBottomLeft);
-
-        _handles.Add(this.Get<Panel>("AnchorPoint"));
+        _handles.Add(AnchorPoint);
 
         this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Rotation).Subscribe(_ => UpdateTransforms()).DisposeWith(d));
     }
@@ -83,10 +64,10 @@ public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
         RotateTransform counterRotate = new(ViewModel.Rotation * -1);
 
         // Apply the counter rotation to the containers
-        foreach (Panel panel in _handleGrid.Children.Where(c => c is Panel and not Canvas).Cast<Panel>())
+        foreach (Panel panel in HandleGrid.Children.Where(c => c is Panel and not Canvas).Cast<Panel>())
             panel.RenderTransform = counterRotate;
 
-        foreach (Control control in _handleGrid.GetVisualDescendants().Where(d => d is Control c && c.Classes.Contains("unscaled")).Cast<Control>())
+        foreach (Control control in HandleGrid.GetVisualDescendants().Where(d => d is Control c && c.Classes.Contains("unscaled")).Cast<Control>())
             control.RenderTransform = counterScale;
     }
 
@@ -117,21 +98,21 @@ public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
 
     private TransformToolViewModel.ResizeSide GetResizeDirection(Ellipse element)
     {
-        if (ReferenceEquals(element.Parent, _resizeTopLeft))
+        if (ReferenceEquals(element.Parent, ResizeTopLeft))
             return TransformToolViewModel.ResizeSide.Top | TransformToolViewModel.ResizeSide.Left;
-        if (ReferenceEquals(element.Parent, _resizeTopRight))
+        if (ReferenceEquals(element.Parent, ResizeTopRight))
             return TransformToolViewModel.ResizeSide.Top | TransformToolViewModel.ResizeSide.Right;
-        if (ReferenceEquals(element.Parent, _resizeBottomRight))
+        if (ReferenceEquals(element.Parent, ResizeBottomRight))
             return TransformToolViewModel.ResizeSide.Bottom | TransformToolViewModel.ResizeSide.Right;
-        if (ReferenceEquals(element.Parent, _resizeBottomLeft))
+        if (ReferenceEquals(element.Parent, ResizeBottomLeft))
             return TransformToolViewModel.ResizeSide.Bottom | TransformToolViewModel.ResizeSide.Left;
-        if (ReferenceEquals(element.Parent, _resizeTopCenter))
+        if (ReferenceEquals(element.Parent, ResizeTopCenter))
             return TransformToolViewModel.ResizeSide.Top;
-        if (ReferenceEquals(element.Parent, _resizeRightCenter))
+        if (ReferenceEquals(element.Parent, ResizeRightCenter))
             return TransformToolViewModel.ResizeSide.Right;
-        if (ReferenceEquals(element.Parent, _resizeBottomCenter))
+        if (ReferenceEquals(element.Parent, ResizeBottomCenter))
             return TransformToolViewModel.ResizeSide.Bottom;
-        if (ReferenceEquals(element.Parent, _resizeLeftCenter))
+        if (ReferenceEquals(element.Parent, ResizeLeftCenter))
             return TransformToolViewModel.ResizeSide.Left;
 
         throw new ArgumentException("Given element is not a child of a resize container");
@@ -310,14 +291,14 @@ public class TransformToolView : ReactiveUserControl<TransformToolViewModel>
 
     private void UpdateCursors()
     {
-        _resizeTopCenter.Cursor = GetCursorAtAngle(0f);
-        _resizeTopRight.Cursor = GetCursorAtAngle(45f);
-        _resizeRightCenter.Cursor = GetCursorAtAngle(90f);
-        _resizeBottomRight.Cursor = GetCursorAtAngle(135f);
-        _resizeBottomCenter.Cursor = GetCursorAtAngle(180f);
-        _resizeBottomLeft.Cursor = GetCursorAtAngle(225f);
-        _resizeLeftCenter.Cursor = GetCursorAtAngle(270f);
-        _resizeTopLeft.Cursor = GetCursorAtAngle(315f);
+        ResizeTopCenter.Cursor = GetCursorAtAngle(0f);
+        ResizeTopRight.Cursor = GetCursorAtAngle(45f);
+        ResizeRightCenter.Cursor = GetCursorAtAngle(90f);
+        ResizeBottomRight.Cursor = GetCursorAtAngle(135f);
+        ResizeBottomCenter.Cursor = GetCursorAtAngle(180f);
+        ResizeBottomLeft.Cursor = GetCursorAtAngle(225f);
+        ResizeLeftCenter.Cursor = GetCursorAtAngle(270f);
+        ResizeTopLeft.Cursor = GetCursorAtAngle(315f);
     }
 
     private Cursor GetCursorAtAngle(float angle, bool includeLayerRotation = true)

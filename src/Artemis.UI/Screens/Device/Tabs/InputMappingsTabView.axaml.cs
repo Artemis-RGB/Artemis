@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Device;
 
-public class InputMappingsTabView : ReactiveUserControl<InputMappingsTabViewModel>
+public partial class InputMappingsTabView : ReactiveUserControl<InputMappingsTabViewModel>
 {
     public InputMappingsTabView()
     {

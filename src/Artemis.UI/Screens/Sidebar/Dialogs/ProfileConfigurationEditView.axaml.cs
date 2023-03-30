@@ -8,12 +8,12 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
 
-public class ProfileConfigurationEditView : ReactiveAppWindow<ProfileConfigurationEditViewModel>
+public partial class ProfileConfigurationEditView : ReactiveAppWindow<ProfileConfigurationEditViewModel>
 {
     public ProfileConfigurationEditView()
     {
         InitializeComponent();
-        this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.SelectedBitmapSource).Subscribe(_ => this.Get<Border>("FillPreview").InvalidateVisual()).DisposeWith(d));
+        this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.SelectedBitmapSource).Subscribe(_ => FillPreview.InvalidateVisual()).DisposeWith(d));
 
 #if DEBUG
         this.AttachDevTools();

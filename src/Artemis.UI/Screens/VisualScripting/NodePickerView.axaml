@@ -17,15 +17,15 @@
             <Setter Property="InnerRightContent">
                 <Template>
                     <StackPanel Orientation="Horizontal">
-                        <controls:Button Content="&#xE8BB;"
-                                         FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                         Classes="AppBarButton"
-                                         Command="{Binding $parent[TextBox].Clear}"
-                                         IsVisible="{Binding $parent[TextBox].Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                        <controls:Button Content="&#xE721;"
-                                         FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                         Classes="AppBarButton"
-                                         IsHitTestVisible="False" />
+                        <Button Content="&#xE8BB;"
+                                FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                Classes="AppBarButton"
+                                Command="{Binding $parent[TextBox].Clear}"
+                                IsVisible="{Binding $parent[TextBox].Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        <Button Content="&#xE721;"
+                                FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                Classes="AppBarButton"
+                                IsHitTestVisible="False" />
                     </StackPanel>
                 </Template>
             </Setter>

@@ -4,7 +4,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 
-public class TreeGroupView : ReactiveUserControl<TreeGroupViewModel>
+public partial class TreeGroupView : ReactiveUserControl<TreeGroupViewModel>
 {
     public TreeGroupView()
     {

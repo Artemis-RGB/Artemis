@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
 
-public class SidebarProfileConfigurationView : ReactiveUserControl<SidebarProfileConfigurationViewModel>
+public partial class SidebarProfileConfigurationView : ReactiveUserControl<SidebarProfileConfigurationViewModel>
 {
     public SidebarProfileConfigurationView()
     {

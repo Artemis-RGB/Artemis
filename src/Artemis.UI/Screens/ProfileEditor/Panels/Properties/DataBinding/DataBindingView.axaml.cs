@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.DataBinding;
 
-public class DataBindingView : ReactiveUserControl<DataBindingViewModel>
+public partial class DataBindingView : ReactiveUserControl<DataBindingViewModel>
 {
     public DataBindingView()
     {

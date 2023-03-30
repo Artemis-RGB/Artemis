@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Plugins;
 
-public class PluginPrerequisitesUninstallDialogView : ReactiveUserControl<PluginPrerequisitesUninstallDialogViewModel>
+public partial class PluginPrerequisitesUninstallDialogView : ReactiveUserControl<PluginPrerequisitesUninstallDialogViewModel>
 {
     public PluginPrerequisitesUninstallDialogView()
     {

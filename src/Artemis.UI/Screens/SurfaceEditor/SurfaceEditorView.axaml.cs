@@ -13,29 +13,18 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.SurfaceEditor;
 
-public class SurfaceEditorView : ReactiveUserControl<SurfaceEditorViewModel>
+public partial class SurfaceEditorView : ReactiveUserControl<SurfaceEditorViewModel>
 {
-    private readonly ItemsControl _deviceContainer;
-    private readonly SelectionRectangle _selectionRectangle;
-    private readonly Border _surfaceBounds;
-    private readonly ZoomBorder _zoomBorder;
-
     public SurfaceEditorView()
     {
         InitializeComponent();
-
-        _zoomBorder = this.Find<ZoomBorder>("ZoomBorder");
-        _deviceContainer = this.Find<ItemsControl>("DeviceContainer");
-        _selectionRectangle = this.Find<SelectionRectangle>("SelectionRectangle");
-        _surfaceBounds = this.Find<Border>("SurfaceBounds");
-
-        _zoomBorder.PropertyChanged += ZoomBorderOnPropertyChanged;
+        ZoomBorder.PropertyChanged += ZoomBorderOnPropertyChanged;
         UpdateZoomBorderBackground();
     }
 
     private void ZoomBorderOnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
-        if (e.Property.Name == nameof(_zoomBorder.Background))
+        if (e.Property.Name == nameof(ZoomBorder.Background))
             UpdateZoomBorderBackground();
     }
 
@@ -47,25 +36,25 @@ public class SurfaceEditorView : ReactiveUserControl<SurfaceEditorViewModel>
     private void ZoomBorder_OnZoomChanged(object sender, ZoomChangedEventArgs e)
     {
         UpdateZoomBorderBackground();
-        _surfaceBounds.BorderThickness = new Thickness(2 / _zoomBorder.ZoomX);
+        SurfaceBounds.BorderThickness = new Thickness(2 / ZoomBorder.ZoomX);
     }
 
     private void SelectionRectangle_OnSelectionUpdated(object? sender, SelectionRectangleEventArgs e)
     {
-        List<ItemContainerInfo> itemContainerInfos = _deviceContainer.ItemContainerGenerator.Containers.Where(c => c.ContainerControl.Bounds.Intersects(e.Rectangle)).ToList();
-        List<SurfaceDeviceViewModel> viewModels = itemContainerInfos.Where(c => c.Item is SurfaceDeviceViewModel).Select(c => (SurfaceDeviceViewModel) c.Item).ToList();
+        List<Control> containers = DeviceContainer.GetRealizedContainers().Where(c => c.Bounds.Intersects(e.Rectangle)).ToList();
+        List<SurfaceDeviceViewModel> viewModels = containers.Where(c => c.DataContext is SurfaceDeviceViewModel).Select(c => (SurfaceDeviceViewModel) c.DataContext!).ToList();
         ViewModel?.UpdateSelection(viewModels, e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
     }
 
     private void ZoomBorder_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (!_selectionRectangle.IsSelecting && e.InitialPressMouseButton == MouseButton.Left)
+        if (!SelectionRectangle.IsSelecting && e.InitialPressMouseButton == MouseButton.Left)
             ViewModel?.ClearSelection();
     }
 
     private void UpdateZoomBorderBackground()
     {
-        if (_zoomBorder.Background is VisualBrush visualBrush)
-            visualBrush.DestinationRect = new RelativeRect(_zoomBorder.OffsetX * -1, _zoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
+        if (ZoomBorder.Background is VisualBrush visualBrush)
+            visualBrush.DestinationRect = new RelativeRect(ZoomBorder.OffsetX * -1, ZoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
     }
 }

@@ -5,7 +5,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.VisualScripting.Pins;
 
-public class OutputPinView : PinView
+public partial class OutputPinView : PinView
 {
     public OutputPinView()
     {

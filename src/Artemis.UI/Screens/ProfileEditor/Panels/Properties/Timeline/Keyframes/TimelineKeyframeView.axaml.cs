@@ -6,7 +6,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 
-public class TimelineKeyframeView : ReactiveUserControl<ITimelineKeyframeViewModel>
+public partial class TimelineKeyframeView : ReactiveUserControl<ITimelineKeyframeViewModel>
 {
     private bool _moved;
     private TimelinePropertyView? _timelinePropertyView;

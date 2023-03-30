@@ -6,7 +6,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Tree.Dialogs;
 
-public class LayerBrushPresetView : ReactiveUserControl<LayerBrushPresetViewModel>
+public partial class LayerBrushPresetView : ReactiveUserControl<LayerBrushPresetViewModel>
 {
     public LayerBrushPresetView()
     {

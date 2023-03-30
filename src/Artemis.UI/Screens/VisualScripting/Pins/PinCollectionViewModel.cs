@@ -2,13 +2,13 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.Core.Events;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.NodeEditor.Commands;
-using Avalonia.Controls.Mixins;
 using DynamicData;
 using ReactiveUI;
 

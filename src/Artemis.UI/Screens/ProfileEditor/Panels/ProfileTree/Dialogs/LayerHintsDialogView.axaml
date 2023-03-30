@@ -1,10 +1,11 @@
-﻿<controls:CoreWindow xmlns="https://github.com/avaloniaui"
+﻿<windowing:AppWindow xmlns="https://github.com/avaloniaui"
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                      xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
                      xmlns:dialogs="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs"
                      xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+                     xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
                      mc:Ignorable="d"
                      x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.LayerHintsDialogView"
                      x:DataType="dialogs:LayerHintsDialogViewModel"
@@ -68,8 +69,8 @@
         <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
             <Button Grid.Row="0" Grid.Column="0" Command="{Binding AutoDetermineHints}">Auto-determine hints</Button>
             <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="5">
-                <controls:DropDownButton>
-                    <controls:DropDownButton.Flyout>
+                <DropDownButton>
+                    <DropDownButton.Flyout>
                         <MenuFlyout Placement="Top">
                             <MenuItem Header="Category hint" Command="{Binding AddCategoryHint}">
                                 <MenuItem.Icon>
@@ -87,12 +88,12 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                         </MenuFlyout>
-                    </controls:DropDownButton.Flyout>
+                    </DropDownButton.Flyout>
                     Add hint
-                </controls:DropDownButton>
+                </DropDownButton>
                 <Button Command="{Binding Finish}">Close</Button>
             </StackPanel>
         </Grid>
 
     </Grid>
-</controls:CoreWindow>
+</windowing:AppWindow>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Exceptions;
@@ -7,7 +8,6 @@ using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia;
-using Avalonia.Controls.Mixins;
 using Material.Icons;
 using ReactiveUI;
 using SkiaSharp;

@@ -56,7 +56,6 @@ public partial class DraggableNumberBox : UserControl
     /// </summary>
     public static readonly StyledProperty<string?> SuffixProperty = AvaloniaProperty.Register<DraggableNumberBox, string?>(nameof(Suffix));
 
-    private readonly NumberBox _numberBox;
     private TextBox? _inputTextBox;
     private double _lastX;
     private bool _moved;
@@ -69,8 +68,7 @@ public partial class DraggableNumberBox : UserControl
     public DraggableNumberBox()
     {
         InitializeComponent();
-        _numberBox = this.Get<NumberBox>("NumberBox");
-        _numberBox.Value = Value;
+        NumberBox.Value = Value;
 
         PointerPressed += OnPointerPressed;
         PointerMoved += OnPointerMoved;
@@ -167,11 +165,11 @@ public partial class DraggableNumberBox : UserControl
     
     private void SetNumberBoxValue(double value)
     {
-        if (!(Math.Abs(_numberBox.Value - Value) > 0.00001))
+        if (!(Math.Abs(NumberBox.Value - Value) > 0.00001))
             return;
 
         _updating = true;
-        _numberBox.Value = Value;
+        NumberBox.Value = Value;
         _updating = false;
     }
 
@@ -189,7 +187,7 @@ public partial class DraggableNumberBox : UserControl
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         PointerPoint point = e.GetCurrentPoint(this);
-        _inputTextBox = _numberBox.FindDescendantOfType<TextBox>();
+        _inputTextBox = NumberBox.FindDescendantOfType<TextBox>();
         _moved = false;
         _startX = point.Position.X;
         _lastX = point.Position.X;
@@ -261,17 +259,17 @@ public partial class DraggableNumberBox : UserControl
 
         if (args.NewValue < Minimum)
         {
-            _numberBox.Value = Minimum;
+            NumberBox.Value = Minimum;
             return;
         }
 
         if (args.NewValue > Maximum)
         {
-            _numberBox.Value = Maximum;
+            NumberBox.Value = Maximum;
             return;
         }
 
-        if (Math.Abs(Value - _numberBox.Value) > 0.00001)
-            Value = _numberBox.Value;
+        if (Math.Abs(Value - NumberBox.Value) > 0.00001)
+            Value = NumberBox.Value;
     }
 }

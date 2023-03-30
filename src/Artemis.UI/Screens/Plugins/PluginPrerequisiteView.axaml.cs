@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Plugins;
 
-public class PluginPrerequisiteView : ReactiveUserControl<PluginPrerequisiteViewModel>
+public partial class PluginPrerequisiteView : ReactiveUserControl<PluginPrerequisiteViewModel>
 {
     public PluginPrerequisiteView()
     {

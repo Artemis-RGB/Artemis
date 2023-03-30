@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Settings;
 
-public class DevicesTabView : ReactiveUserControl<DevicesTabViewModel>
+public partial class DevicesTabView : ReactiveUserControl<DevicesTabViewModel>
 {
     public DevicesTabView()
     {

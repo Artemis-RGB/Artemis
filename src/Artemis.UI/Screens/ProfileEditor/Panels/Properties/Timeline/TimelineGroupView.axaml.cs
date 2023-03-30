@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 
-public class TimelineGroupView : ReactiveUserControl<TimelineGroupViewModel>
+public partial class TimelineGroupView : ReactiveUserControl<TimelineGroupViewModel>
 {
     public TimelineGroupView()
     {

@@ -1,7 +1,6 @@
 using System.Reflection;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.DryIoc.InstanceProviders;
-using Artemis.UI.Screens;
 using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Services.Updating;
@@ -9,7 +8,6 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Platform;
-using Avalonia.Shared.PlatformSupport;
 using DryIoc;
 
 namespace Artemis.UI.DryIoc;

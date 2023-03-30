@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Debugger.Settings;
 
-public class DebugSettingsView : ReactiveUserControl<DebugSettingsViewModel>
+public partial class DebugSettingsView : ReactiveUserControl<DebugSettingsViewModel>
 {
     public DebugSettingsView()
     {

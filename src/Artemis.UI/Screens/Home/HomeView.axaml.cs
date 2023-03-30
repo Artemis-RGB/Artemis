@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Home;
 
-public class HomeView : ReactiveUserControl<HomeViewModel>
+public partial class HomeView : ReactiveUserControl<HomeViewModel>
 {
     public HomeView()
     {

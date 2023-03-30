@@ -1,20 +1,13 @@
 using System;
-using System.Diagnostics;
-using System.Reflection;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
-using AvaloniaEdit;
 
 namespace Artemis.UI.Screens.Debugger.Logs;
 
-public class LogsDebugView : ReactiveUserControl<LogsDebugViewModel>
+public partial class LogsDebugView : ReactiveUserControl<LogsDebugViewModel>
 {
     private int _lineCount;
-    private TextEditor? _textEditor;
 
     public LogsDebugView()
     {
@@ -25,25 +18,22 @@ public class LogsDebugView : ReactiveUserControl<LogsDebugViewModel>
     private void InitializeComponent()
     {
         AvaloniaXamlLoader.Load(this);
-        _textEditor = this.FindControl<TextEditor>("log");
     }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Dispatcher.UIThread.Post(() => _textEditor?.ScrollToEnd(), DispatcherPriority.ApplicationIdle);
+        Dispatcher.UIThread.Post(() => LogTextEditor.ScrollToEnd(), DispatcherPriority.ApplicationIdle);
     }
 
     private void OnTextChanged(object? sender, EventArgs e)
     {
-        if (_textEditor is null)
-            return;
-        if (_textEditor.ExtentHeight == 0)
+        if (LogTextEditor.ExtentHeight == 0)
             return;
 
-        int linesAdded = _textEditor.LineCount - _lineCount;
-        double lineHeight = _textEditor.ExtentHeight / _textEditor.LineCount;
-        double outOfScreenTextHeight = _textEditor.ExtentHeight - _textEditor.VerticalOffset - _textEditor.ViewportHeight;
+        int linesAdded = LogTextEditor.LineCount - _lineCount;
+        double lineHeight = LogTextEditor.ExtentHeight / LogTextEditor.LineCount;
+        double outOfScreenTextHeight = LogTextEditor.ExtentHeight - LogTextEditor.VerticalOffset - LogTextEditor.ViewportHeight;
         double outOfScreenLines = outOfScreenTextHeight / lineHeight;
 
         //we need this help distance because of rounding.
@@ -61,8 +51,8 @@ public class LogsDebugView : ReactiveUserControl<LogsDebugViewModel>
         //mess with anything.
         if (_lineCount == 0 || linesAdded + GRACE_DISTANCE >  outOfScreenLines)
         {
-            Dispatcher.UIThread.Post(() => _textEditor.ScrollToEnd(), DispatcherPriority.ApplicationIdle);
-            _lineCount = _textEditor.LineCount;
+            Dispatcher.UIThread.Post(() => LogTextEditor.ScrollToEnd(), DispatcherPriority.ApplicationIdle);
+            _lineCount = LogTextEditor.LineCount;
         }
     }
 }

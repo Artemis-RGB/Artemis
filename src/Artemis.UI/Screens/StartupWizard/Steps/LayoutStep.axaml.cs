@@ -3,7 +3,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.StartupWizard.Steps;
 
-public class LayoutStep : UserControl
+public partial class LayoutStep : UserControl
 {
     public LayoutStep()
     {

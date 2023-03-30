@@ -3,7 +3,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints;
 
-public class CategoryAdaptionHintView : UserControl
+public partial class CategoryAdaptionHintView : UserControl
 {
     public CategoryAdaptionHintView()
     {

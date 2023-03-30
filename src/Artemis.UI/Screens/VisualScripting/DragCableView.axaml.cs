@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
@@ -11,15 +12,13 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
-public class DragCableView : ReactiveUserControl<DragCableViewModel>
+public partial class DragCableView : ReactiveUserControl<DragCableViewModel>
 {
     private const double CABLE_OFFSET = 24 * 4;
-    private readonly Path _cablePath;
 
     public DragCableView()
     {
         InitializeComponent();
-        _cablePath = this.Get<Path>("CablePath");
 
         // Not using bindings here to avoid warnings
         this.WhenActivated(d =>
@@ -37,8 +36,11 @@ public class DragCableView : ReactiveUserControl<DragCableViewModel>
 
     private void Update()
     {
-        PathFigure pathFigure = ((PathGeometry) _cablePath.Data).Figures.First();
-        BezierSegment segment = (BezierSegment) pathFigure.Segments!.First();
+        PathFigure? pathFigure = ((PathGeometry) CablePath.Data).Figures?.FirstOrDefault();
+        if (pathFigure?.Segments == null)
+            return;
+        
+        BezierSegment segment = (BezierSegment) pathFigure.Segments.First();
         pathFigure.StartPoint = ViewModel!.FromPoint;
         segment.Point1 = new Point(ViewModel.FromPoint.X + CABLE_OFFSET, ViewModel.FromPoint.Y);
         segment.Point2 = new Point(ViewModel.ToPoint.X - CABLE_OFFSET, ViewModel.ToPoint.Y);

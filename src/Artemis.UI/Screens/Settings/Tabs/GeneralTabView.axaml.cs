@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Settings;
 
-public class GeneralTabView : ReactiveUserControl<GeneralTabViewModel>
+public partial class GeneralTabView : ReactiveUserControl<GeneralTabViewModel>
 {
     public GeneralTabView()
     {

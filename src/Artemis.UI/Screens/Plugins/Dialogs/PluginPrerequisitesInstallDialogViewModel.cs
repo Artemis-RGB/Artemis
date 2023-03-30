@@ -11,6 +11,7 @@ using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Avalonia.Threading;
+using FluentAvalonia.Core;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using ContentDialogButton = Artemis.UI.Shared.Services.Builders.ContentDialogButton;
@@ -98,7 +99,7 @@ public class PluginPrerequisitesInstallDialogViewModel : ContentDialogViewModelB
 
     private async Task ExecuteInstall()
     {
-        ContentDialogClosingDeferral? deferral = null;
+        Deferral? deferral = null;
         if (ContentDialog != null)
             ContentDialog.Closing += (_, args) => deferral = args.GetDeferral();
 

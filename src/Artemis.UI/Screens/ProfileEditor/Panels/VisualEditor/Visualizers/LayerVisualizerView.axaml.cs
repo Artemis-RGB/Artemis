@@ -10,15 +10,13 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
 
-public class LayerVisualizerView : ReactiveUserControl<LayerVisualizerViewModel>
+public partial class LayerVisualizerView : ReactiveUserControl<LayerVisualizerViewModel>
 {
-    private readonly Path _layerVisualizer;
     private ZoomBorder? _zoomBorder;
 
     public LayerVisualizerView()
     {
         InitializeComponent();
-        _layerVisualizer = this.Get<Path>("LayerVisualizer");
     }
 
     private void InitializeComponent()
@@ -49,7 +47,7 @@ public class LayerVisualizerView : ReactiveUserControl<LayerVisualizerViewModel>
     {
         if (e.Property != ZoomBorder.ZoomXProperty || _zoomBorder == null)
             return;
-        _layerVisualizer.StrokeThickness = Math.Max(1, 4 / _zoomBorder.ZoomX);
+        LayerVisualizer.StrokeThickness = Math.Max(1, 4 / _zoomBorder.ZoomX);
     }
 
     #endregion

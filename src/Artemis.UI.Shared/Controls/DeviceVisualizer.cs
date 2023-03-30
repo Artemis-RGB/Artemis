@@ -122,7 +122,7 @@ public class DeviceVisualizer : Control
     private Rect MeasureDevice()
     {
         if (Device == null)
-            return new Rect(0, 0, 0, 0);
+            return new Rect();
 
         Rect deviceRect = new(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
         Geometry geometry = new RectangleGeometry(deviceRect);

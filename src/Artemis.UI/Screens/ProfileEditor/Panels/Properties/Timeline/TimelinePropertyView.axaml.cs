@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 
-public class TimelinePropertyView : ReactiveUserControl<ITimelinePropertyViewModel>
+public partial class TimelinePropertyView : ReactiveUserControl<ITimelinePropertyViewModel>
 {
     public TimelinePropertyView()
     {

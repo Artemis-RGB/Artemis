@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Debugger.DataModel;
 
-public class DataModelDebugView : ReactiveUserControl<DataModelDebugViewModel>
+public partial class DataModelDebugView : ReactiveUserControl<DataModelDebugViewModel>
 {
     public DataModelDebugView()
     {
