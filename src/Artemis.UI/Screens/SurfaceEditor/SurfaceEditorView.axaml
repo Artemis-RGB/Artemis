@@ -64,7 +64,7 @@
     </UserControl.Resources>
     <Grid Margin="0 0 15 15" ColumnDefinitions="*,400">
         <Border Grid.Column="0" Classes="card-condensed">
-            <paz:ZoomBorder Name="ZoomBorder"
+            <paz:ZoomBorder Name="ContainerZoomBorder"
                             Stretch="None"
                             ClipToBounds="True"
                             Focusable="True"

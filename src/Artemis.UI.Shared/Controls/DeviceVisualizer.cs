@@ -12,8 +12,6 @@ using Avalonia.Input;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Platform;
-using Avalonia.Rendering;
 using Avalonia.Threading;
 
 namespace Artemis.UI.Shared;

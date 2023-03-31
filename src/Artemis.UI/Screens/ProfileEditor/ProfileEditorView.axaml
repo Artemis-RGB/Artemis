@@ -8,8 +8,7 @@
              xmlns:shared="clr-namespace:Artemis.UI.Shared.Services.ProfileEditor;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileEditorView"
-             x:DataType="profileEditor:ProfileEditorViewModel"
-             Name="ProfileEditorView">
+             x:DataType="profileEditor:ProfileEditorViewModel">
     <UserControl.Resources>
         <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter" />
     </UserControl.Resources>

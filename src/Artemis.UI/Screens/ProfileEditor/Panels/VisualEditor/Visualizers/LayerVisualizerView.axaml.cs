@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
-using Avalonia.Controls.Shapes;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;

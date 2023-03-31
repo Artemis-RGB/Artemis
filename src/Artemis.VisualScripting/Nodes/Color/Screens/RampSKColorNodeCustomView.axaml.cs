@@ -4,7 +4,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.VisualScripting.Nodes.Color.Screens;
 
-public class RampSKColorNodeCustomView : ReactiveUserControl<RampSKColorNodeCustomViewModel>
+public partial class RampSKColorNodeCustomView : ReactiveUserControl<RampSKColorNodeCustomViewModel>
 {
     public RampSKColorNodeCustomView()
     {

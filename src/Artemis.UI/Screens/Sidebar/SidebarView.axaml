@@ -9,15 +9,12 @@
              x:Class="Artemis.UI.Screens.Sidebar.SidebarView"
              x:DataType="sidebar:SidebarViewModel">
     <UserControl.Styles>
-        <StyleInclude Source="avares://Avalonia.Xaml.Interactions/Draggable/Styles.axaml" />
+        <StyleInclude Source="avares://Avalonia.Xaml.Interactions.Draggable/Styles.axaml" />
     </UserControl.Styles>
     <Grid RowDefinitions="60,Auto,Auto,*,Auto,Auto">
         <Grid Grid.Row="0" IsHitTestVisible="False" ColumnDefinitions="Auto,*">
             <Image Grid.Column="0" Margin="12" Source="/Assets/Images/Logo/bow.png" RenderOptions.BitmapInterpolationMode="HighQuality" />
-            <TextBlock Grid.Column="1"
-                       FontSize="24"
-                       VerticalAlignment="Center"
-                       Foreground="{DynamicResource MaterialDesignDarkForeground}">
+            <TextBlock Grid.Column="1" FontSize="24" VerticalAlignment="Center">
                 Artemis 2
             </TextBlock>
         </Grid>

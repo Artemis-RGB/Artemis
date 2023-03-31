@@ -1,6 +1,5 @@
 ﻿using System;
 using EmbedIO;
-using DryIoc;
 
 namespace Artemis.Core.Services;
 

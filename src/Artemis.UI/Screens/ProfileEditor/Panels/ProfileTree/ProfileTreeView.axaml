@@ -23,8 +23,8 @@
         <converters:ColorOpacityConverter x:Key="ColorOpacityConverter" />
     </UserControl.Resources>
     <UserControl.Styles>
-        <StyleInclude Source="avares://Avalonia.Xaml.Interactions/Draggable/Styles.axaml" />
-        <Style Selector="TreeView#ProfileTreeView">
+        <StyleInclude Source="avares://Avalonia.Xaml.Interactions.Draggable/Styles.axaml" />
+        <Style Selector="TreeView#Profile">
             <Style.Resources>
                 <profileBehaviors:ProfileTreeViewDropHandler x:Key="ProfileTreeViewDropHandler" />
             </Style.Resources>
@@ -37,7 +37,7 @@
             </Setter>
         </Style>
 
-        <Style Selector="TreeView#ProfileTreeView TreeViewItem">
+        <Style Selector="TreeView#Profile TreeViewItem">
             <Setter Property="IsExpanded" Value="True" />
             <Setter Property="(Interaction.Behaviors)">
                 <BehaviorCollectionTemplate>
@@ -48,7 +48,7 @@
             </Setter>
         </Style>
 
-        <Style Selector="TreeView#ProfileTreeView TreeViewItem:dragging-before">
+        <Style Selector="TreeView#Profile TreeViewItem:dragging-before">
             <Setter Property="Background">
                 <Setter.Value>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,28">
@@ -60,7 +60,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style Selector="TreeView#ProfileTreeView TreeViewItem:dragging-into">
+        <Style Selector="TreeView#Profile TreeViewItem:dragging-into">
             <Setter Property="Background">
                 <Setter.Value>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,28">
@@ -76,7 +76,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style Selector="TreeView#ProfileTreeView TreeViewItem:dragging-after">
+        <Style Selector="TreeView#Profile TreeViewItem:dragging-after">
             <Setter Property="Background">
                 <Setter.Value>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,28">
@@ -90,7 +90,7 @@
         </Style>
     </UserControl.Styles>
     <Grid RowDefinitions="*,Auto">
-        <TreeView Name="ProfileTreeView" Classes="no-right-margin draggable"
+        <TreeView Name="Profile" Classes="no-right-margin draggable"
                   Items="{CompiledBinding Children}"
                   SelectedItem="{CompiledBinding SelectedChild}"
                   SelectionChanged="ProfileTreeView_OnSelectionChanged">

@@ -3,8 +3,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Mixins;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
 using Avalonia.LogicalTree;

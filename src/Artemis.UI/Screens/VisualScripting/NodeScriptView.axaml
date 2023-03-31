@@ -35,7 +35,7 @@
         <KeyBinding Command="{CompiledBinding History.Undo}" Gesture="Ctrl+Z" />
         <KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y" />
     </UserControl.KeyBindings>
-    <paz:ZoomBorder Name="ZoomBorder"
+    <paz:ZoomBorder Name="NodeScriptZoomBorder"
                     Stretch="None"
                     Focusable="True"
                     VerticalAlignment="Stretch"
@@ -86,7 +86,7 @@
             </ItemsControl>
 
             <shared:SelectionRectangle Name="SelectionRectangle"
-                                       InputElement="{Binding #ZoomBorder}"
+                                       InputElement="{Binding #NodeScriptZoomBorder}"
                                        SelectionUpdated="SelectionRectangle_OnSelectionUpdated"
                                        SelectionFinished="SelectionRectangle_OnSelectionFinished"
                                        BorderBrush="{DynamicResource SystemAccentColor}"

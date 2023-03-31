@@ -1,6 +1,5 @@
 using System;
 using System.Reactive.Disposables;
-using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;

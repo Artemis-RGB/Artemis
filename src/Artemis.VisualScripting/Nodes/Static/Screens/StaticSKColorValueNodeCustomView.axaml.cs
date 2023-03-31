@@ -4,7 +4,7 @@ using FluentAvalonia.UI.Controls;
 
 namespace Artemis.VisualScripting.Nodes.Static.Screens;
 
-public class StaticSKColorValueNodeCustomView : ReactiveUserControl<StaticSKColorValueNodeCustomViewModel>
+public partial class StaticSKColorValueNodeCustomView : ReactiveUserControl<StaticSKColorValueNodeCustomViewModel>
 {
     public StaticSKColorValueNodeCustomView()
     {

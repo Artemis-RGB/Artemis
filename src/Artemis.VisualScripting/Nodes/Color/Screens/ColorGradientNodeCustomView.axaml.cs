@@ -4,7 +4,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.VisualScripting.Nodes.Color.Screens;
 
-public class ColorGradientNodeCustomView : ReactiveUserControl<ColorGradientNodeCustomViewModel>
+public partial class ColorGradientNodeCustomView : ReactiveUserControl<ColorGradientNodeCustomViewModel>
 {
     public ColorGradientNodeCustomView()
     {

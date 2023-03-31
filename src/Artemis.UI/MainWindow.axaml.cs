@@ -7,13 +7,12 @@ using Artemis.UI.Shared;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Avalonia.Threading;
-using FluentAvalonia.Core.ApplicationModel;
+using Avalonia.ReactiveUI;
 using ReactiveUI;
 
 namespace Artemis.UI;
 
-public class MainWindow : ReactiveAppWindow<RootViewModel>
+public partial class MainWindow : ReactiveAppWindow<RootViewModel>
 {
     private readonly Panel _rootPanel;
     private readonly ContentControl _sidebarContentControl;
@@ -25,7 +24,7 @@ public class MainWindow : ReactiveAppWindow<RootViewModel>
         Activated += OnActivated;
         Deactivated += OnDeactivated;
 
-        ApplyWindowSize();
+        // ApplyWindowSize();
         InitializeComponent();
 
         _rootPanel = this.Get<Panel>("RootPanel");
@@ -67,12 +66,12 @@ public class MainWindow : ReactiveAppWindow<RootViewModel>
     private void OnOpened(object? sender, EventArgs e)
     {
         Opened -= OnOpened;
-        ICoreApplicationView coreAppTitleBar = this;
-        if (coreAppTitleBar.TitleBar != null)
-        {
-            coreAppTitleBar.TitleBar.ExtendViewIntoTitleBar = true;
-            SetTitleBar(this.Get<Border>("DragHandle"));
-        }
+        // ICoreApplicationView coreAppTitleBar = this;
+        // if (coreAppTitleBar.TitleBar != null)
+        // {
+        //     coreAppTitleBar.TitleBar.ExtendViewIntoTitleBar = true;
+        //     SetTitleBar(this.Get<Border>("DragHandle"));
+        // }
     }
 
     private void OnActivated(object? sender, EventArgs e)

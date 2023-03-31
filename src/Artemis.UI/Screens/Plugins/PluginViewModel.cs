@@ -13,7 +13,6 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Avalonia.Controls;
 using Avalonia.Threading;
-using DryIoc;
 using Material.Icons;
 using ReactiveUI;
 

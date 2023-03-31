@@ -18,7 +18,7 @@
             <TextBlock Text=" - " />
             <TextBlock Text="{CompiledBinding ActiveAction.Action.Name, Mode=OneWay, FallbackValue=''}" />
         </StackPanel>
-        <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}" TextWrapping="Wrap" IsVisible="{CompiledBinding Actions.Count}">
+        <TextBlock Classes="subtitle" TextWrapping="Wrap" IsVisible="{CompiledBinding Actions.Count}">
 
         </TextBlock>
         <TextBlock Classes="h4" TextWrapping="Wrap" Text="{CompiledBinding ActiveAction.Action.Name, Mode=OneWay}" IsVisible="{CompiledBinding !Actions.Count}" />

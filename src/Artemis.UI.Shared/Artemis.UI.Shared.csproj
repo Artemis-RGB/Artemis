@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Library</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <OutputPath>bin\</OutputPath>
         <Platforms>x64</Platforms>
@@ -17,7 +17,7 @@
         <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.0-preview6" />
         <PackageReference Include="DynamicData" Version="7.13.1" />
         <PackageReference Include="FluentAvaloniaUI" Version="2.0.0-preview6" />
-        <PackageReference Include="Material.Icons.Avalonia" Version="1.1.10" />
+        <PackageReference Include="Material.Icons.Avalonia" Version="2.0.0-preview3" />
         <PackageReference Include="ReactiveUI" Version="18.4.26" />
         <PackageReference Include="ReactiveUI.Validation" Version="3.1.7" />
         <PackageReference Include="RGB.NET.Core" Version="2.0.0-prerelease.17" />

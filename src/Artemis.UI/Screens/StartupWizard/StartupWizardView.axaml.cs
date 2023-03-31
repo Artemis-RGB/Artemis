@@ -3,9 +3,7 @@ using System.Reactive.Disposables;
 using Artemis.UI.Screens.StartupWizard.Steps;
 using Artemis.UI.Shared;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Navigation;
 using ReactiveUI;
 

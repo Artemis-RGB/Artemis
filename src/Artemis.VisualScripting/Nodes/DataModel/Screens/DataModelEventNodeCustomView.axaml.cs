@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.VisualScripting.Nodes.DataModel.Screens;
 
-public class DataModelEventNodeCustomView : ReactiveUserControl<DataModelEventNodeCustomViewModel>
+public partial class DataModelEventNodeCustomView : ReactiveUserControl<DataModelEventNodeCustomViewModel>
 {
     public DataModelEventNodeCustomView()
     {

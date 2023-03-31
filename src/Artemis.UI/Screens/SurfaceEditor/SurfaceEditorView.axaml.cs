@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.UI.Shared;
 using Artemis.UI.Shared.Events;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Generators;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
@@ -18,7 +16,7 @@ public partial class SurfaceEditorView : ReactiveUserControl<SurfaceEditorViewMo
     public SurfaceEditorView()
     {
         InitializeComponent();
-        ZoomBorder.PropertyChanged += ZoomBorderOnPropertyChanged;
+        ContainerZoomBorder.PropertyChanged += ZoomBorderOnPropertyChanged;
         UpdateZoomBorderBackground();
     }
 
@@ -36,7 +34,7 @@ public partial class SurfaceEditorView : ReactiveUserControl<SurfaceEditorViewMo
     private void ZoomBorder_OnZoomChanged(object sender, ZoomChangedEventArgs e)
     {
         UpdateZoomBorderBackground();
-        SurfaceBounds.BorderThickness = new Thickness(2 / ZoomBorder.ZoomX);
+        SurfaceBounds.BorderThickness = new Thickness(2 / ContainerZoomBorder.ZoomX);
     }
 
     private void SelectionRectangle_OnSelectionUpdated(object? sender, SelectionRectangleEventArgs e)
@@ -54,7 +52,7 @@ public partial class SurfaceEditorView : ReactiveUserControl<SurfaceEditorViewMo
 
     private void UpdateZoomBorderBackground()
     {
-        if (ZoomBorder.Background is VisualBrush visualBrush)
-            visualBrush.DestinationRect = new RelativeRect(ZoomBorder.OffsetX * -1, ZoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
+        if (ContainerZoomBorder.Background is VisualBrush visualBrush)
+            visualBrush.DestinationRect = new RelativeRect(ContainerZoomBorder.OffsetX * -1, ContainerZoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
     }
 }

@@ -6,7 +6,6 @@ using Artemis.Core;
 using Artemis.UI.Shared.Extensions;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Mixins;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;

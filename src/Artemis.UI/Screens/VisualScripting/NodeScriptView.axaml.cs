@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
-using Artemis.UI.Shared;
 using Artemis.UI.Shared.Events;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Generators;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -25,26 +23,26 @@ public partial class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
     {
         InitializeComponent();
 
-        ZoomBorder.PropertyChanged += ZoomBorderOnPropertyChanged;
-        UpdateZoomBorderBackground();
-
-        ZoomBorder.AddHandler(PointerReleasedEvent, CanvasOnPointerReleased, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
-        ZoomBorder.AddHandler(PointerWheelChangedEvent, ZoomOnPointerWheelChanged, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
-        ZoomBorder.AddHandler(PointerMovedEvent, ZoomOnPointerMoved, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
-
-        this.WhenActivated(d =>
-        {
-            ViewModel!.AutoFitRequested += ViewModelOnAutoFitRequested;
-            ViewModel.PickerPositionSubject.Subscribe(ShowPickerAt).DisposeWith(d);
-            if (ViewModel.IsPreview)
-            {
-                BoundsProperty.Changed.Subscribe(BoundsPropertyChanged).DisposeWith(d);
-                ViewModel.NodeViewModels.ToObservableChangeSet().Subscribe(_ => AutoFitIfPreview()).DisposeWith(d);
-            }
-
-            Dispatcher.UIThread.InvokeAsync(() => AutoFit(true), DispatcherPriority.ContextIdle);
-            Disposable.Create(() => ViewModel.AutoFitRequested -= ViewModelOnAutoFitRequested).DisposeWith(d);
-        });
+        // NodeScriptZoomBorder.PropertyChanged += ZoomBorderOnPropertyChanged;
+        // UpdateZoomBorderBackground();
+        //
+        // NodeScriptZoomBorder.AddHandler(PointerReleasedEvent, CanvasOnPointerReleased, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+        // NodeScriptZoomBorder.AddHandler(PointerWheelChangedEvent, ZoomOnPointerWheelChanged, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+        // NodeScriptZoomBorder.AddHandler(PointerMovedEvent, ZoomOnPointerMoved, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+        //
+        // this.WhenActivated(d =>
+        // {
+        //     ViewModel!.AutoFitRequested += ViewModelOnAutoFitRequested;
+        //     ViewModel.PickerPositionSubject.Subscribe(ShowPickerAt).DisposeWith(d);
+        //     if (ViewModel.IsPreview)
+        //     {
+        //         BoundsProperty.Changed.Subscribe(BoundsPropertyChanged).DisposeWith(d);
+        //         ViewModel.NodeViewModels.ToObservableChangeSet().Subscribe(_ => AutoFitIfPreview()).DisposeWith(d);
+        //     }
+        //
+        //     Dispatcher.UIThread.InvokeAsync(() => AutoFit(true), DispatcherPriority.ContextIdle);
+        //     Disposable.Create(() => ViewModel.AutoFitRequested -= ViewModelOnAutoFitRequested).DisposeWith(d);
+        // });
     }
 
     protected override Size MeasureOverride(Size availableSize)
@@ -56,7 +54,7 @@ public partial class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
     private void ZoomOnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
     {
         // If scroll events aren't handled here the ZoomBorder does some random panning when at the zoom limit
-        if (e.Delta.Y > 0 && ZoomBorder.ZoomX >= 1)
+        if (e.Delta.Y > 0 && NodeScriptZoomBorder.ZoomX >= 1)
             e.Handled = true;
     }
 
@@ -71,7 +69,7 @@ public partial class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
         if (ViewModel == null)
             return;
         ViewModel.NodePickerViewModel.Position = point;
-        ZoomBorder?.ContextFlyout?.ShowAt(ZoomBorder);
+        NodeScriptZoomBorder?.ContextFlyout?.ShowAt(NodeScriptZoomBorder);
     }
 
     private void AutoFitIfPreview()
@@ -111,8 +109,8 @@ public partial class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
         double scale = Math.Min(1, Math.Min(Bounds.Width / scriptRect.Width, Bounds.Height / scriptRect.Height));
 
         // Pan and zoom to make the script fit
-        ZoomBorder.Zoom(scale, 0, 0, skipTransitions);
-        ZoomBorder.Pan(Bounds.Center.X - scriptRect.Center.X * scale, Bounds.Center.Y - scriptRect.Center.Y * scale, skipTransitions);
+        NodeScriptZoomBorder.Zoom(scale, 0, 0, skipTransitions);
+        NodeScriptZoomBorder.Pan(Bounds.Center.X - scriptRect.Center.X * scale, Bounds.Center.Y - scriptRect.Center.Y * scale, skipTransitions);
     }
 
     private void ViewModelOnAutoFitRequested(object? sender, EventArgs e)
@@ -122,14 +120,14 @@ public partial class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
 
     private void ZoomBorderOnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
-        if (e.Property.Name == nameof(ZoomBorder.Background))
+        if (e.Property.Name == nameof(NodeScriptZoomBorder.Background))
             UpdateZoomBorderBackground();
     }
 
     private void UpdateZoomBorderBackground()
     {
-        if (ZoomBorder.Background is VisualBrush visualBrush)
-            visualBrush.DestinationRect = new RelativeRect(ZoomBorder.OffsetX * -1, ZoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
+        if (NodeScriptZoomBorder.Background is VisualBrush visualBrush)
+            visualBrush.DestinationRect = new RelativeRect(NodeScriptZoomBorder.OffsetX * -1, NodeScriptZoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
     }
 
     private void InitializeComponent()
@@ -140,7 +138,7 @@ public partial class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
     private void ZoomBorder_OnZoomChanged(object sender, ZoomChangedEventArgs e)
     {
         if (ViewModel != null)
-            ViewModel.PanMatrix = ZoomBorder.Matrix;
+            ViewModel.PanMatrix = NodeScriptZoomBorder.Matrix;
         UpdateZoomBorderBackground();
     }
 

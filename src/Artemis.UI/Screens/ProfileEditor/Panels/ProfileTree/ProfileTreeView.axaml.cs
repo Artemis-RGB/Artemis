@@ -120,6 +120,6 @@ public partial class ProfileTreeView : ReactiveUserControl<ProfileTreeViewModel>
 
     private void ProfileTreeView_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        ProfileTreeView.Focus();
+        Profile.Focus();
     }
 }

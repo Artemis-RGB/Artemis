@@ -9,7 +9,6 @@ using Artemis.UI.Screens.Settings;
 using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared.Services.MainWindow;
 using Avalonia.Threading;
-using DryIoc.ImTools;
 using Microsoft.Toolkit.Uwp.Notifications;
 using ReactiveUI;
 

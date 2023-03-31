@@ -2,7 +2,6 @@ using System;
 using System.Reactive.Disposables;
 using Artemis.UI.Shared;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using ReactiveUI;
 

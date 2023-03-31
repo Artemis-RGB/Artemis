@@ -4,7 +4,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.VisualScripting.Nodes.Mathematics.Screens;
 
-public class MathExpressionNodeCustomView : ReactiveUserControl<MathExpressionNodeCustomViewModel>
+public partial class MathExpressionNodeCustomView : ReactiveUserControl<MathExpressionNodeCustomViewModel>
 {
     public MathExpressionNodeCustomView()
     {

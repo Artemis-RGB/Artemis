@@ -5,6 +5,8 @@ using System.Timers;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Windows.Utilities;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform;
 using Linearstar.Windows.RawInput;
 using Linearstar.Windows.RawInput.Native;
 using Serilog;
@@ -17,7 +19,6 @@ public class WindowsInputProvider : InputProvider
 
     private readonly IInputService _inputService;
     private readonly ILogger _logger;
-    private readonly SpongeWindow _sponge;
     private readonly Timer _taskManagerTimer;
     private int _lastProcessId;
 
@@ -25,16 +26,24 @@ public class WindowsInputProvider : InputProvider
     {
         _logger = logger;
         _inputService = inputService;
-
-        _sponge = new SpongeWindow();
-        _sponge.WndProcCalled += SpongeOnWndProcCalled;
-
+        
         _taskManagerTimer = new Timer(500);
         _taskManagerTimer.Elapsed += TaskManagerTimerOnElapsed;
         _taskManagerTimer.Start();
 
-        RawInputDevice.RegisterDevice(HidUsageAndPage.Keyboard, RawInputDeviceFlags.InputSink, _sponge.Handle.Handle);
-        RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, _sponge.Handle.Handle);
+        // if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        // {
+        //     IWindowImpl window = desktop.MainWindow!.PlatformImpl!;
+        //     
+        //     // https://github.com/sanjay900/guitar-configurator/blob/master/Notify/WindowsDeviceNotifierAvalonia.cs
+        //     // _hWndProcHook = GetWindowLongPtr(window.Handle.Handle, GwlWndproc);
+        //     // _fnWndProcHook = CustomWndProc;
+        //     // var newLong = Marshal.GetFunctionPointerForDelegate(_fnWndProcHook);
+        //     // SetWindowLongPtr(window.Handle.Handle, GwlWndproc, newLong);
+        //     
+        //     RawInputDevice.RegisterDevice(HidUsageAndPage.Keyboard, RawInputDeviceFlags.InputSink, window.Handle.Handle);
+        //     RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, window.Handle.Handle);
+        // }
     }
 
     public static Guid Id { get; } = new("6737b204-ffb1-4cd9-8776-9fb851db303a");
@@ -55,19 +64,18 @@ public class WindowsInputProvider : InputProvider
     {
         if (disposing)
         {
-            _sponge.Dispose();
             _taskManagerTimer.Dispose();
         }
 
         base.Dispose(disposing);
     }
 
-    private void SpongeOnWndProcCalled(object? sender, SpongeWindowEventArgs message)
+    private void OnWndProcCalled(nint hWnd, uint msg, nint wParam, nint lParam)
     {
-        if (message.Msg != WM_INPUT)
+        if (msg != WM_INPUT)
             return;
 
-        RawInputData data = RawInputData.FromHandle(message.LParam);
+        RawInputData data = RawInputData.FromHandle(lParam);
         switch (data)
         {
             case RawInputMouseData mouse:

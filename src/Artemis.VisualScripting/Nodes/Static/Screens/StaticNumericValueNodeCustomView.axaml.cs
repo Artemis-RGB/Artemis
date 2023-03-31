@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.VisualScripting.Nodes.Static.Screens;
 
-public class StaticNumericValueNodeCustomView : ReactiveUserControl<StaticNumericValueNodeCustomViewModel>
+public partial class StaticNumericValueNodeCustomView : ReactiveUserControl<StaticNumericValueNodeCustomViewModel>
 {
     public StaticNumericValueNodeCustomView()
     {

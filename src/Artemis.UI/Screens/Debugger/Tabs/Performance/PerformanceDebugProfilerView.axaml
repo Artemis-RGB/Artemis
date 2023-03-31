@@ -9,7 +9,6 @@
         <TextBlock Classes="subtitle" Text="{Binding Profiler.Name}" Margin="10 10 0 0" />
 
         <DataGrid Items="{Binding Measurements}"
-                  d:DataContext="{d:DesignInstance Type={x:Type local:PerformanceDebugMeasurementViewModel}}"
                   CanUserSortColumns="True"
                   IsReadOnly="True"
                   AutoGenerateColumns="False"

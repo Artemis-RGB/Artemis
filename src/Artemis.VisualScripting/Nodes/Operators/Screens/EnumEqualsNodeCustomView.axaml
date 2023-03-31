@@ -7,7 +7,6 @@
     <ComboBox IsEnabled="{Binding EnumValues.Count}"
               Items="{Binding EnumValues}"
               SelectedItem="{Binding CurrentValue}"
-              VirtualizationMode="Simple"
               PlaceholderText="Select a value"
               Classes="condensed"
               VerticalAlignment="Center">

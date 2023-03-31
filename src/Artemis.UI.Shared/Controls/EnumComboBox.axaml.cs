@@ -90,7 +90,7 @@ public partial class EnumComboBox : UserControl
     /// <inheritdoc />
     protected override void OnAttachedToLogicalTree(LogicalTreeAttachmentEventArgs e)
     {
-        _enumComboBox = this.Get<ComboBox>("EnumComboBox");
+        _enumComboBox = this.Get<ComboBox>("ChildEnumComboBox");
         _enumComboBox.Items = _currentValues;
 
         UpdateValues();

@@ -11,7 +11,7 @@ namespace Artemis.UI;
 
 public class ViewLocator : IDataTemplate
 {
-    public IControl Build(object data)
+    public Control Build(object data)
     {
         Type dataType = data.GetType();
         string name = dataType.FullName!.Split('`')[0].Replace("ViewModel", "View");

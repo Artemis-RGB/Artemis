@@ -29,7 +29,7 @@
                 <TextBlock Grid.Row="1"
                            Grid.Column="1"
                            VerticalAlignment="Top"
-                           Foreground="{DynamicResource MaterialDesignBodyLight}"
+                           Classes="subtitle"
                            Text="{Binding Version}" />
 
                 <controls:HyperlinkButton Grid.Row="1"

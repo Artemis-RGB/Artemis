@@ -1,10 +1,10 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.VisualScripting;
 using Artemis.VisualScripting.Nodes.External.Commands;
-using Avalonia.Controls.Mixins;
 using DynamicData;
 using ReactiveUI;
 
