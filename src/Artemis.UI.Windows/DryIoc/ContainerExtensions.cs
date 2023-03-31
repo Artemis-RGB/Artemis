@@ -20,7 +20,7 @@ public static class UIContainerExtensions
     public static void RegisterProviders(this IContainer container)
     {
         container.Register<ICursorProvider, CursorProvider>(Reuse.Singleton);
-        // container.Register<IGraphicsContextProvider, GraphicsContextProvider>(Reuse.Singleton);
+        container.Register<IGraphicsContextProvider, GraphicsContextProvider>(Reuse.Singleton);
         container.Register<IAutoRunProvider, AutoRunProvider>();
         container.Register<InputProvider, WindowsInputProvider>(serviceKey: WindowsInputProvider.Id);
         container.Register<IUpdateNotificationProvider, WindowsUpdateNotificationProvider>();

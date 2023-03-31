@@ -16,7 +16,6 @@
                      Height="800">
 
     <Window.Styles>
-        <StyleInclude Source="avares://AvaloniaEdit/AvaloniaEdit.xaml" />
         <Style Selector="StackPanel.sidebar-stackpanel avalonia|MaterialIcon">
             <Setter Property="Margin" Value="-7 0 0 0" />
         </Style>

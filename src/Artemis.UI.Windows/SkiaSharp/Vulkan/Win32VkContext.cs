@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Avalonia.Controls;
-using Avalonia.Win32;
+using Avalonia.Controls.Platform;
+using Avalonia.Platform;
 using SharpVk;
 using SharpVk.Khronos;
 
@@ -11,10 +11,10 @@ internal sealed class Win32VkContext : VkContext
 {
     public Win32VkContext()
     {
-        Window = new Window();
+        Window = PlatformManager.CreateWindow();
         Instance = Instance.Create(null, new[] {"VK_KHR_surface", "VK_KHR_win32_surface"});
         PhysicalDevice = Instance.EnumeratePhysicalDevices().First();
-        Surface = Instance.CreateWin32Surface(Kernel32.CurrentModuleHandle, Window.PlatformImpl!.Handle.Handle);
+        Surface = Instance.CreateWin32Surface(Kernel32.CurrentModuleHandle, Window.Handle.Handle);
 
         (GraphicsFamily, PresentFamily) = FindQueueFamilies();
 
@@ -44,12 +44,12 @@ internal sealed class Win32VkContext : VkContext
         };
     }
 
-    public Window Window { get; }
+    public IWindowImpl Window { get; }
 
     public override void Dispose()
     {
         base.Dispose();
-        Window.Close();
+        Window.Dispose();
     }
 
     private IntPtr Proc(string name, IntPtr instanceHandle, IntPtr deviceHandle)

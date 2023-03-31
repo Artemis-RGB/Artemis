@@ -16,7 +16,6 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="11.0.0-preview6" />
-        <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0-preview5" />
         <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="11.0.0-preview6" />
         <PackageReference Include="Avalonia.Controls.Skia" Version="11.0.0-preview6" />
         <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview6" />

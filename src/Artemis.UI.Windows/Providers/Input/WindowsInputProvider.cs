@@ -5,7 +5,7 @@ using System.Timers;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Windows.Utilities;
-using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.Platform;
 using Avalonia.Platform;
 using Linearstar.Windows.RawInput;
 using Linearstar.Windows.RawInput.Native;
@@ -15,35 +15,43 @@ namespace Artemis.UI.Windows.Providers.Input;
 
 public class WindowsInputProvider : InputProvider
 {
+    private const int GWL_WNDPROC = -4;
     private const int WM_INPUT = 0x00FF;
 
+    private readonly IWindowImpl _window;
+    private readonly nint _hWndProcHook;
+    private readonly WndProc? _fnWndProcHook;
     private readonly IInputService _inputService;
     private readonly ILogger _logger;
     private readonly Timer _taskManagerTimer;
+
     private int _lastProcessId;
+    delegate nint WndProc(nint hWnd, uint msg, nint wParam, nint lParam);
+
+    private nint CustomWndProc(nint hWnd, uint msg, nint wParam, nint lParam)
+    {
+        OnWndProcCalled(hWnd, msg, wParam, lParam);
+        return CallWindowProc(_hWndProcHook, hWnd, msg, wParam, lParam);
+    }
 
     public WindowsInputProvider(ILogger logger, IInputService inputService)
     {
         _logger = logger;
         _inputService = inputService;
-        
+
         _taskManagerTimer = new Timer(500);
         _taskManagerTimer.Elapsed += TaskManagerTimerOnElapsed;
         _taskManagerTimer.Start();
 
-        // if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        // {
-        //     IWindowImpl window = desktop.MainWindow!.PlatformImpl!;
-        //     
-        //     // https://github.com/sanjay900/guitar-configurator/blob/master/Notify/WindowsDeviceNotifierAvalonia.cs
-        //     // _hWndProcHook = GetWindowLongPtr(window.Handle.Handle, GwlWndproc);
-        //     // _fnWndProcHook = CustomWndProc;
-        //     // var newLong = Marshal.GetFunctionPointerForDelegate(_fnWndProcHook);
-        //     // SetWindowLongPtr(window.Handle.Handle, GwlWndproc, newLong);
-        //     
-        //     RawInputDevice.RegisterDevice(HidUsageAndPage.Keyboard, RawInputDeviceFlags.InputSink, window.Handle.Handle);
-        //     RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, window.Handle.Handle);
-        // }
+        _window = PlatformManager.CreateWindow();
+
+        _hWndProcHook = GetWindowLongPtr(_window.Handle.Handle, GWL_WNDPROC);
+        _fnWndProcHook = CustomWndProc;
+        nint newLong = Marshal.GetFunctionPointerForDelegate(_fnWndProcHook);
+        SetWindowLongPtr(_window.Handle.Handle, GWL_WNDPROC, newLong);
+
+        RawInputDevice.RegisterDevice(HidUsageAndPage.Keyboard, RawInputDeviceFlags.InputSink, _window.Handle.Handle);
+        RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, _window.Handle.Handle);
     }
 
     public static Guid Id { get; } = new("6737b204-ffb1-4cd9-8776-9fb851db303a");
@@ -255,6 +263,15 @@ public class WindowsInputProvider : InputProvider
     #endregion
 
     #region Native
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    static extern IntPtr CallWindowProc(nint lpPrevWndFunc, IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
+    [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", CharSet = CharSet.Unicode)]
+    private static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
+
+    [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
+    private static extern IntPtr SetWindowLongPtr(nint hWnd, int nIndex, IntPtr dwNewLong);
 
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
