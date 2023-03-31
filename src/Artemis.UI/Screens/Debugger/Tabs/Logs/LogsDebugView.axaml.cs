@@ -15,10 +15,6 @@ public partial class LogsDebugView : ReactiveUserControl<LogsDebugViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     protected override void OnInitialized()
     {

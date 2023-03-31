@@ -10,8 +10,4 @@ public partial class DefaultTitleBarView : UserControl
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

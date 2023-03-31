@@ -10,8 +10,4 @@ public partial class PlayOnceConditionView : UserControl
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

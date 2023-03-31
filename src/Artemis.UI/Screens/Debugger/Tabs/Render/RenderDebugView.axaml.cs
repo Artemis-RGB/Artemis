@@ -10,8 +10,4 @@ public partial class RenderDebugView : ReactiveUserControl<RenderDebugViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

@@ -10,8 +10,4 @@ public partial class PluginPrerequisitesUninstallDialogView : ReactiveUserContro
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

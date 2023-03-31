@@ -13,10 +13,6 @@ public partial class LayerBrushPresetView : ReactiveUserControl<LayerBrushPreset
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {

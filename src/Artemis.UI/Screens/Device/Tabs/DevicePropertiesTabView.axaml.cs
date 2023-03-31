@@ -11,10 +11,6 @@ public partial class DevicePropertiesTabView : ReactiveUserControl<DevicePropert
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {

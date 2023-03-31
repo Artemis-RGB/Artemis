@@ -26,10 +26,6 @@ public partial class SurfaceEditorView : ReactiveUserControl<SurfaceEditorViewMo
             UpdateZoomBorderBackground();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void ZoomBorder_OnZoomChanged(object sender, ZoomChangedEventArgs e)
     {

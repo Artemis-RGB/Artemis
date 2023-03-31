@@ -23,10 +23,6 @@ public partial class TreePropertyView : ReactiveUserControl<ITreePropertyViewMod
         });
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void DataBindingToggleButton_OnClick(object? sender, RoutedEventArgs e)
     {

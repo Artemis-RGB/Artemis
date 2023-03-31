@@ -10,8 +10,4 @@ public partial class DataBindingView : ReactiveUserControl<DataBindingViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

@@ -10,8 +10,4 @@ public partial class OutputPinCollectionView : ReactiveUserControl<PinCollection
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

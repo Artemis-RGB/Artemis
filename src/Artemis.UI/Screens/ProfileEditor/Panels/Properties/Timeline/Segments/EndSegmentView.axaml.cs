@@ -13,10 +13,6 @@ public partial class EndSegmentView : ReactiveUserControl<EndSegmentViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void KeyframeDragAnchor_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {

@@ -13,10 +13,6 @@ public partial class SelectionAddToolView : ReactiveUserControl<SelectionAddTool
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void SelectionRectangle_OnSelectionFinished(object? sender, SelectionRectangleEventArgs e)
     {

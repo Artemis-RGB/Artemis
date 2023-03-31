@@ -12,10 +12,6 @@ public partial class SKColorPropertyInputView : ReactiveUserControl<SKColorPrope
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void ColorPickerButton_OnFlyoutOpened(ColorPickerButton sender, EventArgs args)
     {

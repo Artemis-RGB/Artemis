@@ -12,10 +12,6 @@ public partial class StringPropertyInputView : ReactiveUserControl<FloatProperty
         AddHandler(KeyUpEvent, OnRoutedKeyUp, handledEventsToo: true);
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void OnRoutedKeyUp(object? sender, KeyEventArgs e)
     {

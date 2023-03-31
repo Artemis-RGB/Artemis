@@ -10,8 +10,4 @@ public partial class RootView : ReactiveUserControl<RootViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

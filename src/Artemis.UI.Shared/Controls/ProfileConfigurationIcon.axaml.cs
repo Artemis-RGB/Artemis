@@ -79,11 +79,6 @@ public partial class ProfileConfigurationIcon : UserControl, IDisposable
         };
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
-
     private void OnDetachedFromLogicalTree(object? sender, LogicalTreeAttachmentEventArgs e)
     {
         if (ConfigurationIcon != null)

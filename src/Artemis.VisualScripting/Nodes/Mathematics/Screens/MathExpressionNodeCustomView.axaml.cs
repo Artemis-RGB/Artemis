@@ -11,10 +11,6 @@ public partial class MathExpressionNodeCustomView : ReactiveUserControl<MathExpr
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnLostFocus(object? sender, RoutedEventArgs e)
     {

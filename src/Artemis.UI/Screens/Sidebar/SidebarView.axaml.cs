@@ -10,8 +10,4 @@ public partial class SidebarView : ReactiveUserControl<SidebarViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

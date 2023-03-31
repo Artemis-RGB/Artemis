@@ -10,8 +10,4 @@ public partial class DevicePhysicalLayoutDialogView : ReactiveUserControl<Device
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

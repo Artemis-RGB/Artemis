@@ -10,8 +10,4 @@ public partial class DataModelEventCycleNodeCustomView : ReactiveUserControl<Dat
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

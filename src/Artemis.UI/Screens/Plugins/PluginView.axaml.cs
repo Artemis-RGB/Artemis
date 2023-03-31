@@ -14,10 +14,6 @@ public partial class PluginView : ReactiveUserControl<PluginViewModel>
         EnabledToggle.Click += EnabledToggleOnClick;
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void EnabledToggleOnClick(object? sender, RoutedEventArgs e)
     {

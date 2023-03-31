@@ -10,8 +10,4 @@ public partial class DisplayConditionScriptView : ReactiveUserControl<DisplayCon
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

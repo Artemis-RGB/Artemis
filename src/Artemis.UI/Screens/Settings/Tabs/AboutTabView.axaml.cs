@@ -10,8 +10,4 @@ public partial class AboutTabView : ReactiveUserControl<AboutTabViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

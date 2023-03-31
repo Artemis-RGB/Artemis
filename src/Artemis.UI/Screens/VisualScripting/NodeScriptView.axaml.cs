@@ -23,26 +23,26 @@ public partial class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
     {
         InitializeComponent();
 
-        // NodeScriptZoomBorder.PropertyChanged += ZoomBorderOnPropertyChanged;
-        // UpdateZoomBorderBackground();
-        //
-        // NodeScriptZoomBorder.AddHandler(PointerReleasedEvent, CanvasOnPointerReleased, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
-        // NodeScriptZoomBorder.AddHandler(PointerWheelChangedEvent, ZoomOnPointerWheelChanged, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
-        // NodeScriptZoomBorder.AddHandler(PointerMovedEvent, ZoomOnPointerMoved, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
-        //
-        // this.WhenActivated(d =>
-        // {
-        //     ViewModel!.AutoFitRequested += ViewModelOnAutoFitRequested;
-        //     ViewModel.PickerPositionSubject.Subscribe(ShowPickerAt).DisposeWith(d);
-        //     if (ViewModel.IsPreview)
-        //     {
-        //         BoundsProperty.Changed.Subscribe(BoundsPropertyChanged).DisposeWith(d);
-        //         ViewModel.NodeViewModels.ToObservableChangeSet().Subscribe(_ => AutoFitIfPreview()).DisposeWith(d);
-        //     }
-        //
-        //     Dispatcher.UIThread.InvokeAsync(() => AutoFit(true), DispatcherPriority.ContextIdle);
-        //     Disposable.Create(() => ViewModel.AutoFitRequested -= ViewModelOnAutoFitRequested).DisposeWith(d);
-        // });
+        NodeScriptZoomBorder.PropertyChanged += ZoomBorderOnPropertyChanged;
+        UpdateZoomBorderBackground();
+        
+        NodeScriptZoomBorder.AddHandler(PointerReleasedEvent, CanvasOnPointerReleased, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+        NodeScriptZoomBorder.AddHandler(PointerWheelChangedEvent, ZoomOnPointerWheelChanged, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+        NodeScriptZoomBorder.AddHandler(PointerMovedEvent, ZoomOnPointerMoved, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+        
+        this.WhenActivated(d =>
+        {
+            ViewModel!.AutoFitRequested += ViewModelOnAutoFitRequested;
+            ViewModel.PickerPositionSubject.Subscribe(ShowPickerAt).DisposeWith(d);
+            if (ViewModel.IsPreview)
+            {
+                BoundsProperty.Changed.Subscribe(BoundsPropertyChanged).DisposeWith(d);
+                ViewModel.NodeViewModels.ToObservableChangeSet().Subscribe(_ => AutoFitIfPreview()).DisposeWith(d);
+            }
+        
+            Dispatcher.UIThread.InvokeAsync(() => AutoFit(true), DispatcherPriority.ContextIdle);
+            Disposable.Create(() => ViewModel.AutoFitRequested -= ViewModelOnAutoFitRequested).DisposeWith(d);
+        });
     }
 
     protected override Size MeasureOverride(Size availableSize)
@@ -130,10 +130,6 @@ public partial class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
             visualBrush.DestinationRect = new RelativeRect(NodeScriptZoomBorder.OffsetX * -1, NodeScriptZoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void ZoomBorder_OnZoomChanged(object sender, ZoomChangedEventArgs e)
     {

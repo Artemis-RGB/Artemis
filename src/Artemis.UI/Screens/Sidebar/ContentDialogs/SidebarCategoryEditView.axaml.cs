@@ -13,8 +13,4 @@ public partial class SidebarCategoryEditView : ReactiveUserControl<SidebarCatego
         this.WhenActivated(_ => this.ClearAllDataValidationErrors());
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

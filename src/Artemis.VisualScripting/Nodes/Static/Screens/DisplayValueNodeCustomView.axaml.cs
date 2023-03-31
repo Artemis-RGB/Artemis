@@ -10,8 +10,4 @@ public partial class DisplayValueNodeCustomView : ReactiveUserControl<DisplayVal
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

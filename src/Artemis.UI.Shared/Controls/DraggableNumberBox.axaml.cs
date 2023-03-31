@@ -179,11 +179,6 @@ public partial class DraggableNumberBox : UserControl
             FocusManager.Instance?.Focus(Parent as IInputElement);
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
-
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         PointerPoint point = e.GetCurrentPoint(this);

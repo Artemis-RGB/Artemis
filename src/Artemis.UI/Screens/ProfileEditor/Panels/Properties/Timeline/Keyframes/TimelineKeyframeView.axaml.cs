@@ -30,10 +30,6 @@ public partial class TimelineKeyframeView : ReactiveUserControl<ITimelineKeyfram
 
     #endregion
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {

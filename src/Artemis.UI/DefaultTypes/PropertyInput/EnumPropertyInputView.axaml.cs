@@ -11,8 +11,4 @@ public partial class EnumPropertyInputView : ReactiveUserControl<PropertyInputVi
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

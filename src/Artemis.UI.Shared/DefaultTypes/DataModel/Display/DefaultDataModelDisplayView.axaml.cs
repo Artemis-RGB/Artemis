@@ -15,9 +15,4 @@ public partial class DefaultDataModelDisplayView : UserControl
     {
         InitializeComponent();
     }
-
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

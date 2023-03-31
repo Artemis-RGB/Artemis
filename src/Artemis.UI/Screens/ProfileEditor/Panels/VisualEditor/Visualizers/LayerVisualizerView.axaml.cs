@@ -17,10 +17,6 @@ public partial class LayerVisualizerView : ReactiveUserControl<LayerVisualizerVi
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     #region Overrides of TemplatedControl
 

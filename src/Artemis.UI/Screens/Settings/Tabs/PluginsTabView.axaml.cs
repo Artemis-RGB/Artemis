@@ -10,8 +10,4 @@ public partial class PluginsTabView : ReactiveUserControl<PluginsTabViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

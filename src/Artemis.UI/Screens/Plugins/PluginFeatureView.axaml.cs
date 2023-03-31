@@ -10,8 +10,4 @@ public partial class PluginFeatureView : ReactiveUserControl<PluginFeatureViewMo
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

@@ -10,8 +10,4 @@ public partial class PluginSettingsView : ReactiveUserControl<PluginSettingsView
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

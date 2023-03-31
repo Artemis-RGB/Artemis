@@ -10,8 +10,4 @@ public partial class DeviceInfoTabView : ReactiveUserControl<DeviceInfoTabViewMo
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

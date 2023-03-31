@@ -70,10 +70,6 @@ public partial class TransformToolView : ReactiveUserControl<TransformToolViewMo
             control.RenderTransform = counterScale;
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private SKPoint GetPositionForViewModel(PointerEventArgs e)
     {

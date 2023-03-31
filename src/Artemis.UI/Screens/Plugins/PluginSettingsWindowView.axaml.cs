@@ -29,8 +29,4 @@ public partial class PluginSettingsWindowView : ReactiveAppWindow<PluginSettings
         );
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

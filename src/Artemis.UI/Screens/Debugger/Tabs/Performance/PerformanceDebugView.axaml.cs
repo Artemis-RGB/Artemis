@@ -10,8 +10,4 @@ public partial class PerformanceDebugView : ReactiveUserControl<PerformanceDebug
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

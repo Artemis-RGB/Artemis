@@ -35,10 +35,6 @@ public partial class NodeView : ReactiveUserControl<NodeViewModel>
 
     #endregion
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {

@@ -12,10 +12,6 @@ public partial class SelectionRemoveToolView : ReactiveUserControl<SelectionRemo
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void SelectionRectangle_OnSelectionFinished(object? sender, SelectionRectangleEventArgs e)
     {

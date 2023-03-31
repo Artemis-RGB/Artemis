@@ -11,12 +11,12 @@ using DryIoc;
 namespace Artemis.Core.DryIoc;
 
 /// <summary>
-/// Provides an extension method to register services onto a DryIoc <see cref="IContainer"/>.
+///     Provides an extension method to register services onto a DryIoc <see cref="IContainer" />.
 /// </summary>
 public static class ContainerExtensions
 {
     /// <summary>
-    /// Registers core services into the container.
+    ///     Registers core services into the container.
     /// </summary>
     /// <param name="container">The builder building the current container</param>
     public static void RegisterCore(this IContainer container)
@@ -37,13 +37,13 @@ public static class ContainerExtensions
         container.RegisterMany(storageAssembly, type => type.IsAssignableTo<IStorageMigration>(), Reuse.Singleton, nonPublicServiceTypes: true);
 
         container.Register<IPluginSettingsFactory, PluginSettingsFactory>(Reuse.Singleton);
-        container.Register(made: Made.Of(_ => ServiceInfo.Of<IPluginSettingsFactory>(), f => f.CreatePluginSettings(Arg.Index<Type>(0)), r => r.Parent.ImplementationType));
+        container.Register(Made.Of(_ => ServiceInfo.Of<IPluginSettingsFactory>(), f => f.CreatePluginSettings(Arg.Index<Type>(0)), r => r.Parent.ImplementationType));
         container.Register<ILoggerFactory, LoggerFactory>(Reuse.Singleton);
-        container.Register(made: Made.Of(_ => ServiceInfo.Of<ILoggerFactory>(), f => f.CreateLogger(Arg.Index<Type>(0)), r => r.Parent.ImplementationType));
+        container.Register(Made.Of(_ => ServiceInfo.Of<ILoggerFactory>(), f => f.CreateLogger(Arg.Index<Type>(0)), r => r.Parent.ImplementationType));
     }
 
     /// <summary>
-    /// Registers plugin services into the container, this is typically a child container.
+    ///     Registers plugin services into the container, this is typically a child container.
     /// </summary>
     /// <param name="container">The builder building the current container</param>
     /// <param name="plugin">The plugin to register</param>

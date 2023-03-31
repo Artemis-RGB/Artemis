@@ -14,8 +14,4 @@ public partial class NodeScriptWindowView : ReactiveAppWindow<NodeScriptWindowVi
 #endif
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

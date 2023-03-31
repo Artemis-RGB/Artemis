@@ -10,8 +10,4 @@ public partial class StatusBarView : ReactiveUserControl<StatusBarViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

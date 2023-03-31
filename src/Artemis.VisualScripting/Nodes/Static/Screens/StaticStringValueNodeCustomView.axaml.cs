@@ -10,8 +10,4 @@ public partial class StaticStringValueNodeCustomView : ReactiveUserControl<Stati
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

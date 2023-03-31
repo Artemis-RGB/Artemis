@@ -19,8 +19,4 @@ public partial class ProfileConfigurationEditView : ReactiveAppWindow<ProfileCon
 #endif
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

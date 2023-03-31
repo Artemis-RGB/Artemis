@@ -10,8 +10,4 @@ public partial class SettingsView : ReactiveUserControl<SettingsViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

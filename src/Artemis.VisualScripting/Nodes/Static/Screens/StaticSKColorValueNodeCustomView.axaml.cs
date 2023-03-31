@@ -11,10 +11,6 @@ public partial class StaticSKColorValueNodeCustomView : ReactiveUserControl<Stat
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void ColorPickerButton_OnFlyoutOpened(ColorPickerButton sender, EventArgs args)
     {

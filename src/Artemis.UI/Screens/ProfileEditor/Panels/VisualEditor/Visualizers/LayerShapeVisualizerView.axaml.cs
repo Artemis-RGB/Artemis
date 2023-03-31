@@ -20,10 +20,6 @@ public partial class LayerShapeVisualizerView : ReactiveUserControl<LayerShapeVi
         this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Selected).Subscribe(_ => UpdateStrokeThickness()).DisposeWith(d));
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     #region Overrides of TemplatedControl
 

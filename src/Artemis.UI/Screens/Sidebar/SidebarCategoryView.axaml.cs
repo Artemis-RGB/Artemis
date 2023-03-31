@@ -28,10 +28,6 @@ public partial class SidebarCategoryView : ReactiveUserControl<SidebarCategoryVi
         AddHandler(PointerEnteredEvent, HandlePointerEnter, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {

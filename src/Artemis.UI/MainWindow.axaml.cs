@@ -84,8 +84,4 @@ public partial class MainWindow : ReactiveAppWindow<RootViewModel>
         ViewModel?.Unfocused();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

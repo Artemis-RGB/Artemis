@@ -10,8 +10,4 @@ public partial class KeyboardSectionAdaptionHintView : UserControl
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

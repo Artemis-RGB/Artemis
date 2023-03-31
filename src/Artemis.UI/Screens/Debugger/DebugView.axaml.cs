@@ -29,10 +29,6 @@ public partial class DebugView : ReactiveAppWindow<DebugViewModel>
         });
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void DeviceVisualizer_OnLedClicked(object? sender, LedClickedEventArgs e)
     {

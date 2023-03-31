@@ -10,8 +10,4 @@ public partial class PlaybackView : ReactiveUserControl<PlaybackViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

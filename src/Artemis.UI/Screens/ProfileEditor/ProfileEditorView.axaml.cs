@@ -22,8 +22,4 @@ public partial class ProfileEditorView : ReactiveUserControl<ProfileEditorViewMo
 
     #endregion
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

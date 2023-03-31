@@ -12,10 +12,6 @@ public partial class IntRangePropertyInputView : ReactiveUserControl<IntRangePro
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void DraggableNumberBox_OnDragStarted(DraggableNumberBox sender, EventArgs args)
     {

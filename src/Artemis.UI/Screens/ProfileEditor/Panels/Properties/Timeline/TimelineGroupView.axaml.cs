@@ -10,8 +10,4 @@ public partial class TimelineGroupView : ReactiveUserControl<TimelineGroupViewMo
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

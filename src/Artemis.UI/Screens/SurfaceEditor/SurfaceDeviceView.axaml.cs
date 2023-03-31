@@ -16,10 +16,6 @@ public partial class SurfaceDeviceView : ReactiveUserControl<SurfaceDeviceViewMo
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnPointerMoved(object? sender, PointerEventArgs e)
     {

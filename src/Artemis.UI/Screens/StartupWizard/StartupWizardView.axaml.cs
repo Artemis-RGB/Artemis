@@ -21,10 +21,6 @@ public partial class StartupWizardView : ReactiveAppWindow<StartupWizardViewMode
         this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.CurrentStep).Subscribe(ApplyCurrentStep).DisposeWith(d));
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void ApplyCurrentStep(int step)
     {

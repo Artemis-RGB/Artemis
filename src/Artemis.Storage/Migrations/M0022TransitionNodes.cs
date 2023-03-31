@@ -22,7 +22,7 @@ public class M0022TransitionNodes : IStorageMigration
             else if (node.Type == "ColorGradientEasingNode")
                 node.Type = "ColorGradientTransitionNode";
             else if (node.Type == "SKColorEasingNode")
-                node.Type = "SKColorTransitionNode";   
+                node.Type = "SKColorTransitionNode";
             else if (node.Type == "EasingTypeNode")
                 node.Type = "EasingFunctionNode";
         }

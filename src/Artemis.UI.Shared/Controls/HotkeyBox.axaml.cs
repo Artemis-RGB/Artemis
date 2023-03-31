@@ -68,11 +68,6 @@ public partial class HotkeyBox : UserControl
         _displayTextBox.CaretIndex = _displayTextBox.Text?.Length ?? 0;
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
-
     private void Button_OnClick(object? sender, RoutedEventArgs e)
     {
         Hotkey = null;

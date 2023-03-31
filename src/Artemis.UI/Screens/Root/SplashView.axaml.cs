@@ -25,8 +25,4 @@ public partial class SplashView : ReactiveWindow<SplashViewModel>
         });
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

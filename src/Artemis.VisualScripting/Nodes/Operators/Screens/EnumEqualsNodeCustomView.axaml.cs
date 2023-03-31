@@ -10,8 +10,4 @@ public partial class EnumEqualsNodeCustomView : ReactiveUserControl<EnumEqualsNo
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

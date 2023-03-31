@@ -10,8 +10,4 @@ public partial class DeviceDetectInputView : ReactiveUserControl<DeviceDetectInp
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

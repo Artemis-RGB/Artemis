@@ -10,8 +10,4 @@ public partial class LayerPropertyNodeCustomView : ReactiveUserControl<LayerProp
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

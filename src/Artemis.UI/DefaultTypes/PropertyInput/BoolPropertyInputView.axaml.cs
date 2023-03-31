@@ -10,8 +10,4 @@ public partial class BoolPropertyInputView : ReactiveUserControl<BoolPropertyInp
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

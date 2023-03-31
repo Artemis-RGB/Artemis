@@ -14,8 +14,4 @@ public partial class LayerHintsDialogView : ReactiveAppWindow<LayerHintsDialogVi
 #endif
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

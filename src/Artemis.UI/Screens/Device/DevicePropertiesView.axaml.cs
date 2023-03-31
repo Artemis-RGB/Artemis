@@ -17,10 +17,6 @@ public partial class DevicePropertiesView : ReactiveAppWindow<DevicePropertiesVi
 #endif
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void DeviceVisualizer_OnLedClicked(object? sender, LedClickedEventArgs e)
     {

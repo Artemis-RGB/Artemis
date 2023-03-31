@@ -10,8 +10,4 @@ public partial class ReleasesTabView : ReactiveUserControl<ReleasesTabViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

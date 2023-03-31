@@ -66,10 +66,6 @@ public partial class VisualEditorView : ReactiveUserControl<VisualEditorViewMode
             visualBrush.DestinationRect = new RelativeRect(ZoomBorder.OffsetX * -1, ZoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void ZoomBorder_OnZoomChanged(object sender, ZoomChangedEventArgs e)
     {

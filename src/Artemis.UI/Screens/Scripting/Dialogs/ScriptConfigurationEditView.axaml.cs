@@ -16,8 +16,4 @@ public partial class ScriptConfigurationEditView : ReactiveUserControl<ScriptCon
         });
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

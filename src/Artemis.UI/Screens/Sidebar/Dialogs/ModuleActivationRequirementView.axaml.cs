@@ -10,8 +10,4 @@ public partial class ModuleActivationRequirementView : ReactiveUserControl<Modul
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

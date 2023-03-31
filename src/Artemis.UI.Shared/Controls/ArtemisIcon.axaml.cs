@@ -93,11 +93,6 @@ public partial class ArtemisIcon : UserControl
             disposable.Dispose();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
-
     #region Properties
 
     /// <summary>

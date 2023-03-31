@@ -13,10 +13,6 @@ public partial class MenuBarView : ReactiveUserControl<MenuBarViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void MenuBase_OnMenuClosed(object? sender, RoutedEventArgs e)
     {

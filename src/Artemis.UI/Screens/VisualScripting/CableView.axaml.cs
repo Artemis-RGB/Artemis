@@ -30,10 +30,6 @@ public partial class CableView : ReactiveUserControl<CableViewModel>
         });
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void Update(bool from)
     {

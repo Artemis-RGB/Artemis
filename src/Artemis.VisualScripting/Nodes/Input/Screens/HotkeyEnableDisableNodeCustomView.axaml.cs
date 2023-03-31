@@ -11,10 +11,6 @@ public partial class HotkeyEnableDisableNodeCustomView : ReactiveUserControl<Hot
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void HotkeyBox_OnHotkeyChanged(HotkeyBox sender, EventArgs args)
     {

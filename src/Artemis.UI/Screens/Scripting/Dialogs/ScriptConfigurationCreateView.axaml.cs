@@ -10,8 +10,4 @@ public partial class ScriptConfigurationCreateView : ReactiveUserControl<ScriptC
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

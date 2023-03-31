@@ -13,10 +13,6 @@ public partial class InputPinView : PinView
         InitializePin(this.Get<Border>("PinPoint"));
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void PinContainer_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {

@@ -10,8 +10,4 @@ public partial class StaticConditionView : ReactiveUserControl<StaticConditionVi
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

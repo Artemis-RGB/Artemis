@@ -10,8 +10,4 @@ public partial class AlwaysOnConditionView : UserControl
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

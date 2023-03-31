@@ -10,8 +10,4 @@ public partial class DebugSettingsView : ReactiveUserControl<DebugSettingsViewMo
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

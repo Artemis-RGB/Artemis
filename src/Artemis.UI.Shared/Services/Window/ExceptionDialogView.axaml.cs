@@ -14,8 +14,4 @@ internal partial class ExceptionDialogView : ReactiveWindow<ExceptionDialogViewM
 #endif
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

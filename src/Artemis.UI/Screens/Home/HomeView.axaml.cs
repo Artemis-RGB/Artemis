@@ -10,8 +10,4 @@ public partial class HomeView : ReactiveUserControl<HomeViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

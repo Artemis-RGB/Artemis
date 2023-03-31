@@ -10,8 +10,4 @@ public partial class TimelinePropertyView : ReactiveUserControl<ITimelinePropert
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

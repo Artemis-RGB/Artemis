@@ -37,8 +37,4 @@ public partial class DeviceLogicalLayoutDialogView : ReactiveUserControl<DeviceL
                regionInfo.TwoLetterISORegionName.Contains(search, StringComparison.OrdinalIgnoreCase);
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

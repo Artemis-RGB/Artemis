@@ -113,10 +113,6 @@ public partial class ProfileTreeView : ReactiveUserControl<ProfileTreeViewModel>
         _dragAdorner.RenderTransform = new TranslateTransform(_dragStartPosition.X - _elementDragOffset.X, position.Y - _elementDragOffset.Y);
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void ProfileTreeView_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {

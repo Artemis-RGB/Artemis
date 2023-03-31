@@ -24,10 +24,6 @@ public partial class NodePickerView : ReactiveUserControl<NodePickerViewModel>
         });
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {

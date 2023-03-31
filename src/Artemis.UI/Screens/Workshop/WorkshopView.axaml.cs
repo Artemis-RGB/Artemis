@@ -10,8 +10,4 @@ public partial class WorkshopView : ReactiveUserControl<WorkshopViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

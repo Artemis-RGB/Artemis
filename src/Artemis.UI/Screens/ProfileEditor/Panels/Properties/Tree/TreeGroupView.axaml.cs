@@ -11,10 +11,6 @@ public partial class TreeGroupView : ReactiveUserControl<TreeGroupViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {

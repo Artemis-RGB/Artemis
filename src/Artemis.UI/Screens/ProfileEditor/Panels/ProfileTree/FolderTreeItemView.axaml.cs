@@ -23,10 +23,6 @@ public partial class FolderTreeItemView : ReactiveUserControl<FolderTreeItemView
         });
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnKeyUp(object? sender, KeyEventArgs e)
     {

@@ -10,8 +10,4 @@ public partial class InputMappingsTabView : ReactiveUserControl<InputMappingsTab
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

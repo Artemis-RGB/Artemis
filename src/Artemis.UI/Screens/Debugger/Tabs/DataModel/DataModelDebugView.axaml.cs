@@ -10,8 +10,4 @@ public partial class DataModelDebugView : ReactiveUserControl<DataModelDebugView
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

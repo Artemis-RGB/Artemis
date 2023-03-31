@@ -11,10 +11,6 @@ public partial class RampSKColorNodeCustomView : ReactiveUserControl<RampSKColor
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void GradientPickerButton_OnFlyoutOpened(GradientPickerButton sender, EventArgs args)
     {

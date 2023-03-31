@@ -31,8 +31,4 @@ public partial class ScriptsDialogView : ReactiveAppWindow<ScriptsDialogViewMode
         }
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

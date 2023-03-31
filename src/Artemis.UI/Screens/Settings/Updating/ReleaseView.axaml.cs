@@ -11,10 +11,6 @@ public partial class ReleaseView : ReactiveUserControl<ReleaseViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
     
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {

@@ -47,11 +47,6 @@ public partial class EnumComboBox : UserControl
         }
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
-
     private void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (_enumComboBox == null || _enumComboBox.SelectedIndex == -1)

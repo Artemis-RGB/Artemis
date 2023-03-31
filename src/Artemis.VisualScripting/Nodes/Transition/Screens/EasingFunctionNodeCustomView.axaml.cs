@@ -10,8 +10,4 @@ public partial class EasingFunctionNodeCustomView : ReactiveUserControl<EasingFu
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

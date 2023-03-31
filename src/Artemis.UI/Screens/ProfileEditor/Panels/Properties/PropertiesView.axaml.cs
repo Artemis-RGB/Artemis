@@ -16,10 +16,6 @@ public partial class PropertiesView : ReactiveUserControl<PropertiesViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void ApplyTransition(bool enable)
     {

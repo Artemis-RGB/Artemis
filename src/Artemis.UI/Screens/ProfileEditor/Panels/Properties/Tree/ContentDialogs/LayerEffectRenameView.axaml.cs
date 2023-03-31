@@ -27,8 +27,4 @@ public partial class LayerEffectRenameView : ReactiveUserControl<LayerEffectRena
         NameTextBox.Focus();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

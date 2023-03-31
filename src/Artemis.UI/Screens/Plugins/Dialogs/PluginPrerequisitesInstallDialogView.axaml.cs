@@ -10,8 +10,4 @@ public partial class PluginPrerequisitesInstallDialogView : ReactiveUserControl<
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

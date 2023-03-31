@@ -26,10 +26,6 @@ public partial class DragCableView : ReactiveUserControl<DragCableViewModel>
         });
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void Update()
     {

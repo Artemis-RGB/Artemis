@@ -10,8 +10,4 @@ public partial class PressedKeyPositionNodeCustomView : ReactiveUserControl<Pres
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

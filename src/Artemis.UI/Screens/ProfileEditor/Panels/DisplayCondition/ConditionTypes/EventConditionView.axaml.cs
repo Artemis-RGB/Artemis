@@ -10,8 +10,4 @@ public partial class EventConditionView : ReactiveUserControl<EventConditionView
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

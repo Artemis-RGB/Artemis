@@ -12,10 +12,6 @@ public partial class ColorGradientPropertyInputView : ReactiveUserControl<ColorG
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void GradientPickerButton_OnFlyoutOpened(GradientPickerButton sender, EventArgs args)
     {

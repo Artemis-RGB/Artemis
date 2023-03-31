@@ -10,8 +10,4 @@ public partial class BrushPropertyInputView : ReactiveUserControl<BrushPropertyI
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

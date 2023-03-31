@@ -10,8 +10,4 @@ public partial class SidebarProfileConfigurationView : ReactiveUserControl<Sideb
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }
