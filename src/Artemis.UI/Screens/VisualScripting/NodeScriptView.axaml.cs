@@ -68,8 +68,9 @@ public partial class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
     {
         if (ViewModel == null)
             return;
-        ViewModel.NodePickerViewModel.Position = point;
+        
         NodeScriptZoomBorder?.ContextFlyout?.ShowAt(NodeScriptZoomBorder);
+        ViewModel.NodePickerViewModel.Position = point;
     }
 
     private void AutoFitIfPreview()

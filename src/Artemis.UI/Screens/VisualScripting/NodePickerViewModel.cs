@@ -42,7 +42,8 @@ public class NodePickerViewModel : ActivatableViewModelBase
                 .ThenByAscending(d => d.Category)
                 .ThenByAscending(d => d.Name))
             .GroupWithImmutableState(n => n.Category)
-            .Bind(out ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeData, string>> categories)
+            .Transform(c => new NodeCategoryViewModel(c))
+            .Bind(out ReadOnlyObservableCollection<NodeCategoryViewModel> categories)
             .Subscribe();
         Categories = categories;
 
@@ -62,7 +63,7 @@ public class NodePickerViewModel : ActivatableViewModelBase
         });
     }
 
-    public ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeData, string>> Categories { get; }
+    public ReadOnlyObservableCollection<NodeCategoryViewModel> Categories { get; }
 
     public bool IsVisible
     {

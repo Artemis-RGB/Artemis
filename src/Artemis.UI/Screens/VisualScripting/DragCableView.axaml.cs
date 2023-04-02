@@ -29,14 +29,28 @@ public partial class DragCableView : ReactiveUserControl<DragCableViewModel>
 
     private void Update()
     {
-        PathFigure? pathFigure = ((PathGeometry) CablePath.Data).Figures?.FirstOrDefault();
-        if (pathFigure?.Segments == null)
+        if (ViewModel == null)
             return;
         
-        BezierSegment segment = (BezierSegment) pathFigure.Segments.First();
-        pathFigure.StartPoint = ViewModel!.FromPoint;
-        segment.Point1 = new Point(ViewModel.FromPoint.X + CABLE_OFFSET, ViewModel.FromPoint.Y);
-        segment.Point2 = new Point(ViewModel.ToPoint.X - CABLE_OFFSET, ViewModel.ToPoint.Y);
-        segment.Point3 = new Point(ViewModel.ToPoint.X, ViewModel.ToPoint.Y);
+        PathGeometry geometry = new()
+        {
+            Figures = new PathFigures()
+        };
+        PathFigure pathFigure = new()
+        {
+            StartPoint = ViewModel.FromPoint,
+            IsClosed = false,
+            Segments = new PathSegments
+            {
+                new BezierSegment
+                {
+                    Point1 = new Point(ViewModel.FromPoint.X + CABLE_OFFSET, ViewModel.FromPoint.Y),
+                    Point2 = new Point(ViewModel.ToPoint.X - CABLE_OFFSET, ViewModel.ToPoint.Y),
+                    Point3 = new Point(ViewModel.ToPoint.X, ViewModel.ToPoint.Y)
+                }
+            }
+        };
+        geometry.Figures.Add(pathFigure);
+        CablePath.Data = geometry;
     }
 }
