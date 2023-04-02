@@ -58,7 +58,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '7.0.x'
       - name: Publish Artemis
         run: dotnet publish --configuration Release -p:Version=${{ needs.version.outputs.version-number }} --runtime ${{ matrix.rid }} --output build/${{ matrix.rid }} --self-contained Artemis/src/Artemis.UI.${{ matrix.csproj }}/Artemis.UI.${{ matrix.csproj }}.csproj
       - name: Publish Plugins

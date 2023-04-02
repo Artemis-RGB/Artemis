@@ -14,8 +14,6 @@ namespace Artemis.UI;
 
 public partial class MainWindow : ReactiveAppWindow<RootViewModel>
 {
-    private readonly Panel _rootPanel;
-    private readonly ContentControl _sidebarContentControl;
     private bool _activated;
 
     public MainWindow()
@@ -24,12 +22,10 @@ public partial class MainWindow : ReactiveAppWindow<RootViewModel>
         Activated += OnActivated;
         Deactivated += OnDeactivated;
 
-        // ApplyWindowSize();
         InitializeComponent();
-
-        _rootPanel = this.Get<Panel>("RootPanel");
-        _sidebarContentControl = this.Get<ContentControl>("SidebarContentControl");
-        _rootPanel.LayoutUpdated += OnLayoutUpdated;
+        ApplyWindowSize();
+        
+        RootPanel.LayoutUpdated += OnLayoutUpdated;
 
 #if DEBUG
         this.AttachDevTools();
@@ -56,22 +52,16 @@ public partial class MainWindow : ReactiveAppWindow<RootViewModel>
         RootViewModel.WindowSizeSetting.Value ??= new WindowSize();
         RootViewModel.WindowSizeSetting.Value.ApplyFromWindow(this);
     }
-
-    // TODO: Replace with a media query once https://github.com/AvaloniaUI/Avalonia/pull/7938 is implemented
+    
     private void OnLayoutUpdated(object? sender, EventArgs e)
     {
-        _sidebarContentControl.Width = _rootPanel.Bounds.Width >= 1800 ? 300 : 240;
+        SidebarContentControl.Width = RootPanel.Bounds.Width >= 1800 ? 300 : 240;
     }
 
     private void OnOpened(object? sender, EventArgs e)
     {
         Opened -= OnOpened;
-        // ICoreApplicationView coreAppTitleBar = this;
-        // if (coreAppTitleBar.TitleBar != null)
-        // {
-        //     coreAppTitleBar.TitleBar.ExtendViewIntoTitleBar = true;
-        //     SetTitleBar(this.Get<Border>("DragHandle"));
-        // }
+        TitleBar.ExtendsContentIntoTitleBar = true;
     }
 
     private void OnActivated(object? sender, EventArgs e)

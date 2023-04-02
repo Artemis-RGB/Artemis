@@ -3,7 +3,7 @@
         xmlns:styling="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
         xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
     <!-- Third party styles -->
-    <styling:FluentAvaloniaTheme PreferSystemTheme="False" RequestedTheme="Dark"/>
+    <styling:FluentAvaloniaTheme PreferSystemTheme="False" PreferUserAccentColor="True"/>
     <avalonia:MaterialIconStyles />
     
     <!-- <FluentTheme Mode="Dark"></FluentTheme> -->

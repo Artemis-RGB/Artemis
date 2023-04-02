@@ -28,6 +28,7 @@ public partial class ArtemisIcon : UserControl
         InitializeComponent();
         DetachedFromLogicalTree += OnDetachedFromLogicalTree;
         LayoutUpdated += OnLayoutUpdated;
+        PropertyChanged += OnPropertyChanged;
     }
 
     private void Update()
@@ -86,6 +87,12 @@ public partial class ArtemisIcon : UserControl
             contentControl.Height = Bounds.Height;
         }
     }
+    
+    private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == IconProperty || e.Property == FillProperty)
+            Update();
+    }
 
     private void OnDetachedFromLogicalTree(object? sender, LogicalTreeAttachmentEventArgs e)
     {
@@ -109,11 +116,7 @@ public partial class ArtemisIcon : UserControl
     public object? Icon
     {
         get => GetValue(IconProperty);
-        set
-        {
-            SetValue(IconProperty, value);
-            Update();
-        }
+        set => SetValue(IconProperty, value);
     }
 
     /// <summary>
@@ -129,11 +132,7 @@ public partial class ArtemisIcon : UserControl
     public bool Fill
     {
         get => GetValue(FillProperty);
-        set
-        {
-            SetValue(FillProperty, value);
-            Update();
-        }
+        set => SetValue(FillProperty, value);
     }
 
     #endregion

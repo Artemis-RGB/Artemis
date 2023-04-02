@@ -94,6 +94,8 @@ public class GradientPicker : TemplatedControl
 
             SelectedColorStop = EditingColorGradient.ElementAtOrDefault(index);
         });
+        
+        PropertyChanged += OnPropertyChanged;
     }
 
     /// <summary>
@@ -102,11 +104,7 @@ public class GradientPicker : TemplatedControl
     public ColorGradient ColorGradient
     {
         get => GetValue(ColorGradientProperty);
-        set
-        {
-            SetValue(ColorGradientProperty, value);
-            ApplyToField();
-        }
+        set => SetValue(ColorGradientProperty, value);
     }
 
     /// <summary>
@@ -341,5 +339,11 @@ public class GradientPicker : TemplatedControl
     {
         EditingColorGradient.Randomize(6);
         SelectedColorStop = EditingColorGradient.First();
+    }
+    
+    private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == ColorGradientProperty)
+            ApplyToField();
     }
 }

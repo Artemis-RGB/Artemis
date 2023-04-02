@@ -30,7 +30,17 @@ public partial class EnumComboBox : UserControl
     /// </summary>
     public EnumComboBox()
     {
+        PropertyChanged += OnPropertyChanged;
         InitializeComponent();
+    }
+
+    private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == ValueProperty)
+        {
+            UpdateValues();
+            UpdateSelection();
+        }
     }
 
     /// <summary>
@@ -39,12 +49,7 @@ public partial class EnumComboBox : UserControl
     public object? Value
     {
         get => GetValue(ValueProperty);
-        set
-        {
-            SetValue(ValueProperty, value);
-            UpdateValues();
-            UpdateSelection();
-        }
+        set => SetValue(ValueProperty, value);
     }
 
     private void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)

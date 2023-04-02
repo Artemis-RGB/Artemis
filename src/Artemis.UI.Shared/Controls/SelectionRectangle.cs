@@ -69,6 +69,14 @@ public class SelectionRectangle : Control
     {
         AffectsRender<TextBlock>(BackgroundProperty, BorderBrushProperty, BorderThicknessProperty);
         IsHitTestVisible = false;
+        
+        PropertyChanged += OnPropertyChanged;
+    }
+
+    private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == InputElementProperty)
+            SubscribeToInputElement();
     }
 
     /// <summary>
@@ -113,11 +121,7 @@ public class SelectionRectangle : Control
     public InputElement? InputElement
     {
         get => GetValue(InputElementProperty);
-        set
-        {
-            SetValue(InputElementProperty, value);
-            SubscribeToInputElement();
-        }
+        set => SetValue(InputElementProperty, value);
     }
 
     /// <summary>

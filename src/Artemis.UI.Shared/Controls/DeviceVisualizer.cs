@@ -38,12 +38,14 @@ public class DeviceVisualizer : Control
         _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
 
         PointerReleased += OnPointerReleased;
+        PropertyChanged += OnPropertyChanged;
     }
+
 
     /// <inheritdoc />
     public override void Render(DrawingContext drawingContext)
     {
-        if (Device == null)
+        if (Device == null || _deviceBounds.Width == 0 || _deviceBounds.Height == 0)
             return;
 
         // Determine the scale required to fit the desired size of the control
@@ -54,11 +56,11 @@ public class DeviceVisualizer : Control
         {
             // Scale the visualization in the desired bounding box
             if (Bounds.Width > 0 && Bounds.Height > 0)
-                boundsPush = drawingContext.PushPreTransform(Matrix.CreateScale(scale, scale));
+                boundsPush = drawingContext.PushTransform(Matrix.CreateScale(scale, scale));
 
             // Apply device rotation
-            using DrawingContext.PushedState translationPush = drawingContext.PushPreTransform(Matrix.CreateTranslation(0 - _deviceBounds.Left, 0 - _deviceBounds.Top));
-            using DrawingContext.PushedState rotationPush = drawingContext.PushPreTransform(Matrix.CreateRotation(Matrix.ToRadians(Device.Rotation)));
+            using DrawingContext.PushedState translationPush = drawingContext.PushTransform(Matrix.CreateTranslation(0 - _deviceBounds.Left, 0 - _deviceBounds.Top));
+            using DrawingContext.PushedState rotationPush = drawingContext.PushTransform(Matrix.CreateRotation(Matrix.ToRadians(Device.Rotation)));
 
             // Render device and LED images 
             if (_deviceImage != null)
@@ -75,7 +77,7 @@ public class DeviceVisualizer : Control
             lock (_deviceVisualizerLeds)
             {
                 // Apply device scale
-                using DrawingContext.PushedState scalePush = drawingContext.PushPreTransform(Matrix.CreateScale(Device.Scale, Device.Scale));
+                using DrawingContext.PushedState scalePush = drawingContext.PushTransform(Matrix.CreateScale(Device.Scale, Device.Scale));
                 foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
                     deviceVisualizerLed.RenderGeometry(drawingContext, false);
             }
@@ -152,6 +154,12 @@ public class DeviceVisualizer : Control
             OnClicked(e);
     }
 
+    private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == DeviceProperty)
+            SetupForDevice();
+    }
+
     private void DevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         Dispatcher.UIThread.Post(SetupForDevice, DispatcherPriority.Background);
@@ -169,18 +177,14 @@ public class DeviceVisualizer : Control
     /// </summary>
     public static readonly StyledProperty<ArtemisDevice?> DeviceProperty =
         AvaloniaProperty.Register<DeviceVisualizer, ArtemisDevice?>(nameof(Device));
-    
+
     /// <summary>
     ///     Gets or sets the <see cref="ArtemisDevice" /> to display
     /// </summary>
     public ArtemisDevice? Device
     {
         get => GetValue(DeviceProperty);
-        set
-        {
-            SetValue(DeviceProperty, value);
-            SetupForDevice();
-        }
+        set => SetValue(DeviceProperty, value);
     }
 
     /// <summary>

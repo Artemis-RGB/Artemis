@@ -25,7 +25,7 @@
                  Margin="10 2"
                  Items="{CompiledBinding SidebarScreens}"
                  SelectedItem="{CompiledBinding SelectedSidebarScreen}" />
-        <Separator Grid.Row="2" Margin="8" Height="1" Background="#FF6c6c6c" />
+        <Border Grid.Row="2" Margin="8" Height="1" Background="{DynamicResource ButtonBorderBrush}"></Border>
 
         <!-- Categories -->
         <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
@@ -39,7 +39,7 @@
         </ScrollViewer>
 
         <!-- Bottom buttons -->
-        <Separator Grid.Row="4" Margin="8" />
+        <Border Grid.Row="4" Margin="8" Height="1" Background="{DynamicResource ButtonBorderBrush}"></Border>
         <WrapPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5 0 5 5">
             <controls:HyperlinkButton Classes="icon-button"
                                       Width="44"

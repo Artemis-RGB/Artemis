@@ -3,15 +3,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
+             xmlns:profileEditor="clr-namespace:Artemis.UI.Screens.ProfileEditor"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.ProfileEditor.ProfileEditorTitleBarView">
-    <Grid ColumnDefinitions="Auto,*,Auto">
-        <ContentControl Grid.Row="0" Grid.Column="0" Content="{Binding MenuBarViewModel}" />
-
-        <!-- This border enables dragging the window in between the menu and the buttons-->
-        <Border Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" IsHitTestVisible="False" />
-
-        <Button Grid.Column="2" Classes="title-bar-button" Command="{Binding ShowDebugger}" HorizontalAlignment="Right" VerticalAlignment="Top">
+             x:Class="Artemis.UI.Screens.ProfileEditor.ProfileEditorTitleBarView"
+             x:DataType="profileEditor:ProfileEditorTitleBarViewModel">
+    <Grid ColumnDefinitions="*,Auto">
+        <ContentControl Grid.Row="0" Grid.Column="0" Content="{CompiledBinding MenuBarViewModel}" windowing:AppWindow.AllowInteractionInTitleBar="True" HorizontalAlignment="Left" />
+        <Button Grid.Column="1" Classes="title-bar-button"
+                Command="{CompiledBinding ShowDebugger}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                windowing:AppWindow.AllowInteractionInTitleBar="True">
             <avalonia:MaterialIcon Kind="Bug" />
         </Button>
     </Grid>

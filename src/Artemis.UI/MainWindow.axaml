@@ -10,8 +10,17 @@
                      Title="Artemis 2.0"
                      MinWidth="600"
                      MinHeight="400">
+    <windowing:AppWindow.Styles>
+      <Styles>
+          <Style Selector="Border#TitleBarContainer">
+              <Setter Property="Height" Value="40"></Setter>
+          </Style>
+          <Style Selector="windowing|AppWindow:windows Border#TitleBarContainer">
+              <Setter Property="Margin" Value="0 0 138 0"></Setter>
+          </Style>
+      </Styles>
+    </windowing:AppWindow.Styles>
     <Panel Name="RootPanel">
-        <Border Name="DragHandle" Background="Transparent" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
         <DockPanel>
             <ContentControl Name="SidebarContentControl" Content="{Binding SidebarViewModel}" DockPanel.Dock="Left" Width="240">
                 <ContentControl.Transitions>
@@ -20,8 +29,8 @@
                     </Transitions>
                 </ContentControl.Transitions>
             </ContentControl>
-            <Border Name="TitleBar" DockPanel.Dock="Top">
-                <ContentControl Content="{Binding TitleBarViewModel}" />
+            <Border Name="TitleBarContainer" DockPanel.Dock="Top">
+                <ContentControl Content="{Binding TitleBarViewModel}"/>
             </Border>
             <ContentControl Content="{Binding}" />
         </DockPanel>

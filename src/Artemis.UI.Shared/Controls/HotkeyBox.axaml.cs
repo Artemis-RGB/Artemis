@@ -19,19 +19,22 @@ namespace Artemis.UI.Shared;
 /// </summary>
 public partial class HotkeyBox : UserControl
 {
-    private readonly TextBox _displayTextBox;
-
     /// <summary>
     ///     Creates a new instance of the <see cref="HotkeyBox" /> class
     /// </summary>
     public HotkeyBox()
     {
         InitializeComponent();
-
-        _displayTextBox = this.Find<TextBox>("DisplayTextBox");
-        _displayTextBox.KeyDown += DisplayTextBoxOnKeyDown;
-        _displayTextBox.KeyUp += DisplayTextBoxOnKeyUp;
+        PropertyChanged += OnPropertyChanged;
+        DisplayTextBox.KeyDown += DisplayTextBoxOnKeyDown;
+        DisplayTextBox.KeyUp += DisplayTextBoxOnKeyUp;
         UpdateDisplayTextBox();
+    }
+
+    private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == HotkeyProperty)
+            UpdateDisplayTextBox();
     }
 
     private void DisplayTextBoxOnKeyDown(object? sender, KeyEventArgs e)
@@ -44,7 +47,7 @@ public partial class HotkeyBox : UserControl
         Hotkey.Modifiers = (KeyboardModifierKey?) e.KeyModifiers;
         UpdateDisplayTextBox();
         HotkeyChanged?.Invoke(this, EventArgs.Empty);
-        
+
         e.Handled = true;
     }
 
@@ -64,8 +67,8 @@ public partial class HotkeyBox : UserControl
         if (Hotkey?.Key != null)
             display = string.IsNullOrEmpty(display) ? Hotkey.Key.ToString() : $"{display}+{Hotkey.Key}";
 
-        _displayTextBox.Text = display;
-        _displayTextBox.CaretIndex = _displayTextBox.Text?.Length ?? 0;
+        DisplayTextBox.Text = display;
+        DisplayTextBox.CaretIndex = DisplayTextBox.Text?.Length ?? 0;
     }
 
     private void Button_OnClick(object? sender, RoutedEventArgs e)
@@ -101,11 +104,7 @@ public partial class HotkeyBox : UserControl
     public Hotkey? Hotkey
     {
         get => GetValue(HotkeyProperty);
-        set
-        {
-            SetValue(HotkeyProperty, value);
-            UpdateDisplayTextBox();
-        }
+        set => SetValue(HotkeyProperty, value);
     }
 
     /// <summary>

@@ -23,7 +23,7 @@
     </UserControl.Styles>
 
     <Panel>
-        <controls:NumberBox Name="NumberBox"
+        <controls:NumberBox Name="InnerNumberBox"
                             AcceptsExpression="True"
                             LargeChange="{Binding $parent[sharedControls:DraggableNumberBox].LargeChange}"
                             SmallChange="{Binding $parent[sharedControls:DraggableNumberBox].SmallChange}"

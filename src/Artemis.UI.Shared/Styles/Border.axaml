@@ -27,14 +27,7 @@
         <Setter Property="CornerRadius" Value="8 0 0 0" />
         <Setter Property="ClipToBounds" Value="True" />
     </Style>
-
-	<Style Selector="Border#TitleBar">
-        <Setter Property="Height" Value="40"></Setter>
-    </Style>
-    <Style Selector="Window:windows Border#TitleBar">
-        <Setter Property="Margin" Value="0 0 138 0"></Setter>
-    </Style>
-
+    
     <Style Selector="Border.card">
         <Setter Property="Padding" Value="16" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />

@@ -47,17 +47,19 @@ public class GradientPickerButton : TemplatedControl
     private Button? _button;
     private ColorGradient? _lastColorGradient;
 
+    /// <inheritdoc />
+    public GradientPickerButton()
+    {
+        PropertyChanged += OnPropertyChanged;
+    }
+
     /// <summary>
     ///     Gets or sets the color gradient.
     /// </summary>
     public ColorGradient? ColorGradient
     {
         get => GetValue(ColorGradientProperty);
-        set
-        {
-            SetValue(ColorGradientProperty, value);
-            Subscribe();
-        }
+        set => SetValue(ColorGradientProperty, value);
     }
 
     /// <summary>
@@ -175,6 +177,12 @@ public class GradientPickerButton : TemplatedControl
         LinearGradientBrush.GradientStops = collection;
     }
 
+    private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == ColorGradientProperty)
+            Subscribe();
+    }
+    
     #region Overrides of Visual
 
     /// <inheritdoc />
