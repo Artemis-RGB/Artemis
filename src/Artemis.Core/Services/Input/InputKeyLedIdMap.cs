@@ -166,7 +166,7 @@ public static class InputKeyUtilities
         {KeyboardKey.OemPipe, LedId.Keyboard_Backslash},
         {KeyboardKey.OemCloseBrackets, LedId.Keyboard_BracketRight},
         {KeyboardKey.OemQuotes, LedId.Keyboard_ApostropheAndDoubleQuote},
-        {KeyboardKey.OemBackslash, LedId.Keyboard_Custom42}, // unverified
+        {KeyboardKey.OemBackslash, LedId.Keyboard_NonUsBackslash},
         {KeyboardKey.ImeProcessed, LedId.Keyboard_Custom43},
         {KeyboardKey.System, LedId.Keyboard_Custom44},
         {KeyboardKey.OemAttn, LedId.Keyboard_Custom45},
@@ -185,7 +185,12 @@ public static class InputKeyUtilities
         {KeyboardKey.Pa1, LedId.Keyboard_Custom57},
         {KeyboardKey.OemClear, LedId.Keyboard_Custom58},
         {KeyboardKey.DeadCharProcessed, LedId.Keyboard_Custom59},
-        {KeyboardKey.NumPadEnter, LedId.Keyboard_NumEnter}
+        {KeyboardKey.NumPadEnter, LedId.Keyboard_NumEnter},
+        {KeyboardKey.NumPadDecimal, LedId.Keyboard_NumPeriodAndDelete},
+        {KeyboardKey.NumPadDivide, LedId.Keyboard_NumSlash},
+        {KeyboardKey.NumPadMultiply, LedId.Keyboard_NumAsterisk},
+        {KeyboardKey.NumPadSubtract, LedId.Keyboard_NumMinus},
+        {KeyboardKey.NumPadAdd, LedId.Keyboard_NumPlus},
     };
 
     /// <summary>

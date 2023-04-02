@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Timers;
@@ -98,7 +98,7 @@ public class WindowsInputProvider : InputProvider
 
     private void HandleKeyboardData(RawInputData data, RawInputKeyboardData keyboardData)
     {
-        KeyboardKey key = InputUtilities.KeyFromVirtualKey(keyboardData.Keyboard.VirutalKey);
+        KeyboardKey key = InputUtilities.CorrectVirtualKeyAndScanCode((uint)keyboardData.Keyboard.VirutalKey, (uint)keyboardData.Keyboard.ScanCode, (uint)keyboardData.Keyboard.Flags);
         // Debug.WriteLine($"VK: {key} ({keyboardData.Keyboard.VirutalKey}), Flags: {keyboardData.Keyboard.Flags}, Scan code: {keyboardData.Keyboard.ScanCode}");
 
         // Sometimes we get double hits and they resolve to None, ignore those

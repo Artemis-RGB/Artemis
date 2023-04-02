@@ -532,5 +532,20 @@ public enum KeyboardKey
     DeadCharProcessed = 172, // 0x000000AC,
 
     /// <summary>The NumPad enter key</summary>
-    NumPadEnter
+    NumPadEnter,
+    
+    /// <summary>The NumPad divide key</summary>
+    NumPadDivide,
+    
+    /// <summary>The NumPad multiply key</summary>
+    NumPadMultiply,
+    
+    /// <summary>The NumPad subtract key</summary>
+    NumPadSubtract,
+    
+    /// <summary>The NumPad add key</summary>
+    NumPadAdd,
+    
+    /// <summary>The NumPad decimal key</summary>
+    NumPadDecimal,
 }

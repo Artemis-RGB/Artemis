@@ -269,6 +269,13 @@ internal class InputService : IInputService
 
         // Get the LED
         bool foundLedId = InputKeyUtilities.KeyboardKeyLedIdMap.TryGetValue(e.Key, out LedId ledId);
+        // If we find a backslash but the keyboard is ISO, we need to use the non-US backslash.
+        // The scancode is the same, but the LED ID is different
+        if (ledId == LedId.Keyboard_Backslash && e.Device?.PhysicalLayout == KeyboardLayoutType.ISO)
+        {
+            ledId = LedId.Keyboard_NonUsTilde;
+        }
+
         ArtemisLed? led = null;
         if (foundLedId && e.Device != null)
             led = e.Device.GetLed(ledId, true);
