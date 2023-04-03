@@ -6,6 +6,7 @@ using Artemis.UI.Shared.Events;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -69,7 +70,7 @@ public partial class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
         if (ViewModel == null)
             return;
         
-        NodeScriptZoomBorder?.ContextFlyout?.ShowAt(NodeScriptZoomBorder);
+        ((PopupFlyoutBase?) NodeScriptZoomBorder?.ContextFlyout)?.ShowAt(NodeScriptZoomBorder, true);
         ViewModel.NodePickerViewModel.Position = point;
     }
 
