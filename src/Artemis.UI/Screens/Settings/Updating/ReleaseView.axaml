@@ -156,9 +156,7 @@
                 <TextBlock Grid.Row="0" Classes="h5 no-margin">Release notes</TextBlock>
                 <Separator Grid.Row="1" Classes="card-separator" />
 
-                <avalonia:MarkdownScrollViewer Grid.Row="2" Markdown="{CompiledBinding Changelog}">
-                  
-                </avalonia:MarkdownScrollViewer>
+                <avalonia:MarkdownScrollViewer Grid.Row="2" Markdown="{CompiledBinding Changelog}" MarkdownStyleName="FluentAvalonia"/>
             </Grid>
         </Border>
     </Grid>
