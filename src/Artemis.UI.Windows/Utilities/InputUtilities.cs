@@ -14,10 +14,7 @@ public static class InputUtilities
 {
     [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
     private static extern short GetKeyState(int keyCode);
-    
-    [DllImport("user32.dll")]
-    private static extern uint MapVirtualKey(uint uCode, MapVirtualKeyMapTypes uMapType);
-    
+
     [Flags]
     private enum KeyStates
     {
@@ -25,48 +22,7 @@ public static class InputUtilities
         Down = 1,
         Toggled = 2
     }
-    
-    /// <summary>
-    /// The set of valid MapTypes used in MapVirtualKey
-    /// </summary>
-    private enum MapVirtualKeyMapTypes : uint
-    {
-        /// <summary>
-        /// uCode is a virtual-key code and is translated into a scan code.
-        /// If it is a virtual-key code that does not distinguish between left- and
-        /// right-hand keys, the left-hand scan code is returned.
-        /// If there is no translation, the function returns 0.
-        /// </summary>
-        MAPVK_VK_TO_VSC = 0x00,
 
-        /// <summary>
-        /// uCode is a scan code and is translated into a virtual-key code that
-        /// does not distinguish between left- and right-hand keys. If there is no
-        /// translation, the function returns 0.
-        /// </summary>
-        MAPVK_VSC_TO_VK = 0x01,
-
-        /// <summary>
-        /// uCode is a virtual-key code and is translated into an unshifted
-        /// character value in the low-order word of the return value. Dead keys (diacritics)
-        /// are indicated by setting the top bit of the return value. If there is no
-        /// translation, the function returns 0.
-        /// </summary>
-        MAPVK_VK_TO_CHAR = 0x02,
-
-        /// <summary>
-        /// Windows NT/2000/XP: uCode is a scan code and is translated into a
-        /// virtual-key code that distinguishes between left- and right-hand keys. If
-        /// there is no translation, the function returns 0.
-        /// </summary>
-        MAPVK_VSC_TO_VK_EX = 0x03,
-
-        /// <summary>
-        /// Not currently documented
-        /// </summary>
-        MAPVK_VK_TO_VSC_EX = 0x04
-    }
-    
     private readonly record struct KeystrokeInfo(int ScanCode, int VirtualKey, bool IsE0, bool IsE1);
     
     /// <summary>
@@ -82,6 +38,12 @@ public static class InputUtilities
             IsE1 = (flags & 4) != 0
         };
 
+        if (info.ScanCode == 0)
+        {
+            // These keys are media or browser keys, they don't have a scan code
+            return KeyFromVirtualKey(info.VirtualKey);
+        }
+
         return info switch
         {
             // Fake keys, usually escape sequences
@@ -90,8 +52,8 @@ public static class InputUtilities
             { ScanCode: 56, VirtualKey: NativeMethods.VK_CONTROL, IsE0: true } => KeyboardKey.None,
             
             { ScanCode: 28, IsE0: true } => KeyboardKey.NumPadEnter,
-            { ScanCode: 28, IsE0: false } => KeyboardKey.Return,
-            { ScanCode: 29, IsE1: true } => KeyboardKey.Pause,
+            { ScanCode: 28, IsE0: false } => KeyboardKey.Enter,
+            { ScanCode: 29, IsE1: true } => KeyboardKey.PauseBreak,
             { ScanCode: 29, IsE0: true } => KeyboardKey.RightCtrl,
             { ScanCode: 29, IsE0: false } => KeyboardKey.LeftCtrl,
             { ScanCode: 56, IsE0: true } => KeyboardKey.RightAlt,
@@ -102,19 +64,19 @@ public static class InputUtilities
             { ScanCode: 55, IsE0: false } => KeyboardKey.NumPadMultiply,
             { ScanCode: 71, IsE0: true } => KeyboardKey.Home,
             { ScanCode: 71, IsE0: false } => KeyboardKey.NumPad7,
-            { ScanCode: 72, IsE0: true } => KeyboardKey.Up,
+            { ScanCode: 72, IsE0: true } => KeyboardKey.ArrowUp,
             { ScanCode: 72, IsE0: false } => KeyboardKey.NumPad8,
             { ScanCode: 73, IsE0: true } => KeyboardKey.PageUp,
             { ScanCode: 73, IsE0: false } => KeyboardKey.NumPad9,
-            { ScanCode: 75, IsE0: true } => KeyboardKey.Left,
+            { ScanCode: 75, IsE0: true } => KeyboardKey.ArrowLeft,
             { ScanCode: 75, IsE0: false } => KeyboardKey.NumPad4,
             { ScanCode: 76, IsE0: true } => KeyboardKey.Clear,
             { ScanCode: 76, IsE0: false } => KeyboardKey.NumPad5,
-            { ScanCode: 77, IsE0: true } => KeyboardKey.Right,
+            { ScanCode: 77, IsE0: true } => KeyboardKey.ArrowRight,
             { ScanCode: 77, IsE0: false } => KeyboardKey.NumPad6,
             { ScanCode: 79, IsE0: true } => KeyboardKey.End,
             { ScanCode: 79, IsE0: false } => KeyboardKey.NumPad1,
-            { ScanCode: 80, IsE0: true } => KeyboardKey.Down,
+            { ScanCode: 80, IsE0: true } => KeyboardKey.ArrowDown,
             { ScanCode: 80, IsE0: false } => KeyboardKey.NumPad2,
             { ScanCode: 81, IsE0: true } => KeyboardKey.PageDown,
             { ScanCode: 81, IsE0: false } => KeyboardKey.NumPad3,
@@ -124,10 +86,6 @@ public static class InputUtilities
             { ScanCode: 83, IsE0: false } => KeyboardKey.NumPadDecimal,
             _ => KeyFromScanCode((uint)info.ScanCode),
         };
-    }
-    public static bool IsKeyDown(KeyboardKey key)
-    {
-        return KeyStates.Down == (GetKeyState(key) & KeyStates.Down);
     }
 
     public static bool IsKeyToggled(KeyboardKey key)
@@ -160,35 +118,25 @@ public static class InputUtilities
     {
         return virtualKey switch
         {
-            NativeMethods.VK_CANCEL => KeyboardKey.Cancel,
-            NativeMethods.VK_BACK => KeyboardKey.Back,
+            NativeMethods.VK_BACK => KeyboardKey.Backspace,
             NativeMethods.VK_TAB => KeyboardKey.Tab,
             NativeMethods.VK_CLEAR => KeyboardKey.Clear,
-            NativeMethods.VK_RETURN => KeyboardKey.Return,
-            NativeMethods.VK_PAUSE => KeyboardKey.Pause,
+            NativeMethods.VK_RETURN => KeyboardKey.Enter,
+            NativeMethods.VK_PAUSE => KeyboardKey.PauseBreak,
             NativeMethods.VK_CAPSLOCK => KeyboardKey.CapsLock,
-            NativeMethods.VK_JUNJA => KeyboardKey.JunjaMode,
-            NativeMethods.VK_FINAL => KeyboardKey.FinalMode,
             NativeMethods.VK_ESCAPE => KeyboardKey.Escape,
-            NativeMethods.VK_CONVERT => KeyboardKey.ImeConvert,
-            NativeMethods.VK_NONCONVERT => KeyboardKey.ImeNonConvert,
-            NativeMethods.VK_ACCEPT => KeyboardKey.ImeAccept,
-            NativeMethods.VK_MODECHANGE => KeyboardKey.ImeModeChange,
             NativeMethods.VK_SPACE => KeyboardKey.Space,
             NativeMethods.VK_PRIOR => KeyboardKey.PageUp,
             NativeMethods.VK_NEXT => KeyboardKey.PageDown,
             NativeMethods.VK_END => KeyboardKey.End,
             NativeMethods.VK_HOME => KeyboardKey.Home,
-            NativeMethods.VK_LEFT => KeyboardKey.Left,
-            NativeMethods.VK_UP => KeyboardKey.Up,
-            NativeMethods.VK_RIGHT => KeyboardKey.Right,
-            NativeMethods.VK_DOWN => KeyboardKey.Down,
-            NativeMethods.VK_SELECT => KeyboardKey.Select,
-            NativeMethods.VK_PRINT => KeyboardKey.Print,
-            NativeMethods.VK_EXECUTE => KeyboardKey.Execute,
+            NativeMethods.VK_LEFT => KeyboardKey.ArrowLeft,
+            NativeMethods.VK_UP => KeyboardKey.ArrowUp,
+            NativeMethods.VK_RIGHT => KeyboardKey.ArrowRight,
+            NativeMethods.VK_DOWN => KeyboardKey.ArrowDown,
+            NativeMethods.VK_PRINT => KeyboardKey.PrintScreen,
             NativeMethods.VK_INSERT => KeyboardKey.Insert,
             NativeMethods.VK_DELETE => KeyboardKey.Delete,
-            NativeMethods.VK_HELP => KeyboardKey.Help,
             NativeMethods.VK_0 => KeyboardKey.D0,
             NativeMethods.VK_1 => KeyboardKey.D1,
             NativeMethods.VK_2 => KeyboardKey.D2,
@@ -225,9 +173,9 @@ public static class InputUtilities
             NativeMethods.VK_X => KeyboardKey.X,
             NativeMethods.VK_Y => KeyboardKey.Y,
             NativeMethods.VK_Z => KeyboardKey.Z,
-            NativeMethods.VK_LWIN => KeyboardKey.LWin,
-            NativeMethods.VK_RWIN => KeyboardKey.RWin,
-            NativeMethods.VK_APPS => KeyboardKey.Apps,
+            NativeMethods.VK_LWIN => KeyboardKey.LeftWin,
+            NativeMethods.VK_RWIN => KeyboardKey.RightWin,
+            NativeMethods.VK_APPS => KeyboardKey.Application,
             NativeMethods.VK_SLEEP => KeyboardKey.Sleep,
             NativeMethods.VK_NUMPAD0 => KeyboardKey.NumPad0,
             NativeMethods.VK_NUMPAD1 => KeyboardKey.NumPad1,
@@ -239,12 +187,12 @@ public static class InputUtilities
             NativeMethods.VK_NUMPAD7 => KeyboardKey.NumPad7,
             NativeMethods.VK_NUMPAD8 => KeyboardKey.NumPad8,
             NativeMethods.VK_NUMPAD9 => KeyboardKey.NumPad9,
-            NativeMethods.VK_MULTIPLY => KeyboardKey.Multiply,
-            NativeMethods.VK_ADD => KeyboardKey.Add,
-            NativeMethods.VK_SEPARATOR => KeyboardKey.Separator,
-            NativeMethods.VK_SUBTRACT => KeyboardKey.Subtract,
-            NativeMethods.VK_DECIMAL => KeyboardKey.Decimal,
-            NativeMethods.VK_DIVIDE => KeyboardKey.Divide,
+            NativeMethods.VK_MULTIPLY => KeyboardKey.NumPadMultiply,
+            NativeMethods.VK_ADD => KeyboardKey.NumPadAdd,
+            NativeMethods.VK_SEPARATOR => KeyboardKey.NumPadSeparator,
+            NativeMethods.VK_SUBTRACT => KeyboardKey.NumPadSubtract,
+            NativeMethods.VK_DECIMAL => KeyboardKey.NumPadDecimal,
+            NativeMethods.VK_DIVIDE => KeyboardKey.NumPadDivide,
             NativeMethods.VK_F1 => KeyboardKey.F1,
             NativeMethods.VK_F2 => KeyboardKey.F2,
             NativeMethods.VK_F3 => KeyboardKey.F3,
@@ -270,7 +218,7 @@ public static class InputUtilities
             NativeMethods.VK_F23 => KeyboardKey.F23,
             NativeMethods.VK_F24 => KeyboardKey.F24,
             NativeMethods.VK_NUMLOCK => KeyboardKey.NumLock,
-            NativeMethods.VK_SCROLL => KeyboardKey.Scroll,
+            NativeMethods.VK_SCROLL => KeyboardKey.ScrollLock,
             NativeMethods.VK_SHIFT => KeyboardKey.LeftShift,
             NativeMethods.VK_LSHIFT => KeyboardKey.LeftShift,
             NativeMethods.VK_RSHIFT => KeyboardKey.RightShift,
@@ -296,8 +244,8 @@ public static class InputUtilities
             NativeMethods.VK_MEDIA_PLAY_PAUSE => KeyboardKey.MediaPlayPause,
             NativeMethods.VK_LAUNCH_MAIL => KeyboardKey.LaunchMail,
             NativeMethods.VK_LAUNCH_MEDIA_SELECT => KeyboardKey.SelectMedia,
-            NativeMethods.VK_LAUNCH_APP1 => KeyboardKey.LaunchApplication1,
-            NativeMethods.VK_LAUNCH_APP2 => KeyboardKey.LaunchApplication2,
+            NativeMethods.VK_LAUNCH_APP1 => KeyboardKey.FileBrowser,
+            NativeMethods.VK_LAUNCH_APP2 => KeyboardKey.Calculator,
             NativeMethods.VK_OEM_1 => KeyboardKey.OemSemicolon,
             NativeMethods.VK_OEM_PLUS => KeyboardKey.OemPlus,
             NativeMethods.VK_OEM_COMMA => KeyboardKey.OemComma,
@@ -310,22 +258,6 @@ public static class InputUtilities
             NativeMethods.VK_OEM_6 => KeyboardKey.OemCloseBrackets,
             NativeMethods.VK_OEM_7 => KeyboardKey.OemQuotes,
             NativeMethods.VK_OEM_102 => KeyboardKey.OemBackslash,
-            NativeMethods.VK_PROCESSKEY => KeyboardKey.ImeProcessed,
-            NativeMethods.VK_OEM_ATTN => KeyboardKey.Attn,
-            NativeMethods.VK_OEM_FINISH => KeyboardKey.OemFinish,
-            NativeMethods.VK_OEM_COPY => KeyboardKey.OemCopy,
-            NativeMethods.VK_OEM_AUTO => KeyboardKey.OemAuto,
-            NativeMethods.VK_OEM_ENLW => KeyboardKey.OemEnlw,
-            NativeMethods.VK_OEM_BACKTAB => KeyboardKey.OemBackTab,
-            NativeMethods.VK_ATTN => KeyboardKey.Attn,
-            NativeMethods.VK_CRSEL => KeyboardKey.CrSel,
-            NativeMethods.VK_EXSEL => KeyboardKey.ExSel,
-            NativeMethods.VK_EREOF => KeyboardKey.EraseEof,
-            NativeMethods.VK_PLAY => KeyboardKey.Play,
-            NativeMethods.VK_ZOOM => KeyboardKey.Zoom,
-            NativeMethods.VK_NONAME => KeyboardKey.NoName,
-            NativeMethods.VK_PA1 => KeyboardKey.Pa1,
-            NativeMethods.VK_OEM_CLEAR => KeyboardKey.OemClear,
             _ => KeyboardKey.None
         };
     }
@@ -337,35 +269,25 @@ public static class InputUtilities
     {
         return key switch
         {
-            KeyboardKey.Cancel => NativeMethods.VK_CANCEL,
-            KeyboardKey.Back => NativeMethods.VK_BACK,
+            KeyboardKey.Backspace => NativeMethods.VK_BACK,
             KeyboardKey.Tab => NativeMethods.VK_TAB,
             KeyboardKey.Clear => NativeMethods.VK_CLEAR,
-            KeyboardKey.Return => NativeMethods.VK_RETURN,
-            KeyboardKey.Pause => NativeMethods.VK_PAUSE,
+            KeyboardKey.Enter => NativeMethods.VK_RETURN,
+            KeyboardKey.PauseBreak => NativeMethods.VK_PAUSE,
             KeyboardKey.CapsLock => NativeMethods.VK_CAPITAL,
-            KeyboardKey.JunjaMode => NativeMethods.VK_JUNJA,
-            KeyboardKey.FinalMode => NativeMethods.VK_FINAL,
             KeyboardKey.Escape => NativeMethods.VK_ESCAPE,
-            KeyboardKey.ImeConvert => NativeMethods.VK_CONVERT,
-            KeyboardKey.ImeNonConvert => NativeMethods.VK_NONCONVERT,
-            KeyboardKey.ImeAccept => NativeMethods.VK_ACCEPT,
-            KeyboardKey.ImeModeChange => NativeMethods.VK_MODECHANGE,
             KeyboardKey.Space => NativeMethods.VK_SPACE,
-            KeyboardKey.Prior => NativeMethods.VK_PRIOR,
-            KeyboardKey.Next => NativeMethods.VK_NEXT,
+            KeyboardKey.PageUp => NativeMethods.VK_PRIOR,
+            KeyboardKey.PageDown => NativeMethods.VK_NEXT,
             KeyboardKey.End => NativeMethods.VK_END,
             KeyboardKey.Home => NativeMethods.VK_HOME,
-            KeyboardKey.Left => NativeMethods.VK_LEFT,
-            KeyboardKey.Up => NativeMethods.VK_UP,
-            KeyboardKey.Right => NativeMethods.VK_RIGHT,
-            KeyboardKey.Down => NativeMethods.VK_DOWN,
-            KeyboardKey.Select => NativeMethods.VK_SELECT,
-            KeyboardKey.Print => NativeMethods.VK_PRINT,
-            KeyboardKey.Execute => NativeMethods.VK_EXECUTE,
+            KeyboardKey.ArrowLeft => NativeMethods.VK_LEFT,
+            KeyboardKey.ArrowUp => NativeMethods.VK_UP,
+            KeyboardKey.ArrowRight => NativeMethods.VK_RIGHT,
+            KeyboardKey.ArrowDown => NativeMethods.VK_DOWN,
+            KeyboardKey.PrintScreen => NativeMethods.VK_PRINT,
             KeyboardKey.Insert => NativeMethods.VK_INSERT,
             KeyboardKey.Delete => NativeMethods.VK_DELETE,
-            KeyboardKey.Help => NativeMethods.VK_HELP,
             KeyboardKey.D0 => NativeMethods.VK_0,
             KeyboardKey.D1 => NativeMethods.VK_1,
             KeyboardKey.D2 => NativeMethods.VK_2,
@@ -402,9 +324,9 @@ public static class InputUtilities
             KeyboardKey.X => NativeMethods.VK_X,
             KeyboardKey.Y => NativeMethods.VK_Y,
             KeyboardKey.Z => NativeMethods.VK_Z,
-            KeyboardKey.LWin => NativeMethods.VK_LWIN,
-            KeyboardKey.RWin => NativeMethods.VK_RWIN,
-            KeyboardKey.Apps => NativeMethods.VK_APPS,
+            KeyboardKey.LeftWin => NativeMethods.VK_LWIN,
+            KeyboardKey.RightWin => NativeMethods.VK_RWIN,
+            KeyboardKey.Application => NativeMethods.VK_APPS,
             KeyboardKey.Sleep => NativeMethods.VK_SLEEP,
             KeyboardKey.NumPad0 => NativeMethods.VK_NUMPAD0,
             KeyboardKey.NumPad1 => NativeMethods.VK_NUMPAD1,
@@ -416,12 +338,12 @@ public static class InputUtilities
             KeyboardKey.NumPad7 => NativeMethods.VK_NUMPAD7,
             KeyboardKey.NumPad8 => NativeMethods.VK_NUMPAD8,
             KeyboardKey.NumPad9 => NativeMethods.VK_NUMPAD9,
-            KeyboardKey.Multiply => NativeMethods.VK_MULTIPLY,
-            KeyboardKey.Add => NativeMethods.VK_ADD,
-            KeyboardKey.Separator => NativeMethods.VK_SEPARATOR,
-            KeyboardKey.Subtract => NativeMethods.VK_SUBTRACT,
-            KeyboardKey.Decimal => NativeMethods.VK_DECIMAL,
-            KeyboardKey.Divide => NativeMethods.VK_DIVIDE,
+            KeyboardKey.NumPadMultiply => NativeMethods.VK_MULTIPLY,
+            KeyboardKey.NumPadAdd => NativeMethods.VK_ADD,
+            KeyboardKey.NumPadSeparator => NativeMethods.VK_SEPARATOR,
+            KeyboardKey.NumPadSubtract => NativeMethods.VK_SUBTRACT,
+            KeyboardKey.NumPadDecimal => NativeMethods.VK_DECIMAL,
+            KeyboardKey.NumPadDivide => NativeMethods.VK_DIVIDE,
             KeyboardKey.F1 => NativeMethods.VK_F1,
             KeyboardKey.F2 => NativeMethods.VK_F2,
             KeyboardKey.F3 => NativeMethods.VK_F3,
@@ -447,7 +369,7 @@ public static class InputUtilities
             KeyboardKey.F23 => NativeMethods.VK_F23,
             KeyboardKey.F24 => NativeMethods.VK_F24,
             KeyboardKey.NumLock => NativeMethods.VK_NUMLOCK,
-            KeyboardKey.Scroll => NativeMethods.VK_SCROLL,
+            KeyboardKey.ScrollLock => NativeMethods.VK_SCROLL,
             KeyboardKey.LeftShift => NativeMethods.VK_LSHIFT,
             KeyboardKey.RightShift => NativeMethods.VK_RSHIFT,
             KeyboardKey.LeftCtrl => NativeMethods.VK_LCONTROL,
@@ -470,8 +392,8 @@ public static class InputUtilities
             KeyboardKey.MediaPlayPause => NativeMethods.VK_MEDIA_PLAY_PAUSE,
             KeyboardKey.LaunchMail => NativeMethods.VK_LAUNCH_MAIL,
             KeyboardKey.SelectMedia => NativeMethods.VK_LAUNCH_MEDIA_SELECT,
-            KeyboardKey.LaunchApplication1 => NativeMethods.VK_LAUNCH_APP1,
-            KeyboardKey.LaunchApplication2 => NativeMethods.VK_LAUNCH_APP2,
+            KeyboardKey.FileBrowser => NativeMethods.VK_LAUNCH_APP1,
+            KeyboardKey.Calculator => NativeMethods.VK_LAUNCH_APP2,
             KeyboardKey.OemSemicolon => NativeMethods.VK_OEM_1,
             KeyboardKey.OemPlus => NativeMethods.VK_OEM_PLUS,
             KeyboardKey.OemComma => NativeMethods.VK_OEM_COMMA,
@@ -484,29 +406,12 @@ public static class InputUtilities
             KeyboardKey.OemCloseBrackets => NativeMethods.VK_OEM_6,
             KeyboardKey.OemQuotes => NativeMethods.VK_OEM_7,
             KeyboardKey.OemBackslash => NativeMethods.VK_OEM_102,
-            KeyboardKey.ImeProcessed => NativeMethods.VK_PROCESSKEY,
-            KeyboardKey.OemAttn => NativeMethods.VK_ATTN,
-            KeyboardKey.OemFinish => NativeMethods.VK_OEM_FINISH,
-            KeyboardKey.OemCopy => NativeMethods.VK_OEM_COPY,
-            KeyboardKey.OemAuto => NativeMethods.VK_OEM_AUTO,
-            KeyboardKey.OemEnlw => NativeMethods.VK_OEM_ENLW,
-            KeyboardKey.OemBackTab => NativeMethods.VK_OEM_BACKTAB,
-            KeyboardKey.Attn => NativeMethods.VK_ATTN,
-            KeyboardKey.CrSel => NativeMethods.VK_CRSEL,
-            KeyboardKey.ExSel => NativeMethods.VK_EXSEL,
-            KeyboardKey.EraseEof => NativeMethods.VK_EREOF,
-            KeyboardKey.Play => NativeMethods.VK_PLAY,
-            KeyboardKey.Zoom => NativeMethods.VK_ZOOM,
-            KeyboardKey.NoName => NativeMethods.VK_NONAME,
-            KeyboardKey.Pa1 => NativeMethods.VK_PA1,
-            KeyboardKey.OemClear => NativeMethods.VK_OEM_CLEAR,
-            KeyboardKey.DeadCharProcessed => 0,
             _ => 0
         };
     }
 
     /// <summary>
-    ///     Convert a scan code to a key, following US keyboard layout.
+    ///     Convert a scan code to our Key enum, following US keyboard layout.
     ///     This is useful because we don't care about the keyboard layout, just the key location for effects.
     /// </summary>
     public static KeyboardKey KeyFromScanCode(uint scanCode)
@@ -526,7 +431,7 @@ public static class InputUtilities
             11 => KeyboardKey.D0,
             12 => KeyboardKey.OemMinus,
             13 => KeyboardKey.OemPlus,
-            14 => KeyboardKey.Back,
+            14 => KeyboardKey.Backspace,
             15 => KeyboardKey.Tab,
             16 => KeyboardKey.Q,
             17 => KeyboardKey.W,
@@ -577,14 +482,14 @@ public static class InputUtilities
             67 => KeyboardKey.F9,
             68 => KeyboardKey.F10,
             69 => KeyboardKey.NumLock,
-            70 => KeyboardKey.Scroll,
+            70 => KeyboardKey.ScrollLock,
             74 => KeyboardKey.NumPadSubtract,
             78 => KeyboardKey.NumPadAdd,
-            86 => KeyboardKey.OemBackslash, //On iso, it's the key between left shift and Z
+            86 => KeyboardKey.OemBackslash,
             87 => KeyboardKey.F11,
             88 => KeyboardKey.F12,
-            91 => KeyboardKey.LWin,
-            92 => KeyboardKey.RWin,
+            91 => KeyboardKey.LeftWin,
+            92 => KeyboardKey.RightWin,
             
             //28 = enter or numpad enter
             //29 = left ctrl or right ctrl

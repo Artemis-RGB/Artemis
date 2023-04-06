@@ -68,7 +68,7 @@ public class InputMappingsTabViewModel : ActivatableViewModelBase
             return;
 
         // Locate the original LED the same way the InputService did it, but supply false to Device.GetLed
-        bool foundLedId = InputKeyUtilities.KeyboardKeyLedIdMap.TryGetValue(e.Key, out LedId ledId);
+        bool foundLedId = InputKeyUtilities.TryGetLedIdFromKeyboardKey(e.Key, out LedId ledId);
         if (!foundLedId)
             return;
         ArtemisLed? artemisLed = Device.GetLed(ledId, false);
