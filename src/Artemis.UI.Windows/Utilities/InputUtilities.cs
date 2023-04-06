@@ -67,79 +67,63 @@ public static class InputUtilities
         MAPVK_VK_TO_VSC_EX = 0x04
     }
     
+    private readonly record struct KeystrokeInfo(int ScanCode, int VirtualKey, bool IsE0, bool IsE1);
+    
     /// <summary>
     ///     https://blog.molecular-matters.com/2011/09/05/properly-handling-keyboard-input/
     /// </summary>
-    public static KeyboardKey CorrectVirtualKeyAndScanCode(uint virtualKey, uint scanCode, uint flags)
+    public static KeyboardKey CorrectVirtualKeyAndScanCode(int virtualKey, int scanCode, uint flags)
     {
-        if (virtualKey == 255)
+        KeystrokeInfo info = new()
         {
-            // discard "fake keys" which are part of an escaped sequence
-            return KeyboardKey.None;
-        }
-
-        if (virtualKey == NativeMethods.VK_CONTROL && scanCode == 0x38)
-        {
-            //fake altgr ctrl
-            return KeyboardKey.None;
-        }
-        
-        if (virtualKey == NativeMethods.VK_SHIFT)
-        {
-            // correct left-hand / right-hand SHIFT
-            virtualKey = MapVirtualKey(scanCode, MapVirtualKeyMapTypes.MAPVK_VSC_TO_VK);    
-        }
-        else if (virtualKey == NativeMethods.VK_NUMLOCK)
-        {
-            // correct PAUSE/BREAK and NUM LOCK silliness, and set the extended bit
-            scanCode = MapVirtualKey(virtualKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC) | 0x100;
-        }
-        
-        const byte RI_KEY_E0 = 0x02;
-        const byte RI_KEY_E1 = 0x04;
-        bool isE0 = (flags & RI_KEY_E0) != 0;
-        bool isE1 = (flags & RI_KEY_E1) != 0;
-        
-        if (isE1)
-        {
-            if (virtualKey == NativeMethods.VK_PAUSE)
-            {
-                scanCode = 0x45;
-            }
-            else
-            {
-                scanCode = MapVirtualKey(virtualKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC);
-            }
-        }
-        KeyboardKey key = (short)virtualKey switch
-        {
-            NativeMethods.VK_CONTROL => isE0 ? KeyboardKey.RightCtrl : KeyboardKey.LeftCtrl,
-            NativeMethods.VK_MENU => isE0 ? KeyboardKey.RightAlt : KeyboardKey.LeftAlt,
-            NativeMethods.VK_RETURN => isE0 ? KeyboardKey.NumPadEnter : KeyboardKey.Enter,
-            NativeMethods.VK_INSERT => !isE0 ? KeyboardKey.NumPad0 : KeyboardKey.Insert,
-            NativeMethods.VK_DELETE => !isE0 ? KeyboardKey.NumPadDecimal : KeyboardKey.Delete,
-            NativeMethods.VK_HOME => !isE0 ? KeyboardKey.NumPad7 : KeyboardKey.Home,
-            NativeMethods.VK_END => !isE0 ? KeyboardKey.NumPad1 : KeyboardKey.End,
-            NativeMethods.VK_PRIOR => !isE0 ? KeyboardKey.NumPad9 : KeyboardKey.PageUp,
-            NativeMethods.VK_NEXT => !isE0 ? KeyboardKey.NumPad3 : KeyboardKey.PageDown,
-            NativeMethods.VK_LEFT => !isE0 ? KeyboardKey.NumPad4 : KeyboardKey.Left,
-            NativeMethods.VK_RIGHT => !isE0 ? KeyboardKey.NumPad6 : KeyboardKey.Right,
-            NativeMethods.VK_UP => !isE0 ? KeyboardKey.NumPad8 : KeyboardKey.Up,
-            NativeMethods.VK_DOWN => !isE0 ? KeyboardKey.NumPad2 : KeyboardKey.Down,
-            NativeMethods.VK_CLEAR => !isE0 ? KeyboardKey.NumPad5 : KeyboardKey.Clear,
-            NativeMethods.VK_DIVIDE => isE0 ? KeyboardKey.NumPadDivide : KeyboardKey.Divide,
-            NativeMethods.VK_MULTIPLY => isE0 ? KeyboardKey.NumPadMultiply : KeyboardKey.Multiply,
-            _ => KeyboardKey.None
+            ScanCode = scanCode,
+            VirtualKey = virtualKey,
+            IsE0 = (flags & 2) != 0,
+            IsE1 = (flags & 4) != 0
         };
-        if (key != KeyboardKey.None)
-            return key;
 
-        key =  KeyFromScanCode(scanCode);
-        if (key != KeyboardKey.None)
-            return key;
-        
-        return KeyFromVirtualKey((int)virtualKey);
-
+        return info switch
+        {
+            // Fake keys, usually escape sequences
+            { VirtualKey: 255 } => KeyboardKey.None,
+            // AltGr
+            { ScanCode: 56, VirtualKey: NativeMethods.VK_CONTROL, IsE0: true } => KeyboardKey.None,
+            
+            { ScanCode: 28, IsE0: true } => KeyboardKey.NumPadEnter,
+            { ScanCode: 28, IsE0: false } => KeyboardKey.Return,
+            { ScanCode: 29, IsE1: true } => KeyboardKey.Pause,
+            { ScanCode: 29, IsE0: true } => KeyboardKey.RightCtrl,
+            { ScanCode: 29, IsE0: false } => KeyboardKey.LeftCtrl,
+            { ScanCode: 56, IsE0: true } => KeyboardKey.RightAlt,
+            { ScanCode: 56, IsE0: false } => KeyboardKey.LeftAlt,
+            { ScanCode: 53, IsE0: true } => KeyboardKey.NumPadDivide,
+            { ScanCode: 53, IsE0: false } => KeyboardKey.OemQuestion,
+            { ScanCode: 55, IsE0: true } => KeyboardKey.PrintScreen,
+            { ScanCode: 55, IsE0: false } => KeyboardKey.NumPadMultiply,
+            { ScanCode: 71, IsE0: true } => KeyboardKey.Home,
+            { ScanCode: 71, IsE0: false } => KeyboardKey.NumPad7,
+            { ScanCode: 72, IsE0: true } => KeyboardKey.Up,
+            { ScanCode: 72, IsE0: false } => KeyboardKey.NumPad8,
+            { ScanCode: 73, IsE0: true } => KeyboardKey.PageUp,
+            { ScanCode: 73, IsE0: false } => KeyboardKey.NumPad9,
+            { ScanCode: 75, IsE0: true } => KeyboardKey.Left,
+            { ScanCode: 75, IsE0: false } => KeyboardKey.NumPad4,
+            { ScanCode: 76, IsE0: true } => KeyboardKey.Clear,
+            { ScanCode: 76, IsE0: false } => KeyboardKey.NumPad5,
+            { ScanCode: 77, IsE0: true } => KeyboardKey.Right,
+            { ScanCode: 77, IsE0: false } => KeyboardKey.NumPad6,
+            { ScanCode: 79, IsE0: true } => KeyboardKey.End,
+            { ScanCode: 79, IsE0: false } => KeyboardKey.NumPad1,
+            { ScanCode: 80, IsE0: true } => KeyboardKey.Down,
+            { ScanCode: 80, IsE0: false } => KeyboardKey.NumPad2,
+            { ScanCode: 81, IsE0: true } => KeyboardKey.PageDown,
+            { ScanCode: 81, IsE0: false } => KeyboardKey.NumPad3,
+            { ScanCode: 82, IsE0: true } => KeyboardKey.Insert,
+            { ScanCode: 82, IsE0: false } => KeyboardKey.NumPad0,
+            { ScanCode: 83, IsE0: true } => KeyboardKey.Delete,
+            { ScanCode: 83, IsE0: false } => KeyboardKey.NumPadDecimal,
+            _ => KeyFromScanCode((uint)info.ScanCode),
+        };
     }
     public static bool IsKeyDown(KeyboardKey key)
     {
@@ -529,112 +513,93 @@ public static class InputUtilities
     {
         return scanCode switch
         {
-            0x01 => KeyboardKey.Escape,
-            0x02 => KeyboardKey.D1,
-            0x03 => KeyboardKey.D2,
-            0x04 => KeyboardKey.D3,
-            0x05 => KeyboardKey.D4,
-            0x06 => KeyboardKey.D5,
-            0x07 => KeyboardKey.D6,
-            0x08 => KeyboardKey.D7,
-            0x09 => KeyboardKey.D8,
-            0x0A => KeyboardKey.D9,
-            0x0B => KeyboardKey.D0,
-            0x0C => KeyboardKey.OemMinus,
-            0x0D => KeyboardKey.OemPlus,
-            0x0E => KeyboardKey.Back,
-            0x0F => KeyboardKey.Tab,
-            0x10 => KeyboardKey.Q,
-            0x11 => KeyboardKey.W,
-            0x12 => KeyboardKey.E,
-            0x13 => KeyboardKey.R,
-            0x14 => KeyboardKey.T,
-            0x15 => KeyboardKey.Y,
-            0x16 => KeyboardKey.U,
-            0x17 => KeyboardKey.I,
-            0x18 => KeyboardKey.O,
-            0x19 => KeyboardKey.P,
-            0x1A => KeyboardKey.OemOpenBrackets,
-            0x1B => KeyboardKey.OemCloseBrackets,
-            0x1C => KeyboardKey.Enter,
-            0x1D => KeyboardKey.LeftCtrl,
-            0x1E => KeyboardKey.A,
-            0x1F => KeyboardKey.S,
-            0x20 => KeyboardKey.D,
-            0x21 => KeyboardKey.F,
-            0x22 => KeyboardKey.G,
-            0x23 => KeyboardKey.H,
-            0x24 => KeyboardKey.J,
-            0x25 => KeyboardKey.K,
-            0x26 => KeyboardKey.L,
-            0x27 => KeyboardKey.OemSemicolon,
-            0x28 => KeyboardKey.OemQuotes,
-            0x29 => KeyboardKey.OemTilde,
-            0x2A => KeyboardKey.LeftShift,
-            0x2B => KeyboardKey.OemPipe,
-            0x2C => KeyboardKey.Z,
-            0x2D => KeyboardKey.X,
-            0x2E => KeyboardKey.C,
-            0x2F => KeyboardKey.V,
-            0x30 => KeyboardKey.B,
-            0x31 => KeyboardKey.N,
-            0x32 => KeyboardKey.M,
-            0x33 => KeyboardKey.OemComma,
-            0x34 => KeyboardKey.OemPeriod,
-            0x35 => KeyboardKey.OemQuestion,
-            0x36 => KeyboardKey.RightShift,
-            0x37 => KeyboardKey.PrintScreen,
-            0x38 => KeyboardKey.LeftAlt,
-            0x39 => KeyboardKey.Space,
-            0x3A => KeyboardKey.CapsLock,
-            0x3B => KeyboardKey.F1,
-            0x3C => KeyboardKey.F2,
-            0x3D => KeyboardKey.F3,
-            0x3E => KeyboardKey.F4,
-            0x3F => KeyboardKey.F5,
-            0x40 => KeyboardKey.F6,
-            0x41 => KeyboardKey.F7,
-            0x42 => KeyboardKey.F8,
-            0x43 => KeyboardKey.F9,
-            0x44 => KeyboardKey.F10,
-            0x45 => KeyboardKey.Pause,
-            0x46 => KeyboardKey.Scroll,
-            0x47 => KeyboardKey.NumPad7,
-            0x48 => KeyboardKey.NumPad8,
-            0x49 => KeyboardKey.NumPad9,
-            0x4A => KeyboardKey.Subtract,
-            0x4B => KeyboardKey.NumPad4,
-            0x4C => KeyboardKey.NumPad5,
-            0x4D => KeyboardKey.NumPad6,
-            0x4E => KeyboardKey.Add,
-            0x4F => KeyboardKey.NumPad1,
-            0x50 => KeyboardKey.NumPad2,
-            0x51 => KeyboardKey.NumPad3,
-            0x52 => KeyboardKey.NumPad0,
-            0x53 => KeyboardKey.Decimal,
-            0x56 => KeyboardKey.OemBackslash,
-            0x57 => KeyboardKey.F11,
-            0x58 => KeyboardKey.F12,
-            0x5C => KeyboardKey.RWin,
-            0x64 => KeyboardKey.F13,
-            0x65 => KeyboardKey.F14,
-            0x66 => KeyboardKey.F15,
-            //0x70 => KeyboardKey.kana,
-            0x73 => KeyboardKey.AbntC1,
-            //0x79 => KeyboardKey.Convert,
-            //0x7B => KeyboardKey.NoConvert,
-            //0x7D => KeyboardKey.Yen,
-            0x7E => KeyboardKey.AbntC2,
-            // 0x8D => KeyboardKey.NumPadEquals,
-            // 0x90 => KeyboardKey.PreviousTrack,
-            // 0x91 => KeyboardKey.At,
-            // 0x92 => KeyboardKey.Colon,
-            // 0x93 => KeyboardKey.Underline,
-            // 0x94 => KeyboardKey.Kanji,
-            // 0x95 => KeyboardKey.Stop,
-            // 0x96 => KeyboardKey.Ax,
-            0x145 => KeyboardKey.NumLock,
-            _ => KeyboardKey.None
+            1 => KeyboardKey.Escape,
+            2 => KeyboardKey.D1,
+            3 => KeyboardKey.D2,
+            4 => KeyboardKey.D3,
+            5 => KeyboardKey.D4,
+            6 => KeyboardKey.D5,
+            7 => KeyboardKey.D6,
+            8 => KeyboardKey.D7,
+            9 => KeyboardKey.D8,
+            10 => KeyboardKey.D9,
+            11 => KeyboardKey.D0,
+            12 => KeyboardKey.OemMinus,
+            13 => KeyboardKey.OemPlus,
+            14 => KeyboardKey.Back,
+            15 => KeyboardKey.Tab,
+            16 => KeyboardKey.Q,
+            17 => KeyboardKey.W,
+            18 => KeyboardKey.E,
+            19 => KeyboardKey.R,
+            20 => KeyboardKey.T,
+            21 => KeyboardKey.Y,
+            22 => KeyboardKey.U,
+            23 => KeyboardKey.I,
+            24 => KeyboardKey.O,
+            25 => KeyboardKey.P,
+            26 => KeyboardKey.OemOpenBrackets,
+            27 => KeyboardKey.OemCloseBrackets,
+            30 => KeyboardKey.A,
+            31 => KeyboardKey.S,
+            32 => KeyboardKey.D,
+            33 => KeyboardKey.F,
+            34 => KeyboardKey.G,
+            35 => KeyboardKey.H,
+            36 => KeyboardKey.J,
+            37 => KeyboardKey.K,
+            38 => KeyboardKey.L,
+            39 => KeyboardKey.OemSemicolon,
+            40 => KeyboardKey.OemQuotes,
+            41 => KeyboardKey.OemTilde,
+            42 => KeyboardKey.LeftShift,
+            43 => KeyboardKey.OemPipe,
+            44 => KeyboardKey.Z,
+            45 => KeyboardKey.X,
+            46 => KeyboardKey.C,
+            47 => KeyboardKey.V,
+            48 => KeyboardKey.B,
+            49 => KeyboardKey.N,
+            50 => KeyboardKey.M,
+            51 => KeyboardKey.OemComma,
+            52 => KeyboardKey.OemPeriod,
+            54 => KeyboardKey.RightShift,
+            57 => KeyboardKey.Space,
+            58 => KeyboardKey.CapsLock,
+            59 => KeyboardKey.F1,
+            60 => KeyboardKey.F2,
+            61 => KeyboardKey.F3,
+            62 => KeyboardKey.F4,
+            63 => KeyboardKey.F5,
+            64 => KeyboardKey.F6,
+            65 => KeyboardKey.F7,
+            66 => KeyboardKey.F8,
+            67 => KeyboardKey.F9,
+            68 => KeyboardKey.F10,
+            69 => KeyboardKey.NumLock,
+            70 => KeyboardKey.Scroll,
+            74 => KeyboardKey.NumPadSubtract,
+            78 => KeyboardKey.NumPadAdd,
+            86 => KeyboardKey.OemBackslash, //On iso, it's the key between left shift and Z
+            87 => KeyboardKey.F11,
+            88 => KeyboardKey.F12,
+            91 => KeyboardKey.LWin,
+            92 => KeyboardKey.RWin,
+            
+            //28 = enter or numpad enter
+            //29 = left ctrl or right ctrl
+            //53 = numpad slash or slash
+            //55 = numpad asterisk or print screen
+            //56 = left alt or right alt
+            28 or 29 or 53 or 55 or 56 => throw new ArgumentException($"This key is unsupported: {scanCode}", nameof(scanCode)),
+            //numpad 789 or home, up, page up
+            >= 71 and <= 73 => throw new ArgumentException("Scan code is for a numpad key. These keys are unsupported.", nameof(scanCode)),
+            //numpad 456 or left, clear, right
+            >= 75 and <= 77 => throw new ArgumentException("Scan code is for a numpad key. These keys are unsupported.", nameof(scanCode)),
+            //numpad 1230., or end, down, page down, ins, del
+            >= 79 and <= 83 => throw new ArgumentException("Scan code is for a numpad key. These keys are unsupported.", nameof(scanCode)),
+            //shouldn't happen, but there might be more weird keys in other layouts
+            _ => throw new ArgumentException($"This key is unsupported: {scanCode}", nameof(scanCode)),
         };
     }
 }

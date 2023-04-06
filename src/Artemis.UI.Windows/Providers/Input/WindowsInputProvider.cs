@@ -98,15 +98,19 @@ public class WindowsInputProvider : InputProvider
 
     private void HandleKeyboardData(RawInputData data, RawInputKeyboardData keyboardData)
     {
-        KeyboardKey key = InputUtilities.CorrectVirtualKeyAndScanCode((uint)keyboardData.Keyboard.VirutalKey, (uint)keyboardData.Keyboard.ScanCode, (uint)keyboardData.Keyboard.Flags);
+        KeyboardKey key = KeyboardKey.None;
+        try
+        {
+            key = InputUtilities.CorrectVirtualKeyAndScanCode(keyboardData.Keyboard.VirutalKey, keyboardData.Keyboard.ScanCode, (uint)keyboardData.Keyboard.Flags);
+        }
+        catch (Exception e)
+        {
+            _logger.Error("Failed to convert virtual key to Artemis key, please share this log with the developers. ScanCode: {scanCode} VK: {virtualKey} Flags: {flags}",
+        keyboardData.Keyboard.ScanCode, keyboardData.Keyboard.VirutalKey, keyboardData.Keyboard.Flags);
+        }
         // Debug.WriteLine($"VK: {key} ({keyboardData.Keyboard.VirutalKey}), Flags: {keyboardData.Keyboard.Flags}, Scan code: {keyboardData.Keyboard.ScanCode}");
 
-        // Sometimes we get double hits and they resolve to None, ignore those
         if (key == KeyboardKey.None)
-            return;
-
-        // Right alt triggers LeftCtrl with a different scan code for some reason, ignore those
-        if (key == KeyboardKey.LeftCtrl && keyboardData.Keyboard.ScanCode == 56)
             return;
 
         string? identifier = data.Device?.DevicePath;
@@ -125,20 +129,6 @@ public class WindowsInputProvider : InputProvider
             {
                 _logger.Warning(e, "Failed to retrieve input device by its identifier");
             }
-
-        // Duplicate keys with different positions can be identified by the LeftKey flag (even though its set of the key that's physically on the right)
-        if (keyboardData.Keyboard.Flags == RawKeyboardFlags.KeyE0 || keyboardData.Keyboard.Flags == (RawKeyboardFlags.KeyE0 | RawKeyboardFlags.Up))
-        {
-            if (key == KeyboardKey.Enter)
-                key = KeyboardKey.NumPadEnter;
-            if (key == KeyboardKey.LeftCtrl)
-                key = KeyboardKey.RightCtrl;
-            if (key == KeyboardKey.LeftAlt)
-                key = KeyboardKey.RightAlt;
-        }
-
-        if (key == KeyboardKey.LeftShift && keyboardData.Keyboard.ScanCode == 54)
-            key = KeyboardKey.RightShift;
 
         bool isDown = keyboardData.Keyboard.Flags != RawKeyboardFlags.Up &&
                       keyboardData.Keyboard.Flags != (RawKeyboardFlags.Up | RawKeyboardFlags.KeyE0) &&
