@@ -156,7 +156,21 @@
                 <TextBlock Grid.Row="0" Classes="h5 no-margin">Release notes</TextBlock>
                 <Separator Grid.Row="1" Classes="card-separator" />
 
-                <avalonia:MarkdownScrollViewer Grid.Row="2" Markdown="{CompiledBinding Changelog}" MarkdownStyleName="FluentAvalonia"/>
+                <avalonia:MarkdownScrollViewer Grid.Row="2" Markdown="{CompiledBinding Changelog}" MarkdownStyleName="FluentAvalonia">
+                    <avalonia:MarkdownScrollViewer.Styles>
+                        <Style Selector="ctxt|CHyperlink">
+                            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight3}" />
+                        </Style>
+                        <Style Selector="ctxt|CHyperlink:pointerover">
+                            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight1}" />
+                        </Style>
+                        <Style Selector="Grid.List">
+                            <Style.Setters>
+                                <Setter Property="Margin" Value="20,0,0,0"/>
+                            </Style.Setters>
+                        </Style>
+                    </avalonia:MarkdownScrollViewer.Styles>
+                </avalonia:MarkdownScrollViewer>
             </Grid>
         </Border>
     </Grid>

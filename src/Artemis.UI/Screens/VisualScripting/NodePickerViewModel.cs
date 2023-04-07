@@ -50,7 +50,6 @@ public class NodePickerViewModel : ActivatableViewModelBase
         this.WhenActivated(d =>
         {
             SearchText = null;
-            TargetPin = null;
 
             nodeSourceList.Edit(list =>
             {
@@ -59,7 +58,11 @@ public class NodePickerViewModel : ActivatableViewModelBase
             });
 
             IsVisible = true;
-            Disposable.Create(() => IsVisible = false).DisposeWith(d);
+            Disposable.Create(() =>
+            {
+                IsVisible = false;
+                TargetPin = null;
+            }).DisposeWith(d);
         });
     }
 
@@ -102,6 +105,7 @@ public class NodePickerViewModel : ActivatableViewModelBase
         node.Y = Math.Round(Position.Y / 10d, 0, MidpointRounding.AwayFromZero) * 10d;
 
         if (TargetPin != null)
+        {
             using (_nodeEditorService.CreateCommandScope(_nodeScript, "Create node for pin"))
             {
                 _nodeEditorService.ExecuteCommand(_nodeScript, new AddNode(_nodeScript, node));
@@ -114,6 +118,7 @@ public class NodePickerViewModel : ActivatableViewModelBase
                 if (source != null)
                     _nodeEditorService.ExecuteCommand(_nodeScript, new ConnectPins(source, TargetPin));
             }
+        }
         else
             _nodeEditorService.ExecuteCommand(_nodeScript, new AddNode(_nodeScript, node));
     }

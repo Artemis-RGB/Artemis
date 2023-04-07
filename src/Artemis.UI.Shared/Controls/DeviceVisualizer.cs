@@ -45,7 +45,7 @@ public class DeviceVisualizer : Control
     /// <inheritdoc />
     public override void Render(DrawingContext drawingContext)
     {
-        if (Device == null || _deviceBounds.Width == 0 || _deviceBounds.Height == 0)
+        if (Device == null || _deviceBounds.Width == 0 || _deviceBounds.Height == 0 || _loading)
             return;
 
         // Determine the scale required to fit the desired size of the control
@@ -208,6 +208,8 @@ public class DeviceVisualizer : Control
     public static readonly StyledProperty<ObservableCollection<ArtemisLed>?> HighlightedLedsProperty =
         AvaloniaProperty.Register<DeviceVisualizer, ObservableCollection<ArtemisLed>?>(nameof(HighlightedLeds));
 
+    private bool _loading;
+
     /// <summary>
     ///     Gets or sets a list of LEDs to highlight
     /// </summary>
@@ -273,6 +275,7 @@ public class DeviceVisualizer : Control
             return;
 
         _deviceBounds = MeasureDevice();
+        _loading = true;
 
         Device.RgbDevice.PropertyChanged += DevicePropertyChanged;
         Device.DeviceUpdated += DeviceUpdated;
@@ -288,15 +291,15 @@ public class DeviceVisualizer : Control
         ArtemisDevice? device = Device;
         Dispatcher.UIThread.Post(() =>
         {
-            if (device.Layout?.Image == null || !File.Exists(device.Layout.Image.LocalPath))
-            {
-                _deviceImage?.Dispose();
-                _deviceImage = null;
-                return;
-            }
-
             try
             {
+                if (device.Layout?.Image == null || !File.Exists(device.Layout.Image.LocalPath))
+                {
+                    _deviceImage?.Dispose();
+                    _deviceImage = null;
+                    return;
+                }
+
                 // Create a bitmap that'll be used to render the device and LED images just once
                 // Render 4 times the actual size of the device to make sure things look sharp when zoomed in
                 RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) device.RgbDevice.ActualSize.Width * 2, (int) device.RgbDevice.ActualSize.Height * 2));
@@ -314,11 +317,15 @@ public class DeviceVisualizer : Control
                 _deviceImage?.Dispose();
                 _deviceImage = renderTargetBitmap;
 
-                Dispatcher.UIThread.Post(InvalidateMeasure);
+                InvalidateMeasure();
             }
             catch (Exception)
             {
                 // ignored
+            }
+            finally
+            {
+                _loading = false;
             }
         });
     }
