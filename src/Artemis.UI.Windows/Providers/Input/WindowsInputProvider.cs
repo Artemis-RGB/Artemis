@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Timers;
@@ -98,15 +98,19 @@ public class WindowsInputProvider : InputProvider
 
     private void HandleKeyboardData(RawInputData data, RawInputKeyboardData keyboardData)
     {
-        KeyboardKey key = InputUtilities.KeyFromVirtualKey(keyboardData.Keyboard.VirutalKey);
+        KeyboardKey key = KeyboardKey.None;
+        try
+        {
+            key = InputUtilities.CorrectVirtualKeyAndScanCode(keyboardData.Keyboard.VirutalKey, keyboardData.Keyboard.ScanCode, (uint)keyboardData.Keyboard.Flags);
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Failed to convert virtual key to Artemis key, please share this log with the developers. ScanCode: {scanCode} VK: {virtualKey} Flags: {flags}",
+        keyboardData.Keyboard.ScanCode, keyboardData.Keyboard.VirutalKey, keyboardData.Keyboard.Flags);
+        }
         // Debug.WriteLine($"VK: {key} ({keyboardData.Keyboard.VirutalKey}), Flags: {keyboardData.Keyboard.Flags}, Scan code: {keyboardData.Keyboard.ScanCode}");
 
-        // Sometimes we get double hits and they resolve to None, ignore those
         if (key == KeyboardKey.None)
-            return;
-
-        // Right alt triggers LeftCtrl with a different scan code for some reason, ignore those
-        if (key == KeyboardKey.LeftCtrl && keyboardData.Keyboard.ScanCode == 56)
             return;
 
         string? identifier = data.Device?.DevicePath;
@@ -126,23 +130,7 @@ public class WindowsInputProvider : InputProvider
                 _logger.Warning(e, "Failed to retrieve input device by its identifier");
             }
 
-        // Duplicate keys with different positions can be identified by the LeftKey flag (even though its set of the key that's physically on the right)
-        if (keyboardData.Keyboard.Flags == RawKeyboardFlags.KeyE0 || keyboardData.Keyboard.Flags == (RawKeyboardFlags.KeyE0 | RawKeyboardFlags.Up))
-        {
-            if (key == KeyboardKey.Enter)
-                key = KeyboardKey.NumPadEnter;
-            if (key == KeyboardKey.LeftCtrl)
-                key = KeyboardKey.RightCtrl;
-            if (key == KeyboardKey.LeftAlt)
-                key = KeyboardKey.RightAlt;
-        }
-
-        if (key == KeyboardKey.LeftShift && keyboardData.Keyboard.ScanCode == 54)
-            key = KeyboardKey.RightShift;
-
-        bool isDown = keyboardData.Keyboard.Flags != RawKeyboardFlags.Up &&
-                      keyboardData.Keyboard.Flags != (RawKeyboardFlags.Up | RawKeyboardFlags.KeyE0) &&
-                      keyboardData.Keyboard.Flags != (RawKeyboardFlags.Up | RawKeyboardFlags.KeyE1);
+        bool isDown = (keyboardData.Keyboard.Flags & RawKeyboardFlags.Up) == 0;
 
         OnKeyboardDataReceived(device, key, isDown);
         UpdateToggleStatus();
@@ -153,7 +141,7 @@ public class WindowsInputProvider : InputProvider
         OnKeyboardToggleStatusReceived(new KeyboardToggleStatus(
             InputUtilities.IsKeyToggled(KeyboardKey.NumLock),
             InputUtilities.IsKeyToggled(KeyboardKey.CapsLock),
-            InputUtilities.IsKeyToggled(KeyboardKey.Scroll)
+            InputUtilities.IsKeyToggled(KeyboardKey.ScrollLock)
         ));
     }
 
@@ -211,37 +199,22 @@ public class WindowsInputProvider : InputProvider
         }
 
         // Button presses
-        MouseButton button = MouseButton.Left;
-        bool isDown = false;
-
-        // Left
-        if (DetermineMouseButton(mouseData, RawMouseButtonFlags.LeftButtonDown, RawMouseButtonFlags.LeftButtonUp, ref isDown))
-            button = MouseButton.Left;
-        // Middle
-        else if (DetermineMouseButton(mouseData, RawMouseButtonFlags.MiddleButtonDown, RawMouseButtonFlags.MiddleButtonUp, ref isDown))
-            button = MouseButton.Middle;
-        // Right
-        else if (DetermineMouseButton(mouseData, RawMouseButtonFlags.RightButtonDown, RawMouseButtonFlags.RightButtonUp, ref isDown))
-            button = MouseButton.Right;
-        // Button 4
-        else if (DetermineMouseButton(mouseData, RawMouseButtonFlags.Button4Down, RawMouseButtonFlags.Button4Up, ref isDown))
-            button = MouseButton.Button4;
-        else if (DetermineMouseButton(mouseData, RawMouseButtonFlags.Button5Down, RawMouseButtonFlags.Button5Up, ref isDown))
-            button = MouseButton.Button5;
+        (MouseButton button, bool isDown) =  mouseData.Mouse.Buttons switch
+        {
+            RawMouseButtonFlags.LeftButtonDown => (MouseButton.Left, true),
+            RawMouseButtonFlags.LeftButtonUp => (MouseButton.Left, false),
+            RawMouseButtonFlags.MiddleButtonDown => (MouseButton.Middle, true),
+            RawMouseButtonFlags.MiddleButtonUp => (MouseButton.Middle, false),
+            RawMouseButtonFlags.RightButtonDown => (MouseButton.Right, true),
+            RawMouseButtonFlags.RightButtonUp => (MouseButton.Right, false),
+            RawMouseButtonFlags.Button4Down => (MouseButton.Button4, true),
+            RawMouseButtonFlags.Button4Up => (MouseButton.Button4, false),
+            RawMouseButtonFlags.Button5Down => (MouseButton.Button5, true),
+            RawMouseButtonFlags.Button5Up => (MouseButton.Button5, false),
+            _ => (MouseButton.Left, false)
+        };
 
         OnMouseButtonDataReceived(device, button, isDown);
-    }
-
-    private bool DetermineMouseButton(RawInputMouseData data, RawMouseButtonFlags downButton, RawMouseButtonFlags upButton, ref bool isDown)
-    {
-        if (data.Mouse.Buttons == downButton || data.Mouse.Buttons == upButton)
-        {
-            isDown = data.Mouse.Buttons == downButton;
-            return true;
-        }
-
-        isDown = false;
-        return false;
     }
 
     #endregion
