@@ -27,4 +27,8 @@
         <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
         <ProjectReference Include="..\Artemis.UI\Artemis.UI.csproj" />
     </ItemGroup>
+    <ItemGroup>
+        <Content Include="Icons/**" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="Scripts/**" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
 </Project>
