@@ -268,7 +268,14 @@ internal class InputService : IInputService
             return;
 
         // Get the LED
-        bool foundLedId = InputKeyUtilities.KeyboardKeyLedIdMap.TryGetValue(e.Key, out LedId ledId);
+        bool foundLedId = InputKeyUtilities.TryGetLedIdFromKeyboardKey(e.Key, out LedId ledId);
+        // If we find a backslash but the keyboard is ISO, we need to use the non-US backslash.
+        // The scancode is the same, but the LED ID is different
+        if (ledId == LedId.Keyboard_Backslash && e.Device?.PhysicalLayout == KeyboardLayoutType.ISO)
+        {
+            ledId = LedId.Keyboard_NonUsTilde;
+        }
+
         ArtemisLed? led = null;
         if (foundLedId && e.Device != null)
             led = e.Device.GetLed(ledId, true);
@@ -348,7 +355,7 @@ internal class InputService : IInputService
             else
                 modifiers &= ~KeyboardModifierKey.Shift;
         }
-        else if (key == KeyboardKey.LWin || key == KeyboardKey.RWin)
+        else if (key == KeyboardKey.LeftWin || key == KeyboardKey.RightWin)
         {
             if (isDown)
                 modifiers |= KeyboardModifierKey.Windows;
@@ -387,7 +394,7 @@ internal class InputService : IInputService
 
     private void InputProviderOnMouseButtonDataReceived(object? sender, InputProviderMouseButtonEventArgs e)
     {
-        bool foundLedId = InputKeyUtilities.MouseButtonLedIdMap.TryGetValue(e.Button, out LedId ledId);
+        bool foundLedId = InputKeyUtilities.TryGetLedIdFromMouseButton(e.Button, out LedId ledId);
         ArtemisLed? led = null;
         if (foundLedId && e.Device != null)
             led = e.Device.Leds.FirstOrDefault(l => l.RgbLed.Id == ledId);
