@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.Storage.Entities.General;
 using Artemis.Storage.Repositories;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Shared.Services.MainWindow;
@@ -110,6 +109,9 @@ public class UpdateService : IUpdateService
 
     private async void HandleAutoUpdateEvent(object? sender, EventArgs e)
     {
+        if (Constants.CurrentVersion == "local")
+            return;
+        
         // The event can trigger from multiple sources with a timer acting as a fallback, only actual perform an action once per max 59 minutes
         if (DateTime.UtcNow - _lastAutoUpdateCheck < TimeSpan.FromMinutes(59))
             return;
@@ -204,6 +206,9 @@ public class UpdateService : IUpdateService
     /// <inheritdoc />
     public bool Initialize()
     {
+        if (Constants.CurrentVersion == "local")
+            return false;
+        
         string? channelArgument = Constants.StartupArguments.FirstOrDefault(a => a.StartsWith("--channel="));
         if (channelArgument != null)
             Channel = channelArgument.Split("=")[1];
