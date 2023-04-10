@@ -8,7 +8,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Plugins;
 
-public class PluginSettingsWindowView : ReactiveCoreWindow<PluginSettingsWindowViewModel>
+public partial class PluginSettingsWindowView : ReactiveAppWindow<PluginSettingsWindowViewModel>
 {
     public PluginSettingsWindowView()
     {
@@ -29,8 +29,4 @@ public class PluginSettingsWindowView : ReactiveCoreWindow<PluginSettingsWindowV
         );
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

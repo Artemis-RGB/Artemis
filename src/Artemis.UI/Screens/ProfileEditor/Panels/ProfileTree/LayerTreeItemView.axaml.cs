@@ -1,6 +1,5 @@
 using System;
 using System.Reactive.Disposables;
-using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -9,7 +8,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
-public class LayerTreeItemView : ReactiveUserControl<LayerTreeItemViewModel>
+public partial class LayerTreeItemView : ReactiveUserControl<LayerTreeItemViewModel>
 {
     public LayerTreeItemView()
     {
@@ -18,16 +17,12 @@ public class LayerTreeItemView : ReactiveUserControl<LayerTreeItemViewModel>
         {
             ViewModel?.Rename.Subscribe(_ =>
             {
-                this.Get<TextBox>("Input").Focus();
-                this.Get<TextBox>("Input").SelectAll();
+                Input.Focus();
+                Input.SelectAll();
             }).DisposeWith(d);
         });
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnKeyUp(object? sender, KeyEventArgs e)
     {

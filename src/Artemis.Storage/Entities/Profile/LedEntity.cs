@@ -5,6 +5,11 @@ namespace Artemis.Storage.Entities.Profile;
 
 public class LedEntity
 {
+    public string LedName { get; set; }
+    public string DeviceIdentifier { get; set; }
+
+    public int? PhysicalLayout { get; set; }
+
     #region LedEntityEqualityComparer
 
     private sealed class LedEntityEqualityComparer : IEqualityComparer<LedEntity>
@@ -31,9 +36,4 @@ public class LedEntity
     public static IEqualityComparer<LedEntity> LedEntityComparer { get; } = new LedEntityEqualityComparer();
 
     #endregion
-
-    public string LedName { get; set; }
-    public string DeviceIdentifier { get; set; }
-
-    public int? PhysicalLayout { get; set; }
 }

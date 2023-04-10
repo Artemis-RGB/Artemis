@@ -6,17 +6,13 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Tree.Dialogs;
 
-public class LayerBrushPresetView : ReactiveUserControl<LayerBrushPresetViewModel>
+public partial class LayerBrushPresetView : ReactiveUserControl<LayerBrushPresetViewModel>
 {
     public LayerBrushPresetView()
     {
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {

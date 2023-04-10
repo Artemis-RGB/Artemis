@@ -7,7 +7,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.Device;
 
-public class DevicePropertiesView : ReactiveCoreWindow<DevicePropertiesViewModel>
+public partial class DevicePropertiesView : ReactiveAppWindow<DevicePropertiesViewModel>
 {
     public DevicePropertiesView()
     {
@@ -17,10 +17,6 @@ public class DevicePropertiesView : ReactiveCoreWindow<DevicePropertiesViewModel
 #endif
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void DeviceVisualizer_OnLedClicked(object? sender, LedClickedEventArgs e)
     {

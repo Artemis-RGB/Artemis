@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -137,47 +138,47 @@ public class TimelineHeader : Control
     private void RenderLabel(DrawingContext drawingContext, string text, double x)
     {
         Typeface typeFace = new(FontFamily);
-        FormattedText formattedText = new(text, typeFace, 9, TextAlignment.Left, TextWrapping.NoWrap, Bounds.Size);
+        FormattedText formattedText = new(text, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeFace, 9, Foreground);
         if (x == 0 && OffsetFirstValue)
-            drawingContext.DrawText(Foreground, new Point(2, 5), formattedText);
+            drawingContext.DrawText(formattedText, new Point(2, 5));
         else
-            drawingContext.DrawText(Foreground, new Point(x - formattedText.Bounds.Width / 2, 5), formattedText);
+            drawingContext.DrawText(formattedText, new Point(x - formattedText.Width / 2, 5));
     }
 
     private void UpdateTimeScale()
     {
-        object[] subds;
+        double[] subds;
         if (PixelsPerSecond > 350)
-            subds = new object[] {12d, 12d, 60d};
+            subds = new[] {12d, 12d, 60d};
         else if (PixelsPerSecond > 250)
-            subds = new object[] {6d, 12d, 60d};
+            subds = new[] {6d, 12d, 60d};
         else if (PixelsPerSecond > 200)
-            subds = new object[] {6d, 6d, 30d};
+            subds = new[] {6d, 6d, 30d};
         else if (PixelsPerSecond > 150)
-            subds = new object[] {4d, 4d, 20d};
+            subds = new[] {4d, 4d, 20d};
         else if (PixelsPerSecond > 140)
-            subds = new object[] {4d, 4d, 20d};
+            subds = new[] {4d, 4d, 20d};
         else if (PixelsPerSecond > 90)
-            subds = new object[] {2d, 4d, 20d};
+            subds = new[] {2d, 4d, 20d};
         else if (PixelsPerSecond > 60)
-            subds = new object[] {2d, 4d, 8d};
+            subds = new[] {2d, 4d, 8d};
         else if (PixelsPerSecond > 40)
-            subds = new object[] {1d, 2d, 10d};
+            subds = new[] {1d, 2d, 10d};
         else if (PixelsPerSecond > 30)
-            subds = new object[] {1d, 2d, 10d};
+            subds = new[] {1d, 2d, 10d};
         else if (PixelsPerSecond > 10)
-            subds = new object[] {1d / 2d, 1d / 2d, 1d / 2d};
+            subds = new[] {1d / 2d, 1d / 2d, 1d / 2d};
         else if (PixelsPerSecond > 4)
-            subds = new object[] {1d / 5d, 1d / 5d, 1d / 5d};
+            subds = new[] {1d / 5d, 1d / 5d, 1d / 5d};
         else if (PixelsPerSecond > 3)
-            subds = new object[] {1d / 10d, 1d / 10d, 1d / 5d};
+            subds = new[] {1d / 10d, 1d / 10d, 1d / 5d};
         else if (PixelsPerSecond > 1)
-            subds = new object[] {1d / 20d, 1d / 20d, 1d / 10d};
+            subds = new[] {1d / 20d, 1d / 20d, 1d / 10d};
         else if (PixelsPerSecond >= 1)
-            subds = new object[] {1d / 30d, 1d / 30d, 1d / 15d};
+            subds = new[] {1d / 30d, 1d / 30d, 1d / 15d};
         else
             // 1s per pixel
-            subds = new object[] {1d / 60d, 1d / 60d, 1d / 15d};
+            subds = new[] {1d / 60d, 1d / 60d, 1d / 15d};
 
         _subd1 = (double) subds[0]; // big ticks / labels
         _subd2 = (double) subds[1]; // medium ticks

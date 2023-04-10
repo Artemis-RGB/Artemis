@@ -1,15 +1,13 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.Controls.GradientPicker">
     <Design.PreviewWith>
         <Border Padding="20" Width="200">
             <StackPanel Spacing="5">
                 <gradientPicker:GradientPickerButton IsCompact="True" />
                 <ComboBox HorizontalAlignment="Stretch"></ComboBox>
-                <controls:DropDownButton HorizontalAlignment="Stretch"></controls:DropDownButton>
+                <DropDownButton HorizontalAlignment="Stretch"></DropDownButton>
             </StackPanel>
-
         </Border>
     </Design.PreviewWith>
 
@@ -31,14 +29,14 @@
         <Setter Property="Template">
             <ControlTemplate>
 
-                <controls:Button
+                <Button
                     Name="MainButton"
-                                 Padding="0 0 12 0"
-                                 CornerRadius="{TemplateBinding CornerRadius}"
-                                 HorizontalAlignment="Stretch"
-                                 VerticalAlignment="Stretch"
-                                 HorizontalContentAlignment="Stretch"
-                                 VerticalContentAlignment="Stretch">
+                    Padding="0 0 12 0"
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch">
                     <Grid ColumnDefinitions="*,Auto">
                         <Border Classes="gradient-display"
                                 HorizontalAlignment="Stretch"
@@ -54,7 +52,7 @@
                                    Margin="4,0,0,0" />
 
                     </Grid>
-                </controls:Button>
+                </Button>
 
 
             </ControlTemplate>

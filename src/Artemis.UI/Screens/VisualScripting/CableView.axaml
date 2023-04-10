@@ -8,6 +8,7 @@
              xmlns:shared="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
              xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
              xmlns:collections="clr-namespace:System.Collections;assembly=System.Runtime"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.VisualScripting.CableView"
              x:DataType="visualScripting:CableViewModel"
@@ -18,23 +19,12 @@
         <shared:SKColorToStringConverter x:Key="SKColorToStringConverter" />
         <shared:SKColorToColorConverter x:Key="SKColorToColorConverter" />
     </UserControl.Resources>
-    <Canvas PointerEnter="OnPointerEnter"
-            PointerLeave="OnPointerLeave">
+    <Canvas PointerEntered="OnPointerEntered"
+            PointerExited="OnPointerExited">
         <Path Name="CablePath"
               Stroke="{CompiledBinding CableColor, Converter={StaticResource ColorToSolidColorBrushConverter}}"
               StrokeThickness="4"
               StrokeLineCap="Round">
-            <Path.Data>
-                <PathGeometry>
-                    <PathGeometry.Figures>
-                        <PathFigure IsClosed="False">
-                            <PathFigure.Segments>
-                                <BezierSegment />
-                            </PathFigure.Segments>
-                        </PathFigure>
-                    </PathGeometry.Figures>
-                </PathGeometry>
-            </Path.Data>
         </Path>
         <Border Name="ValueBorder"
                 Background="{DynamicResource ContentDialogBackground}"
@@ -79,7 +69,7 @@
                     <DataTemplate DataType="collections:IList">
                         <TextBlock Text="{Binding Count, StringFormat='List - {0} item(s)', Mode=OneWay}" FontFamily="Consolas" />
                     </DataTemplate>
-                    <DataTemplate>
+                    <DataTemplate DataType="system:Object">
                         <TextBlock Text="{Binding Mode=OneWay}" FontFamily="Consolas" />
                     </DataTemplate>
                 </ContentControl.DataTemplates>

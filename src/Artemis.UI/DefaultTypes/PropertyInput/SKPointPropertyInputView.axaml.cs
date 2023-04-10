@@ -5,17 +5,13 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
 
-public class SKPointPropertyInputView : ReactiveUserControl<SKPointPropertyInputViewModel>
+public partial class SKPointPropertyInputView : ReactiveUserControl<SKPointPropertyInputViewModel>
 {
     public SKPointPropertyInputView()
     {
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void DraggableNumberBox_OnDragStarted(DraggableNumberBox sender, EventArgs args)
     {

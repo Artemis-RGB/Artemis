@@ -17,7 +17,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
-using Avalonia.Threading;
+using Avalonia.ReactiveUI;
 using DryIoc;
 using DynamicData;
 using DynamicData.Binding;

@@ -51,12 +51,24 @@ public class M0021GradientNodes : IStorageMigration
             TargetType = "ColorGradient",
             TargetNode = gradientNode.Id,
             TargetPinCollectionId = -1,
-            TargetPinId = 0,
+            TargetPinId = 0
         });
 
         // Move the exit node to the right
         exitNode.X += 300;
         exitNode.Y += 30;
+    }
+
+    private void MigrateDataBinding(PropertyGroupEntity propertyGroup)
+    {
+        foreach (PropertyGroupEntity propertyGroupPropertyGroup in propertyGroup.PropertyGroups)
+            MigrateDataBinding(propertyGroupPropertyGroup);
+
+        foreach (PropertyEntity property in propertyGroup.Properties)
+        {
+            if (property.Value.StartsWith("[{\"Color\":\"") && property.DataBinding?.NodeScript != null && property.DataBinding.IsEnabled)
+                MigrateDataBinding(property);
+        }
     }
 
     public int UserVersion => 21;
@@ -71,18 +83,6 @@ public class M0021GradientNodes : IStorageMigration
                 MigrateDataBinding(layer.LayerBrush.PropertyGroup);
 
             repository.Update(profileEntity);
-        }
-    }
-
-    private void MigrateDataBinding(PropertyGroupEntity propertyGroup)
-    {
-        foreach (PropertyGroupEntity propertyGroupPropertyGroup in propertyGroup.PropertyGroups)
-            MigrateDataBinding(propertyGroupPropertyGroup);
-
-        foreach (PropertyEntity property in propertyGroup.Properties)
-        {
-            if (property.Value.StartsWith("[{\"Color\":\"") && property.DataBinding?.NodeScript != null && property.DataBinding.IsEnabled)
-                MigrateDataBinding(property);
         }
     }
 }

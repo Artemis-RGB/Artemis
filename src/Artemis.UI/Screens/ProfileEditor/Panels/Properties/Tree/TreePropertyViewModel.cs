@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Extensions;
@@ -7,7 +8,6 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Artemis.UI.Shared.Services.PropertyInput;
-using Avalonia.Controls.Mixins;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Tree;

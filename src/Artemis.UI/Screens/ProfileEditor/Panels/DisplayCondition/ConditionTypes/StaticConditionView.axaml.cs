@@ -3,15 +3,11 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayCondition.ConditionTypes;
 
-public class StaticConditionView : ReactiveUserControl<StaticConditionViewModel>
+public partial class StaticConditionView : ReactiveUserControl<StaticConditionViewModel>
 {
     public StaticConditionView()
     {
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

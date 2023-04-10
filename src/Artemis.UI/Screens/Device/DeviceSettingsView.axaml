@@ -36,8 +36,8 @@
             <Grid Grid.Row="2" Margin="10" ColumnDefinitions="25,*">
                 <CheckBox IsChecked="{Binding IsDeviceEnabled}" />
 
-				<controls:SplitButton Grid.Column="1" Content="Properties" Command="{Binding ViewProperties}" HorizontalAlignment="Right">
-					<controls:SplitButton.Flyout>
+				<SplitButton Grid.Column="1" Content="Properties" Command="{Binding ViewProperties}" HorizontalAlignment="Right">
+					<SplitButton.Flyout>
 						<MenuFlyout Placement="Bottom">
 							<MenuItem Header="Open plugin directory" Command="{Binding OpenPluginDirectory}">
 								<MenuItem.Icon>
@@ -50,8 +50,8 @@
 								</MenuItem.Icon>
 							</MenuItem>
                         </MenuFlyout>
-					</controls:SplitButton.Flyout>
-				</controls:SplitButton>
+					</SplitButton.Flyout>
+				</SplitButton>
             </Grid>
         </Grid>
     </Border>

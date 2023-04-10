@@ -117,7 +117,7 @@
 						</controls:HyperlinkButton>
 						<TextBlock Grid.Row="1"
 								   Grid.Column="1"
-								   Foreground="{DynamicResource MaterialDesignBodyLight}"
+						           Classes="subtitle"
 								   TextWrapping="Wrap"
 								   VerticalAlignment="Center">
 							Feel like making a donation? It would be gratefully received. Click the button to donate via PayPal.

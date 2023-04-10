@@ -9,7 +9,7 @@ using Avalonia.VisualTree;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
-public class NodeView : ReactiveUserControl<NodeViewModel>
+public partial class NodeView : ReactiveUserControl<NodeViewModel>
 {
     private bool _dragging;
 
@@ -35,10 +35,6 @@ public class NodeView : ReactiveUserControl<NodeViewModel>
 
     #endregion
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {

@@ -42,14 +42,14 @@ public class NodePickerViewModel : ActivatableViewModelBase
                 .ThenByAscending(d => d.Category)
                 .ThenByAscending(d => d.Name))
             .GroupWithImmutableState(n => n.Category)
-            .Bind(out ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeData, string>> categories)
+            .Transform(c => new NodeCategoryViewModel(c))
+            .Bind(out ReadOnlyObservableCollection<NodeCategoryViewModel> categories)
             .Subscribe();
         Categories = categories;
 
         this.WhenActivated(d =>
         {
             SearchText = null;
-            TargetPin = null;
 
             nodeSourceList.Edit(list =>
             {
@@ -58,11 +58,15 @@ public class NodePickerViewModel : ActivatableViewModelBase
             });
 
             IsVisible = true;
-            Disposable.Create(() => IsVisible = false).DisposeWith(d);
+            Disposable.Create(() =>
+            {
+                IsVisible = false;
+                TargetPin = null;
+            }).DisposeWith(d);
         });
     }
 
-    public ReadOnlyObservableCollection<DynamicData.List.IGrouping<NodeData, string>> Categories { get; }
+    public ReadOnlyObservableCollection<NodeCategoryViewModel> Categories { get; }
 
     public bool IsVisible
     {
@@ -101,6 +105,7 @@ public class NodePickerViewModel : ActivatableViewModelBase
         node.Y = Math.Round(Position.Y / 10d, 0, MidpointRounding.AwayFromZero) * 10d;
 
         if (TargetPin != null)
+        {
             using (_nodeEditorService.CreateCommandScope(_nodeScript, "Create node for pin"))
             {
                 _nodeEditorService.ExecuteCommand(_nodeScript, new AddNode(_nodeScript, node));
@@ -113,6 +118,7 @@ public class NodePickerViewModel : ActivatableViewModelBase
                 if (source != null)
                     _nodeEditorService.ExecuteCommand(_nodeScript, new ConnectPins(source, TargetPin));
             }
+        }
         else
             _nodeEditorService.ExecuteCommand(_nodeScript, new AddNode(_nodeScript, node));
     }

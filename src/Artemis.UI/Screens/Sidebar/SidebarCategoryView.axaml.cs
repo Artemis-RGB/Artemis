@@ -14,27 +14,20 @@ using Avalonia.VisualTree;
 
 namespace Artemis.UI.Screens.Sidebar;
 
-public class SidebarCategoryView : ReactiveUserControl<SidebarCategoryViewModel>
+public partial class SidebarCategoryView : ReactiveUserControl<SidebarCategoryViewModel>
 {
     private static Image? _dragAdorner;
     private Point _dragStartPosition;
     private Point _elementDragOffset;
-    private ListBox _listBox;
 
     public SidebarCategoryView()
     {
         InitializeComponent();
-        _listBox = this.Get<ListBox>("SidebarListBox");
-
         AddHandler(DragDrop.DragEnterEvent, HandleDragEnterEvent, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
         AddHandler(DragDrop.DragOverEvent, HandleDragOver, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
-        AddHandler(PointerEnterEvent, HandlePointerEnter, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+        AddHandler(PointerEnteredEvent, HandlePointerEnter, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {

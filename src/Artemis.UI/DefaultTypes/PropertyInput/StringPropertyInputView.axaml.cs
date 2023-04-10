@@ -4,7 +4,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
 
-public class StringPropertyInputView : ReactiveUserControl<FloatPropertyInputViewModel>
+public partial class StringPropertyInputView : ReactiveUserControl<FloatPropertyInputViewModel>
 {
     public StringPropertyInputView()
     {
@@ -12,10 +12,6 @@ public class StringPropertyInputView : ReactiveUserControl<FloatPropertyInputVie
         AddHandler(KeyUpEvent, OnRoutedKeyUp, handledEventsToo: true);
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void OnRoutedKeyUp(object? sender, KeyEventArgs e)
     {

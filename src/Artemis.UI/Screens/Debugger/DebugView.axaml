@@ -1,4 +1,4 @@
-<controls:CoreWindow xmlns="https://github.com/avaloniaui"
+<windowing:AppWindow xmlns="https://github.com/avaloniaui"
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,6 +6,7 @@
                      xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
                      xmlns:debugger="clr-namespace:Artemis.UI.Screens.Debugger"
                      xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+                     xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
                      mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
                      x:Class="Artemis.UI.Screens.Debugger.DebugView"
                      x:DataType="debugger:DebugViewModel"
@@ -15,7 +16,6 @@
                      Height="800">
 
     <Window.Styles>
-        <StyleInclude Source="avares://AvaloniaEdit/AvaloniaEdit.xaml" />
         <Style Selector="StackPanel.sidebar-stackpanel avalonia|MaterialIcon">
             <Setter Property="Margin" Value="-7 0 0 0" />
         </Style>
@@ -38,4 +38,4 @@
 
         <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
     </Grid>
-</controls:CoreWindow>
+</windowing:AppWindow>

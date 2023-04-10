@@ -9,7 +9,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Root;
 
-public class SplashView : ReactiveWindow<SplashViewModel>
+public partial class SplashView : ReactiveWindow<SplashViewModel>
 {
     public SplashView()
     {
@@ -25,8 +25,4 @@ public class SplashView : ReactiveWindow<SplashViewModel>
         });
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

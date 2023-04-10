@@ -5,17 +5,13 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
 
-public class FloatRangePropertyInputView : ReactiveUserControl<FloatRangePropertyInputViewModel>
+public partial class FloatRangePropertyInputView : ReactiveUserControl<FloatRangePropertyInputViewModel>
 {
     public FloatRangePropertyInputView()
     {
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void DraggableNumberBox_OnDragStarted(DraggableNumberBox sender, EventArgs args)
     {

@@ -3,8 +3,6 @@ name: Publish Nuget packages
 on: 
   workflow_dispatch:
   push:
-    branches:
-      - master
 
 jobs:
   version:
@@ -37,7 +35,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '7.0.x'
       - name: Checkout
         uses: actions/checkout@v3
       - name: Pack Artemis.Core

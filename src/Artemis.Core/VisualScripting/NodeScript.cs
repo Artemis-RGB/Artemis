@@ -4,8 +4,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Events;
 using Artemis.Core.Internal;
-using Artemis.Core.Properties;
 using Artemis.Storage.Entities.Profile.Nodes;
+using JetBrains.Annotations;
 
 namespace Artemis.Core;
 

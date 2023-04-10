@@ -1,11 +1,11 @@
-﻿<controls:CoreWindow xmlns="https://github.com/avaloniaui"
+﻿<windowing:AppWindow xmlns="https://github.com/avaloniaui"
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                     xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
                      xmlns:scripting="clr-namespace:Artemis.UI.Screens.Scripting"
                      xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
                      xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+                     xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
                      mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                      x:Class="Artemis.UI.Screens.Scripting.ScriptsDialogView"
                      x:DataType="scripting:ScriptsDialogViewModel"
@@ -87,4 +87,4 @@
         </Border>
     </DockPanel>
 
-</controls:CoreWindow>
+</windowing:AppWindow>

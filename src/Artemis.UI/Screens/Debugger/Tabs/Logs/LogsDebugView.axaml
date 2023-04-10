@@ -8,19 +8,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Debugger.Logs.LogsDebugView"
              x:DataType="logs:LogsDebugViewModel">
-  <aedit:TextEditor Name="log"
-                    Document="{ CompiledBinding Document }"
-                    IsReadOnly="True"
-                    FontFamily="Consolas"
-                    FontSize="12"
-                    HorizontalScrollBarVisibility="Auto"
-                    Padding="0 15 15 15"
-                    TextChanged="OnTextChanged" >
-
-    <aedit:TextEditor.Styles>
-      <Style Selector="aedit|TextArea">
-        <Setter Property="SelectionBrush" Value="#44ffffff" />
-      </Style>
-    </aedit:TextEditor.Styles>
-  </aedit:TextEditor>
+    <ScrollViewer Name="LogsScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <SelectableTextBlock Inlines="{CompiledBinding Lines}" FontFamily="Consolas" SizeChanged="Control_OnSizeChanged"></SelectableTextBlock>    
+    </ScrollViewer>
 </UserControl>

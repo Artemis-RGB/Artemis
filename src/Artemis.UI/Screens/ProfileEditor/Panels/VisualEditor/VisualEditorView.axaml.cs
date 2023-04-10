@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Reactive.Disposables;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
@@ -13,19 +12,17 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor;
 
-public class VisualEditorView : ReactiveUserControl<VisualEditorViewModel>
+public partial class VisualEditorView : ReactiveUserControl<VisualEditorViewModel>
 {
-    private readonly ZoomBorder _zoomBorder;
     private bool _movedByUser;
 
     public VisualEditorView()
     {
         InitializeComponent();
-
-        _zoomBorder = this.Find<ZoomBorder>("ZoomBorder");
-        _zoomBorder.PropertyChanged += ZoomBorderOnPropertyChanged;
-        _zoomBorder.PointerMoved += ZoomBorderOnPointerMoved;
-        _zoomBorder.PointerWheelChanged += ZoomBorderOnPointerWheelChanged;
+        
+        ZoomBorder.PropertyChanged += ZoomBorderOnPropertyChanged;
+        ZoomBorder.PointerMoved += ZoomBorderOnPointerMoved;
+        ZoomBorder.PointerWheelChanged += ZoomBorderOnPointerWheelChanged;
         UpdateZoomBorderBackground();
 
         this.WhenActivated(d =>
@@ -48,7 +45,7 @@ public class VisualEditorView : ReactiveUserControl<VisualEditorViewModel>
 
     private void ZoomBorderOnPointerMoved(object? sender, PointerEventArgs e)
     {
-        if (e.GetCurrentPoint(_zoomBorder).Properties.IsMiddleButtonPressed)
+        if (e.GetCurrentPoint(ZoomBorder).Properties.IsMiddleButtonPressed)
             _movedByUser = true;
     }
 
@@ -59,20 +56,16 @@ public class VisualEditorView : ReactiveUserControl<VisualEditorViewModel>
 
     private void ZoomBorderOnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
-        if (e.Property.Name == nameof(_zoomBorder.Background))
+        if (e.Property.Name == nameof(ZoomBorder.Background))
             UpdateZoomBorderBackground();
     }
 
     private void UpdateZoomBorderBackground()
     {
-        if (_zoomBorder.Background is VisualBrush visualBrush)
-            visualBrush.DestinationRect = new RelativeRect(_zoomBorder.OffsetX * -1, _zoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
+        if (ZoomBorder.Background is VisualBrush visualBrush)
+            visualBrush.DestinationRect = new RelativeRect(ZoomBorder.OffsetX * -1, ZoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void ZoomBorder_OnZoomChanged(object sender, ZoomChangedEventArgs e)
     {
@@ -96,8 +89,8 @@ public class VisualEditorView : ReactiveUserControl<VisualEditorViewModel>
         double scale = Math.Min(3, Math.Min(Bounds.Width / scriptRect.Width, Bounds.Height / scriptRect.Height));
 
         // Pan and zoom to make the script fit
-        _zoomBorder.Zoom(scale, 0, 0, skipTransitions);
-        _zoomBorder.Pan(Bounds.Center.X - scriptRect.Center.X * scale, Bounds.Center.Y - scriptRect.Center.Y * scale, skipTransitions);
+        ZoomBorder.Zoom(scale, 0, 0, skipTransitions);
+        ZoomBorder.Pan(Bounds.Center.X - scriptRect.Center.X * scale, Bounds.Center.Y - scriptRect.Center.Y * scale, skipTransitions);
 
         _movedByUser = false;
     }

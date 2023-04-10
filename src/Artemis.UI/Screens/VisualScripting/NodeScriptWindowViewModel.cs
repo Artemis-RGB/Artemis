@@ -48,18 +48,19 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
         _profileService = profileService;
         _windowService = windowService;
 
-        SourceList<NodeData> nodeSourceList = new();
-        nodeSourceList.AddRange(nodeService.AvailableNodes);
-        nodeSourceList.Connect()
-            .GroupWithImmutableState(n => n.Category)
-            .Bind(out ReadOnlyObservableCollection<IGrouping<NodeData, string>> categories)
-            .Subscribe();
-        Categories = categories;
-
         CreateNode = ReactiveCommand.Create<NodeData>(ExecuteCreateNode);
         AutoArrange = ReactiveCommand.CreateFromTask(ExecuteAutoArrange);
         Export = ReactiveCommand.CreateFromTask(ExecuteExport);
         Import = ReactiveCommand.CreateFromTask(ExecuteImport);
+
+        SourceList<NodeData> nodeSourceList = new();
+        nodeSourceList.AddRange(nodeService.AvailableNodes);
+        nodeSourceList.Connect()
+            .GroupWithImmutableState(n => n.Category)
+            .Transform(c => new NodeMenuItemViewModel(CreateNode, c))
+            .Bind(out ReadOnlyObservableCollection<NodeMenuItemViewModel> categories)
+            .Subscribe();
+        Categories = categories;
 
         this.WhenActivated(d =>
         {
@@ -83,7 +84,7 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
     public NodeEditorHistory History { get; }
     public ReactiveCommand<PluginSetting<bool>, Unit> ToggleBooleanSetting { get; set; }
     public ReactiveCommand<string, Unit> OpenUri { get; set; }
-    public ReadOnlyObservableCollection<IGrouping<NodeData, string>> Categories { get; }
+    public ReadOnlyObservableCollection<NodeMenuItemViewModel> Categories { get; }
     public ReactiveCommand<NodeData, Unit> CreateNode { get; }
     public ReactiveCommand<Unit, Unit> AutoArrange { get; }
     public ReactiveCommand<Unit, Unit> Export { get; }

@@ -3,15 +3,11 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.Sidebar;
 
-public class ModuleActivationRequirementsView : UserControl
+public partial class ModuleActivationRequirementsView : UserControl
 {
     public ModuleActivationRequirementsView()
     {
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

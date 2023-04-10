@@ -3,7 +3,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:visualScripting="clr-namespace:Artemis.UI.Screens.VisualScripting"
-             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="650" d:DesignHeight="450"
@@ -17,15 +16,16 @@
             <Setter Property="InnerRightContent">
                 <Template>
                     <StackPanel Orientation="Horizontal">
-                        <controls:Button Content="&#xE8BB;"
-                                         FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                         Classes="AppBarButton"
-                                         Command="{Binding $parent[TextBox].Clear}"
-                                         IsVisible="{Binding $parent[TextBox].Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                        <controls:Button Content="&#xE721;"
-                                         FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                         Classes="AppBarButton"
-                                         IsHitTestVisible="False" />
+                        <Button Content="&#xE8BB;" 
+                                FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                Theme="{StaticResource TransparentButton}"
+                                Command="{Binding $parent[TextBox].Clear}"
+                                IsVisible="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType=TextBox}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                        <Button Content="&#xE721;"
+                                FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                Theme="{StaticResource TransparentButton}"
+                                Command="{Binding $parent[TextBox].Clear}"
+                                IsHitTestVisible="False"/>
                     </StackPanel>
                 </Template>
             </Setter>
@@ -46,16 +46,21 @@
                     </Style>
                 </TreeView.Styles>
                 <TreeView.DataTemplates>
-                    <TreeDataTemplate DataType="{x:Type core:NodeData}">
+                    <TreeDataTemplate DataType="core:NodeData">
                         <StackPanel Margin="-15 1 0 1" Background="Transparent" PointerReleased="InputElement_OnPointerReleased">
                             <TextBlock Classes="BodyStrongTextBlockStyle" Text="{Binding Name}" TextWrapping="Wrap"></TextBlock>
                             <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding Description}" TextWrapping="Wrap"></TextBlock>
                         </StackPanel>
                     </TreeDataTemplate>
-                    <TreeDataTemplate ItemsSource="{Binding Items}">
-                        <TextBlock Text="{Binding Key}"></TextBlock>
+                    <TreeDataTemplate DataType="visualScripting:NodeCategoryViewModel" ItemsSource="{Binding Nodes}">
+                        <TextBlock Text="{Binding Category}"></TextBlock>
                     </TreeDataTemplate>
                 </TreeView.DataTemplates>
+                <TreeView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                </TreeView.ItemsPanel>
             </TreeView>
             <StackPanel Grid.Row="1" VerticalAlignment="Center" Spacing="20" IsVisible="{CompiledBinding !Categories.Count}">
                 <avalonia:MaterialIcon Kind="CloseCircle" Width="64" Height="64"></avalonia:MaterialIcon>

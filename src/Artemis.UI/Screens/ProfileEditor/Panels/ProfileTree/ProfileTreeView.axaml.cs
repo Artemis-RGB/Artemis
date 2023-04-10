@@ -13,9 +13,8 @@ using Avalonia.VisualTree;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
-public class ProfileTreeView : ReactiveUserControl<ProfileTreeViewModel>
+public partial class ProfileTreeView : ReactiveUserControl<ProfileTreeViewModel>
 {
-    private readonly TreeView _treeView;
     private Image? _dragAdorner;
     private Point _dragStartPosition;
     private Point _elementDragOffset;
@@ -23,11 +22,10 @@ public class ProfileTreeView : ReactiveUserControl<ProfileTreeViewModel>
     public ProfileTreeView()
     {
         InitializeComponent();
-        _treeView = this.Get<TreeView>("ProfileTreeView");
 
         AddHandler(DragDrop.DragEnterEvent, HandleDragEnterEvent, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
         AddHandler(DragDrop.DragOverEvent, HandleDragOver, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
-        AddHandler(PointerEnterEvent, HandlePointerEnter, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
+        AddHandler(PointerEnteredEvent, HandlePointerEnter, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
     }
 
     private void HandlePointerEnter(object? sender, PointerEventArgs e)
@@ -115,13 +113,9 @@ public class ProfileTreeView : ReactiveUserControl<ProfileTreeViewModel>
         _dragAdorner.RenderTransform = new TranslateTransform(_dragStartPosition.X - _elementDragOffset.X, position.Y - _elementDragOffset.Y);
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void ProfileTreeView_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        _treeView.Focus();
+        Profile.Focus();
     }
 }

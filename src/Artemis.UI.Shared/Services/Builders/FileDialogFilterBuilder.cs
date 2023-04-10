@@ -1,4 +1,7 @@
-﻿using Avalonia.Controls;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 
 namespace Artemis.UI.Shared.Services.Builders;
 
@@ -7,11 +10,12 @@ namespace Artemis.UI.Shared.Services.Builders;
 /// </summary>
 public class FileDialogFilterBuilder
 {
-    private readonly FileDialogFilter _filter;
+    private string _name;
+    private readonly List<string> _extensions = new();
 
     internal FileDialogFilterBuilder()
     {
-        _filter = new FileDialogFilter();
+        _name = "Unknown";
     }
 
     /// <summary>
@@ -19,7 +23,7 @@ public class FileDialogFilterBuilder
     /// </summary>
     public FileDialogFilterBuilder WithName(string name)
     {
-        _filter.Name = name;
+        _name = name;
         return this;
     }
 
@@ -28,12 +32,16 @@ public class FileDialogFilterBuilder
     /// </summary>
     public FileDialogFilterBuilder WithExtension(string extension)
     {
-        _filter.Extensions.Add(extension);
+        if (!_extensions.Contains(extension))
+            _extensions.Add(extension);
         return this;
     }
 
-    internal FileDialogFilter Build()
+    internal FilePickerFileType Build()
     {
-        return _filter;
+        return new FilePickerFileType(_name)
+        {
+            Patterns = _extensions.Select(e => "*." + e).ToList()
+        };
     }
 }

@@ -128,6 +128,13 @@ public interface IPluginManagementService : IArtemisService, IDisposable
     Plugin? GetCallingPlugin();
 
     /// <summary>
+    ///     Returns the plugin that threw the provided exception.
+    /// </summary>
+    /// <param name="exception"></param>
+    /// <returns>If the exception was thrown by a plugin, the plugin. Otherwise null</returns>
+    Plugin? GetPluginFromException(Exception exception);
+
+    /// <summary>
     ///     Gets the plugin that defined the specified device
     /// </summary>
     /// <param name="device"></param>

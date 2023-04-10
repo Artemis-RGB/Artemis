@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
-using Avalonia.Controls.Mixins;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments;

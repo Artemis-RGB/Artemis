@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
+using Avalonia;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
@@ -10,22 +9,13 @@ using Avalonia.VisualTree;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties;
 
-public class PropertiesView : ReactiveUserControl<PropertiesViewModel>
+public partial class PropertiesView : ReactiveUserControl<PropertiesViewModel>
 {
-    private readonly Polygon _timelineCaret;
-    private readonly Line _timelineLine;
-
     public PropertiesView()
     {
         InitializeComponent();
-        _timelineCaret = this.Get<Polygon>("TimelineCaret");
-        _timelineLine = this.Get<Line>("TimelineLine");
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void ApplyTransition(bool enable)
     {
@@ -58,12 +48,12 @@ public class PropertiesView : ReactiveUserControl<PropertiesViewModel>
         if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed || ViewModel == null)
             return;
 
-        IInputElement? senderElement = (IInputElement?) sender;
+        Visual? senderElement = (Visual?) sender;
         if (senderElement == null)
             return;
 
         // Get the parent grid, need that for our position
-        IVisual? parent = senderElement.VisualParent;
+        Visual? parent = senderElement.GetVisualParent();
         double x = Math.Max(0, e.GetPosition(parent).X);
         TimeSpan newTime = TimeSpan.FromSeconds(x / ViewModel.PixelsPerSecond);
         newTime = RoundTime(newTime);
@@ -84,11 +74,11 @@ public class PropertiesView : ReactiveUserControl<PropertiesViewModel>
 
     private void TimelineHeader_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (ViewModel == null || sender is not IInputElement senderElement)
+        if (ViewModel == null || sender is not Visual senderElement)
             return;
 
         // Get the parent grid, need that for our position
-        double x = Math.Max(0, e.GetPosition(senderElement.VisualParent).X);
+        double x = Math.Max(0, e.GetPosition(senderElement.GetVisualParent()).X);
         TimeSpan newTime = TimeSpan.FromSeconds(x / ViewModel.PixelsPerSecond);
 
         ViewModel.TimelineViewModel.ChangeTime(RoundTime(newTime));

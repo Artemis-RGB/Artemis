@@ -46,8 +46,8 @@ public class DataModelPickerButton : TemplatedControl
     /// <summary>
     ///     Gets or sets the desired flyout placement.
     /// </summary>
-    public static readonly StyledProperty<FlyoutPlacementMode> PlacementProperty =
-        AvaloniaProperty.Register<FlyoutBase, FlyoutPlacementMode>(nameof(Placement));
+    public static readonly StyledProperty<PlacementMode> PlacementProperty =
+        AvaloniaProperty.Register<FlyoutBase, PlacementMode>(nameof(Placement));
 
     /// <summary>
     ///     Gets or sets data model path.
@@ -133,7 +133,7 @@ public class DataModelPickerButton : TemplatedControl
     /// <summary>
     ///     Gets or sets the desired flyout placement.
     /// </summary>
-    public FlyoutPlacementMode Placement
+    public PlacementMode Placement
     {
         get => GetValue(PlacementProperty);
         set => SetValue(PlacementProperty, value);

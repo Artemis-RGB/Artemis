@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using Artemis.Core.Properties;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
@@ -36,9 +34,7 @@ public class PluginSetting<T> : CorePropertyChanged, IPluginSetting
     /// <summary>
     ///     The value of the setting
     /// </summary>
-    [AllowNull]
-    [CanBeNull]
-    public T Value
+    public T? Value
     {
         get => _value;
         set

@@ -24,7 +24,7 @@ public static class ContainerExtensions
         // Pooling
         container.RegisterInstance(ObjectPool.Create<Stack<InternalEvaluatorValue>>());
         container.RegisterInstance(ObjectPool.Create<List<InternalEvaluatorValue>>());
-        container.RegisterInstance(ObjectPool.Create<ExtraTypeIdContainer>());
+        container.RegisterInstance(ObjectPool.Create<ValueKeeperContainer>());
         
         // Parser
         container.Register<IFormulaCache, FormulaCache>(Reuse.Singleton);
@@ -36,5 +36,6 @@ public static class ContainerExtensions
         
         // Evaluator
         container.Register<INoStringEvaluator, NoStringEvaluator>(Reuse.Singleton);
+        container.Register<INoStringEvaluatorNullable, NoStringEvaluatorNullable>(Reuse.Singleton);
     }
 }

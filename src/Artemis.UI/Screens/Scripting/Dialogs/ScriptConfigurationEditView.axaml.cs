@@ -1,24 +1,19 @@
-﻿using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+﻿using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Scripting.Dialogs;
 
-public class ScriptConfigurationEditView : ReactiveUserControl<ScriptConfigurationEditViewModel>
+public partial class ScriptConfigurationEditView : ReactiveUserControl<ScriptConfigurationEditViewModel>
 {
     public ScriptConfigurationEditView()
     {
         InitializeComponent();
         this.WhenActivated(_ =>
         {
-            this.Get<TextBox>("Input").Focus();
-            this.Get<TextBox>("Input").SelectAll();
+            Input.Focus();
+            Input.SelectAll();
         });
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

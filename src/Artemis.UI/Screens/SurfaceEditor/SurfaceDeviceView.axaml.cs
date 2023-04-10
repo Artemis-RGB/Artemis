@@ -7,7 +7,7 @@ using Avalonia.VisualTree;
 
 namespace Artemis.UI.Screens.SurfaceEditor;
 
-public class SurfaceDeviceView : ReactiveUserControl<SurfaceDeviceViewModel>
+public partial class SurfaceDeviceView : ReactiveUserControl<SurfaceDeviceViewModel>
 {
     private bool _dragging;
 
@@ -16,10 +16,6 @@ public class SurfaceDeviceView : ReactiveUserControl<SurfaceDeviceViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnPointerMoved(object? sender, PointerEventArgs e)
     {

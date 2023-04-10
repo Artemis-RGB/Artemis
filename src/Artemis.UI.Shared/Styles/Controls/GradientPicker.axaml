@@ -168,14 +168,14 @@
                             BorderBrush="{DynamicResource ButtonBorderBrush}"
                             BorderThickness="0 0 1 0"
                             Padding="0 0 10 0">
-                        <fluent:ColorPicker Name="ColorPicker"
-                                            ColorTextType="HexAlpha"
-                                            UseColorWheel="True"
-                                            UseColorTriangle="True"
-                                            IsMoreButtonVisible="True"
-                                            IsVisible="{TemplateBinding SelectedColorStop, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                            IsCompact="{Binding IsCompact, RelativeSource={RelativeSource TemplatedParent}}"
-                                            Color="{Binding SelectedColorStop.Color, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource SKColorToColorConverter}}" />
+                        <fluent:FAColorPicker Name="ColorPicker"
+                                              ColorTextType="HexAlpha"
+                                              UseColorWheel="True"
+                                              UseColorTriangle="True"
+                                              IsMoreButtonVisible="True"
+                                              IsVisible="{TemplateBinding SelectedColorStop, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                              IsCompact="{Binding IsCompact, RelativeSource={RelativeSource TemplatedParent}}"
+                                              Color="{Binding SelectedColorStop.Color, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource SKColorToColorConverter}}" />
                     </Border>
 
                     <Grid Grid.Row="2" Grid.Column="1" RowDefinitions="*,Auto">

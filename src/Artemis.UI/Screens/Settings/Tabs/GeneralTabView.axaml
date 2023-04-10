@@ -28,7 +28,7 @@
                             <ToggleSwitch Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" IsChecked="{CompiledBinding UIAutoRun.Value}" MinWidth="0" Margin="0 -10" OnContent="Yes"
                                           OffContent="No" />
                         </Grid>
-                        <Separator Classes="card-separator" />
+                        <Border Classes="card-separator" />
 
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                             <StackPanel Grid.Column="0">
@@ -39,7 +39,7 @@
                                               OffContent="No" />
                             </StackPanel>
                         </Grid>
-                        <Separator Classes="card-separator" />
+                        <Border Classes="card-separator" />
 
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                             <StackPanel Grid.Column="0">
@@ -60,7 +60,7 @@
                                 <TextBlock VerticalAlignment="Center" TextAlignment="Right" Width="30">sec</TextBlock>
                             </StackPanel>
                         </Grid>
-                        <Separator Classes="card-separator" />
+                        <Border Classes="card-separator" />
                     </StackPanel>
 
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
@@ -76,7 +76,7 @@
                             <shared:EnumComboBox Width="150" Value="{CompiledBinding CoreLoggingLevel.Value}" />
                         </StackPanel>
                     </Grid>
-                    <Separator Classes="card-separator" />
+                    <Border Classes="card-separator" />
 
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
@@ -114,7 +114,7 @@
                             <ToggleSwitch IsChecked="{CompiledBinding WebServerEnabled.Value}" OnContent="Yes" OffContent="No" MinWidth="0" Margin="0 -10" />
                         </StackPanel>
                     </Grid>
-                    <Separator Classes="card-separator" />
+                    <Border Classes="card-separator" />
 
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Column="0">
@@ -156,7 +156,7 @@
                                 <ToggleSwitch IsChecked="{CompiledBinding UICheckForUpdates.Value}" MinWidth="0" OnContent="Yes" OffContent="No" />
                             </StackPanel>
                         </Grid>
-                        <Separator Classes="card-separator" />
+                        <Border Classes="card-separator" />
 
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                             <StackPanel Grid.Column="0">
@@ -171,7 +171,7 @@
                                 <ToggleSwitch IsEnabled="{CompiledBinding UICheckForUpdates.Value}" IsChecked="{CompiledBinding UIAutoUpdate.Value}" MinWidth="0" OnContent="Yes" OffContent="No" />
                             </StackPanel>
                         </Grid>
-                        <Separator Classes="card-separator" />
+                        <Border Classes="card-separator" />
 
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                             <StackPanel Grid.Column="0" VerticalAlignment="Center">
@@ -209,7 +209,7 @@
                             <ToggleSwitch IsChecked="{CompiledBinding ProfileEditorShowDataModelValues.Value}" MinWidth="0" OnContent="Yes" OffContent="No" />
                         </StackPanel>
                     </Grid>
-                    <Separator Classes="card-separator" />
+                    <Border Classes="card-separator" />
 
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Column="0">
@@ -282,7 +282,7 @@
                                       Items="{CompiledBinding GraphicsContexts}" />
                         </StackPanel>
                     </Grid>
-                    <Separator Classes="card-separator" />
+                    <Border Classes="card-separator" />
 
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Column="0">
@@ -305,7 +305,7 @@
                             </ComboBox>
                         </StackPanel>
                     </Grid>
-                    <Separator Classes="card-separator" />
+                    <Border Classes="card-separator" />
 
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Column="0">
@@ -353,7 +353,7 @@
                             <Button Command="{CompiledBinding ShowSetupWizard}" Width="150" Content="Show wizard" />
                         </StackPanel>
                     </Grid>
-                    <Separator Classes="card-separator" />
+                    <Border Classes="card-separator" />
 
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
@@ -368,7 +368,7 @@
                             <Button Command="{CompiledBinding ShowDebugger}" Width="150" Content="Show debugger" />
                         </StackPanel>
                     </Grid>
-                    <Separator Classes="card-separator" />
+                    <Border Classes="card-separator" />
 
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">

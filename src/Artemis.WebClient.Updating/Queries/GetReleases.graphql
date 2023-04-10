@@ -12,7 +12,7 @@ query GetReleases($branch: String!, $platform: Platform!, $take: Int!, $after: S
         pageInfo {
             hasNextPage
             endCursor
-        }        
+        }
         nodes {
             id
             version

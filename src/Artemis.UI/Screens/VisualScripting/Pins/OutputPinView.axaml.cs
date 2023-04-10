@@ -5,7 +5,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.VisualScripting.Pins;
 
-public class OutputPinView : PinView
+public partial class OutputPinView : PinView
 {
     public OutputPinView()
     {
@@ -13,10 +13,6 @@ public class OutputPinView : PinView
         InitializePin(this.Get<Border>("PinPoint"));
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void PinContainer_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {

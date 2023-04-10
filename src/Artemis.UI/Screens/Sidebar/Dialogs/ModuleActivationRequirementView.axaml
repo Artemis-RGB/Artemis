@@ -24,7 +24,7 @@
         </Styles>
     </UserControl.Styles>
     <StackPanel>
-        <Separator Classes="card-separator" />
+        <Border Classes="card-separator" />
         <Grid ColumnDefinitions="*,Auto">
             <StackPanel Grid.Column="0">
                 <TextBlock TextWrapping="Wrap" Text="{CompiledBinding RequirementName}" />

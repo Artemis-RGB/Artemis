@@ -35,22 +35,20 @@
             <ControlTemplate>
                 <DataValidationErrors>
                     <Panel>
-                        <!-- This is flipped (scaleY(-1)) for the elevation brush effect
-                        -->
-                        <Border
-                            Name="PART_BorderElement"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            MinWidth="{TemplateBinding MinWidth}"
-                            MinHeight="{TemplateBinding MinHeight}"
-                            RenderTransform="scaleY(-1)"
-                            CornerRadius="{TemplateBinding CornerRadius}" />
+                        <Border Name="PART_BorderElement"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                MinWidth="{TemplateBinding MinWidth}"
+                                MinHeight="{TemplateBinding MinHeight}">
+                        </Border>
 
-                        <Border
-                            Margin="{TemplateBinding BorderThickness}">
-                            <Grid ColumnDefinitions="Auto,*,Auto">
-                                <ContentPresenter Grid.Column="0" Content="{TemplateBinding InnerLeftContent}" />
+                        <Border Margin="{TemplateBinding BorderThickness}">
+                            <Grid ColumnDefinitions="Auto,*,Auto" >
+                                <ContentPresenter Grid.Column="0"
+                                                  Grid.ColumnSpan="1"
+                                                  Content="{TemplateBinding InnerLeftContent}"/>
                                 <Grid x:Name="PART_InnerGrid"
                                       Grid.Column="1"
                                       RowDefinitions="Auto,Auto"
@@ -62,6 +60,7 @@
                                                Name="PART_FloatingWatermark"
                                                Foreground="{DynamicResource SystemAccentColor}"
                                                FontSize="{TemplateBinding FontSize}"
+                                               IsVisible="False"
                                                Text="{TemplateBinding Watermark}" />
 
                                     <TextBlock Grid.Row="1"
@@ -75,30 +74,33 @@
                                     <ScrollViewer Grid.Row="1"
                                                   Grid.Column="1"
                                                   HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
-                                                  VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}">
+                                                  VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}"
+                                                  IsScrollChainingEnabled="{TemplateBinding (ScrollViewer.IsScrollChainingEnabled)}"
+                                                  AllowAutoHide="{TemplateBinding (ScrollViewer.AllowAutoHide)}">
                                         <Panel>
                                             <TextBlock Name="PART_Watermark"
+                                                       Foreground="{DynamicResource TextControlPlaceholderForeground}"
                                                        Text="{TemplateBinding Watermark}"
                                                        TextAlignment="{TemplateBinding TextAlignment}"
                                                        TextWrapping="{TemplateBinding TextWrapping}"
                                                        IsVisible="{TemplateBinding Text, Converter={x:Static StringConverters.IsNullOrEmpty}}"
                                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                       IsHitTestVisible="False" />
+                                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                                             <TextPresenter Name="PART_TextPresenter"
-                                                           Text="{TemplateBinding Text, Mode=TwoWay}"
-                                                           CaretIndex="{TemplateBinding CaretIndex}"
-                                                           SelectionStart="{TemplateBinding SelectionStart}"
-                                                           SelectionEnd="{TemplateBinding SelectionEnd}"
-                                                           TextAlignment="{TemplateBinding TextAlignment}"
-                                                           TextWrapping="{TemplateBinding TextWrapping}"
-                                                           PasswordChar="{TemplateBinding PasswordChar}"
-                                                           RevealPassword="{TemplateBinding RevealPassword}"
-                                                           SelectionBrush="{TemplateBinding SelectionBrush}"
-                                                           SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
-                                                           CaretBrush="{TemplateBinding CaretBrush}"
-                                                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                                          Text="{TemplateBinding Text, Mode=TwoWay}"
+                                                          CaretIndex="{TemplateBinding CaretIndex}"
+                                                          SelectionStart="{TemplateBinding SelectionStart}"
+                                                          SelectionEnd="{TemplateBinding SelectionEnd}"
+                                                          TextAlignment="{TemplateBinding TextAlignment}"
+                                                          TextWrapping="{TemplateBinding TextWrapping}"
+                                                          LineHeight="{TemplateBinding LineHeight}"
+                                                          PasswordChar="{TemplateBinding PasswordChar}"
+                                                          RevealPassword="{TemplateBinding RevealPassword}"
+                                                          SelectionBrush="{TemplateBinding SelectionBrush}"
+                                                          SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
+                                                          CaretBrush="{TemplateBinding CaretBrush}"
+                                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                                         </Panel>
                                     </ScrollViewer>
 

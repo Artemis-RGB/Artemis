@@ -8,9 +8,9 @@
              x:DataType="sidebar:ModuleActivationRequirementsViewModel">
     <StackPanel>
         <Grid ColumnDefinitions="*,Auto,*">
-            <Separator Grid.Column="0" Height="1" Background="{DynamicResource TextFillColorTertiaryBrush}" />
+            <Border Grid.Column="0" Height="1" Background="{DynamicResource TextFillColorTertiaryBrush}" />
             <TextBlock Grid.Column="1" Margin="16 0">AND</TextBlock>
-            <Separator Grid.Column="2" Height="1" Background="{DynamicResource TextFillColorTertiaryBrush}" />
+            <Border Grid.Column="2" Height="1" Background="{DynamicResource TextFillColorTertiaryBrush}" />
         </Grid>
         <Border Classes="card" Margin="0 5">
             <StackPanel Orientation="Vertical">

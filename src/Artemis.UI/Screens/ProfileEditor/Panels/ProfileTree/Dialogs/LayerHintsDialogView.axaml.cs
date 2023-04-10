@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs;
 
-public class LayerHintsDialogView : ReactiveCoreWindow<LayerHintsDialogViewModel>
+public partial class LayerHintsDialogView : ReactiveAppWindow<LayerHintsDialogViewModel>
 {
     public LayerHintsDialogView()
     {
@@ -14,8 +14,4 @@ public class LayerHintsDialogView : ReactiveCoreWindow<LayerHintsDialogViewModel
 #endif
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

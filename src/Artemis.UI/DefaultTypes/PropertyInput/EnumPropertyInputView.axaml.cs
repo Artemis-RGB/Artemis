@@ -4,15 +4,11 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
 
-public class EnumPropertyInputView : ReactiveUserControl<PropertyInputViewModel>
+public partial class EnumPropertyInputView : ReactiveUserControl<PropertyInputViewModel>
 {
     public EnumPropertyInputView()
     {
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }
