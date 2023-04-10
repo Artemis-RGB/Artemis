@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 
 namespace Artemis.UI.Shared.Services.Builders;
 
@@ -10,8 +12,9 @@ namespace Artemis.UI.Shared.Services.Builders;
 /// </summary>
 public class OpenFileDialogBuilder
 {
-    private readonly OpenFileDialog _openFileDialog;
     private readonly Window _parent;
+    private readonly FilePickerOpenOptions _options;
+    private List<FilePickerFileType>? _fileTypeFilters;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="OpenFileDialogBuilder" /> class.
@@ -20,7 +23,7 @@ public class OpenFileDialogBuilder
     internal OpenFileDialogBuilder(Window parent)
     {
         _parent = parent;
-        _openFileDialog = new OpenFileDialog();
+        _options = new FilePickerOpenOptions();
     }
 
     /// <summary>
@@ -28,7 +31,7 @@ public class OpenFileDialogBuilder
     /// </summary>
     public OpenFileDialogBuilder WithAllowMultiple()
     {
-        _openFileDialog.AllowMultiple = true;
+        _options.AllowMultiple = true;
         return this;
     }
 
@@ -37,7 +40,7 @@ public class OpenFileDialogBuilder
     /// </summary>
     public OpenFileDialogBuilder WithTitle(string? title)
     {
-        _openFileDialog.Title = title;
+        _options.Title = title;
         return this;
     }
 
@@ -46,16 +49,7 @@ public class OpenFileDialogBuilder
     /// </summary>
     public OpenFileDialogBuilder WithDirectory(string? directory)
     {
-        _openFileDialog.Directory = directory;
-        return this;
-    }
-
-    /// <summary>
-    ///     Set the initial file name of the dialog
-    /// </summary>
-    public OpenFileDialogBuilder WithInitialFileName(string? initialFileName)
-    {
-        _openFileDialog.InitialFileName = initialFileName;
+        _options.SuggestedStartLocation = directory != null ? _parent.StorageProvider.TryGetFolderFromPathAsync(directory).GetAwaiter().GetResult() : null;
         return this;
     }
 
@@ -67,8 +61,9 @@ public class OpenFileDialogBuilder
         FileDialogFilterBuilder builder = new();
         configure(builder);
 
-        _openFileDialog.Filters ??= new List<FileDialogFilter>();
-        _openFileDialog.Filters.Add(builder.Build());
+        _fileTypeFilters ??= new List<FilePickerFileType>();
+        _fileTypeFilters.Add(builder.Build());
+        _options.FileTypeFilter = _fileTypeFilters;
 
         return this;
     }
@@ -82,6 +77,7 @@ public class OpenFileDialogBuilder
     /// </returns>
     public async Task<string[]?> ShowAsync()
     {
-        return await _openFileDialog.ShowAsync(_parent);
+        IReadOnlyList<IStorageFile> files = await _parent.StorageProvider.OpenFilePickerAsync(_options);
+        return files.Select(f => f.Path.AbsolutePath).ToArray();
     }
 }

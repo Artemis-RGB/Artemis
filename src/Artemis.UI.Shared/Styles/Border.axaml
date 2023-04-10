@@ -8,7 +8,7 @@
             <Border Classes="card" Margin="20">
                 <StackPanel>
                     <TextBlock>I'm in a panel yo!</TextBlock>
-                    <Separator Classes="card-separator" />
+                    <Border Classes="card-separator" />
                     <TextBlock>I'm in a panel yo!</TextBlock>
                 </StackPanel>
             </Border>
@@ -44,7 +44,7 @@
         <Setter Property="CornerRadius" Value="{DynamicResource CardCornerRadius}" />
     </Style>
 
-    <Style Selector="Separator.card-separator">
+    <Style Selector="Border.card-separator">
         <Setter Property="Background" Value="{DynamicResource ButtonBorderBrush}" />
         <Setter Property="Margin" Value="-12 15" />
         <Setter Property="Height" Value="1" />

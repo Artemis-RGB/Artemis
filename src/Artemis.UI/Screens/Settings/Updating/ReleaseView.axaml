@@ -116,7 +116,7 @@
                     </Panel>
 
                 </Grid>
-                <Separator Classes="card-separator" />
+                <Border Classes="card-separator" />
                 <Grid Margin="-5 -10" ColumnDefinitions="*,*,*">
                     <Grid Grid.Column="0" ColumnDefinitions="*,*" RowDefinitions="*,*,*" Classes="info-container" HorizontalAlignment="Left">
                         <avalonia1:MaterialIcon Kind="Calendar" Grid.Column="0" Grid.RowSpan="2" Classes="info-icon" />
@@ -154,7 +154,7 @@
         <Border Grid.Row="1" Classes="card">
             <Grid RowDefinitions="Auto,Auto,*">
                 <TextBlock Grid.Row="0" Classes="h5 no-margin">Release notes</TextBlock>
-                <Separator Grid.Row="1" Classes="card-separator" />
+                <Border Grid.Row="1" Classes="card-separator" />
 
                 <avalonia:MarkdownScrollViewer Grid.Row="2" Markdown="{CompiledBinding Changelog}" MarkdownStyleName="FluentAvalonia">
                     <avalonia:MarkdownScrollViewer.Styles>

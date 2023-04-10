@@ -68,7 +68,7 @@
                         </StackPanel>
                     </Grid>
 
-                    <Separator Classes="card-separator" />
+                    <Border Classes="card-separator" />
 
                     <Grid RowDefinitions="*,*,*" ColumnDefinitions="Auto,*">
                         <Ellipse Grid.Row="0"
@@ -96,7 +96,7 @@
                         </StackPanel>
                     </Grid>
 
-                    <Separator Classes="card-separator" />
+                    <Border Classes="card-separator" />
 
                     <Grid RowDefinitions="*,*,*" ColumnDefinitions="Auto,*">
                         <Ellipse Grid.Row="0"
@@ -124,7 +124,7 @@
                         </StackPanel>
                     </Grid>
 
-                    <Separator Classes="card-separator" />
+                    <Border Classes="card-separator" />
 
                     <Grid RowDefinitions="*,*,*" ColumnDefinitions="Auto,*">
                         <Ellipse Grid.Row="0"

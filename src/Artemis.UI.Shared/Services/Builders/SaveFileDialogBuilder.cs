@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 
 namespace Artemis.UI.Shared.Services.Builders;
 
@@ -11,8 +12,9 @@ namespace Artemis.UI.Shared.Services.Builders;
 public class SaveFileDialogBuilder
 {
     private readonly Window _parent;
-    private readonly SaveFileDialog _saveFileDialog;
-
+    private readonly FilePickerSaveOptions _options;
+    private List<FilePickerFileType>? _fileTypeFilters;
+    
     /// <summary>
     ///     Creates a new instance of the <see cref="SaveFileDialogBuilder" /> class.
     /// </summary>
@@ -20,7 +22,7 @@ public class SaveFileDialogBuilder
     internal SaveFileDialogBuilder(Window parent)
     {
         _parent = parent;
-        _saveFileDialog = new SaveFileDialog();
+        _options = new FilePickerSaveOptions();
     }
 
     /// <summary>
@@ -28,7 +30,7 @@ public class SaveFileDialogBuilder
     /// </summary>
     public SaveFileDialogBuilder WithTitle(string? title)
     {
-        _saveFileDialog.Title = title;
+        _options.Title = title;
         return this;
     }
 
@@ -37,7 +39,7 @@ public class SaveFileDialogBuilder
     /// </summary>
     public SaveFileDialogBuilder WithDirectory(string? directory)
     {
-        _saveFileDialog.Directory = directory;
+        _options.SuggestedStartLocation = directory != null ? _parent.StorageProvider.TryGetFolderFromPathAsync(directory).GetAwaiter().GetResult() : null;
         return this;
     }
 
@@ -46,16 +48,7 @@ public class SaveFileDialogBuilder
     /// </summary>
     public SaveFileDialogBuilder WithInitialFileName(string? initialFileName)
     {
-        _saveFileDialog.InitialFileName = initialFileName;
-        return this;
-    }
-
-    /// <summary>
-    ///     Set the default extension of the dialog
-    /// </summary>
-    public SaveFileDialogBuilder WithDefaultExtension(string? defaultExtension)
-    {
-        _saveFileDialog.DefaultExtension = defaultExtension;
+        _options.SuggestedFileName = initialFileName;
         return this;
     }
 
@@ -67,8 +60,9 @@ public class SaveFileDialogBuilder
         FileDialogFilterBuilder builder = new();
         configure(builder);
 
-        _saveFileDialog.Filters ??= new List<FileDialogFilter>();
-        _saveFileDialog.Filters.Add(builder.Build());
+        _fileTypeFilters ??= new List<FilePickerFileType>();
+        _fileTypeFilters.Add(builder.Build());
+        _options.FileTypeChoices = _fileTypeFilters;
 
         return this;
     }
@@ -82,6 +76,7 @@ public class SaveFileDialogBuilder
     /// </returns>
     public async Task<string?> ShowAsync()
     {
-        return await _saveFileDialog.ShowAsync(_parent);
+        IStorageFile? path = await _parent.StorageProvider.SaveFilePickerAsync(_options);
+        return path?.Path.AbsolutePath;
     }
 }
