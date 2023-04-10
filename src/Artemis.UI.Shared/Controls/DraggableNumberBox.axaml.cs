@@ -14,12 +14,12 @@ namespace Artemis.UI.Shared.Controls;
 /// <summary>
 ///     Represents a number box that can be mutated by dragging over it horizontally
 /// </summary>
-public class DraggableNumberBox : UserControl
+public partial class DraggableNumberBox : UserControl
 {
     /// <summary>
     ///     Defines the <see cref="Value" /> property.
     /// </summary>
-    public static readonly StyledProperty<double> ValueProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Value), defaultBindingMode: BindingMode.TwoWay, notifying: ValueChanged);
+    public static readonly StyledProperty<double> ValueProperty = AvaloniaProperty.Register<DraggableNumberBox, double>(nameof(Value), defaultBindingMode: BindingMode.TwoWay);
 
     /// <summary>
     ///     Defines the <see cref="Minimum" /> property.
@@ -56,7 +56,6 @@ public class DraggableNumberBox : UserControl
     /// </summary>
     public static readonly StyledProperty<string?> SuffixProperty = AvaloniaProperty.Register<DraggableNumberBox, string?>(nameof(Suffix));
 
-    private readonly NumberBox _numberBox;
     private TextBox? _inputTextBox;
     private double _lastX;
     private bool _moved;
@@ -69,13 +68,13 @@ public class DraggableNumberBox : UserControl
     public DraggableNumberBox()
     {
         InitializeComponent();
-        _numberBox = this.Get<NumberBox>("NumberBox");
-        _numberBox.Value = Value;
+        InnerNumberBox.Value = Value;
 
         PointerPressed += OnPointerPressed;
         PointerMoved += OnPointerMoved;
         PointerReleased += OnPointerReleased;
-
+        PropertyChanged += OnPropertyChanged;
+        
         AddHandler(KeyUpEvent, HandleKeyUp, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
     }
 
@@ -160,36 +159,27 @@ public class DraggableNumberBox : UserControl
     ///     Occurs when the user finishes dragging over the control.
     /// </summary>
     public event TypedEventHandler<DraggableNumberBox, EventArgs>? DragFinished;
-
-    private static void ValueChanged(IAvaloniaObject sender, bool before)
+    
+    private void SetNumberBoxValue(double value)
     {
-        if (before)
+        if (!(Math.Abs(InnerNumberBox.Value - Value) > 0.00001))
             return;
 
-        DraggableNumberBox draggable = (DraggableNumberBox) sender;
-        if (!(Math.Abs(draggable._numberBox.Value - draggable.Value) > 0.00001))
-            return;
-
-        draggable._updating = true;
-        draggable._numberBox.Value = draggable.Value;
-        draggable._updating = false;
+        _updating = true;
+        InnerNumberBox.Value = Value;
+        _updating = false;
     }
 
     private void HandleKeyUp(object? sender, KeyEventArgs e)
     {
         if (e.Key == Key.Enter || e.Key == Key.Escape)
-            Parent?.Focus();
-    }
-
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
+            FocusManager.Instance?.Focus(Parent as IInputElement);
     }
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         PointerPoint point = e.GetCurrentPoint(this);
-        _inputTextBox = _numberBox.FindDescendantOfType<TextBox>();
+        _inputTextBox = InnerNumberBox.FindDescendantOfType<TextBox>();
         _moved = false;
         _startX = point.Position.X;
         _lastX = point.Position.X;
@@ -211,7 +201,7 @@ public class DraggableNumberBox : UserControl
         if (!_moved)
         {
             // Let our parent take focus, it would make more sense to take focus ourselves but that hides the collider
-            Parent?.Focus();
+            FocusManager.Instance?.Focus(Parent as IInputElement);
             _moved = true;
             e.Pointer.Capture(this);
             DragStarted?.Invoke(this, EventArgs.Empty);
@@ -253,6 +243,12 @@ public class DraggableNumberBox : UserControl
 
         e.Handled = true;
     }
+    
+    private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == ValueProperty)
+            SetNumberBoxValue(Value);
+    }
 
     private void NumberBox_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
@@ -261,17 +257,17 @@ public class DraggableNumberBox : UserControl
 
         if (args.NewValue < Minimum)
         {
-            _numberBox.Value = Minimum;
+            InnerNumberBox.Value = Minimum;
             return;
         }
 
         if (args.NewValue > Maximum)
         {
-            _numberBox.Value = Maximum;
+            InnerNumberBox.Value = Maximum;
             return;
         }
 
-        if (Math.Abs(Value - _numberBox.Value) > 0.00001)
-            Value = _numberBox.Value;
+        if (Math.Abs(Value - InnerNumberBox.Value) > 0.00001)
+            Value = InnerNumberBox.Value;
     }
 }

@@ -1,5 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 
 namespace Artemis.UI.Shared.Services.Builders;
 
@@ -8,8 +11,8 @@ namespace Artemis.UI.Shared.Services.Builders;
 /// </summary>
 public class OpenFolderDialogBuilder
 {
-    private readonly OpenFolderDialog _openFolderDialog;
     private readonly Window _parent;
+    private readonly FolderPickerOpenOptions _options;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="OpenFolderDialogBuilder" /> class.
@@ -18,16 +21,15 @@ public class OpenFolderDialogBuilder
     internal OpenFolderDialogBuilder(Window parent)
     {
         _parent = parent;
-        _openFolderDialog = new OpenFolderDialog();
+        _options = new FolderPickerOpenOptions {AllowMultiple = false};
     }
-
 
     /// <summary>
     ///     Set the title of the dialog
     /// </summary>
     public OpenFolderDialogBuilder WithTitle(string? title)
     {
-        _openFolderDialog.Title = title;
+        _options.Title = title;
         return this;
     }
 
@@ -36,7 +38,7 @@ public class OpenFolderDialogBuilder
     /// </summary>
     public OpenFolderDialogBuilder WithDirectory(string? directory)
     {
-        _openFolderDialog.Directory = directory;
+        _options.SuggestedStartLocation = directory != null ? _parent.StorageProvider.TryGetFolderFromPathAsync(directory).GetAwaiter().GetResult() : null;
         return this;
     }
 
@@ -49,6 +51,7 @@ public class OpenFolderDialogBuilder
     /// </returns>
     public async Task<string?> ShowAsync()
     {
-        return await _openFolderDialog.ShowAsync(_parent);
+        IReadOnlyList<IStorageFolder> folder = await _parent.StorageProvider.OpenFolderPickerAsync(_options);
+        return folder.FirstOrDefault()?.Path.AbsolutePath;
     }
 }

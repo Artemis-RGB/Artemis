@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Reactive.Disposables;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
-using Avalonia.Controls.Mixins;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;

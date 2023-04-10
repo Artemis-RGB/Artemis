@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
-public class NodeScriptWindowView : ReactiveCoreWindow<NodeScriptWindowViewModel>
+public partial class NodeScriptWindowView : ReactiveAppWindow<NodeScriptWindowViewModel>
 {
     public NodeScriptWindowView()
     {
@@ -14,8 +14,4 @@ public class NodeScriptWindowView : ReactiveCoreWindow<NodeScriptWindowViewModel
 #endif
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

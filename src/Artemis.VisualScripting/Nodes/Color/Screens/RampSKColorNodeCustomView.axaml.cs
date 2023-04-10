@@ -4,17 +4,13 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.VisualScripting.Nodes.Color.Screens;
 
-public class RampSKColorNodeCustomView : ReactiveUserControl<RampSKColorNodeCustomViewModel>
+public partial class RampSKColorNodeCustomView : ReactiveUserControl<RampSKColorNodeCustomViewModel>
 {
     public RampSKColorNodeCustomView()
     {
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void GradientPickerButton_OnFlyoutOpened(GradientPickerButton sender, EventArgs args)
     {

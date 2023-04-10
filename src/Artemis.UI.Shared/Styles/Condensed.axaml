@@ -102,7 +102,7 @@
         <Setter Property="MinHeight" Value="24" />
     </Style>
 
-    <Style Selector="dataModelPicker|DataModelPickerButton.condensed /template/ controls|Button">
+    <Style Selector="dataModelPicker|DataModelPickerButton.condensed /template/ Button">
 		<Setter Property="Padding" Value="6 3 11 3" />
 		<Setter Property="Height" Value="24" />
     </Style>

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Shared.EnumComboBox">
-    <ComboBox x:Name="EnumComboBox" HorizontalAlignment="Stretch">
+    <ComboBox x:Name="ChildEnumComboBox" HorizontalAlignment="Stretch">
         <ComboBox.ItemTemplate>
             <DataTemplate>
                 <TextBlock Text="{Binding [1]}" />

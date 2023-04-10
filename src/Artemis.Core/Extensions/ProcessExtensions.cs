@@ -21,17 +21,17 @@ public static class ProcessExtensions
     {
         int capacity = 2000;
         StringBuilder builder = new(capacity);
-        IntPtr ptr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, p.Id);
+        nint ptr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, p.Id);
         if (!QueryFullProcessImageName(ptr, 0, builder, ref capacity)) return string.Empty;
 
         return builder.ToString();
     }
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-    private static extern bool QueryFullProcessImageName([In] IntPtr hProcess, [In] int dwFlags, [Out] StringBuilder lpExeName, ref int lpdwSize);
+    private static extern bool QueryFullProcessImageName([In] nint hProcess, [In] int dwFlags, [Out] StringBuilder lpExeName, ref int lpdwSize);
 
     [DllImport("kernel32.dll")]
-    private static extern IntPtr OpenProcess(ProcessAccessFlags processAccess, bool bInheritHandle, int processId);
+    private static extern nint OpenProcess(ProcessAccessFlags processAccess, bool bInheritHandle, int processId);
 
     [Flags]
     private enum ProcessAccessFlags : uint

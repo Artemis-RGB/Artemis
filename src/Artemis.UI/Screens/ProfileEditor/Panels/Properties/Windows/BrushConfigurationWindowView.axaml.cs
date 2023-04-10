@@ -5,7 +5,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Windows;
 
-public class BrushConfigurationWindowView : ReactiveCoreWindow<BrushConfigurationWindowViewModel>
+public partial class BrushConfigurationWindowView : ReactiveAppWindow<BrushConfigurationWindowViewModel>
 {
     private bool _canClose;
 

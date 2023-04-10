@@ -5,7 +5,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Windows;
 
-public class EffectConfigurationWindowView : ReactiveCoreWindow<EffectConfigurationWindowViewModel>
+public partial class EffectConfigurationWindowView : ReactiveAppWindow<EffectConfigurationWindowViewModel>
 {
     private bool _canClose;
 

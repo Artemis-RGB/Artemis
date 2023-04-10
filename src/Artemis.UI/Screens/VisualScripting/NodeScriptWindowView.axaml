@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+<windowing:AppWindow xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,6 +6,8 @@
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+        xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Artemis.UI.Screens.VisualScripting.NodeScriptWindowView"
         x:DataType="visualScripting:NodeScriptWindowViewModel"
@@ -27,22 +29,11 @@
                     </MenuItem.Icon>
                     <MenuItem.Styles>
                         <Style Selector="MenuItem > MenuItem > MenuItem">
-                            <Setter Property="Command" Value="{Binding $parent[visualScripting:NodeScriptWindowView].DataContext.CreateNode}" />
-                            <Setter Property="CommandParameter" Value="{Binding}" />
+                            <Setter Property="Command" Value="{Binding CreateNode}" />
+                            <Setter Property="Header" Value="{Binding Header}" />
                             <Setter Property="Items" Value="{Binding Items}" />
                         </Style>
                     </MenuItem.Styles>
-                    <MenuItem.DataTemplates>
-                        <DataTemplate DataType="{x:Type core:NodeData}">
-                            <StackPanel Background="Transparent">
-                                <TextBlock Text="{Binding Name}" TextWrapping="Wrap"></TextBlock>
-                                <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding Description}" TextWrapping="Wrap"></TextBlock>
-                            </StackPanel>
-                        </DataTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Key}"></TextBlock>
-                        </DataTemplate>
-                    </MenuItem.DataTemplates>
                 </MenuItem>
                 <MenuItem Header="Auto-arrange" Command="{CompiledBinding AutoArrange}" InputGesture="Ctrl+F">
                     <MenuItem.Icon>
@@ -181,4 +172,4 @@
 
     </Grid>
 
-</Window>
+</windowing:AppWindow>

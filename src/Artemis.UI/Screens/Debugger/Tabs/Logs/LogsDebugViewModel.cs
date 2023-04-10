@@ -1,12 +1,15 @@
-﻿using Artemis.Core;
+﻿using System;
+using System.Collections.ObjectModel;
+using Artemis.Core;
 using Artemis.UI.Shared;
 using Avalonia.Threading;
-using AvaloniaEdit.Document;
 using ReactiveUI;
 using Serilog.Events;
 using Serilog.Formatting.Display;
 using System.IO;
 using System.Reactive.Disposables;
+using Avalonia.Controls.Documents;
+using Avalonia.Media;
 
 namespace Artemis.UI.Screens.Debugger.Logs;
 
@@ -14,38 +17,32 @@ public class LogsDebugViewModel : ActivatableViewModelBase
 {
     private readonly MessageTemplateTextFormatter _formatter;
 
-    public TextDocument Document { get; }
+    public InlineCollection Lines { get; } = new InlineCollection();
 
     private const int MAX_ENTRIES = 1000;
-    
+
     public LogsDebugViewModel()
     {
         DisplayName = "Logs";
-        Document = new TextDocument();
+
         _formatter = new MessageTemplateTextFormatter(
             "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff}] [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}"
         );
 
-        foreach(LogEvent logEvent in LogStore.Events)
+        foreach (LogEvent logEvent in LogStore.Events)
             AddLogEvent(logEvent);
-        
+
         this.WhenActivated(disp =>
-        {        
+        {
             LogStore.EventAdded += OnLogEventAdded;
 
-            Disposable.Create(() =>
-            {
-                LogStore.EventAdded -= OnLogEventAdded;
-            }).DisposeWith(disp);
+            Disposable.Create(() => { LogStore.EventAdded -= OnLogEventAdded; }).DisposeWith(disp);
         });
     }
 
     private void OnLogEventAdded(object? sender, LogEventEventArgs e)
     {
-        Dispatcher.UIThread.Post(() =>
-        {
-            AddLogEvent(e.LogEvent);
-        });
+        Dispatcher.UIThread.Post(() => { AddLogEvent(e.LogEvent); });
     }
 
     private void AddLogEvent(LogEvent? logEvent)
@@ -56,22 +53,27 @@ public class LogsDebugViewModel : ActivatableViewModelBase
         using StringWriter writer = new();
         _formatter.Format(logEvent, writer);
         string line = writer.ToString();
-        Document.Insert(Document.TextLength, '\n' + line.TrimEnd('\r', '\n'));
-        while (Document.LineCount > MAX_ENTRIES)
-            RemoveOldestLine();
+
+
+        Lines.Add(new Run(line.TrimEnd('\r', '\n') + '\n')
+        {
+            Foreground = logEvent.Level switch
+            {
+                LogEventLevel.Verbose => new SolidColorBrush(Colors.White),
+                LogEventLevel.Debug => new SolidColorBrush(Color.FromRgb(216, 216, 216)),
+                LogEventLevel.Information => new SolidColorBrush(Color.FromRgb(93, 201, 255)),
+                LogEventLevel.Warning => new SolidColorBrush(Color.FromRgb(255, 177, 53)),
+                LogEventLevel.Error => new SolidColorBrush(Color.FromRgb(255, 63, 63)),
+                LogEventLevel.Fatal => new SolidColorBrush(Colors.Red),
+                _ => throw new ArgumentOutOfRangeException()
+            }
+        });
+        LimitLines();
     }
 
-    private void RemoveOldestLine()
+    private void LimitLines()
     {
-        int firstNewLine = Document.IndexOf('\n', 0, Document.TextLength);
-        if (firstNewLine == -1)
-        {
-            //this should never happen.
-            //just in case let's return
-            //instead of throwing
-            return;
-        }      
-        
-        Document.Remove(0, firstNewLine + 1);
+        if (Lines.Count > MAX_ENTRIES)
+            Lines.RemoveRange(0, Lines.Count - MAX_ENTRIES);
     }
 }

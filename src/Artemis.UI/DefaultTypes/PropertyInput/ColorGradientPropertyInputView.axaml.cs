@@ -5,17 +5,13 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
 
-public class ColorGradientPropertyInputView : ReactiveUserControl<ColorGradientPropertyInputViewModel>
+public partial class ColorGradientPropertyInputView : ReactiveUserControl<ColorGradientPropertyInputViewModel>
 {
     public ColorGradientPropertyInputView()
     {
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void GradientPickerButton_OnFlyoutOpened(GradientPickerButton sender, EventArgs args)
     {

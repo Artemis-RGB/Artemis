@@ -2,12 +2,12 @@ using System;
 using System.Text.RegularExpressions;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Documents;
 using Avalonia.Layout;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Visuals.Media.Imaging;
 using Material.Icons;
 using Material.Icons.Avalonia;
 
@@ -16,9 +16,9 @@ namespace Artemis.UI.Shared;
 /// <summary>
 ///     Represents a control that can display an arbitrary kind of icon.
 /// </summary>
-public class ArtemisIcon : UserControl
+public partial class ArtemisIcon : UserControl
 {
-    private static readonly Regex _imageRegex = new(@"[\/.](gif|jpg|jpeg|tiff|png)$", RegexOptions.Compiled);
+    private static readonly Regex ImageRegex = new(@"[\/.](gif|jpg|jpeg|tiff|png)$", RegexOptions.Compiled);
 
     /// <summary>
     ///     Creates a new instance of the <see cref="ArtemisIcon" /> class.
@@ -28,12 +28,7 @@ public class ArtemisIcon : UserControl
         InitializeComponent();
         DetachedFromLogicalTree += OnDetachedFromLogicalTree;
         LayoutUpdated += OnLayoutUpdated;
-    }
-
-    private static void IconChanging(IAvaloniaObject sender, bool before)
-    {
-        if (before)
-            ((ArtemisIcon) sender).Update();
+        PropertyChanged += OnPropertyChanged;
     }
 
     private void Update()
@@ -54,7 +49,7 @@ public class ArtemisIcon : UserControl
                     Content = new MaterialIcon {Kind = parsedIcon, Width = Bounds.Width, Height = Bounds.Height};
                 }
                 // An URI pointing to an image
-                else if (_imageRegex.IsMatch(iconString))
+                else if (ImageRegex.IsMatch(iconString))
                 {
                     if (!Fill)
                         Content = new Image
@@ -66,7 +61,7 @@ public class ArtemisIcon : UserControl
                     else
                         Content = new Border
                         {
-                            Background = TextBlock.GetForeground(this),
+                            Background = TextElement.GetForeground(this),
                             VerticalAlignment = VerticalAlignment.Stretch,
                             HorizontalAlignment = HorizontalAlignment.Stretch,
                             OpacityMask = new ImageBrush(new Bitmap(iconString)) {BitmapInterpolationMode = BitmapInterpolationMode.MediumQuality}
@@ -92,16 +87,17 @@ public class ArtemisIcon : UserControl
             contentControl.Height = Bounds.Height;
         }
     }
+    
+    private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == IconProperty || e.Property == FillProperty)
+            Update();
+    }
 
     private void OnDetachedFromLogicalTree(object? sender, LogicalTreeAttachmentEventArgs e)
     {
         if (Content is Image image && image.Source is IDisposable disposable)
             disposable.Dispose();
-    }
-
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
     }
 
     #region Properties
@@ -110,8 +106,7 @@ public class ArtemisIcon : UserControl
     ///     Gets or sets the currently displayed icon as either a <see cref="MaterialIconKind" /> or an <see cref="Uri" />
     ///     pointing to an SVG
     /// </summary>
-    public static readonly StyledProperty<object?> IconProperty =
-        AvaloniaProperty.Register<ArtemisIcon, object?>(nameof(Icon), notifying: IconChanging);
+    public static readonly StyledProperty<object?> IconProperty = AvaloniaProperty.Register<ArtemisIcon, object?>(nameof(Icon));
 
 
     /// <summary>
@@ -128,8 +123,7 @@ public class ArtemisIcon : UserControl
     ///     Gets or sets a boolean indicating whether or not the icon should be filled in with the primary text color of the
     ///     theme
     /// </summary>
-    public static readonly StyledProperty<bool> FillProperty =
-        AvaloniaProperty.Register<ArtemisIcon, bool>(nameof(Icon), false, notifying: IconChanging);
+    public static readonly StyledProperty<bool> FillProperty = AvaloniaProperty.Register<ArtemisIcon, bool>(nameof(Icon));
 
     /// <summary>
     ///     Gets or sets a boolean indicating whether or not the icon should be filled in with the primary text color of the

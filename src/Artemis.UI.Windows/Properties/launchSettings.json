@@ -2,7 +2,7 @@
   "profiles": {
     "Artemis.UI.Windows": {
       "commandName": "Project",
-      "commandLineArgs": "--force-elevation --disable-forced-shutdown --pcmr"
+      "commandLineArgs": "--disable-forced-shutdown --pcmr"
     }
   }
 }

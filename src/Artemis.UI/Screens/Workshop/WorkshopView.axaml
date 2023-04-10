@@ -32,7 +32,7 @@
                         </Button>
 
                         <shared:HotkeyBox Watermark="Some hotkey" Width="250" HorizontalAlignment="Left" />
-
+                        
                         <controls1:NumberBox
                             attachedProperties:NumberBoxAssist.PrefixText="$"
                             attachedProperties:NumberBoxAssist.SuffixText="%">
@@ -44,6 +44,7 @@
                         </TextBox>
                         
                         <TextBlock Classes="h4" Text="{CompiledBinding TestValue}"/>
+                        <controls1:NumberBox Value="{CompiledBinding TestValue}"/>
                         <controls:DraggableNumberBox Value="{CompiledBinding TestValue}"/>
                         <controls:DraggableNumberBox Value="{CompiledBinding TestValue}" Classes="condensed"/>
 

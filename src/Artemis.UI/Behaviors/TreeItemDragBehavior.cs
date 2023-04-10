@@ -2,7 +2,6 @@
 using System.Collections;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Generators;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -14,7 +13,7 @@ namespace Artemis.UI.Behaviors;
 
 /// <summary>
 /// </summary>
-public class TreeItemDragBehavior : Behavior<IControl>
+public class TreeItemDragBehavior : Behavior<Control>
 {
     /// <summary>
     /// </summary>
@@ -31,7 +30,7 @@ public class TreeItemDragBehavior : Behavior<IControl>
     public static readonly StyledProperty<double> VerticalDragThresholdProperty =
         AvaloniaProperty.Register<TreeItemDragBehavior, double>(nameof(VerticalDragThreshold), 3);
 
-    private IControl? _draggedContainer;
+    private Control? _draggedContainer;
     private int _draggedIndex;
     private bool _dragStarted;
     private bool _enableDrag;
@@ -69,12 +68,12 @@ public class TreeItemDragBehavior : Behavior<IControl>
     {
         base.OnAttached();
 
-        if (AssociatedObject is { })
+        if (AssociatedObject is not null)
         {
-            AssociatedObject.AddHandler(InputElement.PointerReleasedEvent, Released, RoutingStrategies.Tunnel);
-            AssociatedObject.AddHandler(InputElement.PointerPressedEvent, Pressed, RoutingStrategies.Tunnel);
-            AssociatedObject.AddHandler(InputElement.PointerMovedEvent, Moved, RoutingStrategies.Tunnel);
-            AssociatedObject.AddHandler(InputElement.PointerCaptureLostEvent, CaptureLost, RoutingStrategies.Tunnel);
+            AssociatedObject.AddHandler(InputElement.PointerReleasedEvent, ReleasedHandler, RoutingStrategies.Tunnel);
+            AssociatedObject.AddHandler(InputElement.PointerPressedEvent, PressedHandler, RoutingStrategies.Tunnel);
+            AssociatedObject.AddHandler(InputElement.PointerMovedEvent, MovedHandler, RoutingStrategies.Tunnel);
+            AssociatedObject.AddHandler(InputElement.PointerCaptureLostEvent, CaptureLostHandler, RoutingStrategies.Tunnel);
         }
     }
 
@@ -84,16 +83,16 @@ public class TreeItemDragBehavior : Behavior<IControl>
     {
         base.OnDetaching();
 
-        if (AssociatedObject is { })
+        if (AssociatedObject is not null)
         {
-            AssociatedObject.RemoveHandler(InputElement.PointerReleasedEvent, Released);
-            AssociatedObject.RemoveHandler(InputElement.PointerPressedEvent, Pressed);
-            AssociatedObject.RemoveHandler(InputElement.PointerMovedEvent, Moved);
-            AssociatedObject.RemoveHandler(InputElement.PointerCaptureLostEvent, CaptureLost);
+            AssociatedObject.RemoveHandler(InputElement.PointerReleasedEvent, ReleasedHandler);
+            AssociatedObject.RemoveHandler(InputElement.PointerPressedEvent, PressedHandler);
+            AssociatedObject.RemoveHandler(InputElement.PointerMovedEvent, MovedHandler);
+            AssociatedObject.RemoveHandler(InputElement.PointerCaptureLostEvent, CaptureLostHandler);
         }
     }
 
-    private void Pressed(object? sender, PointerPressedEventArgs e)
+    private void PressedHandler(object? sender, PointerPressedEventArgs e)
     {
         PointerPointProperties properties = e.GetCurrentPoint(AssociatedObject).Properties;
         if (properties.IsLeftButtonPressed
@@ -101,20 +100,20 @@ public class TreeItemDragBehavior : Behavior<IControl>
         {
             _enableDrag = true;
             _dragStarted = false;
-            _start = e.GetPosition(AssociatedObject.Parent);
+            _start = e.GetPosition(AssociatedObject.Parent as Visual);
             _draggedIndex = -1;
             _targetIndex = -1;
             _itemsControl = itemsControl;
             _draggedContainer = AssociatedObject;
 
-            if (_draggedContainer is { })
+            if (_draggedContainer is not null)
                 SetDraggingPseudoClasses(_draggedContainer, true);
 
             AddTransforms(_itemsControl);
         }
     }
 
-    private void Released(object? sender, PointerReleasedEventArgs e)
+    private void ReleasedHandler(object? sender, PointerReleasedEventArgs e)
     {
         if (_dragStarted)
         {
@@ -125,7 +124,7 @@ public class TreeItemDragBehavior : Behavior<IControl>
         }
     }
 
-    private void CaptureLost(object? sender, PointerCaptureLostEventArgs e)
+    private void CaptureLostHandler(object? sender, PointerCaptureLostEventArgs e)
     {
         Released();
     }
@@ -137,19 +136,23 @@ public class TreeItemDragBehavior : Behavior<IControl>
 
         RemoveTransforms(_itemsControl);
 
-        if (_itemsControl is { })
-            foreach (ItemContainerInfo? container in _itemsControl.ItemContainerGenerator.Containers)
-                SetDraggingPseudoClasses(container.ContainerControl, true);
+        if (_itemsControl is not null)
+        {
+            foreach (Control realizedContainer in _itemsControl.GetRealizedContainers())
+                SetDraggingPseudoClasses(realizedContainer, true);
+        }
 
         if (_dragStarted)
             if (_draggedIndex >= 0 && _targetIndex >= 0 && _draggedIndex != _targetIndex)
                 MoveDraggedItem(_itemsControl, _draggedIndex, _targetIndex);
 
-        if (_itemsControl is { })
-            foreach (ItemContainerInfo? container in _itemsControl.ItemContainerGenerator.Containers)
-                SetDraggingPseudoClasses(container.ContainerControl, false);
+        if (_itemsControl is not null)
+        {
+            foreach (Control realizedContainer in _itemsControl.GetRealizedContainers())
+                SetDraggingPseudoClasses(realizedContainer, false);
+        }
 
-        if (_draggedContainer is { })
+        if (_draggedContainer is not null)
             SetDraggingPseudoClasses(_draggedContainer, false);
 
         _draggedIndex = -1;
@@ -165,17 +168,9 @@ public class TreeItemDragBehavior : Behavior<IControl>
     {
         if (itemsControl?.Items is null)
             return;
-
-        int i = 0;
-
-        foreach (object? _ in itemsControl.Items)
-        {
-            IControl? container = itemsControl.ItemContainerGenerator.ContainerFromIndex(i);
-            if (container is not null)
-                SetTranslateTransform(container, 0, 0);
-
-            i++;
-        }
+        
+        foreach (Control container in itemsControl.GetRealizedContainers())
+            SetTranslateTransform(container, 0, 0);
     }
 
     private void RemoveTransforms(ItemsControl? itemsControl)
@@ -183,16 +178,8 @@ public class TreeItemDragBehavior : Behavior<IControl>
         if (itemsControl?.Items is null)
             return;
 
-        int i = 0;
-
-        foreach (object? _ in itemsControl.Items)
-        {
-            IControl? container = itemsControl.ItemContainerGenerator.ContainerFromIndex(i);
-            if (container is not null)
-                SetTranslateTransform(container, 0, 0);
-
-            i++;
-        }
+        foreach (Control container in itemsControl.GetRealizedContainers())
+            SetTranslateTransform(container, 0, 0);
     }
 
     private void MoveDraggedItem(ItemsControl? itemsControl, int draggedIndex, int targetIndex)
@@ -208,7 +195,7 @@ public class TreeItemDragBehavior : Behavior<IControl>
             selectingItemsControl.SelectedIndex = targetIndex;
     }
 
-    private void Moved(object? sender, PointerEventArgs e)
+    private void MovedHandler(object? sender, PointerEventArgs e)
     {
         PointerPointProperties properties = e.GetCurrentPoint(AssociatedObject).Properties;
         if (properties.IsLeftButtonPressed)
@@ -249,7 +236,7 @@ public class TreeItemDragBehavior : Behavior<IControl>
             else
                 SetTranslateTransform(_draggedContainer, 0, delta);
 
-            _draggedIndex = _itemsControl.ItemContainerGenerator.IndexFromContainer(_draggedContainer);
+            _draggedIndex = _itemsControl.IndexFromContainer(_draggedContainer);
             _targetIndex = -1;
 
             Rect draggedBounds = _draggedContainer.Bounds;
@@ -263,17 +250,11 @@ public class TreeItemDragBehavior : Behavior<IControl>
             double draggedDeltaEnd = orientation == Orientation.Horizontal
                 ? draggedBounds.X + delta + draggedBounds.Width
                 : draggedBounds.Y + delta + draggedBounds.Height;
-
-            int i = 0;
-
-            foreach (object? _ in _itemsControl.Items)
+            
+            foreach (Control targetContainer in _itemsControl.GetRealizedContainers())
             {
-                IControl? targetContainer = _itemsControl.ItemContainerGenerator.ContainerFromIndex(i);
-                if (targetContainer?.RenderTransform is null || ReferenceEquals(targetContainer, _draggedContainer))
-                {
-                    i++;
+                if (targetContainer.RenderTransform is null || ReferenceEquals(targetContainer, _draggedContainer))
                     continue;
-                }
 
                 // If the target container has children, there are two options
                 // Move into the top of the container
@@ -286,7 +267,7 @@ public class TreeItemDragBehavior : Behavior<IControl>
                     ? targetBounds.X + targetBounds.Width / 2
                     : targetBounds.Y + targetBounds.Height / 2;
 
-                int targetIndex = _itemsControl.ItemContainerGenerator.IndexFromContainer(targetContainer);
+                int targetIndex = _itemsControl.IndexFromContainer(targetContainer);
 
                 if (targetStart > draggedStart && draggedDeltaEnd >= targetMid)
                 {
@@ -315,22 +296,24 @@ public class TreeItemDragBehavior : Behavior<IControl>
                     else
                         SetTranslateTransform(targetContainer, 0, 0);
                 }
-
-                i++;
             }
         }
     }
 
-    private void SetDraggingPseudoClasses(IControl control, bool isDragging)
+    private void SetDraggingPseudoClasses(Control? control, bool isDragging)
     {
+        if (control == null)
+            return;
         if (isDragging)
             ((IPseudoClasses) control.Classes).Add(":dragging");
         else
             ((IPseudoClasses) control.Classes).Remove(":dragging");
     }
 
-    private void SetTranslateTransform(IControl control, double x, double y)
+    private void SetTranslateTransform(Control? control, double x, double y)
     {
+        if (control == null)
+            return;
         TransformOperations.Builder transformBuilder = new(1);
         transformBuilder.AppendTranslate(x, y);
         control.RenderTransform = transformBuilder.Build();

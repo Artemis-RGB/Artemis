@@ -5,17 +5,13 @@ using FluentAvalonia.UI.Controls;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
 
-public class SKColorPropertyInputView : ReactiveUserControl<SKColorPropertyInputViewModel>
+public partial class SKColorPropertyInputView : ReactiveUserControl<SKColorPropertyInputViewModel>
 {
     public SKColorPropertyInputView()
     {
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void ColorPickerButton_OnFlyoutOpened(ColorPickerButton sender, EventArgs args)
     {

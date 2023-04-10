@@ -5,7 +5,6 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Sidebar"
              xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
-             xmlns:idd="clr-namespace:Avalonia.Xaml.Interactions.DragAndDrop;assembly=Avalonia.Xaml.Interactions"
              xmlns:sb="clr-namespace:Artemis.UI.Screens.Sidebar.Behaviors"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:b="clr-namespace:Artemis.UI.Behaviors"
@@ -93,7 +92,7 @@
             <Setter Property="(i:Interaction.Behaviors)">
                 <i:BehaviorCollectionTemplate>
                     <i:BehaviorCollection>
-                        <idd:ContextDropBehavior Handler="{StaticResource SidebarCategoryViewDropHandler}" />
+                        <ContextDropBehavior Handler="{StaticResource SidebarCategoryViewDropHandler}" />
                     </i:BehaviorCollection>
                 </i:BehaviorCollectionTemplate>
             </Setter>

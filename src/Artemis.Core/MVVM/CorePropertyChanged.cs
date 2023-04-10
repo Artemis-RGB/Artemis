@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Artemis.Core.Properties;
+using JetBrains.Annotations;
 
 namespace Artemis.Core;
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Artemis.Core;
 
@@ -14,7 +13,7 @@ public class UpdateEventArgs : EventArgs
     }
 
     /// <summary>
-    /// Gets a boolean indicating whether to silently update or not.
+    ///     Gets a boolean indicating whether to silently update or not.
     /// </summary>
     public bool Silent { get; }
 }

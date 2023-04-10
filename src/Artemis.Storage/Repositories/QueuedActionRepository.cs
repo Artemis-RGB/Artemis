@@ -46,7 +46,7 @@ public class QueuedActionRepository : IQueuedActionRepository
     {
         return _repository.Query<QueuedActionEntity>().Where(q => q.Type == type).Count() > 0;
     }
-    
+
     /// <inheritdoc />
     public void ClearByType(string type)
     {

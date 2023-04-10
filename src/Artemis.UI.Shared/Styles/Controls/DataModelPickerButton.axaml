@@ -27,20 +27,20 @@
         <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
         <Setter Property="Template">
             <ControlTemplate>
-                <controls:Button Name="MainButton"
-                                 CornerRadius="{TemplateBinding CornerRadius}"
-                                 BorderBrush="{TemplateBinding BorderBrush}"
-                                 VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                                 HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                                 Width="{TemplateBinding Width}"
-                                 Height="{TemplateBinding Height}"
-                                 HorizontalContentAlignment="Stretch">
+                <Button Name="MainButton"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                        HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                        Width="{TemplateBinding Width}"
+                        Height="{TemplateBinding Height}"
+                        HorizontalContentAlignment="Stretch">
                     <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
                         <TextBlock Name="MainButtonLabel"
                                    Grid.Column="0"
                                    VerticalAlignment="Center"
                                    TextAlignment="Left"
-                                   TextTrimming="CharacterEllipsis"/>
+                                   TextTrimming="CharacterEllipsis" />
                         <TextBlock Name="ChevronTextBlock"
                                    Grid.Column="1"
                                    FontFamily="{DynamicResource SymbolThemeFontFamily}"
@@ -51,7 +51,7 @@
                                    Padding="2 2 2 0"
                                    Margin="5 0" />
                     </Grid>
-                </controls:Button>
+                </Button>
             </ControlTemplate>
         </Setter>
     </Style>

@@ -5,6 +5,8 @@ using System.Timers;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Windows.Utilities;
+using Avalonia.Controls.Platform;
+using Avalonia.Platform;
 using Linearstar.Windows.RawInput;
 using Linearstar.Windows.RawInput.Native;
 using Serilog;
@@ -13,28 +15,43 @@ namespace Artemis.UI.Windows.Providers.Input;
 
 public class WindowsInputProvider : InputProvider
 {
+    private const int GWL_WNDPROC = -4;
     private const int WM_INPUT = 0x00FF;
 
+    private readonly IWindowImpl _window;
+    private readonly nint _hWndProcHook;
+    private readonly WndProc? _fnWndProcHook;
     private readonly IInputService _inputService;
     private readonly ILogger _logger;
-    private readonly SpongeWindow _sponge;
     private readonly Timer _taskManagerTimer;
+
     private int _lastProcessId;
+    delegate nint WndProc(nint hWnd, uint msg, nint wParam, nint lParam);
+
+    private nint CustomWndProc(nint hWnd, uint msg, nint wParam, nint lParam)
+    {
+        OnWndProcCalled(hWnd, msg, wParam, lParam);
+        return CallWindowProc(_hWndProcHook, hWnd, msg, wParam, lParam);
+    }
 
     public WindowsInputProvider(ILogger logger, IInputService inputService)
     {
         _logger = logger;
         _inputService = inputService;
 
-        _sponge = new SpongeWindow();
-        _sponge.WndProcCalled += SpongeOnWndProcCalled;
-
         _taskManagerTimer = new Timer(500);
         _taskManagerTimer.Elapsed += TaskManagerTimerOnElapsed;
         _taskManagerTimer.Start();
 
-        RawInputDevice.RegisterDevice(HidUsageAndPage.Keyboard, RawInputDeviceFlags.InputSink, _sponge.Handle.Handle);
-        RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, _sponge.Handle.Handle);
+        _window = PlatformManager.CreateWindow();
+
+        _hWndProcHook = GetWindowLongPtr(_window.Handle.Handle, GWL_WNDPROC);
+        _fnWndProcHook = CustomWndProc;
+        nint newLong = Marshal.GetFunctionPointerForDelegate(_fnWndProcHook);
+        SetWindowLongPtr(_window.Handle.Handle, GWL_WNDPROC, newLong);
+
+        RawInputDevice.RegisterDevice(HidUsageAndPage.Keyboard, RawInputDeviceFlags.InputSink, _window.Handle.Handle);
+        RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, _window.Handle.Handle);
     }
 
     public static Guid Id { get; } = new("6737b204-ffb1-4cd9-8776-9fb851db303a");
@@ -55,19 +72,18 @@ public class WindowsInputProvider : InputProvider
     {
         if (disposing)
         {
-            _sponge.Dispose();
             _taskManagerTimer.Dispose();
         }
 
         base.Dispose(disposing);
     }
 
-    private void SpongeOnWndProcCalled(object? sender, SpongeWindowEventArgs message)
+    private void OnWndProcCalled(nint hWnd, uint msg, nint wParam, nint lParam)
     {
-        if (message.Msg != WM_INPUT)
+        if (msg != WM_INPUT)
             return;
 
-        RawInputData data = RawInputData.FromHandle(message.LParam);
+        RawInputData data = RawInputData.FromHandle(lParam);
         switch (data)
         {
             case RawInputMouseData mouse:
@@ -220,6 +236,15 @@ public class WindowsInputProvider : InputProvider
     #endregion
 
     #region Native
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    static extern IntPtr CallWindowProc(nint lpPrevWndFunc, IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
+    [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", CharSet = CharSet.Unicode)]
+    private static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
+
+    [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
+    private static extern IntPtr SetWindowLongPtr(nint hWnd, int nIndex, IntPtr dwNewLong);
 
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]

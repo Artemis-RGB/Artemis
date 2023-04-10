@@ -5,17 +5,13 @@ using Avalonia.Skia;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools;
 
-public class SelectionRemoveToolView : ReactiveUserControl<SelectionRemoveToolViewModel>
+public partial class SelectionRemoveToolView : ReactiveUserControl<SelectionRemoveToolViewModel>
 {
     public SelectionRemoveToolView()
     {
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void SelectionRectangle_OnSelectionFinished(object? sender, SelectionRectangleEventArgs e)
     {

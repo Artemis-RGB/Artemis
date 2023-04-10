@@ -10,8 +10,4 @@ public partial class ListOperatorPredicateNodeCustomView : ReactiveUserControl<L
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

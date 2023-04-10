@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Generators;
 using Avalonia.Input;
 using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactions.DragAndDrop;
@@ -12,10 +11,12 @@ public class SidebarCategoryViewDropHandler : DropHandlerBase
     public override bool Validate(object? sender, DragEventArgs e, object? sourceContext, object? targetContext, object? state)
     {
         if (sender is ItemsControl itemsControl)
-            foreach (ItemContainerInfo? item in itemsControl.ItemContainerGenerator.Containers)
-                SetDraggingPseudoClasses(item.ContainerControl, false, false);
+        {
+            foreach (Control container in itemsControl.GetRealizedContainers())
+                SetDraggingPseudoClasses(container, false, false);
+        }
 
-        if (e.Source is IControl && sender is ListBox listBox)
+        if (e.Source is Control && sender is ListBox listBox)
             return Validate(listBox, e, sourceContext, targetContext, false);
 
         return false;
@@ -24,10 +25,12 @@ public class SidebarCategoryViewDropHandler : DropHandlerBase
     public override bool Execute(object? sender, DragEventArgs e, object? sourceContext, object? targetContext, object? state)
     {
         if (sender is ItemsControl itemsControl)
-            foreach (ItemContainerInfo? item in itemsControl.ItemContainerGenerator.Containers)
-                SetDraggingPseudoClasses(item.ContainerControl, false, false);
+        {
+            foreach (Control container in itemsControl.GetRealizedContainers())
+                SetDraggingPseudoClasses(container, false, false);
+        }
 
-        if (e.Source is IControl && sender is ListBox listBox)
+        if (e.Source is Control && sender is ListBox listBox)
             return Validate(listBox, e, sourceContext, targetContext, true);
 
         return false;
@@ -36,7 +39,7 @@ public class SidebarCategoryViewDropHandler : DropHandlerBase
     private bool Validate(ListBox listBox, DragEventArgs e, object? sourceContext, object? targetContext, bool bExecute)
     {
         if (sourceContext is not SidebarProfileConfigurationViewModel sourceItem || targetContext is not SidebarCategoryViewModel vm ||
-            listBox.GetVisualAt(e.GetPosition(listBox)) is not IControl targetControl)
+            listBox.GetVisualAt(e.GetPosition(listBox)) is not Control targetControl)
             return false;
         if (e.DragEffects != DragDropEffects.Move)
             return false;
@@ -55,9 +58,9 @@ public class SidebarCategoryViewDropHandler : DropHandlerBase
                     before = false;
             }
         }
-
-        foreach (ItemContainerInfo? item in listBox.ItemContainerGenerator.Containers)
-            SetDraggingPseudoClasses(item.ContainerControl, false, false);
+        
+        foreach (Control container in listBox.GetRealizedContainers())
+            SetDraggingPseudoClasses(container, false, false);
 
         if (bExecute)
         {
@@ -81,8 +84,11 @@ public class SidebarCategoryViewDropHandler : DropHandlerBase
         return true;
     }
 
-    private void SetDraggingPseudoClasses(IControl control, bool dragging, bool before)
+    private void SetDraggingPseudoClasses(Control? control, bool dragging, bool before)
     {
+        if (control == null)
+            return;
+        
         if (!dragging)
         {
             ((IPseudoClasses) control.Classes).Remove(":dragging");

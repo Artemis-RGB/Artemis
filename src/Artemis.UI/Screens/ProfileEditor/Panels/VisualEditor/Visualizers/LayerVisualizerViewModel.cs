@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia;
-using Avalonia.Controls.Mixins;
 using ReactiveUI;
 using SkiaSharp;
 

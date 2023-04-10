@@ -8,17 +8,15 @@ using Avalonia.Threading;
 
 namespace Artemis.UI.Screens.Device;
 
-public class DeviceLogicalLayoutDialogView : ReactiveUserControl<DeviceLogicalLayoutDialogViewModel>
+public partial class DeviceLogicalLayoutDialogView : ReactiveUserControl<DeviceLogicalLayoutDialogViewModel>
 {
     private readonly AutoCompleteBox _autoCompleteBox;
 
     public DeviceLogicalLayoutDialogView()
     {
         InitializeComponent();
-
-        _autoCompleteBox = this.Get<AutoCompleteBox>("RegionsAutoCompleteBox");
-        _autoCompleteBox.ItemFilter += SearchRegions;
-
+        
+        RegionsAutoCompleteBox.ItemFilter += SearchRegions;
         Dispatcher.UIThread.InvokeAsync(DelayedAutoFocus);
     }
 
@@ -39,8 +37,4 @@ public class DeviceLogicalLayoutDialogView : ReactiveUserControl<DeviceLogicalLa
                regionInfo.TwoLetterISORegionName.Contains(search, StringComparison.OrdinalIgnoreCase);
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

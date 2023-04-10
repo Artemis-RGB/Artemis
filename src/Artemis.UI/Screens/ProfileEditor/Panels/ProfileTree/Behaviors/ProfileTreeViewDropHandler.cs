@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Generators;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
@@ -15,7 +14,7 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
 {
     public override bool Validate(object? sender, DragEventArgs e, object? sourceContext, object? targetContext, object? state)
     {
-        if (e.Source is IControl && sender is TreeView treeView)
+        if (e.Source is Control && sender is TreeView treeView)
             return Validate<TreeItemViewModel>(treeView, e, sourceContext, targetContext, false);
 
         return false;
@@ -24,7 +23,7 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
     public override bool Execute(object? sender, DragEventArgs e, object? sourceContext, object? targetContext, object? state)
     {
         bool result = false;
-        if (e.Source is IControl && sender is TreeView treeView)
+        if (e.Source is Control && sender is TreeView treeView)
             result = Validate<TreeItemViewModel>(treeView, e, sourceContext, targetContext, true);
 
         if (sender is ItemsControl itemsControl)
@@ -46,8 +45,8 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
     private bool Validate<T>(TreeView treeView, DragEventArgs e, object? sourceContext, object? targetContext, bool bExecute) where T : TreeItemViewModel
     {
         Point position = e.GetPosition(treeView);
-        IVisual? targetVisual = treeView.GetVisualAt(position).FindAncestorOfType<TreeViewItem>();
-        if (sourceContext is not T sourceNode || targetContext is not ProfileTreeViewModel vm || targetVisual is not IControl {DataContext: T targetNode})
+        TreeViewItem? targetVisual = treeView.GetVisualAt(position).FindAncestorOfType<TreeViewItem>();
+        if (sourceContext is not T sourceNode || targetContext is not ProfileTreeViewModel vm || targetVisual is not Control {DataContext: T targetNode})
             return false;
         if (bExecute && targetNode == sourceNode)
             return false;
@@ -69,7 +68,7 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
         }
         else
         {
-            IVisual? header = targetVisual.GetVisualDescendants().FirstOrDefault(d => d is Border b && b.Name == "PART_LayoutRoot");
+            Visual? header = targetVisual.GetVisualDescendants().FirstOrDefault(d => d is Border b && b.Name == "PART_LayoutRoot");
             if (header != null)
             {
                 position = e.GetPosition(header);
@@ -119,7 +118,7 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
         }
         else
         {
-            SetDraggingPseudoClasses((IControl) targetVisual, dropType);
+            SetDraggingPseudoClasses(targetVisual, dropType);
         }
 
         return true;
@@ -129,12 +128,12 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
     {
         List<TreeViewItem> result = new();
 
-        foreach (ItemContainerInfo containerInfo in currentNode.ItemContainerGenerator.Containers)
+        foreach (Control containerControl in currentNode.GetRealizedContainers())
         {
-            if (containerInfo.ContainerControl is TreeViewItem treeViewItem && containerInfo.Item is TreeItemViewModel)
+            if (containerControl is TreeViewItem treeViewItem && containerControl.DataContext is TreeItemViewModel)
             {
                 result.Add(treeViewItem);
-                if (treeViewItem.ItemContainerGenerator.Containers.Any())
+                if (treeViewItem.ItemCount > 0)
                     result.AddRange(GetFlattenedTreeView(treeViewItem));
             }
         }
@@ -142,7 +141,7 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
         return result;
     }
 
-    private void SetDraggingPseudoClasses(IControl control, TreeDropType type)
+    private void SetDraggingPseudoClasses(TreeViewItem control, TreeDropType type)
     {
         if (type == TreeDropType.None)
         {

@@ -1,6 +1,4 @@
 using Artemis.UI.Shared;
-using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
@@ -13,10 +11,6 @@ public partial class HotkeyEnableDisableNodeCustomView : ReactiveUserControl<Hot
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void HotkeyBox_OnHotkeyChanged(HotkeyBox sender, EventArgs args)
     {

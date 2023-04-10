@@ -1,10 +1,10 @@
-﻿using System.Reactive.Linq;
+﻿using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.Core.Events;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Artemis.UI.Shared.VisualScripting;
-using Avalonia.Controls.Mixins;
 using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
 

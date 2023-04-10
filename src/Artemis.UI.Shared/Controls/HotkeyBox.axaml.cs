@@ -19,10 +19,9 @@ namespace Artemis.UI.Shared;
 /// <summary>
 ///     Represents a control that can be used to display or edit <see cref="Core.Hotkey" /> instances.
 /// </summary>
-public class HotkeyBox : UserControl
+public partial class HotkeyBox : UserControl
 {
     private readonly IInputService _inputService;
-    private readonly TextBox _displayTextBox;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="HotkeyBox" /> class
@@ -32,7 +31,7 @@ public class HotkeyBox : UserControl
         _inputService = UI.Locator.Resolve<IInputService>();
 
         InitializeComponent();
-        _displayTextBox = this.Find<TextBox>("DisplayTextBox");
+        PropertyChanged += OnPropertyChanged;
         UpdateDisplayTextBox();
     }
 
@@ -51,10 +50,11 @@ public class HotkeyBox : UserControl
         
         base.OnLostFocus(e);
     }
-
-    private static void HotkeyChanging(IAvaloniaObject sender, bool before)
+    
+    private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
-        ((HotkeyBox) sender).UpdateDisplayTextBox();
+        if (e.Property == HotkeyProperty)
+            UpdateDisplayTextBox();
     }
 
     private void InputServiceOnKeyboardKeyDown(object? sender, ArtemisKeyboardKeyEventArgs e)
@@ -87,13 +87,8 @@ public class HotkeyBox : UserControl
         if (Hotkey?.Key != null)
             display = string.IsNullOrEmpty(display) ? Hotkey.Key.ToString() : $"{display}+{Hotkey.Key}";
 
-        _displayTextBox.Text = display;
-        _displayTextBox.CaretIndex = _displayTextBox.Text?.Length ?? 0;
-    }
-
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
+        DisplayTextBox.Text = display;
+        DisplayTextBox.CaretIndex = DisplayTextBox.Text?.Length ?? 0;
     }
 
     private void Button_OnClick(object? sender, RoutedEventArgs e)
@@ -110,20 +105,17 @@ public class HotkeyBox : UserControl
     ///     Gets or sets the currently displayed icon as either a <see cref="MaterialIconKind" /> or an <see cref="Uri" />
     ///     pointing to an SVG
     /// </summary>
-    public static readonly StyledProperty<Hotkey?> HotkeyProperty =
-        AvaloniaProperty.Register<HotkeyBox, Hotkey?>(nameof(Hotkey), defaultBindingMode: BindingMode.TwoWay, notifying: HotkeyChanging);
+    public static readonly StyledProperty<Hotkey?> HotkeyProperty = AvaloniaProperty.Register<HotkeyBox, Hotkey?>(nameof(Hotkey), defaultBindingMode: BindingMode.TwoWay);
 
     /// <summary>
     ///     Gets or sets the watermark of the hotkey box when it is empty.
     /// </summary>
-    public static readonly StyledProperty<string?> WatermarkProperty =
-        AvaloniaProperty.Register<HotkeyBox, string?>(nameof(Watermark));
+    public static readonly StyledProperty<string?> WatermarkProperty = AvaloniaProperty.Register<HotkeyBox, string?>(nameof(Watermark));
 
     /// <summary>
     ///     Gets or sets a boolean indicating whether the watermark should float above the hotkey box when it is not empty.
     /// </summary>
-    public static readonly StyledProperty<bool> UseFloatingWatermarkProperty =
-        AvaloniaProperty.Register<HotkeyBox, bool>(nameof(UseFloatingWatermark));
+    public static readonly StyledProperty<bool> UseFloatingWatermarkProperty = AvaloniaProperty.Register<HotkeyBox, bool>(nameof(UseFloatingWatermark));
 
     /// <summary>
     ///     Gets or sets the currently displayed icon as either a <see cref="MaterialIconKind" /> or an <see cref="Uri" />

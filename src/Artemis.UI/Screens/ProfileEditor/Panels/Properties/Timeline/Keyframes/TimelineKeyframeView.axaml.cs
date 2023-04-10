@@ -6,7 +6,7 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 
-public class TimelineKeyframeView : ReactiveUserControl<ITimelineKeyframeViewModel>
+public partial class TimelineKeyframeView : ReactiveUserControl<ITimelineKeyframeViewModel>
 {
     private bool _moved;
     private TimelinePropertyView? _timelinePropertyView;
@@ -30,10 +30,6 @@ public class TimelineKeyframeView : ReactiveUserControl<ITimelineKeyframeViewMod
 
     #endregion
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {

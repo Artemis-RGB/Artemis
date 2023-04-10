@@ -116,7 +116,7 @@ public class NotificationBuilder
     /// <exception cref="ArtemisSharedUIException" />
     public Action Show()
     {
-        IPanel? panel = _parent.Find<IPanel>("NotificationContainer");
+        Panel? panel = _parent.Find<Panel>("NotificationContainer");
         if (panel == null)
             throw new ArtemisSharedUIException("Can't display a notification on a window without a NotificationContainer.");
 
@@ -202,7 +202,7 @@ public class NotificationButtonBuilder
         return this;
     }
 
-    internal IControl Build()
+    internal Control Build()
     {
         if (_action != null)
             return new Button {Content = _text, Command = ReactiveCommand.Create(() => _action()), Classes = new Classes("AppBarButton")};

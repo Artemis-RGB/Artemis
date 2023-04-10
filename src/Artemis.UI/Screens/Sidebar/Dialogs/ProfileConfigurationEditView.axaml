@@ -1,4 +1,4 @@
-<controls1:CoreWindow xmlns="https://github.com/avaloniaui"
+<windowing:AppWindow xmlns="https://github.com/avaloniaui"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,8 +6,8 @@
                       xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
                       xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
                       xmlns:local="clr-namespace:Artemis.UI.Screens.Sidebar"
-                      xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
                       xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+                      xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
                       mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="850"
                       x:Class="Artemis.UI.Screens.Sidebar.ProfileConfigurationEditView"
                       x:DataType="local:ProfileConfigurationEditViewModel"
@@ -106,7 +106,6 @@
                             </Border>
                             <ComboBox Items="{CompiledBinding MaterialIcons}"
                                       SelectedItem="{CompiledBinding SelectedMaterialIcon}"
-                                      VirtualizationMode="Simple"
                                       VerticalAlignment="Bottom"
                                       IsTextSearchEnabled="True"
                                       Margin="10 0"
@@ -197,4 +196,4 @@
         </StackPanel>
     </Grid>
 
-</controls1:CoreWindow>
+</windowing:AppWindow>

@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
+using System.Reactive.Disposables;
 using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Mixins;
-using Avalonia.Controls.Shapes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
@@ -11,15 +9,13 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
-public class DragCableView : ReactiveUserControl<DragCableViewModel>
+public partial class DragCableView : ReactiveUserControl<DragCableViewModel>
 {
     private const double CABLE_OFFSET = 24 * 4;
-    private readonly Path _cablePath;
 
     public DragCableView()
     {
         InitializeComponent();
-        _cablePath = this.Get<Path>("CablePath");
 
         // Not using bindings here to avoid warnings
         this.WhenActivated(d =>
@@ -30,18 +26,31 @@ public class DragCableView : ReactiveUserControl<DragCableViewModel>
         });
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 
     private void Update()
     {
-        PathFigure pathFigure = ((PathGeometry) _cablePath.Data).Figures.First();
-        BezierSegment segment = (BezierSegment) pathFigure.Segments!.First();
-        pathFigure.StartPoint = ViewModel!.FromPoint;
-        segment.Point1 = new Point(ViewModel.FromPoint.X + CABLE_OFFSET, ViewModel.FromPoint.Y);
-        segment.Point2 = new Point(ViewModel.ToPoint.X - CABLE_OFFSET, ViewModel.ToPoint.Y);
-        segment.Point3 = new Point(ViewModel.ToPoint.X, ViewModel.ToPoint.Y);
+        if (ViewModel == null)
+            return;
+        
+        PathGeometry geometry = new()
+        {
+            Figures = new PathFigures()
+        };
+        PathFigure pathFigure = new()
+        {
+            StartPoint = ViewModel.FromPoint,
+            IsClosed = false,
+            Segments = new PathSegments
+            {
+                new BezierSegment
+                {
+                    Point1 = new Point(ViewModel.FromPoint.X + CABLE_OFFSET, ViewModel.FromPoint.Y),
+                    Point2 = new Point(ViewModel.ToPoint.X - CABLE_OFFSET, ViewModel.ToPoint.Y),
+                    Point3 = new Point(ViewModel.ToPoint.X, ViewModel.ToPoint.Y)
+                }
+            }
+        };
+        geometry.Figures.Add(pathFigure);
+        CablePath.Data = geometry;
     }
 }

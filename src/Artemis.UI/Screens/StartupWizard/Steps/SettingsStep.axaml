@@ -31,7 +31,7 @@
                                 </StackPanel>
                                 <ToggleSwitch Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" IsChecked="{CompiledBinding UIAutoRun.Value}" MinWidth="0" Margin="0 -10" />
                             </Grid>
-                            <Separator Classes="card-separator" />
+                            <Border Classes="card-separator" />
 
                             <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                                 <StackPanel Grid.Column="0">
@@ -41,7 +41,7 @@
                                     <ToggleSwitch IsChecked="{CompiledBinding !UIShowOnStartup.Value}" IsEnabled="{CompiledBinding UIAutoRun.Value}" MinWidth="0" Margin="0 -10" />
                                 </StackPanel>
                             </Grid>
-                            <Separator Classes="card-separator" />
+                            <Border Classes="card-separator" />
 
                             <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                                 <StackPanel Grid.Column="0">
@@ -87,7 +87,7 @@
                                 <ToggleSwitch IsChecked="{CompiledBinding UICheckForUpdates.Value}" MinWidth="0" />
                             </StackPanel>
                         </Grid>
-                        <Separator Classes="card-separator" />
+                        <Border Classes="card-separator" />
 
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                             <StackPanel Grid.Column="0">

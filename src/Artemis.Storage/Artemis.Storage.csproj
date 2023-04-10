@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <PreserveCompilationContext>false</PreserveCompilationContext>
         <Platforms>x64</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="LiteDB" Version="5.0.12" />
-        <PackageReference Include="Serilog" Version="2.11.0" />
+        <PackageReference Include="LiteDB" Version="5.0.16" />
+        <PackageReference Include="Serilog" Version="2.12.0" />
     </ItemGroup>
 </Project>

@@ -15,7 +15,7 @@ public class ParentWidthPercentageConverter : IValueConverter
     /// <inheritdoc />
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (parameter is not IControl parent || value is not double percentage)
+        if (parameter is not Control parent || value is not double percentage)
             return value;
 
         return parent.Width / 100.0 * percentage;
@@ -24,7 +24,7 @@ public class ParentWidthPercentageConverter : IValueConverter
     /// <inheritdoc />
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (parameter is not IControl parent || value is not double real)
+        if (parameter is not Control parent || value is not double real)
             return value;
 
         return real / parent.Width * 100.0;

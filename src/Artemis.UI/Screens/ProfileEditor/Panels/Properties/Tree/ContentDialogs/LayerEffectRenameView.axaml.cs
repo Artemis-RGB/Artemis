@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Artemis.UI.Shared.Extensions;
-using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
@@ -8,7 +7,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Tree.ContentDialogs;
 
-public class LayerEffectRenameView : ReactiveUserControl<LayerEffectRenameViewModel>
+public partial class LayerEffectRenameView : ReactiveUserControl<LayerEffectRenameViewModel>
 {
     public LayerEffectRenameView()
     {
@@ -24,12 +23,8 @@ public class LayerEffectRenameView : ReactiveUserControl<LayerEffectRenameViewMo
     {
         // Don't ask
         await Task.Delay(200);
-        this.Get<TextBox>("NameTextBox").SelectAll();
-        this.Get<TextBox>("NameTextBox").Focus();
+        NameTextBox.SelectAll();
+        NameTextBox.Focus();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }
