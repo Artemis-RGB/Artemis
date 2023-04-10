@@ -33,8 +33,8 @@
         <PackageReference Include="Octopus.Octodiff" Version="2.0.261" />
         <PackageReference Include="ReactiveUI" Version="18.4.26" />
         <PackageReference Include="ReactiveUI.Validation" Version="3.1.7" />
-        <PackageReference Include="RGB.NET.Core" Version="2.0.0-prerelease.17" />
-        <PackageReference Include="RGB.NET.Layout" Version="2.0.0-prerelease.17" />
+        <PackageReference Include="RGB.NET.Core" Version="2.0.0-prerelease.29" />
+        <PackageReference Include="RGB.NET.Layout" Version="2.0.0-prerelease.29" />
         <PackageReference Include="SkiaSharp" Version="2.88.3" />
         <PackageReference Include="Splat.DryIoc" Version="14.6.8" />
     </ItemGroup>
