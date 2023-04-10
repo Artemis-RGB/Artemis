@@ -17,5 +17,7 @@ public static class ContainerExtensions
     {
         Assembly artemisShared = typeof(IArtemisSharedUIService).GetAssembly();
         container.RegisterMany(new[] { artemisShared }, type => type.IsAssignableTo<IArtemisSharedUIService>(), Reuse.Singleton);
+
+        UI.Locator = container;
     }
 }

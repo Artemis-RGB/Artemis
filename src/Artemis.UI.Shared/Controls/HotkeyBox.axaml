@@ -10,8 +10,16 @@
         <Style Selector="TextBox#DisplayTextBox:focus:not(TextBox:empty)">
             <Setter Property="InnerRightContent">
                 <Template>
-                    <Button Classes="textBoxClearButton"
-                            Click="Button_OnClick" />
+                    <Button Theme="{StaticResource TextBoxDeleteButtonStyle}"
+                            Click="Button_OnClick"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            Padding="{StaticResource HelperButtonThemePadding}"
+                            IsTabStop="False"
+                            Focusable="False"
+                            FontSize="{TemplateBinding FontSize}"
+                            Width="30"
+                            VerticalAlignment="Stretch" />
                 </Template>
             </Setter>
         </Style>

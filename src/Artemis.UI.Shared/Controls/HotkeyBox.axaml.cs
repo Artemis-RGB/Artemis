@@ -8,6 +8,8 @@ using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
+using DryIoc;
 using FluentAvalonia.Core;
 using Humanizer;
 using Material.Icons;
@@ -19,44 +21,62 @@ namespace Artemis.UI.Shared;
 /// </summary>
 public partial class HotkeyBox : UserControl
 {
+    private readonly IInputService _inputService;
+
     /// <summary>
     ///     Creates a new instance of the <see cref="HotkeyBox" /> class
     /// </summary>
     public HotkeyBox()
     {
+        _inputService = UI.Locator.Resolve<IInputService>();
+
         InitializeComponent();
         PropertyChanged += OnPropertyChanged;
-        DisplayTextBox.KeyDown += DisplayTextBoxOnKeyDown;
-        DisplayTextBox.KeyUp += DisplayTextBoxOnKeyUp;
         UpdateDisplayTextBox();
     }
 
+    protected override void OnGotFocus(GotFocusEventArgs e)
+    {
+        _inputService.KeyboardKeyDown += InputServiceOnKeyboardKeyDown;
+        _inputService.KeyboardKeyUp += InputServiceOnKeyboardKeyUp;
+        
+        base.OnGotFocus(e);
+    }
+
+    protected override void OnLostFocus(RoutedEventArgs e)
+    {
+        _inputService.KeyboardKeyDown -= InputServiceOnKeyboardKeyDown;
+        _inputService.KeyboardKeyUp -= InputServiceOnKeyboardKeyUp;
+        
+        base.OnLostFocus(e);
+    }
+    
     private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
         if (e.Property == HotkeyProperty)
             UpdateDisplayTextBox();
     }
 
-    private void DisplayTextBoxOnKeyDown(object? sender, KeyEventArgs e)
+    private void InputServiceOnKeyboardKeyDown(object? sender, ArtemisKeyboardKeyEventArgs e)
     {
-        if (e.Key >= Key.LeftShift && e.Key <= Key.RightAlt)
+        if (e.Key >= KeyboardKey.LeftShift && e.Key <= KeyboardKey.RightAlt)
             return;
 
         Hotkey ??= new Hotkey();
-        Hotkey.Key = (KeyboardKey?) e.Key;
-        Hotkey.Modifiers = (KeyboardModifierKey?) e.KeyModifiers;
-        UpdateDisplayTextBox();
-        HotkeyChanged?.Invoke(this, EventArgs.Empty);
-
-        e.Handled = true;
+        Hotkey.Key = e.Key;
+        Hotkey.Modifiers = e.Modifiers;
+        
+        Dispatcher.UIThread.Post(() =>
+        {
+            UpdateDisplayTextBox();
+            HotkeyChanged?.Invoke(this, EventArgs.Empty);
+        });
     }
 
-    private void DisplayTextBoxOnKeyUp(object? sender, KeyEventArgs e)
+    private void InputServiceOnKeyboardKeyUp(object? sender, ArtemisKeyboardKeyEventArgs e)
     {
-        if (e.KeyModifiers == KeyModifiers.None)
-            FocusManager.Instance?.Focus(null);
-
-        e.Handled = true;
+        if (e.Modifiers == KeyboardModifierKey.None)
+            Dispatcher.UIThread.Post(() => FocusManager.Instance?.Focus(null));
     }
 
     private void UpdateDisplayTextBox()

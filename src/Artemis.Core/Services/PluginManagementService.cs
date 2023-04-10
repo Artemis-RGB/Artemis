@@ -192,7 +192,19 @@ internal class PluginManagementService : IPluginManagementService
 
     public Plugin? GetCallingPlugin()
     {
-        StackTrace stackTrace = new(); // get call stack
+        return GetPluginFromStackTrace(new StackTrace());
+    }
+
+    public Plugin? GetPluginFromException(Exception exception)
+    {
+        if (exception is ArtemisPluginException pluginException && pluginException.Plugin != null)
+            return pluginException.Plugin;
+
+        return GetPluginFromStackTrace(new StackTrace(exception));
+    }
+
+    private Plugin? GetPluginFromStackTrace(StackTrace stackTrace)
+    {
         StackFrame[] stackFrames = stackTrace.GetFrames(); // get method calls (frames)
 
         foreach (StackFrame stackFrame in stackFrames)
