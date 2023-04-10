@@ -11,8 +11,8 @@
         <PackageReference Include="Avalonia" Version="11.0.0-preview6" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview6" />
         <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.0-preview6" />
-        <PackageReference Include="DryIoc.dll" Version="5.3.1" />
-        <PackageReference Include="NoStringEvaluating" Version="2.4.0" />
+        <PackageReference Include="DryIoc.dll" Version="5.3.4" />
+        <PackageReference Include="NoStringEvaluating" Version="2.5.2" />
         <PackageReference Include="ReactiveUI" Version="18.4.26" />
         <PackageReference Include="ReactiveUI.Validation" Version="3.1.7" />
         <PackageReference Include="SkiaSharp" Version="2.88.3" />

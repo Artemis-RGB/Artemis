@@ -7,9 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.1.0" />
+      <PackageReference Include="DryIoc.dll" Version="5.3.4" />
+      <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.1.1" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
-      <PackageReference Include="StrawberryShake.Server" Version="13.0.0-rc.4" />
+      <PackageReference Include="StrawberryShake.Server" Version="13.0.5" />
     </ItemGroup>
 </Project>
