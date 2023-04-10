@@ -36,16 +36,20 @@ public class HotkeyBox : UserControl
         UpdateDisplayTextBox();
     }
 
-    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    protected override void OnGotFocus(GotFocusEventArgs e)
     {
         _inputService.KeyboardKeyDown += InputServiceOnKeyboardKeyDown;
         _inputService.KeyboardKeyUp += InputServiceOnKeyboardKeyUp;
+        
+        base.OnGotFocus(e);
     }
 
-    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    protected override void OnLostFocus(RoutedEventArgs e)
     {
         _inputService.KeyboardKeyDown -= InputServiceOnKeyboardKeyDown;
         _inputService.KeyboardKeyUp -= InputServiceOnKeyboardKeyUp;
+        
+        base.OnLostFocus(e);
     }
 
     private static void HotkeyChanging(IAvaloniaObject sender, bool before)
