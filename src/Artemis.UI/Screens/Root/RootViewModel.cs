@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reactive;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -61,6 +62,10 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
         mainWindowService.HostScreen = this;
 
         DisplayAccordingToSettings();
+        OpenScreen = ReactiveCommand.Create<string>(ExecuteOpenScreen);
+        OpenDebugger = ReactiveCommand.CreateFromTask(ExecuteOpenDebugger);
+        Exit = ReactiveCommand.CreateFromTask(ExecuteExit);
+
         Router.CurrentViewModel.Subscribe(UpdateTitleBarViewModel);
         Task.Run(() =>
         {
@@ -73,6 +78,10 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
             registrationService.RegisterBuiltInPropertyEditors();
         });
     }
+
+    public ReactiveCommand<string, Unit> OpenScreen { get; }
+    public ReactiveCommand<Unit, Unit> OpenDebugger { get; }
+    public ReactiveCommand<Unit, Unit> Exit { get; }
 
     public SidebarViewModel? SidebarViewModel
     {
@@ -128,7 +137,7 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
 
     #region Tray commands
 
-    public void OpenScreen(string displayName)
+    private void ExecuteOpenScreen(string displayName)
     {
         // The window will open on the UI thread at some point, respond to that to select the chosen screen
         MainWindowOpened += OnEventHandler;
@@ -136,18 +145,19 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
 
         void OnEventHandler(object? sender, EventArgs args)
         {
+            // Avoid threading issues by running this on the UI thread 
             if (SidebarViewModel != null)
-                SidebarViewModel.SelectedSidebarScreen = SidebarViewModel.SidebarScreens.FirstOrDefault(s => s.DisplayName == displayName);
+                Dispatcher.UIThread.InvokeAsync(() => SidebarViewModel.SelectedSidebarScreen = SidebarViewModel.SidebarScreens.FirstOrDefault(s => s.DisplayName == displayName));
             MainWindowOpened -= OnEventHandler;
         }
     }
 
-    public async Task OpenDebugger()
+    private async Task ExecuteOpenDebugger()
     {
         await Dispatcher.UIThread.InvokeAsync(() => _debugService.ShowDebugger());
     }
 
-    public async Task Exit()
+    private async Task ExecuteExit()
     {
         // Don't freeze the UI right after clicking
         await Task.Delay(200);
