@@ -36,6 +36,7 @@ public class Plugin : CorePropertyChanged, IDisposable
 
         Features = new ReadOnlyCollection<PluginFeatureInfo>(_features);
         Profilers = new ReadOnlyCollection<Profiler>(_profilers);
+        HelpPages = new List<IPluginHelpPage>();
     }
 
     /// <summary>
@@ -57,6 +58,8 @@ public class Plugin : CorePropertyChanged, IDisposable
     ///     Gets or sets a configuration dialog for this plugin that is accessible in the UI under Settings > Plugins
     /// </summary>
     public IPluginConfigurationDialog? ConfigurationDialog { get; set; }
+
+    public List<IPluginHelpPage> HelpPages { get; }
 
     /// <summary>
     ///     Indicates whether the user enabled the plugin or not

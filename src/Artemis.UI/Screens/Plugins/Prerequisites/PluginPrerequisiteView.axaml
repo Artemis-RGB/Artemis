@@ -3,9 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:plugins="clr-namespace:Artemis.UI.Screens.Plugins"
+             xmlns:prerequisites="clr-namespace:Artemis.UI.Screens.Plugins.Prerequisites"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Plugins.PluginPrerequisiteView"
-             x:DataType="plugins:PluginPrerequisiteViewModel">
+             x:Class="Artemis.UI.Screens.Plugins.Prerequisites.PluginPrerequisiteView"
+             x:DataType="prerequisites:PluginPrerequisiteViewModel">
     <StackPanel>
         <TextBlock TextWrapping="Wrap" Text="{CompiledBinding PluginPrerequisite.Name, Mode=OneWay}" />
         <TextBlock Classes="subtitle" TextWrapping="Wrap" Text="{CompiledBinding PluginPrerequisite.Description, Mode=OneWay}" Margin="0 0 0 15" />

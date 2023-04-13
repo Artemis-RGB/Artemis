@@ -4,10 +4,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
+using Artemis.UI.Screens.Plugins.Help;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
@@ -28,7 +30,8 @@ public class PluginViewModel : ActivatableViewModelBase
     private bool _canRemovePrerequisites;
     private bool _enabling;
     private Plugin _plugin;
-    private Window? _window;
+    private Window? _settingsWindow;
+    private Window? _helpWindow;
 
     public PluginViewModel(Plugin plugin,
         ReactiveCommand<Unit, Unit>? reload,
@@ -56,6 +59,7 @@ public class PluginViewModel : ActivatableViewModelBase
 
         Reload = reload;
         OpenSettings = ReactiveCommand.Create(ExecuteOpenSettings, this.WhenAnyValue(vm => vm.IsEnabled, e => e && Plugin.ConfigurationDialog != null));
+        OpenHelp = ReactiveCommand.Create(ExecuteOpenHelp, this.WhenAnyValue(vm => vm.HasHelpPages));
         RemoveSettings = ReactiveCommand.CreateFromTask(ExecuteRemoveSettings);
         Remove = ReactiveCommand.CreateFromTask(ExecuteRemove);
         InstallPrerequisites = ReactiveCommand.CreateFromTask(ExecuteInstallPrerequisites, this.WhenAnyValue(x => x.CanInstallPrerequisites));
@@ -72,13 +76,15 @@ public class PluginViewModel : ActivatableViewModelBase
             {
                 Plugin.Enabled -= OnPluginToggled;
                 Plugin.Disabled -= OnPluginToggled;
-                _window?.Close();
+                _settingsWindow?.Close();
+                _helpWindow?.Close();
             }).DisposeWith(d);
         });
     }
 
     public ReactiveCommand<Unit, Unit>? Reload { get; }
     public ReactiveCommand<Unit, Unit> OpenSettings { get; }
+    public ReactiveCommand<Unit,Unit> OpenHelp { get; }
     public ReactiveCommand<Unit, Unit> RemoveSettings { get; }
     public ReactiveCommand<Unit, Unit> Remove { get; }
     public ReactiveCommand<Unit, Unit> InstallPrerequisites { get; }
@@ -102,6 +108,7 @@ public class PluginViewModel : ActivatableViewModelBase
 
     public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
     public bool IsEnabled => Plugin.IsEnabled;
+    public bool HasHelpPages => Plugin.HelpPages.Any();
 
     public bool CanInstallPrerequisites
     {
@@ -199,10 +206,10 @@ public class PluginViewModel : ActivatableViewModelBase
         if (Plugin.ConfigurationDialog == null)
             return;
 
-        if (_window != null)
+        if (_settingsWindow != null)
         {
-            _window.WindowState = WindowState.Normal;
-            _window.Activate();
+            _settingsWindow.WindowState = WindowState.Normal;
+            _settingsWindow.Activate();
             return;
         }
 
@@ -211,12 +218,36 @@ public class PluginViewModel : ActivatableViewModelBase
             if (Plugin.Resolve(Plugin.ConfigurationDialog.Type) is not PluginConfigurationViewModel viewModel)
                 throw new ArtemisUIException($"The type of a plugin configuration dialog must inherit {nameof(PluginConfigurationViewModel)}");
 
-            _window = _windowService.ShowWindow(new PluginSettingsWindowViewModel(viewModel));
-            _window.Closed += (_, _) => _window = null;
+            _settingsWindow = _windowService.ShowWindow(new PluginSettingsWindowViewModel(viewModel));
+            _settingsWindow.Closed += (_, _) => _settingsWindow = null;
         }
         catch (Exception e)
         {
             _windowService.ShowExceptionDialog("An exception occured while trying to show the plugin's settings window", e);
+            throw;
+        }
+    }
+
+    private void ExecuteOpenHelp()
+    {
+        if (Plugin.ConfigurationDialog == null)
+            return;
+
+        if (_helpWindow != null)
+        {
+            _helpWindow.WindowState = WindowState.Normal;
+            _helpWindow.Activate();
+            return;
+        }
+
+        try
+        {
+            _helpWindow = _windowService.ShowWindow(new PluginHelpWindowViewModel(Plugin, null));
+            _helpWindow.Closed += (_, _) => _helpWindow = null;
+        }
+        catch (Exception e)
+        {
+            _windowService.ShowExceptionDialog("An exception occured while trying to show the plugin's help window", e);
             throw;
         }
     }
@@ -313,7 +344,7 @@ public class PluginViewModel : ActivatableViewModelBase
         {
             this.RaisePropertyChanged(nameof(IsEnabled));
             if (!IsEnabled)
-                _window?.Close();
+                _settingsWindow?.Close();
         });
     }
 }

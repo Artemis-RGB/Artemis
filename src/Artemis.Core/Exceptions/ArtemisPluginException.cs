@@ -48,17 +48,17 @@ public class ArtemisPluginException : Exception
     /// <summary>
     ///     Creates a new instance of the <see cref="ArtemisPluginException" /> class
     /// </summary>
-    public ArtemisPluginException(string message, string helpDocument) : base(message)
+    public ArtemisPluginException(string message, string helpPageId) : base(message)
     {
-        HelpDocument = helpDocument;
+        HelpPageId = helpPageId;
     }
 
     /// <summary>
     ///     Creates a new instance of the <see cref="ArtemisPluginException" /> class
     /// </summary>
-    public ArtemisPluginException(string message, Exception inner, string helpDocument) : base(message, inner)
+    public ArtemisPluginException(string message, Exception inner, string helpPageId) : base(message, inner)
     {
-        HelpDocument = helpDocument;
+        HelpPageId = helpPageId;
     }
 
     /// <summary>
@@ -67,8 +67,8 @@ public class ArtemisPluginException : Exception
     public Plugin? Plugin { get; }
     
     /// <summary>
-    ///     Gets or sets the help document related to this exception.
+    ///     Gets the ID of the help page to display for this exception.
     /// </summary>
-    public string? HelpDocument { get; }
+    public string? HelpPageId { get; }
 
 }

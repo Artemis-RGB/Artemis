@@ -18,7 +18,7 @@ using Avalonia.Threading;
 using Material.Icons;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Plugins;
+namespace Artemis.UI.Screens.Plugins.Features;
 
 public class PluginFeatureViewModel : ActivatableViewModelBase
 {

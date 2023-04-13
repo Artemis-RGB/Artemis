@@ -1,7 +1,6 @@
-﻿using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+﻿using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Plugins;
+namespace Artemis.UI.Screens.Plugins.Prerequisites;
 
 public partial class PluginPrerequisiteView : ReactiveUserControl<PluginPrerequisiteViewModel>
 {

@@ -1,7 +1,6 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 
-namespace Artemis.UI.Screens.Plugins;
+namespace Artemis.UI.Screens.Plugins.Prerequisites;
 
 public partial class PluginPrerequisiteActionView : UserControl
 {

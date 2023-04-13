@@ -52,5 +52,25 @@
         <DependentUpon>UpdatingTabView.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
+      <Compile Update="Screens\Plugins\Help\MarkdownPluginHelpPageView.axaml.cs">
+        <DependentUpon>MarkdownPluginHelpPageView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Screens\Plugins\Help\PluginHelpWindowView.axaml.cs">
+        <DependentUpon>PluginHelpWindowView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Screens\Plugins\Features\PluginFeatureView.axaml.cs">
+        <DependentUpon>PluginFeatureView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Screens\Plugins\Prerequisites\PluginPrerequisiteActionView.axaml.cs">
+        <DependentUpon>PluginPrerequisiteActionView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Screens\Plugins\Prerequisites\PluginPrerequisiteView.axaml.cs">
+        <DependentUpon>PluginPrerequisiteView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
     </ItemGroup>
 </Project>

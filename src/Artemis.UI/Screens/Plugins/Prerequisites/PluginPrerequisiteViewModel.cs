@@ -8,7 +8,7 @@ using Artemis.Core;
 using Artemis.UI.Shared;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Plugins;
+namespace Artemis.UI.Screens.Plugins.Prerequisites;
 
 public class PluginPrerequisiteViewModel : ActivatableViewModelBase
 {

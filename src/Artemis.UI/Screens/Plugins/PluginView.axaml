@@ -46,9 +46,9 @@
         </Grid>
 
         <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
-            <StackPanel Orientation="Horizontal">
-                <SplitButton Content="Settings" Command="{CompiledBinding OpenSettings}">
-                    <SplitButton.Flyout>
+            <StackPanel Orientation="Horizontal" Spacing="5">
+                <DropDownButton Content="Manage">
+                       <DropDownButton.Flyout>
                         <MenuFlyout Placement="Bottom" Opening="FlyoutBase_OnOpening">
                             <MenuItem Header="Open plugin directory" Command="{CompiledBinding OpenPluginDirectory}">
                                 <MenuItem.Icon>
@@ -70,6 +70,7 @@
                                     <avalonia:MaterialIcon Kind="Delete" />
                                 </MenuItem.Icon>
                             </MenuItem>
+                            <Separator/>
                             <MenuItem Header="Clear plugin settings" Command="{CompiledBinding RemoveSettings}">
                                 <MenuItem.Icon>
                                     <avalonia:MaterialIcon Kind="DatabaseRemove" />
@@ -81,19 +82,31 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                         </MenuFlyout>
-                    </SplitButton.Flyout>
-                </SplitButton>
-
+                    </DropDownButton.Flyout>
+                </DropDownButton>
+                
                 <controls:HyperlinkButton Classes="icon-button icon-button-large"
-                                          Margin="5 0"
+                                          IsVisible="{CompiledBinding Plugin.ConfigurationDialog, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                          Command="{CompiledBinding OpenSettings}"
+                                          ToolTip.Tip="Open settings">
+                    <avalonia:MaterialIcon Kind="Cog" />
+                </controls:HyperlinkButton>
+                <controls:HyperlinkButton Classes="icon-button icon-button-large"
+                                          IsVisible="{CompiledBinding HasHelpPages}"
+                                          Command="{CompiledBinding OpenHelp}"
+                                          ToolTip.Tip="View help pages">
+                    <avalonia:MaterialIcon Kind="Help" />
+                </controls:HyperlinkButton>
+                <controls:HyperlinkButton Classes="icon-button icon-button-large"
                                           IsVisible="{CompiledBinding Plugin.Info.Website, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                          NavigateUri="{CompiledBinding Plugin.Info.Website}">
+                                          NavigateUri="{CompiledBinding Plugin.Info.Website}"
+                                          ToolTip.Tip="{CompiledBinding Plugin.Info.Website}">
                     <avalonia:MaterialIcon Kind="Web" />
                 </controls:HyperlinkButton>
                 <controls:HyperlinkButton Classes="icon-button icon-button-large"
-                                          Margin="5 0"
                                           IsVisible="{CompiledBinding Plugin.Info.Repository, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                          NavigateUri="{CompiledBinding Plugin.Info.Repository}">
+                                          NavigateUri="{CompiledBinding Plugin.Info.Repository}"
+                                          ToolTip.Tip="{CompiledBinding Plugin.Info.Repository}">
                     <avalonia:MaterialIcon Kind="Git" />
                 </controls:HyperlinkButton>
             </StackPanel>

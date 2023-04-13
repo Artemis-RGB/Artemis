@@ -3,10 +3,12 @@
                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                      xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
+                     xmlns:plugins="clr-namespace:Artemis.UI.Screens.Plugins"
                      mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                      x:Class="Artemis.UI.Screens.Plugins.PluginSettingsWindowView"
+                     x:DataType="plugins:PluginSettingsWindowViewModel"
                      Icon="/Assets/Images/Logo/application.ico"
-                     Title="{Binding DisplayName}"
+                     Title="{CompiledBinding DisplayName}"
                      Width="800"
                      Height="800"
                      WindowStartupLocation="CenterOwner">
