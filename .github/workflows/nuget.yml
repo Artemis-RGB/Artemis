@@ -1,8 +1,10 @@
 name: Publish Nuget packages
 
-on: 
+on:
   workflow_dispatch:
   push:
+    branches:
+      - master
 
 jobs:
   version:

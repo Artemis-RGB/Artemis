@@ -1,8 +1,10 @@
 name: Master - Build
 
-on: 
+on:
   workflow_dispatch:
   push:
+    branches:
+      - master
 
 jobs:
   version:
@@ -26,11 +28,11 @@ jobs:
           # If we're not in master, add the branch name to the version so it counts as prerelease 
           if ($BranchName -ne "master") { $VersionNumber += "-$BranchName" }
           "version-number=$VersionNumber" >> $Env:GITHUB_OUTPUT
-  
+
   build:
     needs: version
     strategy:
-      matrix: 
+      matrix:
         include:
           - os: windows-latest
             rid: win10-x64

@@ -1,6 +1,6 @@
 name: Master - DocFX
 
-on: 
+on:
   workflow_dispatch:
   push:
     branches:
@@ -16,7 +16,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: "7.0.x"
       - name: Setup DocFX
         run: choco install docfx -y
       - name: Build Core
