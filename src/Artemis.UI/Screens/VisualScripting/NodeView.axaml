@@ -39,21 +39,16 @@
                     Background="{DynamicResource ContentDialogBackground}">
                 <Border Background="{DynamicResource TaskDialogHeaderBackground}">
                     <Grid Classes="node-header" VerticalAlignment="Top" ColumnDefinitions="Auto,*,Auto,Auto">
-                        <Button Grid.Column="0"
-                                VerticalAlignment="Center"
-                                IsVisible="{CompiledBinding Node.BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                Classes="icon-button icon-button-small"
-                                Foreground="White"
-                                Background="#E74C4C"
-                                BorderBrush="#E74C4C"
-                                Margin="5 0 0 0"
-                                ToolTip.Tip="{CompiledBinding Node.BrokenState}"
-                                Command="{CompiledBinding ShowBrokenState}">
-                            <avalonia:MaterialIcon Kind="AlertCircle"></avalonia:MaterialIcon>
-                        </Button>
+                        <controls:HyperlinkButton Grid.Column="0" 
+                                                  Classes="icon-button icon-button-small broken-state-button"
+                                                  Margin="5 0 0 0"
+                                                  Command="{CompiledBinding ShowBrokenState}"
+                                                  IsVisible="{CompiledBinding Node.BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                  ToolTip.Tip="{CompiledBinding Node.BrokenState}">
+                            <avalonia:MaterialIcon Kind="AlertCircle" />
+                        </controls:HyperlinkButton>
 
                         <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="10 0 0 0" Text="{CompiledBinding Node.Name}" ToolTip.Tip="{CompiledBinding Node.Description}" />
-
       
                         <controls:HyperlinkButton Grid.Column="2" 
                                                   IsVisible="{CompiledBinding Node.HelpUrl, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
