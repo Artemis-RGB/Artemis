@@ -54,7 +54,8 @@ public class ChangeLayerBrush : IProfileEditorCommand, IDisposable
     /// <inheritdoc />
     public void Undo()
     {
-        _layer.ChangeLayerBrush(_previousBrush);
+        if (_previousBrush != null)
+            _layer.ChangeLayerBrush(_previousBrush);
         _executed = false;
     }
 

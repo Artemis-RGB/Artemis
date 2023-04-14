@@ -59,7 +59,7 @@ public abstract class BreakableModel : CorePropertyChanged, IBreakableModel
     }
 
     /// <inheritdoc />
-    public void SetBrokenState(string state, Exception? exception)
+    public void SetBrokenState(string state, Exception? exception = null)
     {
         BrokenState = state ?? throw new ArgumentNullException(nameof(state));
         BrokenStateException = exception;

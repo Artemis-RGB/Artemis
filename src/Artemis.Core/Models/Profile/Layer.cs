@@ -16,6 +16,9 @@ namespace Artemis.Core;
 /// </summary>
 public sealed class Layer : RenderProfileElement
 {
+    private const string BROKEN_STATE_BRUSH_NOT_FOUND = "Failed to load layer brush, ensure the plugin is enabled";
+    private const string BROKEN_STATE_INIT_FAILED = "Failed to initialize layer brush";
+    
     private readonly List<Layer> _renderCopies = new();
     private LayerGeneralProperties _general = new();
     private LayerTransformProperties _transform = new();
@@ -261,7 +264,10 @@ public sealed class Layer : RenderProfileElement
     private void LayerBrushStoreOnLayerBrushRemoved(object? sender, LayerBrushStoreEvent e)
     {
         if (LayerBrush?.Descriptor == e.Registration.LayerBrushDescriptor)
+        {
             DeactivateLayerBrush();
+            SetBrokenState(BROKEN_STATE_BRUSH_NOT_FOUND);
+        }
     }
 
     private void LayerBrushStoreOnLayerBrushAdded(object? sender, LayerBrushStoreEvent e)
@@ -807,33 +813,46 @@ public sealed class Layer : RenderProfileElement
     /// <summary>
     ///     Changes the current layer brush to the provided layer brush and activates it
     /// </summary>
-    public void ChangeLayerBrush(BaseLayerBrush? layerBrush)
+    public void ChangeLayerBrush(BaseLayerBrush layerBrush)
     {
-        BaseLayerBrush? oldLayerBrush = LayerBrush;
+        if (layerBrush == null)
+            throw new ArgumentNullException(nameof(layerBrush));
 
-        General.BrushReference.SetCurrentValue(layerBrush != null ? new LayerBrushReference(layerBrush.Descriptor) : null);
+        BaseLayerBrush? oldLayerBrush = LayerBrush;
+        General.BrushReference.SetCurrentValue(new LayerBrushReference(layerBrush.Descriptor));
         LayerBrush = layerBrush;
 
+        // Don't dispose the brush, only disable it
+        // That way an undo-action does not need to worry about disposed brushes
         oldLayerBrush?.InternalDisable();
-
-        if (LayerBrush != null)
-            ActivateLayerBrush();
-        else
-            OnLayerBrushUpdated();
+        ActivateLayerBrush();
     }
 
-    internal void ActivateLayerBrush()
+    private void ActivateLayerBrush()
     {
         try
         {
+            // If the brush is null, try to instantiate it
             if (LayerBrush == null)
             {
-                // If the brush is null, try to instantiate it
+                // Ensure the provider is loaded and still provides the expected brush 
                 LayerBrushReference? brushReference = General.BrushReference.CurrentValue;
                 if (brushReference?.LayerBrushProviderId != null && brushReference.BrushType != null)
-                    ChangeLayerBrush(LayerBrushStore.Get(brushReference.LayerBrushProviderId, brushReference.BrushType)?.LayerBrushDescriptor.CreateInstance(this, LayerEntity.LayerBrush));
-                // If that's not possible there's nothing to do
-                return;
+                {
+                    // Only apply the brush if it is successfully retrieved from the store and instantiated
+                    BaseLayerBrush? layerBrush = LayerBrushStore.Get(brushReference.LayerBrushProviderId, brushReference.BrushType)?.LayerBrushDescriptor.CreateInstance(this, LayerEntity.LayerBrush);
+                    if (layerBrush != null)
+                    {
+                        ClearBrokenState(BROKEN_STATE_BRUSH_NOT_FOUND);
+                        ChangeLayerBrush(layerBrush);
+                    }
+                    // If that's not possible there's nothing to do
+                    else
+                    {
+                        SetBrokenState(BROKEN_STATE_BRUSH_NOT_FOUND);
+                        return;
+                    }
+                }
             }
 
             General.ShapeType.IsHidden = LayerBrush != null && !LayerBrush.SupportsTransformation;
@@ -846,15 +865,15 @@ public sealed class Layer : RenderProfileElement
             }
 
             OnLayerBrushUpdated();
-            ClearBrokenState("Failed to initialize layer brush");
+            ClearBrokenState(BROKEN_STATE_INIT_FAILED);
         }
         catch (Exception e)
         {
-            SetBrokenState("Failed to initialize layer brush", e);
+            SetBrokenState(BROKEN_STATE_INIT_FAILED, e);
         }
     }
 
-    internal void DeactivateLayerBrush()
+    private void DeactivateLayerBrush()
     {
         if (LayerBrush == null)
             return;
