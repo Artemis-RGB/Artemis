@@ -230,9 +230,6 @@ public class PluginViewModel : ActivatableViewModelBase
 
     private void ExecuteOpenHelp()
     {
-        if (Plugin.ConfigurationDialog == null)
-            return;
-
         if (_helpWindow != null)
         {
             _helpWindow.WindowState = WindowState.Normal;

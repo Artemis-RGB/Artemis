@@ -1,0 +1,60 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:avalonia="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
+        xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia">
+    <Style Selector="ctxt|CHyperlink">
+        <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight3}" />
+    </Style>
+    <Style Selector="ctxt|CHyperlink:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight1}" />
+    </Style>
+    <Style Selector="Grid.List">
+        <Style.Setters>
+            <Setter Property="Margin" Value="10,0,0,0" />
+        </Style.Setters>
+    </Style>
+
+    <Style Selector="ctxt|CTextBlock">
+        <Style.Setters>
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Margin" Value="0,5" />
+        </Style.Setters>
+    </Style>
+    <Style Selector="TextBlock">
+        <Style.Setters>
+            <Setter Property="FontSize" Value="14" />
+        </Style.Setters>
+    </Style>
+
+    <Style Selector="ctxt|CTextBlock.Heading1">
+        <Style.Setters>
+            <Setter Property="FontSize" Value="28" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,15,0,5" />
+        </Style.Setters>
+    </Style>
+
+    <Style Selector="ctxt|CTextBlock.Heading2">
+        <Style.Setters>
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,15,0,5" />
+        </Style.Setters>
+    </Style>
+
+    <Style Selector="ctxt|CTextBlock.Heading3">
+        <Style.Setters>
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,10,0,5" />
+        </Style.Setters>
+    </Style>
+
+    <Style Selector="ctxt|CTextBlock.Heading4">
+        <Style.Setters>
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,10,0,5" />
+        </Style.Setters>
+    </Style>
+</Styles>

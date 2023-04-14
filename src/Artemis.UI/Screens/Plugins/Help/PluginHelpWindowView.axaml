@@ -10,7 +10,7 @@
         x:DataType="help:PluginHelpWindowViewModel"
         Icon="/Assets/Images/Logo/application.ico"
         Title="{CompiledBinding DisplayName}"
-        Width="800"
+        Width="1200"
         Height="800"
         WindowStartupLocation="CenterOwner">
 
@@ -18,7 +18,7 @@
         <ListBox Items="{CompiledBinding HelpPages}" SelectedItem="{CompiledBinding SelectedHelpPage}" Grid.Column="0" Margin="10">
             <ListBox.ItemTemplate>
                 <DataTemplate x:DataType="core:IPluginHelpPage">
-                    <TextBlock Text="{CompiledBinding Title}"/>
+                    <TextBlock Text="{CompiledBinding Title}" VerticalAlignment="Center" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

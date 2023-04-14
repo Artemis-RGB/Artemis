@@ -188,6 +188,9 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
         }
     }
 
+    [JsonProperty]
+    internal List<PluginInfoHelpPage> HelpPages { get; set; } = new();
+
     /// <summary>
     ///     Gets a boolean indicating whether this plugin is compatible with the current operating system and API version
     /// </summary>

@@ -95,7 +95,7 @@
                                           IsVisible="{CompiledBinding HasHelpPages}"
                                           Command="{CompiledBinding OpenHelp}"
                                           ToolTip.Tip="View help pages">
-                    <avalonia:MaterialIcon Kind="Help" />
+                    <avalonia:MaterialIcon Kind="HelpCircle" />
                 </controls:HyperlinkButton>
                 <controls:HyperlinkButton Classes="icon-button icon-button-large"
                                           IsVisible="{CompiledBinding Plugin.Info.Website, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
