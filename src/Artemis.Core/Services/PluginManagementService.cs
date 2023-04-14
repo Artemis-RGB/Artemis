@@ -350,9 +350,6 @@ internal class PluginManagementService : IPluginManagementService
 
         // Load the entity and fall back on creating a new one
         Plugin plugin = new(pluginInfo, directory, _pluginRepository.GetPluginByGuid(pluginInfo.Guid));
-        foreach (PluginInfoHelpPage pluginInfoHelpPage in pluginInfo.HelpPages)
-            plugin.HelpPages.Add(new MarkdownPluginHelpPage(plugin, pluginInfoHelpPage.Title, pluginInfoHelpPage.Id, pluginInfoHelpPage.MarkdownFile));
-
         OnPluginLoading(new PluginEventArgs(plugin));
 
         // Locate the main assembly entry

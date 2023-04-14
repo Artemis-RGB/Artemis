@@ -27,6 +27,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     private bool _requiresAdmin;
     private string _version = null!;
     private Uri? _website;
+    private Uri? _helpPage;
 
     internal PluginInfo()
     {
@@ -90,6 +91,16 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     {
         get => _repository;
         set => SetAndNotify(ref _repository, value);
+    }
+    
+    /// <summary>
+    ///     Gets or sets the help page of this plugin
+    /// </summary>
+    [JsonProperty]
+    public Uri? HelpPage
+    {
+        get => _helpPage;
+        set => SetAndNotify(ref _helpPage, value);
     }
 
     /// <summary>
@@ -187,9 +198,6 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
             return Icon.Contains('.') ? Plugin.ResolveRelativePath(Icon) : Icon;
         }
     }
-
-    [JsonProperty]
-    internal List<PluginInfoHelpPage> HelpPages { get; set; } = new();
 
     /// <summary>
     ///     Gets a boolean indicating whether this plugin is compatible with the current operating system and API version

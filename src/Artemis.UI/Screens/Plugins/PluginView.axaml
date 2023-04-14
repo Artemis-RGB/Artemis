@@ -92,9 +92,9 @@
                     <avalonia:MaterialIcon Kind="Cog" />
                 </controls:HyperlinkButton>
                 <controls:HyperlinkButton Classes="icon-button icon-button-large"
-                                          IsVisible="{CompiledBinding HasHelpPages}"
-                                          Command="{CompiledBinding OpenHelp}"
-                                          ToolTip.Tip="View help pages">
+                                          IsVisible="{CompiledBinding Plugin.Info.HelpPage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                          NavigateUri="{CompiledBinding Plugin.Info.HelpPage}"
+                                          ToolTip.Tip="{CompiledBinding Plugin.Info.HelpPage}">
                     <avalonia:MaterialIcon Kind="HelpCircle" />
                 </controls:HyperlinkButton>
                 <controls:HyperlinkButton Classes="icon-button icon-button-large"

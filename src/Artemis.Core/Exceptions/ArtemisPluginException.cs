@@ -44,31 +44,9 @@ public class ArtemisPluginException : Exception
     public ArtemisPluginException(string message, Exception inner) : base(message, inner)
     {
     }
-    
-    /// <summary>
-    ///     Creates a new instance of the <see cref="ArtemisPluginException" /> class
-    /// </summary>
-    public ArtemisPluginException(string message, string helpPageId) : base(message)
-    {
-        HelpPageId = helpPageId;
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="ArtemisPluginException" /> class
-    /// </summary>
-    public ArtemisPluginException(string message, Exception inner, string helpPageId) : base(message, inner)
-    {
-        HelpPageId = helpPageId;
-    }
 
     /// <summary>
     ///     Gets the plugin the error is related to
     /// </summary>
     public Plugin? Plugin { get; }
-    
-    /// <summary>
-    ///     Gets the ID of the help page to display for this exception.
-    /// </summary>
-    public string? HelpPageId { get; }
-
 }
