@@ -18,12 +18,11 @@ using Avalonia.Threading;
 using Material.Icons;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Plugins;
+namespace Artemis.UI.Screens.Plugins.Features;
 
 public class PluginFeatureViewModel : ActivatableViewModelBase
 {
     private readonly ICoreService _coreService;
-    private readonly INotificationService _notificationService;
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IWindowService _windowService;
     private bool _enabling;
@@ -32,12 +31,10 @@ public class PluginFeatureViewModel : ActivatableViewModelBase
         bool showShield,
         ICoreService coreService,
         IWindowService windowService,
-        INotificationService notificationService,
         IPluginManagementService pluginManagementService)
     {
         _coreService = coreService;
         _windowService = windowService;
-        _notificationService = notificationService;
         _pluginManagementService = pluginManagementService;
 
         FeatureInfo = pluginFeatureInfo;
@@ -176,11 +173,7 @@ public class PluginFeatureViewModel : ActivatableViewModelBase
         if (FeatureInfo.Instance == null)
         {
             this.RaisePropertyChanged(nameof(IsEnabled));
-            _notificationService.CreateNotification()
-                .WithMessage($"Feature '{FeatureInfo.Name}' is in a broken state and cannot enable.")
-                .HavingButton(b => b.WithText("View logs").WithCommand(ShowLogsFolder))
-                .WithSeverity(NotificationSeverity.Error)
-                .Show();
+            await ShowFailureDialog($"Failed to enable '{FeatureInfo.Name}'", $"Feature '{FeatureInfo.Name}' is in a broken state and cannot enable.");
             return;
         }
 
@@ -215,11 +208,7 @@ public class PluginFeatureViewModel : ActivatableViewModelBase
             }
             catch (Exception e)
             {
-                _notificationService.CreateNotification()
-                    .WithMessage($"Failed to enable '{FeatureInfo.Name}'.\r\n{e.Message}")
-                    .HavingButton(b => b.WithText("View logs").WithCommand(ShowLogsFolder))
-                    .WithSeverity(NotificationSeverity.Error)
-                    .Show();
+                await ShowFailureDialog($"Failed to enable '{FeatureInfo.Name}'", e.Message);
             }
             finally
             {
@@ -253,5 +242,18 @@ public class PluginFeatureViewModel : ActivatableViewModelBase
     private void PluginOnToggled(object? sender, EventArgs e)
     {
         this.RaisePropertyChanged(nameof(CanToggleEnabled));
+    }
+    
+    private async Task ShowFailureDialog(string action, string message)
+    {
+        ContentDialogBuilder builder = _windowService.CreateContentDialog()
+            .WithTitle(action)
+            .WithContent(message)
+            .HavingPrimaryButton(b => b.WithText("View logs").WithCommand(ShowLogsFolder));
+        // If available, add a secondary button pointing to the support page
+        if (FeatureInfo.Plugin.Info.HelpPage != null)
+            builder = builder.HavingSecondaryButton(b => b.WithText("Open support page").WithAction(() => Utilities.OpenUrl(FeatureInfo.Plugin.Info.HelpPage.ToString())));
+
+        await builder.ShowAsync();
     }
 }

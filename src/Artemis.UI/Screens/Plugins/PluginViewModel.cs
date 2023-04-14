@@ -28,7 +28,7 @@ public class PluginViewModel : ActivatableViewModelBase
     private bool _canRemovePrerequisites;
     private bool _enabling;
     private Plugin _plugin;
-    private Window? _window;
+    private Window? _settingsWindow;
 
     public PluginViewModel(Plugin plugin,
         ReactiveCommand<Unit, Unit>? reload,
@@ -72,7 +72,7 @@ public class PluginViewModel : ActivatableViewModelBase
             {
                 Plugin.Enabled -= OnPluginToggled;
                 Plugin.Disabled -= OnPluginToggled;
-                _window?.Close();
+                _settingsWindow?.Close();
             }).DisposeWith(d);
         });
     }
@@ -128,11 +128,7 @@ public class PluginViewModel : ActivatableViewModelBase
             }
             catch (Exception e)
             {
-                await Dispatcher.UIThread.InvokeAsync(() => _notificationService.CreateNotification()
-                    .WithSeverity(NotificationSeverity.Error)
-                    .WithMessage($"Failed to disable plugin {Plugin.Info.Name}\r\n{e.Message}")
-                    .HavingButton(b => b.WithText("View logs").WithCommand(ShowLogsFolder))
-                    .Show());
+                await ShowUpdateEnableFailure(enable, e);
             }
             finally
             {
@@ -167,11 +163,7 @@ public class PluginViewModel : ActivatableViewModelBase
         }
         catch (Exception e)
         {
-            await Dispatcher.UIThread.InvokeAsync(() => _notificationService.CreateNotification()
-                .WithSeverity(NotificationSeverity.Error)
-                .WithMessage($"Failed to enable plugin {Plugin.Info.Name}\r\n{e.Message}")
-                .HavingButton(b => b.WithText("View logs").WithCommand(ShowLogsFolder))
-                .Show());
+            await ShowUpdateEnableFailure(enable, e);
         }
         finally
         {
@@ -179,7 +171,6 @@ public class PluginViewModel : ActivatableViewModelBase
             this.RaisePropertyChanged(nameof(IsEnabled));
         }
     }
-
 
     public void CheckPrerequisites()
     {
@@ -199,10 +190,10 @@ public class PluginViewModel : ActivatableViewModelBase
         if (Plugin.ConfigurationDialog == null)
             return;
 
-        if (_window != null)
+        if (_settingsWindow != null)
         {
-            _window.WindowState = WindowState.Normal;
-            _window.Activate();
+            _settingsWindow.WindowState = WindowState.Normal;
+            _settingsWindow.Activate();
             return;
         }
 
@@ -211,8 +202,8 @@ public class PluginViewModel : ActivatableViewModelBase
             if (Plugin.Resolve(Plugin.ConfigurationDialog.Type) is not PluginConfigurationViewModel viewModel)
                 throw new ArtemisUIException($"The type of a plugin configuration dialog must inherit {nameof(PluginConfigurationViewModel)}");
 
-            _window = _windowService.ShowWindow(new PluginSettingsWindowViewModel(viewModel));
-            _window.Closed += (_, _) => _window = null;
+            _settingsWindow = _windowService.ShowWindow(new PluginSettingsWindowViewModel(viewModel));
+            _settingsWindow.Closed += (_, _) => _settingsWindow = null;
         }
         catch (Exception e)
         {
@@ -306,6 +297,20 @@ public class PluginViewModel : ActivatableViewModelBase
             _windowService.ShowExceptionDialog("Welp, we couldn\'t open the logs folder for you", e);
         }
     }
+    
+    private async Task ShowUpdateEnableFailure(bool enable, Exception e)
+    {
+        string action = enable ? "enable" : "disable";
+        ContentDialogBuilder builder = _windowService.CreateContentDialog()
+            .WithTitle($"Failed to {action} plugin {Plugin.Info.Name}")
+            .WithContent(e.Message)
+            .HavingPrimaryButton(b => b.WithText("View logs").WithCommand(ShowLogsFolder));
+        // If available, add a secondary button pointing to the support page
+        if (Plugin.Info.HelpPage != null)
+            builder = builder.HavingSecondaryButton(b => b.WithText("Open support page").WithAction(() => Utilities.OpenUrl(Plugin.Info.HelpPage.ToString())));
+
+        await builder.ShowAsync();
+    }
 
     private void OnPluginToggled(object? sender, EventArgs e)
     {
@@ -313,7 +318,7 @@ public class PluginViewModel : ActivatableViewModelBase
         {
             this.RaisePropertyChanged(nameof(IsEnabled));
             if (!IsEnabled)
-                _window?.Close();
+                _settingsWindow?.Close();
         });
     }
 }

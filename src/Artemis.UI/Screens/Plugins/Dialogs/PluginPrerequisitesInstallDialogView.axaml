@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:plugins="clr-namespace:Artemis.UI.Screens.Plugins"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:prerequisites="clr-namespace:Artemis.UI.Screens.Plugins.Prerequisites"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Plugins.PluginPrerequisitesInstallDialogView"
              x:DataType="plugins:PluginPrerequisitesInstallDialogViewModel">
@@ -34,7 +35,7 @@
                  SelectedItem="{CompiledBinding ActivePrerequisite, Mode=OneWay}"
                  IsHitTestVisible="False">
             <ListBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type plugins:PluginPrerequisiteViewModel}">
+                <DataTemplate DataType="{x:Type prerequisites:PluginPrerequisiteViewModel}">
                     <Grid ColumnDefinitions="Auto,*" Margin="0 6">
                         <Border Grid.Row="0" Grid.Column="0" Classes="status-border" IsVisible="{CompiledBinding !IsMet}" Background="#ff3838">
                             <avalonia:MaterialIcon Kind="Close" />
