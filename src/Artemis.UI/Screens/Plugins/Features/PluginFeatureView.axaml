@@ -5,9 +5,10 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              xmlns:plugins="clr-namespace:Artemis.UI.Screens.Plugins"
+             xmlns:features="clr-namespace:Artemis.UI.Screens.Plugins.Features"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Plugins.PluginFeatureView"
-             x:DataType="plugins:PluginFeatureViewModel">
+             x:Class="Artemis.UI.Screens.Plugins.Features.PluginFeatureView"
+             x:DataType="features:PluginFeatureViewModel">
     <Grid ColumnDefinitions="30,*,Auto">
         <Grid.ContextFlyout>
             <MenuFlyout>

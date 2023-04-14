@@ -1,7 +1,6 @@
-using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Plugins;
+namespace Artemis.UI.Screens.Plugins.Features;
 
 public partial class PluginFeatureView : ReactiveUserControl<PluginFeatureViewModel>
 {

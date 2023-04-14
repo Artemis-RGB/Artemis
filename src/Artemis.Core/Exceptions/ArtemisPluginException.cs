@@ -44,31 +44,9 @@ public class ArtemisPluginException : Exception
     public ArtemisPluginException(string message, Exception inner) : base(message, inner)
     {
     }
-    
-    /// <summary>
-    ///     Creates a new instance of the <see cref="ArtemisPluginException" /> class
-    /// </summary>
-    public ArtemisPluginException(string message, string helpDocument) : base(message)
-    {
-        HelpDocument = helpDocument;
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="ArtemisPluginException" /> class
-    /// </summary>
-    public ArtemisPluginException(string message, Exception inner, string helpDocument) : base(message, inner)
-    {
-        HelpDocument = helpDocument;
-    }
 
     /// <summary>
     ///     Gets the plugin the error is related to
     /// </summary>
     public Plugin? Plugin { get; }
-    
-    /// <summary>
-    ///     Gets or sets the help document related to this exception.
-    /// </summary>
-    public string? HelpDocument { get; }
-
 }

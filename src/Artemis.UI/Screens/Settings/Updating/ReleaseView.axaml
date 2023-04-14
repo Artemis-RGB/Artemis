@@ -4,9 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:updating="clr-namespace:Artemis.UI.Screens.Settings.Updating"
              xmlns:avalonia="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
-             xmlns:mdc="clr-namespace:Markdown.Avalonia.Controls;assembly=Markdown.Avalonia"
-             xmlns:mde="clr-namespace:Markdown.Avalonia.Extensions;assembly=Markdown.Avalonia"
-             xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia"
              xmlns:avalonia1="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="1400"
@@ -158,17 +155,7 @@
 
                 <avalonia:MarkdownScrollViewer Grid.Row="2" Markdown="{CompiledBinding Changelog}" MarkdownStyleName="FluentAvalonia">
                     <avalonia:MarkdownScrollViewer.Styles>
-                        <Style Selector="ctxt|CHyperlink">
-                            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight3}" />
-                        </Style>
-                        <Style Selector="ctxt|CHyperlink:pointerover">
-                            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight1}" />
-                        </Style>
-                        <Style Selector="Grid.List">
-                            <Style.Setters>
-                                <Setter Property="Margin" Value="20,0,0,0"/>
-                            </Style.Setters>
-                        </Style>
+                        <StyleInclude Source="/Styles/Markdown.axaml"/>
                     </avalonia:MarkdownScrollViewer.Styles>
                 </avalonia:MarkdownScrollViewer>
             </Grid>

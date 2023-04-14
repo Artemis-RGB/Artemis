@@ -1,7 +1,7 @@
 ﻿using Artemis.Core;
 using Artemis.UI.Shared;
 
-namespace Artemis.UI.Screens.Plugins;
+namespace Artemis.UI.Screens.Plugins.Prerequisites;
 
 public class PluginPrerequisiteActionViewModel : ViewModelBase
 {

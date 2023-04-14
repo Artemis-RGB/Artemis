@@ -57,7 +57,7 @@ public class Plugin : CorePropertyChanged, IDisposable
     ///     Gets or sets a configuration dialog for this plugin that is accessible in the UI under Settings > Plugins
     /// </summary>
     public IPluginConfigurationDialog? ConfigurationDialog { get; set; }
-
+    
     /// <summary>
     ///     Indicates whether the user enabled the plugin or not
     /// </summary>

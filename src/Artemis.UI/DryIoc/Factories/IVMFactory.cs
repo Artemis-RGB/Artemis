@@ -7,6 +7,8 @@ using Artemis.Core.LayerEffects;
 using Artemis.Core.ScriptingProviders;
 using Artemis.UI.Screens.Device;
 using Artemis.UI.Screens.Plugins;
+using Artemis.UI.Screens.Plugins.Features;
+using Artemis.UI.Screens.Plugins.Prerequisites;
 using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.ProfileEditor.DisplayCondition.ConditionTypes;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;

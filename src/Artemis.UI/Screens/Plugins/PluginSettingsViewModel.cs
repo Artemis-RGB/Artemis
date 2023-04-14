@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
+using Artemis.UI.Screens.Plugins.Features;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using ReactiveUI;

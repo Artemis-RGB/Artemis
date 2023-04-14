@@ -78,6 +78,6 @@ public class OpenFileDialogBuilder
     public async Task<string[]?> ShowAsync()
     {
         IReadOnlyList<IStorageFile> files = await _parent.StorageProvider.OpenFilePickerAsync(_options);
-        return files.Select(f => f.Path.AbsolutePath).ToArray();
+        return files.Select(f => f.Path.LocalPath).ToArray();
     }
 }
