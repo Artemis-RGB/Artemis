@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.DryIoc;
@@ -30,6 +31,7 @@ internal class PluginManagementService : IPluginManagementService
     private readonly IPluginRepository _pluginRepository;
     private readonly List<Plugin> _plugins;
     private readonly IQueuedActionRepository _queuedActionRepository;
+    private FileSystemWatcher _hotReloadWatcher;
     private bool _disposed;
     private bool _isElevated;
 
@@ -43,6 +45,8 @@ internal class PluginManagementService : IPluginManagementService
         _plugins = new List<Plugin>();
 
         ProcessPluginDeletionQueue();
+
+        StartHotReload();
     }
 
     private void CopyBuiltInPlugin(ZipArchive zipArchive, string targetDirectory)
@@ -216,6 +220,14 @@ internal class PluginManagementService : IPluginManagementService
         }
 
         return null;
+    }
+
+    private Plugin? GetPluginByDirectory(DirectoryInfo directory)
+    {
+        lock (_plugins)
+        {
+            return _plugins.FirstOrDefault(p => p.Directory.FullName == directory.FullName);
+        }
     }
 
     public void Dispose()
@@ -911,6 +923,67 @@ internal class PluginManagementService : IPluginManagementService
         PluginFeatureEnableFailed?.Invoke(this, e);
     }
 
+    #endregion
+
+    #region Hot Reload
+
+    private void StartHotReload()
+    {
+        // Watch for changes in the plugin directory, "plugin.json".
+        // If this file is changed, reload the plugin.
+        _hotReloadWatcher = new FileSystemWatcher(Constants.PluginsFolder, "plugin.json");
+        _hotReloadWatcher.NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.FileName;
+        _hotReloadWatcher.Created += FileSystemWatcherOnCreated;
+        _hotReloadWatcher.Error += FileSystemWatcherOnError;
+        _hotReloadWatcher.IncludeSubdirectories = true;
+        _hotReloadWatcher.EnableRaisingEvents = true;
+    }
+    
+    private void FileSystemWatcherOnError(object sender, ErrorEventArgs e)
+    {
+        _logger.Error(e.GetException(), "File system watcher error");
+    }
+
+    private void FileSystemWatcherOnCreated(object sender, FileSystemEventArgs e)
+    {
+        string? pluginPath = Path.GetDirectoryName(e.FullPath);
+        if (pluginPath == null)
+        {
+            _logger.Warning("Plugin change detected, but could not get plugin directory. {fullPath}", e.FullPath);
+            return;
+        }
+        
+        DirectoryInfo pluginDirectory = new(pluginPath);
+        Plugin? plugin = GetPluginByDirectory(pluginDirectory);
+        
+        if (plugin == null)
+        {
+            _logger.Warning("Plugin change detected, but could not find plugin. {fullPath}", e.FullPath);
+            return;
+        }
+        
+        _logger.Information("Plugin change detected, reloading. {pluginName}", plugin.Info.Name);
+        bool wasEnabled = plugin.IsEnabled;
+        
+        UnloadPlugin(plugin);
+        
+        Thread.Sleep(500);
+        
+        Plugin? loadedPlugin = LoadPlugin(pluginDirectory);
+        
+        if (loadedPlugin == null)
+        {
+            return;
+        }
+        
+        if (wasEnabled)
+        {
+            EnablePlugin(loadedPlugin, true, false);
+        }
+        
+        _logger.Information("Plugin reloaded. {fullPath}", e.FullPath);
+    }
+    
     #endregion
 }
 
