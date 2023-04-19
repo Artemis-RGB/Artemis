@@ -1,15 +1,17 @@
 using System.Threading.Tasks;
 using Artemis.UI.Shared.Extensions;
+using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.ProfileEditor.Properties.Tree.ContentDialogs;
+namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.ContentDialogs;
 
-public partial class LayerEffectRenameView : ReactiveUserControl<LayerEffectRenameViewModel>
+public partial class ProfileElementRenameView : ReactiveUserControl<ProfileElementRenameViewModel>
 {
-    public LayerEffectRenameView()
+    public ProfileElementRenameView()
     {
         InitializeComponent();
         this.WhenActivated(_ =>

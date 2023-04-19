@@ -27,6 +27,7 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
     private readonly ISettingsService _settingsService;
     private readonly IWindowService _windowService;
     private bool _pauseUpdate;
+    private ObservableAsPropertyHelper<bool>? _keyBindingsEnabled;
 
     public NodeScriptWindowViewModel(NodeScript nodeScript,
         INodeService nodeService,
@@ -49,7 +50,7 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
         _windowService = windowService;
 
         CreateNode = ReactiveCommand.Create<NodeData>(ExecuteCreateNode);
-        AutoArrange = ReactiveCommand.CreateFromTask(ExecuteAutoArrange);
+        AutoArrange = ReactiveCommand.CreateFromTask(ExecuteAutoArrange, this.WhenAnyValue(vm => vm.KeyBindingsEnabled));
         Export = ReactiveCommand.CreateFromTask(ExecuteExport);
         Import = ReactiveCommand.CreateFromTask(ExecuteImport);
 
@@ -64,6 +65,8 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
 
         this.WhenActivated(d =>
         {
+            _keyBindingsEnabled = Shared.UI.KeyBindingsEnabled.ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
+            
             DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000), DispatcherPriority.Normal, Update);
             // TODO: Remove in favor of saving each time a node editor command is executed
             DispatcherTimer saveTimer = new(TimeSpan.FromMinutes(2), DispatcherPriority.Normal, Save);
@@ -89,7 +92,8 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
     public ReactiveCommand<Unit, Unit> AutoArrange { get; }
     public ReactiveCommand<Unit, Unit> Export { get; }
     public ReactiveCommand<Unit, Unit> Import { get; }
-
+    public bool KeyBindingsEnabled => _keyBindingsEnabled?.Value ?? false;
+    
     public PluginSetting<bool> ShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
     public PluginSetting<bool> ShowFullPaths => _settingsService.GetSetting("ProfileEditor.ShowFullPaths", false);
     public PluginSetting<bool> AlwaysShowValues => _settingsService.GetSetting("ProfileEditor.AlwaysShowValues", true);

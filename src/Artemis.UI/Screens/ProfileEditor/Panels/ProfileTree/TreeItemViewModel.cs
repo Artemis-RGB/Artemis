@@ -9,9 +9,11 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Extensions;
+using Artemis.UI.Screens.ProfileEditor.ProfileTree.ContentDialogs;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia;
@@ -30,8 +32,6 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
     private bool _isFlyoutOpen;
     private ObservableAsPropertyHelper<bool>? _isFocused;
     private ProfileElement? _profileElement;
-    private string? _renameValue;
-    private bool _renaming;
     private TimeSpan _time;
 
     protected TreeItemViewModel(TreeItemViewModel? parent,
@@ -50,7 +50,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
         AddLayer = ReactiveCommand.Create(ExecuteAddLayer);
         AddFolder = ReactiveCommand.Create(ExecuteAddFolder);
         OpenAdaptionHints = ReactiveCommand.CreateFromTask(ExecuteOpenAdaptionHints, this.WhenAnyValue(vm => vm.ProfileElement).Select(p => p is Layer));
-        Rename = ReactiveCommand.Create(ExecuteRename);
+        Rename = ReactiveCommand.CreateFromTask(ExecuteRename);
         Delete = ReactiveCommand.Create(ExecuteDelete);
         Duplicate = ReactiveCommand.CreateFromTask(ExecuteDuplicate);
         Copy = ReactiveCommand.CreateFromTask(ExecuteCopy);
@@ -96,12 +96,6 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
         set => RaiseAndSetIfChanged(ref _isFlyoutOpen, value);
     }
 
-    public bool Renaming
-    {
-        get => _renaming;
-        set => RaiseAndSetIfChanged(ref _renaming, value);
-    }
-
     public bool CanPaste
     {
         get => _canPaste;
@@ -120,13 +114,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
     public ReactiveCommand<Unit, Unit> Paste { get; }
     public ReactiveCommand<Unit, Unit> Delete { get; }
     public abstract bool SupportsChildren { get; }
-
-    public string? RenameValue
-    {
-        get => _renameValue;
-        set => RaiseAndSetIfChanged(ref _renameValue, value);
-    }
-
+    
     public async Task ShowBrokenStateExceptions()
     {
         if (ProfileElement == null)
@@ -143,26 +131,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
                 return;
         }
     }
-
-    public void SubmitRename()
-    {
-        if (ProfileElement == null)
-        {
-            Renaming = false;
-            return;
-        }
-
-        ProfileEditorService.ExecuteCommand(new RenameProfileElement(ProfileElement, RenameValue));
-        Renaming = false;
-        ProfileEditorService.ChangeSuspendedKeybindings(false);
-    }
-
-    public void CancelRename()
-    {
-        Renaming = false;
-        ProfileEditorService.ChangeSuspendedKeybindings(false);
-    }
-
+    
     public void InsertElement(TreeItemViewModel elementViewModel, int targetIndex)
     {
         if (elementViewModel.Parent == this && Children.IndexOf(elementViewModel) == targetIndex)
@@ -250,11 +219,18 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
             ProfileEditorService.ExecuteCommand(new RemoveProfileElement(renderProfileElement));
     }
 
-    private void ExecuteRename()
+    private async Task ExecuteRename()
     {
-        Renaming = true;
-        RenameValue = ProfileElement?.Name;
-        ProfileEditorService.ChangeSuspendedKeybindings(true);
+        if (ProfileElement == null)
+            return;
+
+        await _windowService.CreateContentDialog()
+            .WithTitle(ProfileElement is Folder ? "Rename folder" : "Rename layer")
+            .WithViewModel(out ProfileElementRenameViewModel vm, ProfileElement)
+            .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Confirm))
+            .WithCloseButtonText("Cancel")
+            .WithDefaultButton(ContentDialogButton.Primary)
+            .ShowAsync();
     }
 
     private void ExecuteAddFolder()

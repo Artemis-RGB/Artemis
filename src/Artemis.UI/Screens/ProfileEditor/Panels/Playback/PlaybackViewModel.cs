@@ -52,7 +52,7 @@ public class PlaybackViewModel : ActivatableViewModelBase
             _currentTime = _profileEditorService.Time.ToProperty(this, vm => vm.CurrentTime).DisposeWith(d);
             _formattedCurrentTime = _profileEditorService.Time.Select(t => $"{Math.Floor(t.TotalSeconds):00}.{t.Milliseconds:000}").ToProperty(this, vm => vm.FormattedCurrentTime).DisposeWith(d);
             _playing = _profileEditorService.Playing.ToProperty(this, vm => vm.Playing).DisposeWith(d);
-            _keyBindingsEnabled = _profileEditorService.SuspendedKeybindings.Select(s => !s).ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
+            _keyBindingsEnabled = Shared.UI.KeyBindingsEnabled.ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
 
             _lastUpdate = DateTime.MinValue;
             DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(60.0 / 1000), DispatcherPriority.Render, Update);

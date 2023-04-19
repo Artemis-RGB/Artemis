@@ -58,7 +58,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
             _focusNone = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.None).ToProperty(this, vm => vm.FocusNone).DisposeWith(d);
             _focusFolder = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.Folder).ToProperty(this, vm => vm.FocusFolder).DisposeWith(d);
             _focusSelection = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.Selection).ToProperty(this, vm => vm.FocusSelection).DisposeWith(d);
-            _keyBindingsEnabled = profileEditorService.SuspendedKeybindings.Select(s => !s).ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
+            _keyBindingsEnabled = Shared.UI.KeyBindingsEnabled.ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
         });
 
         AddFolder = ReactiveCommand.Create(ExecuteAddFolder);
