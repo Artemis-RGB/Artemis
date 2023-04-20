@@ -61,6 +61,9 @@ internal class DeviceVisualizerLed
 
     public void RenderGeometry(DrawingContext drawingContext, bool dimmed)
     {
+        if (DisplayGeometry == null)
+            return;
+
         byte r = Led.RgbLed.Color.GetR();
         byte g = Led.RgbLed.Color.GetG();
         byte b = Led.RgbLed.Color.GetB();
@@ -94,13 +97,13 @@ internal class DeviceVisualizerLed
         switch (Led.RgbLed.Shape)
         {
             case Shape.Custom:
-                if (Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keyboard || Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keypad)
+                if (Led.RgbLed.Device.DeviceInfo.DeviceType is RGBDeviceType.Keyboard or RGBDeviceType.Keypad)
                     CreateCustomGeometry(2.0);
                 else
                     CreateCustomGeometry(1.0);
                 break;
             case Shape.Rectangle:
-                if (Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keyboard || Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keypad)
+                if (Led.RgbLed.Device.DeviceInfo.DeviceType is RGBDeviceType.Keyboard or RGBDeviceType.Keypad)
                     CreateKeyCapGeometry();
                 else
                     CreateRectangleGeometry();
@@ -132,6 +135,9 @@ internal class DeviceVisualizerLed
     {
         try
         {
+            if (Led.RgbLed.ShapeData == null)
+                return;
+
             double width = Led.RgbLed.Size.Width - deflateAmount;
             double height = Led.RgbLed.Size.Height - deflateAmount;
 
