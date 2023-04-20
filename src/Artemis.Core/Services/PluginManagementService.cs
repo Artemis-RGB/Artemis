@@ -938,7 +938,7 @@ internal class PluginManagementService : IPluginManagementService
         _hotReloadWatcher.IncludeSubdirectories = true;
         _hotReloadWatcher.EnableRaisingEvents = true;
     }
-    
+
     private void FileSystemWatcherOnError(object sender, ErrorEventArgs e)
     {
         _logger.Error(e.GetException(), "File system watcher error");
@@ -952,38 +952,38 @@ internal class PluginManagementService : IPluginManagementService
             _logger.Warning("Plugin change detected, but could not get plugin directory. {fullPath}", e.FullPath);
             return;
         }
-        
+
         DirectoryInfo pluginDirectory = new(pluginPath);
         Plugin? plugin = GetPluginByDirectory(pluginDirectory);
-        
+
         if (plugin == null)
         {
             _logger.Warning("Plugin change detected, but could not find plugin. {fullPath}", e.FullPath);
             return;
         }
-        
-        _logger.Information("Plugin change detected, reloading. {pluginName}", plugin.Info.Name);
-        bool wasEnabled = plugin.IsEnabled;
-        
-        UnloadPlugin(plugin);
-        
-        Thread.Sleep(500);
-        
-        Plugin? loadedPlugin = LoadPlugin(pluginDirectory);
-        
-        if (loadedPlugin == null)
+
+        if (!plugin.Info.HotReloadSupported)
         {
+            _logger.Information("Plugin change detected, but hot reload not supported. {pluginName}", plugin.Info.Name);
             return;
         }
-        
+
+        _logger.Information("Plugin change detected, reloading. {pluginName}", plugin.Info.Name);
+        bool wasEnabled = plugin.IsEnabled;
+
+        UnloadPlugin(plugin);
+        Thread.Sleep(500);
+        Plugin? loadedPlugin = LoadPlugin(pluginDirectory);
+
+        if (loadedPlugin == null)
+            return;
+
         if (wasEnabled)
-        {
             EnablePlugin(loadedPlugin, true, false);
-        }
-        
+
         _logger.Information("Plugin reloaded. {fullPath}", e.FullPath);
     }
-    
+
     #endregion
 }
 
