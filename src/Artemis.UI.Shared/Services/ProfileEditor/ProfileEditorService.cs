@@ -31,7 +31,6 @@ internal class ProfileEditorService : IProfileEditorService
     private readonly IRgbService _rgbService;
     private readonly SourceList<ILayerPropertyKeyframe> _selectedKeyframes;
     private readonly BehaviorSubject<bool> _suspendedEditingSubject = new(false);
-    private readonly BehaviorSubject<bool> _suspendedKeybindingsSubject = new(false);
     private readonly BehaviorSubject<TimeSpan> _timeSubject = new(TimeSpan.Zero);
     private readonly IWindowService _windowService;
     private ProfileEditorCommandScope? _profileEditorHistoryScope;
@@ -61,7 +60,6 @@ internal class ProfileEditorService : IProfileEditorService
         Time = _timeSubject.AsObservable();
         Playing = _playingSubject.AsObservable();
         SuspendedEditing = _suspendedEditingSubject.AsObservable();
-        SuspendedKeybindings = _suspendedKeybindingsSubject.AsObservable();
         PixelsPerSecond = _pixelsPerSecondSubject.AsObservable();
         FocusMode = _focusModeSubject.AsObservable();
         SelectedKeyframes = selectedKeyframes;
@@ -210,7 +208,6 @@ internal class ProfileEditorService : IProfileEditorService
 
         _profileConfigurationSubject.OnNext(profileConfiguration);
         ChangeTime(TimeSpan.Zero);
-        ChangeSuspendedKeybindings(false);
     }
 
     public void ChangeCurrentProfileElement(RenderProfileElement? renderProfileElement)
@@ -255,15 +252,7 @@ internal class ProfileEditorService : IProfileEditorService
 
         ApplyFocusMode();
     }
-
-    public void ChangeSuspendedKeybindings(bool suspend)
-    {
-        if (_suspendedKeybindingsSubject.Value == suspend)
-            return;
-
-        _suspendedKeybindingsSubject.OnNext(suspend);
-    }
-
+    
     public void ChangeFocusMode(ProfileEditorFocusMode focusMode)
     {
         if (_focusModeSubject.Value == focusMode)

@@ -54,11 +54,6 @@ public interface IProfileEditorService : IArtemisSharedUIService
     /// <summary>
     ///     Gets an observable of the suspended keybindings state.
     /// </summary>
-    IObservable<bool> SuspendedKeybindings { get; }
-
-    /// <summary>
-    ///     Gets an observable of the suspended keybindings state.
-    /// </summary>
     IObservable<ProfileEditorFocusMode> FocusMode { get; }
 
     /// <summary>
@@ -101,12 +96,6 @@ public interface IProfileEditorService : IArtemisSharedUIService
     /// </summary>
     /// <param name="suspend">The new suspended state.</param>
     void ChangeSuspendedEditing(bool suspend);
-
-    /// <summary>
-    ///     Changes the current suspended keybindings state.
-    /// </summary>
-    /// <param name="suspend">The new suspended state.</param>
-    void ChangeSuspendedKeybindings(bool suspend);
 
     /// <summary>
     ///     Changes the current focus mode.

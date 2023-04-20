@@ -17,14 +17,17 @@ internal class WebServerService : IWebServerService, IDisposable
 {
     private readonly List<WebApiControllerRegistration> _controllers;
     private readonly ILogger _logger;
+    private readonly ICoreService _coreService;
     private readonly List<WebModuleRegistration> _modules;
     private readonly PluginSetting<bool> _webServerEnabledSetting;
     private readonly PluginSetting<int> _webServerPortSetting;
+    private readonly object _webserverLock = new();
     private CancellationTokenSource? _cts;
 
     public WebServerService(ILogger logger, ICoreService coreService, ISettingsService settingsService, IPluginManagementService pluginManagementService)
     {
         _logger = logger;
+        _coreService = coreService;
         _controllers = new List<WebApiControllerRegistration>();
         _modules = new List<WebModuleRegistration>();
 
@@ -35,7 +38,10 @@ internal class WebServerService : IWebServerService, IDisposable
         pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureDisabled;
 
         PluginsModule = new PluginsModule("/plugins");
-        StartWebServer();
+        if (coreService.IsInitialized)
+            StartWebServer();
+        else
+            coreService.Initialized += (_, _) => StartWebServer();
     }
 
     public event EventHandler? WebServerStopped;
@@ -144,21 +150,28 @@ internal class WebServerService : IWebServerService, IDisposable
 
     private void StartWebServer()
     {
-        Server = CreateWebServer();
-
-        if (!_webServerEnabledSetting.Value)
-            return;
-
-        if (Constants.StartupArguments.Contains("--disable-webserver"))
+        lock (_webserverLock)
         {
-            _logger.Warning("Artemis launched with --disable-webserver, not enabling the webserver");
-            return;
-        }
+            // Don't create the webserver until after the core service is initialized, this avoids lots of useless re-creates during initialize
+            if (!_coreService.IsInitialized)
+                return;
 
-        OnWebServerStarting();
-        _cts = new CancellationTokenSource();
-        Server.Start(_cts.Token);
-        OnWebServerStarted();
+            if (!_webServerEnabledSetting.Value)
+                return;
+
+            Server = CreateWebServer();
+
+            if (Constants.StartupArguments.Contains("--disable-webserver"))
+            {
+                _logger.Warning("Artemis launched with --disable-webserver, not enabling the webserver");
+                return;
+            }
+
+            OnWebServerStarting();
+            _cts = new CancellationTokenSource();
+            Server.Start(_cts.Token);
+            OnWebServerStarted();
+        }
     }
 
     #endregion

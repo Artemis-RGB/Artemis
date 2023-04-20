@@ -22,6 +22,7 @@ public class LayerEffectRenameViewModel : ContentDialogViewModelBase
         _layerEffectName = layerEffect.Name;
 
         Confirm = ReactiveCommand.Create(ExecuteConfirm, ValidationContext.Valid);
+        Enter = ReactiveCommand.Create(() => ContentDialog?.Hide(ContentDialogResult.Primary), Confirm.CanExecute);
         this.ValidationRule(vm => vm.LayerEffectName, categoryName => !string.IsNullOrWhiteSpace(categoryName), "You must specify a valid name");
     }
 
@@ -32,6 +33,7 @@ public class LayerEffectRenameViewModel : ContentDialogViewModelBase
     }
 
     public ReactiveCommand<Unit, Unit> Confirm { get; }
+    public ReactiveCommand<Unit, Unit> Enter { get; }
 
     private void ExecuteConfirm()
     {

@@ -28,6 +28,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     private string _version = null!;
     private Uri? _website;
     private Uri? _helpPage;
+    private bool _hotReloadSupported;
 
     internal PluginInfo()
     {
@@ -154,6 +155,17 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     {
         get => _requiresAdmin;
         internal set => SetAndNotify(ref _requiresAdmin, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a boolean indicating whether hot reloading this plugin is supported
+    /// </summary>
+    [DefaultValue(true)]
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+    public bool HotReloadSupported
+    {
+        get => _hotReloadSupported;
+        set => SetAndNotify(ref _hotReloadSupported, value);
     }
 
     /// <summary>

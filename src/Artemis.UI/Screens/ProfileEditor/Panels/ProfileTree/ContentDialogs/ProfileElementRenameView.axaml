@@ -2,14 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:sidebar="clr-namespace:Artemis.UI.Screens.Sidebar"
+             xmlns:contentDialogs="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree.ContentDialogs"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Sidebar.SidebarCategoryEditView"
-             x:DataType="sidebar:SidebarCategoryEditViewModel">
+             x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.ContentDialogs.ProfileElementRenameView"
+             x:DataType="contentDialogs:ProfileElementRenameViewModel">
     <StackPanel>
         <StackPanel.KeyBindings>
             <KeyBinding Gesture="Enter" Command="{CompiledBinding Enter}" />
         </StackPanel.KeyBindings>
-        <TextBox Text="{CompiledBinding CategoryName}" Watermark="Category name"/>
+        <TextBox Name="NameTextBox" Text="{CompiledBinding ProfileElementName}" Watermark="Profile element name" />
     </StackPanel>
 </UserControl>
