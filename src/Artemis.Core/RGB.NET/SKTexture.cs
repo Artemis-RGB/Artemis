@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Artemis.Core.SkiaSharp;
 using RGB.NET.Core;
@@ -107,10 +108,8 @@ public sealed class SKTexture : PixelTexture<byte>, IDisposable
     }
 
     /// <inheritdoc />
-    protected override Color GetColor(in ReadOnlySpan<byte> pixel)
-    {
-        return new Color(pixel[2], pixel[1], pixel[0]);
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    protected override Color GetColor(in ReadOnlySpan<byte> pixel) => new(pixel[2], pixel[1], pixel[0]);
 
     /// <inheritdoc />
     public override Color this[in Rectangle rectangle] => Color.Transparent;
