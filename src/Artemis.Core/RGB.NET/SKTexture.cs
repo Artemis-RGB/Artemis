@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Artemis.Core.SkiaSharp;
@@ -56,31 +55,12 @@ public sealed class SKTexture : PixelTexture<byte>, IDisposable
         if (skRectI.Width <= 0 || skRectI.Height <= 0)
             return Color.Transparent;
 
-        int bufferSize = skRectI.Width * skRectI.Height * DATA_PER_PIXEL;
-        if (bufferSize <= STACK_ALLOC_LIMIT)
-        {
-            Span<byte> buffer = stackalloc byte[bufferSize];
-            GetRegionData(skRectI.Left, skRectI.Top, skRectI.Width, skRectI.Height, buffer);
+        SamplerInfo<byte> samplerInfo = new(skRectI.Left, skRectI.Top, skRectI.Width, skRectI.Height, Stride, DataPerPixel, Data);
 
-            Span<byte> pixelData = stackalloc byte[DATA_PER_PIXEL];
-            Sampler.Sample(new SamplerInfo<byte>(skRectI.Width, skRectI.Height, buffer), pixelData);
+        Span<byte> pixelData = stackalloc byte[DATA_PER_PIXEL];
+        Sampler.Sample(samplerInfo, pixelData);
 
-            return GetColor(pixelData);
-        }
-        else
-        {
-            byte[] rent = ArrayPool<byte>.Shared.Rent(bufferSize);
-
-            Span<byte> buffer = new Span<byte>(rent).Slice(0, bufferSize);
-            GetRegionData(skRectI.Left, skRectI.Top, skRectI.Width, skRectI.Height, buffer);
-
-            Span<byte> pixelData = stackalloc byte[DATA_PER_PIXEL];
-            Sampler.Sample(new SamplerInfo<byte>(skRectI.Width, skRectI.Height, buffer), pixelData);
-
-            ArrayPool<byte>.Shared.Return(rent);
-
-            return GetColor(pixelData);
-        }
+        return GetColor(pixelData);
     }
 
     private void ReleaseUnmanagedResources()
@@ -106,7 +86,6 @@ public sealed class SKTexture : PixelTexture<byte>, IDisposable
 
     #region Constants
 
-    private const int STACK_ALLOC_LIMIT = 1024;
     private const int DATA_PER_PIXEL = 4;
 
     #endregion
