@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Timers;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Windows.Extensions;
 using Artemis.UI.Windows.Utilities;
 using Avalonia.Controls.Platform;
 using Avalonia.Platform;
@@ -45,13 +46,14 @@ public class WindowsInputProvider : InputProvider
 
         _window = PlatformManager.CreateWindow();
 
-        _hWndProcHook = GetWindowLongPtr(_window.Handle.Handle, GWL_WNDPROC);
+        IPlatformHandle handle = _window.GetHandle(); 
+        _hWndProcHook = GetWindowLongPtr(handle.Handle, GWL_WNDPROC);
         _fnWndProcHook = CustomWndProc;
         nint newLong = Marshal.GetFunctionPointerForDelegate(_fnWndProcHook);
-        SetWindowLongPtr(_window.Handle.Handle, GWL_WNDPROC, newLong);
+        SetWindowLongPtr(handle.Handle, GWL_WNDPROC, newLong);
 
-        RawInputDevice.RegisterDevice(HidUsageAndPage.Keyboard, RawInputDeviceFlags.InputSink, _window.Handle.Handle);
-        RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, _window.Handle.Handle);
+        RawInputDevice.RegisterDevice(HidUsageAndPage.Keyboard, RawInputDeviceFlags.InputSink, handle.Handle);
+        RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, handle.Handle);
     }
 
     public static Guid Id { get; } = new("6737b204-ffb1-4cd9-8776-9fb851db303a");

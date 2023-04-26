@@ -53,7 +53,7 @@
 
                     <TreeView Grid.Row="2"
                               Name="DataModelTreeView"
-                              Items="{Binding DataModelViewModel.Children, RelativeSource={RelativeSource TemplatedParent}}">
+                              ItemsSource="{Binding DataModelViewModel.Children, RelativeSource={RelativeSource TemplatedParent}}">
                         <TreeView.Styles>
                             <Style Selector="TreeViewItem">
                                 <Setter Property="IsExpanded" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Artemis.UI.Windows.Extensions;
 using Avalonia.Controls.Platform;
 using Avalonia.Platform;
 using SharpVk;
@@ -14,7 +15,7 @@ internal sealed class Win32VkContext : VkContext
         Window = PlatformManager.CreateWindow();
         Instance = Instance.Create(null, new[] {"VK_KHR_surface", "VK_KHR_win32_surface"});
         PhysicalDevice = Instance.EnumeratePhysicalDevices().First();
-        Surface = Instance.CreateWin32Surface(Kernel32.CurrentModuleHandle, Window.Handle.Handle);
+        Surface = Instance.CreateWin32Surface(Kernel32.CurrentModuleHandle, Window.GetHandle().Handle);
 
         (GraphicsFamily, PresentFamily) = FindQueueFamilies();
 

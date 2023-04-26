@@ -2,8 +2,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:settings="clr-namespace:Artemis.UI.Screens.Settings"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Settings.DevicesTabView">
+             x:Class="Artemis.UI.Screens.Settings.DevicesTabView"
+             x:DataType="settings:DevicesTabViewModel">
     <Grid RowDefinitions="Auto,*">
         <StackPanel MaxWidth="1050">
             <TextBlock Classes="h4">Device management</TextBlock>
@@ -16,7 +18,7 @@
         </StackPanel>
 
         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-            <ItemsControl Items="{Binding Devices}" Margin="-5 0" MaxWidth="1050">
+            <ItemsControl ItemsSource="{CompiledBinding Devices}" Margin="-5 0" MaxWidth="1050">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />

@@ -238,7 +238,7 @@
                             <ComboBox Classes="brush"
                                       Width="200"
                                       HorizontalAlignment="Left"
-                                      Items="{CompiledBinding LayerBrushDescriptors}"
+                                      ItemsSource="{CompiledBinding LayerBrushDescriptors}"
                                       SelectedItem="{CompiledBinding SelectedLayerBrushDescriptor}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate DataType="{x:Type layerBrushes:LayerBrushDescriptor}">
@@ -279,7 +279,7 @@
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
                             <ComboBox Width="150"
                                       SelectedItem="{CompiledBinding CorePreferredGraphicsContext.Value}"
-                                      Items="{CompiledBinding GraphicsContexts}" />
+                                      ItemsSource="{CompiledBinding GraphicsContexts}" />
                         </StackPanel>
                     </Grid>
                     <Border Classes="card-separator" />
@@ -296,9 +296,9 @@
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
                             <ComboBox Width="150"
                                       SelectedItem="{CompiledBinding SelectedRenderScale}"
-                                      Items="{CompiledBinding RenderScales}">
+                                      ItemsSource="{CompiledBinding RenderScales}">
                                 <ComboBox.ItemTemplate>
-                                    <DataTemplate>
+                                    <DataTemplate x:DataType="settings:RenderSettingViewModel">
                                         <TextBlock Text="{CompiledBinding Display}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
@@ -322,9 +322,9 @@
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
                             <ComboBox Width="150"
                                       SelectedItem="{CompiledBinding SelectedTargetFrameRate}"
-                                      Items="{CompiledBinding TargetFrameRates}">
+                                      ItemsSource="{CompiledBinding TargetFrameRates}">
                                 <ComboBox.ItemTemplate>
-                                    <DataTemplate>
+                                    <DataTemplate x:DataType="settings:RenderSettingViewModel">
                                         <TextBlock Text="{CompiledBinding Display}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>

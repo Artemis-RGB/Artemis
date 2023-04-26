@@ -11,7 +11,7 @@
         <ItemsControl Grid.Row="0"
                       Height="28"
                       IsVisible="{CompiledBinding !PropertyGroupViewModel.IsExpanded}"
-                      Items="{CompiledBinding KeyframePositions}"
+                      ItemsSource="{CompiledBinding KeyframePositions}"
                       HorizontalAlignment="Stretch">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -39,7 +39,7 @@
         <Rectangle Grid.Row="1" HorizontalAlignment="Stretch" Fill="{DynamicResource ButtonBorderBrush}" Height="1" />
 
         <ItemsControl Grid.Row="2"
-                      Items="{CompiledBinding Children}"
+                      ItemsSource="{CompiledBinding Children}"
                       IsVisible="{CompiledBinding PropertyGroupViewModel.IsExpanded}"
                       HorizontalAlignment="Stretch">
             <ItemsControl.DataTemplates>

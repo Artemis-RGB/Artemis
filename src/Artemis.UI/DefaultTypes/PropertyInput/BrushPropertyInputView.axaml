@@ -26,7 +26,7 @@
         <ComboBox Classes="brush condensed"
                   Width="200"
                   VerticalAlignment="Center"
-                  Items="{CompiledBinding Descriptors}"
+                  ItemsSource="{CompiledBinding Descriptors}"
                   SelectedItem="{CompiledBinding SelectedDescriptor}"
                   PlaceholderText="Please select a brush">
             <ComboBox.ItemTemplate>

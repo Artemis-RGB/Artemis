@@ -37,7 +37,7 @@
         <Border Grid.Row="1" Classes="card" Margin="0 15">
             <Panel>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" IsVisible="{CompiledBinding AdaptionHints.Count}">
-                    <ItemsControl Items="{CompiledBinding AdaptionHints}" Classes="adaption-hints">
+                    <ItemsControl ItemsSource="{CompiledBinding AdaptionHints}" Classes="adaption-hints">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Spacing="10" />

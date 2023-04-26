@@ -31,7 +31,7 @@
 
         <ListBox Grid.Row="0"
                  Grid.Column="0"
-                 Items="{CompiledBinding Prerequisites}"
+                 ItemsSource="{CompiledBinding Prerequisites}"
                  SelectedItem="{CompiledBinding ActivePrerequisite, Mode=OneWay}"
                  IsHitTestVisible="False">
             <ListBox.ItemTemplate>

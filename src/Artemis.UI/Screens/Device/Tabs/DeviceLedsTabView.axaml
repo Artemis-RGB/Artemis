@@ -13,7 +13,7 @@
         <converters:LedIdToStringConverter x:Key="LedIdToStringConverter" />
         <shared:ToStringConverter x:Key="ToStringConverter" />
     </UserControl.Resources>
-    <DataGrid Items="{CompiledBinding LedViewModels}" CanUserSortColumns="True" AutoGenerateColumns="False">
+    <DataGrid ItemsSource="{CompiledBinding LedViewModels}" CanUserSortColumns="True" AutoGenerateColumns="False">
         <DataGrid.Columns >
             <DataGridTemplateColumn CanUserSort="False" CanUserReorder="False" Header="Highlight"> 
                 <DataGridTemplateColumn.CellTemplate>

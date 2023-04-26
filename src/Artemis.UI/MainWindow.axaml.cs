@@ -25,6 +25,7 @@ public partial class MainWindow : ReactiveAppWindow<RootViewModel>
         InitializeComponent();
         ApplyWindowSize();
         
+        Shared.UI.Clipboard = GetTopLevel(this)!.Clipboard!;
         RootPanel.LayoutUpdated += OnLayoutUpdated;
 
 #if DEBUG

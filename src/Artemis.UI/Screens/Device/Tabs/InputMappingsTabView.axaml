@@ -42,7 +42,7 @@
             </StackPanel>
 
             <DataGrid Grid.Row="2"
-                      Items="{CompiledBinding InputMappings}"
+                      ItemsSource="{CompiledBinding InputMappings}"
                       CanUserSortColumns="True"
                       IsReadOnly="True"
                       AutoGenerateColumns="False"

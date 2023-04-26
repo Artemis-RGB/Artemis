@@ -62,7 +62,7 @@
             <ContentControl Content="{CompiledBinding DragViewModel}" ClipToBounds="False" />
 
             <!-- Cables -->
-            <ItemsControl Items="{CompiledBinding CableViewModels}" ClipToBounds="False">
+            <ItemsControl ItemsSource="{CompiledBinding CableViewModels}" ClipToBounds="False">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas />
@@ -71,7 +71,7 @@
             </ItemsControl>
 
             <!-- Nodes -->
-            <ItemsControl Name="NodesContainer" Items="{CompiledBinding NodeViewModels}" ClipToBounds="False">
+            <ItemsControl Name="NodesContainer" ItemsSource="{CompiledBinding NodeViewModels}" ClipToBounds="False">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas />

@@ -91,7 +91,7 @@
     </UserControl.Styles>
     <Grid RowDefinitions="*,Auto">
         <TreeView Name="Profile" Classes="no-right-margin draggable"
-                  Items="{CompiledBinding Children}"
+                  ItemsSource="{CompiledBinding Children}"
                   SelectedItem="{CompiledBinding SelectedChild}"
                   SelectionChanged="ProfileTreeView_OnSelectionChanged">
             <TreeView.Styles>

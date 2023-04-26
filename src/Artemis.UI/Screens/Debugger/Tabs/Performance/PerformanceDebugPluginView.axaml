@@ -12,7 +12,7 @@
                 <TextBlock Grid.Column="1" VerticalAlignment="Center" Classes="h5" Text="{Binding Plugin.Info.Name}" />
             </Grid>
 
-            <ItemsControl Items="{Binding Profilers}" />
+            <ItemsControl ItemsSource="{Binding Profilers}" />
         </StackPanel>
     </Border>
 </UserControl>

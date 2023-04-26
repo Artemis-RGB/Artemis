@@ -88,7 +88,7 @@
                             Background="{DynamicResource LightCheckerboardBrush}"
                             Margin="5 0">
                         <Border Background="{TemplateBinding LinearGradientBrush}">
-                            <ItemsControl Name="GradientStops" Items="{TemplateBinding EditingColorGradient}" ClipToBounds="False">
+                            <ItemsControl Name="GradientStops" ItemsSource="{TemplateBinding EditingColorGradient}" ClipToBounds="False">
                                 <ItemsControl.Styles>
                                     <Style Selector="ItemsControl#GradientStops > ContentPresenter">
                                         <Setter Property="Canvas.Left">
@@ -134,7 +134,7 @@
                                   Grid.Column="0"
                                   Grid.ColumnSpan="2"
                                   VerticalAlignment="Center"
-                                  Items="{TemplateBinding EditingColorGradient}"
+                                  ItemsSource="{TemplateBinding EditingColorGradient}"
                                   ClipToBounds="False"
                                   Margin="5 0">
                         <ItemsControl.Styles>
@@ -182,7 +182,7 @@
                         <ListBox Name="GradientColors"
                                  Grid.Row="0"
                                  MaxHeight="280"
-                                 Items="{TemplateBinding EditingColorGradient}"
+                                 ItemsSource="{TemplateBinding EditingColorGradient}"
                                  SelectedItem="{TemplateBinding SelectedColorStop, Mode=TwoWay}"
                                  Padding="10 0 15 0">
                             <ListBox.ItemTemplate>

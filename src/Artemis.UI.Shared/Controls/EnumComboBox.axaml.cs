@@ -91,7 +91,7 @@ public partial class EnumComboBox : UserControl
     protected override void OnAttachedToLogicalTree(LogicalTreeAttachmentEventArgs e)
     {
         _enumComboBox = this.Get<ComboBox>("ChildEnumComboBox");
-        _enumComboBox.Items = _currentValues;
+        _enumComboBox.ItemsSource = _currentValues;
 
         UpdateValues();
         UpdateSelection();

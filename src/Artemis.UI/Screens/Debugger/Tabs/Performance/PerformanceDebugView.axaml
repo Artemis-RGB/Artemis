@@ -34,7 +34,7 @@
 
 
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-            <ItemsControl Items="{Binding Items}" Margin="0 0 10 0" />
+            <ItemsControl ItemsSource="{Binding Items}" Margin="0 0 10 0" />
         </ScrollViewer>
     </Grid>
 

@@ -5,7 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.TimelinePropertyView">
     <Border Height="29" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource ButtonBorderBrush}">
-        <ItemsControl Items="{Binding KeyframeViewModels}">
+        <ItemsControl ItemsSource="{Binding KeyframeViewModels}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas />

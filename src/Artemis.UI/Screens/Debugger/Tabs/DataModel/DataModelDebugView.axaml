@@ -21,7 +21,7 @@
             </TextBlock>
         </StackPanel>
 
-        <TreeView Grid.Row="1" Items="{Binding MainDataModel.Children}">
+        <TreeView Grid.Row="1" ItemsSource="{Binding MainDataModel.Children}">
             <TreeView.Styles>
                 <Style Selector="TreeViewItem">
                     <Setter Property="IsExpanded" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />

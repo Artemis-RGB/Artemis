@@ -8,7 +8,7 @@
     <StackPanel>
         <TextBlock Classes="subtitle" Text="{Binding Profiler.Name}" Margin="10 10 0 0" />
 
-        <DataGrid Items="{Binding Measurements}"
+        <DataGrid ItemsSource="{Binding Measurements}"
                   CanUserSortColumns="True"
                   IsReadOnly="True"
                   AutoGenerateColumns="False"

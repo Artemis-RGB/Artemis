@@ -16,7 +16,7 @@
     <DockPanel>
         <ScrollViewer DockPanel.Dock="Left" VerticalScrollBarVisibility="Auto" Width="300" Margin="10">
             <StackPanel>
-                <ListBox Items="{CompiledBinding ScriptConfigurations}" SelectedItem="{CompiledBinding SelectedScript}">
+                <ListBox ItemsSource="{CompiledBinding ScriptConfigurations}" SelectedItem="{CompiledBinding SelectedScript}">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type scripting:ScriptConfigurationViewModel}">
                             <Grid ColumnDefinitions="Auto,*,Auto,Auto" RowDefinitions="*,*" Margin="4">

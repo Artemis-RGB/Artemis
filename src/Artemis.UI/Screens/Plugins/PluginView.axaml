@@ -22,7 +22,7 @@
 
             <TextBlock Grid.Column="1" Grid.Row="0" Classes="h5 no-margin" Text="{CompiledBinding Plugin.Info.Name}" />
 
-            <ItemsControl Grid.Column="2" Grid.Row="0" IsVisible="{CompiledBinding Platforms.Count}" Items="{CompiledBinding Platforms}" HorizontalAlignment="Right">
+            <ItemsControl Grid.Column="2" Grid.Row="0" IsVisible="{CompiledBinding Platforms.Count}" ItemsSource="{CompiledBinding Platforms}" HorizontalAlignment="Right">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Spacing="5" Orientation="Horizontal" />

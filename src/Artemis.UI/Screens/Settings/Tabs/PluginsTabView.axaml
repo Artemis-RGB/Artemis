@@ -25,7 +25,7 @@
         </Grid>
 
         <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
-            <ItemsRepeater Items="{CompiledBinding Plugins}" MaxWidth="900" VerticalAlignment="Center">
+            <ItemsRepeater ItemsSource="{CompiledBinding Plugins}" MaxWidth="900" VerticalAlignment="Center">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="plugins:PluginSettingsViewModel">
                         <ContentControl Content="{CompiledBinding}" Height="200"/>

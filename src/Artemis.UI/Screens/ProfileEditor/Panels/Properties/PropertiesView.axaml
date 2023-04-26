@@ -28,7 +28,7 @@
                           Name="TreeScrollViewer"
                           Offset="{CompiledBinding #TimelineScrollViewer.Offset, Mode=OneWay}">
                 <Grid RowDefinitions="*,Auto">
-                    <ItemsControl Items="{CompiledBinding PropertyGroupViewModels}" Padding="0 0 8 0">
+                    <ItemsControl ItemsSource="{CompiledBinding PropertyGroupViewModels}" Padding="0 0 8 0">
                         <ItemsControl.ItemTemplate>
                             <TreeDataTemplate DataType="{x:Type local:PropertyGroupViewModel}" ItemsSource="{CompiledBinding Children}">
                                 <ContentControl Content="{CompiledBinding TreeGroupViewModel}" />

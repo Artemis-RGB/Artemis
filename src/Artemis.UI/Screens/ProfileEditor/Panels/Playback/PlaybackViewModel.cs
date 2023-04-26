@@ -55,11 +55,11 @@ public class PlaybackViewModel : ActivatableViewModelBase
             _keyBindingsEnabled = Shared.UI.KeyBindingsEnabled.ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
 
             _lastUpdate = DateTime.MinValue;
-            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(60.0 / 1000), DispatcherPriority.Render, Update);
+            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(60.0 / 1000), DispatcherPriority.Background, Update);
             updateTimer.Start();
             Disposable.Create(() =>
             {
-                updateTimer.Stop();
+                // updateTimer.Stop();
                 _settingsService.GetSetting("ProfileEditor.RepeatTimeline", true).Value = _repeating && _repeatTimeline;
                 _settingsService.GetSetting("ProfileEditor.RepeatSegment", false).Value = _repeating && _repeatSegment;
             }).DisposeWith(d);

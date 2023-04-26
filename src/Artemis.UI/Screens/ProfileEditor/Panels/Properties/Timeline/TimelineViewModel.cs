@@ -169,10 +169,10 @@ public class TimelineViewModel : ActivatableViewModelBase
 
     private async Task ExecutePasteKeyframes()
     {
-        if (_profileElement == null || Application.Current?.Clipboard == null)
+        if (_profileElement == null)
             return;
 
-        List<KeyframeClipboardModel>? keyframes = await Application.Current.Clipboard.GetJsonAsync<List<KeyframeClipboardModel>>(KeyframeClipboardModel.ClipboardDataFormat);
+        List<KeyframeClipboardModel>? keyframes = await Shared.UI.Clipboard.GetJsonAsync<List<KeyframeClipboardModel>>(KeyframeClipboardModel.ClipboardDataFormat);
         if (keyframes == null)
             return;
 

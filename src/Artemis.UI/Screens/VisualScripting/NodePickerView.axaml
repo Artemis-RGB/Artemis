@@ -36,7 +36,7 @@
             <TextBox Name="SearchBox" Text="{CompiledBinding SearchText}" Margin="0 0 0 15" Watermark="Search"></TextBox>
             <TreeView Name="NodeTree"
                       Grid.Row="1"
-                      Items="{CompiledBinding Categories}"
+                      ItemsSource="{CompiledBinding Categories}"
                       IsVisible="{CompiledBinding Categories.Count}"
                       SelectedItem="{CompiledBinding SelectedNode}"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled">

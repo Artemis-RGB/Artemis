@@ -23,7 +23,7 @@
     <Grid Margin="15" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,*">
         <Menu Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Top" Margin="-10 -10 -10 0">
             <MenuItem Header="_File">
-                <MenuItem Header="Add Node" Items="{CompiledBinding Categories}">
+                <MenuItem Header="Add Node" ItemsSource="{CompiledBinding Categories}">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="Plus" />
                     </MenuItem.Icon>
@@ -31,7 +31,7 @@
                         <Style Selector="MenuItem > MenuItem > MenuItem">
                             <Setter Property="Command" Value="{Binding CreateNode}" />
                             <Setter Property="Header" Value="{Binding Header}" />
-                            <Setter Property="Items" Value="{Binding Items}" />
+                            <Setter Property="ItemsSource" Value="{Binding Items}" />
                         </Style>
                     </MenuItem.Styles>
                 </MenuItem>

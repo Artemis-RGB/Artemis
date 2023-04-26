@@ -3,6 +3,7 @@ using Artemis.Core;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Avalonia;
+using Avalonia.Controls;
 using RGB.NET.Core;
 
 namespace Artemis.UI.Screens.Device;
@@ -25,13 +26,4 @@ public class DeviceInfoTabViewModel : ActivatableViewModelBase
     public ArtemisDevice Device { get; }
 
     public string DefaultLayoutPath { get; }
-
-    public async Task CopyToClipboard(string content)
-    {
-        if (Application.Current?.Clipboard == null)
-            return;
-
-        await Application.Current.Clipboard.SetTextAsync(content);
-        _notificationService.CreateNotification().WithMessage("Copied path to clipboard.").Show();
-    }
 }

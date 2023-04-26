@@ -218,7 +218,7 @@
         <Panel Grid.Row="1" IsVisible="{CompiledBinding !IsCollapsed}">
             <ListBox Name="SidebarListBox"
                      Classes="sidebar-listbox"
-                     Items="{CompiledBinding ProfileConfigurations}"
+                     ItemsSource="{CompiledBinding ProfileConfigurations}"
                      SelectedItem="{CompiledBinding SelectedProfileConfiguration}"
                      MinHeight="35"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"

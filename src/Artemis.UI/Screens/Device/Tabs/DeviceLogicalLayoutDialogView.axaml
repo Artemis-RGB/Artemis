@@ -16,7 +16,7 @@
         </TextBlock>
 
         <AutoCompleteBox HorizontalAlignment="Stretch" 
-                         Items="{CompiledBinding Regions}" 
+                         ItemsSource="{CompiledBinding Regions}" 
                          SelectedItem="{CompiledBinding SelectedRegion}"
                          ValueMemberBinding="{Binding EnglishName}"
                          Watermark="Enter keyboard country name"

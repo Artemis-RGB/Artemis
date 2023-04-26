@@ -293,22 +293,16 @@ public class NodeScriptViewModel : ActivatableViewModelBase
 
     private async Task ExecuteCopySelected()
     {
-        if (Application.Current?.Clipboard == null)
-            return;
-
         List<INode> nodes = NodeViewModels.Where(vm => vm.IsSelected).Select(vm => vm.Node).Where(n => !n.IsDefaultNode && !n.IsExitNode).ToList();
         DataObject dataObject = new();
         string copy = CoreJson.SerializeObject(new NodesClipboardModel(NodeScript, nodes), true);
         dataObject.Set(CLIPBOARD_DATA_FORMAT, copy);
-        await Application.Current.Clipboard.SetDataObjectAsync(dataObject);   
+        await Shared.UI.Clipboard.SetDataObjectAsync(dataObject);   
     }
 
     private async Task ExecutePasteSelected()
     {
-        if (Application.Current?.Clipboard == null)
-            return;
-
-        byte[]? bytes = (byte[]?) await Application.Current.Clipboard.GetDataAsync(CLIPBOARD_DATA_FORMAT);
+        byte[]? bytes = (byte[]?) await Shared.UI.Clipboard.GetDataAsync(CLIPBOARD_DATA_FORMAT);
         if (bytes == null!)
             return;
 
