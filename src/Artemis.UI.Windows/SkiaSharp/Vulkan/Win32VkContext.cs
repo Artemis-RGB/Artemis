@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Artemis.UI.Windows.Extensions;
-using Avalonia.Controls.Platform;
-using Avalonia.Platform;
 using SharpVk;
 using SharpVk.Khronos;
 
@@ -10,12 +7,16 @@ namespace Artemis.UI.Windows.SkiaSharp.Vulkan;
 
 internal sealed class Win32VkContext : VkContext
 {
+    private readonly nint _hWnd;
+
     public Win32VkContext()
     {
-        Window = PlatformManager.CreateWindow();
+        // Use WS_CHILD and WS_VISIBLE with WS_VISIBLE set to false
+        _hWnd = User32.CreateWindowEx(0, "STATIC", "", 0x80000000, 0, 0, 0, 0, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+
         Instance = Instance.Create(null, new[] {"VK_KHR_surface", "VK_KHR_win32_surface"});
         PhysicalDevice = Instance.EnumeratePhysicalDevices().First();
-        Surface = Instance.CreateWin32Surface(Kernel32.CurrentModuleHandle, Window.GetHandle().Handle);
+        Surface = Instance.CreateWin32Surface(Kernel32.CurrentModuleHandle, _hWnd);
 
         (GraphicsFamily, PresentFamily) = FindQueueFamilies();
 
@@ -45,12 +46,10 @@ internal sealed class Win32VkContext : VkContext
         };
     }
 
-    public IWindowImpl Window { get; }
-
     public override void Dispose()
     {
         base.Dispose();
-        Window.Dispose();
+        User32.DestroyWindow(_hWnd);
     }
 
     private IntPtr Proc(string name, IntPtr instanceHandle, IntPtr deviceHandle)
