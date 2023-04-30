@@ -15,7 +15,7 @@
             BorderBrush="{DynamicResource ButtonBorderBrush}"
             BorderThickness="0,0,0,1"
             Height="29">
-        <Grid Margin="{Binding Converter={StaticResource PropertyTreeMarginConverter}}" ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+        <Grid Margin="{CompiledBinding Converter={StaticResource PropertyTreeMarginConverter}}" ColumnDefinitions="Auto,*,Auto,Auto,Auto">
             <ToggleButton Grid.Column="0"
                           Classes="icon-button"
                           ToolTip.Tip="Toggle key-framing"

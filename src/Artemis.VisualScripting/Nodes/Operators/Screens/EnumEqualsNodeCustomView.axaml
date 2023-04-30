@@ -3,10 +3,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="clr-namespace:Artemis.VisualScripting.Nodes.Operators.Screens"
+             x:DataType="vm:EnumEqualsNodeCustomViewModel"
              x:Class="Artemis.VisualScripting.Nodes.Operators.Screens.EnumEqualsNodeCustomView">
-    <ComboBox IsEnabled="{Binding EnumValues.Count}"
-              ItemsSource="{Binding EnumValues}"
-              SelectedItem="{Binding CurrentValue}"
+    <ComboBox IsEnabled="{CompiledBinding EnumValues.Count}"
+              ItemsSource="{CompiledBinding EnumValues}"
+              SelectedItem="{CompiledBinding CurrentValue}"
               PlaceholderText="Select a value"
               Classes="condensed"
               VerticalAlignment="Center">
@@ -17,7 +19,7 @@
         </ComboBox.ItemsPanel>
         <ComboBox.ItemTemplate>
             <DataTemplate>
-                <TextBlock Text="{Binding [1]}" />
+                <TextBlock Text="{CompiledBinding Path=Name}" />
             </DataTemplate>
         </ComboBox.ItemTemplate>
     </ComboBox>

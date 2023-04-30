@@ -20,10 +20,8 @@ public partial class EnumComboBox : UserControl
     /// </summary>
     public static readonly StyledProperty<object?> ValueProperty = AvaloniaProperty.Register<EnumComboBox, object?>(nameof(Value), defaultBindingMode: BindingMode.TwoWay);
 
-    private readonly ObservableCollection<(Enum, string)> _currentValues = new();
+    private readonly ObservableCollection<EnumComboBoxItem> _currentValues = new();
     private Type? _currentType;
-
-    private ComboBox? _enumComboBox;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="EnumComboBox" /> class.
@@ -54,35 +52,35 @@ public partial class EnumComboBox : UserControl
 
     private void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (_enumComboBox == null || _enumComboBox.SelectedIndex == -1)
+        if (ChildEnumComboBox == null || ChildEnumComboBox.SelectedIndex == -1)
             return;
 
-        (Enum enumValue, _) = _currentValues[_enumComboBox.SelectedIndex];
-        if (!Equals(Value, enumValue))
-            Value = enumValue;
+        EnumComboBoxItem v = _currentValues[ChildEnumComboBox.SelectedIndex];
+        if (!Equals(Value, v.Value))
+            Value = v.Value;
     }
 
     private void UpdateValues()
     {
         Type? newType = Value?.GetType();
-        if (_enumComboBox == null || newType == null || _currentType == newType)
+        if (ChildEnumComboBox == null || newType == null || _currentType == newType)
             return;
 
         _currentValues.Clear();
         foreach ((Enum, string) valueDesc in EnumUtilities.GetAllValuesAndDescriptions(newType))
-            _currentValues.Add(valueDesc);
+            _currentValues.Add(new EnumComboBoxItem(value: valueDesc.Item1, description: valueDesc.Item2));
 
         _currentType = newType;
     }
 
     private void UpdateSelection()
     {
-        if (_enumComboBox == null || Value is not Enum)
+        if (ChildEnumComboBox == null || Value is not Enum)
             return;
 
-        (Enum, string) value = _currentValues.FirstOrDefault(v => v.Item1.Equals(Value));
-        if (!Equals(value.Item1, _enumComboBox.SelectedItem))
-            _enumComboBox.SelectedItem = value;
+        EnumComboBoxItem? value = _currentValues.FirstOrDefault(v => v.Value.Equals(Value));
+        if (!Equals(value?.Value, ChildEnumComboBox.SelectedItem))
+            ChildEnumComboBox.SelectedItem = value;
     }
 
     #region Overrides of TemplatedControl
@@ -90,12 +88,11 @@ public partial class EnumComboBox : UserControl
     /// <inheritdoc />
     protected override void OnAttachedToLogicalTree(LogicalTreeAttachmentEventArgs e)
     {
-        _enumComboBox = this.Get<ComboBox>("ChildEnumComboBox");
-        _enumComboBox.ItemsSource = _currentValues;
+        ChildEnumComboBox.ItemsSource = _currentValues;
 
         UpdateValues();
         UpdateSelection();
-        _enumComboBox.SelectionChanged += OnSelectionChanged;
+        ChildEnumComboBox.SelectionChanged += OnSelectionChanged;
 
         base.OnAttachedToLogicalTree(e);
     }
@@ -103,11 +100,36 @@ public partial class EnumComboBox : UserControl
     /// <inheritdoc />
     protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
     {
-        if (_enumComboBox != null)
-            _enumComboBox.SelectionChanged -= OnSelectionChanged;
+        if (ChildEnumComboBox != null)
+            ChildEnumComboBox.SelectionChanged -= OnSelectionChanged;
 
         base.OnDetachedFromLogicalTree(e);
     }
 
     #endregion
+}
+
+/// <summary>
+///     Represents an item in the <see cref="EnumComboBox" />
+/// </summary>
+public class EnumComboBoxItem
+{
+    /// <summary>
+    ///     Creates a new instance of the <see cref="EnumComboBoxItem" /> class.
+    /// </summary>
+    public EnumComboBoxItem(Enum value, string description)
+    {
+        Value = value;
+        Description = description;
+    }
+
+    /// <summary>
+    ///     Gets or sets the value of the item
+    /// </summary>
+    public Enum Value { get; set; }
+        
+    /// <summary>
+    ///     Gets or sets the description of the item
+    /// </summary>
+    public string Description { get; set; }
 }
