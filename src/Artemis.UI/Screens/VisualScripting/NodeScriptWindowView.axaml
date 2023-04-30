@@ -28,10 +28,10 @@
                         <avalonia:MaterialIcon Kind="Plus" />
                     </MenuItem.Icon>
                     <MenuItem.Styles>
-                        <Style Selector="MenuItem > MenuItem > MenuItem">
-                            <Setter Property="Command" Value="{Binding CreateNode}" />
-                            <Setter Property="Header" Value="{Binding Header}" />
-                            <Setter Property="ItemsSource" Value="{Binding Items}" />
+                        <Style Selector="MenuItem > MenuItem > MenuItem" x:DataType="visualScripting:NodeMenuItemViewModel">
+                            <Setter Property="Command" Value="{CompiledBinding CreateNode}" />
+                            <Setter Property="Header" Value="{CompiledBinding Header}" />
+                            <Setter Property="ItemsSource" Value="{CompiledBinding Items}" />
                         </Style>
                     </MenuItem.Styles>
                 </MenuItem>

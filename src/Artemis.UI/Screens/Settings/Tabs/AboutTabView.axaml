@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:vm="clr-namespace:Artemis.UI.Screens.Settings;assembly=Artemis.UI"
+             x:DataType="vm:AboutTabViewModel"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="1400"
              x:Class="Artemis.UI.Screens.Settings.AboutTabView">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -30,7 +32,7 @@
                            Grid.Column="1"
                            VerticalAlignment="Top"
                            Classes="subtitle"
-                           Text="{Binding Version}" />
+                           Text="{CompiledBinding Version}" />
 
                 <controls:HyperlinkButton Grid.Row="1"
                                           Grid.Column="2"
@@ -50,9 +52,9 @@
                                  Height="75"
                                  Width="75"
                                  Margin="0 0 15 0"
-                                 IsVisible="{Binding RobertProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                 IsVisible="{CompiledBinding RobertProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                             <Ellipse.Fill>
-                                <ImageBrush Source="{Binding RobertProfileImage}" BitmapInterpolationMode="HighQuality" />
+                                <ImageBrush Source="{CompiledBinding RobertProfileImage}" BitmapInterpolationMode="HighQuality" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
@@ -78,9 +80,9 @@
                                  Height="75"
                                  Width="75"
                                  Margin="0 0 15 0"
-                                 IsVisible="{Binding DarthAffeProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                 IsVisible="{CompiledBinding DarthAffeProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                             <Ellipse.Fill>
-                                <ImageBrush Source="{Binding DarthAffeProfileImage}" BitmapInterpolationMode="HighQuality" />
+                                <ImageBrush Source="{CompiledBinding DarthAffeProfileImage}" BitmapInterpolationMode="HighQuality" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
@@ -106,9 +108,9 @@
                                  Height="75"
                                  Width="75"
                                  Margin="0 0 15 0"
-                                 IsVisible="{Binding DrMeteorProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                 IsVisible="{CompiledBinding DrMeteorProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                             <Ellipse.Fill>
-                                <ImageBrush Source="{Binding DrMeteorProfileImage}" BitmapInterpolationMode="HighQuality" />
+                                <ImageBrush Source="{CompiledBinding DrMeteorProfileImage}" BitmapInterpolationMode="HighQuality" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
@@ -134,9 +136,9 @@
                                  Height="75"
                                  Width="75"
                                  Margin="0 0 15 0"
-                                 IsVisible="{Binding KaiProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                 IsVisible="{CompiledBinding KaiProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                             <Ellipse.Fill>
-                                <ImageBrush Source="{Binding KaiProfileImage}" BitmapInterpolationMode="HighQuality" />
+                                <ImageBrush Source="{CompiledBinding KaiProfileImage}" BitmapInterpolationMode="HighQuality" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">

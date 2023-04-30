@@ -10,7 +10,7 @@
         <TabControl Margin="12" ItemsSource="{CompiledBinding SettingTabs}" SelectedItem="{CompiledBinding SelectedTab}">
             <TabControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding DisplayName}" />
+                    <TextBlock Text="{CompiledBinding DisplayName}" />
                 </DataTemplate>
             </TabControl.ItemTemplate>
         </TabControl>

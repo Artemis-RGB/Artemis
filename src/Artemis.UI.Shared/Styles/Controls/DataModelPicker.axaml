@@ -19,7 +19,7 @@
                             <Grid ColumnDefinitions="Auto,*"
                                   RowDefinitions="*"
                                   MinHeight="38"
-                                  IsVisible="{Binding DataModelPath, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                  IsVisible="{CompiledBinding DataModelPath, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}">
                                 <avalonia:MaterialIcon Grid.Column="0"
 													   Grid.Row="0" 
                                                        Name="CurrentPathIcon" 
@@ -27,7 +27,7 @@
                                                        Height="22"
                                                        Width="22"
                                                        Margin="5 0 15 0" 
-                                                       IsVisible="{Binding !IsEventPicker, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                                       IsVisible="{CompiledBinding !IsEventPicker, RelativeSource={RelativeSource TemplatedParent}}"/>
                                 <avalonia:MaterialIcon Grid.Column="0"
                                                        Grid.Row="0" 
                                                        Name="EventIcon"
@@ -35,14 +35,14 @@
                                                        Height="22"
                                                        Width="22" 
                                                        Margin="5 0 15 0"
-                                                       IsVisible="{Binding IsEventPicker, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                                       IsVisible="{CompiledBinding IsEventPicker, RelativeSource={RelativeSource TemplatedParent}}"/>
                                 <StackPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Center">
                                     <TextBlock Name="CurrentPathDisplay" Classes="BodyStrongTextBlockStyle" MaxHeight="50" />
                                     <TextBlock Name="CurrentPathDescription" Classes="BodyTextBlockStyle" Foreground="{DynamicResource TextFillColorSecondary}" MaxHeight="50" />
                                 </StackPanel>
                             </Grid>
                             <Grid MinHeight="38"
-                                  IsVisible="{Binding DataModelPath, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNull}}" ColumnDefinitions="*,Auto"
+                                  IsVisible="{CompiledBinding DataModelPath, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNull}}" ColumnDefinitions="*,Auto"
                                   RowDefinitions="*,*">
                                 <TextBlock Grid.Column="0" Grid.Row="0" Classes="BodyStrongTextBlockStyle">Welcome to the data model picker</TextBlock>
                                 <TextBlock Grid.Column="0" Grid.Row="1" Foreground="{DynamicResource TextFillColorSecondary}">Select a value from the data model below</TextBlock>
@@ -53,19 +53,19 @@
 
                     <TreeView Grid.Row="2"
                               Name="DataModelTreeView"
-                              ItemsSource="{Binding DataModelViewModel.Children, RelativeSource={RelativeSource TemplatedParent}}">
+                              ItemsSource="{CompiledBinding DataModelViewModel.Children, RelativeSource={RelativeSource TemplatedParent}}">
                         <TreeView.Styles>
                             <Style Selector="TreeViewItem">
-                                <Setter Property="IsExpanded" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
-                                <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes, Mode=OneWay}" />
+                                <Setter Property="IsExpanded" Value="{CompiledBinding IsVisualizationExpanded, Mode=TwoWay, DataType=dataModel:DataModelVisualizationViewModel}" />
+                                <Setter Property="IsEnabled" Value="{CompiledBinding IsMatchingFilteredTypes, Mode=OneWay, DataType=dataModel:DataModelVisualizationViewModel}" />
                             </Style>
                         </TreeView.Styles>
                         <TreeView.DataTemplates>
-                            <TreeDataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}" ItemsSource="{Binding Children}">
+                            <TreeDataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}" ItemsSource="{CompiledBinding Children}">
                                 <Grid ColumnDefinitions="Auto,*">
-                                    <TextBlock Grid.Column="0" Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
+                                    <TextBlock Grid.Column="0" Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
                                     <TextBlock Grid.Column="1"
-                                               Text="{Binding DisplayValue}"
+                                               Text="{CompiledBinding DisplayValue}"
                                                FontFamily="Consolas"
                                                HorizontalAlignment="Right"
                                                Margin="0 0 10 0" />
@@ -75,29 +75,29 @@
                             <TreeDataTemplate DataType="{x:Type dataModel:DataModelPropertyViewModel}">
                                 <Grid ColumnDefinitions="Auto,*">
                                     <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                        <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
+                                        <TextBlock Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
                                         <TextBlock Text=" changed"
-                                                   ToolTip.Tip="{Binding PropertyDescription.Description}"
-                                                   IsVisible="{Binding IsEventPicker, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type dataModelPicker:DataModelPicker}}}"/>
+                                                   ToolTip.Tip="{CompiledBinding PropertyDescription.Description}"
+                                                   IsVisible="{CompiledBinding IsEventPicker, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type dataModelPicker:DataModelPicker}}}"/>
                                     </StackPanel>
 
-                                    <ContentControl Grid.Column="1" Content="{Binding DisplayViewModel}" FontFamily="Consolas" Margin="0 0 10 0" />
+                                    <ContentControl Grid.Column="1" Content="{CompiledBinding DisplayViewModel}" FontFamily="Consolas" Margin="0 0 10 0" />
                                 </Grid>
                             </TreeDataTemplate>
 
                             <TreeDataTemplate DataType="{x:Type dataModel:DataModelListViewModel}">
                                 <Grid ColumnDefinitions="Auto,*">
-                                    <TextBlock Grid.Column="0" Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
+                                    <TextBlock Grid.Column="0" Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
                                     <TextBlock Grid.Column="1"
-                                               Text="{Binding CountDisplay, Mode=OneWay}"
+                                               Text="{CompiledBinding CountDisplay, Mode=OneWay}"
                                                FontFamily="Consolas"
                                                HorizontalAlignment="Right"
                                                Margin="0 0 10 0" />
                                 </Grid>
                             </TreeDataTemplate>
 
-                            <TreeDataTemplate DataType="{x:Type dataModel:DataModelEventViewModel}" ItemsSource="{Binding Children}">
-                                <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
+                            <TreeDataTemplate DataType="{x:Type dataModel:DataModelEventViewModel}" ItemsSource="{CompiledBinding Children}">
+                                <TextBlock Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
                             </TreeDataTemplate>
                         </TreeView.DataTemplates>
                     </TreeView>

@@ -35,6 +35,7 @@ public partial class HotkeyBox : UserControl
         UpdateDisplayTextBox();
     }
 
+    /// <inheritdoc />
     protected override void OnGotFocus(GotFocusEventArgs e)
     {
         _inputService.KeyboardKeyDown += InputServiceOnKeyboardKeyDown;
@@ -43,6 +44,7 @@ public partial class HotkeyBox : UserControl
         base.OnGotFocus(e);
     }
 
+    /// <inheritdoc />
     protected override void OnLostFocus(RoutedEventArgs e)
     {
         _inputService.KeyboardKeyDown -= InputServiceOnKeyboardKeyDown;

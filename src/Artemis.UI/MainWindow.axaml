@@ -2,10 +2,11 @@
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                     xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
                      xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
+                     xmlns:vm="clr-namespace:Artemis.UI.Screens.Root"
                      mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                      x:Class="Artemis.UI.MainWindow"
+                     x:DataType="vm:RootViewModel"
                      Icon="/Assets/Images/Logo/application.ico"
                      Title="Artemis 2.0"
                      MinWidth="600"
@@ -22,7 +23,7 @@
     </windowing:AppWindow.Styles>
     <Panel Name="RootPanel">
         <DockPanel>
-            <ContentControl Name="SidebarContentControl" Content="{Binding SidebarViewModel}" DockPanel.Dock="Left" Width="240">
+            <ContentControl Name="SidebarContentControl" Content="{CompiledBinding SidebarViewModel}" DockPanel.Dock="Left" Width="240">
                 <ContentControl.Transitions>
                     <Transitions>
                         <DoubleTransition Property="Width" Duration="0:0:0.2" Easing="CubicEaseOut"></DoubleTransition>
@@ -30,9 +31,9 @@
                 </ContentControl.Transitions>
             </ContentControl>
             <Border Name="TitleBarContainer" DockPanel.Dock="Top">
-                <ContentControl Content="{Binding TitleBarViewModel}"/>
+                <ContentControl Content="{CompiledBinding TitleBarViewModel}"/>
             </Border>
-            <ContentControl Content="{Binding}" />
+            <ContentControl Content="{CompiledBinding}" />
         </DockPanel>
         <StackPanel Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
     </Panel>

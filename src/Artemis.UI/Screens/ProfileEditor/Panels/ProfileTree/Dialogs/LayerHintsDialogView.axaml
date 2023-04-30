@@ -46,7 +46,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Border Classes="card-condensed">
-                                    <ContentControl Content="{Binding}"></ContentControl>
+                                    <ContentControl Content="{CompiledBinding}"></ContentControl>
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -67,22 +67,22 @@
         </Border>
 
         <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
-            <Button Grid.Row="0" Grid.Column="0" Command="{Binding AutoDetermineHints}">Auto-determine hints</Button>
+            <Button Grid.Row="0" Grid.Column="0" Command="{CompiledBinding AutoDetermineHints}">Auto-determine hints</Button>
             <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="5">
                 <DropDownButton>
                     <DropDownButton.Flyout>
                         <MenuFlyout Placement="Top">
-                            <MenuItem Header="Category hint" Command="{Binding AddCategoryHint}">
+                            <MenuItem Header="Category hint" Command="{CompiledBinding AddCategoryHint}">
                                 <MenuItem.Icon>
                                     <avalonia:MaterialIcon Kind="Desk" />
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Device type hint" Command="{Binding AddDeviceHint}">
+                            <MenuItem Header="Device type hint" Command="{CompiledBinding AddDeviceHint}">
                                 <MenuItem.Icon>
                                     <avalonia:MaterialIcon Kind="Devices" />
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Keyboard-section hint" Command="{Binding AddKeyboardSectionHint}">
+                            <MenuItem Header="Keyboard-section hint" Command="{CompiledBinding AddKeyboardSectionHint}">
                                 <MenuItem.Icon>
                                     <avalonia:MaterialIcon Kind="Keyboard" />
                                 </MenuItem.Icon>
@@ -91,7 +91,7 @@
                     </DropDownButton.Flyout>
                     Add hint
                 </DropDownButton>
-                <Button Command="{Binding Finish}">Close</Button>
+                <Button Command="{CompiledBinding Finish}">Close</Button>
             </StackPanel>
         </Grid>
 

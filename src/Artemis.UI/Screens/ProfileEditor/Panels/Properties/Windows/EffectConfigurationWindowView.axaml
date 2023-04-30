@@ -3,16 +3,18 @@
                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                      xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
+                     xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Windows"
+                     x:DataType="local:EffectConfigurationWindowViewModel"
                      mc:Ignorable="d"
                      d:DesignWidth="800"
                      d:DesignHeight="450"
                      x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Windows.EffectConfigurationWindowView"
                      Icon="/Assets/Images/Logo/application.ico"
                      Title="Artemis | Effect configuration"
-                     Width="{Binding Configuration.DialogWidth}"
-                     Height="{Binding Configuration.DialogHeight}"
+                     Width="{CompiledBinding Configuration.DialogWidth}"
+                     Height="{CompiledBinding Configuration.DialogHeight}"
                      WindowStartupLocation="CenterOwner">
     <Panel>
-        <ContentControl Content="{Binding ConfigurationViewModel}" />
+        <ContentControl Content="{CompiledBinding ConfigurationViewModel}" />
     </Panel>
 </windowing:AppWindow>

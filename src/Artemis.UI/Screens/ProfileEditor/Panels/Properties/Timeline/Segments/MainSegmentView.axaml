@@ -22,7 +22,7 @@
                             <avalonia:MaterialIcon Kind="Edit" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Remove segment" Command="{Binding RemoveSegment}">
+                    <MenuItem Header="Remove segment" Command="{CompiledBinding RemoveSegment}">
                         <MenuItem.Icon>
                             <avalonia:MaterialIcon Kind="Remove" />
                         </MenuItem.Icon>
@@ -39,7 +39,7 @@
                     Classes="AppBarButton icon-button icon-button-small"
                     VerticalAlignment="Center"
                     ToolTip.Tip="Add a start segment"
-                    Command="{Binding AddStartSegment}"
+                    Command="{CompiledBinding AddStartSegment}"
                     IsVisible="{CompiledBinding ShowAddStart}">
                 <avalonia:MaterialIcon Kind="PlusCircle" />
             </Button>
@@ -56,7 +56,7 @@
                 <Button Name="SegmentClose"
                         Classes="AppBarButton icon-button icon-button-small"
                         ToolTip.Tip="Remove this segment"
-                        Command="{Binding RemoveSegment}">
+                        Command="{CompiledBinding RemoveSegment}">
                     <avalonia:MaterialIcon Kind="CloseCircle" />
                 </Button>
             </StackPanel>
@@ -66,7 +66,7 @@
                     Classes="AppBarButton icon-button icon-button-small"
                     VerticalAlignment="Center"
                     ToolTip.Tip="Add an end segment"
-                    Command="{Binding AddEndSegment}"
+                    Command="{CompiledBinding AddEndSegment}"
                     IsVisible="{CompiledBinding ShowAddEnd}">
                 <avalonia:MaterialIcon Kind="PlusCircle" />
             </Button>

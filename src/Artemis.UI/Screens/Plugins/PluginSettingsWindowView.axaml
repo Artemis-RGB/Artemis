@@ -13,7 +13,7 @@
                      Height="800"
                      WindowStartupLocation="CenterOwner">
     <Panel>
-        <ContentControl Content="{Binding ConfigurationViewModel}"></ContentControl>
+        <ContentControl Content="{CompiledBinding ConfigurationViewModel}"></ContentControl>
         <StackPanel Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
     </Panel>
 </windowing:AppWindow>
