@@ -6,8 +6,10 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Shared;
+using HidSharp.Reports.Units;
 using ReactiveUI;
 using RGB.NET.Core;
+using Unit = System.Reactive.Unit;
 
 namespace Artemis.UI.Screens.Device;
 
@@ -30,13 +32,13 @@ public class InputMappingsTabViewModel : ActivatableViewModelBase
         Device = device;
         DisplayName = "Input Mappings";
         InputMappings = new ObservableCollection<(ArtemisLed, ArtemisLed)>();
-
+        DeleteMapping = ReactiveCommand.Create<(ArtemisLed, ArtemisLed)>(ExecuteDeleteMapping);
+        
         this.WhenActivated(d =>
         {
             _selectedLeds.CollectionChanged += SelectedLedsOnCollectionChanged;
             _inputService.KeyboardKeyUp += InputServiceOnKeyboardKeyUp;
             UpdateInputMappings();
-
             Disposable.Create(() =>
             {
                 _selectedLeds.CollectionChanged -= SelectedLedsOnCollectionChanged;
@@ -45,6 +47,8 @@ public class InputMappingsTabViewModel : ActivatableViewModelBase
             }).DisposeWith(d);
         });
     }
+
+    public ReactiveCommand<(ArtemisLed, ArtemisLed), Unit> DeleteMapping { get; }
 
     public ArtemisDevice Device { get; }
 
@@ -56,7 +60,7 @@ public class InputMappingsTabViewModel : ActivatableViewModelBase
 
     public ObservableCollection<(ArtemisLed, ArtemisLed)> InputMappings { get; }
 
-    public void DeleteMapping((ArtemisLed, ArtemisLed) inputMapping)
+    private void ExecuteDeleteMapping((ArtemisLed, ArtemisLed) inputMapping)
     {
         Device.InputMappings.Remove(inputMapping.Item1);
         UpdateInputMappings();
