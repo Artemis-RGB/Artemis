@@ -19,7 +19,7 @@ public class LinuxInputDevice
             switch (dataType)
             {
                 case 'I':
-                    InputId = new LinuxInputId(data);
+                    InputId = data;
                     break;
                 case 'N':
                     Name = data.Replace("\"", "").Replace("Name=", "");
@@ -27,14 +27,16 @@ public class LinuxInputDevice
                 case 'H':
                     Handlers = data.Replace("Handlers=", "").Split(" ");
 
-                    if (Handlers?.Any(h => h.Contains("mouse")) == true)
+                    if (Handlers.Any(h => h.Contains("mouse")))
                         DeviceType = LinuxDeviceType.Mouse;
-                    else if (Handlers?.Any(h => h.Contains("kbd")) == true)
+                    else if (Handlers.Any(h => h.Contains("kbd")))
                         DeviceType = LinuxDeviceType.Keyboard;
-                    else if (Handlers?.Any(h => h.Contains("js")) == true)
+                    else if (Handlers.Any(h => h.Contains("js")))
                         DeviceType = LinuxDeviceType.Gamepad;
+                    else
+                        DeviceType = LinuxDeviceType.Unknown;
 
-                    string evt = Handlers!.First(h => h.Contains("event"));
+                    string evt = Handlers.First(h => h.Contains("event"));
 
                     EventPath = $"/dev/input/{evt}";
                     break;
@@ -45,7 +47,7 @@ public class LinuxInputDevice
             throw new ArtemisLinuxInputProviderException("Linux device definition did not contain necessary data");
     }
 
-    public LinuxInputId InputId { get; }
+    public string InputId { get; }
     public string Name { get; }
     public string[] Handlers { get; }
     public string EventPath { get; }
@@ -60,29 +62,4 @@ public class LinuxInputDevice
     }
 
     #endregion
-
-    public class LinuxInputId
-    {
-        public LinuxInputId(string line)
-        {
-            Dictionary<string, string> components = line.Split(" ")
-                .Select(c => c.Split('='))
-                .ToDictionary(c => c[0], c => c[1]);
-
-            Bus = components["Bus"];
-            Vendor = components["Vendor"];
-            Product = components["Product"];
-            Version = components["Version"];
-        }
-
-        public string Bus { get; }
-        public string Vendor { get; }
-        public string Product { get; }
-        public string Version { get; }
-
-        public override string ToString()
-        {
-            return $"Bus={Bus} Vendor={Vendor} Product={Product} Version={Version}";
-        }
-    }
 }

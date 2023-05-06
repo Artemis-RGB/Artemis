@@ -75,7 +75,7 @@ public class LinuxInputProvider : InputProvider
 
         //_logger.Verbose($"Keyboard Key: {(LinuxKeyboardKeyCodes)args.Code} | Down: {isDown}");
 
-        LinuxInputDevice.LinuxInputId identifier = keyboard.InputId;
+        string identifier = keyboard.InputId;
         OnIdentifierReceived(identifier, InputDeviceType.Keyboard);
         ArtemisDevice? device = null;
 
@@ -93,7 +93,7 @@ public class LinuxInputProvider : InputProvider
 
     private void HandleMouseData(LinuxInputDevice mouse, LinuxInputEventArgs args)
     {
-        LinuxInputDevice.LinuxInputId identifier = mouse.InputId;
+        string identifier = mouse.InputId;
         OnIdentifierReceived(identifier, InputDeviceType.Mouse);
         ArtemisDevice? device = null;
 
