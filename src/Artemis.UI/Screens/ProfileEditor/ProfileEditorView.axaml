@@ -47,8 +47,8 @@
             <Setter Property="Width" Value="18" />
             <Setter Property="Height" Value="18" />
         </Style>
-        <Style Selector="Window:windows Grid.editor-grid">
-            <Setter Property="Margin" Value="0 0 4 4" />
+        <Style Selector="Grid.editor-grid">
+            <Setter Property="Margin" Value="0 0 6 6" />
         </Style>
     </UserControl.Styles>
     <Grid Classes="editor-grid">
