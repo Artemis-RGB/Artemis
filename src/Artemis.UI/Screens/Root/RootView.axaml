@@ -7,7 +7,7 @@
              x:Class="Artemis.UI.Screens.Root.RootView">
 	<reactiveUi:RoutedViewHost Router="{Binding Router}">
         <reactiveUi:RoutedViewHost.PageTransition>
-            <CrossFade Duration="0.1" />
+            <CompositePageTransition></CompositePageTransition>
         </reactiveUi:RoutedViewHost.PageTransition>
     </reactiveUi:RoutedViewHost>
 </UserControl>

@@ -27,6 +27,8 @@
                             AcceptsExpression="True"
                             LargeChange="{Binding $parent[sharedControls:DraggableNumberBox].LargeChange}"
                             SmallChange="{Binding $parent[sharedControls:DraggableNumberBox].SmallChange}"
+                            Minimum="{Binding $parent[sharedControls:DraggableNumberBox].Minimum}"
+                            Maximum="{Binding $parent[sharedControls:DraggableNumberBox].Maximum}"
                             SimpleNumberFormat="{Binding $parent[sharedControls:DraggableNumberBox].SimpleNumberFormat}"
                             attachedProperties:NumberBoxAssist.PrefixText="{Binding $parent[sharedControls:DraggableNumberBox].Prefix}"
                             attachedProperties:NumberBoxAssist.SuffixText="{Binding $parent[sharedControls:DraggableNumberBox].Suffix}"
