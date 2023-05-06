@@ -22,18 +22,20 @@ public class App : Application
         Program.CreateLogger(_container);
         RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
         AvaloniaXamlLoader.Load(this);
-
-        RegisterProviders();
     }
 
     public override void OnFrameworkInitializationCompleted()
     {
         if (Design.IsDesignMode)
             return;
-
+        
+        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop) 
+            return;
+        
         ArtemisBootstrapper.Initialize();
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            _applicationStateManager = new ApplicationStateManager(_container!, desktop.Args);
+
+        _applicationStateManager = new ApplicationStateManager(_container!, desktop.Args);
+        RegisterProviders();
     }
 
     private void RegisterProviders()
