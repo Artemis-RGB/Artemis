@@ -6,12 +6,12 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools.SelectionAddToolView" ClipToBounds="False">
     <Grid>
-        <shared:SelectionRectangle InputElement="{Binding $parent[ZoomBorder]}"
+        <shared:SelectionRectangle InputElement="{CompiledBinding $parent[ZoomBorder]}"
                                    BorderBrush="{DynamicResource SystemAccentColor}"
                                    BorderRadius="8"
                                    BorderThickness="1"
                                    SelectionFinished="SelectionRectangle_OnSelectionFinished"
-                                   ZoomRatio="{Binding $parent[ZoomBorder].ZoomX}">
+                                   ZoomRatio="{CompiledBinding $parent[ZoomBorder].ZoomX}">
             <shared:SelectionRectangle.Background>
                 <SolidColorBrush Color="{DynamicResource SystemAccentColorLight1}" Opacity="0.2" />
             </shared:SelectionRectangle.Background>

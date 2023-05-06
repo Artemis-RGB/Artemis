@@ -26,7 +26,7 @@
                     VerticalAlignment="Center"
                     HorizontalAlignment="Right"
                     Margin="10"
-                    Command="{Binding OpenEditor}">
+                    Command="{CompiledBinding OpenEditor}">
                 <avalonia:MaterialIcon Kind="OpenInNew" />
             </Button>
         </Grid>

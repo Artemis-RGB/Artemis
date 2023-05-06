@@ -34,7 +34,7 @@
                     <Grid ColumnDefinitions="30,*" RowDefinitions="Auto,Auto">
                         <avalonia:MaterialIcon Grid.Row="0"
                                                Grid.RowSpan="2"
-                                               Kind="{Binding Icon}"
+                                               Kind="{CompiledBinding Icon}"
                                                Height="20"
                                                Width="20"
                                                VerticalAlignment="Center"

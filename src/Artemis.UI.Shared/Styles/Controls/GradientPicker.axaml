@@ -103,10 +103,10 @@
                                 </ItemsControl.Styles>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="core:ColorGradientStop">
-                                        <gradientPicker:GradientPickerColorStop ColorStop="{Binding}"
-                                                                                PositionReference="{Binding $parent[Border]}"
+                                        <gradientPicker:GradientPickerColorStop ColorStop="{CompiledBinding}"
+                                                                                PositionReference="{CompiledBinding $parent[Border]}"
                                                                                 Classes="gradient-handle"
-                                                                                GradientPicker="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gradientPicker:GradientPicker}}}">
+                                                                                GradientPicker="{CompiledBinding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gradientPicker:GradientPicker}}}">
                                         </gradientPicker:GradientPickerColorStop>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -152,7 +152,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="core:ColorGradientStop">
                                 <Border Classes="stop-position">
-                                    <TextBlock Text="{Binding Position}"></TextBlock>
+                                    <TextBlock Text="{CompiledBinding Position}"></TextBlock>
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -174,8 +174,8 @@
                                               UseColorTriangle="True"
                                               IsMoreButtonVisible="True"
                                               IsVisible="{TemplateBinding SelectedColorStop, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                              IsCompact="{Binding IsCompact, RelativeSource={RelativeSource TemplatedParent}}"
-                                              Color="{Binding SelectedColorStop.Color, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource SKColorToColorConverter}}" />
+                                              IsCompact="{CompiledBinding IsCompact, RelativeSource={RelativeSource TemplatedParent}}"
+                                              Color="{CompiledBinding SelectedColorStop.Color, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource SKColorToColorConverter}}" />
                     </Border>
 
                     <Grid Grid.Row="2" Grid.Column="1" RowDefinitions="*,Auto">
@@ -196,19 +196,19 @@
                                                 BorderBrush="{DynamicResource ButtonBorderBrush}"
                                                 ClipToBounds="True"
                                                 Background="{DynamicResource LightCheckerboardBrush}">
-                                            <Border CornerRadius="4" Margin="-2" Background="{Binding Color, Converter={StaticResource SKColorToBrushConverter}}" />
+                                            <Border CornerRadius="4" Margin="-2" Background="{CompiledBinding Color, Converter={StaticResource SKColorToBrushConverter}}" />
                                         </Border>
-                                        <TextBox Grid.Column="1" Text="{Binding Color, Converter={StaticResource SKColorToStringConverter}}" />
+                                        <TextBox Grid.Column="1" Text="{CompiledBinding Color, Converter={StaticResource SKColorToStringConverter}}" />
                                         <NumericUpDown Grid.Column="2" FormatString="F3" ShowButtonSpinner="False" Margin="5 0" Minimum="0" Maximum="1" Increment="0.01">
                                             <Interaction.Behaviors>
-                                                <behaviors:LostFocusNumericUpDownBindingBehavior Value="{Binding Position}" />
+                                                <behaviors:LostFocusNumericUpDownBindingBehavior Value="{CompiledBinding Position}" />
                                             </Interaction.Behaviors>
                                         </NumericUpDown>
                                         <Button Name="DeleteButton"
                                                 Grid.Column="3"
                                                 Classes="icon-button"
-                                                Command="{Binding DeleteStop, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gradientPicker:GradientPicker}}}"
-                                                CommandParameter="{Binding}">
+                                                Command="{CompiledBinding DeleteStop, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gradientPicker:GradientPicker}}}"
+                                                CommandParameter="{CompiledBinding}">
                                             <avalonia:MaterialIcon Kind="Close" />
                                         </Button>
                                     </Grid>

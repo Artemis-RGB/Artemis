@@ -10,7 +10,7 @@
              x:DataType="timeline:TimelineViewModel">
     <UserControl.Resources>
     </UserControl.Resources>
-    <Grid Background="Transparent" PointerReleased="InputElement_OnPointerReleased" Focusable="True" MinWidth="{Binding MinWidth}">
+    <Grid Background="Transparent" PointerReleased="InputElement_OnPointerReleased" Focusable="True" MinWidth="{CompiledBinding MinWidth}">
         <Grid.KeyBindings>
             <KeyBinding Command="{CompiledBinding CopySelectedKeyframes}" Gesture="Ctrl+C" />
             <KeyBinding Command="{CompiledBinding DuplicateSelectedKeyframes}" Gesture="Ctrl+D" />

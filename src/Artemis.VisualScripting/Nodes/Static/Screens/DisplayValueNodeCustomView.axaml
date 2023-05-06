@@ -38,7 +38,7 @@
                             ClipToBounds="True">
                         <Border CornerRadius="4">
                             <Border.Background>
-                                <SolidColorBrush Color="{Binding Converter={StaticResource SKColorToColorConverter}}" />
+                                <SolidColorBrush Color="{CompiledBinding Converter={StaticResource SKColorToColorConverter}}" />
                             </Border.Background>
                         </Border>
                     </Border>
@@ -46,7 +46,7 @@
             </DataTemplate>
             <DataTemplate DataType="system:Object">
                 <Border Classes="card-condensed" Margin="0,5,5,5 ">
-                    <TextBlock Text="{Binding Converter={StaticResource JsonConverter}}" FontFamily="Consolas"/>    
+                    <TextBlock Text="{CompiledBinding Converter={StaticResource JsonConverter}}" FontFamily="Consolas"/>    
                 </Border>
             </DataTemplate>
         </ContentControl.DataTemplates>

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:properties="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties"
              xmlns:timeline="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Timeline"
+             xmlns:system="clr-namespace:System;assembly=netstandard"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.TimelineGroupView"
              x:DataType="timeline:TimelineGroupViewModel">
@@ -19,8 +20,8 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.Styles>
-                <Style Selector="ContentPresenter">
-                    <Setter Property="Canvas.Left" Value="{Binding}" />
+                <Style Selector="ContentPresenter" x:DataType="system:Double">
+                    <Setter Property="Canvas.Left" Value="{CompiledBinding}" />
                     <Setter Property="Canvas.Top" Value="9" />
                 </Style>
             </ItemsControl.Styles>

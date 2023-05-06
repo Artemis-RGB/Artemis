@@ -3,22 +3,24 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:local="clr-namespace:Artemis.UI.Shared.DefaultTypes.DataModel.Display"
+             x:DataType="local:DefaultDataModelDisplayViewModel"
              x:Class="Artemis.UI.Shared.DefaultTypes.DataModel.Display.DefaultDataModelDisplayView">
     <Grid ColumnDefinitions="*,Auto,Auto">
         <!-- Prefix -->
         <TextBlock Grid.Column="0"
-                   Text="{Binding PropertyDescription.Prefix}"
-                   IsVisible="{Binding PropertyDescription.Prefix, Converter={x:Static ObjectConverters.IsNotNull}}"
+                   Text="{CompiledBinding PropertyDescription.Prefix}"
+                   IsVisible="{CompiledBinding PropertyDescription.Prefix, Converter={x:Static ObjectConverters.IsNotNull}}"
                    TextAlignment="Right"
                    Margin="0 0 5 0" />
 
         <!-- Value -->
-        <TextBlock Grid.Column="1" Text="{Binding Display, Mode=OneWay}" HorizontalAlignment="Right"/>
+        <TextBlock Grid.Column="1" Text="{CompiledBinding Display, Mode=OneWay}" HorizontalAlignment="Right"/>
        
         <!-- Affix -->
         <TextBlock Grid.Column="2"
-                   Text="{Binding PropertyDescription.Affix}"
-                   IsVisible="{Binding PropertyDescription.Affix, Converter={x:Static ObjectConverters.IsNotNull}}"
+                   Text="{CompiledBinding PropertyDescription.Affix}"
+                   IsVisible="{CompiledBinding PropertyDescription.Affix, Converter={x:Static ObjectConverters.IsNotNull}}"
                    Margin="5 0 0 0" />
     </Grid>
 </UserControl>

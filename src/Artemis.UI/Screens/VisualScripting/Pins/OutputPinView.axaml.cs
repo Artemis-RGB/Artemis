@@ -10,7 +10,7 @@ public partial class OutputPinView : PinView
     public OutputPinView()
     {
         InitializeComponent();
-        InitializePin(this.Get<Border>("PinPoint"));
+        InitializePin(PinPoint);
     }
 
 

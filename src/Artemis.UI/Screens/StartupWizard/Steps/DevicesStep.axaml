@@ -28,7 +28,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border Classes="card-condensed" Margin="4">
-                                <ContentControl Content="{Binding}"></ContentControl>
+                                <ContentControl Content="{CompiledBinding}"></ContentControl>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

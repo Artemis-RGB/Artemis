@@ -2,7 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.Debugger.Render"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="local:RenderDebugViewModel"
              x:Class="Artemis.UI.Screens.Debugger.Render.RenderDebugView">
     <StackPanel>
         <TextBlock Classes="h3">Render</TextBlock>
@@ -15,17 +17,17 @@
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <TextBlock Text="FPS: " />
-            <TextBlock FontWeight="Bold" Text="{Binding CurrentFps}" />
+            <TextBlock FontWeight="Bold" Text="{CompiledBinding CurrentFps}" />
             <TextBlock Text=" at " />
-            <TextBlock Text="{Binding RenderWidth}" />
+            <TextBlock Text="{CompiledBinding RenderWidth}" />
             <TextBlock Text="x" />
-            <TextBlock Text="{Binding RenderHeight}" />
+            <TextBlock Text="{CompiledBinding RenderHeight}" />
             <TextBlock Text=" - Renderer: " />
-            <TextBlock Text="{Binding Renderer}" />
+            <TextBlock Text="{CompiledBinding Renderer}" />
         </StackPanel>
 
         <Border Classes="card" Padding="10">
-          <Image Name="Visualization" Source="{Binding CurrentFrame}">
+          <Image Name="Visualization" Source="{CompiledBinding CurrentFrame}">
             <Image.Transitions>
               <Transitions>
                 <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut" />

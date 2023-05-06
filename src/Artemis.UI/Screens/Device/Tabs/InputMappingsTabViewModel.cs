@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reactive.Disposables;
@@ -31,8 +31,8 @@ public class InputMappingsTabViewModel : ActivatableViewModelBase
 
         Device = device;
         DisplayName = "Input Mappings";
-        InputMappings = new ObservableCollection<(ArtemisLed, ArtemisLed)>();
-        DeleteMapping = ReactiveCommand.Create<(ArtemisLed, ArtemisLed)>(ExecuteDeleteMapping);
+        InputMappings = new ObservableCollection<ArtemisInputMapping>();
+        DeleteMapping = ReactiveCommand.Create<ArtemisInputMapping>(ExecuteDeleteMapping);
         
         this.WhenActivated(d =>
         {
@@ -48,7 +48,7 @@ public class InputMappingsTabViewModel : ActivatableViewModelBase
         });
     }
 
-    public ReactiveCommand<(ArtemisLed, ArtemisLed), Unit> DeleteMapping { get; }
+    public ReactiveCommand<ArtemisInputMapping, Unit> DeleteMapping { get; }
 
     public ArtemisDevice Device { get; }
 
@@ -58,11 +58,11 @@ public class InputMappingsTabViewModel : ActivatableViewModelBase
         set => RaiseAndSetIfChanged(ref _selectedLed, value);
     }
 
-    public ObservableCollection<(ArtemisLed, ArtemisLed)> InputMappings { get; }
+    public ObservableCollection<ArtemisInputMapping> InputMappings { get; }
 
-    private void ExecuteDeleteMapping((ArtemisLed, ArtemisLed) inputMapping)
+    private void ExecuteDeleteMapping(ArtemisInputMapping inputMapping)
     {
-        Device.InputMappings.Remove(inputMapping.Item1);
+        Device.InputMappings.Remove(inputMapping.Original);
         UpdateInputMappings();
     }
 
@@ -92,7 +92,7 @@ public class InputMappingsTabViewModel : ActivatableViewModelBase
         if (InputMappings.Any())
             InputMappings.Clear();
 
-        foreach ((ArtemisLed, ArtemisLed) tuple in Device.InputMappings.Select(m => (m.Key, m.Value)))
+        foreach (ArtemisInputMapping tuple in Device.InputMappings.Select(m => new ArtemisInputMapping(m.Key, m.Value)))
             InputMappings.Add(tuple);
     }
 
@@ -100,4 +100,29 @@ public class InputMappingsTabViewModel : ActivatableViewModelBase
     {
         SelectedLed = _selectedLeds.FirstOrDefault();
     }
+}
+
+/// <summary>
+///     Represents a pair of LEDs, the original and the replacement
+/// </summary>
+public class ArtemisInputMapping
+{
+    /// <summary>
+    ///     Creates a new instance of the <see cref="ArtemisInputMapping" /> class
+    /// </summary>
+    public ArtemisInputMapping(ArtemisLed original, ArtemisLed replacement)
+    {
+        Original = original;
+        Replacement = replacement;
+    }
+
+    /// <summary>
+    ///     The original LED
+    /// </summary>
+    public ArtemisLed Original { get; set; }
+    
+    /// <summary>
+    ///     The replacement LED
+    /// </summary>
+    public ArtemisLed Replacement { get; set; }
 }

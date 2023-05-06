@@ -54,8 +54,8 @@
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,28">
                         <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.0" />
                         <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.05" />
-                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.05" />
-                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.25" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.05" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.25" />
                     </LinearGradientBrush>
                 </Setter.Value>
             </Setter>
@@ -66,10 +66,10 @@
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,28">
                         <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.0" />
                         <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.05" />
-                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.05" />
-                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.25" />
-                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.75" />
-                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.95" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.05" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.25" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.75" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.95" />
                         <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.95" />
                         <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="1" />
                     </LinearGradientBrush>
@@ -80,8 +80,8 @@
             <Setter Property="Background">
                 <Setter.Value>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,28">
-                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.75" />
-                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.95" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.75" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.95" />
                         <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.95" />
                         <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="1" />
                     </LinearGradientBrush>
@@ -96,12 +96,12 @@
                   SelectionChanged="ProfileTreeView_OnSelectionChanged">
             <TreeView.Styles>
                 <Style Selector="TreeViewItem">
-                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="IsExpanded" Value="{CompiledBinding IsExpanded, Mode=TwoWay}" />
                 </Style>
             </TreeView.Styles>
             <TreeView.ItemTemplate>
-                <TreeDataTemplate ItemsSource="{Binding Children}">
-                    <ContentControl Content="{Binding}" x:DataType="profileTree:TreeItemViewModel" Background="Transparent">
+                <TreeDataTemplate ItemsSource="{CompiledBinding Children}">
+                    <ContentControl Content="{CompiledBinding}" x:DataType="profileTree:TreeItemViewModel" Background="Transparent">
                         <ContentControl.ContextFlyout>
                             <MenuFlyout IsOpen="{CompiledBinding IsFlyoutOpen, Mode=OneWayToSource}">
                                 <MenuItem Header="Add new folder" Command="{CompiledBinding AddFolder}">

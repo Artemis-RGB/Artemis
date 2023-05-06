@@ -4,11 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Debugger.Performance"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="local:PerformanceDebugProfilerViewModel"
              x:Class="Artemis.UI.Screens.Debugger.Performance.PerformanceDebugProfilerView">
     <StackPanel>
-        <TextBlock Classes="subtitle" Text="{Binding Profiler.Name}" Margin="10 10 0 0" />
+        <TextBlock Classes="subtitle" Text="{CompiledBinding Profiler.Name}" Margin="10 10 0 0" />
 
-        <DataGrid ItemsSource="{Binding Measurements}"
+        <DataGrid ItemsSource="{CompiledBinding Measurements}"
                   CanUserSortColumns="True"
                   IsReadOnly="True"
                   AutoGenerateColumns="False"
@@ -16,12 +17,12 @@
                   CanUserResizeColumns="False"
                   Margin="10 5 10 10">
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Measurement.Identifier}" Header="Identifier" />
-                <DataGridTextColumn Binding="{Binding Last}" Header="Last" />
-                <DataGridTextColumn Binding="{Binding Min}" Header="Min" />
-                <DataGridTextColumn Binding="{Binding Max}" Header="Max" />
-                <DataGridTextColumn Binding="{Binding Average}" Header="Average" />
-                <DataGridTextColumn Binding="{Binding Percentile}" Header="95th percentile" />
+                <DataGridTextColumn Binding="{CompiledBinding Measurement.Identifier}" Header="Identifier" />
+                <DataGridTextColumn Binding="{CompiledBinding Last}" Header="Last" />
+                <DataGridTextColumn Binding="{CompiledBinding Min}" Header="Min" />
+                <DataGridTextColumn Binding="{CompiledBinding Max}" Header="Max" />
+                <DataGridTextColumn Binding="{CompiledBinding Average}" Header="Average" />
+                <DataGridTextColumn Binding="{CompiledBinding Percentile}" Header="95th percentile" />
             </DataGrid.Columns>
         </DataGrid>
     </StackPanel>

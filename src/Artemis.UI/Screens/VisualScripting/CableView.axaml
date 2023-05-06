@@ -54,7 +54,7 @@
                                     ClipToBounds="True">
                                 <Border CornerRadius="4">
                                     <Border.Background>
-                                        <SolidColorBrush Color="{Binding Converter={StaticResource SKColorToColorConverter}, Mode=OneWay}" />
+                                        <SolidColorBrush Color="{CompiledBinding Converter={StaticResource SKColorToColorConverter}, Mode=OneWay}" />
                                     </Border.Background>
                                 </Border>
                             </Border>
@@ -64,13 +64,13 @@
                         <TextBlock Text="Color gradient" FontFamily="Consolas" />
                     </DataTemplate>
                     <DataTemplate DataType="core:Numeric">
-                        <TextBlock Text="{Binding Mode=OneWay}" FontFamily="Consolas" />
+                        <TextBlock Text=" {CompiledBinding Mode=OneWay}" FontFamily="Consolas" />
                     </DataTemplate>
                     <DataTemplate DataType="collections:IList">
-                        <TextBlock Text="{Binding Count, StringFormat='List - {0} item(s)', Mode=OneWay}" FontFamily="Consolas" />
+                        <TextBlock Text="{CompiledBinding Count, StringFormat='List - {0} item(s)', Mode=OneWay}" FontFamily="Consolas" />
                     </DataTemplate>
                     <DataTemplate DataType="system:Object">
-                        <TextBlock Text="{Binding Mode=OneWay}" FontFamily="Consolas" />
+                        <TextBlock Text="{CompiledBinding Mode=OneWay}" FontFamily="Consolas" />
                     </DataTemplate>
                 </ContentControl.DataTemplates>
             </ContentControl>

@@ -25,7 +25,7 @@
                 BorderBrush="{DynamicResource ButtonBorderBrush}"
                 BorderThickness="0,0,0,1"
                 Height="29">
-            <Grid Margin="{Binding Converter={StaticResource PropertyTreeMarginConverter}}" ColumnDefinitions="19,*">
+            <Grid Margin="{CompiledBinding Converter={StaticResource PropertyTreeMarginConverter}}" ColumnDefinitions="19,*">
 
                 <avalonia:MaterialIcon Classes.chevron-collapsed="{CompiledBinding !PropertyGroupViewModel.IsExpanded}"
                                        IsVisible="{CompiledBinding PropertyGroupViewModel.HasChildren}"
