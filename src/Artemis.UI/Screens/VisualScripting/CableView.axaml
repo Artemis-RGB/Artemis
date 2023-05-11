@@ -64,7 +64,7 @@
                         <TextBlock Text="Color gradient" FontFamily="Consolas" />
                     </DataTemplate>
                     <DataTemplate DataType="core:Numeric">
-                        <TextBlock Text=" {CompiledBinding Mode=OneWay}" FontFamily="Consolas" />
+                        <TextBlock Text="{CompiledBinding Mode=OneWay}" FontFamily="Consolas" />
                     </DataTemplate>
                     <DataTemplate DataType="collections:IList">
                         <TextBlock Text="{CompiledBinding Count, StringFormat='List - {0} item(s)', Mode=OneWay}" FontFamily="Consolas" />
