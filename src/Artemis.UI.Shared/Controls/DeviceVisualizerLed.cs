@@ -46,10 +46,10 @@ internal class DeviceVisualizerLed
         try
         {
             using Bitmap bitmap = new(Led.Layout.Image.LocalPath);
+            using Bitmap scaledBitmap = bitmap.CreateScaledBitmap(new PixelSize((Led.RgbLed.Size.Width * scale).RoundToInt(), (Led.RgbLed.Size.Height * scale).RoundToInt()));
             drawingContext.DrawImage(
-                bitmap,
-                new Rect(bitmap.Size),
-                new Rect(Led.RgbLed.Location.X * scale, Led.RgbLed.Location.Y * scale, Led.RgbLed.Size.Width * scale, Led.RgbLed.Size.Height * scale)
+                scaledBitmap,
+                new Rect(Led.RgbLed.Location.X * scale, Led.RgbLed.Location.Y * scale, scaledBitmap.Size.Width, scaledBitmap.Size.Height)
             );
         }
         catch

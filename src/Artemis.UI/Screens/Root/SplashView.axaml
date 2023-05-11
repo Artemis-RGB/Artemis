@@ -15,7 +15,7 @@
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaTitleBarHeightHint="450">
     <Grid RowDefinitions="250,50,Auto,*" IsHitTestVisible="False">
-        <Image Grid.Column="0" Stretch="Uniform" Width="200" Height="150" Source="/Assets/Images/Logo/bow.png" VerticalAlignment="Bottom"/>
+        <Image Grid.Column="0" Stretch="Uniform" Width="200" Height="150" Source="/Assets/Images/Logo/bow.png" VerticalAlignment="Bottom" RenderOptions.BitmapInterpolationMode="HighQuality"/>
         <TextBlock Grid.Row="1"
                    Classes="h5"
                    HorizontalAlignment="Center" 

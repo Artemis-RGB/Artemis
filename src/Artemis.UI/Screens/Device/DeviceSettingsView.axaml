@@ -11,13 +11,14 @@
              x:Class="Artemis.UI.Screens.Device.DeviceSettingsView">
     <Border Classes="card" Padding="0" Width="200" ClipToBounds="True" Margin="5">
         <Grid RowDefinitions="140,*,Auto">
-            <Rectangle Grid.Row="0" Fill="{DynamicResource CheckerboardBrush}"/>
-            <shared:DeviceVisualizer VerticalAlignment="Center"
+            <Rectangle Grid.Row="0" Fill="{DynamicResource CheckerboardBrush}" />
+            <shared:DeviceVisualizer Grid.Row="0"
+                                     VerticalAlignment="Center"
                                      HorizontalAlignment="Center"
                                      Margin="5"
                                      ShowColors="False"
                                      Device="{CompiledBinding Device}"
-                                     Grid.Row="0" />
+                                     RenderOptions.BitmapInterpolationMode="HighQuality" />
             <Button Grid.Row="0"
                     Classes="icon-button icon-button-large"
                     VerticalAlignment="Bottom"
@@ -38,22 +39,22 @@
             <Grid Grid.Row="2" Margin="10" ColumnDefinitions="25,*">
                 <CheckBox IsChecked="{CompiledBinding IsDeviceEnabled}" />
 
-				<SplitButton Grid.Column="1" Content="Properties" Command="{CompiledBinding ViewProperties}" HorizontalAlignment="Right">
-					<SplitButton.Flyout>
-						<MenuFlyout Placement="Bottom">
-							<MenuItem Header="Open plugin directory" Command="{CompiledBinding OpenPluginDirectory}">
-								<MenuItem.Icon>
-									<avalonia:MaterialIcon Kind="FolderOpen" />
-								</MenuItem.Icon>
-							</MenuItem>
-							<MenuItem Header="Identity input" Command="{CompiledBinding DetectInput}">
-								<MenuItem.Icon>
-									<avalonia:MaterialIcon Kind="GestureDoubleTap" />
-								</MenuItem.Icon>
-							</MenuItem>
+                <SplitButton Grid.Column="1" Content="Properties" Command="{CompiledBinding ViewProperties}" HorizontalAlignment="Right">
+                    <SplitButton.Flyout>
+                        <MenuFlyout Placement="Bottom">
+                            <MenuItem Header="Open plugin directory" Command="{CompiledBinding OpenPluginDirectory}">
+                                <MenuItem.Icon>
+                                    <avalonia:MaterialIcon Kind="FolderOpen" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Identity input" Command="{CompiledBinding DetectInput}">
+                                <MenuItem.Icon>
+                                    <avalonia:MaterialIcon Kind="GestureDoubleTap" />
+                                </MenuItem.Icon>
+                            </MenuItem>
                         </MenuFlyout>
-					</SplitButton.Flyout>
-				</SplitButton>
+                    </SplitButton.Flyout>
+                </SplitButton>
             </Grid>
         </Grid>
     </Border>
