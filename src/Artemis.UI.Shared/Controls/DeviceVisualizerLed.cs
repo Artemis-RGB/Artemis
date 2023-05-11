@@ -49,8 +49,7 @@ internal class DeviceVisualizerLed
             drawingContext.DrawImage(
                 bitmap,
                 new Rect(bitmap.Size),
-                new Rect(Led.RgbLed.Location.X * scale, Led.RgbLed.Location.Y * scale, Led.RgbLed.Size.Width * scale, Led.RgbLed.Size.Height * scale),
-                BitmapInterpolationMode.HighQuality
+                new Rect(Led.RgbLed.Location.X * scale, Led.RgbLed.Location.Y * scale, Led.RgbLed.Size.Width * scale, Led.RgbLed.Size.Height * scale)
             );
         }
         catch

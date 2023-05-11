@@ -67,8 +67,7 @@ public class DeviceVisualizer : Control
                 drawingContext.DrawImage(
                     _deviceImage,
                     new Rect(_deviceImage.Size),
-                    new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height),
-                    RenderOptions.GetBitmapInterpolationMode(this)
+                    new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height)
                 );
 
             if (!ShowColors)
@@ -306,8 +305,8 @@ public class DeviceVisualizer : Control
 
                 using DrawingContext context = renderTargetBitmap.CreateDrawingContext();
                 using Bitmap bitmap = new(device.Layout.Image.LocalPath);
-                context.DrawImage(bitmap, new Rect(bitmap.Size), new Rect(renderTargetBitmap.Size), BitmapInterpolationMode.HighQuality);
-
+                
+                context.DrawImage(bitmap, new Rect(bitmap.Size), new Rect(renderTargetBitmap.Size));
                 lock (_deviceVisualizerLeds)
                 {
                     foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)

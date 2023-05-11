@@ -64,7 +64,7 @@ public partial class ArtemisIcon : UserControl
                             Background = TextElement.GetForeground(this),
                             VerticalAlignment = VerticalAlignment.Stretch,
                             HorizontalAlignment = HorizontalAlignment.Stretch,
-                            OpacityMask = new ImageBrush(new Bitmap(iconString)) {BitmapInterpolationMode = BitmapInterpolationMode.MediumQuality}
+                            OpacityMask = new ImageBrush(new Bitmap(iconString))
                         };
                 }
                 else

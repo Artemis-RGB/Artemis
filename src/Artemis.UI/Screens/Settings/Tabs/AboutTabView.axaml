@@ -11,7 +11,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel Margin="15" MaxWidth="800">
             <Grid RowDefinitions="*,*" ColumnDefinitions="Auto,*,Auto">
-                <Image Grid.Column="0" Grid.RowSpan="2" Width="65" Height="65" VerticalAlignment="Center" Source="/Assets/Images/Logo/bow.png" Margin="0 0 20 0"/>
+                <Image Grid.Column="0" Grid.RowSpan="2" Width="65" Height="65" VerticalAlignment="Center" Source="/Assets/Images/Logo/bow.png" Margin="0 0 20 0" />
                 <TextBlock Grid.Row="0" Grid.Column="1" FontSize="36" VerticalAlignment="Bottom">
                     Artemis 2
                 </TextBlock>
@@ -52,9 +52,10 @@
                                  Height="75"
                                  Width="75"
                                  Margin="0 0 15 0"
-                                 IsVisible="{CompiledBinding RobertProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                 IsVisible="{CompiledBinding RobertProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                 RenderOptions.BitmapInterpolationMode="HighQuality">
                             <Ellipse.Fill>
-                                <ImageBrush Source="{CompiledBinding RobertProfileImage}" BitmapInterpolationMode="HighQuality" />
+                                <ImageBrush Source="{CompiledBinding RobertProfileImage}" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
@@ -80,9 +81,10 @@
                                  Height="75"
                                  Width="75"
                                  Margin="0 0 15 0"
-                                 IsVisible="{CompiledBinding DarthAffeProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                 IsVisible="{CompiledBinding DarthAffeProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                 RenderOptions.BitmapInterpolationMode="HighQuality">
                             <Ellipse.Fill>
-                                <ImageBrush Source="{CompiledBinding DarthAffeProfileImage}" BitmapInterpolationMode="HighQuality" />
+                                <ImageBrush Source="{CompiledBinding DarthAffeProfileImage}" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
@@ -108,9 +110,10 @@
                                  Height="75"
                                  Width="75"
                                  Margin="0 0 15 0"
-                                 IsVisible="{CompiledBinding DrMeteorProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                 IsVisible="{CompiledBinding DrMeteorProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                 RenderOptions.BitmapInterpolationMode="HighQuality">
                             <Ellipse.Fill>
-                                <ImageBrush Source="{CompiledBinding DrMeteorProfileImage}" BitmapInterpolationMode="HighQuality" />
+                                <ImageBrush Source="{CompiledBinding DrMeteorProfileImage}" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
@@ -136,9 +139,10 @@
                                  Height="75"
                                  Width="75"
                                  Margin="0 0 15 0"
-                                 IsVisible="{CompiledBinding KaiProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                 IsVisible="{CompiledBinding KaiProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                 RenderOptions.BitmapInterpolationMode="HighQuality">
                             <Ellipse.Fill>
-                                <ImageBrush Source="{CompiledBinding KaiProfileImage}" BitmapInterpolationMode="HighQuality" />
+                                <ImageBrush Source="{CompiledBinding KaiProfileImage}" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">

@@ -79,9 +79,13 @@
 
                             <Border IsVisible="{CompiledBinding ProfileConfiguration.Icon.Fill}" Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}"
                                     Width="78" Height="78">
-                                <Border Name="FillPreview" Background="{DynamicResource TextFillColorPrimary}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10">
+                                <Border Name="FillPreview"
+                                        Background="{DynamicResource TextFillColorPrimary}" 
+                                        VerticalAlignment="Stretch" 
+                                        HorizontalAlignment="Stretch" Margin="10"
+                                        RenderOptions.BitmapInterpolationMode="HighQuality" >
                                     <Border.OpacityMask>
-                                        <ImageBrush Source="{CompiledBinding SelectedBitmapSource}" BitmapInterpolationMode="HighQuality" />
+                                        <ImageBrush Source="{CompiledBinding SelectedBitmapSource}" />
                                     </Border.OpacityMask>
                                 </Border>
                             </Border>
@@ -127,8 +131,9 @@
                             </ComboBox>
                         </StackPanel>
 
-                        <CheckBox VerticalAlignment="Bottom" IsChecked="{CompiledBinding FadeInAndOut}" ToolTip.Tip="Smoothly animates in and out when the profile activation conditions change.">Fade when enabling and disabling</CheckBox>
-
+                        <CheckBox VerticalAlignment="Bottom" IsChecked="{CompiledBinding FadeInAndOut}" ToolTip.Tip="Smoothly animates in and out when the profile activation conditions change.">
+                            Fade when enabling and disabling
+                        </CheckBox>
                     </StackPanel>
                 </Border>
 

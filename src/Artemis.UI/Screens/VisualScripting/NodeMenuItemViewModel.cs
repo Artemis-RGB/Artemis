@@ -18,11 +18,13 @@ public class NodeMenuItemViewModel
     public NodeMenuItemViewModel(ReactiveCommand<NodeData, Unit> createNode, NodeData nodeData)
     {
         Header = nodeData.Name;
+        Subtitle = nodeData.Description;
         Items = new List<NodeMenuItemViewModel>();
         CreateNode = ReactiveCommand.Create(() => { createNode.Execute(nodeData).Subscribe(); });
     }
 
     public string Header { get; }
+    public string? Subtitle { get; }
     public List<NodeMenuItemViewModel> Items { get; }
     public ReactiveCommand<Unit, Unit>? CreateNode { get; }
 }

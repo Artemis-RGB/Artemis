@@ -59,7 +59,7 @@ public class PlaybackViewModel : ActivatableViewModelBase
             updateTimer.Start();
             Disposable.Create(() =>
             {
-                // updateTimer.Stop();
+                updateTimer.Stop();
                 _settingsService.GetSetting("ProfileEditor.RepeatTimeline", true).Value = _repeating && _repeatTimeline;
                 _settingsService.GetSetting("ProfileEditor.RepeatSegment", false).Value = _repeating && _repeatSegment;
             }).DisposeWith(d);

@@ -7,7 +7,6 @@ using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.ProfileEditor;
-using Avalonia.Platform;
 using DryIoc;
 
 namespace Artemis.UI.DryIoc;
@@ -24,11 +23,8 @@ public static class ContainerExtensions
     public static void RegisterUI(this IContainer container)
     {
         Assembly[] thisAssembly = {typeof(ContainerExtensions).Assembly};
-
-        container.RegisterInstance(new AssetLoader(), IfAlreadyRegistered.Throw);
-        container.Register<IAssetLoader, AssetLoader>(Reuse.Singleton);
         
-        container.RegisterMany(thisAssembly, type => type.IsAssignableTo<ViewModelBase>());
+        container.RegisterMany(thisAssembly, type => type.IsAssignableTo<ViewModelBase>(), setup: Setup.With(preventDisposal: true));
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IToolViewModel>() && type.IsInterface);
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IVmFactory>() && type != typeof(PropertyVmFactory));
 

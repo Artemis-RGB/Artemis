@@ -1,20 +1,20 @@
 <windowing:AppWindow xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:visualScripting="clr-namespace:Artemis.UI.Screens.VisualScripting"
-        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-        xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
-        xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
-        xmlns:system="clr-namespace:System;assembly=System.Runtime"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="Artemis.UI.Screens.VisualScripting.NodeScriptWindowView"
-        x:DataType="visualScripting:NodeScriptWindowViewModel"
-        Icon="/Assets/Images/Logo/application.ico"
-        Title="Artemis | Visual Script Editor"
-        Width="1200"
-        Height="800">
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:visualScripting="clr-namespace:Artemis.UI.Screens.VisualScripting"
+                     xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                     xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+                     xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+                     xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
+                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                     x:Class="Artemis.UI.Screens.VisualScripting.NodeScriptWindowView"
+                     x:DataType="visualScripting:NodeScriptWindowViewModel"
+                     Icon="/Assets/Images/Logo/application.ico"
+                     Title="Artemis | Visual Script Editor"
+                     Width="1200"
+                     Height="800">
     <Window.KeyBindings>
         <KeyBinding Command="{CompiledBinding History.Undo}" Gesture="Ctrl+Z" />
         <KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y" />
@@ -30,10 +30,21 @@
                     <MenuItem.Styles>
                         <Style Selector="MenuItem > MenuItem > MenuItem" x:DataType="visualScripting:NodeMenuItemViewModel">
                             <Setter Property="Command" Value="{CompiledBinding CreateNode}" />
-                            <Setter Property="Header" Value="{CompiledBinding Header}" />
                             <Setter Property="ItemsSource" Value="{CompiledBinding Items}" />
                         </Style>
                     </MenuItem.Styles>
+                    <MenuItem.DataTemplates>
+                        <DataTemplate DataType="{x:Type visualScripting:NodeMenuItemViewModel}">
+                            <StackPanel Background="Transparent" MaxWidth="300">
+                                <TextBlock Text="{CompiledBinding Header}" TextWrapping="Wrap"></TextBlock>
+                                <TextBlock IsVisible="{CompiledBinding Subtitle, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                           Foreground="{DynamicResource TextFillColorSecondary}"
+                                           Text="{CompiledBinding Subtitle}"
+                                           TextWrapping="Wrap">
+                                </TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </MenuItem.DataTemplates>
                 </MenuItem>
                 <MenuItem Header="Auto-arrange" Command="{CompiledBinding AutoArrange}" InputGesture="Ctrl+F">
                     <MenuItem.Icon>
