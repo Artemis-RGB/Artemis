@@ -17,9 +17,13 @@ public partial class TreePropertyView : ReactiveUserControl<ITreePropertyViewMod
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            Observable.FromEventPattern<LayerPropertyEventArgs>(e => ViewModel!.BaseLayerProperty.CurrentValueSet += e, e => ViewModel!.BaseLayerProperty.CurrentValueSet -= e)
-                .Subscribe(_ => this.BringIntoView())
-                .DisposeWith(d);
+            ITreePropertyViewModel? viewModel = ViewModel;
+            if (viewModel != null)
+            {
+                Observable.FromEventPattern<LayerPropertyEventArgs>(e => viewModel.BaseLayerProperty.CurrentValueSet += e, e => viewModel.BaseLayerProperty.CurrentValueSet -= e)
+                    .Subscribe(_ => this.BringIntoView())
+                    .DisposeWith(d);
+            }
         });
     }
 

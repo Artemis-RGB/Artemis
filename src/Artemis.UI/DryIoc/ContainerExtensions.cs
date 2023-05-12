@@ -25,7 +25,7 @@ public static class ContainerExtensions
         Assembly[] thisAssembly = {typeof(ContainerExtensions).Assembly};
         
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<ViewModelBase>(), setup: Setup.With(preventDisposal: true));
-        container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IToolViewModel>() && type.IsInterface);
+        container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IToolViewModel>() && type.IsInterface, setup: Setup.With(preventDisposal: true));
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IVmFactory>() && type != typeof(PropertyVmFactory));
 
         container.Register<NodeScriptWindowViewModelBase, NodeScriptWindowViewModel>(Reuse.Singleton);

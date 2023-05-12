@@ -54,7 +54,7 @@ internal class PropertyInputService : IPropertyInputService
                 return existing;
             }
 
-            _container.Register(viewModelType);
+            _container.Register(viewModelType, setup: Setup.With(preventDisposal: true));
             PropertyInputRegistration registration = new(this, plugin, supportedType, viewModelType);
             _registeredPropertyEditors.Add(registration);
             return registration;

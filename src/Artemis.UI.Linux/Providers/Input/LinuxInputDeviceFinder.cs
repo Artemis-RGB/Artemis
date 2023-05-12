@@ -11,10 +11,9 @@ public static class LinuxInputDeviceFinder
 
     public static IEnumerable<LinuxInputDevice> Find()
     {
-        var lineGroups = File.ReadAllLines(DEVICES_FILE)
-            .PartitionBy(s => s?.Length == 0); //split on empty lines 
+        IEnumerable<IEnumerable<string>> lineGroups = File.ReadAllLines(DEVICES_FILE).PartitionBy(s => s?.Length == 0); //split on empty lines 
 
-        foreach (var lineGroup in lineGroups)
+        foreach (IEnumerable<string> lineGroup in lineGroups)
         {
             LinuxInputDevice device;
             
