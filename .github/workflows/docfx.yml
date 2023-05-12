@@ -18,13 +18,13 @@ jobs:
         with:
           dotnet-version: "7.0.x"
       - name: Setup DocFX
-        run: choco install docfx -y
+        run: dotnet tool update -g docfx
       - name: Build Core
         run: dotnet build src/Artemis.Core/Artemis.Core.csproj
       - name: Build UI.Shared
         run: dotnet build src/Artemis.UI.Shared/Artemis.UI.Shared.csproj
       - name: Build DocFX
-        run: docfx.exe docfx/docfx_project/docfx.json
+        run: docfx docfx/docfx_project/docfx.json
       - name: Upload to FTP
         uses: SamKirkland/FTP-Deploy-Action@4.3.2
         with:
