@@ -11,7 +11,7 @@
              x:DataType="screens:PressedKeyPositionNodeCustomViewModel">
     <StackPanel>
         <TextBlock FontSize="13" Margin="0 -2 0 5">Layer</TextBlock>
-        <ComboBox Classes="condensed" Items="{CompiledBinding Layers}" SelectedItem="{CompiledBinding SelectedLayer}" PlaceholderText="Select a layer">
+        <ComboBox Classes="condensed" ItemsSource="{CompiledBinding Layers}" SelectedItem="{CompiledBinding SelectedLayer}" PlaceholderText="Select a layer">
             <ComboBox.ItemTemplate>
                 <DataTemplate DataType="core:Layer">
                     <StackPanel Spacing="5" Orientation="Horizontal">

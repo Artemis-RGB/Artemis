@@ -5,6 +5,7 @@
              xmlns:paz="clr-namespace:Avalonia.Controls.PanAndZoom;assembly=Avalonia.Controls.PanAndZoom"
              xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
              xmlns:visualEditor="clr-namespace:Artemis.UI.Screens.ProfileEditor.VisualEditor"
+             xmlns:vis="clr-namespace:Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.VisualEditor.VisualEditorView"
@@ -38,11 +39,11 @@
                 </Grid.Transitions>
 
                 <!-- The bottom layer consists of devices -->
-                <ItemsControl Name="DevicesContainer" Items="{CompiledBinding Devices}" ClipToBounds="False">
+                <ItemsControl Name="DevicesContainer" ItemsSource="{CompiledBinding Devices}" ClipToBounds="False">
                     <ItemsControl.Styles>
-                        <Style Selector="ContentPresenter">
-                            <Setter Property="Canvas.Left" Value="{Binding X}" />
-                            <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                        <Style Selector="ContentPresenter" x:DataType="core:ArtemisDevice">
+                            <Setter Property="Canvas.Left" Value="{CompiledBinding X}" />
+                            <Setter Property="Canvas.Top" Value="{CompiledBinding Y}" />
                         </Style>
                     </ItemsControl.Styles>
                     <ItemsControl.ItemsPanel>
@@ -52,17 +53,17 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="core:ArtemisDevice">
-                            <shared:DeviceVisualizer Device="{Binding}" ShowColors="True" />
+                            <shared:DeviceVisualizer Device="{CompiledBinding}" ShowColors="True" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
                 <!-- The middle layer contains visualizers -->
-                <ItemsControl Items="{CompiledBinding Visualizers}" ClipToBounds="False" IsVisible="{CompiledBinding !SuspendedEditing}">
+                <ItemsControl ItemsSource="{CompiledBinding Visualizers}" ClipToBounds="False" IsVisible="{CompiledBinding !SuspendedEditing}">
                     <ItemsControl.Styles>
-                        <Style Selector="ContentPresenter">
-                            <Setter Property="Canvas.Left" Value="{Binding X}" />
-                            <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                        <Style Selector="ContentPresenter" x:DataType="vis:IVisualizerViewModel">
+                            <Setter Property="Canvas.Left" Value="{CompiledBinding X}" />
+                            <Setter Property="Canvas.Top" Value="{CompiledBinding Y}" />
                         </Style>
                     </ItemsControl.Styles>
                     <ItemsControl.ItemsPanel>
@@ -73,7 +74,7 @@
                 </ItemsControl>
 
                 <!-- The top layer contains tools -->
-                <ItemsControl Items="{CompiledBinding Tools}" ClipToBounds="False" IsVisible="{CompiledBinding !SuspendedEditing}">
+                <ItemsControl ItemsSource="{CompiledBinding Tools}" ClipToBounds="False" IsVisible="{CompiledBinding !SuspendedEditing}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Grid />

@@ -19,12 +19,12 @@
                         <Button Content="&#xE8BB;" 
                                 FontFamily="{StaticResource SymbolThemeFontFamily}"
                                 Theme="{StaticResource TransparentButton}"
-                                Command="{Binding $parent[TextBox].Clear}"
-                                IsVisible="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType=TextBox}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                Command="{CompiledBinding $parent[TextBox].Clear}"
+                                IsVisible="{CompiledBinding Text, RelativeSource={RelativeSource FindAncestor, AncestorType=TextBox}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
                         <Button Content="&#xE721;"
                                 FontFamily="{StaticResource SymbolThemeFontFamily}"
                                 Theme="{StaticResource TransparentButton}"
-                                Command="{Binding $parent[TextBox].Clear}"
+                                Command="{CompiledBinding $parent[TextBox].Clear}"
                                 IsHitTestVisible="False"/>
                     </StackPanel>
                 </Template>
@@ -36,7 +36,7 @@
             <TextBox Name="SearchBox" Text="{CompiledBinding SearchText}" Margin="0 0 0 15" Watermark="Search"></TextBox>
             <TreeView Name="NodeTree"
                       Grid.Row="1"
-                      Items="{CompiledBinding Categories}"
+                      ItemsSource="{CompiledBinding Categories}"
                       IsVisible="{CompiledBinding Categories.Count}"
                       SelectedItem="{CompiledBinding SelectedNode}"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled">
@@ -48,12 +48,12 @@
                 <TreeView.DataTemplates>
                     <TreeDataTemplate DataType="core:NodeData">
                         <StackPanel Margin="-15 1 0 1" Background="Transparent" PointerReleased="InputElement_OnPointerReleased">
-                            <TextBlock Classes="BodyStrongTextBlockStyle" Text="{Binding Name}" TextWrapping="Wrap"></TextBlock>
-                            <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{Binding Description}" TextWrapping="Wrap"></TextBlock>
+                            <TextBlock Classes="BodyStrongTextBlockStyle" Text="{CompiledBinding Name}" TextWrapping="Wrap"></TextBlock>
+                            <TextBlock Foreground="{DynamicResource TextFillColorSecondary}" Text="{CompiledBinding Description}" TextWrapping="Wrap"></TextBlock>
                         </StackPanel>
                     </TreeDataTemplate>
-                    <TreeDataTemplate DataType="visualScripting:NodeCategoryViewModel" ItemsSource="{Binding Nodes}">
-                        <TextBlock Text="{Binding Category}"></TextBlock>
+                    <TreeDataTemplate DataType="visualScripting:NodeCategoryViewModel" ItemsSource="{CompiledBinding Nodes}">
+                        <TextBlock Text="{CompiledBinding Category}"></TextBlock>
                     </TreeDataTemplate>
                 </TreeView.DataTemplates>
                 <TreeView.ItemsPanel>

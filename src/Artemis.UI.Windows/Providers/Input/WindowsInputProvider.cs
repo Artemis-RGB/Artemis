@@ -5,8 +5,6 @@ using System.Timers;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Windows.Utilities;
-using Avalonia.Controls.Platform;
-using Avalonia.Platform;
 using Linearstar.Windows.RawInput;
 using Linearstar.Windows.RawInput.Native;
 using Serilog;
@@ -18,7 +16,7 @@ public class WindowsInputProvider : InputProvider
     private const int GWL_WNDPROC = -4;
     private const int WM_INPUT = 0x00FF;
 
-    private readonly IWindowImpl _window;
+    private readonly nint _hWnd;
     private readonly nint _hWndProcHook;
     private readonly WndProc? _fnWndProcHook;
     private readonly IInputService _inputService;
@@ -31,7 +29,7 @@ public class WindowsInputProvider : InputProvider
     private nint CustomWndProc(nint hWnd, uint msg, nint wParam, nint lParam)
     {
         OnWndProcCalled(hWnd, msg, wParam, lParam);
-        return CallWindowProc(_hWndProcHook, hWnd, msg, wParam, lParam);
+        return User32.CallWindowProc(_hWndProcHook, hWnd, msg, wParam, lParam);
     }
 
     public WindowsInputProvider(ILogger logger, IInputService inputService)
@@ -43,15 +41,14 @@ public class WindowsInputProvider : InputProvider
         _taskManagerTimer.Elapsed += TaskManagerTimerOnElapsed;
         _taskManagerTimer.Start();
 
-        _window = PlatformManager.CreateWindow();
-
-        _hWndProcHook = GetWindowLongPtr(_window.Handle.Handle, GWL_WNDPROC);
+        _hWnd = User32.CreateWindowEx(0, "STATIC", "", 0x80000000, 0, 0, 0, 0, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+        _hWndProcHook = User32.GetWindowLongPtr(_hWnd, GWL_WNDPROC);
         _fnWndProcHook = CustomWndProc;
         nint newLong = Marshal.GetFunctionPointerForDelegate(_fnWndProcHook);
-        SetWindowLongPtr(_window.Handle.Handle, GWL_WNDPROC, newLong);
+        User32.SetWindowLongPtr(_hWnd, GWL_WNDPROC, newLong);
 
-        RawInputDevice.RegisterDevice(HidUsageAndPage.Keyboard, RawInputDeviceFlags.InputSink, _window.Handle.Handle);
-        RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, _window.Handle.Handle);
+        RawInputDevice.RegisterDevice(HidUsageAndPage.Keyboard, RawInputDeviceFlags.InputSink, _hWnd);
+        RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, _hWnd);
     }
 
     public static Guid Id { get; } = new("6737b204-ffb1-4cd9-8776-9fb851db303a");
@@ -236,31 +233,11 @@ public class WindowsInputProvider : InputProvider
     #endregion
 
     #region Native
-
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-    static extern IntPtr CallWindowProc(nint lpPrevWndFunc, IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
-
-    [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", CharSet = CharSet.Unicode)]
-    private static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
-
-    [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
-    private static extern IntPtr SetWindowLongPtr(nint hWnd, int nIndex, IntPtr dwNewLong);
-
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool GetCursorPos(ref Win32Point pt);
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct Win32Point
-    {
-        public readonly int X;
-        public readonly int Y;
-    }
-
+    
     private static Win32Point GetCursorPosition()
     {
         Win32Point w32Mouse = new();
-        GetCursorPos(ref w32Mouse);
+        User32.GetCursorPos(ref w32Mouse);
 
         return w32Mouse;
     }

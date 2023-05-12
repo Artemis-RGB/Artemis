@@ -1,3 +1,5 @@
+using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
@@ -10,4 +12,13 @@ public partial class DeviceInfoTabView : ReactiveUserControl<DeviceInfoTabViewMo
         InitializeComponent();
     }
 
+    private void LayoutPathButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        TopLevel.GetTopLevel(this).Clipboard.SetTextAsync(ViewModel.DefaultLayoutPath);
+    }
+
+    private void ImagePathButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        TopLevel.GetTopLevel(this).Clipboard.SetTextAsync(ViewModel.Device.Layout.Image.LocalPath);
+    }
 }

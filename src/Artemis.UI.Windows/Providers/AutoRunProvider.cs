@@ -16,12 +16,6 @@ public class AutoRunProvider : IAutoRunProvider
 {
     private readonly string _autorunName = $"Artemis 2 autorun {Environment.UserName}";
     private readonly string _oldAutorunName = "Artemis 2 autorun";
-    private readonly IAssetLoader _assetLoader;
-
-    public AutoRunProvider(IAssetLoader assetLoader)
-    {
-        _assetLoader = assetLoader;
-    }
 
     private async Task<bool> IsAutoRunTaskCreated(string autorunName)
     {
@@ -43,7 +37,7 @@ public class AutoRunProvider : IAutoRunProvider
 
     private async Task CreateAutoRunTask(TimeSpan autoRunDelay, string autorunName)
     {
-        await using Stream taskFile = _assetLoader.Open(new Uri("avares://Artemis.UI.Windows/Assets/autorun.xml"));
+        await using Stream taskFile = AssetLoader.Open(new Uri("avares://Artemis.UI.Windows/Assets/autorun.xml"));
 
         XDocument document = await XDocument.LoadAsync(taskFile, LoadOptions.None, CancellationToken.None);
         XElement task = document.Descendants().First();

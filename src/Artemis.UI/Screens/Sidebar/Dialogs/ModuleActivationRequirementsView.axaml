@@ -21,7 +21,7 @@
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap">These requirements allow the module creator to decide when the data is available to your profile you cannot override them.</TextBlock>
 
-                <ItemsControl Items="{CompiledBinding ActivationRequirements}" />
+                <ItemsControl ItemsSource="{CompiledBinding ActivationRequirements}" />
             </StackPanel>
         </Border>
     </StackPanel>

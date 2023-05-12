@@ -26,8 +26,8 @@
     </UserControl.Styles>
 
     <shared:NoInputTextBox x:Name="DisplayTextBox"
-             Watermark="{Binding $parent.Watermark}"
-             UseFloatingWatermark="{Binding $parent.UseFloatingWatermark}"
+             Watermark="{CompiledBinding $parent.Watermark}"
+             UseFloatingWatermark="{CompiledBinding $parent.UseFloatingWatermark}"
              Classes="clearButton"
              IsReadOnly="True"
              HorizontalAlignment="Stretch" />

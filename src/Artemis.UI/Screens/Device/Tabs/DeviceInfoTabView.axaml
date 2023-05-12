@@ -3,29 +3,31 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:device="clr-namespace:Artemis.UI.Screens.Device"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Device.DeviceInfoTabView">
+             x:Class="Artemis.UI.Screens.Device.DeviceInfoTabView"
+             x:DataType="device:DeviceInfoTabViewModel">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,*" Margin="-5">
             <!-- First row -->
             <Border Classes="card" Grid.Column="0" Grid.Row="0" Margin="5">
                 <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Top">
                     <TextBlock FontWeight="Bold">Device name</TextBlock>
-                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName}" />
+                    <TextBlock TextWrapping="Wrap" Text="{CompiledBinding Device.RgbDevice.DeviceInfo.DeviceName}" />
                     <Border Classes="card-separator" />
 
                     <TextBlock FontWeight="Bold">Manufacturer</TextBlock>
-                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer}" />
+                    <TextBlock TextWrapping="Wrap" Text="{CompiledBinding Device.RgbDevice.DeviceInfo.Manufacturer}" />
                     <Border Classes="card-separator" />
 
 
                     <TextBlock FontWeight="Bold">Device type</TextBlock>
-                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.DeviceType}" />
-                    <Border Classes="card-separator" IsVisible="{Binding IsKeyboard}" />
+                    <TextBlock TextWrapping="Wrap" Text="{CompiledBinding Device.DeviceType}" />
+                    <Border Classes="card-separator" IsVisible="{CompiledBinding IsKeyboard}" />
 
-                    <StackPanel IsVisible="{Binding IsKeyboard}">
+                    <StackPanel IsVisible="{CompiledBinding IsKeyboard}">
                         <TextBlock FontWeight="Bold">Physical layout</TextBlock>
-                        <TextBlock TextWrapping="Wrap" Text="{Binding Device.PhysicalLayout}" />
+                        <TextBlock TextWrapping="Wrap" Text="{CompiledBinding Device.PhysicalLayout}" />
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -33,20 +35,20 @@
             <Border Classes="card" Grid.Row="0" Grid.Column="1" Margin="5">
                 <StackPanel VerticalAlignment="Top">
                     <TextBlock FontWeight="Bold">Size (1px = 1mm)</TextBlock>
-                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.RgbDevice.Size}" />
+                    <TextBlock TextWrapping="Wrap" Text="{CompiledBinding Device.RgbDevice.Size}" />
                     <Border Classes="card-separator" />
 
                     <TextBlock FontWeight="Bold">Location (1px = 1mm)</TextBlock>
-                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.RgbDevice.Location}" />
+                    <TextBlock TextWrapping="Wrap" Text="{CompiledBinding Device.RgbDevice.Location}" />
                     <Border Classes="card-separator" />
 
                     <TextBlock FontWeight="Bold">Rotation (degrees)</TextBlock>
-                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.RgbDevice.Rotation.Degrees}" />
-                    <Border Classes="card-separator" IsVisible="{Binding IsKeyboard}" />
+                    <TextBlock TextWrapping="Wrap" Text="{CompiledBinding Device.RgbDevice.Rotation.Degrees}" />
+                    <Border Classes="card-separator" IsVisible="{CompiledBinding IsKeyboard}" />
 
-                    <StackPanel IsVisible="{Binding IsKeyboard}">
+                    <StackPanel IsVisible="{CompiledBinding IsKeyboard}">
                         <TextBlock FontWeight="Bold">Logical layout</TextBlock>
-                        <TextBlock TextWrapping="Wrap" Text="{Binding Device.LogicalLayout}" />
+                        <TextBlock TextWrapping="Wrap" Text="{CompiledBinding Device.LogicalLayout}" />
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -59,14 +61,13 @@
                         <Button Grid.Column="1"
                                 Classes="icon-button"
                                 ToolTip.Tip="Copy path to clipboard"
-                                Command="{Binding CopyToClipboard}"
-                                CommandParameter="{Binding DefaultLayoutPath}">
+                                Click="LayoutPathButton_OnClick">
                             <avalonia:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
                         </Button>
                     </Grid>
                     <TextBlock
                         TextWrapping="Wrap"
-                        Text="{Binding DefaultLayoutPath}" />
+                        Text="{CompiledBinding DefaultLayoutPath}" />
                     <Border Classes="card-separator" />
 
                     <Grid ColumnDefinitions="*,Auto">
@@ -74,12 +75,11 @@
                         <Button Grid.Column="1"
                                 Classes="icon-button"
                                 ToolTip.Tip="Copy path to clipboard"
-                                Command="{Binding CopyToClipboard}"
-                                CommandParameter="{Binding Device.Layout.Image.LocalPath}">
+                                Click="ImagePathButton_OnClick">
                             <avalonia:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
                         </Button>
                     </Grid>
-                    <TextBlock TextWrapping="Wrap" Text="{Binding Device.Layout.Image.LocalPath}" />
+                    <TextBlock TextWrapping="Wrap" Text="{CompiledBinding Device.Layout.Image.LocalPath}" />
                 </StackPanel>
             </Border>
         </Grid>

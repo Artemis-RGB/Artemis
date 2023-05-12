@@ -26,7 +26,7 @@
         <ComboBox Classes="brush condensed"
                   Width="200"
                   VerticalAlignment="Center"
-                  Items="{CompiledBinding Descriptors}"
+                  ItemsSource="{CompiledBinding Descriptors}"
                   SelectedItem="{CompiledBinding SelectedDescriptor}"
                   PlaceholderText="Please select a brush">
             <ComboBox.ItemTemplate>
@@ -34,7 +34,7 @@
                     <Grid ColumnDefinitions="30,*" RowDefinitions="Auto,Auto">
                         <avalonia:MaterialIcon Grid.Row="0"
                                                Grid.RowSpan="2"
-                                               Kind="{Binding Icon}"
+                                               Kind="{CompiledBinding Icon}"
                                                Height="20"
                                                Width="20"
                                                VerticalAlignment="Center"

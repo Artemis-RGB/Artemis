@@ -18,33 +18,24 @@ public static class ProfileElementExtensions
 
     public static async Task CopyToClipboard(this Folder folder)
     {
-        if (Application.Current?.Clipboard == null)
-            return;
-
         DataObject dataObject = new();
         string copy = CoreJson.SerializeObject(new FolderClipboardModel(folder), true);
         dataObject.Set(ClipboardDataFormat, copy);
-        await Application.Current.Clipboard.SetDataObjectAsync(dataObject);
+        await Shared.UI.Clipboard.SetDataObjectAsync(dataObject);
     }
 
     public static async Task CopyToClipboard(this Layer layer)
     {
-        if (Application.Current?.Clipboard == null)
-            return;
-
         DataObject dataObject = new();
         string copy = CoreJson.SerializeObject(layer.LayerEntity, true);
         dataObject.Set(ClipboardDataFormat, copy);
-        await Application.Current.Clipboard.SetDataObjectAsync(dataObject);
+        await Shared.UI.Clipboard.SetDataObjectAsync(dataObject);
     }
 
 
     public static async Task<RenderProfileElement?> PasteChildFromClipboard(this Folder parent)
     {
-        if (Application.Current?.Clipboard == null)
-            return null;
-
-        byte[]? bytes = (byte[]?) await Application.Current.Clipboard.GetDataAsync(ClipboardDataFormat);
+        byte[]? bytes = (byte[]?) await Shared.UI.Clipboard.GetDataAsync(ClipboardDataFormat);
         if (bytes == null!)
             return null;
 

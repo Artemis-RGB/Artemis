@@ -8,12 +8,12 @@
              x:Class="Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools.SelectionRemoveToolView"
              ClipToBounds="False">
     <Grid>
-        <shared:SelectionRectangle InputElement="{Binding $parent[paz:ZoomBorder]}"
+        <shared:SelectionRectangle InputElement="{CompiledBinding $parent[paz:ZoomBorder]}"
                                    BorderBrush="{DynamicResource SystemAccentColor}"
                                    BorderRadius="8"
                                    BorderThickness="1"
                                    SelectionFinished="SelectionRectangle_OnSelectionFinished"
-                                   ZoomRatio="{Binding $parent[ZoomBorder].ZoomX}">
+                                   ZoomRatio="{CompiledBinding $parent[ZoomBorder].ZoomX}">
             <shared:SelectionRectangle.Background>
                 <SolidColorBrush Color="{DynamicResource SystemAccentColorLight1}" Opacity="0.2" />
             </shared:SelectionRectangle.Background>

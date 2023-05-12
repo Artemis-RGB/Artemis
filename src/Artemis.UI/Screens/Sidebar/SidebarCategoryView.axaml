@@ -115,8 +115,8 @@
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,30">
                         <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.0" />
                         <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.05" />
-                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.05" />
-                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.25" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.05" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.25" />
                     </LinearGradientBrush>
                 </Setter.Value>
             </Setter>
@@ -125,8 +125,8 @@
             <Setter Property="Background">
                 <Setter.Value>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,32">
-                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.75" />
-                        <GradientStop Color="{Binding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.95" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.75" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.95" />
                         <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.95" />
                         <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="1" />
                     </LinearGradientBrush>
@@ -139,8 +139,8 @@
           Margin="0 8 0 0" 
           RowDefinitions="Auto,*" 
           ContextFlyout="{StaticResource CategoryMenuFlyout}"
-          Classes.flyout-open="{Binding IsOpen, Source={StaticResource CategoryMenuFlyout}}"
-          Classes.plus-flyout-open="{Binding IsOpen, Source={StaticResource PlusMenuFlyout}}">
+          Classes.flyout-open="{CompiledBinding IsOpen, Source={StaticResource CategoryMenuFlyout}}"
+          Classes.plus-flyout-open="{CompiledBinding IsOpen, Source={StaticResource PlusMenuFlyout}}">
         <Grid Grid.Row="0" Background="Transparent" Margin="0 0 6 0" ColumnDefinitions="Auto,*,Auto,Auto,Auto">
             <avalonia:MaterialIcon Classes.chevron-collapsed="{CompiledBinding !IsCollapsed}"
                                    Kind="ChevronUp"
@@ -218,7 +218,7 @@
         <Panel Grid.Row="1" IsVisible="{CompiledBinding !IsCollapsed}">
             <ListBox Name="SidebarListBox"
                      Classes="sidebar-listbox"
-                     Items="{CompiledBinding ProfileConfigurations}"
+                     ItemsSource="{CompiledBinding ProfileConfigurations}"
                      SelectedItem="{CompiledBinding SelectedProfileConfiguration}"
                      MinHeight="35"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"

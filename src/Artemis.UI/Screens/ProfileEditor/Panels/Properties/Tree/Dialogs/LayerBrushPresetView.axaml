@@ -14,7 +14,7 @@
         <TextBox Name="SearchBox" Text="{CompiledBinding SearchText}" Margin="0 0 0 15" Watermark="Search" />
         <ListBox Name="EffectDescriptorsList"
                  Grid.Row="1"
-                 Items="{CompiledBinding Presets}"
+                 ItemsSource="{CompiledBinding Presets}"
                  IsVisible="{CompiledBinding Presets.Count}"
                  Height="300">
 

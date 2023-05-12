@@ -75,7 +75,7 @@ public partial class ProfileConfigurationIcon : UserControl, IDisposable
             Background = TextElement.GetForeground(this),
             VerticalAlignment = VerticalAlignment.Stretch,
             HorizontalAlignment = HorizontalAlignment.Stretch,
-            OpacityMask = new ImageBrush(new Bitmap(stream)) {BitmapInterpolationMode = BitmapInterpolationMode.MediumQuality}
+            OpacityMask = new ImageBrush(new Bitmap(stream))
         };
     }
 

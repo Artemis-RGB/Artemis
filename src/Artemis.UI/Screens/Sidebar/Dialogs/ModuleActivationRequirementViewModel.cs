@@ -23,7 +23,7 @@ public class ModuleActivationRequirementViewModel : ActivatableViewModelBase
 
         this.WhenActivated(d =>
         {
-            _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Normal, Update);
+            _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Background, Update);
             _updateTimer.Start();
 
             Disposable.Create(() =>

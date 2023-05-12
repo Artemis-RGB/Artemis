@@ -67,9 +67,9 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
         {
             _keyBindingsEnabled = Shared.UI.KeyBindingsEnabled.ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
             
-            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000), DispatcherPriority.Normal, Update);
+            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000), DispatcherPriority.Background, Update);
             // TODO: Remove in favor of saving each time a node editor command is executed
-            DispatcherTimer saveTimer = new(TimeSpan.FromMinutes(2), DispatcherPriority.Normal, Save);
+            DispatcherTimer saveTimer = new(TimeSpan.FromMinutes(2), DispatcherPriority.Background, Save);
 
             updateTimer.Start();
             saveTimer.Start();

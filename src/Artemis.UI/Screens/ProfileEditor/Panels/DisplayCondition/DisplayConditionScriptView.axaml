@@ -24,7 +24,7 @@
                       Grid.Row="1"
                       Classes="condition-type"
                       PlaceholderText="Select an activation type"
-                      Items="{CompiledBinding ConditionTypeViewModels}"
+                      ItemsSource="{CompiledBinding ConditionTypeViewModels}"
                       IsEnabled="{CompiledBinding ProfileElement, Converter={x:Static ObjectConverters.IsNotNull}}"
                       SelectedItem="{CompiledBinding SelectedConditionTypeViewModel}"
                       HorizontalAlignment="Stretch">

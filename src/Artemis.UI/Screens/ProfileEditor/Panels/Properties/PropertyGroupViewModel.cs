@@ -179,12 +179,12 @@ public class PropertyGroupViewModel : PropertyViewModelBase, IDisposable
     public void Dispose()
     {
         LayerPropertyGroup.VisibilityChanged -= LayerPropertyGroupOnVisibilityChanged;
-        foreach (ViewModelBase viewModelBase in Children)
+        while (Children.Any())
         {
-            if (viewModelBase is IDisposable disposable)
+            if (Children[0] is IDisposable disposable)
                 disposable.Dispose();
+            Children.RemoveAt(0);
         }
-
         _keyframeSubscription.Dispose();
     }
 }

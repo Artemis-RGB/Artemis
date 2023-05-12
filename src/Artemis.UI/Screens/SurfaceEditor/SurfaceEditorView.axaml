@@ -79,7 +79,7 @@
                             <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut" />
                         </Transitions>
                     </Grid.Transitions>
-                    <ItemsControl Name="DeviceContainer" Items="{CompiledBinding SurfaceDeviceViewModels}" ClipToBounds="False">
+                    <ItemsControl Name="DeviceContainer" ItemsSource="{CompiledBinding SurfaceDeviceViewModels}" ClipToBounds="False">
                         <ItemsControl.Styles>
                             <Style Selector="ContentPresenter">
                                 <Setter Property="Canvas.Left" Value="{Binding Device.X}" />
@@ -125,7 +125,7 @@
         
         <Border Grid.Column="1" Classes="card-condensed" Margin="15 0 0 0">
             <Grid RowDefinitions="*,Auto,Auto" ColumnDefinitions="*,*">
-                <ListBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Items="{CompiledBinding ListDeviceViewModels}">
+                <ListBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{CompiledBinding ListDeviceViewModels}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <ContentControl Content="{Binding}" ContextFlyout="{StaticResource DeviceMenuFlyout}"></ContentControl>

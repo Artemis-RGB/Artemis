@@ -18,7 +18,7 @@ public class DisplayValueNodeCustomViewModel : CustomNodeViewModel
         // Because the DisplayValueNode has no output it never evaluates, manually do so here
         this.WhenActivated(d =>
         {
-            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000), DispatcherPriority.Normal, Update);
+            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000), DispatcherPriority.Background, Update);
             updateTimer.Start();
             Disposable.Create(() => updateTimer.Stop()).DisposeWith(d);
         });

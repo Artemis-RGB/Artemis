@@ -62,7 +62,7 @@
             <ContentControl Content="{CompiledBinding DragViewModel}" ClipToBounds="False" />
 
             <!-- Cables -->
-            <ItemsControl Items="{CompiledBinding CableViewModels}" ClipToBounds="False">
+            <ItemsControl ItemsSource="{CompiledBinding CableViewModels}" ClipToBounds="False">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas />
@@ -71,22 +71,22 @@
             </ItemsControl>
 
             <!-- Nodes -->
-            <ItemsControl Name="NodesContainer" Items="{CompiledBinding NodeViewModels}" ClipToBounds="False">
+            <ItemsControl Name="NodesContainer" ItemsSource="{CompiledBinding NodeViewModels}" ClipToBounds="False">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.Styles>
-                    <Style Selector="ItemsControl#NodesContainer > ContentPresenter">
-                        <Setter Property="Canvas.Left" Value="{Binding Node.X}" />
-                        <Setter Property="Canvas.Top" Value="{Binding Node.Y}" />
+                    <Style Selector="ItemsControl#NodesContainer > ContentPresenter" x:DataType="visualScripting:NodeViewModel">
+                        <Setter Property="Canvas.Left" Value="{CompiledBinding Node.X}" />
+                        <Setter Property="Canvas.Top" Value="{CompiledBinding Node.Y}" />
                     </Style>
                 </ItemsControl.Styles>
             </ItemsControl>
 
             <shared:SelectionRectangle Name="SelectionRectangle"
-                                       InputElement="{Binding #NodeScriptZoomBorder}"
+                                       InputElement="{CompiledBinding #NodeScriptZoomBorder}"
                                        SelectionUpdated="SelectionRectangle_OnSelectionUpdated"
                                        SelectionFinished="SelectionRectangle_OnSelectionFinished"
                                        BorderBrush="{DynamicResource SystemAccentColor}"

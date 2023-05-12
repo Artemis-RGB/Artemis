@@ -32,7 +32,6 @@ internal class TreePropertyViewModel<T> : ActivatableViewModelBase, ITreePropert
             _profileEditorService.Time.Subscribe(t => _time = t).DisposeWith(d);
             _isCurrentlySelected = _profileEditorService.LayerProperty.Select(l => l == LayerProperty).ToProperty(this, vm => vm.IsCurrentlySelected).DisposeWith(d);
             _dataBindingEnabled = LayerProperty.BaseDataBinding.AsObservable().Select(b => b.IsEnabled).ToProperty(this, vm => vm.DataBindingEnabled).DisposeWith(d);
-
             this.WhenAnyValue(vm => vm.LayerProperty.KeyframesEnabled).Subscribe(_ => this.RaisePropertyChanged(nameof(KeyframesEnabled))).DisposeWith(d);
         });
 

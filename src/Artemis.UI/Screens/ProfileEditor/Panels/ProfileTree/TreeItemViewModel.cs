@@ -256,15 +256,9 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
 
     private async void UpdateCanPaste(bool isFlyoutOpen)
     {
-        if (Application.Current?.Clipboard == null)
-        {
-            CanPaste = false;
-            return;
-        }
-
-        string[] formats = await Application.Current.Clipboard.GetFormatsAsync();
+        string[] formats = await Shared.UI.Clipboard.GetFormatsAsync();
         //diogotr7: This can be null on Linux sometimes. I'm not sure why.
-        if (formats == null)
+        if (formats == null!)
         {
             CanPaste = false;
             return;

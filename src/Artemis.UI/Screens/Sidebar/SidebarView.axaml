@@ -23,14 +23,14 @@
         <ListBox Classes="sidebar-listbox"
                  Grid.Row="1"
                  Margin="10 2"
-                 Items="{CompiledBinding SidebarScreens}"
+                 ItemsSource="{CompiledBinding SidebarScreens}"
                  SelectedItem="{CompiledBinding SelectedSidebarScreen}" />
         <Border Grid.Row="2" Margin="8" Height="1" Background="{DynamicResource ButtonBorderBrush}"></Border>
 
         <!-- Categories -->
         <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <ItemsControl Margin="10 2" Items="{CompiledBinding SidebarCategories}" Classes="profile-categories" />
+                <ItemsControl Margin="10 2" ItemsSource="{CompiledBinding SidebarCategories}" Classes="profile-categories" />
                 <Button Content="Add new category"
                         Margin="10"
                         HorizontalAlignment="Stretch"

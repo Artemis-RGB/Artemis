@@ -1,6 +1,8 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ui="clr-namespace:Artemis.UI;assembly=Artemis.UI"
+             xmlns:root="clr-namespace:Artemis.UI.Screens.Root;assembly=Artemis.UI"
+             x:DataType="root:RootViewModel"
              x:Class="Artemis.UI.MacOS.App">
     <Application.DataTemplates>
         <ui:ViewLocator />
@@ -12,16 +14,16 @@
 
     <TrayIcon.Icons>
         <TrayIcons>
-            <TrayIcon Icon="avares://Artemis.UI/Assets/Images/Logo/application.ico" ToolTipText="Artemis" Command="{Binding OpenScreen}" CommandParameter="Home">
+            <TrayIcon Icon="avares://Artemis.UI/Assets/Images/Logo/application.ico" ToolTipText="Artemis" Command="{CompiledBinding OpenScreen}" CommandParameter="Home">
                 <TrayIcon.Menu>
                     <NativeMenu>
-                        <NativeMenuItem Header="Home" Command="{Binding OpenScreen}" CommandParameter="Home" />
-                        <!-- <NativeMenuItem Header="Workshop" Command="{Binding OpenScreen}" CommandParameter="Workshop" /> -->
-                        <NativeMenuItem Header="Surface Editor" Command="{Binding OpenScreen}" CommandParameter="Surface Editor" />
-                        <NativeMenuItem Header="Settings" Command="{Binding OpenScreen}" CommandParameter="Settings" />
+                        <NativeMenuItem Header="Home" Command="{CompiledBinding OpenScreen}" CommandParameter="Home" />
+                        <!-- <NativeMenuItem Header="Workshop" Command="{CompiledBinding OpenScreen}" CommandParameter="Workshop" /> -->
+                        <NativeMenuItem Header="Surface Editor" Command="{CompiledBinding OpenScreen}" CommandParameter="Surface Editor" />
+                        <NativeMenuItem Header="Settings" Command="{CompiledBinding OpenScreen}" CommandParameter="Settings" />
                         <NativeMenuItemSeparator />
-                        <NativeMenuItem Header="Debugger" Command="{Binding OpenDebugger}" />
-                        <NativeMenuItem Header="Exit" Command="{Binding Exit}" />
+                        <NativeMenuItem Header="Debugger" Command="{CompiledBinding OpenDebugger}" />
+                        <NativeMenuItem Header="Exit" Command="{CompiledBinding Exit}" />
                     </NativeMenu>
                 </TrayIcon.Menu>
             </TrayIcon>

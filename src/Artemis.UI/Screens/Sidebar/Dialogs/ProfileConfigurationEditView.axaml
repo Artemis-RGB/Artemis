@@ -46,14 +46,14 @@
                         <TextBlock Classes="label">Profile name</TextBlock>
                         <TextBox Watermark="Name" Text="{CompiledBinding ProfileName}" />
                         <TextBlock Classes="label">Module</TextBlock>
-                        <ComboBox SelectedItem="{CompiledBinding SelectedModule}" IsEnabled="{CompiledBinding Modules.Count}" Items="{CompiledBinding Modules}" HorizontalAlignment="Stretch">
+                        <ComboBox SelectedItem="{CompiledBinding SelectedModule}" IsEnabled="{CompiledBinding Modules.Count}" ItemsSource="{CompiledBinding Modules}" HorizontalAlignment="Stretch">
                             <ComboBox.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <VirtualizingStackPanel />
                                 </ItemsPanelTemplate>
                             </ComboBox.ItemsPanel>
                             <ComboBox.ItemTemplate>
-                                <DataTemplate>
+                                <DataTemplate x:DataType="local:ProfileModuleViewModel">
                                     <StackPanel Orientation="Horizontal">
                                         <shared:ArtemisIcon Icon="{CompiledBinding Icon, FallbackValue='Close'}" Width="16" Height="16" Margin="0 0 5 0" />
                                         <TextBlock Text="{CompiledBinding Name, FallbackValue='None'}" />
@@ -79,9 +79,13 @@
 
                             <Border IsVisible="{CompiledBinding ProfileConfiguration.Icon.Fill}" Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}"
                                     Width="78" Height="78">
-                                <Border Name="FillPreview" Background="{DynamicResource TextFillColorPrimary}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10">
+                                <Border Name="FillPreview"
+                                        Background="{DynamicResource TextFillColorPrimary}" 
+                                        VerticalAlignment="Stretch" 
+                                        HorizontalAlignment="Stretch" Margin="10"
+                                        RenderOptions.BitmapInterpolationMode="HighQuality" >
                                     <Border.OpacityMask>
-                                        <ImageBrush Source="{CompiledBinding SelectedBitmapSource}" BitmapInterpolationMode="HighQuality" />
+                                        <ImageBrush Source="{CompiledBinding SelectedBitmapSource}" />
                                     </Border.OpacityMask>
                                 </Border>
                             </Border>
@@ -104,7 +108,7 @@
                             <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="78" Height="78">
                                 <avalonia:MaterialIcon Kind="{CompiledBinding SelectedMaterialIcon.Icon}" Width="45" Height="45" />
                             </Border>
-                            <ComboBox Items="{CompiledBinding MaterialIcons}"
+                            <ComboBox ItemsSource="{CompiledBinding MaterialIcons}"
                                       SelectedItem="{CompiledBinding SelectedMaterialIcon}"
                                       VerticalAlignment="Bottom"
                                       IsTextSearchEnabled="True"
@@ -127,8 +131,9 @@
                             </ComboBox>
                         </StackPanel>
 
-                        <CheckBox VerticalAlignment="Bottom" IsChecked="{CompiledBinding FadeInAndOut}" ToolTip.Tip="Smoothly animates in and out when the profile activation conditions change.">Fade when enabling and disabling</CheckBox>
-
+                        <CheckBox VerticalAlignment="Bottom" IsChecked="{CompiledBinding FadeInAndOut}" ToolTip.Tip="Smoothly animates in and out when the profile activation conditions change.">
+                            Fade when enabling and disabling
+                        </CheckBox>
                     </StackPanel>
                 </Border>
 

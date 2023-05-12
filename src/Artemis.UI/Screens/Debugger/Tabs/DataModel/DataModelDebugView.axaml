@@ -5,7 +5,9 @@
              xmlns:dataModel="clr-namespace:Artemis.UI.Shared.DataModelVisualization.Shared;assembly=Artemis.UI.Shared"
              xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.Debugger.DataModel"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="local:DataModelDebugViewModel"
              x:Class="Artemis.UI.Screens.Debugger.DataModel.DataModelDebugView">
     <UserControl.Resources>
         <converters:TypeToStringConverter x:Key="TypeToStringConverter" />
@@ -21,14 +23,14 @@
             </TextBlock>
         </StackPanel>
 
-        <TreeView Grid.Row="1" Items="{Binding MainDataModel.Children}">
+        <TreeView Grid.Row="1" ItemsSource="{CompiledBinding MainDataModel.Children}">
             <TreeView.Styles>
                 <Style Selector="TreeViewItem">
-                    <Setter Property="IsExpanded" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
+                    <Setter Property="IsExpanded" Value="{CompiledBinding IsVisualizationExpanded, Mode=TwoWay,DataType=dataModel:DataModelVisualizationViewModel}" />
                     <Setter Property="ContextFlyout">
                         <Setter.Value>
                             <MenuFlyout>
-                                <MenuItem Header="Copy path" Command="{Binding CopyPath}">
+                                <MenuItem Header="Copy path" Command="{CompiledBinding CopyPath, DataType=dataModel:DataModelVisualizationViewModel}">
                                     <MenuItem.Icon>
                                         <avalonia:MaterialIcon Kind="ContentCopy" />
                                     </MenuItem.Icon>
@@ -39,32 +41,32 @@
                 </Style>
             </TreeView.Styles>
             <TreeView.DataTemplates>
-                <TreeDataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}" ItemsSource="{Binding Children}">
+                <TreeDataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}" ItemsSource="{CompiledBinding Children}">
                     <Grid ColumnDefinitions="Auto,Auto,*">
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0 0 5 0">
                             <TextBlock FontWeight="Bold">[</TextBlock>
-                            <TextBlock FontWeight="Bold" Text="{Binding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" />
+                            <TextBlock FontWeight="Bold" Text="{CompiledBinding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" />
                             <TextBlock FontWeight="Bold">]</TextBlock>
                         </StackPanel>
 
-                        <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
+                        <TextBlock Grid.Column="1" Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
                         <TextBlock Grid.Column="2"
-                                   Text="{Binding DisplayValue}"
+                                   Text="{CompiledBinding DisplayValue}"
                                    FontFamily="Consolas"
                                    HorizontalAlignment="Right" />
                     </Grid>
 
                 </TreeDataTemplate>
-                <TreeDataTemplate DataType="{x:Type dataModel:DataModelListViewModel}" ItemsSource="{Binding ListChildren}">
+                <TreeDataTemplate DataType="{x:Type dataModel:DataModelListViewModel}" ItemsSource="{CompiledBinding ListChildren}">
                     <Grid ColumnDefinitions="Auto,Auto,*">
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0 0 5 0">
                             <TextBlock FontWeight="Bold">[</TextBlock>
-                            <TextBlock FontWeight="Bold" Text="{Binding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" />
+                            <TextBlock FontWeight="Bold" Text="{CompiledBinding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" />
                             <TextBlock FontWeight="Bold">]</TextBlock>
                         </StackPanel>
-                        <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
+                        <TextBlock Grid.Column="1" Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
                         <TextBlock Grid.Column="2"
-                                   Text="{Binding CountDisplay, Mode=OneWay}"
+                                   Text="{CompiledBinding CountDisplay, Mode=OneWay}"
                                    FontFamily="Consolas"
                                    HorizontalAlignment="Right" />
                     </Grid>
@@ -74,13 +76,13 @@
                         <!-- Value description -->
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0 0 5 0">
                             <TextBlock FontWeight="Bold">[</TextBlock>
-                            <TextBlock FontWeight="Bold" Text="{Binding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" />
+                            <TextBlock FontWeight="Bold" Text="{CompiledBinding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" />
                             <TextBlock FontWeight="Bold">]</TextBlock>
                         </StackPanel>
-                        <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
+                        <TextBlock Grid.Column="1" Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
 
                         <!-- Value display -->
-                        <ContentControl Grid.Column="2" Content="{Binding DisplayViewModel}" FontFamily="Consolas" />
+                        <ContentControl Grid.Column="2" Content="{CompiledBinding DisplayViewModel}" FontFamily="Consolas" />
                     </Grid>
                 </TreeDataTemplate>
                 <TreeDataTemplate DataType="{x:Type dataModel:DataModelListItemViewModel}">
@@ -88,29 +90,29 @@
                         <!-- Value description -->
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0 0 5 0">
                             <TextBlock FontWeight="Bold">[</TextBlock>
-                            <TextBlock FontWeight="Bold" Text="{Binding ListType, Converter={StaticResource TypeToStringConverter}}" />
+                            <TextBlock FontWeight="Bold" Text="{CompiledBinding ListType, Converter={StaticResource TypeToStringConverter}}" />
                             <TextBlock FontWeight="Bold">]</TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0 0 5 0">
                             <TextBlock>List item #</TextBlock>
-                            <TextBlock Text="{Binding Index, Mode=OneWay}" />
+                            <TextBlock Text="{CompiledBinding Index, Mode=OneWay}" />
                         </StackPanel>
 
                         <!-- Value display -->
-                        <ContentControl Grid.Column="2" Content="{Binding DisplayViewModel}" FontFamily="Consolas" />
+                        <ContentControl Grid.Column="2" Content="{CompiledBinding DisplayViewModel}" FontFamily="Consolas" />
                     </Grid>
                 </TreeDataTemplate>
 
-                <TreeDataTemplate DataType="{x:Type dataModel:DataModelEventViewModel}" ItemsSource="{Binding Children}">
+                <TreeDataTemplate DataType="{x:Type dataModel:DataModelEventViewModel}" ItemsSource="{CompiledBinding Children}">
                     <Grid ColumnDefinitions="Auto,Auto,*">
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0 0 5 0">
                             <TextBlock FontWeight="Bold">[</TextBlock>
-                            <TextBlock FontWeight="Bold" Text="{Binding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" />
+                            <TextBlock FontWeight="Bold" Text="{CompiledBinding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" />
                             <TextBlock FontWeight="Bold">]</TextBlock>
                         </StackPanel>
-                        <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip.Tip="{Binding PropertyDescription.Description}" />
+                        <TextBlock Grid.Column="1" Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
                         <TextBlock Grid.Column="2"
-                                   Text="{Binding CountDisplay, Mode=OneWay}"
+                                   Text="{CompiledBinding Path=CountDisplay, DataType=dataModel:DataModelListViewModel ,Mode=OneWay}"
                                    FontFamily="Consolas"
                                    HorizontalAlignment="Right" />
                     </Grid>

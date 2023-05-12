@@ -23,11 +23,11 @@
 		<Style.Resources>
 			<ControlTemplate x:Key="TooltipDataValidationLeftContentTemplate" TargetType="DataValidationErrors">
                 <DockPanel LastChildFill="True">
-                    <ContentControl Content="{Binding (DataValidationErrors.Errors)}"
+                    <ContentControl Content="{CompiledBinding (DataValidationErrors.Errors)}"
                                     ContentTemplate="{TemplateBinding ErrorTemplate}"
                                     DataContext="{TemplateBinding Owner}"
                                     DockPanel.Dock="Left"
-                                    IsVisible="{Binding (DataValidationErrors.HasErrors)}" />
+                                    IsVisible="{CompiledBinding (DataValidationErrors.HasErrors)}" />
                     <ContentPresenter Name="PART_ContentPresenter"
                                       Padding="{TemplateBinding Padding}"
                                       Background="{TemplateBinding Background}"

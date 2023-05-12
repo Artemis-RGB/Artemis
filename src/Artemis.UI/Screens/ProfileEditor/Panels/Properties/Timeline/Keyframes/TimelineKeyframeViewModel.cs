@@ -150,9 +150,6 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
 
     private async Task ExecuteCopy()
     {
-        if (Application.Current?.Clipboard == null)
-            return;
-
         List<KeyframeClipboardModel> keyframes = new();
         if (!IsSelected)
             keyframes.Add(new KeyframeClipboardModel(Keyframe));
@@ -162,15 +159,12 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
         string copy = CoreJson.SerializeObject(keyframes, true);
         DataObject dataObject = new();
         dataObject.Set(KeyframeClipboardModel.ClipboardDataFormat, copy);
-        await Application.Current.Clipboard.SetDataObjectAsync(dataObject);
+        await Shared.UI.Clipboard.SetDataObjectAsync(dataObject);
     }
 
     private async Task ExecutePaste()
     {
-        if (Application.Current?.Clipboard == null)
-            return;
-
-        List<KeyframeClipboardModel>? keyframes = await Application.Current.Clipboard.GetJsonAsync<List<KeyframeClipboardModel>>(KeyframeClipboardModel.ClipboardDataFormat);
+        List<KeyframeClipboardModel>? keyframes = await Shared.UI.Clipboard.GetJsonAsync<List<KeyframeClipboardModel>>(KeyframeClipboardModel.ClipboardDataFormat);
         if (keyframes == null)
             return;
 
@@ -201,13 +195,7 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
 
     private async void UpdateCanPaste(bool isFlyoutOpen)
     {
-        if (Application.Current?.Clipboard == null)
-        {
-            CanPaste = false;
-            return;
-        }
-
-        string[] formats = await Application.Current.Clipboard.GetFormatsAsync();
+        string[] formats = await Shared.UI.Clipboard.GetFormatsAsync();
         CanPaste = formats.Contains("Artemis.Keyframes");
     }
 

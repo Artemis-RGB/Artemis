@@ -15,6 +15,7 @@ using Artemis.WebClient.Updating.DryIoc;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Styling;
 using DryIoc;
 using ReactiveUI;
 using Splat.DryIoc;
@@ -33,6 +34,7 @@ public static class ArtemisBootstrapper
 
         Utilities.PrepareFirstLaunch();
 
+        application.RequestedThemeVariant = ThemeVariant.Dark;
         _application = application;
         _container = new Container(rules => rules
             .WithMicrosoftDependencyInjectionRules()

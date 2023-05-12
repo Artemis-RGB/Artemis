@@ -18,7 +18,7 @@
             </StackPanel>
 
             <ScrollViewer Grid.Row="1" Margin="0 15">
-                <ItemsControl Items="{CompiledBinding DeviceProviders}" Margin="-4 0 8 0">
+                <ItemsControl ItemsSource="{CompiledBinding DeviceProviders}" Margin="-4 0 8 0">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <UniformGrid Columns="2" />
@@ -28,7 +28,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border Classes="card-condensed" Margin="4">
-                                <ContentControl Content="{Binding}"></ContentControl>
+                                <ContentControl Content="{CompiledBinding}"></ContentControl>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

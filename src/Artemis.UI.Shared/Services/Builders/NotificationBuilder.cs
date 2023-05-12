@@ -26,7 +26,8 @@ public class NotificationBuilder
     public NotificationBuilder(Window parent)
     {
         _parent = parent;
-        _infoBar = new InfoBar {Classes = Classes.Parse("notification-info-bar")};
+        _infoBar = new InfoBar();
+        _infoBar.Classes.Add("notification-info-bar");
     }
 
     /// <summary>
@@ -204,11 +205,18 @@ public class NotificationButtonBuilder
 
     internal Control Build()
     {
+        Button button = new() {Content = _text};
+        button.Classes.Add("AppBarButton");
+
         if (_action != null)
-            return new Button {Content = _text, Command = ReactiveCommand.Create(() => _action()), Classes = new Classes("AppBarButton")};
-        if (_command != null)
-            return new Button {Content = _text, Command = _command, CommandParameter = _commandParameter, Classes = new Classes("AppBarButton")};
-        return new Button {Content = _text, Classes = new Classes("AppBarButton")};
+            button.Command = ReactiveCommand.Create(() => _action());
+        else if (_command != null)
+        {
+            button.Command = _command;
+            button.CommandParameter = _commandParameter;
+        }
+
+        return button;
     }
 }
 

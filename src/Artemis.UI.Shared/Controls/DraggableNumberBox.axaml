@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -25,12 +25,14 @@
     <Panel>
         <controls:NumberBox Name="InnerNumberBox"
                             AcceptsExpression="True"
-                            LargeChange="{Binding $parent[sharedControls:DraggableNumberBox].LargeChange}"
-                            SmallChange="{Binding $parent[sharedControls:DraggableNumberBox].SmallChange}"
-                            SimpleNumberFormat="{Binding $parent[sharedControls:DraggableNumberBox].SimpleNumberFormat}"
-                            attachedProperties:NumberBoxAssist.PrefixText="{Binding $parent[sharedControls:DraggableNumberBox].Prefix}"
-                            attachedProperties:NumberBoxAssist.SuffixText="{Binding $parent[sharedControls:DraggableNumberBox].Suffix}"
-                            HorizontalAlignment="{Binding $parent[sharedControls:DraggableNumberBox].HorizontalAlignment}" 
+                            LargeChange="{CompiledBinding $parent[sharedControls:DraggableNumberBox].LargeChange}"
+                            SmallChange="{CompiledBinding $parent[sharedControls:DraggableNumberBox].SmallChange}"
+                            Minimum="{CompiledBinding $parent[sharedControls:DraggableNumberBox].Minimum}"
+                            Maximum="{CompiledBinding $parent[sharedControls:DraggableNumberBox].Maximum}"
+                            SimpleNumberFormat="{CompiledBinding $parent[sharedControls:DraggableNumberBox].SimpleNumberFormat}"
+                            attachedProperties:NumberBoxAssist.PrefixText="{CompiledBinding $parent[sharedControls:DraggableNumberBox].Prefix}"
+                            attachedProperties:NumberBoxAssist.SuffixText="{CompiledBinding $parent[sharedControls:DraggableNumberBox].Suffix}"
+                            HorizontalAlignment="{CompiledBinding $parent[sharedControls:DraggableNumberBox].HorizontalAlignment}"
                             ValueChanged="NumberBox_OnValueChanged"/>
         <Rectangle Name="DragCollider" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Fill="Transparent"></Rectangle>
     </Panel>

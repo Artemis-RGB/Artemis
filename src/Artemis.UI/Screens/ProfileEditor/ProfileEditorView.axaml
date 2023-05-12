@@ -47,8 +47,8 @@
             <Setter Property="Width" Value="18" />
             <Setter Property="Height" Value="18" />
         </Style>
-        <Style Selector="Window:windows Grid.editor-grid">
-            <Setter Property="Margin" Value="0 0 4 4" />
+        <Style Selector="Grid.editor-grid">
+            <Setter Property="Margin" Value="0 0 6 6" />
         </Style>
     </UserControl.Styles>
     <Grid Classes="editor-grid">
@@ -70,7 +70,7 @@
             <Border Grid.Row="0" Classes="card" Padding="0" Margin="4 0 4 4" ClipToBounds="True">
                 <Grid ColumnDefinitions="Auto,*">
                     <Border Grid.Column="0">
-                        <ItemsControl Items="{CompiledBinding Tools}">
+                        <ItemsControl ItemsSource="{CompiledBinding Tools}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="shared:IToolViewModel">
                                     <ToggleButton Classes="icon-button editor-sidebar-button"
@@ -86,9 +86,9 @@
                     <ContentControl Grid.Column="1" Content="{CompiledBinding VisualEditorViewModel}" />
                 </Grid>
             </Border>
-
+        
             <GridSplitter Grid.Row="1" Classes="editor-grid-splitter-horizontal" />
-
+        
             <Border Grid.Row="2" Classes="card card-condensed" Margin="4" Padding="0" ClipToBounds="True">
                 <Panel>
                     <ContentControl Content="{CompiledBinding PropertiesViewModel}" />
@@ -109,9 +109,9 @@
                 </Panel>
             </Border>
         </Grid>
-
+        
         <GridSplitter Grid.Row="0" Grid.Column="1" Classes="editor-grid-splitter-vertical" />
-
+        
         <Grid Grid.Row="0" Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
@@ -124,9 +124,9 @@
                     <Border Classes="suspended-editing" />
                 </Panel>
             </Border>
-
+        
             <GridSplitter Grid.Row="1" Classes="editor-grid-splitter-horizontal" />
-
+        
             <Border Grid.Row="2" Classes="card card-condensed" Margin="4">
                 <Panel>
                     <ContentControl Content="{CompiledBinding DisplayConditionScriptViewModel}" />

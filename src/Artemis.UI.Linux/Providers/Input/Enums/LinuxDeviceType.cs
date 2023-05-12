@@ -2,6 +2,7 @@
 
 public enum LinuxDeviceType
 {
+    Unknown,
     Keyboard,
     Mouse,
     Gamepad
