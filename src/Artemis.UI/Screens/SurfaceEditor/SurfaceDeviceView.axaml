@@ -27,7 +27,7 @@
             </Style>
         </Grid.Styles>
 
-        <shared:DeviceVisualizer Device="{CompiledBinding Device}" ShowColors="True" />
+        <shared:DeviceVisualizer Device="{CompiledBinding Device}" ShowColors="True" RenderOptions.BitmapInterpolationMode="HighQuality"/>
         <Border x:Name="SurfaceDeviceBorder"
                 Classes="selection-border"
                 Classes.selected="{CompiledBinding IsSelected}"

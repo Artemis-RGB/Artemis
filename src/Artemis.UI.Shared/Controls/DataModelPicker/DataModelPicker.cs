@@ -308,7 +308,7 @@ public class DataModelPicker : TemplatedControl
     {
         GetDataModel();
         UpdateCurrentPath(true);
-        _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, Update);
+        _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Background, Update);
         _updateTimer.Start();
     }
 

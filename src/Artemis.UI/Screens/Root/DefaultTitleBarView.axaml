@@ -4,9 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
+             xmlns:root="clr-namespace:Artemis.UI.Screens.Root;assembly=Artemis.UI"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="root:DefaultTitleBarViewModel"
              x:Class="Artemis.UI.Screens.Root.DefaultTitleBarView">
-    <Button Classes="title-bar-button" Command="{Binding ShowDebugger}" VerticalAlignment="Top" HorizontalAlignment="Right" windowing:AppWindow.AllowInteractionInTitleBar="True" >
+    <Button Classes="title-bar-button" Command="{CompiledBinding ShowDebugger}" VerticalAlignment="Top" HorizontalAlignment="Right" windowing:AppWindow.AllowInteractionInTitleBar="True" >
         <avalonia:MaterialIcon Kind="Bug"></avalonia:MaterialIcon>
     </Button>
 </UserControl>

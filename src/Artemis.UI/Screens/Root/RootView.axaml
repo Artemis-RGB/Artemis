@@ -4,10 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:reactiveUi="http://reactiveui.net"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="clr-namespace:Artemis.UI.Screens.Root;assembly=Artemis.UI"
+             x:DataType="vm:RootViewModel"
              x:Class="Artemis.UI.Screens.Root.RootView">
-	<reactiveUi:RoutedViewHost Router="{Binding Router}">
+	<reactiveUi:RoutedViewHost Router="{CompiledBinding Router}">
         <reactiveUi:RoutedViewHost.PageTransition>
-            <CrossFade Duration="0.1" />
+            <CompositePageTransition></CompositePageTransition>
         </reactiveUi:RoutedViewHost.PageTransition>
     </reactiveUi:RoutedViewHost>
 </UserControl>

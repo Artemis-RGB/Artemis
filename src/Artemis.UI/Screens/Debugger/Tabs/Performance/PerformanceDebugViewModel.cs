@@ -26,7 +26,7 @@ public class PerformanceDebugViewModel : ActivatableViewModelBase
     {
         _coreService = coreService;
         _pluginManagementService = pluginManagementService;
-        _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Normal, (_, _) => Update());
+        _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Background, (_, _) => Update());
 
         DisplayName = "Performance";
 

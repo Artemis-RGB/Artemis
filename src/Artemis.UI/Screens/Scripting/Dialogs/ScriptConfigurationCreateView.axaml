@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:dialogs="clr-namespace:Artemis.UI.Screens.Scripting.Dialogs"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:scriptingProviders="clr-namespace:Artemis.Core.ScriptingProviders;assembly=Artemis.Core"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Scripting.Dialogs.ScriptConfigurationCreateView"
              x:DataType="dialogs:ScriptConfigurationCreateViewModel">
@@ -12,14 +13,14 @@
             <TextBlock Classes="label" Margin="0 5">Script name</TextBlock>
             <TextBox Watermark="Name" Text="{CompiledBinding ScriptName}" />
             <TextBlock Classes="label" Margin="0 5">Script type</TextBlock>
-            <ComboBox SelectedItem="{CompiledBinding SelectedScriptingProvider}" Items="{CompiledBinding ScriptingProviders}" HorizontalAlignment="Stretch">
+            <ComboBox SelectedItem="{CompiledBinding SelectedScriptingProvider}" ItemsSource="{CompiledBinding ScriptingProviders}" HorizontalAlignment="Stretch">
                 <ComboBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel />
                     </ItemsPanelTemplate>
                 </ComboBox.ItemsPanel>
                 <ComboBox.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="scriptingProviders:ScriptingProvider">
                         <StackPanel Orientation="Horizontal">
                             <shared:ArtemisIcon Icon="{CompiledBinding Plugin.Info.ResolvedIcon}" Width="16" Height="16" Margin="0 0 5 0" />
                             <TextBlock Text="{CompiledBinding LanguageName}" />

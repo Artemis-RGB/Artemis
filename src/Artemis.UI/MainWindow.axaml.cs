@@ -6,7 +6,6 @@ using Artemis.UI.Screens.Root;
 using Artemis.UI.Shared;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -15,27 +14,24 @@ namespace Artemis.UI;
 public partial class MainWindow : ReactiveAppWindow<RootViewModel>
 {
     private bool _activated;
+    private IDisposable? _positionObserver;
 
     public MainWindow()
     {
         Opened += OnOpened;
+        Closed += OnClosed;
         Activated += OnActivated;
         Deactivated += OnDeactivated;
 
         InitializeComponent();
         ApplyWindowSize();
-        
+
+        Shared.UI.Clipboard = GetTopLevel(this)!.Clipboard!;
         RootPanel.LayoutUpdated += OnLayoutUpdated;
 
 #if DEBUG
         this.AttachDevTools();
 #endif
-
-        Observable.FromEventPattern<PixelPointEventArgs>(x => PositionChanged += x, x => PositionChanged -= x)
-            .Select(_ => Unit.Default)
-            .Merge(this.WhenAnyValue(vm => vm.WindowState, vm => vm.Width, vm => vm.Width, vm => vm.Height).Select(_ => Unit.Default))
-            .Throttle(TimeSpan.FromMilliseconds(200), AvaloniaScheduler.Instance)
-            .Subscribe(_ => SaveWindowSize());
     }
 
     private void ApplyWindowSize()
@@ -52,7 +48,7 @@ public partial class MainWindow : ReactiveAppWindow<RootViewModel>
         RootViewModel.WindowSizeSetting.Value ??= new WindowSize();
         RootViewModel.WindowSizeSetting.Value.ApplyFromWindow(this);
     }
-    
+
     private void OnLayoutUpdated(object? sender, EventArgs e)
     {
         SidebarContentControl.Width = RootPanel.Bounds.Width >= 1800 ? 300 : 240;
@@ -60,8 +56,18 @@ public partial class MainWindow : ReactiveAppWindow<RootViewModel>
 
     private void OnOpened(object? sender, EventArgs e)
     {
-        Opened -= OnOpened;
         TitleBar.ExtendsContentIntoTitleBar = true;
+
+        _positionObserver = Observable.FromEventPattern<PixelPointEventArgs>(x => PositionChanged += x, x => PositionChanged -= x)
+            .Select(_ => Unit.Default)
+            .Merge(this.WhenAnyValue(vm => vm.WindowState, vm => vm.Width, vm => vm.Width, vm => vm.Height).Select(_ => Unit.Default))
+            .Throttle(TimeSpan.FromMilliseconds(200), AvaloniaScheduler.Instance)
+            .Subscribe(_ => SaveWindowSize());
+    }
+    
+    private void OnClosed(object? sender, EventArgs e)
+    {
+        _positionObserver?.Dispose();
     }
 
     private void OnActivated(object? sender, EventArgs e)
@@ -73,5 +79,4 @@ public partial class MainWindow : ReactiveAppWindow<RootViewModel>
     {
         ViewModel?.Unfocused();
     }
-
 }

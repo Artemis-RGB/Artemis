@@ -16,9 +16,9 @@
         </TextBlock>
 
         <AutoCompleteBox HorizontalAlignment="Stretch" 
-                         Items="{CompiledBinding Regions}" 
+                         ItemsSource="{CompiledBinding Regions}" 
                          SelectedItem="{CompiledBinding SelectedRegion}"
-                         ValueMemberBinding="{Binding EnglishName}"
+                         ValueMemberBinding="{CompiledBinding EnglishName, DataType=globalization:RegionInfo}"
                          Watermark="Enter keyboard country name"
                          FilterMode="Custom"
                          MaxDropDownHeight="200"

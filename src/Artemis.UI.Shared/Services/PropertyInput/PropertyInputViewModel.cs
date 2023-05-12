@@ -220,7 +220,7 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
 /// <summary>
 ///     For internal use only, implement <see cref="PropertyInputViewModel" /> instead.
 /// </summary>
-public abstract class PropertyInputViewModel : ReactiveValidationObject, IActivatableViewModel, IDisposable
+public abstract class PropertyInputViewModel : ReactiveValidationObject, IActivatableViewModel
 {
     /// <summary>
     ///     Prevents this type being implemented directly, implement
@@ -228,29 +228,7 @@ public abstract class PropertyInputViewModel : ReactiveValidationObject, IActiva
     /// </summary>
     // ReSharper disable once UnusedMember.Global
     internal abstract object InternalGuard { get; }
-
-    /// <summary>
-    ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
-    /// </summary>
-    /// <param name="disposing">
-    ///     <see langword="true" /> to release both managed and unmanaged resources;
-    ///     <see langword="false" /> to release only unmanaged resources.
-    /// </param>
-    protected virtual void Dispose(bool disposing)
-    {
-    }
-
-    #region Implementation of IActivatableViewModel
-
+    
     /// <inheritdoc />
     public ViewModelActivator Activator { get; } = new();
-
-    #endregion
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
 }

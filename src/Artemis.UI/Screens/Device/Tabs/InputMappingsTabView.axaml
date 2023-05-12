@@ -42,14 +42,14 @@
             </StackPanel>
 
             <DataGrid Grid.Row="2"
-                      Items="{CompiledBinding InputMappings}"
+                      ItemsSource="{CompiledBinding InputMappings}"
                       CanUserSortColumns="True"
                       IsReadOnly="True"
                       AutoGenerateColumns="False"
                       Margin="10">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding [0].RgbLed.Id}" Header="Original LED ID" Width="*" />
-                    <DataGridTextColumn Binding="{Binding [1].RgbLed.Id}" Header="Remapped LED ID" Width="*" />
+                    <DataGridTextColumn Binding="{CompiledBinding Path=Original.RgbLed.Id}" Header="Original LED ID" Width="*" />
+                    <DataGridTextColumn Binding="{CompiledBinding Path=Replacement.RgbLed.Id}" Header="Remapped LED ID" Width="*" />
 
                     <DataGridTemplateColumn Width="Auto" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>

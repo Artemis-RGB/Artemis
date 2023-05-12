@@ -4,15 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="clr-namespace:Artemis.UI.Screens.Debugger.Performance"
+             x:DataType="vm:PerformanceDebugPluginViewModel"
              x:Class="Artemis.UI.Screens.Debugger.Performance.PerformanceDebugPluginView">
     <Border Classes="card-condensed" Margin="0 5">
         <StackPanel>
             <Grid ColumnDefinitions="40,*">
-                <shared:ArtemisIcon Grid.Column="0" Icon="{Binding Plugin.Info.ResolvedIcon}" Width="24" Height="24" />
-                <TextBlock Grid.Column="1" VerticalAlignment="Center" Classes="h5" Text="{Binding Plugin.Info.Name}" />
+                <shared:ArtemisIcon Grid.Column="0" Icon="{CompiledBinding Plugin.Info.ResolvedIcon}" Width="24" Height="24" />
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" Classes="h5" Text="{CompiledBinding Plugin.Info.Name}" />
             </Grid>
 
-            <ItemsControl Items="{Binding Profilers}" />
+            <ItemsControl ItemsSource="{CompiledBinding Profilers}" />
         </StackPanel>
     </Border>
 </UserControl>

@@ -22,7 +22,6 @@ namespace Artemis.UI.Screens.Root;
 
 public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvider
 {
-    private readonly IAssetLoader _assetLoader;
     private readonly ICoreService _coreService;
     private readonly IDebugService _debugService;
     private readonly DefaultTitleBarViewModel _defaultTitleBarViewModel;
@@ -41,7 +40,6 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
         IMainWindowService mainWindowService,
         IDebugService debugService,
         IUpdateService updateService,
-        IAssetLoader assetLoader,
         DefaultTitleBarViewModel defaultTitleBarViewModel,
         ISidebarVmFactory sidebarVmFactory)
     {
@@ -53,7 +51,6 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
         _windowService = windowService;
         _debugService = debugService;
         _updateService = updateService;
-        _assetLoader = assetLoader;
         _defaultTitleBarViewModel = defaultTitleBarViewModel;
         _sidebarVmFactory = sidebarVmFactory;
         _lifeTime = (IClassicDesktopStyleApplicationLifetime) Application.Current!.ApplicationLifetime!;

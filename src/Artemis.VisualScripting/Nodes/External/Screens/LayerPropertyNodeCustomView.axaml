@@ -8,8 +8,8 @@
              x:DataType="screens:LayerPropertyNodeCustomViewModel">
     <Grid>
         <StackPanel Spacing="5" VerticalAlignment="Top" IsVisible="{CompiledBinding !OutsideProfileContext}">
-            <ComboBox Classes="condensed" Items="{CompiledBinding ProfileElements}" SelectedItem="{CompiledBinding SelectedProfileElement}" />
-            <ComboBox Classes="condensed" Items="{CompiledBinding LayerProperties}" SelectedItem="{CompiledBinding SelectedLayerProperty}" />
+            <ComboBox Classes="condensed" ItemsSource="{CompiledBinding ProfileElements}" SelectedItem="{CompiledBinding SelectedProfileElement}" />
+            <ComboBox Classes="condensed" ItemsSource="{CompiledBinding LayerProperties}" SelectedItem="{CompiledBinding SelectedLayerProperty}" />
         </StackPanel>
         <StackPanel IsVisible="{CompiledBinding OutsideProfileContext}" VerticalAlignment="Center">
             <TextBlock Classes="BodyStrongTextBlockStyle" TextAlignment="Center">

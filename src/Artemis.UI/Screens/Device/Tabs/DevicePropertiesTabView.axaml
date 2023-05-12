@@ -157,7 +157,7 @@
                     The device layout is used to determine the position of LEDs and to create the visual representation of the device you see on the left side of this window.
                 </TextBlock>
 
-                <CheckBox Margin="0 0 0 5" IsChecked="{Binding Device.DisableDefaultLayout}">
+                <CheckBox Margin="0 0 0 5" IsChecked="{CompiledBinding Device.DisableDefaultLayout}">
                     <CheckBox.Content>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock>Don't load default layout</TextBlock>
@@ -169,13 +169,13 @@
                 </CheckBox>
 
                 <Grid>
-                    <TextBox Text="{Binding Device.CustomLayoutPath}"
+                    <TextBox Text="{CompiledBinding Device.CustomLayoutPath}"
                              Watermark="Custom layout path"
                              UseFloatingWatermark="True"
                              IsReadOnly="True"
                              PointerReleased="InputElement_OnPointerReleased"
                              Padding="10 5 36 6" />
-                    <Button Classes="AppBarButton" HorizontalAlignment="Right" Command="{Binding ClearCustomLayout}" Padding="6" Margin="5 0">
+                    <Button Classes="AppBarButton" HorizontalAlignment="Right" Command="{CompiledBinding ClearCustomLayout}" Padding="6" Margin="5 0">
                         <avalonia:MaterialIcon Kind="CloseCircle" />
                     </Button>
                 </Grid>
@@ -189,14 +189,14 @@
             <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
                 <Button Grid.Column="0"
                         IsVisible="{CompiledBinding RequiresManualSetup}"
-                        Command="{Binding RestartSetup}"
+                        Command="{CompiledBinding RestartSetup}"
                         ToolTip.Tip="Restart device setup, allowing you to select a new physical and logical layout">
                     Restart setup
                 </Button>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button IsCancel="True" Command="{Binding Reset}" Margin="0 0 5 0">Reset</Button>
-                    <Button Classes="accent" IsDefault="True" Command="{Binding Apply}">Apply</Button>
+                    <Button IsCancel="True" Command="{CompiledBinding Reset}" Margin="0 0 5 0">Reset</Button>
+                    <Button Classes="accent" IsDefault="True" Command="{CompiledBinding Apply}">Apply</Button>
                 </StackPanel>
             </Grid>
         </Grid>

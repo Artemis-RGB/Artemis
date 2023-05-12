@@ -32,7 +32,7 @@
         </Ellipse.Transitions>
         <Ellipse.ContextFlyout>
             <MenuFlyout Opening="FlyoutBase_OnOpening">
-                <MenuItem Header="Easing" Items="{Binding EasingViewModels}">
+                <MenuItem Header="Easing" ItemsSource="{Binding EasingViewModels}">
                     <MenuItem.Styles>
                         <Style Selector="MenuItem > MenuItem">
                             <Setter Property="Icon">

@@ -13,7 +13,8 @@
                    VerticalAlignment="Top"
 				   Source="/Assets/Images/home-banner.png"
 				   Height="200"
-				   Stretch="UniformToFill" />
+				   Stretch="UniformToFill"
+				   RenderOptions.BitmapInterpolationMode="HighQuality"/>
 
 			<!-- TODO: Replace with a shadow when available -->
 			<TextBlock Grid.Row="0"

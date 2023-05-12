@@ -23,10 +23,7 @@ internal class ExceptionDialogViewModel : DialogViewModelBase<object>
 
     public async Task CopyException()
     {
-        if (Application.Current?.Clipboard == null)
-            return;
-
-        await Application.Current.Clipboard.SetTextAsync(Exception.ToString());
+        await UI.Clipboard.SetTextAsync(Exception.ToString());
         _notificationService.CreateNotification()
             .WithMessage("Copied stack trace to clipboard.")
             .WithSeverity(NotificationSeverity.Success)

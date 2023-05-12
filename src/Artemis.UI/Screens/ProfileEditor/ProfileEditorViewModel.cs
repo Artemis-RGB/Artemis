@@ -22,7 +22,6 @@ namespace Artemis.UI.Screens.ProfileEditor;
 
 public class ProfileEditorViewModel : MainScreenViewModel
 {
-    private readonly IMainWindowService _mainWindowService;
     private readonly IProfileEditorService _profileEditorService;
     private readonly ISettingsService _settingsService;
     private readonly SourceList<IToolViewModel> _tools;
@@ -51,7 +50,6 @@ public class ProfileEditorViewModel : MainScreenViewModel
     {
         _profileEditorService = profileEditorService;
         _settingsService = settingsService;
-        _mainWindowService = mainWindowService;
 
         _tools = new SourceList<IToolViewModel>();
         _tools.AddRange(toolViewModels);
@@ -77,6 +75,8 @@ public class ProfileEditorViewModel : MainScreenViewModel
             {
                 mainWindowService.MainWindowFocused -= MainWindowServiceOnMainWindowFocused;
                 mainWindowService.MainWindowUnfocused -= MainWindowServiceOnMainWindowUnfocused;
+                foreach (IToolViewModel toolViewModel in _tools.Items)
+                    toolViewModel.Dispose();
             }).DisposeWith(d);
 
             // Slow and steady wins the race (and doesn't lock up the entire UI)

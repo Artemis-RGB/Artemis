@@ -31,7 +31,7 @@
                        Grid.Column="1"
                        VerticalAlignment="Top"
                        Classes="subtitle"
-                       Text="{Binding Version}" />
+                       Text="{CompiledBinding Version}" />
 
             <controls:HyperlinkButton Grid.Row="1"
                                       Grid.Column="2"

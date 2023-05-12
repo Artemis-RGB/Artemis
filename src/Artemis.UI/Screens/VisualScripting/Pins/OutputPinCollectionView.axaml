@@ -14,7 +14,7 @@
                 Command="{CompiledBinding AddPin}">
             <avalonia:MaterialIcon Kind="Add"></avalonia:MaterialIcon>
         </Button>
-		<ItemsControl Items="{CompiledBinding PinViewModels}" Margin="4 0" HorizontalAlignment="Right">
+		<ItemsControl ItemsSource="{CompiledBinding PinViewModels}" Margin="4 0" HorizontalAlignment="Right">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="pins:PinViewModel">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

@@ -11,9 +11,36 @@ public static class LinuxInputDeviceFinder
 
     public static IEnumerable<LinuxInputDevice> Find()
     {
-        return File.ReadAllLines(DEVICES_FILE)
-            .PartitionBy(s => s?.Length == 0) //split on empty lines 
-            .Select(lineGroup => new LinuxInputDevice(lineGroup));
+        IEnumerable<IEnumerable<string>> lineGroups = File.ReadAllLines(DEVICES_FILE).PartitionBy(s => s?.Length == 0); //split on empty lines 
+
+        foreach (IEnumerable<string> lineGroup in lineGroups)
+        {
+            LinuxInputDevice device;
+            
+            try
+            {
+                device = new LinuxInputDevice(lineGroup);
+            }
+            catch
+            {
+                continue;
+                //some devices don't have all the required data, we can ignore those
+            }
+            
+            if (ShouldReadDevice(device))
+            {
+                yield return device;
+            }
+        }
+    }
+
+    private static bool ShouldReadDevice(LinuxInputDevice device)
+    {
+        if (device.DeviceType == LinuxDeviceType.Unknown)
+            return false;
+        //possibly add more checks here
+        
+        return true;
     }
 
     //https://stackoverflow.com/questions/56623354
@@ -34,7 +61,7 @@ public static class LinuxInputDeviceFinder
             return groupNumber;
         };
         return a
-            .Select(x => new {Value = x, GroupNumber = getGroupNumber(predicate(x))})
+            .Select(x => new { Value = x, GroupNumber = getGroupNumber(predicate(x)) })
             .Where(x => x.GroupNumber != null)
             .GroupBy(x => x.GroupNumber)
             .Select(g => g.Select(x => x.Value));

@@ -25,7 +25,7 @@
     </Window.Styles>
 
     <Grid ColumnDefinitions="240,*">
-        <ListBox Items="{CompiledBinding Items}" SelectedItem="{CompiledBinding SelectedItem}" Grid.Column="0" Margin="10">
+        <ListBox ItemsSource="{CompiledBinding Items}" SelectedItem="{CompiledBinding SelectedItem}" Grid.Column="0" Margin="10">
             <ListBox.ItemTemplate>
                 <DataTemplate x:DataType="shared:ViewModelBase">
                     <TextBlock Text="{CompiledBinding DisplayName}" VerticalAlignment="Center" />

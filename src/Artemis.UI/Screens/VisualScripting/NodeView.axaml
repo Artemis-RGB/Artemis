@@ -75,8 +75,8 @@
                                 IsVisible="{CompiledBinding DisplayCustomViewModelAbove}" />
 
                 <StackPanel Grid.Row="1" Grid.Column="0" IsVisible="{CompiledBinding HasInputPins}">
-                    <ItemsControl Items="{CompiledBinding InputPinViewModels}" Margin="4 0" />
-                    <ItemsControl Items="{CompiledBinding InputPinCollectionViewModels}" />
+                    <ItemsControl ItemsSource="{CompiledBinding InputPinViewModels}" Margin="4 0" />
+                    <ItemsControl ItemsSource="{CompiledBinding InputPinCollectionViewModels}" />
                 </StackPanel>
 
                 <ContentControl Grid.Row="1"
@@ -86,8 +86,8 @@
                                 IsVisible="{CompiledBinding DisplayCustomViewModelBetween}" />
 
                 <StackPanel Grid.Row="1" Grid.Column="2" IsVisible="{CompiledBinding HasOutputPins}">
-                    <ItemsControl Items="{CompiledBinding OutputPinViewModels}" Margin="4 0" />
-                    <ItemsControl Items="{CompiledBinding OutputPinCollectionViewModels}" />
+                    <ItemsControl ItemsSource="{CompiledBinding OutputPinViewModels}" Margin="4 0" />
+                    <ItemsControl ItemsSource="{CompiledBinding OutputPinCollectionViewModels}" />
                 </StackPanel>
 
                 <ContentControl Grid.Row="2"

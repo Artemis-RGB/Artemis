@@ -37,8 +37,8 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
 
         CopyPath = ReactiveCommand.CreateFromTask(async () =>
         {
-            if (Application.Current?.Clipboard != null && Path != null)
-                await Application.Current.Clipboard.SetTextAsync(Path);
+            if (Path != null)
+                await UI.Clipboard.SetTextAsync(Path);
         });
 
         if (parent == null)

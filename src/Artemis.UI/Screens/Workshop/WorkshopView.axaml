@@ -55,7 +55,7 @@
                             <shared:EnumComboBox Value="{CompiledBinding SelectedCursor}"></shared:EnumComboBox>
                         </StackPanel>
 
-                        <Button Command="{Binding CreateRandomGradient}">
+                        <Button Command="{CompiledBinding CreateRandomGradient}">
                             Create random gradient
                         </Button>
                         <gradientPicker:GradientPickerButton ColorGradient="{CompiledBinding ColorGradient}" IsCompact="True" />

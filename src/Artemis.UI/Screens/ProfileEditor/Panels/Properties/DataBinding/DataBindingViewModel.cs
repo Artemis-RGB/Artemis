@@ -50,7 +50,7 @@ public class DataBindingViewModel : ActivatableViewModelBase
                 .DisposeWith(d);
             _profileEditorService.Playing.CombineLatest(_profileEditorService.SuspendedEditing).Subscribe(tuple => _playing = tuple.First || tuple.Second).DisposeWith(d);
 
-            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000), DispatcherPriority.Render, Update);
+            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000), DispatcherPriority.Background, Update);
             // TODO: Remove in favor of saving each time a node editor command is executed
             DispatcherTimer saveTimer = new(TimeSpan.FromMinutes(2), DispatcherPriority.Normal, Save);
 

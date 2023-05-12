@@ -42,15 +42,15 @@ public class EnumEqualsNodeCustomViewModel : CustomNodeViewModel
         });
     }
 
-    public ObservableCollection<(long, string)> EnumValues { get; } = new();
+    public ObservableCollection<EnumValueItem> EnumValues { get; } = new();
 
-    public (long, string) CurrentValue
+    public EnumValueItem CurrentValue
     {
-        get => EnumValues.FirstOrDefault(v => v.Item1 == _node.Storage);
+        get => EnumValues.FirstOrDefault(v => v.Value == _node.Storage);
         set
         {
-            if (!Equals(_node.Storage, value.Item1))
-                _nodeEditorService.ExecuteCommand(Script, new UpdateStorage<long>(_node, value.Item1));
+            if (!Equals(_node.Storage, value.Value))
+                _nodeEditorService.ExecuteCommand(Script, new UpdateStorage<long>(_node, value.Value));
         }
     }
 
@@ -58,13 +58,38 @@ public class EnumEqualsNodeCustomViewModel : CustomNodeViewModel
     {
         Dispatcher.UIThread.Post(() =>
         {
-            List<(long, string)> values = Enum.GetValues(type).Cast<Enum>().Select(e => (Convert.ToInt64(e), e.Humanize())).ToList();
+            List<EnumValueItem> values = Enum.GetValues(type).Cast<Enum>().Select(e => new EnumValueItem(value: Convert.ToInt64(e), name: e.Humanize())).ToList();
             if (values.Count > 20)
-                EnumValues.AddRange(values.OrderBy(v => v.Item2));
+                EnumValues.AddRange(values.OrderBy(v => v.Name));
             else
-                EnumValues.AddRange(Enum.GetValues(type).Cast<Enum>().Select(e => (Convert.ToInt64(e), e.Humanize())));
+                EnumValues.AddRange(values);
 
             this.RaisePropertyChanged(nameof(CurrentValue));
         }, DispatcherPriority.Background);
     }
+}
+
+/// <summary>
+///     Represents a single enum value
+/// </summary>
+public class EnumValueItem
+{
+    /// <summary>
+    ///     Creates a new instance of the <see cref="EnumValueItem" /> class.
+    /// </summary>
+    public EnumValueItem(long value, string name)
+    {
+        Value = value;
+        Name = name;
+    }
+
+    /// <summary>
+    ///     The underlying value of the enum
+    /// </summary>
+    public long Value { get; set; }
+    
+    /// <summary>
+    ///     The name of the enum value
+    /// </summary>
+    public string Name { get; set; }
 }

@@ -7,6 +7,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
+using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using RGB.NET.Core;
@@ -57,10 +58,13 @@ public class DeviceDetectInputViewModel : ContentDialogViewModelBase
 
     private void InputServiceOnDeviceIdentified()
     {
-        ContentDialog?.Hide(ContentDialogResult.Primary);
-        _notificationService.CreateNotification()
-            .WithMessage($"{Device.RgbDevice.DeviceInfo.DeviceName} identified 😁")
-            .WithSeverity(NotificationSeverity.Success)
-            .Show();
+        Dispatcher.UIThread.Post(() =>
+        {
+            ContentDialog?.Hide(ContentDialogResult.Primary);
+            _notificationService.CreateNotification()
+                .WithMessage($"{Device.RgbDevice.DeviceInfo.DeviceName} identified 😁")
+                .WithSeverity(NotificationSeverity.Success)
+                .Show();
+        });
     }
 }
