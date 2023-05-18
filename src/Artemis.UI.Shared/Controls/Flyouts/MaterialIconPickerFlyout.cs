@@ -19,7 +19,20 @@ public sealed class MaterialIconPickerFlyout : Flyout
     protected override Control CreatePresenter()
     {
         _picker ??= new MaterialIconPicker.MaterialIconPicker();
-        PickerFlyoutPresenter presenter = new() {Content = MaterialIconPicker};
+        _picker.Flyout = this;
+        FlyoutPresenter presenter = new() {Content = MaterialIconPicker};
         return presenter;
     }
+
+    #region Overrides of FlyoutBase
+
+    /// <inheritdoc />
+    protected override void OnClosed()
+    {
+        if (_picker != null)
+            _picker.Flyout = null;
+        base.OnClosed();
+    }
+
+    #endregion
 }

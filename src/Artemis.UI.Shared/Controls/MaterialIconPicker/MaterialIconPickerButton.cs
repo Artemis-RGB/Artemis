@@ -31,7 +31,7 @@ public class MaterialIconPickerButton : TemplatedControl
     ///     Gets or sets the desired flyout placement.
     /// </summary>
     public static readonly StyledProperty<PlacementMode> PlacementProperty =
-        AvaloniaProperty.Register<FlyoutBase, PlacementMode>(nameof(Placement));
+        AvaloniaProperty.Register<FlyoutBase, PlacementMode>(nameof(Placement), PlacementMode.BottomEdgeAlignedLeft);
 
     private Button? _button;
     private MaterialIconPickerFlyout? _flyout;
@@ -79,14 +79,21 @@ public class MaterialIconPickerButton : TemplatedControl
         if (_flyout == null)
             return;
 
-        // Logic here is taken from Fluent Avalonia's ColorPicker which also reuses the same control since it's large
-        _flyout.MaterialIconPicker.Value = Value;
-
-        _flyout.Placement = Placement;
-        _flyout.ShowAt(_button != null ? _button : this);
-        _flyoutActive = true;
-
+        MaterialIconPickerFlyout flyout = new();
+        flyout.FlyoutPresenterClasses.Add("material-icon-picker-presenter");
+        flyout.MaterialIconPicker.Value = Value;
+        flyout.Placement = Placement;
+        
+        flyout.Closed += FlyoutOnClosed;
+        flyout.ShowAt(this);
         FlyoutOpened?.Invoke(this, EventArgs.Empty);
+
+        void FlyoutOnClosed(object? closedSender, EventArgs closedEventArgs)
+        {
+            Value = flyout.MaterialIconPicker.Value;
+            flyout.Closed -= FlyoutOnClosed;
+            FlyoutClosed?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     #region Overrides of TemplatedControl

@@ -61,7 +61,8 @@
                         </Button>
                         <gradientPicker:GradientPickerButton ColorGradient="{CompiledBinding ColorGradient}" IsCompact="True" />
                         
-                        <materialIconPicker:MaterialIconPickerButton/>
+                        <materialIconPicker:MaterialIconPickerButton Name="IconPicker" Value="Abc"/>
+                        <TextBlock Text="{CompiledBinding #IconPicker.Value}"></TextBlock>
                     </StackPanel>
                 </Border>
             </StackPanel>
