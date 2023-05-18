@@ -1,0 +1,60 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialIconPicker="clr-namespace:Artemis.UI.Shared.MaterialIconPicker">
+    <Design.PreviewWith>
+        <Border Padding="20" Width="600" Height="800">
+            <StackPanel Spacing="5">
+                <materialIconPicker:MaterialIconPickerButton Value="Achievement" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="FlyoutPresenter.data-model-picker-presenter">
+        <Setter Property="MaxWidth" Value="1200" />
+        <Setter Property="MaxHeight" Value="1200" />
+        <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
+    </Style>
+
+    <Style Selector="materialIconPicker|MaterialIconPickerButton">
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
+        <Setter Property="MinHeight" Value="{DynamicResource TextControlThemeMinHeight}" />
+        <Setter Property="MinWidth" Value="{DynamicResource TextControlThemeMinWidth}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Button Name="MainButton"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                        HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                        Width="{TemplateBinding Width}"
+                        Height="{TemplateBinding Height}"
+                        HorizontalContentAlignment="Stretch">
+                    <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
+                        <TextBlock Name="MainButtonLabel"
+                                   Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   TextAlignment="Left"
+                                   TextTrimming="CharacterEllipsis"
+                                   Text="{TemplateBinding Value}"
+                                   IsVisible="{TemplateBinding Value, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                        <TextBlock Grid.Column="0" 
+                                   Text="{TemplateBinding Placeholder}"
+                                   Foreground="{DynamicResource TextControlPlaceholderForeground}"></TextBlock>
+                        <TextBlock Name="ChevronTextBlock"
+                                   Grid.Column="1"
+                                   FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                   FontSize="13"
+                                   Text="&#xE70D;"
+                                   VerticalAlignment="Center"
+                                   TextAlignment="Right"
+                                   Padding="2 2 2 0"
+                                   Margin="5 0" />
+                    </Grid>
+                </Button>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

@@ -9,6 +9,7 @@
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.Controls.GradientPicker;assembly=Artemis.UI.Shared"
+             xmlns:materialIconPicker="clr-namespace:Artemis.UI.Shared.MaterialIconPicker;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800"
              x:Class="Artemis.UI.Screens.Workshop.WorkshopView"
              x:DataType="workshop:WorkshopViewModel">
@@ -59,6 +60,8 @@
                             Create random gradient
                         </Button>
                         <gradientPicker:GradientPickerButton ColorGradient="{CompiledBinding ColorGradient}" IsCompact="True" />
+                        
+                        <materialIconPicker:MaterialIconPickerButton/>
                     </StackPanel>
                 </Border>
             </StackPanel>

@@ -117,7 +117,7 @@
                                       IsVisible="{CompiledBinding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.MaterialIcon}}">
                                 <ComboBox.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <VirtualizingStackPanel />
+                                        <VirtualizingStackPanel Width="250"/>
                                     </ItemsPanelTemplate>
                                 </ComboBox.ItemsPanel>
                                 <ComboBox.ItemTemplate>
