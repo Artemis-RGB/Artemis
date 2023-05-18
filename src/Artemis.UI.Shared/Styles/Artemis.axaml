@@ -18,6 +18,8 @@
     <StyleInclude Source="/Styles/Controls/GradientPickerButton.axaml" />
     <StyleInclude Source="/Styles/Controls/DataModelPicker.axaml" />
     <StyleInclude Source="/Styles/Controls/DataModelPickerButton.axaml" />
+    <StyleInclude Source="/Styles/Controls/MaterialIconPicker.axaml" />
+    <StyleInclude Source="/Styles/Controls/MaterialIconPickerButton.axaml" />
 
     <!-- Custom styles -->
     <StyleInclude Source="/Styles/Border.axaml" />
@@ -33,4 +35,5 @@
     <StyleInclude Source="/Styles/Notifications.axaml" />
     <StyleInclude Source="/Styles/NumberBox.axaml" />
     <StyleInclude Source="/Styles/TreeView.axaml" />
+    <StyleInclude Source="/Styles/Plugins.axaml" />
 </Styles>

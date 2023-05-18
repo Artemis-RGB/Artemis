@@ -12,7 +12,6 @@
     <Grid RowDefinitions="*,Auto">
         <Grid Grid.Row="0" RowDefinitions="Auto,Auto,*" ColumnDefinitions="80,*, Auto">
             <shared:ArtemisIcon Icon="{CompiledBinding Plugin.Info.ResolvedIcon}"
-                                Fill="False"
                                 Width="48"
                                 Height="48"
                                 Margin="0 5 0 0"
@@ -95,7 +94,7 @@
                                           IsVisible="{CompiledBinding Plugin.Info.HelpPage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                           NavigateUri="{CompiledBinding Plugin.Info.HelpPage}"
                                           ToolTip.Tip="{CompiledBinding Plugin.Info.HelpPage}">
-                    <avalonia:MaterialIcon Kind="HelpCircle" />
+                    <avalonia:MaterialIcon Kind="Quiz" />
                 </controls:HyperlinkButton>
                 <controls:HyperlinkButton Classes="icon-button icon-button-large"
                                           IsVisible="{CompiledBinding Plugin.Info.Website, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"

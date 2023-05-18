@@ -4,6 +4,9 @@
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                      xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
                      xmlns:plugins="clr-namespace:Artemis.UI.Screens.Plugins"
+                     xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                     xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+                     xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
                      mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                      x:Class="Artemis.UI.Screens.Plugins.PluginSettingsWindowView"
                      x:DataType="plugins:PluginSettingsWindowViewModel"
@@ -11,9 +14,63 @@
                      Title="{CompiledBinding DisplayName}"
                      Width="800"
                      Height="800"
+                     MaxWidth="800"
                      WindowStartupLocation="CenterOwner">
     <Panel>
-        <ContentControl Content="{CompiledBinding ConfigurationViewModel}"></ContentControl>
-        <StackPanel Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
+        <Grid RowDefinitions="Auto,Auto, *" ColumnDefinitions="Auto,*,Auto" Margin="15" MaxWidth="800">
+            <shared:ArtemisIcon Grid.Column="0"
+                                Grid.RowSpan="2"
+                                Width="65"
+                                Height="65"
+                                VerticalAlignment="Center"
+                                Margin="0 0 20 0"
+                                Icon="{CompiledBinding Plugin.Info.ResolvedIcon}" />
+            <TextBlock Grid.Row="0" Grid.Column="1" FontSize="28" VerticalAlignment="Bottom" Text="{CompiledBinding Plugin.Info.Name}" />
+
+            <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
+                <controls:HyperlinkButton Classes="icon-button"
+                                          IsVisible="{CompiledBinding Plugin.Info.HelpPage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                          NavigateUri="{CompiledBinding Plugin.Info.HelpPage}"
+                                          ToolTip.Tip="{CompiledBinding Plugin.Info.HelpPage}">
+                    <avalonia:MaterialIcon Kind="Quiz" />
+                </controls:HyperlinkButton>
+                <controls:HyperlinkButton Classes="icon-button"
+                                          IsVisible="{CompiledBinding Plugin.Info.Website, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                          NavigateUri="{CompiledBinding Plugin.Info.Website}"
+                                          ToolTip.Tip="{CompiledBinding Plugin.Info.Website}">
+                    <avalonia:MaterialIcon Kind="Web" />
+                </controls:HyperlinkButton>
+                <controls:HyperlinkButton Classes="icon-button"
+                                          IsVisible="{CompiledBinding Plugin.Info.Repository, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                          NavigateUri="{CompiledBinding Plugin.Info.Repository}"
+                                          ToolTip.Tip="{CompiledBinding Plugin.Info.Repository}">
+                    <avalonia:MaterialIcon Kind="Git" />
+                </controls:HyperlinkButton>
+            </StackPanel>
+
+            <TextBlock Grid.Row="1"
+                       Grid.Column="1"
+                       VerticalAlignment="Top"
+                       Classes="subtitle"
+                       Text="{CompiledBinding Plugin.Info.Version}" />
+
+            <controls:HyperlinkButton Grid.Row="1"
+                                      Grid.Column="2"
+                                      IsVisible="{CompiledBinding Plugin.Info.License, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                      VerticalAlignment="Top"
+                                      NavigateUri="{CompiledBinding Plugin.Info.License}"
+                                      Content="{CompiledBinding LicenseButtonText}" />
+
+            <ScrollViewer Grid.Row="2"
+                          Grid.Column="0"
+                          Grid.ColumnSpan="3"
+                          Margin="0 0 -10 0"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <ContentControl Margin="0 0 5 0" Content="{CompiledBinding ConfigurationViewModel}"></ContentControl>
+            </ScrollViewer>
+        </Grid>
+
+        <StackPanel Name="NotificationContainer" Classes="notification-container" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
     </Panel>
 </windowing:AppWindow>

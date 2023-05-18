@@ -1,0 +1,55 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:materialIconPicker="clr-namespace:Artemis.UI.Shared.MaterialIconPicker"
+        xmlns:icons="clr-namespace:Material.Icons;assembly=Material.Icons">
+    <Design.PreviewWith>
+        <materialIconPicker:MaterialIconPicker />
+    </Design.PreviewWith>
+
+    <Style Selector="materialIconPicker|MaterialIconPicker">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid RowDefinitions="Auto,*" Width="525" Height="485" Margin="10">
+                    <TextBox Grid.Row="0" Watermark="Search" Name="SearchBox" />
+
+                    <Border Grid.Row="1" Classes="card card-condensed" Margin="0 10 0 0">
+                        <ScrollViewer Name="IconsViewer"
+                                      HorizontalScrollBarVisibility="Disabled"
+                                      VerticalScrollBarVisibility="Auto"
+                                      VerticalAlignment="Top">
+                            <ItemsRepeater Name="IconsContainer">
+                                <ItemsRepeater.Layout>
+                                    <WrapLayout />
+                                </ItemsRepeater.Layout>
+                                <ItemsRepeater.ItemTemplate>
+                                    <DataTemplate x:DataType="icons:MaterialIconKind">
+                                        <Button VerticalAlignment="Bottom"
+                                                HorizontalAlignment="Right"
+                                                Width="72" 
+                                                Height="75"
+                                                Margin="5"
+                                                Padding="1"
+                                                ToolTip.Tip="{CompiledBinding}"
+                                                Command="{CompiledBinding SelectIcon, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type materialIconPicker:MaterialIconPicker}}}"
+                                                CommandParameter="{CompiledBinding}">
+                                            <StackPanel Orientation="Vertical">
+                                                <avalonia:MaterialIcon Kind="{CompiledBinding}" Width="35" Height="35"/>
+                                                <TextBlock Text="{CompiledBinding}" 
+                                                           TextAlignment="Center" 
+                                                           TextTrimming="CharacterEllipsis"
+                                                           Classes="subtitle" 
+                                                           Margin="0 8 0 0"
+                                                           FontSize="10"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsRepeater.ItemTemplate>
+                            </ItemsRepeater>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

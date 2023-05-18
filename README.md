@@ -9,7 +9,7 @@
 Artemis adds highly configurable support for several games to a range of RGB keyboards, mice and headsets. 
 
 ### Check out our [Wiki](https://wiki.artemis-rgb.com) and more specifically, the [getting started guide](https://wiki.artemis-rgb.com/en/guides/user).
-**Pre-release download**: https://github.com/SpoinkyNL/Artemis/releases (pre-release means your profiles may break at any given time!)  
+**Pre-release download**: https://artemis-rgb.com/  
 **Plugin documentation**: https://artemis-rgb.com/docs/
 
 **Please note that even though we have plugins for each brand supported by RGB.NET, they have not been thoroughly tested due to a lack of hardware. If you run into any issues please let us know on Discord.**  

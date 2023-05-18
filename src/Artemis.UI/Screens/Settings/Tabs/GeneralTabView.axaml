@@ -14,8 +14,12 @@
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="15" MaxWidth="1000">
+            <TextBlock Classes="h4">General settings</TextBlock>
+            <TextBlock>
+                Here you can change the general settings op the application, for plugin and device specific settings, see the other tabs.
+            </TextBlock>
             <!-- General settings -->
-            <TextBlock Classes="h4" Margin="0 15">
+            <TextBlock Classes="card-title">
                 General
             </TextBlock>
             <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
@@ -95,7 +99,7 @@
             </Border>
 
             <!-- Web server settings -->
-            <TextBlock Classes="h4" Margin="0 15">
+            <TextBlock Classes="card-title">
                 Web server
             </TextBlock>
             <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
@@ -138,7 +142,7 @@
 
             <!-- Update settings -->
             <StackPanel>
-                <TextBlock Classes="h4" Margin="0 15">
+                <TextBlock Classes="card-title">
                     Updating
                 </TextBlock>
                 <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
@@ -191,7 +195,7 @@
             </StackPanel>
 
             <!-- Profile editor settings -->
-            <TextBlock Classes="h4" Margin="0 15">
+            <TextBlock Classes="card-title">
                 Profile editor
             </TextBlock>
             <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
@@ -262,7 +266,7 @@
             </Border>
 
             <!-- Rendering settings -->
-            <TextBlock Classes="h4" Margin="0 15">
+            <TextBlock Classes="card-title">
                 Rendering
             </TextBlock>
             <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
@@ -335,7 +339,7 @@
             </Border>
 
             <!-- Tools -->
-            <TextBlock Classes="h4" Margin="0 15">
+            <TextBlock Classes="card-title">
                 Tools
             </TextBlock>
             <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">

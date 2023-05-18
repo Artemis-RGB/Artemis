@@ -16,4 +16,5 @@ public class PluginSettingsWindowViewModel : ActivatableViewModelBase
 
     public PluginConfigurationViewModel ConfigurationViewModel { get; }
     public Plugin Plugin { get; }
+    public string LicenseButtonText => Plugin.Info.LicenseName ?? "View license";
 }

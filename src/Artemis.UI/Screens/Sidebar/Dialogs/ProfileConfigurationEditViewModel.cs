@@ -32,7 +32,6 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
     private bool _fadeInAndOut;
     private ProfileConfigurationHotkeyMode _hotkeyMode;
     private ProfileConfigurationIconType _iconType;
-    private ObservableCollection<ProfileIconViewModel>? _materialIcons;
     private ProfileConfiguration _profileConfiguration;
     private string _profileName;
     private Bitmap? _selectedBitmapSource;
@@ -185,13 +184,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         get => _iconType;
         set => RaiseAndSetIfChanged(ref _iconType, value);
     }
-
-    public ObservableCollection<ProfileIconViewModel>? MaterialIcons
-    {
-        get => _materialIcons;
-        set => RaiseAndSetIfChanged(ref _materialIcons, value);
-    }
-
+    
     public ProfileIconViewModel? SelectedMaterialIcon
     {
         get => _selectedMaterialIcon;
@@ -227,7 +220,6 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         SelectedMaterialIcon = !IsNew && Enum.TryParse(_profileConfiguration.Icon.IconName, out MaterialIconKind enumValue)
             ? icons.FirstOrDefault(m => m.Icon == enumValue)
             : icons.ElementAt(new Random().Next(0, icons.Count - 1));
-        MaterialIcons = icons;
     }
 
     private async Task SaveIcon()

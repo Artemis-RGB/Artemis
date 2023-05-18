@@ -1,0 +1,65 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialIconPicker="clr-namespace:Artemis.UI.Shared.MaterialIconPicker"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters">
+    <Design.PreviewWith>
+        <Border Padding="20" Width="600" Height="800">
+            <StackPanel Spacing="5">
+                <materialIconPicker:MaterialIconPickerButton Value="Achievement" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="FlyoutPresenter.material-icon-picker-presenter">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MaxWidth" Value="1200" />
+        <Setter Property="MaxHeight" Value="1200" />
+        <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
+    </Style>
+
+    <Style Selector="materialIconPicker|MaterialIconPickerButton">
+        <Style.Resources>
+            <converters:ToStringConverter x:Key="ToStringConverter" />
+        </Style.Resources>
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
+        <Setter Property="MinHeight" Value="{DynamicResource TextControlThemeMinHeight}" />
+        <Setter Property="MinWidth" Value="{DynamicResource TextControlThemeMinWidth}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Button Name="MainButton"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                        HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                        Width="{TemplateBinding Width}"
+                        Height="{TemplateBinding Height}"
+                        HorizontalContentAlignment="Stretch">
+                    <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
+                        <StackPanel Grid.Column="0" IsVisible="{TemplateBinding Value, Converter={x:Static ObjectConverters.IsNotNull}}" Orientation="Horizontal" Spacing="5">
+                            <avalonia:MaterialIcon Kind="{TemplateBinding Value}"/>
+                            <TextBlock VerticalAlignment="Center" TextAlignment="Left" TextTrimming="CharacterEllipsis" Text="{TemplateBinding Value, Converter={StaticResource ToStringConverter}}"/>
+                        </StackPanel>
+                       
+                        <TextBlock Grid.Column="0"
+                                   Text="{TemplateBinding Placeholder}"
+                                   Foreground="{DynamicResource TextControlPlaceholderForeground}"
+                                   IsVisible="{TemplateBinding Value, Converter={x:Static ObjectConverters.IsNull}}" />
+                        <TextBlock Name="ChevronTextBlock"
+                                   Grid.Column="1"
+                                   FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                   FontSize="13"
+                                   Text="&#xE70D;"
+                                   VerticalAlignment="Center"
+                                   TextAlignment="Right"
+                                   Padding="2 2 2 0"
+                                   Margin="5 0" />
+                    </Grid>
+                </Button>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

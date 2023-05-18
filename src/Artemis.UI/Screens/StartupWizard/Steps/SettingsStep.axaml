@@ -19,7 +19,7 @@
 
             <!-- Auto-run settings -->
             <StackPanel IsVisible="{CompiledBinding IsAutoRunSupported}">
-                <TextBlock Classes="h4" Margin="0 15">
+                <TextBlock Classes="card-title">
                     Auto-run
                 </TextBlock>
                 <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
@@ -69,7 +69,7 @@
 
             <!-- Update settings -->
             <StackPanel>
-                <TextBlock Classes="h4" Margin="0 15">
+                <TextBlock Classes="card-title">
                     Updating
                 </TextBlock>
                 <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">

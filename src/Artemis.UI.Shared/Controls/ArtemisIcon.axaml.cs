@@ -43,29 +43,17 @@ public partial class ArtemisIcon : UserControl
             // If it's a string there are several options
             else if (Icon is string iconString)
             {
+                // An URI pointing to an image
+                if (ImageRegex.IsMatch(iconString))
+                {
+                    Image image = new() {Source = new Bitmap(iconString), VerticalAlignment = VerticalAlignment.Stretch, HorizontalAlignment = HorizontalAlignment.Stretch};
+                    RenderOptions.SetBitmapInterpolationMode(image, BitmapInterpolationMode.HighQuality);
+                    Content = image;
+                }
                 // An enum defined as a string
-                if (Enum.TryParse(iconString, true, out MaterialIconKind parsedIcon))
+                else if (Enum.TryParse(iconString, true, out MaterialIconKind parsedIcon))
                 {
                     Content = new MaterialIcon {Kind = parsedIcon, Width = Bounds.Width, Height = Bounds.Height};
-                }
-                // An URI pointing to an image
-                else if (ImageRegex.IsMatch(iconString))
-                {
-                    if (!Fill)
-                        Content = new Image
-                        {
-                            Source = new Bitmap(iconString),
-                            VerticalAlignment = VerticalAlignment.Stretch,
-                            HorizontalAlignment = HorizontalAlignment.Stretch
-                        };
-                    else
-                        Content = new Border
-                        {
-                            Background = TextElement.GetForeground(this),
-                            VerticalAlignment = VerticalAlignment.Stretch,
-                            HorizontalAlignment = HorizontalAlignment.Stretch,
-                            OpacityMask = new ImageBrush(new Bitmap(iconString))
-                        };
                 }
                 else
                 {
@@ -87,10 +75,10 @@ public partial class ArtemisIcon : UserControl
             contentControl.Height = Bounds.Height;
         }
     }
-    
+
     private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
-        if (e.Property == IconProperty || e.Property == FillProperty)
+        if (e.Property == IconProperty)
             Update();
     }
 
@@ -117,22 +105,6 @@ public partial class ArtemisIcon : UserControl
     {
         get => GetValue(IconProperty);
         set => SetValue(IconProperty, value);
-    }
-
-    /// <summary>
-    ///     Gets or sets a boolean indicating whether or not the icon should be filled in with the primary text color of the
-    ///     theme
-    /// </summary>
-    public static readonly StyledProperty<bool> FillProperty = AvaloniaProperty.Register<ArtemisIcon, bool>(nameof(Icon));
-
-    /// <summary>
-    ///     Gets or sets a boolean indicating whether or not the icon should be filled in with the primary text color of the
-    ///     theme
-    /// </summary>
-    public bool Fill
-    {
-        get => GetValue(FillProperty);
-        set => SetValue(FillProperty, value);
     }
 
     #endregion

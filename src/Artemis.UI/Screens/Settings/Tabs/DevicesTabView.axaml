@@ -6,26 +6,22 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Settings.DevicesTabView"
              x:DataType="settings:DevicesTabViewModel">
-    <Grid RowDefinitions="Auto,*">
-        <StackPanel MaxWidth="1050">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="15" MaxWidth="1000">
             <TextBlock Classes="h4">Device management</TextBlock>
-            <TextBlock>
+            <TextBlock TextWrapping="Wrap">
                 Below you view and manage the devices that were detected by Artemis.
-            </TextBlock>
-            <TextBlock>
+                <LineBreak />
                 Disabling a device will cause it to stop updating. Some SDKs will even go back to using manufacturer lighting (Artemis restart may be required).
             </TextBlock>
-        </StackPanel>
-
-        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{CompiledBinding Devices}" Margin="-5 0" MaxWidth="1050">
+            
+            <ItemsControl ItemsSource="{CompiledBinding Devices}" Margin="0 25 0 0">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
-        </ScrollViewer>
-    </Grid>
-
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

@@ -7,8 +7,12 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="48"
              x:Class="Artemis.UI.Screens.ProfileEditor.Playback.PlaybackView"
              x:DataType="playback:PlaybackViewModel">
-    <DockPanel Margin="8 0">
-        <StackPanel Orientation="Horizontal" Spacing="5">
+    <Grid Margin="8 0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="5">
             <Button Classes="icon-button icon-button-large"
                     ToolTip.Tip="Play from start (Shift+Space)" Command="{CompiledBinding PlayFromStart}"
                     Focusable="False">
@@ -60,6 +64,6 @@
 
             </ToggleButton>
         </StackPanel>
-        <TextBlock Classes="h4" Text="{CompiledBinding FormattedCurrentTime, FallbackValue=00.000}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0" />
-    </DockPanel>
+        <TextBlock Grid.Column="1" Classes="h4" Height="32" Text="{CompiledBinding FormattedCurrentTime, FallbackValue=00.000}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0" />
+    </Grid>
 </UserControl>

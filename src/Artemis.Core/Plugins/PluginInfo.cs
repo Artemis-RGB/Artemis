@@ -29,6 +29,8 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     private Uri? _website;
     private Uri? _helpPage;
     private bool _hotReloadSupported;
+    private Uri? _license;
+    private string? _licenseName;
 
     internal PluginInfo()
     {
@@ -102,6 +104,26 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     {
         get => _helpPage;
         set => SetAndNotify(ref _helpPage, value);
+    }
+    
+    /// <summary>
+    ///     Gets or sets the help page of this plugin
+    /// </summary>
+    [JsonProperty]
+    public Uri? License
+    {
+        get => _license;
+        set => SetAndNotify(ref _license, value);
+    }
+    
+    /// <summary>
+    ///     Gets or sets the author of this plugin
+    /// </summary>
+    [JsonProperty]
+    public string? LicenseName
+    {
+        get => _licenseName;
+        set => SetAndNotify(ref _licenseName, value);
     }
 
     /// <summary>

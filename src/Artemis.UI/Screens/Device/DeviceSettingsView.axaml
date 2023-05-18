@@ -9,13 +9,13 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="local:DeviceSettingsViewModel"
              x:Class="Artemis.UI.Screens.Device.DeviceSettingsView">
-    <Border Classes="card" Padding="0" Width="200" ClipToBounds="True" Margin="5">
-        <Grid RowDefinitions="140,*,Auto">
+    <Border Classes="card" Padding="0" Width="240" ClipToBounds="True" Margin="5">
+        <Grid RowDefinitions="160,*,Auto">
             <Rectangle Grid.Row="0" Fill="{DynamicResource CheckerboardBrush}" />
             <shared:DeviceVisualizer Grid.Row="0"
                                      VerticalAlignment="Center"
                                      HorizontalAlignment="Center"
-                                     Margin="5"
+                                     Margin="10"
                                      ShowColors="False"
                                      Device="{CompiledBinding Device}"
                                      RenderOptions.BitmapInterpolationMode="HighQuality" />
@@ -28,7 +28,7 @@
                     Command="{CompiledBinding IdentifyDevice}">
                 <avalonia:MaterialIcon Kind="AlarmLight" />
             </Button>
-            <StackPanel Grid.Row="1" Margin="8 24 8 0">
+            <StackPanel Grid.Row="1" Margin="8 16 8 0">
                 <TextBlock Text="{CompiledBinding Device.RgbDevice.DeviceInfo.Model}" />
                 <StackPanel>
                     <TextBlock TextWrapping="Wrap" Classes="subtitle" Text="{CompiledBinding Device.RgbDevice.DeviceInfo.Manufacturer, Mode=OneWay}" />
