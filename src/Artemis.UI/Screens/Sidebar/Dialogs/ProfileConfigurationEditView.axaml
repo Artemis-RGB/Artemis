@@ -8,6 +8,7 @@
                       xmlns:local="clr-namespace:Artemis.UI.Screens.Sidebar"
                       xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
                       xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
+                      xmlns:materialIconPicker="clr-namespace:Artemis.UI.Shared.MaterialIconPicker;assembly=Artemis.UI.Shared"
                       mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="850"
                       x:Class="Artemis.UI.Screens.Sidebar.ProfileConfigurationEditView"
                       x:DataType="local:ProfileConfigurationEditViewModel"
@@ -108,27 +109,12 @@
                             <Border Background="{DynamicResource CheckerboardBrush}" CornerRadius="{DynamicResource CardCornerRadius}" Width="78" Height="78">
                                 <avalonia:MaterialIcon Kind="{CompiledBinding SelectedMaterialIcon.Icon}" Width="45" Height="45" />
                             </Border>
-                            <ComboBox ItemsSource="{CompiledBinding MaterialIcons}"
-                                      SelectedItem="{CompiledBinding SelectedMaterialIcon}"
-                                      VerticalAlignment="Bottom"
-                                      IsTextSearchEnabled="True"
-                                      Margin="10 0"
-                                      Width="250"
-                                      IsVisible="{CompiledBinding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.MaterialIcon}}">
-                                <ComboBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <VirtualizingStackPanel />
-                                    </ItemsPanelTemplate>
-                                </ComboBox.ItemsPanel>
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate DataType="local:ProfileIconViewModel">
-                                        <StackPanel Orientation="Horizontal">
-                                            <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Margin="0 0 5 0" />
-                                            <TextBlock Text="{CompiledBinding DisplayName}" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
+                            <materialIconPicker:MaterialIconPickerButton 
+                                Value="{CompiledBinding SelectedMaterialIcon.Icon}"
+                                Margin="10 0"
+                                Width="250"
+                                VerticalAlignment="Bottom" 
+                                IsVisible="{CompiledBinding IconType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static core:ProfileConfigurationIconType.MaterialIcon}}"/>
                         </StackPanel>
 
                         <CheckBox VerticalAlignment="Bottom" IsChecked="{CompiledBinding FadeInAndOut}" ToolTip.Tip="Smoothly animates in and out when the profile activation conditions change.">

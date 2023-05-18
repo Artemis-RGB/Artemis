@@ -5,11 +5,20 @@ namespace Artemis.UI.Screens.Sidebar;
 
 public class ProfileIconViewModel : ViewModelBase
 {
+    private MaterialIconKind _icon;
+
     public ProfileIconViewModel(MaterialIconKind icon)
     {
         Icon = icon;
-        DisplayName = icon.ToString();
     }
 
-    public MaterialIconKind Icon { get; }
+    public MaterialIconKind Icon
+    {
+        get => _icon;
+        set
+        {
+            RaiseAndSetIfChanged(ref _icon, value);
+            DisplayName = _icon.ToString();
+        }
+    }
 }

@@ -28,7 +28,6 @@
         <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
         <Setter Property="Template">
             <ControlTemplate>
-
                 <Button
                     Name="MainButton"
                     Padding="0 0 12 0"
