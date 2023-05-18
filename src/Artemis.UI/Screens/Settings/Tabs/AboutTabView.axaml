@@ -11,7 +11,14 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel Margin="15" MaxWidth="800">
             <Grid RowDefinitions="*,*" ColumnDefinitions="Auto,*,Auto">
-                <Image Grid.Column="0" Grid.RowSpan="2" Width="65" Height="65" VerticalAlignment="Center" Source="/Assets/Images/Logo/bow.png" Margin="0 0 20 0" />
+                <Image Grid.Column="0" 
+                       Grid.RowSpan="2" 
+                       Width="65"
+                       Height="65"
+                       VerticalAlignment="Center"
+                       Source="/Assets/Images/Logo/bow.png"
+                       Margin="0 0 20 0"
+                       RenderOptions.BitmapInterpolationMode="HighQuality"/>
                 <TextBlock Grid.Row="0" Grid.Column="1" FontSize="36" VerticalAlignment="Bottom">
                     Artemis 2
                 </TextBlock>

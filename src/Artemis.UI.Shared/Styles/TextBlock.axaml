@@ -45,4 +45,9 @@
     <Style Selector="TextBlock.subtitle">
 		<Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
     </Style>
+    <Style Selector="TextBlock.card-title">
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Margin" Value="0 25 0 5" />
+    </Style>
 </Styles>

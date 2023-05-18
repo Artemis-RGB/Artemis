@@ -33,4 +33,5 @@
     <StyleInclude Source="/Styles/Notifications.axaml" />
     <StyleInclude Source="/Styles/NumberBox.axaml" />
     <StyleInclude Source="/Styles/TreeView.axaml" />
+    <StyleInclude Source="/Styles/Plugins.axaml" />
 </Styles>
