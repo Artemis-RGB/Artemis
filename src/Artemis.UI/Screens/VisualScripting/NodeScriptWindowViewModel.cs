@@ -154,7 +154,7 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
             .HavingFilter(f => f.WithExtension("json").WithName("Artemis node script"))
             .ShowAsync();
 
-        if (result == null)
+        if (result == null || result.Length == 0)
             return;
 
         try
