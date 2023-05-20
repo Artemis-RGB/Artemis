@@ -1,7 +1,6 @@
 ﻿using System.Reactive.Disposables;
 using Artemis.Core;
 using Artemis.UI.Shared.VisualScripting;
-using Avalonia.Threading;
 using ReactiveUI;
 
 namespace Artemis.VisualScripting.Nodes.Static.Screens;
@@ -18,9 +17,10 @@ public class DisplayValueNodeCustomViewModel : CustomNodeViewModel
         // Because the DisplayValueNode has no output it never evaluates, manually do so here
         this.WhenActivated(d =>
         {
-            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000), DispatcherPriority.Background, Update);
+            System.Timers.Timer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000));
+            updateTimer.Elapsed += (_, _) => Update();
             updateTimer.Start();
-            Disposable.Create(() => updateTimer.Stop()).DisposeWith(d);
+            updateTimer.DisposeWith(d);
         });
     }
 
@@ -30,7 +30,7 @@ public class DisplayValueNodeCustomViewModel : CustomNodeViewModel
         private set => this.RaiseAndSetIfChanged(ref _currentValue, value);
     }
 
-    private void Update(object? sender, EventArgs e)
+    private void Update()
     {
         try
         {

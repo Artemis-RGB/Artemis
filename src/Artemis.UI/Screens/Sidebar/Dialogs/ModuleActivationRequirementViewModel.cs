@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Reactive.Disposables;
+using System.Timers;
 using Artemis.Core.Modules;
 using Artemis.UI.Shared;
-using Avalonia.Threading;
 using Humanizer;
 using ReactiveUI;
 
@@ -13,7 +13,6 @@ public class ModuleActivationRequirementViewModel : ActivatableViewModelBase
     private readonly IModuleActivationRequirement _activationRequirement;
     private string _requirementDescription;
     private bool _requirementMet;
-    private DispatcherTimer? _updateTimer;
 
     public ModuleActivationRequirementViewModel(IModuleActivationRequirement activationRequirement)
     {
@@ -23,14 +22,10 @@ public class ModuleActivationRequirementViewModel : ActivatableViewModelBase
 
         this.WhenActivated(d =>
         {
-            _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Background, Update);
-            _updateTimer.Start();
-
-            Disposable.Create(() =>
-            {
-                _updateTimer?.Stop();
-                _updateTimer = null;
-            }).DisposeWith(d);
+            Timer updateTimer = new(TimeSpan.FromMilliseconds(500));
+            updateTimer.Elapsed += (_, _) => Update();
+            updateTimer.Start();
+            updateTimer.DisposeWith(d);
         });
     }
 
@@ -48,7 +43,7 @@ public class ModuleActivationRequirementViewModel : ActivatableViewModelBase
         set => RaiseAndSetIfChanged(ref _requirementMet, value);
     }
 
-    private void Update(object? sender, EventArgs e)
+    private void Update()
     {
         RequirementDescription = _activationRequirement.GetUserFriendlyDescription();
         RequirementMet = _activationRequirement.Evaluate();

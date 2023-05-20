@@ -34,7 +34,7 @@ public class DeviceVisualizer : Control
     /// <inheritdoc />
     public DeviceVisualizer()
     {
-        _timer = new DispatcherTimer(DispatcherPriority.Render) {Interval = TimeSpan.FromMilliseconds(1000.0 / UpdateFrameRate)};
+        _timer = new DispatcherTimer(DispatcherPriority.Background) {Interval = TimeSpan.FromMilliseconds(1000.0 / UpdateFrameRate)};
         _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
 
         PointerReleased += OnPointerReleased;

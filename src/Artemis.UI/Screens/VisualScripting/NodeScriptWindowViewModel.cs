@@ -5,6 +5,7 @@ using System.IO;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
+using System.Timers;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
@@ -12,9 +13,7 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Avalonia;
-using Avalonia.Threading;
 using DynamicData;
-using DynamicData.List;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
@@ -66,19 +65,17 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
         this.WhenActivated(d =>
         {
             _keyBindingsEnabled = Shared.UI.KeyBindingsEnabled.ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
-            
-            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000), DispatcherPriority.Background, Update);
-            // TODO: Remove in favor of saving each time a node editor command is executed
-            DispatcherTimer saveTimer = new(TimeSpan.FromMinutes(2), DispatcherPriority.Background, Save);
 
+            Timer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000));
+            Timer saveTimer = new(TimeSpan.FromMinutes(2));
+
+            updateTimer.Elapsed += (_, _) => Update();
+            saveTimer.Elapsed += (_, _) => Save();
             updateTimer.Start();
             saveTimer.Start();
 
-            Disposable.Create(() =>
-            {
-                updateTimer.Stop();
-                saveTimer.Stop();
-            }).DisposeWith(d);
+            updateTimer.DisposeWith(d);
+            saveTimer.DisposeWith(d);
         });
     }
 
@@ -93,7 +90,7 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
     public ReactiveCommand<Unit, Unit> Export { get; }
     public ReactiveCommand<Unit, Unit> Import { get; }
     public bool KeyBindingsEnabled => _keyBindingsEnabled?.Value ?? false;
-    
+
     public PluginSetting<bool> ShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
     public PluginSetting<bool> ShowFullPaths => _settingsService.GetSetting("ProfileEditor.ShowFullPaths", false);
     public PluginSetting<bool> AlwaysShowValues => _settingsService.GetSetting("ProfileEditor.AlwaysShowValues", true);
@@ -176,13 +173,13 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
         }
     }
 
-    private void Update(object? sender, EventArgs e)
+    private void Update()
     {
         if (!_pauseUpdate)
             NodeScript.Run();
     }
 
-    private void Save(object? sender, EventArgs e)
+    private void Save()
     {
         if (NodeScript.Context is Profile profile)
             _profileService.SaveProfile(profile, true);
