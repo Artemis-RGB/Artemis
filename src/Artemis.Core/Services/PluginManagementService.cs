@@ -396,7 +396,7 @@ internal class PluginManagementService : IPluginManagementService
         List<Type> featureTypes;
         try
         {
-            featureTypes = plugin.Assembly.GetTypes().Where(t => typeof(PluginFeature).IsAssignableFrom(t)).ToList();
+            featureTypes = plugin.Assembly.GetTypes().Where(t => typeof(PluginFeature).IsAssignableFrom(t) && !t.IsAbstract).ToList();
         }
         catch (ReflectionTypeLoadException e)
         {
