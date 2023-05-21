@@ -20,13 +20,7 @@ internal class DeviceVisualizerLed
     public DeviceVisualizerLed(ArtemisLed led)
     {
         Led = led;
-        LedRect = new Rect(
-            Led.RgbLed.Location.X,
-            Led.RgbLed.Location.Y,
-            Led.RgbLed.Size.Width,
-            Led.RgbLed.Size.Height
-        );
-
+        
         _fillBrush = new SolidColorBrush();
         _penBrush = new SolidColorBrush();
         _pen = new Pen(_penBrush) {LineJoin = PenLineJoin.Round};
@@ -35,7 +29,6 @@ internal class DeviceVisualizerLed
     }
 
     public ArtemisLed Led { get; }
-    public Rect LedRect { get; set; }
     public Geometry? DisplayGeometry { get; private set; }
 
     public void DrawBitmap(DrawingContext drawingContext, double scale)
@@ -58,7 +51,7 @@ internal class DeviceVisualizerLed
         }
     }
 
-    public void RenderGeometry(DrawingContext drawingContext, bool dimmed)
+    public void RenderGeometry(DrawingContext drawingContext)
     {
         if (DisplayGeometry == null)
             return;
@@ -66,17 +59,8 @@ internal class DeviceVisualizerLed
         byte r = Led.RgbLed.Color.GetR();
         byte g = Led.RgbLed.Color.GetG();
         byte b = Led.RgbLed.Color.GetB();
-
-        if (dimmed)
-        {
-            _fillBrush.Color = new Color(50, r, g, b);
-            _penBrush.Color = new Color(100, r, g, b);
-        }
-        else
-        {
-            _fillBrush.Color = new Color(100, r, g, b);
-            _penBrush.Color = new Color(255, r, g, b);
-        }
+        _fillBrush.Color = new Color(100, r, g, b);
+        _penBrush.Color = new Color(255, r, g, b);
 
         // Render the LED geometry
         drawingContext.DrawGeometry(_fillBrush, _pen, DisplayGeometry);
