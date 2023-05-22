@@ -18,7 +18,7 @@
                                      Margin="10"
                                      ShowColors="False"
                                      Device="{CompiledBinding Device}"
-                                     RenderOptions.BitmapInterpolationMode="HighQuality" />
+                                     RenderOptions.BitmapInterpolationMode="MediumQuality" />
             <Button Grid.Row="0"
                     Classes="icon-button icon-button-large"
                     VerticalAlignment="Bottom"

@@ -53,7 +53,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="core:ArtemisDevice">
-                            <shared:DeviceVisualizer Device="{CompiledBinding}" ShowColors="True" RenderOptions.BitmapInterpolationMode="HighQuality" />
+                            <shared:DeviceVisualizer Device="{CompiledBinding}" ShowColors="True" RenderOptions.BitmapInterpolationMode="MediumQuality" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
