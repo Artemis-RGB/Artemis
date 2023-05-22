@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
+using Avalonia.LogicalTree;
 using Avalonia.VisualTree;
 using FluentAvalonia.Core;
 using FluentAvalonia.UI.Controls;
@@ -68,13 +68,12 @@ public partial class DraggableNumberBox : UserControl
     public DraggableNumberBox()
     {
         InitializeComponent();
-        InnerNumberBox.Value = Value;
-
+        
         PointerPressed += OnPointerPressed;
         PointerMoved += OnPointerMoved;
         PointerReleased += OnPointerReleased;
         PropertyChanged += OnPropertyChanged;
-        
+
         AddHandler(KeyUpEvent, HandleKeyUp, RoutingStrategies.Direct | RoutingStrategies.Tunnel | RoutingStrategies.Bubble, true);
     }
 
@@ -159,7 +158,22 @@ public partial class DraggableNumberBox : UserControl
     ///     Occurs when the user finishes dragging over the control.
     /// </summary>
     public event TypedEventHandler<DraggableNumberBox, EventArgs>? DragFinished;
-    
+
+    /// <inheritdoc />
+    protected override void OnAttachedToLogicalTree(LogicalTreeAttachmentEventArgs e)
+    {
+        InnerNumberBox.Value = Value;
+        InnerNumberBox.ValueChanged += InnerNumberBoxOnValueChanged;
+        base.OnAttachedToLogicalTree(e);
+    }
+
+    /// <inheritdoc />
+    protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
+    {
+        InnerNumberBox.ValueChanged -= InnerNumberBoxOnValueChanged;
+        base.OnDetachedFromLogicalTree(e);
+    }
+
     private void SetNumberBoxValue(double value)
     {
         if (!(Math.Abs(InnerNumberBox.Value - Value) > 0.00001))
@@ -243,14 +257,14 @@ public partial class DraggableNumberBox : UserControl
 
         e.Handled = true;
     }
-    
+
     private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
         if (e.Property == ValueProperty)
             SetNumberBoxValue(Value);
     }
 
-    private void NumberBox_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    private void InnerNumberBoxOnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
         if (_updating)
             return;

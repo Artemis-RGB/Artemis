@@ -32,8 +32,7 @@
                             SimpleNumberFormat="{CompiledBinding $parent[sharedControls:DraggableNumberBox].SimpleNumberFormat}"
                             attachedProperties:NumberBoxAssist.PrefixText="{CompiledBinding $parent[sharedControls:DraggableNumberBox].Prefix}"
                             attachedProperties:NumberBoxAssist.SuffixText="{CompiledBinding $parent[sharedControls:DraggableNumberBox].Suffix}"
-                            HorizontalAlignment="{CompiledBinding $parent[sharedControls:DraggableNumberBox].HorizontalAlignment}"
-                            ValueChanged="NumberBox_OnValueChanged"/>
+                            HorizontalAlignment="{CompiledBinding $parent[sharedControls:DraggableNumberBox].HorizontalAlignment}"/>
         <Rectangle Name="DragCollider" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Fill="Transparent"></Rectangle>
     </Panel>
 
