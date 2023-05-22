@@ -2,11 +2,11 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Timers;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
-using Avalonia.Threading;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Playback;
@@ -53,13 +53,17 @@ public class PlaybackViewModel : ActivatableViewModelBase
             _formattedCurrentTime = _profileEditorService.Time.Select(t => $"{Math.Floor(t.TotalSeconds):00}.{t.Milliseconds:000}").ToProperty(this, vm => vm.FormattedCurrentTime).DisposeWith(d);
             _playing = _profileEditorService.Playing.ToProperty(this, vm => vm.Playing).DisposeWith(d);
             _keyBindingsEnabled = Shared.UI.KeyBindingsEnabled.ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
-
+            
+            // Update timer
+            Timer updateTimer = new(TimeSpan.FromMilliseconds(60.0 / 1000));
+            updateTimer.Elapsed += (_, _) => Update();
+            updateTimer.DisposeWith(d);
+            _profileEditorService.Playing.Subscribe(_ => _lastUpdate = DateTime.Now).DisposeWith(d);
+            _profileEditorService.Playing.Subscribe(p => updateTimer.Enabled = p).DisposeWith(d);
             _lastUpdate = DateTime.MinValue;
-            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(60.0 / 1000), DispatcherPriority.Background, Update);
-            updateTimer.Start();
+
             Disposable.Create(() =>
             {
-                updateTimer.Stop();
                 _settingsService.GetSetting("ProfileEditor.RepeatTimeline", true).Value = _repeating && _repeatTimeline;
                 _settingsService.GetSetting("ProfileEditor.RepeatSegment", false).Value = _repeating && _repeatSegment;
             }).DisposeWith(d);
@@ -206,13 +210,10 @@ public class PlaybackViewModel : ActivatableViewModelBase
         return TimeSpan.Zero;
     }
 
-    private void Update(object? sender, EventArgs e)
+    private void Update()
     {
         try
         {
-            if (!Playing)
-                return;
-
             if (_lastUpdate == DateTime.MinValue)
                 _lastUpdate = DateTime.Now;
 

@@ -30,12 +30,12 @@
             </VisualBrush>
         </Grid.Background>
         <Grid Grid.Column="0" Name="DeviceDisplayGrid" PointerReleased="DeviceDisplayGrid_OnPointerReleased">
-            <!-- No need to provide LEDs to highlight as LEDs are already physically highlighted -->
             <shared:DeviceVisualizer Device="{CompiledBinding Device}"
                                      HorizontalAlignment="Center"
                                      VerticalAlignment="Center"
                                      ShowColors="True"
                                      Margin="20"
+                                     RenderOptions.BitmapInterpolationMode="MediumQuality"
                                      LedClicked="DeviceVisualizer_OnLedClicked"
                                      Clicked="DeviceVisualizer_OnClicked" />
 

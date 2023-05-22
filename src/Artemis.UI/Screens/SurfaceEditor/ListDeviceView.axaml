@@ -9,7 +9,7 @@
              x:DataType="surfaceEditor:ListDeviceViewModel">
     <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="*,*">
         <Border Grid.Column="0" Grid.RowSpan="2" Width="64" Height="50" Margin="0 0 10 0">
-            <shared:DeviceVisualizer Device="{CompiledBinding Device}" ShowColors="True" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <shared:DeviceVisualizer Device="{CompiledBinding Device}" ShowColors="True" VerticalAlignment="Center" HorizontalAlignment="Center" RenderOptions.BitmapInterpolationMode="MediumQuality"/>
         </Border>
         <TextBlock Grid.Column="1" Grid.Row="0" Text="{CompiledBinding Device.RgbDevice.DeviceInfo.DeviceName}" VerticalAlignment="Bottom" />
         <TextBlock Grid.Column="1" Grid.Row="1" Classes="subtitle" Text="{CompiledBinding Device.RgbDevice.DeviceInfo.Manufacturer}" VerticalAlignment="Top" />

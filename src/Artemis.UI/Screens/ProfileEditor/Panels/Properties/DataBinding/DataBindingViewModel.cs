@@ -2,6 +2,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
@@ -50,20 +51,16 @@ public class DataBindingViewModel : ActivatableViewModelBase
                 .DisposeWith(d);
             _profileEditorService.Playing.CombineLatest(_profileEditorService.SuspendedEditing).Subscribe(tuple => _playing = tuple.First || tuple.Second).DisposeWith(d);
 
-            DispatcherTimer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000), DispatcherPriority.Background, Update);
-            // TODO: Remove in favor of saving each time a node editor command is executed
-            DispatcherTimer saveTimer = new(TimeSpan.FromMinutes(2), DispatcherPriority.Normal, Save);
+            Timer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000));
+            Timer saveTimer = new(TimeSpan.FromMinutes(2));
 
+            updateTimer.Elapsed += (_, _) => Update();
+            saveTimer.Elapsed += (_, _) => Save();
             updateTimer.Start();
             saveTimer.Start();
 
-            Disposable.Create(() =>
-            {
-                updateTimer.Stop();
-                saveTimer.Stop();
-
-                _profileEditorService.SaveProfile();
-            }).DisposeWith(d);
+            updateTimer.DisposeWith(d);
+            saveTimer.DisposeWith(d);
         });
     }
 
@@ -97,7 +94,7 @@ public class DataBindingViewModel : ActivatableViewModelBase
         }
     }
 
-    private void Update(object? sender, EventArgs e)
+    private void Update()
     {
         // If playing the data binding will already be updated, no need to do it here
         if (_playing || !_alwaysApplyDataBindings.Value)
@@ -106,7 +103,7 @@ public class DataBindingViewModel : ActivatableViewModelBase
         LayerProperty?.UpdateDataBinding();
     }
 
-    private void Save(object? sender, EventArgs e)
+    private void Save()
     {
         if (!_editorOpen)
             _profileEditorService.SaveProfile();

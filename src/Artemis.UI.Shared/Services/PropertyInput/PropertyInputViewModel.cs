@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -193,7 +194,7 @@ public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
                 _updating = true;
 
                 // Avoid unnecessary UI updates and validator cycles
-                if (Equals(_inputValue, LayerProperty.CurrentValue))
+                if (EqualityComparer<T>.Default.Equals(_inputValue, LayerProperty.CurrentValue))
                     return;
 
                 // Override the input value

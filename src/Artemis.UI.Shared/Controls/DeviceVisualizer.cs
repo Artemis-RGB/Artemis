@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -13,6 +12,10 @@ using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using RGB.NET.Core;
+using Color = RGB.NET.Core.Color;
+using Point = Avalonia.Point;
+using Size = Avalonia.Size;
 
 namespace Artemis.UI.Shared;
 
@@ -21,20 +24,20 @@ namespace Artemis.UI.Shared;
 /// </summary>
 public class DeviceVisualizer : Control
 {
-    private const double UpdateFrameRate = 25.0;
+    private const double UPDATE_FRAME_RATE = 25.0;
     private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
     private readonly DispatcherTimer _timer;
 
     private Rect _deviceBounds;
     private RenderTargetBitmap? _deviceImage;
-    private List<DeviceVisualizerLed>? _dimmedLeds;
-    private List<DeviceVisualizerLed>? _highlightedLeds;
     private ArtemisDevice? _oldDevice;
-
+    private bool _loading;
+    private Color[] _previousState = Array.Empty<Color>();
+    
     /// <inheritdoc />
     public DeviceVisualizer()
     {
-        _timer = new DispatcherTimer(DispatcherPriority.Render) {Interval = TimeSpan.FromMilliseconds(1000.0 / UpdateFrameRate)};
+        _timer = new DispatcherTimer(DispatcherPriority.Background) {Interval = TimeSpan.FromMilliseconds(1000.0 / UPDATE_FRAME_RATE)};
         _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
 
         PointerReleased += OnPointerReleased;
@@ -77,7 +80,7 @@ public class DeviceVisualizer : Control
                 // Apply device scale
                 using DrawingContext.PushedState scalePush = drawingContext.PushTransform(Matrix.CreateScale(Device.Scale, Device.Scale));
                 foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                    deviceVisualizerLed.RenderGeometry(drawingContext, false);
+                    deviceVisualizerLed.RenderGeometry(drawingContext);
             }
         }
         finally
@@ -112,6 +115,31 @@ public class DeviceVisualizer : Control
         Clicked?.Invoke(this, e);
     }
 
+    private bool IsDirty()
+    {
+        if (Device == null)
+            return false;
+
+        Color[] state = new Color[Device.RgbDevice.Count()];
+        bool difference = _previousState.Length != state.Length;
+
+        // Check all LEDs for differences and copy the colors to a new state
+        int index = 0;
+        foreach (Led led in Device.RgbDevice)
+        {
+            if (!difference && !led.Color.Equals(_previousState[index]))
+                difference = true;
+
+            state[index] = led.Color;
+            index++;
+        }
+
+        // Store the new state for next time
+        _previousState = state;
+
+        return difference;
+    }
+
     private void Update()
     {
         InvalidateVisual();
@@ -131,7 +159,7 @@ public class DeviceVisualizer : Control
 
     private void TimerOnTick(object? sender, EventArgs e)
     {
-        if (ShowColors && IsVisible && Opacity > 0)
+        if (IsDirty() && ShowColors && IsVisible && Opacity > 0)
             Update();
     }
 
@@ -200,23 +228,6 @@ public class DeviceVisualizer : Control
         set => SetValue(ShowColorsProperty, value);
     }
 
-    /// <summary>
-    ///     Gets or sets a list of LEDs to highlight
-    /// </summary>
-    public static readonly StyledProperty<ObservableCollection<ArtemisLed>?> HighlightedLedsProperty =
-        AvaloniaProperty.Register<DeviceVisualizer, ObservableCollection<ArtemisLed>?>(nameof(HighlightedLeds));
-
-    private bool _loading;
-
-    /// <summary>
-    ///     Gets or sets a list of LEDs to highlight
-    /// </summary>
-    public ObservableCollection<ArtemisLed>? HighlightedLeds
-    {
-        get => GetValue(HighlightedLedsProperty);
-        set => SetValue(HighlightedLedsProperty, value);
-    }
-
     #endregion
 
     #region Lifetime management
@@ -254,9 +265,6 @@ public class DeviceVisualizer : Control
 
     private void SetupForDevice()
     {
-        _highlightedLeds = new List<DeviceVisualizerLed>();
-        _dimmedLeds = new List<DeviceVisualizerLed>();
-
         lock (_deviceVisualizerLeds)
         {
             _deviceVisualizerLeds.Clear();
@@ -305,7 +313,7 @@ public class DeviceVisualizer : Control
                 using DrawingContext context = renderTargetBitmap.CreateDrawingContext();
                 using Bitmap bitmap = new(device.Layout.Image.LocalPath);
                 using Bitmap scaledBitmap = bitmap.CreateScaledBitmap(renderTargetBitmap.PixelSize);
-                
+
                 context.DrawImage(scaledBitmap, new Rect(scaledBitmap.Size));
                 lock (_deviceVisualizerLeds)
                 {
