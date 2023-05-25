@@ -12,7 +12,6 @@ public class DataModelEventCycleNode : Node<DataModelPathEntity, DataModelEventC
     private Type _currentType;
     private DataModelPath? _dataModelPath;
     private object? _lastPathValue;
-    private DateTime _lastTrigger;
     private bool _updating;
 
     public DataModelEventCycleNode()
@@ -22,8 +21,8 @@ public class DataModelEventCycleNode : Node<DataModelPathEntity, DataModelEventC
         CycleValues = CreateInputPinCollection(typeof(object), "", 0);
         Output = CreateOutputPin(typeof(object));
 
-        CycleValues.PinAdded += CycleValuesOnPinAdded;
-        CycleValues.PinRemoved += CycleValuesOnPinRemoved;
+        CycleValues.PinAdded += OnCycleValuesOnPinAdded;
+        CycleValues.PinRemoved += OnCycleValuesOnPinRemoved;
         CycleValues.Add(CycleValues.CreatePin());
 
         // Monitor storage for changes
@@ -39,39 +38,21 @@ public class DataModelEventCycleNode : Node<DataModelPathEntity, DataModelEventC
     {
         Script = script;
 
-        if (Storage == null)
-            return;
-
-        UpdateDataModelPath();
+        if (Storage != null)
+            UpdateDataModelPath();
     }
 
     public override void Evaluate()
     {
         object? pathValue = _dataModelPath?.GetValue();
-        bool hasTriggered = pathValue is IDataModelEvent dataModelEvent ? EvaluateEvent(dataModelEvent) : EvaluateValue(pathValue);
-
-        if (hasTriggered)
-        {
-            _currentIndex++;
-
-            if (_currentIndex >= CycleValues.Count())
-                _currentIndex = 0;
-        }
+        if (pathValue is not IDataModelEvent && EvaluateValue(pathValue))
+            Cycle();
 
         object? outputValue = CycleValues.ElementAt(_currentIndex).PinValue;
         if (Output.Type.IsInstanceOfType(outputValue))
             Output.Value = outputValue;
         else if (Output.Type.IsValueType)
             Output.Value = Output.Type.GetDefault()!;
-    }
-
-    private bool EvaluateEvent(IDataModelEvent dataModelEvent)
-    {
-        if (dataModelEvent.LastTrigger <= _lastTrigger)
-            return false;
-
-        _lastTrigger = dataModelEvent.LastTrigger;
-        return true;
     }
 
     private bool EvaluateValue(object? pathValue)
@@ -83,51 +64,26 @@ public class DataModelEventCycleNode : Node<DataModelPathEntity, DataModelEventC
         return true;
     }
 
-    private void CycleValuesOnPinAdded(object? sender, SingleValueEventArgs<IPin> e)
+    private void Cycle()
     {
-        e.Value.PinConnected += OnPinConnected;
-        e.Value.PinDisconnected += OnPinDisconnected;
-    }
+        _currentIndex++;
 
-    private void CycleValuesOnPinRemoved(object? sender, SingleValueEventArgs<IPin> e)
-    {
-        e.Value.PinConnected -= OnPinConnected;
-        e.Value.PinDisconnected -= OnPinDisconnected;
-    }
-
-    private void OnPinDisconnected(object? sender, SingleValueEventArgs<IPin> e)
-    {
-        ProcessPinDisconnected();
-    }
-
-    private void OnPinConnected(object? sender, SingleValueEventArgs<IPin> e)
-    {
-        ProcessPinConnected(e.Value);
-    }
-
-    private void ProcessPinConnected(IPin source)
-    {
-        if (_updating)
-            return;
-
-        try
-        {
-            _updating = true;
-
-            // No need to change anything if the types haven't changed
-            if (_currentType != source.Type)
-                ChangeCurrentType(source.Type);
-        }
-        finally
-        {
-            _updating = false;
-        }
+        if (_currentIndex >= CycleValues.Count())
+            _currentIndex = 0;
     }
 
     private void UpdateDataModelPath()
     {
         DataModelPath? old = _dataModelPath;
+
+        if (old?.GetValue() is IDataModelEvent oldEvent)
+            oldEvent.EventTriggered -= OnEventTriggered;
+
         _dataModelPath = Storage != null ? new DataModelPath(Storage) : null;
+
+        if (_dataModelPath?.GetValue() is IDataModelEvent newEvent)
+            newEvent.EventTriggered += OnEventTriggered;
+
         old?.Dispose();
     }
 
@@ -139,10 +95,28 @@ public class DataModelEventCycleNode : Node<DataModelPathEntity, DataModelEventC
         _currentType = type;
     }
 
-    private void ProcessPinDisconnected()
+    private void OnEventTriggered(object? sender, EventArgs e)
+    {
+        Cycle();
+    }
+
+    private void OnCycleValuesOnPinAdded(object? sender, SingleValueEventArgs<IPin> e)
+    {
+        e.Value.PinConnected += OnPinConnected;
+        e.Value.PinDisconnected += OnPinDisconnected;
+    }
+
+    private void OnCycleValuesOnPinRemoved(object? sender, SingleValueEventArgs<IPin> e)
+    {
+        e.Value.PinConnected -= OnPinConnected;
+        e.Value.PinDisconnected -= OnPinDisconnected;
+    }
+
+    private void OnPinDisconnected(object? sender, SingleValueEventArgs<IPin> e)
     {
         if (_updating)
             return;
+
         try
         {
             // If there's still a connected pin, stick to the current type
@@ -157,9 +131,30 @@ public class DataModelEventCycleNode : Node<DataModelPathEntity, DataModelEventC
         }
     }
 
+    private void OnPinConnected(object? sender, SingleValueEventArgs<IPin> e)
+    {
+        if (_updating)
+            return;
+
+        try
+        {
+            _updating = true;
+
+            // No need to change anything if the types haven't changed
+            if (_currentType != e.Value.Type)
+                ChangeCurrentType(e.Value.Type);
+        }
+        finally
+        {
+            _updating = false;
+        }
+    }
+
     /// <inheritdoc />
     public void Dispose()
     {
+        if (_dataModelPath?.GetValue() is IDataModelEvent newEvent)
+            newEvent.EventTriggered -= OnEventTriggered;
         _dataModelPath?.Dispose();
     }
 }
