@@ -3,17 +3,22 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
-using Avalonia.Rendering;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 
 namespace Artemis.UI.Screens.VisualScripting.Pins;
 
 public class PinView : ReactiveUserControl<PinViewModel>
 {
-    private Canvas? _container;
+    private readonly DispatcherTimer _updateTimer;
     private bool _dragging;
+    private Canvas? _container;
     private Border? _pinPoint;
-    private PinViewRenderLoopTaks _renderLoopTask;
+
+    public PinView()
+    {
+        _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(16), DispatcherPriority.Render, UpdatePosition);
+    }
 
     protected void InitializePin(Border pinPoint)
     {
@@ -21,7 +26,6 @@ public class PinView : ReactiveUserControl<PinViewModel>
         _pinPoint.PointerMoved += PinPointOnPointerMoved;
         _pinPoint.PointerReleased += PinPointOnPointerReleased;
         _pinPoint.PropertyChanged += PinPointOnPropertyChanged;
-        _renderLoopTask = new PinViewRenderLoopTaks(this);
     }
 
     private void PinPointOnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
@@ -74,19 +78,17 @@ public class PinView : ReactiveUserControl<PinViewModel>
     /// <inheritdoc />
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        base.OnAttachedToVisualTree(e);
         _container = this.FindAncestorOfType<Canvas>();
-        AvaloniaLocator.Current.GetRequiredService<IRenderLoop>().Add(_renderLoopTask);
+        _updateTimer.Start();
     }
 
     /// <inheritdoc />
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        base.OnDetachedFromVisualTree(e);
-        AvaloniaLocator.Current.GetRequiredService<IRenderLoop>().Remove(_renderLoopTask);
+        _updateTimer.Stop();
     }
 
-    public void UpdatePosition()
+    public void UpdatePosition(object? sender, EventArgs eventArgs)
     {
         if (_container == null || _pinPoint == null || ViewModel == null)
             return;
@@ -97,25 +99,4 @@ public class PinView : ReactiveUserControl<PinViewModel>
     }
 
     #endregion
-}
-
-public class PinViewRenderLoopTaks : IRenderLoopTask
-{
-    private readonly PinView _pinView;
-
-    public PinViewRenderLoopTaks(PinView pinView)
-    {
-        _pinView = pinView;
-    }
-
-    public void Update(TimeSpan time)
-    {
-        _pinView.UpdatePosition();
-    }
-
-    public void Render()
-    {
-    }
-
-    public bool NeedsUpdate => true;
 }

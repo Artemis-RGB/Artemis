@@ -110,14 +110,14 @@
                         </shared:SelectionRectangle.Background>
                     </shared:SelectionRectangle>
 
-                    <Border Name="SurfaceBounds"
+                    <Rectangle Name="SurfaceBounds"
                             VerticalAlignment="Top"
                             HorizontalAlignment="Left"
                             Width="{Binding MaxTextureSize}"
                             Height="{Binding MaxTextureSize}"
-                            BorderThickness="2"
-                            BorderBrush="{DynamicResource SystemAccentColorLight1}"
-                            BorderDashArray="6,2"
+                            StrokeThickness="2"
+                            Stroke="{DynamicResource SystemAccentColorLight1}"
+                            StrokeDashArray="6,2"
                             Opacity="0.5" />
                 </Grid>
             </paz:ZoomBorder>

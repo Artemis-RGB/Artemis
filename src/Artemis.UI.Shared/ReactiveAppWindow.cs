@@ -48,7 +48,7 @@ public class ReactiveAppWindow<TViewModel> : AppWindow, IViewFor<TViewModel> whe
             return;
 
         TransparencyBackgroundFallback = Brushes.Transparent;
-        TransparencyLevelHint = WindowTransparencyLevel.Mica;
+        TransparencyLevelHint = new[] {WindowTransparencyLevel.Mica};
         TryEnableMicaEffect();
     }
 

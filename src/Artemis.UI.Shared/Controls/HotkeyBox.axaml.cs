@@ -9,6 +9,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using DryIoc;
 using FluentAvalonia.Core;
 using Humanizer;
@@ -78,7 +79,7 @@ public partial class HotkeyBox : UserControl
     private void InputServiceOnKeyboardKeyUp(object? sender, ArtemisKeyboardKeyEventArgs e)
     {
         if (e.Modifiers == KeyboardModifierKey.None)
-            Dispatcher.UIThread.Post(() => FocusManager.Instance?.Focus(null));
+            Dispatcher.UIThread.Post(() => this.FindAncestorOfType<InputElement>()?.Focus());
     }
 
     private void UpdateDisplayTextBox()
@@ -96,7 +97,7 @@ public partial class HotkeyBox : UserControl
     private void Button_OnClick(object? sender, RoutedEventArgs e)
     {
         Hotkey = null;
-        FocusManager.Instance?.Focus(null);
+        this.FindAncestorOfType<InputElement>()?.Focus();
 
         UpdateDisplayTextBox();
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
@@ -68,7 +69,7 @@ public partial class DraggableNumberBox : UserControl
     public DraggableNumberBox()
     {
         InitializeComponent();
-        
+
         PointerPressed += OnPointerPressed;
         PointerMoved += OnPointerMoved;
         PointerReleased += OnPointerReleased;
@@ -186,8 +187,9 @@ public partial class DraggableNumberBox : UserControl
 
     private void HandleKeyUp(object? sender, KeyEventArgs e)
     {
+        IInputElement? toFocus = this.GetLogicalAncestors().OfType<IInputElement>().LastOrDefault();
         if (e.Key == Key.Enter || e.Key == Key.Escape)
-            FocusManager.Instance?.Focus(Parent as IInputElement);
+            toFocus?.Focus();
     }
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -215,7 +217,7 @@ public partial class DraggableNumberBox : UserControl
         if (!_moved)
         {
             // Let our parent take focus, it would make more sense to take focus ourselves but that hides the collider
-            FocusManager.Instance?.Focus(Parent as IInputElement);
+            (Parent as IInputElement)?.Focus();
             _moved = true;
             e.Pointer.Capture(this);
             DragStarted?.Invoke(this, EventArgs.Empty);
