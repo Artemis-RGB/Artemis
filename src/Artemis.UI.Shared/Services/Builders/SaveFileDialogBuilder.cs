@@ -77,6 +77,6 @@ public class SaveFileDialogBuilder
     public async Task<string?> ShowAsync()
     {
         IStorageFile? path = await _parent.StorageProvider.SaveFilePickerAsync(_options);
-        return path?.Path.AbsolutePath;
+        return path?.Path.LocalPath;
     }
 }
