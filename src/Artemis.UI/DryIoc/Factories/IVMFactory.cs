@@ -25,6 +25,7 @@ using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Screens.VisualScripting.Pins;
+using Artemis.UI.Shared;
 using DryIoc;
 using ReactiveUI;
 
@@ -40,9 +41,11 @@ public interface IDeviceVmFactory : IVmFactory
     DeviceSettingsViewModel DeviceSettingsViewModel(ArtemisDevice device, DevicesTabViewModel devicesTabViewModel);
     DeviceDetectInputViewModel DeviceDetectInputViewModel(ArtemisDevice device);
     DevicePropertiesTabViewModel DevicePropertiesTabViewModel(ArtemisDevice device);
+    DeviceLayoutTabViewModel DeviceLayoutTabViewModel(ArtemisDevice device);
     DeviceInfoTabViewModel DeviceInfoTabViewModel(ArtemisDevice device);
     DeviceLedsTabViewModel DeviceLedsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds);
     InputMappingsTabViewModel InputMappingsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds);
+    DeviceGeneralTabViewModel DeviceGeneralTabViewModel(ArtemisDevice device);
 }
 public class DeviceFactory : IDeviceVmFactory
 {
@@ -72,7 +75,12 @@ public class DeviceFactory : IDeviceVmFactory
     {
         return _container.Resolve<DevicePropertiesTabViewModel>(new object[] { device });
     }
-    
+
+    public DeviceLayoutTabViewModel DeviceLayoutTabViewModel(ArtemisDevice device)
+    {
+        return _container.Resolve<DeviceLayoutTabViewModel>(new object[] { device });
+    }
+
     public DeviceInfoTabViewModel DeviceInfoTabViewModel(ArtemisDevice device)
     {
         return _container.Resolve<DeviceInfoTabViewModel>(new object[] { device });
@@ -86,6 +94,11 @@ public class DeviceFactory : IDeviceVmFactory
     public InputMappingsTabViewModel InputMappingsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds)
     {
         return _container.Resolve<InputMappingsTabViewModel>(new object[] { device, selectedLeds });
+    }
+
+    public DeviceGeneralTabViewModel DeviceGeneralTabViewModel(ArtemisDevice device)
+    {
+        return _container.Resolve<DeviceGeneralTabViewModel>(new object[] { device });
     }
 }
 

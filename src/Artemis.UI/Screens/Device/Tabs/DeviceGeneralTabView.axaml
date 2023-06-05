@@ -1,0 +1,371 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             xmlns:device="clr-namespace:Artemis.UI.Screens.Device"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="1450"
+             x:Class="Artemis.UI.Screens.Device.DeviceGeneralTabView"
+             x:DataType="device:DeviceGeneralTabViewModel">
+    <UserControl.Resources>
+        <converters:SKColorToColorConverter x:Key="SKColorToColorConverter" />
+    </UserControl.Resources>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid RowDefinitions="*,Auto">
+            <StackPanel Grid.Row="0" Orientation="Vertical">
+                <!-- Device information and categories -->
+                <Grid ColumnDefinitions="*,*" RowDefinitions="*,*">
+                    <TextBlock Grid.Column="0" Grid.Row="0" Classes="card-title" Text="Information" Margin="10,0,0,0" />
+                    <Border Grid.Column="0" Grid.Row="1" Classes="card" Margin="5" x:Name="InformationBorder">
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="*,*,*,*,*,*">
+                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                <TextBlock Text="Model" />
+                                <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="{CompiledBinding Device.RgbDevice.DeviceInfo.Model}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Grid.Column="0">
+                                <TextBlock Text="Manufacturer" />
+                                <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="{CompiledBinding Device.RgbDevice.DeviceInfo.Manufacturer}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="2" Grid.Column="0">
+                                <TextBlock Text="Device Type" />
+                                <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="{CompiledBinding Device.RgbDevice.DeviceInfo.DeviceType}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="3" Grid.Column="0">
+                                <TextBlock Text="Size (1px = 1mm)" />
+                                <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="{CompiledBinding Device.RgbDevice.Size}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="4" Grid.Column="0" IsVisible="{CompiledBinding IsKeyboard}">
+                                <TextBlock Text="Physical Layout" />
+                                <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="{CompiledBinding Device.PhysicalLayout}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="5" Grid.Column="0" IsVisible="{CompiledBinding IsKeyboard}" >
+                                <TextBlock Text="Logical Layout" />
+                                <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="{CompiledBinding Device.LogicalLayout}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <TextBlock Grid.Column="1" Grid.Row="0" Classes="card-title" Text="Categories" Margin="10,0,0,0" />
+                    <Border Grid.Row="1" Grid.Column="1" Classes="card" Margin="5" x:Name="CategoryBorder">
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" Text="Artemis uses categories to determine where the layers of imported profiles are applied to." />
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="*,*,*,*,*" Margin="0,10,0,0">
+                                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,10">
+                                    <TextBlock Text="Peripheral" />
+                                    <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="A peripheral such as a mouse or keyboard" />
+                                </StackPanel>
+                                <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{CompiledBinding HasPeripheralsCategory}" />
+
+                                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,10">
+                                    <TextBlock Text="Desk" />
+                                    <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="A device acting as desk ornamentation such as a LED strip" />
+                                </StackPanel>
+                                <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{CompiledBinding HasDeskCategory}" />
+
+                                <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,0,10">
+                                    <TextBlock Text="Monitor" />
+                                    <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="A device attached to the monitor such as ambilight LEDs" />
+                                </StackPanel>
+                                <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{CompiledBinding HasMonitorCategory}" />
+
+                                <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,0,10">
+                                    <TextBlock Text="Case" />
+                                    <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="A device inside your computer case" />
+                                </StackPanel>
+                                <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{CompiledBinding HasCaseCategory}" />
+
+                                <StackPanel Grid.Row="4" Grid.Column="0" Margin="0,0,0,10">
+                                    <TextBlock Text="Room" />
+                                    <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="A device elsewhere in the room" />
+                                </StackPanel>
+                                <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{CompiledBinding HasRoomCategory}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Surface and Calibration -->
+                <Grid ColumnDefinitions="*,*" RowDefinitions="*,*">
+                    <TextBlock Grid.Column="0" Grid.Row="0" Classes="card-title" Text="Surface" Margin="10,0,0,0" />
+                    <Border Grid.Column="0" Grid.Row="1" Classes="card" Margin="5" x:Name="SurfaceBorder">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock TextWrapping="Wrap" Text="The device can be rotated and scaled on the surface with the values below." />
+                            <Grid ColumnDefinitions="*,Auto,Auto" RowDefinitions="*,*,*,*">
+                                <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">X-coordinate</TextBlock>
+                                <NumericUpDown Grid.Row="0"
+                                               Grid.Column="1"
+                                               Margin="10 5"
+                                               VerticalAlignment="Center"
+                                               Value="{CompiledBinding X}" />
+                                <TextBlock Grid.Row="0" Grid.Column="2" VerticalAlignment="Center">mm</TextBlock>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Y-coordinate</TextBlock>
+                                <NumericUpDown Grid.Row="1"
+                                               Grid.Column="1"
+                                               Margin="10 5"
+                                               VerticalAlignment="Center"
+                                               Value="{CompiledBinding Y}" />
+                                <TextBlock Grid.Row="1" Grid.Column="2" VerticalAlignment="Center">mm</TextBlock>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Scale</TextBlock>
+                                <NumericUpDown Grid.Row="2"
+                                               Grid.Column="1"
+                                               Margin="10 5"
+                                               VerticalAlignment="Center"
+                                               Increment="0.1"
+                                               FormatString="F1"
+                                               Value="{CompiledBinding Scale}" />
+                                <TextBlock Grid.Row="2" Grid.Column="2" VerticalAlignment="Center">times</TextBlock>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Rotation</TextBlock>
+                                <NumericUpDown Grid.Row="3"
+                                               Grid.Column="1"
+                                               Margin="10 5"
+                                               VerticalAlignment="Center"
+                                               Value="{CompiledBinding Rotation}" />
+                                <TextBlock Grid.Row="3" Grid.Column="2" VerticalAlignment="Center">deg</TextBlock>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Grid.Column="1" Grid.Row="0" Classes="card-title" Text="Calibration" Margin="10,0,0,0" />
+                    <Border Grid.Row="1" Grid.Column="1" Classes="card" Margin="5" x:Name="CalibrationBorder">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock TextWrapping="Wrap" Text="Use the sliders below to adjust the colors of your device so that it matches your other devices." />
+                            <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="*,*,*,*">
+                                <Label Grid.Row="0" Grid.Column="0" Content="R" VerticalAlignment="Center" />
+                                <Slider Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="200" Value="{CompiledBinding RedScale}" Margin="10 0" VerticalAlignment="Center" />
+                                <NumericUpDown Grid.Row="0"
+                                               Grid.Column="2"
+                                               VerticalAlignment="Center"
+                                               Width="65"
+                                               Value="{CompiledBinding RedScale}"
+                                               ShowButtonSpinner="False"
+                                               FormatString="{}{0:0.0}"
+                                               Minimum="0"
+                                               Maximum="200"
+                                               ClipValueToMinMax="True" />
+
+                                <Label Grid.Row="1" Grid.Column="0" Content="G" VerticalAlignment="Center" />
+                                <Slider Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="200" Value="{CompiledBinding GreenScale}" Margin="10 0" VerticalAlignment="Center" />
+                                <NumericUpDown Grid.Row="1"
+                                               Grid.Column="2"
+                                               VerticalAlignment="Center"
+                                               Width="65"
+                                               Value="{CompiledBinding GreenScale}"
+                                               ShowButtonSpinner="False"
+                                               FormatString="{}{0:0.0}"
+                                               Minimum="0"
+                                               Maximum="200"
+                                               ClipValueToMinMax="True" />
+
+                                <Label Grid.Row="2" Grid.Column="0" Content="B" VerticalAlignment="Center" />
+                                <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="200" Value="{CompiledBinding BlueScale}" Margin="10 0" Ticks="100" VerticalAlignment="Center" />
+                                <NumericUpDown Grid.Row="2"
+                                               Grid.Column="2"
+                                               VerticalAlignment="Center"
+                                               Width="65"
+                                               Value="{CompiledBinding BlueScale}"
+                                               ShowButtonSpinner="False"
+                                               FormatString="{}{0:0.0}"
+                                               Minimum="0"
+                                               Maximum="200"
+                                               ClipValueToMinMax="True" />
+
+                                <CheckBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{CompiledBinding DisplayOnDevices}" Content="Show preview" VerticalAlignment="Center" />
+                                <controls:ColorPickerButton Grid.Row="3"
+                                                            Grid.Column="2"
+                                                            VerticalAlignment="Center"
+                                                            HorizontalAlignment="Right"
+                                                            Color="{CompiledBinding CurrentColor, Converter={StaticResource SKColorToColorConverter}}"
+                                                            ShowAcceptDismissButtons="False" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </StackPanel>
+
+            <!-- Stacked instead of grid here: -->
+            <!-- <StackPanel Grid.Row="0"> -->
+            <!--     <TextBlock Classes="card-title" Text="Information" Margin="10,0,0,0" /> -->
+            <!--     <Border Classes="card" Margin="5" x:Name="InformationBorder"> -->
+            <!--         <Grid ColumnDefinitions="*,Auto" RowDefinitions="*,*,*,*,*,*"> -->
+            <!--             <TextBlock Grid.Column="0" Grid.Row="0" Text="Model" /> -->
+            <!--             <TextBlock Grid.Column="1" Grid.Row="0" Classes="subtitle" TextWrapping="Wrap" Text="{CompiledBinding Device.RgbDevice.DeviceInfo.Model}" /> -->
+            <!-- -->
+            <!--             <TextBlock Grid.Column="0" Grid.Row="1" Text="Manufacturer" /> -->
+            <!--             <TextBlock Grid.Column="1" Grid.Row="1" Classes="subtitle" TextWrapping="Wrap" Text="{CompiledBinding Device.RgbDevice.DeviceInfo.Manufacturer}" /> -->
+            <!-- -->
+            <!--             <TextBlock Grid.Column="0" Grid.Row="2" Text="Device Type" /> -->
+            <!--             <TextBlock Grid.Column="1" Grid.Row="2" Classes="subtitle" TextWrapping="Wrap" Text="{CompiledBinding Device.RgbDevice.DeviceInfo.DeviceType}" /> -->
+            <!-- -->
+            <!--             <TextBlock Grid.Column="0" Grid.Row="3" Text="Size (1px = 1mm)" /> -->
+            <!--             <TextBlock Grid.Column="1" Grid.Row="3" Classes="subtitle" TextWrapping="Wrap" Text="{CompiledBinding Device.RgbDevice.Size}" /> -->
+            <!-- -->
+            <!--             <TextBlock IsVisible="{CompiledBinding IsKeyboard}" Grid.Column="0" Grid.Row="4" Text="Physical Layout" /> -->
+            <!--             <TextBlock IsVisible="{CompiledBinding IsKeyboard}" Grid.Column="1" Grid.Row="4" Classes="subtitle" TextWrapping="Wrap" Text="{CompiledBinding Device.PhysicalLayout}" /> -->
+            <!-- -->
+            <!--             <TextBlock IsVisible="{CompiledBinding IsKeyboard}" Grid.Column="0" Grid.Row="5" Text="Logical Layout" /> -->
+            <!--             <TextBlock IsVisible="{CompiledBinding IsKeyboard}" Grid.Column="1" Grid.Row="5" Classes="subtitle" TextWrapping="Wrap" Text="{CompiledBinding Device.LogicalLayout}" /> -->
+            <!--         </Grid> -->
+            <!--     </Border> -->
+            <!-- -->
+            <!--     <TextBlock Classes="card-title" Text="Categories" Margin="10,0,0,0" /> -->
+            <!--     <Border Classes="card" Margin="5" x:Name="CategoryBorder"> -->
+            <!--         <StackPanel> -->
+            <!--             <TextBlock TextWrapping="Wrap" Text="Artemis uses categories to determine where the layers of imported profiles are applied to." /> -->
+            <!--             <Grid ColumnDefinitions="*,Auto" RowDefinitions="*,*,*,*,*" Margin="0,10,0,0"> -->
+            <!--                 <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,10"> -->
+            <!--                     <TextBlock Text="Peripheral" /> -->
+            <!--                     <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="A peripheral such as a mouse or keyboard" /> -->
+            <!--                 </StackPanel> -->
+            <!--                 <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{CompiledBinding HasPeripheralsCategory}" /> -->
+            <!-- -->
+            <!--                 <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,10"> -->
+            <!--                     <TextBlock Text="Desk" /> -->
+            <!--                     <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="A device acting as desk ornamentation such as a LED strip" /> -->
+            <!--                 </StackPanel> -->
+            <!--                 <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{CompiledBinding HasDeskCategory}" /> -->
+            <!-- -->
+            <!--                 <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,0,10"> -->
+            <!--                     <TextBlock Text="Monitor" /> -->
+            <!--                     <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="A device attached to the monitor such as ambilight LEDs" /> -->
+            <!--                 </StackPanel> -->
+            <!--                 <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{CompiledBinding HasMonitorCategory}" /> -->
+            <!-- -->
+            <!--                 <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,0,10"> -->
+            <!--                     <TextBlock Text="Case" /> -->
+            <!--                     <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="A device inside your computer case" /> -->
+            <!--                 </StackPanel> -->
+            <!--                 <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{CompiledBinding HasCaseCategory}" /> -->
+            <!-- -->
+            <!--                 <StackPanel Grid.Row="4" Grid.Column="0" Margin="0,0,0,10"> -->
+            <!--                     <TextBlock Text="Room" /> -->
+            <!--                     <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="A device elsewhere in the room" /> -->
+            <!--                 </StackPanel> -->
+            <!--                 <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{CompiledBinding HasRoomCategory}" /> -->
+            <!--             </Grid> -->
+            <!--         </StackPanel> -->
+            <!--     </Border> -->
+            <!-- -->
+            <!--     <TextBlock Classes="card-title" Text="Surface" Margin="10,0,0,0" /> -->
+            <!--     <Border Classes="card" Margin="5" x:Name="SurfaceBorder"> -->
+            <!--         <StackPanel Orientation="Vertical"> -->
+            <!--             <TextBlock TextWrapping="Wrap" Text="The device can be rotated and scaled on the surface with the values below." /> -->
+            <!--             <Grid ColumnDefinitions="*,Auto,Auto" RowDefinitions="*,*,*,*"> -->
+            <!--                 <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">X-coordinate</TextBlock> -->
+            <!--                 <NumericUpDown Grid.Row="0" -->
+            <!--                                Grid.Column="1" -->
+            <!--                                Margin="10 5" -->
+            <!--                                VerticalAlignment="Center" -->
+            <!--                                Value="{CompiledBinding X}" /> -->
+            <!--                 <TextBlock Grid.Row="0" Grid.Column="2" VerticalAlignment="Center">mm</TextBlock> -->
+            <!-- -->
+            <!--                 <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Y-coordinate</TextBlock> -->
+            <!--                 <NumericUpDown Grid.Row="1" -->
+            <!--                                Grid.Column="1" -->
+            <!--                                Margin="10 5" -->
+            <!--                                VerticalAlignment="Center" -->
+            <!--                                Value="{CompiledBinding Y}" /> -->
+            <!--                 <TextBlock Grid.Row="1" Grid.Column="2" VerticalAlignment="Center">mm</TextBlock> -->
+            <!-- -->
+            <!--                 <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Scale</TextBlock> -->
+            <!--                 <NumericUpDown Grid.Row="2" -->
+            <!--                                Grid.Column="1" -->
+            <!--                                Margin="10 5" -->
+            <!--                                VerticalAlignment="Center" -->
+            <!--                                Increment="0.1" -->
+            <!--                                FormatString="F1" -->
+            <!--                                Value="{CompiledBinding Scale}" /> -->
+            <!--                 <TextBlock Grid.Row="2" Grid.Column="2" VerticalAlignment="Center">times</TextBlock> -->
+            <!-- -->
+            <!--                 <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Rotation</TextBlock> -->
+            <!--                 <NumericUpDown Grid.Row="3" -->
+            <!--                                Grid.Column="1" -->
+            <!--                                Margin="10 5" -->
+            <!--                                VerticalAlignment="Center" -->
+            <!--                                Value="{CompiledBinding Rotation}" /> -->
+            <!--                 <TextBlock Grid.Row="3" Grid.Column="2" VerticalAlignment="Center">deg</TextBlock> -->
+            <!--             </Grid> -->
+            <!--         </StackPanel> -->
+            <!--     </Border> -->
+            <!-- -->
+            <!--     <TextBlock Classes="card-title" Text="Calibration" Margin="10,0,0,0" /> -->
+            <!--     <Border Classes="card" Margin="5" x:Name="CalibrationBorder"> -->
+            <!--         <StackPanel Orientation="Vertical"> -->
+            <!--             <TextBlock TextWrapping="Wrap" Text="Use the sliders below to adjust the colors of your device so that it matches your other devices." /> -->
+            <!--             <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="*,*,*,*"> -->
+            <!--                 <Label Grid.Row="0" Grid.Column="0" Content="R" VerticalAlignment="Center" /> -->
+            <!--                 <Slider Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="200" Value="{CompiledBinding RedScale}" Margin="10 0" VerticalAlignment="Center" /> -->
+            <!--                 <NumericUpDown Grid.Row="0" -->
+            <!--                                Grid.Column="2" -->
+            <!--                                VerticalAlignment="Center" -->
+            <!--                                Width="65" -->
+            <!--                                Value="{CompiledBinding RedScale}" -->
+            <!--                                ShowButtonSpinner="False" -->
+            <!--                                FormatString="{}{0:0.0}" -->
+            <!--                                Minimum="0" -->
+            <!--                                Maximum="200" -->
+            <!--                                ClipValueToMinMax="True" /> -->
+            <!-- -->
+            <!--                 <Label Grid.Row="1" Grid.Column="0" Content="G" VerticalAlignment="Center" /> -->
+            <!--                 <Slider Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="200" Value="{CompiledBinding GreenScale}" Margin="10 0" VerticalAlignment="Center" /> -->
+            <!--                 <NumericUpDown Grid.Row="1" -->
+            <!--                                Grid.Column="2" -->
+            <!--                                VerticalAlignment="Center" -->
+            <!--                                Width="65" -->
+            <!--                                Value="{CompiledBinding GreenScale}" -->
+            <!--                                ShowButtonSpinner="False" -->
+            <!--                                FormatString="{}{0:0.0}" -->
+            <!--                                Minimum="0" -->
+            <!--                                Maximum="200" -->
+            <!--                                ClipValueToMinMax="True" /> -->
+            <!-- -->
+            <!--                 <Label Grid.Row="2" Grid.Column="0" Content="B" VerticalAlignment="Center" /> -->
+            <!--                 <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="200" Value="{CompiledBinding BlueScale}" Margin="10 0" Ticks="100" VerticalAlignment="Center" /> -->
+            <!--                 <NumericUpDown Grid.Row="2" -->
+            <!--                                Grid.Column="2" -->
+            <!--                                VerticalAlignment="Center" -->
+            <!--                                Width="65" -->
+            <!--                                Value="{CompiledBinding BlueScale}" -->
+            <!--                                ShowButtonSpinner="False" -->
+            <!--                                FormatString="{}{0:0.0}" -->
+            <!--                                Minimum="0" -->
+            <!--                                Maximum="200" -->
+            <!--                                ClipValueToMinMax="True" /> -->
+            <!-- -->
+            <!--                 <CheckBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{CompiledBinding DisplayOnDevices}" Content="Show preview" VerticalAlignment="Center" /> -->
+            <!--                 <controls:ColorPickerButton Grid.Row="3" -->
+            <!--                                             Grid.Column="2" -->
+            <!--                                             VerticalAlignment="Center" -->
+            <!--                                             HorizontalAlignment="Right" -->
+            <!--                                             Color="{CompiledBinding CurrentColor, Converter={StaticResource SKColorToColorConverter}}" -->
+            <!--                                             ShowAcceptDismissButtons="False" /> -->
+            <!--             </Grid> -->
+            <!--         </StackPanel> -->
+            <!--     </Border> -->
+            <!-- </StackPanel> -->
+
+            <Grid Grid.Row="1" ColumnDefinitions="Auto,*" Margin="5">
+                <Button Grid.Column="0"
+                        IsVisible="{CompiledBinding RequiresManualSetup}"
+                        Command="{CompiledBinding RestartSetup}"
+                        ToolTip.Tip="Restart device setup, allowing you to select a new physical and logical layout">
+                    Restart setup
+                </Button>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button IsCancel="True" Command="{CompiledBinding Reset}" Margin="0 0 5 0" Content="Reset" />
+                    <Button Classes="accent" IsDefault="True" Command="{CompiledBinding Apply}" Content="Apply" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+    </ScrollViewer>
+</UserControl>

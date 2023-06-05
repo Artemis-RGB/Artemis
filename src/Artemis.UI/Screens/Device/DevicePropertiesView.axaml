@@ -11,8 +11,8 @@
                       Icon="/Assets/Images/Logo/application.ico"
                       Title="Artemis | Device Properties"
                       WindowStartupLocation="CenterOwner"
-                      Width="1250"
-                      Height="900">
+                      Width="1400"
+                      Height="800">
     <windowing:AppWindow.KeyBindings>
         <KeyBinding Gesture="Escape" Command="{CompiledBinding ClearSelectedLeds}" />
     </windowing:AppWindow.KeyBindings>
@@ -52,7 +52,7 @@
 
         <GridSplitter Grid.Column="1" Width="15" Margin="-15 0 0 0" Background="Transparent" HorizontalAlignment="Stretch" />
 
-        <Border Grid.Column="2" Classes="card-condensed" CornerRadius="10 0 0 0" Margin="0 10 0 0" Background="#ff323232">
+        <Border Grid.Column="2" Classes="card-condensed" Margin="5" Background="#ff323232">
             <Panel>
                 <TabControl ItemsSource="{CompiledBinding Tabs}" IsVisible="{CompiledBinding Tabs.Count}" Padding="12">
                     <TabControl.ItemTemplate>
