@@ -120,22 +120,25 @@ public class DeviceVisualizer : Control
         if (Device == null)
             return false;
 
-        Color[] state = new Color[Device.RgbDevice.Count()];
-        bool difference = _previousState.Length != state.Length;
+        bool difference = false;
+
+        int newLedCount = Device.RgbDevice.Count();
+        if (_previousState.Length != newLedCount)
+        {
+            _previousState = new Color[newLedCount];
+            difference = true;
+        }
 
         // Check all LEDs for differences and copy the colors to a new state
         int index = 0;
         foreach (Led led in Device.RgbDevice)
         {
-            if (!difference && !led.Color.Equals(_previousState[index]))
+            if (_previousState[index] != led.Color)
                 difference = true;
 
-            state[index] = led.Color;
+            _previousState[index] = led.Color;
             index++;
         }
-
-        // Store the new state for next time
-        _previousState = state;
 
         return difference;
     }
