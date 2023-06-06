@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Shared.Events;
 using Avalonia;
 using Avalonia.Controls;
@@ -13,6 +14,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using RGB.NET.Core;
+using DryIoc;
 using Color = RGB.NET.Core.Color;
 using Point = Avalonia.Point;
 using Size = Avalonia.Size;
@@ -24,20 +26,19 @@ namespace Artemis.UI.Shared;
 /// </summary>
 public class DeviceVisualizer : Control
 {
-    private const double UPDATE_FRAME_RATE = 25.0;
+    private readonly ICoreService _coreService;
     private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
-    private readonly DispatcherTimer _timer;
 
     private Rect _deviceBounds;
     private RenderTargetBitmap? _deviceImage;
     private ArtemisDevice? _oldDevice;
     private bool _loading;
     private Color[] _previousState = Array.Empty<Color>();
-    
+
     /// <inheritdoc />
     public DeviceVisualizer()
     {
-        _timer = new DispatcherTimer(DispatcherPriority.Background) {Interval = TimeSpan.FromMilliseconds(1000.0 / UPDATE_FRAME_RATE)};
+        _coreService = UI.Locator.Resolve<ICoreService>();
         _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
 
         PointerReleased += OnPointerReleased;
@@ -159,11 +160,14 @@ public class DeviceVisualizer : Control
 
         return geometry.Bounds;
     }
-
-    private void TimerOnTick(object? sender, EventArgs e)
+        
+    private void OnFrameRendered(object? sender, FrameRenderedEventArgs e)
     {
-        if (ShowColors && IsVisible && Opacity > 0 && IsDirty())
-            Update();
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (ShowColors && IsVisible && Opacity > 0 && IsDirty())
+                Update();
+        }, DispatcherPriority.Background);
     }
 
     private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
@@ -253,16 +257,16 @@ public class DeviceVisualizer : Control
     /// <inheritdoc />
     protected override void OnAttachedToLogicalTree(LogicalTreeAttachmentEventArgs e)
     {
-        _timer.Start();
-        _timer.Tick += TimerOnTick;
+        _coreService.FrameRendered += OnFrameRendered;
+
         base.OnAttachedToLogicalTree(e);
     }
 
     /// <inheritdoc />
     protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
     {
-        _timer.Stop();
-        _timer.Tick -= TimerOnTick;
+        _coreService.FrameRendered -= OnFrameRendered;
+
         base.OnDetachedFromLogicalTree(e);
     }
 
