@@ -41,7 +41,7 @@ public partial class HotkeyBox : UserControl
     {
         _inputService.KeyboardKeyDown += InputServiceOnKeyboardKeyDown;
         _inputService.KeyboardKeyUp += InputServiceOnKeyboardKeyUp;
-        
+
         base.OnGotFocus(e);
     }
 
@@ -50,10 +50,10 @@ public partial class HotkeyBox : UserControl
     {
         _inputService.KeyboardKeyDown -= InputServiceOnKeyboardKeyDown;
         _inputService.KeyboardKeyUp -= InputServiceOnKeyboardKeyUp;
-        
+
         base.OnLostFocus(e);
     }
-    
+
     private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
         if (e.Property == HotkeyProperty)
@@ -68,7 +68,7 @@ public partial class HotkeyBox : UserControl
         Hotkey ??= new Hotkey();
         Hotkey.Key = e.Key;
         Hotkey.Modifiers = e.Modifiers;
-        
+
         Dispatcher.UIThread.Post(() =>
         {
             UpdateDisplayTextBox();
@@ -79,7 +79,19 @@ public partial class HotkeyBox : UserControl
     private void InputServiceOnKeyboardKeyUp(object? sender, ArtemisKeyboardKeyEventArgs e)
     {
         if (e.Modifiers == KeyboardModifierKey.None)
-            Dispatcher.UIThread.Post(() => this.FindAncestorOfType<InputElement>()?.Focus());
+            Dispatcher.UIThread.Post(ClearFocus);
+    }
+
+    private void ClearFocus()
+    {
+        InputElement? element = this.FindAncestorOfType<InputElement>();
+        if (element == null)
+            return;
+        
+        bool wasFocusable = element.Focusable;
+        element.Focusable = true;
+        element.Focus();
+        element.Focusable = wasFocusable;
     }
 
     private void UpdateDisplayTextBox()
@@ -97,7 +109,7 @@ public partial class HotkeyBox : UserControl
     private void Button_OnClick(object? sender, RoutedEventArgs e)
     {
         Hotkey = null;
-        this.FindAncestorOfType<InputElement>()?.Focus();
+        ClearFocus();
 
         UpdateDisplayTextBox();
     }
