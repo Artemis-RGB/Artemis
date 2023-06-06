@@ -6,25 +6,27 @@
              xmlns:sharedControls="clr-namespace:Artemis.UI.Shared.Controls"
              xmlns:attachedProperties="clr-namespace:Artemis.UI.Shared.AttachedProperties"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Shared.Controls.DraggableNumberBox">
+             x:Class="Artemis.UI.Shared.Controls.DraggableNumberBox"
+             Focusable="True">
     <UserControl.Styles>
         <Styles>
-            <Style Selector="sharedControls|DraggableNumberBox:not(:focus-within)">
+            <Style Selector="Panel#Container:not(:focus-within)">
                 <Setter Property="Cursor" Value="{DynamicResource DragHorizontalCursor}" />
             </Style>
 
-            <Style Selector="sharedControls|DraggableNumberBox:focus-within Rectangle#DragCollider">
+            <Style Selector="#Container:focus-within Rectangle#DragCollider">
                 <Setter Property="IsHitTestVisible" Value="False" />
             </Style>
-            <Style Selector="sharedControls|DraggableNumberBox:not(:focus-within) controls|NumberBox#NumberBox">
+            <Style Selector="#Container:not(:focus-within) controls|NumberBox#NumberBox">
                 <Setter Property="IsHitTestVisible" Value="False" />
             </Style>
         </Styles>
     </UserControl.Styles>
 
-    <Panel>
+    <Panel Name="Container" Focusable="True">
         <controls:NumberBox Name="InnerNumberBox"
                             AcceptsExpression="True"
+                            Focusable="True"
                             LargeChange="{CompiledBinding $parent[sharedControls:DraggableNumberBox].LargeChange}"
                             SmallChange="{CompiledBinding $parent[sharedControls:DraggableNumberBox].SmallChange}"
                             Minimum="{CompiledBinding $parent[sharedControls:DraggableNumberBox].Minimum}"

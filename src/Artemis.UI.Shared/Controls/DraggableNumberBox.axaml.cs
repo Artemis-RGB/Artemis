@@ -187,9 +187,8 @@ public partial class DraggableNumberBox : UserControl
 
     private void HandleKeyUp(object? sender, KeyEventArgs e)
     {
-        IInputElement? toFocus = this.GetLogicalAncestors().OfType<IInputElement>().LastOrDefault();
         if (e.Key == Key.Enter || e.Key == Key.Escape)
-            toFocus?.Focus();
+            Focus();
     }
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -217,9 +216,9 @@ public partial class DraggableNumberBox : UserControl
         if (!_moved)
         {
             // Let our parent take focus, it would make more sense to take focus ourselves but that hides the collider
-            (Parent as IInputElement)?.Focus();
+            PseudoClasses.Add("dragging");
+            Focus();
             _moved = true;
-            e.Pointer.Capture(this);
             DragStarted?.Invoke(this, EventArgs.Empty);
         }
 
@@ -254,6 +253,7 @@ public partial class DraggableNumberBox : UserControl
         else
         {
             _moved = false;
+            PseudoClasses.Remove("dragging");
             DragFinished?.Invoke(this, EventArgs.Empty);
         }
 
