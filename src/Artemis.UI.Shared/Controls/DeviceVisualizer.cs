@@ -162,7 +162,7 @@ public class DeviceVisualizer : Control
 
     private void TimerOnTick(object? sender, EventArgs e)
     {
-        if (IsDirty() && ShowColors && IsVisible && Opacity > 0)
+        if (ShowColors && IsVisible && Opacity > 0 && IsDirty())
             Update();
     }
 
