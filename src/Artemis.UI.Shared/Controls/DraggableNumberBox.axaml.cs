@@ -187,7 +187,7 @@ public partial class DraggableNumberBox : UserControl
 
     private void HandleKeyUp(object? sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Enter || e.Key == Key.Escape)
+        if (e.Key is Key.Enter or Key.Escape)
             Focus();
     }
 
