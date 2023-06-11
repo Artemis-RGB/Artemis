@@ -25,14 +25,8 @@ public class PinView : ReactiveUserControl<PinViewModel>
         _pinPoint = pinPoint;
         _pinPoint.PointerMoved += PinPointOnPointerMoved;
         _pinPoint.PointerReleased += PinPointOnPointerReleased;
-        _pinPoint.PropertyChanged += PinPointOnPropertyChanged;
     }
-
-    private void PinPointOnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
-    {
-        Console.WriteLine(e);
-    }
-
+    
     private void PinPointOnPointerMoved(object? sender, PointerEventArgs e)
     {
         if (ViewModel == null || _container == null || _pinPoint == null)
