@@ -103,8 +103,9 @@ public class SimpleContextDragBehavior : Behavior<Control>
 
     private void AssociatedObject_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        IFocusManager? focusManager = TopLevel.GetTopLevel(AssociatedObject)?.FocusManager;
         PointerPointProperties properties = e.GetCurrentPoint(AssociatedObject).Properties;
-        if (!properties.IsLeftButtonPressed || FocusManager.Instance?.Current is TextBox)
+        if (!properties.IsLeftButtonPressed || focusManager?.GetFocusedElement() is TextBox)
             return;
         if (e.Source is not Control control || AssociatedObject?.DataContext != control.DataContext)
             return;
@@ -130,8 +131,9 @@ public class SimpleContextDragBehavior : Behavior<Control>
 
     private async void AssociatedObject_PointerMoved(object? sender, PointerEventArgs e)
     {
+        IFocusManager? focusManager = TopLevel.GetTopLevel(AssociatedObject)?.FocusManager;
         PointerPointProperties properties = e.GetCurrentPoint(AssociatedObject).Properties;
-        if (!properties.IsLeftButtonPressed || FocusManager.Instance?.Current is TextBox)
+        if (!properties.IsLeftButtonPressed || focusManager?.GetFocusedElement() is TextBox)
             return;
 
         if (_triggerEvent is null)
