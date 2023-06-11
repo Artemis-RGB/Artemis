@@ -8,7 +8,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.MenuBar.MenuBarView"
              x:DataType="menuBar:MenuBarViewModel">
-    <Menu VerticalAlignment="Top" MenuClosed="MenuBase_OnMenuClosed">
+    <Menu VerticalAlignment="Top" Closed="MenuBase_OnMenuClosed">
         <MenuItem Header="_File">
             <MenuItem Header="New">
                 <MenuItem.Icon>

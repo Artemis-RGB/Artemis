@@ -5,7 +5,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
 
@@ -30,7 +29,7 @@ public partial class SurfaceEditorView : ReactiveUserControl<SurfaceEditorViewMo
     private void ZoomBorder_OnZoomChanged(object sender, ZoomChangedEventArgs e)
     {
         UpdateZoomBorderBackground();
-        SurfaceBounds.BorderThickness = new Thickness(2 / ContainerZoomBorder.ZoomX);
+        SurfaceBounds.StrokeThickness = 2 / ContainerZoomBorder.ZoomX;
     }
 
     private void SelectionRectangle_OnSelectionUpdated(object? sender, SelectionRectangleEventArgs e)
@@ -49,6 +48,11 @@ public partial class SurfaceEditorView : ReactiveUserControl<SurfaceEditorViewMo
     private void UpdateZoomBorderBackground()
     {
         if (ContainerZoomBorder.Background is VisualBrush visualBrush)
+        {
             visualBrush.DestinationRect = new RelativeRect(ContainerZoomBorder.OffsetX * -1, ContainerZoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
+            // Workaround
+            // This fixes an issue where the container is not invalidated, which leaves behind a 'smear' since Avalonia 11 rc1, check if still required later
+            ContainerZoomBorder.InvalidateVisual();
+        }
     }
 }
