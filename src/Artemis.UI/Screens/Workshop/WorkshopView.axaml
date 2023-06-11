@@ -10,62 +10,26 @@
              xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.Controls.GradientPicker;assembly=Artemis.UI.Shared"
              xmlns:materialIconPicker="clr-namespace:Artemis.UI.Shared.MaterialIconPicker;assembly=Artemis.UI.Shared"
+             xmlns:workshop1="clr-namespace:Artemis.WebClient.Workshop;assembly=Artemis.WebClient.Workshop"
              mc:Ignorable="d" d:DesignWidth="800"
              x:Class="Artemis.UI.Screens.Workshop.WorkshopView"
              x:DataType="workshop:WorkshopViewModel">
     <Border Classes="router-container">
-        <ScrollViewer>
-            <StackPanel Margin="12" Spacing="5">
-                <Border Classes="card">
-                    <StackPanel Spacing="5">
-                        <TextBlock Classes="h4">Notification tests</TextBlock>
-                        <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Informational}">
-                            Notification test (default)
-                        </Button>
-                        <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Warning}">
-                            Notification test (warning)
-                        </Button>
-                        <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Error}">
-                            Notification test (error)
-                        </Button>
-                        <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Success}">
-                            Notification test (success)
-                        </Button>
-
-                        <shared:HotkeyBox Watermark="Some hotkey" Width="250" HorizontalAlignment="Left" />
-                        
-                        <controls1:NumberBox
-                            attachedProperties:NumberBoxAssist.PrefixText="$"
-                            attachedProperties:NumberBoxAssist.SuffixText="%">
-                        </controls1:NumberBox>
-
-                        <TextBox
-                            attachedProperties:TextBoxAssist.PrefixText="$"
-                            attachedProperties:TextBoxAssist.SuffixText="%">
-                        </TextBox>
-                        
-                        <TextBlock Classes="h4" Text="{CompiledBinding TestValue}"/>
-                        <controls1:NumberBox Value="{CompiledBinding TestValue}"/>
-                        <controls:DraggableNumberBox Value="{CompiledBinding TestValue}"/>
-                        <controls:DraggableNumberBox Value="{CompiledBinding TestValue}" Classes="condensed"/>
-
-                        <StackPanel Orientation="Horizontal" Spacing="5">
-                            <Border Classes="card" Cursor="{CompiledBinding Cursor}">
-                                <TextBlock Text="{CompiledBinding SelectedCursor}"></TextBlock>
-                            </Border>
-                            <shared:EnumComboBox Value="{CompiledBinding SelectedCursor}"></shared:EnumComboBox>
-                        </StackPanel>
-
-                        <Button Command="{CompiledBinding CreateRandomGradient}">
-                            Create random gradient
-                        </Button>
-                        <gradientPicker:GradientPickerButton ColorGradient="{CompiledBinding ColorGradient}" IsCompact="True" />
-                        
-                        <materialIconPicker:MaterialIconPickerButton Name="IconPicker" Value="Abc"/>
-                        <TextBlock Text="{CompiledBinding #IconPicker.Value}"></TextBlock>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
-        </ScrollViewer>
+        <Grid ColumnDefinitions="300,*" Margin="0 10">
+            <Border Classes="card-condensed" Grid.Column="0" Margin="0 0 10 0">
+                <ListBox ItemsSource="{CompiledBinding Test}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="workshop1:IGetEntries_Entries_Nodes">
+                            <Panel>
+                                <StackPanel Margin="4">
+                                    <TextBlock Text="{CompiledBinding Name}" VerticalAlignment="Center" />
+                                    <TextBlock Text="{CompiledBinding Author}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
+                                </StackPanel>
+                            </Panel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+        </Grid>
     </Border>
 </UserControl>

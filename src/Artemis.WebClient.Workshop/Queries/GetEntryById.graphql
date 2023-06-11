@@ -1,0 +1,7 @@
+query GetEntryById($id: UUID!) {
+    entry(id: $id) {
+        author
+        name
+        entryType
+    }
+}

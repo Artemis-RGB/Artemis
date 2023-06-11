@@ -1,0 +1,9 @@
+query GetEntries {
+    entries {
+        nodes {
+            author
+            name
+            entryType
+        }
+    }
+}

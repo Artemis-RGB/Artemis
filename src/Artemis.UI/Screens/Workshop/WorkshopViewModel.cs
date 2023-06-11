@@ -1,70 +1,52 @@
-﻿using System.Reactive;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
+using Artemis.WebClient.Workshop;
 using Avalonia.Input;
 using ReactiveUI;
 using SkiaSharp;
+using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop;
 
 public class WorkshopViewModel : MainScreenViewModel
 {
-    private readonly ObservableAsPropertyHelper<Cursor> _cursor;
-    private readonly INotificationService _notificationService;
+    private readonly IWorkshopClient _workshopClient;
 
-    private ColorGradient _colorGradient = new()
+    public WorkshopViewModel(IScreen hostScreen, IWorkshopClient workshopClient) : base(hostScreen, "workshop")
     {
-        new ColorGradientStop(new SKColor(0xFFFF6D00), 0f),
-        new ColorGradientStop(new SKColor(0xFFFE6806), 0.2f),
-        new ColorGradientStop(new SKColor(0xFFEF1788), 0.4f),
-        new ColorGradientStop(new SKColor(0xFFEF1788), 0.6f),
-        new ColorGradientStop(new SKColor(0xFF00FCCC), 0.8f),
-        new ColorGradientStop(new SKColor(0xFF00FCCC), 1f)
-    };
-
-    private StandardCursorType _selectedCursor;
-    private double _testValue;
-
-    public WorkshopViewModel(IScreen hostScreen, INotificationService notificationService) : base(hostScreen, "workshop")
-    {
-        _notificationService = notificationService;
-        _cursor = this.WhenAnyValue(vm => vm.SelectedCursor).Select(c => new Cursor(c)).ToProperty(this, vm => vm.Cursor);
-
+        _workshopClient = workshopClient;
         DisplayName = "Workshop";
-        ShowNotification = ReactiveCommand.Create<NotificationSeverity>(ExecuteShowNotification);
+
+        Task.Run(() => GetEntries());
     }
 
-    public ReactiveCommand<NotificationSeverity, Unit> ShowNotification { get; set; }
+    public ObservableCollection<IGetEntries_Entries_Nodes> Test { get; set; } = new();
 
-    public StandardCursorType SelectedCursor
+    private async Task GetEntries()
     {
-        get => _selectedCursor;
-        set => RaiseAndSetIfChanged(ref _selectedCursor, value);
-    }
 
-    public Cursor Cursor => _cursor.Value;
-
-    public ColorGradient ColorGradient
-    {
-        get => _colorGradient;
-        set => RaiseAndSetIfChanged(ref _colorGradient, value);
-    }
-
-    public double TestValue
-    {
-        get => _testValue;
-        set => RaiseAndSetIfChanged(ref _testValue, value);
-    }
-
-    public void CreateRandomGradient()
-    {
-        ColorGradient = ColorGradient.GetRandom(6);
-    }
-
-    private void ExecuteShowNotification(NotificationSeverity severity)
-    {
-        _notificationService.CreateNotification().WithTitle("Test title").WithMessage("Test message").WithSeverity(severity).Show();
+        try
+        {
+            IOperationResult<IGetEntriesResult> entries = await _workshopClient.GetEntries.ExecuteAsync();
+            if (entries.Data?.Entries?.Nodes == null)
+                return;
+        
+            foreach (IGetEntries_Entries_Nodes getEntriesEntriesNodes in entries.Data.Entries.Nodes)
+            {
+                Console.WriteLine(getEntriesEntriesNodes);
+                Test.Add(getEntriesEntriesNodes);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿# This file was generated based on ".graphqlconfig". Do not edit manually.
+﻿# This file was generated. Do not edit manually.
 
 schema {
     query: Query
@@ -107,10 +107,11 @@ type Release {
 
 type ReleaseStatistic {
     count: Int!
+    date: Date!
     lastReportedUsage: DateTime!
     linuxCount: Int!
     osxCount: Int!
-    releaseId: UUID!
+    release: Release
     windowsCount: Int!
 }
 
@@ -144,6 +145,9 @@ enum SortEnumType {
     DESC
 }
 
+"The `Date` scalar represents an ISO-8601 compliant date type."
+scalar Date
+
 "The `DateTime` scalar represents an ISO-8601 compliant date time type."
 scalar DateTime
 
@@ -174,6 +178,21 @@ input ArtifactFilterInput {
 input BooleanOperationFilterInput {
     eq: Boolean
     neq: Boolean
+}
+
+input DateOperationFilterInput {
+    eq: Date
+    gt: Date
+    gte: Date
+    in: [Date]
+    lt: Date
+    lte: Date
+    neq: Date
+    ngt: Date
+    ngte: Date
+    nin: [Date]
+    nlt: Date
+    nlte: Date
 }
 
 input DateTimeOperationFilterInput {
@@ -265,20 +284,22 @@ input ReleaseSortInput {
 input ReleaseStatisticFilterInput {
     and: [ReleaseStatisticFilterInput!]
     count: IntOperationFilterInput
+    date: DateOperationFilterInput
     lastReportedUsage: DateTimeOperationFilterInput
     linuxCount: IntOperationFilterInput
     or: [ReleaseStatisticFilterInput!]
     osxCount: IntOperationFilterInput
-    releaseId: UuidOperationFilterInput
+    release: ReleaseFilterInput
     windowsCount: IntOperationFilterInput
 }
 
 input ReleaseStatisticSortInput {
     count: SortEnumType
+    date: SortEnumType
     lastReportedUsage: SortEnumType
     linuxCount: SortEnumType
     osxCount: SortEnumType
-    releaseId: SortEnumType
+    release: ReleaseSortInput
     windowsCount: SortEnumType
 }
 

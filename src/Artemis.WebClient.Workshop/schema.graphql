@@ -1,0 +1,244 @@
+﻿# This file was generated. Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+"A connection to a list of items."
+type EntriesConnection {
+    "A list of edges."
+    edges: [EntriesEdge!]
+    "A flattened list of the nodes."
+    nodes: [Entry!]
+    "Information to aid in pagination."
+    pageInfo: PageInfo!
+    "Identifies the total count of items in the connection."
+    totalCount: Int!
+}
+
+"An edge in a connection."
+type EntriesEdge {
+    "A cursor for use in pagination."
+    cursor: String!
+    "The item at the end of the edge."
+    node: Entry!
+}
+
+type Entry {
+    author: UUID!
+    description: String!
+    entryType: EntryType!
+    icon: Image
+    id: UUID!
+    images: [Image!]!
+    name: String!
+    releases: [Release!]!
+    tags: [String!]!
+}
+
+type Image {
+    id: UUID!
+    mimeType: String!
+}
+
+type Mutation {
+    addEntry(input: EntryInput!): Entry
+}
+
+"Information about pagination in a connection."
+type PageInfo {
+    "When paginating forwards, the cursor to continue."
+    endCursor: String
+    "Indicates whether more edges exist following the set defined by the clients arguments."
+    hasNextPage: Boolean!
+    "Indicates whether more edges exist prior the set defined by the clients arguments."
+    hasPreviousPage: Boolean!
+    "When paginating backwards, the cursor to continue."
+    startCursor: String
+}
+
+type Query {
+    entries(
+        "Returns the elements in the list that come after the specified cursor."
+        after: String,
+        "Returns the elements in the list that come before the specified cursor."
+        before: String,
+        "Returns the first _n_ elements from the list."
+        first: Int,
+        "Returns the last _n_ elements from the list."
+        last: Int,
+        order: [EntrySortInput!],
+        where: EntryFilterInput
+    ): EntriesConnection
+    entry(id: UUID!): Entry
+}
+
+type Release {
+    createdAt: DateTime!
+    downloadSize: Long!
+    downloads: Long!
+    id: UUID!
+    md5Hash: String
+    version: String!
+}
+
+enum EntryType {
+    LAYOUT
+    PLUGIN
+    PROFILE
+}
+
+enum SortEnumType {
+    ASC
+    DESC
+}
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime
+
+"The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1."
+scalar Long
+
+scalar UUID
+
+input DateTimeOperationFilterInput {
+    eq: DateTime
+    gt: DateTime
+    gte: DateTime
+    in: [DateTime]
+    lt: DateTime
+    lte: DateTime
+    neq: DateTime
+    ngt: DateTime
+    ngte: DateTime
+    nin: [DateTime]
+    nlt: DateTime
+    nlte: DateTime
+}
+
+input EntryFilterInput {
+    and: [EntryFilterInput!]
+    author: UuidOperationFilterInput
+    description: StringOperationFilterInput
+    entryType: EntryTypeOperationFilterInput
+    icon: ImageFilterInput
+    id: UuidOperationFilterInput
+    images: ListFilterInputTypeOfImageFilterInput
+    name: StringOperationFilterInput
+    or: [EntryFilterInput!]
+    releases: ListFilterInputTypeOfReleaseFilterInput
+    tags: ListStringOperationFilterInput
+}
+
+input EntryInput {
+    description: String!
+    entryType: EntryType!
+    name: String!
+    tags: [String!]!
+}
+
+input EntrySortInput {
+    author: SortEnumType
+    description: SortEnumType
+    entryType: SortEnumType
+    icon: ImageSortInput
+    id: SortEnumType
+    name: SortEnumType
+}
+
+input EntryTypeOperationFilterInput {
+    eq: EntryType
+    in: [EntryType!]
+    neq: EntryType
+    nin: [EntryType!]
+}
+
+input ImageFilterInput {
+    and: [ImageFilterInput!]
+    id: UuidOperationFilterInput
+    mimeType: StringOperationFilterInput
+    or: [ImageFilterInput!]
+}
+
+input ImageSortInput {
+    id: SortEnumType
+    mimeType: SortEnumType
+}
+
+input ListFilterInputTypeOfImageFilterInput {
+    all: ImageFilterInput
+    any: Boolean
+    none: ImageFilterInput
+    some: ImageFilterInput
+}
+
+input ListFilterInputTypeOfReleaseFilterInput {
+    all: ReleaseFilterInput
+    any: Boolean
+    none: ReleaseFilterInput
+    some: ReleaseFilterInput
+}
+
+input ListStringOperationFilterInput {
+    all: StringOperationFilterInput
+    any: Boolean
+    none: StringOperationFilterInput
+    some: StringOperationFilterInput
+}
+
+input LongOperationFilterInput {
+    eq: Long
+    gt: Long
+    gte: Long
+    in: [Long]
+    lt: Long
+    lte: Long
+    neq: Long
+    ngt: Long
+    ngte: Long
+    nin: [Long]
+    nlt: Long
+    nlte: Long
+}
+
+input ReleaseFilterInput {
+    and: [ReleaseFilterInput!]
+    createdAt: DateTimeOperationFilterInput
+    downloadSize: LongOperationFilterInput
+    downloads: LongOperationFilterInput
+    id: UuidOperationFilterInput
+    md5Hash: StringOperationFilterInput
+    or: [ReleaseFilterInput!]
+    version: StringOperationFilterInput
+}
+
+input StringOperationFilterInput {
+    and: [StringOperationFilterInput!]
+    contains: String
+    endsWith: String
+    eq: String
+    in: [String]
+    ncontains: String
+    nendsWith: String
+    neq: String
+    nin: [String]
+    nstartsWith: String
+    or: [StringOperationFilterInput!]
+    startsWith: String
+}
+
+input UuidOperationFilterInput {
+    eq: UUID
+    gt: UUID
+    gte: UUID
+    in: [UUID]
+    lt: UUID
+    lte: UUID
+    neq: UUID
+    ngt: UUID
+    ngte: UUID
+    nin: [UUID]
+    nlt: UUID
+    nlte: UUID
+}
