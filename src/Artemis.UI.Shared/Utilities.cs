@@ -14,7 +14,7 @@ public static class UI
 {
     static UI()
     {
-        KeyBindingsEnabled = InputElement.GotFocusEvent.Raised.Select(e => e.Item2.Source is not TextBox);
+        KeyBindingsEnabled = InputElement.GotFocusEvent.Raised.Select(e => e.Item2.Source is not TextBox).StartWith(true);
     }
 
     /// <summary>
