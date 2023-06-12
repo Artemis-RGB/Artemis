@@ -5,7 +5,7 @@
         {
           "files": [
             "Artemis.Core/bin/net7.0/Artemis.Core.dll",
-            "Artemis.UI.Shared/bin/net7.0/Artemis.UI.Shared.dll",
+            "Artemis.UI.Shared/bin/net7.0/Artemis.UI.Shared.dll"
           ],
           "src": "../../src"
         }
