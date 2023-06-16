@@ -66,8 +66,6 @@ public class DevicePropertiesViewModel : DialogViewModelBase<object>
     {
         Tabs.Add(_deviceVmFactory.DeviceGeneralTabViewModel(Device));
         Tabs.Add(_deviceVmFactory.DeviceLayoutTabViewModel(Device));
-        //Tabs.Add(_deviceVmFactory.DevicePropertiesTabViewModel(Device));
-        //Tabs.Add(_deviceVmFactory.DeviceInfoTabViewModel(Device));
         if (Device.DeviceType == RGBDeviceType.Keyboard)
             Tabs.Add(_deviceVmFactory.InputMappingsTabViewModel(Device, SelectedLeds));
         Tabs.Add(_deviceVmFactory.DeviceLedsTabViewModel(Device, SelectedLeds));

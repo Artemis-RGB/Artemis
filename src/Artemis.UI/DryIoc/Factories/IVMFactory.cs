@@ -40,9 +40,7 @@ public interface IDeviceVmFactory : IVmFactory
     DevicePropertiesViewModel DevicePropertiesViewModel(ArtemisDevice device);
     DeviceSettingsViewModel DeviceSettingsViewModel(ArtemisDevice device, DevicesTabViewModel devicesTabViewModel);
     DeviceDetectInputViewModel DeviceDetectInputViewModel(ArtemisDevice device);
-    DevicePropertiesTabViewModel DevicePropertiesTabViewModel(ArtemisDevice device);
     DeviceLayoutTabViewModel DeviceLayoutTabViewModel(ArtemisDevice device);
-    DeviceInfoTabViewModel DeviceInfoTabViewModel(ArtemisDevice device);
     DeviceLedsTabViewModel DeviceLedsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds);
     InputMappingsTabViewModel InputMappingsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds);
     DeviceGeneralTabViewModel DeviceGeneralTabViewModel(ArtemisDevice device);
@@ -71,21 +69,11 @@ public class DeviceFactory : IDeviceVmFactory
         return _container.Resolve<DeviceDetectInputViewModel>(new object[] { device });
     }
     
-    public DevicePropertiesTabViewModel DevicePropertiesTabViewModel(ArtemisDevice device)
-    {
-        return _container.Resolve<DevicePropertiesTabViewModel>(new object[] { device });
-    }
-
     public DeviceLayoutTabViewModel DeviceLayoutTabViewModel(ArtemisDevice device)
     {
         return _container.Resolve<DeviceLayoutTabViewModel>(new object[] { device });
     }
 
-    public DeviceInfoTabViewModel DeviceInfoTabViewModel(ArtemisDevice device)
-    {
-        return _container.Resolve<DeviceInfoTabViewModel>(new object[] { device });
-    }
-    
     public DeviceLedsTabViewModel DeviceLedsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds)
     {
         return _container.Resolve<DeviceLedsTabViewModel>(new object[] { device, selectedLeds });
