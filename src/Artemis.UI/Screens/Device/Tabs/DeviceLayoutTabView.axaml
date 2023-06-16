@@ -12,71 +12,78 @@
         <Border Classes="card" Margin="5">
             <Grid RowDefinitions="*,Auto">
                 <StackPanel Grid.Row="0">
-                    <TextBlock
-                        TextWrapping="Wrap"
-                        Text="The device layout is used to determine the position of LEDs and to create the visual representation of the device." />
-                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="*,*,*,*,*" Margin="0, 20,0,0">
-                        <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,10" >
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Row="0" Grid.Column="0">
                             <TextBlock Text="Default layout file path" />
                             <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="{CompiledBinding DefaultLayoutPath}" />
                         </StackPanel>
-                        <Button
-                            Grid.Column="1"
-                            Grid.Row="0"
-                            Classes="icon-button"
-                            HorizontalAlignment="Right"
-                            ToolTip.Tip="Copy layout file path to clipboard"
-                            Click="LayoutPathButton_OnClick">
-                            <avalonia:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
-                        </Button>
-
-                        <StackPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"  Margin="0,0,0,10">
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <Button
+                                Classes="icon-button"
+                                HorizontalAlignment="Right"
+                                ToolTip.Tip="Copy layout file path to clipboard"
+                                Click="LayoutPathButton_OnClick">
+                                <avalonia:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                    <Border Classes="card-separator" />
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Row="1" Grid.Column="0">
                             <TextBlock Text="Image file path" />
                             <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="{CompiledBinding Device.Layout.Image.LocalPath}" />
                         </StackPanel>
-                        <Button
-                            Grid.Column="1"
-                            Grid.Row="1"
-                            Classes="icon-button"
-                            HorizontalAlignment="Right"
-                            ToolTip.Tip="Copy image file path to clipboard"
-                            Click="ImagePathButton_OnClick">
-                            <avalonia:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
-                        </Button>
-
-                        <StackPanel Grid.Column="0" Grid.Row="2" Margin="0,0,0,10">
+                        <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
+                            <Button
+                                Classes="icon-button"
+                                HorizontalAlignment="Right"
+                                ToolTip.Tip="Copy image file path to clipboard"
+                                Click="ImagePathButton_OnClick">
+                                <avalonia:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                    <Border Classes="card-separator" />
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Row="1" Grid.Column="0">
                             <TextBlock Text="Disable default layout" />
                             <TextBlock Classes="subtitle" FontSize="12" Text="With this checked, Artemis will not load a layout for this device unless you specifically provide one." />
                         </StackPanel>
-                        <CheckBox Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right" Margin="0,0,-10,0" />
-
-                        <StackPanel Grid.Column="0" Grid.Row="3" Margin="0,0,0,10">
+                        <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
+                            <CheckBox HorizontalAlignment="Right" Margin="0,0,-10,0" />
+                        </StackPanel>
+                    </Grid>
+                    <Border Classes="card-separator" />
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Row="1" Grid.Column="0">
                             <TextBlock Text="Custom layout path" />
                             <TextBlock Classes="subtitle" FontSize="12" Text="{CompiledBinding CustomLayoutPath}" />
                         </StackPanel>
-                        <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
                             <Button Content="Clear" Command="{CompiledBinding ClearCustomLayout}" IsEnabled="{CompiledBinding HasCustomLayout}" />
                             <!-- 5 pixels of margin between the buttons -->
                             <Button Margin="5,0,0,0" Content="Browse" Command="{CompiledBinding BrowseCustomLayout}" />
                         </StackPanel>
-
-                        <StackPanel Grid.Column="0" Grid.Row="4" Margin="0,0,0,10">
+                    </Grid>
+                    <Border Classes="card-separator" />
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Row="1" Grid.Column="0">
                             <TextBlock Text="Export current layout" />
                             <TextBlock Classes="subtitle" FontSize="12" Text="If there is a layout used, export that. Otherwise, export the LEDs present." />
                         </StackPanel>
-                        <Button Grid.Column="1" Grid.Row="4" Margin="0,0,0,0" HorizontalAlignment="Right" Content="Export" Command="{CompiledBinding ExportLayout}" />
+                        <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
+                            <Button HorizontalAlignment="Right" Content="Export" Command="{CompiledBinding ExportLayout}" />
+                        </StackPanel>
                     </Grid>
                 </StackPanel>
                 <controls:HyperlinkButton
+                    Grid.Row="1"
                     Content="Learn more about layouts on the wiki"
                     NavigateUri="https://wiki.artemis-rgb.com/en/guides/developer/layouts"
-                    Grid.Row="1"
                     Margin="0 20"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom" />
             </Grid>
-
         </Border>
-
     </ScrollViewer>
 </UserControl>

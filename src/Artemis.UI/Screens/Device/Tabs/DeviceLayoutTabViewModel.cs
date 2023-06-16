@@ -140,4 +140,12 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
             .WithSeverity(NotificationSeverity.Success)
             .Show();
     }
+
+    public void ShowCopiedNotification()
+    {
+        _notificationService.CreateNotification()
+            .WithTitle("Copied!")
+            .WithSeverity(NotificationSeverity.Informational)
+            .Show();
+    }
 }
