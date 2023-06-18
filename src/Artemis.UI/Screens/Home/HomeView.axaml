@@ -43,7 +43,7 @@
 								Under Settings > Plugins you can find your currently installed plugins, these default plugins are created by Artemis developers. We're also keeping track of a list of third-party plugins on our wiki.
 							</TextBlock>
 						</StackPanel>
-						<controls:HyperlinkButton Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/plugins" HorizontalAlignment="Right">
+						<controls:HyperlinkButton Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/plugins?mtm_campaign=artemis&mtm_kwd=home" HorizontalAlignment="Right">
 							<controls:HyperlinkButton.ContextMenu>
 								<ContextMenu>
 									<MenuItem Header="Test"></MenuItem>
@@ -75,7 +75,7 @@
 										<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">GitHub</TextBlock>
 									</StackPanel>
 								</controls:HyperlinkButton>
-								<controls:HyperlinkButton Grid.Row="0" HorizontalAlignment="Right" NavigateUri="https://artemis-rgb.com">
+								<controls:HyperlinkButton Grid.Row="0" HorizontalAlignment="Right" NavigateUri="https://artemis-rgb.com?mtm_campaign=artemis&mtm_kwd=home">
 									<StackPanel Orientation="Horizontal">
 										<avalonia:MaterialIcon Kind="Web" />
 										<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Website</TextBlock>
@@ -110,7 +110,7 @@
 						<controls:HyperlinkButton Grid.Row="1"
 												  Grid.Column="0"
 												  HorizontalAlignment="Center"
-												  NavigateUri="https://wiki.artemis-rgb.com/en/donating">
+												  NavigateUri="https://wiki.artemis-rgb.com/en/donating?mtm_campaign=artemis&mtm_kwd=home">
 							<StackPanel Orientation="Horizontal">
 								<avalonia:MaterialIcon Kind="Gift" />
 								<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Donate</TextBlock>
