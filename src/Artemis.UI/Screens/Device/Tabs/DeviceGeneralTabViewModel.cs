@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -15,28 +16,29 @@ using RGB.NET.Core;
 using SkiaSharp;
 
 namespace Artemis.UI.Screens.Device;
+
 public class DeviceGeneralTabViewModel : ActivatableViewModelBase
 {
     private readonly ICoreService _coreService;
     private readonly IRgbService _rgbService;
     private readonly IWindowService _windowService;
     private readonly List<DeviceCategory> _categories;
-    
+
     private readonly float _initialBlueScale;
     private readonly float _initialGreenScale;
     private readonly float _initialRedScale;
-    
+
     private int _rotation;
     private float _scale;
     private int _x;
     private int _y;
-    
+
     private float _redScale;
     private float _greenScale;
     private float _blueScale;
     private SKColor _currentColor;
     private bool _displayOnDevices;
-    
+
     public DeviceGeneralTabViewModel(ArtemisDevice device, ICoreService coreService, IRgbService rgbService, IWindowService windowService)
     {
         _coreService = coreService;
@@ -46,10 +48,10 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
 
         Device = device;
         DisplayName = "General";
-        X = (int) Device.X;
-        Y = (int) Device.Y;
+        X = (int)Device.X;
+        Y = (int)Device.Y;
         Scale = Device.Scale;
-        Rotation = (int) Device.Rotation;
+        Rotation = (int)Device.Rotation;
         RedScale = Device.RedScale * 100f;
         GreenScale = Device.GreenScale * 100f;
         BlueScale = Device.BlueScale * 100f;
@@ -66,19 +68,20 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
         {
             Device.PropertyChanged += DeviceOnPropertyChanged;
             _coreService.FrameRendering += OnFrameRendering;
-        
+
             Disposable.Create(() =>
             {
                 _coreService.FrameRendering -= OnFrameRendering;
                 Device.PropertyChanged -= DeviceOnPropertyChanged;
+                Apply();
             }).DisposeWith(d);
         });
     }
-    
+
     public bool RequiresManualSetup => !Device.DeviceProvider.CanDetectPhysicalLayout || !Device.DeviceProvider.CanDetectLogicalLayout;
 
     public ArtemisDevice Device { get; }
-    
+
     public int X
     {
         get => _x;
@@ -102,9 +105,9 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
         get => _rotation;
         set => RaiseAndSetIfChanged(ref _rotation, value);
     }
-    
+
     public bool IsKeyboard => Device.DeviceType == RGBDeviceType.Keyboard;
-    
+
     public bool HasDeskCategory
     {
         get => GetCategory(DeviceCategory.Desk);
@@ -134,7 +137,7 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
         get => GetCategory(DeviceCategory.Peripherals);
         set => SetCategory(DeviceCategory.Peripherals, value);
     }
-    
+
     public float RedScale
     {
         get => _redScale;
@@ -164,15 +167,6 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
         get => _displayOnDevices;
         set => RaiseAndSetIfChanged(ref _displayOnDevices, value);
     }
-    
-    public void ApplyScaling()
-    {
-        Device.RedScale = RedScale / 100f;
-        Device.GreenScale = GreenScale / 100f;
-        Device.BlueScale = BlueScale / 100f;
-
-        _rgbService.FlushLeds = true;
-    }
 
     private bool GetCategory(DeviceCategory category)
     {
@@ -188,7 +182,7 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
 
         this.RaisePropertyChanged($"Has{category}Category");
     }
-    
+
     public async Task RestartSetup()
     {
         if (!RequiresManualSetup)
@@ -202,13 +196,13 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
         _rgbService.SaveDevice(Device);
         _rgbService.ApplyBestDeviceLayout(Device);
     }
-    
-    public async Task Apply()
+
+    private void Apply()
     {
         // TODO: Validation
 
         _coreService.ProfileRenderingDisabled = true;
-        await Task.Delay(100);
+        Thread.Sleep(100);
 
         Device.X = X;
         Device.Y = Y;
@@ -226,25 +220,28 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
         _coreService.ProfileRenderingDisabled = false;
     }
 
-    public void Reset()
+    public void ApplyScaling()
     {
-        HasDeskCategory = Device.Categories.Contains(DeviceCategory.Desk);
-        HasMonitorCategory = Device.Categories.Contains(DeviceCategory.Monitor);
-        HasCaseCategory = Device.Categories.Contains(DeviceCategory.Case);
-        HasRoomCategory = Device.Categories.Contains(DeviceCategory.Room);
-        HasPeripheralsCategory = Device.Categories.Contains(DeviceCategory.Peripherals);
+        Device.RedScale = RedScale / 100f;
+        Device.GreenScale = GreenScale / 100f;
+        Device.BlueScale = BlueScale / 100f;
 
+        _rgbService.FlushLeds = true;
+    }
+
+    public void ResetScaling()
+    {
         RedScale = _initialRedScale * 100;
         GreenScale = _initialGreenScale * 100;
         BlueScale = _initialBlueScale * 100;
     }
-    
+
     private void OnFrameRendering(object? sender, FrameRenderingEventArgs e)
     {
         if (!DisplayOnDevices)
             return;
 
-        using SKPaint overlayPaint = new() {Color = CurrentColor};
+        using SKPaint overlayPaint = new() { Color = CurrentColor };
         e.Canvas.DrawRect(0, 0, e.Canvas.LocalClipBounds.Width, e.Canvas.LocalClipBounds.Height, overlayPaint);
     }
 
