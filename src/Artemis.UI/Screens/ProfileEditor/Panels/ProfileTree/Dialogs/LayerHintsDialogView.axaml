@@ -25,7 +25,7 @@
             <controls:HyperlinkButton Grid.Row="0"
                                       Grid.Column="1"
                                       VerticalAlignment="Top"
-                                      NavigateUri="https://wiki.artemis-rgb.com/guides/user/profiles/layers/adaption-hints?mtm_campaign=artemis&mtm_kwd=profile-editor">
+                                      NavigateUri="https://wiki.artemis-rgb.com/guides/user/profiles/layers/adaption-hints?mtm_campaign=artemis&amp;mtm_kwd=profile-editor">
                 Learn more about adaption hints
             </controls:HyperlinkButton>
 

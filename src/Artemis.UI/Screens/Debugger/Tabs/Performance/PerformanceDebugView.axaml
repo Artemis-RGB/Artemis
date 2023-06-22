@@ -17,7 +17,7 @@
                 <TextBlock TextWrapping="Wrap" Classes="subtitle" Margin="0 10">
                     These performance stats are rather basic, for advanced performance profiling check out the wiki.
                 </TextBlock>
-                <controls:HyperlinkButton Grid.Column="1" NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/plugins/profiling?mtm_campaign=artemis&mtm_kwd=debugger">
+                <controls:HyperlinkButton Grid.Column="1" NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/plugins/profiling?mtm_campaign=artemis&amp;mtm_kwd=debugger">
                     JetBrains Profiling Guide
                 </controls:HyperlinkButton>
             </Grid>

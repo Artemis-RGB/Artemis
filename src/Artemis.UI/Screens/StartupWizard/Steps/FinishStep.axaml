@@ -33,10 +33,10 @@
                     <TextBlock Classes="link-name">Discord</TextBlock>
                 </StackPanel>
                 <StackPanel Grid.Column="1">
-                    <controls:HyperlinkButton NavigateUri="https://wiki.artemis-rgb.com/?mtm_campaign=artemis&mtm_kwd=wizard">
+                    <controls:HyperlinkButton NavigateUri="https://wiki.artemis-rgb.com/?mtm_campaign=artemis&amp;mtm_kwd=wizard">
                         https://wiki.artemis-rgb.com/
                     </controls:HyperlinkButton>
-                    <controls:HyperlinkButton NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/introduction?mtm_campaign=artemis&mtm_kwd=wizard">
+                    <controls:HyperlinkButton NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/introduction?mtm_campaign=artemis&amp;mtm_kwd=wizard">
                         https://wiki.artemis-rgb.com/en/guides/user/introduction
                     </controls:HyperlinkButton>
                     <controls:HyperlinkButton NavigateUri="https://github.com/Artemis-RGB/Artemis">
