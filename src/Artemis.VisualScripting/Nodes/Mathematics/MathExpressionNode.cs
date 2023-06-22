@@ -5,7 +5,7 @@ using NoStringEvaluating.Models.FormulaChecker;
 
 namespace Artemis.VisualScripting.Nodes.Mathematics;
 
-[Node("Math Expression", "Outputs the result of a math expression.", "Mathematics", "https://wiki.artemis-rgb.com/en/guides/user/profiles/nodes/mathematics/math-expression", InputType = typeof(Numeric), OutputType = typeof(Numeric))]
+[Node("Math Expression", "Outputs the result of a math expression.", "Mathematics", "https://wiki.artemis-rgb.com/en/guides/user/profiles/nodes/mathematics/math-expression?mtm_campaign=artemis&amp;mtm_kwd=node-help", InputType = typeof(Numeric), OutputType = typeof(Numeric))]
 public class MathExpressionNode : Node<string, MathExpressionNodeCustomViewModel>
 {
     private readonly IFormulaChecker _checker;

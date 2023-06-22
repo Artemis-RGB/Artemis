@@ -17,7 +17,7 @@
             <TextBox Classes="clearButton" Text="{CompiledBinding SearchPluginInput}" Watermark="Search plugins" Margin="0 0 10 0" />
 
             <StackPanel Spacing="5" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
-                <controls:HyperlinkButton VerticalAlignment="Top" NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/plugins">
+                <controls:HyperlinkButton VerticalAlignment="Top" NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/plugins?mtm_campaign=artemis&amp;mtm_kwd=plugins">
                     Get more plugins
                 </controls:HyperlinkButton>
                 <Button Classes="accent" Command="{CompiledBinding ImportPlugin}">Import plugin</Button>

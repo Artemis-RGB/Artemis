@@ -24,13 +24,13 @@
                 </TextBlock>
 
                 <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
-                    <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View website" NavigateUri="https://artemis-rgb.com">
+                    <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View website" NavigateUri="https://artemis-rgb.com?mtm_campaign=artemis&amp;mtm_kwd=about">
                         <avalonia:MaterialIcon Kind="Web" />
                     </controls:HyperlinkButton>
                     <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View GitHub repository" NavigateUri="https://github.com/Artemis-RGB/Artemis">
                         <avalonia:MaterialIcon Kind="Github" />
                     </controls:HyperlinkButton>
-                    <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View Wiki" NavigateUri="https://wiki.artemis-rgb.com">
+                    <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View Wiki" NavigateUri="https://wiki.artemis-rgb.com?mtm_campaign=artemis&amp;mtm_kwd=about">
                         <avalonia:MaterialIcon Kind="BookOpenOutline" />
                     </controls:HyperlinkButton>
                 </StackPanel>

@@ -116,38 +116,38 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="_Help">
-                <MenuItem Header="Artemis Wiki" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/">
+                <MenuItem Header="Artemis Wiki" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/?mtm_campaign=artemis&amp;mtm_kwd=script-editor">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="BookEdit" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="Editor" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/en/guides/user/profiles">
+                <MenuItem Header="Editor" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/en/guides/user/profiles?mtm_campaign=artemis&amp;mtm_kwd=script-editor">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="Edit" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Layers" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/layers">
+                <MenuItem Header="Layers" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/layers?mtm_campaign=artemis&amp;mtm_kwd=script-editor">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="Layers" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Display Conditions" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/conditions">
+                <MenuItem Header="Display Conditions" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/conditions?mtm_campaign=artemis&amp;mtm_kwd=script-editor">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="NotEqual" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Timeline" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/timeline">
+                <MenuItem Header="Timeline" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/timeline?mtm_campaign=artemis&amp;mtm_kwd=script-editor">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="Stopwatch" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Data Bindings" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/data-bindings">
+                <MenuItem Header="Data Bindings" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/data-bindings?mtm_campaign=artemis&amp;mtm_kwd=script-editor">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="VectorLink" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Scripting" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/scripting">
+                <MenuItem Header="Scripting" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/scripting?mtm_campaign=artemis&amp;mtm_kwd=script-editor">
                     <MenuItem.Icon>
                         <avalonia:MaterialIcon Kind="CodeJson" />
                     </MenuItem.Icon>
@@ -173,7 +173,7 @@
                                   Grid.Column="1"
                                   VerticalAlignment="Top"
                                   HorizontalAlignment="Right"
-                                  NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/profiles/nodes">
+                                  NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/profiles/nodes?mtm_campaign=artemis&amp;mtm_kwd=script-editor">
             Learn more about visual scripts
         </controls:HyperlinkButton>
 
