@@ -4,6 +4,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.UI.Screens.Workshop.CurrentUser;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.WebClient.Workshop;
@@ -18,8 +19,9 @@ public class WorkshopViewModel : MainScreenViewModel
 {
     private readonly IWorkshopClient _workshopClient;
 
-    public WorkshopViewModel(IScreen hostScreen, IWorkshopClient workshopClient) : base(hostScreen, "workshop")
+    public WorkshopViewModel(IScreen hostScreen, IWorkshopClient workshopClient, CurrentUserViewModel currentUserViewModel) : base(hostScreen, "workshop")
     {
+        CurrentUserViewModel = currentUserViewModel;
         _workshopClient = workshopClient;
         DisplayName = "Workshop";
 
@@ -27,7 +29,8 @@ public class WorkshopViewModel : MainScreenViewModel
     }
 
     public ObservableCollection<IGetEntries_Entries_Nodes> Test { get; set; } = new();
-
+    public CurrentUserViewModel CurrentUserViewModel { get; set; }
+    
     private async Task GetEntries()
     {
 

@@ -30,6 +30,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </Border>
+            <ContentControl Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Content="{CompiledBinding CurrentUserViewModel}" Margin="8"></ContentControl>
         </Grid>
     </Border>
 </UserControl>

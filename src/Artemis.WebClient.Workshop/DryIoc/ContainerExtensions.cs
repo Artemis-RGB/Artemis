@@ -1,5 +1,8 @@
+using Artemis.WebClient.Workshop.Repositories;
+using Artemis.WebClient.Workshop.Services;
 using DryIoc;
 using DryIoc.Microsoft.DependencyInjection;
+using IdentityModel.Client;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Artemis.WebClient.Workshop.DryIoc;
@@ -20,7 +23,16 @@ public static class ContainerExtensions
             .AddHttpClient()
             .AddWorkshopClient()
             .ConfigureHttpClient(client => client.BaseAddress = new Uri("https://localhost:7281/graphql"));
-        
+
+        serviceCollection.AddSingleton<IDiscoveryCache>(r =>
+        {
+            IHttpClientFactory factory = r.GetRequiredService<IHttpClientFactory>();
+            return new DiscoveryCache(IAuthenticationService.AUTHORITY, () => factory.CreateClient());
+        });
+
         container.WithDependencyInjectionAdapter(serviceCollection);
+
+        container.Register<IAuthenticationRepository, AuthenticationRepository>(Reuse.Singleton);
+        container.Register<IAuthenticationService, AuthenticationService>(Reuse.Singleton);
     }
 }

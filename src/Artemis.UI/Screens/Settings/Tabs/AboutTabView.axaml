@@ -56,8 +56,8 @@
                                  Grid.Column="0"
                                  Grid.RowSpan="3"
                                  VerticalAlignment="Top"
-                                 Height="75"
-                                 Width="75"
+                                 Height="40"
+                                 Width="40"
                                  Margin="0 0 15 0"
                                  IsVisible="{CompiledBinding RobertProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                  RenderOptions.BitmapInterpolationMode="HighQuality">
