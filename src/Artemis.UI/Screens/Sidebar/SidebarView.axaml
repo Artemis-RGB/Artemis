@@ -47,7 +47,7 @@
                                       ToolTip.Tip="View website"
                                       ToolTip.Placement="Top"
                                       ToolTip.VerticalOffset="-5"
-                                      NavigateUri="https://artemis-rgb.com">
+                                      NavigateUri="https://artemis-rgb.com?mtm_campaign=artemis&mtm_kwd=sidebar">
                 <avalonia:MaterialIcon Kind="Web" Width="20" Height="20" />
             </controls:HyperlinkButton>
             <controls:HyperlinkButton Classes="icon-button"
@@ -65,7 +65,7 @@
                                       ToolTip.Tip="View Wiki"
                                       ToolTip.Placement="Top"
                                       ToolTip.VerticalOffset="-5"
-                                      NavigateUri="https://wiki.artemis-rgb.com">
+                                      NavigateUri="https://wiki.artemis-rgb.com?mtm_campaign=artemis&mtm_kwd=sidebar">
                 <avalonia:MaterialIcon Kind="BookOpenOutline" Width="20" Height="20" />
             </controls:HyperlinkButton>
             <controls:HyperlinkButton Classes="icon-button"
@@ -83,7 +83,7 @@
                                       ToolTip.Tip="View donation options"
                                       ToolTip.Placement="Top"
                                       ToolTip.VerticalOffset="-5"
-                                      NavigateUri="https://wiki.artemis-rgb.com/en/donating">
+                                      NavigateUri="https://wiki.artemis-rgb.com/en/donating?mtm_campaign=artemis&mtm_kwd=sidebar">
                 <avalonia:MaterialIcon Kind="Gift" Width="20" Height="20" />
             </controls:HyperlinkButton>
         </WrapPanel>
