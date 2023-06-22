@@ -79,7 +79,7 @@
                 <controls:HyperlinkButton
                     Grid.Row="1"
                     Content="Learn more about layouts on the wiki"
-                    NavigateUri="https://wiki.artemis-rgb.com/en/guides/developer/layouts"
+                    NavigateUri="https://wiki.artemis-rgb.com/en/guides/developer/layouts?mtm_campaign=artemis&mtm_kwd=device-properties"
                     Margin="0 20"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom" />
