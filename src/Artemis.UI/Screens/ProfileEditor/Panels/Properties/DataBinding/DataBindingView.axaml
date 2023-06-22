@@ -43,7 +43,7 @@
                 When you enable data bindings you can no longer use keyframes or normal values for this property.
             </TextBlock>
             <controls:HyperlinkButton HorizontalAlignment="Center"
-                                      NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/profiles/data-bindings"
+                                      NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/profiles/data-bindings?mtm_campaign=artemis&mtm_kwd=profile-editor"
                                       Margin="0 10">
                 Learn more
             </controls:HyperlinkButton>

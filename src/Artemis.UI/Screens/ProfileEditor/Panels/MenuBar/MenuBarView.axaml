@@ -8,7 +8,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.MenuBar.MenuBarView"
              x:DataType="menuBar:MenuBarViewModel">
-    <Menu VerticalAlignment="Top" MenuClosed="MenuBase_OnMenuClosed">
+    <Menu VerticalAlignment="Top" Closed="MenuBase_OnMenuClosed">
         <MenuItem Header="_File">
             <MenuItem Header="New">
                 <MenuItem.Icon>
@@ -164,44 +164,44 @@
             </MenuItem>
         </MenuItem>
         <MenuItem Header="_Help">
-            <MenuItem Header="Artemis Wiki" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/">
+            <MenuItem Header="Artemis Wiki" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/?mtm_campaign=artemis&mtm_kwd=profile-editor">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="BookEdit" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
-            <MenuItem Header="Editor" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/en/guides/user/profiles">
+            <MenuItem Header="Editor" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/en/guides/user/profiles?mtm_campaign=artemis&mtm_kwd=profile-editor">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Edit" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Layers" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/layers">
+            <MenuItem Header="Layers" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/layers?mtm_campaign=artemis&mtm_kwd=profile-editor">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Layers" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Display Conditions" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/conditions">
+            <MenuItem Header="Display Conditions" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/conditions?mtm_campaign=artemis&mtm_kwd=profile-editor">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="NotEqual" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Timeline" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/timeline">
+            <MenuItem Header="Timeline" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/timeline?mtm_campaign=artemis&mtm_kwd=profile-editor">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Stopwatch" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Data Bindings" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/data-bindings">
+            <MenuItem Header="Data Bindings" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/data-bindings?mtm_campaign=artemis&mtm_kwd=profile-editor">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="VectorLink" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Scripting" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/scripting">
+            <MenuItem Header="Scripting" Command="{CompiledBinding OpenUri}" CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/scripting?mtm_campaign=artemis&mtm_kwd=profile-editor">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="CodeJson" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
-            <MenuItem Header="Report a Bug" Command="{CompiledBinding OpenUri}" CommandParameter="https://github.com/Artemis-RGB/Artemis/issues">
+            <MenuItem Header="Report a Bug" Command="{CompiledBinding OpenUri}" CommandParameter="https://github.com/Artemis-RGB/Artemis/issues?mtm_campaign=artemis&mtm_kwd=profile-editor">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Github" />
                 </MenuItem.Icon>

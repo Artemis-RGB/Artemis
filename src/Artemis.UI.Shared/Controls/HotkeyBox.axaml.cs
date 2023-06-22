@@ -9,6 +9,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using DryIoc;
 using FluentAvalonia.Core;
 using Humanizer;
@@ -40,7 +41,7 @@ public partial class HotkeyBox : UserControl
     {
         _inputService.KeyboardKeyDown += InputServiceOnKeyboardKeyDown;
         _inputService.KeyboardKeyUp += InputServiceOnKeyboardKeyUp;
-        
+
         base.OnGotFocus(e);
     }
 
@@ -49,10 +50,10 @@ public partial class HotkeyBox : UserControl
     {
         _inputService.KeyboardKeyDown -= InputServiceOnKeyboardKeyDown;
         _inputService.KeyboardKeyUp -= InputServiceOnKeyboardKeyUp;
-        
+
         base.OnLostFocus(e);
     }
-    
+
     private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
         if (e.Property == HotkeyProperty)
@@ -67,7 +68,7 @@ public partial class HotkeyBox : UserControl
         Hotkey ??= new Hotkey();
         Hotkey.Key = e.Key;
         Hotkey.Modifiers = e.Modifiers;
-        
+
         Dispatcher.UIThread.Post(() =>
         {
             UpdateDisplayTextBox();
@@ -78,7 +79,19 @@ public partial class HotkeyBox : UserControl
     private void InputServiceOnKeyboardKeyUp(object? sender, ArtemisKeyboardKeyEventArgs e)
     {
         if (e.Modifiers == KeyboardModifierKey.None)
-            Dispatcher.UIThread.Post(() => FocusManager.Instance?.Focus(null));
+            Dispatcher.UIThread.Post(ClearFocus);
+    }
+
+    private void ClearFocus()
+    {
+        InputElement? element = this.FindAncestorOfType<InputElement>();
+        if (element == null)
+            return;
+        
+        bool wasFocusable = element.Focusable;
+        element.Focusable = true;
+        element.Focus();
+        element.Focusable = wasFocusable;
     }
 
     private void UpdateDisplayTextBox()
@@ -96,7 +109,7 @@ public partial class HotkeyBox : UserControl
     private void Button_OnClick(object? sender, RoutedEventArgs e)
     {
         Hotkey = null;
-        FocusManager.Instance?.Focus(null);
+        ClearFocus();
 
         UpdateDisplayTextBox();
     }
