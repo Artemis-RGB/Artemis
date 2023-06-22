@@ -1,58 +1,59 @@
 <windowing:AppWindow xmlns="https://github.com/avaloniaui"
-                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                      xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
-                      xmlns:device="clr-namespace:Artemis.UI.Screens.Device"
-                      xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
-                      mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
-                      x:Class="Artemis.UI.Screens.Device.DevicePropertiesView"
-                      x:DataType="device:DevicePropertiesViewModel"
-                      Icon="/Assets/Images/Logo/application.ico"
-                      Title="Artemis | Device Properties"
-                      WindowStartupLocation="CenterOwner"
-                      Width="1250"
-                      Height="900">
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+                     xmlns:device="clr-namespace:Artemis.UI.Screens.Device"
+                     xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
+                     mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+                     x:Class="Artemis.UI.Screens.Device.DevicePropertiesView"
+                     x:DataType="device:DevicePropertiesViewModel"
+                     Icon="/Assets/Images/Logo/application.ico"
+                     Title="Artemis | Device Properties"
+                     WindowStartupLocation="CenterOwner"
+                     Width="1400"
+                     Height="800">
     <windowing:AppWindow.KeyBindings>
         <KeyBinding Gesture="Escape" Command="{CompiledBinding ClearSelectedLeds}" />
     </windowing:AppWindow.KeyBindings>
     <Grid ColumnDefinitions="*,0,1.5*">
-        <Grid.Background>
-            <VisualBrush TileMode="Tile" Stretch="Uniform" DestinationRect="0,0,25,25">
-                <VisualBrush.Visual>
-                    <Grid Width="25" Height="25" RowDefinitions="*,*" ColumnDefinitions="*,*">
-                        <Rectangle Grid.Row="0" Grid.Column="0" Fill="Black" Opacity="0.15" />
-                        <Rectangle Grid.Row="0" Grid.Column="1" />
-                        <Rectangle Grid.Row="1" Grid.Column="0" />
-                        <Rectangle Grid.Row="1" Grid.Column="1" Fill="Black" Opacity="0.15" />
-                    </Grid>
-                </VisualBrush.Visual>
-            </VisualBrush>
-        </Grid.Background>
-        <Grid Grid.Column="0" Name="DeviceDisplayGrid" PointerReleased="DeviceDisplayGrid_OnPointerReleased">
-            <shared:DeviceVisualizer Device="{CompiledBinding Device}"
-                                     HorizontalAlignment="Center"
-                                     VerticalAlignment="Center"
-                                     ShowColors="True"
-                                     Margin="20"
-                                     RenderOptions.BitmapInterpolationMode="MediumQuality"
-                                     LedClicked="DeviceVisualizer_OnLedClicked"
-                                     Clicked="DeviceVisualizer_OnClicked" />
+        <Border Grid.Column="0" Classes="card" Margin="5">
+            <Border.Background>
+                <VisualBrush TileMode="Tile" Stretch="Uniform" DestinationRect="0,0,25,25">
+                    <VisualBrush.Visual>
+                        <Grid Width="25" Height="25" RowDefinitions="*,*" ColumnDefinitions="*,*">
+                            <Rectangle Grid.Row="0" Grid.Column="0" Fill="Black" Opacity="0.15" />
+                            <Rectangle Grid.Row="0" Grid.Column="1" />
+                            <Rectangle Grid.Row="1" Grid.Column="0" />
+                            <Rectangle Grid.Row="1" Grid.Column="1" Fill="Black" Opacity="0.15" />
+                        </Grid>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Border.Background>
+            <Grid Name="DeviceDisplayGrid" PointerReleased="DeviceDisplayGrid_OnPointerReleased">
+                <shared:DeviceVisualizer Device="{CompiledBinding Device}"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         ShowColors="True"
+                                         Margin="5"
+                                         RenderOptions.BitmapInterpolationMode="MediumQuality"
+                                         LedClicked="DeviceVisualizer_OnLedClicked"
+                                         Clicked="DeviceVisualizer_OnClicked" />
 
-            <StackPanel Orientation="Horizontal"
-                        VerticalAlignment="Bottom"
-                        HorizontalAlignment="Left"
-                        Margin="15"
-                        IsVisible="{CompiledBinding Device.Layout.RgbLayout.Author, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-                <TextBlock Classes="h5" Text="Device layout by " />
-                <TextBlock Classes="h5" FontWeight="Bold" Text="{CompiledBinding Device.Layout.RgbLayout.Author}" />
-            </StackPanel>
-        </Grid>
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Left"
+                            IsVisible="{CompiledBinding Device.Layout.RgbLayout.Author, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <TextBlock Classes="h5" Text="Device layout by " />
+                    <TextBlock Classes="h5" FontWeight="Bold" Text="{CompiledBinding Device.Layout.RgbLayout.Author}" />
+                </StackPanel>
+            </Grid>
+        </Border>
 
 
         <GridSplitter Grid.Column="1" Width="15" Margin="-15 0 0 0" Background="Transparent" HorizontalAlignment="Stretch" />
 
-        <Border Grid.Column="2" Classes="card-condensed" CornerRadius="10 0 0 0" Margin="0 10 0 0" Background="#ff323232">
+        <Border Grid.Column="2" Classes="card-condensed" Margin="5">
             <Panel>
                 <TabControl ItemsSource="{CompiledBinding Tabs}" IsVisible="{CompiledBinding Tabs.Count}" Padding="12">
                     <TabControl.ItemTemplate>
@@ -69,6 +70,6 @@
 
         </Border>
 
-        <StackPanel Grid.Column="0" Grid.ColumnSpan="3" Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="3" Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Top" HorizontalAlignment="Right" />
     </Grid>
 </windowing:AppWindow>

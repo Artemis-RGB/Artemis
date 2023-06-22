@@ -41,27 +41,4 @@
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Screens\Settings\Tabs\ReleasesTabView.axaml.cs">
-        <DependentUpon>UpdatingTabView.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-      <Compile Update="Screens\Settings\Updating\ReleaseView.axaml.cs">
-        <DependentUpon>UpdatingTabView.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-      <Compile Update="Screens\Plugins\Features\PluginFeatureView.axaml.cs">
-        <DependentUpon>PluginFeatureView.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-      <Compile Update="Screens\Plugins\Prerequisites\PluginPrerequisiteActionView.axaml.cs">
-        <DependentUpon>PluginPrerequisiteActionView.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-      <Compile Update="Screens\Plugins\Prerequisites\PluginPrerequisiteView.axaml.cs">
-        <DependentUpon>PluginPrerequisiteView.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-    </ItemGroup>
 </Project>
