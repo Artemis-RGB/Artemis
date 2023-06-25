@@ -6,9 +6,9 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Home;
 
-public class HomeViewModel : MainScreenViewModel
+public class HomeViewModel : IMainScreenViewModel
 {
-    public HomeViewModel(IScreen hostScreen, ISettingsService settingsService, IWindowService windowService) : base(hostScreen, "home")
+    public HomeViewModel(ISettingsService settingsService, IWindowService windowService)
     {
         DisplayName = "Home";
 

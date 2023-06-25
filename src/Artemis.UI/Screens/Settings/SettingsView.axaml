@@ -7,12 +7,12 @@
              x:Class="Artemis.UI.Screens.Settings.SettingsView"
              x:DataType="settings:SettingsViewModel">
     <Border Classes="router-container">
-        <TabControl Margin="12" ItemsSource="{CompiledBinding SettingTabs}" SelectedItem="{CompiledBinding SelectedTab}">
-            <TabControl.ItemTemplate>
+        <TabStrip Margin="12" ItemsSource="{CompiledBinding SettingTabs}" SelectedItem="{CompiledBinding SelectedTab}">
+            <TabStrip.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{CompiledBinding DisplayName}" />
+                    <TextBlock Text="{CompiledBinding Name}" />
                 </DataTemplate>
-            </TabControl.ItemTemplate>
-        </TabControl>
+            </TabStrip.ItemTemplate>
+        </TabStrip>
     </Border>
 </UserControl>

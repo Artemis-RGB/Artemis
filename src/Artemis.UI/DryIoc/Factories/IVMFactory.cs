@@ -5,6 +5,7 @@ using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.Core.ScriptingProviders;
+using Artemis.UI.Routing;
 using Artemis.UI.Screens.Device;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.Plugins.Features;
@@ -26,6 +27,7 @@ using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Screens.VisualScripting.Pins;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Routing;
 using DryIoc;
 using ReactiveUI;
 
@@ -123,7 +125,6 @@ public class SettingsVmFactory : ISettingsVmFactory
 
 public interface ISidebarVmFactory : IVmFactory
 {
-    SidebarViewModel? SidebarViewModel(IScreen hostScreen);
     SidebarCategoryViewModel SidebarCategoryViewModel(ProfileCategory profileCategory);
     SidebarProfileConfigurationViewModel SidebarProfileConfigurationViewModel(ProfileConfiguration profileConfiguration);
 }
@@ -135,12 +136,7 @@ public class SidebarVmFactory : ISidebarVmFactory
     {
         _container = container;
     }
-    
-    public SidebarViewModel? SidebarViewModel(IScreen hostScreen)
-    {
-        return _container.Resolve<SidebarViewModel>(new object[] { hostScreen });
-    }
-    
+
     public SidebarCategoryViewModel SidebarCategoryViewModel(ProfileCategory profileCategory)
     {
         return _container.Resolve<SidebarCategoryViewModel>(new object[] { profileCategory });

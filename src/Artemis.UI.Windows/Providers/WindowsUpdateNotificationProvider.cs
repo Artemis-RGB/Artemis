@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.UI.Notifications;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Services.Updating;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services.MainWindow;
 using Avalonia.Threading;
 using Microsoft.Toolkit.Uwp.Notifications;
@@ -17,19 +18,16 @@ namespace Artemis.UI.Windows.Providers;
 public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
 {
     private readonly Func<Guid, ReleaseInstaller> _getReleaseInstaller;
-    private readonly Func<IScreen, SettingsViewModel> _getSettingsViewModel;
     private readonly IMainWindowService _mainWindowService;
     private readonly IUpdateService _updateService;
+    private readonly IRouter _router;
     private CancellationTokenSource? _cancellationTokenSource;
 
-    public WindowsUpdateNotificationProvider(IMainWindowService mainWindowService,
-        IUpdateService updateService,
-        Func<IScreen, SettingsViewModel> getSettingsViewModel,
-        Func<Guid, ReleaseInstaller> getReleaseInstaller)
+    public WindowsUpdateNotificationProvider(IMainWindowService mainWindowService, IUpdateService updateService, IRouter router, Func<Guid, ReleaseInstaller> getReleaseInstaller)
     {
         _mainWindowService = mainWindowService;
         _updateService = updateService;
-        _getSettingsViewModel = getSettingsViewModel;
+        _router = router;
         _getReleaseInstaller = getReleaseInstaller;
         ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompatOnOnActivated;
     }
@@ -59,23 +57,10 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
 
     private void ViewRelease(string releaseVersion)
     {
-        Dispatcher.UIThread.Post(() =>
+        Dispatcher.UIThread.Invoke(async () =>
         {
             _mainWindowService.OpenMainWindow();
-            if (_mainWindowService.HostScreen == null)
-                return;
-
-            // TODO: When proper routing has been implemented, use that here
-            // Create a settings VM to navigate to
-            SettingsViewModel settingsViewModel = _getSettingsViewModel(_mainWindowService.HostScreen);
-            // Get the release tab
-            ReleasesTabViewModel releaseTabViewModel = (ReleasesTabViewModel) settingsViewModel.SettingTabs.First(t => t is ReleasesTabViewModel);
-
-            // Navigate to the settings VM
-            _mainWindowService.HostScreen.Router.Navigate.Execute(settingsViewModel);
-            // Navigate to the release tab
-            releaseTabViewModel.PreselectVersion = releaseVersion;
-            settingsViewModel.SelectedTab = releaseTabViewModel;
+            await _router.Navigate($"settings/releases/{releaseVersion}");
         });
     }
 

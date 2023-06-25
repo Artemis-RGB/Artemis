@@ -2,14 +2,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:reactiveUi="http://reactiveui.net"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              xmlns:vm="clr-namespace:Artemis.UI.Screens.Root;assembly=Artemis.UI"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:ui="clr-namespace:Artemis.UI"
              x:DataType="vm:RootViewModel"
              x:Class="Artemis.UI.Screens.Root.RootView">
-	<reactiveUi:RoutedViewHost Router="{CompiledBinding Router}">
-        <reactiveUi:RoutedViewHost.PageTransition>
-            <CompositePageTransition></CompositePageTransition>
-        </reactiveUi:RoutedViewHost.PageTransition>
-    </reactiveUi:RoutedViewHost>
+    <controls:Frame Name="RootFrame" IsNavigationStackEnabled="False">
+        <controls:Frame.NavigationPageFactory>
+            <ui:PageFactory/>
+        </controls:Frame.NavigationPageFactory>
+    </controls:Frame>
 </UserControl>

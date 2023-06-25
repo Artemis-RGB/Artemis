@@ -1,6 +1,8 @@
 using System.Reflection;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using DryIoc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Artemis.UI.Shared.DryIoc;
 
@@ -15,6 +17,7 @@ public static class ContainerExtensions
     /// <param name="container">The builder building the current container</param>
     public static void RegisterSharedUI(this IContainer container)
     {
+        container.Register<IRouter, Router>(Reuse.Singleton);
         Assembly artemisShared = typeof(IArtemisSharedUIService).GetAssembly();
         container.RegisterMany(new[] {artemisShared}, type => type.IsAssignableTo<IArtemisSharedUIService>(), Reuse.Singleton);
 

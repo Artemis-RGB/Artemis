@@ -9,7 +9,7 @@ using SkiaSharp;
 
 namespace Artemis.UI.Screens.Workshop;
 
-public class WorkshopViewModel : MainScreenViewModel
+public class WorkshopViewModel : IMainScreenViewModel
 {
     private readonly ObservableAsPropertyHelper<Cursor> _cursor;
     private readonly INotificationService _notificationService;
@@ -27,7 +27,7 @@ public class WorkshopViewModel : MainScreenViewModel
     private StandardCursorType _selectedCursor;
     private double _testValue;
 
-    public WorkshopViewModel(IScreen hostScreen, INotificationService notificationService) : base(hostScreen, "workshop")
+    public WorkshopViewModel(INotificationService notificationService)
     {
         _notificationService = notificationService;
         _cursor = this.WhenAnyValue(vm => vm.SelectedCursor).Select(c => new Cursor(c)).ToProperty(this, vm => vm.Cursor);

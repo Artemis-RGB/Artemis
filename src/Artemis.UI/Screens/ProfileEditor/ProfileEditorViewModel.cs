@@ -20,7 +20,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor;
 
-public class ProfileEditorViewModel : MainScreenViewModel
+public class ProfileEditorViewModel : IMainScreenViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
     private readonly ISettingsService _settingsService;
@@ -35,8 +35,7 @@ public class ProfileEditorViewModel : MainScreenViewModel
     private VisualEditorViewModel? _visualEditorViewModel;
 
     /// <inheritdoc />
-    public ProfileEditorViewModel(IScreen hostScreen,
-        IProfileEditorService profileEditorService,
+    public ProfileEditorViewModel(IProfileEditorService profileEditorService,
         ISettingsService settingsService,
         VisualEditorViewModel visualEditorViewModel,
         ProfileTreeViewModel profileTreeViewModel,
@@ -46,7 +45,6 @@ public class ProfileEditorViewModel : MainScreenViewModel
         StatusBarViewModel statusBarViewModel,
         IEnumerable<IToolViewModel> toolViewModels,
         IMainWindowService mainWindowService)
-        : base(hostScreen, "profile-editor")
     {
         _profileEditorService = profileEditorService;
         _settingsService = settingsService;

@@ -16,7 +16,7 @@ using SkiaSharp;
 
 namespace Artemis.UI.Screens.SurfaceEditor;
 
-public class SurfaceEditorViewModel : MainScreenViewModel
+public class SurfaceEditorViewModel : IMainScreenViewModel
 {
     private readonly IDeviceService _deviceService;
     private readonly IDeviceVmFactory _deviceVmFactory;
@@ -30,14 +30,13 @@ public class SurfaceEditorViewModel : MainScreenViewModel
     private double _overlayOpacity;
     private bool _saving;
 
-    public SurfaceEditorViewModel(IScreen hostScreen,
-        ICoreService coreService,
+    public SurfaceEditorViewModel(ICoreService coreService,
         IRgbService rgbService,
         ISurfaceVmFactory surfaceVmFactory,
         ISettingsService settingsService,
         IDeviceVmFactory deviceVmFactory,
         IWindowService windowService,
-        IDeviceService deviceService) : base(hostScreen, "surface-editor")
+        IDeviceService deviceService)
     {
         _rgbService = rgbService;
         _surfaceVmFactory = surfaceVmFactory;

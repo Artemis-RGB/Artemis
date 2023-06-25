@@ -4,47 +4,46 @@ using System.Reactive;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Models;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.MainWindow;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Platform;
 using Avalonia.Threading;
+using DryIoc;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Root;
 
-public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvider
+public class RootViewModel : ActivatableRoutable, IMainWindowProvider
 {
     private readonly ICoreService _coreService;
     private readonly IDebugService _debugService;
     private readonly DefaultTitleBarViewModel _defaultTitleBarViewModel;
     private readonly IClassicDesktopStyleApplicationLifetime _lifeTime;
     private readonly ISettingsService _settingsService;
-    private readonly ISidebarVmFactory _sidebarVmFactory;
     private readonly IUpdateService _updateService;
     private readonly IWindowService _windowService;
-    private SidebarViewModel? _sidebarViewModel;
     private ViewModelBase? _titleBarViewModel;
 
-    public RootViewModel(ICoreService coreService,
+    public RootViewModel(IRouter router,
+        ICoreService coreService,
         ISettingsService settingsService,
         IRegistrationService registrationService,
         IWindowService windowService,
         IMainWindowService mainWindowService,
         IDebugService debugService,
         IUpdateService updateService,
-        DefaultTitleBarViewModel defaultTitleBarViewModel,
-        ISidebarVmFactory sidebarVmFactory)
+        SidebarViewModel sidebarViewModel,
+        DefaultTitleBarViewModel defaultTitleBarViewModel)
     {
-        Router = new RoutingState();
         WindowSizeSetting = settingsService.GetSetting<WindowSize?>("WindowSize");
+        SidebarViewModel = sidebarViewModel;
 
         _coreService = coreService;
         _settingsService = settingsService;
@@ -52,18 +51,16 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
         _debugService = debugService;
         _updateService = updateService;
         _defaultTitleBarViewModel = defaultTitleBarViewModel;
-        _sidebarVmFactory = sidebarVmFactory;
         _lifeTime = (IClassicDesktopStyleApplicationLifetime) Application.Current!.ApplicationLifetime!;
 
+        router.Root = this;
         mainWindowService.ConfigureMainWindowProvider(this);
-        mainWindowService.HostScreen = this;
 
         DisplayAccordingToSettings();
         OpenScreen = ReactiveCommand.Create<string>(ExecuteOpenScreen);
         OpenDebugger = ReactiveCommand.CreateFromTask(ExecuteOpenDebugger);
         Exit = ReactiveCommand.CreateFromTask(ExecuteExit);
 
-        Router.CurrentViewModel.Subscribe(UpdateTitleBarViewModel);
         Task.Run(() =>
         {
             if (_updateService.Initialize())
@@ -76,15 +73,10 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
         });
     }
 
+    public SidebarViewModel SidebarViewModel { get; }
     public ReactiveCommand<string, Unit> OpenScreen { get; }
     public ReactiveCommand<Unit, Unit> OpenDebugger { get; }
     public ReactiveCommand<Unit, Unit> Exit { get; }
-
-    public SidebarViewModel? SidebarViewModel
-    {
-        get => _sidebarViewModel;
-        set => RaiseAndSetIfChanged(ref _sidebarViewModel, value);
-    }
 
     public ViewModelBase? TitleBarViewModel
     {
@@ -92,10 +84,12 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
         set => RaiseAndSetIfChanged(ref _titleBarViewModel, value);
     }
 
-    private void UpdateTitleBarViewModel(IRoutableViewModel? viewModel)
+    public static PluginSetting<WindowSize?>? WindowSizeSetting { get; private set; }
+
+    private void UpdateTitleBarViewModel(IMainScreenViewModel? viewModel)
     {
-        if (viewModel is MainScreenViewModel mainScreenViewModel && mainScreenViewModel.TitleBarViewModel != null)
-            TitleBarViewModel = mainScreenViewModel.TitleBarViewModel;
+        if (viewModel?.TitleBarViewModel != null)
+            TitleBarViewModel = viewModel.TitleBarViewModel;
         else
             TitleBarViewModel = _defaultTitleBarViewModel;
     }
@@ -104,8 +98,6 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
     {
         WindowSizeSetting?.Save();
         _lifeTime.MainWindow = null;
-        SidebarViewModel = null;
-        Router.NavigateAndReset.Execute(new EmptyViewModel(this, "blank")).Subscribe();
         OnMainWindowClosed();
     }
 
@@ -126,12 +118,7 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
     {
         _windowService.ShowWindow<SplashViewModel>();
     }
-
-    /// <inheritdoc />
-    public RoutingState Router { get; }
-
-    public static PluginSetting<WindowSize?>? WindowSizeSetting { get; private set; }
-
+    
     #region Tray commands
 
     private void ExecuteOpenScreen(string displayName)
@@ -176,7 +163,6 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
     {
         if (_lifeTime.MainWindow == null)
         {
-            SidebarViewModel = _sidebarVmFactory.SidebarViewModel(this);
             _lifeTime.MainWindow = new MainWindow {DataContext = this};
             _lifeTime.MainWindow.Show();
             _lifeTime.MainWindow.Closing += CurrentMainWindowOnClosing;
@@ -237,12 +223,4 @@ public class RootViewModel : ActivatableViewModelBase, IScreen, IMainWindowProvi
     }
 
     #endregion
-}
-
-internal class EmptyViewModel : MainScreenViewModel
-{
-    /// <inheritdoc />
-    public EmptyViewModel(IScreen hostScreen, string urlPathSegment) : base(hostScreen, urlPathSegment)
-    {
-    }
 }
