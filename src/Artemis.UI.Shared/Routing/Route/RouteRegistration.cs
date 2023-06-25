@@ -12,6 +12,12 @@ public class RouteRegistration<TViewModel> : IRouterRegistration where TViewMode
         Route = new Route(path);
     }
 
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"{nameof(Route)}: {Route}, {nameof(ViewModel)}: {ViewModel}";
+    }
+
     public Route Route { get; }
 
     /// <inheritdoc />
@@ -25,7 +31,7 @@ public class RouteRegistration<TViewModel> : IRouterRegistration where TViewMode
     {
         List<string> segments = path.Split('/').ToList();
         if (Route.Segments.Count > segments.Count)
-            return RouteResolution.AsFailure();
+            return RouteResolution.AsFailure(path);
 
         // Ensure self is a match
         List<object> parameters = new();
@@ -34,7 +40,7 @@ public class RouteRegistration<TViewModel> : IRouterRegistration where TViewMode
         {
             string segment = segments[currentSegment];
             if (!routeSegment.IsMatch(segment))
-                return RouteResolution.AsFailure();
+                return RouteResolution.AsFailure(path);
 
             object? parameter = routeSegment.GetParameter(segment);
             if (parameter != null)
@@ -44,24 +50,18 @@ public class RouteRegistration<TViewModel> : IRouterRegistration where TViewMode
         }
 
         if (currentSegment == segments.Count)
-            return RouteResolution.AsSuccess(ViewModel, parameters.ToArray());
+            return RouteResolution.AsSuccess(ViewModel, path, parameters.ToArray());
 
         // If segments remain, a child should match it
-        path = string.Join('/', segments);
+        string childPath = string.Join('/', segments.Skip(currentSegment));
         foreach (IRouterRegistration routerRegistration in Children)
         {
-            RouteResolution result = await routerRegistration.Resolve(path);
+            RouteResolution result = await routerRegistration.Resolve(childPath);
             if (result.Success)
-                return RouteResolution.AsSuccess(ViewModel, parameters.ToArray(), result);
+                return RouteResolution.AsSuccess(ViewModel, path, parameters.ToArray(), result);
         }
 
-        return RouteResolution.AsFailure();
-    }
-
-    /// <inheritdoc />
-    public override string ToString()
-    {
-        return $"{nameof(Route)}: {Route}, {nameof(ViewModel)}: {ViewModel}";
+        return RouteResolution.AsFailure(path);
     }
 }
 

@@ -22,6 +22,7 @@ namespace Artemis.UI.Screens.Root;
 
 public class RootViewModel : ActivatableRoutable, IMainWindowProvider
 {
+    private readonly IRouter _router;
     private readonly ICoreService _coreService;
     private readonly IDebugService _debugService;
     private readonly DefaultTitleBarViewModel _defaultTitleBarViewModel;
@@ -45,6 +46,7 @@ public class RootViewModel : ActivatableRoutable, IMainWindowProvider
         WindowSizeSetting = settingsService.GetSetting<WindowSize?>("WindowSize");
         SidebarViewModel = sidebarViewModel;
 
+        _router = router;
         _coreService = coreService;
         _settingsService = settingsService;
         _windowService = windowService;
@@ -118,10 +120,10 @@ public class RootViewModel : ActivatableRoutable, IMainWindowProvider
     {
         _windowService.ShowWindow<SplashViewModel>();
     }
-    
+
     #region Tray commands
 
-    private void ExecuteOpenScreen(string displayName)
+    private void ExecuteOpenScreen(string path)
     {
         // The window will open on the UI thread at some point, respond to that to select the chosen screen
         MainWindowOpened += OnEventHandler;
@@ -129,10 +131,9 @@ public class RootViewModel : ActivatableRoutable, IMainWindowProvider
 
         void OnEventHandler(object? sender, EventArgs args)
         {
-            // Avoid threading issues by running this on the UI thread 
-            if (SidebarViewModel != null)
-                Dispatcher.UIThread.InvokeAsync(() => SidebarViewModel.SelectedSidebarScreen = SidebarViewModel.SidebarScreens.FirstOrDefault(s => s.DisplayName == displayName));
             MainWindowOpened -= OnEventHandler;
+            // Avoid threading issues by running this on the UI thread 
+            Dispatcher.UIThread.InvokeAsync(async () => await _router.Navigate(path));
         }
     }
 

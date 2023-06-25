@@ -15,6 +15,6 @@ public class SettingsTab
 
     public bool Matches(string path)
     {
-        return path.StartsWith(path, StringComparison.InvariantCultureIgnoreCase);
+        return path.StartsWith($"settings/{Path}", StringComparison.InvariantCultureIgnoreCase);
     }
 }

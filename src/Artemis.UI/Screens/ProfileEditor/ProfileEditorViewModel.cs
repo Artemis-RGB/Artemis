@@ -11,6 +11,7 @@ using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Properties;
 using Artemis.UI.Screens.ProfileEditor.StatusBar;
 using Artemis.UI.Screens.ProfileEditor.VisualEditor;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Threading;
@@ -20,7 +21,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor;
 
-public class ProfileEditorViewModel : IMainScreenViewModel
+public class ProfileEditorViewModel : ActivatableViewModelBase, IMainScreenViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
     private readonly ISettingsService _settingsService;
@@ -89,6 +90,8 @@ public class ProfileEditorViewModel : IMainScreenViewModel
         ToggleSuspend = ReactiveCommand.Create(ExecuteToggleSuspend);
         ToggleAutoSuspend = ReactiveCommand.Create(ExecuteToggleAutoSuspend);
     }
+    
+    public ViewModelBase? TitleBarViewModel { get; }
 
     public VisualEditorViewModel? VisualEditorViewModel
     {

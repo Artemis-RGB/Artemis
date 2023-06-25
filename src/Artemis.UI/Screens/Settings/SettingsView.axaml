@@ -3,16 +3,25 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:settings="clr-namespace:Artemis.UI.Screens.Settings"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:ui="clr-namespace:Artemis.UI"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Settings.SettingsView"
              x:DataType="settings:SettingsViewModel">
     <Border Classes="router-container">
-        <TabStrip Margin="12" ItemsSource="{CompiledBinding SettingTabs}" SelectedItem="{CompiledBinding SelectedTab}">
-            <TabStrip.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{CompiledBinding Name}" />
-                </DataTemplate>
-            </TabStrip.ItemTemplate>
-        </TabStrip>
+        <Grid RowDefinitions="Auto,*">
+            <TabStrip Grid.Row="0" Margin="12" ItemsSource="{CompiledBinding SettingTabs}" SelectedItem="{CompiledBinding SelectedTab}">
+                <TabStrip.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{CompiledBinding Name}" />
+                    </DataTemplate>
+                </TabStrip.ItemTemplate>
+            </TabStrip>
+            <controls:Frame Grid.Row="1" Name="TabFrame" IsNavigationStackEnabled="False" CacheSize="0">
+                <controls:Frame.NavigationPageFactory>
+                    <ui:PageFactory/>
+                </controls:Frame.NavigationPageFactory>
+            </controls:Frame>
+        </Grid>
     </Border>
 </UserControl>

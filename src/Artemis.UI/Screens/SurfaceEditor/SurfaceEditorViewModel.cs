@@ -9,6 +9,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Extensions;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Avalonia;
 using ReactiveUI;
@@ -16,7 +17,7 @@ using SkiaSharp;
 
 namespace Artemis.UI.Screens.SurfaceEditor;
 
-public class SurfaceEditorViewModel : IMainScreenViewModel
+public class SurfaceEditorViewModel : ActivatableViewModelBase, IMainScreenViewModel
 {
     private readonly IDeviceService _deviceService;
     private readonly IDeviceVmFactory _deviceVmFactory;
@@ -70,6 +71,8 @@ public class SurfaceEditorViewModel : IMainScreenViewModel
             }).DisposeWith(d);
         });
     }
+    
+    public ViewModelBase? TitleBarViewModel => null;
 
     public bool ColorDevices
     {

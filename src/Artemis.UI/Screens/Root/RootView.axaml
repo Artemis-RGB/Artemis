@@ -8,7 +8,7 @@
              xmlns:ui="clr-namespace:Artemis.UI"
              x:DataType="vm:RootViewModel"
              x:Class="Artemis.UI.Screens.Root.RootView">
-    <controls:Frame Name="RootFrame" IsNavigationStackEnabled="False">
+    <controls:Frame Name="RootFrame" IsNavigationStackEnabled="False" CacheSize="0">
         <controls:Frame.NavigationPageFactory>
             <ui:PageFactory/>
         </controls:Frame.NavigationPageFactory>

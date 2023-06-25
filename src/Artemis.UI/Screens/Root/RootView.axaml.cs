@@ -15,7 +15,7 @@ public partial class RootView : ReactiveUserControl<RootViewModel>
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            ViewModel.WhenAnyValue(vm => vm.CurrentScreen).WhereNotNull().Subscribe(s => TryNavigate(s)).DisposeWith(d);
+            ViewModel.WhenAnyValue(vm => vm.CurrentScreen).WhereNotNull().Subscribe(TryNavigate).DisposeWith(d);
         });
     }
 

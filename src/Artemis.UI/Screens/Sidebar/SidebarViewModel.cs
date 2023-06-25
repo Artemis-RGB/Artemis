@@ -14,6 +14,7 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.ReactiveUI;
+using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
 using Material.Icons;
@@ -51,8 +52,9 @@ public class SidebarViewModel : ActivatableViewModelBase
 
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(vm => vm._router.CurrentPath).WhereNotNull().Subscribe(r => SelectedSidebarScreen = SidebarScreens.FirstOrDefault(s => s.Matches(r))).DisposeWith(d);
-            this.WhenAnyValue(vm => vm.SelectedSidebarScreen).WhereNotNull().Subscribe(model => Task.Run(() => NavigateToScreen(model)));
+            _router.CurrentPath.WhereNotNull().Subscribe(r => SelectedSidebarScreen = SidebarScreens.FirstOrDefault(s => s.Matches(r))).DisposeWith(d);
+            this.WhenAnyValue(vm => vm.SelectedSidebarScreen).WhereNotNull().Subscribe(NavigateToScreen);
+            
             this.WhenAnyObservable(vm => vm._profileEditorService.ProfileConfiguration).Subscribe(NavigateToProfile).DisposeWith(d);
 
             Observable.FromEventPattern<ProfileCategoryEventArgs>(x => profileService.ProfileCategoryAdded += x, x => profileService.ProfileCategoryAdded -= x)
@@ -117,12 +119,18 @@ public class SidebarViewModel : ActivatableViewModelBase
         //     _hostScreen.Router.Navigate.Execute(_profileEditorVmFactory.ProfileEditorViewModel(_hostScreen));
     }
 
-    private async Task NavigateToScreen(SidebarScreenViewModel sidebarScreenViewModel)
+    private void NavigateToScreen(SidebarScreenViewModel sidebarScreenViewModel)
     {
-        // If the current screen changed through external means and already matches, don't navigate again
-        if (sidebarScreenViewModel.Matches(_router.CurrentPath))
-            return;
-
-        await _router.Navigate(sidebarScreenViewModel.Path);
+        Dispatcher.UIThread.Invoke(async () =>
+        {
+            try
+            {
+                await _router.Navigate(sidebarScreenViewModel.Path, new RouterNavigationOptions(){});
+            }
+            catch (Exception e)
+            {
+                _windowService.ShowExceptionDialog("Navigation failed", e);
+            }
+        });
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Reactive;
 using System.Reactive.Linq;
 using Artemis.Core;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Avalonia.Input;
@@ -9,7 +10,7 @@ using SkiaSharp;
 
 namespace Artemis.UI.Screens.Workshop;
 
-public class WorkshopViewModel : IMainScreenViewModel
+public class WorkshopViewModel : ActivatableViewModelBase, IMainScreenViewModel
 {
     private readonly ObservableAsPropertyHelper<Cursor> _cursor;
     private readonly INotificationService _notificationService;
@@ -36,6 +37,7 @@ public class WorkshopViewModel : IMainScreenViewModel
         ShowNotification = ReactiveCommand.Create<NotificationSeverity>(ExecuteShowNotification);
     }
 
+    public ViewModelBase? TitleBarViewModel => null;
     public ReactiveCommand<NotificationSeverity, Unit> ShowNotification { get; set; }
 
     public StandardCursorType SelectedCursor
