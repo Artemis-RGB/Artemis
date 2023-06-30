@@ -28,6 +28,7 @@ using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Screens.VisualScripting.Pins;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
+using Artemis.WebClient.Updating;
 using DryIoc;
 using ReactiveUI;
 
@@ -479,7 +480,7 @@ public class ScriptVmFactory : IScriptVmFactory
 
 public interface IReleaseVmFactory : IVmFactory
 {
-    ReleaseViewModel ReleaseListViewModel(Guid releaseId, string version, DateTimeOffset createdAt);
+    ReleaseViewModel ReleaseListViewModel(IGetReleases_PublishedReleases_Nodes release);
 }
 public class ReleaseVmFactory : IReleaseVmFactory
 {
@@ -490,8 +491,8 @@ public class ReleaseVmFactory : IReleaseVmFactory
         _container = container;
     }
     
-    public ReleaseViewModel ReleaseListViewModel(Guid releaseId, string version, DateTimeOffset createdAt)
+    public ReleaseViewModel ReleaseListViewModel(IGetReleases_PublishedReleases_Nodes release)
     {
-        return _container.Resolve<ReleaseViewModel>(new object[] { releaseId, version, createdAt });
+        return _container.Resolve<ReleaseViewModel>(new object[] { release });
     }
 }

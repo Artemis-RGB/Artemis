@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Artemis.UI.Screens.Home;
 using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.Settings;
+using Artemis.UI.Screens.Settings.Updating;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
 using Artemis.UI.Shared.Routing;
@@ -22,7 +23,13 @@ public static class Routes
                 new RouteRegistration<GeneralTabViewModel>("general"),
                 new RouteRegistration<PluginsTabViewModel>("plugins"),
                 new RouteRegistration<DevicesTabViewModel>("devices"),
-                new RouteRegistration<ReleasesTabViewModel>("releases"),
+                new RouteRegistration<ReleasesTabViewModel>("releases")
+                {
+                    Children = new List<IRouterRegistration>()
+                    {
+                        new RouteRegistration<ReleaseDetailsViewModel>("{releaseId:guid}")
+                    }
+                },
                 new RouteRegistration<AboutTabViewModel>("about")
             }
         },

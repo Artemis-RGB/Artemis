@@ -15,8 +15,8 @@ public partial class RouteSegment
         Match match = ParameterRegex().Match(segment);
         if (match.Success)
         {
-            Parameter = match.Groups[0].Value;
-            ParameterType = match.Groups[1].Value;
+            Parameter = match.Groups[1].Value;
+            ParameterType = match.Groups[2].Value;
             _parameterParser = GetParameterParser(ParameterType);
         }
     }

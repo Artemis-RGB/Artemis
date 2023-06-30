@@ -50,11 +50,10 @@ public class SidebarViewModel : ActivatableViewModelBase
 
         SourceList<ProfileCategory> profileCategories = new();
 
+        this.WhenAnyValue(vm => vm.SelectedSidebarScreen).WhereNotNull().Subscribe(NavigateToScreen);
         this.WhenActivated(d =>
         {
             _router.CurrentPath.WhereNotNull().Subscribe(r => SelectedSidebarScreen = SidebarScreens.FirstOrDefault(s => s.Matches(r))).DisposeWith(d);
-            this.WhenAnyValue(vm => vm.SelectedSidebarScreen).WhereNotNull().Subscribe(NavigateToScreen);
-            
             this.WhenAnyObservable(vm => vm._profileEditorService.ProfileConfiguration).Subscribe(NavigateToProfile).DisposeWith(d);
 
             Observable.FromEventPattern<ProfileCategoryEventArgs>(x => profileService.ProfileCategoryAdded += x, x => profileService.ProfileCategoryAdded -= x)
@@ -125,7 +124,7 @@ public class SidebarViewModel : ActivatableViewModelBase
         {
             try
             {
-                await _router.Navigate(sidebarScreenViewModel.Path, new RouterNavigationOptions(){});
+                await _router.Navigate(sidebarScreenViewModel.Path, new RouterNavigationOptions {IgnoreOnPartialMatch = true});
             }
             catch (Exception e)
             {

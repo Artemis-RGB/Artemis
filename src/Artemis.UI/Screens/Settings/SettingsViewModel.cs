@@ -2,15 +2,15 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Threading;
+using System.Threading.Tasks;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
-using Avalonia.Threading;
 using ReactiveUI;
-
 
 namespace Artemis.UI.Screens.Settings;
 
-public class SettingsViewModel : ActivatableRoutable, IMainScreenViewModel
+public class SettingsViewModel : ActivatableRoutable, IMainScreenViewModel, INavigable
 {
     private readonly IRouter _router;
     private SettingsTab? _selectedTab;
@@ -26,21 +26,12 @@ public class SettingsViewModel : ActivatableRoutable, IMainScreenViewModel
             new("releases", "Releases"),
             new("about", "About"),
         };
-        _selectedTab = SettingTabs.First();
-
-
-        this.WhenActivated(d =>
-        {
-            _router.CurrentPath.WhereNotNull().Subscribe(p =>
-            {
-                if (!p.StartsWith("settings"))
-                    return;
-                
-                SettingsTab tab = SettingTabs.FirstOrDefault(t => t.Matches(p)) ?? SettingTabs.First();
-                if (SelectedTab != tab)
-                    SelectedTab = tab;
-            }).DisposeWith(d);
-        });
+        
+        // Navigate on tab change
+        this.WhenActivated(d =>  this.WhenAnyValue(vm => vm.SelectedTab)
+            .WhereNotNull()
+            .Subscribe(s => _router.Navigate($"settings/{s.Path}", new RouterNavigationOptions {IgnoreOnPartialMatch = true}))
+            .DisposeWith(d));
     }
 
     public ObservableCollection<SettingsTab> SettingTabs { get; }
@@ -48,18 +39,19 @@ public class SettingsViewModel : ActivatableRoutable, IMainScreenViewModel
     public SettingsTab? SelectedTab
     {
         get => _selectedTab;
-        set
-        {
-            RaiseAndSetIfChanged(ref _selectedTab, value);
-            NavigateToTab(_selectedTab);
-        }
-    }
-
-    private void NavigateToTab(SettingsTab? selectedTab)
-    {
-        if (selectedTab != null)
-            Dispatcher.UIThread.InvokeAsync(async () => await _router.Navigate("settings/" + selectedTab.Path));
+        set => RaiseAndSetIfChanged(ref _selectedTab, value);
     }
 
     public ViewModelBase? TitleBarViewModel => null;
+
+    /// <inheritdoc />
+    public async Task Navigated(NavigationArguments args, CancellationToken cancellationToken)
+    {
+        // Display tab change on navigate
+        SelectedTab = SettingTabs.FirstOrDefault(t => t.Matches(args.Path));
+        
+        // Always show a tab, if there is none forward to the first
+        if (SelectedTab == null)
+            await _router.Navigate($"settings/{SettingTabs.First().Path}");
+    }
 }

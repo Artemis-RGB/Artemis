@@ -25,44 +25,6 @@ public class RouteRegistration<TViewModel> : IRouterRegistration where TViewMode
 
     /// <inheritdoc />
     public List<IRouterRegistration> Children { get; set; } = new();
-
-    /// <inheritdoc />
-    public async Task<RouteResolution> Resolve(string path)
-    {
-        List<string> segments = path.Split('/').ToList();
-        if (Route.Segments.Count > segments.Count)
-            return RouteResolution.AsFailure(path);
-
-        // Ensure self is a match
-        List<object> parameters = new();
-        int currentSegment = 0;
-        foreach (RouteSegment routeSegment in Route.Segments)
-        {
-            string segment = segments[currentSegment];
-            if (!routeSegment.IsMatch(segment))
-                return RouteResolution.AsFailure(path);
-
-            object? parameter = routeSegment.GetParameter(segment);
-            if (parameter != null)
-                parameters.Add(parameter);
-
-            currentSegment++;
-        }
-
-        if (currentSegment == segments.Count)
-            return RouteResolution.AsSuccess(ViewModel, path, parameters.ToArray());
-
-        // If segments remain, a child should match it
-        string childPath = string.Join('/', segments.Skip(currentSegment));
-        foreach (IRouterRegistration routerRegistration in Children)
-        {
-            RouteResolution result = await routerRegistration.Resolve(childPath);
-            if (result.Success)
-                return RouteResolution.AsSuccess(ViewModel, path, parameters.ToArray(), result);
-        }
-
-        return RouteResolution.AsFailure(path);
-    }
 }
 
 public interface IRouterRegistration
@@ -71,5 +33,4 @@ public interface IRouterRegistration
     Type ViewModel { get; }
     List<IRouterRegistration> Children { get; set; }
 
-    Task<RouteResolution> Resolve(string path);
 }

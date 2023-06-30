@@ -2,12 +2,12 @@ using System;
 
 namespace Artemis.UI.Shared.Routing.ParameterParsers;
 
-public class GuidParameterParser : IRouteParameterParser
+internal class GuidParameterParser : IRouteParameterParser
 {
     /// <inheritdoc />
     public bool IsMatch(RouteSegment segment, string source)
     {
-        return Guid.TryParse(segment.Parameter, out _);
+        return Guid.TryParse(source, out _);
     }
 
     /// <inheritdoc />

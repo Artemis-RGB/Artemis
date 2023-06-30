@@ -1,6 +1,6 @@
 namespace Artemis.UI.Shared.Routing.ParameterParsers;
 
-public class StringParameterParser : IRouteParameterParser
+internal class StringParameterParser : IRouteParameterParser
 {
     /// <inheritdoc />
     public bool IsMatch(RouteSegment segment, string source)

@@ -1,3 +1,5 @@
+using ReactiveUI;
+
 namespace Artemis.UI.Shared.Routing;
 
 public abstract class Routable : ViewModelBase, IRoutable
@@ -17,8 +19,12 @@ public abstract class Routable : ViewModelBase, IRoutable
     public object? Screen => CurrentScreen;
 
     /// <inheritdoc />
+    public bool RecycleScreen { get; protected set; } = true;
+
+    /// <inheritdoc />
     public void ChangeScreen(object screen)
     {
         CurrentScreen = screen as ViewModelBase;
+        this.RaisePropertyChanged(nameof(Screen));
     }
 }

@@ -1,97 +1,35 @@
 using System;
 using System.Collections.Generic;
 using System.Reactive.Subjects;
-using System.Reflection;
 using System.Threading.Tasks;
 using Artemis.Core;
-using DryIoc;
+using Serilog;
 
 namespace Artemis.UI.Shared.Routing;
 
 internal class Router : CorePropertyChanged, IRouter
 {
+    private readonly ILogger _logger;
     private readonly Stack<string> _backStack = new();
-    private readonly IContainer _container;
     private readonly BehaviorSubject<string?> _currentRouteSubject;
     private readonly Stack<string> _forwardStack = new();
+    private readonly Func<IRoutable, RouteResolution, RouterNavigationOptions, Navigation> _getNavigation;
+    private Navigation? _currentNavigation;
 
     private IRoutable? _root;
 
-    public Router(IContainer container)
+    public Router(ILogger logger, Func<IRoutable, RouteResolution, RouterNavigationOptions, Navigation> getNavigation)
     {
-        _container = container;
+        _logger = logger;
+        _getNavigation = getNavigation;
         _currentRouteSubject = new BehaviorSubject<string?>(null);
-    }
-
-    public void ClearHistory()
-    {
-        _backStack.Clear();
-        _forwardStack.Clear();
-    }
-
-    private async Task NavigateResolution(RouteResolution resolution, IRoutable host)
-    {
-        // Reuse the screen if its type has not changed
-        object screen;
-        if (host.Screen != null && host.Screen.GetType() == resolution.ViewModel)
-            screen = host.Screen;
-        else
-            screen = resolution.GetViewModel(_container);
-
-        if (resolution.Child != null)
-            if (screen is not IRoutable)
-                throw new ArtemisRoutingException($"Route resolved with a child but view model of type {resolution.ViewModel} is does mot implement {nameof(IRoutable)}.");
-
-        // Only change the screen if it wasn't reused
-        if (!ReferenceEquals(host.Screen, screen))
-            host.ChangeScreen(screen);
-
-        // If the screen implements some form of Navigable, activate it
-        await ActivateNavigable(screen, resolution);
-
-        if (resolution.Child != null && screen is IRoutable childHost)
-            await NavigateResolution(resolution.Child, childHost);
-    }
-
-    private async Task ActivateNavigable(object screen, RouteResolution resolution)
-    {
-        if (screen is INavigable navigable)
-        {
-            await navigable.Navigated();
-            return;
-        }
-
-        // Without parameters INavigable<TParameter> cannot be activated
-        if (resolution.Parameters == null)
-            return;
-
-        // Kinda nasty to rely on reflection here but routing should not happen that often
-        // If needed this could use cached expression trees
-
-        // Ensure the screen is of type INavigable<TParameter>
-        Type screenType = screen.GetType();
-        Type navigableInterfaceType = typeof(INavigable<>);
-        if (screenType.GetGenericArguments().Length != 1)
-            return;
-
-        Type navigableGenericType = navigableInterfaceType.MakeGenericType(screenType.GetGenericArguments());
-        if (navigableGenericType.IsAssignableFrom(screenType))
-        {
-            // Create an instance of the parameter type, this assumes the parameter has a public constructor matching the parameters
-            Type parameterType = screenType.GetGenericArguments()[0];
-            object? parameter = Activator.CreateInstance(parameterType, resolution.Parameters);
-            // Invoke the activate method 
-            MethodInfo? method = screenType.GetMethod(nameof(INavigable<object>.Navigated));
-            if (method != null && parameter != null)
-                await (Task) method.Invoke(screen, new[] {parameter})!;
-        }
     }
 
     private async Task<RouteResolution> Resolve(string path)
     {
         foreach (IRouterRegistration routerRegistration in Routes)
         {
-            RouteResolution result = await routerRegistration.Resolve(path);
+            RouteResolution result = await RouteResolution.Resolve(routerRegistration, path);
             if (result.Success)
                 return result;
         }
@@ -112,47 +50,51 @@ internal class Router : CorePropertyChanged, IRouter
     /// <inheritdoc />
     public List<IRouterRegistration> Routes { get; } = new();
 
+    /// <inheritdoc />
     public async Task Navigate(string path, RouterNavigationOptions? options = null)
     {
-        string? startPath = _currentRouteSubject.Value;
-
+        options ??= new RouterNavigationOptions();
+        
         if (Root == null)
             throw new ArtemisRoutingException("Cannot navigate without a root having been set");
-
-        if (_currentRouteSubject.Value != null && _currentRouteSubject.Value.Equals(path, StringComparison.InvariantCultureIgnoreCase))
+        if (PathEquals(path, options.IgnoreOnPartialMatch) || (_currentNavigation != null && _currentNavigation.PathEquals(path, options.IgnoreOnPartialMatch)))
             return;
-
+        
         RouteResolution resolution = await Resolve(path);
         if (!resolution.Success)
+        {
+            _logger.Warning("Failed to resolve path {Path}", path);
+            return;
+        }
+   
+        Navigation navigation = _getNavigation(Root, resolution, options);
+
+        _currentNavigation?.Cancel();
+        _currentNavigation = navigation;
+
+        // Execute the navigation
+        await navigation.Navigate();
+
+        // If it was cancelled before completion, don't add it to history or update the current path
+        if (navigation.Cancelled)
             return;
 
-        options ??= new RouterNavigationOptions();
-
-        try
+        _currentRouteSubject.OnNext(path);
+        if (options.AddToHistory)
         {
-            // Update the path and stack before navigating, this ensures that if navigation triggers a redirect CurrentRoute and the stacks stay correct
-            _currentRouteSubject.OnNext(path);
-            if (options.AddToHistory)
-            {
-                _backStack.Push(path);
-                _forwardStack.Clear();
-            }
-
-            await NavigateResolution(resolution, Root);
-        }
-        catch (Exception e)
-        {
-            // Put back the previous path
-            if (_currentRouteSubject.Value != startPath)
-                _currentRouteSubject.OnNext(startPath);
-
-            // Clear the history to get rid of any broken state
-            ClearHistory();
-
-            throw new ArtemisRoutingException($"Failed to navigate to {path}", e);
+            _backStack.Push(path);
+            _forwardStack.Clear();
         }
     }
 
+    private bool PathEquals(string path, bool allowPartialMatch)
+    {
+        if (allowPartialMatch)
+            return _currentRouteSubject.Value != null && _currentRouteSubject.Value.StartsWith(path, StringComparison.InvariantCultureIgnoreCase);
+        return string.Equals(_currentRouteSubject.Value, path, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    /// <inheritdoc />
     public async Task<bool> GoBack()
     {
         if (!_backStack.TryPop(out string? path))
@@ -163,6 +105,7 @@ internal class Router : CorePropertyChanged, IRouter
         return true;
     }
 
+    /// <inheritdoc />
     public async Task<bool> GoForward()
     {
         if (!_forwardStack.TryPop(out string? path))
@@ -171,5 +114,12 @@ internal class Router : CorePropertyChanged, IRouter
         await Navigate(path);
         _backStack.Push(path);
         return true;
+    }
+
+    /// <inheritdoc />
+    public void ClearHistory()
+    {
+        _backStack.Clear();
+        _forwardStack.Clear();
     }
 }
