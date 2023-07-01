@@ -10,7 +10,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Settings;
 
-public class SettingsViewModel : ActivatableRoutable, IMainScreenViewModel, INavigable
+public class SettingsViewModel : RoutableScreen<ActivatableViewModelBase>, IMainScreenViewModel
 {
     private readonly IRouter _router;
     private SettingsTab? _selectedTab;
@@ -43,9 +43,9 @@ public class SettingsViewModel : ActivatableRoutable, IMainScreenViewModel, INav
     }
 
     public ViewModelBase? TitleBarViewModel => null;
-
+    
     /// <inheritdoc />
-    public async Task Navigated(NavigationArguments args, CancellationToken cancellationToken)
+    public override async Task OnNavigating(NavigationArguments args, CancellationToken cancellationToken)
     {
         // Display tab change on navigate
         SelectedTab = SettingTabs.FirstOrDefault(t => t.Matches(args.Path));

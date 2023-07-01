@@ -131,4 +131,9 @@ public class SidebarProfileConfigurationViewModel : ActivatableViewModelBase
         ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
         _profileService.ImportProfile(ProfileConfiguration.Category, export, true, false, "copy");
     }
+
+    public bool Matches(string s)
+    {
+        return s.StartsWith("profile-editor") && s.EndsWith(ProfileConfiguration.ProfileId.ToString());
+    }
 }

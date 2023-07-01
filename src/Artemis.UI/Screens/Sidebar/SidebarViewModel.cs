@@ -12,7 +12,6 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
-using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using DynamicData;
@@ -25,16 +24,14 @@ namespace Artemis.UI.Screens.Sidebar;
 public class SidebarViewModel : ActivatableViewModelBase
 {
     private readonly IRouter _router;
-    private readonly IProfileEditorService _profileEditorService;
     private readonly IWindowService _windowService;
     private SidebarScreenViewModel? _selectedSidebarScreen;
     private ReadOnlyObservableCollection<SidebarCategoryViewModel> _sidebarCategories = new(new ObservableCollection<SidebarCategoryViewModel>());
 
-    public SidebarViewModel(IRouter router, IProfileService profileService, IWindowService windowService, IProfileEditorService profileEditorService, ISidebarVmFactory sidebarVmFactory)
+    public SidebarViewModel(IRouter router, IProfileService profileService, IWindowService windowService, ISidebarVmFactory sidebarVmFactory)
     {
         _router = router;
         _windowService = windowService;
-        _profileEditorService = profileEditorService;
 
         SidebarScreens = new ObservableCollection<SidebarScreenViewModel>
         {
@@ -54,7 +51,6 @@ public class SidebarViewModel : ActivatableViewModelBase
         this.WhenActivated(d =>
         {
             _router.CurrentPath.WhereNotNull().Subscribe(r => SelectedSidebarScreen = SidebarScreens.FirstOrDefault(s => s.Matches(r))).DisposeWith(d);
-            this.WhenAnyObservable(vm => vm._profileEditorService.ProfileConfiguration).Subscribe(NavigateToProfile).DisposeWith(d);
 
             Observable.FromEventPattern<ProfileCategoryEventArgs>(x => profileService.ProfileCategoryAdded += x, x => profileService.ProfileCategoryAdded -= x)
                 .Subscribe(e => profileCategories.Add(e.EventArgs.ProfileCategory))
@@ -108,14 +104,6 @@ public class SidebarViewModel : ActivatableViewModelBase
             .WithCloseButtonText("Cancel")
             .WithDefaultButton(ContentDialogButton.Primary)
             .ShowAsync();
-    }
-
-    private void NavigateToProfile(ProfileConfiguration? profile)
-    {
-        // if (profile == null && _hostScreen.Router.GetCurrentViewModel() is ProfileEditorViewModel)
-        //     SelectedSidebarScreen = SidebarScreens.FirstOrDefault();
-        // else if (profile != null && _hostScreen.Router.GetCurrentViewModel() is not ProfileEditorViewModel)
-        //     _hostScreen.Router.Navigate.Execute(_profileEditorVmFactory.ProfileEditorViewModel(_hostScreen));
     }
 
     private void NavigateToScreen(SidebarScreenViewModel sidebarScreenViewModel)

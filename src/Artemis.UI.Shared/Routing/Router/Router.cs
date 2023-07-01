@@ -10,15 +10,15 @@ namespace Artemis.UI.Shared.Routing;
 internal class Router : CorePropertyChanged, IRouter
 {
     private readonly ILogger _logger;
-    private readonly Stack<string> _backStack = new();
+    private readonly Func<IRoutableScreen, RouteResolution, RouterNavigationOptions, Navigation> _getNavigation;
     private readonly BehaviorSubject<string?> _currentRouteSubject;
+    private readonly Stack<string> _backStack = new();
     private readonly Stack<string> _forwardStack = new();
-    private readonly Func<IRoutable, RouteResolution, RouterNavigationOptions, Navigation> _getNavigation;
     private Navigation? _currentNavigation;
 
-    private IRoutable? _root;
+    private IRoutableScreen? _root;
 
-    public Router(ILogger logger, Func<IRoutable, RouteResolution, RouterNavigationOptions, Navigation> getNavigation)
+    public Router(ILogger logger, Func<IRoutableScreen, RouteResolution, RouterNavigationOptions, Navigation> getNavigation)
     {
         _logger = logger;
         _getNavigation = getNavigation;
@@ -38,13 +38,6 @@ internal class Router : CorePropertyChanged, IRouter
     }
 
     /// <inheritdoc />
-    public IRoutable? Root
-    {
-        get => _root;
-        set => SetAndNotify(ref _root, value);
-    }
-
-    /// <inheritdoc />
     public IObservable<string?> CurrentPath => _currentRouteSubject;
 
     /// <inheritdoc />
@@ -55,7 +48,7 @@ internal class Router : CorePropertyChanged, IRouter
     {
         options ??= new RouterNavigationOptions();
         
-        if (Root == null)
+        if (_root == null)
             throw new ArtemisRoutingException("Cannot navigate without a root having been set");
         if (PathEquals(path, options.IgnoreOnPartialMatch) || (_currentNavigation != null && _currentNavigation.PathEquals(path, options.IgnoreOnPartialMatch)))
             return;
@@ -66,14 +59,19 @@ internal class Router : CorePropertyChanged, IRouter
             _logger.Warning("Failed to resolve path {Path}", path);
             return;
         }
+        
+        NavigationArguments args = new(resolution.Path, resolution.GetAllParameters());
+        
+        if (!await RequestClose(_root, args))
+            return;
    
-        Navigation navigation = _getNavigation(Root, resolution, options);
+        Navigation navigation = _getNavigation(_root, resolution, options);
 
         _currentNavigation?.Cancel();
         _currentNavigation = navigation;
 
         // Execute the navigation
-        await navigation.Navigate();
+        await navigation.Navigate(args);
 
         // If it was cancelled before completion, don't add it to history or update the current path
         if (navigation.Cancelled)
@@ -85,13 +83,6 @@ internal class Router : CorePropertyChanged, IRouter
             _backStack.Push(path);
             _forwardStack.Clear();
         }
-    }
-
-    private bool PathEquals(string path, bool allowPartialMatch)
-    {
-        if (allowPartialMatch)
-            return _currentRouteSubject.Value != null && _currentRouteSubject.Value.StartsWith(path, StringComparison.InvariantCultureIgnoreCase);
-        return string.Equals(_currentRouteSubject.Value, path, StringComparison.InvariantCultureIgnoreCase);
     }
 
     /// <inheritdoc />
@@ -121,5 +112,41 @@ internal class Router : CorePropertyChanged, IRouter
     {
         _backStack.Clear();
         _forwardStack.Clear();
+    }
+
+    /// <inheritdoc />
+    public void SetRoot<TScreen>(RoutableScreen<TScreen> root) where TScreen : class
+    {
+        _root = root;
+    }
+
+    /// <inheritdoc />
+    public void SetRoot<TScreen, TParam>(RoutableScreen<TScreen, TParam> root) where TScreen : class
+    {
+        _root = root;
+    }
+
+    private async Task<bool> RequestClose(object screen, NavigationArguments args)
+    {
+        if (screen is not IRoutableScreen routableScreen)
+            return true;
+
+        await routableScreen.InternalOnClosing(args);
+        if (args.Cancelled)
+        {
+            _logger.Debug("Navigation to {Path} cancelled during RequestClose by {Screen}", args.Path, screen.GetType().Name);
+            return false;
+        }
+
+        if (routableScreen.InternalScreen == null)
+            return true;
+        return await RequestClose(routableScreen.InternalScreen, args);
+    }
+
+    private bool PathEquals(string path, bool allowPartialMatch)
+    {
+        if (allowPartialMatch)
+            return _currentRouteSubject.Value != null && _currentRouteSubject.Value.StartsWith(path, StringComparison.InvariantCultureIgnoreCase);
+        return string.Equals(_currentRouteSubject.Value, path, StringComparison.InvariantCultureIgnoreCase);
     }
 }

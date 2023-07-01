@@ -7,10 +7,8 @@ using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.DryIoc.Factories;
-using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Settings.Updating;
 using Artemis.UI.Services.Updating;
-using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
@@ -24,7 +22,7 @@ using StrawberryShake;
 
 namespace Artemis.UI.Screens.Settings;
 
-public class ReleasesTabViewModel : ActivatableRoutable, INavigable
+public class ReleasesTabViewModel : RoutableScreen<ReleaseDetailsViewModel>
 {
     private readonly ILogger _logger;
     private readonly IUpdateService _updateService;
@@ -111,11 +109,9 @@ public class ReleasesTabViewModel : ActivatableRoutable, INavigable
             Loading = false;
         }
     }
-
-    #region Implementation of INavigable
-
+    
     /// <inheritdoc />
-    public async Task Navigated(NavigationArguments args, CancellationToken cancellationToken)
+    public override async Task OnNavigating(NavigationArguments args, CancellationToken cancellationToken)
     {
         if (!ReleaseViewModels.Any())
             await GetMoreReleases(cancellationToken);
@@ -126,6 +122,4 @@ public class ReleasesTabViewModel : ActivatableRoutable, INavigable
         else
             SelectedReleaseViewModel = ReleaseViewModels.FirstOrDefault();
     }
-
-    #endregion
 }

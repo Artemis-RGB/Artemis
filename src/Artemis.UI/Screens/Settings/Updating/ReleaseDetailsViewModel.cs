@@ -18,7 +18,7 @@ using StrawberryShake;
 
 namespace Artemis.UI.Screens.Settings.Updating;
 
-public class ReleaseDetailsViewModel : ActivatableViewModelBase, INavigable<ReleaseDetailsViewModelParameters>
+public class ReleaseDetailsViewModel : RoutableScreen<ViewModelBase, ReleaseDetailsViewModelParameters>
 {
     private readonly ILogger _logger;
     private readonly INotificationService _notificationService;
@@ -177,9 +177,8 @@ public class ReleaseDetailsViewModel : ActivatableViewModelBase, INavigable<Rele
         }
     }
 
-
     /// <inheritdoc />
-    public async Task Navigated(ReleaseDetailsViewModelParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
+    public override async Task OnNavigating(ReleaseDetailsViewModelParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
         // There's no point in running anything but the latest version of the current channel.
         // Perhaps later that won't be true anymore, then we could consider allowing to install

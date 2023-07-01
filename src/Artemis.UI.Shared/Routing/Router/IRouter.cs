@@ -10,11 +10,6 @@ namespace Artemis.UI.Shared.Routing;
 public interface IRouter
 {
     /// <summary>
-    ///     Gets or sets the IRoutable that hosts the root of the navigation.
-    /// </summary>
-    IRoutable? Root { get; set; }
-
-    /// <summary>
     ///     Gets an observable containing the current path.
     /// </summary>
     IObservable<string?> CurrentPath { get; }
@@ -49,4 +44,7 @@ public interface IRouter
     ///     Clears the navigation history.
     /// </summary>
     void ClearHistory();
+    
+    void SetRoot<TScreen>(RoutableScreen<TScreen> root) where TScreen : class;
+    void SetRoot<TScreen, TParam>(RoutableScreen<TScreen, TParam> root) where TScreen : class;
 }

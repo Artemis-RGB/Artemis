@@ -14,7 +14,7 @@ public partial class SettingsView : ReactiveUserControl<SettingsViewModel>
     public SettingsView()
     {
         InitializeComponent();
-        this.WhenActivated(d => { ViewModel.WhenAnyValue(vm => vm.CurrentScreen).WhereNotNull().Subscribe(Navigate).DisposeWith(d); });
+        this.WhenActivated(d => { ViewModel.WhenAnyValue(vm => vm.Screen).WhereNotNull().Subscribe(Navigate).DisposeWith(d); });
     }
 
     private void Navigate(ViewModelBase viewModel)

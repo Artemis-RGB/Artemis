@@ -1,6 +1,5 @@
 using System;
 using System.Reactive.Disposables;
-using Artemis.UI.Shared;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using ReactiveUI;
@@ -12,21 +11,18 @@ public partial class RootView : ReactiveUserControl<RootViewModel>
     public RootView()
     {
         InitializeComponent();
-        this.WhenActivated(d =>
-        {
-            ViewModel.WhenAnyValue(vm => vm.CurrentScreen).WhereNotNull().Subscribe(TryNavigate).DisposeWith(d);
-        });
+        this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Screen).Subscribe(Navigate).DisposeWith(d));
     }
 
-    private void TryNavigate(ViewModelBase viewModel)
+    private void Navigate(IMainScreenViewModel viewModel)
     {
         try
         {
             Dispatcher.UIThread.Invoke(() => RootFrame.NavigateFromObject(viewModel));
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine();
+            // ignored
         }
     }
 }

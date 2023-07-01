@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -15,12 +14,11 @@ using Artemis.UI.Shared.Services.MainWindow;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
-using DryIoc;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Root;
 
-public class RootViewModel : ActivatableRoutable, IMainWindowProvider
+public class RootViewModel : RoutableScreen<IMainScreenViewModel>, IMainWindowProvider
 {
     private readonly IRouter _router;
     private readonly ICoreService _coreService;
@@ -55,14 +53,15 @@ public class RootViewModel : ActivatableRoutable, IMainWindowProvider
         _defaultTitleBarViewModel = defaultTitleBarViewModel;
         _lifeTime = (IClassicDesktopStyleApplicationLifetime) Application.Current!.ApplicationLifetime!;
 
-        router.Root = this;
+        router.SetRoot(this);
         mainWindowService.ConfigureMainWindowProvider(this);
 
         DisplayAccordingToSettings();
         OpenScreen = ReactiveCommand.Create<string>(ExecuteOpenScreen);
         OpenDebugger = ReactiveCommand.CreateFromTask(ExecuteOpenDebugger);
         Exit = ReactiveCommand.CreateFromTask(ExecuteExit);
-
+        this.WhenAnyValue(vm => vm.Screen).Subscribe(UpdateTitleBarViewModel);
+        
         Task.Run(() =>
         {
             if (_updateService.Initialize())

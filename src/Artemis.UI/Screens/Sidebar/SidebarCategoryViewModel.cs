@@ -11,6 +11,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
@@ -24,23 +25,19 @@ namespace Artemis.UI.Screens.Sidebar;
 public class SidebarCategoryViewModel : ActivatableViewModelBase
 {
     private readonly IProfileService _profileService;
-    private readonly ISidebarVmFactory _vmFactory;
     private readonly IWindowService _windowService;
-    private readonly IProfileEditorService _profileEditorService;
+    private readonly ISidebarVmFactory _vmFactory;
+    private readonly IRouter _router;
     private ObservableAsPropertyHelper<bool>? _isCollapsed;
     private ObservableAsPropertyHelper<bool>? _isSuspended;
     private SidebarProfileConfigurationViewModel? _selectedProfileConfiguration;
 
-    public SidebarCategoryViewModel(ProfileCategory profileCategory,
-        IProfileService profileService,
-        IWindowService windowService,
-        IProfileEditorService profileEditorService,
-        ISidebarVmFactory vmFactory)
+    public SidebarCategoryViewModel(ProfileCategory profileCategory, IProfileService profileService, IWindowService windowService, ISidebarVmFactory vmFactory, IRouter router)
     {
         _profileService = profileService;
         _windowService = windowService;
-        _profileEditorService = profileEditorService;
         _vmFactory = vmFactory;
+        _router = router;
 
         ProfileCategory = profileCategory;
         SourceList<ProfileConfiguration> profileConfigurations = new();
@@ -66,6 +63,14 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
 
         this.WhenActivated(d =>
         {
+            // Navigate on selection change
+            this.WhenAnyValue(vm => vm.SelectedProfileConfiguration)
+                .WhereNotNull()
+                .Subscribe(s => _router.Navigate($"profile-editor/{s.ProfileConfiguration.ProfileId}", new RouterNavigationOptions {IgnoreOnPartialMatch = true}))
+                .DisposeWith(d);
+            
+            _router.CurrentPath.WhereNotNull().Subscribe(r => SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(c => c.Matches(r))).DisposeWith(d);
+                
             // Update the list of profiles whenever the category fires events
             Observable.FromEventPattern<ProfileConfigurationEventArgs>(x => profileCategory.ProfileConfigurationAdded += x, x => profileCategory.ProfileConfigurationAdded -= x)
                 .Subscribe(e => profileConfigurations.Add(e.EventArgs.ProfileConfiguration))
@@ -73,34 +78,9 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
             Observable.FromEventPattern<ProfileConfigurationEventArgs>(x => profileCategory.ProfileConfigurationRemoved += x, x => profileCategory.ProfileConfigurationRemoved -= x)
                 .Subscribe(e => profileConfigurations.RemoveMany(profileConfigurations.Items.Where(c => c == e.EventArgs.ProfileConfiguration)))
                 .DisposeWith(d);
-
-            profileEditorService.ProfileConfiguration
-                .Subscribe(p => SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(c => ReferenceEquals(c.ProfileConfiguration, p)))
-                .DisposeWith(d);
-
+           
             _isCollapsed = ProfileCategory.WhenAnyValue(vm => vm.IsCollapsed).ToProperty(this, vm => vm.IsCollapsed).DisposeWith(d);
             _isSuspended = ProfileCategory.WhenAnyValue(vm => vm.IsSuspended).ToProperty(this, vm => vm.IsSuspended).DisposeWith(d);
-
-            // Change the current profile configuration when a new one is selected
-            this.WhenAnyValue(vm => vm.SelectedProfileConfiguration)
-                .WhereNotNull()
-                .Subscribe(s =>
-                {
-                    try
-                    {
-                        profileEditorService.ChangeCurrentProfileConfiguration(s.ProfileConfiguration);
-                    }
-                    catch (Exception e)
-                    {
-                        if (s.ProfileConfiguration.BrokenState != null && s.ProfileConfiguration.BrokenStateException != null)
-                            _windowService.ShowExceptionDialog(s.ProfileConfiguration.BrokenState, s.ProfileConfiguration.BrokenStateException);
-                        else
-                            _windowService.ShowExceptionDialog(e.Message, e);
-
-                        profileEditorService.ChangeCurrentProfileConfiguration(null);
-                        SelectedProfileConfiguration = null;
-                    }
-                });
         });
 
         profileConfigurations.Edit(updater =>
@@ -158,7 +138,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
         if (await _windowService.ShowConfirmContentDialog($"Delete {ProfileCategory.Name}", "Do you want to delete this category and all its profiles?"))
         {
             if (ProfileCategory.ProfileConfigurations.Any(c => c.IsBeingEdited))
-                _profileEditorService.ChangeCurrentProfileConfiguration(null);
+                await _router.Navigate("home");
             _profileService.DeleteProfileCategory(ProfileCategory);
         }
     }

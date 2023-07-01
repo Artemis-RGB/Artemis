@@ -12,7 +12,7 @@ public partial class ReleasesTabView : ReactiveUserControl<ReleasesTabViewModel>
     public ReleasesTabView()
     {
         InitializeComponent();
-        this.WhenActivated(d => { ViewModel.WhenAnyValue(vm => vm.CurrentScreen).WhereNotNull().Subscribe(Navigate).DisposeWith(d); });
+        this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Screen).WhereNotNull().Subscribe(Navigate).DisposeWith(d));
     }
 
     private void Navigate(ViewModelBase viewModel)
