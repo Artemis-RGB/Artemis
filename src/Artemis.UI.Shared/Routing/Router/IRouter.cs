@@ -44,7 +44,19 @@ public interface IRouter
     ///     Clears the navigation history.
     /// </summary>
     void ClearHistory();
-    
+
+    /// <summary>
+    ///     Sets the root screen from which navigation takes place.
+    /// </summary>
+    /// <param name="root">The root screen to set.</param>
+    /// <typeparam name="TScreen">The type of the root screen. It must be a class.</typeparam>
     void SetRoot<TScreen>(RoutableScreen<TScreen> root) where TScreen : class;
-    void SetRoot<TScreen, TParam>(RoutableScreen<TScreen, TParam> root) where TScreen : class;
+
+    /// <summary>
+    ///     Sets the root screen from which navigation takes place.
+    /// </summary>
+    /// <param name="root">The root screen to set.</param>
+    /// <typeparam name="TScreen">The type of the root screen. It must be a class.</typeparam>
+    /// <typeparam name="TParam">The type of the parameters for the root screen. It must have a parameterless constructor.</typeparam>
+    void SetRoot<TScreen, TParam>(RoutableScreen<TScreen, TParam> root) where TScreen : class where TParam : new();
 }

@@ -14,7 +14,6 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
-using Artemis.UI.Shared.Services.ProfileEditor;
 using DynamicData;
 using DynamicData.Binding;
 using Newtonsoft.Json;
@@ -66,7 +65,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
             // Navigate on selection change
             this.WhenAnyValue(vm => vm.SelectedProfileConfiguration)
                 .WhereNotNull()
-                .Subscribe(s => _router.Navigate($"profile-editor/{s.ProfileConfiguration.ProfileId}", new RouterNavigationOptions {IgnoreOnPartialMatch = true}))
+                .Subscribe(s => _router.Navigate($"profile-editor/{s.ProfileConfiguration.ProfileId}", new RouterNavigationOptions {IgnoreOnPartialMatch = true, RecycleScreens = false}))
                 .DisposeWith(d);
             
             _router.CurrentPath.WhereNotNull().Subscribe(r => SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(c => c.Matches(r))).DisposeWith(d);

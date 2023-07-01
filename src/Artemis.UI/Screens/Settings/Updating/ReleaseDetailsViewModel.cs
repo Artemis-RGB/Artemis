@@ -20,16 +20,16 @@ namespace Artemis.UI.Screens.Settings.Updating;
 
 public class ReleaseDetailsViewModel : RoutableScreen<ViewModelBase, ReleaseDetailsViewModelParameters>
 {
+    private readonly ObservableAsPropertyHelper<long> _fileSize;
     private readonly ILogger _logger;
     private readonly INotificationService _notificationService;
     private readonly IUpdateService _updateService;
     private readonly IUpdatingClient _updatingClient;
-    private readonly ObservableAsPropertyHelper<long> _fileSize;
-
-    private CancellationTokenSource? _installerCts;
     private bool _installationAvailable;
     private bool _installationFinished;
     private bool _installationInProgress;
+
+    private CancellationTokenSource? _installerCts;
     private bool _loading = true;
     private IGetReleaseById_PublishedRelease? _release;
     private ReleaseInstaller? _releaseInstaller;
@@ -60,11 +60,6 @@ public class ReleaseDetailsViewModel : RoutableScreen<ViewModelBase, ReleaseDeta
             .ToProperty(this, vm => vm.FileSize);
 
         this.WhenActivated(d => Disposable.Create(_installerCts, cts => cts?.Cancel()).DisposeWith(d));
-    }
-
-    private void ExecuteRestart()
-    {
-        _updateService.RestartForUpdate(false);
     }
 
     public ReactiveCommand<Unit, Unit> Restart { get; }
@@ -113,6 +108,22 @@ public class ReleaseDetailsViewModel : RoutableScreen<ViewModelBase, ReleaseDeta
     {
         if (Release != null)
             Utilities.OpenUrl($"https://github.com/Artemis-RGB/Artemis/commit/{Release.Commit}");
+    }
+
+    /// <inheritdoc />
+    public override async Task OnNavigating(ReleaseDetailsViewModelParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
+    {
+        // There's no point in running anything but the latest version of the current channel.
+        // Perhaps later that won't be true anymore, then we could consider allowing to install
+        // older versions with compatible database versions.
+        InstallationAvailable = _updateService.CachedLatestRelease?.Id == parameters.ReleaseId;
+        await RetrieveDetails(parameters.ReleaseId, cancellationToken);
+        ReleaseInstaller = _updateService.GetReleaseInstaller(parameters.ReleaseId);
+    }
+
+    private void ExecuteRestart()
+    {
+        _updateService.RestartForUpdate(false);
     }
 
     private async Task ExecuteInstall(CancellationToken cancellationToken)
@@ -176,25 +187,9 @@ public class ReleaseDetailsViewModel : RoutableScreen<ViewModelBase, ReleaseDeta
             Loading = false;
         }
     }
-
-    /// <inheritdoc />
-    public override async Task OnNavigating(ReleaseDetailsViewModelParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
-    {
-        // There's no point in running anything but the latest version of the current channel.
-        // Perhaps later that won't be true anymore, then we could consider allowing to install
-        // older versions with compatible database versions.
-        InstallationAvailable = _updateService.CachedLatestRelease?.Id == parameters.ReleaseId;
-        await RetrieveDetails(parameters.ReleaseId, cancellationToken);
-        ReleaseInstaller = _updateService.GetReleaseInstaller(parameters.ReleaseId);
-    }
 }
 
 public class ReleaseDetailsViewModelParameters
 {
-    public ReleaseDetailsViewModelParameters(Guid releaseId)
-    {
-        ReleaseId = releaseId;
-    }
-
     public Guid ReleaseId { get; set; }
 }

@@ -9,11 +9,11 @@ namespace Artemis.UI.Shared.Routing;
 
 internal class Router : CorePropertyChanged, IRouter
 {
-    private readonly ILogger _logger;
-    private readonly Func<IRoutableScreen, RouteResolution, RouterNavigationOptions, Navigation> _getNavigation;
-    private readonly BehaviorSubject<string?> _currentRouteSubject;
     private readonly Stack<string> _backStack = new();
+    private readonly BehaviorSubject<string?> _currentRouteSubject;
     private readonly Stack<string> _forwardStack = new();
+    private readonly Func<IRoutableScreen, RouteResolution, RouterNavigationOptions, Navigation> _getNavigation;
+    private readonly ILogger _logger;
     private Navigation? _currentNavigation;
 
     private IRoutableScreen? _root;
@@ -37,6 +37,30 @@ internal class Router : CorePropertyChanged, IRouter
         return RouteResolution.AsFailure(path);
     }
 
+    private async Task<bool> RequestClose(object screen, NavigationArguments args)
+    {
+        if (screen is not IRoutableScreen routableScreen)
+            return true;
+
+        await routableScreen.InternalOnClosing(args);
+        if (args.Cancelled)
+        {
+            _logger.Debug("Navigation to {Path} cancelled during RequestClose by {Screen}", args.Path, screen.GetType().Name);
+            return false;
+        }
+
+        if (routableScreen.InternalScreen == null)
+            return true;
+        return await RequestClose(routableScreen.InternalScreen, args);
+    }
+
+    private bool PathEquals(string path, bool allowPartialMatch)
+    {
+        if (allowPartialMatch)
+            return _currentRouteSubject.Value != null && _currentRouteSubject.Value.StartsWith(path, StringComparison.InvariantCultureIgnoreCase);
+        return string.Equals(_currentRouteSubject.Value, path, StringComparison.InvariantCultureIgnoreCase);
+    }
+
     /// <inheritdoc />
     public IObservable<string?> CurrentPath => _currentRouteSubject;
 
@@ -47,24 +71,24 @@ internal class Router : CorePropertyChanged, IRouter
     public async Task Navigate(string path, RouterNavigationOptions? options = null)
     {
         options ??= new RouterNavigationOptions();
-        
+
         if (_root == null)
             throw new ArtemisRoutingException("Cannot navigate without a root having been set");
         if (PathEquals(path, options.IgnoreOnPartialMatch) || (_currentNavigation != null && _currentNavigation.PathEquals(path, options.IgnoreOnPartialMatch)))
             return;
-        
+
         RouteResolution resolution = await Resolve(path);
         if (!resolution.Success)
         {
             _logger.Warning("Failed to resolve path {Path}", path);
             return;
         }
-        
+
         NavigationArguments args = new(resolution.Path, resolution.GetAllParameters());
-        
+
         if (!await RequestClose(_root, args))
             return;
-   
+
         Navigation navigation = _getNavigation(_root, resolution, options);
 
         _currentNavigation?.Cancel();
@@ -121,32 +145,8 @@ internal class Router : CorePropertyChanged, IRouter
     }
 
     /// <inheritdoc />
-    public void SetRoot<TScreen, TParam>(RoutableScreen<TScreen, TParam> root) where TScreen : class
+    public void SetRoot<TScreen, TParam>(RoutableScreen<TScreen, TParam> root) where TScreen : class where TParam : new()
     {
         _root = root;
-    }
-
-    private async Task<bool> RequestClose(object screen, NavigationArguments args)
-    {
-        if (screen is not IRoutableScreen routableScreen)
-            return true;
-
-        await routableScreen.InternalOnClosing(args);
-        if (args.Cancelled)
-        {
-            _logger.Debug("Navigation to {Path} cancelled during RequestClose by {Screen}", args.Path, screen.GetType().Name);
-            return false;
-        }
-
-        if (routableScreen.InternalScreen == null)
-            return true;
-        return await RequestClose(routableScreen.InternalScreen, args);
-    }
-
-    private bool PathEquals(string path, bool allowPartialMatch)
-    {
-        if (allowPartialMatch)
-            return _currentRouteSubject.Value != null && _currentRouteSubject.Value.StartsWith(path, StringComparison.InvariantCultureIgnoreCase);
-        return string.Equals(_currentRouteSubject.Value, path, StringComparison.InvariantCultureIgnoreCase);
     }
 }
