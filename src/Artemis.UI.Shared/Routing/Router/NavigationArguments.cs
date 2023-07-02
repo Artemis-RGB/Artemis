@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Artemis.UI.Shared.Routing;
 
@@ -7,12 +8,18 @@ namespace Artemis.UI.Shared.Routing;
 /// </summary>
 public class NavigationArguments
 {
-    internal NavigationArguments(string path, object[] routeParameters)
+    internal NavigationArguments(IRouter router, string path, object[] routeParameters)
     {
+        Router = router;
         Path = path;
         RouteParameters = routeParameters;
         SegmentParameters = Array.Empty<object>();
     }
+
+    /// <summary>
+    /// Gets the router in which the navigation is taking place.
+    /// </summary>
+    public IRouter Router { get; }
 
     /// <summary>
     /// Gets the path of the route that is being navigated to.
@@ -29,10 +36,7 @@ public class NavigationArguments
     /// </summary>
     public object[] SegmentParameters { get; internal set; }
 
-    /// <summary>
-    /// A boolean indicating whether the navigation has been cancelled.
-    /// </summary>
-    public bool Cancelled { get; private set; }
+    internal bool Cancelled { get; private set; }
 
     /// <summary>
     /// Cancels further processing of the current navigation. 

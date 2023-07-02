@@ -72,7 +72,7 @@ internal class Router : CorePropertyChanged, IRouter
     public async Task Navigate(string path, RouterNavigationOptions? options = null)
     {
         options ??= new RouterNavigationOptions();
-        
+
         // Routing takes place on the UI thread with processing heavy tasks offloaded by the router itself
         await Dispatcher.UIThread.InvokeAsync(() => InternalNavigate(path, options));
     }
@@ -84,6 +84,7 @@ internal class Router : CorePropertyChanged, IRouter
         if (PathEquals(path, options.IgnoreOnPartialMatch) || (_currentNavigation != null && _currentNavigation.PathEquals(path, options.IgnoreOnPartialMatch)))
             return;
 
+        string? previousPath = _currentRouteSubject.Value;
         RouteResolution resolution = Resolve(path);
         if (!resolution.Success)
         {
@@ -91,7 +92,7 @@ internal class Router : CorePropertyChanged, IRouter
             return;
         }
 
-        NavigationArguments args = new(resolution.Path, resolution.GetAllParameters());
+        NavigationArguments args = new(this, resolution.Path, resolution.GetAllParameters());
 
         if (!await RequestClose(_root, args))
             return;
@@ -108,12 +109,13 @@ internal class Router : CorePropertyChanged, IRouter
         if (navigation.Cancelled)
             return;
 
-        _currentRouteSubject.OnNext(path);
-        if (options.AddToHistory)
+        if (options.AddToHistory && previousPath != null)
         {
-            _backStack.Push(path);
+            _backStack.Push(previousPath);
             _forwardStack.Clear();
         }
+
+        _currentRouteSubject.OnNext(path);
     }
 
     /// <inheritdoc />
@@ -122,8 +124,11 @@ internal class Router : CorePropertyChanged, IRouter
         if (!_backStack.TryPop(out string? path))
             return false;
 
-        await Navigate(path);
-        _forwardStack.Push(path);
+        string? previousPath = _currentRouteSubject.Value;
+        await Navigate(path, new RouterNavigationOptions {AddToHistory = false});
+        if (previousPath != null)
+            _forwardStack.Push(previousPath);
+        
         return true;
     }
 
@@ -133,8 +138,11 @@ internal class Router : CorePropertyChanged, IRouter
         if (!_forwardStack.TryPop(out string? path))
             return false;
 
-        await Navigate(path);
-        _backStack.Push(path);
+        string? previousPath = _currentRouteSubject.Value;
+        await Navigate(path, new RouterNavigationOptions {AddToHistory = false});
+        if (previousPath != null)
+            _backStack.Push(previousPath);
+        
         return true;
     }
 

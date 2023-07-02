@@ -11,6 +11,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Screens.Scripting;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Newtonsoft.Json;
@@ -21,7 +22,7 @@ namespace Artemis.UI.Screens.ProfileEditor.MenuBar;
 
 public class MenuBarViewModel : ActivatableViewModelBase
 {
-    private readonly ILogger _logger;
+    private readonly IRouter _router;
     private readonly IProfileEditorService _profileEditorService;
     private readonly IProfileService _profileService;
     private readonly ISettingsService _settingsService;
@@ -36,9 +37,9 @@ public class MenuBarViewModel : ActivatableViewModelBase
     private ObservableAsPropertyHelper<RenderProfileElement?>? _profileElement;
     private ObservableAsPropertyHelper<bool>? _suspendedEditing;
 
-    public MenuBarViewModel(ILogger logger, IProfileEditorService profileEditorService, IProfileService profileService, ISettingsService settingsService, IWindowService windowService)
+    public MenuBarViewModel(IRouter router, IProfileEditorService profileEditorService, IProfileService profileService, ISettingsService settingsService, IWindowService windowService)
     {
-        _logger = logger;
+        _router = router;
         _profileEditorService = profileEditorService;
         _profileService = profileService;
         _settingsService = settingsService;
@@ -182,7 +183,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
             return;
 
         if (ProfileConfiguration.IsBeingEdited)
-            await _profileEditorService.ChangeCurrentProfileConfiguration(null);
+            await _router.Navigate("home");
         _profileService.RemoveProfileConfiguration(ProfileConfiguration);
     }
 

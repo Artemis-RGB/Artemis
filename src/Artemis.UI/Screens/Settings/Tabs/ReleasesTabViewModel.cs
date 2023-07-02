@@ -119,7 +119,12 @@ public class ReleasesTabViewModel : RoutableScreen<ReleaseDetailsViewModel>
         // If there is an ID parameter further down the path, preselect it
         if (args.RouteParameters.Length > 0 && args.RouteParameters[0] is Guid releaseId)
             SelectedReleaseViewModel = ReleaseViewModels.FirstOrDefault(vm => vm.Release.Id == releaseId);
+        // Otherwise forward to the last release
         else
-            SelectedReleaseViewModel = ReleaseViewModels.FirstOrDefault();
+        {
+            ReleaseViewModel? lastRelease = ReleaseViewModels.FirstOrDefault();
+            if (lastRelease != null)
+                await _router.Navigate($"settings/releases/{lastRelease.Release.Id}");
+        }
     }
 }

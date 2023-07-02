@@ -160,6 +160,14 @@ public class ProfileEditorViewModel : RoutableScreen<object, ProfileEditorViewMo
     public override async Task OnNavigating(ProfileEditorViewModelParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
         ProfileConfiguration? profileConfiguration = _profileService.ProfileConfigurations.FirstOrDefault(c => c.ProfileId == parameters.ProfileId);
+
+        // If the profile doesn't exist, navigate home for lack of some kind of 404 :p
+        if (profileConfiguration == null)
+        {
+            await args.Router.Navigate("home");
+            return;
+        }
+
         await _profileEditorService.ChangeCurrentProfileConfiguration(profileConfiguration);
         ProfileConfiguration = profileConfiguration;
     }

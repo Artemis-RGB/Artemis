@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Newtonsoft.Json;
@@ -17,15 +18,15 @@ namespace Artemis.UI.Screens.Sidebar;
 
 public class SidebarProfileConfigurationViewModel : ActivatableViewModelBase
 {
-    private readonly IProfileEditorService _profileEditorService;
+    private readonly IRouter _router;
     private readonly IProfileService _profileService;
     private readonly IWindowService _windowService;
     private ObservableAsPropertyHelper<bool>? _isDisabled;
 
-    public SidebarProfileConfigurationViewModel(ProfileConfiguration profileConfiguration, IProfileService profileService, IProfileEditorService profileEditorService, IWindowService windowService)
+    public SidebarProfileConfigurationViewModel(IRouter router, ProfileConfiguration profileConfiguration, IProfileService profileService, IWindowService windowService)
     {
+        _router = router;
         _profileService = profileService;
-        _profileEditorService = profileEditorService;
         _windowService = windowService;
 
         ProfileConfiguration = profileConfiguration;
@@ -98,7 +99,7 @@ public class SidebarProfileConfigurationViewModel : ActivatableViewModelBase
             return;
 
         if (ProfileConfiguration.IsBeingEdited)
-            await _profileEditorService.ChangeCurrentProfileConfiguration(null);
+            await _router.Navigate("home");
         _profileService.RemoveProfileConfiguration(ProfileConfiguration);
     }
 

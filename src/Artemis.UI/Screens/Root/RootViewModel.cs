@@ -85,6 +85,16 @@ public class RootViewModel : RoutableScreen<IMainScreenViewModel>, IMainWindowPr
         set => RaiseAndSetIfChanged(ref _titleBarViewModel, value);
     }
 
+    public void GoBack()
+    {
+        _router.GoBack();
+    }
+
+    public void GoForward()
+    {
+        _router.GoForward();
+    }
+
     public static PluginSetting<WindowSize?>? WindowSizeSetting { get; private set; }
 
     private void UpdateTitleBarViewModel(IMainScreenViewModel? viewModel)
