@@ -10,7 +10,8 @@
                      Icon="/Assets/Images/Logo/application.ico"
                      Title="Artemis 2.0"
                      MinWidth="600"
-                     MinHeight="400">
+                     MinHeight="400" 
+                     PointerReleased="InputElement_OnPointerReleased">
     <windowing:AppWindow.Styles>
       <Styles>
           <Style Selector="Border#TitleBarContainer">

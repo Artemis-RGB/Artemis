@@ -149,7 +149,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
             return;
 
         if (_profileConfiguration.IsBeingEdited)
-            _profileEditorService.ChangeCurrentProfileConfiguration(null);
+            await _profileEditorService.ChangeCurrentProfileConfiguration(null);
         _profileService.RemoveProfileConfiguration(_profileConfiguration);
         Close(_profileConfiguration);
     }

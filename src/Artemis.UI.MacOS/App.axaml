@@ -17,10 +17,10 @@
             <TrayIcon Icon="avares://Artemis.UI/Assets/Images/Logo/application.ico" ToolTipText="Artemis" Command="{CompiledBinding OpenScreen}" CommandParameter="Home">
                 <TrayIcon.Menu>
                     <NativeMenu>
-                        <NativeMenuItem Header="Home" Command="{CompiledBinding OpenScreen}" CommandParameter="Home" />
-                        <!-- <NativeMenuItem Header="Workshop" Command="{CompiledBinding OpenScreen}" CommandParameter="Workshop" /> -->
-                        <NativeMenuItem Header="Surface Editor" Command="{CompiledBinding OpenScreen}" CommandParameter="Surface Editor" />
-                        <NativeMenuItem Header="Settings" Command="{CompiledBinding OpenScreen}" CommandParameter="Settings" />
+                        <NativeMenuItem Header="Home" Command="{CompiledBinding OpenScreen}" CommandParameter="home" />
+                        <!-- <NativeMenuItem Header="Workshop" Command="{CompiledBinding OpenScreen}" CommandParameter="workshop" /> -->
+                        <NativeMenuItem Header="Surface Editor" Command="{CompiledBinding OpenScreen}" CommandParameter="surface-editor" />
+                        <NativeMenuItem Header="Settings" Command="{CompiledBinding OpenScreen}" CommandParameter="settings" />
                         <NativeMenuItemSeparator />
                         <NativeMenuItem Header="Debugger" Command="{CompiledBinding OpenDebugger}" />
                         <NativeMenuItem Header="Exit" Command="{CompiledBinding Exit}" />

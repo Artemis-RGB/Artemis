@@ -1,47 +1,28 @@
 using System;
-using System.Linq;
-using Artemis.UI.Screens.Settings;
+using System.Threading.Tasks;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.MainWindow;
-using ReactiveUI;
 
 namespace Artemis.UI.Services.Updating;
 
 public class BasicUpdateNotificationProvider : IUpdateNotificationProvider
 {
-    private readonly Func<IScreen, SettingsViewModel> _getSettingsViewModel;
     private readonly IMainWindowService _mainWindowService;
     private readonly INotificationService _notificationService;
+    private readonly IRouter _router;
     private Action? _available;
     private Action? _installed;
 
-    public BasicUpdateNotificationProvider(INotificationService notificationService, IMainWindowService mainWindowService, Func<IScreen, SettingsViewModel> getSettingsViewModel)
+    public BasicUpdateNotificationProvider(INotificationService notificationService, IMainWindowService mainWindowService, IRouter router)
     {
         _notificationService = notificationService;
         _mainWindowService = mainWindowService;
-        _getSettingsViewModel = getSettingsViewModel;
+        _router = router;
     }
 
-    /// <inheritdoc />
-    public void ShowNotification(Guid releaseId, string releaseVersion)
-    {
-        if (_mainWindowService.IsMainWindowOpen)
-            ShowAvailable(releaseVersion);
-        else
-            _mainWindowService.MainWindowOpened += (_, _) => ShowAvailable(releaseVersion);
-    }
-
-    /// <inheritdoc />
-    public void ShowInstalledNotification(string installedVersion)
-    {
-        if (_mainWindowService.IsMainWindowOpen)
-            ShowInstalled(installedVersion);
-        else
-            _mainWindowService.MainWindowOpened += (_, _) => ShowInstalled(installedVersion);
-    }
-
-    private void ShowAvailable(string releaseVersion)
+    private void ShowAvailable(Guid releaseId, string releaseVersion)
     {
         _available?.Invoke();
         _available = _notificationService.CreateNotification()
@@ -49,7 +30,7 @@ public class BasicUpdateNotificationProvider : IUpdateNotificationProvider
             .WithMessage($"Artemis {releaseVersion} has been released")
             .WithSeverity(NotificationSeverity.Success)
             .WithTimeout(TimeSpan.FromSeconds(15))
-            .HavingButton(b => b.WithText("View release").WithAction(() => ViewRelease(releaseVersion)))
+            .HavingButton(b => b.WithText("View release").WithAction(() => ViewRelease(releaseId)))
             .Show();
     }
 
@@ -61,28 +42,36 @@ public class BasicUpdateNotificationProvider : IUpdateNotificationProvider
             .WithMessage($"Artemis {installedVersion} has been installed.")
             .WithSeverity(NotificationSeverity.Success)
             .WithTimeout(TimeSpan.FromSeconds(15))
-            .HavingButton(b => b.WithText("View release").WithAction(() => ViewRelease(installedVersion)))
+            .HavingButton(b => b.WithText("View release").WithAction(async () => await ViewRelease(null)))
             .Show();
     }
 
-    private void ViewRelease(string version)
+    private async Task ViewRelease(Guid? releaseId)
     {
         _installed?.Invoke();
         _available?.Invoke();
 
-        if (_mainWindowService.HostScreen == null)
-            return;
+        if (releaseId != null)
+            await _router.Navigate($"settings/releases/{releaseId}");
+        else
+            await _router.Navigate("settings/releases");
+    }
 
-        // TODO: When proper routing has been implemented, use that here
-        // Create a settings VM to navigate to
-        SettingsViewModel settingsViewModel = _getSettingsViewModel(_mainWindowService.HostScreen);
-        // Get the release tab
-        ReleasesTabViewModel releaseTabViewModel = (ReleasesTabViewModel) settingsViewModel.SettingTabs.First(t => t is ReleasesTabViewModel);
+    /// <inheritdoc />
+    public void ShowNotification(Guid releaseId, string releaseVersion)
+    {
+        if (_mainWindowService.IsMainWindowOpen)
+            ShowAvailable(releaseId, releaseVersion);
+        else
+            _mainWindowService.MainWindowOpened += (_, _) => ShowAvailable(releaseId, releaseVersion);
+    }
 
-        // Navigate to the settings VM
-        _mainWindowService.HostScreen.Router.Navigate.Execute(settingsViewModel);
-        // Navigate to the release tab
-        releaseTabViewModel.PreselectVersion = version;
-        settingsViewModel.SelectedTab = releaseTabViewModel;
+    /// <inheritdoc />
+    public void ShowInstalledNotification(string installedVersion)
+    {
+        if (_mainWindowService.IsMainWindowOpen)
+            ShowInstalled(installedVersion);
+        else
+            _mainWindowService.MainWindowOpened += (_, _) => ShowInstalled(installedVersion);
     }
 }

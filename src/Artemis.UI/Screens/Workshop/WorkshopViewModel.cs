@@ -1,6 +1,8 @@
 ﻿using System.Reactive;
 using System.Reactive.Linq;
 using Artemis.Core;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Avalonia.Input;
@@ -9,7 +11,7 @@ using SkiaSharp;
 
 namespace Artemis.UI.Screens.Workshop;
 
-public class WorkshopViewModel : MainScreenViewModel
+public class WorkshopViewModel : ActivatableViewModelBase, IMainScreenViewModel
 {
     private readonly ObservableAsPropertyHelper<Cursor> _cursor;
     private readonly INotificationService _notificationService;
@@ -26,17 +28,21 @@ public class WorkshopViewModel : MainScreenViewModel
 
     private StandardCursorType _selectedCursor;
     private double _testValue;
+    private string? _navigationPath;
 
-    public WorkshopViewModel(IScreen hostScreen, INotificationService notificationService) : base(hostScreen, "workshop")
+    public WorkshopViewModel(INotificationService notificationService, IRouter router)
     {
         _notificationService = notificationService;
         _cursor = this.WhenAnyValue(vm => vm.SelectedCursor).Select(c => new Cursor(c)).ToProperty(this, vm => vm.Cursor);
 
         DisplayName = "Workshop";
         ShowNotification = ReactiveCommand.Create<NotificationSeverity>(ExecuteShowNotification);
+        TestNavigation = ReactiveCommand.CreateFromTask(async () => await router.Navigate(NavigationPath!), this.WhenAnyValue(vm => vm.NavigationPath).Select(p => !string.IsNullOrWhiteSpace(p)));
     }
 
+    public ViewModelBase? TitleBarViewModel => null;
     public ReactiveCommand<NotificationSeverity, Unit> ShowNotification { get; set; }
+    public ReactiveCommand<Unit, Unit> TestNavigation { get; set; }
 
     public StandardCursorType SelectedCursor
     {
@@ -45,6 +51,12 @@ public class WorkshopViewModel : MainScreenViewModel
     }
 
     public Cursor Cursor => _cursor.Value;
+
+    public string? NavigationPath
+    {
+        get => _navigationPath;
+        set => RaiseAndSetIfChanged(ref _navigationPath, value);
+    }
 
     public ColorGradient ColorGradient
     {

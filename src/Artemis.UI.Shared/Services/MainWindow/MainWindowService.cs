@@ -9,10 +9,7 @@ internal class MainWindowService : IMainWindowService
 
     /// <inheritdoc />
     public bool IsMainWindowOpen { get; private set; }
-
-    /// <inheritdoc />
-    public IScreen? HostScreen { get; set; }
-
+    
     protected virtual void OnMainWindowOpened()
     {
         MainWindowOpened?.Invoke(this, EventArgs.Empty);
@@ -20,6 +17,7 @@ internal class MainWindowService : IMainWindowService
 
     protected virtual void OnMainWindowClosed()
     {
+        UI.ClearCache();
         MainWindowClosed?.Invoke(this, EventArgs.Empty);
     }
 
