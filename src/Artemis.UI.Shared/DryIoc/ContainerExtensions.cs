@@ -2,7 +2,6 @@ using System.Reflection;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using DryIoc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Artemis.UI.Shared.DryIoc;
 

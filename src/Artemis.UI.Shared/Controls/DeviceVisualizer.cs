@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Events;
@@ -198,12 +199,12 @@ public class DeviceVisualizer : Control
     {
         if (Device != null)
             BitmapCache.Remove(Device);
-        Dispatcher.UIThread.Post(SetupForDevice, DispatcherPriority.Background);
+        Dispatcher.UIThread.Invoke(SetupForDevice, DispatcherPriority.Background);
     }
 
     private void DeviceUpdated(object? sender, EventArgs e)
     {
-        Dispatcher.UIThread.Post(SetupForDevice, DispatcherPriority.Background);
+        Dispatcher.UIThread.Invoke(SetupForDevice, DispatcherPriority.Background);
     }
 
     #region Properties
@@ -270,7 +271,7 @@ public class DeviceVisualizer : Control
         base.OnDetachedFromLogicalTree(e);
     }
 
-    private void SetupForDevice()
+    private async Task SetupForDevice()
     {
         lock (_deviceVisualizerLeds)
         {
@@ -302,25 +303,20 @@ public class DeviceVisualizer : Control
 
         // Load the device main image on a background thread
         ArtemisDevice? device = Device;
-        Dispatcher.UIThread.Post(() =>
+        try
         {
-            try
-            {
-                _deviceImage = GetDevicImage(device);
-                InvalidateMeasure();
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-            finally
-            {
-                _loading = false;
-            }
-        });
+            _deviceImage = await Task.Run(() => GetDeviceImage(device));
+        }
+        catch (Exception e)
+        {
+            // ignored
+        }
+
+        InvalidateMeasure();
+        _loading = false;
     }
 
-    private RenderTargetBitmap? GetDevicImage(ArtemisDevice device)
+    private RenderTargetBitmap? GetDeviceImage(ArtemisDevice device)
     {
         if (BitmapCache.TryGetValue(device, out RenderTargetBitmap? existingBitmap))
             return existingBitmap;
@@ -343,7 +339,7 @@ public class DeviceVisualizer : Control
         lock (_deviceVisualizerLeds)
         {
             foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                deviceVisualizerLed.DrawBitmap(context, 2 * Device.Scale);
+                deviceVisualizerLed.DrawBitmap(context, 2 * device.Scale);
         }
 
         BitmapCache[device] = renderTargetBitmap;

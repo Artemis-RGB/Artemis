@@ -182,7 +182,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
             return;
 
         if (ProfileConfiguration.IsBeingEdited)
-            _profileEditorService.ChangeCurrentProfileConfiguration(null);
+            await _profileEditorService.ChangeCurrentProfileConfiguration(null);
         _profileService.RemoveProfileConfiguration(ProfileConfiguration);
     }
 

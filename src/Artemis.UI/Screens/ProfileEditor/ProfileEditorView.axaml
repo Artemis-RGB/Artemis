@@ -12,14 +12,6 @@
     <UserControl.Resources>
         <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter" />
     </UserControl.Resources>
-    <UserControl.Styles>
-        <Style Selector="Border.suspended-editing">
-            <Setter Property="Margin" Value="-10" />
-            <Setter Property="Background" Value="{DynamicResource SmokeFillColorDefault}" />
-            <Setter Property="IsVisible" Value="{CompiledBinding SuspendedEditing}" />
-            <Setter Property="CornerRadius" Value="{DynamicResource CardCornerRadius}" />
-        </Style>
-    </UserControl.Styles>
     <UserControl.KeyBindings>
         <KeyBinding Command="{CompiledBinding History.Undo}" Gesture="Ctrl+Z" />
         <KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y" />
@@ -30,6 +22,12 @@
         <KeyBinding Command="{Binding TitleBarViewModel.MenuBarViewModel.CycleFocusMode}" Gesture="F" />
     </UserControl.KeyBindings>
     <UserControl.Styles>
+        <Style Selector="Border.suspended-editing">
+            <Setter Property="Margin" Value="-10" />
+            <Setter Property="Background" Value="{DynamicResource SmokeFillColorDefault}" />
+            <Setter Property="IsVisible" Value="{CompiledBinding SuspendedEditing}" />
+            <Setter Property="CornerRadius" Value="{DynamicResource CardCornerRadius}" />
+        </Style>
         <Style Selector="GridSplitter.editor-grid-splitter-vertical">
             <Setter Property="MinWidth" Value="4" />
             <Setter Property="Margin" Value="1 1 1 5" />
@@ -70,7 +68,7 @@
             <Border Grid.Row="0" Classes="card" Padding="0" Margin="4 0 4 4" ClipToBounds="True">
                 <Grid ColumnDefinitions="Auto,*">
                     <Border Grid.Column="0">
-                        <ItemsControl ItemsSource="{CompiledBinding Tools}">
+                        <ItemsControl ItemsSource="{CompiledBinding Tools}" IsVisible="{CompiledBinding ProfileConfiguration, Converter={x:Static ObjectConverters.IsNotNull}}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="shared:IToolViewModel">
                                     <ToggleButton Classes="icon-button editor-sidebar-button"
@@ -83,14 +81,15 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </Border>
-                    <ContentControl Grid.Column="1" Content="{CompiledBinding VisualEditorViewModel}" />
+                    <ContentControl Grid.Column="1" Content="{CompiledBinding VisualEditorViewModel}" Classes="fade-in"
+                                    IsVisible="{CompiledBinding ProfileConfiguration, Converter={x:Static ObjectConverters.IsNotNull}}" />
                 </Grid>
             </Border>
-        
+
             <GridSplitter Grid.Row="1" Classes="editor-grid-splitter-horizontal" />
-        
+
             <Border Grid.Row="2" Classes="card card-condensed" Margin="4" Padding="0" ClipToBounds="True">
-                <Panel>
+                <Panel IsVisible="{CompiledBinding ProfileConfiguration, Converter={x:Static ObjectConverters.IsNotNull}}">
                     <ContentControl Content="{CompiledBinding PropertiesViewModel}" />
                     <Border Classes="suspended-editing">
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16">
@@ -109,9 +108,9 @@
                 </Panel>
             </Border>
         </Grid>
-        
+
         <GridSplitter Grid.Row="0" Grid.Column="1" Classes="editor-grid-splitter-vertical" />
-        
+
         <Grid Grid.Row="0" Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
@@ -119,22 +118,25 @@
                 <RowDefinition Height="{CompiledBinding ConditionsHeight.Value, Mode=TwoWay, Converter={StaticResource DoubleToGridLengthConverter}}" />
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Classes="card card-condensed" Margin="4 0 4 4">
-                <Panel>
+                <Panel IsVisible="{CompiledBinding ProfileConfiguration, Converter={x:Static ObjectConverters.IsNotNull}}">
                     <ContentControl Content="{CompiledBinding ProfileTreeViewModel}" />
                     <Border Classes="suspended-editing" />
                 </Panel>
             </Border>
-        
+
             <GridSplitter Grid.Row="1" Classes="editor-grid-splitter-horizontal" />
-        
+
             <Border Grid.Row="2" Classes="card card-condensed" Margin="4">
-                <Panel>
+                <Panel IsVisible="{CompiledBinding ProfileConfiguration, Converter={x:Static ObjectConverters.IsNotNull}}">
                     <ContentControl Content="{CompiledBinding DisplayConditionScriptViewModel}" />
                     <Border Classes="suspended-editing" />
                 </Panel>
             </Border>
         </Grid>
 
-        <ContentControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Content="{CompiledBinding StatusBarViewModel}" />
+        <Panel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="23">
+            <ContentControl Content="{CompiledBinding StatusBarViewModel}"  IsVisible="{CompiledBinding ProfileConfiguration, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+        </Panel>
+      
     </Grid>
 </UserControl>

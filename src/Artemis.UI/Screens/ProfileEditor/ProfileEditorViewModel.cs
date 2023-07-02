@@ -67,7 +67,7 @@ public class ProfileEditorViewModel : RoutableScreen<object, ProfileEditorViewMo
         ProfileTreeViewModel = profileTreeViewModel;
         PropertiesViewModel = propertiesViewModel;
         DisplayConditionScriptViewModel = displayConditionScriptViewModel;
-        
+
         this.WhenActivated(d =>
         {
             _history = profileEditorService.History.ToProperty(this, vm => vm.History).DisposeWith(d);
@@ -97,10 +97,10 @@ public class ProfileEditorViewModel : RoutableScreen<object, ProfileEditorViewMo
     }
 
     public VisualEditorViewModel? VisualEditorViewModel { get; }
-    public ProfileTreeViewModel? ProfileTreeViewModel{ get; }
-    public PropertiesViewModel? PropertiesViewModel{ get; }
-    public DisplayConditionScriptViewModel? DisplayConditionScriptViewModel{ get; }
-    public StatusBarViewModel? StatusBarViewModel{ get; }
+    public ProfileTreeViewModel? ProfileTreeViewModel { get; }
+    public PropertiesViewModel? PropertiesViewModel { get; }
+    public DisplayConditionScriptViewModel? DisplayConditionScriptViewModel { get; }
+    public StatusBarViewModel? StatusBarViewModel { get; }
 
     public ReadOnlyObservableCollection<IToolViewModel> Tools { get; }
     public ProfileEditorHistory? History => _history?.Value;
@@ -157,20 +157,21 @@ public class ProfileEditorViewModel : RoutableScreen<object, ProfileEditorViewMo
     #region Overrides of RoutableScreen<object,ProfileEditorViewModelParameters>
 
     /// <inheritdoc />
-    public override Task OnNavigating(ProfileEditorViewModelParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
+    public override async Task OnNavigating(ProfileEditorViewModelParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
         ProfileConfiguration? profileConfiguration = _profileService.ProfileConfigurations.FirstOrDefault(c => c.ProfileId == parameters.ProfileId);
+        await _profileEditorService.ChangeCurrentProfileConfiguration(profileConfiguration);
         ProfileConfiguration = profileConfiguration;
-        _profileEditorService.ChangeCurrentProfileConfiguration(profileConfiguration);
-        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
-    public override Task OnClosing(NavigationArguments args)
+    public override async Task OnClosing(NavigationArguments args)
     {
         if (!args.Path.StartsWith("profile-editor"))
-            _profileEditorService.ChangeCurrentProfileConfiguration(null);
-        return base.OnClosing(args);
+        {
+            ProfileConfiguration = null;
+            await _profileEditorService.ChangeCurrentProfileConfiguration(null);
+        }
     }
 
     #endregion

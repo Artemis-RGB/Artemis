@@ -65,7 +65,7 @@ public interface IProfileEditorService : IArtemisSharedUIService
     ///     Changes the selected profile by its <see cref="Core.ProfileConfiguration" />.
     /// </summary>
     /// <param name="profileConfiguration">The profile configuration of the profile to select.</param>
-    void ChangeCurrentProfileConfiguration(ProfileConfiguration? profileConfiguration);
+    Task ChangeCurrentProfileConfiguration(ProfileConfiguration? profileConfiguration);
 
     /// <summary>
     ///     Changes the selected profile element.
