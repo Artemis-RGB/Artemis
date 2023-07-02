@@ -22,7 +22,7 @@ public class BasicUpdateNotificationProvider : IUpdateNotificationProvider
         _router = router;
     }
 
-    private void ShowAvailable(string releaseVersion)
+    private void ShowAvailable(Guid releaseId, string releaseVersion)
     {
         _available?.Invoke();
         _available = _notificationService.CreateNotification()
@@ -30,7 +30,7 @@ public class BasicUpdateNotificationProvider : IUpdateNotificationProvider
             .WithMessage($"Artemis {releaseVersion} has been released")
             .WithSeverity(NotificationSeverity.Success)
             .WithTimeout(TimeSpan.FromSeconds(15))
-            .HavingButton(b => b.WithText("View release").WithAction(() => ViewRelease(releaseVersion)))
+            .HavingButton(b => b.WithText("View release").WithAction(() => ViewRelease(releaseId)))
             .Show();
     }
 
@@ -42,25 +42,28 @@ public class BasicUpdateNotificationProvider : IUpdateNotificationProvider
             .WithMessage($"Artemis {installedVersion} has been installed.")
             .WithSeverity(NotificationSeverity.Success)
             .WithTimeout(TimeSpan.FromSeconds(15))
-            .HavingButton(b => b.WithText("View release").WithAction(async () => await ViewRelease(installedVersion)))
+            .HavingButton(b => b.WithText("View release").WithAction(async () => await ViewRelease(null)))
             .Show();
     }
 
-    private async Task ViewRelease(string version)
+    private async Task ViewRelease(Guid? releaseId)
     {
         _installed?.Invoke();
         _available?.Invoke();
 
-        await _router.Navigate($"settings/releases/{version}");
+        if (releaseId != null)
+            await _router.Navigate($"settings/releases/{releaseId}");
+        else
+            await _router.Navigate("settings/releases");
     }
 
     /// <inheritdoc />
     public void ShowNotification(Guid releaseId, string releaseVersion)
     {
         if (_mainWindowService.IsMainWindowOpen)
-            ShowAvailable(releaseVersion);
+            ShowAvailable(releaseId, releaseVersion);
         else
-            _mainWindowService.MainWindowOpened += (_, _) => ShowAvailable(releaseVersion);
+            _mainWindowService.MainWindowOpened += (_, _) => ShowAvailable(releaseId, releaseVersion);
     }
 
     /// <inheritdoc />

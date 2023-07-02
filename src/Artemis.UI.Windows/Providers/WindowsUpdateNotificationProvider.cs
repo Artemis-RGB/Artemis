@@ -55,12 +55,15 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
             .Show();
     }
 
-    private void ViewRelease(string releaseVersion)
+    private void ViewRelease(Guid? releaseId)
     {
         Dispatcher.UIThread.Invoke(async () =>
         {
             _mainWindowService.OpenMainWindow();
-            await _router.Navigate($"settings/releases/{releaseVersion}");
+            if (releaseId != null)
+                await _router.Navigate($"settings/releases/{releaseId}");
+            else
+                await _router.Navigate($"settings/releases");
         });
     }
 
@@ -158,7 +161,7 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
         if (action == "install")
             await InstallRelease(releaseId, releaseVersion);
         else if (action == "view-changes")
-            ViewRelease(releaseVersion);
+            ViewRelease(releaseId);
         else if (action == "cancel")
             _cancellationTokenSource?.Cancel();
         else if (action == "restart-for-update")

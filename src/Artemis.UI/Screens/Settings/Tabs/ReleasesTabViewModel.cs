@@ -122,7 +122,7 @@ public class ReleasesTabViewModel : RoutableScreen<ReleaseDetailsViewModel>
         // Otherwise forward to the last release
         else
         {
-            ReleaseViewModel? lastRelease = ReleaseViewModels.FirstOrDefault();
+            ReleaseViewModel? lastRelease = ReleaseViewModels.FirstOrDefault(r => r.IsCurrentVersion) ?? ReleaseViewModels.FirstOrDefault();
             if (lastRelease != null)
                 await _router.Navigate($"settings/releases/{lastRelease.Release.Id}");
         }
