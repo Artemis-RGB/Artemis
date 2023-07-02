@@ -241,7 +241,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
             return _stops[^1].Color;
 
         //find the first stop after the position
-        int stop2Index = 0;
+        int stop2Index = -1;
 
         for (int i = 0; i < _stops.Count; i++)
         {

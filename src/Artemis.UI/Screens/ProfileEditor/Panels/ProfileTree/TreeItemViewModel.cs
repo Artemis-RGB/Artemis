@@ -17,6 +17,7 @@ using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia;
+using Avalonia.ReactiveUI;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
@@ -71,7 +72,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
             CreateTreeItems();
         });
 
-        this.WhenAnyValue(vm => vm.IsFlyoutOpen).Subscribe(UpdateCanPaste);
+        this.WhenAnyValue(vm => vm.IsFlyoutOpen).ObserveOn(AvaloniaScheduler.Instance).Subscribe(UpdateCanPaste);
     }
 
     public ReactiveCommand<Unit, bool> AbsorbCommand { get; }

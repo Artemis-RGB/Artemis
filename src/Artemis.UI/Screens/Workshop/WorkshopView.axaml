@@ -18,6 +18,12 @@
             <StackPanel Margin="12" Spacing="5">
                 <Border Classes="card">
                     <StackPanel Spacing="5">
+                        <TextBlock Classes="h4">Navigation test</TextBlock>
+                        <TextBox Text="{CompiledBinding NavigationPath}" Watermark="Enter a navigation path"></TextBox>
+                        <Button Command="{CompiledBinding TestNavigation}">
+                            Navigate
+                        </Button>
+                        
                         <TextBlock Classes="h4">Notification tests</TextBlock>
                         <Button Command="{CompiledBinding ShowNotification}" CommandParameter="{x:Static builders:NotificationSeverity.Informational}">
                             Notification test (default)

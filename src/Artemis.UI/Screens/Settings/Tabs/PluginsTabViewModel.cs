@@ -49,7 +49,7 @@ public class PluginsTabViewModel : ActivatableViewModelBase
 
         this.WhenActivated(d =>
         {
-            Dispatcher.UIThread.Post(() => plugins.AddRange(_pluginManagementService.GetAllPlugins()), DispatcherPriority.Background);
+            plugins.AddRange(_pluginManagementService.GetAllPlugins());
             Observable.FromEventPattern<PluginEventArgs>(x => _pluginManagementService.PluginLoaded += x, x => _pluginManagementService.PluginLoaded -= x)
                 .Subscribe(a => plugins.Add(a.EventArgs.Plugin))
                 .DisposeWith(d);

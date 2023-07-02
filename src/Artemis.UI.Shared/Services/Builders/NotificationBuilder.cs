@@ -153,6 +153,7 @@ public class NotificationBuilder
 public class NotificationButtonBuilder
 {
     private Action? _action;
+    private Func<Task>? _asyncAction;
     private ICommand? _command;
     private object? _commandParameter;
     private string _text = "Text";
@@ -177,6 +178,18 @@ public class NotificationButtonBuilder
     {
         _command = null;
         _action = action;
+        return this;
+    }
+    
+    /// <summary>
+    ///     Changes action that is called when the button is clicked.
+    /// </summary>
+    /// <param name="action">The action to call when the button is clicked.</param>
+    /// <returns>The builder that can be used to further build the button.</returns>
+    public NotificationButtonBuilder WithAction(Func<Task> action)
+    {
+        _command = null;
+        _asyncAction = action;
         return this;
     }
 
@@ -210,6 +223,8 @@ public class NotificationButtonBuilder
 
         if (_action != null)
             button.Command = ReactiveCommand.Create(() => _action());
+        else if (_asyncAction != null)
+            button.Command = ReactiveCommand.CreateFromTask(() => _asyncAction());
         else if (_command != null)
         {
             button.Command = _command;

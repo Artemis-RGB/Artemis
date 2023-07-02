@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Events;
@@ -26,6 +27,7 @@ namespace Artemis.UI.Shared;
 /// </summary>
 public class DeviceVisualizer : Control
 {
+    internal static readonly Dictionary<ArtemisDevice, RenderTargetBitmap?> BitmapCache = new();
     private readonly ICoreService _coreService;
     private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
 
@@ -160,7 +162,7 @@ public class DeviceVisualizer : Control
 
         return geometry.Bounds;
     }
-        
+
     private void OnFrameRendered(object? sender, FrameRenderedEventArgs e)
     {
         Dispatcher.UIThread.Post(() =>
@@ -195,12 +197,14 @@ public class DeviceVisualizer : Control
 
     private void DevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        Dispatcher.UIThread.Post(SetupForDevice, DispatcherPriority.Background);
+        if (Device != null)
+            BitmapCache.Remove(Device);
+        Dispatcher.UIThread.Invoke(SetupForDevice, DispatcherPriority.Background);
     }
 
     private void DeviceUpdated(object? sender, EventArgs e)
     {
-        Dispatcher.UIThread.Post(SetupForDevice, DispatcherPriority.Background);
+        Dispatcher.UIThread.Invoke(SetupForDevice, DispatcherPriority.Background);
     }
 
     #region Properties
@@ -242,9 +246,6 @@ public class DeviceVisualizer : Control
     /// <inheritdoc />
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        _deviceImage?.Dispose();
-        _deviceImage = null;
-
         if (Device != null)
         {
             Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
@@ -270,7 +271,7 @@ public class DeviceVisualizer : Control
         base.OnDetachedFromLogicalTree(e);
     }
 
-    private void SetupForDevice()
+    private async Task SetupForDevice()
     {
         lock (_deviceVisualizerLeds)
         {
@@ -302,46 +303,47 @@ public class DeviceVisualizer : Control
 
         // Load the device main image on a background thread
         ArtemisDevice? device = Device;
-        Dispatcher.UIThread.Post(() =>
+        try
         {
-            try
-            {
-                if (device.Layout?.Image == null || !File.Exists(device.Layout.Image.LocalPath))
-                {
-                    _deviceImage?.Dispose();
-                    _deviceImage = null;
-                    return;
-                }
+            _deviceImage = await Task.Run(() => GetDeviceImage(device));
+        }
+        catch (Exception e)
+        {
+            // ignored
+        }
 
-                // Create a bitmap that'll be used to render the device and LED images just once
-                // Render 4 times the actual size of the device to make sure things look sharp when zoomed in
-                RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) device.RgbDevice.ActualSize.Width * 2, (int) device.RgbDevice.ActualSize.Height * 2));
+        InvalidateMeasure();
+        _loading = false;
+    }
 
-                using DrawingContext context = renderTargetBitmap.CreateDrawingContext();
-                using Bitmap bitmap = new(device.Layout.Image.LocalPath);
-                using Bitmap scaledBitmap = bitmap.CreateScaledBitmap(renderTargetBitmap.PixelSize);
+    private RenderTargetBitmap? GetDeviceImage(ArtemisDevice device)
+    {
+        if (BitmapCache.TryGetValue(device, out RenderTargetBitmap? existingBitmap))
+            return existingBitmap;
 
-                context.DrawImage(scaledBitmap, new Rect(scaledBitmap.Size));
-                lock (_deviceVisualizerLeds)
-                {
-                    foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                        deviceVisualizerLed.DrawBitmap(context, 2 * Device.Scale);
-                }
+        if (device.Layout?.Image == null || !File.Exists(device.Layout.Image.LocalPath))
+        {
+            BitmapCache[device] = null;
+            return null;
+        }
 
-                _deviceImage?.Dispose();
-                _deviceImage = renderTargetBitmap;
+        // Create a bitmap that'll be used to render the device and LED images just once
+        // Render 4 times the actual size of the device to make sure things look sharp when zoomed in
+        RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) device.RgbDevice.ActualSize.Width * 2, (int) device.RgbDevice.ActualSize.Height * 2));
 
-                InvalidateMeasure();
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-            finally
-            {
-                _loading = false;
-            }
-        });
+        using DrawingContext context = renderTargetBitmap.CreateDrawingContext();
+        using Bitmap bitmap = new(device.Layout.Image.LocalPath);
+        using Bitmap scaledBitmap = bitmap.CreateScaledBitmap(renderTargetBitmap.PixelSize);
+
+        context.DrawImage(scaledBitmap, new Rect(scaledBitmap.Size));
+        lock (_deviceVisualizerLeds)
+        {
+            foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
+                deviceVisualizerLed.DrawBitmap(context, 2 * device.Scale);
+        }
+
+        BitmapCache[device] = renderTargetBitmap;
+        return renderTargetBitmap;
     }
 
     /// <inheritdoc />
