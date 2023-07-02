@@ -17,6 +17,7 @@ internal class MainWindowService : IMainWindowService
 
     protected virtual void OnMainWindowClosed()
     {
+        UI.ClearCache();
         MainWindowClosed?.Invoke(this, EventArgs.Empty);
     }
 

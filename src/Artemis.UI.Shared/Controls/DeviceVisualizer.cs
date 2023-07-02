@@ -26,6 +26,7 @@ namespace Artemis.UI.Shared;
 /// </summary>
 public class DeviceVisualizer : Control
 {
+    internal static readonly Dictionary<ArtemisDevice, RenderTargetBitmap?> BitmapCache = new();
     private readonly ICoreService _coreService;
     private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
 
@@ -160,7 +161,7 @@ public class DeviceVisualizer : Control
 
         return geometry.Bounds;
     }
-        
+
     private void OnFrameRendered(object? sender, FrameRenderedEventArgs e)
     {
         Dispatcher.UIThread.Post(() =>
@@ -195,6 +196,8 @@ public class DeviceVisualizer : Control
 
     private void DevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (Device != null)
+            BitmapCache.Remove(Device);
         Dispatcher.UIThread.Post(SetupForDevice, DispatcherPriority.Background);
     }
 
@@ -242,9 +245,6 @@ public class DeviceVisualizer : Control
     /// <inheritdoc />
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        _deviceImage?.Dispose();
-        _deviceImage = null;
-
         if (Device != null)
         {
             Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
@@ -306,31 +306,7 @@ public class DeviceVisualizer : Control
         {
             try
             {
-                if (device.Layout?.Image == null || !File.Exists(device.Layout.Image.LocalPath))
-                {
-                    _deviceImage?.Dispose();
-                    _deviceImage = null;
-                    return;
-                }
-
-                // Create a bitmap that'll be used to render the device and LED images just once
-                // Render 4 times the actual size of the device to make sure things look sharp when zoomed in
-                RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) device.RgbDevice.ActualSize.Width * 2, (int) device.RgbDevice.ActualSize.Height * 2));
-
-                using DrawingContext context = renderTargetBitmap.CreateDrawingContext();
-                using Bitmap bitmap = new(device.Layout.Image.LocalPath);
-                using Bitmap scaledBitmap = bitmap.CreateScaledBitmap(renderTargetBitmap.PixelSize);
-
-                context.DrawImage(scaledBitmap, new Rect(scaledBitmap.Size));
-                lock (_deviceVisualizerLeds)
-                {
-                    foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                        deviceVisualizerLed.DrawBitmap(context, 2 * Device.Scale);
-                }
-
-                _deviceImage?.Dispose();
-                _deviceImage = renderTargetBitmap;
-
+                _deviceImage = GetDevicImage(device);
                 InvalidateMeasure();
             }
             catch (Exception)
@@ -342,6 +318,36 @@ public class DeviceVisualizer : Control
                 _loading = false;
             }
         });
+    }
+
+    private RenderTargetBitmap? GetDevicImage(ArtemisDevice device)
+    {
+        if (BitmapCache.TryGetValue(device, out RenderTargetBitmap? existingBitmap))
+            return existingBitmap;
+
+        if (device.Layout?.Image == null || !File.Exists(device.Layout.Image.LocalPath))
+        {
+            BitmapCache[device] = null;
+            return null;
+        }
+
+        // Create a bitmap that'll be used to render the device and LED images just once
+        // Render 4 times the actual size of the device to make sure things look sharp when zoomed in
+        RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) device.RgbDevice.ActualSize.Width * 2, (int) device.RgbDevice.ActualSize.Height * 2));
+
+        using DrawingContext context = renderTargetBitmap.CreateDrawingContext();
+        using Bitmap bitmap = new(device.Layout.Image.LocalPath);
+        using Bitmap scaledBitmap = bitmap.CreateScaledBitmap(renderTargetBitmap.PixelSize);
+
+        context.DrawImage(scaledBitmap, new Rect(scaledBitmap.Size));
+        lock (_deviceVisualizerLeds)
+        {
+            foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
+                deviceVisualizerLed.DrawBitmap(context, 2 * Device.Scale);
+        }
+
+        BitmapCache[device] = renderTargetBitmap;
+        return renderTargetBitmap;
     }
 
     /// <inheritdoc />

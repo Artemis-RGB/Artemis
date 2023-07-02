@@ -19,7 +19,7 @@ internal class RouteResolution
     public object[]? Parameters { get; private set; }
     public RouteResolution? Child { get; private set; }
 
-    public static async Task<RouteResolution> Resolve(IRouterRegistration registration, string path)
+    public static RouteResolution Resolve(IRouterRegistration registration, string path)
     {
         List<string> segments = path.Split('/').ToList();
         if (registration.Route.Segments.Count > segments.Count)
@@ -48,7 +48,7 @@ internal class RouteResolution
         string childPath = string.Join('/', segments.Skip(currentSegment));
         foreach (IRouterRegistration routerRegistration in registration.Children)
         {
-            RouteResolution result = await Resolve(routerRegistration, childPath);
+            RouteResolution result = Resolve(routerRegistration, childPath);
             if (result.Success)
                 return AsSuccess(registration.ViewModel, path, parameters.ToArray(), result);
         }

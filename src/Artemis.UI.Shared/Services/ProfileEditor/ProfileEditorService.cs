@@ -10,6 +10,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
+using Avalonia.Threading;
 using DynamicData;
 using Serilog;
 
@@ -155,7 +156,6 @@ internal class ProfileEditorService : IProfileEditorService
     public IObservable<ILayerProperty?> LayerProperty { get; }
     public IObservable<ProfileEditorHistory?> History { get; }
     public IObservable<bool> SuspendedEditing { get; }
-    public IObservable<bool> SuspendedKeybindings { get; }
     public IObservable<TimeSpan> Time { get; }
     public IObservable<bool> Playing { get; }
     public IObservable<int> PixelsPerSecond { get; }

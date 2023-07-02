@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Avalonia.Threading;
 using Serilog;
 
 namespace Artemis.UI.Shared.Routing;
@@ -25,11 +26,11 @@ internal class Router : CorePropertyChanged, IRouter
         _currentRouteSubject = new BehaviorSubject<string?>(null);
     }
 
-    private async Task<RouteResolution> Resolve(string path)
+    private RouteResolution Resolve(string path)
     {
         foreach (IRouterRegistration routerRegistration in Routes)
         {
-            RouteResolution result = await RouteResolution.Resolve(routerRegistration, path);
+            RouteResolution result = RouteResolution.Resolve(routerRegistration, path);
             if (result.Success)
                 return result;
         }
@@ -71,13 +72,19 @@ internal class Router : CorePropertyChanged, IRouter
     public async Task Navigate(string path, RouterNavigationOptions? options = null)
     {
         options ??= new RouterNavigationOptions();
+        
+        // Routing takes place on the UI thread with processing heavy tasks offloaded by the router itself
+        await Dispatcher.UIThread.InvokeAsync(() => InternalNavigate(path, options));
+    }
 
+    private async Task InternalNavigate(string path, RouterNavigationOptions options)
+    {
         if (_root == null)
             throw new ArtemisRoutingException("Cannot navigate without a root having been set");
         if (PathEquals(path, options.IgnoreOnPartialMatch) || (_currentNavigation != null && _currentNavigation.PathEquals(path, options.IgnoreOnPartialMatch)))
             return;
 
-        RouteResolution resolution = await Resolve(path);
+        RouteResolution resolution = Resolve(path);
         if (!resolution.Success)
         {
             _logger.Warning("Failed to resolve path {Path}", path);

@@ -1,7 +1,10 @@
 using System;
+using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using DryIoc;
+using ReactiveUI;
 using Serilog;
 
 namespace Artemis.UI.Shared.Routing;
@@ -54,12 +57,12 @@ internal class Navigation
         if (Cancelled)
             return;
 
-        // Reuse the screen if its type has not changed
+        // Reuse the screen if its type has not changed, if a new one must be created, don't do so on the UI thread
         object screen;
         if (_options.RecycleScreens && host.RecycleScreen && host.InternalScreen != null && host.InternalScreen.GetType() == resolution.ViewModel)
             screen = host.InternalScreen;
         else
-            screen = resolution.GetViewModel(_container);
+            screen = await Task.Run(() => resolution.GetViewModel(_container));
 
         // If resolution has a child, ensure the screen can host it
         if (resolution.Child != null && screen is not IRoutableScreen)
@@ -68,8 +71,6 @@ internal class Navigation
         // Only change the screen if it wasn't reused
         if (!ReferenceEquals(host.InternalScreen, screen))
             host.InternalChangeScreen(screen);
-        
-        // TODO Decide whether it's a good idea to wait for the screen to activate
 
         if (CancelIfRequested(args, "ChangeScreen", screen))
             return;
@@ -87,10 +88,10 @@ internal class Navigation
                 Cancel();
                 _logger.Error(e, "Failed to navigate to {Path}", resolution.Path);
             }
-        }
 
-        if (CancelIfRequested(args, "OnNavigating", screen))
-            return;
+            if (CancelIfRequested(args, "OnNavigating", screen))
+                return;
+        }
 
         if (resolution.Child != null && screen is IRoutableScreen childScreen)
             await NavigateResolution(resolution.Child, args, childScreen);

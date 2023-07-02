@@ -17,6 +17,11 @@ public static class UI
         KeyBindingsEnabled = InputElement.GotFocusEvent.Raised.Select(e => e.Item2.Source is not TextBox).StartWith(true);
     }
 
+    internal static void ClearCache()
+    {
+        DeviceVisualizer.BitmapCache.Clear();
+    }
+
     /// <summary>
     ///     Gets the current IoC locator.
     /// </summary>

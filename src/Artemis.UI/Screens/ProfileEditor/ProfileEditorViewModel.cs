@@ -30,14 +30,9 @@ public class ProfileEditorViewModel : RoutableScreen<object, ProfileEditorViewMo
     private readonly IProfileService _profileService;
     private readonly ISettingsService _settingsService;
     private readonly SourceList<IToolViewModel> _tools;
-    private DisplayConditionScriptViewModel? _displayConditionScriptViewModel;
     private ObservableAsPropertyHelper<ProfileEditorHistory?>? _history;
     private ProfileConfiguration? _profileConfiguration;
-    private ProfileTreeViewModel? _profileTreeViewModel;
-    private PropertiesViewModel? _propertiesViewModel;
-    private StatusBarViewModel? _statusBarViewModel;
     private ObservableAsPropertyHelper<bool>? _suspendedEditing;
-    private VisualEditorViewModel? _visualEditorViewModel;
 
     /// <inheritdoc />
     public ProfileEditorViewModel(IProfileService profileService,
@@ -67,6 +62,12 @@ public class ProfileEditorViewModel : RoutableScreen<object, ProfileEditorViewMo
         Tools = tools;
         visualEditorViewModel.SetTools(_tools);
 
+        StatusBarViewModel = statusBarViewModel;
+        VisualEditorViewModel = visualEditorViewModel;
+        ProfileTreeViewModel = profileTreeViewModel;
+        PropertiesViewModel = propertiesViewModel;
+        DisplayConditionScriptViewModel = displayConditionScriptViewModel;
+        
         this.WhenActivated(d =>
         {
             _history = profileEditorService.History.ToProperty(this, vm => vm.History).DisposeWith(d);
@@ -82,13 +83,6 @@ public class ProfileEditorViewModel : RoutableScreen<object, ProfileEditorViewMo
                 foreach (IToolViewModel toolViewModel in _tools.Items)
                     toolViewModel.Dispose();
             }).DisposeWith(d);
-
-            // Slow and steady wins the race (and doesn't lock up the entire UI)
-            Dispatcher.UIThread.Post(() => StatusBarViewModel = statusBarViewModel, DispatcherPriority.Loaded);
-            Dispatcher.UIThread.Post(() => VisualEditorViewModel = visualEditorViewModel, DispatcherPriority.Loaded);
-            Dispatcher.UIThread.Post(() => ProfileTreeViewModel = profileTreeViewModel, DispatcherPriority.Loaded);
-            Dispatcher.UIThread.Post(() => PropertiesViewModel = propertiesViewModel, DispatcherPriority.Loaded);
-            Dispatcher.UIThread.Post(() => DisplayConditionScriptViewModel = displayConditionScriptViewModel, DispatcherPriority.Loaded);
         });
 
         TitleBarViewModel = profileEditorTitleBarViewModel;
@@ -102,35 +96,11 @@ public class ProfileEditorViewModel : RoutableScreen<object, ProfileEditorViewMo
         set => RaiseAndSetIfChanged(ref _profileConfiguration, value);
     }
 
-    public VisualEditorViewModel? VisualEditorViewModel
-    {
-        get => _visualEditorViewModel;
-        set => RaiseAndSetIfChanged(ref _visualEditorViewModel, value);
-    }
-
-    public ProfileTreeViewModel? ProfileTreeViewModel
-    {
-        get => _profileTreeViewModel;
-        set => RaiseAndSetIfChanged(ref _profileTreeViewModel, value);
-    }
-
-    public PropertiesViewModel? PropertiesViewModel
-    {
-        get => _propertiesViewModel;
-        set => RaiseAndSetIfChanged(ref _propertiesViewModel, value);
-    }
-
-    public DisplayConditionScriptViewModel? DisplayConditionScriptViewModel
-    {
-        get => _displayConditionScriptViewModel;
-        set => RaiseAndSetIfChanged(ref _displayConditionScriptViewModel, value);
-    }
-
-    public StatusBarViewModel? StatusBarViewModel
-    {
-        get => _statusBarViewModel;
-        set => RaiseAndSetIfChanged(ref _statusBarViewModel, value);
-    }
+    public VisualEditorViewModel? VisualEditorViewModel { get; }
+    public ProfileTreeViewModel? ProfileTreeViewModel{ get; }
+    public PropertiesViewModel? PropertiesViewModel{ get; }
+    public DisplayConditionScriptViewModel? DisplayConditionScriptViewModel{ get; }
+    public StatusBarViewModel? StatusBarViewModel{ get; }
 
     public ReadOnlyObservableCollection<IToolViewModel> Tools { get; }
     public ProfileEditorHistory? History => _history?.Value;
@@ -192,7 +162,6 @@ public class ProfileEditorViewModel : RoutableScreen<object, ProfileEditorViewMo
         ProfileConfiguration? profileConfiguration = _profileService.ProfileConfigurations.FirstOrDefault(c => c.ProfileId == parameters.ProfileId);
         ProfileConfiguration = profileConfiguration;
         _profileEditorService.ChangeCurrentProfileConfiguration(profileConfiguration);
-
         return Task.CompletedTask;
     }
 
