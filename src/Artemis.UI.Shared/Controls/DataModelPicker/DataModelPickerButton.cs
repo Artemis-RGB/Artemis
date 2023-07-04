@@ -225,7 +225,7 @@ public class DataModelPickerButton : TemplatedControl
 
     private void PathValidationChanged(object? sender, EventArgs e)
     {
-        Dispatcher.UIThread.InvokeAsync(UpdateValueDisplay, DispatcherPriority.DataBind);
+        Dispatcher.UIThread.InvokeAsync(UpdateValueDisplay, DispatcherPriority.Background);
     }
 
     private void UpdateValueDisplay()
