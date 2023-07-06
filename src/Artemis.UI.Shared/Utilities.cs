@@ -1,5 +1,7 @@
 using System;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
@@ -15,6 +17,13 @@ public static class UI
     static UI()
     {
         KeyBindingsEnabled = InputElement.GotFocusEvent.Raised.Select(e => e.Item2.Source is not TextBox).StartWith(true);
+    }
+    
+    public static EventLoopScheduler BackgroundScheduler = new EventLoopScheduler(ts => new Thread(ts));
+
+    internal static void ClearCache()
+    {
+        DeviceVisualizer.BitmapCache.Clear();
     }
 
     /// <summary>

@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Threading;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.ProfileEditor.DisplayCondition;
@@ -11,6 +13,8 @@ using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Properties;
 using Artemis.UI.Screens.ProfileEditor.StatusBar;
 using Artemis.UI.Screens.ProfileEditor.VisualEditor;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Threading;
@@ -20,22 +24,18 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor;
 
-public class ProfileEditorViewModel : MainScreenViewModel
+public class ProfileEditorViewModel : RoutableScreen<object, ProfileEditorViewModelParameters>, IMainScreenViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
+    private readonly IProfileService _profileService;
     private readonly ISettingsService _settingsService;
     private readonly SourceList<IToolViewModel> _tools;
-    private DisplayConditionScriptViewModel? _displayConditionScriptViewModel;
     private ObservableAsPropertyHelper<ProfileEditorHistory?>? _history;
-    private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
-    private ProfileTreeViewModel? _profileTreeViewModel;
-    private PropertiesViewModel? _propertiesViewModel;
-    private StatusBarViewModel? _statusBarViewModel;
+    private ProfileConfiguration? _profileConfiguration;
     private ObservableAsPropertyHelper<bool>? _suspendedEditing;
-    private VisualEditorViewModel? _visualEditorViewModel;
 
     /// <inheritdoc />
-    public ProfileEditorViewModel(IScreen hostScreen,
+    public ProfileEditorViewModel(IProfileService profileService,
         IProfileEditorService profileEditorService,
         ISettingsService settingsService,
         VisualEditorViewModel visualEditorViewModel,
@@ -46,8 +46,8 @@ public class ProfileEditorViewModel : MainScreenViewModel
         StatusBarViewModel statusBarViewModel,
         IEnumerable<IToolViewModel> toolViewModels,
         IMainWindowService mainWindowService)
-        : base(hostScreen, "profile-editor")
     {
+        _profileService = profileService;
         _profileEditorService = profileEditorService;
         _settingsService = settingsService;
 
@@ -62,9 +62,14 @@ public class ProfileEditorViewModel : MainScreenViewModel
         Tools = tools;
         visualEditorViewModel.SetTools(_tools);
 
+        StatusBarViewModel = statusBarViewModel;
+        VisualEditorViewModel = visualEditorViewModel;
+        ProfileTreeViewModel = profileTreeViewModel;
+        PropertiesViewModel = propertiesViewModel;
+        DisplayConditionScriptViewModel = displayConditionScriptViewModel;
+
         this.WhenActivated(d =>
         {
-            _profileConfiguration = profileEditorService.ProfileConfiguration.ToProperty(this, vm => vm.ProfileConfiguration).DisposeWith(d);
             _history = profileEditorService.History.ToProperty(this, vm => vm.History).DisposeWith(d);
             _suspendedEditing = profileEditorService.SuspendedEditing.ToProperty(this, vm => vm.SuspendedEditing).DisposeWith(d);
 
@@ -78,13 +83,6 @@ public class ProfileEditorViewModel : MainScreenViewModel
                 foreach (IToolViewModel toolViewModel in _tools.Items)
                     toolViewModel.Dispose();
             }).DisposeWith(d);
-
-            // Slow and steady wins the race (and doesn't lock up the entire UI)
-            Dispatcher.UIThread.Post(() => StatusBarViewModel = statusBarViewModel, DispatcherPriority.Loaded);
-            Dispatcher.UIThread.Post(() => VisualEditorViewModel = visualEditorViewModel, DispatcherPriority.Loaded);
-            Dispatcher.UIThread.Post(() => ProfileTreeViewModel = profileTreeViewModel, DispatcherPriority.Loaded);
-            Dispatcher.UIThread.Post(() => PropertiesViewModel = propertiesViewModel, DispatcherPriority.Loaded);
-            Dispatcher.UIThread.Post(() => DisplayConditionScriptViewModel = displayConditionScriptViewModel, DispatcherPriority.Loaded);
         });
 
         TitleBarViewModel = profileEditorTitleBarViewModel;
@@ -92,38 +90,19 @@ public class ProfileEditorViewModel : MainScreenViewModel
         ToggleAutoSuspend = ReactiveCommand.Create(ExecuteToggleAutoSuspend);
     }
 
-    public VisualEditorViewModel? VisualEditorViewModel
+    public ProfileConfiguration? ProfileConfiguration
     {
-        get => _visualEditorViewModel;
-        set => RaiseAndSetIfChanged(ref _visualEditorViewModel, value);
+        get => _profileConfiguration;
+        set => RaiseAndSetIfChanged(ref _profileConfiguration, value);
     }
 
-    public ProfileTreeViewModel? ProfileTreeViewModel
-    {
-        get => _profileTreeViewModel;
-        set => RaiseAndSetIfChanged(ref _profileTreeViewModel, value);
-    }
-
-    public PropertiesViewModel? PropertiesViewModel
-    {
-        get => _propertiesViewModel;
-        set => RaiseAndSetIfChanged(ref _propertiesViewModel, value);
-    }
-
-    public DisplayConditionScriptViewModel? DisplayConditionScriptViewModel
-    {
-        get => _displayConditionScriptViewModel;
-        set => RaiseAndSetIfChanged(ref _displayConditionScriptViewModel, value);
-    }
-
-    public StatusBarViewModel? StatusBarViewModel
-    {
-        get => _statusBarViewModel;
-        set => RaiseAndSetIfChanged(ref _statusBarViewModel, value);
-    }
+    public VisualEditorViewModel? VisualEditorViewModel { get; }
+    public ProfileTreeViewModel? ProfileTreeViewModel { get; }
+    public PropertiesViewModel? PropertiesViewModel { get; }
+    public DisplayConditionScriptViewModel? DisplayConditionScriptViewModel { get; }
+    public StatusBarViewModel? StatusBarViewModel { get; }
 
     public ReadOnlyObservableCollection<IToolViewModel> Tools { get; }
-    public ProfileConfiguration? ProfileConfiguration => _profileConfiguration?.Value;
     public ProfileEditorHistory? History => _history?.Value;
     public bool SuspendedEditing => _suspendedEditing?.Value ?? false;
     public PluginSetting<double> TreeWidth => _settingsService.GetSetting("ProfileEditor.TreeWidth", 350.0);
@@ -131,11 +110,6 @@ public class ProfileEditorViewModel : MainScreenViewModel
     public PluginSetting<double> PropertiesHeight => _settingsService.GetSetting("ProfileEditor.PropertiesHeight", 300.0);
     public ReactiveCommand<Unit, Unit> ToggleSuspend { get; }
     public ReactiveCommand<Unit, Unit> ToggleAutoSuspend { get; }
-
-    public void OpenUrl(string url)
-    {
-        Utilities.OpenUrl(url);
-    }
 
     private void ExecuteToggleSuspend()
     {
@@ -177,4 +151,41 @@ public class ProfileEditorViewModel : MainScreenViewModel
         if (_settingsService.GetSetting("ProfileEditor.AutoSuspend", true).Value)
             _profileEditorService.ChangeSuspendedEditing(true);
     }
+
+    public ViewModelBase? TitleBarViewModel { get; }
+
+    #region Overrides of RoutableScreen<object,ProfileEditorViewModelParameters>
+
+    /// <inheritdoc />
+    public override async Task OnNavigating(ProfileEditorViewModelParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
+    {
+        ProfileConfiguration? profileConfiguration = _profileService.ProfileConfigurations.FirstOrDefault(c => c.ProfileId == parameters.ProfileId);
+
+        // If the profile doesn't exist, navigate home for lack of some kind of 404 :p
+        if (profileConfiguration == null)
+        {
+            await args.Router.Navigate("home");
+            return;
+        }
+
+        await _profileEditorService.ChangeCurrentProfileConfiguration(profileConfiguration);
+        ProfileConfiguration = profileConfiguration;
+    }
+
+    /// <inheritdoc />
+    public override async Task OnClosing(NavigationArguments args)
+    {
+        if (!args.Path.StartsWith("profile-editor"))
+        {
+            ProfileConfiguration = null;
+            await _profileEditorService.ChangeCurrentProfileConfiguration(null);
+        }
+    }
+
+    #endregion
+}
+
+public class ProfileEditorViewModelParameters
+{
+    public Guid ProfileId { get; set; }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -15,7 +15,7 @@ using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop;
 
-public class WorkshopViewModel : MainScreenViewModel
+public class WorkshopViewModel : ActivatableViewModelBase, IMainScreenViewModel
 {
     private readonly IWorkshopClient _workshopClient;
 

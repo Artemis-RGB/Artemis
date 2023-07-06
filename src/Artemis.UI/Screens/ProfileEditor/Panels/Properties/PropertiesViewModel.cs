@@ -83,6 +83,7 @@ public class PropertiesViewModel : ActivatableViewModelBase
                     ? Observable.FromEventPattern(x => l.LayerBrushUpdated += x, x => l.LayerBrushUpdated -= x)
                     : Observable.Never<EventPattern<object>>())
                 .Switch()
+                .ObserveOn(Shared.UI.BackgroundScheduler)
                 .Subscribe(_ => UpdatePropertyGroups())
                 .DisposeWith(d);
             this.WhenAnyValue(vm => vm.ProfileElement)
@@ -90,10 +91,11 @@ public class PropertiesViewModel : ActivatableViewModelBase
                     ? Observable.FromEventPattern(x => p.LayerEffectsUpdated += x, x => p.LayerEffectsUpdated -= x)
                     : Observable.Never<EventPattern<object>>())
                 .Switch()
+                .ObserveOn(Shared.UI.BackgroundScheduler)
                 .Subscribe(_ => UpdatePropertyGroups())
                 .DisposeWith(d);
         });
-        this.WhenAnyValue(vm => vm.ProfileElement).Subscribe(_ => UpdatePropertyGroups());
+        this.WhenAnyValue(vm => vm.ProfileElement).ObserveOn(Shared.UI.BackgroundScheduler).Subscribe(_ => UpdatePropertyGroups());
         this.WhenAnyValue(vm => vm.LayerProperty).Subscribe(_ => UpdateTimelineViewModel());
     }
 

@@ -1,35 +1,25 @@
 ﻿using System;
 using Artemis.UI.Shared;
-using DryIoc;
 using Material.Icons;
-using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
 
-public class SidebarScreenViewModel<T> : SidebarScreenViewModel where T : MainScreenViewModel
+public class SidebarScreenViewModel : ViewModelBase
 {
-    public SidebarScreenViewModel(MaterialIconKind icon, string displayName) : base(icon, displayName)
-    {
-    }
-
-    public override Type ScreenType => typeof(T);
-
-    public override MainScreenViewModel CreateInstance(IContainer container, IScreen screen)
-    {
-        return container.Resolve<T>(new object[] { screen });
-    }
-}
-
-public abstract class SidebarScreenViewModel : ViewModelBase
-{
-    protected SidebarScreenViewModel(MaterialIconKind icon, string displayName)
+    public SidebarScreenViewModel(MaterialIconKind icon, string displayName, string path)
     {
         Icon = icon;
+        Path = path;
         DisplayName = displayName;
     }
 
     public MaterialIconKind Icon { get; }
+    public string Path { get; }
 
-    public abstract Type ScreenType { get; }
-    public abstract MainScreenViewModel CreateInstance(IContainer container, IScreen screen);
+    public bool Matches(string? path)
+    {
+        if (path == null)
+            return false;
+        return path.StartsWith(Path, StringComparison.InvariantCultureIgnoreCase);
+    }
 }

@@ -48,11 +48,14 @@ public partial class ProfileConfigurationIcon : UserControl, IDisposable
             }
             else
             {
-                Stream? stream = ConfigurationIcon.GetIconStream();
-                if (stream == null)
-                    Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
-                else
-                    LoadFromBitmap(ConfigurationIcon, stream);
+                Dispatcher.UIThread.Post(() =>
+                {
+                    Stream? stream = ConfigurationIcon.GetIconStream();
+                    if (stream == null)
+                        Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
+                    else
+                        LoadFromBitmap(ConfigurationIcon, stream);
+                }, DispatcherPriority.ApplicationIdle);
             }
         }
         catch (Exception)
@@ -97,12 +100,12 @@ public partial class ProfileConfigurationIcon : UserControl, IDisposable
         if (e.NewValue is Core.ProfileConfigurationIcon newIcon)
             newIcon.IconUpdated += ConfigurationIconOnIconUpdated;
 
-        Dispatcher.UIThread.Post(Update, DispatcherPriority.ApplicationIdle);
+        Update();
     }
 
     private void ConfigurationIconOnIconUpdated(object? sender, EventArgs e)
     {
-        Dispatcher.UIThread.Post(Update, DispatcherPriority.ApplicationIdle);
+        Update();
     }
 
     /// <inheritdoc />

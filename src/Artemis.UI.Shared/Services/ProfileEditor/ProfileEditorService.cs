@@ -10,6 +10,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
+using Avalonia.Threading;
 using DynamicData;
 using Serilog;
 
@@ -155,14 +156,13 @@ internal class ProfileEditorService : IProfileEditorService
     public IObservable<ILayerProperty?> LayerProperty { get; }
     public IObservable<ProfileEditorHistory?> History { get; }
     public IObservable<bool> SuspendedEditing { get; }
-    public IObservable<bool> SuspendedKeybindings { get; }
     public IObservable<TimeSpan> Time { get; }
     public IObservable<bool> Playing { get; }
     public IObservable<int> PixelsPerSecond { get; }
     public IObservable<ProfileEditorFocusMode> FocusMode { get; }
     public ReadOnlyObservableCollection<ILayerPropertyKeyframe> SelectedKeyframes { get; }
 
-    public void ChangeCurrentProfileConfiguration(ProfileConfiguration? profileConfiguration)
+    public async Task ChangeCurrentProfileConfiguration(ProfileConfiguration? profileConfiguration)
     {
         if (ReferenceEquals(_profileConfigurationSubject.Value, profileConfiguration))
             return;
@@ -177,7 +177,7 @@ internal class ProfileEditorService : IProfileEditorService
             _profileConfigurationSubject.Value.Profile.LastSelectedProfileElement = _profileElementSubject.Value;
         }
 
-        SaveProfile();
+        await SaveProfileAsync();
 
         // No need to deactivate the profile, if needed it will be deactivated next update
         if (_profileConfigurationSubject.Value != null)
@@ -192,11 +192,13 @@ internal class ProfileEditorService : IProfileEditorService
         // The new profile may need activation
         if (profileConfiguration != null)
         {
-            profileConfiguration.IsBeingEdited = true;
-            _moduleService.SetActivationOverride(profileConfiguration.Module);
-            _profileService.ActivateProfile(profileConfiguration);
-            _profileService.RenderForEditor = true;
-
+            await Task.Run(() =>
+            {
+                profileConfiguration.IsBeingEdited = true;
+                _moduleService.SetActivationOverride(profileConfiguration.Module);
+                _profileService.ActivateProfile(profileConfiguration);
+                _profileService.RenderForEditor = true;
+            });
             if (profileConfiguration.Profile?.LastSelectedProfileElement is RenderProfileElement renderProfileElement)
                 ChangeCurrentProfileElement(renderProfileElement);
         }

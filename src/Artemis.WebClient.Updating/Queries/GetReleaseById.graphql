@@ -3,6 +3,7 @@ query GetReleaseById($id: UUID!) {
         branch
         commit
         version
+        createdAt
         previousRelease {
             version
         }

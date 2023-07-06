@@ -6,6 +6,7 @@ using Artemis.UI.Screens.Root;
 using Artemis.UI.Shared;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -78,5 +79,13 @@ public partial class MainWindow : ReactiveAppWindow<RootViewModel>
     private void OnDeactivated(object? sender, EventArgs e)
     {
         ViewModel?.Unfocused();
+    }
+
+    private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (e.InitialPressMouseButton == MouseButton.XButton1)
+            ViewModel?.GoBack();
+        else if (e.InitialPressMouseButton == MouseButton.XButton2)
+            ViewModel?.GoForward();
     }
 }

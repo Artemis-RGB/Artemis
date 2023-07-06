@@ -9,6 +9,7 @@ using Artemis.UI.DefaultTypes.PropertyInput;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.DefaultTypes.DataModel.Display;
 using Artemis.UI.Shared.Providers;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.PropertyInput;
@@ -24,12 +25,14 @@ public class RegistrationService : IRegistrationService
     private readonly IDataModelUIService _dataModelUIService;
     private readonly IInputService _inputService;
     private readonly IContainer _container;
+    private readonly IRouter _router;
     private readonly INodeService _nodeService;
     private readonly IPropertyInputService _propertyInputService;
     private readonly IWebServerService _webServerService;
     private bool _registeredBuiltInPropertyEditors;
 
     public RegistrationService(IContainer container,
+        IRouter router,
         IInputService inputService,
         IPropertyInputService propertyInputService,
         IProfileEditorService profileEditorService,
@@ -40,6 +43,7 @@ public class RegistrationService : IRegistrationService
     )
     {
         _container = container;
+        _router = router;
         _inputService = inputService;
         _propertyInputService = propertyInputService;
         _nodeService = nodeService;
@@ -47,8 +51,14 @@ public class RegistrationService : IRegistrationService
         _webServerService = webServerService;
 
         CreateCursorResources();
+        RegisterRoutes();
         RegisterBuiltInNodeTypes();
         RegisterControllers();
+    }
+
+    private void RegisterRoutes()
+    {
+        _router.Routes.AddRange(Routing.Routes.ArtemisRoutes);
     }
 
     private void CreateCursorResources()

@@ -37,6 +37,7 @@
         <PackageReference Include="RGB.NET.Layout" Version="2.0.0-prerelease.83" />
         <PackageReference Include="SkiaSharp" Version="2.88.3" />
         <PackageReference Include="Splat.DryIoc" Version="14.6.8" />
+        <PackageReference Include="System.Reactive" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>

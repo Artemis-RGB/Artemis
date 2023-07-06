@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.LogicalTree;
@@ -17,7 +18,7 @@ public partial class LayerShapeVisualizerView : ReactiveUserControl<LayerShapeVi
     public LayerShapeVisualizerView()
     {
         InitializeComponent();
-        this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Selected).Subscribe(_ => UpdateStrokeThickness()).DisposeWith(d));
+        this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Selected).ObserveOn(AvaloniaScheduler.Instance).Subscribe(_ => UpdateStrokeThickness()).DisposeWith(d));
     }
 
 

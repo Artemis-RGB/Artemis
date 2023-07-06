@@ -6,6 +6,7 @@
              xmlns:updating="clr-namespace:Artemis.UI.Screens.Settings.Updating"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:ui="clr-namespace:Artemis.UI"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="1400"
              x:Class="Artemis.UI.Screens.Settings.ReleasesTabView"
              x:DataType="settings:ReleasesTabViewModel">
@@ -34,31 +35,16 @@
                 </controls:HyperlinkButton>
             </StackPanel>
 
-            <Grid ColumnDefinitions="300,*" Margin="0 10" IsVisible="{CompiledBinding ReleaseViewModels.Count}">
+            <Grid ColumnDefinitions="300,*" Margin="10" IsVisible="{CompiledBinding ReleaseViewModels.Count}">
                 <Border Classes="card-condensed" Grid.Column="0" Margin="0 0 10 0">
-                    <ListBox ItemsSource="{CompiledBinding ReleaseViewModels}" SelectedItem="{CompiledBinding SelectedReleaseViewModel}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate x:DataType="updating:ReleaseViewModel">
-                                <Panel>
-                                    <Grid Margin="4" IsVisible="{CompiledBinding ShowStatusIndicator}" RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{CompiledBinding Version}" VerticalAlignment="Center" FontWeight="SemiBold" />
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{CompiledBinding CreatedAt, StringFormat={}{0:g}}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
-                                        <avalonia:MaterialIcon Classes="status-icon" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Kind="CheckCircle" ToolTip.Tip="Current version"
-                                                               IsVisible="{CompiledBinding IsCurrentVersion}" />
-                                        <avalonia:MaterialIcon Classes="status-icon" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Kind="History" ToolTip.Tip="Previous version"
-                                                               IsVisible="{CompiledBinding IsPreviousVersion}" />
-                                    </Grid>
-                                    <StackPanel Margin="4" IsVisible="{CompiledBinding !ShowStatusIndicator}">
-                                        <TextBlock Text="{CompiledBinding Version}" VerticalAlignment="Center" />
-                                        <TextBlock Text="{CompiledBinding CreatedAt, StringFormat={}{0:g}}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
-                                    </StackPanel>
-                                </Panel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                    <ListBox ItemsSource="{CompiledBinding ReleaseViewModels}" SelectedItem="{CompiledBinding SelectedReleaseViewModel}"/>
                 </Border>
 
-                <ContentControl Grid.Column="1" Content="{CompiledBinding SelectedReleaseViewModel}" />
+                <controls:Frame Grid.Column="1" Name="ReleaseFrame" CacheSize="0" IsNavigationStackEnabled="False">
+                    <controls:Frame.NavigationPageFactory>
+                        <ui:PageFactory />
+                    </controls:Frame.NavigationPageFactory>
+                </controls:Frame>
             </Grid>
         </Panel>
     </Panel>

@@ -1,19 +1,18 @@
-using Avalonia.Input;
+using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Settings.Updating;
 
-public partial class ReleaseView : ReactiveUserControl<ReleaseViewModel>
+public partial class ReleaseView : UserControl
 {
     public ReleaseView()
     {
         InitializeComponent();
     }
 
-    
-    private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    private void InitializeComponent()
     {
-        ViewModel?.NavigateToSource();
+        AvaloniaXamlLoader.Load(this);
     }
 }
