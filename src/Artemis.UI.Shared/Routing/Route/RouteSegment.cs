@@ -48,11 +48,14 @@ public partial class RouteSegment
 
     private IRouteParameterParser GetParameterParser(string parameterType)
     {
-        if (parameterType == "guid")
-            return new GuidParameterParser();
+        return parameterType switch
+        {
+            "guid" => new GuidParameterParser(),
+            "int" => new IntParameterParser(),
+            _ => new StringParameterParser()
+        };
 
         // Default to a string parser which just returns the segment as is
-        return new StringParameterParser();
     }
 
     [GeneratedRegex(@"\{(\w+):(\w+)\}")]

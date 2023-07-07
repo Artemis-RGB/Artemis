@@ -5,6 +5,8 @@ using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Settings.Updating;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
+using Artemis.UI.Screens.Workshop.Layout;
+using Artemis.UI.Screens.Workshop.Profile;
 using Artemis.UI.Shared.Routing;
 
 namespace Artemis.UI.Routing;
@@ -14,8 +16,15 @@ public static class Routes
     public static List<IRouterRegistration> ArtemisRoutes = new()
     {
         new RouteRegistration<HomeViewModel>("home"),
+
         new RouteRegistration<WorkshopViewModel>("workshop"),
+        new RouteRegistration<ProfileListViewModel>("workshop/profiles/{page:int}"),
+        new RouteRegistration<ProfileDetailsViewModel>("workshop/profiles/{entryId:guid}"),
+        new RouteRegistration<LayoutListViewModel>("workshop/layouts/{page:int}"),
+        new RouteRegistration<LayoutDetailsViewModel>("workshop/layouts/{entryId:guid}"),
+
         new RouteRegistration<SurfaceEditorViewModel>("surface-editor"),
+
         new RouteRegistration<SettingsViewModel>("settings")
         {
             Children = new List<IRouterRegistration>
@@ -25,7 +34,7 @@ public static class Routes
                 new RouteRegistration<DevicesTabViewModel>("devices"),
                 new RouteRegistration<ReleasesTabViewModel>("releases")
                 {
-                    Children = new List<IRouterRegistration>()
+                    Children = new List<IRouterRegistration>
                     {
                         new RouteRegistration<ReleaseDetailsViewModel>("{releaseId:guid}")
                     }

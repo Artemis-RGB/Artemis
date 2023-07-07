@@ -43,4 +43,16 @@
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Screens\Workshop\Layout\LayoutDetailsView.axaml" />
+      <AdditionalFiles Include="Screens\Workshop\Layout\LayoutListView.axaml" />
+      <AdditionalFiles Include="Screens\Workshop\Profile\ProfileDetailsView.axaml" />
+      <AdditionalFiles Include="Screens\Workshop\Profile\ProfileListView.axaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Screens\Workshop\Categories\Profile\ProfileDetailsView.axaml" />
+      <UpToDateCheckInput Remove="Screens\Workshop\Categories\Profile\ProfileListView.axaml" />
+    </ItemGroup>
 </Project>

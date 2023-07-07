@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:profile="clr-namespace:Artemis.UI.Screens.Workshop.Profile"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Profile.ProfileListView"
+             x:DataType="profile:ProfileListViewModel">
+    <Border Classes="router-container">
+        <Grid ColumnDefinitions="300,*" Margin="10">
+            <Border Classes="card-condensed" Grid.Column="0" Margin="0 0 10 0">
+                <TextBlock>Side panel</TextBlock>
+            </Border>
+
+            <Border Classes="card-condensed" Grid.Column="1">
+                <TextBlock>
+                    <Run Text="Profile list main panel, page: " /><Run Text="{CompiledBinding Page}"></Run>
+                </TextBlock>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

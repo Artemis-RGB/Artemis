@@ -99,7 +99,6 @@
         </Style>
 
         <Style Selector="ListBox.sidebar-listbox ListBoxItem">
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="(i:Interaction.Behaviors)">
                 <i:BehaviorCollectionTemplate>
                     <i:BehaviorCollection>

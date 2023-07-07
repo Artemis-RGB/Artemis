@@ -2,35 +2,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:builders="clr-namespace:Artemis.UI.Shared.Services.Builders;assembly=Artemis.UI.Shared"
-             xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-             xmlns:attachedProperties="clr-namespace:Artemis.UI.Shared.AttachedProperties;assembly=Artemis.UI.Shared"
              xmlns:workshop="clr-namespace:Artemis.UI.Screens.Workshop"
-             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
-             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
-             xmlns:gradientPicker="clr-namespace:Artemis.UI.Shared.Controls.GradientPicker;assembly=Artemis.UI.Shared"
-             xmlns:materialIconPicker="clr-namespace:Artemis.UI.Shared.MaterialIconPicker;assembly=Artemis.UI.Shared"
-             xmlns:workshop1="clr-namespace:Artemis.WebClient.Workshop;assembly=Artemis.WebClient.Workshop"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:ui="clr-namespace:Artemis.UI"
              mc:Ignorable="d" d:DesignWidth="800"
              x:Class="Artemis.UI.Screens.Workshop.WorkshopView"
              x:DataType="workshop:WorkshopViewModel">
     <Border Classes="router-container">
-        <Grid ColumnDefinitions="300,*" Margin="0 10">
-            <Border Classes="card-condensed" Grid.Column="0" Margin="0 0 10 0">
-                <ListBox ItemsSource="{CompiledBinding Test}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="workshop1:IGetEntries_Entries_Nodes">
-                            <Panel>
-                                <StackPanel Margin="4">
-                                    <TextBlock Text="{CompiledBinding Name}" VerticalAlignment="Center" />
-                                    <TextBlock Text="{CompiledBinding Author}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
-                                </StackPanel>
-                            </Panel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </Border>
-            <ContentControl Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Content="{CompiledBinding CurrentUserViewModel}" Margin="8"></ContentControl>
-        </Grid>
+        <TextBlock>Workshop overview</TextBlock>
     </Border>
 </UserControl>

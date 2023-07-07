@@ -62,7 +62,15 @@ public abstract class RoutableScreen<TScreen> : ActivatableViewModelBase, IRouta
 
     void IRoutableScreen.InternalChangeScreen(object? screen)
     {
-        Screen = screen as TScreen;
+        if (screen == null)
+        {
+            Screen = null;
+            return;
+        }
+
+        if (screen is not TScreen typedScreen)
+            throw new ArtemisRoutingException($"Screen cannot be hosted, {screen.GetType().Name} is not assignable to {typeof(TScreen).Name}.");
+        Screen = typedScreen;
     }
 
     async Task IRoutableScreen.InternalOnNavigating(NavigationArguments args, CancellationToken cancellationToken)

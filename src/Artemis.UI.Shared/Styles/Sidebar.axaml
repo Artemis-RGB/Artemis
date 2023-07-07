@@ -13,9 +13,15 @@
 
     <!-- Add Styles Here -->
     <Style Selector="ListBox.sidebar-listbox ListBoxItem">
-        <Setter Property="MinHeight" Value="35" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="MinHeight" Value="{DynamicResource NavigationViewItemOnLeftMinHeight}" />
     </Style>
-    <Style Selector="ListBox.sidebar-listbox ContentPresenter">
-        <Setter Property="Margin" Value="0" />
+    <!-- <Style Selector="ListBox.sidebar-listbox ContentPresenter"> -->
+    <!--     <Setter Property="Margin" Value="0" /> -->
+    <!-- </Style> -->
+    
+    <Style Selector="ListBox.sidebar-listbox ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="MinHeight" Value="{DynamicResource NavigationViewItemOnLeftMinHeight}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource OverlayCornerRadius}" />
     </Style>
 </Styles>
