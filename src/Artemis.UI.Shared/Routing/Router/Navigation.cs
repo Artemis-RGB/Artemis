@@ -70,7 +70,17 @@ internal class Navigation
 
         // Only change the screen if it wasn't reused
         if (!ReferenceEquals(host.InternalScreen, screen))
-            host.InternalChangeScreen(screen);
+        {
+            try
+            {
+                host.InternalChangeScreen(screen);
+            }
+            catch (Exception e)
+            {
+                Cancel();
+                _logger.Error(e, "Failed to navigate to {Path}", resolution.Path);
+            }
+        }
 
         if (CancelIfRequested(args, "ChangeScreen", screen))
             return;
@@ -93,8 +103,16 @@ internal class Navigation
                 return;
         }
 
-        if (resolution.Child != null && screen is IRoutableScreen childScreen)
-            await NavigateResolution(resolution.Child, args, childScreen);
+        if (screen is IRoutableScreen childScreen)
+        {
+            // Navigate the child too
+            if (resolution.Child != null)
+                await NavigateResolution(resolution.Child, args, childScreen);
+            // Make sure there is no child
+            else if (childScreen.InternalScreen != null)
+                childScreen.InternalChangeScreen(null);
+        }
+
 
         Completed = true;
     }

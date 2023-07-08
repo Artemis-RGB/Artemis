@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Platform;
 
 namespace Artemis.UI.Shared.Routing;
 
@@ -72,7 +73,15 @@ public abstract class RoutableScreen<TScreen, TParam> : ActivatableViewModelBase
 
     void IRoutableScreen.InternalChangeScreen(object? screen)
     {
-        Screen = screen as TScreen;
+        if (screen == null)
+        {
+            Screen = null;
+            return;
+        }
+
+        if (screen is not TScreen typedScreen)
+            throw new ArtemisRoutingException($"Provided screen is not assignable to {typeof(TScreen).FullName}");
+        Screen = typedScreen;
     }
 
     async Task IRoutableScreen.InternalOnNavigating(NavigationArguments args, CancellationToken cancellationToken)

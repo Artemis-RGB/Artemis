@@ -1,4 +1,4 @@
-namespace Artemis.UI.Screens.Workshop;
+namespace Artemis.UI.Screens.Workshop.Parameters;
 
 public class WorkshopListParameters
 {

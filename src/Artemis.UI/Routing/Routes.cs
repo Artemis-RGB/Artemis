@@ -16,15 +16,17 @@ public static class Routes
     public static List<IRouterRegistration> ArtemisRoutes = new()
     {
         new RouteRegistration<HomeViewModel>("home"),
-
-        new RouteRegistration<WorkshopViewModel>("workshop"),
-        new RouteRegistration<ProfileListViewModel>("workshop/profiles/{page:int}"),
-        new RouteRegistration<ProfileDetailsViewModel>("workshop/profiles/{entryId:guid}"),
-        new RouteRegistration<LayoutListViewModel>("workshop/layouts/{page:int}"),
-        new RouteRegistration<LayoutDetailsViewModel>("workshop/layouts/{entryId:guid}"),
-
+        new RouteRegistration<WorkshopViewModel>("workshop")
+        {
+            Children = new List<IRouterRegistration>()
+            {
+                new RouteRegistration<ProfileListViewModel>("profiles/{page:int}"),
+                new RouteRegistration<ProfileDetailsViewModel>("profiles/{entryId:guid}"),
+                new RouteRegistration<LayoutListViewModel>("layouts/{page:int}"),
+                new RouteRegistration<LayoutDetailsViewModel>("layouts/{entryId:guid}")
+            }
+        },
         new RouteRegistration<SurfaceEditorViewModel>("surface-editor"),
-
         new RouteRegistration<SettingsViewModel>("settings")
         {
             Children = new List<IRouterRegistration>

@@ -5,6 +5,12 @@ schema {
     mutation: Mutation
 }
 
+type Category {
+    icon: String!
+    id: Int!
+    name: String!
+}
+
 "A connection to a list of items."
 type EntriesConnection {
     "A list of edges."
@@ -27,14 +33,18 @@ type EntriesEdge {
 
 type Entry {
     author: UUID!
+    categories: [Category!]!
+    createdAt: DateTime!
     description: String!
+    downloads: Long!
     entryType: EntryType!
     icon: Image
     id: UUID!
     images: [Image!]!
     name: String!
     releases: [Release!]!
-    tags: [String!]!
+    summary: String!
+    tags: [Tag!]!
 }
 
 type Image {
@@ -59,6 +69,7 @@ type PageInfo {
 }
 
 type Query {
+    categories(order: [CategorySortInput!], where: CategoryFilterInput): [Category!]!
     entries(
         "Returns the elements in the list that come after the specified cursor."
         after: String,
@@ -78,9 +89,15 @@ type Release {
     createdAt: DateTime!
     downloadSize: Long!
     downloads: Long!
+    entry: Entry!
     id: UUID!
     md5Hash: String
     version: String!
+}
+
+type Tag {
+    id: Int!
+    name: String!
 }
 
 enum EntryType {
@@ -102,6 +119,20 @@ scalar Long
 
 scalar UUID
 
+input CategoryFilterInput {
+    and: [CategoryFilterInput!]
+    icon: StringOperationFilterInput
+    id: IntOperationFilterInput
+    name: StringOperationFilterInput
+    or: [CategoryFilterInput!]
+}
+
+input CategorySortInput {
+    icon: SortEnumType
+    id: SortEnumType
+    name: SortEnumType
+}
+
 input DateTimeOperationFilterInput {
     eq: DateTime
     gt: DateTime
@@ -120,7 +151,10 @@ input DateTimeOperationFilterInput {
 input EntryFilterInput {
     and: [EntryFilterInput!]
     author: UuidOperationFilterInput
+    categories: ListFilterInputTypeOfCategoryFilterInput
+    createdAt: DateTimeOperationFilterInput
     description: StringOperationFilterInput
+    downloads: LongOperationFilterInput
     entryType: EntryTypeOperationFilterInput
     icon: ImageFilterInput
     id: UuidOperationFilterInput
@@ -128,7 +162,8 @@ input EntryFilterInput {
     name: StringOperationFilterInput
     or: [EntryFilterInput!]
     releases: ListFilterInputTypeOfReleaseFilterInput
-    tags: ListStringOperationFilterInput
+    summary: StringOperationFilterInput
+    tags: ListFilterInputTypeOfTagFilterInput
 }
 
 input EntryInput {
@@ -140,11 +175,14 @@ input EntryInput {
 
 input EntrySortInput {
     author: SortEnumType
+    createdAt: SortEnumType
     description: SortEnumType
+    downloads: SortEnumType
     entryType: SortEnumType
     icon: ImageSortInput
     id: SortEnumType
     name: SortEnumType
+    summary: SortEnumType
 }
 
 input EntryTypeOperationFilterInput {
@@ -166,6 +204,28 @@ input ImageSortInput {
     mimeType: SortEnumType
 }
 
+input IntOperationFilterInput {
+    eq: Int
+    gt: Int
+    gte: Int
+    in: [Int]
+    lt: Int
+    lte: Int
+    neq: Int
+    ngt: Int
+    ngte: Int
+    nin: [Int]
+    nlt: Int
+    nlte: Int
+}
+
+input ListFilterInputTypeOfCategoryFilterInput {
+    all: CategoryFilterInput
+    any: Boolean
+    none: CategoryFilterInput
+    some: CategoryFilterInput
+}
+
 input ListFilterInputTypeOfImageFilterInput {
     all: ImageFilterInput
     any: Boolean
@@ -180,11 +240,11 @@ input ListFilterInputTypeOfReleaseFilterInput {
     some: ReleaseFilterInput
 }
 
-input ListStringOperationFilterInput {
-    all: StringOperationFilterInput
+input ListFilterInputTypeOfTagFilterInput {
+    all: TagFilterInput
     any: Boolean
-    none: StringOperationFilterInput
-    some: StringOperationFilterInput
+    none: TagFilterInput
+    some: TagFilterInput
 }
 
 input LongOperationFilterInput {
@@ -207,6 +267,7 @@ input ReleaseFilterInput {
     createdAt: DateTimeOperationFilterInput
     downloadSize: LongOperationFilterInput
     downloads: LongOperationFilterInput
+    entry: EntryFilterInput
     id: UuidOperationFilterInput
     md5Hash: StringOperationFilterInput
     or: [ReleaseFilterInput!]
@@ -226,6 +287,13 @@ input StringOperationFilterInput {
     nstartsWith: String
     or: [StringOperationFilterInput!]
     startsWith: String
+}
+
+input TagFilterInput {
+    and: [TagFilterInput!]
+    id: IntOperationFilterInput
+    name: StringOperationFilterInput
+    or: [TagFilterInput!]
 }
 
 input UuidOperationFilterInput {

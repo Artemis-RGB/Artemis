@@ -22,4 +22,13 @@
     <ItemGroup>
       <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <GraphQL Update="Queries\SearchEntries.graphql">
+        <Generator>MSBuild:GenerateGraphQLCode</Generator>
+      </GraphQL>
+      <GraphQL Update="Queries\GetCategories.graphql">
+        <Generator>MSBuild:GenerateGraphQLCode</Generator>
+      </GraphQL>
+    </ItemGroup>
 </Project>

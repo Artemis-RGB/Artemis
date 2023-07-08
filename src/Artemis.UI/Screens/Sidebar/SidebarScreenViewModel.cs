@@ -2,11 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.UI.Shared;
-using Artemis.UI.Shared.Routing;
-using Artemis.UI.Shared.Services;
-using Avalonia.Threading;
 using Material.Icons;
-using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
 
@@ -22,7 +18,7 @@ public class SidebarScreenViewModel : ViewModelBase
         DisplayName = displayName;
         Screens = screens ?? new ObservableCollection<SidebarScreenViewModel>();
     }
-    
+
     public MaterialIconKind Icon { get; }
     public string Path { get; }
     public string RootPath { get; }
@@ -56,15 +52,12 @@ public class SidebarScreenViewModel : ViewModelBase
 
     public void ExpandIfRequired(SidebarScreenViewModel selected)
     {
-        if (selected == this && Screens.Any())
-        {
-            IsExpanded = true;
+        if (selected == this)
             return;
-        }
 
         if (Screens.Contains(selected))
             IsExpanded = true;
-        
+
         foreach (SidebarScreenViewModel sidebarScreenViewModel in Screens)
             sidebarScreenViewModel.ExpandIfRequired(selected);
     }

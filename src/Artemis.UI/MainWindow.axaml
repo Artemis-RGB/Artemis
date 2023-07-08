@@ -15,7 +15,7 @@
     <windowing:AppWindow.Styles>
       <Styles>
           <Style Selector="Border#TitleBarContainer">
-              <Setter Property="Height" Value="40"></Setter>
+              <Setter Property="MinHeight" Value="40"></Setter>
           </Style>
           <Style Selector="windowing|AppWindow:windows Border#TitleBarContainer">
               <Setter Property="Margin" Value="0 0 138 0"></Setter>

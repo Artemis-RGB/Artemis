@@ -8,7 +8,9 @@
              mc:Ignorable="d" d:DesignWidth="800"
              x:Class="Artemis.UI.Screens.Workshop.WorkshopView"
              x:DataType="workshop:WorkshopViewModel">
-    <Border Classes="router-container">
-        <TextBlock>Workshop overview</TextBlock>
-    </Border>
+    <controls:Frame Name="WorkshopFrame" IsNavigationStackEnabled="False" CacheSize="0">
+        <controls:Frame.NavigationPageFactory>
+            <ui:PageFactory/>
+        </controls:Frame.NavigationPageFactory>
+    </controls:Frame>
 </UserControl>
