@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.UI.Screens.Workshop.Categories;
 using Artemis.UI.Screens.Workshop.Parameters;
-using Artemis.UI.Screens.Workshop.Search;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.WebClient.Workshop;
@@ -13,10 +13,12 @@ public class LayoutListViewModel : RoutableScreen<ActivatableViewModelBase, Work
 {
     private int _page;
 
-    /// <inheritdoc />
-    public LayoutListViewModel()
+    public LayoutListViewModel(CategoriesViewModel categoriesViewModel)
     {
+        CategoriesViewModel = categoriesViewModel;
     }
+
+    public CategoriesViewModel CategoriesViewModel { get; }
 
     public int Page
     {

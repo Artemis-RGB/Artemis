@@ -1,9 +1,14 @@
-query GetEntries {
-    entries {
+query GetEntries($filter: EntryFilterInput) {
+    entries(where: $filter) {
         nodes {
             author
             name
+            summary
             entryType
+            categories {
+                name
+                icon
+            }
         }
     }
 }

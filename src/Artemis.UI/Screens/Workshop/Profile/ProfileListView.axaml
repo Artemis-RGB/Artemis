@@ -8,14 +8,22 @@
              x:DataType="profile:ProfileListViewModel">
     <Border Classes="router-container">
         <Grid ColumnDefinitions="300,*" Margin="10">
-            <Border Classes="card-condensed" Grid.Column="0" Margin="0 0 10 0">
-                <TextBlock>Side panel</TextBlock>
+            <Border Classes="card-condensed" Grid.Column="0" Margin="0 0 10 0" VerticalAlignment="Top">
+                <StackPanel>
+                    <TextBlock Classes="h3">Categories</TextBlock>
+                    <ContentControl Content="{CompiledBinding CategoriesViewModel}"></ContentControl>    
+                </StackPanel>
+                
             </Border>
 
             <Border Classes="card-condensed" Grid.Column="1">
-                <TextBlock>
-                    <Run Text="Profile list main panel, page: " /><Run Text="{CompiledBinding Page}"></Run>
-                </TextBlock>
+                <ItemsRepeater ItemsSource="{CompiledBinding Entries}">
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl Content="{CompiledBinding}" Margin="0 0 0 5"></ContentControl>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
             </Border>
         </Grid>
     </Border>

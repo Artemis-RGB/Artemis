@@ -1,5 +1,5 @@
 using Avalonia;
-using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
@@ -15,5 +15,11 @@ public partial class CategoriesView : ReactiveUserControl<CategoriesViewModel>
     private void InitializeComponent()
     {
         AvaloniaXamlLoader.Load(this);
+    }
+
+    private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (e.InitialPressMouseButton == MouseButton.Left && sender is IDataContextProvider p && p.DataContext is CategoryViewModel categoryViewModel)
+            categoryViewModel.IsSelected = !categoryViewModel.IsSelected;
     }
 }
