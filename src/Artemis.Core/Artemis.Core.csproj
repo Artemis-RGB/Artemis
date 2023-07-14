@@ -1,4 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\Artemis.props" />
+    
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <PreserveCompilationContext>false</PreserveCompilationContext>
@@ -43,14 +45,14 @@
         <PackageReference Include="LiteDB" Version="5.0.16" />
         <PackageReference Include="McMaster.NETCore.Plugins" Version="1.4.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="RGB.NET.Core" Version="2.0.0-prerelease.83" />
-        <PackageReference Include="RGB.NET.Layout" Version="2.0.0-prerelease.83" />
-        <PackageReference Include="RGB.NET.Presets" Version="2.0.0-prerelease.83" />
+        <PackageReference Include="RGB.NET.Core" Version="$(RGBDotNetVersion)" />
+        <PackageReference Include="RGB.NET.Layout" Version="$(RGBDotNetVersion)" />
+        <PackageReference Include="RGB.NET.Presets" Version="$(RGBDotNetVersion)" />
         <PackageReference Include="Serilog" Version="2.12.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
         <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-        <PackageReference Include="SkiaSharp" Version="2.88.3" />
+        <PackageReference Include="SkiaSharp" Version="$(SkiaSharpVersion)" />
         <PackageReference Include="System.Buffers" Version="4.5.1" />
         <PackageReference Include="System.IO.FileSystem.AccessControl" Version="5.0.0" />
         <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />

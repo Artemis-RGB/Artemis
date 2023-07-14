@@ -36,11 +36,6 @@ internal class Program
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .LogToTrace()
-            .With(new Win32PlatformOptions
-            {
-                UseWindowsUIComposition = true,
-                CompositionBackdropCornerRadius = 8f
-            })
             .UseReactiveUI();
     }
 

@@ -21,6 +21,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.VisualScripting", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.WebClient.Updating", "Artemis.WebClient.Updating\Artemis.WebClient.Updating.csproj", "{7C8C6F50-0CC8-45B3-B608-A7218C005E4B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{44482312-142F-44A4-992C-0AF0F26BAE54}"
+	ProjectSection(SolutionItems) = preProject
+		Artemis.props = Artemis.props
+		Artemis.sln.DotSettings = Artemis.sln.DotSettings
+		Artemis.sln.DotSettings.user = Artemis.sln.DotSettings.user
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
