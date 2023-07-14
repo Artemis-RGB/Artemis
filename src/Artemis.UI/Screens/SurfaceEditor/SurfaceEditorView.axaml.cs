@@ -48,11 +48,6 @@ public partial class SurfaceEditorView : ReactiveUserControl<SurfaceEditorViewMo
     private void UpdateZoomBorderBackground()
     {
         if (ContainerZoomBorder.Background is VisualBrush visualBrush)
-        {
             visualBrush.DestinationRect = new RelativeRect(ContainerZoomBorder.OffsetX * -1, ContainerZoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
-            // Workaround
-            // This fixes an issue where the container is not invalidated, which leaves behind a 'smear' since Avalonia 11 rc1, check if still required later
-            ContainerZoomBorder.InvalidateVisual();
-        }
     }
 }

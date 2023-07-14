@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
@@ -22,6 +22,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.WebClient.Updating", "Artemis.WebClient.Updating\Artemis.WebClient.Updating.csproj", "{7C8C6F50-0CC8-45B3-B608-A7218C005E4B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.WebClient.Workshop", "Artemis.WebClient.Workshop\Artemis.WebClient.Workshop.csproj", "{2B982C2E-3CBC-4DAB-9167-CCCA4C78E92B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{44482312-142F-44A4-992C-0AF0F26BAE54}"
+	ProjectSection(SolutionItems) = preProject
+		Artemis.props = Artemis.props
+		Artemis.sln.DotSettings = Artemis.sln.DotSettings
+		Artemis.sln.DotSettings.user = Artemis.sln.DotSettings.user
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

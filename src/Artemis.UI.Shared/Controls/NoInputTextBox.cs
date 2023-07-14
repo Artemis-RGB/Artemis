@@ -1,11 +1,12 @@
 ﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Styling;
 
 namespace Artemis.UI.Shared;
 
-internal class NoInputTextBox : TextBox, IStyleable
+internal class NoInputTextBox : TextBox
 {
     /// <inheritdoc />
     protected override void OnKeyDown(KeyEventArgs e)
@@ -19,5 +20,6 @@ internal class NoInputTextBox : TextBox, IStyleable
         // Don't call the base method on purpose
     }
 
-    Type IStyleable.StyleKey => typeof(TextBox);
+    /// <inheritdoc />
+    protected override Type StyleKeyOverride => typeof(TextBox);
 }

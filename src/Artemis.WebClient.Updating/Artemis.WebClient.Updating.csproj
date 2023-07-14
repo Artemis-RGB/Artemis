@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\Artemis.props" />
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
