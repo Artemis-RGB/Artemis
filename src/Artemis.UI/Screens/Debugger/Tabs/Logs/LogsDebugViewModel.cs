@@ -7,7 +7,9 @@ using ReactiveUI;
 using Serilog.Events;
 using Serilog.Formatting.Display;
 using System.IO;
+using System.Linq;
 using System.Reactive.Disposables;
+using System.Text;
 using Avalonia.Controls.Documents;
 using Avalonia.Media;
 
@@ -54,8 +56,14 @@ public class LogsDebugViewModel : ActivatableViewModelBase
         _formatter.Format(logEvent, writer);
         string line = writer.ToString();
 
+        StringBuilder builder = new();
 
-        Lines.Add(new Run(line.TrimEnd('\r', '\n') + '\n')
+        //hack: https://github.com/AvaloniaUI/Avalonia/issues/10913
+        string paddedLine2 = line.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries)
+            .Aggregate(builder, (sb, s) => sb.Append(s).Append(' ', 400 - s.Length).AppendLine())
+            .ToString();
+
+        Lines.Add(new Run(paddedLine2)
         {
             Foreground = logEvent.Level switch
             {
