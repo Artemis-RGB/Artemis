@@ -22,12 +22,12 @@ public static class ContainerExtensions
         serviceCollection
             .AddHttpClient()
             .AddWorkshopClient()
-            .ConfigureHttpClient(client => client.BaseAddress = new Uri("https://localhost:7281/graphql"));
+            .ConfigureHttpClient(client => client.BaseAddress = new Uri(WorkshopConstants.WORKSHOP_URL + "/graphql"));
 
         serviceCollection.AddSingleton<IDiscoveryCache>(r =>
         {
             IHttpClientFactory factory = r.GetRequiredService<IHttpClientFactory>();
-            return new DiscoveryCache(IAuthenticationService.AUTHORITY, () => factory.CreateClient());
+            return new DiscoveryCache(WorkshopConstants.AUTHORITY_URL, () => factory.CreateClient());
         });
 
         container.WithDependencyInjectionAdapter(serviceCollection);

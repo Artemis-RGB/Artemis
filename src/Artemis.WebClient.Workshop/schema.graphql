@@ -32,7 +32,8 @@ type EntriesEdge {
 }
 
 type Entry {
-    author: UUID!
+    author: String!
+    authorId: UUID!
     categories: [Category!]!
     createdAt: DateTime!
     description: String!
@@ -83,6 +84,7 @@ type Query {
         where: EntryFilterInput
     ): EntriesConnection
     entry(id: UUID!): Entry
+    searchEntries(input: String!, order: [EntrySortInput!], type: EntryType, where: EntryFilterInput): [Entry!]!
 }
 
 type Release {
@@ -90,6 +92,7 @@ type Release {
     downloadSize: Long!
     downloads: Long!
     entry: Entry!
+    entryId: UUID!
     id: UUID!
     md5Hash: String
     version: String!
@@ -98,6 +101,12 @@ type Release {
 type Tag {
     id: Int!
     name: String!
+}
+
+enum ApplyPolicy {
+    AFTER_RESOLVER
+    BEFORE_RESOLVER
+    VALIDATION
 }
 
 enum EntryType {
@@ -150,7 +159,8 @@ input DateTimeOperationFilterInput {
 
 input EntryFilterInput {
     and: [EntryFilterInput!]
-    author: UuidOperationFilterInput
+    author: StringOperationFilterInput
+    authorId: UuidOperationFilterInput
     categories: ListFilterInputTypeOfCategoryFilterInput
     createdAt: DateTimeOperationFilterInput
     description: StringOperationFilterInput
@@ -175,6 +185,7 @@ input EntryInput {
 
 input EntrySortInput {
     author: SortEnumType
+    authorId: SortEnumType
     createdAt: SortEnumType
     description: SortEnumType
     downloads: SortEnumType
@@ -268,6 +279,7 @@ input ReleaseFilterInput {
     downloadSize: LongOperationFilterInput
     downloads: LongOperationFilterInput
     entry: EntryFilterInput
+    entryId: UuidOperationFilterInput
     id: UuidOperationFilterInput
     md5Hash: StringOperationFilterInput
     or: [ReleaseFilterInput!]

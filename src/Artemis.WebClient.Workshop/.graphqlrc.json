@@ -5,7 +5,7 @@
     "strawberryShake": {
       "name": "WorkshopClient",
       "namespace": "Artemis.WebClient.Workshop",
-      "url": "https://localhost:7281/graphql/",
+      "url": "https://workshop.artemis-rgb.com/graphql/",
       "emitGeneratedCode": false,
       "records": {
         "inputs": false,

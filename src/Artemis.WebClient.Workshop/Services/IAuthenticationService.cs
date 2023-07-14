@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -11,8 +12,6 @@ namespace Artemis.WebClient.Workshop.Services;
 
 public interface IAuthenticationService : IProtectedArtemisService
 {
-    public const string AUTHORITY = "https://localhost:5001";
-    
     bool IsLoggedIn { get; }
     string? UserCode { get; }
     ReadOnlyObservableCollection<Claim> Claims { get; }
@@ -25,7 +24,7 @@ public interface IAuthenticationService : IProtectedArtemisService
 
 internal class AuthenticationService : CorePropertyChanged, IAuthenticationService
 {
-    internal const string CLIENT_ID = "artemis.desktop";
+    private const string CLIENT_ID = "artemis.desktop";
 
     private readonly IDiscoveryCache _discoveryCache;
     private readonly IAuthenticationRepository _authenticationRepository;
@@ -109,7 +108,8 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
         DeviceAuthorizationResponse response = await client.RequestDeviceAuthorizationAsync(new DeviceAuthorizationRequest
         {
             Address = disco.DeviceAuthorizationEndpoint,
-            ClientId = CLIENT_ID
+            ClientId = CLIENT_ID, 
+            Scope = "openid profile email offline_access api"
         });
         if (response.IsError)
             throw new ArtemisWebClientException("Failed to request device authorization: " + response.Error);
@@ -168,33 +168,25 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
             throw new ArtemisWebClientException("Failed to request device token: " + response.Error);
         }
 
-        await SetCurrentUser(client, response);
+        SetCurrentUser(response);
         return true;
     }
 
-    private async Task SetCurrentUser(HttpClient client, TokenResponse response)
+    private void SetCurrentUser(TokenResponse response)
     {
         _token = new AuthenticationToken(response);
         _authenticationRepository.SetRefreshToken(_token.RefreshToken);
-
-        await GetUserInfo(client, _token.AccessToken);
-        IsLoggedIn = true;
-    }
-
-    private async Task GetUserInfo(HttpClient client, string accessToken)
-    {
-        DiscoveryDocumentResponse disco = await GetDiscovery();
-        UserInfoResponse response = await client.GetUserInfoAsync(new UserInfoRequest()
-        {
-            Address = disco.UserInfoEndpoint,
-            Token = accessToken
-        });
-        if (response.IsError)
-            throw new ArtemisWebClientException("Failed to retrieve user info: " + response.Error);
+        
+        JwtSecurityTokenHandler handler = new();
+        JwtSecurityToken? token = handler.ReadJwtToken(response.IdentityToken);
+        if (token == null)
+            throw new ArtemisWebClientException("Failed to read JWT token");
 
         _claims.Clear();
-        foreach (Claim responseClaim in response.Claims)
+        foreach (Claim responseClaim in token.Claims)
             _claims.Add(responseClaim);
+        
+        IsLoggedIn = true;
     }
 
     private async Task<bool> UseRefreshToken(string refreshToken)
@@ -216,7 +208,7 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
             throw new ArtemisWebClientException("Failed to request refresh token: " + response.Error);
         }
 
-        await SetCurrentUser(client, response);
+        SetCurrentUser(response);
         return false;
     }
 }

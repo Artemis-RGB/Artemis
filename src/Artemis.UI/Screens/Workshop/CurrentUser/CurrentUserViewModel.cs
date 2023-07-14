@@ -5,6 +5,7 @@ using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Shared;
+using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Services;
 using Avalonia.Media.Imaging;
 using Flurl.Http;
@@ -94,7 +95,7 @@ public class CurrentUserViewModel : ActivatableViewModelBase
     {
         try
         {
-            Avatar = new Bitmap(await $"{IAuthenticationService.AUTHORITY}/user/avatar/{userId}".GetStreamAsync());
+            Avatar = new Bitmap(await $"{WorkshopConstants.AUTHORITY_URL}/user/avatar/{userId}".GetStreamAsync());
         }
         catch (Exception)
         {
