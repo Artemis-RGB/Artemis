@@ -18,7 +18,7 @@ public class SearchViewModel : ViewModelBase
     private readonly IRouter _router;
     private readonly IWorkshopClient _workshopClient;
     private EntryType? _entryType;
-    private ISearchEntries_Entries_Nodes? _selectedEntry;
+    private ISearchEntries_SearchEntries? _selectedEntry;
 
     public SearchViewModel(IWorkshopClient workshopClient, IRouter router, CurrentUserViewModel currentUserViewModel)
     {
@@ -32,7 +32,7 @@ public class SearchViewModel : ViewModelBase
 
     public Func<string?, CancellationToken, Task<IEnumerable<object>>> SearchAsync { get; }
 
-    public ISearchEntries_Entries_Nodes? SelectedEntry
+    public ISearchEntries_SearchEntries? SelectedEntry
     {
         get => _selectedEntry;
         set => RaiseAndSetIfChanged(ref _selectedEntry, value);
@@ -44,7 +44,7 @@ public class SearchViewModel : ViewModelBase
         set => RaiseAndSetIfChanged(ref _entryType, value);
     }
 
-    private void NavigateToEntry(ISearchEntries_Entries_Nodes entry)
+    private void NavigateToEntry(ISearchEntries_SearchEntries entry)
     {
         string? url = null;
         if (entry.EntryType == WebClient.Workshop.EntryType.Profile)
@@ -60,21 +60,8 @@ public class SearchViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(input))
             return new List<object>();
-
-        EntryFilterInput filter;
-        if (EntryType != null)
-            filter = new EntryFilterInput
-            {
-                And = new[]
-                {
-                    new EntryFilterInput {EntryType = new EntryTypeOperationFilterInput {Eq = EntryType}},
-                    new EntryFilterInput {Name = new StringOperationFilterInput {Contains = input}}
-                }
-            };
-        else
-            filter = new EntryFilterInput {Name = new StringOperationFilterInput {Contains = input}};
-
-        IOperationResult<ISearchEntriesResult> results = await _workshopClient.SearchEntries.ExecuteAsync(filter, cancellationToken);
-        return results.Data?.Entries?.Nodes?.Cast<object>() ?? new List<object>();
+        
+        IOperationResult<ISearchEntriesResult> results = await _workshopClient.SearchEntries.ExecuteAsync(input, EntryType, cancellationToken);
+        return results.Data?.SearchEntries.Cast<object>() ?? new List<object>();
     }
 }

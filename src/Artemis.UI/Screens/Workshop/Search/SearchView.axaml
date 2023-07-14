@@ -16,13 +16,13 @@
                          MaxWidth="500"
                          Watermark="Search"
                          Margin="0 5"
-                         ValueMemberBinding="{CompiledBinding Name, DataType=workshop:ISearchEntries_Entries_Nodes}"
+                         ValueMemberBinding="{CompiledBinding Name, DataType=workshop:ISearchEntries_SearchEntries}"
                          AsyncPopulator="{CompiledBinding SearchAsync}"
                          SelectedItem="{CompiledBinding SelectedEntry}"
                          FilterMode="None"
                          windowing:AppWindow.AllowInteractionInTitleBar="True">
             <AutoCompleteBox.ItemTemplate>
-                <DataTemplate x:DataType="workshop:ISearchEntries_Entries_Nodes">
+                <DataTemplate x:DataType="workshop:ISearchEntries_SearchEntries">
                     <Panel>
                         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
                             <TextBlock Text="{CompiledBinding Name}" />

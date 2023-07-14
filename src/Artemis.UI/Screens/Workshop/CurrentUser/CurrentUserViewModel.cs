@@ -10,38 +10,33 @@ using Artemis.WebClient.Workshop.Services;
 using Avalonia.Media.Imaging;
 using Flurl.Http;
 using ReactiveUI;
+using Serilog;
 
 namespace Artemis.UI.Screens.Workshop.CurrentUser;
 
 public class CurrentUserViewModel : ActivatableViewModelBase
 {
+    private readonly ILogger _logger;
     private readonly IAuthenticationService _authenticationService;
-    private ObservableAsPropertyHelper<bool>? _isLoggedIn;
-
-    private string? _userId;
-    private string? _name;
-    private string? _email;
+    private bool _loading = true;
     private Bitmap? _avatar;
+    private string? _email;
+    private string? _name;
+    private string? _userId;
 
-    public CurrentUserViewModel(IAuthenticationService authenticationService)
+    public CurrentUserViewModel(ILogger logger, IAuthenticationService authenticationService)
     {
+        _logger = logger;
         _authenticationService = authenticationService;
         Login = ReactiveCommand.CreateFromTask(ExecuteLogin);
 
-        this.WhenActivated(d => _isLoggedIn = _authenticationService.WhenAnyValue(s => s.IsLoggedIn).ToProperty(this, vm => vm.IsLoggedIn).DisposeWith(d));
-        this.WhenActivated(d =>
-        {
-            Task.Run(async () =>
-            {
-                await _authenticationService.AutoLogin();
-                await LoadCurrentUser();
-            }).DisposeWith(d);
-        });
+        this.WhenActivated(d => ReactiveCommand.CreateFromTask(ExecuteAutoLogin).Execute().Subscribe().DisposeWith(d));
     }
 
-    public void Logout()
+    public bool Loading
     {
-        _authenticationService.Logout();
+        get => _loading;
+        set => RaiseAndSetIfChanged(ref _loading, value);
     }
 
     public string? UserId
@@ -69,18 +64,38 @@ public class CurrentUserViewModel : ActivatableViewModelBase
     }
 
     public ReactiveCommand<Unit, Unit> Login { get; }
-    public bool IsLoggedIn => _isLoggedIn?.Value ?? false;
+
+    public void Logout()
+    {
+        _authenticationService.Logout();
+    }
 
     private async Task ExecuteLogin(CancellationToken cancellationToken)
     {
         await _authenticationService.Login();
         await LoadCurrentUser();
-        Console.WriteLine(_authenticationService.Claims);
+    }
+
+    private async Task ExecuteAutoLogin(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _authenticationService.AutoLogin();
+            await LoadCurrentUser();
+        }
+        catch (Exception e)
+        {
+            _logger.Warning(e, "Failed to load the current user");
+        }
+        finally
+        {
+            Loading = false;
+        }
     }
 
     private async Task LoadCurrentUser()
     {
-        if (!IsLoggedIn)
+        if (!_authenticationService.IsLoggedIn)
             return;
 
         UserId = _authenticationService.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;

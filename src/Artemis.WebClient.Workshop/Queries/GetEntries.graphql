@@ -1,10 +1,13 @@
 query GetEntries($filter: EntryFilterInput) {
     entries(where: $filter) {
         nodes {
+            id
             author
             name
             summary
             entryType
+            downloads
+            createdAt
             categories {
                 name
                 icon

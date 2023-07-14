@@ -22,6 +22,6 @@
     
     <Style Selector="ListBox.sidebar-listbox ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="MinHeight" Value="{DynamicResource NavigationViewItemOnLeftMinHeight}" />
-        <Setter Property="CornerRadius" Value="{DynamicResource OverlayCornerRadius}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
     </Style>
 </Styles>

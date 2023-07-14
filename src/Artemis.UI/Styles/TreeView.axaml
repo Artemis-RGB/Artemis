@@ -1,7 +1,6 @@
 ﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:converters="clr-namespace:Avalonia.Controls.Converters;assembly=Avalonia.Controls"
-                    xmlns:ui="using:FluentAvalonia.UI.Controls"
                     xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
                     x:CompileBindings="True">
     <Design.PreviewWith>
@@ -77,7 +76,7 @@
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             MinHeight="{DynamicResource NavigationViewItemOnLeftMinHeight}"
-                            CornerRadius="{DynamicResource OverlayCornerRadius}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
                             TemplatedControl.IsTemplateFocusTarget="True"
                             Margin="2">
                         <Panel>

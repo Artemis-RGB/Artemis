@@ -55,4 +55,11 @@
       <UpToDateCheckInput Remove="Screens\Workshop\Categories\Profile\ProfileDetailsView.axaml" />
       <UpToDateCheckInput Remove="Screens\Workshop\Categories\Profile\ProfileListView.axaml" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Screens\Workshop\Enries\EntryListView.axaml.cs">
+        <DependentUpon>ProfileListEntryView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
 </Project>
