@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using System.Text;
+using SkiaSharp;
 
 namespace Artemis.Core.ColorScience;
 
@@ -36,4 +37,14 @@ public readonly record struct ColorSwatch
     ///     The <see cref="ColorType.DarkMuted" /> component.
     /// </summary>
     public SKColor DarkMuted { get; init; }
+
+    /// <summary>
+    ///     Override the record ToString method,
+    ///     so we get a cleaner datamodel viewer
+    /// </summary>
+    /// <returns></returns>
+    public override string? ToString()
+    {
+        return base.ToString();
+    }
 }
