@@ -197,9 +197,12 @@ public class DeviceVisualizer : Control
 
     private void DevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (Device != null)
-            BitmapCache.Remove(Device);
-        Dispatcher.UIThread.Invoke(SetupForDevice, DispatcherPriority.Background);
+        Dispatcher.UIThread.Invoke(async () =>
+        {
+            if (Device != null)
+                BitmapCache.Remove(Device);
+            await SetupForDevice();
+        }, DispatcherPriority.Background);
     }
 
     private void DeviceUpdated(object? sender, EventArgs e)

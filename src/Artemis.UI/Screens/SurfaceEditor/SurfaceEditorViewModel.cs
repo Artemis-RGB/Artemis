@@ -136,6 +136,10 @@ public class SurfaceEditorViewModel : ActivatableViewModelBase, IMainScreenViewM
                 _saving = true;
                 _rgbService.SaveDevices();
             }
+            catch (Exception e)
+            {
+                _windowService.ShowExceptionDialog("Failed to update device positions", e);
+            }
             finally
             {
                 _saving = false;
