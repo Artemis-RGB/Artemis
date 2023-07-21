@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EmbedIO;
@@ -15,7 +16,7 @@ public class PluginsModule : WebModuleBase
 
     internal PluginsModule(string baseRoute) : base(baseRoute)
     {
-        _pluginEndPoints = new Dictionary<string, Dictionary<string, PluginEndPoint>>();
+        _pluginEndPoints = new Dictionary<string, Dictionary<string, PluginEndPoint>>(comparer: StringComparer.InvariantCultureIgnoreCase);
     }
 
     internal void AddPluginEndPoint(PluginEndPoint registration)
