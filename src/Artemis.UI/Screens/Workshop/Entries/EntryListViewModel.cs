@@ -10,13 +10,13 @@ public class EntryListViewModel : ViewModelBase
 {
     private readonly IRouter _router;
 
-    public EntryListViewModel(IGetEntries_Entries_Nodes entry, IRouter router)
+    public EntryListViewModel(IGetEntries_Entries_Items entry, IRouter router)
     {
         _router = router;
         Entry = entry;
     }
 
-    public IGetEntries_Entries_Nodes Entry { get; }
+    public IGetEntries_Entries_Items Entry { get; }
 
     public async Task NavigateToEntry()
     {

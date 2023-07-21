@@ -51,18 +51,20 @@ public partial class Pagination : TemplatedControl
 
     private void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
-        if (e.Property == ValueProperty)
+        if (e.Property == ValueProperty || e.Property == MaximumProperty)
             Update();
     }
 
     private void NextButtonOnClick(object? sender, RoutedEventArgs e)
     {
-        Value++;
+        if (Value < Maximum)
+            Value++;
     }
 
     private void PreviousButtonOnClick(object? sender, RoutedEventArgs e)
     {
-        Value--;
+        if (Value > 1)
+            Value--;
     }
 
     private void Update()

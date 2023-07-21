@@ -78,7 +78,8 @@ internal class Navigation
             catch (Exception e)
             {
                 Cancel();
-                _logger.Error(e, "Failed to navigate to {Path}", resolution.Path);
+                if (e is not TaskCanceledException)
+                    _logger.Error(e, "Failed to navigate to {Path}", resolution.Path);
             }
         }
 
@@ -96,7 +97,8 @@ internal class Navigation
             catch (Exception e)
             {
                 Cancel();
-                _logger.Error(e, "Failed to navigate to {Path}", resolution.Path);
+                if (e is not TaskCanceledException)
+                    _logger.Error(e, "Failed to navigate to {Path}", resolution.Path);
             }
 
             if (CancelIfRequested(args, "OnNavigating", screen))

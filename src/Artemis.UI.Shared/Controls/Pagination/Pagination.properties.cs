@@ -1,6 +1,7 @@
 using System;
 using Avalonia;
 using Avalonia.Controls.Primitives;
+using Avalonia.Data;
 
 namespace Artemis.UI.Shared.Pagination;
 
@@ -10,7 +11,7 @@ public partial class Pagination : TemplatedControl
     ///     Defines the <see cref="Value" /> property
     /// </summary>
     public static readonly StyledProperty<int> ValueProperty =
-        AvaloniaProperty.Register<Pagination, int>(nameof(Value), 1, enableDataValidation: true, coerce: (p, v) => Math.Clamp(v, 1, ((Pagination) p).Maximum));
+        AvaloniaProperty.Register<Pagination, int>(nameof(Value), 1, defaultBindingMode: BindingMode.TwoWay);
 
     /// <summary>
     ///     Defines the <see cref="Maximum" /> property

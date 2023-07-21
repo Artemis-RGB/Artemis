@@ -11,24 +11,21 @@ type Category {
     name: String!
 }
 
-"A connection to a list of items."
-type EntriesConnection {
-    "A list of edges."
-    edges: [EntriesEdge!]
-    "A flattened list of the nodes."
-    nodes: [Entry!]
-    "Information to aid in pagination."
-    pageInfo: PageInfo!
-    "Identifies the total count of items in the connection."
-    totalCount: Int!
+"Information about the offset pagination."
+type CollectionSegmentInfo {
+    "Indicates whether more items exist following the set defined by the clients arguments."
+    hasNextPage: Boolean!
+    "Indicates whether more items exist prior the set defined by the clients arguments."
+    hasPreviousPage: Boolean!
 }
 
-"An edge in a connection."
-type EntriesEdge {
-    "A cursor for use in pagination."
-    cursor: String!
-    "The item at the end of the edge."
-    node: Entry!
+"A segment of a collection."
+type EntriesCollectionSegment {
+    "A flattened list of the items."
+    items: [Entry!]
+    "Information to aid in pagination."
+    pageInfo: CollectionSegmentInfo!
+    totalCount: Int!
 }
 
 type Entry {
@@ -54,35 +51,13 @@ type Image {
 }
 
 type Mutation {
-    addEntry(input: EntryInput!): Entry
-}
-
-"Information about pagination in a connection."
-type PageInfo {
-    "When paginating forwards, the cursor to continue."
-    endCursor: String
-    "Indicates whether more edges exist following the set defined by the clients arguments."
-    hasNextPage: Boolean!
-    "Indicates whether more edges exist prior the set defined by the clients arguments."
-    hasPreviousPage: Boolean!
-    "When paginating backwards, the cursor to continue."
-    startCursor: String
+    addEntry(input: CreateEntryInput!): Entry
+    updateEntry(input: UpdateEntryInput!): Entry
 }
 
 type Query {
     categories(order: [CategorySortInput!], where: CategoryFilterInput): [Category!]!
-    entries(
-        "Returns the elements in the list that come after the specified cursor."
-        after: String,
-        "Returns the elements in the list that come before the specified cursor."
-        before: String,
-        "Returns the first _n_ elements from the list."
-        first: Int,
-        "Returns the last _n_ elements from the list."
-        last: Int,
-        order: [EntrySortInput!],
-        where: EntryFilterInput
-    ): EntriesConnection
+    entries(order: [EntrySortInput!], skip: Int, take: Int, where: EntryFilterInput): EntriesCollectionSegment
     entry(id: UUID!): Entry
     searchEntries(input: String!, order: [EntrySortInput!], type: EntryType, where: EntryFilterInput): [Entry!]!
 }
@@ -142,6 +117,15 @@ input CategorySortInput {
     name: SortEnumType
 }
 
+input CreateEntryInput {
+    categories: [Int!]!
+    description: String!
+    entryType: EntryType!
+    name: String!
+    summary: String!
+    tags: [String!]!
+}
+
 input DateTimeOperationFilterInput {
     eq: DateTime
     gt: DateTime
@@ -174,13 +158,6 @@ input EntryFilterInput {
     releases: ListFilterInputTypeOfReleaseFilterInput
     summary: StringOperationFilterInput
     tags: ListFilterInputTypeOfTagFilterInput
-}
-
-input EntryInput {
-    description: String!
-    entryType: EntryType!
-    name: String!
-    tags: [String!]!
 }
 
 input EntrySortInput {
@@ -306,6 +283,15 @@ input TagFilterInput {
     id: IntOperationFilterInput
     name: StringOperationFilterInput
     or: [TagFilterInput!]
+}
+
+input UpdateEntryInput {
+    categories: [Int!]!
+    description: String!
+    id: UUID!
+    name: String!
+    summary: String!
+    tags: [String!]!
 }
 
 input UuidOperationFilterInput {

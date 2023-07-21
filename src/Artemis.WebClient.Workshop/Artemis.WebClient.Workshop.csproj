@@ -13,8 +13,10 @@
       <PackageReference Include="IdentityModel" Version="6.1.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+      <PackageReference Include="ReactiveUI" Version="18.4.26" />
       <PackageReference Include="StrawberryShake.Server" Version="13.0.5" />
       <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.31.0" />
+      <PackageReference Include="System.Reactive" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>

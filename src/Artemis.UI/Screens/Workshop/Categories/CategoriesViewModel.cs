@@ -1,56 +1,64 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Reactive.Linq;
 using Artemis.UI.Shared;
 using Artemis.WebClient.Workshop;
+using Artemis.WebClient.Workshop.Extensions;
 using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
-using Serilog;
 using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Categories;
 
 public class CategoriesViewModel : ActivatableViewModelBase
 {
-    private readonly IWorkshopClient _client;
-    private readonly ILogger _logger;
-    public readonly SourceList<CategoryViewModel> _categories;
+    private ObservableAsPropertyHelper<IReadOnlyList<EntryFilterInput>?>? _categoryFilters;
 
-    public CategoriesViewModel(ILogger logger, IWorkshopClient client)
+    public CategoriesViewModel(IWorkshopClient client)
     {
-        _logger = logger;
-        _client = client;
-        _categories = new SourceList<CategoryViewModel>();
-        _categories.Connect().Bind(out ReadOnlyObservableCollection<CategoryViewModel> categoryViewModels).Subscribe();
-        
+        client.GetCategories
+            .Watch(ExecutionStrategy.CacheFirst)
+            .SelectOperationResult(c => c.Categories)
+            .ToObservableChangeSet(c => c.Id)
+            .Transform(c => new CategoryViewModel(c))
+            .Bind(out ReadOnlyObservableCollection<CategoryViewModel> categoryViewModels)
+            .Subscribe();
+
         Categories = categoryViewModels;
-        this.WhenActivated(d => ReactiveCommand.CreateFromTask(GetCategories).Execute().Subscribe().DisposeWith(d));
+
+        this.WhenActivated(d =>
+        {
+            _categoryFilters = Categories.ToObservableChangeSet()
+                .AutoRefresh(c => c.IsSelected)
+                .Filter(e => e.IsSelected)
+                .Select(_ => CreateFilter())
+                .ToProperty(this, vm => vm.CategoryFilters)
+                .DisposeWith(d);
+        });
     }
 
     public ReadOnlyObservableCollection<CategoryViewModel> Categories { get; }
+    public IReadOnlyList<EntryFilterInput>? CategoryFilters => _categoryFilters?.Value;
 
-
-    private async Task GetCategories(CancellationToken cancellationToken)
+    private IReadOnlyList<EntryFilterInput>? CreateFilter()
     {
-        try
-        {
-            IOperationResult<IGetCategoriesResult> result = await _client.GetCategories.ExecuteAsync(cancellationToken);
-            if (result.IsErrorResult())
-                _logger.Warning("Failed to retrieve categories {Error}", result.Errors);
+        List<int?> categories = Categories.Where(c => c.IsSelected).Select(c => (int?) c.Id).ToList();
+        if (!categories.Any())
+            return null;
 
-            _categories.Edit(l =>
+        List<EntryFilterInput> categoryFilters = new();
+        foreach (int? category in categories)
+        {
+            categoryFilters.Add(new EntryFilterInput
             {
-                l.Clear();
-                if (result.Data?.Categories != null)
-                    l.AddRange(result.Data.Categories.Select(c => new CategoryViewModel(c)));
+                Categories = new ListFilterInputTypeOfCategoryFilterInput {Some = new CategoryFilterInput {Id = new IntOperationFilterInput {Eq = category}}}
             });
         }
-        catch (Exception e)
-        {
-            _logger.Warning(e, "Failed to retrieve categories");
-        }
+
+        return categoryFilters;
     }
 }
