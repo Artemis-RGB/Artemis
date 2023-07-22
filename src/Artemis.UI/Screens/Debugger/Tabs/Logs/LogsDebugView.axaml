@@ -2,13 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:aedit="https://github.com/avaloniaui/avaloniaedit"
-             xmlns:controls="clr-namespace:Artemis.UI.Controls"
              xmlns:logs="clr-namespace:Artemis.UI.Screens.Debugger.Logs"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Debugger.Logs.LogsDebugView"
              x:DataType="logs:LogsDebugViewModel">
     <ScrollViewer Name="LogsScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-        <SelectableTextBlock Inlines="{CompiledBinding Lines}" FontFamily="Consolas" SizeChanged="Control_OnSizeChanged"></SelectableTextBlock>    
+        <SelectableTextBlock 
+            Inlines="{CompiledBinding Lines}" 
+            FontFamily="Consolas" 
+            SizeChanged="Control_OnSizeChanged" 
+            SelectionBrush="{StaticResource TextControlSelectionHighlightColor}"
+        />    
     </ScrollViewer>
 </UserControl>

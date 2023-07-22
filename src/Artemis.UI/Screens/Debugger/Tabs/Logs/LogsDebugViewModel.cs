@@ -7,7 +7,9 @@ using ReactiveUI;
 using Serilog.Events;
 using Serilog.Formatting.Display;
 using System.IO;
+using System.Linq;
 using System.Reactive.Disposables;
+using System.Text;
 using Avalonia.Controls.Documents;
 using Avalonia.Media;
 
@@ -53,7 +55,6 @@ public class LogsDebugViewModel : ActivatableViewModelBase
         using StringWriter writer = new();
         _formatter.Format(logEvent, writer);
         string line = writer.ToString();
-
 
         Lines.Add(new Run(line.TrimEnd('\r', '\n') + '\n')
         {

@@ -71,7 +71,7 @@ public class EnumSwitchNode : Node
 
         foreach (Enum enumValue in Enum.GetValues(enumType).Cast<Enum>())
         {
-            InputPin pin = CreateOrAddInputPin(typeof(object), enumValue.ToString().Humanize(LetterCasing.Sentence));
+            InputPin pin = CreateOrAddInputPin(typeof(object), enumValue.Humanize(LetterCasing.Sentence));
             pin.PinConnected += OnInputPinConnected;
             pin.PinDisconnected += OnInputPinDisconnected;
             _inputPins[enumValue] = pin;
