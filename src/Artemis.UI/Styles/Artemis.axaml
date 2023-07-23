@@ -13,6 +13,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <MergeResourceInclude Source="TreeView.axaml"></MergeResourceInclude>
+                <MergeResourceInclude Source="/Controls/AcrylicBlur/AcrylicBlur.axaml"></MergeResourceInclude>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Styles.Resources>

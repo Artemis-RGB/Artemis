@@ -16,9 +16,4 @@ public partial class EntryListView : ReactiveUserControl<EntryListViewModel>
     {
         AvaloniaXamlLoader.Load(this);
     }
-
-    private async void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
-    {
-        await ViewModel.NavigateToEntry();
-    }
 }

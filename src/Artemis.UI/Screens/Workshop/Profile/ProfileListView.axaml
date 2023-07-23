@@ -16,20 +16,10 @@
                 <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
                     <ContentControl Content="{CompiledBinding CategoriesViewModel}"></ContentControl>
                 </Border>
-
-                <TextBlock Classes="card-title">
-                    Filters
-                </TextBlock>
-                <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
-                    <StackPanel>
-                        <Label>Author</Label>
-                        <AutoCompleteBox Watermark="Search authors.." />
-                    </StackPanel>
-                </Border>
-
             </StackPanel>
-
-            <ScrollViewer Grid.Column="1" Grid.Row="0">
+            
+            <ProgressBar Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" Margin="0 26 20 0" IsVisible="{CompiledBinding IsLoading}" IsIndeterminate="True"/>
+            <ScrollViewer Grid.Column="1" Grid.Row="0" Margin="0 26 0 0">
                 <ItemsRepeater ItemsSource="{CompiledBinding Entries}" Margin="0 0 20 0">
                     <ItemsRepeater.ItemTemplate>
                         <DataTemplate>
@@ -41,6 +31,7 @@
 
             <pagination:Pagination Grid.Column="1"
                                    Grid.Row="1" 
+                                   Margin="0 20 0 10"
                                    IsVisible="{CompiledBinding ShowPagination}"
                                    Value="{CompiledBinding Page}" 
                                    Maximum="{CompiledBinding TotalPages}"

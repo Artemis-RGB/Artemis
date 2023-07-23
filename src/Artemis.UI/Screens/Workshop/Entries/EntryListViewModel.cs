@@ -1,8 +1,10 @@
 using System;
+using System.Reactive;
 using System.Threading.Tasks;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.WebClient.Workshop;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.Entries;
 
@@ -14,11 +16,13 @@ public class EntryListViewModel : ViewModelBase
     {
         _router = router;
         Entry = entry;
+        NavigateToEntry = ReactiveCommand.CreateFromTask(ExecuteNavigateToEntry);
     }
 
     public IGetEntries_Entries_Items Entry { get; }
+    public ReactiveCommand<Unit,Unit> NavigateToEntry { get; }
 
-    public async Task NavigateToEntry()
+    private async Task ExecuteNavigateToEntry()
     {
         switch (Entry.EntryType)
         {
