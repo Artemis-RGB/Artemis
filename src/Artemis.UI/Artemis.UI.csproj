@@ -54,11 +54,16 @@
     <ItemGroup>
       <UpToDateCheckInput Remove="Screens\Workshop\Categories\Profile\ProfileDetailsView.axaml" />
       <UpToDateCheckInput Remove="Screens\Workshop\Categories\Profile\ProfileListView.axaml" />
+      <UpToDateCheckInput Remove="Controls\AcrylicBlur\AcrylicBlur.axaml" />
     </ItemGroup>
 
     <ItemGroup>
       <Compile Update="Screens\Workshop\Enries\EntryListView.axaml.cs">
         <DependentUpon>ProfileListEntryView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Screens\Workshop\SubmissionWizard\SubmissionWizardView.axaml.cs">
+        <DependentUpon>StartupWizardView.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
     </ItemGroup>

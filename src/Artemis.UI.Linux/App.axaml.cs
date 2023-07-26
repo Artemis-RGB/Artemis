@@ -1,3 +1,4 @@
+using System;
 using Artemis.Core.Services;
 using Artemis.UI.Linux.DryIoc;
 using Artemis.UI.Linux.Providers.Input;
@@ -26,15 +27,11 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (Design.IsDesignMode)
+        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop || Design.IsDesignMode)
             return;
-        
-        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop) 
-            return;
-        
-        ArtemisBootstrapper.Initialize();
 
-        _applicationStateManager = new ApplicationStateManager(_container!, desktop.Args);
+        _applicationStateManager = new ApplicationStateManager(_container!, desktop.Args ?? Array.Empty<string>());
+        ArtemisBootstrapper.Initialize();
         RegisterProviders();
     }
 

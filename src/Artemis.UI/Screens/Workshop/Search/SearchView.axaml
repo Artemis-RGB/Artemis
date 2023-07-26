@@ -48,6 +48,8 @@
             </AutoCompleteBox.ItemTemplate>
         </AutoCompleteBox>
         <ContentControl HorizontalAlignment="Right" 
+                        Width="28"
+                        Height="28"
                         Margin="0 0 50 0"
                         Content="{CompiledBinding CurrentUserViewModel}"
                         windowing:AppWindow.AllowInteractionInTitleBar="True"/>

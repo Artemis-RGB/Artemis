@@ -30,9 +30,9 @@ public class GeneralTabViewModel : ActivatableViewModelBase
     private readonly IAutoRunProvider? _autoRunProvider;
     private readonly IDebugService _debugService;
     private readonly PluginSetting<LayerBrushReference> _defaultLayerBrushDescriptor;
+    private readonly INotificationService _notificationService;
     private readonly ISettingsService _settingsService;
     private readonly IUpdateService _updateService;
-    private readonly INotificationService _notificationService;
     private readonly IWindowService _windowService;
     private bool _startupWizardOpen;
 
@@ -74,12 +74,14 @@ public class GeneralTabViewModel : ActivatableViewModelBase
         {
             UIAutoRun.SettingChanged += UIAutoRunOnSettingChanged;
             UIAutoRunDelay.SettingChanged += UIAutoRunDelayOnSettingChanged;
+            EnableMica.SettingChanged += EnableMicaOnSettingChanged;
 
             Dispatcher.UIThread.InvokeAsync(ApplyAutoRun);
             Disposable.Create(() =>
             {
                 UIAutoRun.SettingChanged -= UIAutoRunOnSettingChanged;
                 UIAutoRunDelay.SettingChanged -= UIAutoRunDelayOnSettingChanged;
+                EnableMica.SettingChanged -= EnableMicaOnSettingChanged;
 
                 _settingsService.SaveAllSettings();
             }).DisposeWith(d);
@@ -146,6 +148,7 @@ public class GeneralTabViewModel : ActivatableViewModelBase
     public PluginSetting<bool> UIAutoRun => _settingsService.GetSetting("UI.AutoRun", false);
     public PluginSetting<int> UIAutoRunDelay => _settingsService.GetSetting("UI.AutoRunDelay", 15);
     public PluginSetting<bool> UIShowOnStartup => _settingsService.GetSetting("UI.ShowOnStartup", true);
+    public PluginSetting<bool> EnableMica => _settingsService.GetSetting("UI.EnableMica", true);
     public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.Updating.AutoCheck", true);
     public PluginSetting<bool> UIAutoUpdate => _settingsService.GetSetting("UI.Updating.AutoInstall", true);
     public PluginSetting<bool> ProfileEditorShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
@@ -237,5 +240,10 @@ public class GeneralTabViewModel : ActivatableViewModelBase
         {
             _windowService.ShowExceptionDialog("Failed to apply auto-run", exception);
         }
+    }
+
+    private void EnableMicaOnSettingChanged(object? sender, EventArgs e)
+    {
+        Shared.UI.SetMicaEnabled(EnableMica.Value);
     }
 }

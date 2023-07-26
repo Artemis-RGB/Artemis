@@ -9,9 +9,9 @@
              x:Class="Artemis.UI.Screens.Workshop.CurrentUser.CurrentUserView"
              x:DataType="currentUser:CurrentUserViewModel">
 
-    <Panel IsVisible="{CompiledBinding !Loading}">
+    <Panel Name="Container" IsVisible="{CompiledBinding !Loading}">
         <!-- Signed out -->
-        <Ellipse Height="28" Width="28" IsVisible="{CompiledBinding Name, Converter={x:Static StringConverters.IsNullOrEmpty}}">
+        <Ellipse Height="{CompiledBinding Bounds.Height, ElementName=Container}" Width="{CompiledBinding Bounds.Height, ElementName=Container}" IsVisible="{CompiledBinding Name, Converter={x:Static StringConverters.IsNullOrEmpty}}">
             <Ellipse.ContextFlyout>
                 <MenuFlyout>
                     <MenuItem Header="Login" Command="{CompiledBinding Login}">
@@ -27,7 +27,7 @@
         </Ellipse>
 
         <!-- Signed in -->
-        <Ellipse Height="28" Width="28" IsVisible="{CompiledBinding Name, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" Name="UserMenu">
+        <Ellipse Height="{CompiledBinding Bounds.Height, ElementName=Container}" Width="{CompiledBinding Bounds.Height, ElementName=Container}" IsVisible="{CompiledBinding Name, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" Name="UserMenu">
             <Ellipse.ContextFlyout>
                 <Flyout>
                     <Grid ColumnDefinitions="Auto,*" RowDefinitions="*,*,*" MinWidth="300">

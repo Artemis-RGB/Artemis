@@ -44,6 +44,19 @@
                             </StackPanel>
                         </Grid>
                         <Border Classes="card-separator" />
+                        
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock>Enable Mica effect</TextBlock>
+                                <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                    The Mica effect is the semi-transparent effect used by the application window, the colors are based on your wallpaper.
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                <ToggleSwitch IsChecked="{CompiledBinding EnableMica.Value}" OnContent="Yes" OffContent="No" MinWidth="0" Margin="0 -10" />
+                            </StackPanel>
+                        </Grid>
+                        <Border Classes="card-separator" />
 
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                             <StackPanel Grid.Column="0">
