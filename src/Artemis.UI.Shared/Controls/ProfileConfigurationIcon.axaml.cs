@@ -50,6 +50,9 @@ public partial class ProfileConfigurationIcon : UserControl, IDisposable
             {
                 Dispatcher.UIThread.Post(() =>
                 {
+                    if (ConfigurationIcon is null)
+                        return;
+                    
                     Stream? stream = ConfigurationIcon.GetIconStream();
                     if (stream == null)
                         Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
