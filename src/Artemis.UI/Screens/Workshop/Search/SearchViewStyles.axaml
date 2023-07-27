@@ -1,0 +1,28 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="10">
+            <StackPanel Orientation="Horizontal" Spacing="5">
+                <Border Classes="category">
+                    <TextBlock Text="Media"></TextBlock>
+                </Border>
+
+                <Border Classes="category">
+                    <TextBlock Text="Audio"></TextBlock>
+                </Border>
+
+                <Border Classes="category">
+                    <TextBlock Text="Interaction"></TextBlock>
+                </Border>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="Border.category">
+        <Setter Property="Background" Value="{DynamicResource ControlSolidFillColorDefaultBrush}" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Padding" Value="6 1"></Setter>
+        <Setter Property="TextBlock.FontSize" Value="12" />
+    </Style>
+</Styles>

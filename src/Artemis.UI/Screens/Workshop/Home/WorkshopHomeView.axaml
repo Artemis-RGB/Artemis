@@ -1,0 +1,78 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:home="clr-namespace:Artemis.UI.Screens.Workshop.Home"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+             x:Class="Artemis.UI.Screens.Workshop.Home.WorkshopHomeView"
+             x:DataType="home:WorkshopHomeViewModel">
+    <Border Classes="router-container">
+        <Grid RowDefinitions="200,*,*">
+            <Image Grid.Row="0"
+                   Grid.RowSpan="2"
+                   VerticalAlignment="Top"
+                   Source="/Assets/Images/workshop-banner.jpg"
+                   Height="200"
+                   Stretch="UniformToFill"
+                   RenderOptions.BitmapInterpolationMode="HighQuality">
+                <Image.OpacityMask>
+                    <LinearGradientBrush StartPoint="0%,70%" EndPoint="0%,100%">
+                        <GradientStops>
+                            <GradientStop Color="Black" Offset="0"></GradientStop>
+                            <GradientStop Color="Transparent" Offset="100"></GradientStop>
+                        </GradientStops>
+                    </LinearGradientBrush>
+                </Image.OpacityMask>
+            </Image>
+
+            <TextBlock Grid.Row="0"
+                       TextWrapping="Wrap"
+                       Foreground="White"
+                       FontSize="32"
+                       Margin="30"
+                       Text="Welcome to the Artemis Workshop!">
+                <TextBlock.Effect>
+                    <DropShadowEffect Color="Black" OffsetX="2" OffsetY="2" BlurRadius="5"></DropShadowEffect>
+                </TextBlock.Effect>
+            </TextBlock>
+
+            <StackPanel Margin="30 -75 30 0" Grid.Row="1">
+                <StackPanel  Spacing="10" Orientation="Horizontal" VerticalAlignment="Top">
+                    <Button Width="150" Height="180" Command="{CompiledBinding AddSubmission}" VerticalContentAlignment="Top">
+                        <StackPanel>
+                            <avalonia:MaterialIcon Kind="CloudUpload" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />
+                            <TextBlock TextWrapping="Wrap" FontSize="16" Margin="0 5">Add submission</TextBlock>
+                            <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8">Upload your own creations to the workshop!</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    
+                    <Button Width="150" Height="180" Command="{CompiledBinding Navigate}" CommandParameter="workshop/profiles/1" VerticalContentAlignment="Top">
+                        <StackPanel>
+                            <avalonia:MaterialIcon Kind="FolderVideo" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />
+                            <TextBlock TextWrapping="Wrap" FontSize="16" Margin="0 5">Profiles</TextBlock>
+                            <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8">Browse new profiles created by other users.</TextBlock>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Width="150" Height="180" Command="{CompiledBinding Navigate}" CommandParameter="workshop/layouts/1" VerticalContentAlignment="Top">
+                        <StackPanel>
+                            <avalonia:MaterialIcon Kind="KeyboardVariant" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />
+                            <TextBlock TextWrapping="Wrap" FontSize="16" Margin="0 5">Layouts</TextBlock>
+                            <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8">Layouts make your devices look great in the editor.</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    
+
+                </StackPanel>
+                
+                <TextBlock Classes="h4" Margin="0 15 0 5">Featured submissions</TextBlock>
+                <TextBlock>Not yet implemented, here we'll show submissions we think are worth some extra attention.</TextBlock>
+                
+                <TextBlock Classes="h4" Margin="0 15 0 5">Recently updated</TextBlock>
+                <TextBlock>Not yet implemented, here we'll a few of the most recent uploads/updates to the workshop.</TextBlock>
+            </StackPanel>
+           
+        </Grid>
+    </Border>
+</UserControl>

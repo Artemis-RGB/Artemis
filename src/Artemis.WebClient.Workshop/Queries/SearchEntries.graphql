@@ -1,0 +1,13 @@
+query SearchEntries($input: String! $type: EntryType) {
+    searchEntries(input: $input type: $type) {
+        id
+        name
+        summary
+        entryType
+        categories {
+            id
+            name
+            icon
+        }
+    }
+}

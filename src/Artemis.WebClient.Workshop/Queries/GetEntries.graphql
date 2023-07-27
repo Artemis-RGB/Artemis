@@ -1,0 +1,18 @@
+query GetEntries($filter: EntryFilterInput $skip: Int $take: Int) {
+    entries(where: $filter skip: $skip take: $take) {
+        totalCount
+        items {
+            id
+            author
+            name
+            summary
+            entryType
+            downloads
+            createdAt
+            categories {
+                name
+                icon
+            }
+        }
+    }
+}

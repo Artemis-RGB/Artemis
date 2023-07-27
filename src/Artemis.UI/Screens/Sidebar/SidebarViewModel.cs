@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -23,34 +24,38 @@ namespace Artemis.UI.Screens.Sidebar;
 
 public class SidebarViewModel : ActivatableViewModelBase
 {
+    public const string ROOT_SCREEN = "root";
+
     private readonly IRouter _router;
     private readonly IWindowService _windowService;
-    private SidebarScreenViewModel? _selectedSidebarScreen;
     private ReadOnlyObservableCollection<SidebarCategoryViewModel> _sidebarCategories = new(new ObservableCollection<SidebarCategoryViewModel>());
+    private SidebarScreenViewModel? _selectedScreen;
 
     public SidebarViewModel(IRouter router, IProfileService profileService, IWindowService windowService, ISidebarVmFactory sidebarVmFactory)
     {
         _router = router;
         _windowService = windowService;
 
-        SidebarScreens = new ObservableCollection<SidebarScreenViewModel>
+        SidebarScreen = new SidebarScreenViewModel(MaterialIconKind.Abacus, ROOT_SCREEN, "", null, new ObservableCollection<SidebarScreenViewModel>()
         {
-            new(MaterialIconKind.Home, "Home", "home"),
-#if DEBUG
-            new(MaterialIconKind.TestTube, "Workshop", "workshop"),
-#endif
+            new(MaterialIconKind.HomeOutline, "Home", "home"),
+            new(MaterialIconKind.TestTube, "Workshop", "workshop", null, new ObservableCollection<SidebarScreenViewModel>
+            {
+                new(MaterialIconKind.FolderVideo, "Profiles", "workshop/profiles/1", "workshop/profiles"),
+                new(MaterialIconKind.KeyboardVariant, "Layouts", "workshop/layouts/1", "workshop/layouts"),
+            }),
             new(MaterialIconKind.Devices, "Surface Editor", "surface-editor"),
-            new(MaterialIconKind.Cog, "Settings", "settings")
-        };
+            new(MaterialIconKind.SettingsOutline, "Settings", "settings")
+        });
 
         AddCategory = ReactiveCommand.CreateFromTask(ExecuteAddCategory);
+        this.WhenAnyValue(vm => vm.SelectedScreen).WhereNotNull().Subscribe(NavigateToScreen);
+        this.WhenAnyValue(vm => vm.SelectedScreen).WhereNotNull().Subscribe(s => SidebarScreen.ExpandIfRequired(s));
 
         SourceList<ProfileCategory> profileCategories = new();
-
-        this.WhenAnyValue(vm => vm.SelectedSidebarScreen).WhereNotNull().Subscribe(NavigateToScreen);
         this.WhenActivated(d =>
         {
-            _router.CurrentPath.WhereNotNull().Subscribe(r => SelectedSidebarScreen = SidebarScreens.FirstOrDefault(s => s.Matches(r))).DisposeWith(d);
+            _router.CurrentPath.WhereNotNull().Subscribe(r => SelectedScreen = SidebarScreen.GetMatch(r)).DisposeWith(d);
 
             Observable.FromEventPattern<ProfileCategoryEventArgs>(x => profileService.ProfileCategoryAdded += x, x => profileService.ProfileCategoryAdded -= x)
                 .Subscribe(e => profileCategories.Add(e.EventArgs.ProfileCategory))
@@ -75,22 +80,22 @@ public class SidebarViewModel : ActivatableViewModelBase
                 .DisposeWith(d);
 
             SidebarCategories = categoryViewModels;
-            SelectedSidebarScreen = SidebarScreens.First();
         });
+        SelectedScreen = SidebarScreen.Screens.First();
     }
 
-    public ObservableCollection<SidebarScreenViewModel> SidebarScreens { get; }
+    public SidebarScreenViewModel SidebarScreen { get; }
+
+    public SidebarScreenViewModel? SelectedScreen
+    {
+        get => _selectedScreen;
+        set => RaiseAndSetIfChanged(ref _selectedScreen, value);
+    }
 
     public ReadOnlyObservableCollection<SidebarCategoryViewModel> SidebarCategories
     {
         get => _sidebarCategories;
         set => RaiseAndSetIfChanged(ref _sidebarCategories, value);
-    }
-
-    public SidebarScreenViewModel? SelectedSidebarScreen
-    {
-        get => _selectedSidebarScreen;
-        set => RaiseAndSetIfChanged(ref _selectedSidebarScreen, value);
     }
 
     public ReactiveCommand<Unit, Unit> AddCategory { get; }
@@ -112,7 +117,7 @@ public class SidebarViewModel : ActivatableViewModelBase
         {
             try
             {
-                await _router.Navigate(sidebarScreenViewModel.Path, new RouterNavigationOptions {IgnoreOnPartialMatch = true});
+                await _router.Navigate(sidebarScreenViewModel.Path);
             }
             catch (Exception e)
             {

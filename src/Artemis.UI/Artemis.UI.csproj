@@ -14,6 +14,7 @@
         <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
         <ProjectReference Include="..\Artemis.VisualScripting\Artemis.VisualScripting.csproj" />
         <ProjectReference Include="..\Artemis.WebClient.Updating\Artemis.WebClient.Updating.csproj" />
+        <ProjectReference Include="..\Artemis.WebClient.Workshop\Artemis.WebClient.Workshop.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -41,5 +42,29 @@
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Screens\Workshop\Layout\LayoutDetailsView.axaml" />
+      <AdditionalFiles Include="Screens\Workshop\Layout\LayoutListView.axaml" />
+      <AdditionalFiles Include="Screens\Workshop\Profile\ProfileDetailsView.axaml" />
+      <AdditionalFiles Include="Screens\Workshop\Profile\ProfileListView.axaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Screens\Workshop\Categories\Profile\ProfileDetailsView.axaml" />
+      <UpToDateCheckInput Remove="Screens\Workshop\Categories\Profile\ProfileListView.axaml" />
+      <UpToDateCheckInput Remove="Controls\AcrylicBlur\AcrylicBlur.axaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Screens\Workshop\Enries\EntryListView.axaml.cs">
+        <DependentUpon>ProfileListEntryView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Screens\Workshop\SubmissionWizard\SubmissionWizardView.axaml.cs">
+        <DependentUpon>StartupWizardView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
     </ItemGroup>
 </Project>

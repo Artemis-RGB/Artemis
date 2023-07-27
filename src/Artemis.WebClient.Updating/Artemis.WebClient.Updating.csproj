@@ -14,4 +14,8 @@
       <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
       <PackageReference Include="StrawberryShake.Server" Version="13.0.5" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Remove=".graphqlconfig" />
+    </ItemGroup>
 </Project>

@@ -15,20 +15,17 @@
 				   Height="200"
 				   Stretch="UniformToFill"
 				   RenderOptions.BitmapInterpolationMode="HighQuality"/>
-
-			<!-- TODO: Replace with a shadow when available -->
+			
 			<TextBlock Grid.Row="0"
-					   TextWrapping="Wrap"
-					   Foreground="Black"
-					   FontSize="32"
-					   Margin="32"
-					   Text=" Welcome to Artemis, the unified RGB platform." />
-			<TextBlock Grid.Row="0"
-					   TextWrapping="Wrap"
-					   Foreground="White"
-					   FontSize="32"
-					   Margin="30"
-					   Text=" Welcome to Artemis, the unified RGB platform." />
+			           TextWrapping="Wrap"
+			           Foreground="White"
+			           FontSize="32"
+			           Margin="30"
+			           Text=" Welcome to Artemis, the unified RGB platform.">
+				<TextBlock.Effect>
+					<DropShadowEffect Color="Black" OffsetX="2" OffsetY="2" BlurRadius="5"></DropShadowEffect>
+				</TextBlock.Effect>
+			</TextBlock>
 
 			<Grid Grid.Row="1" MaxWidth="840" Margin="30" VerticalAlignment="Bottom" ColumnDefinitions="*,*" RowDefinitions="*,*">
 				<Border Classes="card" Margin="8" Grid.ColumnSpan="2" ClipToBounds="True">

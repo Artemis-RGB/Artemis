@@ -1,82 +1,38 @@
-﻿using System.Reactive;
-using System.Reactive.Linq;
-using Artemis.Core;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Artemis.UI.Screens.Workshop.Home;
+using Artemis.UI.Screens.Workshop.Search;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
-using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Builders;
-using Avalonia.Input;
-using ReactiveUI;
-using SkiaSharp;
+using Artemis.WebClient.Workshop;
 
 namespace Artemis.UI.Screens.Workshop;
 
-public class WorkshopViewModel : ActivatableViewModelBase, IMainScreenViewModel
+public class WorkshopViewModel : RoutableScreen<IWorkshopViewModel>, IMainScreenViewModel
 {
-    private readonly ObservableAsPropertyHelper<Cursor> _cursor;
-    private readonly INotificationService _notificationService;
+    private readonly SearchViewModel _searchViewModel;
 
-    private ColorGradient _colorGradient = new()
+    public WorkshopViewModel(SearchViewModel searchViewModel, WorkshopHomeViewModel homeViewModel)
     {
-        new ColorGradientStop(new SKColor(0xFFFF6D00), 0f),
-        new ColorGradientStop(new SKColor(0xFFFE6806), 0.2f),
-        new ColorGradientStop(new SKColor(0xFFEF1788), 0.4f),
-        new ColorGradientStop(new SKColor(0xFFEF1788), 0.6f),
-        new ColorGradientStop(new SKColor(0xFF00FCCC), 0.8f),
-        new ColorGradientStop(new SKColor(0xFF00FCCC), 1f)
-    };
-
-    private StandardCursorType _selectedCursor;
-    private double _testValue;
-    private string? _navigationPath;
-
-    public WorkshopViewModel(INotificationService notificationService, IRouter router)
-    {
-        _notificationService = notificationService;
-        _cursor = this.WhenAnyValue(vm => vm.SelectedCursor).Select(c => new Cursor(c)).ToProperty(this, vm => vm.Cursor);
-
-        DisplayName = "Workshop";
-        ShowNotification = ReactiveCommand.Create<NotificationSeverity>(ExecuteShowNotification);
-        TestNavigation = ReactiveCommand.CreateFromTask(async () => await router.Navigate(NavigationPath!), this.WhenAnyValue(vm => vm.NavigationPath).Select(p => !string.IsNullOrWhiteSpace(p)));
+        _searchViewModel = searchViewModel;
+        
+        TitleBarViewModel = searchViewModel;
+        HomeViewModel = homeViewModel;
     }
 
-    public ViewModelBase? TitleBarViewModel => null;
-    public ReactiveCommand<NotificationSeverity, Unit> ShowNotification { get; set; }
-    public ReactiveCommand<Unit, Unit> TestNavigation { get; set; }
+    public ViewModelBase TitleBarViewModel { get; }
+    public WorkshopHomeViewModel HomeViewModel { get; }
 
-    public StandardCursorType SelectedCursor
+    /// <inheritdoc />
+    public override Task OnNavigating(NavigationArguments args, CancellationToken cancellationToken)
     {
-        get => _selectedCursor;
-        set => RaiseAndSetIfChanged(ref _selectedCursor, value);
+        _searchViewModel.EntryType = Screen?.EntryType;
+        return Task.CompletedTask;
     }
+}
 
-    public Cursor Cursor => _cursor.Value;
-
-    public string? NavigationPath
-    {
-        get => _navigationPath;
-        set => RaiseAndSetIfChanged(ref _navigationPath, value);
-    }
-
-    public ColorGradient ColorGradient
-    {
-        get => _colorGradient;
-        set => RaiseAndSetIfChanged(ref _colorGradient, value);
-    }
-
-    public double TestValue
-    {
-        get => _testValue;
-        set => RaiseAndSetIfChanged(ref _testValue, value);
-    }
-
-    public void CreateRandomGradient()
-    {
-        ColorGradient = ColorGradient.GetRandom(6);
-    }
-
-    private void ExecuteShowNotification(NotificationSeverity severity)
-    {
-        _notificationService.CreateNotification().WithTitle("Test title").WithMessage("Test message").WithSeverity(severity).Show();
-    }
+public interface IWorkshopViewModel
+{
+    public EntryType? EntryType { get; }
 }

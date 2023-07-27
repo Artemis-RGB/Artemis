@@ -8,4 +8,12 @@
     
     <!-- <FluentTheme Mode="Dark"></FluentTheme> -->
     <StyleInclude Source="avares://Artemis.UI.Shared/Styles/Artemis.axaml" />
+    
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <MergeResourceInclude Source="TreeView.axaml"></MergeResourceInclude>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
 </Styles>

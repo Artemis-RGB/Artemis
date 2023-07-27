@@ -1,0 +1,310 @@
+﻿# This file was generated. Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Category {
+    icon: String!
+    id: Int!
+    name: String!
+}
+
+"Information about the offset pagination."
+type CollectionSegmentInfo {
+    "Indicates whether more items exist following the set defined by the clients arguments."
+    hasNextPage: Boolean!
+    "Indicates whether more items exist prior the set defined by the clients arguments."
+    hasPreviousPage: Boolean!
+}
+
+"A segment of a collection."
+type EntriesCollectionSegment {
+    "A flattened list of the items."
+    items: [Entry!]
+    "Information to aid in pagination."
+    pageInfo: CollectionSegmentInfo!
+    totalCount: Int!
+}
+
+type Entry {
+    author: String!
+    authorId: UUID!
+    categories: [Category!]!
+    createdAt: DateTime!
+    description: String!
+    downloads: Long!
+    entryType: EntryType!
+    icon: Image
+    id: UUID!
+    images: [Image!]!
+    name: String!
+    releases: [Release!]!
+    summary: String!
+    tags: [Tag!]!
+}
+
+type Image {
+    id: UUID!
+    mimeType: String!
+}
+
+type Mutation {
+    addEntry(input: CreateEntryInput!): Entry
+    updateEntry(input: UpdateEntryInput!): Entry
+}
+
+type Query {
+    categories(order: [CategorySortInput!], where: CategoryFilterInput): [Category!]!
+    entries(order: [EntrySortInput!], skip: Int, take: Int, where: EntryFilterInput): EntriesCollectionSegment
+    entry(id: UUID!): Entry
+    searchEntries(input: String!, order: [EntrySortInput!], type: EntryType, where: EntryFilterInput): [Entry!]!
+}
+
+type Release {
+    createdAt: DateTime!
+    downloadSize: Long!
+    downloads: Long!
+    entry: Entry!
+    entryId: UUID!
+    id: UUID!
+    md5Hash: String
+    version: String!
+}
+
+type Tag {
+    id: Int!
+    name: String!
+}
+
+enum ApplyPolicy {
+    AFTER_RESOLVER
+    BEFORE_RESOLVER
+    VALIDATION
+}
+
+enum EntryType {
+    LAYOUT
+    PLUGIN
+    PROFILE
+}
+
+enum SortEnumType {
+    ASC
+    DESC
+}
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime
+
+"The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1."
+scalar Long
+
+scalar UUID
+
+input CategoryFilterInput {
+    and: [CategoryFilterInput!]
+    icon: StringOperationFilterInput
+    id: IntOperationFilterInput
+    name: StringOperationFilterInput
+    or: [CategoryFilterInput!]
+}
+
+input CategorySortInput {
+    icon: SortEnumType
+    id: SortEnumType
+    name: SortEnumType
+}
+
+input CreateEntryInput {
+    categories: [Int!]!
+    description: String!
+    entryType: EntryType!
+    name: String!
+    summary: String!
+    tags: [String!]!
+}
+
+input DateTimeOperationFilterInput {
+    eq: DateTime
+    gt: DateTime
+    gte: DateTime
+    in: [DateTime]
+    lt: DateTime
+    lte: DateTime
+    neq: DateTime
+    ngt: DateTime
+    ngte: DateTime
+    nin: [DateTime]
+    nlt: DateTime
+    nlte: DateTime
+}
+
+input EntryFilterInput {
+    and: [EntryFilterInput!]
+    author: StringOperationFilterInput
+    authorId: UuidOperationFilterInput
+    categories: ListFilterInputTypeOfCategoryFilterInput
+    createdAt: DateTimeOperationFilterInput
+    description: StringOperationFilterInput
+    downloads: LongOperationFilterInput
+    entryType: EntryTypeOperationFilterInput
+    icon: ImageFilterInput
+    id: UuidOperationFilterInput
+    images: ListFilterInputTypeOfImageFilterInput
+    name: StringOperationFilterInput
+    or: [EntryFilterInput!]
+    releases: ListFilterInputTypeOfReleaseFilterInput
+    summary: StringOperationFilterInput
+    tags: ListFilterInputTypeOfTagFilterInput
+}
+
+input EntrySortInput {
+    author: SortEnumType
+    authorId: SortEnumType
+    createdAt: SortEnumType
+    description: SortEnumType
+    downloads: SortEnumType
+    entryType: SortEnumType
+    icon: ImageSortInput
+    id: SortEnumType
+    name: SortEnumType
+    summary: SortEnumType
+}
+
+input EntryTypeOperationFilterInput {
+    eq: EntryType
+    in: [EntryType!]
+    neq: EntryType
+    nin: [EntryType!]
+}
+
+input ImageFilterInput {
+    and: [ImageFilterInput!]
+    id: UuidOperationFilterInput
+    mimeType: StringOperationFilterInput
+    or: [ImageFilterInput!]
+}
+
+input ImageSortInput {
+    id: SortEnumType
+    mimeType: SortEnumType
+}
+
+input IntOperationFilterInput {
+    eq: Int
+    gt: Int
+    gte: Int
+    in: [Int]
+    lt: Int
+    lte: Int
+    neq: Int
+    ngt: Int
+    ngte: Int
+    nin: [Int]
+    nlt: Int
+    nlte: Int
+}
+
+input ListFilterInputTypeOfCategoryFilterInput {
+    all: CategoryFilterInput
+    any: Boolean
+    none: CategoryFilterInput
+    some: CategoryFilterInput
+}
+
+input ListFilterInputTypeOfImageFilterInput {
+    all: ImageFilterInput
+    any: Boolean
+    none: ImageFilterInput
+    some: ImageFilterInput
+}
+
+input ListFilterInputTypeOfReleaseFilterInput {
+    all: ReleaseFilterInput
+    any: Boolean
+    none: ReleaseFilterInput
+    some: ReleaseFilterInput
+}
+
+input ListFilterInputTypeOfTagFilterInput {
+    all: TagFilterInput
+    any: Boolean
+    none: TagFilterInput
+    some: TagFilterInput
+}
+
+input LongOperationFilterInput {
+    eq: Long
+    gt: Long
+    gte: Long
+    in: [Long]
+    lt: Long
+    lte: Long
+    neq: Long
+    ngt: Long
+    ngte: Long
+    nin: [Long]
+    nlt: Long
+    nlte: Long
+}
+
+input ReleaseFilterInput {
+    and: [ReleaseFilterInput!]
+    createdAt: DateTimeOperationFilterInput
+    downloadSize: LongOperationFilterInput
+    downloads: LongOperationFilterInput
+    entry: EntryFilterInput
+    entryId: UuidOperationFilterInput
+    id: UuidOperationFilterInput
+    md5Hash: StringOperationFilterInput
+    or: [ReleaseFilterInput!]
+    version: StringOperationFilterInput
+}
+
+input StringOperationFilterInput {
+    and: [StringOperationFilterInput!]
+    contains: String
+    endsWith: String
+    eq: String
+    in: [String]
+    ncontains: String
+    nendsWith: String
+    neq: String
+    nin: [String]
+    nstartsWith: String
+    or: [StringOperationFilterInput!]
+    startsWith: String
+}
+
+input TagFilterInput {
+    and: [TagFilterInput!]
+    id: IntOperationFilterInput
+    name: StringOperationFilterInput
+    or: [TagFilterInput!]
+}
+
+input UpdateEntryInput {
+    categories: [Int!]!
+    description: String!
+    id: UUID!
+    name: String!
+    summary: String!
+    tags: [String!]!
+}
+
+input UuidOperationFilterInput {
+    eq: UUID
+    gt: UUID
+    gte: UUID
+    in: [UUID]
+    lt: UUID
+    lte: UUID
+    neq: UUID
+    ngt: UUID
+    ngte: UUID
+    nin: [UUID]
+    nlt: UUID
+    nlte: UUID
+}

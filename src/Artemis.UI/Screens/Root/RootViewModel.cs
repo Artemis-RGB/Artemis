@@ -20,11 +20,11 @@ namespace Artemis.UI.Screens.Root;
 
 public class RootViewModel : RoutableScreen<IMainScreenViewModel>, IMainWindowProvider
 {
-    private readonly IRouter _router;
     private readonly ICoreService _coreService;
     private readonly IDebugService _debugService;
     private readonly DefaultTitleBarViewModel _defaultTitleBarViewModel;
     private readonly IClassicDesktopStyleApplicationLifetime _lifeTime;
+    private readonly IRouter _router;
     private readonly ISettingsService _settingsService;
     private readonly IUpdateService _updateService;
     private readonly IWindowService _windowService;
@@ -41,6 +41,7 @@ public class RootViewModel : RoutableScreen<IMainScreenViewModel>, IMainWindowPr
         SidebarViewModel sidebarViewModel,
         DefaultTitleBarViewModel defaultTitleBarViewModel)
     {
+        Shared.UI.SetMicaEnabled(settingsService.GetSetting("UI.EnableMica", true).Value);
         WindowSizeSetting = settingsService.GetSetting<WindowSize?>("WindowSize");
         SidebarViewModel = sidebarViewModel;
 
@@ -61,7 +62,7 @@ public class RootViewModel : RoutableScreen<IMainScreenViewModel>, IMainWindowPr
         OpenDebugger = ReactiveCommand.CreateFromTask(ExecuteOpenDebugger);
         Exit = ReactiveCommand.CreateFromTask(ExecuteExit);
         this.WhenAnyValue(vm => vm.Screen).Subscribe(UpdateTitleBarViewModel);
-        
+
         Task.Run(() =>
         {
             if (_updateService.Initialize())
@@ -85,6 +86,8 @@ public class RootViewModel : RoutableScreen<IMainScreenViewModel>, IMainWindowPr
         set => RaiseAndSetIfChanged(ref _titleBarViewModel, value);
     }
 
+    public static PluginSetting<WindowSize?>? WindowSizeSetting { get; private set; }
+
     public void GoBack()
     {
         _router.GoBack();
@@ -94,8 +97,6 @@ public class RootViewModel : RoutableScreen<IMainScreenViewModel>, IMainWindowPr
     {
         _router.GoForward();
     }
-
-    public static PluginSetting<WindowSize?>? WindowSizeSetting { get; private set; }
 
     private void UpdateTitleBarViewModel(IMainScreenViewModel? viewModel)
     {

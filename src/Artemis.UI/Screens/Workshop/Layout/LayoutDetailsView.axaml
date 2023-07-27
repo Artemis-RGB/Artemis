@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:layout="clr-namespace:Artemis.UI.Screens.Workshop.Layout"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Layout.LayoutDetailsView"
+             x:DataType="layout:LayoutDetailsViewModel">
+    <Border Classes="router-container">
+        <Grid ColumnDefinitions="300,*" RowDefinitions="Auto,*" Margin="10">
+            <StackPanel Grid.Row="0" Grid.ColumnSpan="2" >
+                <TextBlock Text="{CompiledBinding Entry.Name, FallbackValue=Layout}" Classes="h3 no-margin"/>
+                <TextBlock Text="{CompiledBinding Entry.Author, FallbackValue=Author}" Classes="subtitle" Margin="0 0 0 5"/>
+            </StackPanel>
+        
+            <Border Classes="card-condensed" Grid.Row="1" Grid.Column="0" Margin="0 0 10 0">
+                <TextBlock>Side panel</TextBlock>
+            </Border>
+
+            <Border Classes="card-condensed" Grid.Row="1" Grid.Column="1">
+                <TextBlock>Layout details panel</TextBlock>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

@@ -106,7 +106,7 @@
                                         <gradientPicker:GradientPickerColorStop ColorStop="{CompiledBinding}"
                                                                                 PositionReference="{CompiledBinding $parent[Border]}"
                                                                                 Classes="gradient-handle"
-                                                                                GradientPicker="{CompiledBinding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gradientPicker:GradientPicker}}}">
+                                                                                GradientPicker="{CompiledBinding $parent[gradientPicker:GradientPicker]}">
                                         </gradientPicker:GradientPickerColorStop>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -207,7 +207,7 @@
                                         <Button Name="DeleteButton"
                                                 Grid.Column="3"
                                                 Classes="icon-button"
-                                                Command="{CompiledBinding DeleteStop, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gradientPicker:GradientPicker}}}"
+                                                Command="{CompiledBinding $parent[gradientPicker:GradientPicker].DeleteStop}"
                                                 CommandParameter="{CompiledBinding}">
                                             <avalonia:MaterialIcon Kind="Close" />
                                         </Button>

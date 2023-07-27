@@ -1,12 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Artemis.UI.Shared.Routing;
 
+/// <summary>
+///     Represents a registration for a route and its associated view model.
+/// </summary>
+/// <typeparam name="TViewModel">The type of the view model associated with the route.</typeparam>
 public class RouteRegistration<TViewModel> : IRouterRegistration where TViewModel : ViewModelBase
 {
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="RouteRegistration{TViewModel}" /> class.
+    /// </summary>
+    /// <param name="path">The path of the route.</param>
     public RouteRegistration(string path)
     {
         Route = new Route(path);
@@ -18,6 +24,9 @@ public class RouteRegistration<TViewModel> : IRouterRegistration where TViewMode
         return $"{nameof(Route)}: {Route}, {nameof(ViewModel)}: {ViewModel}";
     }
 
+    /// <summary>
+    ///     Gets the route associated with this registration.
+    /// </summary>
     public Route Route { get; }
 
     /// <inheritdoc />
@@ -25,12 +34,4 @@ public class RouteRegistration<TViewModel> : IRouterRegistration where TViewMode
 
     /// <inheritdoc />
     public List<IRouterRegistration> Children { get; set; } = new();
-}
-
-public interface IRouterRegistration
-{
-    Route Route { get; }
-    Type ViewModel { get; }
-    List<IRouterRegistration> Children { get; set; }
-
 }

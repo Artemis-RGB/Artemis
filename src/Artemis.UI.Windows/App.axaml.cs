@@ -43,8 +43,8 @@ public class App : Application
     {
         if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop || Design.IsDesignMode || _shutDown)
             return;
-        
-        _applicationStateManager = new ApplicationStateManager(_container!, desktop.Args);
+
+        _applicationStateManager = new ApplicationStateManager(_container!, desktop.Args ?? Array.Empty<string>());
         ArtemisBootstrapper.Initialize();
         RegisterProviders(_container!);
     }
@@ -52,11 +52,14 @@ public class App : Application
     private void RegisterProviders(IContainer container)
     {
         IInputService inputService = container.Resolve<IInputService>();
-        inputService.AddInputProvider(container.Resolve<InputProvider>(serviceKey: WindowsInputProvider.Id));
+        inputService.AddInputProvider(container.Resolve<InputProvider>(WindowsInputProvider.Id));
     }
 
     private bool FocusExistingInstance()
     {
+        if (Design.IsDesignMode)
+            return false;
+
         _artemisMutex = new Mutex(true, "Artemis-3c24b502-64e6-4587-84bf-9072970e535f", out bool createdNew);
         return !createdNew && RemoteFocus();
     }

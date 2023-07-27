@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:currentUser="clr-namespace:Artemis.UI.Screens.Workshop.CurrentUser"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.CurrentUser.CurrentUserView"
+             x:DataType="currentUser:CurrentUserViewModel">
+
+    <Panel Name="Container" IsVisible="{CompiledBinding !Loading}">
+        <!-- Signed out -->
+        <Ellipse Height="{CompiledBinding Bounds.Height, ElementName=Container}" Width="{CompiledBinding Bounds.Height, ElementName=Container}" IsVisible="{CompiledBinding Name, Converter={x:Static StringConverters.IsNullOrEmpty}}">
+            <Ellipse.ContextFlyout>
+                <MenuFlyout>
+                    <MenuItem Header="Login" Command="{CompiledBinding Login}">
+                        <MenuItem.Icon>
+                            <avalonia:MaterialIcon Kind="Login" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuFlyout>
+            </Ellipse.ContextFlyout>
+            <Ellipse.Fill>
+                <ImageBrush Source="/Assets/Images/avatar-placeholder.png" />
+            </Ellipse.Fill>
+        </Ellipse>
+
+        <!-- Signed in -->
+        <Ellipse Height="{CompiledBinding Bounds.Height, ElementName=Container}" Width="{CompiledBinding Bounds.Height, ElementName=Container}" IsVisible="{CompiledBinding Name, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" Name="UserMenu">
+            <Ellipse.ContextFlyout>
+                <Flyout>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="*,*,*" MinWidth="300">
+                        <Ellipse Grid.Column="0" Grid.RowSpan="3" Height="50" Width="50" Margin="0 0 8 0" VerticalAlignment="Top">
+                            <Ellipse.Fill>
+                                <ImageBrush Source="{CompiledBinding Avatar}" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <TextBlock Grid.Column="1" Grid.Row="0" Text="{CompiledBinding Name}" Margin="0 4 0 0"></TextBlock>
+                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{CompiledBinding Email}"></TextBlock>
+                        <controls:HyperlinkButton
+                            Grid.Column="1"
+                            Grid.Row="2"
+                            Margin="-8 0 0 0"
+                            Padding="6 4"
+                            Click="Button_OnClick">
+                            Sign out
+                        </controls:HyperlinkButton>
+                    </Grid>
+                </Flyout>
+            </Ellipse.ContextFlyout>
+            <Ellipse.Fill>
+                <ImageBrush Source="{CompiledBinding Avatar}" />
+            </Ellipse.Fill>
+        </Ellipse>
+    </Panel>
+
+
+</UserControl>
