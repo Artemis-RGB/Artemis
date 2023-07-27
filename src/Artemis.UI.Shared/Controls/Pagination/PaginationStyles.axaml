@@ -1,0 +1,80 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="using:FluentAvalonia.UI.Controls"
+                    xmlns:pagination="clr-namespace:Artemis.UI.Shared.Pagination"
+                    x:CompileBindings="True">
+    <Design.PreviewWith>
+        <Border Padding="30" Width="400">
+            <StackPanel Spacing="20">
+                <pagination:Pagination Value="{CompiledBinding Value, ElementName=Numeric, Mode=TwoWay}" HorizontalAlignment="Center"/>
+                <pagination:Pagination Value="{CompiledBinding Value, ElementName=Numeric, Mode=TwoWay}" Maximum="999" HorizontalAlignment="Center"/>
+                <NumericUpDown Name="Numeric" Value="1" Width="120" HorizontalAlignment="Center"></NumericUpDown>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <ControlTheme x:Key="{x:Type pagination:Pagination}" TargetType="pagination:Pagination">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="2">
+                    <Button Name="PART_PreviousButton" Theme="{StaticResource TransparentButton}" Width="32" Height="30">
+                        <ui:SymbolIcon Symbol="ChevronLeft" />
+                    </Button>
+                    <StackPanel Name="PART_PagesView" Orientation="Horizontal" Spacing="2"></StackPanel>
+                    <Button Name="PART_NextButton" Theme="{StaticResource TransparentButton}" Width="32" Height="30">
+                        <ui:SymbolIcon Symbol="ChevronRight" />
+                    </Button>
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type pagination:PaginationPage}" TargetType="pagination:PaginationPage">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <Button Theme="{StaticResource TransparentButton}"
+                            MinWidth="32"
+                            Padding="6 5"
+                            Content="{TemplateBinding Page}"
+                            Command="{TemplateBinding Command}"/>
+                    <Rectangle Name="SelectionIndicator"
+                               Width="16"
+                               Height="3"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Bottom"
+                               RadiusX="2"
+                               RadiusY="2"
+                               IsVisible="False"
+                               RenderTransform="scaleX(0)"
+                               Fill="{DynamicResource TreeViewItemSelectionIndicatorForeground}">
+                        <Rectangle.Transitions>
+                            <Transitions>
+                                <TransformOperationsTransition Duration="00:00:00.167"
+                                                               Property="RenderTransform"
+                                                               Easing="0,0 0,1" />
+                            </Transitions>
+                        </Rectangle.Transitions>
+                    </Rectangle>
+                </Panel>
+
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:selected">
+            <Style Selector="^ /template/ Rectangle#SelectionIndicator">
+                <Setter Property="IsVisible" Value="True" />
+                <Setter Property="RenderTransform" Value="scaleX(1)" />
+            </Style>
+        </Style>
+    </ControlTheme>
+
+
+    <ControlTheme x:Key="{x:Type pagination:PaginationEllipsis}" TargetType="pagination:PaginationEllipsis">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <TextBlock VerticalAlignment="Bottom" Margin="11 5">...</TextBlock>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>

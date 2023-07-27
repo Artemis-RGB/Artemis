@@ -14,6 +14,7 @@
         <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
         <ProjectReference Include="..\Artemis.VisualScripting\Artemis.VisualScripting.csproj" />
         <ProjectReference Include="..\Artemis.WebClient.Updating\Artemis.WebClient.Updating.csproj" />
+        <ProjectReference Include="..\Artemis.WebClient.Workshop\Artemis.WebClient.Workshop.csproj" />
     </ItemGroup>
 
     <ItemGroup>

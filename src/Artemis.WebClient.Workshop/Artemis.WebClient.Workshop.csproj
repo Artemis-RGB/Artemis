@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\Artemis.props" />
+    
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="DryIoc.dll" Version="5.4.0" />
+      <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.2.0" />
+      <PackageReference Include="IdentityModel" Version="6.1.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+      <PackageReference Include="ReactiveUI" Version="18.4.26" />
+      <PackageReference Include="StrawberryShake.Server" Version="13.0.5" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.31.0" />
+      <PackageReference Include="System.Reactive" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove=".graphqlconfig" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <GraphQL Update="Queries\SearchEntries.graphql">
+        <Generator>MSBuild:GenerateGraphQLCode</Generator>
+      </GraphQL>
+      <GraphQL Update="Queries\GetCategories.graphql">
+        <Generator>MSBuild:GenerateGraphQLCode</Generator>
+      </GraphQL>
+    </ItemGroup>
+</Project>

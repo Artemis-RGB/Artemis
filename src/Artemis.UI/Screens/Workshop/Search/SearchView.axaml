@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:search="clr-namespace:Artemis.UI.Screens.Workshop.Search"
+             xmlns:workshop="clr-namespace:Artemis.WebClient.Workshop;assembly=Artemis.WebClient.Workshop"
+             xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Search.SearchView"
+             x:DataType="search:SearchViewModel">
+    <UserControl.Styles>
+        <StyleInclude Source="SearchViewStyles.axaml" />
+    </UserControl.Styles>
+    <Panel>
+        <AutoCompleteBox Name="SearchBox"
+                         MaxWidth="500"
+                         Watermark="Search"
+                         Margin="0 5"
+                         ValueMemberBinding="{CompiledBinding Name, DataType=workshop:ISearchEntries_SearchEntries}"
+                         AsyncPopulator="{CompiledBinding SearchAsync}"
+                         SelectedItem="{CompiledBinding SelectedEntry}"
+                         FilterMode="None"
+                         windowing:AppWindow.AllowInteractionInTitleBar="True">
+            <AutoCompleteBox.ItemTemplate>
+                <DataTemplate x:DataType="workshop:ISearchEntries_SearchEntries">
+                    <Panel>
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <TextBlock Text="{CompiledBinding Name}" />
+                            <TextBlock Text="{CompiledBinding Summary}" Foreground="{DynamicResource TextFillColorSecondary}" />
+
+                            <ItemsControl ItemsSource="{CompiledBinding Categories}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="5"></StackPanel>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Classes="category">
+                                            <TextBlock Text="{CompiledBinding Name}"></TextBlock>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Panel>
+                </DataTemplate>
+            </AutoCompleteBox.ItemTemplate>
+        </AutoCompleteBox>
+        <ContentControl HorizontalAlignment="Right" 
+                        Width="28"
+                        Height="28"
+                        Margin="0 0 50 0"
+                        Content="{CompiledBinding CurrentUserViewModel}"
+                        windowing:AppWindow.AllowInteractionInTitleBar="True"/>
+    </Panel>
+</UserControl>

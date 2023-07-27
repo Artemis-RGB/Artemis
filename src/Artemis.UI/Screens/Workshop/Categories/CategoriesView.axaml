@@ -1,0 +1,21 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:categories="clr-namespace:Artemis.UI.Screens.Workshop.Categories"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Categories.CategoriesView"
+             x:DataType="categories:CategoriesViewModel">
+    <ItemsRepeater ItemsSource="{CompiledBinding Categories}">
+        <ItemsRepeater.ItemTemplate>
+            <DataTemplate DataType="categories:CategoryViewModel">
+                <StackPanel Orientation="Horizontal" Spacing="5" Background="Transparent" Cursor="Hand" PointerReleased="InputElement_OnPointerReleased">
+                    <CheckBox IsChecked="{CompiledBinding IsSelected}" Padding="1 5 1 0"/>
+                    <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" />
+                    <TextBlock Text="{CompiledBinding Name}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </DataTemplate>
+        </ItemsRepeater.ItemTemplate>
+    </ItemsRepeater>
+</UserControl>

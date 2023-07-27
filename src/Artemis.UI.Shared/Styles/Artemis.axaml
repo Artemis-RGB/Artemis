@@ -1,17 +1,24 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Styles.Resources>
-        <VisualBrush x:Key="CheckerboardBrush" TileMode="Tile" Stretch="Uniform" DestinationRect="0,0,12,12">
-            <VisualBrush.Visual>
-                <Canvas Width="12" Height="12">
-                    <Rectangle Width="6" Height="6" Fill="Black" Opacity="0.15" />
-                    <Rectangle Width="6" Height="6" Canvas.Left="6" />
-                    <Rectangle Width="6" Height="6" Canvas.Top="6" />
-                    <Rectangle Width="6" Height="6" Canvas.Left="6" Canvas.Top="6" Fill="Black" Opacity="0.15" />
-                </Canvas>
-            </VisualBrush.Visual>
-        </VisualBrush>
+        <ResourceDictionary>
+            <VisualBrush x:Key="CheckerboardBrush" TileMode="Tile" Stretch="Uniform" DestinationRect="0,0,12,12">
+                <VisualBrush.Visual>
+                    <Canvas Width="12" Height="12">
+                        <Rectangle Width="6" Height="6" Fill="Black" Opacity="0.15" />
+                        <Rectangle Width="6" Height="6" Canvas.Left="6" />
+                        <Rectangle Width="6" Height="6" Canvas.Top="6" />
+                        <Rectangle Width="6" Height="6" Canvas.Left="6" Canvas.Top="6" Fill="Black" Opacity="0.15" />
+                    </Canvas>
+                </VisualBrush.Visual>
+            </VisualBrush>
+
+            <ResourceDictionary.MergedDictionaries>
+                <MergeResourceInclude Source="/Controls/Pagination/PaginationStyles.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Styles.Resources>
+
 
     <!-- Custom controls -->
     <StyleInclude Source="/Styles/Controls/GradientPicker.axaml" />

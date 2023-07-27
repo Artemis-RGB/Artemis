@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using Artemis.Core;
@@ -30,6 +31,8 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.WebClient.Updating;
 using DryIoc;
+using DynamicData;
+using Material.Icons;
 using ReactiveUI;
 
 namespace Artemis.UI.DryIoc.Factories;
@@ -137,7 +140,7 @@ public class SidebarVmFactory : ISidebarVmFactory
     {
         _container = container;
     }
-
+    
     public SidebarCategoryViewModel SidebarCategoryViewModel(ProfileCategory profileCategory)
     {
         return _container.Resolve<SidebarCategoryViewModel>(new object[] { profileCategory });

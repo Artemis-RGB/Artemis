@@ -4,11 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:Artemis.UI.Screens.Sidebar;assembly=Artemis.UI"
-             x:DataType="vm:SidebarScreenViewModel"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Sidebar.SidebarScreenView">
-    <StackPanel Orientation="Horizontal">
-        <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Width="16" Height="16" />
-        <TextBlock FontSize="12" Margin="10 0" VerticalAlignment="Center" Text="{CompiledBinding DisplayName}" />
+             x:Class="Artemis.UI.Screens.Sidebar.SidebarScreenView"
+             x:DataType="vm:SidebarScreenViewModel">
+    <StackPanel Orientation="Horizontal" Height="34" Background="Transparent" PointerPressed="InputElement_OnPointerPressed" DoubleTapped="InputElement_OnDoubleTapped" >
+        <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Width="18" Height="18" />
+        <TextBlock Margin="10 0" VerticalAlignment="Center" FontSize="13" Text="{CompiledBinding DisplayName}" />
     </StackPanel>
 </UserControl>
