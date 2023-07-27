@@ -39,11 +39,13 @@ public class SidebarViewModel : ActivatableViewModelBase
         SidebarScreen = new SidebarScreenViewModel(MaterialIconKind.Abacus, ROOT_SCREEN, "", null, new ObservableCollection<SidebarScreenViewModel>()
         {
             new(MaterialIconKind.HomeOutline, "Home", "home"),
+            #if DEBUG
             new(MaterialIconKind.TestTube, "Workshop", "workshop", null, new ObservableCollection<SidebarScreenViewModel>
             {
                 new(MaterialIconKind.FolderVideo, "Profiles", "workshop/profiles/1", "workshop/profiles"),
                 new(MaterialIconKind.KeyboardVariant, "Layouts", "workshop/layouts/1", "workshop/layouts"),
             }),
+            #endif
             new(MaterialIconKind.Devices, "Surface Editor", "surface-editor"),
             new(MaterialIconKind.SettingsOutline, "Settings", "settings")
         });

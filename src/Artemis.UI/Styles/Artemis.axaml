@@ -12,7 +12,7 @@
     <Styles.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <MergeResourceInclude Source="TreeView.axaml"></MergeResourceInclude>
+                <MergeResourceInclude Source="TreeView.axaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Styles.Resources>
