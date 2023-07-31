@@ -5,9 +5,11 @@ using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Services;
 using Avalonia.Media.Imaging;
+using FluentAvalonia.UI.Controls;
 using Flurl.Http;
 using ReactiveUI;
 using Serilog;
@@ -16,21 +18,24 @@ namespace Artemis.UI.Screens.Workshop.CurrentUser;
 
 public class CurrentUserViewModel : ActivatableViewModelBase
 {
-    private readonly ILogger _logger;
     private readonly IAuthenticationService _authenticationService;
-    private bool _loading = true;
+    private readonly ILogger _logger;
+    private readonly IWindowService _windowService;
     private Bitmap? _avatar;
     private string? _email;
+    private bool _loading = true;
     private string? _name;
     private string? _userId;
 
-    public CurrentUserViewModel(ILogger logger, IAuthenticationService authenticationService)
+    public CurrentUserViewModel(ILogger logger, IAuthenticationService authenticationService, IWindowService windowService)
     {
         _logger = logger;
         _authenticationService = authenticationService;
+        _windowService = windowService;
         Login = ReactiveCommand.CreateFromTask(ExecuteLogin);
 
         this.WhenActivated(d => ReactiveCommand.CreateFromTask(ExecuteAutoLogin).Execute().Subscribe().DisposeWith(d));
+        this.WhenActivated(d => _authenticationService.IsLoggedIn.Subscribe(_ => LoadCurrentUser().DisposeWith(d)));
     }
 
     public bool Loading
@@ -72,8 +77,13 @@ public class CurrentUserViewModel : ActivatableViewModelBase
 
     private async Task ExecuteLogin(CancellationToken cancellationToken)
     {
-        await _authenticationService.Login();
-        await LoadCurrentUser();
+        ContentDialogResult result = await _windowService.CreateContentDialog()
+            .WithViewModel(out WorkshopLoginViewModel _)
+            .WithTitle("Workshop login")
+            .ShowAsync();
+
+        if (result == ContentDialogResult.Primary)
+            await LoadCurrentUser();
     }
 
     private async Task ExecuteAutoLogin(CancellationToken cancellationToken)
@@ -95,21 +105,26 @@ public class CurrentUserViewModel : ActivatableViewModelBase
 
     private async Task LoadCurrentUser()
     {
-        if (!_authenticationService.IsLoggedIn)
-            return;
-
         UserId = _authenticationService.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
         Name = _authenticationService.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
         Email = _authenticationService.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
 
         if (UserId != null)
+        {
             await LoadAvatar(UserId);
+        }
+        else
+        {
+            Avatar?.Dispose();
+            Avatar = null;
+        }
     }
 
     private async Task LoadAvatar(string userId)
     {
         try
         {
+            Avatar?.Dispose();
             Avatar = new Bitmap(await $"{WorkshopConstants.AUTHORITY_URL}/user/avatar/{userId}".GetStreamAsync());
         }
         catch (Exception)

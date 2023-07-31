@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:currentUser="clr-namespace:Artemis.UI.Screens.Workshop.CurrentUser"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.CurrentUser.WorkshopLoginView"
+             x:DataType="currentUser:WorkshopLoginViewModel">
+    <StackPanel Width="400">
+        <TextBlock TextWrapping="Wrap">
+            In order to login you must enter your Artemis credentials in a browser.
+        </TextBlock>
+        <TextBlock TextWrapping="Wrap" Margin="0 15">
+            If you do not have an account yet you can create one in the browser too. Alternatively you can log in with Google or Discord.
+        </TextBlock>
+
+        <ProgressBar IsIndeterminate="True" IsVisible="{CompiledBinding Code, Converter={x:Static StringConverters.IsNullOrEmpty}}"></ProgressBar>
+        <StackPanel IsVisible="{CompiledBinding Code, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+            <TextBlock TextWrapping="Wrap">When logging in please enter the the code below</TextBlock>
+            <StackPanel Margin="0 10" Orientation="Horizontal"  HorizontalAlignment="Center" Spacing="5">
+                <TextBox Width="115" IsReadOnly="True" Text="{CompiledBinding Code}" />
+                <Button Width="32" Height="32" ToolTip.Tip="Copy code to clipboard" Command="{CompiledBinding CopyToClipboard}">
+                    <avalonia:MaterialIcon Kind="ContentCopy"/>
+                </Button>
+            </StackPanel>
+
+            <Button Width="152" HorizontalAlignment="Center" Command="{CompiledBinding OpenBrowser}">
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                    <avalonia:MaterialIcon Kind="ExternalLink" />
+                    <TextBlock>Open browser</TextBlock>
+                </StackPanel>
+            </Button>    
+        </StackPanel>
+    </StackPanel>
+</UserControl>
