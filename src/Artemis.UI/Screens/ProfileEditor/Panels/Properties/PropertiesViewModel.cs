@@ -111,7 +111,6 @@ public class PropertiesViewModel : ActivatableViewModelBase
     }
 
     public RenderProfileElement? ProfileElement => _profileElement?.Value;
-    public Layer? Layer => _profileElement?.Value as Layer;
     public ILayerProperty? LayerProperty => _layerProperty?.Value;
     public bool SuspendedEditing => _suspendedEditing?.Value ?? false;
 
@@ -133,26 +132,27 @@ public class PropertiesViewModel : ActivatableViewModelBase
 
     private void UpdatePropertyGroups()
     {
-        if (ProfileElement == null)
+        RenderProfileElement? profileElement = ProfileElement;
+        if (profileElement == null)
         {
             PropertyGroupViewModels.Clear();
             return;
         }
 
         ObservableCollection<PropertyGroupViewModel> viewModels = new();
-        if (Layer != null)
+        if (profileElement is Layer layer)
         {
             // Add base VMs
-            viewModels.Add(GetOrCreatePropertyViewModel(Layer.General, null, null));
-            viewModels.Add(GetOrCreatePropertyViewModel(Layer.Transform, null, null));
+            viewModels.Add(GetOrCreatePropertyViewModel(layer.General, null, null));
+            viewModels.Add(GetOrCreatePropertyViewModel(layer.Transform, null, null));
 
             // Add brush VM if the brush has properties
-            if (Layer.LayerBrush?.BaseProperties != null)
-                viewModels.Add(GetOrCreatePropertyViewModel(Layer.LayerBrush.BaseProperties, Layer.LayerBrush, null));
+            if (layer.LayerBrush?.BaseProperties != null)
+                viewModels.Add(GetOrCreatePropertyViewModel(layer.LayerBrush.BaseProperties, layer.LayerBrush, null));
         }
 
         // Add effect VMs
-        foreach (BaseLayerEffect layerEffect in ProfileElement.LayerEffects.OrderBy(e => e.Order))
+        foreach (BaseLayerEffect layerEffect in profileElement.LayerEffects.OrderBy(e => e.Order))
         {
             if (layerEffect.BaseProperties != null)
                 viewModels.Add(GetOrCreatePropertyViewModel(layerEffect.BaseProperties, null, layerEffect));
