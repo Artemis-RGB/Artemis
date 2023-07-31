@@ -36,6 +36,5 @@
             </Border>
             <ContentControl Content="{CompiledBinding}" />
         </DockPanel>
-        <StackPanel Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
     </Panel>
 </windowing:AppWindow>

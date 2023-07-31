@@ -69,7 +69,5 @@
             </Panel>
 
         </Border>
-
-        <StackPanel Grid.Column="0" Grid.ColumnSpan="3" Classes="notification-container" Name="NotificationContainer" VerticalAlignment="Top" HorizontalAlignment="Right" />
     </Grid>
 </windowing:AppWindow>
