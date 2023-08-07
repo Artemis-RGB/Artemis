@@ -30,6 +30,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
     private Hotkey? _disableHotkey;
     private Hotkey? _enableHotkey;
     private bool _fadeInAndOut;
+    private bool _allowTransparency;
     private ProfileConfigurationHotkeyMode _hotkeyMode;
     private ProfileConfigurationIconType _iconType;
     private ProfileConfiguration _profileConfiguration;
@@ -60,6 +61,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         _iconType = _profileConfiguration.Icon.IconType;
         _hotkeyMode = _profileConfiguration.HotkeyMode;
         _fadeInAndOut = _profileConfiguration.FadeInAndOut;
+        _allowTransparency = _profileConfiguration.AllowTransparency;
         if (_profileConfiguration.EnableHotkey != null)
             _enableHotkey = new Hotkey {Key = _profileConfiguration.EnableHotkey.Key, Modifiers = _profileConfiguration.EnableHotkey.Modifiers};
         if (_profileConfiguration.DisableHotkey != null)
@@ -124,6 +126,12 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         set => RaiseAndSetIfChanged(ref _fadeInAndOut, value);
     }
 
+    public bool AllowTransparency
+    {
+        get => _allowTransparency;
+        set => RaiseAndSetIfChanged(ref _allowTransparency, value);
+    }
+
     public ObservableCollection<ProfileModuleViewModel?> Modules { get; }
 
     public ProfileModuleViewModel? SelectedModule
@@ -162,6 +170,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         ProfileConfiguration.EnableHotkey = EnableHotkey;
         ProfileConfiguration.DisableHotkey = DisableHotkey;
         ProfileConfiguration.FadeInAndOut = FadeInAndOut;
+        ProfileConfiguration.AllowTransparency = AllowTransparency;
 
         await SaveIcon();
 

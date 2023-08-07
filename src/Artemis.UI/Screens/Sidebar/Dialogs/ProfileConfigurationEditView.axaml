@@ -120,6 +120,10 @@
                         <CheckBox VerticalAlignment="Bottom" IsChecked="{CompiledBinding FadeInAndOut}" ToolTip.Tip="Smoothly animates in and out when the profile activation conditions change.">
                             Fade when enabling and disabling
                         </CheckBox>
+
+                        <CheckBox VerticalAlignment="Bottom" IsChecked="{CompiledBinding AllowTransparency}" ToolTip.Tip="Allow layers from below to shine through transparent leds.">
+                            Allow layers from below to shine through transparent leds
+                        </CheckBox>
                     </StackPanel>
                 </Border>
 

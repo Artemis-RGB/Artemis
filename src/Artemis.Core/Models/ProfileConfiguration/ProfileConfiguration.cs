@@ -27,6 +27,7 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
     private bool _isMissingModule;
     private bool _isSuspended;
     private bool _fadeInAndOut;
+    private bool _allowTransparency = true;
     private Module? _module;
 
     private string _name;
@@ -173,6 +174,16 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
     { 
         get => _fadeInAndOut;
         set => SetAndNotify(ref _fadeInAndOut, value);
+    }
+
+    /// <summary>
+    ///     Gets or sets a boolean indicating whether this profile allows transparency.
+    ///     If <c>true</c>, transparency is enabled and layers below are rendered; if <c>false</c> this profile is rendered on top of solid black and profiles below are not rendered.
+    /// </summary>
+    public bool AllowTransparency
+    {
+        get => _allowTransparency;
+        set => SetAndNotify(ref _allowTransparency, value);
     }
 
     /// <summary>

@@ -125,7 +125,7 @@ internal class ProfileService : IProfileService
                     profileConfiguration.IsSuspended = true;
             }
         }
-        
+
         // If suspension was changed, save the category
         if (before != profileConfiguration.IsSuspended)
             SaveProfileCategory(profileConfiguration.Category);
@@ -258,28 +258,38 @@ internal class ProfileService : IProfileService
                 return;
 
             // Iterate the children in reverse because the first category must be rendered last to end up on top
-            for (int i = _profileCategories.Count - 1; i > -1; i--)
+            IEnumerable<Profile> profilesToRender = GetProfilesToRender(_profileCategories).Reverse();
+            foreach (Profile profile in profilesToRender)
             {
-                ProfileCategory profileCategory = _profileCategories[i];
-                for (int j = profileCategory.ProfileConfigurations.Count - 1; j > -1; j--)
+                try
                 {
-                    try
-                    {
-                        ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
-                        // Ensure all criteria are met before rendering
-                        bool fadingOut = profileConfiguration.Profile?.ShouldDisplay == false && profileConfiguration.Profile?.Opacity > 0;
-                        if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && (profileConfiguration.ActivationConditionMet || fadingOut))
-                            profileConfiguration.Profile?.Render(canvas, SKPointI.Empty, null);
-                    }
-                    catch (Exception e)
-                    {
-                        _renderExceptions.Add(e);
-                    }
+                    profile.Render(canvas, SKPointI.Empty, null);
+                }
+                catch (Exception e)
+                {
+                    _renderExceptions.Add(e);
                 }
             }
 
             LogProfileRenderExceptions();
         }
+    }
+
+    private static IEnumerable<Profile> GetProfilesToRender(IEnumerable<ProfileCategory> profileCategories)
+    {
+        IEnumerable<Profile?> profiles = profileCategories.SelectMany(x => x.ProfileConfigurations).Select(x => x.Profile);
+        foreach (Profile? profile in profiles)
+            if (profile != null)
+            {
+                bool fadingOut = profile.ShouldDisplay == false && profile.Opacity > 0;
+                if (!profile.Configuration.IsSuspended && !profile.Configuration.IsMissingModule && (profile.Configuration.ActivationConditionMet || fadingOut))
+                {
+                    yield return profile;
+
+                    if (!profile.Configuration.AllowTransparency)
+                        break;
+                }
+            }
     }
 
     public ReadOnlyCollection<ProfileCategory> ProfileCategories
