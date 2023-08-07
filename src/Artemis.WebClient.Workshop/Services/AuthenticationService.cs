@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Artemis.Core;
 using Artemis.WebClient.Workshop.Repositories;
+using DynamicData;
 using IdentityModel;
 using IdentityModel.Client;
 
@@ -18,7 +19,7 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
     private const string CLIENT_ID = "artemis.desktop";
     private readonly IAuthenticationRepository _authenticationRepository;
     private readonly SemaphoreSlim _authLock = new(1);
-    private readonly ObservableCollection<Claim> _claims = new();
+    private readonly SourceList<Claim> _claims;
 
     private readonly IDiscoveryCache _discoveryCache;
     private readonly IHttpClientFactory _httpClientFactory;
@@ -32,7 +33,9 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
         _discoveryCache = discoveryCache;
         _authenticationRepository = authenticationRepository;
 
-        Claims = new ReadOnlyObservableCollection<Claim>(_claims);
+        _claims = new SourceList<Claim>();
+        _claims.Connect().Bind(out ReadOnlyObservableCollection<Claim> claims).Subscribe();
+        Claims = claims;
     }
 
     private async Task<DiscoveryDocumentResponse> GetDiscovery()
@@ -54,9 +57,11 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
         if (token == null)
             throw new ArtemisWebClientException("Failed to read JWT token");
 
-        _claims.Clear();
-        foreach (Claim responseClaim in token.Claims)
-            _claims.Add(responseClaim);
+        _claims.Edit(c =>
+        {
+            c.Clear();
+            c.AddRange(token.Claims);
+        });
 
         _isLoggedInSubject.OnNext(true);
     }
@@ -96,6 +101,15 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
     /// <inheritdoc />
     public ReadOnlyObservableCollection<Claim> Claims { get; }
 
+    /// <inheritdoc />
+    public IObservable<Claim?> GetClaim(string type)
+    {
+        return _claims.Connect()
+            .Filter(c => c.Type == JwtClaimTypes.Email)
+            .ToCollection()
+            .Select(f => f.FirstOrDefault());
+    }
+
     public async Task<string?> GetBearer()
     {
         await _authLock.WaitAsync();
@@ -122,13 +136,13 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
     }
 
     /// <inheritdoc />
-    public async Task<bool> AutoLogin()
+    public async Task<bool> AutoLogin(bool force = false)
     {
         await _authLock.WaitAsync();
 
         try
         {
-            if (_isLoggedInSubject.Value)
+            if (!force && _isLoggedInSubject.Value)
                 return true;
 
             string? refreshToken = _authenticationRepository.GetRefreshToken();

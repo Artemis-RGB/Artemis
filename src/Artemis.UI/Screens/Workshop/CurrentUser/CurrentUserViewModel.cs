@@ -34,8 +34,11 @@ public class CurrentUserViewModel : ActivatableViewModelBase
         _windowService = windowService;
         Login = ReactiveCommand.CreateFromTask(ExecuteLogin);
 
-        this.WhenActivated(d => ReactiveCommand.CreateFromTask(ExecuteAutoLogin).Execute().Subscribe().DisposeWith(d));
-        this.WhenActivated(d => _authenticationService.IsLoggedIn.Subscribe(_ => LoadCurrentUser().DisposeWith(d)));
+        this.WhenActivated(d =>
+        {
+            Task.Run(AutoLogin);
+            _authenticationService.IsLoggedIn.Subscribe(_ => Task.Run(LoadCurrentUser)).DisposeWith(d);
+        });
     }
 
     public bool Loading
@@ -86,7 +89,7 @@ public class CurrentUserViewModel : ActivatableViewModelBase
             await LoadCurrentUser();
     }
 
-    private async Task ExecuteAutoLogin(CancellationToken cancellationToken)
+    private async Task AutoLogin()
     {
         try
         {

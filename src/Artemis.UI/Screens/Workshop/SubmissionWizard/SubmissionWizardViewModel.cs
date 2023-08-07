@@ -10,9 +10,9 @@ public class SubmissionWizardViewModel : DialogViewModelBase<bool>
 {
     private SubmissionViewModel _screen;
 
-    public SubmissionWizardViewModel(CurrentUserViewModel currentUserViewModel)
+    public SubmissionWizardViewModel(CurrentUserViewModel currentUserViewModel, WelcomeStepViewModel welcomeStepViewModel)
     {
-        _screen = new WelcomeStepViewModel();
+        _screen = welcomeStepViewModel;
         CurrentUserViewModel = currentUserViewModel;
     }
 

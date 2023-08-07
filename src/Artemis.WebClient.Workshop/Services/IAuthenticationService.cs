@@ -9,8 +9,9 @@ public interface IAuthenticationService : IProtectedArtemisService
     IObservable<bool> IsLoggedIn { get; }
     ReadOnlyObservableCollection<Claim> Claims { get; }
 
+    IObservable<Claim?> GetClaim(string type);
     Task<string?> GetBearer();
-    Task<bool> AutoLogin();
+    Task<bool> AutoLogin(bool force = false);
     Task Login(CancellationToken cancellationToken);
     void Logout();
 }
