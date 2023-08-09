@@ -20,6 +20,7 @@ using Artemis.UI.Shared.Services.Builders;
 using Avalonia.Threading;
 using DryIoc;
 using DynamicData;
+using FluentAvalonia.Interop;
 using ReactiveUI;
 using Serilog.Events;
 
@@ -95,6 +96,7 @@ public class GeneralTabViewModel : ActivatableViewModelBase
     public ReactiveCommand<Unit, Unit> ShowDataFolder { get; }
 
     public bool IsAutoRunSupported => _autoRunProvider != null;
+    public bool IsWindows11 => OSVersionHelper.IsWindows11();
 
     public ObservableCollection<LayerBrushDescriptor> LayerBrushDescriptors { get; }
     public ObservableCollection<string> GraphicsContexts { get; }

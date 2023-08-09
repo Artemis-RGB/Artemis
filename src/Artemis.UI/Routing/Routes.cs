@@ -16,6 +16,7 @@ public static class Routes
     public static List<IRouterRegistration> ArtemisRoutes = new()
     {
         new RouteRegistration<HomeViewModel>("home"),
+        #if DEBUG
         new RouteRegistration<WorkshopViewModel>("workshop")
         {
             Children = new List<IRouterRegistration>()
@@ -26,6 +27,7 @@ public static class Routes
                 new RouteRegistration<LayoutDetailsViewModel>("layouts/{entryId:guid}")
             }
         },
+        #endif
         new RouteRegistration<SurfaceEditorViewModel>("surface-editor"),
         new RouteRegistration<SettingsViewModel>("settings")
         {

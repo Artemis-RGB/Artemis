@@ -45,7 +45,7 @@
                         </Grid>
                         <Border Classes="card-separator" />
                         
-                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto" IsVisible="{CompiledBinding IsWindows11}">
                             <StackPanel Grid.Column="0">
                                 <TextBlock>Enable Mica effect</TextBlock>
                                 <TextBlock Classes="subtitle" TextWrapping="Wrap">
@@ -56,7 +56,7 @@
                                 <ToggleSwitch IsChecked="{CompiledBinding EnableMica.Value}" OnContent="Yes" OffContent="No" MinWidth="0" Margin="0 -10" />
                             </StackPanel>
                         </Grid>
-                        <Border Classes="card-separator" />
+                        <Border Classes="card-separator" IsVisible="{CompiledBinding IsWindows11}"/>
 
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                             <StackPanel Grid.Column="0">
