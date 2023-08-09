@@ -17,7 +17,8 @@
     <Grid Margin="15" RowDefinitions="Auto,*,Auto">
         <Grid RowDefinitions="*,*" ColumnDefinitions="Auto,*,Auto" Margin="0 0 0 15">
             <ContentControl Grid.Column="0" Grid.RowSpan="2" Width="65" Height="65" VerticalAlignment="Center" Margin="0 0 20 0" Content="{CompiledBinding CurrentUserViewModel}"/>
-            <TextBlock Grid.Row="0" Grid.Column="1" FontSize="36" VerticalAlignment="Bottom" Text="{CompiledBinding CurrentUserViewModel.Name, FallbackValue=Not logged in}"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" FontSize="36" VerticalAlignment="Bottom" Text="{CompiledBinding CurrentUserViewModel.Name}" IsVisible="{CompiledBinding !CurrentUserViewModel.IsAnonymous}"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" FontSize="36" VerticalAlignment="Bottom" Text="Anon 🕵️" IsVisible="{CompiledBinding CurrentUserViewModel.IsAnonymous}"/>
 
             <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
                 <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View Wiki" NavigateUri="https://wiki.artemis-rgb.com?mtm_campaign=artemis&amp;mtm_kwd=workshop-wizard">
@@ -44,9 +45,7 @@
             <Button Command="{CompiledBinding Screen.GoBack}" IsVisible="{CompiledBinding Screen.ShowGoBack}">
                 Back
             </Button>
-            <Button Command="{CompiledBinding Screen.Continue}" IsVisible="{CompiledBinding !Screen.ShowFinish}" Width="80">
-                Continue
-            </Button>
+            <Button Command="{CompiledBinding Screen.Continue}" IsVisible="{CompiledBinding !Screen.ShowFinish}" Width="80" Content="{CompiledBinding Screen.ContinueText}"/>
             <Button Command="{CompiledBinding Screen.Continue}" IsVisible="{CompiledBinding Screen.ShowFinish}" Width="80">
                 Finish
             </Button>

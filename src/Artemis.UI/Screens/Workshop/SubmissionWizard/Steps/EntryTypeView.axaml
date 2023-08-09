@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:steps="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps"
+             xmlns:workshop="clr-namespace:Artemis.WebClient.Workshop;assembly=Artemis.WebClient.Workshop"
+             xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.EntryTypeView"
+             x:DataType="steps:EntryTypeViewModel">
+    <UserControl.Resources>
+        <converters:EnumToBooleanConverter x:Key="EnumBoolConverter" />
+    </UserControl.Resources>
+    <StackPanel>
+        <StackPanel.Styles>
+            <Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                </Style>
+            </Styles>
+        </StackPanel.Styles>
+        <TextBlock Theme="{StaticResource TitleTextBlockStyle}" TextWrapping="Wrap">
+            Submission type
+        </TextBlock>
+        <TextBlock TextWrapping="Wrap">
+            Please select the type of content you want to submit to the workshop.
+        </TextBlock>
+        <RadioButton GroupName="EntryType" 
+                     Margin="0 15 0 0"
+                     IsChecked="{CompiledBinding SelectedEntryType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static workshop:EntryType.Profile}}" >
+            <RadioButton.Content>
+                <StackPanel>
+                    <TextBlock>Profile</TextBlock>
+                    <TextBlock Classes="subtitle" TextWrapping="Wrap">A profile which others can install to enjoy new lighting and interactions.</TextBlock>
+                </StackPanel>
+            </RadioButton.Content>
+        </RadioButton>
+        <RadioButton GroupName="EntryType" 
+                     IsChecked="{CompiledBinding SelectedEntryType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static workshop:EntryType.Layout}}">
+            <RadioButton.Content>
+                <StackPanel>
+                    <TextBlock>Layout</TextBlock>
+                    <TextBlock Classes="subtitle" TextWrapping="Wrap">A layout providing users with a visual representation of a device.</TextBlock>
+                </StackPanel>
+            </RadioButton.Content>
+        </RadioButton>
+    </StackPanel>
+</UserControl>

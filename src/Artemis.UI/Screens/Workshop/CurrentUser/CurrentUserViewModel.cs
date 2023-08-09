@@ -19,8 +19,10 @@ namespace Artemis.UI.Screens.Workshop.CurrentUser;
 public class CurrentUserViewModel : ActivatableViewModelBase
 {
     private readonly IAuthenticationService _authenticationService;
+    private readonly ObservableAsPropertyHelper<bool> _isAnonymous;
     private readonly ILogger _logger;
     private readonly IWindowService _windowService;
+    private bool _allowLogout = true;
     private Bitmap? _avatar;
     private string? _email;
     private bool _loading = true;
@@ -34,6 +36,8 @@ public class CurrentUserViewModel : ActivatableViewModelBase
         _windowService = windowService;
         Login = ReactiveCommand.CreateFromTask(ExecuteLogin);
 
+        _isAnonymous = this.WhenAnyValue(vm => vm.Loading, vm => vm.Name, (l, n) => l || n == null).ToProperty(this, vm => vm.IsAnonymous);
+
         this.WhenActivated(d =>
         {
             Task.Run(AutoLogin);
@@ -41,41 +45,50 @@ public class CurrentUserViewModel : ActivatableViewModelBase
         });
     }
 
+    public bool IsAnonymous => _isAnonymous.Value;
+
+    public bool AllowLogout
+    {
+        get => _allowLogout;
+        set => RaiseAndSetIfChanged(ref _allowLogout, value);
+    }
+
     public bool Loading
     {
         get => _loading;
-        set => RaiseAndSetIfChanged(ref _loading, value);
+        private set => RaiseAndSetIfChanged(ref _loading, value);
     }
 
     public string? UserId
     {
         get => _userId;
-        set => RaiseAndSetIfChanged(ref _userId, value);
+        private set => RaiseAndSetIfChanged(ref _userId, value);
     }
 
     public string? Name
     {
         get => _name;
-        set => RaiseAndSetIfChanged(ref _name, value);
+        private set => RaiseAndSetIfChanged(ref _name, value);
     }
 
     public string? Email
     {
         get => _email;
-        set => RaiseAndSetIfChanged(ref _email, value);
+        private set => RaiseAndSetIfChanged(ref _email, value);
     }
 
     public Bitmap? Avatar
     {
         get => _avatar;
-        set => RaiseAndSetIfChanged(ref _avatar, value);
+        private set => RaiseAndSetIfChanged(ref _avatar, value);
     }
 
     public ReactiveCommand<Unit, Unit> Login { get; }
 
     public void Logout()
     {
-        _authenticationService.Logout();
+        if (AllowLogout)
+            _authenticationService.Logout();
     }
 
     private async Task ExecuteLogin(CancellationToken cancellationToken)

@@ -8,13 +8,10 @@
              x:DataType="currentUser:WorkshopLoginViewModel">
     <StackPanel Width="400">
         <TextBlock TextWrapping="Wrap">
-            In order to login you must enter your Artemis credentials in a browser.
-        </TextBlock>
-        <TextBlock TextWrapping="Wrap" Margin="0 15">
-            If you do not have an account yet you can create one in the browser too. Alternatively you can log in with Google or Discord.
+            A browser window has opened where you'll be able to create an account and/or log in.
         </TextBlock>
 
-        <TextBlock>Waiting for login...</TextBlock>
+        <TextBlock Margin="0 15 0 0">Waiting for log in...</TextBlock>
         <ProgressBar Margin="0 5 0 0" IsIndeterminate="True"></ProgressBar>
     </StackPanel>
 </UserControl>

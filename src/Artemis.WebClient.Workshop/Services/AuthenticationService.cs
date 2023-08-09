@@ -79,14 +79,14 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
 
         if (response.IsError)
         {
-            if (response.Error == OidcConstants.TokenErrors.ExpiredToken)
+            if (response.Error is OidcConstants.TokenErrors.ExpiredToken or OidcConstants.TokenErrors.InvalidGrant)
                 return false;
 
             throw new ArtemisWebClientException("Failed to request refresh token: " + response.Error);
         }
 
         SetCurrentUser(response);
-        return false;
+        return true;
     }
 
     private static byte[] HashSha256(string inputString)
