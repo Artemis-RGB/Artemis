@@ -1,4 +1,3 @@
-using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.CurrentUser;
@@ -8,10 +7,5 @@ public partial class WorkshopLoginView : ReactiveUserControl<WorkshopLoginViewMo
     public WorkshopLoginView()
     {
         InitializeComponent();
-    }
-
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
     }
 }

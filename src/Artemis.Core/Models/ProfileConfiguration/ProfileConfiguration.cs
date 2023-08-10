@@ -147,16 +147,7 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
         get => _activationConditionMet;
         private set => SetAndNotify(ref _activationConditionMet, value);
     }
-
-    /// <summary>
-    ///     Gets or sets a boolean indicating whether this profile configuration is being edited
-    /// </summary>
-    public bool IsBeingEdited
-    {
-        get => _isBeingEdited;
-        set => SetAndNotify(ref _isBeingEdited, value);
-    }
-
+    
     /// <summary>
     ///     Gets the profile of this profile configuration
     /// </summary>
@@ -243,8 +234,6 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
     {
         if (_disposed)
             throw new ObjectDisposedException("ProfileConfiguration");
-        if (IsBeingEdited)
-            return true;
         if (Category.IsSuspended || IsSuspended || IsMissingModule)
             return false;
 

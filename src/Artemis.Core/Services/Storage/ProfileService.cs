@@ -15,14 +15,14 @@ namespace Artemis.Core.Services;
 internal class ProfileService : IProfileService
 {
     private readonly ILogger _logger;
+    private readonly IRgbService _rgbService;
+    private readonly IProfileCategoryRepository _profileCategoryRepository;
+    private readonly IPluginManagementService _pluginManagementService;
 
     private readonly List<ArtemisKeyboardKeyEventArgs> _pendingKeyboardEvents = new();
-    private readonly IPluginManagementService _pluginManagementService;
     private readonly List<ProfileCategory> _profileCategories;
-    private readonly IProfileCategoryRepository _profileCategoryRepository;
     private readonly IProfileRepository _profileRepository;
     private readonly List<Exception> _renderExceptions = new();
-    private readonly IRgbService _rgbService;
     private readonly List<Exception> _updateExceptions = new();
     private DateTime _lastRenderExceptionLog;
     private DateTime _lastUpdateExceptionLog;
@@ -45,7 +45,6 @@ internal class ProfileService : IProfileService
         _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureToggled;
         _pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureToggled;
 
-        HotkeysEnabled = true;
         inputService.KeyboardKeyUp += InputServiceOnKeyboardKeyUp;
 
         if (!_profileCategories.Any())
@@ -53,140 +52,21 @@ internal class ProfileService : IProfileService
         UpdateModules();
     }
 
-    private void InputServiceOnKeyboardKeyUp(object? sender, ArtemisKeyboardKeyEventArgs e)
-    {
-        if (!HotkeysEnabled)
-            return;
+    public ProfileConfiguration? FocusProfile { get; set; }
+    public ProfileElement? FocusProfileElement { get; set; }
+    public bool UpdateFocusProfile { get; set; }
 
-        lock (_profileCategories)
-        {
-            _pendingKeyboardEvents.Add(e);
-        }
-    }
-
-    /// <summary>
-    ///     Populates all missing LEDs on all currently active profiles
-    /// </summary>
-    private void ActiveProfilesPopulateLeds()
-    {
-        foreach (ProfileConfiguration profileConfiguration in ProfileConfigurations)
-        {
-            if (profileConfiguration.Profile == null) continue;
-            profileConfiguration.Profile.PopulateLeds(_rgbService.EnabledDevices);
-
-            if (!profileConfiguration.Profile.IsFreshImport) continue;
-            _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profileConfiguration.Profile);
-            AdaptProfile(profileConfiguration.Profile);
-        }
-    }
-
-    private void UpdateModules()
-    {
-        lock (_profileRepository)
-        {
-            List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>();
-            foreach (ProfileCategory profileCategory in _profileCategories)
-            {
-                foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
-                    profileConfiguration.LoadModules(modules);
-            }
-        }
-    }
-
-    private void RgbServiceOnLedsChanged(object? sender, EventArgs e)
-    {
-        ActiveProfilesPopulateLeds();
-    }
-
-    private void PluginManagementServiceOnPluginFeatureToggled(object? sender, PluginFeatureEventArgs e)
-    {
-        if (e.PluginFeature is Module)
-            UpdateModules();
-    }
-
-    private void ProcessPendingKeyEvents(ProfileConfiguration profileConfiguration)
-    {
-        if (profileConfiguration.HotkeyMode == ProfileConfigurationHotkeyMode.None)
-            return;
-
-        bool before = profileConfiguration.IsSuspended;
-        foreach (ArtemisKeyboardKeyEventArgs e in _pendingKeyboardEvents)
-        {
-            if (profileConfiguration.HotkeyMode == ProfileConfigurationHotkeyMode.Toggle)
-            {
-                if (profileConfiguration.EnableHotkey != null && profileConfiguration.EnableHotkey.MatchesEventArgs(e))
-                    profileConfiguration.IsSuspended = !profileConfiguration.IsSuspended;
-            }
-            else
-            {
-                if (profileConfiguration.IsSuspended && profileConfiguration.EnableHotkey != null && profileConfiguration.EnableHotkey.MatchesEventArgs(e))
-                    profileConfiguration.IsSuspended = false;
-                else if (!profileConfiguration.IsSuspended && profileConfiguration.DisableHotkey != null && profileConfiguration.DisableHotkey.MatchesEventArgs(e))
-                    profileConfiguration.IsSuspended = true;
-            }
-        }
-        
-        // If suspension was changed, save the category
-        if (before != profileConfiguration.IsSuspended)
-            SaveProfileCategory(profileConfiguration.Category);
-    }
-
-    private void CreateDefaultProfileCategories()
-    {
-        foreach (DefaultCategoryName defaultCategoryName in Enum.GetValues<DefaultCategoryName>())
-            CreateProfileCategory(defaultCategoryName.ToString());
-    }
-
-    private void LogProfileUpdateExceptions()
-    {
-        // Only log update exceptions every 10 seconds to avoid spamming the logs
-        if (DateTime.Now - _lastUpdateExceptionLog < TimeSpan.FromSeconds(10))
-            return;
-        _lastUpdateExceptionLog = DateTime.Now;
-
-        if (!_updateExceptions.Any())
-            return;
-
-        // Group by stack trace, that should gather up duplicate exceptions
-        foreach (IGrouping<string?, Exception> exceptions in _updateExceptions.GroupBy(e => e.StackTrace))
-        {
-            _logger.Warning(exceptions.First(),
-                "Exception was thrown {count} times during profile update in the last 10 seconds",
-                exceptions.Count());
-        }
-
-        // When logging is finished start with a fresh slate
-        _updateExceptions.Clear();
-    }
-
-    private void LogProfileRenderExceptions()
-    {
-        // Only log update exceptions every 10 seconds to avoid spamming the logs
-        if (DateTime.Now - _lastRenderExceptionLog < TimeSpan.FromSeconds(10))
-            return;
-        _lastRenderExceptionLog = DateTime.Now;
-
-        if (!_renderExceptions.Any())
-            return;
-
-        // Group by stack trace, that should gather up duplicate exceptions
-        foreach (IGrouping<string?, Exception> exceptions in _renderExceptions.GroupBy(e => e.StackTrace))
-        {
-            _logger.Warning(exceptions.First(),
-                "Exception was thrown {count} times during profile render in the last 10 seconds",
-                exceptions.Count());
-        }
-
-        // When logging is finished start with a fresh slate
-        _renderExceptions.Clear();
-    }
-
-    public bool HotkeysEnabled { get; set; }
-    public bool RenderForEditor { get; set; }
-    public ProfileElement? EditorFocus { get; set; }
-
+    /// <inheritdoc />
     public void UpdateProfiles(double deltaTime)
     {
+        // If there is a focus profile update only that, and only if UpdateFocusProfile is true
+        if (FocusProfile != null)
+        {
+            if (UpdateFocusProfile)
+                FocusProfile.Profile?.Update(deltaTime);
+            return;
+        }
+
         lock (_profileCategories)
         {
             // Iterate the children in reverse because the first category must be rendered last to end up on top
@@ -200,16 +80,11 @@ internal class ProfileService : IProfileService
                     // Process hotkeys that where pressed since this profile last updated
                     ProcessPendingKeyEvents(profileConfiguration);
 
-                    // Profiles being edited are updated at their own leisure
-                    if (profileConfiguration.IsBeingEdited && RenderForEditor)
-                        continue;
-
                     bool shouldBeActive = profileConfiguration.ShouldBeActive(false);
                     if (shouldBeActive)
                     {
                         profileConfiguration.Update();
-                        if (!profileConfiguration.IsBeingEdited)
-                            shouldBeActive = profileConfiguration.ActivationConditionMet;
+                        shouldBeActive = profileConfiguration.ActivationConditionMet;
                     }
 
                     try
@@ -243,20 +118,18 @@ internal class ProfileService : IProfileService
         }
     }
 
+    /// <inheritdoc />
     public void RenderProfiles(SKCanvas canvas)
     {
+        // If there is a focus profile, render only that
+        if (FocusProfile != null)
+        {
+            FocusProfile.Profile?.Render(canvas, SKPointI.Empty, FocusProfileElement);
+            return;
+        }
+
         lock (_profileCategories)
         {
-            ProfileConfiguration? editedProfileConfiguration = _profileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(p => p.IsBeingEdited);
-            if (editedProfileConfiguration != null)
-            {
-                editedProfileConfiguration.Profile?.Render(canvas, SKPointI.Empty, RenderForEditor ? EditorFocus : null);
-                return;
-            }
-
-            if (RenderForEditor)
-                return;
-
             // Iterate the children in reverse because the first category must be rendered last to end up on top
             for (int i = _profileCategories.Count - 1; i > -1; i--)
             {
@@ -282,6 +155,7 @@ internal class ProfileService : IProfileService
         }
     }
 
+    /// <inheritdoc />
     public ReadOnlyCollection<ProfileCategory> ProfileCategories
     {
         get
@@ -293,6 +167,7 @@ internal class ProfileService : IProfileService
         }
     }
 
+    /// <inheritdoc />
     public ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations
     {
         get
@@ -304,6 +179,7 @@ internal class ProfileService : IProfileService
         }
     }
 
+    /// <inheritdoc />
     public void LoadProfileConfigurationIcon(ProfileConfiguration profileConfiguration)
     {
         if (profileConfiguration.Icon.IconType == ProfileConfigurationIconType.MaterialIcon)
@@ -314,6 +190,7 @@ internal class ProfileService : IProfileService
             profileConfiguration.Icon.SetIconByStream(profileConfiguration.Entity.IconOriginalFileName, stream);
     }
 
+    /// <inheritdoc />
     public void SaveProfileConfigurationIcon(ProfileConfiguration profileConfiguration)
     {
         if (profileConfiguration.Icon.IconType == ProfileConfigurationIconType.MaterialIcon)
@@ -327,6 +204,13 @@ internal class ProfileService : IProfileService
         }
     }
 
+    /// <inheritdoc />
+    public ProfileConfiguration CloneProfileConfiguration(ProfileConfiguration profileConfiguration)
+    {
+        return new ProfileConfiguration(profileConfiguration.Category, profileConfiguration.Entity);
+    }
+
+    /// <inheritdoc />
     public Profile ActivateProfile(ProfileConfiguration profileConfiguration)
     {
         if (profileConfiguration.Profile != null)
@@ -364,9 +248,10 @@ internal class ProfileService : IProfileService
         return profile;
     }
 
+    /// <inheritdoc />
     public void DeactivateProfile(ProfileConfiguration profileConfiguration)
     {
-        if (profileConfiguration.IsBeingEdited)
+        if (FocusProfile == profileConfiguration)
             throw new ArtemisCoreException("Cannot disable a profile that is being edited, that's rude");
         if (profileConfiguration.Profile == null)
             return;
@@ -378,9 +263,10 @@ internal class ProfileService : IProfileService
         OnProfileDeactivated(new ProfileConfigurationEventArgs(profileConfiguration));
     }
 
+    /// <inheritdoc />
     public void RequestDeactivation(ProfileConfiguration profileConfiguration)
     {
-        if (profileConfiguration.IsBeingEdited)
+        if (FocusProfile == profileConfiguration)
             throw new ArtemisCoreException("Cannot disable a profile that is being edited, that's rude");
         if (profileConfiguration.Profile == null)
             return;
@@ -388,6 +274,7 @@ internal class ProfileService : IProfileService
         profileConfiguration.Profile.ShouldDisplay = false;
     }
 
+    /// <inheritdoc />
     public void DeleteProfile(ProfileConfiguration profileConfiguration)
     {
         DeactivateProfile(profileConfiguration);
@@ -401,6 +288,7 @@ internal class ProfileService : IProfileService
         SaveProfileCategory(profileConfiguration.Category);
     }
 
+    /// <inheritdoc />
     public ProfileCategory CreateProfileCategory(string name)
     {
         ProfileCategory profileCategory;
@@ -415,6 +303,7 @@ internal class ProfileService : IProfileService
         return profileCategory;
     }
 
+    /// <inheritdoc />
     public void DeleteProfileCategory(ProfileCategory profileCategory)
     {
         List<ProfileConfiguration> profileConfigurations = profileCategory.ProfileConfigurations.ToList();
@@ -430,6 +319,7 @@ internal class ProfileService : IProfileService
         OnProfileCategoryRemoved(new ProfileCategoryEventArgs(profileCategory));
     }
 
+    /// <inheritdoc />
     public ProfileConfiguration CreateProfileConfiguration(ProfileCategory category, string name, string icon)
     {
         ProfileConfiguration configuration = new(category, name, icon);
@@ -441,6 +331,7 @@ internal class ProfileService : IProfileService
         return configuration;
     }
 
+    /// <inheritdoc />
     public void RemoveProfileConfiguration(ProfileConfiguration profileConfiguration)
     {
         profileConfiguration.Category.RemoveProfileConfiguration(profileConfiguration);
@@ -454,6 +345,7 @@ internal class ProfileService : IProfileService
         profileConfiguration.Dispose();
     }
 
+    /// <inheritdoc />
     public void SaveProfileCategory(ProfileCategory profileCategory)
     {
         profileCategory.Save();
@@ -465,6 +357,7 @@ internal class ProfileService : IProfileService
         }
     }
 
+    /// <inheritdoc />
     public void SaveProfile(Profile profile, bool includeChildren)
     {
         _logger.Debug("Updating profile - Saving {Profile}", profile);
@@ -480,6 +373,7 @@ internal class ProfileService : IProfileService
         _profileRepository.Save(profile.ProfileEntity);
     }
 
+    /// <inheritdoc />
     public ProfileConfigurationExportModel ExportProfile(ProfileConfiguration profileConfiguration)
     {
         // The profile may not be active and in that case lets activate it real quick
@@ -493,6 +387,7 @@ internal class ProfileService : IProfileService
         };
     }
 
+    /// <inheritdoc />
     public ProfileConfiguration ImportProfile(ProfileCategory category, ProfileConfigurationExportModel exportModel,
         bool makeUnique, bool markAsFreshImport, string? nameAffix)
     {
@@ -563,6 +458,131 @@ internal class ProfileService : IProfileService
 
         _logger.Debug("Adapt profile - Saving " + profile);
         _profileRepository.Save(profile.ProfileEntity);
+    }
+
+    private void InputServiceOnKeyboardKeyUp(object? sender, ArtemisKeyboardKeyEventArgs e)
+    {
+        lock (_profileCategories)
+        {
+            _pendingKeyboardEvents.Add(e);
+        }
+    }
+
+    /// <summary>
+    ///     Populates all missing LEDs on all currently active profiles
+    /// </summary>
+    private void ActiveProfilesPopulateLeds()
+    {
+        foreach (ProfileConfiguration profileConfiguration in ProfileConfigurations)
+        {
+            if (profileConfiguration.Profile == null) continue;
+            profileConfiguration.Profile.PopulateLeds(_rgbService.EnabledDevices);
+
+            if (!profileConfiguration.Profile.IsFreshImport) continue;
+            _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profileConfiguration.Profile);
+            AdaptProfile(profileConfiguration.Profile);
+        }
+    }
+
+    private void UpdateModules()
+    {
+        lock (_profileRepository)
+        {
+            List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>();
+            foreach (ProfileCategory profileCategory in _profileCategories)
+            {
+                foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
+                    profileConfiguration.LoadModules(modules);
+            }
+        }
+    }
+
+    private void RgbServiceOnLedsChanged(object? sender, EventArgs e)
+    {
+        ActiveProfilesPopulateLeds();
+    }
+
+    private void PluginManagementServiceOnPluginFeatureToggled(object? sender, PluginFeatureEventArgs e)
+    {
+        if (e.PluginFeature is Module)
+            UpdateModules();
+    }
+
+    private void ProcessPendingKeyEvents(ProfileConfiguration profileConfiguration)
+    {
+        if (profileConfiguration.HotkeyMode == ProfileConfigurationHotkeyMode.None)
+            return;
+
+        bool before = profileConfiguration.IsSuspended;
+        foreach (ArtemisKeyboardKeyEventArgs e in _pendingKeyboardEvents)
+        {
+            if (profileConfiguration.HotkeyMode == ProfileConfigurationHotkeyMode.Toggle)
+            {
+                if (profileConfiguration.EnableHotkey != null && profileConfiguration.EnableHotkey.MatchesEventArgs(e))
+                    profileConfiguration.IsSuspended = !profileConfiguration.IsSuspended;
+            }
+            else
+            {
+                if (profileConfiguration.IsSuspended && profileConfiguration.EnableHotkey != null && profileConfiguration.EnableHotkey.MatchesEventArgs(e))
+                    profileConfiguration.IsSuspended = false;
+                else if (!profileConfiguration.IsSuspended && profileConfiguration.DisableHotkey != null && profileConfiguration.DisableHotkey.MatchesEventArgs(e))
+                    profileConfiguration.IsSuspended = true;
+            }
+        }
+
+        // If suspension was changed, save the category
+        if (before != profileConfiguration.IsSuspended)
+            SaveProfileCategory(profileConfiguration.Category);
+    }
+
+    private void CreateDefaultProfileCategories()
+    {
+        foreach (DefaultCategoryName defaultCategoryName in Enum.GetValues<DefaultCategoryName>())
+            CreateProfileCategory(defaultCategoryName.ToString());
+    }
+
+    private void LogProfileUpdateExceptions()
+    {
+        // Only log update exceptions every 10 seconds to avoid spamming the logs
+        if (DateTime.Now - _lastUpdateExceptionLog < TimeSpan.FromSeconds(10))
+            return;
+        _lastUpdateExceptionLog = DateTime.Now;
+
+        if (!_updateExceptions.Any())
+            return;
+
+        // Group by stack trace, that should gather up duplicate exceptions
+        foreach (IGrouping<string?, Exception> exceptions in _updateExceptions.GroupBy(e => e.StackTrace))
+        {
+            _logger.Warning(exceptions.First(),
+                "Exception was thrown {count} times during profile update in the last 10 seconds",
+                exceptions.Count());
+        }
+
+        // When logging is finished start with a fresh slate
+        _updateExceptions.Clear();
+    }
+
+    private void LogProfileRenderExceptions()
+    {
+        // Only log update exceptions every 10 seconds to avoid spamming the logs
+        if (DateTime.Now - _lastRenderExceptionLog < TimeSpan.FromSeconds(10))
+            return;
+        _lastRenderExceptionLog = DateTime.Now;
+
+        if (!_renderExceptions.Any())
+            return;
+
+        // Group by stack trace, that should gather up duplicate exceptions
+        foreach (IGrouping<string?, Exception> exceptions in _renderExceptions.GroupBy(e => e.StackTrace))
+        {
+            _logger.Warning(exceptions.First(),
+                "Exception was thrown {count} times during profile render in the last 10 seconds",
+                exceptions.Count());
+        }
+
+        // When logging is finished start with a fresh slate
+        _renderExceptions.Clear();
     }
 
     #region Events

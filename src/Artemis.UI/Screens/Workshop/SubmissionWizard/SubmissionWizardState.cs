@@ -7,8 +7,8 @@ namespace Artemis.UI.Screens.Workshop.SubmissionWizard;
 
 public class SubmissionWizardState
 {
-    private readonly SubmissionWizardViewModel _wizardViewModel;
     private readonly IContainer _container;
+    private readonly SubmissionWizardViewModel _wizardViewModel;
 
     public SubmissionWizardState(SubmissionWizardViewModel wizardViewModel, IContainer container)
     {
@@ -26,6 +26,8 @@ public class SubmissionWizardState
     public List<int> Categories { get; set; } = new();
     public List<int> Tags { get; set; } = new();
     public List<Stream> Images { get; set; } = new();
+
+    public object? EntrySource { get; set; }
 
     public void ChangeScreen<TSubmissionViewModel>() where TSubmissionViewModel : SubmissionViewModel
     {

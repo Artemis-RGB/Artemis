@@ -17,13 +17,12 @@ public sealed class Profile : ProfileElement
     private readonly ObservableCollection<ScriptConfiguration> _scriptConfigurations;
     private readonly ObservableCollection<ProfileScript> _scripts;
     private bool _isFreshImport;
-    private ProfileElement? _lastSelectedProfileElement;
 
     internal Profile(ProfileConfiguration configuration, ProfileEntity profileEntity) : base(null!)
     {
         _scripts = new ObservableCollection<ProfileScript>();
         _scriptConfigurations = new ObservableCollection<ScriptConfiguration>();
-        
+
         Opacity = 0d;
         ShouldDisplay = true;
         Configuration = configuration;
@@ -68,15 +67,6 @@ public sealed class Profile : ProfileElement
     }
 
     /// <summary>
-    ///     Gets or sets the last selected profile element of this profile
-    /// </summary>
-    public ProfileElement? LastSelectedProfileElement
-    {
-        get => _lastSelectedProfileElement;
-        set => SetAndNotify(ref _lastSelectedProfileElement, value);
-    }
-
-    /// <summary>
     ///     Gets the profile entity this profile uses for persistent storage
     /// </summary>
     public ProfileEntity ProfileEntity { get; internal set; }
@@ -105,7 +95,7 @@ public sealed class Profile : ProfileElement
                 profileScript.OnProfileUpdated(deltaTime);
 
             const double OPACITY_PER_SECOND = 1;
-            
+
             if (ShouldDisplay && Opacity < 1)
                 Opacity = Math.Clamp(Opacity + OPACITY_PER_SECOND * deltaTime, 0d, 1d);
             if (!ShouldDisplay && Opacity > 0)
@@ -123,14 +113,14 @@ public sealed class Profile : ProfileElement
 
             foreach (ProfileScript profileScript in Scripts)
                 profileScript.OnProfileRendering(canvas, canvas.LocalClipBounds);
-            
+
             SKPaint? opacityPaint = null;
             bool applyOpacityLayer = Configuration.FadeInAndOut && Opacity < 1;
-            
+
             if (applyOpacityLayer)
             {
                 opacityPaint = new SKPaint();
-                opacityPaint.Color = new SKColor(0, 0, 0, (byte)(255d * Easings.CubicEaseInOut(Opacity)));
+                opacityPaint.Color = new SKColor(0, 0, 0, (byte) (255d * Easings.CubicEaseInOut(Opacity)));
                 canvas.SaveLayer(opacityPaint);
             }
 
@@ -242,20 +232,13 @@ public sealed class Profile : ProfileElement
                 AddChild(new Folder(this, this, rootFolder));
         }
 
-        List<RenderProfileElement> renderElements = GetAllRenderElements();
-
-        if (ProfileEntity.LastSelectedProfileElement != Guid.Empty)
-            LastSelectedProfileElement = renderElements.FirstOrDefault(f => f.EntityId == ProfileEntity.LastSelectedProfileElement);
-        else
-            LastSelectedProfileElement = null;
-
         while (_scriptConfigurations.Any())
             RemoveScriptConfiguration(_scriptConfigurations[0]);
         foreach (ScriptConfiguration scriptConfiguration in ProfileEntity.ScriptConfigurations.Select(e => new ScriptConfiguration(e)))
             AddScriptConfiguration(scriptConfiguration);
 
         // Load node scripts last since they may rely on the profile structure being in place
-        foreach (RenderProfileElement renderProfileElement in renderElements)
+        foreach (RenderProfileElement renderProfileElement in GetAllRenderElements())
             renderProfileElement.LoadNodeScript();
     }
 
@@ -312,7 +295,6 @@ public sealed class Profile : ProfileElement
         ProfileEntity.Id = EntityId;
         ProfileEntity.Name = Configuration.Name;
         ProfileEntity.IsFreshImport = IsFreshImport;
-        ProfileEntity.LastSelectedProfileElement = LastSelectedProfileElement?.EntityId ?? Guid.Empty;
 
         foreach (ProfileElement profileElement in Children)
             profileElement.Save();

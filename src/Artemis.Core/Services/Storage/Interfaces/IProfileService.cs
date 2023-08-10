@@ -26,19 +26,26 @@ public interface IProfileService : IArtemisService
     ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations { get; }
 
     /// <summary>
-    ///     Gets or sets a boolean indicating whether hotkeys are enabled.
+    ///     Gets or sets the focused profile configuration which is rendered exclusively.
     /// </summary>
-    bool HotkeysEnabled { get; set; }
+    ProfileConfiguration? FocusProfile { get; set; }
 
     /// <summary>
-    ///     Gets or sets a boolean indicating whether rendering should only be done for profiles being edited.
+    ///     Gets or sets the profile element which is rendered exclusively.
     /// </summary>
-    bool RenderForEditor { get; set; }
+    ProfileElement? FocusProfileElement { get; set; }
 
     /// <summary>
-    ///     Gets or sets the profile element to focus on while rendering for the editor.
+    /// Gets or sets a value indicating whether the currently focused profile should receive updates.
     /// </summary>
-    ProfileElement? EditorFocus { get; set; }
+    bool UpdateFocusProfile { get; set; }
+
+    /// <summary>
+    ///     Creates a copy of the provided profile configuration.
+    /// </summary>
+    /// <param name="profileConfiguration">The profile configuration to clone.</param>
+    /// <returns>The resulting clone.</returns>
+    ProfileConfiguration CloneProfileConfiguration(ProfileConfiguration profileConfiguration);
 
     /// <summary>
     ///     Activates the profile of the given <see cref="ProfileConfiguration" /> with the currently active surface.

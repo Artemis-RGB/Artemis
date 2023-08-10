@@ -1,6 +1,6 @@
-using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 using Artemis.WebClient.Workshop;
 using ReactiveUI;
 

@@ -39,9 +39,17 @@
         <PackageReference Include="RGB.NET.Layout" Version="$(RGBDotNetVersion)" />
         <PackageReference Include="SkiaSharp" Version="$(SkiaSharpVersion)" />
         <PackageReference Include="Splat.DryIoc" Version="14.6.8" />
+        <PackageReference Include="System.Reactive" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Screens\Workshop\SubmissionWizard\Steps\Profile\ProfileSelectionStepView.axaml.cs">
+        <DependentUpon>ProfileSelectionStepView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
     </ItemGroup>
 </Project>

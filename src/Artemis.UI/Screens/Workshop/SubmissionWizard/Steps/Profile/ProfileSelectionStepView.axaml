@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:profile="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile.ProfileSelectionStepView"
+             x:DataType="profile:ProfileSelectionStepViewModel">
+    <Grid RowDefinitions="Auto,*">
+        <StackPanel>
+            <StackPanel.Styles>
+                <Styles>
+                    <Style Selector="TextBlock">
+                        <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                    </Style>
+                </Styles>
+            </StackPanel.Styles>
+            <TextBlock Theme="{StaticResource TitleTextBlockStyle}" TextWrapping="Wrap">
+                Profile selection
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap">
+                Please select the profile you want to share, a preview will be shown below.
+            </TextBlock>
+
+            <ComboBox ItemsSource="{CompiledBinding Profiles}" SelectedItem="{CompiledBinding SelectedProfile}"
+                      Width="460"
+                      VerticalContentAlignment="Center"
+                      Height="50"
+                      Margin="0 15"
+                      PlaceholderText="Select a profile">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="core:ProfileConfiguration">
+                        <Grid RowDefinitions="Auto,*" ColumnDefinitions="Auto,*">
+                            <shared:ProfileConfigurationIcon Grid.Row="0"
+                                                             Grid.RowSpan="2"
+                                                             Grid.Column="0"
+                                                             ConfigurationIcon="{CompiledBinding Icon}"
+                                                             VerticalAlignment="Center"
+                                                             Width="22"
+                                                             Height="22"
+                                                             Margin="0 0 10 0" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{CompiledBinding Name}" TextTrimming="CharacterEllipsis"></TextBlock>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{CompiledBinding Category.Name}" TextTrimming="CharacterEllipsis" Classes="subtitle"></TextBlock>
+                        </Grid>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+        <Border Grid.Row="1" Classes="card" Padding="0" ClipToBounds="True" IsVisible="{CompiledBinding SelectedProfile, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <ContentControl Content="{CompiledBinding ProfilePreview}"></ContentControl>
+        </Border>
+    </Grid>
+
+</UserControl>
