@@ -4,7 +4,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard;
 
-public abstract class SubmissionViewModel : ActivatableViewModelBase
+public abstract class SubmissionViewModel : ValidatableViewModelBase
 {
     private string _continueText = "Continue";
     private bool _showFinish;

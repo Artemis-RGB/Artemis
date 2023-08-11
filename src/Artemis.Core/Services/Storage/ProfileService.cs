@@ -363,14 +363,24 @@ internal class ProfileService : IProfileService
         _logger.Debug("Updating profile - Saving {Profile}", profile);
         profile.Save();
         if (includeChildren)
+        {
             foreach (RenderProfileElement child in profile.GetAllRenderElements())
                 child.Save();
+        }
 
         // At this point the user made actual changes, save that
         profile.IsFreshImport = false;
         profile.ProfileEntity.IsFreshImport = false;
 
         _profileRepository.Save(profile.ProfileEntity);
+        
+        // If the provided profile is external (cloned or from the workshop?) but it is loaded locally too, reload the local instance
+        // A bit dodge but it ensures local instances always represent the latest stored version
+        ProfileConfiguration? localInstance = ProfileConfigurations.FirstOrDefault(p => p.Profile != null && p.Profile != profile && p.ProfileId == profile.ProfileEntity.Id);
+        if (localInstance == null)
+            return;
+        DeactivateProfile(localInstance);
+        ActivateProfile(localInstance);
     }
 
     /// <inheritdoc />

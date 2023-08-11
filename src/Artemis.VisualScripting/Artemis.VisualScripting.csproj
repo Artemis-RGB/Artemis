@@ -23,12 +23,4 @@
         <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
         <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Nodes\Input\Screens\HotkeyPressNodeCustomView.axaml.cs">
-        <DependentUpon>HotkeyPressNodeCustomView.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-    </ItemGroup>
-
 </Project>

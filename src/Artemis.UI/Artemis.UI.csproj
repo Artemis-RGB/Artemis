@@ -23,6 +23,7 @@
         <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="$(AvaloniaVersion)" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
         <PackageReference Include="Avalonia.Skia.Lottie" Version="11.0.0" />
         <PackageReference Include="Avalonia.Xaml.Behaviors" Version="$(AvaloniaVersion)" />
@@ -44,12 +45,5 @@
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Screens\Workshop\SubmissionWizard\Steps\Profile\ProfileSelectionStepView.axaml.cs">
-        <DependentUpon>ProfileSelectionStepView.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
     </ItemGroup>
 </Project>

@@ -27,12 +27,21 @@
         
         <Lottie Path="/Assets/Animations/email.json" RepeatCount="-1" Width="200" Height="200"></Lottie>
         
-        <Button Margin="0 0 0 15" HorizontalAlignment="Center" Command="{CompiledBinding Refresh}">
-            <StackPanel Orientation="Horizontal" Spacing="5">
-                <avalonia:MaterialIcon Kind="Refresh" />
-                <TextBlock>Refresh</TextBlock>
-            </StackPanel>
-        </Button>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="5">
+            <Button Margin="0 0 0 15" HorizontalAlignment="Center" Command="{CompiledBinding Refresh}">
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                    <avalonia:MaterialIcon Kind="Refresh" />
+                    <TextBlock>Refresh</TextBlock>
+                </StackPanel>
+            </Button>
+            <Button Margin="0 0 0 15" HorizontalAlignment="Center" Command="{CompiledBinding Resend}">
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                    <avalonia:MaterialIcon Kind="Mail" />
+                    <TextBlock>Resend confirmation mail</TextBlock>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        
         
         <TextBlock Theme="{StaticResource CaptionTextBlockStyle}">
             PS: We take this step to avoid the workshop getting spammed with low quality content.

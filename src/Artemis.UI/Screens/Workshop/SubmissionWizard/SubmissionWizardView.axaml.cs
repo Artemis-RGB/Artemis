@@ -25,9 +25,9 @@ public partial class SubmissionWizardView : ReactiveAppWindow<SubmissionWizardVi
         {
             Dispatcher.UIThread.Invoke(() => Frame.NavigateFromObject(viewModel));
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // ignored
+            ViewModel?.WindowService.ShowExceptionDialog("Wizard screen failed to activate", e);
         }
     }
 }

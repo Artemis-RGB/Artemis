@@ -1,10 +1,13 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.Core;
+using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Services;
 using IdentityModel;
 using ReactiveUI;
@@ -23,6 +26,8 @@ public class ValidateEmailStepViewModel : SubmissionViewModel
 
         Continue = ReactiveCommand.Create(ExecuteContinue);
         Refresh = ReactiveCommand.CreateFromTask(ExecuteRefresh);
+        Resend = ReactiveCommand.Create(() => Utilities.OpenUrl(WorkshopConstants.AUTHORITY_URL + "/account/confirm/resend"));
+        
         ShowGoBack = false;
         ShowHeader = false;
 
@@ -45,6 +50,7 @@ public class ValidateEmailStepViewModel : SubmissionViewModel
     public override ReactiveCommand<Unit, Unit> GoBack { get; } = null!;
 
     public ReactiveCommand<Unit, Unit> Refresh { get; }
+    public ReactiveCommand<Unit, Process?> Resend { get; }
 
     public Claim? Email => _email?.Value;
 

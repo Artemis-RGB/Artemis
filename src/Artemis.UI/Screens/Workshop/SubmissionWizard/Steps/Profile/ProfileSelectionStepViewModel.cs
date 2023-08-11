@@ -26,6 +26,9 @@ public class ProfileSelectionStepViewModel : SubmissionViewModel
         
         // Use copies of the profiles, the originals are used by the core and could be disposed
         Profiles = new ObservableCollection<ProfileConfiguration>(_profileService.ProfileConfigurations.Select(_profileService.CloneProfileConfiguration));
+        foreach (ProfileConfiguration profileConfiguration in Profiles)
+            _profileService.LoadProfileConfigurationIcon(profileConfiguration);
+        
         ProfilePreview = profilePreviewViewModel;
 
         GoBack = ReactiveCommand.Create(() => State.ChangeScreen<EntryTypeViewModel>());
