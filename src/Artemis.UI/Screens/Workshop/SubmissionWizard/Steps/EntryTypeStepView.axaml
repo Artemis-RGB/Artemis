@@ -6,8 +6,8 @@
              xmlns:workshop="clr-namespace:Artemis.WebClient.Workshop;assembly=Artemis.WebClient.Workshop"
              xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.EntryTypeView"
-             x:DataType="steps:EntryTypeViewModel">
+             x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.EntryTypeStepView"
+             x:DataType="steps:EntryTypeStepViewModel">
     <UserControl.Resources>
         <converters:EnumToBooleanConverter x:Key="EnumBoolConverter" />
     </UserControl.Resources>

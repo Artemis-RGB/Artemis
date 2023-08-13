@@ -2,9 +2,9 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 
-public partial class EntryTypeView : ReactiveUserControl<EntryTypeViewModel>
+public partial class EntryTypeStepView : ReactiveUserControl<EntryTypeStepViewModel>
 {
-    public EntryTypeView()
+    public EntryTypeStepView()
     {
         InitializeComponent();
     }

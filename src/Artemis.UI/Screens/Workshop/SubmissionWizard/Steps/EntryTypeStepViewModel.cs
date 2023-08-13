@@ -6,12 +6,12 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 
-public class EntryTypeViewModel : SubmissionViewModel
+public class EntryTypeStepViewModel : SubmissionViewModel
 {
     private EntryType? _selectedEntryType;
 
     /// <inheritdoc />
-    public EntryTypeViewModel()
+    public EntryTypeStepViewModel()
     {
         GoBack = ReactiveCommand.Create(() => State.ChangeScreen<WelcomeStepViewModel>());
         Continue = ReactiveCommand.Create(ExecuteContinue, this.WhenAnyValue(vm => vm.SelectedEntryType).Select(e => e != null));

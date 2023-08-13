@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:steps="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps"
+             mc:Ignorable="d"  d:DesignWidth="970" d:DesignHeight="900"
+             x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.UploadStepView"
+             x:DataType="steps:UploadStepViewModel">
+    <StackPanel Margin="0 50 0 0" >
+        <StackPanel.Styles>
+            <Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="TextAlignment" Value="Center"></Setter>
+                    <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                </Style>
+            </Styles>
+        </StackPanel.Styles>
+        <TextBlock Theme="{StaticResource TitleTextBlockStyle}" TextAlignment="Center" TextWrapping="Wrap">
+            Uploading your submission...
+        </TextBlock>
+        <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+            Wooo, the final step, that was pretty easy, right!?
+        </TextBlock>
+
+        <StackPanel IsVisible="{CompiledBinding Finished}" Margin="0 100 0 0">
+            <Lottie Path="/Assets/Animations/success.json" RepeatCount="1" Width="300" Height="300"></Lottie>
+            <TextBlock Theme="{StaticResource TitleTextBlockStyle}">All done! Hit finish to view your submission.</TextBlock>
+        </StackPanel>
+        
+    </StackPanel>
+</UserControl>

@@ -12,7 +12,7 @@
         Icon="/Assets/Images/Logo/application.ico"
         Title="Artemis | Workshop submission wizard"
         Width="1000"
-        Height="735"
+        Height="950"
         WindowStartupLocation="CenterOwner">
     <Grid Margin="15" RowDefinitions="Auto,*,Auto">
         <Grid RowDefinitions="*,*" ColumnDefinitions="Auto,*,Auto" Margin="0 0 0 15">

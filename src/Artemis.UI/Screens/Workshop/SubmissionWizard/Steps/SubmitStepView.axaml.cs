@@ -5,9 +5,9 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 
-public partial class EntrySpecificationsStepView : ReactiveUserControl<EntrySpecificationsStepViewModel>
+public partial class SubmitStepView : ReactiveUserControl<SubmitStepViewModel>
 {
-    public EntrySpecificationsStepView()
+    public SubmitStepView()
     {
         InitializeComponent();
     }

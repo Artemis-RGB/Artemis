@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:steps="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps"
-             mc:Ignorable="d" d:DesignWidth="970" d:DesignHeight="625"
+             mc:Ignorable="d" d:DesignWidth="970" d:DesignHeight="900"
              x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.WelcomeStepView"
              x:DataType="steps:WelcomeStepViewModel">
     <StackPanel Margin="0 50 0 0" >
@@ -14,6 +14,6 @@
             Here we'll take you, step by step, through the process of uploading your submission to the workshop.
         </TextBlock>
 
-        <Lottie Path="/Assets/Animations/workshop-wizard.json" RepeatCount="1" Width="300" Height="400"></Lottie>
+        <Lottie Path="/Assets/Animations/workshop-wizard.json" RepeatCount="1" Width="500" Height="700"></Lottie>
     </StackPanel>
 </UserControl>

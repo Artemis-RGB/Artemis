@@ -43,7 +43,7 @@ public class ProfileSelectionStepViewModel : SubmissionViewModel
 
         ProfilePreview = profilePreviewViewModel;
 
-        GoBack = ReactiveCommand.Create(() => State.ChangeScreen<EntryTypeViewModel>());
+        GoBack = ReactiveCommand.Create(() => State.ChangeScreen<EntryTypeStepViewModel>());
         Continue = ReactiveCommand.Create(ExecuteContinue, this.WhenAnyValue(vm => vm.SelectedProfile).Select(p => p != null));
 
         this.WhenAnyValue(vm => vm.SelectedProfile).Subscribe(p => Update(p));

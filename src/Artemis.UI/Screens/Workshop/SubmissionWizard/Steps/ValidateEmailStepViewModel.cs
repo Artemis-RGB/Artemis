@@ -73,7 +73,7 @@ public class ValidateEmailStepViewModel : SubmissionViewModel
 
     private void ExecuteContinue()
     {
-        State.ChangeScreen<EntryTypeViewModel>();
+        State.ChangeScreen<EntryTypeStepViewModel>();
     }
 
     private async Task ExecuteRefresh(CancellationToken ct)

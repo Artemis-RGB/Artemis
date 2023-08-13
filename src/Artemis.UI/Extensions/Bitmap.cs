@@ -14,7 +14,11 @@ public class BitmapExtensions
 
     public static Bitmap LoadAndResize(Stream stream, int size)
     {
-        using SKBitmap source = SKBitmap.Decode(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+        using MemoryStream copy = new();
+        stream.CopyTo(copy);
+        copy.Seek(0, SeekOrigin.Begin);
+        using SKBitmap source = SKBitmap.Decode(copy);
         return Resize(source, size);
     }
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -13,7 +12,6 @@ using Artemis.UI.Screens.Workshop.Categories;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
-using Artemis.WebClient.Workshop.Extensions;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Aggregation;
@@ -26,18 +24,17 @@ using Bitmap = Avalonia.Media.Imaging.Bitmap;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 
-public class EntrySpecificationsStepViewModel : SubmissionViewModel
+public class SpecificationsStepViewModel : SubmissionViewModel
 {
     private readonly IWindowService _windowService;
     private ObservableAsPropertyHelper<bool>? _categoriesValid;
     private ObservableAsPropertyHelper<bool>? _iconValid;
     private string _description = string.Empty;
-    private Bitmap? _iconBitmap;
-    private bool _isDirty;
     private string _name = string.Empty;
     private string _summary = string.Empty;
+    private Bitmap? _iconBitmap;
 
-    public EntrySpecificationsStepViewModel(IWorkshopClient workshopClient, IWindowService windowService)
+    public SpecificationsStepViewModel(IWorkshopClient workshopClient, IWindowService windowService)
     {
         _windowService = windowService;
         GoBack = ReactiveCommand.Create(ExecuteGoBack);
@@ -45,47 +42,18 @@ public class EntrySpecificationsStepViewModel : SubmissionViewModel
         SelectIcon = ReactiveCommand.CreateFromTask(ExecuteSelectIcon);
         ClearIcon = ReactiveCommand.Create(ExecuteClearIcon);
 
-        workshopClient.GetCategories
-            .Watch(ExecutionStrategy.CacheFirst)
-            .SelectOperationResult(c => c.Categories)
-            .ToObservableChangeSet(c => c.Id)
-            .Transform(c => new CategoryViewModel(c))
-            .Bind(out ReadOnlyObservableCollection<CategoryViewModel> categoryViewModels)
-            .Subscribe();
-        Categories = categoryViewModels;
-
         this.WhenActivated(d =>
         {
             DisplayName = $"{State.EntryType} Information";
-            
-            // Basic fields
-            Name = State.Name;
-            Summary = State.Summary;
-            Description = State.Description;
 
-            // Categories
-            foreach (CategoryViewModel categoryViewModel in Categories)
-                categoryViewModel.IsSelected = State.Categories.Contains(categoryViewModel.Id);
+            // Load categories
+            Observable.FromAsync(workshopClient.GetCategories.ExecuteAsync).Subscribe(PopulateCategories).DisposeWith(d);
 
-            // Tags
-            Tags.Clear();
-            Tags.AddRange(State.Tags);
+            // Apply the state
+            ApplyFromState();
 
-            // Icon
-            if (State.Icon != null)
-            {
-                State.Icon.Seek(0, SeekOrigin.Begin);
-                IconBitmap = BitmapExtensions.LoadAndResize(State.Icon, 128);
-            }
-            
-            IsDirty = false;
             this.ClearValidationRules();
-
-            Disposable.Create(() =>
-            {
-                IconBitmap?.Dispose();
-                IconBitmap = null;
-            }).DisposeWith(d);
+            Disposable.Create(ExecuteClearIcon).DisposeWith(d);
         });
     }
 
@@ -94,7 +62,7 @@ public class EntrySpecificationsStepViewModel : SubmissionViewModel
     public ReactiveCommand<Unit, Unit> SelectIcon { get; }
     public ReactiveCommand<Unit, Unit> ClearIcon { get; }
 
-    public ReadOnlyObservableCollection<CategoryViewModel> Categories { get; }
+    public ObservableCollection<CategoryViewModel> Categories { get; } = new();
     public ObservableCollection<string> Tags { get; } = new();
     public bool CategoriesValid => _categoriesValid?.Value ?? true;
     public bool IconValid => _iconValid?.Value ?? true;
@@ -117,12 +85,6 @@ public class EntrySpecificationsStepViewModel : SubmissionViewModel
         set => RaiseAndSetIfChanged(ref _description, value);
     }
 
-    public bool IsDirty
-    {
-        get => _isDirty;
-        set => RaiseAndSetIfChanged(ref _isDirty, value);
-    }
-
     public Bitmap? IconBitmap
     {
         get => _iconBitmap;
@@ -131,6 +93,9 @@ public class EntrySpecificationsStepViewModel : SubmissionViewModel
 
     private void ExecuteGoBack()
     {
+        // Apply what's there so far
+        ApplyToState();
+
         switch (State.EntryType)
         {
             case EntryType.Layout:
@@ -147,35 +112,20 @@ public class EntrySpecificationsStepViewModel : SubmissionViewModel
 
     private void ExecuteContinue()
     {
-        if (!IsDirty)
+        if (!ValidationContext.Validations.Any())
         {
-            SetupDataValidation();
-            IsDirty = true;
-
             // The ValidationContext seems to update asynchronously, so stop and schedule a retry
+            SetupDataValidation();
             Dispatcher.UIThread.Post(ExecuteContinue);
             return;
         }
 
+        ApplyToState();
+        
         if (!ValidationContext.GetIsValid())
             return;
-
-        State.Name = Name;
-        State.Summary = Summary;
-        State.Description = Description;
-        State.Categories = Categories.Where(c => c.IsSelected).Select(c => c.Id).ToList();
-        State.Tags = new List<string>(Tags);
-
-        State.Icon?.Dispose();
-        if (IconBitmap != null)
-        {
-            State.Icon = new MemoryStream();
-            IconBitmap.Save(State.Icon);
-        }
-        else
-        {
-            State.Icon = null;
-        }
+        
+        State.ChangeScreen<SubmitStepViewModel>();
     }
 
     private async Task ExecuteSelectIcon()
@@ -197,6 +147,13 @@ public class EntrySpecificationsStepViewModel : SubmissionViewModel
         IconBitmap = null;
     }
 
+    private void PopulateCategories(IOperationResult<IGetCategoriesResult> result)
+    {
+        Categories.Clear();
+        if (result.Data != null)
+            Categories.AddRange(result.Data.Categories.Select(c => new CategoryViewModel(c) {IsSelected = State.Categories.Contains(c.Id)}));
+    }
+
     private void SetupDataValidation()
     {
         // Hopefully this can be avoided in the future
@@ -204,17 +161,56 @@ public class EntrySpecificationsStepViewModel : SubmissionViewModel
         this.ValidationRule(vm => vm.Name, s => !string.IsNullOrWhiteSpace(s), "Name is required");
         this.ValidationRule(vm => vm.Summary, s => !string.IsNullOrWhiteSpace(s), "Summary is required");
         this.ValidationRule(vm => vm.Description, s => !string.IsNullOrWhiteSpace(s), "Description is required");
-        
+
         // These don't use inputs that support validation messages, do so manually
         ValidationHelper iconRule = this.ValidationRule(vm => vm.IconBitmap, s => s != null, "Icon required");
-        ValidationHelper categoriesRule = this.ValidationRule(vm => vm.Categories, Categories.ToObservableChangeSet()
-                .AutoRefresh(c => c.IsSelected)
-                .Filter(c => c.IsSelected)
-                .IsEmpty()
-                .CombineLatest(this.WhenAnyValue(vm => vm.IsDirty), (empty, dirty) => !dirty || !empty),
+        ValidationHelper categoriesRule = this.ValidationRule(vm => vm.Categories, Categories.ToObservableChangeSet().AutoRefresh(c => c.IsSelected).Filter(c => c.IsSelected).IsNotEmpty(),
             "At least one category must be selected"
         );
         _iconValid = iconRule.ValidationChanged.Select(c => c.IsValid).ToProperty(this, vm => vm.IconValid);
         _categoriesValid = categoriesRule.ValidationChanged.Select(c => c.IsValid).ToProperty(this, vm => vm.CategoriesValid);
+    }
+
+    private void ApplyFromState()
+    {
+        // Basic fields
+        Name = State.Name;
+        Summary = State.Summary;
+        Description = State.Description;
+
+        // Tags
+        Tags.Clear();
+        Tags.AddRange(State.Tags);
+
+        // Icon
+        if (State.Icon != null)
+        {
+            State.Icon.Seek(0, SeekOrigin.Begin);
+            IconBitmap = BitmapExtensions.LoadAndResize(State.Icon, 128);
+        }
+    }
+
+    private void ApplyToState()
+    {
+        // Basic fields
+        State.Name = Name;
+        State.Summary = Summary;
+        State.Description = Description;
+
+        // Categories and tasks
+        State.Categories = Categories.Where(c => c.IsSelected).Select(c => c.Id).ToList();
+        State.Tags = new List<string>(Tags);
+
+        // Icon
+        State.Icon?.Dispose();
+        if (IconBitmap != null)
+        {
+            State.Icon = new MemoryStream();
+            IconBitmap.Save(State.Icon);
+        }
+        else
+        {
+            State.Icon = null;
+        }
     }
 }

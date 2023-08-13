@@ -7,8 +7,8 @@
              xmlns:categories="clr-namespace:Artemis.UI.Screens.Workshop.Categories"
              xmlns:tagsInput="clr-namespace:Artemis.UI.Shared.TagsInput;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="970" d:DesignHeight="625"
-             x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.EntrySpecificationsStepView"
-             x:DataType="steps:EntrySpecificationsStepViewModel">
+             x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.SpecificationsStepView"
+             x:DataType="steps:SpecificationsStepViewModel">
     <Grid RowDefinitions="Auto,*">
         <StackPanel Grid.Row="0">
             <StackPanel.Styles>

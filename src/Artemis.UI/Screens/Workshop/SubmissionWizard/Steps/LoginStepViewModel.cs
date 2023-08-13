@@ -43,7 +43,7 @@ public class LoginStepViewModel : SubmissionViewModel
 
         Claim? emailVerified = _authenticationService.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.EmailVerified);
         if (emailVerified?.Value == "true")
-            State.ChangeScreen<EntryTypeViewModel>();
+            State.ChangeScreen<EntryTypeStepViewModel>();
         else
             State.ChangeScreen<ValidateEmailStepViewModel>();
     }
