@@ -28,7 +28,7 @@ public class SubmissionWizardState
     public string Description { get; set; } = string.Empty;
 
     public List<int> Categories { get; set; } = new();
-    public List<int> Tags { get; set; } = new();
+    public List<string> Tags { get; set; } = new();
     public List<Stream> Images { get; set; } = new();
 
     public object? EntrySource { get; set; }

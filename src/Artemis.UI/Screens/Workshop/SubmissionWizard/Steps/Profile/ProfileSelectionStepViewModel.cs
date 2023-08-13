@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -8,8 +9,19 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
+using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Workshop.Profile;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
+using Avalonia.Layout;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Material.Icons;
+using Material.Icons.Avalonia;
 using ReactiveUI;
+using SkiaSharp;
+using Path = Avalonia.Controls.Shapes.Path;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 
@@ -23,12 +35,12 @@ public class ProfileSelectionStepViewModel : SubmissionViewModel
     public ProfileSelectionStepViewModel(IProfileService profileService, ProfilePreviewViewModel profilePreviewViewModel)
     {
         _profileService = profileService;
-        
+
         // Use copies of the profiles, the originals are used by the core and could be disposed
         Profiles = new ObservableCollection<ProfileConfiguration>(_profileService.ProfileConfigurations.Select(_profileService.CloneProfileConfiguration));
         foreach (ProfileConfiguration profileConfiguration in Profiles)
             _profileService.LoadProfileConfigurationIcon(profileConfiguration);
-        
+
         ProfilePreview = profilePreviewViewModel;
 
         GoBack = ReactiveCommand.Create(() => State.ChangeScreen<EntryTypeViewModel>());
@@ -45,7 +57,7 @@ public class ProfileSelectionStepViewModel : SubmissionViewModel
     private void Update(ProfileConfiguration? profileConfiguration)
     {
         ProfilePreview.ProfileConfiguration = null;
-        
+
         foreach (ProfileConfiguration configuration in Profiles)
         {
             if (configuration == profileConfiguration)
@@ -80,6 +92,10 @@ public class ProfileSelectionStepViewModel : SubmissionViewModel
         State.EntrySource = SelectedProfile;
         State.Name = SelectedProfile.Name;
         State.Icon = SelectedProfile.Icon.GetIconStream();
+
+        // Render the material icon of the profile
+        if (State.Icon == null && SelectedProfile.Icon.IconName != null)
+            State.Icon = Enum.Parse<MaterialIconKind>(SelectedProfile.Icon.IconName).EncodeToBitmap(128, 14, SKColors.White);
 
         State.ChangeScreen<ProfileAdaptionHintsStepViewModel>();
     }

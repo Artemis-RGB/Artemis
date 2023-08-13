@@ -39,11 +39,6 @@
 				<Button Classes="title-bar-button">
 					<avalonia:MaterialIcon Kind="WindowMinimize" />
 				</Button>
-
-                <TextBlock Margin="0 5 0 0">ToggleButton.window-button</TextBlock>
-                <ToggleButton Classes="icon-button">
-                    <avalonia:MaterialIcon Kind="BlockChain" />
-                </ToggleButton>
                 
                 <Button Classes="icon-button">
                     <avalonia:MaterialIcon Kind="Cog" />
@@ -109,28 +104,4 @@
     <Style Selector="Button.title-bar-button:pointerover">
         <Setter Property="Background" Value="Red"></Setter>
     </Style>
-
-	<Style Selector="ToggleButton:checked:pointerover /template/ Border#BorderElement">
-		<Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrushCheckedPointerOver}" />
-	</Style>
-	<Style Selector="ToggleButton:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="Background" Value="{DynamicResource ToggleButtonBackgroundCheckedPointerOver}" />
-		<Setter Property="TextBlock.Foreground" Value="{DynamicResource ToggleButtonForegroundCheckedPointerOver}" />
-	</Style>
-
-	<Style Selector="ToggleButton:checked:pressed /template/ Border#BorderElement">
-		<Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrushCheckedPressed}" />
-	</Style>
-	<Style Selector="ToggleButton:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="Background" Value="{DynamicResource ToggleButtonBackgroundCheckedPressed}" />
-		<Setter Property="TextBlock.Foreground" Value="{DynamicResource ToggleButtonForegroundCheckedPressed}" />
-	</Style>
-
-	<Style Selector="ToggleButton:checked:disabled /template/ Border#BorderElement">
-		<Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrushCheckedDisabled}" />
-	</Style>
-	<Style Selector="ToggleButton:checked:disabled /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="Background" Value="{DynamicResource ToggleButtonBackgroundCheckedDisabled}" />
-		<Setter Property="TextBlock.Foreground" Value="{DynamicResource ToggleButtonForegroundCheckedDisabled}" />
-	</Style>
 </Styles>

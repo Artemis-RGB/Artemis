@@ -3,31 +3,125 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:steps="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:categories="clr-namespace:Artemis.UI.Screens.Workshop.Categories"
+             xmlns:tagsInput="clr-namespace:Artemis.UI.Shared.TagsInput;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="970" d:DesignHeight="625"
              x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.EntrySpecificationsStepView"
              x:DataType="steps:EntrySpecificationsStepViewModel">
-    <StackPanel>
-        <StackPanel.Styles>
-            <Styles>
-                <Style Selector="TextBlock">
-                    <Setter Property="TextWrapping" Value="Wrap"></Setter>
-                </Style>
-            </Styles>
-        </StackPanel.Styles>
-        <TextBlock Theme="{StaticResource TitleTextBlockStyle}" TextWrapping="Wrap" Text="{CompiledBinding DisplayName, FallbackValue=Information}"/>
-        <TextBlock TextWrapping="Wrap">
-            Provide some general information on your submission below.
-        </TextBlock>
-        
-        <Label Target="Name" Margin="0 15 0 0">Name</Label>
-        <TextBox Name="Name" Text="{CompiledBinding Name}"></TextBox>
-        
-        <Label Target="Summary" Margin="0 5 0 0">Summary</Label>
-        <TextBox Name="Summary" Text="{CompiledBinding Summary}"></TextBox>
-        <TextBlock Theme="{StaticResource CaptionTextBlockStyle}">A short summary of your submission's description</TextBlock>
-        
-        <Label Target="Description" Margin="0 5 0 0">Description</Label>
-        <TextBox AcceptsReturn="True" Name="Description" Text="{CompiledBinding Description}" Height="250"></TextBox>
-        <TextBlock Theme="{StaticResource CaptionTextBlockStyle}">The main description, Markdown supported. (A better editor planned)</TextBlock>
-    </StackPanel>
+    <Grid RowDefinitions="Auto,*">
+        <StackPanel Grid.Row="0">
+            <StackPanel.Styles>
+                <Styles>
+                    <Style Selector="TextBlock">
+                        <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                    </Style>
+                </Styles>
+            </StackPanel.Styles>
+            <TextBlock Theme="{StaticResource TitleTextBlockStyle}" TextWrapping="Wrap" Text="{CompiledBinding DisplayName, FallbackValue=Information}" />
+            <TextBlock TextWrapping="Wrap">
+                Provide some general information on your submission below.
+            </TextBlock>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" Padding="0 0 20 0">
+            <StackPanel>
+                <StackPanel.Styles>
+                    <Styles>
+                        <Style Selector="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                        </Style>
+                        <Style Selector="Label">
+                            <Setter Property="Margin" Value="0 8 0 0"></Setter>
+                        </Style>
+                    </Styles>
+                </StackPanel.Styles>
+
+                <Grid ColumnDefinitions="103,*">
+                    <StackPanel Grid.Column="0" Width="95">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right"
+                                    VerticalAlignment="Bottom"
+                                    Classes="icon-button"
+                                    Command="{CompiledBinding ClearIcon}"
+                                    IsVisible="{CompiledBinding IconBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                    Width="22"
+                                    Height="22">
+                                <avalonia:MaterialIcon Kind="Trash"></avalonia:MaterialIcon>
+                            </Button>
+                            <Label DockPanel.Dock="Left" Target="Name" Margin="0 15 0 0">Icon</Label>
+                        </DockPanel>
+
+                        <Button Width="95"
+                                Height="95"
+                                Command="{CompiledBinding SelectIcon}"
+                                IsVisible="{CompiledBinding IconBitmap, Converter={x:Static ObjectConverters.IsNull}}">
+                            <avalonia:MaterialIcon Kind="FolderOpen"
+                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                   Width="30"
+                                                   Height="30" />
+                        </Button>
+                        <Border IsVisible="{CompiledBinding IconBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                ClipToBounds="True"
+                                CornerRadius="12"
+                                Background="{StaticResource ControlStrokeColorOnAccentDefault}"
+                                VerticalAlignment="Center"
+                                Width="95"
+                                Height="95">
+                            <Image Source="{CompiledBinding IconBitmap}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"></Image>
+                        </Border>
+                        <TextBlock Foreground="{DynamicResource SystemFillColorCriticalBrush}" Margin="2 0" 
+                                   IsVisible="{CompiledBinding !IconValid}"
+                                   TextWrapping="Wrap">
+                            Icon required
+                        </TextBlock>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <Label Target="Name" Margin="0 15 0 0">Name</Label>
+                        <TextBox Name="Name" Text="{CompiledBinding Name}"></TextBox>
+
+                        <Label Target="Summary" Margin="0 5 0 0">Summary</Label>
+                        <TextBox Name="Summary" Text="{CompiledBinding Summary}"></TextBox>
+                    </StackPanel>
+
+                </Grid>
+
+
+                <!-- <TextBlock Theme="{StaticResource CaptionTextBlockStyle}">A short summary of your submission's description</TextBlock> -->
+
+                <Label Margin="0 28 0 0">Categories</Label>
+                <ItemsControl ItemsSource="{CompiledBinding Categories}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="categories:CategoryViewModel">
+                            <ToggleButton IsChecked="{CompiledBinding IsSelected}" Margin="0 0 5 5">
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" />
+                                    <TextBlock Text="{CompiledBinding Name}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </ToggleButton>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock Foreground="{DynamicResource SystemFillColorCriticalBrush}" Margin="2 0" IsVisible="{CompiledBinding !CategoriesValid}">
+                    At least one category is required
+                </TextBlock>
+                <!-- <TextBlock Theme="{StaticResource CaptionTextBlockStyle}" Margin="0 -5 0 0">Pick one or more categories that suit your submission</TextBlock> -->
+
+                <Label>Tags</Label>
+                <tagsInput:TagsInput Tags="{CompiledBinding Tags}" />
+                <!-- <TextBlock Theme="{StaticResource CaptionTextBlockStyle}" Margin="0 -5 0 0">Tags are used by the search engine, use keywords that match your submission</TextBlock> -->
+
+                <Label Target="Description" Margin="0 28 0 0">Description</Label>
+                <TextBox AcceptsReturn="True" Name="Description" Text="{CompiledBinding Description}" Height="250"></TextBox>
+                <TextBlock Theme="{StaticResource CaptionTextBlockStyle}">Markdown supported, a better editor planned</TextBlock>
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
+
 </UserControl>
