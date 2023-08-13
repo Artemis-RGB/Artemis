@@ -70,6 +70,6 @@ internal class ProfileCategoryRepository : IProfileCategoryRepository
         if (stream == null && _profileIcons.Exists(profileConfigurationEntity.FileIconId))
             _profileIcons.Delete(profileConfigurationEntity.FileIconId);
 
-        _profileIcons.Upload(profileConfigurationEntity.FileIconId, profileConfigurationEntity.IconOriginalFileName, stream);
+        _profileIcons.Upload(profileConfigurationEntity.FileIconId, profileConfigurationEntity.FileIconId + ".png", stream);
     }
 }

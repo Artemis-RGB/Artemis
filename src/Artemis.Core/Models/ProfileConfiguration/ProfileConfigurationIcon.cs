@@ -15,7 +15,6 @@ public class ProfileConfigurationIcon : CorePropertyChanged, IStorageModel
     private string? _iconName;
     private Stream? _iconStream;
     private ProfileConfigurationIconType _iconType;
-    private string? _originalFileName;
 
     internal ProfileConfigurationIcon(ProfileConfigurationEntity entity)
     {
@@ -41,15 +40,6 @@ public class ProfileConfigurationIcon : CorePropertyChanged, IStorageModel
     }
 
     /// <summary>
-    ///     Gets the original file name of the icon (if applicable)
-    /// </summary>
-    public string? OriginalFileName
-    {
-        get => _originalFileName;
-        private set => SetAndNotify(ref _originalFileName, value);
-    }
-
-    /// <summary>
     ///     Gets or sets a boolean indicating whether or not this icon should be filled.
     /// </summary>
     public bool Fill
@@ -69,7 +59,6 @@ public class ProfileConfigurationIcon : CorePropertyChanged, IStorageModel
 
         _iconStream?.Dispose();
         IconName = iconName;
-        OriginalFileName = null;
         IconType = ProfileConfigurationIconType.MaterialIcon;
 
         OnIconUpdated();
@@ -78,11 +67,9 @@ public class ProfileConfigurationIcon : CorePropertyChanged, IStorageModel
     /// <summary>
     ///     Updates the stream returned by <see cref="GetIconStream" /> to the provided stream
     /// </summary>
-    /// <param name="originalFileName">The original file name backing the stream, should include the extension</param>
     /// <param name="stream">The stream to copy</param>
-    public void SetIconByStream(string originalFileName, Stream stream)
+    public void SetIconByStream(Stream stream)
     {
-        if (originalFileName == null) throw new ArgumentNullException(nameof(originalFileName));
         if (stream == null) throw new ArgumentNullException(nameof(stream));
 
         _iconStream?.Dispose();
@@ -92,7 +79,6 @@ public class ProfileConfigurationIcon : CorePropertyChanged, IStorageModel
         _iconStream.Seek(0, SeekOrigin.Begin);
 
         IconName = null;
-        OriginalFileName = originalFileName;
         IconType = ProfileConfigurationIconType.BitmapImage;
         OnIconUpdated();
     }

@@ -187,7 +187,7 @@ internal class ProfileService : IProfileService
 
         using Stream? stream = _profileCategoryRepository.GetProfileIconStream(profileConfiguration.Entity.FileIconId);
         if (stream != null)
-            profileConfiguration.Icon.SetIconByStream(profileConfiguration.Entity.IconOriginalFileName, stream);
+            profileConfiguration.Icon.SetIconByStream(stream);
     }
 
     /// <inheritdoc />
@@ -197,11 +197,8 @@ internal class ProfileService : IProfileService
             return;
 
         using Stream? stream = profileConfiguration.Icon.GetIconStream();
-        if (stream != null && profileConfiguration.Icon.OriginalFileName != null)
-        {
-            profileConfiguration.Entity.IconOriginalFileName = profileConfiguration.Icon.OriginalFileName;
+        if (stream != null)
             _profileCategoryRepository.SaveProfileIconStream(profileConfiguration.Entity, stream);
-        }
     }
 
     /// <inheritdoc />
@@ -441,8 +438,11 @@ internal class ProfileService : IProfileService
             profileConfiguration = new ProfileConfiguration(category, profileEntity.Name, "Import");
         }
 
-        if (exportModel.ProfileImage != null && exportModel.ProfileConfigurationEntity?.IconOriginalFileName != null)
-            profileConfiguration.Icon.SetIconByStream(exportModel.ProfileConfigurationEntity.IconOriginalFileName, exportModel.ProfileImage);
+        if (exportModel.ProfileImage != null)
+        {
+            profileConfiguration.Icon.SetIconByStream(exportModel.ProfileImage);
+            SaveProfileConfigurationIcon(profileConfiguration);
+        }
 
         profileConfiguration.Entity.ProfileId = profileEntity.Id;
         category.AddProfileConfiguration(profileConfiguration, 0);
@@ -450,7 +450,7 @@ internal class ProfileService : IProfileService
         List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>();
         profileConfiguration.LoadModules(modules);
         SaveProfileCategory(category);
-
+        
         return profileConfiguration;
     }
 
