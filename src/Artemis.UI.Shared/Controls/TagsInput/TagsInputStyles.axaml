@@ -1,0 +1,49 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="using:FluentAvalonia.UI.Controls"
+                    xmlns:tagsInput="clr-namespace:Artemis.UI.Shared.TagsInput"
+                    xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+                    x:CompileBindings="True">
+    <Design.PreviewWith>
+        <Border Padding="30" Width="400">
+            <StackPanel Spacing="20">
+               <tagsInput:TagsInput Name="TagsInput"/>
+               <ItemsControl ItemsSource="{CompiledBinding Path=Tags, ElementName=TagsInput}"/>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <ControlTheme x:Key="{x:Type tagsInput:TagsInput}" TargetType="tagsInput:TagsInput">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel>
+                    <TextBox Watermark="Enter tags" Name="PART_TagInputBox" MaxLines="1" MaxLength="{TemplateBinding MaxLength}">
+                        <TextBox.InnerLeftContent>
+                            <avalonia:MaterialIcon Kind="Tags" Margin="8 0 -2 0"></avalonia:MaterialIcon>
+                        </TextBox.InnerLeftContent>
+                    </TextBox>
+                    
+                    <ItemsControl ItemsSource="{CompiledBinding Tags, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tagsInput:TagsInput}}}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.DataTemplates>
+                            <DataTemplate DataType="x:String">
+                                <Button Margin="0 5 5 0" 
+                                        Command="{CompiledBinding RemoveTag, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tagsInput:TagsInput}}}"
+                                        CommandParameter="{CompiledBinding}">
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                        <avalonia:MaterialIcon Kind="Close" Margin="-5 0 0 0" Foreground="Gray" />
+                                        <TextBlock Text="{CompiledBinding}"></TextBlock>
+                                    </StackPanel>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.DataTemplates>
+                    </ItemsControl>
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>
