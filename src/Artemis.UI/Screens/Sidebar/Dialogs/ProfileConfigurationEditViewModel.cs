@@ -9,6 +9,7 @@ using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
+using Artemis.UI.Extensions;
 using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
@@ -231,7 +232,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         else if (_selectedIconPath != null)
         {
             await using FileStream fileStream = File.OpenRead(_selectedIconPath);
-            ProfileConfiguration.Icon.SetIconByStream(Path.GetFileName(_selectedIconPath), fileStream);
+            ProfileConfiguration.Icon.SetIconByStream(fileStream);
         }
     }
 
@@ -244,7 +245,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         if (result == null)
             return;
 
-        SelectedBitmapSource = new Bitmap(result[0]);
+        SelectedBitmapSource = BitmapExtensions.LoadAndResize(result[0], 128);
         _selectedIconPath = result[0];
     }
 
