@@ -21,6 +21,12 @@
         <TextBlock TextAlignment="Center" TextWrapping="Wrap">
             Wooo, the final step, that was pretty easy, right!?
         </TextBlock>
+        
+        <ProgressBar Margin="0 15 0 0" 
+                     Width="380" 
+                     IsVisible="{CompiledBinding !Finished}"
+                     IsIndeterminate="{CompiledBinding ProgressIndeterminate}"
+                     Value="{CompiledBinding ProgressPercentage}"></ProgressBar>
 
         <StackPanel IsVisible="{CompiledBinding Finished}" Margin="0 100 0 0">
             <Lottie Path="/Assets/Animations/success.json" RepeatCount="1" Width="300" Height="300"></Lottie>

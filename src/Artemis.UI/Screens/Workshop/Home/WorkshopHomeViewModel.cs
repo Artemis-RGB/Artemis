@@ -26,7 +26,7 @@ public class WorkshopHomeViewModel : ActivatableViewModelBase, IWorkshopViewMode
 
     private async Task ExecuteAddSubmission(CancellationToken arg)
     {
-        await _windowService.ShowDialogAsync<SubmissionWizardViewModel>();
+        await _windowService.ShowDialogAsync<SubmissionWizardViewModel, bool>();
     }
 
     public EntryType? EntryType => null;

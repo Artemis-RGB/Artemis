@@ -44,4 +44,14 @@ public class SubmissionWizardState
             _windowService.ShowExceptionDialog("Wizard screen failed to activate", e);
         }
     }
+
+    public void Finish()
+    {
+        _wizardViewModel.Close(true);
+    }
+
+    public void Cancel()
+    {
+        _wizardViewModel.Close(false);
+    }
 }
