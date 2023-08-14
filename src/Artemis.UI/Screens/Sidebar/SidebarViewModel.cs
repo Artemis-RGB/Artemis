@@ -30,6 +30,7 @@ public class SidebarViewModel : ActivatableViewModelBase
     private readonly IWindowService _windowService;
     private ReadOnlyObservableCollection<SidebarCategoryViewModel> _sidebarCategories = new(new ObservableCollection<SidebarCategoryViewModel>());
     private SidebarScreenViewModel? _selectedScreen;
+    private bool _updating;
 
     public SidebarViewModel(IRouter router, IProfileService profileService, IWindowService windowService, ISidebarVmFactory sidebarVmFactory)
     {
@@ -57,7 +58,12 @@ public class SidebarViewModel : ActivatableViewModelBase
         SourceList<ProfileCategory> profileCategories = new();
         this.WhenActivated(d =>
         {
-            _router.CurrentPath.WhereNotNull().Subscribe(r => SelectedScreen = SidebarScreen.GetMatch(r)).DisposeWith(d);
+            _router.CurrentPath.WhereNotNull().Subscribe(r =>
+            {
+                _updating = true;
+                SelectedScreen = SidebarScreen.GetMatch(r);
+                _updating = false;
+            }).DisposeWith(d);
 
             Observable.FromEventPattern<ProfileCategoryEventArgs>(x => profileService.ProfileCategoryAdded += x, x => profileService.ProfileCategoryAdded -= x)
                 .Subscribe(e => profileCategories.Add(e.EventArgs.ProfileCategory))
@@ -115,6 +121,9 @@ public class SidebarViewModel : ActivatableViewModelBase
 
     private void NavigateToScreen(SidebarScreenViewModel sidebarScreenViewModel)
     {
+        if (_updating)
+            return;
+        
         Dispatcher.UIThread.Invoke(async () =>
         {
             try
