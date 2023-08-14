@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:routing="clr-namespace:Artemis.UI.Screens.Debugger.Routing"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Debugger.Routing.RoutingDebugView"
+             x:DataType="routing:RoutingDebugViewModel">
+
+    <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,Auto">
+        <TextBox Grid.Row="0" Grid.Column="0" Watermark="Enter a route to navigate to" Text="{CompiledBinding Route}">
+            <TextBox.KeyBindings>
+                <KeyBinding Gesture="Enter" Command="{CompiledBinding Navigate}"></KeyBinding>
+            </TextBox.KeyBindings>
+        </TextBox>
+        <Button Grid.Row="0" Grid.Column="1" Margin="5 0 0 0" Command="{CompiledBinding Navigate}">Navigate</Button>    
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 15">Navigation logs</TextBlock>
+        <ScrollViewer Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Name="LogsScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <SelectableTextBlock
+                Inlines="{CompiledBinding Lines}"
+                FontFamily="Consolas"
+                SizeChanged="Control_OnSizeChanged"
+                SelectionBrush="{StaticResource TextControlSelectionHighlightColor}" />
+        </ScrollViewer>
+    </Grid>
+
+</UserControl>
