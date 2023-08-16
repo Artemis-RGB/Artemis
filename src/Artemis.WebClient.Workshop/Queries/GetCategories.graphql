@@ -1,5 +1,5 @@
 query GetCategories {
-    categories {
+    categories(order: {name: ASC}) {
         id
         name
         icon

@@ -26,6 +26,7 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
     private readonly BehaviorSubject<bool> _isLoggedInSubject = new(false);
 
     private AuthenticationToken? _token;
+    private bool _noStoredRefreshToken;
 
     public AuthenticationService(IHttpClientFactory httpClientFactory, IDiscoveryCache discoveryCache, IAuthenticationRepository authenticationRepository)
     {
@@ -50,7 +51,7 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
     private void SetCurrentUser(TokenResponse response)
     {
         _token = new AuthenticationToken(response);
-        _authenticationRepository.SetRefreshToken(_token.RefreshToken);
+        SetStoredRefreshToken(_token.RefreshToken);
 
         JwtSecurityTokenHandler handler = new();
         JwtSecurityToken? token = handler.ReadJwtToken(response.IdentityToken);
@@ -80,7 +81,10 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
         if (response.IsError)
         {
             if (response.Error is OidcConstants.TokenErrors.ExpiredToken or OidcConstants.TokenErrors.InvalidGrant)
+            {
+                SetStoredRefreshToken(null);
                 return false;
+            }
 
             throw new ArtemisWebClientException("Failed to request refresh token: " + response.Error);
         }
@@ -118,8 +122,9 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
         {
             // If not logged in, attempt to auto login first
             if (!_isLoggedInSubject.Value)
-                await AutoLogin();
+                await InternalAutoLogin();
 
+            // If there is no token, even after an auto-login, there's no bearer to add
             if (_token == null)
                 return null;
 
@@ -142,20 +147,14 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
 
         try
         {
-            if (!force && _isLoggedInSubject.Value)
-                return true;
-
-            string? refreshToken = _authenticationRepository.GetRefreshToken();
-            if (refreshToken == null)
-                return false;
-
-            return await UseRefreshToken(refreshToken);
+            return await InternalAutoLogin(force);
         }
         finally
         {
             _authLock.Release();
         }
     }
+
 
     /// <inheritdoc />
     public async Task Login(CancellationToken cancellationToken)
@@ -240,8 +239,36 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
     {
         _token = null;
         _claims.Clear();
-        _authenticationRepository.SetRefreshToken(null);
+        SetStoredRefreshToken(null);
 
         _isLoggedInSubject.OnNext(false);
+    }
+
+    private async Task<bool> InternalAutoLogin(bool force = false)
+    {
+        if (!force && _isLoggedInSubject.Value)
+            return true;
+
+        if (_noStoredRefreshToken)
+            return false;
+
+        string? refreshToken = GetStoredRefreshToken();
+        if (refreshToken == null)
+            return false;
+
+        return await UseRefreshToken(refreshToken);
+    }
+
+    private string? GetStoredRefreshToken()
+    {
+        string? token = _authenticationRepository.GetRefreshToken();
+        _noStoredRefreshToken = token == null;
+        return token;
+    }
+
+    private void SetStoredRefreshToken(string? token)
+    {
+        _authenticationRepository.SetRefreshToken(token);
+        _noStoredRefreshToken = token == null;
     }
 }

@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using SkiaSharp;
 
@@ -24,21 +26,23 @@ public class BitmapExtensions
 
     private static Bitmap Resize(SKBitmap source, int size)
     {
-        int newWidth, newHeight;
-        float aspectRatio = (float) source.Width / source.Height;
+        // Get smaller dimension.
+        int minDim = Math.Min(source.Width, source.Height);
 
-        if (aspectRatio > 1)
-        {
-            newWidth = size;
-            newHeight = (int) (size / aspectRatio);
-        }
-        else
-        {
-            newWidth = (int) (size * aspectRatio);
-            newHeight = size;
-        }
+        // Calculate crop rectangle position for center crop.
+        int deltaX = (source.Width - minDim) / 2;
+        int deltaY = (source.Height - minDim) / 2;
 
-        using SKBitmap resizedBitmap = source.Resize(new SKImageInfo(newWidth, newHeight), SKFilterQuality.High);
+        // Create crop rectangle.
+        SKRectI rect = new(deltaX, deltaY, deltaX + minDim, deltaY + minDim);
+
+        // Do the actual cropping of the bitmap.
+        using SKBitmap croppedBitmap = new(minDim, minDim);
+        source.ExtractSubset(croppedBitmap, rect);
+
+        // Resize to the desired size after cropping.
+        using SKBitmap resizedBitmap = croppedBitmap.Resize(new SKImageInfo(size, size), SKFilterQuality.High);
+
         return new Bitmap(resizedBitmap.Encode(SKEncodedImageFormat.Png, 100).AsStream());
     }
 }

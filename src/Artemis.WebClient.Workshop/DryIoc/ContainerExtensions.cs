@@ -44,6 +44,7 @@ public static class ContainerExtensions
 
         container.Register<IAuthenticationRepository, AuthenticationRepository>(Reuse.Singleton);
         container.Register<IAuthenticationService, AuthenticationService>(Reuse.Singleton);
+        container.Register<IWorkshopService, WorkshopService>(Reuse.Singleton);
         
         container.Register<EntryUploadHandlerFactory>(Reuse.Transient);
         container.RegisterMany(workshopAssembly, type => type.IsAssignableTo<IEntryUploadHandler>(), Reuse.Transient);

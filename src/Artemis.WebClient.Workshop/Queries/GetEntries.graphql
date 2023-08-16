@@ -1,5 +1,5 @@
 query GetEntries($filter: EntryFilterInput $skip: Int $take: Int) {
-    entries(where: $filter skip: $skip take: $take) {
+    entries(where: $filter skip: $skip take: $take, order: {createdAt: DESC}) {
         totalCount
         items {
             id

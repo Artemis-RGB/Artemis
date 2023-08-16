@@ -13,12 +13,14 @@ using Artemis.Core;
 using Artemis.UI.Shared.Routing;
 using System;
 using Artemis.UI.Shared.Utilities;
+using Artemis.WebClient.Workshop.Services;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 
 public class UploadStepViewModel : SubmissionViewModel
 {
     private readonly IWorkshopClient _workshopClient;
+    private readonly IWorkshopService _workshopService;
     private readonly EntryUploadHandlerFactory _entryUploadHandlerFactory;
     private readonly IWindowService _windowService;
     private readonly IRouter _router;
@@ -30,9 +32,10 @@ public class UploadStepViewModel : SubmissionViewModel
     private Guid? _entryId;
 
     /// <inheritdoc />
-    public UploadStepViewModel(IWorkshopClient workshopClient, EntryUploadHandlerFactory entryUploadHandlerFactory, IWindowService windowService, IRouter router)
+    public UploadStepViewModel(IWorkshopClient workshopClient, IWorkshopService workshopService, EntryUploadHandlerFactory entryUploadHandlerFactory, IWindowService windowService, IRouter router)
     {
         _workshopClient = workshopClient;
+        _workshopService = workshopService;
         _entryUploadHandlerFactory = entryUploadHandlerFactory;
         _windowService = windowService;
         _router = router;
@@ -87,6 +90,10 @@ public class UploadStepViewModel : SubmissionViewModel
 
         if (cancellationToken.IsCancellationRequested)
             return;
+        
+        // Upload image
+        if (State.Icon != null)
+            await _workshopService.SetEntryIcon(entryId.Value, _progress, State.Icon, cancellationToken);
 
         // Create the workshop entry
         try

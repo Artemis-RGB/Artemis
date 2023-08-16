@@ -23,8 +23,9 @@
                     VerticalAlignment="Center"
                     Margin="0 0 10 0"
                     Width="80"
-                    Height="80">
-                <avalonia:MaterialIcon Kind="HandOkay" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="70" Height="70" />
+                    Height="80"
+                    ClipToBounds="True">
+                <Image Source="{CompiledBinding EntryIcon^}" Stretch="UniformToFill"/>
             </Border>
             
             <!-- Body -->

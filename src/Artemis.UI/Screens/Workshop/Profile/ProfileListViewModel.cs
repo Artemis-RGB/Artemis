@@ -13,6 +13,7 @@ using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.WebClient.Workshop;
+using DryIoc.ImTools;
 using ReactiveUI;
 using StrawberryShake;
 
@@ -20,8 +21,8 @@ namespace Artemis.UI.Screens.Workshop.Profile;
 
 public class ProfileListViewModel : RoutableScreen<ActivatableViewModelBase, WorkshopListParameters>, IWorkshopViewModel
 {
-    private readonly IRouter _router;
     private readonly INotificationService _notificationService;
+    private readonly Func<IGetEntries_Entries_Items, EntryListViewModel> _getEntryListViewModel;
     private readonly IWorkshopClient _workshopClient;
     private readonly ObservableAsPropertyHelper<bool> _showPagination;
     private readonly ObservableAsPropertyHelper<bool> _isLoading;
@@ -31,18 +32,22 @@ public class ProfileListViewModel : RoutableScreen<ActivatableViewModelBase, Wor
     private int _totalPages = 1;
     private int _entriesPerPage = 10;
 
-    public ProfileListViewModel(IWorkshopClient workshopClient, IRouter router, CategoriesViewModel categoriesViewModel, INotificationService notificationService)
+    public ProfileListViewModel(IWorkshopClient workshopClient,
+        IRouter router, 
+        CategoriesViewModel categoriesViewModel, 
+        INotificationService notificationService,
+        Func<IGetEntries_Entries_Items, EntryListViewModel> getEntryListViewModel)
     {
         _workshopClient = workshopClient;
-        _router = router;
         _notificationService = notificationService;
+        _getEntryListViewModel = getEntryListViewModel;
         _showPagination = this.WhenAnyValue(vm => vm.TotalPages).Select(t => t > 1).ToProperty(this, vm => vm.ShowPagination);
         _isLoading = this.WhenAnyValue(vm => vm.Page, vm => vm.LoadedPage, (p, c) => p != c).ToProperty(this, vm => vm.IsLoading);
 
         CategoriesViewModel = categoriesViewModel;
 
         // Respond to page changes
-        this.WhenAnyValue(vm => vm.Page).Skip(1).Subscribe(p => Task.Run(() => _router.Navigate($"workshop/profiles/{p}")));
+        this.WhenAnyValue(vm => vm.Page).Skip(1).Subscribe(p => Task.Run(() => router.Navigate($"workshop/profiles/{p}")));
         // Respond to filter changes
         this.WhenActivated(d => CategoriesViewModel.WhenAnyValue(vm => vm.CategoryFilters).Skip(1).Subscribe(_ =>
         {
@@ -57,7 +62,7 @@ public class ProfileListViewModel : RoutableScreen<ActivatableViewModelBase, Wor
 
     public bool ShowPagination => _showPagination.Value;
     public bool IsLoading => _isLoading.Value;
-    
+
     public CategoriesViewModel CategoriesViewModel { get; }
 
     public List<EntryListViewModel>? Entries
@@ -108,10 +113,10 @@ public class ProfileListViewModel : RoutableScreen<ActivatableViewModelBase, Wor
             EntryFilterInput filter = GetFilter();
             IOperationResult<IGetEntriesResult> entries = await _workshopClient.GetEntries.ExecuteAsync(filter, EntriesPerPage * (Page - 1), EntriesPerPage, cancellationToken);
             entries.EnsureNoErrors();
-            
+
             if (entries.Data?.Entries?.Items != null)
             {
-                Entries = entries.Data.Entries.Items.Select(n => new EntryListViewModel(n, _router)).ToList();
+                Entries = entries.Data.Entries.Items.Select(n => _getEntryListViewModel(n)).ToList();
                 TotalPages = (int) Math.Ceiling(entries.Data.Entries.TotalCount / (double) EntriesPerPage);
             }
             else
