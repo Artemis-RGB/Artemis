@@ -11,6 +11,7 @@ using Artemis.WebClient.Workshop.Repositories;
 using DynamicData;
 using IdentityModel;
 using IdentityModel.Client;
+using Serilog;
 
 namespace Artemis.WebClient.Workshop.Services;
 
@@ -22,14 +23,16 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
     private readonly SourceList<Claim> _claims;
 
     private readonly IDiscoveryCache _discoveryCache;
+    private readonly ILogger _logger;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly BehaviorSubject<bool> _isLoggedInSubject = new(false);
 
     private AuthenticationToken? _token;
     private bool _noStoredRefreshToken;
 
-    public AuthenticationService(IHttpClientFactory httpClientFactory, IDiscoveryCache discoveryCache, IAuthenticationRepository authenticationRepository)
+    public AuthenticationService(ILogger logger, IHttpClientFactory httpClientFactory, IDiscoveryCache discoveryCache, IAuthenticationRepository authenticationRepository)
     {
+        _logger = logger;
         _httpClientFactory = httpClientFactory;
         _discoveryCache = discoveryCache;
         _authenticationRepository = authenticationRepository;
@@ -69,28 +72,37 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
 
     private async Task<bool> UseRefreshToken(string refreshToken)
     {
-        DiscoveryDocumentResponse disco = await GetDiscovery();
-        HttpClient client = _httpClientFactory.CreateClient();
-        TokenResponse response = await client.RequestRefreshTokenAsync(new RefreshTokenRequest
+        try
         {
-            Address = disco.TokenEndpoint,
-            ClientId = CLIENT_ID,
-            RefreshToken = refreshToken
-        });
-
-        if (response.IsError)
-        {
-            if (response.Error is OidcConstants.TokenErrors.ExpiredToken or OidcConstants.TokenErrors.InvalidGrant)
+            DiscoveryDocumentResponse disco = await GetDiscovery();
+            HttpClient client = _httpClientFactory.CreateClient();
+            TokenResponse response = await client.RequestRefreshTokenAsync(new RefreshTokenRequest
             {
-                SetStoredRefreshToken(null);
-                return false;
+                Address = disco.TokenEndpoint,
+                ClientId = CLIENT_ID,
+                RefreshToken = refreshToken
+            });
+
+            if (response.IsError)
+            {
+                if (response.Error is OidcConstants.TokenErrors.ExpiredToken or OidcConstants.TokenErrors.InvalidGrant)
+                {
+                    SetStoredRefreshToken(null);
+                    return false;
+                }
+
+                throw new ArtemisWebClientException("Failed to request refresh token: " + response.Error);
             }
 
-            throw new ArtemisWebClientException("Failed to request refresh token: " + response.Error);
+            SetCurrentUser(response);
+            return true;
         }
-
-        SetCurrentUser(response);
-        return true;
+        catch (Exception e)
+        {
+            _logger.Error(e, "Failed to use refresh token");
+            SetStoredRefreshToken(null);
+            return false;
+        }
     }
 
     private static byte[] HashSha256(string inputString)
@@ -133,6 +145,11 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
                 return null;
 
             return _token.AccessToken;
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Failed to retrieve bearer token");
+            return null;
         }
         finally
         {

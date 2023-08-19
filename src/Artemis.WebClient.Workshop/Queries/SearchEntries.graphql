@@ -4,6 +4,7 @@ query SearchEntries($input: String! $type: EntryType) {
         name
         summary
         entryType
+        author
         categories {
             id
             name

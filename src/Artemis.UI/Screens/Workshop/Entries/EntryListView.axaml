@@ -14,7 +14,8 @@
             CornerRadius="8"
             HorizontalAlignment="Stretch"
             HorizontalContentAlignment="Stretch" 
-            Command="{CompiledBinding NavigateToEntry}">
+            Command="{CompiledBinding NavigateToEntry}"
+            IsVisible="{CompiledBinding Entry, Converter={x:Static ObjectConverters.IsNotNull}}">
         <Grid ColumnDefinitions="Auto,*,Auto">
             <!-- Icon -->
             <Border Grid.Column="0"
@@ -25,7 +26,10 @@
                     Width="80"
                     Height="80"
                     ClipToBounds="True">
-                <Image Source="{CompiledBinding EntryIcon^}" Stretch="UniformToFill"/>
+                <Image Source="{CompiledBinding EntryIcon}" 
+                       Stretch="UniformToFill" 
+                       Classes="fade-in"
+                       Classes.faded-in="{CompiledBinding EntryIcon, Converter={x:Static ObjectConverters.IsNotNull}}" />
             </Border>
             
             <!-- Body -->

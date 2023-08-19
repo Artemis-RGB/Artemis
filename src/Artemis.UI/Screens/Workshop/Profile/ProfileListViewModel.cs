@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -13,7 +14,9 @@ using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.WebClient.Workshop;
+using Avalonia.Threading;
 using DryIoc.ImTools;
+using DynamicData;
 using ReactiveUI;
 using StrawberryShake;
 
@@ -26,7 +29,7 @@ public class ProfileListViewModel : RoutableScreen<ActivatableViewModelBase, Wor
     private readonly IWorkshopClient _workshopClient;
     private readonly ObservableAsPropertyHelper<bool> _showPagination;
     private readonly ObservableAsPropertyHelper<bool> _isLoading;
-    private List<EntryListViewModel>? _entries;
+    private SourceList<IGetEntries_Entries_Items> _entries = new();
     private int _page;
     private int _loadedPage = -1;
     private int _totalPages = 1;
@@ -45,9 +48,17 @@ public class ProfileListViewModel : RoutableScreen<ActivatableViewModelBase, Wor
         _isLoading = this.WhenAnyValue(vm => vm.Page, vm => vm.LoadedPage, (p, c) => p != c).ToProperty(this, vm => vm.IsLoading);
 
         CategoriesViewModel = categoriesViewModel;
-
+        
+        _entries.Connect()
+            .ObserveOn(new AvaloniaSynchronizationContext(DispatcherPriority.SystemIdle))
+            .Transform(getEntryListViewModel)
+            .Bind(out ReadOnlyObservableCollection<EntryListViewModel> entries)
+            .Subscribe();
+        Entries = entries;
+        
         // Respond to page changes
         this.WhenAnyValue(vm => vm.Page).Skip(1).Subscribe(p => Task.Run(() => router.Navigate($"workshop/profiles/{p}")));
+        
         // Respond to filter changes
         this.WhenActivated(d => CategoriesViewModel.WhenAnyValue(vm => vm.CategoryFilters).Skip(1).Subscribe(_ =>
         {
@@ -65,11 +76,7 @@ public class ProfileListViewModel : RoutableScreen<ActivatableViewModelBase, Wor
 
     public CategoriesViewModel CategoriesViewModel { get; }
 
-    public List<EntryListViewModel>? Entries
-    {
-        get => _entries;
-        set => RaiseAndSetIfChanged(ref _entries, value);
-    }
+    public ReadOnlyObservableCollection<EntryListViewModel> Entries { get; }
 
     public int Page
     {
@@ -99,8 +106,11 @@ public class ProfileListViewModel : RoutableScreen<ActivatableViewModelBase, Wor
     {
         Page = Math.Max(1, parameters.Page);
 
-        // Throttle page changes
-        await Task.Delay(200, cancellationToken);
+        // Throttle page changes, wait longer for the first one to keep UI smooth
+        // if (Entries == null)
+            // await Task.Delay(400, cancellationToken);
+        // else
+            await Task.Delay(200, cancellationToken);
 
         if (!cancellationToken.IsCancellationRequested)
             await Query(cancellationToken);
@@ -116,8 +126,12 @@ public class ProfileListViewModel : RoutableScreen<ActivatableViewModelBase, Wor
 
             if (entries.Data?.Entries?.Items != null)
             {
-                Entries = entries.Data.Entries.Items.Select(n => _getEntryListViewModel(n)).ToList();
                 TotalPages = (int) Math.Ceiling(entries.Data.Entries.TotalCount / (double) EntriesPerPage);
+                _entries.Edit(e =>
+                {
+                    e.Clear();
+                    e.AddRange(entries.Data.Entries.Items);
+                });
             }
             else
                 TotalPages = 1;

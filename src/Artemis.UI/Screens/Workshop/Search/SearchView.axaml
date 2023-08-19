@@ -11,47 +11,31 @@
     <UserControl.Styles>
         <StyleInclude Source="SearchViewStyles.axaml" />
     </UserControl.Styles>
-    <Panel>
+    <Panel Margin="0 5">
         <AutoCompleteBox Name="SearchBox"
                          MaxWidth="500"
                          Watermark="Search"
-                         Margin="0 5"
-                         ValueMemberBinding="{CompiledBinding Name, DataType=workshop:ISearchEntries_SearchEntries}"
+                         MinimumPopulateDelay="0:0:0.8"
+                         ValueMemberBinding="{CompiledBinding Entry.Name, DataType=search:SearchResultViewModel}"
                          AsyncPopulator="{CompiledBinding SearchAsync}"
                          SelectedItem="{CompiledBinding SelectedEntry}"
                          FilterMode="None"
                          windowing:AppWindow.AllowInteractionInTitleBar="True">
             <AutoCompleteBox.ItemTemplate>
-                <DataTemplate x:DataType="workshop:ISearchEntries_SearchEntries">
-                    <Panel>
-                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
-                            <TextBlock Text="{CompiledBinding Name}" />
-                            <TextBlock Text="{CompiledBinding Summary}" Foreground="{DynamicResource TextFillColorSecondary}" />
-
-                            <ItemsControl ItemsSource="{CompiledBinding Categories}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" Spacing="5"></StackPanel>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Classes="category">
-                                            <TextBlock Text="{CompiledBinding Name}"></TextBlock>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
-                    </Panel>
+                <DataTemplate>
+                    <ContentControl Content="{Binding}" Margin="-5 0 0 0"></ContentControl>
                 </DataTemplate>
             </AutoCompleteBox.ItemTemplate>
         </AutoCompleteBox>
-        <ContentControl HorizontalAlignment="Right" 
+        <ContentControl HorizontalAlignment="Right"
                         Width="28"
                         Height="28"
                         Margin="0 0 50 0"
                         Content="{CompiledBinding CurrentUserViewModel}"
-                        windowing:AppWindow.AllowInteractionInTitleBar="True"/>
+                        windowing:AppWindow.AllowInteractionInTitleBar="True" />
+
+        <Border VerticalAlignment="Top" CornerRadius="4 4 0 0" ClipToBounds="True" MaxWidth="500">
+            <ProgressBar IsIndeterminate="True" VerticalAlignment="Top" IsVisible="{CompiledBinding IsLoading}"></ProgressBar>
+        </Border>
     </Panel>
 </UserControl>

@@ -1,0 +1,60 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:search="clr-namespace:Artemis.UI.Screens.Workshop.Search"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="80"
+             x:Class="Artemis.UI.Screens.Workshop.Search.SearchResultView"
+             x:DataType="search:SearchResultViewModel">
+    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0 5">
+        <!-- Icon -->
+        <Border Grid.Column="0"
+                CornerRadius="6"
+                Background="{StaticResource ControlStrokeColorOnAccentDefault}"
+                VerticalAlignment="Center"
+                Margin="0 0 10 0"
+                Width="50"
+                Height="50"
+                ClipToBounds="True">
+            <Image Source="{CompiledBinding EntryIcon}"
+                   Stretch="UniformToFill"
+                   Classes="fade-in"
+                   Classes.faded-in="{CompiledBinding EntryIcon, Converter={x:Static ObjectConverters.IsNotNull}}" />
+        </Border>
+
+        <!-- Body -->
+        <Grid Grid.Column="1" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
+            <TextBlock Grid.Row="0" TextTrimming="CharacterEllipsis">
+                <Run  Text="{CompiledBinding Entry.Name, FallbackValue=Title}" />
+                <Run Classes="subtitle" FontSize="12">by</Run>
+                <Run Classes="subtitle" FontSize="12" Text="{CompiledBinding Entry.Author, FallbackValue=Author}" />
+            </TextBlock>
+            <TextBlock Grid.Row="1"
+                       Classes="subtitle"
+                       TextWrapping="Wrap"
+                       TextTrimming="CharacterEllipsis"
+                       FontSize="13"
+                       Text="{CompiledBinding Entry.Summary, FallbackValue=Summary}">
+            </TextBlock>
+
+            <ItemsControl Grid.Row="2" ItemsSource="{CompiledBinding Entry.Categories}" Margin="0 5">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="5"></StackPanel>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Classes="badge">
+                            <TextBlock Text="{CompiledBinding Name}"></TextBlock>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+
+        <Border Grid.Column="2" Classes="badge" VerticalAlignment="Top" Margin="0 5 0 0">
+            <TextBlock Text="{CompiledBinding Entry.EntryType}"></TextBlock>
+        </Border>
+    </Grid>
+</UserControl>

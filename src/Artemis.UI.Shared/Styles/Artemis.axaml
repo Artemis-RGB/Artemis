@@ -32,6 +32,7 @@
     <!-- Custom styles -->
     <StyleInclude Source="/Styles/Border.axaml" />
     <StyleInclude Source="/Styles/BrokenState.axaml" />
+    <StyleInclude Source="/Styles/Control.axaml" />
     <StyleInclude Source="/Styles/Skeleton.axaml" />
     <StyleInclude Source="/Styles/Button.axaml" />
     <StyleInclude Source="/Styles/Condensed.axaml" />
