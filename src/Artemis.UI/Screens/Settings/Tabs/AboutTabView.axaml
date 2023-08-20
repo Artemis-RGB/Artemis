@@ -35,11 +35,11 @@
                     </controls:HyperlinkButton>
                 </StackPanel>
 
-                <TextBlock Grid.Row="1"
-                           Grid.Column="1"
-                           VerticalAlignment="Top"
-                           Classes="subtitle"
-                           Text="{CompiledBinding Version}" />
+                <SelectableTextBlock Grid.Row="1"
+                                     Grid.Column="1"
+                                     VerticalAlignment="Top"
+                                     Classes="subtitle"
+                                     Text="{CompiledBinding Version}" />
 
                 <controls:HyperlinkButton Grid.Row="1"
                                           Grid.Column="2"

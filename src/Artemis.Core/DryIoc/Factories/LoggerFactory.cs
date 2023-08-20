@@ -13,7 +13,10 @@ internal class LoggerFactory : ILoggerFactory
     internal static readonly ILogger Logger = new LoggerConfiguration()
         .Enrich.FromLogContext()
         .WriteTo.File(Path.Combine(Constants.LogsFolder, "Artemis log-.log"),
+            fileSizeLimitBytes: 5 * 1024 * 1024,
+            rollOnFileSizeLimit: true,
             rollingInterval: RollingInterval.Day,
+            retainedFileCountLimit: 14,
             outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}")
         .WriteTo.Console()
 #if DEBUG

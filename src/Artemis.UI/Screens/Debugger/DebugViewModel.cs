@@ -5,6 +5,7 @@ using Artemis.UI.Screens.Debugger.DataModel;
 using Artemis.UI.Screens.Debugger.Logs;
 using Artemis.UI.Screens.Debugger.Performance;
 using Artemis.UI.Screens.Debugger.Render;
+using Artemis.UI.Screens.Debugger.Routing;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using ReactiveUI;
@@ -15,9 +16,9 @@ public class DebugViewModel : ActivatableViewModelBase, IScreen
 {
     private ViewModelBase _selectedItem;
 
-    public DebugViewModel(IDebugService debugService, RenderDebugViewModel render, DataModelDebugViewModel dataModel, PerformanceDebugViewModel performance, LogsDebugViewModel logs)
+    public DebugViewModel(IDebugService debugService, RenderDebugViewModel render, DataModelDebugViewModel dataModel, PerformanceDebugViewModel performance, RoutingDebugViewModel routing, LogsDebugViewModel logs)
     {
-        Items = new ObservableCollection<ViewModelBase> {render, dataModel, performance, logs};
+        Items = new ObservableCollection<ViewModelBase> {render, dataModel, performance, routing, logs};
         _selectedItem = render;
 
         this.WhenActivated(d => Disposable.Create(debugService.ClearDebugger).DisposeWith(d));

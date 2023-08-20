@@ -1,8 +1,8 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <AvaloniaVersion>11.0.1</AvaloniaVersion>
-        <FluentAvaloniaVersion>2.0.0</FluentAvaloniaVersion>
-        <RGBDotNetVersion>2.0.0-prerelease.94</RGBDotNetVersion>
+        <AvaloniaVersion>11.0.3</AvaloniaVersion>
+        <FluentAvaloniaVersion>2.0.1</FluentAvaloniaVersion>
+        <RGBDotNetVersion>2.0.0-prerelease.101</RGBDotNetVersion>
         <SkiaSharpVersion>2.88.3</SkiaSharpVersion>
     </PropertyGroup>
 </Project>
