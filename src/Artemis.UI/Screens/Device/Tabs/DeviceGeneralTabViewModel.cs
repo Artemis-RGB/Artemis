@@ -66,13 +66,11 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
 
         this.WhenActivated(d =>
         {
-            Device.PropertyChanged += DeviceOnPropertyChanged;
             _coreService.FrameRendering += OnFrameRendering;
 
             Disposable.Create(() =>
             {
                 _coreService.FrameRendering -= OnFrameRendering;
-                Device.PropertyChanged -= DeviceOnPropertyChanged;
                 Apply();
             }).DisposeWith(d);
         });
@@ -243,11 +241,5 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
 
         using SKPaint overlayPaint = new() { Color = CurrentColor };
         e.Canvas.DrawRect(0, 0, e.Canvas.LocalClipBounds.Width, e.Canvas.LocalClipBounds.Height, overlayPaint);
-    }
-
-    private void DeviceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(Device.CustomLayoutPath) || e.PropertyName == nameof(Device.DisableDefaultLayout))
-            Task.Run(() => _rgbService.ApplyBestDeviceLayout(Device));
     }
 }

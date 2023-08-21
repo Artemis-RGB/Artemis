@@ -25,8 +25,8 @@
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
         <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="$(AvaloniaVersion)" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="Avalonia.Xaml.Behaviors" Version="$(AvaloniaBehavioursVersion)" />
         <PackageReference Include="Avalonia.Skia.Lottie" Version="11.0.0" />
-        <PackageReference Include="Avalonia.Xaml.Behaviors" Version="$(AvaloniaVersion)" />
         <PackageReference Include="DryIoc.dll" Version="5.4.0" />
         <PackageReference Include="DynamicData" Version="7.13.1" />
         <PackageReference Include="FluentAvaloniaUI" Version="$(FluentAvaloniaVersion)" />

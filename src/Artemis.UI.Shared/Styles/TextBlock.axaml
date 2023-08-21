@@ -1,4 +1,4 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <Border Padding="20">
@@ -101,5 +101,9 @@
     </Style>
     <Style Selector="Run.info">
         <Setter Property="Foreground" Value="{DynamicResource AccentButtonBackground}"></Setter>
+    </Style>
+    
+    <Style Selector="SelectableTextBlock">
+        <Setter Property="SelectionBrush" Value="{DynamicResource TextControlSelectionHighlightColor}" />
     </Style>
 </Styles>
