@@ -24,7 +24,7 @@
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
-        <PackageReference Include="Avalonia.Xaml.Behaviors" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="Avalonia.Xaml.Behaviors" Version="$(AvaloniaBehavioursVersion)" />
         <PackageReference Include="DryIoc.dll" Version="5.4.0" />
         <PackageReference Include="DynamicData" Version="7.13.1" />
         <PackageReference Include="FluentAvaloniaUI" Version="$(FluentAvaloniaVersion)" />

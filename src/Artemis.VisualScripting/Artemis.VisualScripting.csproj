@@ -11,7 +11,7 @@
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
-        <PackageReference Include="Avalonia.Xaml.Behaviors" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="Avalonia.Xaml.Behaviors" Version="$(AvaloniaBehavioursVersion)" />
         <PackageReference Include="DryIoc.dll" Version="5.4.0" />
         <PackageReference Include="NoStringEvaluating" Version="2.5.2" />
         <PackageReference Include="ReactiveUI" Version="18.4.26" />

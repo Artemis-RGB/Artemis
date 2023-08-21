@@ -12,18 +12,9 @@ namespace Artemis.Core.DeviceProviders;
 public abstract class DeviceProvider : PluginFeature
 {
     /// <summary>
-    ///     Creates a new instance of the <see cref="DeviceProvider" /> class
-    /// </summary>
-    /// <param name="rgbDeviceProvider"></param>
-    protected DeviceProvider(IRGBDeviceProvider rgbDeviceProvider)
-    {
-        RgbDeviceProvider = rgbDeviceProvider ?? throw new ArgumentNullException(nameof(rgbDeviceProvider));
-    }
-
-    /// <summary>
     ///     The RGB.NET device provider backing this Artemis device provider
     /// </summary>
-    public IRGBDeviceProvider RgbDeviceProvider { get; }
+    public abstract IRGBDeviceProvider RgbDeviceProvider { get; }
     
     /// <summary>
     ///     A boolean indicating whether this device provider detects the physical layout of connected keyboards.
