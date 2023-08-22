@@ -40,7 +40,6 @@ public class SpecificationsStepViewModel : SubmissionViewModel
         GoBack = ReactiveCommand.Create(ExecuteGoBack);
         Continue = ReactiveCommand.Create(ExecuteContinue, ValidationContext.Valid);
         SelectIcon = ReactiveCommand.CreateFromTask(ExecuteSelectIcon);
-        ClearIcon = ReactiveCommand.Create(ExecuteClearIcon);
 
         this.WhenActivated(d =>
         {
@@ -53,14 +52,13 @@ public class SpecificationsStepViewModel : SubmissionViewModel
             ApplyFromState();
 
             this.ClearValidationRules();
-            Disposable.Create(ExecuteClearIcon).DisposeWith(d);
+            Disposable.Create(ClearIcon).DisposeWith(d);
         });
     }
 
     public override ReactiveCommand<Unit, Unit> Continue { get; }
     public override ReactiveCommand<Unit, Unit> GoBack { get; }
     public ReactiveCommand<Unit, Unit> SelectIcon { get; }
-    public ReactiveCommand<Unit, Unit> ClearIcon { get; }
 
     public ObservableCollection<CategoryViewModel> Categories { get; } = new();
     public ObservableCollection<string> Tags { get; } = new();
@@ -141,7 +139,7 @@ public class SpecificationsStepViewModel : SubmissionViewModel
         IconBitmap = BitmapExtensions.LoadAndResize(result[0], 128);
     }
 
-    private void ExecuteClearIcon()
+    private void ClearIcon()
     {
         IconBitmap?.Dispose();
         IconBitmap = null;

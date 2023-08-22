@@ -3,18 +3,54 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:profile="clr-namespace:Artemis.UI.Screens.Workshop.Profile"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Profile.ProfileDetailsView"
              x:DataType="profile:ProfileDetailsViewModel">
     <Border Classes="router-container">
         <Grid ColumnDefinitions="300,*" RowDefinitions="Auto,*" Margin="10">
-            <StackPanel Grid.Row="0" Grid.ColumnSpan="2" >
-                <TextBlock Text="{CompiledBinding Entry.Name, FallbackValue=Profile}" Classes="h3 no-margin"/>
-                <TextBlock Text="{CompiledBinding Entry.Author, FallbackValue=Author}" Classes="subtitle" Margin="0 0 0 5"/>
-            </StackPanel>
-        
-            <Border Classes="card-condensed" Grid.Row="1" Grid.Column="0" Margin="0 0 10 0">
-                <TextBlock>Side panel</TextBlock>
+            <Border Classes="card" Grid.Row="1" Grid.Column="0" Margin="0 0 10 0">
+                <StackPanel>
+                    <Border CornerRadius="12"
+                            Background="{StaticResource ControlStrokeColorOnAccentDefault}"
+                            HorizontalAlignment="Left"
+                            Margin="0 0 10 0"
+                            Width="80"
+                            Height="80"
+                            ClipToBounds="True">
+                        <Image Source="{CompiledBinding EntryIcon}"
+                               Stretch="UniformToFill"
+                               Classes="fade-in"
+                               Classes.faded-in="{CompiledBinding EntryIcon, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                    </Border>
+
+                    <TextBlock Theme="{StaticResource TitleTextBlockStyle}" 
+                               MaxLines="3"
+                               TextTrimming="CharacterEllipsis" 
+                               Text="{CompiledBinding Entry.Name, FallbackValue=Title }"/>
+
+                    <TextBlock Classes="subtitle" TextTrimming="CharacterEllipsis" Text="{CompiledBinding Entry.Author, FallbackValue=Author}"/>
+                    
+
+
+                    <TextBlock Margin="0 8" TextWrapping="Wrap" Text="{CompiledBinding Entry.Summary, FallbackValue=Summary}" />
+
+                    <ItemsControl ItemsSource="{CompiledBinding Entry.Categories}" Margin="0 0 -8 0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"></WrapPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="0 0 8 0">
+                                    <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Margin="0 0 3 0"></avalonia:MaterialIcon>
+                                    <TextBlock Text="{CompiledBinding Name}" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
             </Border>
 
             <Border Classes="card-condensed" Grid.Row="1" Grid.Column="1">

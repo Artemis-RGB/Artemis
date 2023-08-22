@@ -1,7 +1,16 @@
 query GetEntryById($id: UUID!) {
     entry(id: $id) {
+        id
         author
         name
+        summary
         entryType
+        downloads
+        createdAt
+        description
+        categories {
+            name
+            icon
+        }
     }
 }

@@ -7,7 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="970" d:DesignHeight="625"
              x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.ValidateEmailStepView"
              x:DataType="steps:ValidateEmailStepViewModel">
-    <StackPanel >
+    <StackPanel Margin="0 50 0 0">
         <StackPanel.Styles>
             <Styles>
                 <Style Selector="TextBlock">
