@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Timers;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Windows.Utilities;
+using HidSharp;
 using Linearstar.Windows.RawInput;
 using Linearstar.Windows.RawInput.Native;
 using Serilog;
@@ -22,6 +24,7 @@ public class WindowsInputProvider : InputProvider
     private readonly IInputService _inputService;
     private readonly ILogger _logger;
     private readonly Timer _taskManagerTimer;
+    private readonly Dictionary<RawInputDeviceHandle, string> _handleToDevicePath;
 
     private int _lastProcessId;
     delegate nint WndProc(nint hWnd, uint msg, nint wParam, nint lParam);
@@ -40,6 +43,7 @@ public class WindowsInputProvider : InputProvider
         _taskManagerTimer = new Timer(500);
         _taskManagerTimer.Elapsed += TaskManagerTimerOnElapsed;
         _taskManagerTimer.Start();
+        _handleToDevicePath = new Dictionary<RawInputDeviceHandle, string>();
 
         _hWnd = User32.CreateWindowEx(0, "STATIC", "", 0x80000000, 0, 0, 0, 0, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
         _hWndProcHook = User32.GetWindowLongPtr(_hWnd, GWL_WNDPROC);
@@ -106,6 +110,20 @@ public class WindowsInputProvider : InputProvider
         if (active?.ProcessName == "Taskmgr" || active?.ProcessName == "Idle")
             _inputService.ReleaseAll();
     }
+    
+    private string? GetDeviceIdentifier(in RawInputData data)
+    {
+        if (_handleToDevicePath.TryGetValue(data.Header.DeviceHandle, out string? identifier))
+            return identifier;
+        
+        string? newIdentifier = data.Device?.DevicePath;
+        if (newIdentifier == null)
+            return null;
+        
+        _handleToDevicePath.Add(data.Header.DeviceHandle, newIdentifier);
+        
+        return newIdentifier;
+    }
 
     #region Keyboard
 
@@ -126,7 +144,7 @@ public class WindowsInputProvider : InputProvider
         if (key == KeyboardKey.None)
             return;
 
-        string? identifier = data.Device?.DevicePath;
+        string? identifier = GetDeviceIdentifier(in data);
 
         // Let the core know there is an identifier so it can store new identifications if applicable
         if (identifier != null)
@@ -164,7 +182,7 @@ public class WindowsInputProvider : InputProvider
 
     private int _previousMouseX;
     private int _previousMouseY;
-
+    
     private void HandleMouseData(RawInputData data, RawInputMouseData mouseData)
     {
         // Only submit mouse movement 25 times per second but increment the delta
@@ -176,7 +194,7 @@ public class WindowsInputProvider : InputProvider
         }
 
         ArtemisDevice? device = null;
-        string? identifier = data.Device?.DevicePath;
+        string? identifier = GetDeviceIdentifier(in data);
         if (identifier != null)
             try
             {
