@@ -19,16 +19,14 @@ public class SearchViewModel : ViewModelBase
     private readonly ILogger _logger;
     private readonly IRouter _router;
     private readonly IWorkshopClient _workshopClient;
-    private readonly IWorkshopService _workshopService;
     private EntryType? _entryType;
     private bool _isLoading;
     private SearchResultViewModel? _selectedEntry;
 
-    public SearchViewModel(ILogger logger, IWorkshopClient workshopClient, IWorkshopService workshopService, IRouter router, CurrentUserViewModel currentUserViewModel)
+    public SearchViewModel(ILogger logger, IWorkshopClient workshopClient, IRouter router, CurrentUserViewModel currentUserViewModel)
     {
         _logger = logger;
         _workshopClient = workshopClient;
-        _workshopService = workshopService;
         _router = router;
         CurrentUserViewModel = currentUserViewModel;
         SearchAsync = ExecuteSearchAsync;
@@ -79,7 +77,7 @@ public class SearchViewModel : ViewModelBase
 
             IsLoading = true;
             IOperationResult<ISearchEntriesResult> results = await _workshopClient.SearchEntries.ExecuteAsync(input, EntryType, cancellationToken);
-            return results.Data?.SearchEntries.Select(e => new SearchResultViewModel(e, _workshopService) as object) ?? new List<object>();
+            return results.Data?.SearchEntries.Select(e => new SearchResultViewModel(e) as object) ?? new List<object>();
         }
         catch (Exception e)
         {

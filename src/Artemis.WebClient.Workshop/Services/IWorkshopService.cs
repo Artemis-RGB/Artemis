@@ -23,40 +23,6 @@ public class WorkshopService : IWorkshopService
         });
     }
 
-    /// <inheritdoc />
-    public async Task<Bitmap?> GetEntryIcon(Guid entryId, CancellationToken cancellationToken)
-    {
-        await _iconCacheLock.WaitAsync(cancellationToken);
-        try
-        {
-            if (_entryIconCache.TryGetValue(entryId, out Stream? cachedBitmap))
-            {
-                cachedBitmap.Seek(0, SeekOrigin.Begin);
-                return new Bitmap(cachedBitmap);
-            }
-        }
-        finally
-        {
-            _iconCacheLock.Release();
-        }
-
-        HttpClient client = _httpClientFactory.CreateClient(WorkshopConstants.WORKSHOP_CLIENT_NAME);
-        try
-        {
-            HttpResponseMessage response = await client.GetAsync($"entries/{entryId}/icon", cancellationToken);
-            response.EnsureSuccessStatusCode();
-            Stream data = await response.Content.ReadAsStreamAsync(cancellationToken);
-
-            _entryIconCache[entryId] = data;
-            return new Bitmap(data);
-        }
-        catch (HttpRequestException)
-        {
-            // ignored
-            return null;
-        }
-    }
-
     public async Task<ImageUploadResult> SetEntryIcon(Guid entryId, Progress<StreamProgress> progress, Stream icon, CancellationToken cancellationToken)
     {
         icon.Seek(0, SeekOrigin.Begin);
@@ -96,6 +62,5 @@ public class WorkshopService : IWorkshopService
 
 public interface IWorkshopService
 {
-    Task<Bitmap?> GetEntryIcon(Guid entryId, CancellationToken cancellationToken);
     Task<ImageUploadResult> SetEntryIcon(Guid entryId, Progress<StreamProgress> progress, Stream icon, CancellationToken cancellationToken);
 }

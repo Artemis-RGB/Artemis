@@ -3,17 +3,21 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             xmlns:entries="clr-namespace:Artemis.UI.Screens.Workshop.Profile"
              xmlns:entries1="clr-namespace:Artemis.UI.Screens.Workshop.Entries"
+             xmlns:il="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="110"
              x:Class="Artemis.UI.Screens.Workshop.Entries.EntryListView"
              x:DataType="entries1:EntryListViewModel">
-    <Button MinHeight="110" 
-            MaxHeight="140" 
+    <UserControl.Resources>
+        <converters:EntryIconUriConverter x:Key="EntryIconUriConverter" />
+    </UserControl.Resources>
+    <Button MinHeight="110"
+            MaxHeight="140"
             Padding="16"
             CornerRadius="8"
             HorizontalAlignment="Stretch"
-            HorizontalContentAlignment="Stretch" 
+            HorizontalContentAlignment="Stretch"
             Command="{CompiledBinding NavigateToEntry}"
             IsVisible="{CompiledBinding Entry, Converter={x:Static ObjectConverters.IsNotNull}}">
         <Grid ColumnDefinitions="Auto,*,Auto">
@@ -26,24 +30,22 @@
                     Width="80"
                     Height="80"
                     ClipToBounds="True">
-                <Image Source="{CompiledBinding EntryIcon}" 
-                       Stretch="UniformToFill" 
-                       Classes="fade-in"
-                       Classes.faded-in="{CompiledBinding EntryIcon, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                <Image Stretch="UniformToFill" il:ImageLoader.Source="{CompiledBinding Entry.Id, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
             </Border>
-            
+
             <!-- Body -->
             <Grid Grid.Column="1" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
-                <TextBlock Grid.Row="0" Margin="0 0 0 5" TextTrimming="CharacterEllipsis" >
+                <TextBlock Grid.Row="0" Margin="0 0 0 5" TextTrimming="CharacterEllipsis">
                     <Run Classes="h5" Text="{CompiledBinding Entry.Name, FallbackValue=Title}" />
                     <Run Classes="subtitle">by</Run>
                     <Run Classes="subtitle" Text="{CompiledBinding Entry.Author, FallbackValue=Author}" />
                 </TextBlock>
-                <TextBlock Grid.Row="1" 
-                           Classes="subtitle" 
+                <TextBlock Grid.Row="1"
+                           Classes="subtitle"
                            TextWrapping="Wrap"
-                           TextTrimming="CharacterEllipsis" 
-                           Text="{CompiledBinding Entry.Summary, FallbackValue=Summary}"></TextBlock>
+                           TextTrimming="CharacterEllipsis"
+                           Text="{CompiledBinding Entry.Summary, FallbackValue=Summary}">
+                </TextBlock>
 
                 <ItemsControl Grid.Row="2" ItemsSource="{CompiledBinding Entry.Categories}">
                     <ItemsControl.ItemsPanel>
@@ -61,7 +63,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </Grid>
-            
+
             <!-- Info -->
             <StackPanel Grid.Column="2">
                 <TextBlock TextAlignment="Right" Text="{CompiledBinding Entry.CreatedAt, StringFormat={}{0:g}, FallbackValue=01-01-1337}" />

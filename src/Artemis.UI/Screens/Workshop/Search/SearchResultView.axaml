@@ -3,9 +3,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:search="clr-namespace:Artemis.UI.Screens.Workshop.Search"
+             xmlns:il="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="80"
              x:Class="Artemis.UI.Screens.Workshop.Search.SearchResultView"
              x:DataType="search:SearchResultViewModel">
+    <UserControl.Resources>
+        <converters:EntryIconUriConverter x:Key="EntryIconUriConverter" />
+    </UserControl.Resources>
     <Grid ColumnDefinitions="Auto,*,Auto" Margin="0 5">
         <!-- Icon -->
         <Border Grid.Column="0"
@@ -16,16 +21,13 @@
                 Width="50"
                 Height="50"
                 ClipToBounds="True">
-            <Image Source="{CompiledBinding EntryIcon}"
-                   Stretch="UniformToFill"
-                   Classes="fade-in"
-                   Classes.faded-in="{CompiledBinding EntryIcon, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            <Image Stretch="UniformToFill" il:ImageLoader.Source="{CompiledBinding Entry.Id, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
         </Border>
 
         <!-- Body -->
         <Grid Grid.Column="1" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
             <TextBlock Grid.Row="0" TextTrimming="CharacterEllipsis">
-                <Run  Text="{CompiledBinding Entry.Name, FallbackValue=Title}" />
+                <Run Text="{CompiledBinding Entry.Name, FallbackValue=Title}" />
                 <Run Classes="subtitle" FontSize="12">by</Run>
                 <Run Classes="subtitle" FontSize="12" Text="{CompiledBinding Entry.Author, FallbackValue=Author}" />
             </TextBlock>

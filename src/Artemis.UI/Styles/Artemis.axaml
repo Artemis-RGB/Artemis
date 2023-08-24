@@ -8,6 +8,7 @@
     
     <!-- <FluentTheme Mode="Dark"></FluentTheme> -->
     <StyleInclude Source="avares://Artemis.UI.Shared/Styles/Artemis.axaml" />
+    <StyleInclude Source="avares://AsyncImageLoader.Avalonia/AdvancedImage.axaml" />
     
     <Styles.Resources>
         <ResourceDictionary>
