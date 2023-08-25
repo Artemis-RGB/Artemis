@@ -245,6 +245,10 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
             listener.Stop();
             listener.Close();
         }
+        catch (HttpListenerException e)
+        {
+            throw new ArtemisWebClientException($"HTTP listener for login callback failed with error code {e.ErrorCode}", e);
+        }
         finally
         {
             _authLock.Release();

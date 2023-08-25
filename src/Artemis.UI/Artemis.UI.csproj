@@ -32,7 +32,8 @@
         <PackageReference Include="DynamicData" Version="7.13.1" />
         <PackageReference Include="FluentAvaloniaUI" Version="$(FluentAvaloniaVersion)" />
         <PackageReference Include="Flurl.Http" Version="3.2.4" />
-        <PackageReference Include="Markdown.Avalonia.Tight" Version="11.0.0" />
+        <PackageReference Include="Markdown.Avalonia.Svg" Version="11.0.1" />
+        <PackageReference Include="Markdown.Avalonia.Tight" Version="11.0.1" />
         <PackageReference Include="Material.Icons.Avalonia" Version="2.0.1" />
         <PackageReference Include="Octopus.Octodiff" Version="2.0.261" />
         <PackageReference Include="ReactiveUI" Version="18.4.26" />

@@ -8,7 +8,7 @@ query GetEntries($filter: EntryFilterInput $skip: Int $take: Int) {
             summary
             entryType
             downloads
-            createdAt
+            createdAt            
             categories {
                 name
                 icon

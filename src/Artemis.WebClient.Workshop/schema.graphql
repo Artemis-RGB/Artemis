@@ -37,8 +37,10 @@ type Entry {
     downloads: Long!
     entryType: EntryType!
     icon: Image
+    iconId: UUID
     id: UUID!
     images: [Image!]!
+    latestRelease: Release
     name: String!
     releases: [Release!]!
     summary: String!
@@ -151,6 +153,7 @@ input EntryFilterInput {
     downloads: LongOperationFilterInput
     entryType: EntryTypeOperationFilterInput
     icon: ImageFilterInput
+    iconId: UuidOperationFilterInput
     id: UuidOperationFilterInput
     images: ListFilterInputTypeOfImageFilterInput
     name: StringOperationFilterInput
@@ -168,6 +171,7 @@ input EntrySortInput {
     downloads: SortEnumType
     entryType: SortEnumType
     icon: ImageSortInput
+    iconId: SortEnumType
     id: SortEnumType
     name: SortEnumType
     summary: SortEnumType

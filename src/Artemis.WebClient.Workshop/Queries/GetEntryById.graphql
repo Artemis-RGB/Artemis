@@ -12,5 +12,12 @@ query GetEntryById($id: UUID!) {
             name
             icon
         }
+        latestRelease {
+            id
+            version
+            downloadSize
+            md5Hash
+            createdAt            
+        }
     }
 }

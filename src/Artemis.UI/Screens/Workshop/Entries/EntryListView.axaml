@@ -11,6 +11,7 @@
              x:DataType="entries1:EntryListViewModel">
     <UserControl.Resources>
         <converters:EntryIconUriConverter x:Key="EntryIconUriConverter" />
+        <converters:DateTimeConverter x:Key="DateTimeConverter" />
     </UserControl.Resources>
     <Button MinHeight="110"
             MaxHeight="140"
@@ -66,7 +67,7 @@
 
             <!-- Info -->
             <StackPanel Grid.Column="2">
-                <TextBlock TextAlignment="Right" Text="{CompiledBinding Entry.CreatedAt, StringFormat={}{0:g}, FallbackValue=01-01-1337}" />
+                <TextBlock TextAlignment="Right" Text="{CompiledBinding Entry.CreatedAt, FallbackValue=01-01-1337, Converter={StaticResource DateTimeConverter}}" />
                 <TextBlock TextAlignment="Right">
                     <avalonia:MaterialIcon Kind="Downloads" />
                     <Run Classes="h5" Text="{CompiledBinding Entry.Downloads, FallbackValue=0}" />
