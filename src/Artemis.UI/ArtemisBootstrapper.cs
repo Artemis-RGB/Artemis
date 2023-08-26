@@ -16,6 +16,7 @@ using Artemis.WebClient.Workshop.DryIoc;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Logging;
 using Avalonia.Styling;
 using DryIoc;
 using ReactiveUI;
@@ -32,9 +33,9 @@ public static class ArtemisBootstrapper
     {
         if (_application != null || _container != null)
             throw new ArtemisUIException("UI already bootstrapped");
-
+         
         Utilities.PrepareFirstLaunch();
-
+        
         application.RequestedThemeVariant = ThemeVariant.Dark;
         _application = application;
         _container = new Container(rules => rules
@@ -51,6 +52,8 @@ public static class ArtemisBootstrapper
         configureServices?.Invoke(_container);
 
         _container.UseDryIocDependencyResolver();
+        
+        Logger.Sink = _container.Resolve<SerilogAvaloniaSink>();
         return _container;
     }
 
