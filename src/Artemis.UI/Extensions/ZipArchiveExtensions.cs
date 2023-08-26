@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Threading;
+using Artemis.UI.Shared.Utilities;
 
 namespace Artemis.UI.Extensions;
 
@@ -16,7 +17,7 @@ public static class ZipArchiveExtensions
     /// <param name="overwriteFiles">A boolean indicating whether to override existing files</param>
     /// <param name="progress">The progress to report to.</param>
     /// <param name="cancellationToken">A cancellation token</param>
-    public static void ExtractToDirectory(this ZipArchive source, string destinationDirectoryName, bool overwriteFiles, IProgress<float> progress, CancellationToken cancellationToken)
+    public static void ExtractToDirectory(this ZipArchive source, string destinationDirectoryName, bool overwriteFiles, IProgress<StreamProgress> progress, CancellationToken cancellationToken)
     {
         if (source == null)
             throw new ArgumentNullException(nameof(source));
@@ -28,7 +29,7 @@ public static class ZipArchiveExtensions
         {
             ZipArchiveEntry entry = source.Entries[index];
             entry.ExtractRelativeToDirectory(destinationDirectoryName, overwriteFiles);
-            progress.Report((index + 1f) / source.Entries.Count * 100f);
+            progress.Report(new StreamProgress(index + 1, source.Entries.Count));
             cancellationToken.ThrowIfCancellationRequested();
         }
     }

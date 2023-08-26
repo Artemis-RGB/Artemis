@@ -86,28 +86,35 @@
                     <StackPanel>
                         <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Latest release</TextBlock>
                         <Border Classes="card-separator" />
-                        <Button CornerRadius="8"
-                                HorizontalAlignment="Stretch"
-                                HorizontalContentAlignment="Stretch">
+                        <Button CornerRadius="8" 
+                                HorizontalAlignment="Stretch" 
+                                HorizontalContentAlignment="Stretch" 
+                                Command="{CompiledBinding DownloadLatestRelease}">
                             <Grid ColumnDefinitions="Auto,*">
                                 <!-- Icon -->
                                 <Border Grid.Column="0"
-                                        CornerRadius="8"
+                                        CornerRadius="4"
                                         Background="{StaticResource SystemAccentColor}"
                                         VerticalAlignment="Center"
                                         Margin="0 6"
-                                        Width="45"
-                                        Height="45"
+                                        Width="50"
+                                        Height="50"
                                         ClipToBounds="True">
                                     <avalonia:MaterialIcon Kind="Download"></avalonia:MaterialIcon>
                                 </Border>
 
                                 <!-- Body -->
-                                <StackPanel Grid.Column="1" Margin="10 6">
+                                <StackPanel Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
                                     <TextBlock Text="{CompiledBinding Entry.LatestRelease.Version, FallbackValue=Version}"></TextBlock>
                                     <TextBlock Classes="subtitle">
                                         <avalonia:MaterialIcon Kind="BoxOutline" />
                                         <Run Text="{CompiledBinding Entry.LatestRelease.DownloadSize, Converter={StaticResource BytesToStringConverter}, Mode=OneWay}"></Run>
+                                    </TextBlock>
+                                    <TextBlock Classes="subtitle"
+                                               ToolTip.Tip="{CompiledBinding Entry.LatestRelease.CreatedAt, Converter={StaticResource DateTimeConverter}}">
+                                        <avalonia:MaterialIcon Kind="Calendar" />
+                                        <Run>Created</Run>
+                                        <Run Text="{CompiledBinding Entry.LatestRelease.CreatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
                                     </TextBlock>
                                 </StackPanel>
                             </Grid>

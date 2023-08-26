@@ -3,12 +3,13 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.UI.Shared.Utilities;
 
-namespace Artemis.UI.Extensions
+namespace Artemis.UI.Shared.Extensions
 {
     public static class HttpClientProgressExtensions
     {
-        public static async Task DownloadDataAsync(this HttpClient client, string requestUrl, Stream destination, IProgress<float>? progress, CancellationToken cancellationToken)
+        public static async Task DownloadDataAsync(this HttpClient client, string requestUrl, Stream destination, IProgress<StreamProgress>? progress, CancellationToken cancellationToken)
         {
             using HttpResponseMessage response = await client.GetAsync(requestUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             response.EnsureSuccessStatusCode();
@@ -23,13 +24,10 @@ namespace Artemis.UI.Extensions
             }
 
             // Such progress and contentLength much reporting Wow!
-            Progress<long> progressWrapper = new(totalBytes => progress.Report(GetProgressPercentage(totalBytes, contentLength.Value)));
-            await download.CopyToAsync(destination, 81920, progressWrapper, cancellationToken);
-
-            float GetProgressPercentage(float totalBytes, float currentBytes) => (totalBytes / currentBytes) * 100f;
+            await download.CopyToAsync(destination, 81920, progress, contentLength, cancellationToken);
         }
 
-        static async Task CopyToAsync(this Stream source, Stream destination, int bufferSize, IProgress<long> progress, CancellationToken cancellationToken)
+        static async Task CopyToAsync(this Stream source, Stream destination, int bufferSize, IProgress<StreamProgress> progress, long? contentLength, CancellationToken cancellationToken)
         {
             if (bufferSize < 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
@@ -49,7 +47,7 @@ namespace Artemis.UI.Extensions
             {
                 await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
                 totalBytesRead += bytesRead;
-                progress?.Report(totalBytesRead);
+                progress?.Report(new StreamProgress(totalBytesRead, contentLength ?? totalBytesRead));
             }
         }
     }

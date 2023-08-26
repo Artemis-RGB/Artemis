@@ -286,12 +286,26 @@ internal class ProfileService : IProfileService
     }
 
     /// <inheritdoc />
-    public ProfileCategory CreateProfileCategory(string name)
+    public ProfileCategory CreateProfileCategory(string name, bool addToTop = false)
     {
         ProfileCategory profileCategory;
         lock (_profileRepository)
         {
-            profileCategory = new ProfileCategory(name, _profileCategories.Count + 1);
+            if (addToTop)
+            {
+                profileCategory = new ProfileCategory(name, 1);
+                foreach (ProfileCategory category in _profileCategories)
+                {
+                    category.Order++;
+                    category.Save();
+                    _profileCategoryRepository.Save(category.Entity);
+                }
+            }
+            else
+            {
+                profileCategory = new ProfileCategory(name, _profileCategories.Count + 1);
+            }
+
             _profileCategories.Add(profileCategory);
             SaveProfileCategory(profileCategory);
         }
@@ -370,7 +384,7 @@ internal class ProfileService : IProfileService
         profile.ProfileEntity.IsFreshImport = false;
 
         _profileRepository.Save(profile.ProfileEntity);
-        
+
         // If the provided profile is external (cloned or from the workshop?) but it is loaded locally too, reload the local instance
         // A bit dodge but it ensures local instances always represent the latest stored version
         ProfileConfiguration? localInstance = ProfileConfigurations.FirstOrDefault(p => p.Profile != null && p.Profile != profile && p.ProfileId == profile.ProfileEntity.Id);
@@ -450,7 +464,7 @@ internal class ProfileService : IProfileService
         List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>();
         profileConfiguration.LoadModules(modules);
         SaveProfileCategory(category);
-        
+
         return profileConfiguration;
     }
 

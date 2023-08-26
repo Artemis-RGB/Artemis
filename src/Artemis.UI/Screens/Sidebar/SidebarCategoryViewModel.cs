@@ -77,15 +77,15 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
             Observable.FromEventPattern<ProfileConfigurationEventArgs>(x => profileCategory.ProfileConfigurationRemoved += x, x => profileCategory.ProfileConfigurationRemoved -= x)
                 .Subscribe(e => profileConfigurations.RemoveMany(profileConfigurations.Items.Where(c => c == e.EventArgs.ProfileConfiguration)))
                 .DisposeWith(d);
+            
+            profileConfigurations.Edit(updater =>
+            {
+                updater.Clear();
+                updater.AddRange(profileCategory.ProfileConfigurations);
+            });
 
             _isCollapsed = ProfileCategory.WhenAnyValue(vm => vm.IsCollapsed).ToProperty(this, vm => vm.IsCollapsed).DisposeWith(d);
             _isSuspended = ProfileCategory.WhenAnyValue(vm => vm.IsSuspended).ToProperty(this, vm => vm.IsSuspended).DisposeWith(d);
-        });
-
-        profileConfigurations.Edit(updater =>
-        {
-            foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
-                updater.Add(profileConfiguration);
         });
     }
 

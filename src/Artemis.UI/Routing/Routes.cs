@@ -5,6 +5,7 @@ using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Settings.Updating;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
+using Artemis.UI.Screens.Workshop.Home;
 using Artemis.UI.Screens.Workshop.Layout;
 using Artemis.UI.Screens.Workshop.Profile;
 using Artemis.UI.Shared.Routing;
@@ -21,6 +22,7 @@ public static class Routes
         {
             Children = new List<IRouterRegistration>()
             {
+                new RouteRegistration<WorkshopOfflineViewModel>("offline/{message:string}"),
                 new RouteRegistration<ProfileListViewModel>("profiles/{page:int}"),
                 new RouteRegistration<ProfileDetailsViewModel>("profiles/{entryId:guid}"),
                 new RouteRegistration<LayoutListViewModel>("layouts/{page:int}"),

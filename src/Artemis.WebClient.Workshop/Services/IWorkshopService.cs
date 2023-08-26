@@ -1,4 +1,6 @@
+using System.Net;
 using System.Net.Http.Headers;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop.UploadHandlers;
@@ -11,11 +13,13 @@ public class WorkshopService : IWorkshopService
 {
     private readonly Dictionary<Guid, Stream> _entryIconCache = new();
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IRouter _router;
     private readonly SemaphoreSlim _iconCacheLock = new(1);
 
-    public WorkshopService(IHttpClientFactory httpClientFactory, IMainWindowService mainWindowService)
+    public WorkshopService(IHttpClientFactory httpClientFactory, IMainWindowService mainWindowService, IRouter router)
     {
         _httpClientFactory = httpClientFactory;
+        _router = router;
         mainWindowService.MainWindowClosed += (_, _) => Dispatcher.UIThread.InvokeAsync(async () =>
         {
             await Task.Delay(1000);
@@ -43,6 +47,31 @@ public class WorkshopService : IWorkshopService
         return ImageUploadResult.FromSuccess();
     }
 
+    /// <inheritdoc />
+    public async Task<IWorkshopService.WorkshopStatus> GetWorkshopStatus()
+    {
+        try
+        {
+            // Don't use the workshop client which adds auth headers
+            HttpClient client = _httpClientFactory.CreateClient();
+            HttpResponseMessage response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, WorkshopConstants.WORKSHOP_URL + "/status"));
+            return new IWorkshopService.WorkshopStatus(response.IsSuccessStatusCode, response.StatusCode.ToString());
+        }
+        catch (HttpRequestException e)
+        {
+            return new IWorkshopService.WorkshopStatus(false, e.Message);
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> ValidateWorkshopStatus()
+    {
+        IWorkshopService.WorkshopStatus status = await GetWorkshopStatus();
+        if (!status.IsReachable)
+            await _router.Navigate($"workshop/offline/{status.Message}");
+        return status.IsReachable;
+    }
+
     private void ClearCache()
     {
         try
@@ -63,4 +92,8 @@ public class WorkshopService : IWorkshopService
 public interface IWorkshopService
 {
     Task<ImageUploadResult> SetEntryIcon(Guid entryId, Progress<StreamProgress> progress, Stream icon, CancellationToken cancellationToken);
+    Task<WorkshopStatus> GetWorkshopStatus();
+    Task<bool> ValidateWorkshopStatus();
+
+    public record WorkshopStatus(bool IsReachable, string Message);
 }

@@ -28,8 +28,10 @@ public class UploadStepViewModel : SubmissionViewModel
     private readonly ObservableAsPropertyHelper<int> _progressPercentage;
     private readonly ObservableAsPropertyHelper<bool> _progressIndeterminate;
 
-    private bool _finished;
     private Guid? _entryId;
+    private bool _finished;
+    private bool _succeeded;
+    private bool _failed;
 
     /// <inheritdoc />
     public UploadStepViewModel(IWorkshopClient workshopClient, IWorkshopService workshopService, EntryUploadHandlerFactory entryUploadHandlerFactory, IWindowService windowService, IRouter router)
@@ -43,14 +45,14 @@ public class UploadStepViewModel : SubmissionViewModel
         ShowGoBack = false;
         ContinueText = "Finish";
         Continue = ReactiveCommand.CreateFromTask(ExecuteContinue, this.WhenAnyValue(vm => vm.Finished));
-        
+
         _progressPercentage = Observable.FromEventPattern<StreamProgress>(x => _progress.ProgressChanged += x, x => _progress.ProgressChanged -= x)
             .Select(e => e.EventArgs.ProgressPercentage)
             .ToProperty(this, vm => vm.ProgressPercentage);
         _progressIndeterminate = Observable.FromEventPattern<StreamProgress>(x => _progress.ProgressChanged += x, x => _progress.ProgressChanged -= x)
             .Select(e => e.EventArgs.ProgressPercentage == 0)
             .ToProperty(this, vm => vm.ProgressIndeterminate);
-        
+
         this.WhenActivated(d => Observable.FromAsync(ExecuteUpload).Subscribe().DisposeWith(d));
     }
 
@@ -69,6 +71,18 @@ public class UploadStepViewModel : SubmissionViewModel
         set => RaiseAndSetIfChanged(ref _finished, value);
     }
 
+    public bool Succeeded
+    {
+        get => _succeeded;
+        set => RaiseAndSetIfChanged(ref _succeeded, value);
+    }
+
+    public bool Failed
+    {
+        get => _failed;
+        set => RaiseAndSetIfChanged(ref _failed, value);
+    }
+
     public async Task ExecuteUpload(CancellationToken cancellationToken)
     {
         IOperationResult<IAddEntryResult> result = await _workshopClient.AddEntry.ExecuteAsync(new CreateEntryInput
@@ -85,12 +99,13 @@ public class UploadStepViewModel : SubmissionViewModel
         if (result.IsErrorResult() || entryId == null)
         {
             await _windowService.ShowConfirmContentDialog("Failed to create workshop entry", result.Errors.ToString() ?? "Not even an error message", "Close", null);
+            State.ChangeScreen<SubmitStepViewModel>();
             return;
         }
 
         if (cancellationToken.IsCancellationRequested)
             return;
-        
+
         // Upload image
         if (State.Icon != null)
             await _workshopService.SetEntryIcon(entryId.Value, _progress, State.Icon, cancellationToken);
@@ -113,21 +128,27 @@ public class UploadStepViewModel : SubmissionViewModel
             }
 
             _entryId = entryId;
-            Finished = true;
+            Succeeded = true;
         }
         catch (Exception e)
         {
             // Something went wrong when creating a release :c
             // We'll keep the workshop entry so that the user can make changes and try again
+            Failed = true;
+        }
+        finally
+        {
+            Finished = true;
         }
     }
 
     private async Task ExecuteContinue()
     {
+        State.Finish();
+
         if (_entryId == null)
             return;
 
-        State.Finish();
         switch (State.EntryType)
         {
             case EntryType.Layout:

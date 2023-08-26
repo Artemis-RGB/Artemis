@@ -3,10 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:steps="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps"
-             mc:Ignorable="d"  d:DesignWidth="970" d:DesignHeight="900"
+             mc:Ignorable="d" d:DesignWidth="970" d:DesignHeight="900"
              x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.UploadStepView"
              x:DataType="steps:UploadStepViewModel">
-    <StackPanel Margin="0 50 0 0" >
+    <StackPanel Margin="0 50 0 0">
         <StackPanel.Styles>
             <Styles>
                 <Style Selector="TextBlock">
@@ -15,23 +15,31 @@
                 </Style>
             </Styles>
         </StackPanel.Styles>
-        <TextBlock Theme="{StaticResource TitleTextBlockStyle}" TextAlignment="Center" TextWrapping="Wrap">
+
+        <TextBlock IsVisible="{CompiledBinding !Finished}" Theme="{StaticResource TitleTextBlockStyle}" TextAlignment="Center" TextWrapping="Wrap">
             Uploading your submission...
         </TextBlock>
-        <TextBlock TextAlignment="Center" TextWrapping="Wrap">
-            Wooo, the final step, that was pretty easy, right!?
-        </TextBlock>
-        
-        <ProgressBar Margin="0 15 0 0" 
-                     Width="380" 
-                     IsVisible="{CompiledBinding !Finished}"
-                     IsIndeterminate="{CompiledBinding ProgressIndeterminate}"
-                     Value="{CompiledBinding ProgressPercentage}"></ProgressBar>
 
-        <StackPanel IsVisible="{CompiledBinding Finished}" Margin="0 100 0 0">
-            <Lottie Path="/Assets/Animations/success.json" RepeatCount="1" Width="300" Height="300"></Lottie>
+        <ProgressBar IsVisible="{CompiledBinding !Finished}"
+                     Margin="0 15 0 0"
+                     Width="380"
+                     IsIndeterminate="{CompiledBinding ProgressIndeterminate}"
+                     Value="{CompiledBinding ProgressPercentage}">
+        </ProgressBar>
+
+        <StackPanel IsVisible="{CompiledBinding Succeeded}">
+            <Lottie Path="/Assets/Animations/success.json" RepeatCount="1" Width="250" Height="250" Margin="0 100"></Lottie>
             <TextBlock Theme="{StaticResource TitleTextBlockStyle}">All done! Hit finish to view your submission.</TextBlock>
         </StackPanel>
-        
+
+        <StackPanel IsVisible="{CompiledBinding Failed}">
+            <TextBlock FontSize="140" Margin="0 100">😢</TextBlock>
+            <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">
+                Unfortunately something went wrong while uploading your submission.
+            </TextBlock>
+            <TextBlock>Hit finish to view your submission, from there you can try to upload a new release.</TextBlock>
+            <TextBlock Margin="0 10" Classes="subtitle">If this keeps occuring, hit us up on Discord</TextBlock>
+        </StackPanel>
+
     </StackPanel>
 </UserControl>

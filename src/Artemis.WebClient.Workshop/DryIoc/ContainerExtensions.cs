@@ -1,4 +1,5 @@
 using System.Reflection;
+using Artemis.WebClient.Workshop.DownloadHandlers;
 using Artemis.WebClient.Workshop.Extensions;
 using Artemis.WebClient.Workshop.Repositories;
 using Artemis.WebClient.Workshop.Services;
@@ -48,5 +49,6 @@ public static class ContainerExtensions
         
         container.Register<EntryUploadHandlerFactory>(Reuse.Transient);
         container.RegisterMany(workshopAssembly, type => type.IsAssignableTo<IEntryUploadHandler>(), Reuse.Transient);
+        container.RegisterMany(workshopAssembly, type => type.IsAssignableTo<IEntryDownloadHandler>(), Reuse.Transient);
     }
 }

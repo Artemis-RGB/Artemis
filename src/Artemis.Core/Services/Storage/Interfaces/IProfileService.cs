@@ -76,8 +76,9 @@ public interface IProfileService : IArtemisService
     ///     Creates a new profile category and saves it to persistent storage.
     /// </summary>
     /// <param name="name">The name of the new profile category, must be unique.</param>
+    /// <param name="addToTop">A boolean indicating whether or not to add the category to the top.</param>
     /// <returns>The newly created profile category.</returns>
-    ProfileCategory CreateProfileCategory(string name);
+    ProfileCategory CreateProfileCategory(string name, bool addToTop = false);
 
     /// <summary>
     ///     Permanently deletes the provided profile category.
