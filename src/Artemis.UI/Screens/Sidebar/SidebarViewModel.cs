@@ -52,7 +52,6 @@ public class SidebarViewModel : ActivatableViewModelBase
         });
 
         AddCategory = ReactiveCommand.CreateFromTask(ExecuteAddCategory);
-        this.WhenAnyValue(vm => vm.SelectedScreen).WhereNotNull().Subscribe(NavigateToScreen);
         this.WhenAnyValue(vm => vm.SelectedScreen).WhereNotNull().Subscribe(s => SidebarScreen.ExpandIfRequired(s));
 
         SourceList<ProfileCategory> profileCategories = new();
@@ -119,7 +118,7 @@ public class SidebarViewModel : ActivatableViewModelBase
             .ShowAsync();
     }
 
-    private void NavigateToScreen(SidebarScreenViewModel sidebarScreenViewModel)
+    public void NavigateToScreen(SidebarScreenViewModel sidebarScreenViewModel)
     {
         if (_updating)
             return;
