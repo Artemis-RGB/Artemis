@@ -24,7 +24,8 @@
                   Margin="10 2"
                   ItemsSource="{CompiledBinding SidebarScreen.Screens}"
                   SelectedItem="{CompiledBinding SelectedScreen}"
-                  ItemContainerTheme="{StaticResource MenuTreeViewItem}">
+                  ItemContainerTheme="{StaticResource MenuTreeViewItem}"
+                  PointerReleased="InputElement_OnPointerReleased">
             <TreeView.Styles>
                 <Style Selector="TreeViewItem">
                     <Setter Property="IsExpanded" Value="{CompiledBinding IsExpanded, Mode=TwoWay, DataType=sidebar:SidebarScreenViewModel}" />
