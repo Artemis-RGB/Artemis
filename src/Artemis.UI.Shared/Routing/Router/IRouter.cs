@@ -59,4 +59,9 @@ public interface IRouter
     /// <typeparam name="TScreen">The type of the root screen. It must be a class.</typeparam>
     /// <typeparam name="TParam">The type of the parameters for the root screen. It must have a parameterless constructor.</typeparam>
     void SetRoot<TScreen, TParam>(RoutableScreen<TScreen, TParam> root) where TScreen : class where TParam : new();
+
+    /// <summary>
+    ///     Clears the route used by the previous window, so that it is not restored when the main window opens.
+    /// </summary>
+    void ClearPreviousWindowRoute();
 }

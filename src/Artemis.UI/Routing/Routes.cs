@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Artemis.UI.Screens.Home;
 using Artemis.UI.Screens.ProfileEditor;
+using Artemis.UI.Screens.Root;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Settings.Updating;
 using Artemis.UI.Screens.SurfaceEditor;
@@ -16,6 +17,7 @@ public static class Routes
 {
     public static List<IRouterRegistration> ArtemisRoutes = new()
     {
+        new RouteRegistration<BlankViewModel>("blank"),
         new RouteRegistration<HomeViewModel>("home"),
         #if DEBUG
         new RouteRegistration<WorkshopViewModel>("workshop")
