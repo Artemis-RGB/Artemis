@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using Artemis.Core;
 using Artemis.UI.Exceptions;
+using Artemis.UI.Screens.Root;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.ReactiveUI;
@@ -11,9 +12,13 @@ namespace Artemis.UI;
 
 public class ViewLocator : IDataTemplate
 {
-    public Control Build(object data)
+    public Control Build(object? data)
     {
+        if (data == null)
+            return new TextBlock {Text = "No data provided"};
+        
         Type dataType = data.GetType();
+        
         string name = dataType.FullName!.Split('`')[0].Replace("ViewModel", "View");
         Type? type = dataType.Assembly.GetType(name);
 
@@ -27,7 +32,7 @@ public class ViewLocator : IDataTemplate
         return new TextBlock {Text = "Not Found: " + name};
     }
 
-    public bool Match(object data)
+    public bool Match(object? data)
     {
         return data is ReactiveObject;
     }

@@ -3,27 +3,34 @@ using System.Collections.Generic;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.UI.Shared.Services.MainWindow;
 using Avalonia.Threading;
 using Serilog;
 
 namespace Artemis.UI.Shared.Routing;
 
-internal class Router : CorePropertyChanged, IRouter
+internal class Router : CorePropertyChanged, IRouter, IDisposable
 {
     private readonly Stack<string> _backStack = new();
     private readonly BehaviorSubject<string?> _currentRouteSubject;
     private readonly Stack<string> _forwardStack = new();
     private readonly Func<IRoutableScreen, RouteResolution, RouterNavigationOptions, Navigation> _getNavigation;
     private readonly ILogger _logger;
+    private readonly IMainWindowService _mainWindowService;
     private Navigation? _currentNavigation;
 
     private IRoutableScreen? _root;
+    private string? _previousWindowRoute;
 
-    public Router(ILogger logger, Func<IRoutableScreen, RouteResolution, RouterNavigationOptions, Navigation> getNavigation)
+    public Router(ILogger logger, IMainWindowService mainWindowService, Func<IRoutableScreen, RouteResolution, RouterNavigationOptions, Navigation> getNavigation)
     {
         _logger = logger;
+        _mainWindowService = mainWindowService;
         _getNavigation = getNavigation;
         _currentRouteSubject = new BehaviorSubject<string?>(null);
+
+        mainWindowService.MainWindowOpened += MainWindowServiceOnMainWindowOpened;
+        mainWindowService.MainWindowClosed += MainWindowServiceOnMainWindowClosed;
     }
 
     private RouteResolution Resolve(string path)
@@ -128,7 +135,7 @@ internal class Router : CorePropertyChanged, IRouter
         await Navigate(path, new RouterNavigationOptions {AddToHistory = false});
         if (previousPath != null)
             _forwardStack.Push(previousPath);
-        
+
         return true;
     }
 
@@ -142,7 +149,7 @@ internal class Router : CorePropertyChanged, IRouter
         await Navigate(path, new RouterNavigationOptions {AddToHistory = false});
         if (previousPath != null)
             _backStack.Push(previousPath);
-        
+
         return true;
     }
 
@@ -163,5 +170,30 @@ internal class Router : CorePropertyChanged, IRouter
     public void SetRoot<TScreen, TParam>(RoutableScreen<TScreen, TParam> root) where TScreen : class where TParam : new()
     {
         _root = root;
+    }
+
+    /// <inheritdoc />
+    public void ClearPreviousWindowRoute()
+    {
+        _previousWindowRoute = null;
+    }
+
+    public void Dispose()
+    {
+        _currentRouteSubject.Dispose();
+        _mainWindowService.MainWindowOpened -= MainWindowServiceOnMainWindowOpened;
+        _mainWindowService.MainWindowClosed -= MainWindowServiceOnMainWindowClosed;
+    }
+
+    private void MainWindowServiceOnMainWindowOpened(object? sender, EventArgs e)
+    {
+        if (_previousWindowRoute != null && _currentRouteSubject.Value == "blank")
+            Dispatcher.UIThread.InvokeAsync(async () => await Navigate(_previousWindowRoute, new RouterNavigationOptions {AddToHistory = false, EnableLogging = false}));
+    }
+
+    private void MainWindowServiceOnMainWindowClosed(object? sender, EventArgs e)
+    {
+        _previousWindowRoute = _currentRouteSubject.Value;
+        Dispatcher.UIThread.InvokeAsync(async () => await Navigate("blank", new RouterNavigationOptions {AddToHistory = false, EnableLogging = false}));
     }
 }

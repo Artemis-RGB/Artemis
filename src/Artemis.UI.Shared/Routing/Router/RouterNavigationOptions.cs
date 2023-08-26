@@ -20,4 +20,10 @@ public class RouterNavigationOptions
     /// </summary>
     /// <example>If set to true, a route change from <c>page/subpage1/subpage2</c> to <c>page/subpage1</c> will be ignored.</example>
     public bool IgnoreOnPartialMatch { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a boolean value indicating whether logging should be enabled.
+    /// <remarks>Errors and warnings are always logged.</remarks>
+    /// </summary>
+    public bool EnableLogging { get; set; } = true;
 }

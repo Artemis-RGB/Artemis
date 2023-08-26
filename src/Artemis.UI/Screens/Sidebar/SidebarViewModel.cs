@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -88,7 +86,6 @@ public class SidebarViewModel : ActivatableViewModelBase
 
             SidebarCategories = categoryViewModels;
         });
-        SelectedScreen = SidebarScreen.Screens.First();
     }
 
     public SidebarScreenViewModel SidebarScreen { get; }
