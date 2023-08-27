@@ -1,4 +1,5 @@
 using Artemis.Core;
+using Artemis.WebClient.Workshop.Exceptions;
 using IdentityModel.Client;
 
 namespace Artemis.WebClient.Workshop.Services;

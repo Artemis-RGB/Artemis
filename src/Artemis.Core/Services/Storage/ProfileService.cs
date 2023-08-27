@@ -499,12 +499,6 @@ internal class ProfileService : IProfileService
             SaveProfileConfigurationIcon(profileConfiguration);
         }
 
-        if (exportModel.ProfileImage != null)
-        {
-            profileConfiguration.Icon.SetIconByStream(exportModel.ProfileImage);
-            SaveProfileConfigurationIcon(profileConfiguration);
-        }
-
         profileConfiguration.Entity.ProfileId = profileEntity.Id;
         category.AddProfileConfiguration(profileConfiguration, 0);
 
