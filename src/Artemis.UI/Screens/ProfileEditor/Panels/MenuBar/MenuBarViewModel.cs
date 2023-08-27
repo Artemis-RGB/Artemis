@@ -69,7 +69,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
         ToggleSuspended = ReactiveCommand.Create(ExecuteToggleSuspended, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
         DeleteProfile = ReactiveCommand.CreateFromTask(ExecuteDeleteProfile, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
         ExportProfile = ReactiveCommand.CreateFromTask(ExecuteExportProfile, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
-        DuplicateProfile = ReactiveCommand.Create(ExecuteDuplicateProfile, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
+        DuplicateProfile = ReactiveCommand.CreateFromTask(ExecuteDuplicateProfile, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
         ToggleSuspendedEditing = ReactiveCommand.Create(ExecuteToggleSuspendedEditing);
         OpenUri = ReactiveCommand.Create<string>(s => Process.Start(new ProcessStartInfo(s) {UseShellExecute = true, Verb = "open"}));
         ToggleBooleanSetting = ReactiveCommand.Create<PluginSetting<bool>>(ExecuteToggleBooleanSetting);
@@ -194,32 +194,31 @@ public class MenuBarViewModel : ActivatableViewModelBase
         // Might not cover everything but then the dialog will complain and that's good enough
         string fileName = Path.GetInvalidFileNameChars().Aggregate(ProfileConfiguration.Name, (current, c) => current.Replace(c, '-'));
         string? result = await _windowService.CreateSaveFileDialog()
-            .HavingFilter(f => f.WithExtension("json").WithName("Artemis profile"))
+            .HavingFilter(f => f.WithExtension("zip").WithName("Artemis profile"))
             .WithInitialFileName(fileName)
             .ShowAsync();
 
         if (result == null)
             return;
 
-        ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
-        string json = JsonConvert.SerializeObject(export, IProfileService.ExportSettings);
         try
         {
-            await File.WriteAllTextAsync(result, json);
+            await using Stream stream = await _profileService.ExportProfile(ProfileConfiguration);
+            await using FileStream fileStream = File.OpenWrite(result);
+            await stream.CopyToAsync(fileStream);
         }
         catch (Exception e)
         {
             _windowService.ShowExceptionDialog("Failed to export profile", e);
         }
     }
-
-    private void ExecuteDuplicateProfile()
+    
+    private async Task ExecuteDuplicateProfile()
     {
         if (ProfileConfiguration == null)
             return;
-
-        ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
-        _profileService.ImportProfile(ProfileConfiguration.Category, export, true, false, "copy");
+        await using Stream export = await _profileService.ExportProfile(ProfileConfiguration);
+        await _profileService.ImportProfile(export, ProfileConfiguration.Category, true, false, "copy");
     }
 
     private void ExecuteToggleSuspendedEditing()

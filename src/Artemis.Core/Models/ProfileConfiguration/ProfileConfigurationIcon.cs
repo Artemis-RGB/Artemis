@@ -74,7 +74,8 @@ public class ProfileConfigurationIcon : CorePropertyChanged, IStorageModel
 
         _iconStream?.Dispose();
         _iconStream = new MemoryStream();
-        stream.Seek(0, SeekOrigin.Begin);
+        if (stream.CanSeek)
+            stream.Seek(0, SeekOrigin.Begin);
         stream.CopyTo(_iconStream);
         _iconStream.Seek(0, SeekOrigin.Begin);
 

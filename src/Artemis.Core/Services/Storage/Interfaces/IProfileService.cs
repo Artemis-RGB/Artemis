@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SkiaSharp;
 
@@ -118,17 +120,17 @@ public interface IProfileService : IArtemisService
     void SaveProfile(Profile profile, bool includeChildren);
 
     /// <summary>
-    ///     Exports the profile described in the given <see cref="ProfileConfiguration" /> into an export model.
+    ///     Exports the profile described in the given <see cref="ProfileConfiguration" /> into a zip archive.
     /// </summary>
     /// <param name="profileConfiguration">The profile configuration of the profile to export.</param>
-    /// <returns>The resulting export model.</returns>
-    ProfileConfigurationExportModel ExportProfile(ProfileConfiguration profileConfiguration);
+    /// <returns>The resulting zip archive.</returns>
+    Task<Stream> ExportProfile(ProfileConfiguration profileConfiguration);
 
     /// <summary>
     ///     Imports the provided base64 encoded GZIPed JSON as a profile configuration.
     /// </summary>
+    /// <param name="archiveStream">The zip archive containing the profile to import.</param>
     /// <param name="category">The <see cref="ProfileCategory" /> in which to import the profile.</param>
-    /// <param name="exportModel">The model containing the profile to import.</param>
     /// <param name="makeUnique">Whether or not to give the profile a new GUID, making it unique.</param>
     /// <param name="markAsFreshImport">
     ///     Whether or not to mark the profile as a fresh import, causing it to be adapted until
@@ -136,8 +138,7 @@ public interface IProfileService : IArtemisService
     /// </param>
     /// <param name="nameAffix">Text to add after the name of the profile (separated by a dash).</param>
     /// <returns>The resulting profile configuration.</returns>
-    ProfileConfiguration ImportProfile(ProfileCategory category, ProfileConfigurationExportModel exportModel, bool makeUnique = true, bool markAsFreshImport = true,
-        string? nameAffix = "imported");
+    Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix = "imported");
 
     /// <summary>
     ///     Adapts a given profile to the currently active devices.

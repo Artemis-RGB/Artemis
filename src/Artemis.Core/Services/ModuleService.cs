@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 using Artemis.Core.Modules;
 using Newtonsoft.Json;
@@ -31,8 +32,8 @@ internal class ModuleService : IModuleService
         pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureEnabled;
         pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureDisabled;
         _modules = pluginManagementService.GetFeaturesOfType<Module>().ToList();
-        foreach (Module module in _modules)
-            ImportDefaultProfiles(module);
+
+        Task.Run(ImportDefaultProfiles);
     }
 
     protected virtual void OnModuleActivated(ModuleEventArgs e)
@@ -96,7 +97,7 @@ internal class ModuleService : IModuleService
         {
             if (e.PluginFeature is Module module && !_modules.Contains(module))
             {
-                ImportDefaultProfiles(module);
+                Task.Run(() => ImportDefaultProfiles(module));
                 _modules.Add(module);
             }
         }
@@ -111,24 +112,21 @@ internal class ModuleService : IModuleService
         }
     }
 
-    private void ImportDefaultProfiles(Module module)
+    private async Task ImportDefaultProfiles()
+    {
+        foreach (Module module in _modules)
+            await ImportDefaultProfiles(module);
+    }
+    
+    private async Task ImportDefaultProfiles(Module module)
     {
         try
         {
-            List<ProfileConfiguration> profileConfigurations = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).ToList();
             foreach ((DefaultCategoryName categoryName, string profilePath) in module.DefaultProfilePaths)
             {
-                ProfileConfigurationExportModel? profileConfigurationExportModel =
-                    JsonConvert.DeserializeObject<ProfileConfigurationExportModel>(File.ReadAllText(profilePath), IProfileService.ExportSettings);
-                if (profileConfigurationExportModel?.ProfileEntity == null)
-                    throw new ArtemisCoreException($"Default profile at path {profilePath} contains no valid profile data");
-                if (profileConfigurations.Any(p => p.Entity.ProfileId == profileConfigurationExportModel.ProfileEntity.Id))
-                    continue;
-
-                ProfileCategory category = _profileService.ProfileCategories.FirstOrDefault(c => c.Name == categoryName.ToString()) ??
-                                           _profileService.CreateProfileCategory(categoryName.ToString());
-
-                _profileService.ImportProfile(category, profileConfigurationExportModel, false, true, null);
+                ProfileCategory category = _profileService.ProfileCategories.FirstOrDefault(c => c.Name == categoryName.ToString()) ?? _profileService.CreateProfileCategory(categoryName.ToString());
+                await using FileStream fileStream = File.OpenRead(profilePath);
+                await _profileService.ImportProfile(fileStream, category, false, true, null);
             }
         }
         catch (Exception e)
