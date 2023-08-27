@@ -231,7 +231,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         else if (_selectedIconPath != null)
         {
             await using FileStream fileStream = File.OpenRead(_selectedIconPath);
-            ProfileConfiguration.Icon.SetIconByStream(Path.GetFileName(_selectedIconPath), fileStream);
+            ProfileConfiguration.Icon.SetIconByStream(fileStream);
         }
     }
 
