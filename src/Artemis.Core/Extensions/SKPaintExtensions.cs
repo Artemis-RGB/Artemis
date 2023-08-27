@@ -2,9 +2,16 @@
 
 namespace Artemis.Core;
 
-internal static class SKPaintExtensions
+/// <summary>
+///     A static class providing <see cref="SKPaint" /> extensions
+/// </summary>
+public static class SKPaintExtensions
 {
-    internal static void DisposeSelfAndProperties(this SKPaint paint)
+    /// <summary>
+    ///     Disposes the paint and its disposable properties such as shaders and filters.
+    /// </summary>
+    /// <param name="paint">The pain to dispose.</param>
+    public static void DisposeSelfAndProperties(this SKPaint paint)
     {
         paint.ImageFilter?.Dispose();
         paint.ColorFilter?.Dispose();

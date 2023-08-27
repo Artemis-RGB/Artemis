@@ -10,8 +10,6 @@ using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.ProfileEditor;
-using Newtonsoft.Json;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
@@ -36,7 +34,7 @@ public class SidebarProfileConfigurationViewModel : ActivatableViewModelBase
         SuspendAll = ReactiveCommand.Create<string>(ExecuteSuspendAll);
         DeleteProfile = ReactiveCommand.CreateFromTask(ExecuteDeleteProfile);
         ExportProfile = ReactiveCommand.CreateFromTask(ExecuteExportProfile);
-        DuplicateProfile = ReactiveCommand.Create(ExecuteDuplicateProfile);
+        DuplicateProfile = ReactiveCommand.CreateFromTask(ExecuteDuplicateProfile);
 
         this.WhenActivated(d => _isDisabled = ProfileConfiguration.WhenAnyValue(c => c.Profile)
             .Select(p => p == null)
@@ -116,18 +114,18 @@ public class SidebarProfileConfigurationViewModel : ActivatableViewModelBase
         // Might not cover everything but then the dialog will complain and that's good enough
         string fileName = Path.GetInvalidFileNameChars().Aggregate(ProfileConfiguration.Name, (current, c) => current.Replace(c, '-'));
         string? result = await _windowService.CreateSaveFileDialog()
-            .HavingFilter(f => f.WithExtension("json").WithName("Artemis profile"))
+            .HavingFilter(f => f.WithExtension("zip").WithName("Artemis profile"))
             .WithInitialFileName(fileName)
             .ShowAsync();
 
         if (result == null)
             return;
 
-        ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
-        string json = JsonConvert.SerializeObject(export, IProfileService.ExportSettings);
         try
         {
-            await File.WriteAllTextAsync(result, json);
+            await using Stream stream = await _profileService.ExportProfile(ProfileConfiguration);
+            await using FileStream fileStream = File.OpenWrite(result);
+            await stream.CopyToAsync(fileStream);
         }
         catch (Exception e)
         {
@@ -135,10 +133,10 @@ public class SidebarProfileConfigurationViewModel : ActivatableViewModelBase
         }
     }
 
-    private void ExecuteDuplicateProfile()
+    private async Task ExecuteDuplicateProfile()
     {
-        ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
-        _profileService.ImportProfile(ProfileConfiguration.Category, export, true, false, "copy");
+        await using Stream export = await _profileService.ExportProfile(ProfileConfiguration);
+        await _profileService.ImportProfile(export, ProfileConfiguration.Category, true, false, "copy");
     }
 
     public bool Matches(string s)

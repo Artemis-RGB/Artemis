@@ -35,11 +35,12 @@ internal class Navigation
 
     public async Task Navigate(NavigationArguments args)
     {
-        _logger.Information("Navigating to {Path}", _resolution.Path);
+        if (_options.EnableLogging)
+            _logger.Information("Navigating to {Path}", _resolution.Path);
         _cts = new CancellationTokenSource();
         await NavigateResolution(_resolution, args, _root);
 
-        if (!Cancelled)
+        if (!Cancelled && _options.EnableLogging)
             _logger.Information("Navigated to {Path}", _resolution.Path);
     }
 
@@ -48,7 +49,8 @@ internal class Navigation
         if (Cancelled || Completed)
             return;
 
-        _logger.Information("Cancelled navigation to {Path}", _resolution.Path);
+        if (_options.EnableLogging)
+            _logger.Information("Cancelled navigation to {Path}", _resolution.Path);
         _cts.Cancel();
     }
 

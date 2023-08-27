@@ -2,7 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
@@ -311,7 +315,7 @@ internal class ProfileService : IProfileService
 
         using Stream? stream = _profileCategoryRepository.GetProfileIconStream(profileConfiguration.Entity.FileIconId);
         if (stream != null)
-            profileConfiguration.Icon.SetIconByStream(profileConfiguration.Entity.IconOriginalFileName, stream);
+            profileConfiguration.Icon.SetIconByStream(stream);
     }
 
     public void SaveProfileConfigurationIcon(ProfileConfiguration profileConfiguration)
@@ -320,9 +324,8 @@ internal class ProfileService : IProfileService
             return;
 
         using Stream? stream = profileConfiguration.Icon.GetIconStream();
-        if (stream != null && profileConfiguration.Icon.OriginalFileName != null)
+        if (stream != null)
         {
-            profileConfiguration.Entity.IconOriginalFileName = profileConfiguration.Icon.OriginalFileName;
             _profileCategoryRepository.SaveProfileIconStream(profileConfiguration.Entity, stream);
         }
     }
@@ -378,7 +381,7 @@ internal class ProfileService : IProfileService
         OnProfileDeactivated(new ProfileConfigurationEventArgs(profileConfiguration));
     }
 
-    public void RequestDeactivation(ProfileConfiguration profileConfiguration)
+    private void RequestDeactivation(ProfileConfiguration profileConfiguration)
     {
         if (profileConfiguration.IsBeingEdited)
             throw new ArtemisCoreException("Cannot disable a profile that is being edited, that's rude");
@@ -480,34 +483,83 @@ internal class ProfileService : IProfileService
         _profileRepository.Save(profile.ProfileEntity);
     }
 
-    public ProfileConfigurationExportModel ExportProfile(ProfileConfiguration profileConfiguration)
+    /// <inheritdoc />
+    public async Task<Stream> ExportProfile(ProfileConfiguration profileConfiguration)
     {
-        // The profile may not be active and in that case lets activate it real quick
-        Profile profile = profileConfiguration.Profile ?? ActivateProfile(profileConfiguration);
+        ProfileEntity? profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
+        if (profileEntity == null)
+            throw new ArtemisCoreException("Could not locate profile entity");
 
-        return new ProfileConfigurationExportModel
+        string configurationJson = JsonConvert.SerializeObject(profileConfiguration.Entity, IProfileService.ExportSettings);
+        string profileJson = JsonConvert.SerializeObject(profileEntity, IProfileService.ExportSettings);
+
+        MemoryStream archiveStream = new();
+
+        // Create a ZIP archive
+        using (ZipArchive archive = new(archiveStream, ZipArchiveMode.Create, true))
         {
-            ProfileConfigurationEntity = profileConfiguration.Entity,
-            ProfileEntity = profile.ProfileEntity,
-            ProfileImage = profileConfiguration.Icon.GetIconStream()
-        };
+            ZipArchiveEntry configurationEntry = archive.CreateEntry("configuration.json");
+            await using (Stream entryStream = configurationEntry.Open())
+            {
+                await entryStream.WriteAsync(Encoding.Default.GetBytes(configurationJson));
+            }
+
+            ZipArchiveEntry profileEntry = archive.CreateEntry("profile.json");
+            await using (Stream entryStream = profileEntry.Open())
+            {
+                await entryStream.WriteAsync(Encoding.Default.GetBytes(profileJson));
+            }
+
+            await using Stream? iconStream = profileConfiguration.Icon.GetIconStream();
+            if (iconStream != null)
+            {
+                ZipArchiveEntry iconEntry = archive.CreateEntry("icon.png");
+                await using Stream entryStream = iconEntry.Open();
+                await iconStream.CopyToAsync(entryStream);
+            }
+        }
+
+        archiveStream.Seek(0, SeekOrigin.Begin);
+        return archiveStream;
     }
 
-    public ProfileConfiguration ImportProfile(ProfileCategory category, ProfileConfigurationExportModel exportModel,
-        bool makeUnique, bool markAsFreshImport, string? nameAffix)
+    /// <inheritdoc />
+    public async Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix)
     {
-        if (exportModel.ProfileEntity == null)
-            throw new ArtemisCoreException("Cannot import a profile without any data");
+        using ZipArchive archive = new(archiveStream, ZipArchiveMode.Read, true);
 
-        // Create a copy of the entity because we'll be using it from now on
-        ProfileEntity profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(
-            JsonConvert.SerializeObject(exportModel.ProfileEntity, IProfileService.ExportSettings),
-            IProfileService.ExportSettings
-        )!;
+        // There should be a configuration.json and profile.json
+        ZipArchiveEntry? configurationEntry = archive.Entries.FirstOrDefault(e => e.Name.EndsWith("configuration.json"));
+        ZipArchiveEntry? profileEntry = archive.Entries.FirstOrDefault(e => e.Name.EndsWith("profile.json"));
+        ZipArchiveEntry? iconEntry = archive.Entries.FirstOrDefault(e => e.Name.EndsWith("icon.png"));
+
+        if (configurationEntry == null)
+            throw new ArtemisCoreException("Could not import profile, configuration.json missing");
+        if (profileEntry == null)
+            throw new ArtemisCoreException("Could not import profile, profile.json missing");
+
+        await using Stream configurationStream = configurationEntry.Open();
+        using StreamReader configurationReader = new(configurationStream);
+        ProfileConfigurationEntity? configurationEntity = JsonConvert.DeserializeObject<ProfileConfigurationEntity>(await configurationReader.ReadToEndAsync(), IProfileService.ExportSettings);
+        if (configurationEntity == null)
+            throw new ArtemisCoreException("Could not import profile, failed to deserialize configuration.json");
+
+        await using Stream profileStream = profileEntry.Open();
+        using StreamReader profileReader = new(profileStream);
+        ProfileEntity? profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(await profileReader.ReadToEndAsync(), IProfileService.ExportSettings);
+        if (profileEntity == null)
+            throw new ArtemisCoreException("Could not import profile, failed to deserialize profile.json");
 
         // Assign a new GUID to make sure it is unique in case of a previous import of the same content
         if (makeUnique)
             profileEntity.UpdateGuid(Guid.NewGuid());
+        else
+        {
+            // If the profile already exists and this one is not to be made unique, return the existing profile
+            ProfileConfiguration? existing = ProfileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(p => p.ProfileId == profileEntity.Id);
+            if (existing != null)
+                return existing;
+        }
 
         if (nameAffix != null)
             profileEntity.Name = $"{profileEntity.Name} - {nameAffix}";
@@ -519,25 +571,19 @@ internal class ProfileService : IProfileService
         else
             throw new ArtemisCoreException($"Cannot import this profile without {nameof(makeUnique)} being true");
 
-        ProfileConfiguration profileConfiguration;
-        if (exportModel.ProfileConfigurationEntity != null)
-        {
-            ProfileConfigurationEntity profileConfigurationEntity = JsonConvert.DeserializeObject<ProfileConfigurationEntity>(
-                JsonConvert.SerializeObject(exportModel.ProfileConfigurationEntity, IProfileService.ExportSettings), IProfileService.ExportSettings
-            )!;
-            // A new GUID will be given on save
-            profileConfigurationEntity.FileIconId = Guid.Empty;
-            profileConfiguration = new ProfileConfiguration(category, profileConfigurationEntity);
-            if (nameAffix != null)
-                profileConfiguration.Name = $"{profileConfiguration.Name} - {nameAffix}";
-        }
-        else
-        {
-            profileConfiguration = new ProfileConfiguration(category, profileEntity.Name, "Import");
-        }
+        // A new GUID will be given on save
+        configurationEntity.FileIconId = Guid.Empty;
+        ProfileConfiguration profileConfiguration = new(category, configurationEntity);
+        if (nameAffix != null)
+            profileConfiguration.Name = $"{profileConfiguration.Name} - {nameAffix}";
 
-        if (exportModel.ProfileImage != null && exportModel.ProfileConfigurationEntity?.IconOriginalFileName != null)
-            profileConfiguration.Icon.SetIconByStream(exportModel.ProfileConfigurationEntity.IconOriginalFileName, exportModel.ProfileImage);
+        // If an icon was provided, import that as well
+        if (iconEntry != null)
+        {
+            await using Stream iconStream = iconEntry.Open();
+            profileConfiguration.Icon.SetIconByStream(iconStream);
+            SaveProfileConfigurationIcon(profileConfiguration);
+        }
 
         profileConfiguration.Entity.ProfileId = profileEntity.Id;
         category.AddProfileConfiguration(profileConfiguration, 0);

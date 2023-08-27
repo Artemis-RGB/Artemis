@@ -58,7 +58,7 @@ public class RootViewModel : RoutableScreen<IMainScreenViewModel>, IMainWindowPr
         mainWindowService.ConfigureMainWindowProvider(this);
 
         DisplayAccordingToSettings();
-        OpenScreen = ReactiveCommand.Create<string>(ExecuteOpenScreen);
+        OpenScreen = ReactiveCommand.Create<string?>(ExecuteOpenScreen);
         OpenDebugger = ReactiveCommand.CreateFromTask(ExecuteOpenDebugger);
         Exit = ReactiveCommand.CreateFromTask(ExecuteExit);
         this.WhenAnyValue(vm => vm.Screen).Subscribe(UpdateTitleBarViewModel);
@@ -72,11 +72,13 @@ public class RootViewModel : RoutableScreen<IMainScreenViewModel>, IMainWindowPr
             registrationService.RegisterBuiltInDataModelDisplays();
             registrationService.RegisterBuiltInDataModelInputs();
             registrationService.RegisterBuiltInPropertyEditors();
+
+            _router.Navigate("home");
         });
     }
 
     public SidebarViewModel SidebarViewModel { get; }
-    public ReactiveCommand<string, Unit> OpenScreen { get; }
+    public ReactiveCommand<string?, Unit> OpenScreen { get; }
     public ReactiveCommand<Unit, Unit> OpenDebugger { get; }
     public ReactiveCommand<Unit, Unit> Exit { get; }
 
@@ -133,8 +135,11 @@ public class RootViewModel : RoutableScreen<IMainScreenViewModel>, IMainWindowPr
 
     #region Tray commands
 
-    private void ExecuteOpenScreen(string path)
+    private void ExecuteOpenScreen(string? path)
     {
+        if (path != null)
+            _router.ClearPreviousWindowRoute();
+        
         // The window will open on the UI thread at some point, respond to that to select the chosen screen
         MainWindowOpened += OnEventHandler;
         OpenMainWindow();
@@ -143,7 +148,8 @@ public class RootViewModel : RoutableScreen<IMainScreenViewModel>, IMainWindowPr
         {
             MainWindowOpened -= OnEventHandler;
             // Avoid threading issues by running this on the UI thread 
-            Dispatcher.UIThread.InvokeAsync(async () => await _router.Navigate(path));
+            if (path != null)
+                Dispatcher.UIThread.InvokeAsync(async () => await _router.Navigate(path));
         }
     }
 
