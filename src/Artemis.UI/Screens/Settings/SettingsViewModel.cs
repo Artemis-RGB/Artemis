@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.UI.Routing;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using ReactiveUI;
@@ -13,30 +14,30 @@ namespace Artemis.UI.Screens.Settings;
 public class SettingsViewModel : RoutableScreen<ActivatableViewModelBase>, IMainScreenViewModel
 {
     private readonly IRouter _router;
-    private SettingsTab? _selectedTab;
+    private RouteViewModel? _selectedTab;
 
     public SettingsViewModel(IRouter router)
     {
         _router = router;
-        SettingTabs = new ObservableCollection<SettingsTab>
+        SettingTabs = new ObservableCollection<RouteViewModel>
         {
-            new("general", "General"),
-            new("plugins", "Plugins"),
-            new("devices", "Devices"),
-            new("releases", "Releases"),
-            new("about", "About"),
+            new("settings/general", "General"),
+            new("settings/plugins", "Plugins"),
+            new("settings/devices", "Devices"),
+            new("settings/releases", "Releases"),
+            new("settings/about", "About"),
         };
         
         // Navigate on tab change
         this.WhenActivated(d =>  this.WhenAnyValue(vm => vm.SelectedTab)
             .WhereNotNull()
-            .Subscribe(s => _router.Navigate($"settings/{s.Path}", new RouterNavigationOptions {IgnoreOnPartialMatch = true}))
+            .Subscribe(s => _router.Navigate(s.Path, new RouterNavigationOptions {IgnoreOnPartialMatch = true}))
             .DisposeWith(d));
     }
 
-    public ObservableCollection<SettingsTab> SettingTabs { get; }
+    public ObservableCollection<RouteViewModel> SettingTabs { get; }
 
-    public SettingsTab? SelectedTab
+    public RouteViewModel? SelectedTab
     {
         get => _selectedTab;
         set => RaiseAndSetIfChanged(ref _selectedTab, value);
@@ -52,6 +53,6 @@ public class SettingsViewModel : RoutableScreen<ActivatableViewModelBase>, IMain
         
         // Always show a tab, if there is none forward to the first
         if (SelectedTab == null)
-            await _router.Navigate($"settings/{SettingTabs.First().Path}");
+            await _router.Navigate(SettingTabs.First().Path);
     }
 }

@@ -8,6 +8,8 @@ using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
 using Artemis.UI.Screens.Workshop.Home;
 using Artemis.UI.Screens.Workshop.Layout;
+using Artemis.UI.Screens.Workshop.Library;
+using Artemis.UI.Screens.Workshop.Library.Tabs;
 using Artemis.UI.Screens.Workshop.Profile;
 using Artemis.UI.Shared.Routing;
 
@@ -28,7 +30,12 @@ public static class Routes
                 new RouteRegistration<ProfileListViewModel>("profiles/{page:int}"),
                 new RouteRegistration<ProfileDetailsViewModel>("profiles/{entryId:guid}"),
                 new RouteRegistration<LayoutListViewModel>("layouts/{page:int}"),
-                new RouteRegistration<LayoutDetailsViewModel>("layouts/{entryId:guid}")
+                new RouteRegistration<LayoutDetailsViewModel>("layouts/{entryId:guid}"),
+                new RouteRegistration<WorkshopLibraryViewModel>("library") {Children = new List<IRouterRegistration>()
+                {
+                    new RouteRegistration<LibraryInstalledViewModel>("installed"),
+                    new RouteRegistration<LibrarySubmissionsViewModel>("submissions"),
+                }}
             }
         },
         #endif

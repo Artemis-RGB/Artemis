@@ -23,14 +23,16 @@ public class ProfileDetailsViewModel : RoutableScreen<ActivatableViewModelBase, 
     private readonly IWorkshopClient _client;
     private readonly ProfileEntryDownloadHandler _downloadHandler;
     private readonly INotificationService _notificationService;
+    private readonly IWindowService _windowService;
     private readonly ObservableAsPropertyHelper<DateTimeOffset?> _updatedAt;
     private IGetEntryById_Entry? _entry;
 
-    public ProfileDetailsViewModel(IWorkshopClient client, ProfileEntryDownloadHandler downloadHandler, INotificationService notificationService)
+    public ProfileDetailsViewModel(IWorkshopClient client, ProfileEntryDownloadHandler downloadHandler, INotificationService notificationService, IWindowService windowService)
     {
         _client = client;
         _downloadHandler = downloadHandler;
         _notificationService = notificationService;
+        _windowService = windowService;
         _updatedAt = this.WhenAnyValue(vm => vm.Entry).Select(e => e?.LatestRelease?.CreatedAt ?? e?.CreatedAt).ToProperty(this, vm => vm.UpdatedAt);
 
         DownloadLatestRelease = ReactiveCommand.CreateFromTask(ExecuteDownloadLatestRelease);
@@ -63,6 +65,10 @@ public class ProfileDetailsViewModel : RoutableScreen<ActivatableViewModelBase, 
     private async Task ExecuteDownloadLatestRelease(CancellationToken cancellationToken)
     {
         if (Entry?.LatestRelease == null)
+            return;
+
+        bool confirm = await _windowService.ShowConfirmContentDialog("Install profile?", "The profile will be downloaded and added to your sidebar automatically.");
+        if (!confirm)
             return;
 
         EntryInstallResult<ProfileConfiguration> result = await _downloadHandler.InstallProfileAsync(Entry.LatestRelease.Id, new Progress<StreamProgress>(), cancellationToken);

@@ -41,14 +41,6 @@
             
             <StackPanel Margin="30 -75 30 0" Grid.Row="1">
                 <StackPanel Spacing="10" Orientation="Horizontal" VerticalAlignment="Top">
-                    <Button Width="150" Height="180" Command="{CompiledBinding AddSubmission}" VerticalContentAlignment="Top">
-                        <StackPanel>
-                            <avalonia:MaterialIcon Kind="CloudUpload" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />
-                            <TextBlock TextWrapping="Wrap" FontSize="16" Margin="0 5">Add submission</TextBlock>
-                            <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8">Upload your own creations to the workshop!</TextBlock>
-                        </StackPanel>
-                    </Button>
-
                     <Button Width="150" Height="180" Command="{CompiledBinding Navigate}" CommandParameter="workshop/profiles/1" VerticalContentAlignment="Top">
                         <StackPanel>
                             <avalonia:MaterialIcon Kind="FolderVideo" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />
@@ -62,6 +54,22 @@
                             <avalonia:MaterialIcon Kind="KeyboardVariant" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />
                             <TextBlock TextWrapping="Wrap" FontSize="16" Margin="0 5">Layouts</TextBlock>
                             <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8">Layouts make your devices look great in the editor.</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    
+                    <Button Width="150" Height="180" Command="{CompiledBinding Navigate}" CommandParameter="workshop/library" VerticalContentAlignment="Top">
+                        <StackPanel>
+                            <avalonia:MaterialIcon Kind="Bookshelf" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />
+                            <TextBlock TextWrapping="Wrap" FontSize="16" Margin="0 5">Library</TextBlock>
+                            <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8">Manage your submissions and downloaded content.</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    
+                    <Button Width="150" Height="180" Command="{CompiledBinding AddSubmission}" VerticalContentAlignment="Top">
+                        <StackPanel>
+                            <avalonia:MaterialIcon Kind="CloudUpload" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />
+                            <TextBlock TextWrapping="Wrap" FontSize="16" Margin="0 5">Add submission</TextBlock>
+                            <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8">Upload your own creations to the workshop!</TextBlock>
                         </StackPanel>
                     </Button>
 
