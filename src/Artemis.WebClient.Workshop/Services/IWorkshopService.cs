@@ -1,30 +1,19 @@
-using System.Net;
 using System.Net.Http.Headers;
 using Artemis.UI.Shared.Routing;
-using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop.UploadHandlers;
-using Avalonia.Media.Imaging;
-using Avalonia.Threading;
 
 namespace Artemis.WebClient.Workshop.Services;
 
 public class WorkshopService : IWorkshopService
 {
-    private readonly Dictionary<Guid, Stream> _entryIconCache = new();
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IRouter _router;
-    private readonly SemaphoreSlim _iconCacheLock = new(1);
 
-    public WorkshopService(IHttpClientFactory httpClientFactory, IMainWindowService mainWindowService, IRouter router)
+    public WorkshopService(IHttpClientFactory httpClientFactory, IRouter router)
     {
         _httpClientFactory = httpClientFactory;
         _router = router;
-        mainWindowService.MainWindowClosed += (_, _) => Dispatcher.UIThread.InvokeAsync(async () =>
-        {
-            await Task.Delay(1000);
-            ClearCache();
-        });
     }
 
     public async Task<ImageUploadResult> SetEntryIcon(Guid entryId, Progress<StreamProgress> progress, Stream icon, CancellationToken cancellationToken)
@@ -48,14 +37,18 @@ public class WorkshopService : IWorkshopService
     }
 
     /// <inheritdoc />
-    public async Task<IWorkshopService.WorkshopStatus> GetWorkshopStatus()
+    public async Task<IWorkshopService.WorkshopStatus> GetWorkshopStatus(CancellationToken cancellationToken)
     {
         try
         {
             // Don't use the workshop client which adds auth headers
             HttpClient client = _httpClientFactory.CreateClient();
-            HttpResponseMessage response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, WorkshopConstants.WORKSHOP_URL + "/status"));
+            HttpResponseMessage response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, WorkshopConstants.WORKSHOP_URL + "/status"), cancellationToken);
             return new IWorkshopService.WorkshopStatus(response.IsSuccessStatusCode, response.StatusCode.ToString());
+        }
+        catch (OperationCanceledException e)
+        {
+            return new IWorkshopService.WorkshopStatus(false, e.Message);
         }
         catch (HttpRequestException e)
         {
@@ -63,37 +56,22 @@ public class WorkshopService : IWorkshopService
         }
     }
 
+    /// <param name="cancellationToken"></param>
     /// <inheritdoc />
-    public async Task<bool> ValidateWorkshopStatus()
+    public async Task<bool> ValidateWorkshopStatus(CancellationToken cancellationToken)
     {
-        IWorkshopService.WorkshopStatus status = await GetWorkshopStatus();
+        IWorkshopService.WorkshopStatus status = await GetWorkshopStatus(cancellationToken);
         if (!status.IsReachable)
             await _router.Navigate($"workshop/offline/{status.Message}");
         return status.IsReachable;
-    }
-
-    private void ClearCache()
-    {
-        try
-        {
-            List<Stream> values = _entryIconCache.Values.ToList();
-            _entryIconCache.Clear();
-            foreach (Stream bitmap in values)
-                bitmap.Dispose();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
     }
 }
 
 public interface IWorkshopService
 {
     Task<ImageUploadResult> SetEntryIcon(Guid entryId, Progress<StreamProgress> progress, Stream icon, CancellationToken cancellationToken);
-    Task<WorkshopStatus> GetWorkshopStatus();
-    Task<bool> ValidateWorkshopStatus();
+    Task<WorkshopStatus> GetWorkshopStatus(CancellationToken cancellationToken);
+    Task<bool> ValidateWorkshopStatus(CancellationToken cancellationToken);
 
     public record WorkshopStatus(bool IsReachable, string Message);
 }

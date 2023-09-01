@@ -1,4 +1,4 @@
-using System.Net;
+
 using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,7 +41,7 @@ public class WorkshopOfflineViewModel : RoutableScreen<ActivatableViewModelBase,
 
     private async Task ExecuteRetry(CancellationToken cancellationToken)
     {
-        IWorkshopService.WorkshopStatus status = await _workshopService.GetWorkshopStatus();
+        IWorkshopService.WorkshopStatus status = await _workshopService.GetWorkshopStatus(cancellationToken);
         if (status.IsReachable)
             await _router.Navigate("workshop");
 

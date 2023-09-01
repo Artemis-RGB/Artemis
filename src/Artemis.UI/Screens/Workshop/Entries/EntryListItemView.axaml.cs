@@ -2,9 +2,9 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.Entries;
 
-public partial class EntryListView : ReactiveUserControl<EntryListViewModel>
+public partial class EntryListItemView : ReactiveUserControl<EntryListItemViewModel>
 {
-    public EntryListView()
+    public EntryListItemView()
     {
         InitializeComponent();
     }

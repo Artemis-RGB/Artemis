@@ -41,6 +41,7 @@ type Entry {
     id: UUID!
     images: [Image!]!
     latestRelease: Release
+    latestReleaseId: UUID
     name: String!
     releases: [Release!]!
     summary: String!
@@ -62,6 +63,7 @@ type Query {
     entries(order: [EntrySortInput!], skip: Int, take: Int, where: EntryFilterInput): EntriesCollectionSegment
     entry(id: UUID!): Entry
     searchEntries(input: String!, order: [EntrySortInput!], type: EntryType, where: EntryFilterInput): [Entry!]!
+    submittedEntries(order: [EntrySortInput!], where: EntryFilterInput): [Entry!]!
 }
 
 type Release {
@@ -156,6 +158,8 @@ input EntryFilterInput {
     iconId: UuidOperationFilterInput
     id: UuidOperationFilterInput
     images: ListFilterInputTypeOfImageFilterInput
+    latestRelease: ReleaseFilterInput
+    latestReleaseId: UuidOperationFilterInput
     name: StringOperationFilterInput
     or: [EntryFilterInput!]
     releases: ListFilterInputTypeOfReleaseFilterInput
@@ -173,6 +177,8 @@ input EntrySortInput {
     icon: ImageSortInput
     iconId: SortEnumType
     id: SortEnumType
+    latestRelease: ReleaseSortInput
+    latestReleaseId: SortEnumType
     name: SortEnumType
     summary: SortEnumType
 }
@@ -265,6 +271,17 @@ input ReleaseFilterInput {
     md5Hash: StringOperationFilterInput
     or: [ReleaseFilterInput!]
     version: StringOperationFilterInput
+}
+
+input ReleaseSortInput {
+    createdAt: SortEnumType
+    downloadSize: SortEnumType
+    downloads: SortEnumType
+    entry: EntrySortInput
+    entryId: SortEnumType
+    id: SortEnumType
+    md5Hash: SortEnumType
+    version: SortEnumType
 }
 
 input StringOperationFilterInput {

@@ -1,0 +1,10 @@
+query GetSubmittedEntries($filter: EntryFilterInput) {
+    submittedEntries(where: $filter order: {createdAt: DESC}) {
+        id
+        name
+        summary
+        entryType
+        downloads
+        createdAt
+    }
+}

@@ -43,6 +43,7 @@ public class SidebarViewModel : ActivatableViewModelBase
             {
                 new(MaterialIconKind.FolderVideo, "Profiles", "workshop/profiles/1", "workshop/profiles"),
                 new(MaterialIconKind.KeyboardVariant, "Layouts", "workshop/layouts/1", "workshop/layouts"),
+                new(MaterialIconKind.Bookshelf, "Library", "workshop/library"),
             }),
             #endif
             new(MaterialIconKind.Devices, "Surface Editor", "surface-editor"),

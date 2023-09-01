@@ -3,23 +3,40 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:layout="clr-namespace:Artemis.UI.Screens.Workshop.Layout"
+             xmlns:pagination="clr-namespace:Artemis.UI.Shared.Pagination;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Layout.LayoutListView"
              x:DataType="layout:LayoutListViewModel">
     <Border Classes="router-container">
-        <Grid ColumnDefinitions="300,*" Margin="10">
-            <Border Classes="card-condensed" Grid.Column="0" Margin="0 0 10 0">
-                <StackPanel>
-                    <TextBlock Classes="h3">Categories</TextBlock>
-                    <ContentControl Content="{CompiledBinding CategoriesViewModel}"></ContentControl>
-                </StackPanel>
-            </Border>
+        <Grid ColumnDefinitions="300,*" Margin="10" RowDefinitions="*,Auto">
+            <StackPanel Grid.Column="0" Grid.RowSpan="2" Margin="0 0 10 0" VerticalAlignment="Top">
+                <Border Classes="card" VerticalAlignment="Stretch">
+                    <StackPanel>
+                        <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Categories</TextBlock>
+                        <Border Classes="card-separator" />
+                        <ContentControl Content="{CompiledBinding CategoriesViewModel}"></ContentControl>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+            
+            <ProgressBar Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" Margin="0 0 20 0" IsVisible="{CompiledBinding IsLoading}" IsIndeterminate="True"/>
+            <ScrollViewer Grid.Column="1" Grid.Row="0">
+                <ItemsRepeater ItemsSource="{CompiledBinding Entries}" Margin="0 0 20 0">
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl Content="{CompiledBinding}" Margin="0 0 0 5"></ContentControl>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </ScrollViewer>
 
-            <Border Classes="card-condensed" Grid.Column="1">
-                <TextBlock>
-                    <Run Text="Layout list main panel, page: " /><Run Text="{CompiledBinding Page}"></Run>
-                </TextBlock>
-            </Border>
+            <pagination:Pagination Grid.Column="1"
+                                   Grid.Row="1" 
+                                   Margin="0 20 0 10"
+                                   IsVisible="{CompiledBinding ShowPagination}"
+                                   Value="{CompiledBinding Page}" 
+                                   Maximum="{CompiledBinding TotalPages}"
+                                   HorizontalAlignment="Center" />
         </Grid>
     </Border>
 </UserControl>

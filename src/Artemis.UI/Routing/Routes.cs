@@ -21,7 +21,7 @@ public static class Routes
     {
         new RouteRegistration<BlankViewModel>("blank"),
         new RouteRegistration<HomeViewModel>("home"),
-        #if DEBUG
+#if DEBUG
         new RouteRegistration<WorkshopViewModel>("workshop")
         {
             Children = new List<IRouterRegistration>()
@@ -31,14 +31,17 @@ public static class Routes
                 new RouteRegistration<ProfileDetailsViewModel>("profiles/{entryId:guid}"),
                 new RouteRegistration<LayoutListViewModel>("layouts/{page:int}"),
                 new RouteRegistration<LayoutDetailsViewModel>("layouts/{entryId:guid}"),
-                new RouteRegistration<WorkshopLibraryViewModel>("library") {Children = new List<IRouterRegistration>()
+                new RouteRegistration<WorkshopLibraryViewModel>("library")
                 {
-                    new RouteRegistration<LibraryInstalledViewModel>("installed"),
-                    new RouteRegistration<LibrarySubmissionsViewModel>("submissions"),
-                }}
+                    Children = new List<IRouterRegistration>()
+                    {
+                        new RouteRegistration<LibraryInstalledViewModel>("installed"),
+                        new RouteRegistration<LibrarySubmissionsViewModel>("submissions"),
+                    }
+                }
             }
         },
-        #endif
+#endif
         new RouteRegistration<SurfaceEditorViewModel>("surface-editor"),
         new RouteRegistration<SettingsViewModel>("settings")
         {

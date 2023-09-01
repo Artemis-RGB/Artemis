@@ -2,7 +2,67 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Workshop.Library.Tabs.LibrarySubmissionsView">
-    Submission management here 😗
+             xmlns:tabs="clr-namespace:Artemis.UI.Screens.Workshop.Library.Tabs"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:workshop="clr-namespace:Artemis.WebClient.Workshop;assembly=Artemis.WebClient.Workshop"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="650"
+             x:Class="Artemis.UI.Screens.Workshop.Library.Tabs.LibrarySubmissionsView"
+             x:DataType="tabs:LibrarySubmissionsViewModel">
+    <UserControl.Resources>
+        <controls:SymbolIconSource x:Key="GoIcon" Symbol="ChevronRight" />
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Styles>
+            <Style Selector="StackPanel.empty-state > TextBlock">
+                <Setter Property="TextAlignment" Value="Center"></Setter>
+                <Setter Property="TextWrapping" Value="Wrap"></Setter>
+            </Style>
+        </Styles>
+    </UserControl.Styles>
+
+    <Panel IsVisible="{CompiledBinding !IsLoading}">
+        <StackPanel IsVisible="{CompiledBinding !IsLoggedIn^}" Margin="0 50 0 0" Classes="empty-state">
+            <TextBlock Theme="{StaticResource TitleTextBlockStyle}">You are not logged in</TextBlock>
+            <TextBlock>
+                <Run>In order to manage your submissions you must be logged in.</Run>
+            </TextBlock>
+            <Lottie Path="/Assets/Animations/login-pending.json" RepeatCount="1" Width="350" Height="350"></Lottie>
+            <Button HorizontalAlignment="Center" Command="{CompiledBinding Login}">Log in</Button>
+        </StackPanel>
+
+        <Panel IsVisible="{CompiledBinding IsLoggedIn^}">
+            <StackPanel IsVisible="{CompiledBinding !Entries.Count}" Margin="0 50 0 0" Classes="empty-state">
+                <TextBlock Theme="{StaticResource TitleTextBlockStyle}">Oh boy, it's empty here 🤔</TextBlock>
+                <TextBlock>
+                    <Run>Any entries you submit to the workshop you can later manage here</Run>
+                </TextBlock>
+                <Lottie Path="/Assets/Animations/empty.json" RepeatCount="1" Width="350" Height="350"></Lottie>
+                <Button HorizontalAlignment="Center" Command="{CompiledBinding AddSubmission}">Submit new entry</Button>
+            </StackPanel>
+
+            <ItemsRepeater IsVisible="{CompiledBinding Entries.Count}" ItemsSource="{CompiledBinding Entries}">
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate DataType="workshop:IGetSubmittedEntries_SubmittedEntries">
+                        <controls:SettingsExpander
+                            Header="{CompiledBinding Name}"
+                            Description="{CompiledBinding Summary}"
+                            IsClickEnabled="True"
+                            ActionIconSource="{StaticResource GoIcon}"
+                            Command="{Binding $parent[tabs:LibrarySubmissionsView].DataContext.NavigateToEntry}"
+                            CommandParameter="{CompiledBinding}">
+                            <controls:SettingsExpander.FooterTemplate>
+                                <DataTemplate x:DataType="workshop:IGetSubmittedEntries_SubmittedEntries">
+                                    <Border Classes="badge" VerticalAlignment="Top" Margin="0 5 0 0">
+                                        <TextBlock Text="{CompiledBinding EntryType}"></TextBlock>
+                                    </Border>
+                                </DataTemplate>
+                            </controls:SettingsExpander.FooterTemplate>
+                        </controls:SettingsExpander>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </Panel>
+    </Panel>
+
 </UserControl>

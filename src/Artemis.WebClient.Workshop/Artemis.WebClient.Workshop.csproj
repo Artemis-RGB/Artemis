@@ -35,5 +35,8 @@
       <GraphQL Update="Queries\GetCategories.graphql">
         <Generator>MSBuild:GenerateGraphQLCode</Generator>
       </GraphQL>
+      <GraphQL Update="Queries\GetSubmittedEntries.graphql">
+        <Generator>MSBuild:GenerateGraphQLCode</Generator>
+      </GraphQL>
     </ItemGroup>
 </Project>

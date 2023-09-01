@@ -13,11 +13,11 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.Entries;
 
-public class EntryListViewModel : ActivatableViewModelBase
+public class EntryListItemViewModel : ActivatableViewModelBase
 {
     private readonly IRouter _router;
 
-    public EntryListViewModel(IGetEntries_Entries_Items entry, IRouter router)
+    public EntryListItemViewModel(IGetEntries_Entries_Items entry, IRouter router)
     {
         _router = router;
 

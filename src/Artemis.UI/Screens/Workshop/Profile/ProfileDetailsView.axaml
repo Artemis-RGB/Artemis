@@ -23,8 +23,7 @@
             <StackPanel Grid.Row="1" Grid.Column="0" Margin="0 0 10 0" Spacing="10">
                 <Border Classes="card" VerticalAlignment="Top">
                     <StackPanel>
-                        <Border CornerRadius="12"
-                                Background="{StaticResource ControlStrokeColorOnAccentDefault}"
+                        <Border CornerRadius="6"
                                 HorizontalAlignment="Left"
                                 Margin="0 0 10 0"
                                 Width="80"

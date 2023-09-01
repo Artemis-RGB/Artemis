@@ -21,17 +21,18 @@ public partial class WorkshopLibraryView : ReactiveUserControl<WorkshopLibraryVi
 
     private void Navigate(ViewModelBase viewModel)
     {
-        Dispatcher.UIThread.Invoke(() =>
-        {
-            if (ViewModel == null)
-                return;
-            
-            SlideNavigationTransitionInfo transitionInfo = new()
-            {
-                Effect = ViewModel.Tabs.IndexOf(ViewModel.SelectedTab) > _lastIndex ? SlideNavigationTransitionEffect.FromRight : SlideNavigationTransitionEffect.FromLeft
-            };
-            TabFrame.NavigateFromObject(viewModel, new FrameNavigationOptions {TransitionInfoOverride = transitionInfo});
-            _lastIndex = ViewModel.Tabs.IndexOf(ViewModel.SelectedTab);
-        });
+        Dispatcher.UIThread.Invoke(() => TabFrame.NavigateFromObject(viewModel, new FrameNavigationOptions {TransitionInfoOverride = GetTransitionInfo()}));
+    }
+
+    private SlideNavigationTransitionInfo GetTransitionInfo()
+    {
+        if (ViewModel?.SelectedTab == null)
+            return new SlideNavigationTransitionInfo();
+
+        SlideNavigationTransitionEffect effect = ViewModel.Tabs.IndexOf(ViewModel.SelectedTab) > _lastIndex ? SlideNavigationTransitionEffect.FromRight : SlideNavigationTransitionEffect.FromLeft;
+        SlideNavigationTransitionInfo info = new() {Effect = effect};
+        _lastIndex = ViewModel.Tabs.IndexOf(ViewModel.SelectedTab);
+        
+        return info;
     }
 }

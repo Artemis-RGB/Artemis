@@ -2,6 +2,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Workshop.SubmissionWizard;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
@@ -27,7 +28,7 @@ public class WorkshopHomeViewModel : ActivatableViewModelBase, IWorkshopViewMode
         AddSubmission = ReactiveCommand.CreateFromTask(ExecuteAddSubmission, this.WhenAnyValue(vm => vm.WorkshopReachable));
         Navigate = ReactiveCommand.CreateFromTask<string>(async r => await router.Navigate(r), this.WhenAnyValue(vm => vm.WorkshopReachable));
 
-        this.WhenActivated((CompositeDisposable _) => Dispatcher.UIThread.InvokeAsync(ValidateWorkshopStatus));
+        this.WhenActivatedAsync(async d => WorkshopReachable = await workshopService.ValidateWorkshopStatus(d.AsCancellationToken()));
     }
 
     public ReactiveCommand<Unit, Unit> AddSubmission { get; }
@@ -42,11 +43,6 @@ public class WorkshopHomeViewModel : ActivatableViewModelBase, IWorkshopViewMode
     private async Task ExecuteAddSubmission(CancellationToken arg)
     {
         await _windowService.ShowDialogAsync<SubmissionWizardViewModel, bool>();
-    }
-
-    private async Task ValidateWorkshopStatus()
-    {
-        WorkshopReachable = await _workshopService.ValidateWorkshopStatus();
     }
 
     public EntryType? EntryType => null;

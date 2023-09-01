@@ -1,36 +1,44 @@
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Artemis.UI.Screens.Workshop.Categories;
-using Artemis.UI.Screens.Workshop.Parameters;
-using Artemis.UI.Shared;
+using Artemis.UI.Screens.Workshop.Entries;
 using Artemis.UI.Shared.Routing;
+using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
 
 namespace Artemis.UI.Screens.Workshop.Layout;
 
-public class LayoutListViewModel : RoutableScreen<ActivatableViewModelBase, WorkshopListParameters>, IWorkshopViewModel
+public class LayoutListViewModel : EntryListBaseViewModel
 {
-    private int _page;
-
-    public LayoutListViewModel(CategoriesViewModel categoriesViewModel)
+    /// <inheritdoc />
+    public LayoutListViewModel(IWorkshopClient workshopClient,
+        IRouter router,
+        CategoriesViewModel categoriesViewModel,
+        INotificationService notificationService,
+        Func<IGetEntries_Entries_Items, EntryListItemViewModel> getEntryListViewModel)
+        : base(workshopClient, router, categoriesViewModel, notificationService, getEntryListViewModel)
     {
-        CategoriesViewModel = categoriesViewModel;
     }
 
-    public CategoriesViewModel CategoriesViewModel { get; }
+    #region Overrides of EntryListBaseViewModel
 
-    public int Page
+    /// <inheritdoc />
+    protected override string GetPagePath(int page)
     {
-        get => _page;
-        set => RaiseAndSetIfChanged(ref _page, value);
+        return $"workshop/layouts/{page}";
+    }
+    
+    /// <inheritdoc />
+    protected override EntryFilterInput GetFilter()
+    {
+        return new EntryFilterInput
+        {
+            And = new[]
+            {
+                new EntryFilterInput {EntryType = new EntryTypeOperationFilterInput {Eq = WebClient.Workshop.EntryType.Layout}},
+                base.GetFilter()
+            }
+        };
     }
 
-    public override Task OnNavigating(WorkshopListParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
-    {
-        Page = Math.Max(1, parameters.Page);
-        return Task.CompletedTask;
-    }
-
-    public EntryType? EntryType => WebClient.Workshop.EntryType.Layout;
+    #endregion
 }

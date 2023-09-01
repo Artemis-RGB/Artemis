@@ -2,26 +2,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:library="clr-namespace:Artemis.UI.Screens.Workshop.Library"
-             xmlns:routing="clr-namespace:Artemis.UI.Routing"
-             xmlns:ui1="clr-namespace:Artemis.UI"
+             xmlns:ui="clr-namespace:Artemis.UI"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Library.WorkshopLibraryView"
              x:DataType="library:WorkshopLibraryViewModel">
-    <ui:NavigationView PaneDisplayMode="Top" MenuItemsSource="{CompiledBinding Tabs}" SelectedItem="{CompiledBinding SelectedTab}">
-        <ui:NavigationView.Styles>
+    <controls:NavigationView PaneDisplayMode="Top" MenuItemsSource="{CompiledBinding Tabs}" SelectedItem="{CompiledBinding SelectedTab}">
+        <controls:NavigationView.Styles>
             <Styles>
-                <Style Selector="ui|NavigationView:topnavminimal /template/ SplitView Border#ContentGridBorder">
+                <Style Selector="controls|NavigationView:topnavminimal /template/ SplitView Border#ContentGridBorder">
                     <Setter Property="CornerRadius" Value="8 0 0 0" />
                 </Style>
             </Styles>
-        </ui:NavigationView.Styles>
+        </controls:NavigationView.Styles>
         
-        <ui:Frame Name="TabFrame" IsNavigationStackEnabled="False" CacheSize="0">
-            <ui:Frame.NavigationPageFactory>
-                <ui1:PageFactory/>
-            </ui:Frame.NavigationPageFactory>
-        </ui:Frame>
-    </ui:NavigationView>
+        <controls:Frame Name="TabFrame" IsNavigationStackEnabled="False" CacheSize="0" Padding="20">
+            <controls:Frame.NavigationPageFactory>
+                <ui:PageFactory/>
+            </controls:Frame.NavigationPageFactory>
+        </controls:Frame>
+    </controls:NavigationView>
 </UserControl>
