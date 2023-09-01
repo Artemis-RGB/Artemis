@@ -6,7 +6,6 @@ using System.Timers;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Windows.Utilities;
-using HidSharp;
 using Linearstar.Windows.RawInput;
 using Linearstar.Windows.RawInput.Native;
 using Serilog;
