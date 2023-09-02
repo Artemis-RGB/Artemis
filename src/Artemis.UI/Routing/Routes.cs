@@ -6,6 +6,8 @@ using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Settings.Updating;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
+using Artemis.UI.Screens.Workshop.Entries;
+using Artemis.UI.Screens.Workshop.Entries.Tabs;
 using Artemis.UI.Screens.Workshop.Home;
 using Artemis.UI.Screens.Workshop.Layout;
 using Artemis.UI.Screens.Workshop.Library;
@@ -24,16 +26,22 @@ public static class Routes
 #if DEBUG
         new RouteRegistration<WorkshopViewModel>("workshop")
         {
-            Children = new List<IRouterRegistration>()
+            Children = new List<IRouterRegistration>
             {
                 new RouteRegistration<WorkshopOfflineViewModel>("offline/{message:string}"),
-                new RouteRegistration<ProfileListViewModel>("profiles/{page:int}"),
-                new RouteRegistration<ProfileDetailsViewModel>("profiles/{entryId:guid}"),
-                new RouteRegistration<LayoutListViewModel>("layouts/{page:int}"),
-                new RouteRegistration<LayoutDetailsViewModel>("layouts/{entryId:guid}"),
+                new RouteRegistration<EntriesViewModel>("entries")
+                {
+                    Children = new List<IRouterRegistration>
+                    {
+                        new RouteRegistration<ProfileListViewModel>("profiles/{page:int}"),
+                        new RouteRegistration<ProfileDetailsViewModel>("profiles/details/{entryId:guid}"),
+                        new RouteRegistration<LayoutListViewModel>("layouts/{page:int}"),
+                        new RouteRegistration<LayoutDetailsViewModel>("layouts/details/{entryId:guid}"),
+                    }
+                },
                 new RouteRegistration<WorkshopLibraryViewModel>("library")
                 {
-                    Children = new List<IRouterRegistration>()
+                    Children = new List<IRouterRegistration>
                     {
                         new RouteRegistration<InstalledTabViewModel>("installed"),
                         new RouteRegistration<SubmissionsTabViewModel>("submissions"),

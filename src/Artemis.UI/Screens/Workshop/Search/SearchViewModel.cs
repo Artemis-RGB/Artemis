@@ -53,9 +53,9 @@ public class SearchViewModel : ViewModelBase
     {
         string? url = null;
         if (searchResult.Entry.EntryType == WebClient.Workshop.EntryType.Profile)
-            url = $"workshop/profiles/{searchResult.Entry.Id}";
+            url = $"workshop/entries/profiles/{searchResult.Entry.Id}";
         if (searchResult.Entry.EntryType == WebClient.Workshop.EntryType.Layout)
-            url = $"workshop/layouts/{searchResult.Entry.Id}";
+            url = $"workshop/entries/layouts/{searchResult.Entry.Id}";
 
         if (url != null)
             Task.Run(() => _router.Navigate(url));

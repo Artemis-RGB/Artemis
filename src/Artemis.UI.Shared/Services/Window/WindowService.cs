@@ -21,14 +21,13 @@ internal class WindowService : IWindowService
         _container = container;
     }
 
-    public T ShowWindow<T>(params object[] parameters)
+    public Window ShowWindow<T>(out T viewModel, params object[] parameters)
     {
-        T viewModel = _container.Resolve<T>(parameters);
+        viewModel = _container.Resolve<T>(parameters);
         if (viewModel == null)
             throw new ArtemisSharedUIException($"Failed to show window for VM of type {typeof(T).Name}, could not create instance.");
         
-        ShowWindow(viewModel);
-        return viewModel;
+        return ShowWindow(viewModel);
     }
 
     public Window ShowWindow(object viewModel)

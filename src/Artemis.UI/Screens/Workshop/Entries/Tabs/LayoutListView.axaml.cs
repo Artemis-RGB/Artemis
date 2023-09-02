@@ -1,6 +1,6 @@
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Workshop.Layout;
+namespace Artemis.UI.Screens.Workshop.Entries.Tabs;
 
 public partial class LayoutListView : ReactiveUserControl<LayoutListViewModel>
 {

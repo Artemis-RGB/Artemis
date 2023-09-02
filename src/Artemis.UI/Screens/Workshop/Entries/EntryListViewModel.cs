@@ -18,7 +18,7 @@ using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Entries;
 
-public abstract class EntryListBaseViewModel : RoutableScreen<WorkshopListParameters>
+public abstract class EntryListViewModel : RoutableScreen<WorkshopListParameters>
 {
     private readonly INotificationService _notificationService;
     private readonly IWorkshopClient _workshopClient;
@@ -31,7 +31,7 @@ public abstract class EntryListBaseViewModel : RoutableScreen<WorkshopListParame
     private int _totalPages = 1;
     private int _entriesPerPage = 10;
 
-    protected EntryListBaseViewModel(IWorkshopClient workshopClient, IRouter router, CategoriesViewModel categoriesViewModel, INotificationService notificationService,
+    protected EntryListViewModel(IWorkshopClient workshopClient, IRouter router, CategoriesViewModel categoriesViewModel, INotificationService notificationService,
         Func<IGetEntries_Entries_Items, EntryListItemViewModel> getEntryListViewModel)
     {
         _workshopClient = workshopClient;
@@ -143,6 +143,4 @@ public abstract class EntryListBaseViewModel : RoutableScreen<WorkshopListParame
     {
         return new EntryFilterInput {And = CategoriesViewModel.CategoryFilters};
     }
-
-    public EntryType? EntryType => null;
 }

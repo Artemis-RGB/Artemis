@@ -18,118 +18,116 @@
         <converters:DateTimeConverter x:Key="DateTimeConverter" />
         <converters1:BytesToStringConverter x:Key="BytesToStringConverter" />
     </UserControl.Resources>
-    <Border Classes="router-container">
-        <Grid ColumnDefinitions="300,*" RowDefinitions="Auto,*" Margin="10">
-            <StackPanel Grid.Row="1" Grid.Column="0" Margin="0 0 10 0" Spacing="10">
-                <Border Classes="card" VerticalAlignment="Top">
-                    <StackPanel>
-                        <Border CornerRadius="6"
-                                HorizontalAlignment="Left"
-                                Margin="0 0 10 0"
-                                Width="80"
-                                Height="80"
-                                ClipToBounds="True">
-                            <Image Stretch="UniformToFill" il:ImageLoader.Source="{CompiledBinding Entry.Id, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
-                        </Border>
+    <Grid ColumnDefinitions="300,*" RowDefinitions="Auto,*">
+        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0 0 10 0" Spacing="10">
+            <Border Classes="card" VerticalAlignment="Top">
+                <StackPanel>
+                    <Border CornerRadius="6"
+                            HorizontalAlignment="Left"
+                            Margin="0 0 10 0"
+                            Width="80"
+                            Height="80"
+                            ClipToBounds="True">
+                        <Image Stretch="UniformToFill" il:ImageLoader.Source="{CompiledBinding Entry.Id, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
+                    </Border>
 
-                        <TextBlock Theme="{StaticResource TitleTextBlockStyle}"
-                                   MaxLines="3"
-                                   TextTrimming="CharacterEllipsis"
-                                   Text="{CompiledBinding Entry.Name, FallbackValue=Title }" />
+                    <TextBlock Theme="{StaticResource TitleTextBlockStyle}"
+                               MaxLines="3"
+                               TextTrimming="CharacterEllipsis"
+                               Text="{CompiledBinding Entry.Name, FallbackValue=Title }" />
 
-                        <TextBlock Classes="subtitle" TextTrimming="CharacterEllipsis" Text="{CompiledBinding Entry.Author, FallbackValue=Author}" />
+                    <TextBlock Classes="subtitle" TextTrimming="CharacterEllipsis" Text="{CompiledBinding Entry.Author, FallbackValue=Author}" />
 
-                        <TextBlock Margin="0 8" TextWrapping="Wrap" Text="{CompiledBinding Entry.Summary, FallbackValue=Summary}" />
+                    <TextBlock Margin="0 8" TextWrapping="Wrap" Text="{CompiledBinding Entry.Summary, FallbackValue=Summary}" />
 
-                        <!-- Categories -->
-                        <ItemsControl ItemsSource="{CompiledBinding Entry.Categories}" Margin="0 0 -8 0">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel Orientation="Horizontal"></WrapPanel>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" Margin="0 0 8 0">
-                                        <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Margin="0 0 3 0"></avalonia:MaterialIcon>
-                                        <TextBlock Text="{CompiledBinding Name}" TextTrimming="CharacterEllipsis" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
-                        <Border Classes="card-separator"></Border>
-
-                        <TextBlock Margin="0 0 0 8">
-                            <avalonia:MaterialIcon Kind="Downloads" />
-                            <Run Classes="h5" Text="{CompiledBinding Entry.Downloads, FallbackValue=0}" />
-                            <Run>downloads</Run>
-                        </TextBlock>
-
-                        <TextBlock Classes="subtitle"
-                                   ToolTip.Tip="{CompiledBinding Entry.CreatedAt, Converter={StaticResource DateTimeConverter}}">
-                            <avalonia:MaterialIcon Kind="Calendar" />
-                            <Run>Created</Run>
-                            <Run Text="{CompiledBinding Entry.CreatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
-                        </TextBlock>
-                        <TextBlock Classes="subtitle"
-                                   ToolTip.Tip="{CompiledBinding UpdatedAt, Converter={StaticResource DateTimeConverter}}">
-                            <avalonia:MaterialIcon Kind="Update" />
-                            <Run>Updated</Run>
-                            <Run Text="{CompiledBinding UpdatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
-                        </TextBlock>
-                    </StackPanel>
-                </Border>
-
-                <Border Classes="card" VerticalAlignment="Top" IsVisible="{CompiledBinding Entry.LatestRelease, Converter={x:Static ObjectConverters.IsNotNull}}">
-                    <StackPanel>
-                        <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Latest release</TextBlock>
-                        <Border Classes="card-separator" />
-                        <Button HorizontalAlignment="Stretch" 
-                                HorizontalContentAlignment="Stretch" 
-                                Command="{CompiledBinding DownloadLatestRelease}">
-                            <Grid ColumnDefinitions="Auto,*">
-                                <!-- Icon -->
-                                <Border Grid.Column="0"
-                                        CornerRadius="4"
-                                        Background="{StaticResource SystemAccentColor}"
-                                        VerticalAlignment="Center"
-                                        Margin="0 6"
-                                        Width="50"
-                                        Height="50"
-                                        ClipToBounds="True">
-                                    <avalonia:MaterialIcon Kind="Download"></avalonia:MaterialIcon>
-                                </Border>
-
-                                <!-- Body -->
-                                <StackPanel Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
-                                    <TextBlock Text="{CompiledBinding Entry.LatestRelease.Version, FallbackValue=Version}"></TextBlock>
-                                    <TextBlock Classes="subtitle">
-                                        <avalonia:MaterialIcon Kind="BoxOutline" />
-                                        <Run Text="{CompiledBinding Entry.LatestRelease.DownloadSize, Converter={StaticResource BytesToStringConverter}, Mode=OneWay}"></Run>
-                                    </TextBlock>
-                                    <TextBlock Classes="subtitle"
-                                               ToolTip.Tip="{CompiledBinding Entry.LatestRelease.CreatedAt, Converter={StaticResource DateTimeConverter}}">
-                                        <avalonia:MaterialIcon Kind="Calendar" />
-                                        <Run>Created</Run>
-                                        <Run Text="{CompiledBinding Entry.LatestRelease.CreatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
-                                    </TextBlock>
+                    <!-- Categories -->
+                    <ItemsControl ItemsSource="{CompiledBinding Entry.Categories}" Margin="0 0 -8 0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"></WrapPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="0 0 8 0">
+                                    <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Margin="0 0 3 0"></avalonia:MaterialIcon>
+                                    <TextBlock Text="{CompiledBinding Name}" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
-                            </Grid>
-                        </Button>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
+                    <Border Classes="card-separator"></Border>
 
-            <Border Classes="card" Grid.Row="1" Grid.Column="1">
-                <mdxaml:MarkdownScrollViewer Markdown="{CompiledBinding Entry.Description}" MarkdownStyleName="FluentAvalonia">
-                    <mdxaml:MarkdownScrollViewer.Styles>
-                        <StyleInclude Source="/Styles/Markdown.axaml" />
-                    </mdxaml:MarkdownScrollViewer.Styles>
-                </mdxaml:MarkdownScrollViewer>
+                    <TextBlock Margin="0 0 0 8">
+                        <avalonia:MaterialIcon Kind="Downloads" />
+                        <Run Classes="h5" Text="{CompiledBinding Entry.Downloads, FallbackValue=0}" />
+                        <Run>downloads</Run>
+                    </TextBlock>
 
+                    <TextBlock Classes="subtitle"
+                               ToolTip.Tip="{CompiledBinding Entry.CreatedAt, Converter={StaticResource DateTimeConverter}}">
+                        <avalonia:MaterialIcon Kind="Calendar" />
+                        <Run>Created</Run>
+                        <Run Text="{CompiledBinding Entry.CreatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
+                    </TextBlock>
+                    <TextBlock Classes="subtitle"
+                               ToolTip.Tip="{CompiledBinding UpdatedAt, Converter={StaticResource DateTimeConverter}}">
+                        <avalonia:MaterialIcon Kind="Update" />
+                        <Run>Updated</Run>
+                        <Run Text="{CompiledBinding UpdatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
+                    </TextBlock>
+                </StackPanel>
             </Border>
-        </Grid>
-    </Border>
+
+            <Border Classes="card" VerticalAlignment="Top" IsVisible="{CompiledBinding Entry.LatestRelease, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <StackPanel>
+                    <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Latest release</TextBlock>
+                    <Border Classes="card-separator" />
+                    <Button HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Command="{CompiledBinding DownloadLatestRelease}">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <!-- Icon -->
+                            <Border Grid.Column="0"
+                                    CornerRadius="4"
+                                    Background="{StaticResource SystemAccentColor}"
+                                    VerticalAlignment="Center"
+                                    Margin="0 6"
+                                    Width="50"
+                                    Height="50"
+                                    ClipToBounds="True">
+                                <avalonia:MaterialIcon Kind="Download"></avalonia:MaterialIcon>
+                            </Border>
+
+                            <!-- Body -->
+                            <StackPanel Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
+                                <TextBlock Text="{CompiledBinding Entry.LatestRelease.Version, FallbackValue=Version}"></TextBlock>
+                                <TextBlock Classes="subtitle">
+                                    <avalonia:MaterialIcon Kind="BoxOutline" />
+                                    <Run Text="{CompiledBinding Entry.LatestRelease.DownloadSize, Converter={StaticResource BytesToStringConverter}, Mode=OneWay}"></Run>
+                                </TextBlock>
+                                <TextBlock Classes="subtitle"
+                                           ToolTip.Tip="{CompiledBinding Entry.LatestRelease.CreatedAt, Converter={StaticResource DateTimeConverter}}">
+                                    <avalonia:MaterialIcon Kind="Calendar" />
+                                    <Run>Created</Run>
+                                    <Run Text="{CompiledBinding Entry.LatestRelease.CreatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+
+        <Border Classes="card" Grid.Row="1" Grid.Column="1">
+            <mdxaml:MarkdownScrollViewer Markdown="{CompiledBinding Entry.Description}" MarkdownStyleName="FluentAvalonia">
+                <mdxaml:MarkdownScrollViewer.Styles>
+                    <StyleInclude Source="/Styles/Markdown.axaml" />
+                </mdxaml:MarkdownScrollViewer.Styles>
+            </mdxaml:MarkdownScrollViewer>
+
+        </Border>
+    </Grid>
 </UserControl>

@@ -1,0 +1,105 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:entries="clr-namespace:Artemis.UI.Screens.Workshop.Entries"
+             xmlns:tagsInput="clr-namespace:Artemis.UI.Shared.TagsInput;assembly=Artemis.UI.Shared"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:categories="clr-namespace:Artemis.UI.Screens.Workshop.Categories"
+             xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
+             x:Class="Artemis.UI.Screens.Workshop.Entries.EntrySpecificationsView"
+             x:DataType="entries:EntrySpecificationsViewModel">
+    <StackPanel>
+        <StackPanel.Styles>
+            <Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                </Style>
+                <Style Selector="Label">
+                    <Setter Property="Margin" Value="0 8 0 0"></Setter>
+                </Style>
+            </Styles>
+        </StackPanel.Styles>
+
+        <Grid ColumnDefinitions="103,*">
+            <StackPanel Grid.Column="0" Width="95">
+                <Label Target="Name">Icon</Label>
+                <Button Width="95"
+                        Height="95"
+                        Command="{CompiledBinding SelectIcon}"
+                        IsVisible="{CompiledBinding IconBitmap, Converter={x:Static ObjectConverters.IsNull}}">
+                    <avalonia:MaterialIcon Kind="FolderOpen"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                           Width="30"
+                                           Height="30" />
+                </Button>
+                <Border IsVisible="{CompiledBinding IconBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"
+                        ClipToBounds="True"
+                        CornerRadius="6"
+                        VerticalAlignment="Center"
+                        Width="95"
+                        Height="95">
+                    <Panel>
+                        <Image Source="{CompiledBinding IconBitmap}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"></Image>
+                        <Button Classes="icon-button image-picker"
+                                VerticalAlignment="Stretch"
+                                HorizontalAlignment="Stretch"
+                                Cursor="Hand"
+                                Command="{CompiledBinding SelectIcon}"
+                                ToolTip.Tip="Click to browse">
+                        </Button>
+                    </Panel>
+
+                </Border>
+                <TextBlock Foreground="{DynamicResource SystemFillColorCriticalBrush}" Margin="2 0" IsVisible="{CompiledBinding !IconValid}" TextWrapping="Wrap">
+                    Icon required
+                </TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Column="1">
+                <Label Target="Name">Name</Label>
+                <TextBox Name="Name" Text="{CompiledBinding Name}"></TextBox>
+
+                <Label Target="Summary" Margin="0 5 0 0">Summary</Label>
+                <TextBox Name="Summary" Text="{CompiledBinding Summary}"></TextBox>
+            </StackPanel>
+        </Grid>
+
+        <Label Margin="0 28 0 0">Categories</Label>
+        <ItemsControl ItemsSource="{CompiledBinding Categories}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="categories:CategoryViewModel">
+                    <ToggleButton IsChecked="{CompiledBinding IsSelected}" Margin="0 0 5 5">
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" />
+                            <TextBlock Text="{CompiledBinding Name}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ToggleButton>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <TextBlock Foreground="{DynamicResource SystemFillColorCriticalBrush}" Margin="2 0" IsVisible="{CompiledBinding !CategoriesValid}">
+            At least one category is required
+        </TextBlock>
+
+        <Label>Tags</Label>
+        <tagsInput:TagsInput Tags="{CompiledBinding Tags}" />
+
+        <Label Target="DescriptionEditor" Margin="0 28 0 0">Description</Label>
+        <Border Classes="card">
+            <avaloniaEdit:TextEditor Height="250" Name="DescriptionEditor" Document="{CompiledBinding MarkdownDocument}"/>    
+        </Border>
+        
+        
+        <DockPanel HorizontalAlignment="Stretch">
+            <TextBlock Theme="{StaticResource CaptionTextBlockStyle}">Markdown supported, a better editor planned</TextBlock>
+            <Button Margin="0 5" HorizontalAlignment="Right" Command="{CompiledBinding OpenMarkdownPreview}">Open preview</Button>    
+        </DockPanel>
+        
+    </StackPanel>
+</UserControl>

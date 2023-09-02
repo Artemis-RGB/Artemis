@@ -47,8 +47,6 @@ public class WorkshopOfflineViewModel : RoutableScreen<WorkshopOfflineParameters
 
         Message = status.Message;
     }
-
-    public EntryType? EntryType => null;
 }
 
 public class WorkshopOfflineParameters

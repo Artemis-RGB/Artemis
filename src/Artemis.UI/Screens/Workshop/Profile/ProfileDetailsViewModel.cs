@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Screens.Workshop.Parameters;
-using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
@@ -77,6 +76,4 @@ public class ProfileDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
         else
             _notificationService.CreateNotification().WithTitle("Failed to install profile").WithMessage(result.Message).WithSeverity(NotificationSeverity.Error).Show();
     }
-
-    public EntryType? EntryType => null;
 }

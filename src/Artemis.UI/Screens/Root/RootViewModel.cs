@@ -128,7 +128,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
 
     private void ShowSplashScreen()
     {
-        _windowService.ShowWindow<SplashViewModel>();
+        _windowService.ShowWindow(out SplashViewModel _);
     }
 
     #region Tray commands

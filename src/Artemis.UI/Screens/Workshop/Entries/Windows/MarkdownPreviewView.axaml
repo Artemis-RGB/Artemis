@@ -1,0 +1,43 @@
+<windowing:AppWindow xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:windows="clr-namespace:Artemis.UI.Screens.Workshop.Entries.Windows"
+                     xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
+                     xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia.Tight"
+                     xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                     x:Class="Artemis.UI.Screens.Workshop.Entries.Windows.MarkdownPreviewView"
+                     x:DataType="windows:MarkdownPreviewViewModel"
+                     Icon="/Assets/Images/Logo/application.ico"
+                     Title="Artemis | Markdown Preview"
+                     Width="1200"
+                     Height="800">
+    <Grid RowDefinitions="Auto,*" Margin="15">
+        <StackPanel Grid.Row="0">
+            <TextBlock Theme="{StaticResource TitleTextBlockStyle}">Markdown Previewer</TextBlock>
+            <TextBlock TextWrapping="Wrap" Margin="0 10">
+                <Run>In this window you can preview the Markdown you're writing in the main window of the application.</Run>
+                <LineBreak/>
+                <Run>The preview updates realtime, so it might be a good idea to keep this window visible while you're typing.</Run>
+            </TextBlock>
+        </StackPanel>
+        
+        <controls:HyperlinkButton
+            Grid.Row="0"
+            Content="Learn more about Markdown on the wiki"
+            NavigateUri="https://wiki.artemis-rgb.com/guides/user/markdown?mtm_campaign=artemis&amp;mtm_kwd=markdown-editor"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top" />
+
+        <Border Grid.Row="1" Classes="card">
+            <mdxaml:MarkdownScrollViewer Markdown="{CompiledBinding Markdown^}" MarkdownStyleName="FluentAvalonia" SaveScrollValueWhenContentUpdated="True">
+                <mdxaml:MarkdownScrollViewer.Styles>
+                    <StyleInclude Source="/Styles/Markdown.axaml" />
+                </mdxaml:MarkdownScrollViewer.Styles>
+            </mdxaml:MarkdownScrollViewer>
+        </Border>
+
+    </Grid>
+
+</windowing:AppWindow>

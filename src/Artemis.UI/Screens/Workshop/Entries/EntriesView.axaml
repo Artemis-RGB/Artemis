@@ -1,19 +1,19 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:entries="clr-namespace:Artemis.UI.Screens.Workshop.Entries"
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-             xmlns:library="clr-namespace:Artemis.UI.Screens.Workshop.Library"
              xmlns:ui="clr-namespace:Artemis.UI"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Workshop.Library.WorkshopLibraryView"
-             x:DataType="library:WorkshopLibraryViewModel">
+             x:Class="Artemis.UI.Screens.Workshop.Entries.EntriesView"
+             x:DataType="entries:EntriesViewModel">
     <controls:NavigationView PaneDisplayMode="Top" 
                              MenuItemsSource="{CompiledBinding Tabs}" 
-                             SelectedItem="{CompiledBinding SelectedTab}" 
-                             IsBackEnabled="{CompiledBinding CanGoBack}"
-                             IsSettingsVisible="False"
+                             SelectedItem="{CompiledBinding SelectedTab}"
+                             IsBackEnabled="True"
                              IsBackButtonVisible="True"
+                             IsSettingsVisible="False"
                              BackRequested="NavigationView_OnBackRequested">
         <controls:NavigationView.Styles>
             <Styles>

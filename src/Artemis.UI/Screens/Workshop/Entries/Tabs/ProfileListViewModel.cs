@@ -1,13 +1,12 @@
 using System;
 using Artemis.UI.Screens.Workshop.Categories;
-using Artemis.UI.Screens.Workshop.Entries;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
 
-namespace Artemis.UI.Screens.Workshop.Profile;
+namespace Artemis.UI.Screens.Workshop.Entries.Tabs;
 
-public class ProfileListViewModel : EntryListBaseViewModel
+public class ProfileListViewModel : EntryListViewModel
 {
     /// <inheritdoc />
     public ProfileListViewModel(IWorkshopClient workshopClient,
@@ -24,7 +23,7 @@ public class ProfileListViewModel : EntryListBaseViewModel
     /// <inheritdoc />
     protected override string GetPagePath(int page)
     {
-        return $"workshop/profiles/{page}";
+        return $"workshop/entries/profiles/{page}";
     }
 
     /// <inheritdoc />

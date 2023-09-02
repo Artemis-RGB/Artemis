@@ -44,6 +44,4 @@ public class WorkshopHomeViewModel : RoutableScreen
     {
         await _windowService.ShowDialogAsync<SubmissionWizardViewModel, bool>();
     }
-
-    public EntryType? EntryType => null;
 }

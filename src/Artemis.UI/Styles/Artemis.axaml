@@ -1,7 +1,9 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:styling="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
-        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:aedit="using:AvaloniaEdit"
+        xmlns:aedit2="using:AvaloniaEdit.Editing">
     <!-- Third party styles -->
     <styling:FluentAvaloniaTheme PreferSystemTheme="False" PreferUserAccentColor="True"/>
     <avalonia:MaterialIconStyles />
@@ -9,6 +11,18 @@
     <!-- <FluentTheme Mode="Dark"></FluentTheme> -->
     <StyleInclude Source="avares://Artemis.UI.Shared/Styles/Artemis.axaml" />
     <StyleInclude Source="avares://AsyncImageLoader.Avalonia/AdvancedImage.axaml" />
+    <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
+    
+    <!-- Adjust the ScrollViewer padding in AvaloniaEdit so scrollbar doesn't overlap text -->
+    <Style Selector="aedit|TextEditor /template/ ScrollViewer ScrollContentPresenter">
+        <Setter Property="Padding" Value="0 0 0 20" />
+    </Style>
+    
+    <!-- set the selection color for the AvaloniaEdit boxes -->
+    <Style Selector="aedit2|TextArea">
+        <Setter Property="SelectionBrush" Value="{DynamicResource TextControlSelectionHighlightColor}" />
+        <Setter Property="SelectionForeground" Value="{DynamicResource TextOnAccentFillColorSelectedTextBrush}" />
+    </Style>
     
     <Styles.Resources>
         <ResourceDictionary>

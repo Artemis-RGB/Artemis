@@ -9,29 +9,28 @@ using ReactiveUI;
 using System;
 using System.Reactive.Linq;
 
-namespace Artemis.UI.Screens.Workshop.Library;
+namespace Artemis.UI.Screens.Workshop.Entries;
 
-public class WorkshopLibraryViewModel : RoutableHostScreen<RoutableScreen>
+public class EntriesViewModel : RoutableHostScreen<RoutableScreen>
 {
     private readonly IRouter _router;
     private RouteViewModel? _selectedTab;
-    private ObservableAsPropertyHelper<bool>? _canGoBack;
+    private ObservableAsPropertyHelper<bool>? _viewingDetails;
 
-    /// <inheritdoc />
-    public WorkshopLibraryViewModel(IRouter router)
+    public EntriesViewModel(IRouter router)
     {
         _router = router;
 
         Tabs = new ObservableCollection<RouteViewModel>
         {
-            new("Installed", "workshop/library/installed"),
-            new("Submissions", "workshop/library/submissions")
+            new("Profiles", "workshop/entries/profiles/1", "workshop/entries/profiles"),
+            new("Layouts", "workshop/entries/layouts/1", "workshop/entries/layouts")
         };
 
         this.WhenActivated(d =>
         {
             // Show back button on details page
-            _canGoBack = _router.CurrentPath.Select(p => p != null && p.StartsWith("workshop/library/submissions/")).ToProperty(this, vm => vm.CanGoBack).DisposeWith(d);
+            _viewingDetails = _router.CurrentPath.Select(p => p != null && p.Contains("details")).ToProperty(this, vm => vm.ViewingDetails).DisposeWith(d);
             // Navigate on tab change
             this.WhenAnyValue(vm => vm.SelectedTab)
                 .WhereNotNull()
@@ -40,7 +39,7 @@ public class WorkshopLibraryViewModel : RoutableHostScreen<RoutableScreen>
         });
     }
 
-    public bool CanGoBack => _canGoBack?.Value ?? false;
+    public bool ViewingDetails => _viewingDetails?.Value ?? false;
     public ObservableCollection<RouteViewModel> Tabs { get; }
 
     public RouteViewModel? SelectedTab
@@ -58,6 +57,9 @@ public class WorkshopLibraryViewModel : RoutableHostScreen<RoutableScreen>
 
     public void GoBack()
     {
-        _router.GoBack();
+        if (ViewingDetails)
+            _router.GoBack();
+        else
+            _router.Navigate("workshop");
     }
 }

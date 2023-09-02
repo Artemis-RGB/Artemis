@@ -1,16 +1,16 @@
-﻿using System;
 using System.Reactive.Disposables;
 using Artemis.UI.Shared;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
+using System;
 
-namespace Artemis.UI.Screens.Workshop.Library;
+namespace Artemis.UI.Screens.Workshop.Entries;
 
-public partial class WorkshopLibraryView : ReactiveUserControl<WorkshopLibraryViewModel>
+public partial class EntriesView : ReactiveUserControl<EntriesViewModel>
 {
-    public WorkshopLibraryView()
+    public EntriesView()
     {
         InitializeComponent();
         this.WhenActivated(d => { ViewModel.WhenAnyValue(vm => vm.Screen).WhereNotNull().Subscribe(Navigate).DisposeWith(d); });

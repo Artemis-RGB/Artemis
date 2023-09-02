@@ -21,6 +21,7 @@ public class SubmissionsTabViewModel : RoutableScreen
     private readonly IWorkshopClient _client;
     private readonly SourceCache<IGetSubmittedEntries_SubmittedEntries, Guid> _entries;
     private readonly IWindowService _windowService;
+    private readonly IRouter _router;
     private bool _isLoading = true;
     private bool _workshopReachable;
 
@@ -28,6 +29,7 @@ public class SubmissionsTabViewModel : RoutableScreen
     {
         _client = client;
         _windowService = windowService;
+        _router = router;
         _entries = new SourceCache<IGetSubmittedEntries_SubmittedEntries, Guid>(e => e.Id);
         _entries.Connect().Bind(out ReadOnlyObservableCollection<IGetSubmittedEntries_SubmittedEntries> entries).Subscribe();
 
@@ -76,9 +78,9 @@ public class SubmissionsTabViewModel : RoutableScreen
         await _windowService.ShowDialogAsync<SubmissionWizardViewModel, bool>();
     }
 
-    private Task ExecuteNavigateToEntry(IGetSubmittedEntries_SubmittedEntries entry, CancellationToken cancellationToken)
+    private async Task ExecuteNavigateToEntry(IGetSubmittedEntries_SubmittedEntries entry, CancellationToken cancellationToken)
     {
-        return Task.CompletedTask;
+        await _router.Navigate($"workshop/library/submissions/{entry.Id}");
     }
 
     private async Task GetEntries(CancellationToken ct)
@@ -103,6 +105,4 @@ public class SubmissionsTabViewModel : RoutableScreen
             IsLoading = false;
         }
     }
-
-    public EntryType? EntryType => null;
 }

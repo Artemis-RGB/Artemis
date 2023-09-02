@@ -152,13 +152,13 @@ public class UploadStepViewModel : SubmissionViewModel
         switch (State.EntryType)
         {
             case EntryType.Layout:
-                await _router.Navigate($"workshop/layouts/{_entryId.Value}");
+                await _router.Navigate($"workshop/entries/layouts/{_entryId.Value}");
                 break;
             case EntryType.Plugin:
-                await _router.Navigate($"workshop/plugins/{_entryId.Value}");
+                await _router.Navigate($"workshop/entries/plugins/{_entryId.Value}");
                 break;
             case EntryType.Profile:
-                await _router.Navigate($"workshop/profiles/{_entryId.Value}");
+                await _router.Navigate($"workshop/entries/profiles/{_entryId.Value}");
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

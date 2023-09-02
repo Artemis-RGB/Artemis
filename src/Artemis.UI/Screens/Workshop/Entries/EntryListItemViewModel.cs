@@ -33,10 +33,10 @@ public class EntryListItemViewModel : ActivatableViewModelBase
         switch (Entry.EntryType)
         {
             case EntryType.Layout:
-                await _router.Navigate($"workshop/layouts/{Entry.Id}");
+                await _router.Navigate($"workshop/entries/layouts/details/{Entry.Id}");
                 break;
             case EntryType.Profile:
-                await _router.Navigate($"workshop/profiles/{Entry.Id}");
+                await _router.Navigate($"workshop/entries/profiles/details/{Entry.Id}");
                 break;
             case EntryType.Plugin:
                 break;

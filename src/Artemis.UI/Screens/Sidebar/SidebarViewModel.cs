@@ -41,8 +41,8 @@ public class SidebarViewModel : ActivatableViewModelBase
             #if DEBUG
             new(MaterialIconKind.TestTube, "Workshop", "workshop", null, new ObservableCollection<SidebarScreenViewModel>
             {
-                new(MaterialIconKind.FolderVideo, "Profiles", "workshop/profiles/1", "workshop/profiles"),
-                new(MaterialIconKind.KeyboardVariant, "Layouts", "workshop/layouts/1", "workshop/layouts"),
+                new(MaterialIconKind.FolderVideo, "Profiles", "workshop/entries/profiles/1", "workshop/entries/profiles"),
+                new(MaterialIconKind.KeyboardVariant, "Layouts", "workshop/entries/layouts/1", "workshop/entries/layouts"),
                 new(MaterialIconKind.Bookshelf, "Library", "workshop/library"),
             }),
             #endif

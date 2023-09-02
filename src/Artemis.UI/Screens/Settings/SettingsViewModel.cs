@@ -21,11 +21,11 @@ public class SettingsViewModel : RoutableHostScreen<RoutableScreen>, IMainScreen
         _router = router;
         SettingTabs = new ObservableCollection<RouteViewModel>
         {
-            new("settings/general", "General"),
-            new("settings/plugins", "Plugins"),
-            new("settings/devices", "Devices"),
-            new("settings/releases", "Releases"),
-            new("settings/about", "About"),
+            new("General", "settings/general"),
+            new("Plugins", "settings/plugins"),
+            new("Devices", "settings/devices"),
+            new("Releases", "settings/releases"),
+            new("About", "settings/about"),
         };
         
         // Navigate on tab change
