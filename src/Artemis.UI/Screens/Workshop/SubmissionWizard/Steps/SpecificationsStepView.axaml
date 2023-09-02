@@ -54,8 +54,7 @@
                         </Button>
                         <Border IsVisible="{CompiledBinding IconBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"
                                 ClipToBounds="True"
-                                CornerRadius="12"
-                                Background="{StaticResource ControlStrokeColorOnAccentDefault}"
+                                CornerRadius="6"
                                 VerticalAlignment="Center"
                                 Width="95"
                                 Height="95">

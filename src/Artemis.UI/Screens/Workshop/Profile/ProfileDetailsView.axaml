@@ -85,8 +85,7 @@
                     <StackPanel>
                         <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Latest release</TextBlock>
                         <Border Classes="card-separator" />
-                        <Button CornerRadius="8" 
-                                HorizontalAlignment="Stretch" 
+                        <Button HorizontalAlignment="Stretch" 
                                 HorizontalContentAlignment="Stretch" 
                                 Command="{CompiledBinding DownloadLatestRelease}">
                             <Grid ColumnDefinitions="Auto,*">

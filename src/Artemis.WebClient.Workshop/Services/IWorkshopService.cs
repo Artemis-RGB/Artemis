@@ -55,13 +55,12 @@ public class WorkshopService : IWorkshopService
             return new IWorkshopService.WorkshopStatus(false, e.Message);
         }
     }
-
-    /// <param name="cancellationToken"></param>
+    
     /// <inheritdoc />
     public async Task<bool> ValidateWorkshopStatus(CancellationToken cancellationToken)
     {
         IWorkshopService.WorkshopStatus status = await GetWorkshopStatus(cancellationToken);
-        if (!status.IsReachable)
+        if (!status.IsReachable && !cancellationToken.IsCancellationRequested)
             await _router.Navigate($"workshop/offline/{status.Message}");
         return status.IsReachable;
     }
