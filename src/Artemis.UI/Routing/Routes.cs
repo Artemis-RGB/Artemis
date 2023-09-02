@@ -35,8 +35,9 @@ public static class Routes
                 {
                     Children = new List<IRouterRegistration>()
                     {
-                        new RouteRegistration<LibraryInstalledViewModel>("installed"),
-                        new RouteRegistration<LibrarySubmissionsViewModel>("submissions"),
+                        new RouteRegistration<InstalledTabViewModel>("installed"),
+                        new RouteRegistration<SubmissionsTabViewModel>("submissions"),
+                        new RouteRegistration<SubmissionsDetailViewModel>("submissions/{entryId:guid}"),
                     }
                 }
             }

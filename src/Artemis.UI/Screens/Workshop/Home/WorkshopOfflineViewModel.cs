@@ -10,7 +10,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.Home;
 
-public class WorkshopOfflineViewModel : RoutableScreen<ActivatableViewModelBase, WorkshopOfflineParameters>, IWorkshopViewModel
+public class WorkshopOfflineViewModel : RoutableScreen<WorkshopOfflineParameters>
 {
     private readonly IRouter _router;
     private readonly IWorkshopService _workshopService;

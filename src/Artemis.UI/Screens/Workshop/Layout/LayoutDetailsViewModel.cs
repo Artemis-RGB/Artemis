@@ -9,7 +9,7 @@ using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Layout;
 
-public class LayoutDetailsViewModel : RoutableScreen<ActivatableViewModelBase, WorkshopDetailParameters>, IWorkshopViewModel
+public class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
 {
     private readonly IWorkshopClient _client;
     private IGetEntryById_Entry? _entry;

@@ -5,9 +5,9 @@ using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.Library.Tabs;
 
-public partial class LibrarySubmissionsView : ReactiveUserControl<LibrarySubmissionsViewModel>
+public partial class InstalledTabView : ReactiveUserControl<InstalledTabViewModel>
 {
-    public LibrarySubmissionsView()
+    public InstalledTabView()
     {
         InitializeComponent();
     }

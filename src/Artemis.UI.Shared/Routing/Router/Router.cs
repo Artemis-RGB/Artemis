@@ -14,15 +14,15 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
     private readonly Stack<string> _backStack = new();
     private readonly BehaviorSubject<string?> _currentRouteSubject;
     private readonly Stack<string> _forwardStack = new();
-    private readonly Func<IRoutableScreen, RouteResolution, RouterNavigationOptions, Navigation> _getNavigation;
+    private readonly Func<IRoutableHostScreen, RouteResolution, RouterNavigationOptions, Navigation> _getNavigation;
     private readonly ILogger _logger;
     private readonly IMainWindowService _mainWindowService;
     private Navigation? _currentNavigation;
 
-    private IRoutableScreen? _root;
+    private IRoutableHostScreen? _root;
     private string? _previousWindowRoute;
 
-    public Router(ILogger logger, IMainWindowService mainWindowService, Func<IRoutableScreen, RouteResolution, RouterNavigationOptions, Navigation> getNavigation)
+    public Router(ILogger logger, IMainWindowService mainWindowService, Func<IRoutableHostScreen, RouteResolution, RouterNavigationOptions, Navigation> getNavigation)
     {
         _logger = logger;
         _mainWindowService = mainWindowService;
@@ -45,21 +45,17 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
         return RouteResolution.AsFailure(path);
     }
 
-    private async Task<bool> RequestClose(object screen, NavigationArguments args)
+    private async Task<bool> RequestClose(IRoutableScreen screen, NavigationArguments args)
     {
-        if (screen is not IRoutableScreen routableScreen)
-            return true;
-
-        await routableScreen.InternalOnClosing(args);
-        if (args.Cancelled)
-        {
-            _logger.Debug("Navigation to {Path} cancelled during RequestClose by {Screen}", args.Path, screen.GetType().Name);
+        // Drill down to child screens first
+        if (screen is IRoutableHostScreen hostScreen && hostScreen.InternalScreen != null && !await RequestClose(hostScreen.InternalScreen, args))
             return false;
-        }
 
-        if (routableScreen.InternalScreen == null)
+        await screen.InternalOnClosing(args);
+        if (!args.Cancelled)
             return true;
-        return await RequestClose(routableScreen.InternalScreen, args);
+        _logger.Debug("Navigation to {Path} cancelled during RequestClose by {Screen}", args.Path, screen.GetType().Name);
+        return false;
     }
 
     private bool PathEquals(string path, bool allowPartialMatch)
@@ -161,13 +157,13 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
     }
 
     /// <inheritdoc />
-    public void SetRoot<TScreen>(RoutableScreen<TScreen> root) where TScreen : class
+    public void SetRoot<TScreen>(RoutableHostScreen<TScreen> root) where TScreen : RoutableScreen
     {
         _root = root;
     }
 
     /// <inheritdoc />
-    public void SetRoot<TScreen, TParam>(RoutableScreen<TScreen, TParam> root) where TScreen : class where TParam : new()
+    public void SetRoot<TScreen, TParam>(RoutableHostScreen<TScreen, TParam> root) where TScreen : RoutableScreen where TParam : new()
     {
         _root = root;
     }

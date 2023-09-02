@@ -1,9 +1,9 @@
 ﻿using Artemis.Core;
-using Artemis.UI.Shared;
+using Artemis.UI.Shared.Routing;
 
 namespace Artemis.UI.Screens.Settings;
 
-public class AboutTabViewModel : ActivatableViewModelBase
+public class AboutTabViewModel : RoutableScreen
 {
     public AboutTabViewModel()
     {

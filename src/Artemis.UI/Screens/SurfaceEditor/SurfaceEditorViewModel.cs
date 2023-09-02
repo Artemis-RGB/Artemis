@@ -10,6 +10,7 @@ using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Extensions;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Avalonia;
 using ReactiveUI;
@@ -17,7 +18,7 @@ using SkiaSharp;
 
 namespace Artemis.UI.Screens.SurfaceEditor;
 
-public class SurfaceEditorViewModel : ActivatableViewModelBase, IMainScreenViewModel
+public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
 {
     private readonly IDeviceService _deviceService;
     private readonly IDeviceVmFactory _deviceVmFactory;

@@ -17,14 +17,13 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.UI.Shared.Services.ProfileEditor;
-using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor;
 
-public class ProfileEditorViewModel : RoutableScreen<object, ProfileEditorViewModelParameters>, IMainScreenViewModel
+public class ProfileEditorViewModel : RoutableScreen<ProfileEditorViewModelParameters>, IMainScreenViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
     private readonly IProfileService _profileService;

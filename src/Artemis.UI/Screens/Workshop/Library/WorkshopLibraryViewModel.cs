@@ -12,7 +12,7 @@ using System;
 
 namespace Artemis.UI.Screens.Workshop.Library;
 
-public class WorkshopLibraryViewModel : RoutableScreen<ActivatableViewModelBase>, IWorkshopViewModel
+public class WorkshopLibraryViewModel : RoutableHostScreen<RoutableScreen>
 {
     private RouteViewModel? _selectedTab;
 

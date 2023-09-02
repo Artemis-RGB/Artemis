@@ -1,12 +1,13 @@
 ﻿using Artemis.Core.Services;
 using Artemis.UI.Screens.StartupWizard;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Avalonia.Threading;
 
 namespace Artemis.UI.Screens.Home;
 
-public class HomeViewModel : ViewModelBase, IMainScreenViewModel
+public class HomeViewModel : RoutableScreen, IMainScreenViewModel
 {
     public HomeViewModel(ISettingsService settingsService, IWindowService windowService)
     {

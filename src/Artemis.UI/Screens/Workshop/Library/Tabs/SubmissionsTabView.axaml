@@ -8,8 +8,8 @@
              xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="650"
-             x:Class="Artemis.UI.Screens.Workshop.Library.Tabs.LibrarySubmissionsView"
-             x:DataType="tabs:LibrarySubmissionsViewModel">
+             x:Class="Artemis.UI.Screens.Workshop.Library.Tabs.SubmissionsTabView"
+             x:DataType="tabs:SubmissionsTabViewModel">
     <UserControl.Resources>
         <converters:EntryIconUriConverter x:Key="EntryIconUriConverter" />
         <converters:DateTimeConverter x:Key="DateTimeConverter" />
@@ -54,7 +54,7 @@
                                     Margin="0 0 0 5"
                                     HorizontalAlignment="Stretch"
                                     HorizontalContentAlignment="Stretch"
-                                    Command="{Binding $parent[tabs:LibrarySubmissionsView].DataContext.NavigateToEntry}"
+                                    Command="{Binding $parent[tabs:SubmissionsTabView].DataContext.NavigateToEntry}"
                                     CommandParameter="{CompiledBinding}">
                                 <Grid ColumnDefinitions="Auto,*,Auto">
                                     <!-- Icon -->

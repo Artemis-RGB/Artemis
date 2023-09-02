@@ -19,7 +19,6 @@ public class SearchViewModel : ViewModelBase
     private readonly ILogger _logger;
     private readonly IRouter _router;
     private readonly IWorkshopClient _workshopClient;
-    private EntryType? _entryType;
     private bool _isLoading;
     private SearchResultViewModel? _selectedEntry;
 
@@ -42,12 +41,6 @@ public class SearchViewModel : ViewModelBase
     {
         get => _selectedEntry;
         set => RaiseAndSetIfChanged(ref _selectedEntry, value);
-    }
-
-    public EntryType? EntryType
-    {
-        get => _entryType;
-        set => RaiseAndSetIfChanged(ref _entryType, value);
     }
 
     public bool IsLoading
@@ -76,7 +69,7 @@ public class SearchViewModel : ViewModelBase
                 return new List<object>();
 
             IsLoading = true;
-            IOperationResult<ISearchEntriesResult> results = await _workshopClient.SearchEntries.ExecuteAsync(input, EntryType, cancellationToken);
+            IOperationResult<ISearchEntriesResult> results = await _workshopClient.SearchEntries.ExecuteAsync(input, null, cancellationToken);
             return results.Data?.SearchEntries.Select(e => new SearchResultViewModel(e) as object) ?? new List<object>();
         }
         catch (Exception e)

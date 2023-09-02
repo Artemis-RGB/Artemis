@@ -50,7 +50,7 @@ public interface IRouter
     /// </summary>
     /// <param name="root">The root screen to set.</param>
     /// <typeparam name="TScreen">The type of the root screen. It must be a class.</typeparam>
-    void SetRoot<TScreen>(RoutableScreen<TScreen> root) where TScreen : class;
+    void SetRoot<TScreen>(RoutableHostScreen<TScreen> root) where TScreen : RoutableScreen;
 
     /// <summary>
     ///     Sets the root screen from which navigation takes place.
@@ -58,7 +58,7 @@ public interface IRouter
     /// <param name="root">The root screen to set.</param>
     /// <typeparam name="TScreen">The type of the root screen. It must be a class.</typeparam>
     /// <typeparam name="TParam">The type of the parameters for the root screen. It must have a parameterless constructor.</typeparam>
-    void SetRoot<TScreen, TParam>(RoutableScreen<TScreen, TParam> root) where TScreen : class where TParam : new();
+    void SetRoot<TScreen, TParam>(RoutableHostScreen<TScreen, TParam> root) where TScreen : RoutableScreen where TParam : new();
 
     /// <summary>
     ///     Clears the route used by the previous window, so that it is not restored when the main window opens.

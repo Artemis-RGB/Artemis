@@ -1,13 +1,13 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.Library.Tabs;
 
-public partial class LibraryInstalledView : ReactiveUserControl<LibraryInstalledViewModel>
+public partial class SubmissionsDetailView : ReactiveUserControl<SubmissionsDetailViewModel>
 {
-    public LibraryInstalledView()
+    public SubmissionsDetailView()
     {
         InitializeComponent();
     }

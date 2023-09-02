@@ -18,7 +18,7 @@ using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Profile;
 
-public class ProfileDetailsViewModel : RoutableScreen<ActivatableViewModelBase, WorkshopDetailParameters>, IWorkshopViewModel
+public class ProfileDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
 {
     private readonly IWorkshopClient _client;
     private readonly ProfileEntryDownloadHandler _downloadHandler;

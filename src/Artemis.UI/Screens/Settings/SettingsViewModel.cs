@@ -11,7 +11,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Settings;
 
-public class SettingsViewModel : RoutableScreen<ActivatableViewModelBase>, IMainScreenViewModel
+public class SettingsViewModel : RoutableHostScreen<RoutableScreen>, IMainScreenViewModel
 {
     private readonly IRouter _router;
     private RouteViewModel? _selectedTab;

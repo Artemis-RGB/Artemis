@@ -8,7 +8,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.Device;
-using Artemis.UI.Shared;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Avalonia.Threading;
 using DynamicData;
@@ -16,7 +16,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Settings;
 
-public class DevicesTabViewModel : ActivatableViewModelBase
+public class DevicesTabViewModel : RoutableScreen
 {
     private readonly IDeviceVmFactory _deviceVmFactory;
     private readonly IRgbService _rgbService;

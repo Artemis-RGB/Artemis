@@ -9,18 +9,17 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.Plugins;
-using Artemis.UI.Shared;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Avalonia.ReactiveUI;
-using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Settings;
 
-public class PluginsTabViewModel : ActivatableViewModelBase
+public class PluginsTabViewModel : RoutableScreen
 {
     private readonly INotificationService _notificationService;
     private readonly IPluginManagementService _pluginManagementService;

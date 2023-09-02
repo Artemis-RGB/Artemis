@@ -14,7 +14,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.Home;
 
-public class WorkshopHomeViewModel : ActivatableViewModelBase, IWorkshopViewModel
+public class WorkshopHomeViewModel : RoutableScreen
 {
     private readonly IWindowService _windowService;
     private readonly IWorkshopService _workshopService;

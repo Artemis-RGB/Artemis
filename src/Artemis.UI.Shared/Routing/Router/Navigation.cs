@@ -14,12 +14,12 @@ internal class Navigation
     private readonly IContainer _container;
     private readonly ILogger _logger;
 
-    private readonly IRoutableScreen _root;
+    private readonly IRoutableHostScreen _root;
     private readonly RouteResolution _resolution;
     private readonly RouterNavigationOptions _options;
     private CancellationTokenSource _cts;
 
-    public Navigation(IContainer container, ILogger logger, IRoutableScreen root, RouteResolution resolution, RouterNavigationOptions options)
+    public Navigation(IContainer container, ILogger logger, IRoutableHostScreen root, RouteResolution resolution, RouterNavigationOptions options)
     {
         _container = container;
         _logger = logger;
@@ -54,21 +54,21 @@ internal class Navigation
         _cts.Cancel();
     }
 
-    private async Task NavigateResolution(RouteResolution resolution, NavigationArguments args, IRoutableScreen host)
+    private async Task NavigateResolution(RouteResolution resolution, NavigationArguments args, IRoutableHostScreen host)
     {
         if (Cancelled)
             return;
 
         // Reuse the screen if its type has not changed, if a new one must be created, don't do so on the UI thread
-        object screen;
+        IRoutableScreen screen;
         if (_options.RecycleScreens && host.RecycleScreen && host.InternalScreen != null && host.InternalScreen.GetType() == resolution.ViewModel)
             screen = host.InternalScreen;
         else
             screen = await Task.Run(() => resolution.GetViewModel(_container));
 
         // If resolution has a child, ensure the screen can host it
-        if (resolution.Child != null && screen is not IRoutableScreen)
-            throw new ArtemisRoutingException($"Route resolved with a child but view model of type {resolution.ViewModel} is does mot implement {nameof(IRoutableScreen)}.");
+        if (resolution.Child != null && screen is not IRoutableHostScreen)
+            throw new ArtemisRoutingException($"Route resolved with a child but view model of type {resolution.ViewModel} is does mot implement {nameof(IRoutableHostScreen)}.");
 
         // Only change the screen if it wasn't reused
         if (!ReferenceEquals(host.InternalScreen, screen))
@@ -87,27 +87,24 @@ internal class Navigation
 
         if (CancelIfRequested(args, "ChangeScreen", screen))
             return;
-
-        // If the screen implements some form of Navigable, activate it
+        
+        // Navigate on the screen
         args.SegmentParameters = resolution.Parameters ?? Array.Empty<object>();
-        if (screen is IRoutableScreen routableScreen)
+        try
         {
-            try
-            {
-                await routableScreen.InternalOnNavigating(args, _cts.Token);
-            }
-            catch (Exception e)
-            {
-                Cancel();
-                if (e is not TaskCanceledException)
-                    _logger.Error(e, "Failed to navigate to {Path}", resolution.Path);
-            }
-
-            if (CancelIfRequested(args, "OnNavigating", screen))
-                return;
+            await screen.InternalOnNavigating(args, _cts.Token);
+        }
+        catch (Exception e)
+        {
+            Cancel();
+            if (e is not TaskCanceledException)
+                _logger.Error(e, "Failed to navigate to {Path}", resolution.Path);
         }
 
-        if (screen is IRoutableScreen childScreen)
+        if (CancelIfRequested(args, "OnNavigating", screen))
+            return;
+
+        if (screen is IRoutableHostScreen childScreen)
         {
             // Navigate the child too
             if (resolution.Child != null)

@@ -18,7 +18,7 @@ using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Entries;
 
-public abstract class EntryListBaseViewModel : RoutableScreen<ActivatableViewModelBase, WorkshopListParameters>, IWorkshopViewModel
+public abstract class EntryListBaseViewModel : RoutableScreen<WorkshopListParameters>
 {
     private readonly INotificationService _notificationService;
     private readonly IWorkshopClient _workshopClient;

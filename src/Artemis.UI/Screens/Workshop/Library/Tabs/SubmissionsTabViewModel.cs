@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Workshop.CurrentUser;
 using Artemis.UI.Screens.Workshop.SubmissionWizard;
-using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
@@ -17,7 +16,7 @@ using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Library.Tabs;
 
-public class LibrarySubmissionsViewModel : ActivatableViewModelBase, IWorkshopViewModel
+public class SubmissionsTabViewModel : RoutableScreen
 {
     private readonly IWorkshopClient _client;
     private readonly SourceCache<IGetSubmittedEntries_SubmittedEntries, Guid> _entries;
@@ -25,7 +24,7 @@ public class LibrarySubmissionsViewModel : ActivatableViewModelBase, IWorkshopVi
     private bool _isLoading = true;
     private bool _workshopReachable;
 
-    public LibrarySubmissionsViewModel(IWorkshopClient client, IAuthenticationService authenticationService, IWindowService windowService, IWorkshopService workshopService, IRouter router)
+    public SubmissionsTabViewModel(IWorkshopClient client, IAuthenticationService authenticationService, IWindowService windowService, IWorkshopService workshopService, IRouter router)
     {
         _client = client;
         _windowService = windowService;
