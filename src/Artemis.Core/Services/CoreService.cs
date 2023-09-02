@@ -43,8 +43,7 @@ internal class CoreService : ICoreService
         IRgbService rgbService,
         IProfileService profileService,
         IModuleService moduleService,
-        IScriptingService scriptingService,
-        IProcessMonitorService _2)
+        IScriptingService scriptingService)
     {
         Constants.CorePlugin.Container = container;
 
@@ -82,8 +81,8 @@ internal class CoreService : ICoreService
             string[] parts = argument.Split('=');
             if (parts.Length == 2 && Enum.TryParse(typeof(LogEventLevel), parts[1], true, out object? logLevelArgument))
             {
-                _logger.Information("Setting logging level to {loggingLevel} from startup argument", (LogEventLevel) logLevelArgument!);
-                LoggerFactory.LoggingLevelSwitch.MinimumLevel = (LogEventLevel) logLevelArgument;
+                _logger.Information("Setting logging level to {loggingLevel} from startup argument", (LogEventLevel)logLevelArgument!);
+                LoggerFactory.LoggingLevelSwitch.MinimumLevel = (LogEventLevel)logLevelArgument;
             }
             else
             {
@@ -206,6 +205,8 @@ internal class CoreService : ICoreService
         _logger.Information("Stopwatch high resolution: {IsHighResolution}", Stopwatch.IsHighResolution);
 
         ApplyLoggingLevel();
+
+        ProcessMonitor.Start();
 
         // Don't remove even if it looks useless
         // Just this line should prevent a certain someone from removing HidSharp as an unused dependency as well
