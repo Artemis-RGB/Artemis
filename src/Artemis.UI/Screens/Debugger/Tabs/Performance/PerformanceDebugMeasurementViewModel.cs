@@ -10,6 +10,7 @@ public class PerformanceDebugMeasurementViewModel : ViewModelBase
     private string? _max;
     private string? _min;
     private string? _percentile;
+    private string? _count;
 
     public PerformanceDebugMeasurementViewModel(ProfilingMeasurement measurement)
     {
@@ -47,6 +48,12 @@ public class PerformanceDebugMeasurementViewModel : ViewModelBase
         get => _percentile;
         set => RaiseAndSetIfChanged(ref _percentile, value);
     }
+    
+    public string? Count
+    {
+        get => _count;
+        set => RaiseAndSetIfChanged(ref _count, value);
+    }
 
     public void Update()
     {
@@ -55,5 +62,6 @@ public class PerformanceDebugMeasurementViewModel : ViewModelBase
         Min = Measurement.GetMin().TotalMilliseconds + " ms";
         Max = Measurement.GetMax().TotalMilliseconds + " ms";
         Percentile = Measurement.GetPercentile(0.95).TotalMilliseconds + " ms";
+        Count = Measurement.GetCount().ToString();
     }
 }

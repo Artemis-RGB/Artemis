@@ -23,6 +23,7 @@
                 <DataGridTextColumn Binding="{CompiledBinding Max}" Header="Max" />
                 <DataGridTextColumn Binding="{CompiledBinding Average}" Header="Average" />
                 <DataGridTextColumn Binding="{CompiledBinding Percentile}" Header="95th percentile" />
+                <DataGridTextColumn Binding="{CompiledBinding Count}" Header="Number of Calls" />
             </DataGrid.Columns>
         </DataGrid>
     </StackPanel>

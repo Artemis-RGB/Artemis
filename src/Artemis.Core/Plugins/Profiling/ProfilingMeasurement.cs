@@ -14,6 +14,7 @@ public class ProfilingMeasurement
     private long _last;
     private bool _open;
     private long _start;
+    private ulong _count;
 
     internal ProfilingMeasurement(string identifier)
     {
@@ -59,6 +60,7 @@ public class ProfilingMeasurement
             _filledArray = true;
             _index = 0;
         }
+        _count++;
 
         _last = difference;
         return difference;
@@ -124,6 +126,14 @@ public class ProfilingMeasurement
             : Measurements.Take(_index).OrderBy(l => l).ToArray();
 
         return new TimeSpan((long) Percentile(collection, percentile));
+    }
+
+    /// <summary>
+    ///     Gets the number of measurements taken
+    /// </summary>
+    public ulong GetCount()
+    {
+        return _count;
     }
 
     private static double Percentile(long[] elements, double percentile)
