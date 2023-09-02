@@ -6,5 +6,9 @@ query GetSubmittedEntries($filter: EntryFilterInput) {
         entryType
         downloads
         createdAt
+        categories {
+            name
+            icon
+        }
     }
 }

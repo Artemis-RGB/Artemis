@@ -69,6 +69,7 @@ public class LibrarySubmissionsViewModel : ActivatableViewModelBase, IWorkshopVi
     private async Task ExecuteLogin(CancellationToken ct)
     {
         await _windowService.CreateContentDialog().WithViewModel(out WorkshopLoginViewModel _).WithTitle("Workshop login").ShowAsync();
+        await GetEntries(ct);
     }
 
     private async Task ExecuteAddSubmission(CancellationToken arg)
