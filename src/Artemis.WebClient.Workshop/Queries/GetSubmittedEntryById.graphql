@@ -1,0 +1,17 @@
+query GetSubmittedEntryById($id: UUID!) {
+    entry(id: $id) {
+        id
+        name
+        summary
+        entryType
+        downloads
+        createdAt
+        description
+        categories {
+            id
+        }
+        tags {
+            name
+        }
+    }
+}

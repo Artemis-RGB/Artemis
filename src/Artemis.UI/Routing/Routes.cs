@@ -45,7 +45,7 @@ public static class Routes
                     {
                         new RouteRegistration<InstalledTabViewModel>("installed"),
                         new RouteRegistration<SubmissionsTabViewModel>("submissions"),
-                        new RouteRegistration<SubmissionsDetailViewModel>("submissions/{entryId:guid}"),
+                        new RouteRegistration<SubmissionDetailViewModel>("submissions/{entryId:guid}"),
                     }
                 }
             }

@@ -1,0 +1,5 @@
+mutation RemoveEntry ($id: UUID!) {
+    removeEntry(id: $id) {
+        id
+    }
+}

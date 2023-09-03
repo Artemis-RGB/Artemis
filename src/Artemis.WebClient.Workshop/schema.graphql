@@ -55,6 +55,7 @@ type Image {
 
 type Mutation {
     addEntry(input: CreateEntryInput!): Entry
+    removeEntry(id: UUID!): Entry
     updateEntry(input: UpdateEntryInput!): Entry
 }
 

@@ -5,15 +5,12 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Workshop.Categories;
-using Artemis.UI.Screens.Workshop.Entries.Windows;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
-using Avalonia.Controls;
 using AvaloniaEdit.Document;
 using DynamicData;
 using DynamicData.Aggregation;
@@ -35,16 +32,13 @@ public class EntrySpecificationsViewModel : ValidatableViewModelBase
     private string _name = string.Empty;
     private string _summary = string.Empty;
     private Bitmap? _iconBitmap;
-    private Window? _previewWindow;
     private TextDocument? _markdownDocument;
 
     public EntrySpecificationsViewModel(IWorkshopClient workshopClient, IWindowService windowService)
     {
         _windowService = windowService;
         SelectIcon = ReactiveCommand.CreateFromTask(ExecuteSelectIcon);
-        OpenMarkdownPreview = ReactiveCommand.Create(ExecuteOpenMarkdownPreview);
 
-        // this.WhenAnyValue(vm => vm.Description).Subscribe(d => MarkdownDocument.Text = d);
         this.WhenActivated(d =>
         {
             // Load categories
@@ -56,7 +50,6 @@ public class EntrySpecificationsViewModel : ValidatableViewModelBase
             MarkdownDocument.TextChanged += MarkdownDocumentOnTextChanged;
             Disposable.Create(() =>
             {
-                _previewWindow?.Close();
                 MarkdownDocument.TextChanged -= MarkdownDocumentOnTextChanged;
                 MarkdownDocument = null;
                 ClearIcon();
@@ -66,11 +59,10 @@ public class EntrySpecificationsViewModel : ValidatableViewModelBase
 
     private void MarkdownDocumentOnTextChanged(object? sender, EventArgs e)
     {
-        Description = MarkdownDocument.Text;
+        Description = MarkdownDocument?.Text ?? string.Empty;
     }
 
     public ReactiveCommand<Unit, Unit> SelectIcon { get; }
-    public ReactiveCommand<Unit, Unit> OpenMarkdownPreview { get; }
 
     public ObservableCollection<CategoryViewModel> Categories { get; } = new();
     public ObservableCollection<string> Tags { get; } = new();
@@ -137,25 +129,6 @@ public class EntrySpecificationsViewModel : ValidatableViewModelBase
 
         IconBitmap?.Dispose();
         IconBitmap = BitmapExtensions.LoadAndResize(result[0], 128);
-    }
-
-    private void ExecuteOpenMarkdownPreview()
-    {
-        if (_previewWindow != null)
-        {
-            _previewWindow.Activate();
-            return;
-        }
-
-        _previewWindow = _windowService.ShowWindow(out MarkdownPreviewViewModel _, this.WhenAnyValue(vm => vm.Description));
-        _previewWindow.Closed += PreviewWindowOnClosed;
-    }
-
-    private void PreviewWindowOnClosed(object? sender, EventArgs e)
-    {
-        if (_previewWindow != null)
-            _previewWindow.Closed -= PreviewWindowOnClosed;
-        _previewWindow = null;
     }
 
     private void ClearIcon()

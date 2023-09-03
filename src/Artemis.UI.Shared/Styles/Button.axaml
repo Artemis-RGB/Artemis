@@ -43,6 +43,10 @@
                 <Button Classes="icon-button">
                     <avalonia:MaterialIcon Kind="Cog" />
                 </Button>
+                
+                <Button Classes="danger">
+                    Oohohoho daanger!
+                </Button>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -103,5 +107,30 @@
     </Style>
     <Style Selector="Button.title-bar-button:pointerover">
         <Setter Property="Background" Value="Red"></Setter>
+    </Style>
+    
+    <Style Selector="Button.danger">
+        <Setter Property="Background" Value="#D64848"></Setter>
+    </Style>
+    
+    <Style Selector="Button.danger:pointerover">
+        <Style Selector="^ /template/ controls|FABorder#Root">
+            <Setter Property="Background" Value="#D65757"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPointerOver}" />
+        </Style>
+    </Style>
+
+    <Style Selector="Button.danger:pressed">
+        <Style Selector="^ /template/ controls|FABorder#Root">
+            <Setter Property="Background" Value="#D64848" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPressed}" />
+        </Style>
+    </Style>
+
+    <Style Selector="Button.danger:disabled">
+        <Style Selector="^ /template/ controls|FABorder#Root">
+            <Setter Property="Background" Value="#D79D9C" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushDisabled}" />
+        </Style>
     </Style>
 </Styles>

@@ -61,9 +61,13 @@
         <DependentUpon>LayoutListView.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
-      <Compile Update="Screens\Workshop\Library\SubmissionsDetailView.axaml.cs">
+      <Compile Update="Screens\Workshop\Library\SubmissionDetailView.axaml.cs">
         <DependentUpon>SubmissionsDetailView.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Screens\Workshop\Entries\Windows\MarkdownPreviewView.axaml" />
     </ItemGroup>
 </Project>

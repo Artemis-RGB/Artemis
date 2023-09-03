@@ -66,7 +66,7 @@
                                     <TextBlock Grid.Column="0" Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
                                     <TextBlock Grid.Column="1"
                                                Text="{CompiledBinding DisplayValue}"
-                                               FontFamily="Consolas"
+                                               FontFamily="{StaticResource RobotoMono}"
                                                HorizontalAlignment="Right"
                                                Margin="0 0 10 0" />
                                 </Grid>
@@ -81,7 +81,7 @@
                                                    IsVisible="{CompiledBinding IsEventPicker, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type dataModelPicker:DataModelPicker}}}"/>
                                     </StackPanel>
 
-                                    <ContentControl Grid.Column="1" Content="{CompiledBinding DisplayViewModel}" FontFamily="Consolas" Margin="0 0 10 0" />
+                                    <ContentControl Grid.Column="1" Content="{CompiledBinding DisplayViewModel}" FontFamily="{StaticResource RobotoMono}" Margin="0 0 10 0" />
                                 </Grid>
                             </TreeDataTemplate>
 
@@ -90,7 +90,7 @@
                                     <TextBlock Grid.Column="0" Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
                                     <TextBlock Grid.Column="1"
                                                Text="{CompiledBinding CountDisplay, Mode=OneWay}"
-                                               FontFamily="Consolas"
+                                               FontFamily="{StaticResource RobotoMono}"
                                                HorizontalAlignment="Right"
                                                Margin="0 0 10 0" />
                                 </Grid>

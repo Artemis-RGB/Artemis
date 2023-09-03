@@ -12,6 +12,9 @@
                      MinWidth="600"
                      MinHeight="400"
                      PointerReleased="InputElement_OnPointerReleased">
+    <windowing:AppWindow.Resources>
+
+    </windowing:AppWindow.Resources>
     <windowing:AppWindow.Styles>
       <Styles>
           <Style Selector="Border#TitleBarContainer">

@@ -15,7 +15,7 @@ public class WorkshopLibraryViewModel : RoutableHostScreen<RoutableScreen>
 {
     private readonly IRouter _router;
     private RouteViewModel? _selectedTab;
-    private ObservableAsPropertyHelper<bool>? _canGoBack;
+    private ObservableAsPropertyHelper<bool>? _viewingDetails;
 
     /// <inheritdoc />
     public WorkshopLibraryViewModel(IRouter router)
@@ -30,8 +30,7 @@ public class WorkshopLibraryViewModel : RoutableHostScreen<RoutableScreen>
 
         this.WhenActivated(d =>
         {
-            // Show back button on details page
-            _canGoBack = _router.CurrentPath.Select(p => p != null && p.StartsWith("workshop/library/submissions/")).ToProperty(this, vm => vm.CanGoBack).DisposeWith(d);
+            _viewingDetails = _router.CurrentPath.Select(p => p != null && p.StartsWith("workshop/library/submissions/")).ToProperty(this, vm => vm.ViewingDetails).DisposeWith(d);
             // Navigate on tab change
             this.WhenAnyValue(vm => vm.SelectedTab)
                 .WhereNotNull()
@@ -40,7 +39,7 @@ public class WorkshopLibraryViewModel : RoutableHostScreen<RoutableScreen>
         });
     }
 
-    public bool CanGoBack => _canGoBack?.Value ?? false;
+    public bool ViewingDetails => _viewingDetails?.Value ?? false;
     public ObservableCollection<RouteViewModel> Tabs { get; }
 
     public RouteViewModel? SelectedTab
@@ -58,6 +57,9 @@ public class WorkshopLibraryViewModel : RoutableHostScreen<RoutableScreen>
 
     public void GoBack()
     {
-        _router.GoBack();
+        if (ViewingDetails)
+            _router.GoBack();
+        else
+            _router.Navigate("workshop");
     }
 }

@@ -15,7 +15,7 @@
     
     <!-- Adjust the ScrollViewer padding in AvaloniaEdit so scrollbar doesn't overlap text -->
     <Style Selector="aedit|TextEditor /template/ ScrollViewer ScrollContentPresenter">
-        <Setter Property="Padding" Value="0 0 0 20" />
+        <Setter Property="Padding" Value="0 0 20 0" />
     </Style>
     
     <!-- set the selection color for the AvaloniaEdit boxes -->
@@ -26,6 +26,7 @@
     
     <Styles.Resources>
         <ResourceDictionary>
+            <FontFamily x:Key="RobotoMono">avares://Artemis.UI/Assets/Fonts#Roboto Mono</FontFamily>
             <ResourceDictionary.MergedDictionaries>
                 <MergeResourceInclude Source="TreeView.axaml"/>
             </ResourceDictionary.MergedDictionaries>

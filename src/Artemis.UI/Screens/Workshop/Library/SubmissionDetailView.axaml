@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:library="clr-namespace:Artemis.UI.Screens.Workshop.Library"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Library.SubmissionDetailView"
+             x:DataType="library:SubmissionDetailViewModel">
+    <UserControl.Resources>
+        <converters:DateTimeConverter x:Key="DateTimeConverter" />
+    </UserControl.Resources>
+    <Grid ColumnDefinitions="300,*">
+        <StackPanel Grid.Column="0" Spacing="10">
+            <Border Classes="card" VerticalAlignment="Top" Margin="0 0 10 0">
+                <StackPanel>
+                    <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Management</TextBlock>
+                    <Border Classes="card-separator" />
+                    
+                    <TextBlock Margin="0 0 0 8">
+                        <avalonia:MaterialIcon Kind="Downloads" />
+                        <Run Classes="h5" Text="{CompiledBinding Entry.Downloads, FallbackValue=0}" />
+                        <Run>downloads</Run>
+                    </TextBlock>
+                    
+                    <TextBlock Classes="subtitle"
+                               ToolTip.Tip="{CompiledBinding Entry.CreatedAt, Converter={StaticResource DateTimeConverter}}">
+                        <avalonia:MaterialIcon Kind="Calendar" />
+                        <Run>Created</Run>
+                        <Run Text="{CompiledBinding Entry.CreatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
+                    </TextBlock>
+                  
+                    <Border Classes="card-separator" />
+                    
+                    <StackPanel Spacing="5">
+                        <Button HorizontalAlignment="Stretch" Command="{CompiledBinding CreateRelease}">
+                            Create new release
+                        </Button>
+                        <Button Classes="danger" HorizontalAlignment="Stretch" Command="{CompiledBinding DeleteSubmission}">
+                            Delete submission
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        <ContentControl Grid.Column="1" Content="{CompiledBinding EntrySpecificationsViewModel}"></ContentControl>
+    </Grid>
+
+</UserControl>

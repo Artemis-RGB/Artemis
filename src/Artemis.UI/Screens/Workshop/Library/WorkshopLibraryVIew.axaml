@@ -11,7 +11,7 @@
     <controls:NavigationView PaneDisplayMode="Top" 
                              MenuItemsSource="{CompiledBinding Tabs}" 
                              SelectedItem="{CompiledBinding SelectedTab}" 
-                             IsBackEnabled="{CompiledBinding CanGoBack}"
+                             IsBackEnabled="True"
                              IsSettingsVisible="False"
                              IsBackButtonVisible="True"
                              BackRequested="NavigationView_OnBackRequested">

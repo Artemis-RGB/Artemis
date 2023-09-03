@@ -23,7 +23,7 @@
             </TextBlock>
         </StackPanel>
 
-        <TreeView Grid.Row="1" ItemsSource="{CompiledBinding MainDataModel.Children}">
+        <TreeView Grid.Row="1" ItemsSource="{CompiledBinding MainDataModel.Children}" Padding="0 0 15 0">
             <TreeView.Styles>
                 <Style Selector="TreeViewItem">
                     <Setter Property="IsExpanded" Value="{CompiledBinding IsVisualizationExpanded, Mode=TwoWay,DataType=dataModel:DataModelVisualizationViewModel}" />
@@ -42,7 +42,7 @@
             </TreeView.Styles>
             <TreeView.DataTemplates>
                 <TreeDataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}" ItemsSource="{CompiledBinding Children}">
-                    <Grid ColumnDefinitions="Auto,Auto,*">
+                    <Grid ColumnDefinitions="Auto,Auto,*" Margin="0 0 8 0">
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0 0 5 0">
                             <TextBlock FontWeight="Bold">[</TextBlock>
                             <TextBlock FontWeight="Bold" Text="{CompiledBinding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" />
@@ -52,13 +52,14 @@
                         <TextBlock Grid.Column="1" Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
                         <TextBlock Grid.Column="2"
                                    Text="{CompiledBinding DisplayValue}"
-                                   FontFamily="Consolas"
+                                   FontSize="13"
+                                   FontFamily="{StaticResource RobotoMono}"
                                    HorizontalAlignment="Right" />
                     </Grid>
 
                 </TreeDataTemplate>
                 <TreeDataTemplate DataType="{x:Type dataModel:DataModelListViewModel}" ItemsSource="{CompiledBinding ListChildren}">
-                    <Grid ColumnDefinitions="Auto,Auto,*">
+                    <Grid ColumnDefinitions="Auto,Auto,*" Margin="0 0 8 0">
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0 0 5 0">
                             <TextBlock FontWeight="Bold">[</TextBlock>
                             <TextBlock FontWeight="Bold" Text="{CompiledBinding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" />
@@ -67,12 +68,13 @@
                         <TextBlock Grid.Column="1" Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
                         <TextBlock Grid.Column="2"
                                    Text="{CompiledBinding CountDisplay, Mode=OneWay}"
-                                   FontFamily="Consolas"
+                                   FontSize="13"
+                                   FontFamily="{StaticResource RobotoMono}"
                                    HorizontalAlignment="Right" />
                     </Grid>
                 </TreeDataTemplate>
                 <TreeDataTemplate DataType="{x:Type dataModel:DataModelPropertyViewModel}">
-                    <Grid ColumnDefinitions="Auto,Auto,*">
+                    <Grid ColumnDefinitions="Auto,Auto,*" Margin="0 0 8 0">
                         <!-- Value description -->
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0 0 5 0">
                             <TextBlock FontWeight="Bold">[</TextBlock>
@@ -82,11 +84,11 @@
                         <TextBlock Grid.Column="1" Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
 
                         <!-- Value display -->
-                        <ContentControl Grid.Column="2" Content="{CompiledBinding DisplayViewModel}" FontFamily="Consolas" />
+                        <ContentControl Grid.Column="2" Content="{CompiledBinding DisplayViewModel}" FontSize="13" FontFamily="{StaticResource RobotoMono}" />
                     </Grid>
                 </TreeDataTemplate>
                 <TreeDataTemplate DataType="{x:Type dataModel:DataModelListItemViewModel}">
-                    <Grid ColumnDefinitions="Auto,Auto,*">
+                    <Grid ColumnDefinitions="Auto,Auto,*" Margin="0 0 8 0">
                         <!-- Value description -->
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0 0 5 0">
                             <TextBlock FontWeight="Bold">[</TextBlock>
@@ -99,12 +101,12 @@
                         </StackPanel>
 
                         <!-- Value display -->
-                        <ContentControl Grid.Column="2" Content="{CompiledBinding DisplayViewModel}" FontFamily="Consolas" />
+                        <ContentControl Grid.Column="2" Content="{CompiledBinding DisplayViewModel}" FontSize="13" FontFamily="{StaticResource RobotoMono}" />
                     </Grid>
                 </TreeDataTemplate>
 
                 <TreeDataTemplate DataType="{x:Type dataModel:DataModelEventViewModel}" ItemsSource="{CompiledBinding Children}">
-                    <Grid ColumnDefinitions="Auto,Auto,*">
+                    <Grid ColumnDefinitions="Auto,Auto,*" Margin="0 0 8 0">
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0 0 5 0">
                             <TextBlock FontWeight="Bold">[</TextBlock>
                             <TextBlock FontWeight="Bold" Text="{CompiledBinding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" />
@@ -113,7 +115,8 @@
                         <TextBlock Grid.Column="1" Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
                         <TextBlock Grid.Column="2"
                                    Text="{CompiledBinding Path=CountDisplay, DataType=dataModel:DataModelListViewModel ,Mode=OneWay}"
-                                   FontFamily="Consolas"
+                                   FontSize="13"
+                                   FontFamily="{StaticResource RobotoMono}"
                                    HorizontalAlignment="Right" />
                     </Grid>
                 </TreeDataTemplate>
