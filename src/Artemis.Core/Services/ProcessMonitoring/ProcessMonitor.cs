@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Threading;
 
 namespace Artemis.Core.Services;
@@ -115,7 +114,7 @@ public static partial class ProcessMonitor
         
         lock (LOCK)
         {
-            return _processes.Values.Any(x => Match(x, processName, processLocation));
+            return _processes.Values.Any(x => IsProcessRunning(x, processName, processLocation));
         }
     }
 
@@ -132,7 +131,7 @@ public static partial class ProcessMonitor
             }
     }
         
-    private static bool Match(ProcessInfo info, string? processName, string? processLocation)
+    private static bool IsProcessRunning(ProcessInfo info, string? processName, string? processLocation)
     {
         if (processName != null && processLocation != null)
             return string.Equals(info.ProcessName, processName, StringComparison.InvariantCultureIgnoreCase) &&
