@@ -1,34 +1,22 @@
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.Storage.Entities.Profile;
-using Artemis.Storage.Repositories.Interfaces;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Workshop.Profile;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
-using Avalonia.Layout;
-using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Material.Icons;
-using Material.Icons.Avalonia;
 using ReactiveUI;
 using SkiaSharp;
-using Path = Avalonia.Controls.Shapes.Path;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 
 public class ProfileSelectionStepViewModel : SubmissionViewModel
 {
     private readonly IProfileService _profileService;
-    private readonly IProfileCategoryRepository _profileCategoryRepository;
     private ProfileConfiguration? _selectedProfile;
 
     /// <inheritdoc />
@@ -49,24 +37,10 @@ public class ProfileSelectionStepViewModel : SubmissionViewModel
         this.WhenAnyValue(vm => vm.SelectedProfile).Subscribe(p => Update(p));
         this.WhenActivated((CompositeDisposable _) =>
         {
+            ShowGoBack = State.EntryId == null;
             if (State.EntrySource is ProfileConfiguration profileConfiguration)
                 SelectedProfile = Profiles.FirstOrDefault(p => p.ProfileId == profileConfiguration.ProfileId);
         });
-    }
-
-    private void Update(ProfileConfiguration? profileConfiguration)
-    {
-        ProfilePreview.ProfileConfiguration = null;
-
-        foreach (ProfileConfiguration configuration in Profiles)
-        {
-            if (configuration == profileConfiguration)
-                _profileService.ActivateProfile(configuration);
-            else
-                _profileService.DeactivateProfile(configuration);
-        }
-
-        ProfilePreview.ProfileConfiguration = profileConfiguration;
     }
 
     public ObservableCollection<ProfileConfiguration> Profiles { get; }
@@ -83,6 +57,21 @@ public class ProfileSelectionStepViewModel : SubmissionViewModel
 
     /// <inheritdoc />
     public override ReactiveCommand<Unit, Unit> GoBack { get; }
+
+    private void Update(ProfileConfiguration? profileConfiguration)
+    {
+        ProfilePreview.ProfileConfiguration = null;
+
+        foreach (ProfileConfiguration configuration in Profiles)
+        {
+            if (configuration == profileConfiguration)
+                _profileService.ActivateProfile(configuration);
+            else
+                _profileService.DeactivateProfile(configuration);
+        }
+
+        ProfilePreview.ProfileConfiguration = profileConfiguration;
+    }
 
     private void ExecuteContinue()
     {

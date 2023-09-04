@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
 using DryIoc;
@@ -11,9 +12,9 @@ public class SubmissionWizardState
 {
     private readonly IContainer _container;
     private readonly IWindowService _windowService;
-    private readonly SubmissionWizardViewModel _wizardViewModel;
+    private readonly IWorkshopWizardViewModel _wizardViewModel;
 
-    public SubmissionWizardState(SubmissionWizardViewModel wizardViewModel, IContainer container, IWindowService windowService)
+    public SubmissionWizardState(IWorkshopWizardViewModel wizardViewModel, IContainer container, IWindowService windowService)
     {
         _wizardViewModel = wizardViewModel;
         _container = container;
@@ -21,6 +22,7 @@ public class SubmissionWizardState
     }
 
     public EntryType EntryType { get; set; }
+    public Guid? EntryId { get; set; }
 
     public string Name { get; set; } = string.Empty;
     public Stream? Icon { get; set; }
@@ -45,13 +47,16 @@ public class SubmissionWizardState
         }
     }
 
-    public void Finish()
+    public void Close()
     {
-        _wizardViewModel.Close(true);
+        _wizardViewModel.ShouldClose = true;
     }
 
-    public void Cancel()
+    public void StartForCurrentEntry()
     {
-        _wizardViewModel.Close(false);
+        if (EntryType == EntryType.Profile)
+            ChangeScreen<ProfileSelectionStepViewModel>();
+        else
+            throw new NotImplementedException();
     }
 }

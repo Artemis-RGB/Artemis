@@ -7,9 +7,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Screens.Workshop.Entries;
 using Artemis.UI.Screens.Workshop.Parameters;
+using Artemis.UI.Screens.Workshop.SubmissionWizard;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
+using Artemis.WebClient.Workshop.Services;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
 using StrawberryShake;
@@ -22,26 +24,32 @@ public class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly Func<EntrySpecificationsViewModel> _getEntrySpecificationsViewModel;
     private readonly IWindowService _windowService;
+    private readonly IWorkshopService _workshopService;
     private readonly IRouter _router;
     private IGetSubmittedEntryById_Entry? _entry;
     private EntrySpecificationsViewModel? _entrySpecificationsViewModel;
 
     public SubmissionDetailViewModel(IWorkshopClient client,
-        IHttpClientFactory httpClientFactory, 
-        Func<EntrySpecificationsViewModel> entrySpecificationsViewModel,
+        IHttpClientFactory httpClientFactory,
         IWindowService windowService,
-        IRouter router)
+        IWorkshopService workshopService,
+        IRouter router,
+        Func<EntrySpecificationsViewModel> entrySpecificationsViewModel)
     {
         _client = client;
         _httpClientFactory = httpClientFactory;
-        _getEntrySpecificationsViewModel = entrySpecificationsViewModel;
         _windowService = windowService;
+        _workshopService = workshopService;
         _router = router;
+        _getEntrySpecificationsViewModel = entrySpecificationsViewModel;
 
+        Save = ReactiveCommand.CreateFromTask(ExecuteSave);
         CreateRelease = ReactiveCommand.CreateFromTask(ExecuteCreateRelease);
         DeleteSubmission = ReactiveCommand.CreateFromTask(ExecuteDeleteSubmission);
+        ViewWorkshopPage = ReactiveCommand.CreateFromTask(ExecuteViewWorkshopPage);
     }
 
+    public ReactiveCommand<Unit, Unit> Save { get; }
     public ReactiveCommand<Unit, Unit> CreateRelease { get; }
     public ReactiveCommand<Unit, Unit> DeleteSubmission { get; }
 
@@ -56,6 +64,8 @@ public class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters
         get => _entry;
         set => RaiseAndSetIfChanged(ref _entry, value);
     }
+
+    public ReactiveCommand<Unit, Unit> ViewWorkshopPage { get; }
 
     public override async Task OnNavigating(WorkshopDetailParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
@@ -107,16 +117,24 @@ public class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters
         }
     }
 
-    private Task ExecuteCreateRelease(CancellationToken cancellationToken)
+    private async Task ExecuteSave(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        UpdateEntryInput input = new();
+        IOperationResult<IUpdateEntryResult> result = await _client.UpdateEntry.ExecuteAsync(input, cancellationToken);
+        result.EnsureNoErrors();
+    }
+
+    private async Task ExecuteCreateRelease(CancellationToken cancellationToken)
+    {
+        if (Entry != null)
+            await _windowService.ShowDialogAsync<ReleaseWizardViewModel>(Entry);
     }
 
     private async Task ExecuteDeleteSubmission(CancellationToken cancellationToken)
     {
         if (Entry == null)
             return;
-        
+
         bool confirmed = await _windowService.ShowConfirmContentDialog(
             "Delete submission?",
             "You cannot undo this by yourself.\r\n" +
@@ -127,5 +145,11 @@ public class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters
         IOperationResult<IRemoveEntryResult> result = await _client.RemoveEntry.ExecuteAsync(Entry.Id, cancellationToken);
         result.EnsureNoErrors();
         await _router.Navigate("workshop/library/submissions");
+    }
+
+    private async Task ExecuteViewWorkshopPage()
+    {
+        if (Entry != null)
+            await _workshopService.NavigateToEntry(Entry.Id, Entry.EntryType);
     }
 }

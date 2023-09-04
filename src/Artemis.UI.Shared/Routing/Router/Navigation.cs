@@ -118,11 +118,9 @@ internal class Navigation
         Completed = true;
     }
 
-    public bool PathEquals(string path, bool allowPartialMatch)
+    public bool PathEquals(string path, RouterNavigationOptions options)
     {
-        if (allowPartialMatch)
-            return _resolution.Path.StartsWith(path, StringComparison.InvariantCultureIgnoreCase);
-        return string.Equals(_resolution.Path, path, StringComparison.InvariantCultureIgnoreCase);
+        return options.PathEquals(_resolution.Path, path);
     }
 
     private bool CancelIfRequested(NavigationArguments args, string stage, object screen)

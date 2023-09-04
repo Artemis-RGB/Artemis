@@ -62,6 +62,9 @@ public class ProfileAdaptionHintsStepViewModel : SubmissionViewModel
         if (Layers.Any(l => l.AdaptionHintCount == 0))
             return;
         
-        State.ChangeScreen<SpecificationsStepViewModel>();
+        if (State.EntryId == null)
+            State.ChangeScreen<SpecificationsStepViewModel>();
+        else
+            State.ChangeScreen<UploadStepViewModel>();
     }
 }

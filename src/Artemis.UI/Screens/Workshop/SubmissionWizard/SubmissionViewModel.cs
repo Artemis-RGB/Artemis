@@ -11,7 +11,6 @@ public abstract class SubmissionViewModel : ValidatableViewModelBase
     private bool _showGoBack = true;
     private bool _showHeader = true;
 
-    public SubmissionWizardViewModel WizardViewModel { get; set; } = null!;
     public SubmissionWizardState State { get; set; } = null!;
     
     public abstract ReactiveCommand<Unit, Unit> Continue { get; }

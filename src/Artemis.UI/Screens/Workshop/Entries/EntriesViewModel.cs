@@ -34,7 +34,7 @@ public class EntriesViewModel : RoutableHostScreen<RoutableScreen>
             // Navigate on tab change
             this.WhenAnyValue(vm => vm.SelectedTab)
                 .WhereNotNull()
-                .Subscribe(s => router.Navigate(s.Path, new RouterNavigationOptions {IgnoreOnPartialMatch = true}))
+                .Subscribe(s => router.Navigate(s.Path, new RouterNavigationOptions {IgnoreOnPartialMatch = true, PartialMatchOverride = s.MatchPath}))
                 .DisposeWith(d);
         });
     }

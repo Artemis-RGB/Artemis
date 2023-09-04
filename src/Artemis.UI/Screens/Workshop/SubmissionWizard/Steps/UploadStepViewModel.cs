@@ -1,37 +1,36 @@
 using System;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
+using Artemis.WebClient.Workshop.Exceptions;
+using Artemis.WebClient.Workshop.Services;
 using Artemis.WebClient.Workshop.UploadHandlers;
 using ReactiveUI;
 using StrawberryShake;
-using System.Reactive.Disposables;
-using Artemis.Core;
-using Artemis.UI.Shared.Routing;
-using System;
-using Artemis.UI.Shared.Utilities;
-using Artemis.WebClient.Workshop.Services;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 
 public class UploadStepViewModel : SubmissionViewModel
 {
+    private readonly EntryUploadHandlerFactory _entryUploadHandlerFactory;
+    private readonly Progress<StreamProgress> _progress = new();
+    private readonly ObservableAsPropertyHelper<bool> _progressIndeterminate;
+    private readonly ObservableAsPropertyHelper<int> _progressPercentage;
+    private readonly IRouter _router;
+    private readonly IWindowService _windowService;
     private readonly IWorkshopClient _workshopClient;
     private readonly IWorkshopService _workshopService;
-    private readonly EntryUploadHandlerFactory _entryUploadHandlerFactory;
-    private readonly IWindowService _windowService;
-    private readonly IRouter _router;
-    private readonly Progress<StreamProgress> _progress = new();
-    private readonly ObservableAsPropertyHelper<int> _progressPercentage;
-    private readonly ObservableAsPropertyHelper<bool> _progressIndeterminate;
 
     private Guid? _entryId;
+    private bool _failed;
     private bool _finished;
     private bool _succeeded;
-    private bool _failed;
 
     /// <inheritdoc />
     public UploadStepViewModel(IWorkshopClient workshopClient, IWorkshopService workshopService, EntryUploadHandlerFactory entryUploadHandlerFactory, IWindowService windowService, IRouter router)
@@ -83,7 +82,45 @@ public class UploadStepViewModel : SubmissionViewModel
         set => RaiseAndSetIfChanged(ref _failed, value);
     }
 
-    public async Task ExecuteUpload(CancellationToken cancellationToken)
+    private async Task ExecuteUpload(CancellationToken cancellationToken)
+    {
+        // Use the existing entry or create a new one
+        _entryId = State.EntryId ?? await CreateEntry(cancellationToken);
+
+        // If a new entry had to be created but that failed, stop here, CreateEntry will send the user back
+        if (_entryId == null)
+            return;
+
+        try
+        {
+            IEntryUploadHandler uploadHandler = _entryUploadHandlerFactory.CreateHandler(State.EntryType);
+            EntryUploadResult uploadResult = await uploadHandler.CreateReleaseAsync(_entryId.Value, State.EntrySource!, _progress, cancellationToken);
+            if (!uploadResult.IsSuccess)
+            {
+                string? message = uploadResult.Message;
+                if (message != null)
+                    message += "\r\n\r\n";
+                else
+                    message = "";
+                message += "Your submission has still been saved, you may try to upload a new release";
+                await _windowService.ShowConfirmContentDialog("Failed to upload workshop entry", message, "Close", null);
+            }
+
+            Succeeded = true;
+        }
+        catch (Exception)
+        {
+            // Something went wrong when creating a release :c
+            // We'll keep the workshop entry so that the user can make changes and try again
+            Failed = true;
+        }
+        finally
+        {
+            Finished = true;
+        }
+    }
+
+    private async Task<Guid?> CreateEntry(CancellationToken cancellationToken)
     {
         IOperationResult<IAddEntryResult> result = await _workshopClient.AddEntry.ExecuteAsync(new CreateEntryInput
         {
@@ -100,68 +137,45 @@ public class UploadStepViewModel : SubmissionViewModel
         {
             await _windowService.ShowConfirmContentDialog("Failed to create workshop entry", result.Errors.ToString() ?? "Not even an error message", "Close", null);
             State.ChangeScreen<SubmitStepViewModel>();
-            return;
+            return null;
         }
 
         if (cancellationToken.IsCancellationRequested)
-            return;
+        {
+            State.ChangeScreen<SubmitStepViewModel>();
+            return null;
+        }
+
+
+        if (State.Icon == null)
+            return entryId;
 
         // Upload image
-        if (State.Icon != null)
-            await _workshopService.SetEntryIcon(entryId.Value, _progress, State.Icon, cancellationToken);
-
-        // Create the workshop entry
         try
         {
-            IEntryUploadHandler uploadHandler = _entryUploadHandlerFactory.CreateHandler(State.EntryType);
-            EntryUploadResult uploadResult = await uploadHandler.CreateReleaseAsync(entryId.Value, State.EntrySource!, _progress, cancellationToken);
-            if (!uploadResult.IsSuccess)
-            {
-                string? message = uploadResult.Message;
-                if (message != null)
-                    message += "\r\n\r\n";
-                else
-                    message = "";
-                message += "Your submission has still been saved, you may try to upload a new release";
-                await _windowService.ShowConfirmContentDialog("Failed to upload workshop entry", message, "Close", null);
-                return;
-            }
-
-            _entryId = entryId;
-            Succeeded = true;
+            ImageUploadResult imageUploadResult = await _workshopService.SetEntryIcon(entryId.Value, _progress, State.Icon, cancellationToken);
+            if (!imageUploadResult.IsSuccess)
+                throw new ArtemisWorkshopException(imageUploadResult.Message);
         }
         catch (Exception e)
         {
-            // Something went wrong when creating a release :c
-            // We'll keep the workshop entry so that the user can make changes and try again
-            Failed = true;
+            // It's not critical if this fails
+            await _windowService.ShowConfirmContentDialog(
+                "Failed to upload icon",
+                "Your submission will continue, you can try upload a new image afterwards\r\n" + e.Message,
+                "Continue",
+                null
+            );
         }
-        finally
-        {
-            Finished = true;
-        }
+
+        return entryId;
     }
 
     private async Task ExecuteContinue()
     {
-        State.Finish();
+        State.Close();
 
-        if (_entryId == null)
-            return;
-
-        switch (State.EntryType)
-        {
-            case EntryType.Layout:
-                await _router.Navigate($"workshop/entries/layouts/{_entryId.Value}");
-                break;
-            case EntryType.Plugin:
-                await _router.Navigate($"workshop/entries/plugins/{_entryId.Value}");
-                break;
-            case EntryType.Profile:
-                await _router.Navigate($"workshop/entries/profiles/{_entryId.Value}");
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+        if (_entryId != null)
+            await _router.Navigate($"workshop/library/submissions/{_entryId.Value}");
     }
 }

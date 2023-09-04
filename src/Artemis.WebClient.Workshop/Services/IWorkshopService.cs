@@ -64,6 +64,24 @@ public class WorkshopService : IWorkshopService
             await _router.Navigate($"workshop/offline/{status.Message}");
         return status.IsReachable;
     }
+
+    public async Task NavigateToEntry(Guid entryId, EntryType entryType)
+    {
+        switch (entryType)
+        {
+            case EntryType.Profile:
+                await _router.Navigate($"workshop/entries/profiles/details/{entryId}");
+                break;
+            case EntryType.Layout:
+                await _router.Navigate($"workshop/entries/layouts/details/{entryId}");
+                break;
+            case EntryType.Plugin:
+                await _router.Navigate($"workshop/entries/plugins/details/{entryId}");
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(entryType));
+        }
+    }
 }
 
 public interface IWorkshopService
@@ -71,6 +89,7 @@ public interface IWorkshopService
     Task<ImageUploadResult> SetEntryIcon(Guid entryId, Progress<StreamProgress> progress, Stream icon, CancellationToken cancellationToken);
     Task<WorkshopStatus> GetWorkshopStatus(CancellationToken cancellationToken);
     Task<bool> ValidateWorkshopStatus(CancellationToken cancellationToken);
-
+    Task NavigateToEntry(Guid entryId, EntryType entryType);
+    
     public record WorkshopStatus(bool IsReachable, string Message);
 }

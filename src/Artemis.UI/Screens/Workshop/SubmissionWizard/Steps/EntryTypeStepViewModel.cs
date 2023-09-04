@@ -35,7 +35,6 @@ public class EntryTypeStepViewModel : SubmissionViewModel
             return;
 
         State.EntryType = SelectedEntryType.Value;
-        if (State.EntryType == EntryType.Profile)
-            State.ChangeScreen<ProfileSelectionStepViewModel>();
+        State.StartForCurrentEntry();
     }
 }

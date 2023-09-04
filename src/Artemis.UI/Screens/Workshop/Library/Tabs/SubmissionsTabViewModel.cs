@@ -75,7 +75,7 @@ public class SubmissionsTabViewModel : RoutableScreen
 
     private async Task ExecuteAddSubmission(CancellationToken arg)
     {
-        await _windowService.ShowDialogAsync<SubmissionWizardViewModel, bool>();
+        await _windowService.ShowDialogAsync<SubmissionWizardViewModel>();
     }
 
     private async Task ExecuteNavigateToEntry(IGetSubmittedEntries_SubmittedEntries entry, CancellationToken cancellationToken)

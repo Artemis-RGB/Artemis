@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.UI.Shared;
@@ -8,16 +8,16 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard;
 
-public partial class SubmissionWizardView : ReactiveAppWindow<SubmissionWizardViewModel>
+public partial class ReleaseWizardView: ReactiveAppWindow<ReleaseWizardViewModel>
 {
-    public SubmissionWizardView()
+    public ReleaseWizardView()
     {
         InitializeComponent();
 #if DEBUG
         this.AttachDevTools();
 #endif
 
-        this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Screen).Subscribe(Navigate).DisposeWith(d));
+        this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Screen).WhereNotNull().Subscribe(Navigate).DisposeWith(d));
         this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.ShouldClose).Where(c => c).Subscribe(_ => Close()).DisposeWith(d));
     }
 

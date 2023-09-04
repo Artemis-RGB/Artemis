@@ -58,11 +58,9 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
         return false;
     }
 
-    private bool PathEquals(string path, bool allowPartialMatch)
+    private bool PathEquals(string path, RouterNavigationOptions options)
     {
-        if (allowPartialMatch)
-            return _currentRouteSubject.Value != null && _currentRouteSubject.Value.StartsWith(path, StringComparison.InvariantCultureIgnoreCase);
-        return string.Equals(_currentRouteSubject.Value, path, StringComparison.InvariantCultureIgnoreCase);
+        return _currentRouteSubject.Value != null && options.PathEquals(_currentRouteSubject.Value, path);
     }
 
     /// <inheritdoc />
@@ -84,7 +82,7 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
     {
         if (_root == null)
             throw new ArtemisRoutingException("Cannot navigate without a root having been set");
-        if (PathEquals(path, options.IgnoreOnPartialMatch) || (_currentNavigation != null && _currentNavigation.PathEquals(path, options.IgnoreOnPartialMatch)))
+        if (PathEquals(path, options) || (_currentNavigation != null && _currentNavigation.PathEquals(path, options)))
             return;
 
         string? previousPath = _currentRouteSubject.Value;
