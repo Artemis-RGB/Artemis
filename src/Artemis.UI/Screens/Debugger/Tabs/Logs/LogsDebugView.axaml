@@ -10,8 +10,8 @@
         <SelectableTextBlock 
             Inlines="{CompiledBinding Lines}" 
             FontFamily="{StaticResource RobotoMono}" 
+            FontSize="12"
             SizeChanged="Control_OnSizeChanged" 
-            SelectionBrush="{StaticResource TextControlSelectionHighlightColor}"
-        />    
+            SelectionBrush="{StaticResource TextControlSelectionHighlightColor}"/>    
     </ScrollViewer>
 </UserControl>

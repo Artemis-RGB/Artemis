@@ -1,6 +1,4 @@
-using System;
 using System.Linq;
-using System.Reactive;
 using System.Threading.Tasks;
 using Artemis.WebClient.Workshop.Services;
 using IdentityModel;
@@ -20,12 +18,6 @@ public class WelcomeStepViewModel : SubmissionViewModel
         ShowHeader = false;
         ShowGoBack = false;
     }
-
-    /// <inheritdoc />
-    public override ReactiveCommand<Unit, Unit> Continue { get; }
-
-    /// <inheritdoc />
-    public override ReactiveCommand<Unit, Unit> GoBack { get; } = null!;
 
     private async Task ExecuteContinue()
     {

@@ -1,6 +1,4 @@
-using System;
 using System.Linq;
-using System.Reactive;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,12 +26,6 @@ public class LoginStepViewModel : SubmissionViewModel
         ShowHeader = false;
         ContinueText = "Log In";
     }
-
-    /// <inheritdoc />
-    public override ReactiveCommand<Unit, Unit> Continue { get; }
-
-    /// <inheritdoc />
-    public override ReactiveCommand<Unit, Unit> GoBack { get; } = null!;
 
     private async Task ExecuteLogin(CancellationToken ct)
     {

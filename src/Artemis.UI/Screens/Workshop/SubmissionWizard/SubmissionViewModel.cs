@@ -6,15 +6,26 @@ namespace Artemis.UI.Screens.Workshop.SubmissionWizard;
 
 public abstract class SubmissionViewModel : ValidatableViewModelBase
 {
+    private ReactiveCommand<Unit, Unit>? _continue;
+    private ReactiveCommand<Unit, Unit>? _goBack;
     private string _continueText = "Continue";
     private bool _showFinish;
     private bool _showGoBack = true;
     private bool _showHeader = true;
 
     public SubmissionWizardState State { get; set; } = null!;
-    
-    public abstract ReactiveCommand<Unit, Unit> Continue { get; }
-    public abstract ReactiveCommand<Unit, Unit> GoBack { get; }
+
+    public ReactiveCommand<Unit, Unit>? Continue
+    {
+        get => _continue;
+        set => RaiseAndSetIfChanged(ref _continue, value);
+    }
+
+    public ReactiveCommand<Unit, Unit>? GoBack
+    {
+        get => _goBack;
+        set => RaiseAndSetIfChanged(ref _goBack, value);
+    }
 
     public bool ShowHeader
     {

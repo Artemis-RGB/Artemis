@@ -52,8 +52,8 @@
                         <TextBlock Grid.Column="1" Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
                         <TextBlock Grid.Column="2"
                                    Text="{CompiledBinding DisplayValue}"
-                                   FontSize="13"
                                    FontFamily="{StaticResource RobotoMono}"
+                                   FontSize="13"
                                    HorizontalAlignment="Right" />
                     </Grid>
 

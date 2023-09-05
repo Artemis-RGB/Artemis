@@ -2,41 +2,38 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Disposables;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Workshop.Entries;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 using Artemis.WebClient.Workshop;
-using Avalonia.Threading;
 using DynamicData;
 using ReactiveUI;
-using ReactiveUI.Validation.Extensions;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 
 public class SpecificationsStepViewModel : SubmissionViewModel
 {
-    public SpecificationsStepViewModel(EntrySpecificationsViewModel entrySpecificationsViewModel)
-    {
-        EntrySpecificationsViewModel = entrySpecificationsViewModel;
-        GoBack = ReactiveCommand.Create(ExecuteGoBack);
-        Continue = ReactiveCommand.Create(ExecuteContinue, EntrySpecificationsViewModel.ValidationContext.Valid);
+    private readonly Func<EntrySpecificationsViewModel> _getEntrySpecificationsViewModel;
+    private EntrySpecificationsViewModel? _entrySpecificationsViewModel;
 
+    public SpecificationsStepViewModel(Func<EntrySpecificationsViewModel> getEntrySpecificationsViewModel)
+    {
+        _getEntrySpecificationsViewModel = getEntrySpecificationsViewModel;
+
+        GoBack = ReactiveCommand.Create(ExecuteGoBack);
         this.WhenActivated((CompositeDisposable d) =>
         {
             DisplayName = $"{State.EntryType} Information";
-
-            // Apply the state
             ApplyFromState();
-
-            EntrySpecificationsViewModel.ClearValidationRules();
         });
     }
 
-    public EntrySpecificationsViewModel EntrySpecificationsViewModel { get; }
-    public override ReactiveCommand<Unit, Unit> Continue { get; }
-    public override ReactiveCommand<Unit, Unit> GoBack { get; }
+    public EntrySpecificationsViewModel? EntrySpecificationsViewModel
+    {
+        get => _entrySpecificationsViewModel;
+        set => RaiseAndSetIfChanged(ref _entrySpecificationsViewModel, value);
+    }
 
     private void ExecuteGoBack()
     {
@@ -59,46 +56,45 @@ public class SpecificationsStepViewModel : SubmissionViewModel
 
     private void ExecuteContinue()
     {
-        if (!EntrySpecificationsViewModel.ValidationContext.Validations.Any())
-        {
-            // The ValidationContext seems to update asynchronously, so stop and schedule a retry
-            EntrySpecificationsViewModel.SetupDataValidation();
-            Dispatcher.UIThread.Post(ExecuteContinue);
+        if (EntrySpecificationsViewModel == null || !EntrySpecificationsViewModel.ValidationContext.GetIsValid())
             return;
-        }
 
         ApplyToState();
-
-        if (!EntrySpecificationsViewModel.ValidationContext.GetIsValid())
-            return;
-
         State.ChangeScreen<SubmitStepViewModel>();
     }
 
     private void ApplyFromState()
     {
+        EntrySpecificationsViewModel viewModel = _getEntrySpecificationsViewModel();
+
         // Basic fields
-        EntrySpecificationsViewModel.Name = State.Name;
-        EntrySpecificationsViewModel.Summary = State.Summary;
-        EntrySpecificationsViewModel.Description = State.Description;
+        viewModel.Name = State.Name;
+        viewModel.Summary = State.Summary;
+        viewModel.Description = State.Description;
 
         // Tags
-        EntrySpecificationsViewModel.Tags.Clear();
-        EntrySpecificationsViewModel.Tags.AddRange(State.Tags);
+        viewModel.Tags.Clear();
+        viewModel.Tags.AddRange(State.Tags);
 
         // Categories
-        EntrySpecificationsViewModel.PreselectedCategories = State.Categories;
+        viewModel.PreselectedCategories = State.Categories;
 
         // Icon
         if (State.Icon != null)
         {
             State.Icon.Seek(0, SeekOrigin.Begin);
-            EntrySpecificationsViewModel.IconBitmap = BitmapExtensions.LoadAndResize(State.Icon, 128);
+            viewModel.IconBitmap = BitmapExtensions.LoadAndResize(State.Icon, 128);
         }
+
+        EntrySpecificationsViewModel = viewModel;
+        Continue = ReactiveCommand.Create(ExecuteContinue, EntrySpecificationsViewModel.ValidationContext.Valid);
     }
 
     private void ApplyToState()
     {
+        if (EntrySpecificationsViewModel == null)
+            return;
+
         // Basic fields
         State.Name = EntrySpecificationsViewModel.Name;
         State.Summary = EntrySpecificationsViewModel.Summary;

@@ -12,7 +12,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              x:Class="Artemis.UI.Screens.Workshop.Entries.EntrySpecificationsView"
              x:DataType="entries:EntrySpecificationsViewModel">
-    <Grid RowDefinitions="Auto,*,Auto">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
         <StackPanel>
             <StackPanel.Styles>
                 <Styles>
@@ -25,8 +25,8 @@
                 </Styles>
             </StackPanel.Styles>
 
-            <Grid ColumnDefinitions="103,*">
-                <StackPanel Grid.Column="0" Width="95">
+            <Grid ColumnDefinitions="105,*">
+                <StackPanel Grid.Column="0" Width="95" HorizontalAlignment="Left">
                     <Label Target="Name" Margin="0">Icon</Label>
                     <Button Width="95"
                             Height="95"
@@ -92,12 +92,22 @@
 
             <Label>Tags</Label>
             <tagsInput:TagsInput Tags="{CompiledBinding Tags}" />
-
-            <Label Target="DescriptionEditor" Margin="0 28 0 0">Description</Label>
         </StackPanel>
+        
+        <Grid Row="1" ColumnDefinitions="Auto,*">
+            <Label Grid.Column="0" Target="DescriptionEditor" Margin="0 28 0 0">Description</Label>
+            
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <CheckBox Name="SynchronizedScrolling" IsChecked="True" VerticalAlignment="Bottom">Synchronized scrolling</CheckBox>
+                <controls:HyperlinkButton
+                    Margin="0 0 0 -20"
+                    Content="Markdown supported"
+                    NavigateUri="https://wiki.artemis-rgb.com/guides/user/markdown?mtm_campaign=artemis&amp;mtm_kwd=markdown-editor"
+                    HorizontalAlignment="Right"/>
+            </StackPanel>
+        </Grid>
 
-
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,*">
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,*">
             <Border Grid.Column="0" BorderThickness="1"
                     BorderBrush="{DynamicResource TextControlBorderBrush}"
                     CornerRadius="{DynamicResource ControlCornerRadius}"
@@ -105,6 +115,7 @@
                     Padding="{DynamicResource TextControlThemePadding}">
                 <avaloniaEdit:TextEditor
                     FontFamily="{StaticResource RobotoMono}"
+                    FontSize="13"
                     Name="DescriptionEditor"
                     Document="{CompiledBinding MarkdownDocument}"
                     WordWrap="True" />
@@ -123,17 +134,12 @@
                 </mdxaml:MarkdownScrollViewer>
             </Border>
         </Grid>
-
-
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <CheckBox Name="SynchronizedScrolling" IsChecked="True" VerticalAlignment="Bottom">Synchronized scrolling</CheckBox>
-            <controls:HyperlinkButton
-                Margin="0 5 0 0"
-                Content="Learn more about Markdown on the wiki"
-                NavigateUri="https://wiki.artemis-rgb.com/guides/user/markdown?mtm_campaign=artemis&amp;mtm_kwd=markdown-editor"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top" />
-        </StackPanel>
-
+        
+        <TextBlock Grid.Row="3" 
+                   Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                   Margin="2 8 0 0"
+                   IsVisible="{CompiledBinding !DescriptionValid}">
+            A description is required
+        </TextBlock>
     </Grid>
 </UserControl>

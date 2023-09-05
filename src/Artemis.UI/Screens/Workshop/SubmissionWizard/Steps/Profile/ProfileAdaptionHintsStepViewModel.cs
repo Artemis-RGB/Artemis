@@ -3,23 +3,22 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs;
 using Artemis.UI.Shared.Services;
 using DynamicData;
-using ReactiveUI;
 using DynamicData.Aggregation;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 
 public class ProfileAdaptionHintsStepViewModel : SubmissionViewModel
 {
-    private readonly IWindowService _windowService;
-    private readonly IProfileService _profileService;
     private readonly SourceList<ProfileAdaptionHintsLayerViewModel> _layers;
+    private readonly IProfileService _profileService;
+    private readonly IWindowService _windowService;
 
     public ProfileAdaptionHintsStepViewModel(IWindowService windowService, IProfileService profileService, Func<Layer, ProfileAdaptionHintsLayerViewModel> getLayerViewModel)
     {
@@ -36,18 +35,14 @@ public class ProfileAdaptionHintsStepViewModel : SubmissionViewModel
         this.WhenActivated((CompositeDisposable _) =>
         {
             if (State.EntrySource is ProfileConfiguration profileConfiguration && profileConfiguration.Profile != null)
-            {
                 _layers.Edit(l =>
                 {
                     l.Clear();
                     l.AddRange(profileConfiguration.Profile.GetAllLayers().Select(getLayerViewModel));
                 });
-            }
         });
     }
 
-    public override ReactiveCommand<Unit, Unit> Continue { get; }
-    public override ReactiveCommand<Unit, Unit> GoBack { get; }
     public ReactiveCommand<Layer, Unit> EditAdaptionHints { get; }
     public ReadOnlyObservableCollection<ProfileAdaptionHintsLayerViewModel> Layers { get; }
 
@@ -61,7 +56,7 @@ public class ProfileAdaptionHintsStepViewModel : SubmissionViewModel
     {
         if (Layers.Any(l => l.AdaptionHintCount == 0))
             return;
-        
+
         if (State.EntryId == null)
             State.ChangeScreen<SpecificationsStepViewModel>();
         else

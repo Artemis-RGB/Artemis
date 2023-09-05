@@ -1,6 +1,4 @@
-using System.Reactive;
 using System.Reactive.Linq;
-using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 using Artemis.WebClient.Workshop;
 using ReactiveUI;
 
@@ -22,12 +20,6 @@ public class EntryTypeStepViewModel : SubmissionViewModel
         get => _selectedEntryType;
         set => RaiseAndSetIfChanged(ref _selectedEntryType, value);
     }
-
-    /// <inheritdoc />
-    public override ReactiveCommand<Unit, Unit> Continue { get; }
-
-    /// <inheritdoc />
-    public override ReactiveCommand<Unit, Unit> GoBack { get; }
 
     private void ExecuteContinue()
     {

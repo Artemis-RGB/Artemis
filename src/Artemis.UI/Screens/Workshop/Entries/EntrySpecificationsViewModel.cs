@@ -11,6 +11,7 @@ using Artemis.UI.Screens.Workshop.Categories;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
+using Avalonia.Media.Imaging;
 using AvaloniaEdit.Document;
 using DynamicData;
 using DynamicData.Aggregation;
@@ -19,32 +20,55 @@ using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
 using ReactiveUI.Validation.Helpers;
 using StrawberryShake;
-using Bitmap = Avalonia.Media.Imaging.Bitmap;
 
 namespace Artemis.UI.Screens.Workshop.Entries;
 
 public class EntrySpecificationsViewModel : ValidatableViewModelBase
 {
+    private readonly ObservableAsPropertyHelper<bool> _categoriesValid;
+    private readonly ObservableAsPropertyHelper<bool> _iconValid;
+    private readonly ObservableAsPropertyHelper<bool> _descriptionValid;
+    private readonly IWorkshopClient _workshopClient;
     private readonly IWindowService _windowService;
-    private ObservableAsPropertyHelper<bool>? _categoriesValid;
-    private ObservableAsPropertyHelper<bool>? _iconValid;
+    
     private string _description = string.Empty;
-    private string _name = string.Empty;
-    private string _summary = string.Empty;
     private Bitmap? _iconBitmap;
     private TextDocument? _markdownDocument;
+    private string _name = string.Empty;
+    private string _summary = string.Empty;
+    private bool _iconChanged;
 
     public EntrySpecificationsViewModel(IWorkshopClient workshopClient, IWindowService windowService)
     {
+        _workshopClient = workshopClient;
         _windowService = windowService;
         SelectIcon = ReactiveCommand.CreateFromTask(ExecuteSelectIcon);
+        
+        Categories.ToObservableChangeSet()
+            .AutoRefresh(c => c.IsSelected)
+            .Filter(c => c.IsSelected)
+            .Transform(c => c.Id)
+            .Bind(out ReadOnlyObservableCollection<int> selectedCategories)
+            .Subscribe();
+        SelectedCategories = selectedCategories;
 
-        this.WhenActivated(d =>
+        this.ValidationRule(vm => vm.Name, s => !string.IsNullOrWhiteSpace(s), "Name is required");
+        this.ValidationRule(vm => vm.Summary, s => !string.IsNullOrWhiteSpace(s), "Summary is required");
+        ValidationHelper descriptionRule = this.ValidationRule(vm => vm.Description, s => !string.IsNullOrWhiteSpace(s), "Description is required");
+
+        // These don't use inputs that support validation messages, do so manually
+        ValidationHelper iconRule = this.ValidationRule(vm => vm.IconBitmap, s => s != null, "Icon required");
+        ValidationHelper categoriesRule = this.ValidationRule(vm => vm.Categories, Categories.ToObservableChangeSet().AutoRefresh(c => c.IsSelected).Filter(c => c.IsSelected).IsNotEmpty(),
+            "At least one category must be selected"
+        );
+        _iconValid = iconRule.ValidationChanged.Select(c => c.IsValid).ToProperty(this, vm => vm.IconValid);
+        _categoriesValid = categoriesRule.ValidationChanged.Select(c => c.IsValid).ToProperty(this, vm => vm.CategoriesValid);
+        _descriptionValid = descriptionRule.ValidationChanged.Select(c => c.IsValid).ToProperty(this, vm => vm.DescriptionValid);
+
+        this.WhenActivatedAsync(async d =>
         {
             // Load categories
-            Observable.FromAsync(workshopClient.GetCategories.ExecuteAsync).Subscribe(PopulateCategories).DisposeWith(d);
-
-            this.ClearValidationRules();
+            await PopulateCategories();
 
             MarkdownDocument = new TextDocument(new StringTextSource(Description));
             MarkdownDocument.TextChanged += MarkdownDocumentOnTextChanged;
@@ -57,17 +81,15 @@ public class EntrySpecificationsViewModel : ValidatableViewModelBase
         });
     }
 
-    private void MarkdownDocumentOnTextChanged(object? sender, EventArgs e)
-    {
-        Description = MarkdownDocument?.Text ?? string.Empty;
-    }
-
     public ReactiveCommand<Unit, Unit> SelectIcon { get; }
 
     public ObservableCollection<CategoryViewModel> Categories { get; } = new();
     public ObservableCollection<string> Tags { get; } = new();
-    public bool CategoriesValid => _categoriesValid?.Value ?? true;
-    public bool IconValid => _iconValid?.Value ?? true;
+    public ReadOnlyObservableCollection<int> SelectedCategories { get; }
+    
+    public bool CategoriesValid => _categoriesValid.Value ;
+    public bool IconValid => _iconValid.Value;
+    public bool DescriptionValid => _descriptionValid.Value;
 
     public string Name
     {
@@ -99,23 +121,17 @@ public class EntrySpecificationsViewModel : ValidatableViewModelBase
         set => RaiseAndSetIfChanged(ref _markdownDocument, value);
     }
 
-    public List<int> PreselectedCategories { get; set; } = new List<int>();
-
-    public void SetupDataValidation()
+    public bool IconChanged
     {
-        // Hopefully this can be avoided in the future
-        // https://github.com/reactiveui/ReactiveUI.Validation/discussions/558
-        this.ValidationRule(vm => vm.Name, s => !string.IsNullOrWhiteSpace(s), "Name is required");
-        this.ValidationRule(vm => vm.Summary, s => !string.IsNullOrWhiteSpace(s), "Summary is required");
-        this.ValidationRule(vm => vm.Description, s => !string.IsNullOrWhiteSpace(s), "Description is required");
+        get => _iconChanged;
+        private set => RaiseAndSetIfChanged(ref _iconChanged, value);
+    }
 
-        // These don't use inputs that support validation messages, do so manually
-        ValidationHelper iconRule = this.ValidationRule(vm => vm.IconBitmap, s => s != null, "Icon required");
-        ValidationHelper categoriesRule = this.ValidationRule(vm => vm.Categories, Categories.ToObservableChangeSet().AutoRefresh(c => c.IsSelected).Filter(c => c.IsSelected).IsNotEmpty(),
-            "At least one category must be selected"
-        );
-        _iconValid = iconRule.ValidationChanged.Select(c => c.IsValid).ToProperty(this, vm => vm.IconValid);
-        _categoriesValid = categoriesRule.ValidationChanged.Select(c => c.IsValid).ToProperty(this, vm => vm.CategoriesValid);
+    public List<int> PreselectedCategories { get; set; } = new();
+
+    private void MarkdownDocumentOnTextChanged(object? sender, EventArgs e)
+    {
+        Description = MarkdownDocument?.Text ?? string.Empty;
     }
 
     private async Task ExecuteSelectIcon()
@@ -129,6 +145,7 @@ public class EntrySpecificationsViewModel : ValidatableViewModelBase
 
         IconBitmap?.Dispose();
         IconBitmap = BitmapExtensions.LoadAndResize(result[0], 128);
+        IconChanged = true;
     }
 
     private void ClearIcon()
@@ -137,10 +154,11 @@ public class EntrySpecificationsViewModel : ValidatableViewModelBase
         IconBitmap = null;
     }
 
-    private void PopulateCategories(IOperationResult<IGetCategoriesResult> result)
+    private async Task PopulateCategories()
     {
+        IOperationResult<IGetCategoriesResult> categories = await _workshopClient.GetCategories.ExecuteAsync();
         Categories.Clear();
-        if (result.Data != null)
-            Categories.AddRange(result.Data.Categories.Select(c => new CategoryViewModel(c) {IsSelected = PreselectedCategories.Contains(c.Id)}));
+        if (categories.Data != null)
+            Categories.AddRange(categories.Data.Categories.Select(c => new CategoryViewModel(c) {IsSelected = PreselectedCategories.Contains(c.Id)}));
     }
 }

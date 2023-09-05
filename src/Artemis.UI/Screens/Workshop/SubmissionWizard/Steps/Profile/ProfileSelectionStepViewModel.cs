@@ -1,7 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
@@ -51,12 +50,6 @@ public class ProfileSelectionStepViewModel : SubmissionViewModel
         get => _selectedProfile;
         set => RaiseAndSetIfChanged(ref _selectedProfile, value);
     }
-
-    /// <inheritdoc />
-    public override ReactiveCommand<Unit, Unit> Continue { get; }
-
-    /// <inheritdoc />
-    public override ReactiveCommand<Unit, Unit> GoBack { get; }
 
     private void Update(ProfileConfiguration? profileConfiguration)
     {

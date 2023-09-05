@@ -12,8 +12,8 @@
     <UserControl.Resources>
         <converters:DateTimeConverter x:Key="DateTimeConverter" />
     </UserControl.Resources>
-    <Grid ColumnDefinitions="300,*">
-        <StackPanel Grid.Column="0" Spacing="10">
+    <Grid ColumnDefinitions="300,*" RowDefinitions="*, Auto">
+        <StackPanel Grid.Column="0" Grid.RowSpan="2" Spacing="10">
             <Border Classes="card" VerticalAlignment="Top" Margin="0 0 10 0">
                 <StackPanel>
                     <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Management</TextBlock>
@@ -48,7 +48,11 @@
                 View workshop page
             </controls:HyperlinkButton>
         </StackPanel>
-        <ContentControl Grid.Column="1" Content="{CompiledBinding EntrySpecificationsViewModel}"></ContentControl>
+        <ContentControl Grid.Column="1" Grid.Row="0" Content="{CompiledBinding EntrySpecificationsViewModel}"></ContentControl>
+        <StackPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right" Spacing="5" Orientation="Horizontal" Margin="0 10 0 0">
+            <Button Command="{CompiledBinding DiscardChanges}">Discard changes</Button>
+            <Button Command="{CompiledBinding SaveChanges}">Save</Button>
+        </StackPanel>
     </Grid>
 
 </UserControl>

@@ -16,6 +16,22 @@ public class WorkshopService : IWorkshopService
         _router = router;
     }
 
+    public async Task<Stream?> GetEntryIcon(Guid entryId, CancellationToken cancellationToken)
+    {
+        HttpClient client = _httpClientFactory.CreateClient(WorkshopConstants.WORKSHOP_CLIENT_NAME);
+        try
+        {
+            HttpResponseMessage response = await client.GetAsync($"entries/{entryId}/icon", cancellationToken);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStreamAsync(cancellationToken);
+        }
+        catch (HttpRequestException)
+        {
+            // ignored
+            return null;
+        }
+    }
+
     public async Task<ImageUploadResult> SetEntryIcon(Guid entryId, Progress<StreamProgress> progress, Stream icon, CancellationToken cancellationToken)
     {
         icon.Seek(0, SeekOrigin.Begin);
@@ -55,7 +71,7 @@ public class WorkshopService : IWorkshopService
             return new IWorkshopService.WorkshopStatus(false, e.Message);
         }
     }
-    
+
     /// <inheritdoc />
     public async Task<bool> ValidateWorkshopStatus(CancellationToken cancellationToken)
     {
@@ -86,10 +102,11 @@ public class WorkshopService : IWorkshopService
 
 public interface IWorkshopService
 {
+    Task<Stream?> GetEntryIcon(Guid entryId, CancellationToken cancellationToken);
     Task<ImageUploadResult> SetEntryIcon(Guid entryId, Progress<StreamProgress> progress, Stream icon, CancellationToken cancellationToken);
     Task<WorkshopStatus> GetWorkshopStatus(CancellationToken cancellationToken);
     Task<bool> ValidateWorkshopStatus(CancellationToken cancellationToken);
     Task NavigateToEntry(Guid entryId, EntryType entryType);
-    
+
     public record WorkshopStatus(bool IsReachable, string Message);
 }

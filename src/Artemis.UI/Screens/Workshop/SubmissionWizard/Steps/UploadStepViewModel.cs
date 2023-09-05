@@ -1,5 +1,4 @@
 using System;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
@@ -54,12 +53,6 @@ public class UploadStepViewModel : SubmissionViewModel
 
         this.WhenActivated(d => Observable.FromAsync(ExecuteUpload).Subscribe().DisposeWith(d));
     }
-
-    /// <inheritdoc />
-    public override ReactiveCommand<Unit, Unit> Continue { get; }
-
-    /// <inheritdoc />
-    public override ReactiveCommand<Unit, Unit> GoBack { get; } = null!;
 
     public int ProgressPercentage => _progressPercentage.Value;
     public bool ProgressIndeterminate => _progressIndeterminate.Value;

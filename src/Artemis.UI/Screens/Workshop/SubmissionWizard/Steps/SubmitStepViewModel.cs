@@ -1,17 +1,16 @@
+using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.UI.Screens.Workshop.Categories;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Services;
+using Avalonia.Media.Imaging;
 using IdentityModel;
 using ReactiveUI;
 using StrawberryShake;
-using System;
-using System.IO;
-using Avalonia.Media.Imaging;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 
@@ -26,9 +25,9 @@ public class SubmitStepViewModel : SubmissionViewModel
         CurrentUser = authenticationService.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Name)?.Value;
         GoBack = ReactiveCommand.Create(() => State.ChangeScreen<SpecificationsStepViewModel>());
         Continue = ReactiveCommand.Create(() => State.ChangeScreen<UploadStepViewModel>());
-        
+
         ContinueText = "Submit";
-        
+
         this.WhenActivated(d =>
         {
             if (State.Icon != null)
@@ -37,6 +36,7 @@ public class SubmitStepViewModel : SubmissionViewModel
                 IconBitmap = new Bitmap(State.Icon);
                 IconBitmap.DisposeWith(d);
             }
+
             Observable.FromAsync(workshopClient.GetCategories.ExecuteAsync).Subscribe(PopulateCategories).DisposeWith(d);
         });
     }
@@ -55,19 +55,13 @@ public class SubmitStepViewModel : SubmissionViewModel
         set => RaiseAndSetIfChanged(ref _categories, value);
     }
 
-    public override ReactiveCommand<Unit, Unit> Continue { get; }
-
-    public override ReactiveCommand<Unit, Unit> GoBack { get; }
-
     private void PopulateCategories(IOperationResult<IGetCategoriesResult> result)
     {
         if (result.Data == null)
             Categories = null;
         else
-        {
             Categories = new ReadOnlyObservableCollection<CategoryViewModel>(
                 new ObservableCollection<CategoryViewModel>(result.Data.Categories.Where(c => State.Categories.Contains(c.Id)).Select(c => new CategoryViewModel(c)))
             );
-        }
     }
 }

@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,8 +12,11 @@ using Artemis.UI.Screens.Workshop.Parameters;
 using Artemis.UI.Screens.Workshop.SubmissionWizard;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
+using Artemis.WebClient.Workshop.Exceptions;
 using Artemis.WebClient.Workshop.Services;
+using Artemis.WebClient.Workshop.UploadHandlers;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
 using StrawberryShake;
@@ -21,37 +26,33 @@ namespace Artemis.UI.Screens.Workshop.Library;
 public class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters>
 {
     private readonly IWorkshopClient _client;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly Func<EntrySpecificationsViewModel> _getEntrySpecificationsViewModel;
+    private readonly Func<EntrySpecificationsViewModel> _getGetSpecificationsVm;
+    private readonly IRouter _router;
     private readonly IWindowService _windowService;
     private readonly IWorkshopService _workshopService;
-    private readonly IRouter _router;
     private IGetSubmittedEntryById_Entry? _entry;
     private EntrySpecificationsViewModel? _entrySpecificationsViewModel;
+    private bool _hasChanges;
 
-    public SubmissionDetailViewModel(IWorkshopClient client,
-        IHttpClientFactory httpClientFactory,
-        IWindowService windowService,
-        IWorkshopService workshopService,
-        IRouter router,
-        Func<EntrySpecificationsViewModel> entrySpecificationsViewModel)
-    {
+    public SubmissionDetailViewModel(IWorkshopClient client, IWindowService windowService, IWorkshopService workshopService, IRouter router, Func<EntrySpecificationsViewModel> getSpecificationsVm) {
         _client = client;
-        _httpClientFactory = httpClientFactory;
         _windowService = windowService;
         _workshopService = workshopService;
         _router = router;
-        _getEntrySpecificationsViewModel = entrySpecificationsViewModel;
+        _getGetSpecificationsVm = getSpecificationsVm;
 
-        Save = ReactiveCommand.CreateFromTask(ExecuteSave);
         CreateRelease = ReactiveCommand.CreateFromTask(ExecuteCreateRelease);
         DeleteSubmission = ReactiveCommand.CreateFromTask(ExecuteDeleteSubmission);
         ViewWorkshopPage = ReactiveCommand.CreateFromTask(ExecuteViewWorkshopPage);
+        DiscardChanges = ReactiveCommand.CreateFromTask(ExecuteDiscardChanges, this.WhenAnyValue(vm => vm.HasChanges));
+        SaveChanges = ReactiveCommand.CreateFromTask(ExecuteSaveChanges, this.WhenAnyValue(vm => vm.HasChanges));
     }
 
-    public ReactiveCommand<Unit, Unit> Save { get; }
     public ReactiveCommand<Unit, Unit> CreateRelease { get; }
     public ReactiveCommand<Unit, Unit> DeleteSubmission { get; }
+    public ReactiveCommand<Unit, Unit> ViewWorkshopPage { get; }
+    public ReactiveCommand<Unit, Unit> SaveChanges { get; }
+    public ReactiveCommand<Unit, Unit> DiscardChanges { get; }
 
     public EntrySpecificationsViewModel? EntrySpecificationsViewModel
     {
@@ -65,8 +66,12 @@ public class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters
         set => RaiseAndSetIfChanged(ref _entry, value);
     }
 
-    public ReactiveCommand<Unit, Unit> ViewWorkshopPage { get; }
-
+    public bool HasChanges
+    {
+        get => _hasChanges;
+        private set => RaiseAndSetIfChanged(ref _hasChanges, value);
+    }
+    
     public override async Task OnNavigating(WorkshopDetailParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
         IOperationResult<IGetSubmittedEntryByIdResult> result = await _client.GetSubmittedEntryById.ExecuteAsync(parameters.EntryId, cancellationToken);
@@ -77,12 +82,29 @@ public class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters
         await ApplyFromEntry(cancellationToken);
     }
 
+    public override async Task OnClosing(NavigationArguments args)
+    {
+        if (!HasChanges)
+            return;
+
+        bool confirmed = await _windowService.ShowConfirmContentDialog("You have unsaved changes", "Do you want to discard your unsaved changes?");
+        if (!confirmed)
+            args.Cancel();
+    }
+
     private async Task ApplyFromEntry(CancellationToken cancellationToken)
     {
         if (Entry == null)
             return;
 
-        EntrySpecificationsViewModel viewModel = _getEntrySpecificationsViewModel();
+        if (EntrySpecificationsViewModel != null)
+        {
+            EntrySpecificationsViewModel.PropertyChanged -= EntrySpecificationsViewModelOnPropertyChanged;
+            ((INotifyCollectionChanged) EntrySpecificationsViewModel.SelectedCategories).CollectionChanged -= SelectedCategoriesOnCollectionChanged;
+            EntrySpecificationsViewModel.Tags.CollectionChanged -= TagsOnCollectionChanged;
+        }
+
+        EntrySpecificationsViewModel viewModel = _getGetSpecificationsVm();
 
         viewModel.IconBitmap = await GetEntryIcon(cancellationToken);
         viewModel.Name = Entry.Name;
@@ -95,6 +117,9 @@ public class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters
             viewModel.Tags.Add(tag);
 
         EntrySpecificationsViewModel = viewModel;
+        EntrySpecificationsViewModel.PropertyChanged += EntrySpecificationsViewModelOnPropertyChanged;
+        ((INotifyCollectionChanged) EntrySpecificationsViewModel.SelectedCategories).CollectionChanged += SelectedCategoriesOnCollectionChanged;
+        EntrySpecificationsViewModel.Tags.CollectionChanged += TagsOnCollectionChanged;
     }
 
     private async Task<Bitmap?> GetEntryIcon(CancellationToken cancellationToken)
@@ -102,26 +127,59 @@ public class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters
         if (Entry == null)
             return null;
 
-        HttpClient client = _httpClientFactory.CreateClient(WorkshopConstants.WORKSHOP_CLIENT_NAME);
-        try
-        {
-            HttpResponseMessage response = await client.GetAsync($"entries/{Entry.Id}/icon", cancellationToken);
-            response.EnsureSuccessStatusCode();
-            Stream data = await response.Content.ReadAsStreamAsync(cancellationToken);
-            return new Bitmap(data);
-        }
-        catch (HttpRequestException)
-        {
-            // ignored
-            return null;
-        }
+        Stream? stream = await _workshopService.GetEntryIcon(Entry.Id, cancellationToken);
+        return stream != null ? new Bitmap(stream) : null;
     }
 
-    private async Task ExecuteSave(CancellationToken cancellationToken)
+    private void UpdateHasChanges()
     {
-        UpdateEntryInput input = new();
+        if (EntrySpecificationsViewModel == null || Entry == null)
+            return;
+
+        List<int> categories = EntrySpecificationsViewModel.Categories.Where(c => c.IsSelected).Select(c => c.Id).OrderBy(c => c).ToList();
+        List<string> tags = EntrySpecificationsViewModel.Tags.OrderBy(t => t).ToList();
+
+        HasChanges = EntrySpecificationsViewModel.Name != Entry.Name ||
+                     EntrySpecificationsViewModel.Description != Entry.Description ||
+                     EntrySpecificationsViewModel.Summary != Entry.Summary ||
+                     EntrySpecificationsViewModel.IconChanged ||
+                     !tags.SequenceEqual(Entry.Tags.Select(t => t.Name).OrderBy(t => t)) ||
+                     !categories.SequenceEqual(Entry.Categories.Select(c => c.Id).OrderBy(c => c));
+    }
+
+    private async Task ExecuteDiscardChanges()
+    {
+        await ApplyFromEntry(CancellationToken.None);
+    }
+
+    private async Task ExecuteSaveChanges(CancellationToken cancellationToken)
+    {
+        if (Entry == null || EntrySpecificationsViewModel == null || !EntrySpecificationsViewModel.ValidationContext.GetIsValid())
+            return;
+        
+        UpdateEntryInput input = new()
+        {
+            Id = Entry.Id,
+            Name = EntrySpecificationsViewModel.Name,
+            Summary = EntrySpecificationsViewModel.Summary,
+            Description = EntrySpecificationsViewModel.Description,
+            Categories = EntrySpecificationsViewModel.SelectedCategories,
+            Tags = EntrySpecificationsViewModel.Tags
+        };
+
         IOperationResult<IUpdateEntryResult> result = await _client.UpdateEntry.ExecuteAsync(input, cancellationToken);
         result.EnsureNoErrors();
+
+        if (EntrySpecificationsViewModel.IconChanged && EntrySpecificationsViewModel.IconBitmap != null)
+        {
+            using MemoryStream stream = new();
+            EntrySpecificationsViewModel.IconBitmap.Save(stream);
+            ImageUploadResult imageResult = await _workshopService.SetEntryIcon(Entry.Id, new Progress<StreamProgress>(), stream, cancellationToken);
+            if (!imageResult.IsSuccess)
+                throw new ArtemisWorkshopException("Failed to upload image. " + imageResult.Message);
+        }
+
+        HasChanges = false;
     }
 
     private async Task ExecuteCreateRelease(CancellationToken cancellationToken)
@@ -151,5 +209,20 @@ public class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters
     {
         if (Entry != null)
             await _workshopService.NavigateToEntry(Entry.Id, Entry.EntryType);
+    }
+    
+    private void TagsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        UpdateHasChanges();
+    }
+
+    private void SelectedCategoriesOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        UpdateHasChanges();
+    }
+
+    private void EntrySpecificationsViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        UpdateHasChanges();
     }
 }

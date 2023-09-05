@@ -27,7 +27,7 @@ public class ValidateEmailStepViewModel : SubmissionViewModel
         Continue = ReactiveCommand.Create(ExecuteContinue);
         Refresh = ReactiveCommand.CreateFromTask(ExecuteRefresh);
         Resend = ReactiveCommand.Create(() => Utilities.OpenUrl(WorkshopConstants.AUTHORITY_URL + "/account/confirm/resend"));
-        
+
         ShowGoBack = false;
         ShowHeader = false;
 
@@ -42,12 +42,6 @@ public class ValidateEmailStepViewModel : SubmissionViewModel
             updateTimer.DisposeWith(d);
         });
     }
-
-    /// <inheritdoc />
-    public override ReactiveCommand<Unit, Unit> Continue { get; }
-
-    /// <inheritdoc />
-    public override ReactiveCommand<Unit, Unit> GoBack { get; } = null!;
 
     public ReactiveCommand<Unit, Unit> Refresh { get; }
     public ReactiveCommand<Unit, Process?> Resend { get; }
