@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -99,6 +100,23 @@ public static partial class ProcessMonitor
                 FreeBuffer();
         }
     }
+    
+    /// <summary>
+    ///     Returns whether the specified process is running
+    /// </summary>
+    /// <param name="processName">The name of the process to check</param>
+    /// <param name="processLocation">The location of where the process must be running from (optional)</param>
+    /// <returns></returns>
+    public static bool IsProcessRunning(string? processName = null, string? processLocation = null)
+    {
+        if (!IsStarted || (processName == null && processLocation == null))
+            return false;
+        
+        lock (LOCK)
+        {
+            return _processes.Values.Any(x => IsProcessRunning(x, processName, processLocation));
+        }
+    }
 
     // ReSharper disable once SuggestBaseTypeForParameter
     private static void HandleStoppedProcesses(HashSet<int> currentProcessIds)
@@ -111,6 +129,21 @@ public static partial class ProcessMonitor
                 _processes.Remove(id);
                 OnProcessStopped(info);
             }
+    }
+        
+    private static bool IsProcessRunning(ProcessInfo info, string? processName, string? processLocation)
+    {
+        if (processName != null && processLocation != null)
+            return string.Equals(info.ProcessName, processName, StringComparison.InvariantCultureIgnoreCase) &&
+                   string.Equals(Path.GetDirectoryName(info.Executable), processLocation, StringComparison.InvariantCultureIgnoreCase);
+        
+        if (processName != null)
+            return string.Equals(info.ProcessName, processName, StringComparison.InvariantCultureIgnoreCase);
+        
+        if (processLocation != null)
+            return string.Equals(Path.GetDirectoryName(info.Executable), processLocation, StringComparison.InvariantCultureIgnoreCase);
+        
+        return false;
     }
 
     private static void OnProcessStarted(ProcessInfo processInfo)
