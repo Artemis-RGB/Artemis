@@ -127,7 +127,7 @@ public interface IProfileService : IArtemisService
     Task<Stream> ExportProfile(ProfileConfiguration profileConfiguration);
 
     /// <summary>
-    ///     Imports the provided base64 encoded GZIPed JSON as a profile configuration.
+    ///     Imports the provided ZIP archive stream as a profile configuration.
     /// </summary>
     /// <param name="archiveStream">The zip archive containing the profile to import.</param>
     /// <param name="category">The <see cref="ProfileCategory" /> in which to import the profile.</param>
@@ -137,8 +137,17 @@ public interface IProfileService : IArtemisService
     ///     any changes are made to it.
     /// </param>
     /// <param name="nameAffix">Text to add after the name of the profile (separated by a dash).</param>
+    /// <param name="targetIndex">The index at which to import the profile into the category.</param>
     /// <returns>The resulting profile configuration.</returns>
-    Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix = "imported");
+    Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix = "imported", int targetIndex = 0);
+    
+    /// <summary>
+    ///     Imports the provided ZIP archive stream into the provided profile configuration
+    /// </summary>
+    /// <param name="archiveStream">The zip archive containing the profile to import.</param>
+    /// <param name="profileConfiguration">The profile configuration to overwrite.</param>
+    /// <returns>The resulting profile configuration.</returns>
+    Task<ProfileConfiguration> OverwriteProfile(MemoryStream archiveStream, ProfileConfiguration profileConfiguration);
 
     /// <summary>
     ///     Adapts a given profile to the currently active devices.
@@ -176,4 +185,5 @@ public interface IProfileService : IArtemisService
     ///     Occurs whenever a profile category is removed.
     /// </summary>
     public event EventHandler<ProfileCategoryEventArgs>? ProfileCategoryRemoved;
+    
 }

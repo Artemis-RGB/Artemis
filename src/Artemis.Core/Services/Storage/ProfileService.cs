@@ -438,7 +438,7 @@ internal class ProfileService : IProfileService
     }
 
     /// <inheritdoc />
-    public async Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix)
+    public async Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix, int targetIndex = 0)
     {
         using ZipArchive archive = new(archiveStream, ZipArchiveMode.Read, true);
 
@@ -500,13 +500,24 @@ internal class ProfileService : IProfileService
         }
 
         profileConfiguration.Entity.ProfileId = profileEntity.Id;
-        category.AddProfileConfiguration(profileConfiguration, 0);
+        category.AddProfileConfiguration(profileConfiguration, targetIndex);
 
         List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>();
         profileConfiguration.LoadModules(modules);
         SaveProfileCategory(category);
 
         return profileConfiguration;
+    }
+
+    /// <inheritdoc />
+    public async Task<ProfileConfiguration> OverwriteProfile(MemoryStream archiveStream, ProfileConfiguration profileConfiguration)
+    {
+        ProfileConfiguration imported = await ImportProfile(archiveStream, profileConfiguration.Category, true, true, null, profileConfiguration.Order + 1);
+        
+        DeleteProfile(profileConfiguration);
+        SaveProfileCategory(imported.Category);
+        
+        return imported;
     }
 
     /// <inheritdoc />

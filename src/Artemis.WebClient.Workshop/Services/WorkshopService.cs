@@ -1,4 +1,6 @@
 using System.Net.Http.Headers;
+using Artemis.Storage.Entities.Workshop;
+using Artemis.Storage.Repositories.Interfaces;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop.UploadHandlers;
@@ -9,11 +11,13 @@ public class WorkshopService : IWorkshopService
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IRouter _router;
+    private readonly IEntryRepository _entryRepository;
 
-    public WorkshopService(IHttpClientFactory httpClientFactory, IRouter router)
+    public WorkshopService(IHttpClientFactory httpClientFactory, IRouter router, IEntryRepository entryRepository)
     {
         _httpClientFactory = httpClientFactory;
         _router = router;
+        _entryRepository = entryRepository;
     }
 
     public async Task<Stream?> GetEntryIcon(Guid entryId, CancellationToken cancellationToken)
@@ -98,15 +102,27 @@ public class WorkshopService : IWorkshopService
                 throw new ArgumentOutOfRangeException(nameof(entryType));
         }
     }
-}
 
-public interface IWorkshopService
-{
-    Task<Stream?> GetEntryIcon(Guid entryId, CancellationToken cancellationToken);
-    Task<ImageUploadResult> SetEntryIcon(Guid entryId, Progress<StreamProgress> progress, Stream icon, CancellationToken cancellationToken);
-    Task<WorkshopStatus> GetWorkshopStatus(CancellationToken cancellationToken);
-    Task<bool> ValidateWorkshopStatus(CancellationToken cancellationToken);
-    Task NavigateToEntry(Guid entryId, EntryType entryType);
+    /// <inheritdoc />
+    public InstalledEntry? GetInstalledEntry(IGetEntryById_Entry entry)
+    {
+        EntryEntity? entity = _entryRepository.GetByEntryId(entry.Id);
+        if (entity == null)
+            return null;
 
-    public record WorkshopStatus(bool IsReachable, string Message);
+        return new InstalledEntry(entity);
+    }
+
+    /// <inheritdoc />
+    public InstalledEntry CreateInstalledEntry(IGetEntryById_Entry entry)
+    {
+        return new InstalledEntry(entry);
+    }
+
+    /// <inheritdoc />
+    public void SaveInstalledEntry(InstalledEntry entry)
+    {
+        entry.Save();
+        _entryRepository.Save(entry.Entity);
+    }
 }

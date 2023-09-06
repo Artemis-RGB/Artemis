@@ -20,16 +20,16 @@ namespace Artemis.UI.Screens.Workshop.Profile;
 public class ProfileDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
 {
     private readonly IWorkshopClient _client;
-    private readonly ProfileEntryDownloadHandler _downloadHandler;
+    private readonly ProfileEntryInstallationHandler _installationHandler;
     private readonly INotificationService _notificationService;
     private readonly IWindowService _windowService;
     private readonly ObservableAsPropertyHelper<DateTimeOffset?> _updatedAt;
     private IGetEntryById_Entry? _entry;
 
-    public ProfileDetailsViewModel(IWorkshopClient client, ProfileEntryDownloadHandler downloadHandler, INotificationService notificationService, IWindowService windowService)
+    public ProfileDetailsViewModel(IWorkshopClient client, ProfileEntryInstallationHandler installationHandler, INotificationService notificationService, IWindowService windowService)
     {
         _client = client;
-        _downloadHandler = downloadHandler;
+        _installationHandler = installationHandler;
         _notificationService = notificationService;
         _windowService = windowService;
         _updatedAt = this.WhenAnyValue(vm => vm.Entry).Select(e => e?.LatestRelease?.CreatedAt ?? e?.CreatedAt).ToProperty(this, vm => vm.UpdatedAt);
@@ -70,7 +70,7 @@ public class ProfileDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
         if (!confirm)
             return;
 
-        EntryInstallResult<ProfileConfiguration> result = await _downloadHandler.InstallProfileAsync(Entry.LatestRelease.Id, new Progress<StreamProgress>(), cancellationToken);
+        EntryInstallResult<ProfileConfiguration> result = await _installationHandler.InstallProfileAsync(Entry, Entry.LatestRelease.Id, new Progress<StreamProgress>(), cancellationToken);
         if (result.IsSuccess)
             _notificationService.CreateNotification().WithTitle("Profile installed").WithSeverity(NotificationSeverity.Success).Show();
         else

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Screens.Workshop.CurrentUser;
+using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.WebClient.Workshop;
@@ -18,15 +19,17 @@ public class SearchViewModel : ViewModelBase
 {
     private readonly ILogger _logger;
     private readonly IRouter _router;
+    private readonly IDebugService _debugService;
     private readonly IWorkshopClient _workshopClient;
     private bool _isLoading;
     private SearchResultViewModel? _selectedEntry;
 
-    public SearchViewModel(ILogger logger, IWorkshopClient workshopClient, IRouter router, CurrentUserViewModel currentUserViewModel)
+    public SearchViewModel(ILogger logger, IWorkshopClient workshopClient, IRouter router, CurrentUserViewModel currentUserViewModel, IDebugService debugService)
     {
         _logger = logger;
         _workshopClient = workshopClient;
         _router = router;
+        _debugService = debugService;
         CurrentUserViewModel = currentUserViewModel;
         SearchAsync = ExecuteSearchAsync;
 
@@ -49,6 +52,11 @@ public class SearchViewModel : ViewModelBase
         set => RaiseAndSetIfChanged(ref _isLoading, value);
     }
 
+    public void ShowDebugger()
+    {
+        _debugService.ShowDebugger();
+    }
+    
     private void NavigateToEntry(SearchResultViewModel searchResult)
     {
         string? url = null;

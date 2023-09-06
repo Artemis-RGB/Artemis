@@ -49,6 +49,6 @@ public static class ContainerExtensions
         
         container.Register<EntryUploadHandlerFactory>(Reuse.Transient);
         container.RegisterMany(workshopAssembly, type => type.IsAssignableTo<IEntryUploadHandler>(), Reuse.Transient);
-        container.RegisterMany(workshopAssembly, type => type.IsAssignableTo<IEntryDownloadHandler>(), Reuse.Transient);
+        container.RegisterMany(workshopAssembly, type => type.IsAssignableTo<IEntryInstallationHandler>(), Reuse.Transient);
     }
 }

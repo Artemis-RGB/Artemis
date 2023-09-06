@@ -2,6 +2,6 @@
 
 namespace Artemis.WebClient.Workshop.DownloadHandlers;
 
-public interface IEntryDownloadHandler
+public interface IEntryInstallationHandler
 {
 }
