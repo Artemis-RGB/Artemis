@@ -10,6 +10,8 @@ public interface IWorkshopService
     Task<WorkshopStatus> GetWorkshopStatus(CancellationToken cancellationToken);
     Task<bool> ValidateWorkshopStatus(CancellationToken cancellationToken);
     Task NavigateToEntry(Guid entryId, EntryType entryType);
+
+    List<InstalledEntry> GetInstalledEntries();
     InstalledEntry? GetInstalledEntry(IGetEntryById_Entry entry);
     InstalledEntry CreateInstalledEntry(IGetEntryById_Entry entry);
     void SaveInstalledEntry(InstalledEntry entry);

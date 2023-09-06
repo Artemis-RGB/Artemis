@@ -1,0 +1,53 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tabs="clr-namespace:Artemis.UI.Screens.Workshop.Library.Tabs"
+             xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Library.Tabs.InstalledTabItemView"
+             x:DataType="tabs:InstalledTabItemViewModel">
+    <UserControl.Resources>
+        <converters:EntryIconUriConverter x:Key="EntryIconUriConverter" />
+        <converters:DateTimeConverter x:Key="DateTimeConverter" />
+    </UserControl.Resources>
+    <Border Classes="card-condensed" 
+        MinHeight="80"
+            MaxHeight="110"
+            Padding="12 6"
+            Margin="0 0 0 5"
+            HorizontalAlignment="Stretch">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+            <!-- Icon -->
+            <Border Grid.Column="0"
+                    CornerRadius="6"
+                    VerticalAlignment="Center"
+                    Margin="0 0 10 0"
+                    Width="50"
+                    Height="50"
+                    ClipToBounds="True">
+                <Image Stretch="UniformToFill" asyncImageLoader:ImageLoader.Source="{CompiledBinding InstalledEntry.EntryId, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
+            </Border>
+
+            <!-- Body -->
+            <Grid Grid.Column="1" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
+                <TextBlock Grid.Row="0"
+                           Classes="h5 no-margin"
+                           TextTrimming="CharacterEllipsis"
+                           Text="{CompiledBinding InstalledEntry.Name, FallbackValue=Title}" />
+                <TextBlock Grid.Row="1"
+                           Classes="subtitle"
+                           TextWrapping="Wrap"
+                           TextTrimming="CharacterEllipsis"
+                           Text="{CompiledBinding InstalledEntry.Summary, FallbackValue=Summary}">
+                </TextBlock>
+            </Grid>
+
+            <!-- Info -->
+            <StackPanel Grid.Column="2" Margin="0 0 4 0">
+                <TextBlock TextAlignment="Right" Text="{CompiledBinding InstalledEntry.InstalledAt, FallbackValue=01-01-1337, Converter={StaticResource DateTimeConverter}}" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

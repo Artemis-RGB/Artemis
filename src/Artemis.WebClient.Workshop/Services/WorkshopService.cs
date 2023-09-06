@@ -103,6 +103,11 @@ public class WorkshopService : IWorkshopService
         }
     }
 
+    public List<InstalledEntry> GetInstalledEntries()
+    {
+        return _entryRepository.GetAll().Select(e => new InstalledEntry(e)).ToList();
+    }
+
     /// <inheritdoc />
     public InstalledEntry? GetInstalledEntry(IGetEntryById_Entry entry)
     {
