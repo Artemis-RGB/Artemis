@@ -5,6 +5,7 @@
              xmlns:tabs="clr-namespace:Artemis.UI.Screens.Workshop.Library.Tabs"
              xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Library.Tabs.InstalledTabItemView"
              x:DataType="tabs:InstalledTabItemViewModel">
@@ -12,14 +13,14 @@
         <converters:EntryIconUriConverter x:Key="EntryIconUriConverter" />
         <converters:DateTimeConverter x:Key="DateTimeConverter" />
     </UserControl.Resources>
-    <Border Classes="card-condensed" 
-        MinHeight="80"
+    <Button MinHeight="65"
             MaxHeight="110"
-            Padding="12 6"
+            Padding="6"
             Margin="0 0 0 5"
-            HorizontalAlignment="Stretch">
-        <Grid ColumnDefinitions="Auto,*,Auto">
-            <!-- Icon -->
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Stretch"
+            Command="{CompiledBinding ViewWorkshopPage}">
+        <Grid ColumnDefinitions="Auto,*,*,*,Auto">
             <Border Grid.Column="0"
                     CornerRadius="6"
                     VerticalAlignment="Center"
@@ -30,24 +31,28 @@
                 <Image Stretch="UniformToFill" asyncImageLoader:ImageLoader.Source="{CompiledBinding InstalledEntry.EntryId, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
             </Border>
 
-            <!-- Body -->
-            <Grid Grid.Column="1" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
-                <TextBlock Grid.Row="0"
-                           Classes="h5 no-margin"
-                           TextTrimming="CharacterEllipsis"
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock TextTrimming="CharacterEllipsis"
                            Text="{CompiledBinding InstalledEntry.Name, FallbackValue=Title}" />
-                <TextBlock Grid.Row="1"
-                           Classes="subtitle"
+                <TextBlock Classes="subtitle"
                            TextWrapping="Wrap"
                            TextTrimming="CharacterEllipsis"
-                           Text="{CompiledBinding InstalledEntry.Summary, FallbackValue=Summary}">
+                           Text="{CompiledBinding InstalledEntry.Author, FallbackValue=Summary}">
                 </TextBlock>
-            </Grid>
-
-            <!-- Info -->
-            <StackPanel Grid.Column="2" Margin="0 0 4 0">
-                <TextBlock TextAlignment="Right" Text="{CompiledBinding InstalledEntry.InstalledAt, FallbackValue=01-01-1337, Converter={StaticResource DateTimeConverter}}" />
+            </StackPanel>
+            
+            <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{CompiledBinding InstalledEntry.EntryType}"></TextBlock>
+            <TextBlock Grid.Column="3" VerticalAlignment="Center">
+                <Run>Installed</Run>
+                <Run Text="{CompiledBinding InstalledEntry.InstalledAt, FallbackValue=01-01-1337, Converter={StaticResource DateTimeConverter}}" />
+            </TextBlock>
+            
+            <StackPanel Grid.Column="4" VerticalAlignment="Center" Orientation="Horizontal" Spacing="6">
+                <Button Command="{CompiledBinding ViewLocal}">Open</Button>
+                <Button Command="{CompiledBinding Uninstall}" Theme="{StaticResource TransparentButton}" Height="32">
+                    <avalonia:MaterialIcon Kind="Trash"/>
+                </Button>
             </StackPanel>
         </Grid>
-    </Border>
+    </Button>
 </UserControl>

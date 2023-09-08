@@ -3,17 +3,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tabs="clr-namespace:Artemis.UI.Screens.Workshop.Library.Tabs"
-             xmlns:workshop="clr-namespace:Artemis.WebClient.Workshop;assembly=Artemis.WebClient.Workshop"
-             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
-             xmlns:converters="clr-namespace:Artemis.UI.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="650"
              x:Class="Artemis.UI.Screens.Workshop.Library.Tabs.SubmissionsTabView"
              x:DataType="tabs:SubmissionsTabViewModel">
-    <UserControl.Resources>
-        <converters:EntryIconUriConverter x:Key="EntryIconUriConverter" />
-        <converters:DateTimeConverter x:Key="DateTimeConverter" />
-    </UserControl.Resources>
 
     <UserControl.Styles>
         <Styles>
@@ -44,71 +36,11 @@
                 <Button HorizontalAlignment="Center" Command="{CompiledBinding AddSubmission}">Submit new entry</Button>
             </StackPanel>
 
-            <ScrollViewer>
-                <ItemsRepeater IsVisible="{CompiledBinding Entries.Count}" ItemsSource="{CompiledBinding Entries}">
+            <ScrollViewer IsVisible="{CompiledBinding Entries.Count}">
+                <ItemsRepeater ItemsSource="{CompiledBinding Entries}">
                     <ItemsRepeater.ItemTemplate>
-                        <DataTemplate DataType="workshop:IGetSubmittedEntries_SubmittedEntries">
-                            <Button MinHeight="80"
-                                    MaxHeight="110"
-                                    Padding="12 6"
-                                    Margin="0 0 0 5"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Stretch"
-                                    Command="{Binding $parent[tabs:SubmissionsTabView].DataContext.NavigateToEntry}"
-                                    CommandParameter="{CompiledBinding}">
-                                <Grid ColumnDefinitions="Auto,*,Auto">
-                                    <!-- Icon -->
-                                    <Border Grid.Column="0"
-                                            CornerRadius="6"
-                                            VerticalAlignment="Center"
-                                            Margin="0 0 10 0"
-                                            Width="50"
-                                            Height="50"
-                                            ClipToBounds="True">
-                                        <Image Stretch="UniformToFill" asyncImageLoader:ImageLoader.Source="{CompiledBinding Id, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
-                                    </Border>
-
-                                    <!-- Body -->
-                                    <Grid Grid.Column="1" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
-                                        <TextBlock Grid.Row="0" 
-                                                   Classes="h5 no-margin"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   Text="{CompiledBinding Name, FallbackValue=Title}"/>
-                                        <TextBlock Grid.Row="1"
-                                                   Classes="subtitle"
-                                                   TextWrapping="Wrap"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   Text="{CompiledBinding Summary, FallbackValue=Summary}">
-                                        </TextBlock>
-
-                                        <ItemsControl Grid.Row="2" ItemsSource="{CompiledBinding Categories}">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <StackPanel Orientation="Horizontal" Spacing="8"></StackPanel>
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Margin="0 0 3 0"></avalonia:MaterialIcon>
-                                                        <TextBlock Text="{CompiledBinding Name}" TextTrimming="CharacterEllipsis" />
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </Grid>
-
-                                    <!-- Info -->
-                                    <StackPanel Grid.Column="2" Margin="0 0 4 0">
-                                        <TextBlock TextAlignment="Right" Text="{CompiledBinding CreatedAt, FallbackValue=01-01-1337, Converter={StaticResource DateTimeConverter}}" />
-                                        <TextBlock TextAlignment="Right">
-                                            <avalonia:MaterialIcon Kind="Downloads" />
-                                            <Run Classes="h5" Text="{CompiledBinding Downloads, FallbackValue=0}" />
-                                            <Run>downloads</Run>
-                                        </TextBlock>
-                                    </StackPanel>
-                                </Grid>
-                            </Button>
+                        <DataTemplate>
+                            <ContentControl Content="{CompiledBinding}"/>
                         </DataTemplate>
                     </ItemsRepeater.ItemTemplate>
                 </ItemsRepeater>

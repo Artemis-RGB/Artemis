@@ -8,8 +8,8 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Exceptions;
+using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using Artemis.WebClient.Workshop.Services;
-using Artemis.WebClient.Workshop.UploadHandlers;
 using ReactiveUI;
 using StrawberryShake;
 

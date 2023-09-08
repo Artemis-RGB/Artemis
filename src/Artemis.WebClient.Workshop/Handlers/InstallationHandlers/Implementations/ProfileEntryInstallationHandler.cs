@@ -4,7 +4,7 @@ using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop.Services;
 
-namespace Artemis.WebClient.Workshop.DownloadHandlers.Implementations;
+namespace Artemis.WebClient.Workshop.Handlers.InstallationHandlers.Implementations;
 
 public class ProfileEntryInstallationHandler : IEntryInstallationHandler
 {
@@ -19,7 +19,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         _workshopService = workshopService;
     }
 
-    public async Task<EntryInstallResult<ProfileConfiguration>> InstallProfileAsync(IGetEntryById_Entry entry, Guid releaseId, Progress<StreamProgress> progress, CancellationToken cancellationToken)
+    public async Task<EntryInstallResult> InstallAsync(IGetEntryById_Entry entry, Guid releaseId, Progress<StreamProgress> progress, CancellationToken cancellationToken)
     {
         using MemoryStream stream = new();
 
@@ -31,7 +31,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         }
         catch (Exception e)
         {
-            return EntryInstallResult<ProfileConfiguration>.FromFailure(e.Message);
+            return EntryInstallResult.FromFailure(e.Message);
         }
 
         // Find existing installation to potentially replace the profile
@@ -43,10 +43,10 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
             {
                 ProfileConfiguration overwritten = await _profileService.OverwriteProfile(stream, existing);
                 installedEntry.LocalReference = overwritten.ProfileId.ToString();
-                
+
                 // Update the release and return the profile configuration
                 UpdateRelease(releaseId, installedEntry);
-                return EntryInstallResult<ProfileConfiguration>.FromSuccess(overwritten);
+                return EntryInstallResult.FromSuccess(overwritten);
             }
         }
 
@@ -60,7 +60,33 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
 
         // Update the release and return the profile configuration
         UpdateRelease(releaseId, installedEntry);
-        return EntryInstallResult<ProfileConfiguration>.FromSuccess(imported);
+        return EntryInstallResult.FromSuccess(imported);
+    }
+
+    public async Task<EntryUninstallResult> UninstallAsync(InstalledEntry installedEntry, CancellationToken cancellationToken)
+    {
+        if (!Guid.TryParse(installedEntry.LocalReference, out Guid profileId))
+            return EntryUninstallResult.FromFailure("Local reference does not contain a GUID");
+
+        return await Task.Run(() =>
+        {
+            try
+            {
+                // Find the profile if still there
+                ProfileConfiguration? profile = _profileService.ProfileConfigurations.FirstOrDefault(c => c.ProfileId == profileId);
+                if (profile != null)
+                    _profileService.DeleteProfile(profile);
+
+                // Remove the release
+                _workshopService.RemoveInstalledEntry(installedEntry);
+            }
+            catch (Exception e)
+            {
+                return EntryUninstallResult.FromFailure(e.Message);
+            }
+
+            return EntryUninstallResult.FromSuccess();
+        }, cancellationToken);
     }
 
     private void UpdateRelease(Guid releaseId, InstalledEntry installedEntry)

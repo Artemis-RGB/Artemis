@@ -160,10 +160,10 @@ public class ProfileEditorViewModel : RoutableScreen<ProfileEditorViewModelParam
     {
         ProfileConfiguration? profileConfiguration = _profileService.ProfileConfigurations.FirstOrDefault(c => c.ProfileId == parameters.ProfileId);
 
-        // If the profile doesn't exist, navigate home for lack of some kind of 404 :p
+        // If the profile doesn't exist, cancel navigation
         if (profileConfiguration == null)
         {
-            await args.Router.Navigate("home");
+            args.Cancel();
             return;
         }
 

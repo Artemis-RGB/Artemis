@@ -1,5 +1,5 @@
 using Artemis.UI.Shared.Utilities;
-using Artemis.WebClient.Workshop.UploadHandlers;
+using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 
 namespace Artemis.WebClient.Workshop.Services;
 
@@ -14,7 +14,9 @@ public interface IWorkshopService
     List<InstalledEntry> GetInstalledEntries();
     InstalledEntry? GetInstalledEntry(IGetEntryById_Entry entry);
     InstalledEntry CreateInstalledEntry(IGetEntryById_Entry entry);
+    void RemoveInstalledEntry(InstalledEntry installedEntry);
     void SaveInstalledEntry(InstalledEntry entry);
+
 
     public record WorkshopStatus(bool IsReachable, string Message);
 }

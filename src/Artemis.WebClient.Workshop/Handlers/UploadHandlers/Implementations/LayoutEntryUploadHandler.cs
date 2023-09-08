@@ -1,6 +1,6 @@
 ﻿using Artemis.UI.Shared.Utilities;
 
-namespace Artemis.WebClient.Workshop.UploadHandlers.Implementations;
+namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers.Implementations;
 
 public class LayoutEntryUploadHandler : IEntryUploadHandler
 {

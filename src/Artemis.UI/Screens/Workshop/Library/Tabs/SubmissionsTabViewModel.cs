@@ -21,21 +21,25 @@ public class SubmissionsTabViewModel : RoutableScreen
     private readonly IWorkshopClient _client;
     private readonly SourceCache<IGetSubmittedEntries_SubmittedEntries, Guid> _entries;
     private readonly IWindowService _windowService;
-    private readonly IRouter _router;
     private bool _isLoading = true;
     private bool _workshopReachable;
 
-    public SubmissionsTabViewModel(IWorkshopClient client, IAuthenticationService authenticationService, IWindowService windowService, IWorkshopService workshopService, IRouter router)
+    public SubmissionsTabViewModel(IWorkshopClient client,
+        IAuthenticationService authenticationService,
+        IWindowService windowService, 
+        IWorkshopService workshopService, 
+        Func<IGetSubmittedEntries_SubmittedEntries, SubmissionsTabItemViewModel> getSubmissionsTabItemViewModel)
     {
         _client = client;
         _windowService = windowService;
-        _router = router;
         _entries = new SourceCache<IGetSubmittedEntries_SubmittedEntries, Guid>(e => e.Id);
-        _entries.Connect().Bind(out ReadOnlyObservableCollection<IGetSubmittedEntries_SubmittedEntries> entries).Subscribe();
+        _entries.Connect()
+            .Transform(getSubmissionsTabItemViewModel)
+            .Bind(out ReadOnlyObservableCollection<SubmissionsTabItemViewModel> entries)
+            .Subscribe();
 
         AddSubmission = ReactiveCommand.CreateFromTask(ExecuteAddSubmission, this.WhenAnyValue(vm => vm.WorkshopReachable));
         Login = ReactiveCommand.CreateFromTask(ExecuteLogin, this.WhenAnyValue(vm => vm.WorkshopReachable));
-        NavigateToEntry = ReactiveCommand.CreateFromTask<IGetSubmittedEntries_SubmittedEntries>(ExecuteNavigateToEntry);
 
         IsLoggedIn = authenticationService.IsLoggedIn;
         Entries = entries;
@@ -53,7 +57,7 @@ public class SubmissionsTabViewModel : RoutableScreen
     public ReactiveCommand<IGetSubmittedEntries_SubmittedEntries, Unit> NavigateToEntry { get; }
 
     public IObservable<bool> IsLoggedIn { get; }
-    public ReadOnlyObservableCollection<IGetSubmittedEntries_SubmittedEntries> Entries { get; }
+    public ReadOnlyObservableCollection<SubmissionsTabItemViewModel> Entries { get; }
 
     public bool WorkshopReachable
     {
@@ -77,12 +81,7 @@ public class SubmissionsTabViewModel : RoutableScreen
     {
         await _windowService.ShowDialogAsync<SubmissionWizardViewModel>();
     }
-
-    private async Task ExecuteNavigateToEntry(IGetSubmittedEntries_SubmittedEntries entry, CancellationToken cancellationToken)
-    {
-        await _router.Navigate($"workshop/library/submissions/{entry.Id}");
-    }
-
+    
     private async Task GetEntries(CancellationToken ct)
     {
         IsLoading = true;

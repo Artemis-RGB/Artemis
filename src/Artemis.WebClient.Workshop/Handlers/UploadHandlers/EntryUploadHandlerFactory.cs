@@ -1,7 +1,7 @@
-﻿using Artemis.WebClient.Workshop.UploadHandlers.Implementations;
+﻿using Artemis.WebClient.Workshop.Handlers.UploadHandlers.Implementations;
 using DryIoc;
 
-namespace Artemis.WebClient.Workshop.UploadHandlers;
+namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 
 public class EntryUploadHandlerFactory
 {

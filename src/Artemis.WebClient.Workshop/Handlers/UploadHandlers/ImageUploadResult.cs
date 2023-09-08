@@ -1,4 +1,4 @@
-﻿namespace Artemis.WebClient.Workshop.UploadHandlers;
+﻿namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 
 public class ImageUploadResult
 {

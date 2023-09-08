@@ -48,4 +48,8 @@
         <Generator>MSBuild:GenerateGraphQLCode</Generator>
       </GraphQL>
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Handlers\" />
+    </ItemGroup>
 </Project>

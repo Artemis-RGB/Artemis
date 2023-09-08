@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Reactive.Disposables;
+using System.Reactive;
 using System.Reactive.Linq;
 using Artemis.UI.Shared.Routing;
 using Artemis.WebClient.Workshop.Services;
-using Avalonia.ReactiveUI;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
@@ -15,26 +15,31 @@ public class InstalledTabViewModel : RoutableScreen
 {
     private string? _searchEntryInput;
 
-    public InstalledTabViewModel(IWorkshopService workshopService, Func<InstalledEntry, InstalledTabItemViewModel> getInstalledTabItemViewModel)
+    public InstalledTabViewModel(IWorkshopService workshopService, IRouter router, Func<InstalledEntry, InstalledTabItemViewModel> getInstalledTabItemViewModel)
     {
         SourceList<InstalledEntry> installedEntries = new();
         IObservable<Func<InstalledEntry, bool>> pluginFilter = this.WhenAnyValue(vm => vm.SearchEntryInput).Throttle(TimeSpan.FromMilliseconds(100)).Select(CreatePredicate);
 
         installedEntries.Connect()
             .Filter(pluginFilter)
-            .Sort(SortExpressionComparer<InstalledEntry>.Ascending(p => p.Name))
+            .Sort(SortExpressionComparer<InstalledEntry>.Descending(p => p.InstalledAt))
             .Transform(getInstalledTabItemViewModel)
-            .ObserveOn(AvaloniaScheduler.Instance)
+            .AutoRefresh(vm => vm.IsRemoved)
+            .Filter(vm => !vm.IsRemoved)
             .Bind(out ReadOnlyObservableCollection<InstalledTabItemViewModel> installedEntryViewModels)
             .Subscribe();
+        
+        List<InstalledEntry> entries = workshopService.GetInstalledEntries();
+        installedEntries.AddRange(entries);
+        
+        Empty = entries.Count == 0;
         InstalledEntries = installedEntryViewModels;
         
-        this.WhenActivated(d =>
-        {
-            installedEntries.AddRange(workshopService.GetInstalledEntries());
-            Disposable.Create(installedEntries, e => e.Clear()).DisposeWith(d);
-        });
+        OpenWorkshop = ReactiveCommand.CreateFromTask(async () => await router.Navigate("workshop"));
     }
+
+    public bool Empty { get; }
+    public ReactiveCommand<Unit, Unit> OpenWorkshop { get; }
 
     public ReadOnlyObservableCollection<InstalledTabItemViewModel> InstalledEntries { get; }
 
@@ -49,7 +54,6 @@ public class InstalledTabViewModel : RoutableScreen
         if (string.IsNullOrWhiteSpace(text))
             return _ => true;
 
-        return data => data.Name.Contains(text, StringComparison.InvariantCultureIgnoreCase) ||
-                       data.Summary.Contains(text, StringComparison.InvariantCultureIgnoreCase);
+        return data => data.Name.Contains(text, StringComparison.InvariantCultureIgnoreCase);
     }
 }

@@ -3,7 +3,7 @@ using Artemis.Storage.Entities.Workshop;
 using Artemis.Storage.Repositories.Interfaces;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Utilities;
-using Artemis.WebClient.Workshop.UploadHandlers;
+using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 
 namespace Artemis.WebClient.Workshop.Services;
 
@@ -122,6 +122,12 @@ public class WorkshopService : IWorkshopService
     public InstalledEntry CreateInstalledEntry(IGetEntryById_Entry entry)
     {
         return new InstalledEntry(entry);
+    }
+
+    /// <inheritdoc />
+    public void RemoveInstalledEntry(InstalledEntry installedEntry)
+    {
+        _entryRepository.Remove(installedEntry.Entity);
     }
 
     /// <inheritdoc />

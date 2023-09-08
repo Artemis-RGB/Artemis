@@ -1,10 +1,10 @@
 using System.Reflection;
-using Artemis.WebClient.Workshop.DownloadHandlers;
 using Artemis.WebClient.Workshop.Extensions;
+using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
+using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using Artemis.WebClient.Workshop.Repositories;
 using Artemis.WebClient.Workshop.Services;
 using Artemis.WebClient.Workshop.State;
-using Artemis.WebClient.Workshop.UploadHandlers;
 using DryIoc;
 using DryIoc.Microsoft.DependencyInjection;
 using IdentityModel.Client;

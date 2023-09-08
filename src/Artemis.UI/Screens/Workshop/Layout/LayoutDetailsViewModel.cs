@@ -10,7 +10,6 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
-using Artemis.WebClient.Workshop.DownloadHandlers;
 using ReactiveUI;
 using StrawberryShake;
 

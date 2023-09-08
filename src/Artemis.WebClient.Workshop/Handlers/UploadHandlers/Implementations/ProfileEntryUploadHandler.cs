@@ -1,12 +1,11 @@
 ﻿using System.Net.Http.Headers;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.Storage.Repositories.Interfaces;
 using Artemis.UI.Shared.Utilities;
 using Artemis.Web.Workshop.Entities;
 using Newtonsoft.Json;
 
-namespace Artemis.WebClient.Workshop.UploadHandlers.Implementations;
+namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers.Implementations;
 
 public class ProfileEntryUploadHandler : IEntryUploadHandler
 {

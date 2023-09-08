@@ -20,7 +20,6 @@ public class InstalledEntry
 
         Author = entry.Author;
         Name = entry.Name;
-        Summary = entry.Summary;
     }
 
     public Guid EntryId { get; set; }
@@ -28,7 +27,6 @@ public class InstalledEntry
 
     public string Author { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-    public string Summary { get; set; } = string.Empty;
 
     public Guid ReleaseId { get; set; }
     public string ReleaseVersion { get; set; } = string.Empty;
@@ -45,7 +43,6 @@ public class InstalledEntry
 
         Author = Entity.Author;
         Name = Entity.Name;
-        Summary = Entity.Summary;
 
         ReleaseId = Entity.ReleaseId;
         ReleaseVersion = Entity.ReleaseVersion;
@@ -61,7 +58,6 @@ public class InstalledEntry
 
         Entity.Author = Author;
         Entity.Name = Name;
-        Entity.Summary = Summary;
 
         Entity.ReleaseId = ReleaseId;
         Entity.ReleaseVersion = ReleaseVersion;

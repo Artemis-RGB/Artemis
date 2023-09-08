@@ -10,8 +10,8 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
-using Artemis.WebClient.Workshop.DownloadHandlers;
-using Artemis.WebClient.Workshop.DownloadHandlers.Implementations;
+using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
+using Artemis.WebClient.Workshop.Handlers.InstallationHandlers.Implementations;
 using ReactiveUI;
 using StrawberryShake;
 
@@ -70,7 +70,7 @@ public class ProfileDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
         if (!confirm)
             return;
 
-        EntryInstallResult<ProfileConfiguration> result = await _installationHandler.InstallProfileAsync(Entry, Entry.LatestRelease.Id, new Progress<StreamProgress>(), cancellationToken);
+        EntryInstallResult result = await _installationHandler.InstallAsync(Entry, Entry.LatestRelease.Id, new Progress<StreamProgress>(), cancellationToken);
         if (result.IsSuccess)
             _notificationService.CreateNotification().WithTitle("Profile installed").WithSeverity(NotificationSeverity.Success).Show();
         else
