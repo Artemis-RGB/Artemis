@@ -38,14 +38,15 @@ public class SidebarViewModel : ActivatableViewModelBase
         SidebarScreen = new SidebarScreenViewModel(MaterialIconKind.Abacus, ROOT_SCREEN, "", null, new ObservableCollection<SidebarScreenViewModel>()
         {
             new(MaterialIconKind.HomeOutline, "Home", "home"),
-            #if DEBUG
             new(MaterialIconKind.TestTube, "Workshop", "workshop", null, new ObservableCollection<SidebarScreenViewModel>
             {
                 new(MaterialIconKind.FolderVideo, "Profiles", "workshop/entries/profiles/1", "workshop/entries/profiles"),
+#if DEBUG
                 new(MaterialIconKind.KeyboardVariant, "Layouts", "workshop/entries/layouts/1", "workshop/entries/layouts"),
+#endif
                 new(MaterialIconKind.Bookshelf, "Library", "workshop/library"),
             }),
-            #endif
+
             new(MaterialIconKind.Devices, "Surface Editor", "surface-editor"),
             new(MaterialIconKind.SettingsOutline, "Settings", "settings")
         });
@@ -120,7 +121,7 @@ public class SidebarViewModel : ActivatableViewModelBase
     {
         if (_updating)
             return;
-        
+
         Dispatcher.UIThread.Invoke(async () =>
         {
             try

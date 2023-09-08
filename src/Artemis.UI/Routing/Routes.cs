@@ -23,7 +23,6 @@ public static class Routes
     {
         new RouteRegistration<BlankViewModel>("blank"),
         new RouteRegistration<HomeViewModel>("home"),
-#if DEBUG
         new RouteRegistration<WorkshopViewModel>("workshop")
         {
             Children = new List<IRouterRegistration>
@@ -35,8 +34,10 @@ public static class Routes
                     {
                         new RouteRegistration<ProfileListViewModel>("profiles/{page:int}"),
                         new RouteRegistration<ProfileDetailsViewModel>("profiles/details/{entryId:guid}"),
+#if DEBUG
                         new RouteRegistration<LayoutListViewModel>("layouts/{page:int}"),
                         new RouteRegistration<LayoutDetailsViewModel>("layouts/details/{entryId:guid}"),
+#endif
                     }
                 },
                 new RouteRegistration<WorkshopLibraryViewModel>("library")
@@ -50,7 +51,6 @@ public static class Routes
                 }
             }
         },
-#endif
         new RouteRegistration<SurfaceEditorViewModel>("surface-editor"),
         new RouteRegistration<SettingsViewModel>("settings")
         {

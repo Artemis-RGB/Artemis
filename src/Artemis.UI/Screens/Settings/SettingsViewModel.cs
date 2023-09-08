@@ -55,4 +55,9 @@ public class SettingsViewModel : RoutableHostScreen<RoutableScreen>, IMainScreen
         if (SelectedTab == null)
             await _router.Navigate(SettingTabs.First().Path);
     }
+
+    public void GoBack()
+    {
+        _router.Navigate("workshop");
+    }
 }
