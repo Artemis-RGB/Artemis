@@ -1,5 +1,10 @@
+using System.Reflection;
+using Artemis.WebClient.Workshop.Extensions;
+using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
+using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using Artemis.WebClient.Workshop.Repositories;
 using Artemis.WebClient.Workshop.Services;
+using Artemis.WebClient.Workshop.State;
 using DryIoc;
 using DryIoc.Microsoft.DependencyInjection;
 using IdentityModel.Client;
@@ -18,11 +23,17 @@ public static class ContainerExtensions
     /// <param name="container">The builder building the current container</param>
     public static void RegisterWorkshopClient(this IContainer container)
     {
+        Assembly[] workshopAssembly = {typeof(WorkshopConstants).Assembly};
+        
         ServiceCollection serviceCollection = new();
         serviceCollection
             .AddHttpClient()
             .AddWorkshopClient()
+            .AddHttpMessageHandler<WorkshopClientStoreAccessor, AuthenticationDelegatingHandler>()
             .ConfigureHttpClient(client => client.BaseAddress = new Uri(WorkshopConstants.WORKSHOP_URL + "/graphql"));
+        serviceCollection.AddHttpClient(WorkshopConstants.WORKSHOP_CLIENT_NAME)
+            .AddHttpMessageHandler<AuthenticationDelegatingHandler>()
+            .ConfigureHttpClient(client => client.BaseAddress = new Uri(WorkshopConstants.WORKSHOP_URL));
 
         serviceCollection.AddSingleton<IDiscoveryCache>(r =>
         {
@@ -34,5 +45,10 @@ public static class ContainerExtensions
 
         container.Register<IAuthenticationRepository, AuthenticationRepository>(Reuse.Singleton);
         container.Register<IAuthenticationService, AuthenticationService>(Reuse.Singleton);
+        container.Register<IWorkshopService, WorkshopService>(Reuse.Singleton);
+        
+        container.Register<EntryUploadHandlerFactory>(Reuse.Transient);
+        container.RegisterMany(workshopAssembly, type => type.IsAssignableTo<IEntryUploadHandler>(), Reuse.Transient);
+        container.RegisterMany(workshopAssembly, type => type.IsAssignableTo<IEntryInstallationHandler>(), Reuse.Transient);
     }
 }

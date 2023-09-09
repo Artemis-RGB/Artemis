@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:steps="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps"
+             mc:Ignorable="d" d:DesignWidth="970" d:DesignHeight="625"
+             x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.LoginStepView"
+             x:DataType="steps:LoginStepViewModel">
+    <StackPanel Margin="0 50 0 0">
+        <StackPanel.Styles>
+            <Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="TextAlignment" Value="Center"></Setter>
+                    <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                </Style>
+            </Styles>
+        </StackPanel.Styles>
+        <TextBlock Theme="{StaticResource TitleTextBlockStyle}">First things first</TextBlock>
+        <TextBlock>
+            <Run>In order to submit anything to the workshop you must be logged in.</Run>
+            <LineBreak />
+            <Run>Creating an account is free and we'll not bother you with a newsletter or crap like that.</Run>
+        </TextBlock>
+        
+        <Lottie Path="/Assets/Animations/login-pending.json" RepeatCount="1" Width="350" Height="350"></Lottie>
+        
+        <TextBlock>
+            <Run>Click Log In below to (create an account) and log in.</Run>
+            <LineBreak/>
+            <Run>You'll also be able to log in with Google or Discord.</Run>
+        </TextBlock>
+    </StackPanel>
+</UserControl>

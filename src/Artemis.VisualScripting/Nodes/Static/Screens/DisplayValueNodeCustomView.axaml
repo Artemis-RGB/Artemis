@@ -25,7 +25,7 @@
                                Text="{CompiledBinding Converter={StaticResource SKColorToStringConverter}}"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Stretch" 
-                               FontFamily="Consolas"/>
+                               FontFamily="{StaticResource RobotoMono}"/>
                     <Border Margin="5 0 0 0"
                             VerticalAlignment="Bottom"
                             HorizontalAlignment="Right"
@@ -46,7 +46,7 @@
             </DataTemplate>
             <DataTemplate DataType="system:Object">
                 <Border Classes="card-condensed" Margin="0,5,5,5 ">
-                    <TextBlock Text="{CompiledBinding Converter={StaticResource JsonConverter}}" FontFamily="Consolas"/>    
+                    <TextBlock Text="{CompiledBinding Converter={StaticResource JsonConverter}}" FontFamily="{StaticResource RobotoMono}" FontSize="12"/>    
                 </Border>
             </DataTemplate>
         </ContentControl.DataTemplates>

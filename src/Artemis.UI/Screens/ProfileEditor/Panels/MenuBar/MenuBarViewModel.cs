@@ -16,7 +16,6 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Newtonsoft.Json;
 using ReactiveUI;
-using Serilog;
 
 namespace Artemis.UI.Screens.ProfileEditor.MenuBar;
 
@@ -182,7 +181,7 @@ public class MenuBarViewModel : ActivatableViewModelBase
         if (!await _windowService.ShowConfirmContentDialog("Delete profile", "Are you sure you want to permanently delete this profile?"))
             return;
 
-        if (ProfileConfiguration.IsBeingEdited)
+        if (_profileService.FocusProfile == ProfileConfiguration)
             await _router.Navigate("home");
         _profileService.RemoveProfileConfiguration(ProfileConfiguration);
     }

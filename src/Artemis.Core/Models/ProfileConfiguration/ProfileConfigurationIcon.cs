@@ -15,7 +15,6 @@ public class ProfileConfigurationIcon : CorePropertyChanged, IStorageModel
     private string? _iconName;
     private Stream? _iconStream;
     private ProfileConfigurationIconType _iconType;
-    private string? _originalFileName;
 
     internal ProfileConfigurationIcon(ProfileConfigurationEntity entity)
     {

@@ -4,13 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:updating="clr-namespace:Artemis.UI.Screens.Settings.Updating"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Settings.Updating.ReleaseView"
              x:DataType="updating:ReleaseViewModel">
+    <UserControl.Resources>
+        <converters:DateTimeConverter x:Key="DateTimeConverter" />
+    </UserControl.Resources>
     <Panel>
         <Grid Margin="4" IsVisible="{CompiledBinding ShowStatusIndicator}" RowDefinitions="*,*" ColumnDefinitions="*,Auto">
             <TextBlock Grid.Row="0" Grid.Column="0" Text="{CompiledBinding Release.Version}" VerticalAlignment="Center" FontWeight="SemiBold" />
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="{CompiledBinding Release.CreatedAt, StringFormat={}{0:g}}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{CompiledBinding Release.CreatedAt, Converter={StaticResource DateTimeConverter}}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
             <avalonia:MaterialIcon Classes="status-icon" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Kind="CheckCircle" ToolTip.Tip="Current version"
                                    IsVisible="{CompiledBinding IsCurrentVersion}" />
             <avalonia:MaterialIcon Classes="status-icon" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Kind="History" ToolTip.Tip="Previous version"
@@ -18,7 +22,7 @@
         </Grid>
         <StackPanel Margin="4" IsVisible="{CompiledBinding !ShowStatusIndicator}">
             <TextBlock Text="{CompiledBinding Release.Version}" VerticalAlignment="Center" />
-            <TextBlock Text="{CompiledBinding Release.CreatedAt, StringFormat={}{0:g}}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
+            <TextBlock Text="{CompiledBinding Release.CreatedAt, Converter={StaticResource DateTimeConverter}}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
         </StackPanel>
     </Panel>
 </UserControl>

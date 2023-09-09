@@ -7,7 +7,7 @@ schema {
 
 type Category {
     icon: String!
-    id: Int!
+    id: Long!
     name: String!
 }
 
@@ -37,8 +37,11 @@ type Entry {
     downloads: Long!
     entryType: EntryType!
     icon: Image
-    id: UUID!
+    iconId: UUID
+    id: Long!
     images: [Image!]!
+    latestRelease: Release
+    latestReleaseId: Long
     name: String!
     releases: [Release!]!
     summary: String!
@@ -52,14 +55,16 @@ type Image {
 
 type Mutation {
     addEntry(input: CreateEntryInput!): Entry
+    removeEntry(id: Long!): Entry
     updateEntry(input: UpdateEntryInput!): Entry
 }
 
 type Query {
     categories(order: [CategorySortInput!], where: CategoryFilterInput): [Category!]!
     entries(order: [EntrySortInput!], skip: Int, take: Int, where: EntryFilterInput): EntriesCollectionSegment
-    entry(id: UUID!): Entry
+    entry(id: Long!): Entry
     searchEntries(input: String!, order: [EntrySortInput!], type: EntryType, where: EntryFilterInput): [Entry!]!
+    submittedEntries(order: [EntrySortInput!], where: EntryFilterInput): [Entry!]!
 }
 
 type Release {
@@ -67,14 +72,14 @@ type Release {
     downloadSize: Long!
     downloads: Long!
     entry: Entry!
-    entryId: UUID!
-    id: UUID!
+    entryId: Long!
+    id: Long!
     md5Hash: String
     version: String!
 }
 
 type Tag {
-    id: Int!
+    id: Long!
     name: String!
 }
 
@@ -106,7 +111,7 @@ scalar UUID
 input CategoryFilterInput {
     and: [CategoryFilterInput!]
     icon: StringOperationFilterInput
-    id: IntOperationFilterInput
+    id: LongOperationFilterInput
     name: StringOperationFilterInput
     or: [CategoryFilterInput!]
 }
@@ -118,7 +123,7 @@ input CategorySortInput {
 }
 
 input CreateEntryInput {
-    categories: [Int!]!
+    categories: [Long!]!
     description: String!
     entryType: EntryType!
     name: String!
@@ -151,8 +156,11 @@ input EntryFilterInput {
     downloads: LongOperationFilterInput
     entryType: EntryTypeOperationFilterInput
     icon: ImageFilterInput
-    id: UuidOperationFilterInput
+    iconId: UuidOperationFilterInput
+    id: LongOperationFilterInput
     images: ListFilterInputTypeOfImageFilterInput
+    latestRelease: ReleaseFilterInput
+    latestReleaseId: LongOperationFilterInput
     name: StringOperationFilterInput
     or: [EntryFilterInput!]
     releases: ListFilterInputTypeOfReleaseFilterInput
@@ -168,7 +176,10 @@ input EntrySortInput {
     downloads: SortEnumType
     entryType: SortEnumType
     icon: ImageSortInput
+    iconId: SortEnumType
     id: SortEnumType
+    latestRelease: ReleaseSortInput
+    latestReleaseId: SortEnumType
     name: SortEnumType
     summary: SortEnumType
 }
@@ -190,21 +201,6 @@ input ImageFilterInput {
 input ImageSortInput {
     id: SortEnumType
     mimeType: SortEnumType
-}
-
-input IntOperationFilterInput {
-    eq: Int
-    gt: Int
-    gte: Int
-    in: [Int]
-    lt: Int
-    lte: Int
-    neq: Int
-    ngt: Int
-    ngte: Int
-    nin: [Int]
-    nlt: Int
-    nlte: Int
 }
 
 input ListFilterInputTypeOfCategoryFilterInput {
@@ -256,11 +252,22 @@ input ReleaseFilterInput {
     downloadSize: LongOperationFilterInput
     downloads: LongOperationFilterInput
     entry: EntryFilterInput
-    entryId: UuidOperationFilterInput
-    id: UuidOperationFilterInput
+    entryId: LongOperationFilterInput
+    id: LongOperationFilterInput
     md5Hash: StringOperationFilterInput
     or: [ReleaseFilterInput!]
     version: StringOperationFilterInput
+}
+
+input ReleaseSortInput {
+    createdAt: SortEnumType
+    downloadSize: SortEnumType
+    downloads: SortEnumType
+    entry: EntrySortInput
+    entryId: SortEnumType
+    id: SortEnumType
+    md5Hash: SortEnumType
+    version: SortEnumType
 }
 
 input StringOperationFilterInput {
@@ -280,15 +287,15 @@ input StringOperationFilterInput {
 
 input TagFilterInput {
     and: [TagFilterInput!]
-    id: IntOperationFilterInput
+    id: LongOperationFilterInput
     name: StringOperationFilterInput
     or: [TagFilterInput!]
 }
 
 input UpdateEntryInput {
-    categories: [Int!]!
+    categories: [Long!]!
     description: String!
-    id: UUID!
+    id: Long!
     name: String!
     summary: String!
     tags: [String!]!

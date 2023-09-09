@@ -18,7 +18,7 @@
                 <TrayIcon.Menu>
                     <NativeMenu>
                         <NativeMenuItem Header="Home" Command="{CompiledBinding OpenScreen}" CommandParameter="home" />
-                        <!-- <NativeMenuItem Header="Workshop" Command="{CompiledBinding OpenScreen}" CommandParameter="workshop" /> -->
+                        <NativeMenuItem Header="Workshop" Command="{CompiledBinding OpenScreen}" CommandParameter="workshop" />
                         <NativeMenuItem Header="Surface Editor" Command="{CompiledBinding OpenScreen}" CommandParameter="surface-editor" />
                         <NativeMenuItem Header="Settings" Command="{CompiledBinding OpenScreen}" CommandParameter="settings" />
                         <NativeMenuItemSeparator />

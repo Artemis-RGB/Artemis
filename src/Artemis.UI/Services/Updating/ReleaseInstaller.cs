@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Extensions;
+using Artemis.UI.Shared.Extensions;
+using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Updating;
 using Octodiff.Core;
 using Octodiff.Diagnostics;
@@ -32,7 +34,7 @@ public class ReleaseInstaller : CorePropertyChanged
     private IGetReleaseById_PublishedRelease _release = null!;
     private IGetReleaseById_PublishedRelease_Artifacts _artifact = null!;
 
-    private Progress<float> _stepProgress = new();
+    private Progress<StreamProgress> _stepProgress = new();
     private string _status = string.Empty;
     private float _floatProgress;
 
@@ -69,9 +71,7 @@ public class ReleaseInstaller : CorePropertyChanged
 
     public async Task InstallAsync(CancellationToken cancellationToken)
     {
-        _stepProgress = new Progress<float>();
-
-        ((IProgress<float>) _progress).Report(0);
+        _stepProgress = new Progress<StreamProgress>();
 
         Status = "Retrieving details";
         _logger.Information("Retrieving details for release {ReleaseId}", _releaseId);
@@ -99,7 +99,7 @@ public class ReleaseInstaller : CorePropertyChanged
     {
         // 10 - 50%
         _stepProgress.ProgressChanged += StepProgressOnProgressChanged;
-        void StepProgressOnProgressChanged(object? sender, float e) => ((IProgress<float>) _progress).Report(10f + e * 0.4f);
+        void StepProgressOnProgressChanged(object? sender, StreamProgress e) => ((IProgress<float>) _progress).Report(10f + e.ProgressPercentage * 0.4f);
 
         Status = "Downloading...";
         await using MemoryStream stream = new();
@@ -113,7 +113,7 @@ public class ReleaseInstaller : CorePropertyChanged
     {
         // 50 - 60%
         _stepProgress.ProgressChanged += StepProgressOnProgressChanged;
-        void StepProgressOnProgressChanged(object? sender, float e) => ((IProgress<float>) _progress).Report(50f + e * 0.1f);
+        void StepProgressOnProgressChanged(object? sender, StreamProgress e) => ((IProgress<float>) _progress).Report(50f + e.ProgressPercentage * 0.1f);
 
         Status = "Patching...";
         await using FileStream newFileStream = new(Path.Combine(Constants.UpdatingFolder, $"{_release.Version}.zip"), FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
@@ -139,7 +139,7 @@ public class ReleaseInstaller : CorePropertyChanged
     {
         // 10 - 60%
         _stepProgress.ProgressChanged += StepProgressOnProgressChanged;
-        void StepProgressOnProgressChanged(object? sender, float e) => ((IProgress<float>) _progress).Report(10f + e * 0.5f);
+        void StepProgressOnProgressChanged(object? sender, StreamProgress e) => ((IProgress<float>) _progress).Report(10f + e.ProgressPercentage * 0.5f);
 
         Status = "Downloading...";
         await using FileStream stream = new(Path.Combine(Constants.UpdatingFolder, $"{_release.Version}.zip"), FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
@@ -155,7 +155,7 @@ public class ReleaseInstaller : CorePropertyChanged
     {
         // 60 - 100%
         _stepProgress.ProgressChanged += StepProgressOnProgressChanged;
-        void StepProgressOnProgressChanged(object? sender, float e) => ((IProgress<float>) _progress).Report(60f + e * 0.4f);
+        void StepProgressOnProgressChanged(object? sender, StreamProgress e) => ((IProgress<float>) _progress).Report(60f + e.ProgressPercentage * 0.4f);
 
         Status = "Extracting...";
         // Ensure the directory is empty

@@ -8,20 +8,25 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Settings.SettingsView"
              x:DataType="settings:SettingsViewModel">
-    <Border Classes="router-container">
-        <Grid RowDefinitions="Auto,*">
-            <TabStrip Grid.Row="0" Margin="12" ItemsSource="{CompiledBinding SettingTabs}" SelectedItem="{CompiledBinding SelectedTab}">
-                <TabStrip.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{CompiledBinding Name}" />
-                    </DataTemplate>
-                </TabStrip.ItemTemplate>
-            </TabStrip>
-            <controls:Frame Grid.Row="1" Name="TabFrame" IsNavigationStackEnabled="False" CacheSize="0">
-                <controls:Frame.NavigationPageFactory>
-                    <ui:PageFactory/>
-                </controls:Frame.NavigationPageFactory>
-            </controls:Frame>
-        </Grid>
-    </Border>
+    <controls:NavigationView PaneDisplayMode="Top" 
+                             MenuItemsSource="{CompiledBinding SettingTabs}" 
+                             SelectedItem="{CompiledBinding SelectedTab}"
+                             IsBackEnabled="True"
+                             IsBackButtonVisible="True"
+                             IsSettingsVisible="False"
+                             BackRequested="NavigationView_OnBackRequested">
+        <controls:NavigationView.Styles>
+            <Styles>
+                <Style Selector="controls|NavigationView:topnavminimal /template/ SplitView Border#ContentGridBorder">
+                    <Setter Property="CornerRadius" Value="8 0 0 0" />
+                </Style>
+            </Styles>
+        </controls:NavigationView.Styles>
+        
+        <controls:Frame Name="TabFrame" IsNavigationStackEnabled="False" CacheSize="0" Padding="20">
+            <controls:Frame.NavigationPageFactory>
+                <ui:PageFactory/>
+            </controls:Frame.NavigationPageFactory>
+        </controls:Frame>
+    </controls:NavigationView>
 </UserControl>

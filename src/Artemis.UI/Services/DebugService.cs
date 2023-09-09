@@ -22,7 +22,8 @@ public class DebugService : IDebugService
 
     private void CreateDebugger()
     {
-        _debugViewModel = _windowService.ShowWindow<DebugViewModel>();
+        _windowService.ShowWindow(out DebugViewModel debugViewModel);
+        _debugViewModel = debugViewModel;
     }
 
     public void ClearDebugger()

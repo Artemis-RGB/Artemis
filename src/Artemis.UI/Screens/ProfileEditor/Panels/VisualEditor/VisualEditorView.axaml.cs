@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
@@ -19,7 +19,7 @@ public partial class VisualEditorView : ReactiveUserControl<VisualEditorViewMode
     public VisualEditorView()
     {
         InitializeComponent();
-        
+
         ZoomBorder.PropertyChanged += ZoomBorderOnPropertyChanged;
         ZoomBorder.PointerMoved += ZoomBorderOnPointerMoved;
         ZoomBorder.PointerWheelChanged += ZoomBorderOnPointerWheelChanged;
@@ -31,11 +31,7 @@ public partial class VisualEditorView : ReactiveUserControl<VisualEditorViewMode
             Disposable.Create(() => ViewModel.AutoFitRequested -= ViewModelOnAutoFitRequested).DisposeWith(d);
         });
 
-        this.WhenAnyValue(v => v.Bounds).Subscribe(_ =>
-        {
-            if (!_movedByUser)
-                AutoFit(true);
-        });
+        this.WhenAnyValue(v => v.Bounds).Where(_ => !_movedByUser).Subscribe(_ => AutoFit(true));
     }
 
     private void ZoomBorderOnPointerWheelChanged(object? sender, PointerWheelEventArgs e)

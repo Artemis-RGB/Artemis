@@ -25,14 +25,19 @@
         </Grid>
 
         <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
-            <ItemsRepeater ItemsSource="{CompiledBinding Plugins}" MaxWidth="1000" VerticalAlignment="Center">
-                <ItemsRepeater.ItemTemplate>
+            <ItemsControl ItemsSource="{CompiledBinding Plugins}" MaxWidth="1000" VerticalAlignment="Center">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="plugins:PluginSettingsViewModel">
-                        <ContentControl Content="{CompiledBinding}" Height="200"/>
+                        <ContentControl Content="{CompiledBinding}" Height="200" />
                     </DataTemplate>
-                </ItemsRepeater.ItemTemplate>
-            </ItemsRepeater>
-            
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
         </ScrollViewer>
     </Grid>
 </UserControl>

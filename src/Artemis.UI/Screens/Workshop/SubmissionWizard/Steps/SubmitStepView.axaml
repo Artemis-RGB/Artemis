@@ -1,0 +1,71 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:steps="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.SubmitStepView"
+             x:DataType="steps:SubmitStepViewModel">
+    <StackPanel>
+        <StackPanel.Styles>
+            <Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                </Style>
+            </Styles>
+        </StackPanel.Styles>
+        <TextBlock Theme="{StaticResource TitleTextBlockStyle}">
+            Ready to submit?
+        </TextBlock>
+        <TextBlock>
+            We have all the information we need, are you ready to submit the following to the workshop?
+        </TextBlock>
+
+        <Border Classes="card" Margin="0 15 0 0" >
+            <Grid ColumnDefinitions="Auto,*">
+            <!-- Icon -->
+            <Border Grid.Column="0"
+                    CornerRadius="12"
+                    Background="{StaticResource ControlStrokeColorOnAccentDefault}"
+                    VerticalAlignment="Center"
+                    Margin="0 0 10 0"
+                    Width="80"
+                    Height="80"
+                    ClipToBounds="True">
+                <Image Source="{CompiledBinding IconBitmap}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"></Image>
+            </Border>
+            
+            <!-- Body -->
+            <Grid Grid.Column="1" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
+                <TextBlock Grid.Row="0" Margin="0 0 0 5" TextTrimming="CharacterEllipsis" >
+                    <Run Classes="h5" Text="{CompiledBinding State.Name, FallbackValue=Title}" />
+                    <Run Classes="subtitle">by</Run>
+                    <Run Classes="subtitle" Text="{CompiledBinding CurrentUser, FallbackValue=Author}" />
+                </TextBlock>
+                <TextBlock Grid.Row="1" 
+                           Classes="subtitle" 
+                           TextWrapping="Wrap"
+                           TextTrimming="CharacterEllipsis" 
+                           Text="{CompiledBinding State.Summary, FallbackValue=Summary}"></TextBlock>
+
+                <ItemsControl Grid.Row="2" ItemsSource="{CompiledBinding Categories}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="8"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Margin="0 0 3 0"></avalonia:MaterialIcon>
+                                <TextBlock Text="{CompiledBinding Name}" TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+            </Grid>
+        </Border>
+    </StackPanel>
+</UserControl>

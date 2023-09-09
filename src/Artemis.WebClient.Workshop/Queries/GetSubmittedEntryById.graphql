@@ -1,0 +1,17 @@
+query GetSubmittedEntryById($id: Long!) {
+    entry(id: $id) {
+        id
+        name
+        summary
+        entryType
+        downloads
+        createdAt
+        description
+        categories {
+            id
+        }
+        tags {
+            name
+        }
+    }
+}

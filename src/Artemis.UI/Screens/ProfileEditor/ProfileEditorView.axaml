@@ -81,7 +81,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </Border>
-                    <ContentControl Grid.Column="1" Content="{CompiledBinding VisualEditorViewModel}" Classes="fade-in"
+                    <ContentControl Grid.Column="1" Content="{CompiledBinding VisualEditorViewModel}" 
                                     IsVisible="{CompiledBinding ProfileConfiguration, Converter={x:Static ObjectConverters.IsNotNull}}" />
                 </Grid>
             </Border>

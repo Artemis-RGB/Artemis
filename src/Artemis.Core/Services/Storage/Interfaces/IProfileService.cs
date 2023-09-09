@@ -28,19 +28,26 @@ public interface IProfileService : IArtemisService
     ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations { get; }
 
     /// <summary>
-    ///     Gets or sets a boolean indicating whether hotkeys are enabled.
+    ///     Gets or sets the focused profile configuration which is rendered exclusively.
     /// </summary>
-    bool HotkeysEnabled { get; set; }
+    ProfileConfiguration? FocusProfile { get; set; }
 
     /// <summary>
-    ///     Gets or sets a boolean indicating whether rendering should only be done for profiles being edited.
+    ///     Gets or sets the profile element which is rendered exclusively.
     /// </summary>
-    bool RenderForEditor { get; set; }
+    ProfileElement? FocusProfileElement { get; set; }
 
     /// <summary>
-    ///     Gets or sets the profile element to focus on while rendering for the editor.
+    /// Gets or sets a value indicating whether the currently focused profile should receive updates.
     /// </summary>
-    ProfileElement? EditorFocus { get; set; }
+    bool UpdateFocusProfile { get; set; }
+
+    /// <summary>
+    ///     Creates a copy of the provided profile configuration.
+    /// </summary>
+    /// <param name="profileConfiguration">The profile configuration to clone.</param>
+    /// <returns>The resulting clone.</returns>
+    ProfileConfiguration CloneProfileConfiguration(ProfileConfiguration profileConfiguration);
 
     /// <summary>
     ///     Activates the profile of the given <see cref="ProfileConfiguration" /> with the currently active surface.
@@ -71,8 +78,9 @@ public interface IProfileService : IArtemisService
     ///     Creates a new profile category and saves it to persistent storage.
     /// </summary>
     /// <param name="name">The name of the new profile category, must be unique.</param>
+    /// <param name="addToTop">A boolean indicating whether or not to add the category to the top.</param>
     /// <returns>The newly created profile category.</returns>
-    ProfileCategory CreateProfileCategory(string name);
+    ProfileCategory CreateProfileCategory(string name, bool addToTop = false);
 
     /// <summary>
     ///     Permanently deletes the provided profile category.
@@ -119,7 +127,7 @@ public interface IProfileService : IArtemisService
     Task<Stream> ExportProfile(ProfileConfiguration profileConfiguration);
 
     /// <summary>
-    ///     Imports the provided base64 encoded GZIPed JSON as a profile configuration.
+    ///     Imports the provided ZIP archive stream as a profile configuration.
     /// </summary>
     /// <param name="archiveStream">The zip archive containing the profile to import.</param>
     /// <param name="category">The <see cref="ProfileCategory" /> in which to import the profile.</param>
@@ -129,8 +137,17 @@ public interface IProfileService : IArtemisService
     ///     any changes are made to it.
     /// </param>
     /// <param name="nameAffix">Text to add after the name of the profile (separated by a dash).</param>
+    /// <param name="targetIndex">The index at which to import the profile into the category.</param>
     /// <returns>The resulting profile configuration.</returns>
-    Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix = "imported");
+    Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix = "imported", int targetIndex = 0);
+    
+    /// <summary>
+    ///     Imports the provided ZIP archive stream into the provided profile configuration
+    /// </summary>
+    /// <param name="archiveStream">The zip archive containing the profile to import.</param>
+    /// <param name="profileConfiguration">The profile configuration to overwrite.</param>
+    /// <returns>The resulting profile configuration.</returns>
+    Task<ProfileConfiguration> OverwriteProfile(MemoryStream archiveStream, ProfileConfiguration profileConfiguration);
 
     /// <summary>
     ///     Adapts a given profile to the currently active devices.
@@ -168,4 +185,5 @@ public interface IProfileService : IArtemisService
     ///     Occurs whenever a profile category is removed.
     /// </summary>
     public event EventHandler<ProfileCategoryEventArgs>? ProfileCategoryRemoved;
+    
 }

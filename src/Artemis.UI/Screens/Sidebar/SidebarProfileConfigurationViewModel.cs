@@ -104,7 +104,7 @@ public class SidebarProfileConfigurationViewModel : ActivatableViewModelBase
         if (!await _windowService.ShowConfirmContentDialog("Delete profile", "Are you sure you want to permanently delete this profile?"))
             return;
 
-        if (ProfileConfiguration.IsBeingEdited)
+        if (_profileService.FocusProfile == ProfileConfiguration)
             await _router.Navigate("home");
         _profileService.RemoveProfileConfiguration(ProfileConfiguration);
     }

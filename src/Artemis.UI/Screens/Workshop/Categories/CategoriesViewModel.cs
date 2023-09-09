@@ -46,16 +46,16 @@ public class CategoriesViewModel : ActivatableViewModelBase
 
     private IReadOnlyList<EntryFilterInput>? CreateFilter()
     {
-        List<int?> categories = Categories.Where(c => c.IsSelected).Select(c => (int?) c.Id).ToList();
+        List<long?> categories = Categories.Where(c => c.IsSelected).Select(c => (long?) c.Id).ToList();
         if (!categories.Any())
             return null;
 
         List<EntryFilterInput> categoryFilters = new();
-        foreach (int? category in categories)
+        foreach (long? category in categories)
         {
             categoryFilters.Add(new EntryFilterInput
             {
-                Categories = new ListFilterInputTypeOfCategoryFilterInput {Some = new CategoryFilterInput {Id = new IntOperationFilterInput {Eq = category}}}
+                Categories = new ListFilterInputTypeOfCategoryFilterInput {Some = new CategoryFilterInput {Id = new LongOperationFilterInput {Eq = category}}}
             });
         }
 

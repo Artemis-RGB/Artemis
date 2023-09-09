@@ -18,7 +18,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Root;
 
-public class RootViewModel : RoutableScreen<IMainScreenViewModel>, IMainWindowProvider
+public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProvider
 {
     private readonly ICoreService _coreService;
     private readonly IDebugService _debugService;
@@ -100,12 +100,10 @@ public class RootViewModel : RoutableScreen<IMainScreenViewModel>, IMainWindowPr
         _router.GoForward();
     }
 
-    private void UpdateTitleBarViewModel(IMainScreenViewModel? viewModel)
+    private void UpdateTitleBarViewModel(RoutableScreen? viewModel)
     {
-        if (viewModel?.TitleBarViewModel != null)
-            TitleBarViewModel = viewModel.TitleBarViewModel;
-        else
-            TitleBarViewModel = _defaultTitleBarViewModel;
+        IMainScreenViewModel? mainScreenViewModel = viewModel as IMainScreenViewModel;
+        TitleBarViewModel = mainScreenViewModel?.TitleBarViewModel ?? _defaultTitleBarViewModel;
     }
 
     private void CurrentMainWindowOnClosing(object? sender, EventArgs e)
@@ -130,7 +128,7 @@ public class RootViewModel : RoutableScreen<IMainScreenViewModel>, IMainWindowPr
 
     private void ShowSplashScreen()
     {
-        _windowService.ShowWindow<SplashViewModel>();
+        _windowService.ShowWindow(out SplashViewModel _);
     }
 
     #region Tray commands

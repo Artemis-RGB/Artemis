@@ -1,0 +1,51 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tabs="clr-namespace:Artemis.UI.Screens.Workshop.Library.Tabs"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="650"
+             x:Class="Artemis.UI.Screens.Workshop.Library.Tabs.SubmissionsTabView"
+             x:DataType="tabs:SubmissionsTabViewModel">
+
+    <UserControl.Styles>
+        <Styles>
+            <Style Selector="StackPanel.empty-state > TextBlock">
+                <Setter Property="TextAlignment" Value="Center"></Setter>
+                <Setter Property="TextWrapping" Value="Wrap"></Setter>
+            </Style>
+        </Styles>
+    </UserControl.Styles>
+
+    <Panel IsVisible="{CompiledBinding !IsLoading}">
+        <StackPanel IsVisible="{CompiledBinding !IsLoggedIn^}" Margin="0 50 0 0" Classes="empty-state">
+            <TextBlock Theme="{StaticResource TitleTextBlockStyle}">You are not logged in</TextBlock>
+            <TextBlock>
+                <Run>In order to manage your submissions you must be logged in.</Run>
+            </TextBlock>
+            <Lottie Path="/Assets/Animations/login-pending.json" RepeatCount="1" Width="350" Height="350"></Lottie>
+            <Button HorizontalAlignment="Center" Command="{CompiledBinding Login}">Log in</Button>
+        </StackPanel>
+
+        <Panel IsVisible="{CompiledBinding IsLoggedIn^}">
+            <StackPanel IsVisible="{CompiledBinding !Entries.Count}" Margin="0 50 0 0" Classes="empty-state">
+                <TextBlock Theme="{StaticResource TitleTextBlockStyle}">Oh boy, it's empty here 🤔</TextBlock>
+                <TextBlock>
+                    <Run>Any entries you submit to the workshop you can later manage here</Run>
+                </TextBlock>
+                <Lottie Path="/Assets/Animations/empty.json" RepeatCount="1" Width="350" Height="350"></Lottie>
+                <Button HorizontalAlignment="Center" Command="{CompiledBinding AddSubmission}">Submit new entry</Button>
+            </StackPanel>
+
+            <ScrollViewer IsVisible="{CompiledBinding Entries.Count}">
+                <ItemsRepeater ItemsSource="{CompiledBinding Entries}">
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl Content="{CompiledBinding}"/>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </ScrollViewer>
+        </Panel>
+    </Panel>
+
+</UserControl>

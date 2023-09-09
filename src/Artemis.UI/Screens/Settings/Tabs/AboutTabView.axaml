@@ -5,20 +5,21 @@
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:Artemis.UI.Screens.Settings;assembly=Artemis.UI"
+             xmlns:il="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
              x:DataType="vm:AboutTabViewModel"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="1400"
              x:Class="Artemis.UI.Screens.Settings.AboutTabView">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel Margin="15" MaxWidth="800">
             <Grid RowDefinitions="*,*" ColumnDefinitions="Auto,*,Auto">
-                <Image Grid.Column="0" 
-                       Grid.RowSpan="2" 
+                <Image Grid.Column="0"
+                       Grid.RowSpan="2"
                        Width="65"
                        Height="65"
                        VerticalAlignment="Center"
                        Source="/Assets/Images/Logo/bow.png"
                        Margin="0 0 20 0"
-                       RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                       RenderOptions.BitmapInterpolationMode="HighQuality" />
                 <TextBlock Grid.Row="0" Grid.Column="1" FontSize="36" VerticalAlignment="Bottom">
                     Artemis 2
                 </TextBlock>
@@ -52,17 +53,9 @@
             <Border Classes="card" Margin="0 20 0 10">
                 <StackPanel>
                     <Grid RowDefinitions="*,*,*" ColumnDefinitions="Auto,*">
-                        <Ellipse Grid.Row="0"
-                                 Grid.Column="0"
-                                 Grid.RowSpan="3"
-                                 VerticalAlignment="Top"
-                                 Height="40"
-                                 Width="40"
-                                 Margin="0 0 15 0"
-                                 IsVisible="{CompiledBinding RobertProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                 RenderOptions.BitmapInterpolationMode="HighQuality">
+                        <Ellipse Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" VerticalAlignment="Top" Height="75" Width="75" Margin="0 0 15 0">
                             <Ellipse.Fill>
-                                <ImageBrush Source="{CompiledBinding RobertProfileImage}" />
+                                <ImageBrush il:ImageBrushLoader.Source="https://avatars.githubusercontent.com/u/8858506" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
@@ -81,17 +74,9 @@
                     <Border Classes="card-separator" />
 
                     <Grid RowDefinitions="*,*,*" ColumnDefinitions="Auto,*">
-                        <Ellipse Grid.Row="0"
-                                 Grid.Column="0"
-                                 Grid.RowSpan="3"
-                                 VerticalAlignment="Top"
-                                 Height="75"
-                                 Width="75"
-                                 Margin="0 0 15 0"
-                                 IsVisible="{CompiledBinding DarthAffeProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                 RenderOptions.BitmapInterpolationMode="HighQuality">
+                        <Ellipse Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" VerticalAlignment="Top" Height="75" Width="75" Margin="0 0 15 0">
                             <Ellipse.Fill>
-                                <ImageBrush Source="{CompiledBinding DarthAffeProfileImage}" />
+                                <ImageBrush il:ImageBrushLoader.Source="https://avatars.githubusercontent.com/u/1094841" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
@@ -110,17 +95,9 @@
                     <Border Classes="card-separator" />
 
                     <Grid RowDefinitions="*,*,*" ColumnDefinitions="Auto,*">
-                        <Ellipse Grid.Row="0"
-                                 Grid.Column="0"
-                                 Grid.RowSpan="3"
-                                 VerticalAlignment="Top"
-                                 Height="75"
-                                 Width="75"
-                                 Margin="0 0 15 0"
-                                 IsVisible="{CompiledBinding DrMeteorProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                 RenderOptions.BitmapInterpolationMode="HighQuality">
+                        <Ellipse Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" VerticalAlignment="Top" Height="75" Width="75" Margin="0 0 15 0">
                             <Ellipse.Fill>
-                                <ImageBrush Source="{CompiledBinding DrMeteorProfileImage}" />
+                                <ImageBrush il:ImageBrushLoader.Source="https://avatars.githubusercontent.com/u/29486064" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
@@ -139,17 +116,9 @@
                     <Border Classes="card-separator" />
 
                     <Grid RowDefinitions="*,*,*" ColumnDefinitions="Auto,*">
-                        <Ellipse Grid.Row="0"
-                                 Grid.Column="0"
-                                 Grid.RowSpan="3"
-                                 VerticalAlignment="Top"
-                                 Height="75"
-                                 Width="75"
-                                 Margin="0 0 15 0"
-                                 IsVisible="{CompiledBinding KaiProfileImage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                 RenderOptions.BitmapInterpolationMode="HighQuality">
+                        <Ellipse Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" VerticalAlignment="Top" Height="75" Width="75" Margin="0 0 15 0">
                             <Ellipse.Fill>
-                                <ImageBrush Source="{CompiledBinding KaiProfileImage}" />
+                                <ImageBrush il:ImageBrushLoader.Source="https://i.imgur.com/8mPWY1j.png" />
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">

@@ -2,10 +2,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.WelcomeStepView">
-    <StackPanel>
-        <TextBlock>Welcome to the Workshop Submission Wizard 🧙</TextBlock>
-        <TextBlock>Here we'll take you, step by step, through the process of uploading your submission to the workshop.</TextBlock>
+             xmlns:steps="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps"
+             mc:Ignorable="d" d:DesignWidth="970" d:DesignHeight="900"
+             x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.WelcomeStepView"
+             x:DataType="steps:WelcomeStepViewModel">
+    <StackPanel Margin="0 50 0 0" >
+        <TextBlock Theme="{StaticResource TitleTextBlockStyle}" TextAlignment="Center" TextWrapping="Wrap">
+            Welcome to the Workshop Submission Wizard 🧙
+        </TextBlock>
+        <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+            Here we'll take you, step by step, through the process of uploading your submission to the workshop.
+        </TextBlock>
+
+        <Lottie Path="/Assets/Animations/workshop-wizard.json" RepeatCount="1" Width="500" Height="700"></Lottie>
     </StackPanel>
 </UserControl>

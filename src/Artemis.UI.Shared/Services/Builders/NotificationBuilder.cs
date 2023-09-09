@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
-using Button = Avalonia.Controls.Button;
 
 namespace Artemis.UI.Shared.Services.Builders;
 
@@ -117,33 +117,33 @@ public class NotificationBuilder
     /// <exception cref="ArtemisSharedUIException" />
     public Action Show()
     {
-        Panel? panel = _parent.Find<Panel>("NotificationContainer");
-        if (panel == null)
-            throw new ArtemisSharedUIException("Can't display a notification on a window without a NotificationContainer.");
-
         Dispatcher.UIThread.Post(() =>
         {
-            panel.Children.Add(_infoBar);
+            OverlayLayer? overlayLayer = OverlayLayer.GetOverlayLayer(_parent);
+            if (overlayLayer == null)
+                throw new ArtemisSharedUIException("Can't display a notification on a window an overlay layer.");
+
+            NotificationHost container = new() {Content = _infoBar};
+            overlayLayer.Children.Add(container);
             _infoBar.Closed += InfoBarOnClosed;
             _infoBar.IsOpen = true;
-        });
 
-        Task.Run(async () =>
-        {
-            await Task.Delay(_timeout);
-            Dispatcher.UIThread.Post(() => _infoBar.IsOpen = false);
+            Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                await Task.Delay(_timeout);
+                _infoBar.IsOpen = false;
+            });
+
+            return;
+
+            void InfoBarOnClosed(InfoBar sender, InfoBarClosedEventArgs args)
+            {
+                overlayLayer.Children.Remove(container);
+                _infoBar.Closed -= InfoBarOnClosed;
+            }
         });
 
         return () => Dispatcher.UIThread.Post(() => _infoBar.IsOpen = false);
-    }
-
-    private void InfoBarOnClosed(InfoBar sender, InfoBarClosedEventArgs args)
-    {
-        _infoBar.Closed -= InfoBarOnClosed;
-        if (_parent.Content is not Panel panel)
-            return;
-
-        panel.Children.Remove(_infoBar);
     }
 }
 
@@ -180,7 +180,7 @@ public class NotificationButtonBuilder
         _action = action;
         return this;
     }
-    
+
     /// <summary>
     ///     Changes action that is called when the button is clicked.
     /// </summary>
@@ -222,9 +222,13 @@ public class NotificationButtonBuilder
         button.Classes.Add("AppBarButton");
 
         if (_action != null)
+        {
             button.Command = ReactiveCommand.Create(() => _action());
+        }
         else if (_asyncAction != null)
+        {
             button.Command = ReactiveCommand.CreateFromTask(() => _asyncAction());
+        }
         else if (_command != null)
         {
             button.Command = _command;

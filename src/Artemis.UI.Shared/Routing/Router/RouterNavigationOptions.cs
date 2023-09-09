@@ -1,3 +1,5 @@
+using System;
+
 namespace Artemis.UI.Shared.Routing;
 
 /// <summary>
@@ -22,8 +24,30 @@ public class RouterNavigationOptions
     public bool IgnoreOnPartialMatch { get; set; } = false;
 
     /// <summary>
+    /// Gets or sets the path to use when determining whether the path is a partial match,
+    /// only has any effect if <see cref="IgnoreOnPartialMatch"/> is <see langword="true"/>.
+    /// </summary>
+    public string? PartialMatchOverride { get; set; }
+
+    /// <summary>
     /// Gets or sets a boolean value indicating whether logging should be enabled.
     /// <remarks>Errors and warnings are always logged.</remarks>
     /// </summary>
     public bool EnableLogging { get; set; } = true;
+
+    /// <summary>
+    /// Determines whether the given two paths are considered equal using these navigation options.
+    /// </summary>
+    /// <param name="current">The current path.</param>
+    /// <param name="target">The target path.</param>
+    /// <returns><see langword="true"/> if the paths are considered equal; otherwise <see langword="false"/>.</returns>
+    internal bool PathEquals(string current, string target)
+    {
+        if (PartialMatchOverride != null && IgnoreOnPartialMatch)
+            target = PartialMatchOverride;
+        
+        if (IgnoreOnPartialMatch)
+            return current.StartsWith(target, StringComparison.InvariantCultureIgnoreCase);
+        return string.Equals(current, target, StringComparison.InvariantCultureIgnoreCase);
+    }
 }

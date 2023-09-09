@@ -26,9 +26,9 @@ namespace Artemis.UI.Screens.Sidebar;
 public class SidebarCategoryViewModel : ActivatableViewModelBase
 {
     private readonly IProfileService _profileService;
-    private readonly IWindowService _windowService;
-    private readonly ISidebarVmFactory _vmFactory;
     private readonly IRouter _router;
+    private readonly ISidebarVmFactory _vmFactory;
+    private readonly IWindowService _windowService;
     private ObservableAsPropertyHelper<bool>? _isCollapsed;
     private ObservableAsPropertyHelper<bool>? _isSuspended;
     private SidebarProfileConfigurationViewModel? _selectedProfileConfiguration;
@@ -69,9 +69,9 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
                 .WhereNotNull()
                 .Subscribe(s => _router.Navigate($"profile-editor/{s.ProfileConfiguration.ProfileId}", new RouterNavigationOptions {IgnoreOnPartialMatch = true, RecycleScreens = false}))
                 .DisposeWith(d);
-            
+
             _router.CurrentPath.WhereNotNull().Subscribe(r => SelectedProfileConfiguration = ProfileConfigurations.FirstOrDefault(c => c.Matches(r))).DisposeWith(d);
-                
+
             // Update the list of profiles whenever the category fires events
             Observable.FromEventPattern<ProfileConfigurationEventArgs>(x => profileCategory.ProfileConfigurationAdded += x, x => profileCategory.ProfileConfigurationAdded -= x)
                 .Subscribe(e => profileConfigurations.Add(e.EventArgs.ProfileConfiguration))
@@ -88,12 +88,6 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
 
             _isCollapsed = ProfileCategory.WhenAnyValue(vm => vm.IsCollapsed).ToProperty(this, vm => vm.IsCollapsed).DisposeWith(d);
             _isSuspended = ProfileCategory.WhenAnyValue(vm => vm.IsSuspended).ToProperty(this, vm => vm.IsSuspended).DisposeWith(d);
-        });
-
-        profileConfigurations.Edit(updater =>
-        {
-            foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
-                updater.Add(profileConfiguration);
         });
     }
 
@@ -144,7 +138,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
     {
         if (await _windowService.ShowConfirmContentDialog($"Delete {ProfileCategory.Name}", "Do you want to delete this category and all its profiles?"))
         {
-            if (ProfileCategory.ProfileConfigurations.Any(c => c.IsBeingEdited))
+            if (ProfileCategory.ProfileConfigurations.Any(c => _profileService.FocusProfile == c))
                 await _router.Navigate("home");
             _profileService.DeleteProfileCategory(ProfileCategory);
         }
@@ -161,7 +155,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
     }
 
     private async Task ExecuteImportProfile()
-    { 
+    {
         string[]? result = await _windowService.CreateOpenFileDialog()
             .HavingFilter(f => f.WithExtension("zip").WithExtension("json").WithName("Artemis profile"))
             .ShowAsync();

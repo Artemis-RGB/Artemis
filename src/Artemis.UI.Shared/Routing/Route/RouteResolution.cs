@@ -74,19 +74,12 @@ internal class RouteResolution
         };
     }
 
-    public object GetViewModel(IContainer container)
+    public RoutableScreen GetViewModel(IContainer container)
     {
-        if (ViewModel == null)
-            throw new ArtemisRoutingException("Cannot get a view model of a non-success route resolution");
-
-        object? viewModel = container.Resolve(ViewModel);
-        if (viewModel == null)
-            throw new ArtemisRoutingException($"Could not resolve view model of type {ViewModel}");
-
-        return viewModel;
+        return GetViewModel<RoutableScreen>(container);
     }
 
-    public T GetViewModel<T>(IContainer container)
+    public T GetViewModel<T>(IContainer container) where T : RoutableScreen
     {
         if (ViewModel == null)
             throw new ArtemisRoutingException("Cannot get a view model of a non-success route resolution");

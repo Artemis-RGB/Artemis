@@ -1,0 +1,77 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:entries1="clr-namespace:Artemis.UI.Screens.Workshop.Entries"
+             xmlns:il="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="110"
+             x:Class="Artemis.UI.Screens.Workshop.Entries.EntryListItemView"
+             x:DataType="entries1:EntryListItemViewModel">
+    <UserControl.Resources>
+        <converters:EntryIconUriConverter x:Key="EntryIconUriConverter" />
+        <converters:DateTimeConverter x:Key="DateTimeConverter" />
+    </UserControl.Resources>
+    <Button MinHeight="110"
+            MaxHeight="140"
+            Padding="12"
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Stretch"
+            Command="{CompiledBinding NavigateToEntry}"
+            IsVisible="{CompiledBinding Entry, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+            <!-- Icon -->
+            <Border Grid.Column="0"
+                    CornerRadius="6"
+                    VerticalAlignment="Center"
+                    Margin="0 0 10 0"
+                    Width="80"
+                    Height="80"
+                    ClipToBounds="True">
+                <Image Stretch="UniformToFill" il:ImageLoader.Source="{CompiledBinding Entry.Id, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
+            </Border>
+
+            <!-- Body -->
+            <Grid Grid.Column="1" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
+                <TextBlock Grid.Row="0" Margin="0 0 0 5" TextTrimming="CharacterEllipsis">
+                    <Run Classes="h5" Text="{CompiledBinding Entry.Name, FallbackValue=Title}" />
+                    <Run Classes="subtitle">by</Run>
+                    <Run Classes="subtitle" Text="{CompiledBinding Entry.Author, FallbackValue=Author}" />
+                </TextBlock>
+                <TextBlock Grid.Row="1"
+                           Classes="subtitle"
+                           TextWrapping="Wrap"
+                           TextTrimming="CharacterEllipsis"
+                           Text="{CompiledBinding Entry.Summary, FallbackValue=Summary}">
+                </TextBlock>
+
+                <ItemsControl Grid.Row="2" ItemsSource="{CompiledBinding Entry.Categories}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="8"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Margin="0 0 3 0"></avalonia:MaterialIcon>
+                                <TextBlock Text="{CompiledBinding Name}" TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+
+            <!-- Info -->
+            <StackPanel Grid.Column="2" Margin="0 0 4 0">
+                <TextBlock TextAlignment="Right" Text="{CompiledBinding Entry.CreatedAt, FallbackValue=01-01-1337, Converter={StaticResource DateTimeConverter}}" />
+                <TextBlock TextAlignment="Right">
+                    <avalonia:MaterialIcon Kind="Downloads" />
+                    <Run Classes="h5" Text="{CompiledBinding Entry.Downloads, FallbackValue=0}" />
+                    <Run>downloads</Run>
+                </TextBlock>
+            </StackPanel>
+        </Grid>
+    </Button>
+</UserControl>

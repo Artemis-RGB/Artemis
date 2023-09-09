@@ -1,0 +1,32 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:library="clr-namespace:Artemis.UI.Screens.Workshop.Library"
+             xmlns:ui="clr-namespace:Artemis.UI"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Library.WorkshopLibraryView"
+             x:DataType="library:WorkshopLibraryViewModel">
+    <controls:NavigationView PaneDisplayMode="Top" 
+                             MenuItemsSource="{CompiledBinding Tabs}" 
+                             SelectedItem="{CompiledBinding SelectedTab}" 
+                             IsBackEnabled="True"
+                             IsSettingsVisible="False"
+                             IsBackButtonVisible="True"
+                             BackRequested="NavigationView_OnBackRequested">
+        <controls:NavigationView.Styles>
+            <Styles>
+                <Style Selector="controls|NavigationView:topnavminimal /template/ SplitView Border#ContentGridBorder">
+                    <Setter Property="CornerRadius" Value="8 0 0 0" />
+                </Style>
+            </Styles>
+        </controls:NavigationView.Styles>
+        
+        <controls:Frame Name="TabFrame" IsNavigationStackEnabled="False" CacheSize="0" Padding="20">
+            <controls:Frame.NavigationPageFactory>
+                <ui:PageFactory/>
+            </controls:Frame.NavigationPageFactory>
+        </controls:Frame>
+    </controls:NavigationView>
+</UserControl>
