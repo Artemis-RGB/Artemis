@@ -7,6 +7,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
+using Avalonia.Threading;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Playback;
@@ -237,7 +238,7 @@ public class PlaybackViewModel : ActivatableViewModelBase
                 }
             }
 
-            _profileEditorService.ChangeTime(newTime);
+            Dispatcher.UIThread.Invoke(() => _profileEditorService.ChangeTime(newTime));
         }
         finally
         {
