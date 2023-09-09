@@ -32,7 +32,7 @@ internal class EntryRepository : IEntryRepository
         return _repository.FirstOrDefault<EntryEntity>(s => s.Id == id);
     }
 
-    public EntryEntity GetByEntryId(Guid entryId)
+    public EntryEntity GetByEntryId(long entryId)
     {
         return _repository.FirstOrDefault<EntryEntity>(s => s.EntryId == entryId);
     }

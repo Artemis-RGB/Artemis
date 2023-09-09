@@ -1,4 +1,4 @@
-query GetEntryById($id: UUID!) {
+query GetEntryById($id: Long!) {
     entry(id: $id) {
         id
         author

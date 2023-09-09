@@ -48,7 +48,7 @@ public class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
         await GetEntry(parameters.EntryId, cancellationToken);
     }
 
-    private async Task GetEntry(Guid entryId, CancellationToken cancellationToken)
+    private async Task GetEntry(long entryId, CancellationToken cancellationToken)
     {
         IOperationResult<IGetEntryByIdResult> result = await _client.GetEntryById.ExecuteAsync(entryId, cancellationToken);
         if (result.IsErrorResult())

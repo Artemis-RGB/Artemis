@@ -20,7 +20,7 @@ public class WorkshopService : IWorkshopService
         _entryRepository = entryRepository;
     }
 
-    public async Task<Stream?> GetEntryIcon(Guid entryId, CancellationToken cancellationToken)
+    public async Task<Stream?> GetEntryIcon(long entryId, CancellationToken cancellationToken)
     {
         HttpClient client = _httpClientFactory.CreateClient(WorkshopConstants.WORKSHOP_CLIENT_NAME);
         try
@@ -36,7 +36,7 @@ public class WorkshopService : IWorkshopService
         }
     }
 
-    public async Task<ImageUploadResult> SetEntryIcon(Guid entryId, Progress<StreamProgress> progress, Stream icon, CancellationToken cancellationToken)
+    public async Task<ImageUploadResult> SetEntryIcon(long entryId, Progress<StreamProgress> progress, Stream icon, CancellationToken cancellationToken)
     {
         icon.Seek(0, SeekOrigin.Begin);
 
@@ -85,7 +85,7 @@ public class WorkshopService : IWorkshopService
         return status.IsReachable;
     }
 
-    public async Task NavigateToEntry(Guid entryId, EntryType entryType)
+    public async Task NavigateToEntry(long entryId, EntryType entryType)
     {
         switch (entryType)
         {

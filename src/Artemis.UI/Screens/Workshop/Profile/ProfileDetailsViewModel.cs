@@ -3,7 +3,6 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Artemis.Core;
 using Artemis.UI.Screens.Workshop.Parameters;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
@@ -52,7 +51,7 @@ public class ProfileDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
         await GetEntry(parameters.EntryId, cancellationToken);
     }
 
-    private async Task GetEntry(Guid entryId, CancellationToken cancellationToken)
+    private async Task GetEntry(long entryId, CancellationToken cancellationToken)
     {
         IOperationResult<IGetEntryByIdResult> result = await _client.GetEntryById.ExecuteAsync(entryId, cancellationToken);
         if (result.IsErrorResult())

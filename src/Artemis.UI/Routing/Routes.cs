@@ -33,10 +33,10 @@ public static class Routes
                     Children = new List<IRouterRegistration>
                     {
                         new RouteRegistration<ProfileListViewModel>("profiles/{page:int}"),
-                        new RouteRegistration<ProfileDetailsViewModel>("profiles/details/{entryId:guid}"),
+                        new RouteRegistration<ProfileDetailsViewModel>("profiles/details/{entryId:long}"),
 #if DEBUG
                         new RouteRegistration<LayoutListViewModel>("layouts/{page:int}"),
-                        new RouteRegistration<LayoutDetailsViewModel>("layouts/details/{entryId:guid}"),
+                        new RouteRegistration<LayoutDetailsViewModel>("layouts/details/{entryId:long}"),
 #endif
                     }
                 },
@@ -46,7 +46,7 @@ public static class Routes
                     {
                         new RouteRegistration<InstalledTabViewModel>("installed"),
                         new RouteRegistration<SubmissionsTabViewModel>("submissions"),
-                        new RouteRegistration<SubmissionDetailViewModel>("submissions/{entryId:guid}"),
+                        new RouteRegistration<SubmissionDetailViewModel>("submissions/{entryId:long}"),
                     }
                 }
             }

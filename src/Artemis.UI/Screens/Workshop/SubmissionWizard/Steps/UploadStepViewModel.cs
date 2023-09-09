@@ -11,12 +11,14 @@ using Artemis.WebClient.Workshop.Exceptions;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using Artemis.WebClient.Workshop.Services;
 using ReactiveUI;
+using Serilog;
 using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 
 public class UploadStepViewModel : SubmissionViewModel
 {
+    private readonly ILogger _logger;
     private readonly EntryUploadHandlerFactory _entryUploadHandlerFactory;
     private readonly Progress<StreamProgress> _progress = new();
     private readonly ObservableAsPropertyHelper<bool> _progressIndeterminate;
@@ -26,14 +28,20 @@ public class UploadStepViewModel : SubmissionViewModel
     private readonly IWorkshopClient _workshopClient;
     private readonly IWorkshopService _workshopService;
 
-    private Guid? _entryId;
+    private long? _entryId;
     private bool _failed;
     private bool _finished;
     private bool _succeeded;
 
     /// <inheritdoc />
-    public UploadStepViewModel(IWorkshopClient workshopClient, IWorkshopService workshopService, EntryUploadHandlerFactory entryUploadHandlerFactory, IWindowService windowService, IRouter router)
+    public UploadStepViewModel(ILogger logger,
+        IWorkshopClient workshopClient,
+        IWorkshopService workshopService,
+        EntryUploadHandlerFactory entryUploadHandlerFactory,
+        IWindowService windowService, 
+        IRouter router)
     {
+        _logger = logger;
         _workshopClient = workshopClient;
         _workshopService = workshopService;
         _entryUploadHandlerFactory = entryUploadHandlerFactory;
@@ -101,8 +109,10 @@ public class UploadStepViewModel : SubmissionViewModel
 
             Succeeded = true;
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            _logger.Error(e, "Failed to upload submission for entry {EntryId}", _entryId);
+            
             // Something went wrong when creating a release :c
             // We'll keep the workshop entry so that the user can make changes and try again
             Failed = true;
@@ -113,7 +123,7 @@ public class UploadStepViewModel : SubmissionViewModel
         }
     }
 
-    private async Task<Guid?> CreateEntry(CancellationToken cancellationToken)
+    private async Task<long?> CreateEntry(CancellationToken cancellationToken)
     {
         IOperationResult<IAddEntryResult> result = await _workshopClient.AddEntry.ExecuteAsync(new CreateEntryInput
         {
@@ -125,7 +135,7 @@ public class UploadStepViewModel : SubmissionViewModel
             Tags = State.Tags
         }, cancellationToken);
 
-        Guid? entryId = result.Data?.AddEntry?.Id;
+        long? entryId = result.Data?.AddEntry?.Id;
         if (result.IsErrorResult() || entryId == null)
         {
             await _windowService.ShowConfirmContentDialog("Failed to create workshop entry", result.Errors.ToString() ?? "Not even an error message", "Close", null);

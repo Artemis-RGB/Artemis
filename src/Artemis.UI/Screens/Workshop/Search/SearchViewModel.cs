@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Artemis.UI.Screens.Workshop.CurrentUser;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
-using Artemis.UI.Shared.Routing;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Services;
 using ReactiveUI;
@@ -18,17 +17,17 @@ namespace Artemis.UI.Screens.Workshop.Search;
 public class SearchViewModel : ViewModelBase
 {
     private readonly ILogger _logger;
-    private readonly IRouter _router;
+    private readonly IWorkshopService _workshopService;
     private readonly IDebugService _debugService;
     private readonly IWorkshopClient _workshopClient;
     private bool _isLoading;
     private SearchResultViewModel? _selectedEntry;
 
-    public SearchViewModel(ILogger logger, IWorkshopClient workshopClient, IRouter router, CurrentUserViewModel currentUserViewModel, IDebugService debugService)
+    public SearchViewModel(ILogger logger, IWorkshopClient workshopClient, IWorkshopService workshopService, CurrentUserViewModel currentUserViewModel, IDebugService debugService)
     {
         _logger = logger;
         _workshopClient = workshopClient;
-        _router = router;
+        _workshopService = workshopService;
         _debugService = debugService;
         CurrentUserViewModel = currentUserViewModel;
         SearchAsync = ExecuteSearchAsync;
@@ -59,14 +58,7 @@ public class SearchViewModel : ViewModelBase
     
     private void NavigateToEntry(SearchResultViewModel searchResult)
     {
-        string? url = null;
-        if (searchResult.Entry.EntryType == WebClient.Workshop.EntryType.Profile)
-            url = $"workshop/entries/profiles/{searchResult.Entry.Id}";
-        if (searchResult.Entry.EntryType == WebClient.Workshop.EntryType.Layout)
-            url = $"workshop/entries/layouts/{searchResult.Entry.Id}";
-
-        if (url != null)
-            Task.Run(() => _router.Navigate(url));
+        _workshopService.NavigateToEntry(searchResult.Entry.Id, searchResult.Entry.EntryType);
     }
 
     private async Task<IEnumerable<object>> ExecuteSearchAsync(string? input, CancellationToken cancellationToken)

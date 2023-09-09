@@ -1,4 +1,4 @@
-mutation RemoveEntry ($id: UUID!) {
+mutation RemoveEntry ($id: Long!) {
     removeEntry(id: $id) {
         id
     }

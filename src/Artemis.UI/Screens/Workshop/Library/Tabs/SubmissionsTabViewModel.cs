@@ -19,7 +19,7 @@ namespace Artemis.UI.Screens.Workshop.Library.Tabs;
 public class SubmissionsTabViewModel : RoutableScreen
 {
     private readonly IWorkshopClient _client;
-    private readonly SourceCache<IGetSubmittedEntries_SubmittedEntries, Guid> _entries;
+    private readonly SourceCache<IGetSubmittedEntries_SubmittedEntries, long> _entries;
     private readonly IWindowService _windowService;
     private bool _isLoading = true;
     private bool _workshopReachable;
@@ -32,7 +32,7 @@ public class SubmissionsTabViewModel : RoutableScreen
     {
         _client = client;
         _windowService = windowService;
-        _entries = new SourceCache<IGetSubmittedEntries_SubmittedEntries, Guid>(e => e.Id);
+        _entries = new SourceCache<IGetSubmittedEntries_SubmittedEntries, long>(e => e.Id);
         _entries.Connect()
             .Transform(getSubmissionsTabItemViewModel)
             .Bind(out ReadOnlyObservableCollection<SubmissionsTabItemViewModel> entries)
@@ -54,7 +54,6 @@ public class SubmissionsTabViewModel : RoutableScreen
 
     public ReactiveCommand<Unit, Unit> Login { get; }
     public ReactiveCommand<Unit, Unit> AddSubmission { get; }
-    public ReactiveCommand<IGetSubmittedEntries_SubmittedEntries, Unit> NavigateToEntry { get; }
 
     public IObservable<bool> IsLoggedIn { get; }
     public ReadOnlyObservableCollection<SubmissionsTabItemViewModel> Entries { get; }

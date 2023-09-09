@@ -1,4 +1,4 @@
-﻿using Artemis.Web.Workshop.Entities;
+﻿using Artemis.WebClient.Workshop.Entities;
 
 namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 

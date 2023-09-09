@@ -22,13 +22,13 @@ public class InstalledEntry
         Name = entry.Name;
     }
 
-    public Guid EntryId { get; set; }
+    public long EntryId { get; set; }
     public EntryType EntryType { get; set; }
 
     public string Author { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
 
-    public Guid ReleaseId { get; set; }
+    public long ReleaseId { get; set; }
     public string ReleaseVersion { get; set; } = string.Empty;
     public DateTimeOffset InstalledAt { get; set; }
 

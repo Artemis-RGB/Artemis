@@ -48,7 +48,7 @@ public class EntrySpecificationsViewModel : ValidatableViewModelBase
             .AutoRefresh(c => c.IsSelected)
             .Filter(c => c.IsSelected)
             .Transform(c => c.Id)
-            .Bind(out ReadOnlyObservableCollection<int> selectedCategories)
+            .Bind(out ReadOnlyObservableCollection<long> selectedCategories)
             .Subscribe();
         SelectedCategories = selectedCategories;
 
@@ -85,7 +85,7 @@ public class EntrySpecificationsViewModel : ValidatableViewModelBase
 
     public ObservableCollection<CategoryViewModel> Categories { get; } = new();
     public ObservableCollection<string> Tags { get; } = new();
-    public ReadOnlyObservableCollection<int> SelectedCategories { get; }
+    public ReadOnlyObservableCollection<long> SelectedCategories { get; }
     
     public bool CategoriesValid => _categoriesValid.Value ;
     public bool IconValid => _iconValid.Value;
@@ -127,7 +127,7 @@ public class EntrySpecificationsViewModel : ValidatableViewModelBase
         private set => RaiseAndSetIfChanged(ref _iconChanged, value);
     }
 
-    public List<int> PreselectedCategories { get; set; } = new();
+    public List<long> PreselectedCategories { get; set; } = new();
 
     private void MarkdownDocumentOnTextChanged(object? sender, EventArgs e)
     {

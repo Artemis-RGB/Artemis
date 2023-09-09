@@ -19,7 +19,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         _workshopService = workshopService;
     }
 
-    public async Task<EntryInstallResult> InstallAsync(IGetEntryById_Entry entry, Guid releaseId, Progress<StreamProgress> progress, CancellationToken cancellationToken)
+    public async Task<EntryInstallResult> InstallAsync(IGetEntryById_Entry entry, long releaseId, Progress<StreamProgress> progress, CancellationToken cancellationToken)
     {
         using MemoryStream stream = new();
 
@@ -89,7 +89,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         }, cancellationToken);
     }
 
-    private void UpdateRelease(Guid releaseId, InstalledEntry installedEntry)
+    private void UpdateRelease(long releaseId, InstalledEntry installedEntry)
     {
         installedEntry.ReleaseId = releaseId;
         installedEntry.ReleaseVersion = "TODO";

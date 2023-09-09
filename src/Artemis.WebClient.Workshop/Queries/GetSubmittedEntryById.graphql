@@ -1,4 +1,4 @@
-query GetSubmittedEntryById($id: UUID!) {
+query GetSubmittedEntryById($id: Long!) {
     entry(id: $id) {
         id
         name

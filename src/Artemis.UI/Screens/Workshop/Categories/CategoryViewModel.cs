@@ -17,7 +17,7 @@ public class CategoryViewModel : ViewModelBase
             Icon = icon as MaterialIconKind? ?? MaterialIconKind.QuestionMarkCircle;
     }
 
-    public int Id { get; }
+    public long Id { get; }
     public string Name { get; }
     public MaterialIconKind Icon { get; }
 

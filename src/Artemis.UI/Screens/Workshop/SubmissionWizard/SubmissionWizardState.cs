@@ -22,14 +22,14 @@ public class SubmissionWizardState
     }
 
     public EntryType EntryType { get; set; }
-    public Guid? EntryId { get; set; }
+    public long? EntryId { get; set; }
 
     public string Name { get; set; } = string.Empty;
     public Stream? Icon { get; set; }
     public string Summary { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
 
-    public List<int> Categories { get; set; } = new();
+    public List<long> Categories { get; set; } = new();
     public List<string> Tags { get; set; } = new();
     public List<Stream> Images { get; set; } = new();
 

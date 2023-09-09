@@ -2,7 +2,7 @@
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Utilities;
-using Artemis.Web.Workshop.Entities;
+using Artemis.WebClient.Workshop.Entities;
 using Newtonsoft.Json;
 
 namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers.Implementations;
@@ -19,7 +19,7 @@ public class ProfileEntryUploadHandler : IEntryUploadHandler
     }
 
     /// <inheritdoc />
-    public async Task<EntryUploadResult> CreateReleaseAsync(Guid entryId, object file, Progress<StreamProgress> progress, CancellationToken cancellationToken)
+    public async Task<EntryUploadResult> CreateReleaseAsync(long entryId, object file, Progress<StreamProgress> progress, CancellationToken cancellationToken)
     {
         if (file is not ProfileConfiguration profileConfiguration)
             throw new InvalidOperationException("Can only create releases for profile configurations");

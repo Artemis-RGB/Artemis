@@ -5,11 +5,11 @@ namespace Artemis.WebClient.Workshop.Services;
 
 public interface IWorkshopService
 {
-    Task<Stream?> GetEntryIcon(Guid entryId, CancellationToken cancellationToken);
-    Task<ImageUploadResult> SetEntryIcon(Guid entryId, Progress<StreamProgress> progress, Stream icon, CancellationToken cancellationToken);
+    Task<Stream?> GetEntryIcon(long entryId, CancellationToken cancellationToken);
+    Task<ImageUploadResult> SetEntryIcon(long entryId, Progress<StreamProgress> progress, Stream icon, CancellationToken cancellationToken);
     Task<WorkshopStatus> GetWorkshopStatus(CancellationToken cancellationToken);
     Task<bool> ValidateWorkshopStatus(CancellationToken cancellationToken);
-    Task NavigateToEntry(Guid entryId, EntryType entryType);
+    Task NavigateToEntry(long entryId, EntryType entryType);
 
     List<InstalledEntry> GetInstalledEntries();
     InstalledEntry? GetInstalledEntry(IGetEntryById_Entry entry);

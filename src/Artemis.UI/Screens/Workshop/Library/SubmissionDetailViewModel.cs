@@ -136,7 +136,7 @@ public class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters
         if (EntrySpecificationsViewModel == null || Entry == null)
             return;
 
-        List<int> categories = EntrySpecificationsViewModel.Categories.Where(c => c.IsSelected).Select(c => c.Id).OrderBy(c => c).ToList();
+        List<long> categories = EntrySpecificationsViewModel.Categories.Where(c => c.IsSelected).Select(c => c.Id).OrderBy(c => c).ToList();
         List<string> tags = EntrySpecificationsViewModel.Tags.OrderBy(t => t).ToList();
 
         HasChanges = EntrySpecificationsViewModel.Name != Entry.Name ||

@@ -6,14 +6,14 @@ public class EntryEntity
 {
     public Guid Id { get; set; }
     
-    public Guid EntryId { get; set; }
+    public long EntryId { get; set; }
     public int EntryType { get; set; }
     
     public string Author { get; set; } 
     public string Name { get; set; } = string.Empty;
     public string Summary { get; set; } = string.Empty;
 
-    public Guid ReleaseId { get; set; }
+    public long ReleaseId { get; set; }
     public string ReleaseVersion { get; set; }
     public DateTimeOffset InstalledAt { get; set; }
     

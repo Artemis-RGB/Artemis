@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Artemis.Web.Workshop.Entities;
+namespace Artemis.WebClient.Workshop.Entities;
 
 public class Release
 {
-    public Guid Id { get; set; }
+    public long Id { get; set; }
 
     [MaxLength(64)]
     public string Version { get; set; } = string.Empty;
@@ -18,5 +18,5 @@ public class Release
     [MaxLength(32)]
     public string? Md5Hash { get; set; }
 
-    public Guid EntryId { get; set; }
+    public long EntryId { get; set; }
 }
