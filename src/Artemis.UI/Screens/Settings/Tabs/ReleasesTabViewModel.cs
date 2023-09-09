@@ -22,7 +22,7 @@ using StrawberryShake;
 
 namespace Artemis.UI.Screens.Settings;
 
-public class ReleasesTabViewModel : RoutableScreen<ReleaseDetailsViewModel>
+public class ReleasesTabViewModel : RoutableHostScreen<ReleaseDetailsViewModel>
 {
     private readonly ILogger _logger;
     private readonly IUpdateService _updateService;

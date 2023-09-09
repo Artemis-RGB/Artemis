@@ -32,7 +32,7 @@
                 <TextBox Text="{CompiledBinding Exception, Mode=OneTime}"
                          AcceptsReturn="True"
                          IsReadOnly="True"
-                         FontFamily="Consolas"
+                         FontFamily="{StaticResource RobotoMono}"
                          FontSize="12"
                          BorderThickness="0" />
             </ScrollViewer>

@@ -19,7 +19,7 @@
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
-    <Style Selector="Border.category">
+    <Style Selector="Border.badge">
         <Setter Property="Background" Value="{DynamicResource ControlSolidFillColorDefaultBrush}" />
         <Setter Property="CornerRadius" Value="12" />
         <Setter Property="Padding" Value="6 1"></Setter>

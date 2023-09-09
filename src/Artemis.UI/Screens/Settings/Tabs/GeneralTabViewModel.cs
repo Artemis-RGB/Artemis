@@ -13,8 +13,8 @@ using Artemis.Core.Services;
 using Artemis.UI.Screens.StartupWizard;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Services.Updating;
-using Artemis.UI.Shared;
 using Artemis.UI.Shared.Providers;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Avalonia.Threading;
@@ -26,7 +26,7 @@ using Serilog.Events;
 
 namespace Artemis.UI.Screens.Settings;
 
-public class GeneralTabViewModel : ActivatableViewModelBase
+public class GeneralTabViewModel : RoutableScreen
 {
     private readonly IAutoRunProvider? _autoRunProvider;
     private readonly IDebugService _debugService;

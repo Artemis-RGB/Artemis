@@ -9,9 +9,9 @@
     <ScrollViewer Name="LogsScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
         <SelectableTextBlock 
             Inlines="{CompiledBinding Lines}" 
-            FontFamily="Consolas" 
+            FontFamily="{StaticResource RobotoMono}" 
+            FontSize="12"
             SizeChanged="Control_OnSizeChanged" 
-            SelectionBrush="{StaticResource TextControlSelectionHighlightColor}"
-        />    
+            SelectionBrush="{StaticResource TextControlSelectionHighlightColor}"/>    
     </ScrollViewer>
 </UserControl>

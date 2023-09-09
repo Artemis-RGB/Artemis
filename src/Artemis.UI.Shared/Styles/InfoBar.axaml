@@ -17,6 +17,8 @@
         <Setter Property="Opacity" Value="0" />
         <Setter Property="MaxWidth" Value="600" />
         <Setter Property="Margin" Value="15"/>
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
         <Setter Property="Transitions">
             <Transitions>
                 <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>

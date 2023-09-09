@@ -98,6 +98,7 @@ public class ProfileCategory : CorePropertyChanged, IStorageModel
     /// </summary>
     public void AddProfileConfiguration(ProfileConfiguration configuration, int? targetIndex)
     {
+        // TODO: Look into this, it doesn't seem to make sense
         // Removing the original will shift every item in the list forwards, keep that in mind with the target index
         if (configuration.Category == this && targetIndex != null && targetIndex.Value > _profileConfigurations.IndexOf(configuration))
             targetIndex -= 1;

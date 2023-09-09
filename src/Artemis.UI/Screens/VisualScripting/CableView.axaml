@@ -41,7 +41,8 @@
                                        Text="{CompiledBinding Converter={StaticResource SKColorToStringConverter}, Mode=OneWay}"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Stretch"
-                                       FontFamily="Consolas" />
+                                       FontFamily="{StaticResource RobotoMono}"
+                                       FontSize="13"/>
                             <Border Margin="5 0 0 0"
                                     VerticalAlignment="Bottom"
                                     HorizontalAlignment="Right"
@@ -61,16 +62,16 @@
                         </StackPanel>
                     </DataTemplate>
                     <DataTemplate DataType="core:ColorGradient">
-                        <TextBlock Text="Color gradient" FontFamily="Consolas" />
+                        <TextBlock Text="Color gradient" FontFamily="{StaticResource RobotoMono}" FontSize="13"/>
                     </DataTemplate>
                     <DataTemplate DataType="core:Numeric">
-                        <TextBlock Text="{CompiledBinding Mode=OneWay}" FontFamily="Consolas" />
+                        <TextBlock Text="{CompiledBinding Mode=OneWay}" FontFamily="{StaticResource RobotoMono}" FontSize="13"/>
                     </DataTemplate>
                     <DataTemplate DataType="collections:IList">
-                        <TextBlock Text="{CompiledBinding Count, StringFormat='List - {0} item(s)', Mode=OneWay}" FontFamily="Consolas" />
+                        <TextBlock Text="{CompiledBinding Count, StringFormat='List - {0} item(s)', Mode=OneWay}" FontFamily="{StaticResource RobotoMono}" FontSize="13"/>
                     </DataTemplate>
                     <DataTemplate DataType="system:Object">
-                        <TextBlock Text="{CompiledBinding Mode=OneWay}" FontFamily="Consolas" />
+                        <TextBlock Text="{CompiledBinding Mode=OneWay}" FontFamily="{StaticResource RobotoMono}" FontSize="13"/>
                     </DataTemplate>
                 </ContentControl.DataTemplates>
             </ContentControl>

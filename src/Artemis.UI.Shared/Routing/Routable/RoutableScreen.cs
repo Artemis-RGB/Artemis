@@ -1,24 +1,55 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ReactiveUI;
 
 namespace Artemis.UI.Shared.Routing;
 
 /// <summary>
-/// For internal use.
+///     Represents a view model to which routing can take place.
 /// </summary>
-/// <seealso cref="RoutableScreen{TScreen}"/>
-/// <seealso cref="RoutableScreen{TScreen, TParam}"/>
-internal interface IRoutableScreen : IActivatableViewModel
+public abstract class RoutableScreen : ActivatableViewModelBase, IRoutableScreen
 {
     /// <summary>
-    /// Gets or sets a value indicating whether or not to reuse the child screen instance if the type has not changed.
+    ///     Called before navigating to this screen.
     /// </summary>
-    /// <remarks>Defaults to <see langword="true"/>.</remarks>
-    bool RecycleScreen { get; }
+    /// <param name="args">Navigation arguments containing information about the navigation action.</param>
+    public virtual Task BeforeNavigating(NavigationArguments args)
+    {
+        return Task.CompletedTask;
+    }
 
-    object? InternalScreen { get; }
-    void InternalChangeScreen(object? screen);
-    Task InternalOnNavigating(NavigationArguments args, CancellationToken cancellationToken);
-    Task InternalOnClosing(NavigationArguments args);
+    /// <summary>
+    ///     Called while navigating to this screen.
+    /// </summary>
+    /// <param name="args">Navigation arguments containing information about the navigation action.</param>
+    /// <param name="cancellationToken">
+    ///     A cancellation token that can be used by other objects or threads to receive notice of
+    ///     cancellation.
+    /// </param>
+    public virtual Task OnNavigating(NavigationArguments args, CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    ///     Called before navigating away from this screen.
+    /// </summary>
+    /// <param name="args">Navigation arguments containing information about the navigation action.</param>
+    public virtual Task OnClosing(NavigationArguments args)
+    {
+        return Task.CompletedTask;
+    }
+
+    #region Overrides of RoutableScreen
+
+    async Task IRoutableScreen.InternalOnNavigating(NavigationArguments args, CancellationToken cancellationToken)
+    {
+        await OnNavigating(args, cancellationToken);
+    }
+
+    async Task IRoutableScreen.InternalOnClosing(NavigationArguments args)
+    {
+        await OnClosing(args);
+    }
+
+    #endregion
 }

@@ -9,6 +9,7 @@ using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
+using Artemis.UI.Extensions;
 using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
@@ -52,9 +53,9 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         _windowService = windowService;
         _profileService = profileService;
         _profileEditorService = profileEditorService;
-        
-        _profileConfiguration = profileConfiguration == ProfileConfiguration.Empty 
-            ? profileService.CreateProfileConfiguration(profileCategory, "New profile", Enum.GetValues<MaterialIconKind>().First().ToString()) 
+
+        _profileConfiguration = profileConfiguration == ProfileConfiguration.Empty
+            ? profileService.CreateProfileConfiguration(profileCategory, "New profile", Enum.GetValues<MaterialIconKind>().First().ToString())
             : profileConfiguration;
         _profileName = _profileConfiguration.Name;
         _iconType = _profileConfiguration.Icon.IconType;
@@ -140,7 +141,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
     public ReactiveCommand<Unit, Unit> Confirm { get; }
     public ReactiveCommand<Unit, Unit> Delete { get; }
     public ReactiveCommand<Unit, Unit> Cancel { get; }
-    
+
     private async Task ExecuteDelete()
     {
         if (IsNew)
@@ -148,7 +149,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         if (!await _windowService.ShowConfirmContentDialog("Delete profile", "Are you sure you want to permanently delete this profile?"))
             return;
 
-        if (_profileConfiguration.IsBeingEdited)
+        if (_profileService.FocusProfile == _profileConfiguration)
             await _profileEditorService.ChangeCurrentProfileConfiguration(null);
         _profileService.RemoveProfileConfiguration(_profileConfiguration);
         Close(_profileConfiguration);
@@ -184,7 +185,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         get => _iconType;
         set => RaiseAndSetIfChanged(ref _iconType, value);
     }
-    
+
     public ProfileIconViewModel? SelectedMaterialIcon
     {
         get => _selectedMaterialIcon;
@@ -244,7 +245,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
         if (result == null)
             return;
 
-        SelectedBitmapSource = new Bitmap(result[0]);
+        SelectedBitmapSource = BitmapExtensions.LoadAndResize(result[0], 128);
         _selectedIconPath = result[0];
     }
 

@@ -1,6 +1,4 @@
-using System;
-
-namespace Artemis.Core;
+namespace Artemis.WebClient.Workshop.Exceptions;
 
 /// <summary>
 ///     An exception thrown when a web client related error occurs

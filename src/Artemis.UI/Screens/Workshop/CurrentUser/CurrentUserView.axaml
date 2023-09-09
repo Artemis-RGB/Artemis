@@ -9,9 +9,9 @@
              x:Class="Artemis.UI.Screens.Workshop.CurrentUser.CurrentUserView"
              x:DataType="currentUser:CurrentUserViewModel">
 
-    <Panel Name="Container" IsVisible="{CompiledBinding !Loading}">
+    <Panel Name="Container">
         <!-- Signed out -->
-        <Ellipse Height="{CompiledBinding Bounds.Height, ElementName=Container}" Width="{CompiledBinding Bounds.Height, ElementName=Container}" IsVisible="{CompiledBinding Name, Converter={x:Static StringConverters.IsNullOrEmpty}}">
+        <Ellipse Height="{CompiledBinding Bounds.Height, ElementName=Container}" Width="{CompiledBinding Bounds.Height, ElementName=Container}" IsVisible="{CompiledBinding IsAnonymous}">
             <Ellipse.ContextFlyout>
                 <MenuFlyout>
                     <MenuItem Header="Login" Command="{CompiledBinding Login}">
@@ -27,7 +27,7 @@
         </Ellipse>
 
         <!-- Signed in -->
-        <Ellipse Height="{CompiledBinding Bounds.Height, ElementName=Container}" Width="{CompiledBinding Bounds.Height, ElementName=Container}" IsVisible="{CompiledBinding Name, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" Name="UserMenu">
+        <Ellipse Height="{CompiledBinding Bounds.Height, ElementName=Container}" Width="{CompiledBinding Bounds.Height, ElementName=Container}" IsVisible="{CompiledBinding !IsAnonymous}" Name="UserMenu">
             <Ellipse.ContextFlyout>
                 <Flyout>
                     <Grid ColumnDefinitions="Auto,*" RowDefinitions="*,*,*" MinWidth="300">
@@ -39,6 +39,7 @@
                         <TextBlock Grid.Column="1" Grid.Row="0" Text="{CompiledBinding Name}" Margin="0 4 0 0"></TextBlock>
                         <TextBlock Grid.Column="1" Grid.Row="1" Text="{CompiledBinding Email}"></TextBlock>
                         <controls:HyperlinkButton
+                            IsVisible="{CompiledBinding AllowLogout}"
                             Grid.Column="1"
                             Grid.Row="2"
                             Margin="-8 0 0 0"
@@ -54,6 +55,4 @@
             </Ellipse.Fill>
         </Ellipse>
     </Panel>
-
-
 </UserControl>

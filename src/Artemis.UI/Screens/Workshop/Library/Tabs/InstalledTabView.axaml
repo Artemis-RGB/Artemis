@@ -1,0 +1,39 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tabs="clr-namespace:Artemis.UI.Screens.Workshop.Library.Tabs"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Library.Tabs.InstalledTabView"
+             x:DataType="tabs:InstalledTabViewModel">
+    <UserControl.Styles>
+        <Styles>
+            <Style Selector="StackPanel.empty-state > TextBlock">
+                <Setter Property="TextAlignment" Value="Center"></Setter>
+                <Setter Property="TextWrapping" Value="Wrap"></Setter>
+            </Style>
+        </Styles>
+    </UserControl.Styles>
+    
+    <Panel>
+        <StackPanel IsVisible="{CompiledBinding Empty}" Margin="0 50 0 0" Classes="empty-state">
+            <TextBlock Theme="{StaticResource TitleTextBlockStyle}">Not much here yet, huh!</TextBlock>
+            <TextBlock>
+                <Run>Any entries you download from the workshop you can later manage here</Run>
+            </TextBlock>
+            <Lottie Path="/Assets/Animations/empty.json" RepeatCount="1" Width="350" Height="350"></Lottie>
+            <Button HorizontalAlignment="Center" Command="{CompiledBinding OpenWorkshop}">Browse the Workshop</Button>
+        </StackPanel>
+        
+        <ScrollViewer IsVisible="{CompiledBinding !Empty}">
+            <ItemsRepeater ItemsSource="{CompiledBinding InstalledEntries}">
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl Content="{CompiledBinding}"/>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </ScrollViewer>
+    </Panel>
+    
+</UserControl>

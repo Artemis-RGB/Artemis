@@ -25,6 +25,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
+      <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -34,5 +35,21 @@
       <GraphQL Update="Queries\GetCategories.graphql">
         <Generator>MSBuild:GenerateGraphQLCode</Generator>
       </GraphQL>
+      <GraphQL Update="Queries\GetSubmittedEntries.graphql">
+        <Generator>MSBuild:GenerateGraphQLCode</Generator>
+      </GraphQL>
+      <GraphQL Update="Queries\GetSubmittedEntryById.graphql">
+        <Generator>MSBuild:GenerateGraphQLCode</Generator>
+      </GraphQL>
+      <GraphQL Update="Queries\RemoveEntry.graphql">
+        <Generator>MSBuild:GenerateGraphQLCode</Generator>
+      </GraphQL>
+      <GraphQL Update="Queries\UpdateEntry.graphql">
+        <Generator>MSBuild:GenerateGraphQLCode</Generator>
+      </GraphQL>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Handlers\" />
     </ItemGroup>
 </Project>

@@ -16,7 +16,7 @@ public interface IWindowService : IArtemisSharedUIService
     /// </summary>
     /// <typeparam name="TViewModel">The type of view model to create</typeparam>
     /// <returns>The created view model</returns>
-    TViewModel ShowWindow<TViewModel>(params object[] parameters);
+    Window ShowWindow<TViewModel>(out TViewModel viewModel, params object[] parameters);
 
     /// <summary>
     ///     Given a ViewModel, show its corresponding View as a window

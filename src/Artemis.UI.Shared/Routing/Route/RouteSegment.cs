@@ -79,6 +79,7 @@ public partial class RouteSegment
         return parameterType switch
         {
             "guid" => new GuidParameterParser(),
+            "long" => new LongParameterParser(),
             "int" => new IntParameterParser(),
             _ => new StringParameterParser()
         };

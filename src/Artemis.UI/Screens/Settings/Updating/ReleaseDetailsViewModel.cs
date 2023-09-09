@@ -18,7 +18,7 @@ using StrawberryShake;
 
 namespace Artemis.UI.Screens.Settings.Updating;
 
-public class ReleaseDetailsViewModel : RoutableScreen<ViewModelBase, ReleaseDetailsViewModelParameters>
+public class ReleaseDetailsViewModel : RoutableScreen<ReleaseDetailsViewModelParameters>
 {
     private readonly ObservableAsPropertyHelper<long> _fileSize;
     private readonly ILogger _logger;

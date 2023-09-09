@@ -1,0 +1,67 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:profile="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile.ProfileAdaptionHintsStepView"
+             x:DataType="profile:ProfileAdaptionHintsStepViewModel">
+    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto, *">
+        <Grid.Styles>
+            <Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                </Style>
+            </Styles>
+        </Grid.Styles>
+        <TextBlock Grid.Row="0" Theme="{StaticResource TitleTextBlockStyle}" TextWrapping="Wrap">
+            Set up profile adaption hints
+        </TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap">
+            Add hints below to help decide where to place this each layer when the profile is imported by another user.
+        </TextBlock>
+
+
+        <controls:HyperlinkButton Grid.Row="0"
+                                  Grid.Column="1"
+                                  VerticalAlignment="Top"
+                                  NavigateUri="https://wiki.artemis-rgb.com/guides/user/profiles/layers/adaption-hints?mtm_campaign=artemis&amp;mtm_kwd=workshop-wizard">
+            Learn more about adaption hints
+        </controls:HyperlinkButton>
+
+        <ItemsRepeater ItemsSource="{CompiledBinding Layers}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 10 0 0">
+            <ItemsRepeater.ItemTemplate>
+                <DataTemplate DataType="profile:ProfileAdaptionHintsLayerViewModel">
+                    <StackPanel>
+                        <Border Classes="card-separator" />
+                        <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="*,*">
+                            <avalonia:MaterialIcon Grid.Column="0"
+                                                   Grid.Row="0"
+                                                   Grid.RowSpan="2"
+                                                   Width="25"
+                                                   Height="25"
+                                                   Margin="5 0 10 0"
+                                                   Kind="{CompiledBinding Layer.LayerBrush.Descriptor.Icon, FallbackValue=QuestionMark}" />
+                            <TextBlock Grid.Column="1" Grid.Row="0" Text="{CompiledBinding Layer.Name}" />
+                            <TextBlock Grid.Column="1" 
+                                       Grid.Row="1" 
+                                       VerticalAlignment="Top" 
+                                       Classes="subtitle" 
+                                       Classes.danger="{CompiledBinding !AdaptionHintCount}"
+                                       Text="{CompiledBinding AdaptionHintText}">
+                            </TextBlock>
+                            <Button Grid.Column="2"
+                                    Grid.Row="0"
+                                    Grid.RowSpan="2"
+                                    Command="{Binding EditAdaptionHints}">
+                                Edit hints
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsRepeater.ItemTemplate>
+        </ItemsRepeater>
+    </Grid>
+</UserControl>

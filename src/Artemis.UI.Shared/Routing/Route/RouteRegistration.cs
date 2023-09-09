@@ -7,7 +7,7 @@ namespace Artemis.UI.Shared.Routing;
 ///     Represents a registration for a route and its associated view model.
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model associated with the route.</typeparam>
-public class RouteRegistration<TViewModel> : IRouterRegistration where TViewModel : ViewModelBase
+public class RouteRegistration<TViewModel> : IRouterRegistration where TViewModel : RoutableScreen
 {
     /// <summary>
     ///     Initializes a new instance of the <see cref="RouteRegistration{TViewModel}" /> class.

@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:profile="clr-namespace:Artemis.UI.Screens.Workshop.Profile"
+             xmlns:pagination="clr-namespace:Artemis.UI.Shared.Pagination;assembly=Artemis.UI.Shared"
+             xmlns:tabs="clr-namespace:Artemis.UI.Screens.Workshop.Entries.Tabs"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Entries.Tabs.ProfileListView"
+             x:DataType="tabs:ProfileListViewModel">
+    <Grid ColumnDefinitions="300,*" RowDefinitions="*,Auto">
+        <StackPanel Grid.Column="0" Grid.RowSpan="2" Margin="0 0 10 0" VerticalAlignment="Top">
+            <Border Classes="card" VerticalAlignment="Stretch">
+                <StackPanel>
+                    <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Categories</TextBlock>
+                    <Border Classes="card-separator" />
+                    <ContentControl Content="{CompiledBinding CategoriesViewModel}"></ContentControl>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <ProgressBar Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" Margin="0 0 20 0" IsVisible="{CompiledBinding IsLoading}" IsIndeterminate="True" />
+
+        <ScrollViewer Grid.Column="1" Grid.Row="0">
+            <ItemsRepeater ItemsSource="{CompiledBinding Entries}" Margin="0 0 20 0">
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl Content="{CompiledBinding}" Margin="0 0 0 5"></ContentControl>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </ScrollViewer>
+
+        <pagination:Pagination Grid.Column="1"
+                               Grid.Row="1"
+                               Margin="0 20 0 10"
+                               IsVisible="{CompiledBinding ShowPagination}"
+                               Value="{CompiledBinding Page}"
+                               Maximum="{CompiledBinding TotalPages}"
+                               HorizontalAlignment="Center" />
+    </Grid>
+</UserControl>

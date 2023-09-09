@@ -6,7 +6,12 @@ using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Settings.Updating;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
+using Artemis.UI.Screens.Workshop.Entries;
+using Artemis.UI.Screens.Workshop.Entries.Tabs;
+using Artemis.UI.Screens.Workshop.Home;
 using Artemis.UI.Screens.Workshop.Layout;
+using Artemis.UI.Screens.Workshop.Library;
+using Artemis.UI.Screens.Workshop.Library.Tabs;
 using Artemis.UI.Screens.Workshop.Profile;
 using Artemis.UI.Shared.Routing;
 
@@ -18,18 +23,34 @@ public static class Routes
     {
         new RouteRegistration<BlankViewModel>("blank"),
         new RouteRegistration<HomeViewModel>("home"),
-        #if DEBUG
         new RouteRegistration<WorkshopViewModel>("workshop")
         {
-            Children = new List<IRouterRegistration>()
+            Children = new List<IRouterRegistration>
             {
-                new RouteRegistration<ProfileListViewModel>("profiles/{page:int}"),
-                new RouteRegistration<ProfileDetailsViewModel>("profiles/{entryId:guid}"),
-                new RouteRegistration<LayoutListViewModel>("layouts/{page:int}"),
-                new RouteRegistration<LayoutDetailsViewModel>("layouts/{entryId:guid}")
+                new RouteRegistration<WorkshopOfflineViewModel>("offline/{message:string}"),
+                new RouteRegistration<EntriesViewModel>("entries")
+                {
+                    Children = new List<IRouterRegistration>
+                    {
+                        new RouteRegistration<ProfileListViewModel>("profiles/{page:int}"),
+                        new RouteRegistration<ProfileDetailsViewModel>("profiles/details/{entryId:long}"),
+#if DEBUG
+                        new RouteRegistration<LayoutListViewModel>("layouts/{page:int}"),
+                        new RouteRegistration<LayoutDetailsViewModel>("layouts/details/{entryId:long}"),
+#endif
+                    }
+                },
+                new RouteRegistration<WorkshopLibraryViewModel>("library")
+                {
+                    Children = new List<IRouterRegistration>
+                    {
+                        new RouteRegistration<InstalledTabViewModel>("installed"),
+                        new RouteRegistration<SubmissionsTabViewModel>("submissions"),
+                        new RouteRegistration<SubmissionDetailViewModel>("submissions/{entryId:long}"),
+                    }
+                }
             }
         },
-        #endif
         new RouteRegistration<SurfaceEditorViewModel>("surface-editor"),
         new RouteRegistration<SettingsViewModel>("settings")
         {

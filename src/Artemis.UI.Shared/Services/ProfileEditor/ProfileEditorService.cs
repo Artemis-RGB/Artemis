@@ -10,7 +10,6 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
-using Avalonia.Threading;
 using DynamicData;
 using Serilog;
 
@@ -140,14 +139,14 @@ internal class ProfileEditorService : IProfileEditorService
     private void ApplyFocusMode()
     {
         if (_suspendedEditingSubject.Value)
-            _profileService.EditorFocus = null;
+            _profileService.FocusProfileElement = null;
 
-        _profileService.EditorFocus = _focusModeSubject.Value switch
+        _profileService.FocusProfileElement = _focusModeSubject.Value switch
         {
             ProfileEditorFocusMode.None => null,
             ProfileEditorFocusMode.Folder => _profileElementSubject.Value?.Parent,
             ProfileEditorFocusMode.Selection => _profileElementSubject.Value,
-            _ => _profileService.EditorFocus
+            _ => _profileService.FocusProfileElement
         };
     }
 
@@ -164,52 +163,38 @@ internal class ProfileEditorService : IProfileEditorService
 
     public async Task ChangeCurrentProfileConfiguration(ProfileConfiguration? profileConfiguration)
     {
-        if (ReferenceEquals(_profileConfigurationSubject.Value, profileConfiguration))
+        ProfileConfiguration? previous = _profileConfigurationSubject.Value;
+        if (ReferenceEquals(previous, profileConfiguration))
             return;
 
         _logger.Verbose("ChangeCurrentProfileConfiguration {profile}", profileConfiguration);
 
         // Stop playing and save the current profile
         Pause();
-        if (_profileConfigurationSubject.Value?.Profile != null)
-        {
-            _profileConfigurationSubject.Value.Profile.Reset();
-            _profileConfigurationSubject.Value.Profile.LastSelectedProfileElement = _profileElementSubject.Value;
-        }
-
         await SaveProfileAsync();
-
-        // No need to deactivate the profile, if needed it will be deactivated next update
-        if (_profileConfigurationSubject.Value != null)
-            _profileConfigurationSubject.Value.IsBeingEdited = false;
 
         // Deselect whatever profile element was active
         ChangeCurrentProfileElement(null);
+        ChangeSuspendedEditing(false);
 
         // Close the command scope if one was open
         _profileEditorHistoryScope?.Dispose();
 
-        // The new profile may need activation
-        if (profileConfiguration != null)
+        // Activate the profile and it's mode off of the UI thread
+        await Task.Run(() =>
         {
-            await Task.Run(() =>
-            {
-                profileConfiguration.IsBeingEdited = true;
-                _moduleService.SetActivationOverride(profileConfiguration.Module);
+            // Activate the profile if one was provided
+            if (profileConfiguration != null)
                 _profileService.ActivateProfile(profileConfiguration);
-                _profileService.RenderForEditor = true;
-            });
-            if (profileConfiguration.Profile?.LastSelectedProfileElement is RenderProfileElement renderProfileElement)
-                ChangeCurrentProfileElement(renderProfileElement);
-        }
-        else
-        {
-            _moduleService.SetActivationOverride(null);
-            _profileService.RenderForEditor = false;
-        }
+            // If there is no profile configuration or module, deliberately set the override to null
+            _moduleService.SetActivationOverride(profileConfiguration?.Module);
+        });
 
+        _profileService.FocusProfile = profileConfiguration;
         _profileConfigurationSubject.OnNext(profileConfiguration);
+
         ChangeTime(TimeSpan.Zero);
+        previous?.Profile?.Reset();
     }
 
     public void ChangeCurrentProfileElement(RenderProfileElement? renderProfileElement)
@@ -238,23 +223,23 @@ internal class ProfileEditorService : IProfileEditorService
         if (_suspendedEditingSubject.Value == suspend)
             return;
 
-        _suspendedEditingSubject.OnNext(suspend);
         if (suspend)
         {
             Pause();
-            _profileService.RenderForEditor = false;
+            _profileService.UpdateFocusProfile = true;
             _profileConfigurationSubject.Value?.Profile?.Reset();
         }
         else
         {
             if (_profileConfigurationSubject.Value != null)
-                _profileService.RenderForEditor = true;
+                _profileService.UpdateFocusProfile = false;
             Tick(_timeSubject.Value);
         }
 
+        _suspendedEditingSubject.OnNext(suspend);
         ApplyFocusMode();
     }
-    
+
     public void ChangeFocusMode(ProfileEditorFocusMode focusMode)
     {
         if (_focusModeSubject.Value == focusMode)
@@ -411,10 +396,8 @@ internal class ProfileEditorService : IProfileEditorService
     public void SaveProfile()
     {
         Profile? profile = _profileConfigurationSubject.Value?.Profile;
-        if (profile == null)
-            return;
-
-        _profileService.SaveProfile(profile, true);
+        if (profile != null)
+            _profileService.SaveProfile(profile, true);
     }
 
     /// <inheritdoc />

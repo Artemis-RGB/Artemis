@@ -39,14 +39,13 @@
 				<Button Classes="title-bar-button">
 					<avalonia:MaterialIcon Kind="WindowMinimize" />
 				</Button>
-
-                <TextBlock Margin="0 5 0 0">ToggleButton.window-button</TextBlock>
-                <ToggleButton Classes="icon-button">
-                    <avalonia:MaterialIcon Kind="BlockChain" />
-                </ToggleButton>
                 
                 <Button Classes="icon-button">
                     <avalonia:MaterialIcon Kind="Cog" />
+                </Button>
+                
+                <Button Classes="danger">
+                    Oohohoho daanger!
                 </Button>
             </StackPanel>
         </Border>
@@ -109,28 +108,29 @@
     <Style Selector="Button.title-bar-button:pointerover">
         <Setter Property="Background" Value="Red"></Setter>
     </Style>
+    
+    <Style Selector="Button.danger">
+        <Setter Property="Background" Value="#D64848"></Setter>
+    </Style>
+    
+    <Style Selector="Button.danger:pointerover">
+        <Style Selector="^ /template/ controls|FABorder#Root">
+            <Setter Property="Background" Value="#D65757"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPointerOver}" />
+        </Style>
+    </Style>
 
-	<Style Selector="ToggleButton:checked:pointerover /template/ Border#BorderElement">
-		<Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrushCheckedPointerOver}" />
-	</Style>
-	<Style Selector="ToggleButton:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="Background" Value="{DynamicResource ToggleButtonBackgroundCheckedPointerOver}" />
-		<Setter Property="TextBlock.Foreground" Value="{DynamicResource ToggleButtonForegroundCheckedPointerOver}" />
-	</Style>
+    <Style Selector="Button.danger:pressed">
+        <Style Selector="^ /template/ controls|FABorder#Root">
+            <Setter Property="Background" Value="#D64848" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPressed}" />
+        </Style>
+    </Style>
 
-	<Style Selector="ToggleButton:checked:pressed /template/ Border#BorderElement">
-		<Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrushCheckedPressed}" />
-	</Style>
-	<Style Selector="ToggleButton:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="Background" Value="{DynamicResource ToggleButtonBackgroundCheckedPressed}" />
-		<Setter Property="TextBlock.Foreground" Value="{DynamicResource ToggleButtonForegroundCheckedPressed}" />
-	</Style>
-
-	<Style Selector="ToggleButton:checked:disabled /template/ Border#BorderElement">
-		<Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrushCheckedDisabled}" />
-	</Style>
-	<Style Selector="ToggleButton:checked:disabled /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="Background" Value="{DynamicResource ToggleButtonBackgroundCheckedDisabled}" />
-		<Setter Property="TextBlock.Foreground" Value="{DynamicResource ToggleButtonForegroundCheckedDisabled}" />
-	</Style>
+    <Style Selector="Button.danger:disabled">
+        <Style Selector="^ /template/ controls|FABorder#Root">
+            <Setter Property="Background" Value="#D79D9C" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushDisabled}" />
+        </Style>
+    </Style>
 </Styles>

@@ -1,4 +1,4 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <Border Padding="20">
@@ -10,15 +10,10 @@
                 <TextBlock Classes="h5">This is heading 5</TextBlock>
                 <TextBlock Classes="h6">This is heading 6</TextBlock>
                 <TextBlock Classes="subtitle">This is a subtitle</TextBlock>
-                <TextBlock>
-                    <Run Classes="h1">This is heading 1</Run>
-                    <Run Classes="h2">This is heading 2</Run>
-                    <Run Classes="h3">This is heading 3</Run>
-                    <Run Classes="h4">This is heading 4</Run>
-                    <Run Classes="h5">This is heading 5</Run>
-                    <Run Classes="h6">This is heading 6</Run>
-                    <Run Classes="subtitle">This is a subtitle</Run>
-                </TextBlock>
+                <TextBlock Classes="danger">Danger</TextBlock>
+                <TextBlock Classes="warning">Warning</TextBlock>
+                <TextBlock Classes="success">Success</TextBlock>
+                <TextBlock Classes="info">Info</TextBlock>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -80,6 +75,32 @@
     </Style>
     <Style Selector="Run.subtitle">
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
+    </Style>
+    
+    <Style Selector="TextBlock.danger">
+        <Setter Property="Foreground" Value="#FF5C5C"></Setter>
+    </Style>
+    <Style Selector="TextBlock.warning">
+        <Setter Property="Foreground" Value="#DAA520"></Setter>
+    </Style>
+    <Style Selector="TextBlock.success">
+        <Setter Property="Foreground" Value="#12B775"></Setter>
+    </Style>
+    <Style Selector="TextBlock.info">
+        <Setter Property="Foreground" Value="{DynamicResource AccentButtonBackground}"></Setter>
+    </Style>
+    
+    <Style Selector="Run.danger">
+        <Setter Property="Foreground" Value="#FF5C5C"></Setter>
+    </Style>
+    <Style Selector="Run.warning">
+        <Setter Property="Foreground" Value="#DAA520"></Setter>
+    </Style>
+    <Style Selector="Run.success">
+        <Setter Property="Foreground" Value="#12B775"></Setter>
+    </Style>
+    <Style Selector="Run.info">
+        <Setter Property="Foreground" Value="{DynamicResource AccentButtonBackground}"></Setter>
     </Style>
     
     <Style Selector="SelectableTextBlock">

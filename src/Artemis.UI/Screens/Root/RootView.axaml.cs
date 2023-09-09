@@ -1,5 +1,6 @@
 using System;
 using System.Reactive.Disposables;
+using Artemis.UI.Shared.Routing;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using ReactiveUI;
@@ -14,7 +15,7 @@ public partial class RootView : ReactiveUserControl<RootViewModel>
         this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Screen).Subscribe(Navigate).DisposeWith(d));
     }
 
-    private void Navigate(IMainScreenViewModel viewModel)
+    private void Navigate(RoutableScreen viewModel)
     {
         try
         {

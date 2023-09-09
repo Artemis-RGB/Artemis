@@ -1,5 +1,6 @@
 using System;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Artemis.UI.Shared;
 using Avalonia;
 using Avalonia.Threading;
@@ -17,6 +18,7 @@ public partial class SubmissionWizardView : ReactiveAppWindow<SubmissionWizardVi
 #endif
 
         this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Screen).Subscribe(Navigate).DisposeWith(d));
+        this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.ShouldClose).Where(c => c).Subscribe(_ => Close()).DisposeWith(d));
     }
 
     private void Navigate(SubmissionViewModel viewModel)
@@ -25,9 +27,9 @@ public partial class SubmissionWizardView : ReactiveAppWindow<SubmissionWizardVi
         {
             Dispatcher.UIThread.Invoke(() => Frame.NavigateFromObject(viewModel));
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // ignored
+            ViewModel?.WindowService.ShowExceptionDialog("Wizard screen failed to activate", e);
         }
     }
 }

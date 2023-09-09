@@ -23,15 +23,11 @@
             </Border>
         </StackPanel>
     </Design.PreviewWith>
-
-    <Styles.Resources>
-        <CornerRadius x:Key="CardCornerRadius">8</CornerRadius>
-    </Styles.Resources>
-
+    
     <!-- Add Styles Here -->
     <Style Selector="Border.router-container">
-        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+        <Setter Property="Background" Value="{DynamicResource NavigationViewContentBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource NavigationViewContentGridBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="8 0 0 0" />
         <Setter Property="ClipToBounds" Value="True" />
@@ -39,18 +35,18 @@
     
     <Style Selector="Border.card">
         <Setter Property="Padding" Value="16" />
-        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+        <Setter Property="Background" Value="{DynamicResource NavigationViewContentBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource NavigationViewContentGridBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="{DynamicResource CardCornerRadius}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
     </Style>
 
     <Style Selector="Border.card-condensed">
         <Setter Property="Padding" Value="8" />
-        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+        <Setter Property="Background" Value="{DynamicResource NavigationViewContentBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource NavigationViewContentGridBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="{DynamicResource CardCornerRadius}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
     </Style>
 
     <Style Selector="Border.card-separator">
