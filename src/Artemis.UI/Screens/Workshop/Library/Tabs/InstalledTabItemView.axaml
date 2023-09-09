@@ -44,7 +44,7 @@
             <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{CompiledBinding InstalledEntry.EntryType}"></TextBlock>
             <TextBlock Grid.Column="3" VerticalAlignment="Center">
                 <Run>Installed</Run>
-                <Run Text="{CompiledBinding InstalledEntry.InstalledAt, FallbackValue=01-01-1337, Converter={StaticResource DateTimeConverter}}" />
+                <Run Text="{CompiledBinding InstalledEntry.InstalledAt, FallbackValue=01-01-1337, Mode=OneWay, Converter={StaticResource DateTimeConverter}}" />
             </TextBlock>
             
             <StackPanel Grid.Column="4" VerticalAlignment="Center" Orientation="Horizontal" Spacing="6">
