@@ -7,12 +7,12 @@
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints.DeviceAdaptionHintView"
-             x:DataType="adaptionHints:DeviceAdaptionHintViewModel">
+             x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints.SingleLedAdaptionHintView"
+             x:DataType="adaptionHints:SingleLedAdaptionHintViewModel">
     <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
         <StackPanel Grid.ColumnSpan="2" Margin="0 0 0 5">
-            <TextBlock Classes="h5">Device type hint</TextBlock>
-            <TextBlock Classes="subtitle">Applies the layer to devices of a certain type</TextBlock>
+            <TextBlock Classes="h5">Single LED hint</TextBlock>
+            <TextBlock Classes="subtitle">Applies the layer to a single LED of one or more devices</TextBlock>
         </StackPanel>
 
         <Button Grid.Row="0"
@@ -26,18 +26,23 @@
         </Button>
 
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Spacing="5">
-            <shared:EnumComboBox Value="{CompiledBinding DeviceAdaptionHint.DeviceType}" Width="200" Margin="0 0 10 0" />
-
+            <controls:FAComboBox  Width="200" 
+                                  Margin="0 0 10 0"  
+                                  ItemsSource="{CompiledBinding AdaptionLeds}" 
+                                  SelectedItem="{CompiledBinding SelectedLed}"
+                                  DisplayMemberBinding="{CompiledBinding Description}"
+                                  IsEditable="True" 
+                                  IsTextSearchEnabled="True"></controls:FAComboBox>
             <TextBlock VerticalAlignment="Center">Skip</TextBlock>
             <controls:NumberBox HorizontalAlignment="Stretch"
-                                Value="{CompiledBinding DeviceAdaptionHint.Skip}"
+                                Value="{CompiledBinding SingleLedAdaptionHint.Skip}"
                                 Minimum="0" />
             <TextBlock VerticalAlignment="Center">device(s)</TextBlock>
 
             <TextBlock VerticalAlignment="Center">Take</TextBlock>
-            <controls:NumberBox IsEnabled="{CompiledBinding DeviceAdaptionHint.LimitAmount}"
+            <controls:NumberBox IsEnabled="{CompiledBinding SingleLedAdaptionHint.LimitAmount}"
                                 HorizontalAlignment="Stretch"
-                                Value="{CompiledBinding DeviceAdaptionHint.Amount}"
+                                Value="{CompiledBinding SingleLedAdaptionHint.Amount}"
                                 Minimum="1" />
             <TextBlock VerticalAlignment="Center">device(s)</TextBlock>
         </StackPanel>
@@ -47,6 +52,6 @@
                   Content="Take all devices"
                   VerticalAlignment="Center"
                   HorizontalAlignment="Right"
-                  IsChecked="{CompiledBinding !DeviceAdaptionHint.LimitAmount}" />
+                  IsChecked="{CompiledBinding !SingleLedAdaptionHint.LimitAmount}" />
     </Grid>
 </UserControl>

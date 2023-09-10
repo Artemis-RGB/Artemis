@@ -66,6 +66,12 @@ public class LayerHintsDialogViewModel : DialogViewModelBase<bool>
     {
         Layer.Adapter.Add(new KeyboardSectionAdaptionHint());
     }
+    
+    public void AddSingleLedHint()
+    {
+        Layer.Adapter.Add(new SingleLedAdaptionHint());
+    }
+
 
     public void RemoveAdaptionHint(IAdaptionHint hint)
     {
@@ -79,6 +85,7 @@ public class LayerHintsDialogViewModel : DialogViewModelBase<bool>
             CategoryAdaptionHint categoryAdaptionHint => _vmFactory.CategoryAdaptionHintViewModel(Layer, categoryAdaptionHint),
             DeviceAdaptionHint deviceAdaptionHint => _vmFactory.DeviceAdaptionHintViewModel(Layer, deviceAdaptionHint),
             KeyboardSectionAdaptionHint keyboardSectionAdaptionHint => _vmFactory.KeyboardSectionAdaptionHintViewModel(Layer, keyboardSectionAdaptionHint),
+            SingleLedAdaptionHint singleLedAdaptionHint => _vmFactory.SingleLedAdaptionHintViewModel(Layer, singleLedAdaptionHint),
             _ => throw new ArgumentOutOfRangeException(nameof(hint))
         };
     }

@@ -119,6 +119,11 @@
                                         <avalonia:MaterialIcon Kind="Magic" />
                                     </MenuItem.Icon>
                                 </MenuItem>
+                                <MenuItem Header="Apply adaption hints" Command="{CompiledBinding ApplyAdaptionHints}">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="CogPlay" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
                                 <MenuItem Header="-" />
                                 <MenuItem Header="Duplicate" Command="{CompiledBinding Duplicate}" InputGesture="Ctrl+D">
                                     <MenuItem.Icon>

@@ -7,6 +7,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
@@ -22,8 +23,8 @@ public class ProfileTreeViewModel : TreeItemViewModel
     private ObservableAsPropertyHelper<bool>? _keyBindingsEnabled;
     private TreeItemViewModel? _selectedChild;
 
-    public ProfileTreeViewModel(IWindowService windowService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
-        : base(null, null, windowService, profileEditorService, profileEditorVmFactory)
+    public ProfileTreeViewModel(IWindowService windowService, IRgbService rgbService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
+        : base(null, null, windowService, rgbService, profileEditorService, profileEditorVmFactory)
     {
         this.WhenActivated(d =>
         {
