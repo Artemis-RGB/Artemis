@@ -34,37 +34,34 @@
             </TextBlock>
         </Grid>
 
-        <Border Grid.Row="1" Classes="card" Margin="0 15">
-            <Panel>
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" IsVisible="{CompiledBinding AdaptionHints.Count}">
-                    <ItemsControl ItemsSource="{CompiledBinding AdaptionHints}" Classes="adaption-hints">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Spacing="10" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Classes="card-condensed">
-                                    <ContentControl Content="{CompiledBinding}"></ContentControl>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+        <Panel Grid.Row="1" Classes="card" Margin="0 15">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" IsVisible="{CompiledBinding AdaptionHints.Count}">
+                <ItemsControl ItemsSource="{CompiledBinding AdaptionHints}" Classes="adaption-hints">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="5" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Classes="card-condensed">
+                                <ContentControl Content="{CompiledBinding}"></ContentControl>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
 
-                <StackPanel IsVisible="{CompiledBinding !AdaptionHints.Count}" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <avalonia:MaterialIcon Kind="AlertCircleOutline" HorizontalAlignment="Center" Width="48" Height="48" />
-                    <TextBlock Classes="h4" TextAlignment="Center" TextWrapping="Wrap">
-                        You haven't set up any adaption hints
-                    </TextBlock>
-                    <TextBlock Classes="subtitle" TextAlignment="Center" TextWrapping="Wrap">
-                        Artemis will attempt to directly map the LEDs of this layer to different surfaces but results may vary.
-                    </TextBlock>
-                </StackPanel>
-            </Panel>
-
-        </Border>
+            <StackPanel IsVisible="{CompiledBinding !AdaptionHints.Count}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <avalonia:MaterialIcon Kind="AlertCircleOutline" HorizontalAlignment="Center" Width="48" Height="48" />
+                <TextBlock Classes="h4" TextAlignment="Center" TextWrapping="Wrap">
+                    You haven't set up any adaption hints
+                </TextBlock>
+                <TextBlock Classes="subtitle" TextAlignment="Center" TextWrapping="Wrap">
+                    Artemis will attempt to directly map the LEDs of this layer to different surfaces but results may vary.
+                </TextBlock>
+            </StackPanel>
+        </Panel>
 
         <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
             <Button Grid.Row="0" Grid.Column="0" Command="{CompiledBinding AutoDetermineHints}">Auto-determine hints</Button>
@@ -85,6 +82,11 @@
                             <MenuItem Header="Keyboard-section hint" Command="{CompiledBinding AddKeyboardSectionHint}">
                                 <MenuItem.Icon>
                                     <avalonia:MaterialIcon Kind="Keyboard" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Single LED hint" Command="{CompiledBinding AddSingleLedHint}">
+                                <MenuItem.Icon>
+                                    <avalonia:MaterialIcon Kind="LedVariantOn" />
                                 </MenuItem.Icon>
                             </MenuItem>
                         </MenuFlyout>

@@ -26,7 +26,7 @@
         </Button>
 
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Spacing="5">
-            <shared:EnumComboBox Value="{CompiledBinding CategoryAdaptionHint.Category}" Width="130" Margin="0 0 10 0" />
+            <shared:EnumComboBox Value="{CompiledBinding CategoryAdaptionHint.Category}" Width="200" Margin="0 0 10 0" />
 
             <TextBlock VerticalAlignment="Center">Skip</TextBlock>
             <controls:NumberBox HorizontalAlignment="Stretch"

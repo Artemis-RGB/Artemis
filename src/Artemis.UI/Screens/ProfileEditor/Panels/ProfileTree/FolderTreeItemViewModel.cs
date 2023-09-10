@@ -22,7 +22,7 @@ public class FolderTreeItemViewModel : TreeItemViewModel
         IProfileEditorService profileEditorService,
         IRgbService rgbService,
         IProfileEditorVmFactory profileEditorVmFactory)
-        : base(parent, folder, windowService, profileEditorService, profileEditorVmFactory)
+        : base(parent, folder, windowService, rgbService, profileEditorService, profileEditorVmFactory)
     {
         _rgbService = rgbService;
         Folder = folder;

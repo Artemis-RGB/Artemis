@@ -430,6 +430,7 @@ public interface ILayerHintVmFactory : IVmFactory
     CategoryAdaptionHintViewModel CategoryAdaptionHintViewModel(Layer layer, CategoryAdaptionHint adaptionHint);
     DeviceAdaptionHintViewModel DeviceAdaptionHintViewModel(Layer layer, DeviceAdaptionHint adaptionHint);
     KeyboardSectionAdaptionHintViewModel KeyboardSectionAdaptionHintViewModel(Layer layer, KeyboardSectionAdaptionHint adaptionHint);
+    SingleLedAdaptionHintViewModel SingleLedAdaptionHintViewModel(Layer layer, SingleLedAdaptionHint adaptionHint);
 }
 public class LayerHintVmFactory : ILayerHintVmFactory
 {
@@ -453,6 +454,11 @@ public class LayerHintVmFactory : ILayerHintVmFactory
     public KeyboardSectionAdaptionHintViewModel KeyboardSectionAdaptionHintViewModel(Layer layer, KeyboardSectionAdaptionHint adaptionHint)
     {
         return _container.Resolve<KeyboardSectionAdaptionHintViewModel>(new object[] { layer, adaptionHint });
+    }
+    
+    public SingleLedAdaptionHintViewModel SingleLedAdaptionHintViewModel(Layer layer, SingleLedAdaptionHint adaptionHint)
+    {
+        return _container.Resolve<SingleLedAdaptionHintViewModel>(new object[] { layer, adaptionHint });
     }
 }
 

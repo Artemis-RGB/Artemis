@@ -22,7 +22,7 @@ public class LayerTreeItemViewModel : TreeItemViewModel
         IProfileEditorService profileEditorService,
         IRgbService rgbService,
         IProfileEditorVmFactory profileEditorVmFactory)
-        : base(parent, layer, windowService, profileEditorService, profileEditorVmFactory)
+        : base(parent, layer, windowService, rgbService, profileEditorService, profileEditorVmFactory)
     {
         _rgbService = rgbService;
         Layer = layer;

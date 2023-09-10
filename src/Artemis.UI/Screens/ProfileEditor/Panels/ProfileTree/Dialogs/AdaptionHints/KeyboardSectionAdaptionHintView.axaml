@@ -25,7 +25,7 @@
         </Button>
 
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Spacing="5">
-            <shared:EnumComboBox Value="{CompiledBinding KeyboardSectionAdaptionHint.Section}" Width="130" Margin="0 0 10 0" />
+            <shared:EnumComboBox Value="{CompiledBinding KeyboardSectionAdaptionHint.Section}" Width="200" Margin="0 0 10 0" />
         </StackPanel>
     </Grid>
 </UserControl>

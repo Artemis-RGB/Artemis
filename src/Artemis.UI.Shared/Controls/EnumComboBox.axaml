@@ -8,7 +8,7 @@
     <ComboBox x:Name="ChildEnumComboBox" HorizontalAlignment="Stretch">
         <ComboBox.ItemTemplate>
             <DataTemplate x:DataType="local:EnumComboBoxItem">
-                <TextBlock Text="{CompiledBinding Value}" />
+                <TextBlock Text="{CompiledBinding Description}" />
             </DataTemplate>
         </ComboBox.ItemTemplate>
     </ComboBox>

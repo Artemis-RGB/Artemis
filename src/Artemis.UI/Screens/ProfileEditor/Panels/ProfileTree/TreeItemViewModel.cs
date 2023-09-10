@@ -5,8 +5,10 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.ContentDialogs;
@@ -26,6 +28,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
 {
     private readonly IProfileEditorVmFactory _profileEditorVmFactory;
     private readonly IWindowService _windowService;
+    private readonly IRgbService _rgbService;
     protected readonly IProfileEditorService ProfileEditorService;
     private bool _canPaste;
     private RenderProfileElement? _currentProfileElement;
@@ -38,11 +41,13 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
     protected TreeItemViewModel(TreeItemViewModel? parent,
         ProfileElement? profileElement,
         IWindowService windowService,
+        IRgbService rgbService,
         IProfileEditorService profileEditorService,
         IProfileEditorVmFactory profileEditorVmFactory)
     {
         ProfileEditorService = profileEditorService;
         _windowService = windowService;
+        _rgbService = rgbService;
         _profileEditorVmFactory = profileEditorVmFactory;
 
         Parent = parent;
@@ -51,6 +56,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
         AddLayer = ReactiveCommand.Create(ExecuteAddLayer);
         AddFolder = ReactiveCommand.Create(ExecuteAddFolder);
         OpenAdaptionHints = ReactiveCommand.CreateFromTask(ExecuteOpenAdaptionHints, this.WhenAnyValue(vm => vm.ProfileElement).Select(p => p is Layer));
+        ApplyAdaptionHints = ReactiveCommand.Create(ExecuteApplyAdaptionHints, this.WhenAnyValue(vm => vm.ProfileElement).Select(p => p is Layer));
         Rename = ReactiveCommand.CreateFromTask(ExecuteRename);
         Delete = ReactiveCommand.Create(ExecuteDelete);
         Duplicate = ReactiveCommand.CreateFromTask(ExecuteDuplicate);
@@ -109,6 +115,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
     public ReactiveCommand<Unit, Unit> AddLayer { get; }
     public ReactiveCommand<Unit, Unit> AddFolder { get; }
     public ReactiveCommand<Unit, Unit> OpenAdaptionHints { get; }
+    public ReactiveCommand<Unit, Unit> ApplyAdaptionHints { get; }
     public ReactiveCommand<Unit, Unit> Rename { get; }
     public ReactiveCommand<Unit, Unit> Duplicate { get; }
     public ReactiveCommand<Unit, Unit> Copy { get; }
@@ -253,6 +260,14 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
 
         await _windowService.ShowDialogAsync<LayerHintsDialogViewModel, bool>(layer);
         await ProfileEditorService.SaveProfileAsync();
+    }
+    
+    private void ExecuteApplyAdaptionHints()
+    {
+        if (ProfileElement is not Layer layer)
+            return;
+        
+        ProfileEditorService.ExecuteCommand(new ApplyAdaptionHints(layer, _rgbService.EnabledDevices.ToList()));
     }
 
     private async void UpdateCanPaste(bool isFlyoutOpen)

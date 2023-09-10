@@ -111,6 +111,15 @@ public class LayerAdapter : IStorageModel
                     newHints.Add(hint);
                 }
             }
+
+            // A single LED assignment is turned into a hint for one matching LED ID on the same device type
+            if (Layer.Leds.Count == 1)
+            {
+                ArtemisLed led = Layer.Leds.Single();
+                SingleLedAdaptionHint hint = new() {LedId = led.RgbLed.Id, Amount = 1, LimitAmount = true};
+                Add(hint);
+                newHints.Add(hint);
+            }
         }
 
         return newHints;
@@ -183,6 +192,9 @@ public class LayerAdapter : IStorageModel
                     break;
                 case KeyboardSectionAdaptionHintEntity entity:
                     Add(new KeyboardSectionAdaptionHint(entity));
+                    break;
+                case SingleLedAdaptionHintEntity entity:
+                    Add(new SingleLedAdaptionHint(entity));
                     break;
             }
         }
