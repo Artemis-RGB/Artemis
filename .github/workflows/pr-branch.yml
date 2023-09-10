@@ -1,0 +1,17 @@
+name: Check pull request branch
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+jobs:
+  check-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branches
+        run: |
+          if [ ${{ github.head_ref }} != "development" ] && [ ${{ github.base_ref }} == "master" ]; then
+            echo "Merge requests to master are only allowed from development."
+            exit 1
+          fi
