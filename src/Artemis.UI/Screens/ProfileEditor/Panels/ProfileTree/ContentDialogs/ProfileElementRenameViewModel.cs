@@ -22,7 +22,6 @@ public class ProfileElementRenameViewModel : ContentDialogViewModelBase
         _profileElementName = profileElement.Name;
 
         Confirm = ReactiveCommand.Create(ExecuteConfirm, ValidationContext.Valid);
-        Enter = ReactiveCommand.Create(() => ContentDialog?.Hide(ContentDialogResult.Primary), Confirm.CanExecute);
         this.ValidationRule(vm => vm.ProfileElementName, name => !string.IsNullOrWhiteSpace(name), "You must specify a valid name");
     }
 
@@ -33,7 +32,6 @@ public class ProfileElementRenameViewModel : ContentDialogViewModelBase
     }
 
 
-    public ReactiveCommand<Unit, Unit> Enter { get; }
     public ReactiveCommand<Unit, Unit> Confirm { get; }
 
     private void ExecuteConfirm()

@@ -2,8 +2,8 @@
     <PropertyGroup>
         <AvaloniaVersion>11.0.4</AvaloniaVersion>
         <AvaloniaBehavioursVersion>11.0.2</AvaloniaBehavioursVersion>
-        <FluentAvaloniaVersion>2.0.1</FluentAvaloniaVersion>
+        <FluentAvaloniaVersion>2.0.4</FluentAvaloniaVersion>
         <RGBDotNetVersion>2.0.0-prerelease.101</RGBDotNetVersion>
-        <SkiaSharpVersion>2.88.3</SkiaSharpVersion>
+        <SkiaSharpVersion>2.88.5</SkiaSharpVersion>
     </PropertyGroup>
 </Project>

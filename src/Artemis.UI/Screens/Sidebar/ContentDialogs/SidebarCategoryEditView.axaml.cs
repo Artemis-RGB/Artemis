@@ -1,6 +1,7 @@
+using System.Threading.Tasks;
 using Artemis.UI.Shared.Extensions;
-using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
+using Avalonia.Threading;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
@@ -10,7 +11,18 @@ public partial class SidebarCategoryEditView : ReactiveUserControl<SidebarCatego
     public SidebarCategoryEditView()
     {
         InitializeComponent();
-        this.WhenActivated(_ => this.ClearAllDataValidationErrors());
+        this.WhenActivated(_ =>
+        {
+            this.ClearAllDataValidationErrors();
+            Dispatcher.UIThread.Post(DelayedAutoFocus);
+        });
     }
-
+    
+    private async void DelayedAutoFocus()
+    {
+        // Don't ask
+        await Task.Delay(200);
+        NameTextBox.SelectAll();
+        NameTextBox.Focus();
+    }
 }

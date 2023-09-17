@@ -5,14 +5,15 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Platforms>x64</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="DryIoc.dll" Version="5.4.0" />
+      <PackageReference Include="DryIoc.dll" Version="5.4.1" />
       <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.2.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
-      <PackageReference Include="StrawberryShake.Server" Version="13.0.5" />
+      <PackageReference Include="StrawberryShake.Server" Version="13.5.1" />
     </ItemGroup>
 
     <ItemGroup>
