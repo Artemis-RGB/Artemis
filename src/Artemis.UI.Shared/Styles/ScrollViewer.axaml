@@ -1,0 +1,15 @@
+<Style xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <ScrollViewer Classes="with-padding" Height="100">
+                <Rectangle Fill="Blue" Width="50" Height="200"></Rectangle>
+            </ScrollViewer>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="ScrollViewer.with-padding /template/ ScrollContentPresenter#PART_ContentPresenter">
+        <Setter Property="Grid.ColumnSpan" Value="1"></Setter>
+    </Style>
+</Style>

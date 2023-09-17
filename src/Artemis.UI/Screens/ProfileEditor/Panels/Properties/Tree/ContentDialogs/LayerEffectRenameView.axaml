@@ -7,9 +7,6 @@
              x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Tree.ContentDialogs.LayerEffectRenameView"
              x:DataType="contentDialogs:LayerEffectRenameViewModel">
     <StackPanel>
-        <StackPanel.KeyBindings>
-            <KeyBinding Gesture="Enter" Command="{CompiledBinding Enter}" />
-        </StackPanel.KeyBindings>
         <TextBox Name="NameTextBox" Text="{CompiledBinding LayerEffectName}" Watermark="Layer effect name" />
     </StackPanel>
 </UserControl>

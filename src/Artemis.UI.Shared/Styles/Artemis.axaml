@@ -45,4 +45,5 @@
     <StyleInclude Source="/Styles/NumberBox.axaml" />
     <StyleInclude Source="/Styles/TreeView.axaml" />
     <StyleInclude Source="/Styles/Plugins.axaml" />
+    <StyleInclude Source="/Styles/ScrollViewer.axaml" />
 </Styles>

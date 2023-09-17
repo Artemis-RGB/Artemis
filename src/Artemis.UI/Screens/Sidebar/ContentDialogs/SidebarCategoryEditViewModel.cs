@@ -24,7 +24,6 @@ public class SidebarCategoryEditViewModel : ContentDialogViewModelBase
             _categoryName = _category.Name;
 
         Confirm = ReactiveCommand.Create(ExecuteConfirm, ValidationContext.Valid);
-        Enter = ReactiveCommand.Create(() => ContentDialog?.Hide(ContentDialogResult.Primary), Confirm.CanExecute);
         this.ValidationRule(vm => vm.CategoryName, categoryName => !string.IsNullOrWhiteSpace(categoryName?.Trim()), "You must specify a valid name");
         this.ValidationRule(vm => vm.CategoryName, categoryName => profileService.ProfileCategories.All(c => c.Name != categoryName?.Trim()), "You must specify a unique name");
     }
@@ -36,7 +35,6 @@ public class SidebarCategoryEditViewModel : ContentDialogViewModelBase
     }
 
     public ReactiveCommand<Unit, Unit> Confirm { get; }
-    public ReactiveCommand<Unit, Unit> Enter { get; }
 
     private void ExecuteConfirm()
     {

@@ -20,6 +20,12 @@ public class RemoteController : WebApiController
         _mainWindowService = mainWindowService;
     }
 
+    [Route(HttpVerbs.Any, "/status")]
+    public void GetStatus()
+    {
+        HttpContext.Response.StatusCode = 200;
+    }
+
     [Route(HttpVerbs.Post, "/remote/bring-to-foreground")]
     public void PostBringToForeground()
     {

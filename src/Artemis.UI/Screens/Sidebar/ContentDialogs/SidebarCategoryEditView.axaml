@@ -7,9 +7,6 @@
              x:Class="Artemis.UI.Screens.Sidebar.SidebarCategoryEditView"
              x:DataType="sidebar:SidebarCategoryEditViewModel">
     <StackPanel>
-        <StackPanel.KeyBindings>
-            <KeyBinding Gesture="Enter" Command="{CompiledBinding Enter}" />
-        </StackPanel.KeyBindings>
-        <TextBox Text="{CompiledBinding CategoryName}" Watermark="Category name"/>
+        <TextBox Name="NameTextBox" Text="{CompiledBinding CategoryName}" Watermark="Category name"/>
     </StackPanel>
 </UserControl>
