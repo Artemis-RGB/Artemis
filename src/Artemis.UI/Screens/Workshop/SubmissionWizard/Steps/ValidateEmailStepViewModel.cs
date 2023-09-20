@@ -54,9 +54,7 @@ public class ValidateEmailStepViewModel : SubmissionViewModel
         {
             // Use the refresh token to login again, updating claims
             await _authenticationService.AutoLogin(true);
-
-            Claim? emailVerified = _authenticationService.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.EmailVerified);
-            if (emailVerified?.Value == "true")
+            if (_authenticationService.GetIsEmailVerified())
                 ExecuteContinue();
         }
         catch (Exception)

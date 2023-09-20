@@ -14,4 +14,5 @@ public interface IAuthenticationService : IProtectedArtemisService
     Task<bool> AutoLogin(bool force = false);
     Task Login(CancellationToken cancellationToken);
     void Logout();
+    bool GetIsEmailVerified();
 }

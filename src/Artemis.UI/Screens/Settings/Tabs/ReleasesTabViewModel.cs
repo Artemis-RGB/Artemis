@@ -31,7 +31,6 @@ public class ReleasesTabViewModel : RoutableHostScreen<ReleaseDetailsViewModel>
     private readonly IRouter _router;
     private readonly SourceList<IGetReleases_PublishedReleases_Nodes> _releases;
     private bool _loading;
-    private IGetReleases_PublishedReleases_PageInfo? _lastPageInfo;
     private ReleaseViewModel? _selectedReleaseViewModel;
 
     public ReleasesTabViewModel(ILogger logger, IUpdateService updateService, IUpdatingClient updatingClient, IReleaseVmFactory releaseVmFactory, INotificationService notificationService,
@@ -75,21 +74,21 @@ public class ReleasesTabViewModel : RoutableHostScreen<ReleaseDetailsViewModel>
         private set => RaiseAndSetIfChanged(ref _loading, value);
     }
 
-    public async Task GetMoreReleases(CancellationToken cancellationToken)
+    public async Task GetReleases(CancellationToken cancellationToken)
     {
-        if (_lastPageInfo != null && !_lastPageInfo.HasNextPage)
-            return;
-
         try
         {
             Loading = true;
 
-            IOperationResult<IGetReleasesResult> result = await _updatingClient.GetReleases.ExecuteAsync(_updateService.Channel, Platform.Windows, 20, _lastPageInfo?.EndCursor, cancellationToken);
+            IOperationResult<IGetReleasesResult> result = await _updatingClient.GetReleases.ExecuteAsync(_updateService.Channel, Platform.Windows, cancellationToken);
             if (result.Data?.PublishedReleases?.Nodes == null)
                 return;
 
-            _lastPageInfo = result.Data.PublishedReleases.PageInfo;
-            _releases.AddRange(result.Data.PublishedReleases.Nodes);
+            _releases.Edit(r =>
+            {
+                r.Clear();
+                r.AddRange(result.Data.PublishedReleases.Nodes);
+            });
         }
         catch (TaskCanceledException)
         {
@@ -114,7 +113,7 @@ public class ReleasesTabViewModel : RoutableHostScreen<ReleaseDetailsViewModel>
     public override async Task OnNavigating(NavigationArguments args, CancellationToken cancellationToken)
     {
         if (!ReleaseViewModels.Any())
-            await GetMoreReleases(cancellationToken);
+            await GetReleases(cancellationToken);
 
         // If there is an ID parameter further down the path, preselect it
         if (args.RouteParameters.Length > 0 && args.RouteParameters[0] is Guid releaseId)

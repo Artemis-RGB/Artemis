@@ -266,6 +266,13 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
         _isLoggedInSubject.OnNext(false);
     }
 
+    /// <inheritdoc />
+    public bool GetIsEmailVerified()
+    {
+        Claim? emailVerified = Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.EmailVerified);
+        return emailVerified?.Value.ToLower() == "true";
+    }
+
     private async Task<bool> InternalAutoLogin(bool force = false)
     {
         if (!force && _isLoggedInSubject.Value)

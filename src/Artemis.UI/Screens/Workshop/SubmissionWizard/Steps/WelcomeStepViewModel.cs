@@ -29,7 +29,7 @@ public class WelcomeStepViewModel : SubmissionViewModel
         }
         else
         {
-            if (_authenticationService.Claims.Any(c => c.Type == JwtClaimTypes.EmailVerified && c.Value == "true"))
+            if (_authenticationService.GetIsEmailVerified())
                 State.ChangeScreen<EntryTypeStepViewModel>();
             else
                 State.ChangeScreen<ValidateEmailStepViewModel>();

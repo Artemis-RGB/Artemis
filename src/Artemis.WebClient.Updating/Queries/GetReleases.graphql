@@ -1,7 +1,7 @@
-query GetReleases($branch: String!, $platform: Platform!, $take: Int!, $after: String) {
+query GetReleases($branch: String!, $platform: Platform!) {
     publishedReleases(
-        first: $take
-        after: $after
+        order: {createdAt: DESC}
+        first: 50
         where: {
             and: [
                 { branch: { eq: $branch } }
@@ -9,10 +9,6 @@ query GetReleases($branch: String!, $platform: Platform!, $take: Int!, $after: S
             ]
         }
     ) {
-        pageInfo {
-            hasNextPage
-            endCursor
-        }
         nodes {
             id
             version
