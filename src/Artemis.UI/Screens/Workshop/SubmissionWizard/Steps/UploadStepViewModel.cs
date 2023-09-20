@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
@@ -138,7 +139,7 @@ public class UploadStepViewModel : SubmissionViewModel
         long? entryId = result.Data?.AddEntry?.Id;
         if (result.IsErrorResult() || entryId == null)
         {
-            await _windowService.ShowConfirmContentDialog("Failed to create workshop entry", result.Errors.ToString() ?? "Not even an error message", "Close", null);
+            await _windowService.ShowConfirmContentDialog("Failed to create workshop entry",  string.Join("\r\n", result.Errors.Select(e => e.Message)), "Close", null);
             State.ChangeScreen<SubmitStepViewModel>();
             return null;
         }
