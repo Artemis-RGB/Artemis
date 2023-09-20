@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Artemis.Core.Services;
 
 namespace Artemis.Core.Modules;
@@ -38,16 +35,7 @@ public class ProcessActivationRequirement : IModuleActivationRequirement
     /// <inheritdoc />
     public bool Evaluate()
     {
-        if (!ProcessMonitor.IsStarted || (ProcessName == null && Location == null))
-            return false;
-
-        IEnumerable<ProcessInfo> processes = ProcessMonitor.Processes;
-        if (ProcessName != null)
-            processes = processes.Where(p => string.Equals(p.ProcessName, ProcessName, StringComparison.InvariantCultureIgnoreCase));
-        if (Location != null)
-            processes = processes.Where(p => string.Equals(Path.GetDirectoryName(p.Executable), Location, StringComparison.InvariantCultureIgnoreCase));
-
-        return processes.Any();
+        return ProcessMonitor.IsProcessRunning(ProcessName, Location);
     }
 
     /// <inheritdoc />
