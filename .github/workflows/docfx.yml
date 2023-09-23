@@ -28,7 +28,8 @@ jobs:
       - name: Upload to FTP
         uses: SamKirkland/FTP-Deploy-Action@4.3.2
         with:
-          server: artemis-rgb.com
+          server: www360.your-server.de
+          protocol: ftps
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: docfx/docfx_project/_site/
