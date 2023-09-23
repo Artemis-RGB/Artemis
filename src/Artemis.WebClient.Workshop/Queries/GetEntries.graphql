@@ -1,5 +1,5 @@
-query GetEntries($filter: EntryFilterInput $skip: Int $take: Int) {
-    entries(where: $filter skip: $skip take: $take, order: {createdAt: DESC}) {
+query GetEntries($search: String $filter: EntryFilterInput $skip: Int $take: Int $order: [EntrySortInput!]) {
+    entries(search: $search where: $filter skip: $skip take: $take, order: $order) {
         totalCount
         items {
             id

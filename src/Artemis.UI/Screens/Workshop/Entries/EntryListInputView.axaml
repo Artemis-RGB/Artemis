@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:entries="clr-namespace:Artemis.UI.Screens.Workshop.Entries"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Entries.EntryListInputView"
+             x:DataType="entries:EntryListInputViewModel">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MaxWidth="500" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <TextBox Grid.Column="0" Name="SearchBox" Classes="search-box" Watermark="{CompiledBinding SearchWatermark}" Text="{CompiledBinding Search}"/>
+
+        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="5" Margin="5 0">
+            <TextBlock VerticalAlignment="Center">Sort by</TextBlock>
+            <ComboBox Width="165" SelectedIndex="{CompiledBinding SortBy}">
+                <ComboBoxItem>Recently updated</ComboBoxItem>
+                <ComboBoxItem>Recently added</ComboBoxItem>
+                <ComboBoxItem>Download count</ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="5">
+            <TextBlock VerticalAlignment="Center">Show per page</TextBlock>
+            <ComboBox Width="65" SelectedItem="{CompiledBinding EntriesPerPage}">
+                <system:Int32>10</system:Int32>
+                <system:Int32>20</system:Int32>
+                <system:Int32>50</system:Int32>
+                <system:Int32>100</system:Int32>
+            </ComboBox>
+        </StackPanel>
+        <TextBlock Grid.Column="3" VerticalAlignment="Center" Margin="5 0 0 0" MinWidth="75" TextAlignment="Right">
+            <Run Text="{CompiledBinding TotalCount}"/>
+            <Run Text="total"/>
+        </TextBlock>
+    </Grid>
+
+</UserControl>

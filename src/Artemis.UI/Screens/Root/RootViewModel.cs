@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -28,7 +30,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
     private readonly ISettingsService _settingsService;
     private readonly IUpdateService _updateService;
     private readonly IWindowService _windowService;
-    private ViewModelBase? _titleBarViewModel;
+    private readonly ObservableAsPropertyHelper<ViewModelBase?> _titleBarViewModel;
 
     public RootViewModel(IRouter router,
         ICoreService coreService,
@@ -61,7 +63,13 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         OpenScreen = ReactiveCommand.Create<string?>(ExecuteOpenScreen);
         OpenDebugger = ReactiveCommand.CreateFromTask(ExecuteOpenDebugger);
         Exit = ReactiveCommand.CreateFromTask(ExecuteExit);
-        this.WhenAnyValue(vm => vm.Screen).Subscribe(UpdateTitleBarViewModel);
+        
+        _titleBarViewModel = this.WhenAnyValue(vm => vm.Screen)
+            .Select(s => s as IMainScreenViewModel)
+            .Select(s => s?.WhenAnyValue(svm => svm.TitleBarViewModel) ?? Observable.Never<ViewModelBase>())
+            .Switch()
+            .Select(vm => vm ?? _defaultTitleBarViewModel)
+            .ToProperty(this, vm => vm.TitleBarViewModel);
 
         Task.Run(() =>
         {
@@ -82,12 +90,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
     public ReactiveCommand<Unit, Unit> OpenDebugger { get; }
     public ReactiveCommand<Unit, Unit> Exit { get; }
 
-    public ViewModelBase? TitleBarViewModel
-    {
-        get => _titleBarViewModel;
-        set => RaiseAndSetIfChanged(ref _titleBarViewModel, value);
-    }
-
+    public ViewModelBase? TitleBarViewModel => _titleBarViewModel.Value;
     public static PluginSetting<WindowSize?>? WindowSizeSetting { get; private set; }
 
     public void GoBack()
@@ -98,12 +101,6 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
     public void GoForward()
     {
         _router.GoForward();
-    }
-
-    private void UpdateTitleBarViewModel(RoutableScreen? viewModel)
-    {
-        IMainScreenViewModel? mainScreenViewModel = viewModel as IMainScreenViewModel;
-        TitleBarViewModel = mainScreenViewModel?.TitleBarViewModel ?? _defaultTitleBarViewModel;
     }
 
     private void CurrentMainWindowOnClosing(object? sender, EventArgs e)

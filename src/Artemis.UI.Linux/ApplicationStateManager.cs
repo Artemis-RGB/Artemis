@@ -12,18 +12,24 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using DryIoc;
+using Serilog;
 
 namespace Artemis.UI.Linux;
 
 public class ApplicationStateManager
 {
+    private readonly IContainer _container;
+    private readonly ILogger _logger;
     private readonly IWindowService _windowService;
+
 
     // ReSharper disable once NotAccessedField.Local - Kept in scope to ensure it does not get released
     private Mutex? _artemisMutex;
 
     public ApplicationStateManager(IContainer container, string[] startupArguments)
     {
+        _container = container;
+        _logger = container.Resolve<ILogger>();
         _windowService = container.Resolve<IWindowService>();
         StartupArguments = startupArguments;
 
@@ -33,14 +39,7 @@ public class ApplicationStateManager
 
         // On OS shutdown dispose the IOC container just so device providers get a chance to clean up
         if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
-            controlledApplicationLifetime.Exit += (_, _) =>
-            {
-                RunForcedShutdownIfEnabled();
-
-                // Dispose plugins before disposing the IOC container because plugins might access services during dispose
-                container.Resolve<IPluginManagementService>().Dispose();
-                container.Dispose();
-            };
+            controlledApplicationLifetime.Exit += ControlledApplicationLifetimeOnExit;
     }
 
     public string[] StartupArguments { get; }
@@ -122,6 +121,17 @@ public class ApplicationStateManager
 
         if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
             Dispatcher.UIThread.Post(() => controlledApplicationLifetime.Shutdown());
+    }
+
+    private void ControlledApplicationLifetimeOnExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
+    {
+        _logger.Information("Application lifetime exiting, disposing container and friends");
+        
+        RunForcedShutdownIfEnabled();
+
+        // Dispose plugins before disposing the IOC container because plugins might access services during dispose
+        _container.Resolve<IPluginManagementService>().Dispose();
+        _container.Dispose();
     }
 
     private void UtilitiesOnShutdownRequested(object? sender, EventArgs e)

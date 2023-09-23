@@ -45,10 +45,10 @@
                         </Border>
 
                         <Border Margin="{TemplateBinding BorderThickness}">
-                            <Grid ColumnDefinitions="Auto,*,Auto" >
+                            <Grid ColumnDefinitions="Auto,*,Auto">
                                 <ContentPresenter Grid.Column="0"
                                                   Grid.ColumnSpan="1"
-                                                  Content="{TemplateBinding InnerLeftContent}"/>
+                                                  Content="{TemplateBinding InnerLeftContent}" />
                                 <Grid x:Name="PART_InnerGrid"
                                       Grid.Column="1"
                                       RowDefinitions="Auto,Auto"
@@ -85,22 +85,22 @@
                                                        TextWrapping="{TemplateBinding TextWrapping}"
                                                        IsVisible="{TemplateBinding Text, Converter={x:Static StringConverters.IsNullOrEmpty}}"
                                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                                             <TextPresenter Name="PART_TextPresenter"
-                                                          Text="{TemplateBinding Text, Mode=TwoWay}"
-                                                          CaretIndex="{TemplateBinding CaretIndex}"
-                                                          SelectionStart="{TemplateBinding SelectionStart}"
-                                                          SelectionEnd="{TemplateBinding SelectionEnd}"
-                                                          TextAlignment="{TemplateBinding TextAlignment}"
-                                                          TextWrapping="{TemplateBinding TextWrapping}"
-                                                          LineHeight="{TemplateBinding LineHeight}"
-                                                          PasswordChar="{TemplateBinding PasswordChar}"
-                                                          RevealPassword="{TemplateBinding RevealPassword}"
-                                                          SelectionBrush="{TemplateBinding SelectionBrush}"
-                                                          SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
-                                                          CaretBrush="{TemplateBinding CaretBrush}"
-                                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                                           Text="{TemplateBinding Text, Mode=TwoWay}"
+                                                           CaretIndex="{TemplateBinding CaretIndex}"
+                                                           SelectionStart="{TemplateBinding SelectionStart}"
+                                                           SelectionEnd="{TemplateBinding SelectionEnd}"
+                                                           TextAlignment="{TemplateBinding TextAlignment}"
+                                                           TextWrapping="{TemplateBinding TextWrapping}"
+                                                           LineHeight="{TemplateBinding LineHeight}"
+                                                           PasswordChar="{TemplateBinding PasswordChar}"
+                                                           RevealPassword="{TemplateBinding RevealPassword}"
+                                                           SelectionBrush="{TemplateBinding SelectionBrush}"
+                                                           SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
+                                                           CaretBrush="{TemplateBinding CaretBrush}"
+                                                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                                         </Panel>
                                     </ScrollViewer>
 
@@ -137,4 +137,23 @@
         <Setter Property="Margin" Value="4 0 0 0"></Setter>
     </Style>
 
+    <Style Selector="TextBox.search-box">
+        <Setter Property="VerticalAlignment" Value="Top"></Setter>
+        <Setter Property="InnerRightContent">
+            <Template>
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="&#xE8BB;"
+                            FontFamily="{StaticResource SymbolThemeFontFamily}"
+                            Theme="{StaticResource TransparentButton}"
+                            Command="{CompiledBinding $parent[TextBox].Clear}"
+                            IsVisible="{CompiledBinding Text, RelativeSource={RelativeSource FindAncestor, AncestorType=TextBox}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <Button Content="&#xE721;"
+                            FontFamily="{StaticResource SymbolThemeFontFamily}"
+                            Theme="{StaticResource TransparentButton}"
+                            Command="{CompiledBinding $parent[TextBox].Clear}"
+                            IsHitTestVisible="False" />
+                </StackPanel>
+            </Template>
+        </Setter>
+    </Style>
 </Styles>

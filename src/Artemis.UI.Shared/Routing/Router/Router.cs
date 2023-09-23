@@ -177,6 +177,8 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
         _currentRouteSubject.Dispose();
         _mainWindowService.MainWindowOpened -= MainWindowServiceOnMainWindowOpened;
         _mainWindowService.MainWindowClosed -= MainWindowServiceOnMainWindowClosed;
+
+        _logger.Debug("Router disposed, should that be? Stacktrace: \r\n{StackTrace}", Environment.StackTrace);
     }
 
     private void MainWindowServiceOnMainWindowOpened(object? sender, EventArgs e)

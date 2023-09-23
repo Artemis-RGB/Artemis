@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -6,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Screens.Workshop.Categories;
 using Artemis.UI.Screens.Workshop.Parameters;
-using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
@@ -20,26 +20,33 @@ namespace Artemis.UI.Screens.Workshop.Entries;
 
 public abstract class EntryListViewModel : RoutableScreen<WorkshopListParameters>
 {
-    private readonly INotificationService _notificationService;
-    private readonly IWorkshopClient _workshopClient;
-    private readonly ObservableAsPropertyHelper<bool> _showPagination;
-    private readonly ObservableAsPropertyHelper<bool> _isLoading;
     private readonly SourceList<IGetEntries_Entries_Items> _entries = new();
-    
-    private int _page;
+    private readonly ObservableAsPropertyHelper<bool> _isLoading;
+    private readonly INotificationService _notificationService;
+    private readonly string _route;
+    private readonly ObservableAsPropertyHelper<bool> _showPagination;
+    private readonly IWorkshopClient _workshopClient;
     private int _loadedPage = -1;
-    private int _totalPages = 1;
-    private int _entriesPerPage = 10;
 
-    protected EntryListViewModel(IWorkshopClient workshopClient, IRouter router, CategoriesViewModel categoriesViewModel, INotificationService notificationService,
+    private int _page;
+    private int _totalPages = 1;
+
+    protected EntryListViewModel(string route,
+        IWorkshopClient workshopClient,
+        IRouter router,
+        CategoriesViewModel categoriesViewModel,
+        EntryListInputViewModel entryListInputViewModel,
+        INotificationService notificationService,
         Func<IGetEntries_Entries_Items, EntryListItemViewModel> getEntryListViewModel)
     {
+        _route = route;
         _workshopClient = workshopClient;
         _notificationService = notificationService;
         _showPagination = this.WhenAnyValue(vm => vm.TotalPages).Select(t => t > 1).ToProperty(this, vm => vm.ShowPagination);
         _isLoading = this.WhenAnyValue(vm => vm.Page, vm => vm.LoadedPage, (p, c) => p != c).ToProperty(this, vm => vm.IsLoading);
 
         CategoriesViewModel = categoriesViewModel;
+        InputViewModel = entryListInputViewModel;
 
         _entries.Connect()
             .ObserveOn(new AvaloniaSynchronizationContext(DispatcherPriority.SystemIdle))
@@ -49,26 +56,22 @@ public abstract class EntryListViewModel : RoutableScreen<WorkshopListParameters
         Entries = entries;
 
         // Respond to page changes
-        this.WhenAnyValue(vm => vm.Page).Skip(1).Subscribe(p => Task.Run(() => router.Navigate(GetPagePath(p))));
+        this.WhenAnyValue(vm => vm.Page).Skip(1).Subscribe(p => Task.Run(() => router.Navigate($"{_route}/{p}")));
 
-        // Respond to filter changes
-        this.WhenActivated(d => CategoriesViewModel.WhenAnyValue(vm => vm.CategoryFilters).Skip(1).Subscribe(_ =>
+        this.WhenActivated(d =>
         {
-            // Reset to page one, will trigger a query
-            if (Page != 1)
-                Page = 1;
-            // If already at page one, force a query
-            else
-                Task.Run(() => Query(CancellationToken.None));
-        }).DisposeWith(d));
+            // Respond to filter query input changes
+            InputViewModel.WhenAnyValue(vm => vm.Search).Skip(1).Throttle(TimeSpan.FromMilliseconds(200)).Subscribe(_ => RefreshToStart()).DisposeWith(d);
+            InputViewModel.WhenAnyValue(vm => vm.SortBy, vm => vm.EntriesPerPage).Skip(1).Subscribe(_ => RefreshToStart()).DisposeWith(d);
+            CategoriesViewModel.WhenAnyValue(vm => vm.CategoryFilters).Skip(1).Subscribe(_ => RefreshToStart()).DisposeWith(d);
+        });
     }
-
-    protected abstract string GetPagePath(int page);
 
     public bool ShowPagination => _showPagination.Value;
     public bool IsLoading => _isLoading.Value;
 
     public CategoriesViewModel CategoriesViewModel { get; }
+    public EntryListInputViewModel InputViewModel { get; }
 
     public ReadOnlyObservableCollection<EntryListItemViewModel> Entries { get; }
 
@@ -84,16 +87,11 @@ public abstract class EntryListViewModel : RoutableScreen<WorkshopListParameters
         set => RaiseAndSetIfChanged(ref _loadedPage, value);
     }
 
+
     public int TotalPages
     {
         get => _totalPages;
         set => RaiseAndSetIfChanged(ref _totalPages, value);
-    }
-
-    public int EntriesPerPage
-    {
-        get => _entriesPerPage;
-        set => RaiseAndSetIfChanged(ref _entriesPerPage, value);
     }
 
     public override async Task OnNavigating(WorkshopListParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
@@ -105,17 +103,70 @@ public abstract class EntryListViewModel : RoutableScreen<WorkshopListParameters
             await Query(cancellationToken);
     }
 
+    public override Task OnClosing(NavigationArguments args)
+    {
+        // Clear search if not navigating to a child
+        if (!args.Path.StartsWith(_route))
+            InputViewModel.ClearLastSearch();
+        return base.OnClosing(args);
+    }
+
+
+    protected virtual EntryFilterInput GetFilter()
+    {
+        return new EntryFilterInput {And = CategoriesViewModel.CategoryFilters};
+    }
+
+    protected virtual IReadOnlyList<EntrySortInput> GetSort()
+    {
+        // Sort by created at
+        if (InputViewModel.SortBy == 1)
+            return new[] {new EntrySortInput {CreatedAt = SortEnumType.Desc}};
+
+        // Sort by downloads
+        if (InputViewModel.SortBy == 2)
+            return new[] {new EntrySortInput {Downloads = SortEnumType.Desc}};
+
+
+        // Sort by latest release, then by created at
+        return new[]
+        {
+            new EntrySortInput {LatestRelease = new ReleaseSortInput {CreatedAt = SortEnumType.Desc}},
+            new EntrySortInput {CreatedAt = SortEnumType.Desc}
+        };
+    }
+
+    private void RefreshToStart()
+    {
+        // Reset to page one, will trigger a query
+        if (Page != 1)
+            Page = 1;
+        // If already at page one, force a query
+        else
+            Task.Run(() => Query(CancellationToken.None));
+    }
+
     private async Task Query(CancellationToken cancellationToken)
     {
         try
         {
+            string? search = string.IsNullOrWhiteSpace(InputViewModel.Search) ? null : InputViewModel.Search;
             EntryFilterInput filter = GetFilter();
-            IOperationResult<IGetEntriesResult> entries = await _workshopClient.GetEntries.ExecuteAsync(filter, EntriesPerPage * (Page - 1), EntriesPerPage, cancellationToken);
+            IReadOnlyList<EntrySortInput> sort = GetSort();
+            IOperationResult<IGetEntriesResult> entries = await _workshopClient.GetEntries.ExecuteAsync(
+                search,
+                filter,
+                InputViewModel.EntriesPerPage * (Page - 1),
+                InputViewModel.EntriesPerPage,
+                sort,
+                cancellationToken
+            );
             entries.EnsureNoErrors();
 
             if (entries.Data?.Entries?.Items != null)
             {
-                TotalPages = (int) Math.Ceiling(entries.Data.Entries.TotalCount / (double) EntriesPerPage);
+                TotalPages = (int) Math.Ceiling(entries.Data.Entries.TotalCount / (double) InputViewModel.EntriesPerPage);
+                InputViewModel.TotalCount = entries.Data.Entries.TotalCount;
                 _entries.Edit(e =>
                 {
                     e.Clear();
@@ -123,7 +174,9 @@ public abstract class EntryListViewModel : RoutableScreen<WorkshopListParameters
                 });
             }
             else
+            {
                 TotalPages = 1;
+            }
         }
         catch (Exception e)
         {
@@ -137,10 +190,5 @@ public abstract class EntryListViewModel : RoutableScreen<WorkshopListParameters
         {
             LoadedPage = Page;
         }
-    }
-
-    protected virtual EntryFilterInput GetFilter()
-    {
-        return new EntryFilterInput {And = CategoriesViewModel.CategoryFilters};
     }
 }

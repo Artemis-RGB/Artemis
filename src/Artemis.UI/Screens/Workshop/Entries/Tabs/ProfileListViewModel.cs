@@ -8,36 +8,26 @@ namespace Artemis.UI.Screens.Workshop.Entries.Tabs;
 
 public class ProfileListViewModel : EntryListViewModel
 {
-    /// <inheritdoc />
     public ProfileListViewModel(IWorkshopClient workshopClient,
         IRouter router,
         CategoriesViewModel categoriesViewModel,
+        EntryListInputViewModel entryListInputViewModel,
         INotificationService notificationService,
         Func<IGetEntries_Entries_Items, EntryListItemViewModel> getEntryListViewModel)
-        : base(workshopClient, router, categoriesViewModel, notificationService, getEntryListViewModel)
+        : base("workshop/entries/profiles", workshopClient, router, categoriesViewModel, entryListInputViewModel, notificationService, getEntryListViewModel)
     {
+        entryListInputViewModel.SearchWatermark = "Search profiles";
     }
 
-    #region Overrides of EntryListBaseViewModel
-
-    /// <inheritdoc />
-    protected override string GetPagePath(int page)
-    {
-        return $"workshop/entries/profiles/{page}";
-    }
-
-    /// <inheritdoc />
     protected override EntryFilterInput GetFilter()
     {
         return new EntryFilterInput
         {
             And = new[]
             {
-                new EntryFilterInput {EntryType = new EntryTypeOperationFilterInput {Eq = WebClient.Workshop.EntryType.Profile}},
+                new EntryFilterInput {EntryType = new EntryTypeOperationFilterInput {Eq = EntryType.Profile}},
                 base.GetFilter()
             }
         };
     }
-
-    #endregion
 }

@@ -61,7 +61,7 @@ type Mutation {
 
 type Query {
     categories(order: [CategorySortInput!], where: CategoryFilterInput): [Category!]!
-    entries(order: [EntrySortInput!], skip: Int, take: Int, where: EntryFilterInput): EntriesCollectionSegment
+    entries(order: [EntrySortInput!], search: String, skip: Int, take: Int, where: EntryFilterInput): EntriesCollectionSegment
     entry(id: Long!): Entry
     searchEntries(input: String!, order: [EntrySortInput!], type: EntryType, where: EntryFilterInput): [Entry!]!
     submittedEntries(order: [EntrySortInput!], where: EntryFilterInput): [Entry!]!
