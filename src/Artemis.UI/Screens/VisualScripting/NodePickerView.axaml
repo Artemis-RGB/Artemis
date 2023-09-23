@@ -10,30 +10,9 @@
              x:DataType="visualScripting:NodePickerViewModel"
              Width="600"
              Height="400">
-    <UserControl.Styles>
-        <Style Selector="TextBox#SearchBox">
-            <Setter Property="VerticalAlignment" Value="Top"></Setter>
-            <Setter Property="InnerRightContent">
-                <Template>
-                    <StackPanel Orientation="Horizontal">
-                        <Button Content="&#xE8BB;" 
-                                FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                Theme="{StaticResource TransparentButton}"
-                                Command="{CompiledBinding $parent[TextBox].Clear}"
-                                IsVisible="{CompiledBinding Text, RelativeSource={RelativeSource FindAncestor, AncestorType=TextBox}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
-                        <Button Content="&#xE721;"
-                                FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                Theme="{StaticResource TransparentButton}"
-                                Command="{CompiledBinding $parent[TextBox].Clear}"
-                                IsHitTestVisible="False"/>
-                    </StackPanel>
-                </Template>
-            </Setter>
-        </Style>
-    </UserControl.Styles>
     <Border Classes="picker-container">
         <Grid RowDefinitions="Auto,*">
-            <TextBox Name="SearchBox" Text="{CompiledBinding SearchText}" Margin="0 0 0 15" Watermark="Search"></TextBox>
+            <TextBox Name="SearchBox" Classes="search-box" Text="{CompiledBinding SearchText}" Margin="0 0 0 15" Watermark="Search nodes"></TextBox>
             <TreeView Name="NodeTree"
                       Grid.Row="1"
                       ItemsSource="{CompiledBinding Categories}"

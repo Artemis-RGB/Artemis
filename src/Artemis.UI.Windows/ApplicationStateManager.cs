@@ -11,15 +11,21 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using DryIoc;
+using Serilog;
 
 namespace Artemis.UI.Windows;
 
 public class ApplicationStateManager
 {
+    private readonly IContainer _container;
+    private readonly ILogger _logger;
     private const int SM_SHUTTINGDOWN = 0x2000;
 
     public ApplicationStateManager(IContainer container, string[] startupArguments)
     {
+        _container = container;
+        _logger = container.Resolve<ILogger>();
+        
         StartupArguments = startupArguments;
         IsElevated = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
 
@@ -29,20 +35,14 @@ public class ApplicationStateManager
 
         // On Windows shutdown dispose the IOC container just so device providers get a chance to clean up
         if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
-            controlledApplicationLifetime.Exit += (_, _) =>
-            {
-                RunForcedShutdownIfEnabled();
-
-                // Dispose plugins before disposing the IOC container because plugins might access services during dispose
-                container.Resolve<IPluginManagementService>().Dispose();
-                container.Dispose();
-            };
+            controlledApplicationLifetime.Exit += ControlledApplicationLifetimeOnExit;
 
         // Inform the Core about elevation status
         container.Resolve<ICoreService>().IsElevated = IsElevated;
     }
 
     public string[] StartupArguments { get; }
+
     public bool IsElevated { get; }
 
     private void UtilitiesOnRestartRequested(object? sender, RestartEventArgs e)
@@ -109,6 +109,17 @@ public class ApplicationStateManager
         // Lets try a graceful shutdown, PowerShell will kill if needed
         if (Application.Current?.ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
             Dispatcher.UIThread.Post(() => controlledApplicationLifetime.Shutdown());
+    }
+
+    private void ControlledApplicationLifetimeOnExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
+    {
+        _logger.Information("Application lifetime exiting, disposing container and friends");
+        
+        RunForcedShutdownIfEnabled();
+
+        // Dispose plugins before disposing the IOC container because plugins might access services during dispose
+        _container.Resolve<IPluginManagementService>().Dispose();
+        _container.Dispose();
     }
 
     private void UtilitiesOnShutdownRequested(object? sender, EventArgs e)

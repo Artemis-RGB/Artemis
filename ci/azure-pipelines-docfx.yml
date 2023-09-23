@@ -44,12 +44,12 @@ steps:
   displayName: "DockFX FTP upload"
   inputs:
     credentialsOption: 'inputs'
-    serverUrl: 'ftp://artemis-rgb.com'
-    username: 'devops'
+    serverUrl: 'ftp://www360.your-server.de'
+    username: '$(ftp_user)'
     password: '$(ftp_password)'
     rootDirectory: '$(Pipeline.Workspace)/s/Artemis/docfx/docfx_project/_site'
     filePatterns: '**'
-    remoteDirectory: '/httpdocs/docs'
+    remoteDirectory: '/docs'
     clean: true
     preservePaths: true
     trustSSL: false
