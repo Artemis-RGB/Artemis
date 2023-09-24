@@ -20,6 +20,7 @@ namespace Artemis.UI.Screens.StartupWizard;
 public class StartupWizardViewModel : DialogViewModelBase<bool>
 {
     private readonly IAutoRunProvider? _autoRunProvider;
+    private readonly IProtocolProvider? _protocolProvider;
     private readonly IRgbService _rgbService;
     private readonly ISettingsService _settingsService;
     private readonly IWindowService _windowService;
@@ -39,6 +40,7 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
         _rgbService = rgbService;
         _windowService = windowService;
         _autoRunProvider = container.Resolve<IAutoRunProvider>(IfUnresolved.ReturnDefault);
+        _protocolProvider = container.Resolve<IProtocolProvider>(IfUnresolved.ReturnDefault);
 
         Continue = ReactiveCommand.Create(ExecuteContinue);
         GoBack = ReactiveCommand.Create(ExecuteGoBack);
@@ -58,11 +60,13 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
         this.WhenActivated(d =>
         {
             UIAutoRun.SettingChanged += UIAutoRunOnSettingChanged;
+            UIUseProtocol.SettingChanged += UIUseProtocolOnSettingChanged;
             UIAutoRunDelay.SettingChanged += UIAutoRunDelayOnSettingChanged;
 
             Disposable.Create(() =>
             {
                 UIAutoRun.SettingChanged -= UIAutoRunOnSettingChanged;
+                UIUseProtocol.SettingChanged -= UIUseProtocolOnSettingChanged;
                 UIAutoRunDelay.SettingChanged -= UIAutoRunDelayOnSettingChanged;
 
                 _settingsService.SaveAllSettings();
@@ -81,6 +85,7 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
     public bool IsAutoRunSupported => _autoRunProvider != null;
 
     public PluginSetting<bool> UIAutoRun => _settingsService.GetSetting("UI.AutoRun", false);
+    public PluginSetting<bool> UIUseProtocol => _settingsService.GetSetting("UI.UseProtocol", true);
     public PluginSetting<int> UIAutoRunDelay => _settingsService.GetSetting("UI.AutoRunDelay", 15);
     public PluginSetting<bool> UIShowOnStartup => _settingsService.GetSetting("UI.ShowOnStartup", true);
     public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.Updating.AutoCheck", true);
@@ -177,9 +182,32 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
         }
     }
 
+    private void ApplyProtocolAssociation()
+    {
+        if (_protocolProvider == null)
+            return;
+
+        try
+        {
+            if (UIUseProtocol.Value)
+                _protocolProvider.AssociateWithProtocol("artemis");
+            else
+                _protocolProvider.DisassociateWithProtocol("artemis");
+        }
+        catch (Exception exception)
+        {
+            _windowService.ShowExceptionDialog("Failed to apply protocol association", exception);
+        }
+    }
+
     private async void UIAutoRunOnSettingChanged(object? sender, EventArgs e)
     {
         await ApplyAutoRun();
+    }
+
+    private void UIUseProtocolOnSettingChanged(object? sender, EventArgs e)
+    {
+        ApplyProtocolAssociation();
     }
 
     private async void UIAutoRunDelayOnSettingChanged(object? sender, EventArgs e)

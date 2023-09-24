@@ -74,6 +74,9 @@ public class App : Application
             return false;
         }
 
+
+        string? route = (ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.Args?.FirstOrDefault(a => a.Contains("route"));
+        route = route?.Split("artemis://")[1];
         string url = File.ReadAllText(Path.Combine(Constants.DataFolder, "webserver.txt"));
         using HttpClient client = new();
         try
@@ -81,7 +84,7 @@ public class App : Application
             CancellationTokenSource cts = new();
             cts.CancelAfter(2000);
 
-            HttpResponseMessage httpResponseMessage = client.Send(new HttpRequestMessage(HttpMethod.Post, url + "remote/bring-to-foreground"), cts.Token);
+            HttpResponseMessage httpResponseMessage = client.Send(new HttpRequestMessage(HttpMethod.Post, url + "remote/bring-to-foreground") {Content = new StringContent(route ?? "")}, cts.Token);
             httpResponseMessage.EnsureSuccessStatusCode();
             return true;
         }

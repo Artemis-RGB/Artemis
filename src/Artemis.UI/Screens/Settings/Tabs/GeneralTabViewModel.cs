@@ -29,6 +29,7 @@ namespace Artemis.UI.Screens.Settings;
 public class GeneralTabViewModel : RoutableScreen
 {
     private readonly IAutoRunProvider? _autoRunProvider;
+    private readonly IProtocolProvider? _protocolProvider;
     private readonly IDebugService _debugService;
     private readonly PluginSetting<LayerBrushReference> _defaultLayerBrushDescriptor;
     private readonly INotificationService _notificationService;
@@ -52,6 +53,7 @@ public class GeneralTabViewModel : RoutableScreen
         _updateService = updateService;
         _notificationService = notificationService;
         _autoRunProvider = container.Resolve<IAutoRunProvider>(IfUnresolved.ReturnDefault);
+        _protocolProvider = container.Resolve<IProtocolProvider>(IfUnresolved.ReturnDefault);
 
         List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
         List<IGraphicsContextProvider> graphicsContextProviders = container.Resolve<List<IGraphicsContextProvider>>();
@@ -74,13 +76,16 @@ public class GeneralTabViewModel : RoutableScreen
         this.WhenActivated(d =>
         {
             UIAutoRun.SettingChanged += UIAutoRunOnSettingChanged;
+            UIUseProtocol.SettingChanged += UIUseProtocolOnSettingChanged;
             UIAutoRunDelay.SettingChanged += UIAutoRunDelayOnSettingChanged;
             EnableMica.SettingChanged += EnableMicaOnSettingChanged;
 
             Dispatcher.UIThread.InvokeAsync(ApplyAutoRun);
+            Dispatcher.UIThread.Invoke(ApplyProtocolAssociation);
             Disposable.Create(() =>
             {
                 UIAutoRun.SettingChanged -= UIAutoRunOnSettingChanged;
+                UIUseProtocol.SettingChanged -= UIUseProtocolOnSettingChanged;
                 UIAutoRunDelay.SettingChanged -= UIAutoRunDelayOnSettingChanged;
                 EnableMica.SettingChanged -= EnableMicaOnSettingChanged;
 
@@ -148,6 +153,7 @@ public class GeneralTabViewModel : RoutableScreen
     }
 
     public PluginSetting<bool> UIAutoRun => _settingsService.GetSetting("UI.AutoRun", false);
+    public PluginSetting<bool> UIUseProtocol => _settingsService.GetSetting("UI.UseProtocol", true);
     public PluginSetting<int> UIAutoRunDelay => _settingsService.GetSetting("UI.AutoRunDelay", 15);
     public PluginSetting<bool> UIShowOnStartup => _settingsService.GetSetting("UI.ShowOnStartup", true);
     public PluginSetting<bool> EnableMica => _settingsService.GetSetting("UI.EnableMica", true);
@@ -223,10 +229,33 @@ public class GeneralTabViewModel : RoutableScreen
             _windowService.ShowExceptionDialog("Failed to apply auto-run", exception);
         }
     }
+    
+    private void ApplyProtocolAssociation()
+    {
+        if (_protocolProvider == null)
+            return;
+        
+        try
+        {
+            if (UIUseProtocol.Value)
+                _protocolProvider.AssociateWithProtocol("artemis");
+            else
+                _protocolProvider.DisassociateWithProtocol("artemis");
+        }
+        catch (Exception exception)
+        {
+            _windowService.ShowExceptionDialog("Failed to apply protocol association", exception);
+        }
+    }
 
     private async void UIAutoRunOnSettingChanged(object? sender, EventArgs e)
     {
         await ApplyAutoRun();
+    }
+    
+    private void UIUseProtocolOnSettingChanged(object? sender, EventArgs e)
+    {
+        ApplyProtocolAssociation();
     }
 
     private async void UIAutoRunDelayOnSettingChanged(object? sender, EventArgs e)

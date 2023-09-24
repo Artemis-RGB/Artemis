@@ -14,6 +14,7 @@ using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.MainWindow;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using ReactiveUI;
@@ -181,6 +182,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         }
 
         _lifeTime.MainWindow.Activate();
+        _lifeTime.MainWindow.WindowState = WindowState.Normal;
         OnMainWindowOpened();
     }
 

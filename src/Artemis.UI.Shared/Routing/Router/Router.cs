@@ -72,6 +72,7 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
     /// <inheritdoc />
     public async Task Navigate(string path, RouterNavigationOptions? options = null)
     {
+        path = path.ToLower().Trim(' ', '/', '\\');
         options ??= new RouterNavigationOptions();
 
         // Routing takes place on the UI thread with processing heavy tasks offloaded by the router itself

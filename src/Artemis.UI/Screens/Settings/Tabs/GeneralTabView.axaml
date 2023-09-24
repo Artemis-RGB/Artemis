@@ -45,6 +45,19 @@
                         </Grid>
                         <Border Classes="card-separator" />
                         
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock>Associate with Artemis links</TextBlock>
+                                <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                    Open Artemis when navigating to artemis:// links, allows opening workshop entries from your browser.
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                <ToggleSwitch IsChecked="{CompiledBinding UIUseProtocol.Value}" OnContent="Yes" OffContent="No" MinWidth="0" Margin="0 -10" />
+                            </StackPanel>
+                        </Grid>
+                        <Border Classes="card-separator"/>
+                        
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto" IsVisible="{CompiledBinding IsWindows11}">
                             <StackPanel Grid.Column="0">
                                 <TextBlock>Enable Mica effect</TextBlock>
@@ -57,7 +70,7 @@
                             </StackPanel>
                         </Grid>
                         <Border Classes="card-separator" IsVisible="{CompiledBinding IsWindows11}"/>
-
+                        
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                             <StackPanel Grid.Column="0">
                                 <TextBlock>Startup delay</TextBlock>

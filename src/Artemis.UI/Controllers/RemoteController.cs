@@ -1,6 +1,8 @@
 using System;
+using System.IO;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services.MainWindow;
 using Avalonia.Threading;
 using EmbedIO;
@@ -13,11 +15,13 @@ public class RemoteController : WebApiController
 {
     private readonly ICoreService _coreService;
     private readonly IMainWindowService _mainWindowService;
+    private readonly IRouter _router;
 
-    public RemoteController(ICoreService coreService, IMainWindowService mainWindowService)
+    public RemoteController(ICoreService coreService, IMainWindowService mainWindowService, IRouter router)
     {
         _coreService = coreService;
         _mainWindowService = mainWindowService;
+        _router = router;
     }
 
     [Route(HttpVerbs.Any, "/status")]
@@ -29,7 +33,15 @@ public class RemoteController : WebApiController
     [Route(HttpVerbs.Post, "/remote/bring-to-foreground")]
     public void PostBringToForeground()
     {
-        Dispatcher.UIThread.Post(() => _mainWindowService.OpenMainWindow());
+        using StreamReader reader = new(Request.InputStream);
+        string route = reader.ReadToEnd();
+
+        Dispatcher.UIThread.InvokeAsync(async () =>
+        {
+            if (!string.IsNullOrWhiteSpace(route))
+                await _router.Navigate(route);
+            _mainWindowService.OpenMainWindow();
+        });
     }
 
     [Route(HttpVerbs.Post, "/remote/restart")]
