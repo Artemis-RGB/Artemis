@@ -24,5 +24,6 @@ public static class UIContainerExtensions
         container.Register<IAutoRunProvider, AutoRunProvider>();
         container.Register<InputProvider, WindowsInputProvider>(serviceKey: WindowsInputProvider.Id);
         container.Register<IUpdateNotificationProvider, WindowsUpdateNotificationProvider>();
+        container.Register<IProtocolProvider, ProtocolProvider>();
     }
 }

@@ -38,9 +38,9 @@ public class BooleanBranchNode : Node
 
     private void InputPinConnected(object? sender, SingleValueEventArgs<IPin> e)
     {
-        if (TrueInput.ConnectedTo.Any() && !FalseInput.ConnectedTo.Any())
+        if (TrueInput.ConnectedTo.Any())
             ChangeType(TrueInput.ConnectedTo.First().Type);
-        if (FalseInput.ConnectedTo.Any() && !TrueInput.ConnectedTo.Any())
+        else if (FalseInput.ConnectedTo.Any())
             ChangeType(FalseInput.ConnectedTo.First().Type);
     }
 

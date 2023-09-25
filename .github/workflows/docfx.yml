@@ -33,4 +33,4 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: docfx/docfx_project/_site/
-          server-dir: /httpdocs/docs/
+          server-dir: /docs/
