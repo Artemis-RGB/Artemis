@@ -22,14 +22,24 @@
         <StackPanel Grid.Row="1" Grid.Column="0" Margin="0 0 10 0" Spacing="10">
             <Border Classes="card" VerticalAlignment="Top">
                 <StackPanel>
-                    <Border CornerRadius="6"
-                            HorizontalAlignment="Left"
-                            Margin="0 0 10 0"
-                            Width="80"
-                            Height="80"
-                            ClipToBounds="True">
-                        <Image Stretch="UniformToFill" il:ImageLoader.Source="{CompiledBinding Entry.Id, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
-                    </Border>
+                    <Panel>
+                        <Border CornerRadius="6"
+                                HorizontalAlignment="Left"
+                                Margin="0 0 10 0"
+                                Width="80"
+                                Height="80"
+                                ClipToBounds="True">
+                            <Image Stretch="UniformToFill" il:ImageLoader.Source="{CompiledBinding Entry.Id, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
+                        </Border>
+                        <Button Classes="icon-button" 
+                                VerticalAlignment="Top" 
+                                HorizontalAlignment="Right"
+                                Command="{CompiledBinding CopyShareLink}"
+                                ToolTip.Tip="Copy share link">
+                            <avalonia:MaterialIcon Kind="ShareVariant"/>
+                        </Button>
+                    </Panel>
+                    
 
                     <TextBlock Theme="{StaticResource TitleTextBlockStyle}"
                                MaxLines="3"

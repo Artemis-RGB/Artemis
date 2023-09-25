@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.Core;
 using Artemis.UI.Screens.Workshop.Parameters;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
@@ -21,8 +22,8 @@ public class ProfileDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
     private readonly IWorkshopClient _client;
     private readonly ProfileEntryInstallationHandler _installationHandler;
     private readonly INotificationService _notificationService;
-    private readonly IWindowService _windowService;
     private readonly ObservableAsPropertyHelper<DateTimeOffset?> _updatedAt;
+    private readonly IWindowService _windowService;
     private IGetEntryById_Entry? _entry;
 
     public ProfileDetailsViewModel(IWorkshopClient client, ProfileEntryInstallationHandler installationHandler, INotificationService notificationService, IWindowService windowService)
@@ -34,7 +35,10 @@ public class ProfileDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
         _updatedAt = this.WhenAnyValue(vm => vm.Entry).Select(e => e?.LatestRelease?.CreatedAt ?? e?.CreatedAt).ToProperty(this, vm => vm.UpdatedAt);
 
         DownloadLatestRelease = ReactiveCommand.CreateFromTask(ExecuteDownloadLatestRelease);
+        CopyShareLink = ReactiveCommand.CreateFromTask(ExecuteCopyShareLink);
     }
+
+    public ReactiveCommand<Unit, Unit> CopyShareLink { get; set; }
 
     public ReactiveCommand<Unit, Unit> DownloadLatestRelease { get; }
 
@@ -74,5 +78,14 @@ public class ProfileDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
             _notificationService.CreateNotification().WithTitle("Profile installed").WithSeverity(NotificationSeverity.Success).Show();
         else
             _notificationService.CreateNotification().WithTitle("Failed to install profile").WithMessage(result.Message).WithSeverity(NotificationSeverity.Error).Show();
+    }
+
+    private async Task ExecuteCopyShareLink(CancellationToken arg)
+    {
+        if (Entry == null)
+            return;
+
+        await Shared.UI.Clipboard.SetTextAsync($"{WorkshopConstants.WORKSHOP_URL}/entries/{Entry.Id}/{StringUtilities.UrlFriendly(Entry.Name)}");
+        _notificationService.CreateNotification().WithTitle("Copied share link to clipboard.").Show();
     }
 }
