@@ -158,7 +158,16 @@ public class DataModelPath : IStorageModel, IDisposable
         if (_disposed)
             throw new ObjectDisposedException("DataModelPath");
 
-        return Segments.LastOrDefault()?.GetPropertyType();
+        // Prefer the actual type from the segments
+        Type? segmentType = Segments.LastOrDefault()?.GetPropertyType();
+        if (segmentType != null)
+            return segmentType;
+        
+        // Fall back to stored type
+        if (!string.IsNullOrWhiteSpace(Entity.Type))
+            return Type.GetType(Entity.Type);
+
+        return null;
     }
 
     /// <summary>
@@ -358,9 +367,14 @@ public class DataModelPath : IStorageModel, IDisposable
         // Do not save an invalid state
         if (!IsValid)
             return;
-
+        
         Entity.Path = Path;
         Entity.DataModelId = DataModelId;
+        
+        // Store the type name but only if available
+        Type? pathType = Segments.LastOrDefault()?.GetPropertyType();
+        if (pathType != null)
+            Entity.Type = pathType.FullName;
     }
 
     #region Equality members

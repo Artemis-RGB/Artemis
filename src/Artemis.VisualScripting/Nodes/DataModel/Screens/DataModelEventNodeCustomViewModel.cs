@@ -44,7 +44,7 @@ public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
 
             // Subscribe to node changes 
             _node.WhenAnyValue(n => n.Storage).Subscribe(UpdateDataModelPath).DisposeWith(d);
-            this.WhenAnyValue(vm => vm.DataModelPath).Subscribe(ApplyDataModelPath).DisposeWith(d);
+            this.WhenAnyValue(vm => vm.DataModelPath).WhereNotNull().Subscribe(ApplyDataModelPath).DisposeWith(d);
 
             Disposable.Create(() =>
             {
@@ -89,18 +89,18 @@ public class DataModelEventNodeCustomViewModel : CustomNodeViewModel
         }
     }
 
-    private void ApplyDataModelPath(DataModelPath? path)
+    private void ApplyDataModelPath(DataModelPath path)
     {
         try
         {
             if (_updating)
                 return;
-            if (path?.Path == _node.Storage?.Path)
+            if (path.Path == _node.Storage?.Path)
                 return;
 
             _updating = true;
 
-            path?.Save();
+            path.Save();
             _nodeEditorService.ExecuteCommand(Script, new UpdateStorage<DataModelPathEntity>(_node, path?.Entity, "event"));
         }
         finally
