@@ -182,7 +182,9 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         }
 
         _lifeTime.MainWindow.Activate();
-        _lifeTime.MainWindow.WindowState = WindowState.Normal;
+        if (_lifeTime.MainWindow.WindowState == WindowState.Minimized)
+            _lifeTime.MainWindow.WindowState = WindowState.Normal;
+        
         OnMainWindowOpened();
     }
 
