@@ -17,14 +17,14 @@ public class SelectionAddToolViewModel : ToolViewModel
 {
     private readonly ObservableAsPropertyHelper<bool>? _isEnabled;
     private readonly IProfileEditorService _profileEditorService;
-    private readonly IRgbService _rgbService;
+    private readonly IDeviceService _deviceService;
     private Layer? _layer;
 
     /// <inheritdoc />
-    public SelectionAddToolViewModel(IProfileEditorService profileEditorService, IRgbService rgbService)
+    public SelectionAddToolViewModel(IProfileEditorService profileEditorService, IDeviceService deviceService)
     {
         _profileEditorService = profileEditorService;
-        _rgbService = rgbService;
+        _deviceService = deviceService;
         // Not disposed when deactivated but when really disposed
         _isEnabled = profileEditorService.ProfileElement.Select(p => p is Layer).ToProperty(this, vm => vm.IsEnabled);
 
@@ -57,7 +57,7 @@ public class SelectionAddToolViewModel : ToolViewModel
         if (inverse)
         {
             List<ArtemisLed> toRemove = _layer.Leds.Where(l => l.AbsoluteRectangle.IntersectsWith(rect)).ToList();
-            List<ArtemisLed> toAdd = _rgbService.EnabledDevices.SelectMany(d => d.Leds).Where(l => l.AbsoluteRectangle.IntersectsWith(rect)).Except(toRemove).ToList();
+            List<ArtemisLed> toAdd = _deviceService.EnabledDevices.SelectMany(d => d.Leds).Where(l => l.AbsoluteRectangle.IntersectsWith(rect)).Except(toRemove).ToList();
             List<ArtemisLed> leds = _layer.Leds.Except(toRemove).ToList();
             leds.AddRange(toAdd);
 
@@ -65,7 +65,7 @@ public class SelectionAddToolViewModel : ToolViewModel
         }
         else
         {
-            List<ArtemisLed> leds = _rgbService.EnabledDevices.SelectMany(d => d.Leds).Where(l => l.AbsoluteRectangle.IntersectsWith(rect)).ToList();
+            List<ArtemisLed> leds = _deviceService.EnabledDevices.SelectMany(d => d.Leds).Where(l => l.AbsoluteRectangle.IntersectsWith(rect)).ToList();
             if (expand)
                 leds.AddRange(_layer.Leds);
             _profileEditorService.ExecuteCommand(new ChangeLayerLeds(_layer, leds.Distinct().ToList()));

@@ -16,17 +16,17 @@ namespace Artemis.UI.Screens.Device;
 public class InputMappingsTabViewModel : ActivatableViewModelBase
 {
     private readonly IInputService _inputService;
-    private readonly IRgbService _rgbService;
+    private readonly IDeviceService _deviceService;
     private readonly ObservableCollection<ArtemisLed> _selectedLeds;
     private ArtemisLed? _selectedLed;
 
-    public InputMappingsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds, IRgbService rgbService, IInputService inputService)
+    public InputMappingsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds, IInputService inputService, IDeviceService deviceService)
     {
         if (device.DeviceType != RGBDeviceType.Keyboard)
             throw new ArtemisUIException("The input mappings tab only supports keyboards");
 
-        _rgbService = rgbService;
         _inputService = inputService;
+        _deviceService = deviceService;
         _selectedLeds = selectedLeds;
 
         Device = device;
@@ -81,7 +81,7 @@ public class InputMappingsTabViewModel : ActivatableViewModelBase
 
         // Apply the new LED mapping
         Device.InputMappings[SelectedLed] = artemisLed;
-        _rgbService.SaveDevice(Device);
+        _deviceService.SaveDevice(Device);
         _selectedLeds.Clear();
 
         UpdateInputMappings();
