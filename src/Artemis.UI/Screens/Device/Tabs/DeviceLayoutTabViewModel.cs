@@ -37,11 +37,7 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
         this.WhenActivated(d =>
         {
             Device.PropertyChanged += DeviceOnPropertyChanged;
-
-            Disposable.Create(() =>
-            {
-                Device.PropertyChanged -= DeviceOnPropertyChanged;
-            }).DisposeWith(d);
+            Disposable.Create(() => Device.PropertyChanged -= DeviceOnPropertyChanged).DisposeWith(d);
         });
     }
 
@@ -51,7 +47,7 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
 
     public string? ImagePath => Device.Layout?.Image?.LocalPath;
     
-    public string CustomLayoutPath => Device.CustomLayoutPath;
+    public string? CustomLayoutPath => Device.CustomLayoutPath;
     
     public bool HasCustomLayout => Device.CustomLayoutPath != null;
     
@@ -61,6 +57,8 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
         _notificationService.CreateNotification()
             .WithMessage("Cleared imported layout.")
             .WithSeverity(NotificationSeverity.Informational);
+        
+        _deviceService.SaveDevice(Device);
     }
 
     public async Task BrowseCustomLayout()
@@ -77,6 +75,8 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
                 .WithTitle("Imported layout")
                 .WithMessage($"File loaded from {files[0]}")
                 .WithSeverity(NotificationSeverity.Informational);
+            
+            _deviceService.SaveDevice(Device);
         }
     }
 
@@ -153,6 +153,10 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
     private void DeviceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is nameof(Device.CustomLayoutPath) or nameof(Device.DisableDefaultLayout))
+        {
             Task.Run(() => _deviceService.ApplyDeviceLayout(Device, Device.GetBestDeviceLayout()));
+            this.RaisePropertyChanged(nameof(CustomLayoutPath));
+            this.RaisePropertyChanged(nameof(HasCustomLayout));
+        }
     }
 }

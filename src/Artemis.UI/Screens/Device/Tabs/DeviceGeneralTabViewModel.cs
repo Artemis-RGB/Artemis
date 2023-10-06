@@ -218,8 +218,7 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
         Device.RedScale = RedScale / 100f;
         Device.GreenScale = GreenScale / 100f;
         Device.BlueScale = BlueScale / 100f;
-
-        _renderService.FlushLeds = true;
+        Device.RgbDevice.Update(true);
     }
 
     public void ResetScaling()
@@ -227,6 +226,7 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
         RedScale = _initialRedScale * 100;
         GreenScale = _initialGreenScale * 100;
         BlueScale = _initialBlueScale * 100;
+        Device.RgbDevice.Update(true);
     }
 
     private void OnFrameRendering(object? sender, FrameRenderingEventArgs e)

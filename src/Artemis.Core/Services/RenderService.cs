@@ -71,20 +71,9 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
     public TimeSpan FrameTime { get; private set; }
 
     /// <inheritdoc />
-    public bool FlushLeds { get; set; }
-
-    /// <inheritdoc />
     public void Render(SKCanvas canvas, double delta)
     {
         _frameStopWatch.Restart();
-        
-        if (FlushLeds)
-        {
-            FlushLeds = false;
-            Surface.Update(true);
-            return;
-        }
-
         try
         {
             OnFrameRendering(new FrameRenderingEventArgs(canvas, delta, _surfaceManager.Surface));

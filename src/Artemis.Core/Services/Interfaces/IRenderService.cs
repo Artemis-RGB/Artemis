@@ -32,11 +32,6 @@ public interface IRenderService : IArtemisService
     bool IsPaused { get; set; }
     
     /// <summary>
-    ///     Gets or sets a boolean indicating whether to flush the RGB.NET LEDs during next update
-    /// </summary>
-    bool FlushLeds { get; set; }
-    
-    /// <summary>
     ///     The time the last frame took to render
     /// </summary>
     TimeSpan FrameTime { get; }
