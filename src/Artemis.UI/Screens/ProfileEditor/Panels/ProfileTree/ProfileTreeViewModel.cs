@@ -23,8 +23,8 @@ public class ProfileTreeViewModel : TreeItemViewModel
     private ObservableAsPropertyHelper<bool>? _keyBindingsEnabled;
     private TreeItemViewModel? _selectedChild;
 
-    public ProfileTreeViewModel(IWindowService windowService, IRgbService rgbService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
-        : base(null, null, windowService, rgbService, profileEditorService, profileEditorVmFactory)
+    public ProfileTreeViewModel(IWindowService windowService, IDeviceService deviceService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
+        : base(null, null, windowService, deviceService, profileEditorService, profileEditorVmFactory)
     {
         this.WhenActivated(d =>
         {

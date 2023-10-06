@@ -22,20 +22,13 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
 {
     private readonly IWindowService _windowService;
     private readonly INotificationService _notificationService;
-    private readonly ICoreService _coreService;
-    private readonly IRgbService _rgbService;
+    private readonly IDeviceService _deviceService;
 
-    public DeviceLayoutTabViewModel(
-        IWindowService windowService,
-        INotificationService notificationService,
-        ICoreService coreService,
-        IRgbService rgbService,
-        ArtemisDevice device)
+    public DeviceLayoutTabViewModel(IWindowService windowService, INotificationService notificationService, IDeviceService deviceService, ArtemisDevice device)
     {
         _windowService = windowService;
         _notificationService = notificationService;
-        _coreService = coreService;
-        _rgbService = rgbService;
+        _deviceService = deviceService;
 
         Device = device;
         DisplayName = "Layout";
@@ -160,6 +153,6 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
     private void DeviceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is nameof(Device.CustomLayoutPath) or nameof(Device.DisableDefaultLayout))
-            Task.Run(() => _rgbService.ApplyBestDeviceLayout(Device));
+            Task.Run(() => _deviceService.ApplyDeviceLayout(Device, Device.GetBestDeviceLayout()));
     }
 }

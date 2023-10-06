@@ -16,12 +16,12 @@ public class ProfilePreviewViewModel : ActivatableViewModelBase
     private readonly IWindowService _windowService;
     private ProfileConfiguration? _profileConfiguration;
 
-    public ProfilePreviewViewModel(IProfileService profileService, IRgbService rgbService, IWindowService windowService)
+    public ProfilePreviewViewModel(IProfileService profileService, IDeviceService deviceService, IWindowService windowService)
     {
         _profileService = profileService;
         _windowService = windowService;
 
-        Devices = new ObservableCollection<ArtemisDevice>(rgbService.EnabledDevices.OrderBy(d => d.ZIndex));
+        Devices = new ObservableCollection<ArtemisDevice>(deviceService.EnabledDevices.OrderBy(d => d.ZIndex));
 
         this.WhenAnyValue(vm => vm.ProfileConfiguration).Subscribe(_ => Update());
         this.WhenActivated(d => Disposable.Create(() => PreviewProfile(null)).DisposeWith(d));

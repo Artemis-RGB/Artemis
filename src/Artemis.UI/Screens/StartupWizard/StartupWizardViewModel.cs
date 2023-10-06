@@ -21,9 +21,9 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
 {
     private readonly IAutoRunProvider? _autoRunProvider;
     private readonly IProtocolProvider? _protocolProvider;
-    private readonly IRgbService _rgbService;
     private readonly ISettingsService _settingsService;
     private readonly IWindowService _windowService;
+    private readonly IDeviceService _deviceService;
     private int _currentStep;
     private bool _showContinue;
     private bool _showFinish;
@@ -31,14 +31,14 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
 
     public StartupWizardViewModel(IContainer container,
         ISettingsService settingsService,
-        IRgbService rgbService,
         IPluginManagementService pluginManagementService,
         IWindowService windowService,
+        IDeviceService deviceService,
         ISettingsVmFactory settingsVmFactory)
     {
         _settingsService = settingsService;
-        _rgbService = rgbService;
         _windowService = windowService;
+        _deviceService = deviceService;
         _autoRunProvider = container.Resolve<IAutoRunProvider>(IfUnresolved.ReturnDefault);
         _protocolProvider = container.Resolve<IProtocolProvider>(IfUnresolved.ReturnDefault);
 
@@ -159,7 +159,7 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
     private void ExecuteSelectLayout(string layout)
     {
         // TODO: Implement the layout
-        _rgbService.AutoArrangeDevices();
+        _deviceService.AutoArrangeDevices();
 
         ExecuteContinue();
     }
