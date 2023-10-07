@@ -7,6 +7,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
+using Avalonia.Input;
 using Material.Icons;
 using ReactiveUI;
 using SkiaSharp;
@@ -45,9 +46,12 @@ public class SelectionAddToolViewModel : ToolViewModel
 
     /// <inheritdoc />
     public override MaterialIconKind Icon => MaterialIconKind.SelectionDrag;
+    
+    /// <inheritdoc />
+    public override Hotkey? Hotkey { get; } = new(KeyboardKey.OemPlus, KeyboardModifierKey.Control);
 
     /// <inheritdoc />
-    public override string ToolTip => "Add LEDs to the current layer";
+    public override string ToolTip => "Add LEDs to the current layer (Ctrl + +)";
 
     public void AddLedsInRectangle(SKRect rect, bool expand, bool inverse)
     {

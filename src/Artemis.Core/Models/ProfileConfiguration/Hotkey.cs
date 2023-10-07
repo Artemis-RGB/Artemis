@@ -1,4 +1,5 @@
-﻿using Artemis.Core.Services;
+﻿using System;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core;
@@ -13,6 +14,14 @@ public class Hotkey : CorePropertyChanged, IStorageModel
     /// </summary>
     public Hotkey()
     {
+        Entity = new ProfileConfigurationHotkeyEntity();
+    }
+
+    /// <inheritdoc />
+    public Hotkey(KeyboardKey? key, KeyboardModifierKey? modifiers)
+    {
+        Key = key;
+        Modifiers = modifiers;
         Entity = new ProfileConfigurationHotkeyEntity();
     }
 
@@ -46,7 +55,7 @@ public class Hotkey : CorePropertyChanged, IStorageModel
     /// <returns><see langword="true" /> if the event args match the hotkey; otherwise <see langword="false" /></returns>
     public bool MatchesEventArgs(ArtemisKeyboardKeyEventArgs eventArgs)
     {
-        return eventArgs.Key == Key && eventArgs.Modifiers == Modifiers;
+        return eventArgs.Key == Key && (eventArgs.Modifiers == Modifiers || (eventArgs.Modifiers == KeyboardModifierKey.None && Modifiers == null));
     }
 
     #region Implementation of IStorageModel
