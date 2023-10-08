@@ -3,17 +3,21 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:keyframes="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes.TimelineEasingView"
              x:DataType="keyframes:TimelineEasingViewModel">
-    <StackPanel Orientation="Horizontal">
-        <Polyline Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+    <Grid ColumnDefinitions="25,30,*">
+        <avalonia:MaterialIcon Grid.Column="0" Kind="Check" IsVisible="{CompiledBinding IsEasingModeSelected}" HorizontalAlignment="Left"/>
+        <Polyline Grid.Column="1" 
+                  Stroke="{DynamicResource TextFillColorPrimaryBrush}"
                   StrokeThickness="1"
                   Points="{CompiledBinding EasingPoints}"
                   Stretch="Uniform"
                   Width="20"
                   Height="20"
-                  Margin="0 0 10 0" />
-        <TextBlock Text="{CompiledBinding Description}" />
-    </StackPanel>
+                  HorizontalAlignment="Left"/>
+        <TextBlock Grid.Column="2" Text="{CompiledBinding Description}" HorizontalAlignment="Left"/>
+    </Grid>
+
 </UserControl>

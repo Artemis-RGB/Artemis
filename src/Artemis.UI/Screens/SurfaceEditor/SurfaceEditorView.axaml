@@ -99,7 +99,7 @@
                     </ItemsControl>
 
                     <shared:SelectionRectangle Name="SelectionRectangle"
-                                               InputElement="{Binding #ZoomBorder}"
+                                               InputElement="{Binding #ContainerZoomBorder}"
                                                SelectionUpdated="SelectionRectangle_OnSelectionUpdated"
                                                BorderBrush="{DynamicResource SystemAccentColor}"
                                                BorderRadius="8"

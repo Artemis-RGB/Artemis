@@ -20,19 +20,11 @@ namespace Artemis.Core.Services;
 /// </summary>
 internal class CoreService : ICoreService
 {
-    private readonly Stopwatch _frameStopWatch;
     private readonly ILogger _logger;
     private readonly PluginSetting<LogEventLevel> _loggingLevel;
-    private readonly IModuleService _moduleService;
     private readonly IPluginManagementService _pluginManagementService;
-    private readonly IProfileService _profileService;
-    private readonly IRgbService _rgbService;
-    private readonly IScriptingService _scriptingService;
-    private readonly List<Exception> _updateExceptions = new();
+    private readonly IRenderService _renderService;
 
-    private int _frames;
-    private DateTime _lastExceptionLog;
-    private DateTime _lastFrameRateSample;
 
     // ReSharper disable UnusedParameter.Local
     public CoreService(IContainer container,
@@ -40,36 +32,49 @@ internal class CoreService : ICoreService
         StorageMigrationService _1, // injected to ensure migration runs early
         ISettingsService settingsService,
         IPluginManagementService pluginManagementService,
-        IRgbService rgbService,
         IProfileService profileService,
         IModuleService moduleService,
-        IScriptingService scriptingService)
+        IScriptingService scriptingService,
+        IRenderService renderService)
     {
         Constants.CorePlugin.Container = container;
 
         _logger = logger;
         _pluginManagementService = pluginManagementService;
-        _rgbService = rgbService;
-        _profileService = profileService;
-        _moduleService = moduleService;
-        _scriptingService = scriptingService;
+        _renderService = renderService;
         _loggingLevel = settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Debug);
-        _frameStopWatch = new Stopwatch();
-
-        _rgbService.Surface.Updating += SurfaceOnUpdating;
         _loggingLevel.SettingChanged += (sender, args) => ApplyLoggingLevel();
     }
+   
+    public bool IsElevated { get; set; }
 
-    // ReSharper restore UnusedParameter.Local
+    public bool IsInitialized { get; set; }
 
-    protected virtual void OnFrameRendering(FrameRenderingEventArgs e)
+    public void Initialize()
     {
-        FrameRendering?.Invoke(this, e);
-    }
+        if (IsInitialized)
+            throw new ArtemisCoreException("Cannot initialize the core as it is already initialized.");
 
-    protected virtual void OnFrameRendered(FrameRenderedEventArgs e)
-    {
-        FrameRendered?.Invoke(this, e);
+        _logger.Information("Initializing Artemis Core version {CurrentVersion}", Constants.CurrentVersion);
+        _logger.Information("Startup arguments: {StartupArguments}", Constants.StartupArguments);
+        _logger.Information("Elevated permissions: {IsElevated}", IsElevated);
+        _logger.Information("Stopwatch high resolution: {IsHighResolution}", Stopwatch.IsHighResolution);
+
+        ApplyLoggingLevel();
+
+        ProcessMonitor.Start();
+
+        // Don't remove even if it looks useless
+        // Just this line should prevent a certain someone from removing HidSharp as an unused dependency as well
+        Version? hidSharpVersion = Assembly.GetAssembly(typeof(HidDevice))!.GetName().Version;
+        _logger.Debug("Forcing plugins to use HidSharp {HidSharpVersion}", hidSharpVersion);
+
+        // Initialize the services
+        _pluginManagementService.CopyBuiltInPlugins();
+        _pluginManagementService.LoadPlugins(IsElevated);
+        _renderService.Initialize();
+        
+        OnInitialized();
     }
 
     private void ApplyLoggingLevel()
@@ -98,131 +103,11 @@ internal class CoreService : ICoreService
         }
     }
 
-    private void SurfaceOnUpdating(UpdatingEventArgs args)
-    {
-        if (_rgbService.IsRenderPaused)
-            return;
-
-        if (_rgbService.FlushLeds)
-        {
-            _rgbService.FlushLeds = false;
-            _rgbService.Surface.Update(true);
-            return;
-        }
-
-        try
-        {
-            _frameStopWatch.Restart();
-
-            foreach (GlobalScript script in _scriptingService.GlobalScripts)
-                script.OnCoreUpdating(args.DeltaTime);
-
-            _moduleService.UpdateActiveModules(args.DeltaTime);
-            SKTexture texture = _rgbService.OpenRender();
-            SKCanvas canvas = texture.Surface.Canvas;
-            canvas.Save();
-            if (Math.Abs(texture.RenderScale - 1) > 0.001)
-                canvas.Scale(texture.RenderScale);
-            canvas.Clear(new SKColor(0, 0, 0));
-
-            if (!ProfileRenderingDisabled)
-            {
-                _profileService.UpdateProfiles(args.DeltaTime);
-                _profileService.RenderProfiles(canvas);
-            }
-
-            OnFrameRendering(new FrameRenderingEventArgs(canvas, args.DeltaTime, _rgbService.Surface));
-            canvas.RestoreToCount(-1);
-            canvas.Flush();
-
-            OnFrameRendered(new FrameRenderedEventArgs(texture, _rgbService.Surface));
-
-            foreach (GlobalScript script in _scriptingService.GlobalScripts)
-                script.OnCoreUpdated(args.DeltaTime);
-        }
-        catch (Exception e)
-        {
-            _updateExceptions.Add(e);
-        }
-        finally
-        {
-            _rgbService.CloseRender();
-            _frameStopWatch.Stop();
-            _frames++;
-
-            if ((DateTime.Now - _lastFrameRateSample).TotalSeconds >= 1)
-            {
-                FrameRate = _frames;
-                _frames = 0;
-                _lastFrameRateSample = DateTime.Now;
-            }
-
-            FrameTime = _frameStopWatch.Elapsed;
-
-            LogUpdateExceptions();
-        }
-    }
-
-    private void LogUpdateExceptions()
-    {
-        // Only log update exceptions every 10 seconds to avoid spamming the logs
-        if (DateTime.Now - _lastExceptionLog < TimeSpan.FromSeconds(10))
-            return;
-        _lastExceptionLog = DateTime.Now;
-
-        if (!_updateExceptions.Any())
-            return;
-
-        // Group by stack trace, that should gather up duplicate exceptions
-        foreach (IGrouping<string?, Exception> exceptions in _updateExceptions.GroupBy(e => e.StackTrace))
-            _logger.Warning(exceptions.First(), "Exception was thrown {count} times during update in the last 10 seconds", exceptions.Count());
-
-        // When logging is finished start with a fresh slate
-        _updateExceptions.Clear();
-    }
+    public event EventHandler? Initialized;
 
     private void OnInitialized()
     {
         IsInitialized = true;
         Initialized?.Invoke(this, EventArgs.Empty);
     }
-
-    public int FrameRate { get; private set; }
-    public TimeSpan FrameTime { get; private set; }
-    public bool ProfileRenderingDisabled { get; set; }
-    public bool IsElevated { get; set; }
-
-    public bool IsInitialized { get; set; }
-
-    public void Initialize()
-    {
-        if (IsInitialized)
-            throw new ArtemisCoreException("Cannot initialize the core as it is already initialized.");
-
-        _logger.Information("Initializing Artemis Core version {CurrentVersion}", Constants.CurrentVersion);
-        _logger.Information("Startup arguments: {StartupArguments}", Constants.StartupArguments);
-        _logger.Information("Elevated permissions: {IsElevated}", IsElevated);
-        _logger.Information("Stopwatch high resolution: {IsHighResolution}", Stopwatch.IsHighResolution);
-
-        ApplyLoggingLevel();
-
-        ProcessMonitor.Start();
-
-        // Don't remove even if it looks useless
-        // Just this line should prevent a certain someone from removing HidSharp as an unused dependency as well
-        Version? hidSharpVersion = Assembly.GetAssembly(typeof(HidDevice))!.GetName().Version;
-        _logger.Debug("Forcing plugins to use HidSharp {HidSharpVersion}", hidSharpVersion);
-
-        // Initialize the services
-        _pluginManagementService.CopyBuiltInPlugins();
-        _pluginManagementService.LoadPlugins(IsElevated);
-
-        _rgbService.ApplyPreferredGraphicsContext(Constants.StartupArguments.Contains("--force-software-render"));
-        _rgbService.SetRenderPaused(false);
-        OnInitialized();
-    }
-
-    public event EventHandler? Initialized;
-    public event EventHandler<FrameRenderingEventArgs>? FrameRendering;
-    public event EventHandler<FrameRenderedEventArgs>? FrameRendered;
 }

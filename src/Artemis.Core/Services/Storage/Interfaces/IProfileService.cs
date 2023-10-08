@@ -41,6 +41,11 @@ public interface IProfileService : IArtemisService
     /// Gets or sets a value indicating whether the currently focused profile should receive updates.
     /// </summary>
     bool UpdateFocusProfile { get; set; }
+    
+    /// <summary>
+    ///     Gets or sets whether profiles are rendered each frame by calling their Render method
+    /// </summary>
+    bool ProfileRenderingDisabled { get; set; }
 
     /// <summary>
     ///     Creates a copy of the provided profile configuration.

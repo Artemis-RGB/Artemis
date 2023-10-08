@@ -18,18 +18,15 @@ public class DeviceSettingsViewModel : ActivatableViewModelBase
     private readonly IDeviceService _deviceService;
     private readonly DevicesTabViewModel _devicesTabViewModel;
     private readonly IDeviceVmFactory _deviceVmFactory;
-    private readonly IRgbService _rgbService;
     private readonly IWindowService _windowService;
     private bool _togglingDevice;
 
-    public DeviceSettingsViewModel(ArtemisDevice device, DevicesTabViewModel devicesTabViewModel, IDeviceService deviceService, IWindowService windowService, IDeviceVmFactory deviceVmFactory,
-        IRgbService rgbService)
+    public DeviceSettingsViewModel(ArtemisDevice device, DevicesTabViewModel devicesTabViewModel, IDeviceService deviceService, IWindowService windowService, IDeviceVmFactory deviceVmFactory)
     {
         _devicesTabViewModel = devicesTabViewModel;
         _deviceService = deviceService;
         _windowService = windowService;
         _deviceVmFactory = deviceVmFactory;
-        _rgbService = rgbService;
         Device = device;
 
         Type = Device.DeviceType.ToString().Humanize();
@@ -87,7 +84,7 @@ public class DeviceSettingsViewModel : ActivatableViewModelBase
             .ShowAsync();
 
         if (viewModel.MadeChanges)
-            _rgbService.SaveDevice(Device);
+            _deviceService.SaveDevice(Device);
     }
 
     private async Task UpdateIsDeviceEnabled(bool value)
@@ -103,9 +100,9 @@ public class DeviceSettingsViewModel : ActivatableViewModelBase
                 value = !await _devicesTabViewModel.ShowDeviceDisableDialog();
 
             if (value)
-                _rgbService.EnableDevice(Device);
+                _deviceService.EnableDevice(Device);
             else
-                _rgbService.DisableDevice(Device);
+                _deviceService.DisableDevice(Device);
 
             this.RaisePropertyChanged(nameof(IsDeviceEnabled));
             SaveDevice();
@@ -118,6 +115,6 @@ public class DeviceSettingsViewModel : ActivatableViewModelBase
 
     private void SaveDevice()
     {
-        _rgbService.SaveDevice(Device);
+        _deviceService.SaveDevice(Device);
     }
 }

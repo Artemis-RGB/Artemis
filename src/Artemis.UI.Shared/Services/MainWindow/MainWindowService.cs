@@ -10,6 +10,9 @@ internal class MainWindowService : IMainWindowService
     /// <inheritdoc />
     public bool IsMainWindowOpen { get; private set; }
     
+    /// <inheritdoc />
+    public bool IsMainWindowFocused { get; private set; }
+    
     protected virtual void OnMainWindowOpened()
     {
         MainWindowOpened?.Invoke(this, EventArgs.Empty);
@@ -24,11 +27,13 @@ internal class MainWindowService : IMainWindowService
     protected virtual void OnMainWindowFocused()
     {
         MainWindowFocused?.Invoke(this, EventArgs.Empty);
+        IsMainWindowFocused = true;
     }
 
     protected virtual void OnMainWindowUnfocused()
     {
         MainWindowUnfocused?.Invoke(this, EventArgs.Empty);
+        IsMainWindowFocused = false;
     }
 
     private void SyncWithManager()

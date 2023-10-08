@@ -23,8 +23,8 @@ public class ProfileTreeViewModel : TreeItemViewModel
     private ObservableAsPropertyHelper<bool>? _keyBindingsEnabled;
     private TreeItemViewModel? _selectedChild;
 
-    public ProfileTreeViewModel(IWindowService windowService, IRgbService rgbService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
-        : base(null, null, windowService, rgbService, profileEditorService, profileEditorVmFactory)
+    public ProfileTreeViewModel(IWindowService windowService, IDeviceService deviceService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
+        : base(null, null, windowService, deviceService, profileEditorService, profileEditorVmFactory)
     {
         this.WhenActivated(d =>
         {
@@ -46,7 +46,7 @@ public class ProfileTreeViewModel : TreeItemViewModel
             _focusNone = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.None).ToProperty(this, vm => vm.FocusNone).DisposeWith(d);
             _focusFolder = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.Folder).ToProperty(this, vm => vm.FocusFolder).DisposeWith(d);
             _focusSelection = profileEditorService.FocusMode.Select(f => f == ProfileEditorFocusMode.Selection).ToProperty(this, vm => vm.FocusSelection).DisposeWith(d);
-            _keyBindingsEnabled = Shared.UI.KeyBindingsEnabled.ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
+            _keyBindingsEnabled = Shared.UI.CurrentKeyBindingsEnabled.ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
         });
 
         ClearSelection = ReactiveCommand.Create(() => profileEditorService.ChangeCurrentProfileElement(null), this.WhenAnyValue(vm => vm.KeyBindingsEnabled));

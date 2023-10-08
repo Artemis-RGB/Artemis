@@ -14,17 +14,17 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
 public class LayerTreeItemViewModel : TreeItemViewModel
 {
-    private readonly IRgbService _rgbService;
+    private readonly IDeviceService _deviceService;
 
     public LayerTreeItemViewModel(TreeItemViewModel? parent,
         Layer layer,
         IWindowService windowService,
         IProfileEditorService profileEditorService,
-        IRgbService rgbService,
+        IDeviceService deviceService,
         IProfileEditorVmFactory profileEditorVmFactory)
-        : base(parent, layer, windowService, rgbService, profileEditorService, profileEditorVmFactory)
+        : base(parent, layer, windowService, deviceService, profileEditorService, profileEditorVmFactory)
     {
-        _rgbService = rgbService;
+        _deviceService = deviceService;
         Layer = layer;
     }
 
@@ -43,7 +43,7 @@ public class LayerTreeItemViewModel : TreeItemViewModel
 
         Layer copied = new(Layer.Profile, Layer.Parent, copy, true);
         ProfileEditorService.ExecuteCommand(new AddProfileElement(copied, Layer.Parent, Layer.Order - 1));
-        Layer.Profile.PopulateLeds(_rgbService.EnabledDevices);
+        Layer.Profile.PopulateLeds(_deviceService.EnabledDevices);
     }
 
     protected override async Task ExecuteCopy()
@@ -65,7 +65,7 @@ public class LayerTreeItemViewModel : TreeItemViewModel
             pasted.Name = parent.GetNewLayerName(pasted.Name + " - copy");
 
         ProfileEditorService.ExecuteCommand(new AddProfileElement(pasted, parent, Layer.Order - 1));
-        Layer.Profile.PopulateLeds(_rgbService.EnabledDevices);
+        Layer.Profile.PopulateLeds(_deviceService.EnabledDevices);
     }
 
     /// <inheritdoc />

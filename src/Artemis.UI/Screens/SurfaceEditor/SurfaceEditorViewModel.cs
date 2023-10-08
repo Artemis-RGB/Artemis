@@ -21,8 +21,8 @@ namespace Artemis.UI.Screens.SurfaceEditor;
 public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
 {
     private readonly IDeviceService _deviceService;
+    private readonly IRenderService _renderService;
     private readonly IDeviceVmFactory _deviceVmFactory;
-    private readonly IRgbService _rgbService;
     private readonly ISettingsService _settingsService;
     private readonly ISurfaceVmFactory _surfaceVmFactory;
     private readonly IWindowService _windowService;
@@ -33,23 +33,23 @@ public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
     private bool _saving;
 
     public SurfaceEditorViewModel(ICoreService coreService,
-        IRgbService rgbService,
         ISurfaceVmFactory surfaceVmFactory,
         ISettingsService settingsService,
         IDeviceVmFactory deviceVmFactory,
         IWindowService windowService,
-        IDeviceService deviceService)
+        IDeviceService deviceService,
+        IRenderService renderService)
     {
-        _rgbService = rgbService;
         _surfaceVmFactory = surfaceVmFactory;
         _settingsService = settingsService;
         _deviceVmFactory = deviceVmFactory;
         _windowService = windowService;
         _deviceService = deviceService;
+        _renderService = renderService;
 
         DisplayName = "Surface Editor";
-        SurfaceDeviceViewModels = new ObservableCollection<SurfaceDeviceViewModel>(rgbService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => surfaceVmFactory.SurfaceDeviceViewModel(d, this)));
-        ListDeviceViewModels = new ObservableCollection<ListDeviceViewModel>(rgbService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => surfaceVmFactory.ListDeviceViewModel(d, this)));
+        SurfaceDeviceViewModels = new ObservableCollection<SurfaceDeviceViewModel>(deviceService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => surfaceVmFactory.SurfaceDeviceViewModel(d, this)));
+        ListDeviceViewModels = new ObservableCollection<ListDeviceViewModel>(deviceService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => surfaceVmFactory.ListDeviceViewModel(d, this)));
 
         AutoArrange = ReactiveCommand.CreateFromTask(ExecuteAutoArrange);
         IdentifyDevice = ReactiveCommand.Create<ArtemisDevice>(ExecuteIdentifyDevice);
@@ -61,14 +61,14 @@ public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
 
         this.WhenActivated(d =>
         {
-            coreService.FrameRendering += CoreServiceOnFrameRendering;
-            _rgbService.DeviceAdded += RgbServiceOnDeviceAdded;
-            _rgbService.DeviceRemoved += RgbServiceOnDeviceRemoved;
+            _renderService.FrameRendering += RenderServiceOnFrameRendering;
+            _deviceService.DeviceAdded += DeviceServiceOnDeviceAdded;
+            _deviceService.DeviceRemoved += DeviceServiceOnDeviceRemoved;
             Disposable.Create(() =>
             {
-                coreService.FrameRendering -= CoreServiceOnFrameRendering;
-                _rgbService.DeviceAdded -= RgbServiceOnDeviceAdded;
-                _rgbService.DeviceRemoved -= RgbServiceOnDeviceRemoved;
+                _renderService.FrameRendering -= RenderServiceOnFrameRendering;
+                _deviceService.DeviceAdded -= DeviceServiceOnDeviceAdded;
+                _deviceService.DeviceRemoved -= DeviceServiceOnDeviceRemoved;
             }).DisposeWith(d);
         });
     }
@@ -135,7 +135,7 @@ public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
             try
             {
                 _saving = true;
-                _rgbService.SaveDevices();
+                _deviceService.SaveDevices();
             }
             catch (Exception e)
             {
@@ -166,7 +166,7 @@ public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
             surfaceDeviceViewModel.UpdateMouseDrag(mousePosition, round, ignoreOverlap);
     }
 
-    private void RgbServiceOnDeviceAdded(object? sender, DeviceEventArgs e)
+    private void DeviceServiceOnDeviceAdded(object? sender, DeviceEventArgs e)
     {
         if (!e.Device.IsEnabled)
             return;
@@ -177,7 +177,7 @@ public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
         ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
     }
 
-    private void RgbServiceOnDeviceRemoved(object? sender, DeviceEventArgs e)
+    private void DeviceServiceOnDeviceRemoved(object? sender, DeviceEventArgs e)
     {
         SurfaceDeviceViewModel? surfaceVm = SurfaceDeviceViewModels.FirstOrDefault(vm => vm.Device == e.Device);
         ListDeviceViewModel? listVm = ListDeviceViewModels.FirstOrDefault(vm => vm.Device == e.Device);
@@ -193,10 +193,10 @@ public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
         if (!confirmed)
             return;
 
-        _rgbService.AutoArrangeDevices();
+        _deviceService.AutoArrangeDevices();
     }
 
-    private void CoreServiceOnFrameRendering(object? sender, FrameRenderingEventArgs e)
+    private void RenderServiceOnFrameRendering(object? sender, FrameRenderingEventArgs e)
     {
         // Animate the overlay because I'm vain
         if (ColorDevices && _overlayOpacity < 1)
@@ -255,7 +255,7 @@ public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
 
         ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
 
-        _rgbService.SaveDevices();
+        _deviceService.SaveDevices();
     }
 
     private void ExecuteBringForward(ArtemisDevice device)
@@ -273,7 +273,7 @@ public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
 
         ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
 
-        _rgbService.SaveDevices();
+        _deviceService.SaveDevices();
     }
 
     private void ExecuteSendToBack(ArtemisDevice device)
@@ -288,7 +288,7 @@ public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
 
         ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
 
-        _rgbService.SaveDevices();
+        _deviceService.SaveDevices();
     }
 
     private void ExecuteSendBackward(ArtemisDevice device)
@@ -305,7 +305,7 @@ public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
 
         ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
 
-        _rgbService.SaveDevices();
+        _deviceService.SaveDevices();
     }
 
     #endregion
