@@ -14,7 +14,7 @@ namespace Artemis.UI.Screens.Debugger.Performance;
 
 public class PerformanceDebugViewModel : ActivatableViewModelBase
 {
-    private readonly IRenderService _renderService;
+    private readonly ICoreService _coreService;
     private readonly IPluginManagementService _pluginManagementService;
     private readonly DispatcherTimer _updateTimer;
     private double _currentFps;
@@ -22,9 +22,9 @@ public class PerformanceDebugViewModel : ActivatableViewModelBase
     private int _renderHeight;
     private int _renderWidth;
 
-    public PerformanceDebugViewModel(IRenderService renderService, IPluginManagementService pluginManagementService)
+    public PerformanceDebugViewModel(ICoreService coreService, IPluginManagementService pluginManagementService)
     {
-        _renderService = renderService;
+        _coreService = coreService;
         _pluginManagementService = pluginManagementService;
         _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Background, (_, _) => Update());
 
@@ -87,12 +87,12 @@ public class PerformanceDebugViewModel : ActivatableViewModelBase
     private void HandleActivation()
     {
         Renderer = Constants.ManagedGraphicsContext != null ? Constants.ManagedGraphicsContext.GetType().Name : "Software";
-        _renderService.FrameRendered += RenderServiceOnFrameRendered;
+        _coreService.FrameRendered += CoreServiceOnFrameRendered;
     }
 
     private void HandleDeactivation()
     {
-        _renderService.FrameRendered -= RenderServiceOnFrameRendered;
+        _coreService.FrameRendered -= CoreServiceOnFrameRendered;
     }
 
     private void PopulateItems()
@@ -116,9 +116,9 @@ public class PerformanceDebugViewModel : ActivatableViewModelBase
             viewModel.Update();
     }
 
-    private void RenderServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
+    private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
     {
-        CurrentFps = _renderService.FrameRate;
+        CurrentFps = _coreService.FrameRate;
         SKImageInfo bitmapInfo = e.Texture.ImageInfo;
 
         RenderHeight = bitmapInfo.Height;

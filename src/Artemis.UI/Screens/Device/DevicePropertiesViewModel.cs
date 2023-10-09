@@ -17,7 +17,7 @@ public class DevicePropertiesViewModel : DialogViewModelBase<object>
     private readonly IDeviceVmFactory _deviceVmFactory;
     private ArtemisDevice _device;
 
-    public DevicePropertiesViewModel(ArtemisDevice device, IRenderService renderService, IDeviceService deviceService, IDeviceVmFactory deviceVmFactory)
+    public DevicePropertiesViewModel(ArtemisDevice device, ICoreService coreService, IRgbService rgbService, IDeviceVmFactory deviceVmFactory)
     {
         _deviceVmFactory = deviceVmFactory;
         _device = device;
@@ -28,15 +28,10 @@ public class DevicePropertiesViewModel : DialogViewModelBase<object>
         AddTabs();
         this.WhenActivated(d =>
         {
-            deviceService.DeviceAdded += DeviceServiceOnDeviceAdded;
-            deviceService.DeviceRemoved += DeviceServiceOnDeviceRemoved;
-            renderService.FrameRendering += RenderServiceOnFrameRendering;
-            Disposable.Create(() =>
-            {
-                deviceService.DeviceAdded -= DeviceServiceOnDeviceAdded;
-                deviceService.DeviceRemoved -= DeviceServiceOnDeviceRemoved;
-                renderService.FrameRendering -= RenderServiceOnFrameRendering;
-            }).DisposeWith(d);
+            rgbService.DeviceAdded += RgbServiceOnDeviceAdded;
+            rgbService.DeviceRemoved += RgbServiceOnDeviceRemoved;
+            coreService.FrameRendering += CoreServiceOnFrameRendering;
+            Disposable.Create(() => coreService.FrameRendering -= CoreServiceOnFrameRendering).DisposeWith(d);
         });
 
         ClearSelectedLeds = ReactiveCommand.Create(ExecuteClearSelectedLeds);
@@ -52,7 +47,7 @@ public class DevicePropertiesViewModel : DialogViewModelBase<object>
     public ObservableCollection<ActivatableViewModelBase> Tabs { get; }
     public ReactiveCommand<Unit, Unit> ClearSelectedLeds { get; }
 
-    private void DeviceServiceOnDeviceAdded(object? sender, DeviceEventArgs e)
+    private void RgbServiceOnDeviceAdded(object? sender, DeviceEventArgs e)
     {
         if (e.Device.Identifier != Device.Identifier || Device == e.Device)
             return;
@@ -61,7 +56,7 @@ public class DevicePropertiesViewModel : DialogViewModelBase<object>
         AddTabs();
     }
 
-    private void DeviceServiceOnDeviceRemoved(object? sender, DeviceEventArgs e)
+    private void RgbServiceOnDeviceRemoved(object? sender, DeviceEventArgs e)
     {
         Tabs.Clear();
         SelectedLeds.Clear();
@@ -81,7 +76,7 @@ public class DevicePropertiesViewModel : DialogViewModelBase<object>
         SelectedLeds.Clear();
     }
 
-    private void RenderServiceOnFrameRendering(object? sender, FrameRenderingEventArgs e)
+    private void CoreServiceOnFrameRendering(object? sender, FrameRenderingEventArgs e)
     {
         if (!SelectedLeds.Any())
             return;

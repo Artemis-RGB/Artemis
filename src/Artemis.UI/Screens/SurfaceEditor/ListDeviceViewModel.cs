@@ -15,16 +15,16 @@ namespace Artemis.UI.Screens.SurfaceEditor;
 public class ListDeviceViewModel : ViewModelBase
 {
     private static readonly Random Random = new();
+    private readonly IRgbService _rgbService;
     private readonly IWindowService _windowService;
-    private readonly IDeviceService _deviceService;
 
     private SKColor _color;
     private bool _isSelected;
 
-    public ListDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel, IWindowService windowService, IDeviceService deviceService)
+    public ListDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel, IWindowService windowService, IRgbService rgbService)
     {
         _windowService = windowService;
-        _deviceService = deviceService;
+        _rgbService = rgbService;
 
         Device = device;
         SurfaceEditorViewModel = surfaceEditorViewModel;
@@ -62,6 +62,6 @@ public class ListDeviceViewModel : ViewModelBase
             .ShowAsync();
 
         if (viewModel.MadeChanges)
-            _deviceService.SaveDevice(Device);
+            _rgbService.SaveDevice(Device);
     }
 }

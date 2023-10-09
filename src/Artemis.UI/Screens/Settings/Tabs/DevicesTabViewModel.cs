@@ -19,15 +19,15 @@ namespace Artemis.UI.Screens.Settings;
 public class DevicesTabViewModel : RoutableScreen
 {
     private readonly IDeviceVmFactory _deviceVmFactory;
-    private readonly IDeviceService _deviceService;
+    private readonly IRgbService _rgbService;
     private readonly IWindowService _windowService;
     private bool _confirmedDisable;
 
-    public DevicesTabViewModel(IDeviceService deviceService, IWindowService windowService, IDeviceVmFactory deviceVmFactory)
+    public DevicesTabViewModel(IRgbService rgbService, IWindowService windowService, IDeviceVmFactory deviceVmFactory)
     {
         DisplayName = "Devices";
 
-        _deviceService = deviceService;
+        _rgbService = rgbService;
         _windowService = windowService;
         _deviceVmFactory = deviceVmFactory;
 
@@ -36,10 +36,10 @@ public class DevicesTabViewModel : RoutableScreen
         {
             GetDevices();
 
-            Observable.FromEventPattern<DeviceEventArgs>(x => _deviceService.DeviceAdded += x, x => _deviceService.DeviceAdded -= x)
+            Observable.FromEventPattern<DeviceEventArgs>(x => rgbService.DeviceAdded += x, x => rgbService.DeviceAdded -= x)
                 .Subscribe(d => AddDevice(d.EventArgs.Device))
                 .DisposeWith(disposables);
-            Observable.FromEventPattern<DeviceEventArgs>(x => _deviceService.DeviceRemoved += x, x => _deviceService.DeviceRemoved -= x)
+            Observable.FromEventPattern<DeviceEventArgs>(x => rgbService.DeviceRemoved += x, x => rgbService.DeviceRemoved -= x)
                 .Subscribe(d => RemoveDevice(d.EventArgs.Device))
                 .DisposeWith(disposables);
         });
@@ -66,7 +66,7 @@ public class DevicesTabViewModel : RoutableScreen
     private void GetDevices()
     {
         Devices.Clear();
-        Dispatcher.UIThread.InvokeAsync(() => { Devices.AddRange(_deviceService.Devices.Select(d => _deviceVmFactory.DeviceSettingsViewModel(d, this))); }, DispatcherPriority.Background);
+        Dispatcher.UIThread.InvokeAsync(() => { Devices.AddRange(_rgbService.Devices.Select(d => _deviceVmFactory.DeviceSettingsViewModel(d, this))); }, DispatcherPriority.Background);
     }
 
     private void AddDevice(ArtemisDevice device)
@@ -81,7 +81,7 @@ public class DevicesTabViewModel : RoutableScreen
     private void RemoveDevice(ArtemisDevice device)
     {
         // If the device was only disabled don't remove it
-        if (_deviceService.Devices.Contains(device))
+        if (_rgbService.Devices.Contains(device))
             return;
 
         DeviceSettingsViewModel? viewModel = Devices.FirstOrDefault(i => i.Device == device);

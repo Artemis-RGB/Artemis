@@ -17,16 +17,20 @@ namespace Artemis.UI.Screens.Device;
 public class DeviceDetectInputViewModel : ContentDialogViewModelBase
 {
     private readonly IInputService _inputService;
+    private readonly ListLedGroup _ledGroup;
     private readonly INotificationService _notificationService;
+    private readonly IRgbService _rgbService;
 
-    public DeviceDetectInputViewModel(ArtemisDevice device, IInputService inputService, INotificationService notificationService, IRenderService renderService)
+    public DeviceDetectInputViewModel(ArtemisDevice device, IInputService inputService, INotificationService notificationService, IRgbService rgbService)
     {
         _inputService = inputService;
         _notificationService = notificationService;
+        _rgbService = rgbService;
+
         Device = device;
 
         // Create a LED group way at the top
-        ListLedGroup ledGroup = new(renderService.Surface, Device.Leds.Select(l => l.RgbLed))
+        _ledGroup = new ListLedGroup(_rgbService.Surface, Device.Leds.Select(l => l.RgbLed))
         {
             Brush = new SolidColorBrush(new Color(255, 255, 0)),
             ZIndex = 999
@@ -42,7 +46,7 @@ public class DeviceDetectInputViewModel : ContentDialogViewModelBase
             Disposable.Create(() =>
             {
                 _inputService.StopIdentify();
-                ledGroup.Detach();
+                _ledGroup.Detach();
             }).DisposeWith(disposables);
         });
     }

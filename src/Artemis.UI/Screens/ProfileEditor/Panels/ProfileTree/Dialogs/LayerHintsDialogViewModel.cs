@@ -15,12 +15,12 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs;
 
 public class LayerHintsDialogViewModel : DialogViewModelBase<bool>
 {
-    private readonly IDeviceService _deviceService;
+    private readonly IRgbService _rgbService;
     private readonly ILayerHintVmFactory _vmFactory;
 
-    public LayerHintsDialogViewModel(Layer layer, IDeviceService deviceService, ILayerHintVmFactory vmFactory)
+    public LayerHintsDialogViewModel(Layer layer, IRgbService rgbService, ILayerHintVmFactory vmFactory)
     {
-        _deviceService = deviceService;
+        _rgbService = rgbService;
         _vmFactory = vmFactory;
 
         Layer = layer;
@@ -49,7 +49,7 @@ public class LayerHintsDialogViewModel : DialogViewModelBase<bool>
 
     public void AutoDetermineHints()
     {
-        Layer.Adapter.DetermineHints(_deviceService.EnabledDevices);
+        Layer.Adapter.DetermineHints(_rgbService.EnabledDevices);
     }
 
     public void AddCategoryHint()

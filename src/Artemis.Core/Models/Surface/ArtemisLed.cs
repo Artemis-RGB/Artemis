@@ -59,13 +59,13 @@ public class ArtemisLed : CorePropertyChanged
 
     internal void CalculateRectangles()
     {
-        Rectangle = RenderScale.CreateScaleCompatibleRect(
+        Rectangle = Utilities.CreateScaleCompatibleRect(
             RgbLed.Boundary.Location.X,
             RgbLed.Boundary.Location.Y,
             RgbLed.Boundary.Size.Width,
             RgbLed.Boundary.Size.Height
         );
-        AbsoluteRectangle = RenderScale.CreateScaleCompatibleRect(
+        AbsoluteRectangle = Utilities.CreateScaleCompatibleRect(
             RgbLed.AbsoluteBoundary.Location.X,
             RgbLed.AbsoluteBoundary.Location.Y,
             RgbLed.AbsoluteBoundary.Size.Width,

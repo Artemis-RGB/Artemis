@@ -17,16 +17,16 @@ namespace Artemis.UI.Screens.SurfaceEditor;
 
 public class SurfaceDeviceViewModel : ActivatableViewModelBase
 {
-    private readonly IDeviceService _deviceService;
+    private readonly IRgbService _rgbService;
     private readonly ISettingsService _settingsService;
     private readonly IWindowService _windowService;
     private double _dragOffsetX;
     private double _dragOffsetY;
     private bool _isSelected;
 
-    public SurfaceDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel, IDeviceService deviceService, ISettingsService settingsService, IWindowService windowService)
+    public SurfaceDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel, IRgbService rgbService, ISettingsService settingsService, IWindowService windowService)
     {
-        _deviceService = deviceService;
+        _rgbService = rgbService;
         _settingsService = settingsService;
         _windowService = windowService;
 
@@ -100,7 +100,7 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
 
         IEnumerable<SKRect> own = Device.Leds
             .Select(l => SKRect.Create(l.Rectangle.Left + x, l.Rectangle.Top + y, l.Rectangle.Width, l.Rectangle.Height));
-        IEnumerable<SKRect> others = _deviceService.EnabledDevices
+        IEnumerable<SKRect> others = _rgbService.EnabledDevices
             .Where(d => d != Device && d.IsEnabled)
             .SelectMany(d => d.Leds)
             .Select(l => SKRect.Create(l.Rectangle.Left + l.Device.X, l.Rectangle.Top + l.Device.Y, l.Rectangle.Width, l.Rectangle.Height));
@@ -120,6 +120,6 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
             .ShowAsync();
 
         if (viewModel.MadeChanges)
-            _deviceService.SaveDevice(Device);
+            _rgbService.SaveDevice(Device);
     }
 }

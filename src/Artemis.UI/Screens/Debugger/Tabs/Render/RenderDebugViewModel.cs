@@ -11,7 +11,7 @@ namespace Artemis.UI.Screens.Debugger.Render;
 
 public class RenderDebugViewModel : ActivatableViewModelBase
 {
-    private readonly IRenderService _renderService;
+    private readonly ICoreService _coreService;
     private double _currentFps;
 
     private Bitmap? _currentFrame;
@@ -20,9 +20,9 @@ public class RenderDebugViewModel : ActivatableViewModelBase
     private int _renderHeight;
     private int _renderWidth;
 
-    public RenderDebugViewModel(IRenderService renderService)
+    public RenderDebugViewModel(ICoreService coreService)
     {
-        _renderService = renderService;
+        _coreService = coreService;
 
         DisplayName = "Rendering";
 
@@ -66,17 +66,17 @@ public class RenderDebugViewModel : ActivatableViewModelBase
     private void HandleActivation()
     {
         Renderer = Constants.ManagedGraphicsContext != null ? Constants.ManagedGraphicsContext.GetType().Name : "Software";
-        _renderService.FrameRendered += RenderServiceOnFrameRendered;
+        _coreService.FrameRendered += CoreServiceOnFrameRendered;
     }
 
     private void HandleDeactivation()
     {
-        _renderService.FrameRendered -= RenderServiceOnFrameRendered;
+        _coreService.FrameRendered -= CoreServiceOnFrameRendered;
     }
 
-    private void RenderServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
+    private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
     {
-        CurrentFps = _renderService.FrameRate;
+        CurrentFps = _coreService.FrameRate;
         using SKImage skImage = e.Texture.Surface.Snapshot();
         SKImageInfo bitmapInfo = e.Texture.ImageInfo;
 

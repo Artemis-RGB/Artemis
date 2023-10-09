@@ -28,7 +28,6 @@ public class ProfileEditorViewModel : RoutableScreen<ProfileEditorViewModelParam
     private readonly IProfileEditorService _profileEditorService;
     private readonly IProfileService _profileService;
     private readonly ISettingsService _settingsService;
-    private readonly IMainWindowService _mainWindowService;
     private readonly SourceList<IToolViewModel> _tools;
     private ObservableAsPropertyHelper<ProfileEditorHistory?>? _history;
     private ProfileConfiguration? _profileConfiguration;
@@ -45,13 +44,11 @@ public class ProfileEditorViewModel : RoutableScreen<ProfileEditorViewModelParam
         DisplayConditionScriptViewModel displayConditionScriptViewModel,
         StatusBarViewModel statusBarViewModel,
         IEnumerable<IToolViewModel> toolViewModels,
-        IMainWindowService mainWindowService,
-        IInputService inputService)
+        IMainWindowService mainWindowService)
     {
         _profileService = profileService;
         _profileEditorService = profileEditorService;
         _settingsService = settingsService;
-        _mainWindowService = mainWindowService;
 
         _tools = new SourceList<IToolViewModel>();
         _tools.AddRange(toolViewModels);
@@ -75,13 +72,11 @@ public class ProfileEditorViewModel : RoutableScreen<ProfileEditorViewModelParam
             _history = profileEditorService.History.ToProperty(this, vm => vm.History).DisposeWith(d);
             _suspendedEditing = profileEditorService.SuspendedEditing.ToProperty(this, vm => vm.SuspendedEditing).DisposeWith(d);
 
-            inputService.KeyboardKeyDown += InputServiceOnKeyboardKeyDown;
             mainWindowService.MainWindowFocused += MainWindowServiceOnMainWindowFocused;
             mainWindowService.MainWindowUnfocused += MainWindowServiceOnMainWindowUnfocused;
 
             Disposable.Create(() =>
             {
-                inputService.KeyboardKeyDown -= InputServiceOnKeyboardKeyDown;
                 mainWindowService.MainWindowFocused -= MainWindowServiceOnMainWindowFocused;
                 mainWindowService.MainWindowUnfocused -= MainWindowServiceOnMainWindowUnfocused;
                 foreach (IToolViewModel toolViewModel in _tools.Items)
@@ -142,33 +137,6 @@ public class ProfileEditorViewModel : RoutableScreen<ProfileEditorViewModelParam
             foreach (IToolViewModel toolViewModel in list.Where(t => t.IsExclusive && t != changed))
                 toolViewModel.IsSelected = false;
         });
-    }
-
-    private void InputServiceOnKeyboardKeyDown(object? sender, ArtemisKeyboardKeyEventArgs e)
-    {
-        if (!Shared.UI.KeyBindingsEnabled || !_mainWindowService.IsMainWindowFocused)
-            return;
-        
-        if (e.Modifiers == KeyboardModifierKey.Control && e.Key == KeyboardKey.Z)
-            History?.Undo.Execute().Subscribe();
-        else if (e.Modifiers == KeyboardModifierKey.Control && e.Key == KeyboardKey.Y)
-            History?.Redo.Execute().Subscribe();
-        else if (e.Modifiers == KeyboardModifierKey.None && e.Key == KeyboardKey.F5)
-            ToggleSuspend.Execute().Subscribe();
-        else if (e.Modifiers == KeyboardModifierKey.Shift && e.Key == KeyboardKey.F5)
-            ToggleAutoSuspend.Execute().Subscribe();
-        else if (e.Modifiers == KeyboardModifierKey.None && e.Key == KeyboardKey.Space)
-            PropertiesViewModel?.PlaybackViewModel.TogglePlay.Execute().Subscribe();
-        else if (e.Modifiers == KeyboardModifierKey.Shift && e.Key == KeyboardKey.Space)
-            PropertiesViewModel?.PlaybackViewModel.PlayFromStart.Execute().Subscribe();
-        else if (e.Modifiers == KeyboardModifierKey.None && e.Key == KeyboardKey.F)
-            (TitleBarViewModel as ProfileEditorTitleBarViewModel)?.MenuBarViewModel.CycleFocusMode.Execute().Subscribe();
-        else
-        {
-            IToolViewModel? tool = Tools.FirstOrDefault(t => t.Hotkey != null && t.Hotkey.MatchesEventArgs(e));
-            if (tool != null)
-                tool.IsSelected = true;
-        }
     }
 
     private void MainWindowServiceOnMainWindowFocused(object? sender, EventArgs e)

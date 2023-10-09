@@ -14,17 +14,17 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
 public class FolderTreeItemViewModel : TreeItemViewModel
 {
-    private readonly IDeviceService _deviceService;
+    private readonly IRgbService _rgbService;
 
     public FolderTreeItemViewModel(TreeItemViewModel? parent,
         Folder folder,
         IWindowService windowService,
-        IDeviceService deviceService,
         IProfileEditorService profileEditorService,
+        IRgbService rgbService,
         IProfileEditorVmFactory profileEditorVmFactory)
-        : base(parent, folder, windowService, deviceService, profileEditorService, profileEditorVmFactory)
+        : base(parent, folder, windowService, rgbService, profileEditorService, profileEditorVmFactory)
     {
-        _deviceService = deviceService;
+        _rgbService = rgbService;
         Folder = folder;
     }
 
@@ -63,7 +63,7 @@ public class FolderTreeItemViewModel : TreeItemViewModel
             pasted.Name = parent.GetNewFolderName(pasted.Name + " - copy");
 
         ProfileEditorService.ExecuteCommand(new AddProfileElement(pasted, parent, Folder.Order - 1));
-        Folder.Profile.PopulateLeds(_deviceService.EnabledDevices);
+        Folder.Profile.PopulateLeds(_rgbService.EnabledDevices);
     }
 
     private async Task ExecutePasteInto()

@@ -8,11 +8,19 @@
              xmlns:shared="clr-namespace:Artemis.UI.Shared.Services.ProfileEditor;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileEditorView"
-             x:DataType="profileEditor:ProfileEditorViewModel"
-             Focusable="True">
+             x:DataType="profileEditor:ProfileEditorViewModel">
     <UserControl.Resources>
         <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter" />
     </UserControl.Resources>
+    <UserControl.KeyBindings>
+        <KeyBinding Command="{CompiledBinding History.Undo}" Gesture="Ctrl+Z" />
+        <KeyBinding Command="{CompiledBinding History.Redo}" Gesture="Ctrl+Y" />
+        <KeyBinding Command="{CompiledBinding ToggleSuspend}" Gesture="F5" />
+        <KeyBinding Command="{CompiledBinding ToggleAutoSuspend}" Gesture="Shift+F5" />
+        <KeyBinding Command="{CompiledBinding PropertiesViewModel.PlaybackViewModel.TogglePlay}" Gesture="Space" />
+        <KeyBinding Command="{CompiledBinding PropertiesViewModel.PlaybackViewModel.PlayFromStart}" Gesture="Shift+Space" />
+        <KeyBinding Command="{Binding TitleBarViewModel.MenuBarViewModel.CycleFocusMode}" Gesture="F" />
+    </UserControl.KeyBindings>
     <UserControl.Styles>
         <Style Selector="Border.suspended-editing">
             <Setter Property="Margin" Value="-10" />

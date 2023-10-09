@@ -25,7 +25,7 @@ public class VisualEditorViewModel : ActivatableViewModelBase
     private ObservableAsPropertyHelper<bool>? _suspendedEditing;
     private ReadOnlyObservableCollection<IToolViewModel>? _tools;
 
-    public VisualEditorViewModel(IProfileEditorService profileEditorService, IDeviceService deviceService, IProfileEditorVmFactory vmFactory)
+    public VisualEditorViewModel(IProfileEditorService profileEditorService, IRgbService rgbService, IProfileEditorVmFactory vmFactory)
     {
         _vmFactory = vmFactory;
         _visualizers = new SourceList<IVisualizerViewModel>();
@@ -34,7 +34,7 @@ public class VisualEditorViewModel : ActivatableViewModelBase
             .Bind(out ReadOnlyObservableCollection<IVisualizerViewModel> visualizers)
             .Subscribe();
 
-        Devices = new ObservableCollection<ArtemisDevice>(deviceService.EnabledDevices.OrderBy(d => d.ZIndex));
+        Devices = new ObservableCollection<ArtemisDevice>(rgbService.EnabledDevices.OrderBy(d => d.ZIndex));
         Visualizers = visualizers;
 
         this.WhenActivated(d =>

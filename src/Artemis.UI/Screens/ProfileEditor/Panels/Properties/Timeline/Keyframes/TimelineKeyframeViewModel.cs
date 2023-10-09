@@ -54,12 +54,10 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
         Copy = ReactiveCommand.CreateFromTask(ExecuteCopy);
         Paste = ReactiveCommand.CreateFromTask(ExecutePaste);
         Delete = ReactiveCommand.Create(ExecuteDelete);
-        SelectEasingFunction = ReactiveCommand.Create<Easings.Functions>(ExecuteSelectEasingFunction);
     }
 
     public LayerPropertyKeyframe<T> LayerPropertyKeyframe { get; }
     public ObservableCollection<TimelineEasingViewModel> EasingViewModels { get; }
-    
 
     public double X
     {
@@ -95,8 +93,7 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
     public ReactiveCommand<Unit, Unit> Copy { get; }
     public ReactiveCommand<Unit, Unit> Paste { get; }
     public ReactiveCommand<Unit, Unit> Delete { get; }
-    public ReactiveCommand<Easings.Functions, Unit> SelectEasingFunction { get; }
-    
+
     public bool IsSelected => _isSelected?.Value ?? false;
     public TimeSpan Position => LayerPropertyKeyframe.Position;
     public ILayerPropertyKeyframe Keyframe => LayerPropertyKeyframe;
@@ -258,10 +255,10 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
 
         EasingViewModels.AddRange(Enum.GetValues(typeof(Easings.Functions))
             .Cast<Easings.Functions>()
-            .Select(e => new TimelineEasingViewModel(e, Keyframe, SelectEasingFunction)));
+            .Select(e => new TimelineEasingViewModel(e, Keyframe)));
     }
 
-    private void ExecuteSelectEasingFunction(Easings.Functions easingFunction)
+    public void SelectEasingFunction(Easings.Functions easingFunction)
     {
         _profileEditorService.ExecuteCommand(new ChangeKeyframeEasing(Keyframe, easingFunction));
     }

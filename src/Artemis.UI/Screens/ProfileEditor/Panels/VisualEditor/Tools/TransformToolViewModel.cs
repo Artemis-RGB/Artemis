@@ -3,13 +3,11 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
-using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia;
-using Avalonia.Input;
 using Material.Icons;
 using ReactiveUI;
 using SkiaSharp;
@@ -97,15 +95,12 @@ public class TransformToolViewModel : ToolViewModel
 
     /// <inheritdoc />
     public override int Order => 3;
-    
-    /// <inheritdoc />
-    public override Hotkey? Hotkey { get; } = new(KeyboardKey.T, KeyboardModifierKey.Control);
 
     /// <inheritdoc />
     public override MaterialIconKind Icon => MaterialIconKind.TransitConnectionVariant;
 
     /// <inheritdoc />
-    public override string ToolTip => "Transform the shape of the current layer (Ctrl+T)";
+    public override string ToolTip => "Transform the shape of the current layer";
 
     public Rect ShapeBounds
     {

@@ -28,7 +28,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
 {
     private readonly IProfileEditorVmFactory _profileEditorVmFactory;
     private readonly IWindowService _windowService;
-    private readonly IDeviceService _deviceService;
+    private readonly IRgbService _rgbService;
     protected readonly IProfileEditorService ProfileEditorService;
     private bool _canPaste;
     private RenderProfileElement? _currentProfileElement;
@@ -41,13 +41,13 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
     protected TreeItemViewModel(TreeItemViewModel? parent,
         ProfileElement? profileElement,
         IWindowService windowService,
-        IDeviceService deviceService,
+        IRgbService rgbService,
         IProfileEditorService profileEditorService,
         IProfileEditorVmFactory profileEditorVmFactory)
     {
         ProfileEditorService = profileEditorService;
         _windowService = windowService;
-        _deviceService = deviceService;
+        _rgbService = rgbService;
         _profileEditorVmFactory = profileEditorVmFactory;
 
         Parent = parent;
@@ -267,7 +267,7 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
         if (ProfileElement is not Layer layer)
             return;
         
-        ProfileEditorService.ExecuteCommand(new ApplyAdaptionHints(layer, _deviceService.EnabledDevices.ToList()));
+        ProfileEditorService.ExecuteCommand(new ApplyAdaptionHints(layer, _rgbService.EnabledDevices.ToList()));
     }
 
     private async void UpdateCanPaste(bool isFlyoutOpen)

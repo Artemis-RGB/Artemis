@@ -1,3 +1,5 @@
+using Avalonia;
+using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor;
@@ -8,4 +10,16 @@ public partial class ProfileEditorView : ReactiveUserControl<ProfileEditorViewMo
     {
         InitializeComponent();
     }
+
+    #region Overrides of Visual
+
+    /// <inheritdoc />
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        Focus();
+    }
+
+    #endregion
+
 }

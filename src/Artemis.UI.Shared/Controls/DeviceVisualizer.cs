@@ -27,8 +27,8 @@ namespace Artemis.UI.Shared;
 /// </summary>
 public class DeviceVisualizer : Control
 {
-    internal static readonly Dictionary<string, RenderTargetBitmap?> BitmapCache = new();
-    private readonly IRenderService _renderService;
+    internal static readonly Dictionary<ArtemisDevice, RenderTargetBitmap?> BitmapCache = new();
+    private readonly ICoreService _coreService;
     private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
 
     private Rect _deviceBounds;
@@ -40,7 +40,7 @@ public class DeviceVisualizer : Control
     /// <inheritdoc />
     public DeviceVisualizer()
     {
-        _renderService = UI.Locator.Resolve<IRenderService>();
+        _coreService = UI.Locator.Resolve<ICoreService>();
         _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
 
         PointerReleased += OnPointerReleased;
@@ -195,6 +195,16 @@ public class DeviceVisualizer : Control
             SetupForDevice();
     }
 
+    private void DevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        Dispatcher.UIThread.Invoke(async () =>
+        {
+            if (Device != null)
+                BitmapCache.Remove(Device);
+            await SetupForDevice();
+        }, DispatcherPriority.Background);
+    }
+
     private void DeviceUpdated(object? sender, EventArgs e)
     {
         Dispatcher.UIThread.Invoke(SetupForDevice, DispatcherPriority.Background);
@@ -241,6 +251,7 @@ public class DeviceVisualizer : Control
     {
         if (Device != null)
         {
+            Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
             Device.DeviceUpdated -= DeviceUpdated;
         }
 
@@ -250,7 +261,7 @@ public class DeviceVisualizer : Control
     /// <inheritdoc />
     protected override void OnAttachedToLogicalTree(LogicalTreeAttachmentEventArgs e)
     {
-        _renderService.FrameRendered += OnFrameRendered;
+        _coreService.FrameRendered += OnFrameRendered;
 
         base.OnAttachedToLogicalTree(e);
     }
@@ -258,7 +269,7 @@ public class DeviceVisualizer : Control
     /// <inheritdoc />
     protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
     {
-        _renderService.FrameRendered -= OnFrameRendered;
+        _coreService.FrameRendered -= OnFrameRendered;
 
         base.OnDetachedFromLogicalTree(e);
     }
@@ -272,6 +283,7 @@ public class DeviceVisualizer : Control
 
         if (_oldDevice != null)
         {
+            _oldDevice.RgbDevice.PropertyChanged -= DevicePropertyChanged;
             _oldDevice.DeviceUpdated -= DeviceUpdated;
         }
 
@@ -282,6 +294,7 @@ public class DeviceVisualizer : Control
         _deviceBounds = MeasureDevice();
         _loading = true;
 
+        Device.RgbDevice.PropertyChanged += DevicePropertyChanged;
         Device.DeviceUpdated += DeviceUpdated;
 
         // Create all the LEDs
@@ -308,15 +321,12 @@ public class DeviceVisualizer : Control
 
     private RenderTargetBitmap? GetDeviceImage(ArtemisDevice device)
     {
-        string? path = device.Layout?.Image?.LocalPath;
-        if (path == null)
-            return null;
-        
-        if (BitmapCache.TryGetValue(path, out RenderTargetBitmap? existingBitmap))
+        if (BitmapCache.TryGetValue(device, out RenderTargetBitmap? existingBitmap))
             return existingBitmap;
-        if (!File.Exists(path))
+
+        if (device.Layout?.Image == null || !File.Exists(device.Layout.Image.LocalPath))
         {
-            BitmapCache[path] = null;
+            BitmapCache[device] = null;
             return null;
         }
 
@@ -325,7 +335,7 @@ public class DeviceVisualizer : Control
         RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) device.RgbDevice.ActualSize.Width * 2, (int) device.RgbDevice.ActualSize.Height * 2));
 
         using DrawingContext context = renderTargetBitmap.CreateDrawingContext();
-        using Bitmap bitmap = new(path);
+        using Bitmap bitmap = new(device.Layout.Image.LocalPath);
         using Bitmap scaledBitmap = bitmap.CreateScaledBitmap(renderTargetBitmap.PixelSize);
 
         context.DrawImage(scaledBitmap, new Rect(scaledBitmap.Size));
@@ -335,7 +345,7 @@ public class DeviceVisualizer : Control
                 deviceVisualizerLed.DrawBitmap(context, 2 * device.Scale);
         }
 
-        BitmapCache[path] = renderTargetBitmap;
+        BitmapCache[device] = renderTargetBitmap;
         return renderTargetBitmap;
     }
 

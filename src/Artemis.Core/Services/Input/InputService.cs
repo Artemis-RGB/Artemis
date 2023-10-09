@@ -9,19 +9,19 @@ namespace Artemis.Core.Services;
 internal class InputService : IInputService
 {
     private readonly ILogger _logger;
-    private readonly IDeviceService _deviceService;
+    private readonly IRgbService _rgbService;
     private ArtemisDevice? _firstKeyboard;
     private ArtemisDevice? _firstMouse;
     private int _keyboardCount;
     private int _mouseCount;
 
-    public InputService(ILogger logger, IDeviceService deviceService)
+    public InputService(ILogger logger, IRgbService rgbService)
     {
         _logger = logger;
-        _deviceService = deviceService;
+        _rgbService = rgbService;
 
-        _deviceService.DeviceAdded += DeviceServiceOnDevicesModified;
-        _deviceService.DeviceRemoved += DeviceServiceOnDevicesModified;
+        _rgbService.DeviceAdded += RgbServiceOnDevicesModified;
+        _rgbService.DeviceRemoved += RgbServiceOnDevicesModified;
         BustIdentifierCache();
     }
 
@@ -157,7 +157,7 @@ internal class InputService : IInputService
 
         _logger.Debug("Stop identifying device {device}", _identifyingDevice);
         _identifyingDevice = null;
-        _deviceService.SaveDevices();
+        _rgbService.SaveDevices();
 
         BustIdentifierCache();
     }
@@ -209,7 +209,7 @@ internal class InputService : IInputService
     public void BustIdentifierCache()
     {
         _deviceCache.Clear();
-        _devices = _deviceService.EnabledDevices.Where(d => d.InputIdentifiers.Any()).ToList();
+        _devices = _rgbService.EnabledDevices.Where(d => d.InputIdentifiers.Any()).ToList();
     }
 
     private void AddDeviceToCache(ArtemisDevice match, InputProvider provider, object identifier)
@@ -241,12 +241,12 @@ internal class InputService : IInputService
         OnDeviceIdentified();
     }
 
-    private void DeviceServiceOnDevicesModified(object? sender, DeviceEventArgs args)
+    private void RgbServiceOnDevicesModified(object? sender, DeviceEventArgs args)
     {
-        _firstKeyboard = _deviceService.Devices.FirstOrDefault(d => d.DeviceType == RGBDeviceType.Keyboard);
-        _firstMouse = _deviceService.Devices.FirstOrDefault(d => d.DeviceType == RGBDeviceType.Mouse);
-        _keyboardCount = _deviceService.Devices.Count(d => d.DeviceType == RGBDeviceType.Keyboard);
-        _mouseCount = _deviceService.Devices.Count(d => d.DeviceType == RGBDeviceType.Mouse);
+        _firstKeyboard = _rgbService.Devices.FirstOrDefault(d => d.DeviceType == RGBDeviceType.Keyboard);
+        _firstMouse = _rgbService.Devices.FirstOrDefault(d => d.DeviceType == RGBDeviceType.Mouse);
+        _keyboardCount = _rgbService.Devices.Count(d => d.DeviceType == RGBDeviceType.Keyboard);
+        _mouseCount = _rgbService.Devices.Count(d => d.DeviceType == RGBDeviceType.Mouse);
 
         BustIdentifierCache();
     }

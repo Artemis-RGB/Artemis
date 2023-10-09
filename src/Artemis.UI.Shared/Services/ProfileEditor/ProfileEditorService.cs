@@ -21,7 +21,6 @@ internal class ProfileEditorService : IProfileEditorService
     private readonly ILayerBrushService _layerBrushService;
     private readonly BehaviorSubject<ILayerProperty?> _layerPropertySubject = new(null);
     private readonly ILogger _logger;
-    private readonly IDeviceService _deviceService;
     private readonly IModuleService _moduleService;
     private readonly BehaviorSubject<int> _pixelsPerSecondSubject = new(120);
     private readonly BehaviorSubject<bool> _playingSubject = new(false);
@@ -29,6 +28,7 @@ internal class ProfileEditorService : IProfileEditorService
     private readonly Dictionary<ProfileConfiguration, ProfileEditorHistory> _profileEditorHistories = new();
     private readonly BehaviorSubject<RenderProfileElement?> _profileElementSubject = new(null);
     private readonly IProfileService _profileService;
+    private readonly IRgbService _rgbService;
     private readonly SourceList<ILayerPropertyKeyframe> _selectedKeyframes;
     private readonly BehaviorSubject<bool> _suspendedEditingSubject = new(false);
     private readonly BehaviorSubject<TimeSpan> _timeSubject = new(TimeSpan.Zero);
@@ -36,17 +36,17 @@ internal class ProfileEditorService : IProfileEditorService
     private ProfileEditorCommandScope? _profileEditorHistoryScope;
 
     public ProfileEditorService(ILogger logger,
-        IDeviceService deviceService,
         IProfileService profileService,
         IModuleService moduleService,
+        IRgbService rgbService,
         ILayerBrushService layerBrushService,
         IMainWindowService mainWindowService,
         IWindowService windowService)
     {
         _logger = logger;
-        _deviceService = deviceService;
         _profileService = profileService;
         _moduleService = moduleService;
+        _rgbService = rgbService;
         _layerBrushService = layerBrushService;
         _windowService = windowService;
 
@@ -369,7 +369,7 @@ internal class ProfileEditorService : IProfileEditorService
             Layer layer = new(targetLayer.Parent, targetLayer.GetNewLayerName());
             _layerBrushService.ApplyDefaultBrush(layer);
 
-            layer.AddLeds(_deviceService.EnabledDevices.SelectMany(d => d.Leds));
+            layer.AddLeds(_rgbService.EnabledDevices.SelectMany(d => d.Leds));
             ExecuteCommand(new AddProfileElement(layer, targetLayer.Parent, targetLayer.Order));
 
             return layer;
@@ -379,7 +379,7 @@ internal class ProfileEditorService : IProfileEditorService
             Layer layer = new(target, target.GetNewLayerName());
             _layerBrushService.ApplyDefaultBrush(layer);
 
-            layer.AddLeds(_deviceService.EnabledDevices.SelectMany(d => d.Leds));
+            layer.AddLeds(_rgbService.EnabledDevices.SelectMany(d => d.Leds));
             ExecuteCommand(new AddProfileElement(layer, target, 0));
 
             return layer;

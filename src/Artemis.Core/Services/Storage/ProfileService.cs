@@ -5,9 +5,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core.Modules;
-using Artemis.Core.Services.Core;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
@@ -16,37 +16,36 @@ using SkiaSharp;
 
 namespace Artemis.Core.Services;
 
-internal class ProfileService : IProfileService, IRenderer
+internal class ProfileService : IProfileService
 {
     private readonly ILogger _logger;
+    private readonly IRgbService _rgbService;
     private readonly IProfileCategoryRepository _profileCategoryRepository;
     private readonly IPluginManagementService _pluginManagementService;
-    private readonly IDeviceService _deviceService;
+
     private readonly List<ArtemisKeyboardKeyEventArgs> _pendingKeyboardEvents = new();
     private readonly List<ProfileCategory> _profileCategories;
     private readonly IProfileRepository _profileRepository;
     private readonly List<Exception> _renderExceptions = new();
     private readonly List<Exception> _updateExceptions = new();
-    
     private DateTime _lastRenderExceptionLog;
     private DateTime _lastUpdateExceptionLog;
 
     public ProfileService(ILogger logger,
+        IRgbService rgbService,
         IProfileCategoryRepository profileCategoryRepository,
         IPluginManagementService pluginManagementService,
         IInputService inputService,
-        IDeviceService deviceService,
-        IRenderService renderService,
         IProfileRepository profileRepository)
     {
         _logger = logger;
+        _rgbService = rgbService;
         _profileCategoryRepository = profileCategoryRepository;
         _pluginManagementService = pluginManagementService;
-        _deviceService = deviceService;
         _profileRepository = profileRepository;
         _profileCategories = new List<ProfileCategory>(_profileCategoryRepository.GetAll().Select(c => new ProfileCategory(c)).OrderBy(c => c.Order));
 
-        _deviceService.LedsChanged += DeviceServiceOnLedsChanged;
+        _rgbService.LedsChanged += RgbServiceOnLedsChanged;
         _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureToggled;
         _pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureToggled;
 
@@ -55,15 +54,11 @@ internal class ProfileService : IProfileService, IRenderer
         if (!_profileCategories.Any())
             CreateDefaultProfileCategories();
         UpdateModules();
-        
-        renderService.Renderers.Add(this);
     }
 
     public ProfileConfiguration? FocusProfile { get; set; }
     public ProfileElement? FocusProfileElement { get; set; }
     public bool UpdateFocusProfile { get; set; }
-    
-    public bool ProfileRenderingDisabled { get; set; }
 
     /// <inheritdoc />
     public void UpdateProfiles(double deltaTime)
@@ -187,21 +182,6 @@ internal class ProfileService : IProfileService, IRenderer
             }
         }
     }
-    
-    /// <inheritdoc />
-    public void Render(SKCanvas canvas, double delta)
-    {
-        if (ProfileRenderingDisabled)
-            return;
-        
-        UpdateProfiles(delta);
-        RenderProfiles(canvas);
-    }
-
-    /// <inheritdoc />
-    public void PostRender(SKTexture texture)
-    {
-    }
 
     /// <inheritdoc />
     public void LoadProfileConfigurationIcon(ProfileConfiguration profileConfiguration)
@@ -255,7 +235,7 @@ internal class ProfileService : IProfileService, IRenderer
             throw new ArtemisCoreException($"Cannot find profile named: {profileConfiguration.Name} ID: {profileConfiguration.Entity.ProfileId}");
 
         Profile profile = new(profileConfiguration, profileEntity);
-        profile.PopulateLeds(_deviceService.EnabledDevices);
+        profile.PopulateLeds(_rgbService.EnabledDevices);
 
         if (profile.IsFreshImport)
         {
@@ -543,7 +523,7 @@ internal class ProfileService : IProfileService, IRenderer
     /// <inheritdoc />
     public void AdaptProfile(Profile profile)
     {
-        List<ArtemisDevice> devices = _deviceService.EnabledDevices.ToList();
+        List<ArtemisDevice> devices = _rgbService.EnabledDevices.ToList();
         foreach (Layer layer in profile.GetAllLayers())
             layer.Adapter.Adapt(devices);
 
@@ -572,7 +552,7 @@ internal class ProfileService : IProfileService, IRenderer
         foreach (ProfileConfiguration profileConfiguration in ProfileConfigurations)
         {
             if (profileConfiguration.Profile == null) continue;
-            profileConfiguration.Profile.PopulateLeds(_deviceService.EnabledDevices);
+            profileConfiguration.Profile.PopulateLeds(_rgbService.EnabledDevices);
 
             if (!profileConfiguration.Profile.IsFreshImport) continue;
             _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profileConfiguration.Profile);
@@ -593,7 +573,7 @@ internal class ProfileService : IProfileService, IRenderer
         }
     }
 
-    private void DeviceServiceOnLedsChanged(object? sender, EventArgs e)
+    private void RgbServiceOnLedsChanged(object? sender, EventArgs e)
     {
         ActiveProfilesPopulateLeds();
     }

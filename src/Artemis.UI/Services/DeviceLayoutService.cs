@@ -17,18 +17,18 @@ namespace Artemis.UI.Services;
 public class DeviceLayoutService : IDeviceLayoutService
 {
     private readonly List<ArtemisDevice> _ignoredDevices;
-    private readonly IDeviceService _deviceService;
     private readonly IMainWindowService _mainWindowService;
+    private readonly IRgbService _rgbService;
     private readonly IWindowService _windowService;
 
-    public DeviceLayoutService(IDeviceService deviceService, IMainWindowService mainWindowService, IWindowService windowService)
+    public DeviceLayoutService(IRgbService rgbService, IMainWindowService mainWindowService, IWindowService windowService)
     {
-        _deviceService = deviceService;
+        _rgbService = rgbService;
         _mainWindowService = mainWindowService;
         _windowService = windowService;
         _ignoredDevices = new List<ArtemisDevice>();
 
-        deviceService.DeviceAdded += RgbServiceOnDeviceAdded;
+        rgbService.DeviceAdded += RgbServiceOnDeviceAdded;
         mainWindowService.MainWindowOpened += WindowServiceOnMainWindowOpened;
     }
 
@@ -60,8 +60,8 @@ public class DeviceLayoutService : IDeviceLayoutService
         }
 
         await Task.Delay(400);
-        _deviceService.SaveDevice(artemisDevice);
-        _deviceService.ApplyDeviceLayout(artemisDevice, artemisDevice.GetBestDeviceLayout());
+        _rgbService.SaveDevice(artemisDevice);
+        _rgbService.ApplyBestDeviceLayout(artemisDevice);
     }
 
     private bool DeviceNeedsLayout(ArtemisDevice d)
@@ -73,7 +73,7 @@ public class DeviceLayoutService : IDeviceLayoutService
 
     private async void WindowServiceOnMainWindowOpened(object? sender, EventArgs e)
     {
-        List<ArtemisDevice> devices = _deviceService.Devices.Where(device => DeviceNeedsLayout(device) && !_ignoredDevices.Contains(device)).ToList();
+        List<ArtemisDevice> devices = _rgbService.Devices.Where(device => DeviceNeedsLayout(device) && !_ignoredDevices.Contains(device)).ToList();
         await Dispatcher.UIThread.InvokeAsync(async () =>
         {
             foreach (ArtemisDevice artemisDevice in devices)
