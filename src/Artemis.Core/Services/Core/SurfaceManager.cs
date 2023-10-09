@@ -24,7 +24,7 @@ internal sealed class SurfaceManager : IDisposable
     public SurfaceManager(IRenderer renderer, IManagedGraphicsContext? graphicsContext, int targetFrameRate, float renderScale)
     {
         _renderer = renderer;
-        _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / targetFrameRate};
+        _updateTrigger = new TimerUpdateTrigger(false) {UpdateFrequency = 1.0 / targetFrameRate};
 
         GraphicsContext = graphicsContext;
         TargetFrameRate = targetFrameRate;
