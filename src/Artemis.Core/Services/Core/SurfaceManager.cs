@@ -159,6 +159,8 @@ internal sealed class SurfaceManager : IDisposable
         _texture = new SKTexture(GraphicsContext, width, height, RenderScale, _devices);
         _textureBrush.Texture = _texture;
 
+        UpdateLedGroup();
+        
         return _texture;
     }
 
@@ -168,10 +170,7 @@ internal sealed class SurfaceManager : IDisposable
         {
             SKTexture? texture = _texture;
             if (texture == null || texture.IsInvalid)
-            {
                 texture = CreateTexture();
-                UpdateLedGroup();
-            }
 
             // Prepare a canvas
             SKCanvas canvas = texture.Surface.Canvas;
