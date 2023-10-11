@@ -22,8 +22,8 @@ public class ArtemisDevice : CorePropertyChanged
 
     internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider)
     {
-        _originalLeds = new List<OriginalLed>(rgbDevice.Select(l => new OriginalLed(l)));
         Rectangle ledRectangle = new(rgbDevice.Select(x => x.Boundary));
+        _originalLeds = new List<OriginalLed>(rgbDevice.Select(l => new OriginalLed(l)));
         _originalSize = ledRectangle.Size + new Size(ledRectangle.Location.X, ledRectangle.Location.Y);
 
         Identifier = rgbDevice.GetDeviceIdentifier();
@@ -54,10 +54,10 @@ public class ArtemisDevice : CorePropertyChanged
 
     internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider, DeviceEntity deviceEntity)
     {
-        _originalLeds = new List<OriginalLed>(rgbDevice.Select(l => new OriginalLed(l)));
         Rectangle ledRectangle = new(rgbDevice.Select(x => x.Boundary));
+        _originalLeds = new List<OriginalLed>(rgbDevice.Select(l => new OriginalLed(l)));
         _originalSize = ledRectangle.Size + new Size(ledRectangle.Location.X, ledRectangle.Location.Y);
-
+ 
         Identifier = rgbDevice.GetDeviceIdentifier();
         DeviceEntity = deviceEntity;
         RgbDevice = rgbDevice;

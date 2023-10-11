@@ -153,9 +153,9 @@ public class DeviceVisualizer : Control
 
     private Rect MeasureDevice()
     {
-        if (Device == null)
+        if (Device == null || float.IsNaN(Device.RgbDevice.ActualSize.Width) || float.IsNaN(Device.RgbDevice.ActualSize.Height))
             return new Rect();
-
+        
         Rect deviceRect = new(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
         Geometry geometry = new RectangleGeometry(deviceRect);
         geometry.Transform = new RotateTransform(Device.Rotation);

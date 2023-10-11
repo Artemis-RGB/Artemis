@@ -10,8 +10,6 @@ namespace Artemis.UI.Screens.Device;
 
 public partial class DeviceLogicalLayoutDialogView : ReactiveUserControl<DeviceLogicalLayoutDialogViewModel>
 {
-    private readonly AutoCompleteBox _autoCompleteBox;
-
     public DeviceLogicalLayoutDialogView()
     {
         InitializeComponent();
@@ -23,8 +21,8 @@ public partial class DeviceLogicalLayoutDialogView : ReactiveUserControl<DeviceL
     private async Task DelayedAutoFocus()
     {
         await Task.Delay(200);
-        _autoCompleteBox.Focus();
-        _autoCompleteBox.PopulateComplete();
+        RegionsAutoCompleteBox.Focus();
+        RegionsAutoCompleteBox.PopulateComplete();
     }
 
     private bool SearchRegions(string search, object item)
