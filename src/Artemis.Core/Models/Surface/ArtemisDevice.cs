@@ -15,11 +15,17 @@ namespace Artemis.Core;
 /// </summary>
 public class ArtemisDevice : CorePropertyChanged
 {
+    private readonly List<OriginalLed> _originalLeds;
+    private readonly Size _originalSize;
     private SKPath? _path;
     private SKRect _rectangle;
 
     internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider)
     {
+        _originalLeds = new List<OriginalLed>(rgbDevice.Select(l => new OriginalLed(l)));
+        Rectangle ledRectangle = new(rgbDevice.Select(x => x.Boundary));
+        _originalSize = ledRectangle.Size + new Size(ledRectangle.Location.X, ledRectangle.Location.Y);
+
         Identifier = rgbDevice.GetDeviceIdentifier();
         DeviceEntity = new DeviceEntity();
         RgbDevice = rgbDevice;
@@ -48,6 +54,10 @@ public class ArtemisDevice : CorePropertyChanged
 
     internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider, DeviceEntity deviceEntity)
     {
+        _originalLeds = new List<OriginalLed>(rgbDevice.Select(l => new OriginalLed(l)));
+        Rectangle ledRectangle = new(rgbDevice.Select(x => x.Boundary));
+        _originalSize = ledRectangle.Size + new Size(ledRectangle.Location.X, ledRectangle.Location.Y);
+
         Identifier = rgbDevice.GetDeviceIdentifier();
         DeviceEntity = deviceEntity;
         RgbDevice = rgbDevice;
@@ -349,7 +359,7 @@ public class ArtemisDevice : CorePropertyChanged
             return mappedLed;
         return artemisLed;
     }
-    
+
     /// <summary>
     /// Returns the most preferred device layout for this device.
     /// </summary>
@@ -451,6 +461,16 @@ public class ArtemisDevice : CorePropertyChanged
     /// </param>
     internal void ApplyLayout(ArtemisLayout? layout, bool createMissingLeds, bool removeExcessiveLeds)
     {
+        if (layout == null)
+        {
+            ClearLayout();
+            UpdateLeds();
+            
+            CalculateRenderProperties();
+            OnDeviceUpdated();
+            return;
+        }
+
         if (createMissingLeds && !DeviceProvider.CreateMissingLedsSupported)
             throw new ArtemisCoreException($"Cannot apply layout with {nameof(createMissingLeds)} " +
                                            "set to true because the device provider does not support it");
@@ -458,16 +478,31 @@ public class ArtemisDevice : CorePropertyChanged
             throw new ArtemisCoreException($"Cannot apply layout with {nameof(removeExcessiveLeds)} " +
                                            "set to true because the device provider does not support it");
 
-        if (layout != null && layout.IsValid)
+        ClearLayout();
+        if (layout.IsValid)
             layout.ApplyTo(RgbDevice, createMissingLeds, removeExcessiveLeds);
-
-
         UpdateLeds();
-
+        
         Layout = layout;
-        Layout?.ApplyDevice(this);
+        Layout.ApplyDevice(this);
+        
         CalculateRenderProperties();
         OnDeviceUpdated();
+    }
+
+    private void ClearLayout()
+    {
+        if (Layout == null)
+            return;
+        
+        RgbDevice.DeviceInfo.LayoutMetadata = null;
+        RgbDevice.Size = _originalSize;
+        Layout = null;
+
+        while (RgbDevice.Any())
+            RgbDevice.RemoveLed(RgbDevice.First().Id);
+        foreach (OriginalLed originalLed in _originalLeds)
+            RgbDevice.AddLed(originalLed.Id, originalLed.Location, originalLed.Size, originalLed.CustomData);
     }
 
     internal void ApplyToEntity()
