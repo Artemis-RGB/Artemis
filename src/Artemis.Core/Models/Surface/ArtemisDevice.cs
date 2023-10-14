@@ -22,13 +22,13 @@ public class ArtemisDevice : CorePropertyChanged
 
     internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider)
     {
-        Rectangle ledRectangle = new(rgbDevice.Select(x => x.Boundary));
+        rgbDevice.EnsureValidDimensions();
         _originalLeds = new List<OriginalLed>(rgbDevice.Select(l => new OriginalLed(l)));
-        _originalSize = ledRectangle.Size + new Size(ledRectangle.Location.X, ledRectangle.Location.Y);
+        _originalSize = rgbDevice.Size;
 
+        RgbDevice = rgbDevice;
         Identifier = rgbDevice.GetDeviceIdentifier();
         DeviceEntity = new DeviceEntity();
-        RgbDevice = rgbDevice;
         DeviceProvider = deviceProvider;
 
         Rotation = 0;
@@ -58,13 +58,13 @@ public class ArtemisDevice : CorePropertyChanged
 
     internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider, DeviceEntity deviceEntity)
     {
-        Rectangle ledRectangle = new(rgbDevice.Select(x => x.Boundary));
+        rgbDevice.EnsureValidDimensions();
         _originalLeds = new List<OriginalLed>(rgbDevice.Select(l => new OriginalLed(l)));
-        _originalSize = ledRectangle.Size + new Size(ledRectangle.Location.X, ledRectangle.Location.Y);
+        _originalSize = rgbDevice.Size;
  
+        RgbDevice = rgbDevice;
         Identifier = rgbDevice.GetDeviceIdentifier();
         DeviceEntity = deviceEntity;
-        RgbDevice = rgbDevice;
         DeviceProvider = deviceProvider;
 
         LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(new Dictionary<LedId, ArtemisLed>());
@@ -609,9 +609,9 @@ public class ArtemisDevice : CorePropertyChanged
     
     private void RgbDeviceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName != nameof(IRGBDevice.Surface))
+        if (e.PropertyName != nameof(IRGBDevice.Surface) || RgbDevice.Surface == null)
             return;
-
+       
         RgbDevice.Rotation = DeviceEntity.Rotation;
         RgbDevice.Scale = DeviceEntity.Scale;
         ApplyLocation(DeviceEntity.X, DeviceEntity.Y);

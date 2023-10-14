@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using RGB.NET.Core;
 using SkiaSharp;
 
@@ -17,6 +18,18 @@ internal static class RgbDeviceExtensions
         builder.Append('-');
         builder.Append(rgbDevice.DeviceInfo.DeviceType);
         return builder.ToString();
+    }
+
+    public static void EnsureValidDimensions(this IRGBDevice rgbDevice)
+    {
+        if (rgbDevice.Location == Point.Invalid)
+            rgbDevice.Location = new Point(0, 0);
+        
+        if (rgbDevice.Size == Size.Invalid)
+        {
+            Rectangle ledRectangle = new(rgbDevice.Select(x => x.Boundary));
+            rgbDevice.Size = ledRectangle.Size + new Size(ledRectangle.Location.X, ledRectangle.Location.Y);
+        }
     }
 }
 

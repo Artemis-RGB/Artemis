@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -37,6 +39,12 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
         DetectInput = ReactiveCommand.CreateFromTask(ExecuteDetectInput, this.WhenAnyValue(vm => vm.CanDetectInput));
         X = device.X;
         Y = device.Y;
+        
+        this.WhenActivated(d =>
+        {
+            Device.PropertyChanged += DeviceOnPropertyChanged;
+            Disposable.Create(() => Device.PropertyChanged -= DeviceOnPropertyChanged).DisposeWith(d);
+        });
     }
 
     public ReactiveCommand<Unit, Unit> DetectInput { get; }
@@ -142,5 +150,13 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
     {
         Device.X = X;
         Device.Y = Y;
+    }
+    
+    private void DeviceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Device.X))
+            X = Device.X;
+        if (e.PropertyName == nameof(Device.Y))
+            Y = Device.Y;
     }
 }
