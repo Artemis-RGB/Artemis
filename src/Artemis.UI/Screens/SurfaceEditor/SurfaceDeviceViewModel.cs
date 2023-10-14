@@ -23,6 +23,8 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
     private double _dragOffsetX;
     private double _dragOffsetY;
     private bool _isSelected;
+    private float _x;
+    private float _y;
 
     public SurfaceDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel, IDeviceService deviceService, ISettingsService settingsService, IWindowService windowService)
     {
@@ -33,6 +35,8 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
         Device = device;
         SurfaceEditorViewModel = surfaceEditorViewModel;
         DetectInput = ReactiveCommand.CreateFromTask(ExecuteDetectInput, this.WhenAnyValue(vm => vm.CanDetectInput));
+        X = device.X;
+        Y = device.Y;
     }
 
     public ReactiveCommand<Unit, Unit> DetectInput { get; }
@@ -45,6 +49,18 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
     {
         get => _isSelected;
         set => RaiseAndSetIfChanged(ref _isSelected, value);
+    }
+
+    public float X
+    {
+        get => _x;
+        set => RaiseAndSetIfChanged(ref _x, value);
+    }
+
+    public float Y
+    {
+        get => _y;
+        set => RaiseAndSetIfChanged(ref _y, value);
     }
 
     public void StartMouseDrag(Point mouseStartPosition)
@@ -73,16 +89,16 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
 
         if (Fits(x, y, ignoreOverlap))
         {
-            Device.X = x;
-            Device.Y = y;
+            X = x;
+            Y = y;
         }
         else if (Fits(x, Device.Y, ignoreOverlap))
         {
-            Device.X = x;
+            X = x;
         }
         else if (Fits(Device.X, y, ignoreOverlap))
         {
-            Device.Y = y;
+            Y = y;
         }
     }
 
@@ -100,10 +116,9 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
 
         IEnumerable<SKRect> own = Device.Leds
             .Select(l => SKRect.Create(l.Rectangle.Left + x, l.Rectangle.Top + y, l.Rectangle.Width, l.Rectangle.Height));
-        IEnumerable<SKRect> others = _deviceService.EnabledDevices
-            .Where(d => d != Device && d.IsEnabled)
-            .SelectMany(d => d.Leds)
-            .Select(l => SKRect.Create(l.Rectangle.Left + l.Device.X, l.Rectangle.Top + l.Device.Y, l.Rectangle.Width, l.Rectangle.Height));
+        IEnumerable<SKRect> others = SurfaceEditorViewModel.SurfaceDeviceViewModels
+            .Where(vm => vm != this && vm.Device.IsEnabled)
+            .SelectMany(vm => vm.Device.Leds.Select(l => SKRect.Create(l.Rectangle.Left + vm.X, l.Rectangle.Top + vm.Y, l.Rectangle.Width, l.Rectangle.Height)));
 
         return !own.Any(o => others.Any(l => l.IntersectsWith(o)));
     }
@@ -121,5 +136,11 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
 
         if (viewModel.MadeChanges)
             _deviceService.SaveDevice(Device);
+    }
+
+    public void Apply()
+    {
+        Device.X = X;
+        Device.Y = Y;
     }
 }

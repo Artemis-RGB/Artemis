@@ -82,8 +82,8 @@
                     <ItemsControl Name="DeviceContainer" ItemsSource="{CompiledBinding SurfaceDeviceViewModels}" ClipToBounds="False">
                         <ItemsControl.Styles>
                             <Style Selector="ContentPresenter">
-                                <Setter Property="Canvas.Left" Value="{Binding Device.X}" />
-                                <Setter Property="Canvas.Top" Value="{Binding Device.Y}" />
+                                <Setter Property="Canvas.Left" Value="{CompiledBinding X, DataType=surfaceEditor:SurfaceDeviceViewModel}" />
+                                <Setter Property="Canvas.Top" Value="{CompiledBinding Y, DataType=surfaceEditor:SurfaceDeviceViewModel}" />
                             </Style>
                         </ItemsControl.Styles>
                         <ItemsControl.ItemsPanel>

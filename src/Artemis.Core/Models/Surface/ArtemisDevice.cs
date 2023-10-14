@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using Artemis.Core.DeviceProviders;
-using Artemis.Core.Services;
 using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
 using SkiaSharp;
@@ -44,12 +44,16 @@ public class ArtemisDevice : CorePropertyChanged
         InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
         InputMappings = new Dictionary<ArtemisLed, ArtemisLed>();
         Categories = new HashSet<DeviceCategory>();
-
-        UpdateLeds();
+        
+        RgbDevice.ColorCorrections.Clear();
+        RgbDevice.ColorCorrections.Add(new ScaleColorCorrection(this));
+        
+        UpdateLeds(false);
         ApplyKeyboardLayout();
-        ApplyToEntity();
-        ApplyDefaultCategories();
         CalculateRenderProperties();
+        Save();
+        
+        RgbDevice.PropertyChanged += RgbDeviceOnPropertyChanged;
     }
 
     internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider, DeviceEntity deviceEntity)
@@ -71,11 +75,18 @@ public class ArtemisDevice : CorePropertyChanged
 
         foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifiers)
             InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(identifierEntity.InputProvider, identifierEntity.Identifier));
-
-        UpdateLeds();
+        
+        RgbDevice.ColorCorrections.Clear();
+        RgbDevice.ColorCorrections.Add(new ScaleColorCorrection(this));
+        
+        UpdateLeds(false);
+        Load();
         ApplyKeyboardLayout();
+        CalculateRenderProperties();
+        
+        RgbDevice.PropertyChanged += RgbDeviceOnPropertyChanged;
     }
-
+    
     /// <summary>
     ///     Gets the (hopefully unique and persistent) ID of this device
     /// </summary>
@@ -149,6 +160,8 @@ public class ArtemisDevice : CorePropertyChanged
         set
         {
             DeviceEntity.X = value;
+            if (RgbDevice.Surface != null)
+                ApplyLocation(DeviceEntity.X, DeviceEntity.Y);
             OnPropertyChanged(nameof(X));
         }
     }
@@ -162,6 +175,8 @@ public class ArtemisDevice : CorePropertyChanged
         set
         {
             DeviceEntity.Y = value;
+            if (RgbDevice.Surface != null)
+                ApplyLocation(DeviceEntity.X, DeviceEntity.Y);
             OnPropertyChanged(nameof(Y));
         }
     }
@@ -175,6 +190,8 @@ public class ArtemisDevice : CorePropertyChanged
         set
         {
             DeviceEntity.Rotation = value;
+            if (RgbDevice.Surface != null)
+                RgbDevice.Rotation = DeviceEntity.Rotation;
             OnPropertyChanged(nameof(Rotation));
         }
     }
@@ -188,6 +205,8 @@ public class ArtemisDevice : CorePropertyChanged
         set
         {
             DeviceEntity.Scale = value;
+            if (RgbDevice.Surface != null)
+                RgbDevice.Scale = DeviceEntity.Scale;
             OnPropertyChanged(nameof(Scale));
         }
     }
@@ -412,8 +431,7 @@ public class ArtemisDevice : CorePropertyChanged
             case RGBDeviceType.Mousepad:
             case RGBDeviceType.HeadsetStand:
             case RGBDeviceType.Keypad:
-                if (!Categories.Contains(DeviceCategory.Peripherals))
-                    Categories.Add(DeviceCategory.Peripherals);
+                Categories.Add(DeviceCategory.Peripherals);
                 break;
             case RGBDeviceType.Mainboard:
             case RGBDeviceType.GraphicsCard:
@@ -421,20 +439,16 @@ public class ArtemisDevice : CorePropertyChanged
             case RGBDeviceType.Fan:
             case RGBDeviceType.LedStripe:
             case RGBDeviceType.Cooler:
-                if (!Categories.Contains(DeviceCategory.Case))
-                    Categories.Add(DeviceCategory.Case);
+                Categories.Add(DeviceCategory.Case);
                 break;
             case RGBDeviceType.Speaker:
-                if (!Categories.Contains(DeviceCategory.Desk))
-                    Categories.Add(DeviceCategory.Desk);
+                Categories.Add(DeviceCategory.Desk);
                 break;
             case RGBDeviceType.Monitor:
-                if (!Categories.Contains(DeviceCategory.Monitor))
-                    Categories.Add(DeviceCategory.Monitor);
+                Categories.Add(DeviceCategory.Monitor);
                 break;
             case RGBDeviceType.LedMatrix:
-                if (!Categories.Contains(DeviceCategory.Room))
-                    Categories.Add(DeviceCategory.Room);
+                Categories.Add(DeviceCategory.Room);
                 break;
         }
     }
@@ -464,10 +478,9 @@ public class ArtemisDevice : CorePropertyChanged
         if (layout == null)
         {
             ClearLayout();
-            UpdateLeds();
+            UpdateLeds(true);
             
             CalculateRenderProperties();
-            OnDeviceUpdated();
             return;
         }
 
@@ -481,13 +494,12 @@ public class ArtemisDevice : CorePropertyChanged
         ClearLayout();
         if (layout.IsValid)
             layout.ApplyTo(RgbDevice, createMissingLeds, removeExcessiveLeds);
-        UpdateLeds();
+        UpdateLeds(true);
         
         Layout = layout;
         Layout.ApplyDevice(this);
         
         CalculateRenderProperties();
-        OnDeviceUpdated();
     }
 
     private void ClearLayout()
@@ -505,7 +517,7 @@ public class ArtemisDevice : CorePropertyChanged
             RgbDevice.AddLed(originalLed.Id, originalLed.Location, originalLed.Size, originalLed.CustomData);
     }
 
-    internal void ApplyToEntity()
+    internal void Save()
     {
         // Other properties are computed
         DeviceEntity.Id = Identifier;
@@ -513,48 +525,30 @@ public class ArtemisDevice : CorePropertyChanged
 
         DeviceEntity.InputIdentifiers.Clear();
         foreach (ArtemisDeviceInputIdentifier identifier in InputIdentifiers)
-        {
-            DeviceEntity.InputIdentifiers.Add(new DeviceInputIdentifierEntity
-            {
-                InputProvider = identifier.InputProvider,
-                Identifier = identifier.Identifier
-            });
-        }
+            DeviceEntity.InputIdentifiers.Add(new DeviceInputIdentifierEntity {InputProvider = identifier.InputProvider, Identifier = identifier.Identifier});
 
         DeviceEntity.InputMappings.Clear();
         foreach ((ArtemisLed? original, ArtemisLed? mapped) in InputMappings)
             DeviceEntity.InputMappings.Add(new InputMappingEntity {OriginalLedId = (int) original.RgbLed.Id, MappedLedId = (int) mapped.RgbLed.Id});
-
+        
         DeviceEntity.Categories.Clear();
         foreach (DeviceCategory deviceCategory in Categories)
             DeviceEntity.Categories.Add((int) deviceCategory);
     }
 
-    internal void ApplyToRgbDevice()
+    internal void Load()
     {
-        RgbDevice.Rotation = DeviceEntity.Rotation;
-        RgbDevice.Scale = DeviceEntity.Scale;
-
-        // Workaround for device rotation not applying
-        if (DeviceEntity.X == 0 && DeviceEntity.Y == 0)
-            RgbDevice.Location = new Point(1, 1);
-        RgbDevice.Location = new Point(DeviceEntity.X, DeviceEntity.Y);
-
         InputIdentifiers.Clear();
         foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifiers)
             InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(identifierEntity.InputProvider, identifierEntity.Identifier));
-
-        if (!RgbDevice.ColorCorrections.Any())
-            RgbDevice.ColorCorrections.Add(new ScaleColorCorrection(this));
 
         Categories.Clear();
         foreach (int deviceEntityCategory in DeviceEntity.Categories)
             Categories.Add((DeviceCategory) deviceEntityCategory);
         if (!Categories.Any())
             ApplyDefaultCategories();
-
-        CalculateRenderProperties();
-        OnDeviceUpdated();
+        
+        LoadInputMappings();
     }
 
     internal void CalculateRenderProperties()
@@ -571,13 +565,21 @@ public class ArtemisDevice : CorePropertyChanged
             path.AddRect(artemisLed.AbsoluteRectangle);
 
         Path = path;
+        
+        OnDeviceUpdated();
     }
 
-    private void UpdateLeds()
+    private void UpdateLeds(bool loadInputMappings)
     {
         Leds = RgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
         LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
 
+        if (loadInputMappings)
+            LoadInputMappings();
+    }
+
+    private void LoadInputMappings()
+    {
         InputMappings.Clear();
         foreach (InputMappingEntity deviceEntityInputMapping in DeviceEntity.InputMappings)
         {
@@ -603,6 +605,27 @@ public class ArtemisDevice : CorePropertyChanged
             LogicalLayout = DeviceProvider.GetLogicalLayout(keyboard);
         else
             LogicalLayout = DeviceEntity.LogicalLayout;
+    }
+    
+    private void RgbDeviceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(IRGBDevice.Surface))
+            return;
+
+        RgbDevice.Rotation = DeviceEntity.Rotation;
+        RgbDevice.Scale = DeviceEntity.Scale;
+        ApplyLocation(DeviceEntity.X, DeviceEntity.Y);
+    }
+
+    private void ApplyLocation(float x, float y)
+    {
+        // Workaround for device rotation not applying
+        if (x == 0 && y == 0)
+            RgbDevice.Location = new Point(1, 1);
+        RgbDevice.Location = new Point(x, y);
+
+        UpdateLeds(false);
+        CalculateRenderProperties();
     }
 }
 

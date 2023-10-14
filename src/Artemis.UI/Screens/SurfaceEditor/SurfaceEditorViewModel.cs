@@ -135,6 +135,8 @@ public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
             try
             {
                 _saving = true;
+                foreach (SurfaceDeviceViewModel surfaceDeviceViewModel in SurfaceDeviceViewModels)
+                    surfaceDeviceViewModel.Apply();
                 _deviceService.SaveDevices();
             }
             catch (Exception e)

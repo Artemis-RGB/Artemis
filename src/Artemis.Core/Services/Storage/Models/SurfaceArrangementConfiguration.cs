@@ -80,9 +80,7 @@ internal class SurfaceArrangementConfiguration
                 };
             }
 
-            artemisDevice.ApplyToRgbDevice();
             previous = artemisDevice;
-
             SurfaceArrangement.ArrangedDevices.Add(artemisDevice);
         }
 

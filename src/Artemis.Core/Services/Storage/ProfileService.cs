@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Artemis.Core.Modules;
-using Artemis.Core.Services.Core;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
@@ -16,7 +15,7 @@ using SkiaSharp;
 
 namespace Artemis.Core.Services;
 
-internal class ProfileService : IProfileService, IRenderer
+internal class ProfileService : IProfileService
 {
     private readonly ILogger _logger;
     private readonly IProfileCategoryRepository _profileCategoryRepository;
@@ -36,7 +35,6 @@ internal class ProfileService : IProfileService, IRenderer
         IPluginManagementService pluginManagementService,
         IInputService inputService,
         IDeviceService deviceService,
-        IRenderService renderService,
         IProfileRepository profileRepository)
     {
         _logger = logger;
@@ -55,8 +53,6 @@ internal class ProfileService : IProfileService, IRenderer
         if (!_profileCategories.Any())
             CreateDefaultProfileCategories();
         UpdateModules();
-        
-        renderService.Renderers.Add(this);
     }
 
     public ProfileConfiguration? FocusProfile { get; set; }
@@ -186,21 +182,6 @@ internal class ProfileService : IProfileService, IRenderer
                 return _profileCategories.SelectMany(c => c.ProfileConfigurations).ToList().AsReadOnly();
             }
         }
-    }
-    
-    /// <inheritdoc />
-    public void Render(SKCanvas canvas, double delta)
-    {
-        if (ProfileRenderingDisabled)
-            return;
-        
-        UpdateProfiles(delta);
-        RenderProfiles(canvas);
-    }
-
-    /// <inheritdoc />
-    public void PostRender(SKTexture texture)
-    {
     }
 
     /// <inheritdoc />

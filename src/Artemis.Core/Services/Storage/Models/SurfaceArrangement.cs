@@ -27,7 +27,6 @@ internal class SurfaceArrangement
         {
             surfaceDevice.X = 0;
             surfaceDevice.Y = 0;
-            surfaceDevice.ApplyToRgbDevice();
         }
 
         foreach (SurfaceArrangementType surfaceArrangementType in Types)
@@ -37,18 +36,16 @@ internal class SurfaceArrangement
         float x = devices.Min(d => d.RgbDevice.Location.X);
         float y = devices.Min(d => d.RgbDevice.Location.Y);
         if (x < 0)
+        {
             foreach (ArtemisDevice surfaceDevice in devices)
-            {
                 surfaceDevice.X += x * -1;
-                surfaceDevice.ApplyToRgbDevice();
-            }
+        }
 
         if (y < 0)
+        {
             foreach (ArtemisDevice surfaceDevice in devices)
-            {
                 surfaceDevice.Y += y * -1;
-                surfaceDevice.ApplyToRgbDevice();
-            }
+        }
     }
 
     internal static SurfaceArrangement GetDefaultArrangement()

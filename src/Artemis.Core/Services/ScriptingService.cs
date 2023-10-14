@@ -12,7 +12,7 @@ internal class ScriptingService : IScriptingService
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IProfileService _profileService;
     private readonly List<ScriptingProvider> _scriptingProviders;
-
+    
     public ScriptingService(IPluginManagementService pluginManagementService, IProfileService profileService)
     {
         _pluginManagementService = pluginManagementService;
