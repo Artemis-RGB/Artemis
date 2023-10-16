@@ -23,7 +23,6 @@ public class ArtemisDevice : CorePropertyChanged
 
     internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider)
     {
-        Debug.WriteLine("Creating Artemis device for " + rgbDevice.DeviceInfo.DeviceName);
         rgbDevice.EnsureValidDimensions();
         _originalLeds = new List<OriginalLed>(rgbDevice.Select(l => new OriginalLed(l)));
         _originalSize = rgbDevice.Size;
@@ -60,7 +59,6 @@ public class ArtemisDevice : CorePropertyChanged
 
     internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider, DeviceEntity deviceEntity)
     {
-        Debug.WriteLine("Creating Artemis device for " + rgbDevice.DeviceInfo.DeviceName);
         rgbDevice.EnsureValidDimensions();
         _originalLeds = new List<OriginalLed>(rgbDevice.Select(l => new OriginalLed(l)));
         _originalSize = rgbDevice.Size;
