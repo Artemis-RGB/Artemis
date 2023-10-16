@@ -57,9 +57,6 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
     public RGBSurface Surface => _surfaceManager.Surface;
 
     /// <inheritdoc />
-    public List<IRenderer> Renderers { get; } = new();
-
-    /// <inheritdoc />
     public bool IsPaused
     {
         get => _surfaceManager.IsPaused;

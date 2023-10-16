@@ -33,7 +33,7 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
         Device = device;
         DisplayName = "Layout";
         DefaultLayoutPath = Device.DeviceProvider.LoadLayout(Device).FilePath;
-        
+
         this.WhenActivated(d =>
         {
             Device.PropertyChanged += DeviceOnPropertyChanged;
@@ -42,23 +42,21 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
     }
 
     public ArtemisDevice Device { get; }
-    
+
     public string DefaultLayoutPath { get; }
 
     public string? ImagePath => Device.Layout?.Image?.LocalPath;
-    
+
     public string? CustomLayoutPath => Device.CustomLayoutPath;
-    
+
     public bool HasCustomLayout => Device.CustomLayoutPath != null;
-    
+
     public void ClearCustomLayout()
     {
         Device.CustomLayoutPath = null;
         _notificationService.CreateNotification()
             .WithMessage("Cleared imported layout.")
             .WithSeverity(NotificationSeverity.Informational);
-        
-        _deviceService.SaveDevice(Device);
     }
 
     public async Task BrowseCustomLayout()
@@ -75,8 +73,6 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
                 .WithTitle("Imported layout")
                 .WithMessage($"File loaded from {files[0]}")
                 .WithSeverity(NotificationSeverity.Informational);
-            
-            _deviceService.SaveDevice(Device);
         }
     }
 
@@ -154,7 +150,12 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
     {
         if (e.PropertyName is nameof(Device.CustomLayoutPath) or nameof(Device.DisableDefaultLayout))
         {
-            Task.Run(() => _deviceService.ApplyDeviceLayout(Device, Device.GetBestDeviceLayout()));
+            Task.Run(() =>
+            {
+                _deviceService.ApplyDeviceLayout(Device, Device.GetBestDeviceLayout());
+                _deviceService.SaveDevice(Device);
+            });
+            
             this.RaisePropertyChanged(nameof(CustomLayoutPath));
             this.RaisePropertyChanged(nameof(HasCustomLayout));
         }

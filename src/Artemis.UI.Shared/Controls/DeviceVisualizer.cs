@@ -123,27 +123,35 @@ public class DeviceVisualizer : Control
         if (Device == null)
             return false;
 
-        bool difference = false;
-
-        int newLedCount = Device.RgbDevice.Count();
-        if (_previousState.Length != newLedCount)
+        // Device might be modified mid-check, in that case just pretend it was not dirty
+        try
         {
-            _previousState = new Color[newLedCount];
-            difference = true;
-        }
+            bool difference = false;
 
-        // Check all LEDs for differences and copy the colors to a new state
-        int index = 0;
-        foreach (Led led in Device.RgbDevice)
-        {
-            if (_previousState[index] != led.Color)
+            int newLedCount = Device.RgbDevice.Count();
+            if (_previousState.Length != newLedCount)
+            {
+                _previousState = new Color[newLedCount];
                 difference = true;
+            }
 
-            _previousState[index] = led.Color;
-            index++;
+            // Check all LEDs for differences and copy the colors to a new state
+            int index = 0;
+            foreach (Led led in Device.RgbDevice)
+            {
+                if (_previousState[index] != led.Color)
+                    difference = true;
+
+                _previousState[index] = led.Color;
+                index++;
+            }
+
+            return difference;
         }
-
-        return difference;
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     private void Update()
@@ -335,7 +343,7 @@ public class DeviceVisualizer : Control
                 deviceVisualizerLed.DrawBitmap(context, 2 * device.Scale);
         }
 
-        BitmapCache[path] = renderTargetBitmap;
+        // BitmapCache[path] = renderTargetBitmap;
         return renderTargetBitmap;
     }
 

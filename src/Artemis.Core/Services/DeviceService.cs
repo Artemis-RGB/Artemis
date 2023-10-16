@@ -30,13 +30,13 @@ internal class DeviceService : IDeviceService
 
         EnabledDevices = new ReadOnlyCollection<ArtemisDevice>(_enabledDevices);
         Devices = new ReadOnlyCollection<ArtemisDevice>(_devices);
-        
+
         RenderScale.RenderScaleMultiplierChanged += RenderScaleOnRenderScaleMultiplierChanged;
     }
 
     public IReadOnlyCollection<ArtemisDevice> EnabledDevices { get; }
     public IReadOnlyCollection<ArtemisDevice> Devices { get; }
-    
+
     /// <inheritdoc />
     public void IdentifyDevice(ArtemisDevice device)
     {
@@ -52,11 +52,12 @@ internal class DeviceService : IDeviceService
         try
         {
             // Can't see why this would happen, RgbService used to do this though
-            List<ArtemisDevice> toRemove = _devices.Where(a => rgbDeviceProvider.Devices.Any(d => a.RgbDevice == d)).ToList();
+            List<ArtemisDevice> toRemove = _devices.Where(a => a.DeviceProvider.Id == deviceProvider.Id).ToList();
             _logger.Verbose("[AddDeviceProvider] Removing {Count} old device(s)", toRemove.Count);
             foreach (ArtemisDevice device in toRemove)
             {
                 _devices.Remove(device);
+                _enabledDevices.Remove(device);
                 OnDeviceRemoved(new DeviceEventArgs(device));
             }
 
@@ -94,7 +95,7 @@ internal class DeviceService : IDeviceService
                 _devices.Add(artemisDevice);
                 if (artemisDevice.IsEnabled)
                     _enabledDevices.Add(artemisDevice);
-                
+
                 _logger.Debug("Device provider {deviceProvider} added {deviceName}", deviceProvider.GetType().Name, rgbDevice.DeviceInfo.DeviceName);
             }
 
@@ -104,7 +105,7 @@ internal class DeviceService : IDeviceService
             OnDeviceProviderAdded(new DeviceProviderEventArgs(deviceProvider, addedDevices));
             foreach (ArtemisDevice artemisDevice in addedDevices)
                 OnDeviceAdded(new DeviceEventArgs(artemisDevice));
-            
+
             UpdateLeds();
         }
         catch (Exception e)
@@ -118,9 +119,8 @@ internal class DeviceService : IDeviceService
     public void RemoveDeviceProvider(DeviceProvider deviceProvider)
     {
         _logger.Verbose("[RemoveDeviceProvider] Pausing rendering to remove {DeviceProvider}", deviceProvider.GetType().Name);
-        IRGBDeviceProvider rgbDeviceProvider = deviceProvider.RgbDeviceProvider;
-        List<ArtemisDevice> toRemove = _devices.Where(a => rgbDeviceProvider.Devices.Any(d => a.RgbDevice == d)).ToList();
-        
+        List<ArtemisDevice> toRemove = _devices.Where(a => a.DeviceProvider.Id == deviceProvider.Id).ToList();
+
         try
         {
             _logger.Verbose("[RemoveDeviceProvider] Removing {Count} old device(s)", toRemove.Count);
@@ -131,11 +131,11 @@ internal class DeviceService : IDeviceService
             }
 
             _devices.Sort((a, b) => a.ZIndex - b.ZIndex);
-            
+
             OnDeviceProviderRemoved(new DeviceProviderEventArgs(deviceProvider, toRemove));
             foreach (ArtemisDevice artemisDevice in toRemove)
                 OnDeviceRemoved(new DeviceEventArgs(artemisDevice));
-            
+
             UpdateLeds();
         }
         catch (Exception e)
@@ -155,7 +155,7 @@ internal class DeviceService : IDeviceService
 
         SaveDevices();
     }
-    
+
     /// <inheritdoc />
     public void ApplyDeviceLayout(ArtemisDevice device, ArtemisLayout? layout)
     {
@@ -163,10 +163,10 @@ internal class DeviceService : IDeviceService
             device.ApplyLayout(layout, false, false);
         else
             device.ApplyLayout(layout, device.DeviceProvider.CreateMissingLedsSupported, device.DeviceProvider.RemoveExcessiveLedsSupported);
-        
+
         UpdateLeds();
     }
-    
+
     /// <inheritdoc />
     public void EnableDevice(ArtemisDevice device)
     {
@@ -213,7 +213,7 @@ internal class DeviceService : IDeviceService
         _deviceRepository.Save(_devices.Select(d => d.DeviceEntity));
         UpdateLeds();
     }
-    
+
     private ArtemisDevice GetArtemisDevice(IRGBDevice rgbDevice)
     {
         string deviceIdentifier = rgbDevice.GetDeviceIdentifier();
@@ -233,7 +233,7 @@ internal class DeviceService : IDeviceService
         ApplyDeviceLayout(device, device.GetBestDeviceLayout());
         return device;
     }
-    
+
     private void BlinkDevice(ArtemisDevice device, int blinkCount)
     {
         RGBSurface surface = _renderService.Value.Surface;
@@ -259,7 +259,7 @@ internal class DeviceService : IDeviceService
             }
         });
     }
-    
+
     private void CalculateRenderProperties()
     {
         foreach (ArtemisDevice artemisDevice in Devices)
@@ -271,7 +271,7 @@ internal class DeviceService : IDeviceService
     {
         OnLedsChanged();
     }
-    
+
     private void RenderScaleOnRenderScaleMultiplierChanged(object? sender, EventArgs e)
     {
         CalculateRenderProperties();
@@ -296,7 +296,7 @@ internal class DeviceService : IDeviceService
 
     /// <inheritdoc />
     public event EventHandler<DeviceProviderEventArgs>? DeviceProviderRemoved;
-    
+
     /// <inheritdoc />
     public event EventHandler? LedsChanged;
 
@@ -329,7 +329,7 @@ internal class DeviceService : IDeviceService
     {
         DeviceProviderRemoved?.Invoke(this, e);
     }
-    
+
     protected virtual void OnLedsChanged()
     {
         LedsChanged?.Invoke(this, EventArgs.Empty);

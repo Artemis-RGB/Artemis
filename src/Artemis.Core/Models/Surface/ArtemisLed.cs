@@ -1,4 +1,5 @@
-﻿using RGB.NET.Core;
+﻿using System.Linq;
+using RGB.NET.Core;
 using SkiaSharp;
 
 namespace Artemis.Core;
@@ -15,6 +16,9 @@ public class ArtemisLed : CorePropertyChanged
     {
         RgbLed = led;
         Device = device;
+        Layout = device.Layout?.Leds.FirstOrDefault(l => l.RgbLayout.Id == led.Id.ToString());
+        Layout?.ApplyCustomLedData(Device);
+
         CalculateRectangles();
     }
 
