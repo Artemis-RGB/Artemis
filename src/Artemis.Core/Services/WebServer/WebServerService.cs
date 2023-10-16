@@ -39,9 +39,9 @@ internal class WebServerService : IWebServerService, IDisposable
 
         PluginsModule = new PluginsModule("/plugins");
         if (coreService.IsInitialized)
-            StartWebServer();
+            AutoStartWebServer();
         else
-            coreService.Initialized += (_, _) => StartWebServer();
+            coreService.Initialized += (sender, args) => AutoStartWebServer();
     }
 
     public event EventHandler? WebServerStopped;
@@ -138,7 +138,7 @@ internal class WebServerService : IWebServerService, IDisposable
         // Add registered controllers to the API module
         foreach (WebApiControllerRegistration registration in _controllers)
             apiModule.RegisterController(registration.ControllerType, (Func<WebApiController>) registration.UntypedFactory);
-
+        
         // Listen for state changes.
         server.StateChanged += (s, e) => _logger.Verbose("WebServer new state - {state}", e.NewState);
 
@@ -171,6 +171,18 @@ internal class WebServerService : IWebServerService, IDisposable
             _cts = new CancellationTokenSource();
             Server.Start(_cts.Token);
             OnWebServerStarted();
+        }
+    }
+    
+    private void AutoStartWebServer()
+    {
+        try
+        {
+            StartWebServer();
+        }
+        catch (Exception exception)
+        {
+            _logger.Warning(exception, "Failed to initially start webserver");
         }
     }
 
@@ -237,10 +249,6 @@ internal class WebServerService : IWebServerService, IDisposable
         return endPoint;
     }
 
-    private void HandleDataModelRequest<T>(Module<T> module, T value) where T : DataModel, new()
-    {
-    }
-
     public void RemovePluginEndPoint(PluginEndPoint endPoint)
     {
         PluginsModule.RemovePluginEndPoint(endPoint);
@@ -250,15 +258,20 @@ internal class WebServerService : IWebServerService, IDisposable
 
     #region Controller management
 
-    public void AddController<T>(PluginFeature feature) where T : WebApiController
+    public WebApiControllerRegistration AddController<T>(PluginFeature feature) where T : WebApiController
     {
-        _controllers.Add(new WebApiControllerRegistration<T>(feature));
+        if (feature == null) throw new ArgumentNullException(nameof(feature));
+
+        WebApiControllerRegistration<T> registration = new(this, feature);
+        _controllers.Add(registration);
         StartWebServer();
+
+        return registration;
     }
 
-    public void RemoveController<T>() where T : WebApiController
+    public void RemoveController(WebApiControllerRegistration registration)
     {
-        _controllers.RemoveAll(r => r.ControllerType == typeof(T));
+        _controllers.Remove(registration);
         StartWebServer();
     }
 
@@ -266,33 +279,31 @@ internal class WebServerService : IWebServerService, IDisposable
 
     #region Module management
 
-    public void AddModule(PluginFeature feature, Func<IWebModule> create)
+    public WebModuleRegistration AddModule(PluginFeature feature, Func<IWebModule> create)
     {
         if (feature == null) throw new ArgumentNullException(nameof(feature));
 
-        _modules.Add(new WebModuleRegistration(feature, create));
+        WebModuleRegistration registration = new(this, feature, create);
+        _modules.Add(registration);
         StartWebServer();
+
+        return registration;
     }
 
-    public void RemoveModule(Func<IWebModule> create)
-    {
-        _modules.RemoveAll(r => r.Create == create);
-        StartWebServer();
-    }
-
-    public void AddModule<T>(PluginFeature feature) where T : IWebModule
+    public WebModuleRegistration AddModule<T>(PluginFeature feature) where T : IWebModule
     {
         if (feature == null) throw new ArgumentNullException(nameof(feature));
-        if (_modules.Any(r => r.WebModuleType == typeof(T)))
-            return;
 
-        _modules.Add(new WebModuleRegistration(feature, typeof(T)));
+        WebModuleRegistration registration = new(this, feature, typeof(T));
+        _modules.Add(registration);
         StartWebServer();
+
+        return registration;
     }
 
-    public void RemoveModule<T>() where T : IWebModule
+    public void RemoveModule(WebModuleRegistration registration)
     {
-        _modules.RemoveAll(r => r.WebModuleType == typeof(T));
+        _modules.Remove(registration);
         StartWebServer();
     }
 

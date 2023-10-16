@@ -3,26 +3,55 @@ using EmbedIO.WebApi;
 
 namespace Artemis.Core.Services;
 
-internal class WebApiControllerRegistration<T> : WebApiControllerRegistration where T : WebApiController
+/// <summary>
+/// Represents a web API controller registration.
+/// </summary>
+/// <typeparam name="T">The type of the web API controller.</typeparam>
+public class WebApiControllerRegistration<T> : WebApiControllerRegistration where T : WebApiController
 {
-    public WebApiControllerRegistration(PluginFeature feature) : base(feature, typeof(T))
+    internal WebApiControllerRegistration(IWebServerService webServerService, PluginFeature feature) : base(webServerService, feature, typeof(T))
     {
         Factory = () => feature.Plugin.Resolve<T>();
     }
 
-    public Func<T> Factory { get; set; }
-    public override object UntypedFactory => Factory;
+    internal Func<T> Factory { get; set; }
+    internal override object UntypedFactory => Factory;
 }
 
-internal abstract class WebApiControllerRegistration
+/// <summary>
+/// Represents a web API controller registration.
+/// </summary>
+public abstract class WebApiControllerRegistration
 {
-    protected WebApiControllerRegistration(PluginFeature feature, Type controllerType)
+    private readonly IWebServerService _webServerService;
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="WebApiControllerRegistration"/> class.
+    /// </summary>
+    protected internal WebApiControllerRegistration(IWebServerService webServerService, PluginFeature feature, Type controllerType)
     {
+        _webServerService = webServerService;
         Feature = feature;
         ControllerType = controllerType;
+        
+        Feature.Disabled += FeatureOnDisabled;
     }
 
-    public abstract object UntypedFactory { get; }
-    public Type ControllerType { get; set; }
+    private void FeatureOnDisabled(object? sender, EventArgs e)
+    {
+        _webServerService.RemoveController(this);
+        Feature.Disabled -= FeatureOnDisabled;
+    }
+
+    internal abstract object UntypedFactory { get; }
+    
+    /// <summary>
+    /// Gets the type of the web API controller.
+    /// </summary>
+    public Type ControllerType { get; }
+    
+    /// <summary>
+    /// Gets the plugin feature that provided the web API controller.
+    /// </summary>
     public PluginFeature Feature { get; }
 }

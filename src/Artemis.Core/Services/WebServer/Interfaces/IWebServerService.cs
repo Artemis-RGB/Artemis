@@ -95,35 +95,29 @@ public interface IWebServerService : IArtemisService
     ///     Adds a new Web API controller and restarts the web server
     /// </summary>
     /// <typeparam name="T">The type of Web API controller to remove</typeparam>
-    void AddController<T>(PluginFeature feature) where T : WebApiController;
+    WebApiControllerRegistration AddController<T>(PluginFeature feature) where T : WebApiController;
 
     /// <summary>
     ///     Removes an existing Web API controller and restarts the web server
     /// </summary>
     /// <typeparam name="T">The type of Web API controller to remove</typeparam>
-    void RemoveController<T>() where T : WebApiController;
+    void RemoveController(WebApiControllerRegistration registration);
 
     /// <summary>
     ///     Adds a new EmbedIO module and restarts the web server
     /// </summary>
-    void AddModule(PluginFeature feature, Func<IWebModule> create);
+    WebModuleRegistration AddModule(PluginFeature feature, Func<IWebModule> create);
 
     /// <summary>
     ///     Removes a EmbedIO module and restarts the web server
     /// </summary>
-    void RemoveModule(Func<IWebModule> create);
+    void RemoveModule(WebModuleRegistration create);
 
     /// <summary>
     ///     Adds a new EmbedIO module and restarts the web server
     /// </summary>
     /// <typeparam name="T">The type of module to add</typeparam>
-    void AddModule<T>(PluginFeature feature) where T : IWebModule;
-
-    /// <summary>
-    ///     Removes a EmbedIO module and restarts the web server
-    /// </summary>
-    /// <typeparam name="T">The type of module to remove</typeparam>
-    void RemoveModule<T>() where T : IWebModule;
+    WebModuleRegistration AddModule<T>(PluginFeature feature) where T : IWebModule;
 
     /// <summary>
     ///     Occurs when the web server has been created and is about to start. This is the ideal place to add your own modules.
