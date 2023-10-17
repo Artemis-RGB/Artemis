@@ -45,9 +45,9 @@ public class RemoteController : WebApiController
     }
 
     [Route(HttpVerbs.Post, "/remote/restart")]
-    public void PostRestart()
+    public void PostRestart([FormField] string[] args)
     {
-        Utilities.Restart(_coreService.IsElevated, TimeSpan.FromMilliseconds(500));
+        Utilities.Restart(_coreService.IsElevated, TimeSpan.FromMilliseconds(500), args);
     }
 
     [Route(HttpVerbs.Post, "/remote/shutdown")]

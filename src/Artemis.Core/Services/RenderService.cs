@@ -19,22 +19,24 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
     
     private readonly ILogger _logger;
     private readonly IDeviceService _deviceService;
+    private readonly CoreRenderer _coreRenderer;
     private readonly LazyEnumerable<IGraphicsContextProvider> _graphicsContextProviders;
     private readonly PluginSetting<int> _targetFrameRateSetting;
     private readonly PluginSetting<double> _renderScaleSetting;
     private readonly PluginSetting<string> _preferredGraphicsContext;
+    private readonly SurfaceManager _surfaceManager;
     
-    private SurfaceManager _surfaceManager;
     private int _frames;
     private DateTime _lastExceptionLog;
     private DateTime _lastFrameRateSample;
     private bool _initialized;
 
-    public RenderService(ILogger logger, ISettingsService settingsService, IDeviceService deviceService, LazyEnumerable<IGraphicsContextProvider> graphicsContextProviders)
+    public RenderService(ILogger logger, ISettingsService settingsService, IDeviceService deviceService, CoreRenderer coreRenderer, LazyEnumerable<IGraphicsContextProvider> graphicsContextProviders)
     {
         _frameStopWatch = new Stopwatch();
         _logger = logger;
         _deviceService = deviceService;
+        _coreRenderer = coreRenderer;
         _graphicsContextProviders = graphicsContextProviders;
 
         _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 30);
@@ -53,9 +55,6 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
 
     /// <inheritdoc />
     public RGBSurface Surface => _surfaceManager.Surface;
-
-    /// <inheritdoc />
-    public List<IRenderer> Renderers { get; } = new();
 
     /// <inheritdoc />
     public bool IsPaused
@@ -77,8 +76,7 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
         try
         {
             OnFrameRendering(new FrameRenderingEventArgs(canvas, delta, _surfaceManager.Surface));
-            foreach (IRenderer renderer in Renderers)
-                renderer.Render(canvas, delta);
+            _coreRenderer.Render(canvas, delta);
         }
         catch (Exception e)
         {
@@ -91,8 +89,7 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
     {
         try
         {
-            foreach (IRenderer renderer in Renderers)
-                renderer.PostRender(texture);
+            _coreRenderer.PostRender(texture);
             OnFrameRendered(new FrameRenderedEventArgs(texture, _surfaceManager.Surface));
         }
         catch (Exception e)

@@ -14,8 +14,9 @@ namespace Artemis.Core.Modules;
 /// </summary>
 public abstract class DataModel
 {
+    private const StringComparison PathsStringComparison = StringComparison.OrdinalIgnoreCase;
     private readonly List<DataModelPath> _activePaths = new();
-    private readonly HashSet<string> _activePathsHashSet = new();
+    private readonly HashSet<string> _activePathsHashSet = new(StringComparer.FromComparison(PathsStringComparison));
     private readonly Dictionary<string, DynamicChild> _dynamicChildren = new();
 
     /// <summary>
@@ -332,11 +333,10 @@ public abstract class DataModel
     /// </param>
     internal bool IsPropertyInUse(string path, bool includeChildren)
     {
-        path = path.ToUpperInvariant();
         lock (_activePaths)
         {
             return includeChildren
-                ? _activePathsHashSet.Any(p => p.StartsWith(path, StringComparison.Ordinal))
+                ? _activePathsHashSet.Any(p => p.StartsWith(path, PathsStringComparison))
                 : _activePathsHashSet.Contains(path);
         }
     }
@@ -351,9 +351,7 @@ public abstract class DataModel
             _activePaths.Add(path);
 
             // Add to the hashset if this is the first path pointing 
-            string hashPath = path.Path.ToUpperInvariant();
-            if (!_activePathsHashSet.Contains(hashPath))
-                _activePathsHashSet.Add(hashPath);
+            _activePathsHashSet.Add(path.Path);
         }
 
         OnActivePathAdded(new DataModelPathEventArgs(path));
@@ -368,7 +366,7 @@ public abstract class DataModel
 
             // Remove from the hashset if this was the last path pointing there
             if (_activePaths.All(p => p.Path != path.Path))
-                _activePathsHashSet.Remove(path.Path.ToUpperInvariant());
+                _activePathsHashSet.Remove(path.Path);
         }
 
         OnActivePathRemoved(new DataModelPathEventArgs(path));

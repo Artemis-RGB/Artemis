@@ -22,11 +22,6 @@ public interface IRenderService : IArtemisService
     RGBSurface Surface { get; }
 
     /// <summary>
-    ///     Gets a list of registered renderers.
-    /// </summary>
-    List<IRenderer> Renderers { get; }
-
-    /// <summary>
     ///     Gets or sets a boolean indicating whether rendering is paused.
     /// </summary>
     bool IsPaused { get; set; }

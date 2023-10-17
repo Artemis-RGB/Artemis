@@ -37,11 +37,6 @@ public class ArtemisLayout
     public LayoutSource Source { get; }
 
     /// <summary>
-    ///     Gets the device this layout is applied to
-    /// </summary>
-    public ArtemisDevice? Device { get; private set; }
-
-    /// <summary>
     ///     Gets a boolean indicating whether a valid layout was loaded
     /// </summary>
     public bool IsValid { get; private set; }
@@ -69,7 +64,7 @@ public class ArtemisLayout
     /// <summary>
     ///     Applies the layout to the provided device
     /// </summary>
-    public void ApplyTo(IRGBDevice device, bool createMissingLeds = false, bool removeExcessiveLeds = false)
+    public void ApplyToDevice(IRGBDevice device, bool createMissingLeds = false, bool removeExcessiveLeds = false)
     {
         device.Size = new Size(MathF.Round(RgbLayout.Width), MathF.Round(RgbLayout.Height));
         device.DeviceInfo.LayoutMetadata = RgbLayout.CustomData;
@@ -122,13 +117,6 @@ public class ArtemisLayout
             else
                 led.Location = new Point(x, y);
         }
-    }
-
-    internal void ApplyDevice(ArtemisDevice artemisDevice)
-    {
-        Device = artemisDevice;
-        foreach (ArtemisLedLayout artemisLedLayout in Leds)
-            artemisLedLayout.ApplyDevice(Device);
     }
 
     internal static ArtemisLayout? GetDefaultLayout(ArtemisDevice device)

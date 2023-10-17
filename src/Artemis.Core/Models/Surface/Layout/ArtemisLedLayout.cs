@@ -28,11 +28,6 @@ public class ArtemisLedLayout
     public ILedLayout RgbLayout { get; }
 
     /// <summary>
-    ///     Gets the LED this layout is applied to
-    /// </summary>
-    public ArtemisLed? Led { get; protected set; }
-
-    /// <summary>
     ///     Gets the name of the logical layout this LED belongs to
     /// </summary>
     public string? LogicalName { get; private set; }
@@ -46,17 +41,9 @@ public class ArtemisLedLayout
     ///     Gets the custom layout data embedded in the RGB.NET layout
     /// </summary>
     public LayoutCustomLedData LayoutCustomLedData { get; }
+    
 
-    internal void ApplyDevice(ArtemisDevice device)
-    {
-        Led = device.Leds.FirstOrDefault(d => d.RgbLed.Id.ToString() == RgbLayout.Id);
-        if (Led != null)
-            Led.Layout = this;
-
-        ApplyCustomLedData(device);
-    }
-
-    private void ApplyCustomLedData(ArtemisDevice artemisDevice)
+    internal void ApplyCustomLedData(ArtemisDevice artemisDevice)
     {
         if (LayoutCustomLedData.LogicalLayouts == null || !LayoutCustomLedData.LogicalLayouts.Any())
             return;

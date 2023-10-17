@@ -52,7 +52,7 @@
                             <TextBlock Classes="subtitle" FontSize="12" Text="With this checked, Artemis will not load a layout for this device unless you specifically provide one." />
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
-                            <CheckBox HorizontalAlignment="Right" Margin="0,0,-10,0" IsChecked="{CompiledBinding Device.DisableDefaultLayout}" />
+                            <CheckBox HorizontalAlignment="Right" Margin="0,0,-10,0" IsChecked="{CompiledBinding Device.DisableDefaultLayout}"/>
                         </StackPanel>
                     </Grid>
                     <Border Classes="card-separator" />
