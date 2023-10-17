@@ -22,10 +22,11 @@ public static class UI
 
     static UI()
     {
-        KeyBindingsEnabled = InputElement.GotFocusEvent.Raised.Select(e => e.Item2.Source is not TextBox).StartWith(true);
+        CurrentKeyBindingsEnabled = InputElement.GotFocusEvent.Raised.Select(e => e.Item2.Source is not TextBox).StartWith(true);
+        CurrentKeyBindingsEnabled.Subscribe(b => KeyBindingsEnabled = b);
         MicaEnabled = MicaEnabledSubject.AsObservable();
     }
-
+    
     /// <summary>
     ///     Gets the current IoC locator.
     /// </summary>
@@ -37,9 +38,14 @@ public static class UI
     public static IClipboard Clipboard { get; set; } = null!;
 
     /// <summary>
+    ///     Gets an observable boolean indicating whether hotkeys are to be disabled.
+    /// </summary>
+    public static IObservable<bool> CurrentKeyBindingsEnabled { get; }
+    
+    /// <summary>
     ///     Gets a boolean indicating whether hotkeys are to be disabled.
     /// </summary>
-    public static IObservable<bool> KeyBindingsEnabled { get; }
+    public static bool KeyBindingsEnabled { get; private set; }
 
     /// <summary>
     ///     Gets a boolean indicating whether the Mica effect should be enabled.

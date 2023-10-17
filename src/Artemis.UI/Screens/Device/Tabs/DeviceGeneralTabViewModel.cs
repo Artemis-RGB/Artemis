@@ -20,7 +20,8 @@ namespace Artemis.UI.Screens.Device;
 public class DeviceGeneralTabViewModel : ActivatableViewModelBase
 {
     private readonly ICoreService _coreService;
-    private readonly IRgbService _rgbService;
+    private readonly IDeviceService _deviceService;
+    private readonly IRenderService _renderService;
     private readonly IWindowService _windowService;
     private readonly List<DeviceCategory> _categories;
 
@@ -39,10 +40,11 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
     private SKColor _currentColor;
     private bool _displayOnDevices;
 
-    public DeviceGeneralTabViewModel(ArtemisDevice device, ICoreService coreService, IRgbService rgbService, IWindowService windowService)
+    public DeviceGeneralTabViewModel(ArtemisDevice device, ICoreService coreService, IDeviceService deviceService, IRenderService renderService, IWindowService windowService)
     {
         _coreService = coreService;
-        _rgbService = rgbService;
+        _deviceService = deviceService;
+        _renderService = renderService;
         _windowService = windowService;
         _categories = new List<DeviceCategory>(device.Categories);
 
@@ -66,11 +68,11 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
 
         this.WhenActivated(d =>
         {
-            _coreService.FrameRendering += OnFrameRendering;
+            _renderService.FrameRendering += OnFrameRendering;
 
             Disposable.Create(() =>
             {
-                _coreService.FrameRendering -= OnFrameRendering;
+                _renderService.FrameRendering -= OnFrameRendering;
                 Apply();
             }).DisposeWith(d);
         });
@@ -191,17 +193,12 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
             return;
 
         await Task.Delay(400);
-        _rgbService.SaveDevice(Device);
-        _rgbService.ApplyBestDeviceLayout(Device);
+        _deviceService.SaveDevice(Device);
+        _deviceService.ApplyDeviceLayout(Device, Device.GetBestDeviceLayout());
     }
 
     private void Apply()
     {
-        // TODO: Validation
-
-        _coreService.ProfileRenderingDisabled = true;
-        Thread.Sleep(100);
-
         Device.X = X;
         Device.Y = Y;
         Device.Scale = Scale;
@@ -213,9 +210,7 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
         foreach (DeviceCategory deviceCategory in _categories)
             Device.Categories.Add(deviceCategory);
 
-        _rgbService.SaveDevice(Device);
-
-        _coreService.ProfileRenderingDisabled = false;
+        _deviceService.SaveDevice(Device);
     }
 
     public void ApplyScaling()
@@ -223,8 +218,7 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
         Device.RedScale = RedScale / 100f;
         Device.GreenScale = GreenScale / 100f;
         Device.BlueScale = BlueScale / 100f;
-
-        _rgbService.FlushLeds = true;
+        Device.RgbDevice.Update(true);
     }
 
     public void ResetScaling()
@@ -232,6 +226,7 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
         RedScale = _initialRedScale * 100;
         GreenScale = _initialGreenScale * 100;
         BlueScale = _initialBlueScale * 100;
+        Device.RgbDevice.Update(true);
     }
 
     private void OnFrameRendering(object? sender, FrameRenderingEventArgs e)

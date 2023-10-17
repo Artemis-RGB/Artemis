@@ -1,4 +1,6 @@
 ﻿using System;
+using Artemis.Core;
+using Avalonia.Input;
 using Material.Icons;
 
 namespace Artemis.UI.Shared.Services.ProfileEditor;
@@ -43,6 +45,11 @@ public interface IToolViewModel : IDisposable
     ///     Gets the tooltip which this tool should show in the toolbar.
     /// </summary>
     public string ToolTip { get; }
+    
+    /// <summary>
+    /// Gets the keyboard hotkey that activates the tool.
+    /// </summary>
+    Hotkey? Hotkey { get; }
 }
 
 /// <inheritdoc cref="IToolViewModel" />
@@ -97,6 +104,9 @@ public abstract class ToolViewModel : ActivatableViewModelBase, IToolViewModel
 
     /// <inheritdoc />
     public abstract string ToolTip { get; }
+
+    /// <inheritdoc />
+    public abstract Hotkey? Hotkey { get; }
 
     #endregion
 }

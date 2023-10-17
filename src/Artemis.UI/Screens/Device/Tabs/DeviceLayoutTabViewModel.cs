@@ -22,20 +22,13 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
 {
     private readonly IWindowService _windowService;
     private readonly INotificationService _notificationService;
-    private readonly ICoreService _coreService;
-    private readonly IRgbService _rgbService;
+    private readonly IDeviceService _deviceService;
 
-    public DeviceLayoutTabViewModel(
-        IWindowService windowService,
-        INotificationService notificationService,
-        ICoreService coreService,
-        IRgbService rgbService,
-        ArtemisDevice device)
+    public DeviceLayoutTabViewModel(IWindowService windowService, INotificationService notificationService, IDeviceService deviceService, ArtemisDevice device)
     {
         _windowService = windowService;
         _notificationService = notificationService;
-        _coreService = coreService;
-        _rgbService = rgbService;
+        _deviceService = deviceService;
 
         Device = device;
         DisplayName = "Layout";
@@ -44,11 +37,7 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
         this.WhenActivated(d =>
         {
             Device.PropertyChanged += DeviceOnPropertyChanged;
-
-            Disposable.Create(() =>
-            {
-                Device.PropertyChanged -= DeviceOnPropertyChanged;
-            }).DisposeWith(d);
+            Disposable.Create(() => Device.PropertyChanged -= DeviceOnPropertyChanged).DisposeWith(d);
         });
     }
 
@@ -58,7 +47,7 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
 
     public string? ImagePath => Device.Layout?.Image?.LocalPath;
     
-    public string CustomLayoutPath => Device.CustomLayoutPath;
+    public string? CustomLayoutPath => Device.CustomLayoutPath;
     
     public bool HasCustomLayout => Device.CustomLayoutPath != null;
     
@@ -68,6 +57,8 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
         _notificationService.CreateNotification()
             .WithMessage("Cleared imported layout.")
             .WithSeverity(NotificationSeverity.Informational);
+        
+        _deviceService.SaveDevice(Device);
     }
 
     public async Task BrowseCustomLayout()
@@ -84,6 +75,8 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
                 .WithTitle("Imported layout")
                 .WithMessage($"File loaded from {files[0]}")
                 .WithSeverity(NotificationSeverity.Informational);
+            
+            _deviceService.SaveDevice(Device);
         }
     }
 
@@ -160,6 +153,10 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
     private void DeviceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is nameof(Device.CustomLayoutPath) or nameof(Device.DisableDefaultLayout))
-            Task.Run(() => _rgbService.ApplyBestDeviceLayout(Device));
+        {
+            Task.Run(() => _deviceService.ApplyDeviceLayout(Device, Device.GetBestDeviceLayout()));
+            this.RaisePropertyChanged(nameof(CustomLayoutPath));
+            this.RaisePropertyChanged(nameof(HasCustomLayout));
+        }
     }
 }

@@ -4,8 +4,10 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
+using Avalonia.Input;
 using Material.Icons;
 using ReactiveUI;
 using SkiaSharp;
@@ -38,12 +40,15 @@ public class SelectionRemoveToolViewModel : ToolViewModel
 
     /// <inheritdoc />
     public override int Order => 3;
+    
+    /// <inheritdoc />
+    public override Hotkey? Hotkey { get; } = new(KeyboardKey.OemMinus, KeyboardModifierKey.Control);
 
     /// <inheritdoc />
     public override MaterialIconKind Icon => MaterialIconKind.SelectOff;
 
     /// <inheritdoc />
-    public override string ToolTip => "Remove LEDs from the current layer";
+    public override string ToolTip => "Remove LEDs from the current layer (Ctrl + -)";
 
     public void RemoveLedsInRectangle(SKRect rect)
     {

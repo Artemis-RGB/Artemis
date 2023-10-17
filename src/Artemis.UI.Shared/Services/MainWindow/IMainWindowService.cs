@@ -11,7 +11,12 @@ public interface IMainWindowService : IArtemisSharedUIService
     ///     Gets a boolean indicating whether the main window is currently open
     /// </summary>
     bool IsMainWindowOpen { get; }
-    
+
+    /// <summary>
+    ///     Gets a boolean indicating whether the main window is currently focused
+    /// </summary>
+    bool IsMainWindowFocused { get; }
+
     /// <summary>
     ///     Sets up the main window provider that controls the state of the main window
     /// </summary>

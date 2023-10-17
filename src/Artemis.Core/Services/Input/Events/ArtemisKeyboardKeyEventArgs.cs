@@ -34,4 +34,13 @@ public class ArtemisKeyboardKeyEventArgs : EventArgs
     ///     Gets the modifiers that are pressed
     /// </summary>
     public KeyboardModifierKey Modifiers { get; }
+
+    /// <summary>
+    /// Creates a hotkey matching the event.
+    /// </summary>
+    /// <returns>The resulting hotkey.</returns>
+    public Hotkey ToHotkey()
+    {
+        return new Hotkey {Key = Key, Modifiers = Modifiers};
+    }
 }
