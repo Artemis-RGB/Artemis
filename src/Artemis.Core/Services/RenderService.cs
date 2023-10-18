@@ -75,8 +75,8 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
         _frameStopWatch.Restart();
         try
         {
-            OnFrameRendering(new FrameRenderingEventArgs(canvas, delta, _surfaceManager.Surface));
             _coreRenderer.Render(canvas, delta);
+            OnFrameRendering(new FrameRenderingEventArgs(canvas, delta, _surfaceManager.Surface));
         }
         catch (Exception e)
         {
