@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using Artemis.Core.DeviceProviders;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
 using SkiaSharp;
@@ -266,7 +267,7 @@ public class ArtemisDevice : CorePropertyChanged
 
     /// <summary>
     ///     Gets a boolean indicating whether this devices is enabled or not
-    ///     <para>Note: To enable/disable a device use the methods provided by <see cref="IRgbService" /></para>
+    ///     <para>Note: To enable/disable a device use the methods provided by <see cref="IDeviceService" /></para>
     /// </summary>
     public bool IsEnabled
     {
@@ -320,7 +321,7 @@ public class ArtemisDevice : CorePropertyChanged
     }
 
     /// <summary>
-    ///     Gets or sets the path of the custom layout to load when calling <see cref="IRgbService.ApplyBestDeviceLayout" />
+    ///     Gets or sets the path of the custom layout to load when calling <see cref="GetBestDeviceLayout" />
     ///     for this device
     /// </summary>
     public string? CustomLayoutPath

@@ -61,7 +61,10 @@ internal class WindowService : IWindowService
     public async Task ShowDialogAsync(object viewModel)
     {
         Window? parent = GetCurrentWindow();
-
+        
+        if (parent == null)
+            throw new ArtemisSharedUIException("Failed to get the current window.");
+        
         string name = viewModel.GetType().FullName!.Split('`')[0].Replace("ViewModel", "View");
         Type? type = viewModel.GetType().Assembly.GetType(name);
 
@@ -100,6 +103,9 @@ internal class WindowService : IWindowService
     public async Task<TResult> ShowDialogAsync<TResult>(DialogViewModelBase<TResult> viewModel)
     {
         Window? parent = GetCurrentWindow();
+        
+        if (parent == null)
+            throw new ArtemisSharedUIException("Failed to get the current window.");
 
         string name = viewModel.GetType().FullName!.Split('`')[0].Replace("ViewModel", "View");
         Type? type = viewModel.GetType().Assembly.GetType(name);

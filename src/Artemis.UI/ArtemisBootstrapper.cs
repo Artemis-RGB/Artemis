@@ -33,9 +33,9 @@ public static class ArtemisBootstrapper
     {
         if (_application != null || _container != null)
             throw new ArtemisUIException("UI already bootstrapped");
-         
+
         Utilities.PrepareFirstLaunch();
-        
+
         application.RequestedThemeVariant = ThemeVariant.Dark;
         _application = application;
         _container = new Container(rules => rules
@@ -52,7 +52,7 @@ public static class ArtemisBootstrapper
         configureServices?.Invoke(_container);
 
         _container.UseDryIocDependencyResolver();
-        
+
         Logger.Sink = _container.Resolve<SerilogAvaloniaSink>();
         return _container;
     }
@@ -64,7 +64,7 @@ public static class ArtemisBootstrapper
         if (_application.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
             return;
 
-        Constants.StartupArguments = new ReadOnlyCollection<string>(new List<string>(desktop.Args));
+        Constants.StartupArguments = new ReadOnlyCollection<string>(desktop.Args != null ? new List<string>(desktop.Args) : new List<string>());
 
         // Don't shut down when the last window closes, we might still be active in the tray
         desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;

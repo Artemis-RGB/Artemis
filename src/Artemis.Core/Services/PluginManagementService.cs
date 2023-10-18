@@ -31,7 +31,7 @@ internal class PluginManagementService : IPluginManagementService
     private readonly IPluginRepository _pluginRepository;
     private readonly List<Plugin> _plugins;
     private readonly IQueuedActionRepository _queuedActionRepository;
-    private FileSystemWatcher _hotReloadWatcher;
+    private FileSystemWatcher? _hotReloadWatcher;
     private bool _disposed;
     private bool _isElevated;
 

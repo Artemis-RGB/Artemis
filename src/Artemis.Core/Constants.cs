@@ -151,8 +151,7 @@ public static class Constants
     public static ReadOnlyCollection<string> StartupArguments { get; set; } = null!;
 
     /// <summary>
-    ///     Gets the graphics context to be used for rendering by SkiaSharp. Can be set via
-    ///     <see cref="IRgbService.UpdateGraphicsContext" />.
+    ///     Gets the graphics context to be used for rendering by SkiaSharp.
     /// </summary>
     public static IManagedGraphicsContext? ManagedGraphicsContext { get; internal set; }
 }

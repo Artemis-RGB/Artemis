@@ -18,6 +18,9 @@ public static class UI
 {
     private static readonly BehaviorSubject<bool> MicaEnabledSubject = new(false);
 
+    /// <summary>
+    ///     Gets the background event loop scheduler.
+    /// </summary>
     public static EventLoopScheduler BackgroundScheduler = new(ts => new Thread(ts));
 
     static UI()

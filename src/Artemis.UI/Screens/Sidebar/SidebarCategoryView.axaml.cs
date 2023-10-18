@@ -49,7 +49,8 @@ public partial class SidebarCategoryView : ReactiveUserControl<SidebarCategoryVi
 
     private void CreateDragAdorner(DragEventArgs e)
     {
-        if (_dragAdorner != null)
+        Window? window = this.FindAncestorOfType<Window>();
+        if (window == null || _dragAdorner != null)
             return;
 
         if (e.Source is not Control c)
@@ -64,7 +65,7 @@ public partial class SidebarCategoryView : ReactiveUserControl<SidebarCategoryVi
         ITransform? originalTransform = container.RenderTransform;
         try
         {
-            _dragStartPosition = e.GetPosition(this.FindAncestorOfType<Window>());
+            _dragStartPosition = e.GetPosition(window);
             _elementDragOffset = e.GetPosition(container);
 
             RenderTargetBitmap renderTarget = new(new PixelSize((int) container.Bounds.Width, (int) container.Bounds.Height));
@@ -88,7 +89,9 @@ public partial class SidebarCategoryView : ReactiveUserControl<SidebarCategoryVi
 
     private void HandleDragOver(object? sender, DragEventArgs e)
     {
-        UpdateDragAdorner(e.GetPosition(this.FindAncestorOfType<Window>()));
+        Window? window = this.FindAncestorOfType<Window>();
+        if (window != null)
+            UpdateDragAdorner(e.GetPosition(window));
     }
 
     private void HandleLeaveEvent(object? sender, RoutedEventArgs e)

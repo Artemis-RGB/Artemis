@@ -305,7 +305,7 @@ public class DeviceVisualizer : Control
         {
             _deviceImage = await Task.Run(() => GetDeviceImage(device));
         }
-        catch (Exception e)
+        catch (Exception)
         {
             // ignored
         }

@@ -25,8 +25,10 @@ public partial class DeviceLogicalLayoutDialogView : ReactiveUserControl<DeviceL
         RegionsAutoCompleteBox.PopulateComplete();
     }
 
-    private bool SearchRegions(string search, object item)
+    private bool SearchRegions(string? search, object? item)
     {
+        if (search == null)
+            return true;
         if (item is not RegionInfo regionInfo)
             return false;
 

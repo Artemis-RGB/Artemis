@@ -202,14 +202,17 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
     {
         // Preselect the icon based on streams if needed
         if (_profileConfiguration.Icon.IconType == ProfileConfigurationIconType.BitmapImage)
+        {
             try
             {
-                SelectedBitmapSource = new Bitmap(_profileConfiguration.Icon.GetIconStream());
+                Stream? iconStream = _profileConfiguration.Icon.GetIconStream();
+                SelectedBitmapSource = iconStream != null ? new Bitmap(iconStream) : null;
             }
             catch (Exception e)
             {
                 _windowService.ShowConfirmContentDialog("Failed to load profile icon", e.Message, "Meh", null);
             }
+        }
 
         // Prepare the contents of the dropdown box, it should be virtualized so no need to wait with this
         ObservableCollection<ProfileIconViewModel> icons = new(Enum.GetValues<MaterialIconKind>()

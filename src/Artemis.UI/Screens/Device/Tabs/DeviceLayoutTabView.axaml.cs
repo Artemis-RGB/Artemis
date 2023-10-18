@@ -1,8 +1,5 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Input;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.Device;
@@ -18,17 +15,17 @@ public partial class DeviceLayoutTabView : ReactiveUserControl<DeviceLayoutTabVi
     {
         if (ViewModel?.DefaultLayoutPath is null)
             return;
-        
-        TopLevel.GetTopLevel(this).Clipboard.SetTextAsync(ViewModel.DefaultLayoutPath);
+
+        TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(ViewModel.DefaultLayoutPath);
         ViewModel.ShowCopiedNotification();
     }
 
     private void ImagePathButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (ViewModel?.Device?.Layout?.Image?.LocalPath is null)
+        if (ViewModel?.Device.Layout?.Image?.LocalPath is null)
             return;
-        
-        TopLevel.GetTopLevel(this).Clipboard.SetTextAsync(ViewModel.Device.Layout.Image.LocalPath);
+
+        TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(ViewModel.Device.Layout.Image.LocalPath);
         ViewModel.ShowCopiedNotification();
     }
 }

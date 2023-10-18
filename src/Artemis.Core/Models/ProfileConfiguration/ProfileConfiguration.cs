@@ -23,7 +23,6 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
     private bool _disposed;
     private Hotkey? _enableHotkey;
     private ProfileConfigurationHotkeyMode _hotkeyMode;
-    private bool _isBeingEdited;
     private bool _isMissingModule;
     private bool _isSuspended;
     private bool _fadeInAndOut;

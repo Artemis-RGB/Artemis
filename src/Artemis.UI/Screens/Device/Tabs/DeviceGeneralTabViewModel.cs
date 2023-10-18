@@ -1,15 +1,10 @@
-﻿using Artemis.UI.Shared;
-using Artemis.UI.Shared;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Reactive.Disposables;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using ReactiveUI;
 using RGB.NET.Core;
@@ -50,10 +45,10 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
 
         Device = device;
         DisplayName = "General";
-        X = (int)Device.X;
-        Y = (int)Device.Y;
+        X = (int) Device.X;
+        Y = (int) Device.Y;
         Scale = Device.Scale;
-        Rotation = (int)Device.Rotation;
+        Rotation = (int) Device.Rotation;
         RedScale = Device.RedScale * 100f;
         GreenScale = Device.GreenScale * 100f;
         BlueScale = Device.BlueScale * 100f;
@@ -234,7 +229,7 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
         if (!DisplayOnDevices)
             return;
 
-        using SKPaint overlayPaint = new() { Color = CurrentColor };
+        using SKPaint overlayPaint = new() {Color = CurrentColor};
         e.Canvas.DrawRect(0, 0, e.Canvas.LocalClipBounds.Width, e.Canvas.LocalClipBounds.Height, overlayPaint);
     }
 }

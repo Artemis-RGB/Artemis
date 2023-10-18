@@ -23,7 +23,7 @@ public partial class ReleasesTabView : ReactiveUserControl<ReleasesTabViewModel>
             {
                 ReleaseFrame.NavigateFromObject(viewModel);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // ignored
             }
