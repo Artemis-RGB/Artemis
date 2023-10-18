@@ -33,7 +33,7 @@
         <PackageReference Include="Microsoft.Win32" Version="2.0.1" />
         <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.5" />
         <PackageReference Include="RawInput.Sharp" Version="0.1.1" />
-        <PackageReference Include="ReactiveUI" Version="19.4.1" />
+        <PackageReference Include="ReactiveUI" Version="19.5.1" />
         <PackageReference Include="SkiaSharp.Vulkan.SharpVk" Version="$(SkiaSharpVersion)" />
     </ItemGroup>
     <ItemGroup>
