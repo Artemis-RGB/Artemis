@@ -20,23 +20,25 @@ using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia;
 using Avalonia.ReactiveUI;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
-public abstract class TreeItemViewModel : ActivatableViewModelBase
+public abstract partial class TreeItemViewModel : ActivatableViewModelBase
 {
     private readonly IProfileEditorVmFactory _profileEditorVmFactory;
     private readonly IWindowService _windowService;
     private readonly IDeviceService _deviceService;
     protected readonly IProfileEditorService ProfileEditorService;
-    private bool _canPaste;
     private RenderProfileElement? _currentProfileElement;
-    private bool _isExpanded;
-    private bool _isFlyoutOpen;
     private ObservableAsPropertyHelper<bool>? _isFocused;
-    private ProfileElement? _profileElement;
     private TimeSpan _time;
+    
+    [Notify] private bool _canPaste;
+    [Notify] private bool _isExpanded;
+    [Notify] private bool _isFlyoutOpen;
+    [Notify] private ProfileElement? _profileElement;
 
     protected TreeItemViewModel(TreeItemViewModel? parent,
         ProfileElement? profileElement,
@@ -84,30 +86,6 @@ public abstract class TreeItemViewModel : ActivatableViewModelBase
     public ReactiveCommand<Unit, bool> AbsorbCommand { get; }
 
     public bool IsFocused => _isFocused?.Value ?? false;
-
-    public ProfileElement? ProfileElement
-    {
-        get => _profileElement;
-        set => RaiseAndSetIfChanged(ref _profileElement, value);
-    }
-
-    public bool IsExpanded
-    {
-        get => _isExpanded;
-        set => RaiseAndSetIfChanged(ref _isExpanded, value);
-    }
-
-    public bool IsFlyoutOpen
-    {
-        get => _isFlyoutOpen;
-        set => RaiseAndSetIfChanged(ref _isFlyoutOpen, value);
-    }
-
-    public bool CanPaste
-    {
-        get => _canPaste;
-        set => RaiseAndSetIfChanged(ref _canPaste, value);
-    }
 
     public TreeItemViewModel? Parent { get; set; }
     public ObservableCollection<TreeItemViewModel> Children { get; } = new();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Artemis.UI.Shared.Events;
 using FluentAvalonia.UI.Controls;
@@ -100,6 +101,24 @@ public abstract class ValidatableViewModelBase : ReactiveValidationObject, IActi
 
     /// <inheritdoc />
     public ViewModelActivator Activator { get; } = new();
+    
+    /// <summary>
+    /// Raises the property changed event for the provided property.
+    /// </summary>
+    /// <param name="args">The event arguments containing the name of the property that changed.</param>
+    protected virtual void OnPropertyChanged(PropertyChangedEventArgs args)
+    {
+        this.RaisePropertyChanged(args.PropertyName);
+    }
+
+    /// <summary>
+    /// Raises the property changing event for the provided property.
+    /// </summary>
+    /// <param name="args">The event arguments containing the name of the property that is changing.</param>
+    protected virtual void OnPropertyChanging(PropertyChangingEventArgs args)
+    {
+        this.RaisePropertyChanging(args.PropertyName);
+    }
 }
 
 /// <summary>
@@ -152,5 +171,23 @@ public abstract class ViewModelBase : ReactiveObject
         backingField = newValue;
         this.RaisePropertyChanged(propertyName);
         return newValue;
+    }
+
+    /// <summary>
+    /// Raises the property changed event for the provided property.
+    /// </summary>
+    /// <param name="args">The event arguments containing the name of the property that changed.</param>
+    protected virtual void OnPropertyChanged(PropertyChangedEventArgs args)
+    {
+        this.RaisePropertyChanged(args.PropertyName);
+    }
+
+    /// <summary>
+    /// Raises the property changing event for the provided property.
+    /// </summary>
+    /// <param name="args">The event arguments containing the name of the property that is changing.</param>
+    protected virtual void OnPropertyChanging(PropertyChangingEventArgs args)
+    {
+        this.RaisePropertyChanging(args.PropertyName);
     }
 }

@@ -5,15 +5,16 @@ using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using DynamicData;
+using PropertyChanged.SourceGenerator;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties;
 
-public class PropertyViewModel : PropertyViewModelBase, IDisposable
+public partial class PropertyViewModel : PropertyViewModelBase, IDisposable
 {
     private readonly SourceList<ILayerPropertyKeyframe> _keyframes;
-    private bool _isExpanded;
-    private bool _isHighlighted;
-    private bool _isVisible;
+    [Notify] private bool _isExpanded;
+    [Notify] private bool _isHighlighted;
+    [Notify] private bool _isVisible;
 
     public PropertyViewModel(ILayerProperty layerProperty, IPropertyVmFactory propertyVmFactory)
     {
@@ -37,24 +38,6 @@ public class PropertyViewModel : PropertyViewModelBase, IDisposable
     public ITreePropertyViewModel TreePropertyViewModel { get; }
     public ITimelinePropertyViewModel TimelinePropertyViewModel { get; }
     public override ReadOnlyObservableCollection<ILayerPropertyKeyframe> Keyframes { get; }
-
-    public bool IsVisible
-    {
-        get => _isVisible;
-        set => RaiseAndSetIfChanged(ref _isVisible, value);
-    }
-
-    public bool IsHighlighted
-    {
-        get => _isHighlighted;
-        set => RaiseAndSetIfChanged(ref _isHighlighted, value);
-    }
-
-    public bool IsExpanded
-    {
-        get => _isExpanded;
-        set => RaiseAndSetIfChanged(ref _isExpanded, value);
-    }
 
     private void LayerPropertyOnVisibilityChanged(object? sender, LayerPropertyEventArgs e)
     {

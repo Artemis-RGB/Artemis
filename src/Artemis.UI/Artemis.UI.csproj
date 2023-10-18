@@ -37,6 +37,10 @@
         <PackageReference Include="Markdown.Avalonia.Tight" Version="11.0.2" />
         <PackageReference Include="Material.Icons.Avalonia" Version="2.0.1" />
         <PackageReference Include="Octopus.Octodiff" Version="2.0.468" />
+        <PackageReference Include="PropertyChanged.SourceGenerator" Version="1.0.8">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="ReactiveUI" Version="19.5.1" />
         <PackageReference Include="ReactiveUI.Validation" Version="3.1.7" />
         <PackageReference Include="RGB.NET.Core" Version="$(RGBDotNetVersion)" />

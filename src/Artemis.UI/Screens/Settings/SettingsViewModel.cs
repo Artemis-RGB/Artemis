@@ -7,14 +7,15 @@ using System.Threading.Tasks;
 using Artemis.UI.Routing;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Settings;
 
-public class SettingsViewModel : RoutableHostScreen<RoutableScreen>, IMainScreenViewModel
+public partial class SettingsViewModel : RoutableHostScreen<RoutableScreen>, IMainScreenViewModel
 {
     private readonly IRouter _router;
-    private RouteViewModel? _selectedTab;
+    [Notify] private RouteViewModel? _selectedTab;
 
     public SettingsViewModel(IRouter router)
     {
@@ -36,12 +37,6 @@ public class SettingsViewModel : RoutableHostScreen<RoutableScreen>, IMainScreen
     }
 
     public ObservableCollection<RouteViewModel> SettingTabs { get; }
-
-    public RouteViewModel? SelectedTab
-    {
-        get => _selectedTab;
-        set => RaiseAndSetIfChanged(ref _selectedTab, value);
-    }
 
     public ViewModelBase? TitleBarViewModel => null;
     

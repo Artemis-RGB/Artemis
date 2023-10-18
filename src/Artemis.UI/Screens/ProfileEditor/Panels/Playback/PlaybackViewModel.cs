@@ -8,11 +8,12 @@ using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Threading;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Playback;
 
-public class PlaybackViewModel : ActivatableViewModelBase
+public partial class PlaybackViewModel : ActivatableViewModelBase
 {
     private readonly IProfileEditorService _profileEditorService;
     private readonly ISettingsService _settingsService;
@@ -22,9 +23,9 @@ public class PlaybackViewModel : ActivatableViewModelBase
     private DateTime _lastUpdate;
     private ObservableAsPropertyHelper<bool>? _playing;
     private RenderProfileElement? _profileElement;
-    private bool _repeating;
-    private bool _repeatSegment;
-    private bool _repeatTimeline;
+    [Notify] private bool _repeating;
+    [Notify] private bool _repeatSegment;
+    [Notify] private bool _repeatTimeline;
 
     public PlaybackViewModel(IProfileEditorService profileEditorService, ISettingsService settingsService)
     {
@@ -83,24 +84,6 @@ public class PlaybackViewModel : ActivatableViewModelBase
     public string? FormattedCurrentTime => _formattedCurrentTime?.Value;
     public bool Playing => _playing?.Value ?? false;
     public bool KeyBindingsEnabled => _keyBindingsEnabled?.Value ?? false;
-
-    public bool Repeating
-    {
-        get => _repeating;
-        set => RaiseAndSetIfChanged(ref _repeating, value);
-    }
-
-    public bool RepeatTimeline
-    {
-        get => _repeatTimeline;
-        set => RaiseAndSetIfChanged(ref _repeatTimeline, value);
-    }
-
-    public bool RepeatSegment
-    {
-        get => _repeatSegment;
-        set => RaiseAndSetIfChanged(ref _repeatSegment, value);
-    }
 
     public ReactiveCommand<Unit, Unit> PlayFromStart { get; }
     public ReactiveCommand<Unit, Unit> TogglePlay { get; }

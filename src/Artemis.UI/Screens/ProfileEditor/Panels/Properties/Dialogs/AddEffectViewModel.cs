@@ -8,15 +8,16 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using DynamicData;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Dialogs;
 
-public class AddEffectViewModel : ContentDialogViewModelBase
+public partial class AddEffectViewModel : ContentDialogViewModelBase
 {
     private readonly IProfileEditorService _profileEditorService;
     private readonly RenderProfileElement _renderProfileElement;
-    private string? _searchText;
+    [Notify] private string? _searchText;
 
     public AddEffectViewModel(RenderProfileElement renderProfileElement, IProfileEditorService profileEditorService, ILayerEffectService layerEffectService)
     {
@@ -35,12 +36,6 @@ public class AddEffectViewModel : ContentDialogViewModelBase
     }
 
     public ReadOnlyObservableCollection<LayerEffectDescriptor> LayerEffectDescriptors { get; }
-
-    public string? SearchText
-    {
-        get => _searchText;
-        set => RaiseAndSetIfChanged(ref _searchText, value);
-    }
 
     public void AddLayerEffect(LayerEffectDescriptor descriptor)
     {

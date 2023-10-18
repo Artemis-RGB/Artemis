@@ -13,17 +13,18 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using DynamicData;
 using DynamicData.Binding;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor;
 
-public class VisualEditorViewModel : ActivatableViewModelBase
+public partial class VisualEditorViewModel : ActivatableViewModelBase
 {
     private readonly SourceList<IVisualizerViewModel> _visualizers;
     private readonly IProfileEditorVmFactory _vmFactory;
     private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
     private ObservableAsPropertyHelper<bool>? _suspendedEditing;
-    private ReadOnlyObservableCollection<IToolViewModel>? _tools;
+    [Notify] private ReadOnlyObservableCollection<IToolViewModel>? _tools;
 
     public VisualEditorViewModel(IProfileEditorService profileEditorService, IDeviceService deviceService, IProfileEditorVmFactory vmFactory)
     {
@@ -64,12 +65,6 @@ public class VisualEditorViewModel : ActivatableViewModelBase
 
     public ProfileConfiguration? ProfileConfiguration => _profileConfiguration?.Value;
     public bool SuspendedEditing => _suspendedEditing?.Value ?? false;
-
-    public ReadOnlyObservableCollection<IToolViewModel>? Tools
-    {
-        get => _tools;
-        set => RaiseAndSetIfChanged(ref _tools, value);
-    }
 
     public ReadOnlyObservableCollection<IVisualizerViewModel> Visualizers { get; }
     public ObservableCollection<ArtemisDevice> Devices { get; }

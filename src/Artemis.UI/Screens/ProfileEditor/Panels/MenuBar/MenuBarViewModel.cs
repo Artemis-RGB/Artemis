@@ -15,11 +15,12 @@ using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Newtonsoft.Json;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.MenuBar;
 
-public class MenuBarViewModel : ActivatableViewModelBase
+public partial class MenuBarViewModel : ActivatableViewModelBase
 {
     private readonly IRouter _router;
     private readonly IProfileEditorService _profileEditorService;
@@ -29,12 +30,12 @@ public class MenuBarViewModel : ActivatableViewModelBase
     private ObservableAsPropertyHelper<bool>? _focusFolder;
     private ObservableAsPropertyHelper<bool>? _focusNone;
     private ObservableAsPropertyHelper<bool>? _focusSelection;
-    private ProfileEditorHistory? _history;
     private ObservableAsPropertyHelper<bool>? _isSuspended;
     private ObservableAsPropertyHelper<bool>? _keyBindingsEnabled;
     private ObservableAsPropertyHelper<ProfileConfiguration?>? _profileConfiguration;
     private ObservableAsPropertyHelper<RenderProfileElement?>? _profileElement;
     private ObservableAsPropertyHelper<bool>? _suspendedEditing;
+    [Notify] private ProfileEditorHistory? _history;
 
     public MenuBarViewModel(IRouter router, IProfileEditorService profileEditorService, IProfileService profileService, ISettingsService settingsService, IWindowService windowService)
     {
@@ -107,12 +108,6 @@ public class MenuBarViewModel : ActivatableViewModelBase
     public PluginSetting<bool> AlwaysShowValues => _settingsService.GetSetting("ProfileEditor.AlwaysShowValues", true);
     public PluginSetting<bool> AlwaysApplyDataBindings => _settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", false);
     public PluginSetting<ProfileEditorFocusMode> FocusMode => _settingsService.GetSetting("ProfileEditor.FocusMode", ProfileEditorFocusMode.Folder);
-
-    public ProfileEditorHistory? History
-    {
-        get => _history;
-        set => RaiseAndSetIfChanged(ref _history, value);
-    }
 
     private void ExecuteAddFolder()
     {

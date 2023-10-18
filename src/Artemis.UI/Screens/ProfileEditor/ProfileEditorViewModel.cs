@@ -19,11 +19,12 @@ using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using DynamicData;
 using DynamicData.Binding;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor;
 
-public class ProfileEditorViewModel : RoutableScreen<ProfileEditorViewModelParameters>, IMainScreenViewModel
+public partial class ProfileEditorViewModel : RoutableScreen<ProfileEditorViewModelParameters>, IMainScreenViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
     private readonly IProfileService _profileService;
@@ -31,8 +32,9 @@ public class ProfileEditorViewModel : RoutableScreen<ProfileEditorViewModelParam
     private readonly IMainWindowService _mainWindowService;
     private readonly SourceList<IToolViewModel> _tools;
     private ObservableAsPropertyHelper<ProfileEditorHistory?>? _history;
-    private ProfileConfiguration? _profileConfiguration;
     private ObservableAsPropertyHelper<bool>? _suspendedEditing;
+    
+    [Notify] private ProfileConfiguration? _profileConfiguration;
 
     /// <inheritdoc />
     public ProfileEditorViewModel(IProfileService profileService,
@@ -92,12 +94,6 @@ public class ProfileEditorViewModel : RoutableScreen<ProfileEditorViewModelParam
         TitleBarViewModel = profileEditorTitleBarViewModel;
         ToggleSuspend = ReactiveCommand.Create(ExecuteToggleSuspend);
         ToggleAutoSuspend = ReactiveCommand.Create(ExecuteToggleAutoSuspend);
-    }
-
-    public ProfileConfiguration? ProfileConfiguration
-    {
-        get => _profileConfiguration;
-        set => RaiseAndSetIfChanged(ref _profileConfiguration, value);
     }
 
     public VisualEditorViewModel? VisualEditorViewModel { get; }
