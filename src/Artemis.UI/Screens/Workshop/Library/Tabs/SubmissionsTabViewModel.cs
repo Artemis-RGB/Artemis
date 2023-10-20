@@ -11,18 +11,19 @@ using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Services;
 using DynamicData;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Library.Tabs;
 
-public class SubmissionsTabViewModel : RoutableScreen
+public partial class SubmissionsTabViewModel : RoutableScreen
 {
     private readonly IWorkshopClient _client;
     private readonly SourceCache<IGetSubmittedEntries_SubmittedEntries, long> _entries;
     private readonly IWindowService _windowService;
-    private bool _isLoading = true;
-    private bool _workshopReachable;
+    [Notify] private bool _isLoading = true;
+    [Notify] private bool _workshopReachable;
 
     public SubmissionsTabViewModel(IWorkshopClient client,
         IAuthenticationService authenticationService,
@@ -54,22 +55,9 @@ public class SubmissionsTabViewModel : RoutableScreen
 
     public ReactiveCommand<Unit, Unit> Login { get; }
     public ReactiveCommand<Unit, Unit> AddSubmission { get; }
-
     public IObservable<bool> IsLoggedIn { get; }
     public ReadOnlyObservableCollection<SubmissionsTabItemViewModel> Entries { get; }
-
-    public bool WorkshopReachable
-    {
-        get => _workshopReachable;
-        set => RaiseAndSetIfChanged(ref _workshopReachable, value);
-    }
-
-    public bool IsLoading
-    {
-        get => _isLoading;
-        set => RaiseAndSetIfChanged(ref _isLoading, value);
-    }
-
+    
     private async Task ExecuteLogin(CancellationToken ct)
     {
         await _windowService.CreateContentDialog().WithViewModel(out WorkshopLoginViewModel _).WithTitle("Workshop login").ShowAsync();

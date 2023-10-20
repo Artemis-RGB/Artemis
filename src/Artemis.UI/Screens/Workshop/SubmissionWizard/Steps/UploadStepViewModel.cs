@@ -11,13 +11,14 @@ using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Exceptions;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using Artemis.WebClient.Workshop.Services;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using Serilog;
 using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 
-public class UploadStepViewModel : SubmissionViewModel
+public partial class UploadStepViewModel : SubmissionViewModel
 {
     private readonly ILogger _logger;
     private readonly EntryUploadHandlerFactory _entryUploadHandlerFactory;
@@ -28,11 +29,10 @@ public class UploadStepViewModel : SubmissionViewModel
     private readonly IWindowService _windowService;
     private readonly IWorkshopClient _workshopClient;
     private readonly IWorkshopService _workshopService;
-
     private long? _entryId;
-    private bool _failed;
-    private bool _finished;
-    private bool _succeeded;
+    [Notify] private bool _failed;
+    [Notify] private bool _finished;
+    [Notify] private bool _succeeded;
 
     /// <inheritdoc />
     public UploadStepViewModel(ILogger logger,
@@ -65,24 +65,6 @@ public class UploadStepViewModel : SubmissionViewModel
 
     public int ProgressPercentage => _progressPercentage.Value;
     public bool ProgressIndeterminate => _progressIndeterminate.Value;
-
-    public bool Finished
-    {
-        get => _finished;
-        set => RaiseAndSetIfChanged(ref _finished, value);
-    }
-
-    public bool Succeeded
-    {
-        get => _succeeded;
-        set => RaiseAndSetIfChanged(ref _succeeded, value);
-    }
-
-    public bool Failed
-    {
-        get => _failed;
-        set => RaiseAndSetIfChanged(ref _failed, value);
-    }
 
     private async Task ExecuteUpload(CancellationToken cancellationToken)
     {

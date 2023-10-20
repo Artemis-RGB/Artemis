@@ -10,18 +10,19 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Layout;
 
-public class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
+public partial class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
 {
     private readonly IWorkshopClient _client;
     private readonly INotificationService _notificationService;
     private readonly IWindowService _windowService;
     private readonly ObservableAsPropertyHelper<DateTimeOffset?> _updatedAt;
-    private IGetEntryById_Entry? _entry;
+    [Notify(Setter.Private)] private IGetEntryById_Entry? _entry;
 
     public LayoutDetailsViewModel(IWorkshopClient client, INotificationService notificationService, IWindowService windowService)
     {
@@ -36,12 +37,6 @@ public class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
     public ReactiveCommand<Unit, Unit> DownloadLatestRelease { get; }
 
     public DateTimeOffset? UpdatedAt => _updatedAt.Value;
-
-    public IGetEntryById_Entry? Entry
-    {
-        get => _entry;
-        private set => RaiseAndSetIfChanged(ref _entry, value);
-    }
 
     public override async Task OnNavigating(WorkshopDetailParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {

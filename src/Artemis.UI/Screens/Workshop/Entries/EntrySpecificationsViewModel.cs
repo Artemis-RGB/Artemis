@@ -16,6 +16,7 @@ using AvaloniaEdit.Document;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Binding;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
 using ReactiveUI.Validation.Helpers;
@@ -23,20 +24,19 @@ using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Entries;
 
-public class EntrySpecificationsViewModel : ValidatableViewModelBase
+public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
 {
     private readonly ObservableAsPropertyHelper<bool> _categoriesValid;
     private readonly ObservableAsPropertyHelper<bool> _iconValid;
     private readonly ObservableAsPropertyHelper<bool> _descriptionValid;
     private readonly IWorkshopClient _workshopClient;
     private readonly IWindowService _windowService;
-    
-    private string _description = string.Empty;
-    private Bitmap? _iconBitmap;
-    private TextDocument? _markdownDocument;
-    private string _name = string.Empty;
-    private string _summary = string.Empty;
-    private bool _iconChanged;
+    [Notify] private string _name = string.Empty;
+    [Notify] private string _summary = string.Empty;
+    [Notify] private string _description = string.Empty;
+    [Notify] private Bitmap? _iconBitmap;
+    [Notify] private TextDocument? _markdownDocument;
+    [Notify(Setter.Private)] private bool _iconChanged;
 
     public EntrySpecificationsViewModel(IWorkshopClient workshopClient, IWindowService windowService)
     {
@@ -90,42 +90,6 @@ public class EntrySpecificationsViewModel : ValidatableViewModelBase
     public bool CategoriesValid => _categoriesValid.Value ;
     public bool IconValid => _iconValid.Value;
     public bool DescriptionValid => _descriptionValid.Value;
-
-    public string Name
-    {
-        get => _name;
-        set => RaiseAndSetIfChanged(ref _name, value);
-    }
-
-    public string Summary
-    {
-        get => _summary;
-        set => RaiseAndSetIfChanged(ref _summary, value);
-    }
-
-    public string Description
-    {
-        get => _description;
-        set => RaiseAndSetIfChanged(ref _description, value);
-    }
-
-    public Bitmap? IconBitmap
-    {
-        get => _iconBitmap;
-        set => RaiseAndSetIfChanged(ref _iconBitmap, value);
-    }
-
-    public TextDocument? MarkdownDocument
-    {
-        get => _markdownDocument;
-        set => RaiseAndSetIfChanged(ref _markdownDocument, value);
-    }
-
-    public bool IconChanged
-    {
-        get => _iconChanged;
-        private set => RaiseAndSetIfChanged(ref _iconChanged, value);
-    }
 
     public List<long> PreselectedCategories { get; set; } = new();
 

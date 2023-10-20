@@ -8,14 +8,15 @@ using Artemis.UI.Screens.Workshop.Entries;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 using Artemis.WebClient.Workshop;
 using DynamicData;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 
-public class SpecificationsStepViewModel : SubmissionViewModel
+public partial class SpecificationsStepViewModel : SubmissionViewModel
 {
     private readonly Func<EntrySpecificationsViewModel> _getEntrySpecificationsViewModel;
-    private EntrySpecificationsViewModel? _entrySpecificationsViewModel;
+    [Notify] private EntrySpecificationsViewModel? _entrySpecificationsViewModel;
 
     public SpecificationsStepViewModel(Func<EntrySpecificationsViewModel> getEntrySpecificationsViewModel)
     {
@@ -27,12 +28,6 @@ public class SpecificationsStepViewModel : SubmissionViewModel
             DisplayName = $"{State.EntryType} Information";
             ApplyFromState();
         });
-    }
-
-    public EntrySpecificationsViewModel? EntrySpecificationsViewModel
-    {
-        get => _entrySpecificationsViewModel;
-        set => RaiseAndSetIfChanged(ref _entrySpecificationsViewModel, value);
     }
 
     private void ExecuteGoBack()

@@ -12,19 +12,20 @@ using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
 using Artemis.WebClient.Workshop.Handlers.InstallationHandlers.Implementations;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Profile;
 
-public class ProfileDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
+public partial class ProfileDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
 {
     private readonly IWorkshopClient _client;
     private readonly ProfileEntryInstallationHandler _installationHandler;
     private readonly INotificationService _notificationService;
     private readonly ObservableAsPropertyHelper<DateTimeOffset?> _updatedAt;
     private readonly IWindowService _windowService;
-    private IGetEntryById_Entry? _entry;
+    [Notify(Setter.Private)] private IGetEntryById_Entry? _entry;
 
     public ProfileDetailsViewModel(IWorkshopClient client, ProfileEntryInstallationHandler installationHandler, INotificationService notificationService, IWindowService windowService)
     {
@@ -43,13 +44,7 @@ public class ProfileDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
     public ReactiveCommand<Unit, Unit> DownloadLatestRelease { get; }
 
     public DateTimeOffset? UpdatedAt => _updatedAt.Value;
-
-    public IGetEntryById_Entry? Entry
-    {
-        get => _entry;
-        private set => RaiseAndSetIfChanged(ref _entry, value);
-    }
-
+    
     public override async Task OnNavigating(WorkshopDetailParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
         await GetEntry(parameters.EntryId, cancellationToken);

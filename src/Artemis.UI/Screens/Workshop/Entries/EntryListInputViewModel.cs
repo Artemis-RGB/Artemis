@@ -1,18 +1,19 @@
 ﻿using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.Entries;
 
-public class EntryListInputViewModel : ViewModelBase
+public partial class EntryListInputViewModel : ViewModelBase
 {
     private static string? _lastSearch;
     private readonly PluginSetting<int> _entriesPerPage;
     private readonly PluginSetting<int> _sortBy;
     private string? _search;
-    private string _searchWatermark = "Search";
-    private int _totalCount;
+    [Notify] private string _searchWatermark = "Search";
+    [Notify] private int _totalCount;
 
     public EntryListInputViewModel(ISettingsService settingsService)
     {
@@ -22,13 +23,7 @@ public class EntryListInputViewModel : ViewModelBase
         _entriesPerPage.AutoSave = true;
         _sortBy.AutoSave = true;
     }
-
-    public string SearchWatermark
-    {
-        get => _searchWatermark;
-        set => RaiseAndSetIfChanged(ref _searchWatermark, value);
-    }
-
+    
     public string? Search
     {
         get => _search;
@@ -59,15 +54,8 @@ public class EntryListInputViewModel : ViewModelBase
         }
     }
 
-    public int TotalCount
-    {
-        get => _totalCount;
-        set => RaiseAndSetIfChanged(ref _totalCount, value);
-    }
-
     public void ClearLastSearch()
     {
         _lastSearch = null;
     }
-
 }

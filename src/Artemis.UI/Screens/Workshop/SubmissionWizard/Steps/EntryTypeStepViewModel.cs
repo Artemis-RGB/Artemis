@@ -1,12 +1,13 @@
 using System.Reactive.Linq;
 using Artemis.WebClient.Workshop;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 
-public class EntryTypeStepViewModel : SubmissionViewModel
+public partial class EntryTypeStepViewModel : SubmissionViewModel
 {
-    private EntryType? _selectedEntryType;
+    [Notify] private EntryType? _selectedEntryType;
 
     /// <inheritdoc />
     public EntryTypeStepViewModel()
@@ -20,12 +21,6 @@ public class EntryTypeStepViewModel : SubmissionViewModel
 # else
     public bool ShowLayouts => false;
 #endif
-
-    public EntryType? SelectedEntryType
-    {
-        get => _selectedEntryType;
-        set => RaiseAndSetIfChanged(ref _selectedEntryType, value);
-    }
 
     private void ExecuteContinue()
     {

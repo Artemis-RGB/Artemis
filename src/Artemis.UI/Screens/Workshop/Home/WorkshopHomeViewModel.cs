@@ -6,14 +6,15 @@ using Artemis.UI.Screens.Workshop.SubmissionWizard;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop.Services;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.Home;
 
-public class WorkshopHomeViewModel : RoutableScreen
+public partial class WorkshopHomeViewModel : RoutableScreen
 {
     private readonly IWindowService _windowService;
-    private bool _workshopReachable;
+    [Notify(Setter.Private)] private bool _workshopReachable;
 
     public WorkshopHomeViewModel(IRouter router, IWindowService windowService, IWorkshopService workshopService)
     {
@@ -33,12 +34,6 @@ public class WorkshopHomeViewModel : RoutableScreen
     
     public ReactiveCommand<Unit, Unit> AddSubmission { get; }
     public ReactiveCommand<string, Unit> Navigate { get; }
-
-    public bool WorkshopReachable
-    {
-        get => _workshopReachable;
-        private set => RaiseAndSetIfChanged(ref _workshopReachable, value);
-    }
 
     private async Task ExecuteAddSubmission(CancellationToken arg)
     {

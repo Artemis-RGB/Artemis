@@ -13,12 +13,13 @@ using Artemis.UI.Shared.Services.Builders;
 using Artemis.WebClient.Workshop;
 using Avalonia.Threading;
 using DynamicData;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Entries;
 
-public abstract class EntryListViewModel : RoutableScreen<WorkshopListParameters>
+public abstract partial class EntryListViewModel : RoutableScreen<WorkshopListParameters>
 {
     private readonly SourceList<IGetEntries_Entries_Items> _entries = new();
     private readonly ObservableAsPropertyHelper<bool> _isLoading;
@@ -26,10 +27,9 @@ public abstract class EntryListViewModel : RoutableScreen<WorkshopListParameters
     private readonly string _route;
     private readonly ObservableAsPropertyHelper<bool> _showPagination;
     private readonly IWorkshopClient _workshopClient;
-    private int _loadedPage = -1;
-
-    private int _page;
-    private int _totalPages = 1;
+    [Notify] private int _page;
+    [Notify] private int _loadedPage = -1;
+    [Notify] private int _totalPages = 1;
 
     protected EntryListViewModel(string route,
         IWorkshopClient workshopClient,
@@ -74,26 +74,7 @@ public abstract class EntryListViewModel : RoutableScreen<WorkshopListParameters
     public EntryListInputViewModel InputViewModel { get; }
 
     public ReadOnlyObservableCollection<EntryListItemViewModel> Entries { get; }
-
-    public int Page
-    {
-        get => _page;
-        set => RaiseAndSetIfChanged(ref _page, value);
-    }
-
-    public int LoadedPage
-    {
-        get => _loadedPage;
-        set => RaiseAndSetIfChanged(ref _loadedPage, value);
-    }
-
-
-    public int TotalPages
-    {
-        get => _totalPages;
-        set => RaiseAndSetIfChanged(ref _totalPages, value);
-    }
-
+    
     public override async Task OnNavigating(WorkshopListParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
         Page = Math.Max(1, parameters.Page);
