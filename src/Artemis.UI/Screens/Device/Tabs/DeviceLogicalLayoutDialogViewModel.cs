@@ -8,18 +8,18 @@ using Artemis.Core;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using FluentAvalonia.UI.Controls;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using ContentDialogButton = Artemis.UI.Shared.Services.Builders.ContentDialogButton;
 
 namespace Artemis.UI.Screens.Device;
 
-public class DeviceLogicalLayoutDialogViewModel : ContentDialogViewModelBase
+public partial class DeviceLogicalLayoutDialogViewModel : ContentDialogViewModelBase
 {
     private const int LOCALE_NEUTRAL = 0x0000;
     private const int LOCALE_CUSTOM_DEFAULT = 0x0c00;
     private const int LOCALE_INVARIANT = 0x007F;
-
-    private RegionInfo? _selectedRegion;
+    [Notify] private RegionInfo? _selectedRegion;
 
     public DeviceLogicalLayoutDialogViewModel(ArtemisDevice device)
     {
@@ -43,12 +43,6 @@ public class DeviceLogicalLayoutDialogViewModel : ContentDialogViewModelBase
     public ReactiveCommand<Unit, Unit> ApplyLogicalLayout { get; }
     public ObservableCollection<RegionInfo> Regions { get; }
     public bool Applied { get; set; }
-
-    public RegionInfo? SelectedRegion
-    {
-        get => _selectedRegion;
-        set => RaiseAndSetIfChanged(ref _selectedRegion, value);
-    }
 
     public static async Task<bool> SelectLogicalLayout(IWindowService windowService, ArtemisDevice device)
     {

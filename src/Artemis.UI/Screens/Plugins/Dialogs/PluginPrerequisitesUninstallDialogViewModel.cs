@@ -15,19 +15,20 @@ using Artemis.UI.Shared.Services;
 using Avalonia.Threading;
 using FluentAvalonia.Core;
 using FluentAvalonia.UI.Controls;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using ContentDialogButton = Artemis.UI.Shared.Services.Builders.ContentDialogButton;
 
 namespace Artemis.UI.Screens.Plugins;
 
-public class PluginPrerequisitesUninstallDialogViewModel : ContentDialogViewModelBase
+public partial class PluginPrerequisitesUninstallDialogViewModel : ContentDialogViewModelBase
 {
     private readonly IPluginManagementService _pluginManagementService;
     private readonly List<IPrerequisitesSubject> _subjects;
     private readonly IWindowService _windowService;
-    private PluginPrerequisiteViewModel? _activePrerequisite;
-    private bool _canUninstall;
     private CancellationTokenSource? _tokenSource;
+    [Notify] private PluginPrerequisiteViewModel? _activePrerequisite;
+    [Notify] private bool _canUninstall;
 
     public PluginPrerequisitesUninstallDialogViewModel(List<IPrerequisitesSubject> subjects,
         IPrerequisitesVmFactory prerequisitesVmFactory,
@@ -59,19 +60,7 @@ public class PluginPrerequisitesUninstallDialogViewModel : ContentDialogViewMode
 
     public ReactiveCommand<Unit, Unit> Uninstall { get; }
     public ObservableCollection<PluginPrerequisiteViewModel> Prerequisites { get; }
-
-    public PluginPrerequisiteViewModel? ActivePrerequisite
-    {
-        get => _activePrerequisite;
-        set => RaiseAndSetIfChanged(ref _activePrerequisite, value);
-    }
-
-    public bool CanUninstall
-    {
-        get => _canUninstall;
-        set => RaiseAndSetIfChanged(ref _canUninstall, value);
-    }
-
+    
     public static async Task Show(IWindowService windowService, List<IPrerequisitesSubject> subjects, string cancelLabel = "Cancel")
     {
         await windowService.CreateContentDialog()

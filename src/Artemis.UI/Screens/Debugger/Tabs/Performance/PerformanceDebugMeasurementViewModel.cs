@@ -1,16 +1,17 @@
 ﻿using Artemis.Core;
 using Artemis.UI.Shared;
+using PropertyChanged.SourceGenerator;
 
 namespace Artemis.UI.Screens.Debugger.Performance;
 
-public class PerformanceDebugMeasurementViewModel : ViewModelBase
+public partial class PerformanceDebugMeasurementViewModel : ViewModelBase
 {
-    private string? _average;
-    private string? _last;
-    private string? _max;
-    private string? _min;
-    private string? _percentile;
-    private string? _count;
+    [Notify] private string? _average;
+    [Notify] private string? _last;
+    [Notify] private string? _max;
+    [Notify] private string? _min;
+    [Notify] private string? _percentile;
+    [Notify] private string? _count;
 
     public PerformanceDebugMeasurementViewModel(ProfilingMeasurement measurement)
     {
@@ -18,42 +19,6 @@ public class PerformanceDebugMeasurementViewModel : ViewModelBase
     }
 
     public ProfilingMeasurement Measurement { get; }
-
-    public string? Last
-    {
-        get => _last;
-        set => RaiseAndSetIfChanged(ref _last, value);
-    }
-
-    public string? Average
-    {
-        get => _average;
-        set => RaiseAndSetIfChanged(ref _average, value);
-    }
-
-    public string? Min
-    {
-        get => _min;
-        set => RaiseAndSetIfChanged(ref _min, value);
-    }
-
-    public string? Max
-    {
-        get => _max;
-        set => RaiseAndSetIfChanged(ref _max, value);
-    }
-
-    public string? Percentile
-    {
-        get => _percentile;
-        set => RaiseAndSetIfChanged(ref _percentile, value);
-    }
-    
-    public string? Count
-    {
-        get => _count;
-        set => RaiseAndSetIfChanged(ref _count, value);
-    }
 
     public void Update()
     {

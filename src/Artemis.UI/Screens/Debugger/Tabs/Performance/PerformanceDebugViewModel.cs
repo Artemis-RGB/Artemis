@@ -7,20 +7,21 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Avalonia.Threading;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using SkiaSharp;
 
 namespace Artemis.UI.Screens.Debugger.Performance;
 
-public class PerformanceDebugViewModel : ActivatableViewModelBase
+public partial class PerformanceDebugViewModel : ActivatableViewModelBase
 {
     private readonly IRenderService _renderService;
     private readonly IPluginManagementService _pluginManagementService;
     private readonly DispatcherTimer _updateTimer;
-    private double _currentFps;
-    private string? _renderer;
-    private int _renderHeight;
-    private int _renderWidth;
+    [Notify] private double _currentFps;
+    [Notify] private string? _renderer;
+    [Notify] private int _renderHeight;
+    [Notify] private int _renderWidth;
 
     public PerformanceDebugViewModel(IRenderService renderService, IPluginManagementService pluginManagementService)
     {
@@ -59,31 +60,7 @@ public class PerformanceDebugViewModel : ActivatableViewModelBase
     }
 
     public ObservableCollection<PerformanceDebugPluginViewModel> Items { get; } = new();
-
-    public double CurrentFps
-    {
-        get => _currentFps;
-        set => RaiseAndSetIfChanged(ref _currentFps, value);
-    }
-
-    public int RenderWidth
-    {
-        get => _renderWidth;
-        set => RaiseAndSetIfChanged(ref _renderWidth, value);
-    }
-
-    public int RenderHeight
-    {
-        get => _renderHeight;
-        set => RaiseAndSetIfChanged(ref _renderHeight, value);
-    }
-
-    public string? Renderer
-    {
-        get => _renderer;
-        set => RaiseAndSetIfChanged(ref _renderer, value);
-    }
-
+    
     private void HandleActivation()
     {
         Renderer = Constants.ManagedGraphicsContext != null ? Constants.ManagedGraphicsContext.GetType().Name : "Software";

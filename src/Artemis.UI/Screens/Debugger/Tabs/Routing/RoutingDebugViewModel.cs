@@ -11,18 +11,19 @@ using Artemis.UI.Shared.Routing;
 using Avalonia.Controls.Documents;
 using Avalonia.Media;
 using Avalonia.Threading;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using Serilog.Events;
 using Serilog.Formatting.Display;
 
 namespace Artemis.UI.Screens.Debugger.Routing;
 
-public class RoutingDebugViewModel : ActivatableViewModelBase
+public partial class RoutingDebugViewModel : ActivatableViewModelBase
 {
     private readonly IRouter _router;
     private const int MAX_ENTRIES = 1000;
     private readonly MessageTemplateTextFormatter _formatter;
-    private string? _route;
+    [Notify] private string? _route;
 
     public RoutingDebugViewModel(IRouter router)
     {
@@ -48,12 +49,6 @@ public class RoutingDebugViewModel : ActivatableViewModelBase
 
     public InlineCollection Lines { get; } = new();
     public ReactiveCommand<Unit, Unit> Navigate { get; }
-
-    public string? Route
-    {
-        get => _route;
-        set => RaiseAndSetIfChanged(ref _route, value);
-    }
 
     private void OnLogEventAdded(object? sender, LogEventEventArgs e)
     {

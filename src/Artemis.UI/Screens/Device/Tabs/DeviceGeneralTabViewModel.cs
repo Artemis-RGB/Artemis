@@ -6,38 +6,35 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using RGB.NET.Core;
 using SkiaSharp;
 
 namespace Artemis.UI.Screens.Device;
 
-public class DeviceGeneralTabViewModel : ActivatableViewModelBase
+public partial class DeviceGeneralTabViewModel : ActivatableViewModelBase
 {
-    private readonly ICoreService _coreService;
     private readonly IDeviceService _deviceService;
     private readonly IRenderService _renderService;
     private readonly IWindowService _windowService;
     private readonly List<DeviceCategory> _categories;
-
     private readonly float _initialBlueScale;
     private readonly float _initialGreenScale;
     private readonly float _initialRedScale;
 
-    private int _rotation;
-    private float _scale;
-    private int _x;
-    private int _y;
+    [Notify] private int _rotation;
+    [Notify] private float _scale;
+    [Notify] private int _x;
+    [Notify] private int _y;
+    [Notify] private float _redScale;
+    [Notify] private float _greenScale;
+    [Notify] private float _blueScale;
+    [Notify] private SKColor _currentColor;
+    [Notify] private bool _displayOnDevices;
 
-    private float _redScale;
-    private float _greenScale;
-    private float _blueScale;
-    private SKColor _currentColor;
-    private bool _displayOnDevices;
-
-    public DeviceGeneralTabViewModel(ArtemisDevice device, ICoreService coreService, IDeviceService deviceService, IRenderService renderService, IWindowService windowService)
+    public DeviceGeneralTabViewModel(ArtemisDevice device, IDeviceService deviceService, IRenderService renderService, IWindowService windowService)
     {
-        _coreService = coreService;
         _deviceService = deviceService;
         _renderService = renderService;
         _windowService = windowService;
@@ -76,31 +73,7 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
     public bool RequiresManualSetup => !Device.DeviceProvider.CanDetectPhysicalLayout || !Device.DeviceProvider.CanDetectLogicalLayout;
 
     public ArtemisDevice Device { get; }
-
-    public int X
-    {
-        get => _x;
-        set => RaiseAndSetIfChanged(ref _x, value);
-    }
-
-    public int Y
-    {
-        get => _y;
-        set => RaiseAndSetIfChanged(ref _y, value);
-    }
-
-    public float Scale
-    {
-        get => _scale;
-        set => RaiseAndSetIfChanged(ref _scale, value);
-    }
-
-    public int Rotation
-    {
-        get => _rotation;
-        set => RaiseAndSetIfChanged(ref _rotation, value);
-    }
-
+    
     public bool IsKeyboard => Device.DeviceType == RGBDeviceType.Keyboard;
 
     public bool HasDeskCategory
@@ -132,37 +105,7 @@ public class DeviceGeneralTabViewModel : ActivatableViewModelBase
         get => GetCategory(DeviceCategory.Peripherals);
         set => SetCategory(DeviceCategory.Peripherals, value);
     }
-
-    public float RedScale
-    {
-        get => _redScale;
-        set => RaiseAndSetIfChanged(ref _redScale, value);
-    }
-
-    public float GreenScale
-    {
-        get => _greenScale;
-        set => RaiseAndSetIfChanged(ref _greenScale, value);
-    }
-
-    public float BlueScale
-    {
-        get => _blueScale;
-        set => RaiseAndSetIfChanged(ref _blueScale, value);
-    }
-
-    public SKColor CurrentColor
-    {
-        get => _currentColor;
-        set => RaiseAndSetIfChanged(ref _currentColor, value);
-    }
-
-    public bool DisplayOnDevices
-    {
-        get => _displayOnDevices;
-        set => RaiseAndSetIfChanged(ref _displayOnDevices, value);
-    }
-
+    
     private bool GetCategory(DeviceCategory category)
     {
         return _categories.Contains(category);

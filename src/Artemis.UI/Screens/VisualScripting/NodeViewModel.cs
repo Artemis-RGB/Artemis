@@ -16,29 +16,28 @@ using Avalonia;
 using Avalonia.Layout;
 using DynamicData;
 using DynamicData.Binding;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
-public class NodeViewModel : ActivatableViewModelBase
+public partial class NodeViewModel : ActivatableViewModelBase
 {
     private readonly INodeEditorService _nodeEditorService;
     private readonly IWindowService _windowService;
-
-    private ICustomNodeViewModel? _customNodeViewModel;
-    private double _dragOffsetX;
-    private double _dragOffsetY;
     private ObservableAsPropertyHelper<bool>? _hasInputPins;
     private ObservableAsPropertyHelper<bool>? _hasOutputPins;
-    private bool _isSelected;
-
     private ObservableAsPropertyHelper<bool>? _isStaticNode;
+    private double _dragOffsetX;
+    private double _dragOffsetY;
     private double _startX;
     private double _startY;
-    private bool _displayCustomViewModelAbove;
-    private bool _displayCustomViewModelBetween;
-    private bool _displayCustomViewModelBelow;
-    private VerticalAlignment _customViewModelVerticalAlignment;
+    [Notify] private bool _isSelected;
+    [Notify] private ICustomNodeViewModel? _customNodeViewModel;
+    [Notify] private bool _displayCustomViewModelAbove;
+    [Notify] private bool _displayCustomViewModelBetween;
+    [Notify] private bool _displayCustomViewModelBelow;
+    [Notify] private VerticalAlignment _customViewModelVerticalAlignment;
 
     public NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node, INodeVmFactory nodeVmFactory, INodeEditorService nodeEditorService, IWindowService windowService)
     {
@@ -170,43 +169,6 @@ public class NodeViewModel : ActivatableViewModelBase
     public ReadOnlyObservableCollection<PinViewModel> OutputPinViewModels { get; }
     public ReadOnlyObservableCollection<PinCollectionViewModel> OutputPinCollectionViewModels { get; }
     public ReadOnlyObservableCollection<PinViewModel> PinViewModels { get; }
-
-    public bool IsSelected
-    {
-        get => _isSelected;
-        set => RaiseAndSetIfChanged(ref _isSelected, value);
-    }
-    
-    public ICustomNodeViewModel? CustomNodeViewModel
-    {
-        get => _customNodeViewModel;
-        set => RaiseAndSetIfChanged(ref _customNodeViewModel, value);
-    }
-
-    public bool DisplayCustomViewModelAbove
-    {
-        get => _displayCustomViewModelAbove;
-        set => RaiseAndSetIfChanged(ref _displayCustomViewModelAbove, value);
-    }
-
-    public bool DisplayCustomViewModelBetween
-    {
-        get => _displayCustomViewModelBetween;
-        set => RaiseAndSetIfChanged(ref _displayCustomViewModelBetween, value);
-    }
-
-    public bool DisplayCustomViewModelBelow
-    {
-        get => _displayCustomViewModelBelow;
-        set => RaiseAndSetIfChanged(ref _displayCustomViewModelBelow, value);
-    }
-
-    public VerticalAlignment CustomViewModelVerticalAlignment
-    {
-        get => _customViewModelVerticalAlignment;
-        set => RaiseAndSetIfChanged(ref _customViewModelVerticalAlignment, value);
-    }
-
     public ReactiveCommand<Unit, Unit> ShowBrokenState { get; }
     public ReactiveCommand<Unit, Unit> DeleteNode { get; }
 

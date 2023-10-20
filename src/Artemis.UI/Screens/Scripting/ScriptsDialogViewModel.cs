@@ -16,19 +16,20 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using DynamicData;
 using DynamicData.Binding;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Scripting;
 
-public class ScriptsDialogViewModel : DialogViewModelBase<object?>
+public partial class ScriptsDialogViewModel : DialogViewModelBase<object?>
 {
     private readonly Dictionary<ScriptingProvider, IScriptEditorViewModel> _providerViewModels = new();
     private readonly IScriptingService _scriptingService;
     private readonly IWindowService _windowService;
     private ObservableAsPropertyHelper<bool>? _hasScripts;
-    private ReadOnlyObservableCollection<ScriptConfigurationViewModel> _scriptConfigurations;
-    private IScriptEditorViewModel? _scriptEditorViewModel;
-    private ScriptConfigurationViewModel? _selectedScript;
+    [Notify] private ReadOnlyObservableCollection<ScriptConfigurationViewModel> _scriptConfigurations;
+    [Notify] private IScriptEditorViewModel? _scriptEditorViewModel;
+    [Notify] private ScriptConfigurationViewModel? _selectedScript;
 
     public ScriptsDialogViewModel(IScriptingService scriptingService, IWindowService windowService, IProfileService profileService, IScriptVmFactory scriptVmFactory)
     {
@@ -74,25 +75,6 @@ public class ScriptsDialogViewModel : DialogViewModelBase<object?>
     public List<ScriptingProvider> ScriptingProviders { get; }
     public Profile? Profile { get; }
     public bool HasScripts => _hasScripts?.Value ?? false;
-
-    public ReadOnlyObservableCollection<ScriptConfigurationViewModel> ScriptConfigurations
-    {
-        get => _scriptConfigurations;
-        set => RaiseAndSetIfChanged(ref _scriptConfigurations, value);
-    }
-
-    public ScriptConfigurationViewModel? SelectedScript
-    {
-        get => _selectedScript;
-        set => RaiseAndSetIfChanged(ref _selectedScript, value);
-    }
-
-    public IScriptEditorViewModel? ScriptEditorViewModel
-    {
-        get => _scriptEditorViewModel;
-        set => RaiseAndSetIfChanged(ref _scriptEditorViewModel, value);
-    }
-
     public ReactiveCommand<Unit, Unit> AddScriptConfiguration { get; }
 
     public async Task<bool> CanClose()

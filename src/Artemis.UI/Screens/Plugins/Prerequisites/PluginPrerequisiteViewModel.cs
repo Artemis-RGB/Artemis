@@ -6,21 +6,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Shared;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Plugins.Prerequisites;
 
-public class PluginPrerequisiteViewModel : ActivatableViewModelBase
+public partial class PluginPrerequisiteViewModel : ActivatableViewModelBase
 {
     private readonly ObservableAsPropertyHelper<int> _activeStepNumber;
     private readonly ObservableAsPropertyHelper<bool> _busy;
     private readonly bool _uninstall;
-
-    private PluginPrerequisiteActionViewModel? _activeAction;
-
-    private bool _installing;
-    private bool _isMet;
-    private bool _uninstalling;
+    [Notify] private PluginPrerequisiteActionViewModel? _activeAction;
+    [Notify] private bool _installing;
+    [Notify] private bool _isMet;
+    [Notify] private bool _uninstalling;
 
     public PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall)
     {
@@ -45,33 +44,7 @@ public class PluginPrerequisiteViewModel : ActivatableViewModelBase
     }
 
     public ObservableCollection<PluginPrerequisiteActionViewModel> Actions { get; }
-
-    public PluginPrerequisiteActionViewModel? ActiveAction
-    {
-        get => _activeAction;
-        set => RaiseAndSetIfChanged(ref _activeAction, value);
-    }
-
     public PluginPrerequisite PluginPrerequisite { get; }
-
-    public bool Installing
-    {
-        get => _installing;
-        set => RaiseAndSetIfChanged(ref _installing, value);
-    }
-
-    public bool Uninstalling
-    {
-        get => _uninstalling;
-        set => RaiseAndSetIfChanged(ref _uninstalling, value);
-    }
-
-    public bool IsMet
-    {
-        get => _isMet;
-        set => RaiseAndSetIfChanged(ref _isMet, value);
-    }
-
     public bool Busy => _busy.Value;
     public int ActiveStepNumber => _activeStepNumber.Value;
 

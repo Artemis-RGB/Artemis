@@ -12,21 +12,21 @@ using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Artemis.UI.Shared.Services;
 using Avalonia.Threading;
 using DynamicData;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Debugger.DataModel;
 
-public class DataModelDebugViewModel : ActivatableViewModelBase
+public partial class DataModelDebugViewModel : ActivatableViewModelBase
 {
     private readonly IDataModelUIService _dataModelUIService;
     private readonly IPluginManagementService _pluginManagementService;
     private readonly DispatcherTimer _updateTimer;
-
     private bool _isModuleFilterEnabled;
-    private DataModelPropertiesViewModel? _mainDataModel;
-    private string? _propertySearch;
     private Module? _selectedModule;
     private bool _slowUpdates;
+    [Notify] private DataModelPropertiesViewModel? _mainDataModel;
+    [Notify] private string? _propertySearch;
 
     public DataModelDebugViewModel(IDataModelUIService dataModelUIService, IPluginManagementService pluginManagementService)
     {
@@ -55,18 +55,6 @@ public class DataModelDebugViewModel : ActivatableViewModelBase
                 MainDataModel = null;
             }).DisposeWith(disposables);
         });
-    }
-
-    public DataModelPropertiesViewModel? MainDataModel
-    {
-        get => _mainDataModel;
-        set => RaiseAndSetIfChanged(ref _mainDataModel, value);
-    }
-
-    public string? PropertySearch
-    {
-        get => _propertySearch;
-        set => RaiseAndSetIfChanged(ref _propertySearch, value);
     }
 
     public bool SlowUpdates

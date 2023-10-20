@@ -4,16 +4,17 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using FluentAvalonia.UI.Controls;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
 
 namespace Artemis.UI.Screens.Sidebar;
 
-public class SidebarCategoryEditViewModel : ContentDialogViewModelBase
+public partial class SidebarCategoryEditViewModel : ContentDialogViewModelBase
 {
     private readonly ProfileCategory? _category;
     private readonly IProfileService _profileService;
-    private string? _categoryName;
+    [Notify] private string? _categoryName;
 
     public SidebarCategoryEditViewModel(IProfileService profileService, ProfileCategory category)
     {
@@ -27,13 +28,7 @@ public class SidebarCategoryEditViewModel : ContentDialogViewModelBase
         this.ValidationRule(vm => vm.CategoryName, categoryName => !string.IsNullOrWhiteSpace(categoryName?.Trim()), "You must specify a valid name");
         this.ValidationRule(vm => vm.CategoryName, categoryName => profileService.ProfileCategories.All(c => c.Name != categoryName?.Trim()), "You must specify a unique name");
     }
-
-    public string? CategoryName
-    {
-        get => _categoryName;
-        set => RaiseAndSetIfChanged(ref _categoryName, value);
-    }
-
+    
     public ReactiveCommand<Unit, Unit> Confirm { get; }
 
     private void ExecuteConfirm()

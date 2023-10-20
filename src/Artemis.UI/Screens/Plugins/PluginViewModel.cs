@@ -14,21 +14,22 @@ using Artemis.UI.Shared.Services.Builders;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using Material.Icons;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Plugins;
 
-public class PluginViewModel : ActivatableViewModelBase
+public partial class PluginViewModel : ActivatableViewModelBase
 {
     private readonly ICoreService _coreService;
     private readonly INotificationService _notificationService;
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IWindowService _windowService;
-    private bool _canInstallPrerequisites;
-    private bool _canRemovePrerequisites;
-    private bool _enabling;
-    private Plugin _plugin;
     private Window? _settingsWindow;
+    [Notify] private bool _canInstallPrerequisites;
+    [Notify] private bool _canRemovePrerequisites;
+    [Notify] private bool _enabling;
+    [Notify] private Plugin _plugin;
 
     public PluginViewModel(Plugin plugin,
         ReactiveCommand<Unit, Unit>? reload,
@@ -87,34 +88,9 @@ public class PluginViewModel : ActivatableViewModelBase
     public ReactiveCommand<Unit, Unit> OpenPluginDirectory { get; }
 
     public ObservableCollection<PluginPlatformViewModel> Platforms { get; }
-
-    public Plugin Plugin
-    {
-        get => _plugin;
-        set => RaiseAndSetIfChanged(ref _plugin, value);
-    }
-
-    public bool Enabling
-    {
-        get => _enabling;
-        set => RaiseAndSetIfChanged(ref _enabling, value);
-    }
-
     public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
     public bool IsEnabled => Plugin.IsEnabled;
-
-    public bool CanInstallPrerequisites
-    {
-        get => _canInstallPrerequisites;
-        set => RaiseAndSetIfChanged(ref _canInstallPrerequisites, value);
-    }
-
-    public bool CanRemovePrerequisites
-    {
-        get => _canRemovePrerequisites;
-        set => RaiseAndSetIfChanged(ref _canRemovePrerequisites, value);
-    }
-
+    
     public async Task UpdateEnabled(bool enable)
     {
         if (Enabling)

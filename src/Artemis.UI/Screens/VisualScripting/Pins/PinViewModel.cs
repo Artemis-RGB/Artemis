@@ -13,17 +13,18 @@ using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Avalonia;
 using Avalonia.Media;
 using DynamicData;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting.Pins;
 
-public abstract class PinViewModel : ActivatableViewModelBase
+public abstract partial class PinViewModel : ActivatableViewModelBase
 {
     private readonly INodeService _nodeService;
-    private Color _darkenedPinColor;
-    private Color _pinColor;
-    private Point _position;
-    private ReactiveCommand<IPin, Unit>? _removePin;
+    [Notify] private Color _darkenedPinColor;
+    [Notify] private Color _pinColor;
+    [Notify] private Point _position;
+    [Notify] private ReactiveCommand<IPin, Unit>? _removePin;
 
     protected PinViewModel(IPin pin, NodeScriptViewModel nodeScriptViewModel, INodeService nodeService, INodeEditorService nodeEditorService)
     {
@@ -49,33 +50,7 @@ public abstract class PinViewModel : ActivatableViewModelBase
     }
 
     public IObservableList<IPin> Connections { get; }
-
     public IPin Pin { get; }
-
-    public Color PinColor
-    {
-        get => _pinColor;
-        set => RaiseAndSetIfChanged(ref _pinColor, value);
-    }
-
-    public Color DarkenedPinColor
-    {
-        get => _darkenedPinColor;
-        set => RaiseAndSetIfChanged(ref _darkenedPinColor, value);
-    }
-
-    public Point Position
-    {
-        get => _position;
-        set => RaiseAndSetIfChanged(ref _position, value);
-    }
-
-    public ReactiveCommand<IPin, Unit>? RemovePin
-    {
-        get => _removePin;
-        set => RaiseAndSetIfChanged(ref _removePin, value);
-    }
-
     public ReactiveCommand<Unit, Unit> DisconnectPin { get; }
 
     public bool IsCompatibleWith(PinViewModel pinViewModel)

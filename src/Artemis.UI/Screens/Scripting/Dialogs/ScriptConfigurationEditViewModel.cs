@@ -2,14 +2,15 @@
 using Artemis.Core.ScriptingProviders;
 using Artemis.UI.Shared;
 using FluentAvalonia.UI.Controls;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
 
 namespace Artemis.UI.Screens.Scripting.Dialogs;
 
-public class ScriptConfigurationEditViewModel : ContentDialogViewModelBase
+public partial class ScriptConfigurationEditViewModel : ContentDialogViewModelBase
 {
-    private string? _scriptName;
+    [Notify] private string? _scriptName;
 
     public ScriptConfigurationEditViewModel(ScriptConfiguration scriptConfiguration)
     {
@@ -22,12 +23,6 @@ public class ScriptConfigurationEditViewModel : ContentDialogViewModelBase
 
     public ScriptConfiguration ScriptConfiguration { get; }
     public ReactiveCommand<Unit, Unit> Submit { get; }
-
-    public string? ScriptName
-    {
-        get => _scriptName;
-        set => RaiseAndSetIfChanged(ref _scriptName, value);
-    }
 
     private void ExecuteSubmit()
     {

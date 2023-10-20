@@ -12,27 +12,27 @@ using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.WebClient.Updating;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using Serilog;
 using StrawberryShake;
 
 namespace Artemis.UI.Screens.Settings.Updating;
 
-public class ReleaseDetailsViewModel : RoutableScreen<ReleaseDetailsViewModelParameters>
+public partial class ReleaseDetailsViewModel : RoutableScreen<ReleaseDetailsViewModelParameters>
 {
     private readonly ObservableAsPropertyHelper<long> _fileSize;
     private readonly ILogger _logger;
     private readonly INotificationService _notificationService;
     private readonly IUpdateService _updateService;
     private readonly IUpdatingClient _updatingClient;
-    private bool _installationAvailable;
-    private bool _installationFinished;
-    private bool _installationInProgress;
-
     private CancellationTokenSource? _installerCts;
-    private bool _loading = true;
-    private IGetReleaseById_PublishedRelease? _release;
-    private ReleaseInstaller? _releaseInstaller;
+    [Notify(Setter.Private)] private bool _loading = true;
+    [Notify] private IGetReleaseById_PublishedRelease? _release;
+    [Notify] private ReleaseInstaller? _releaseInstaller;
+    [Notify] private bool _installationAvailable;
+    [Notify] private bool _installationFinished;
+    [Notify] private bool _installationInProgress;
 
     public ReleaseDetailsViewModel(ILogger logger, IUpdatingClient updatingClient, INotificationService notificationService, IUpdateService updateService)
     {
@@ -67,43 +67,7 @@ public class ReleaseDetailsViewModel : RoutableScreen<ReleaseDetailsViewModelPar
     public ReactiveCommand<Unit, Unit> CancelInstall { get; }
 
     public long FileSize => _fileSize.Value;
-
-    public IGetReleaseById_PublishedRelease? Release
-    {
-        get => _release;
-        set => RaiseAndSetIfChanged(ref _release, value);
-    }
-
-    public ReleaseInstaller? ReleaseInstaller
-    {
-        get => _releaseInstaller;
-        set => RaiseAndSetIfChanged(ref _releaseInstaller, value);
-    }
-
-    public bool Loading
-    {
-        get => _loading;
-        private set => RaiseAndSetIfChanged(ref _loading, value);
-    }
-
-    public bool InstallationAvailable
-    {
-        get => _installationAvailable;
-        set => RaiseAndSetIfChanged(ref _installationAvailable, value);
-    }
-
-    public bool InstallationInProgress
-    {
-        get => _installationInProgress;
-        set => RaiseAndSetIfChanged(ref _installationInProgress, value);
-    }
-
-    public bool InstallationFinished
-    {
-        get => _installationFinished;
-        set => RaiseAndSetIfChanged(ref _installationFinished, value);
-    }
-
+    
     public void NavigateToSource()
     {
         if (Release != null)

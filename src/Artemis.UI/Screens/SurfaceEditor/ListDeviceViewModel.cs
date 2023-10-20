@@ -6,20 +6,20 @@ using Artemis.Core.Services;
 using Artemis.UI.Screens.Device;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using RGB.NET.Core;
 using SkiaSharp;
 
 namespace Artemis.UI.Screens.SurfaceEditor;
 
-public class ListDeviceViewModel : ViewModelBase
+public partial class ListDeviceViewModel : ViewModelBase
 {
     private static readonly Random Random = new();
     private readonly IWindowService _windowService;
     private readonly IDeviceService _deviceService;
-
-    private SKColor _color;
-    private bool _isSelected;
+    [Notify] private SKColor _color;
+    [Notify] private bool _isSelected;
 
     public ListDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel, IWindowService windowService, IDeviceService deviceService)
     {
@@ -37,19 +37,7 @@ public class ListDeviceViewModel : ViewModelBase
     public ArtemisDevice Device { get; }
     public SurfaceEditorViewModel SurfaceEditorViewModel { get; }
     public bool CanDetectInput => Device.DeviceType == RGBDeviceType.Keyboard || Device.DeviceType == RGBDeviceType.Mouse;
-
-    public bool IsSelected
-    {
-        get => _isSelected;
-        set => RaiseAndSetIfChanged(ref _isSelected, value);
-    }
-
-    public SKColor Color
-    {
-        get => _color;
-        set => RaiseAndSetIfChanged(ref _color, value);
-    }
-
+    
     private async Task ExecuteDetectInput()
     {
         if (!CanDetectInput)

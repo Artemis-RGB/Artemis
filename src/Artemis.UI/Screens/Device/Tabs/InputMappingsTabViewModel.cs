@@ -7,18 +7,19 @@ using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Shared;
 using HidSharp.Reports.Units;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using RGB.NET.Core;
 using Unit = System.Reactive.Unit;
 
 namespace Artemis.UI.Screens.Device;
 
-public class InputMappingsTabViewModel : ActivatableViewModelBase
+public partial class InputMappingsTabViewModel : ActivatableViewModelBase
 {
     private readonly IInputService _inputService;
     private readonly IDeviceService _deviceService;
     private readonly ObservableCollection<ArtemisLed> _selectedLeds;
-    private ArtemisLed? _selectedLed;
+    [Notify] private ArtemisLed? _selectedLed;
 
     public InputMappingsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds, IInputService inputService, IDeviceService deviceService)
     {
@@ -49,15 +50,7 @@ public class InputMappingsTabViewModel : ActivatableViewModelBase
     }
 
     public ReactiveCommand<ArtemisInputMapping, Unit> DeleteMapping { get; }
-
     public ArtemisDevice Device { get; }
-
-    public ArtemisLed? SelectedLed
-    {
-        get => _selectedLed;
-        set => RaiseAndSetIfChanged(ref _selectedLed, value);
-    }
-
     public ObservableCollection<ArtemisInputMapping> InputMappings { get; }
 
     private void ExecuteDeleteMapping(ArtemisInputMapping inputMapping)
