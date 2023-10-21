@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
@@ -56,6 +57,8 @@ public class SubmissionWizardState
     {
         if (EntryType == EntryType.Profile)
             ChangeScreen<ProfileSelectionStepViewModel>();
+        else if (EntryType == EntryType.Layout)
+            ChangeScreen<LayoutSelectionStepViewModel>();
         else
             throw new NotImplementedException();
     }

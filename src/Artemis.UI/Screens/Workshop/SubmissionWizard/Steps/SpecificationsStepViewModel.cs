@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive.Disposables;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Workshop.Entries;
+using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 using Artemis.WebClient.Workshop;
 using DynamicData;
@@ -38,6 +39,7 @@ public partial class SpecificationsStepViewModel : SubmissionViewModel
         switch (State.EntryType)
         {
             case EntryType.Layout:
+                State.ChangeScreen<LayoutSelectionStepViewModel>();
                 break;
             case EntryType.Plugin:
                 break;

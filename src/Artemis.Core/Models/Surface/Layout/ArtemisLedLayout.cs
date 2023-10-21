@@ -15,6 +15,11 @@ public class ArtemisLedLayout
         DeviceLayout = deviceLayout;
         RgbLayout = led;
         LayoutCustomLedData = (LayoutCustomLedData?) led.CustomData ?? new LayoutCustomLedData();
+        
+        // Default to the first logical layout for images
+        LayoutCustomLedDataLogicalLayout? defaultLogicalLayout = LayoutCustomLedData.LogicalLayouts?.FirstOrDefault();
+        if (defaultLogicalLayout != null)
+            ApplyLogicalLayout(defaultLogicalLayout);
     }
 
     /// <summary>
@@ -54,6 +59,11 @@ public class ArtemisLedLayout
             .ThenBy(l => l.Name == null)
             .First();
 
+        ApplyLogicalLayout(logicalLayout);
+    }
+    
+    private void ApplyLogicalLayout(LayoutCustomLedDataLogicalLayout logicalLayout)
+    {
         LogicalName = logicalLayout.Name;
         Image = new Uri(Path.Combine(Path.GetDirectoryName(DeviceLayout.FilePath)!, logicalLayout.Image!), UriKind.Absolute);
     }
