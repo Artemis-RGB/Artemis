@@ -4,22 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
              xmlns:layout="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout"
-             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout.LayoutSelectionStepView"
              x:DataType="layout:LayoutSelectionStepViewModel">
-    <UserControl.Resources>
-        <VisualBrush x:Key="LargeCheckerboardBrush" TileMode="Tile" Stretch="Uniform" SourceRect="0,0,20,20">
-            <VisualBrush.Visual>
-                <Canvas Width="20" Height="20">
-                    <Rectangle Width="10" Height="10" Fill="Black" Opacity="0.15" />
-                    <Rectangle Width="10" Height="10" Canvas.Left="10" />
-                    <Rectangle Width="10" Height="10" Canvas.Top="10" />
-                    <Rectangle Width="10" Height="10" Canvas.Left="10" Canvas.Top="10" Fill="Black" Opacity="0.15" />
-                </Canvas>
-            </VisualBrush.Visual>
-        </VisualBrush>
-    </UserControl.Resources>
     <Grid RowDefinitions="Auto,*">
         <StackPanel>
             <StackPanel.Styles>

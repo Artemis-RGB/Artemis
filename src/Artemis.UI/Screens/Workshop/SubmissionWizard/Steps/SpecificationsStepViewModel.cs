@@ -39,7 +39,7 @@ public partial class SpecificationsStepViewModel : SubmissionViewModel
         switch (State.EntryType)
         {
             case EntryType.Layout:
-                State.ChangeScreen<LayoutSelectionStepViewModel>();
+                State.ChangeScreen<LayoutInfoStepViewModel>();
                 break;
             case EntryType.Plugin:
                 break;

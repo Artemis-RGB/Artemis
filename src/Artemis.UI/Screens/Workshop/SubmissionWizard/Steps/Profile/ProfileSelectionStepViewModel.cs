@@ -7,6 +7,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Workshop.Profile;
+using Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
 using Material.Icons;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
@@ -38,8 +39,8 @@ public partial class ProfileSelectionStepViewModel : SubmissionViewModel
         this.WhenActivated((CompositeDisposable _) =>
         {
             ShowGoBack = State.EntryId == null;
-            if (State.EntrySource is ProfileConfiguration profileConfiguration)
-                SelectedProfile = Profiles.FirstOrDefault(p => p.ProfileId == profileConfiguration.ProfileId);
+            if (State.EntrySource is ProfileEntrySource profileEntrySource)
+                SelectedProfile = Profiles.FirstOrDefault(p => p.ProfileId == profileEntrySource.ProfileConfiguration.ProfileId);
         });
     }
 
@@ -66,7 +67,7 @@ public partial class ProfileSelectionStepViewModel : SubmissionViewModel
         if (SelectedProfile == null)
             return;
 
-        State.EntrySource = SelectedProfile;
+        State.EntrySource = new ProfileEntrySource(SelectedProfile);
         State.Name = SelectedProfile.Name;
         State.Icon = SelectedProfile.Icon.GetIconStream();
 

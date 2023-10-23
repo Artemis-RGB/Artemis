@@ -5,16 +5,15 @@ using Artemis.Core.Services;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Artemis.UI.Extensions;
+using Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
 using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Services;
-using Avalonia;
 using Avalonia.Media.Imaging;
-using Material.Icons;
-using RGB.NET.Core;
 using SkiaSharp;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout;
@@ -36,10 +35,20 @@ public partial class LayoutSelectionStepViewModel : SubmissionViewModel
                 .OrderBy(d => d.RgbDevice.DeviceInfo.Model)
         );
 
+        GoBack = ReactiveCommand.Create(() => State.ChangeScreen<EntryTypeStepViewModel>());
         Continue = ReactiveCommand.Create(ExecuteContinue, this.WhenAnyValue(vm => vm.Layout).Select(p => p != null));
 
         this.WhenAnyValue(vm => vm.SelectedDevice).WhereNotNull().Subscribe(d => Layout = d.Layout);
         this.WhenAnyValue(vm => vm.Layout).Subscribe(CreatePreviewDevice);
+        
+        this.WhenActivated((CompositeDisposable _) =>
+        {
+            ShowGoBack = State.EntryId == null;
+            if (State.EntrySource is not LayoutEntrySource layoutEntrySource)
+                return;
+            Layout = layoutEntrySource.Layout;
+            SelectedDevice = Devices.FirstOrDefault(d => d.Layout == Layout);
+        });
     }
 
     public ObservableCollection<ArtemisDevice> Devices { get; }
@@ -78,12 +87,22 @@ public partial class LayoutSelectionStepViewModel : SubmissionViewModel
         if (Layout == null)
             return;
 
-        State.EntrySource = Layout;
+        State.EntrySource = new LayoutEntrySource(Layout);
         State.Name = Layout.RgbLayout.Name ?? "";
         State.Summary = !string.IsNullOrWhiteSpace(Layout.RgbLayout.Vendor)
             ? $"{Layout.RgbLayout.Vendor} {Layout.RgbLayout.Type} device layout"
             : $"{Layout.RgbLayout.Type} device layout";
+        
+        State.Categories = new List<long> {8}; // Device category, yes this could change but why would it
+        
+        State.Icon?.Dispose();
+        State.Icon = GetDeviceIcon();
+        
+        State.ChangeScreen<LayoutInfoStepViewModel>();
+    }
 
+    private Stream GetDeviceIcon()
+    {
         // Go through the hassle of resizing the image to 128x128 without losing aspect ratio, padding is added for this
         using RenderTargetBitmap image = Layout.RenderLayout(false);
         using MemoryStream stream = new();
@@ -99,18 +118,14 @@ public partial class LayoutSelectionStepViewModel : SubmissionViewModel
         SKSizeI scaledDimensions = new((int) Math.Floor(sourceWidth * scale), (int) Math.Floor(sourceHeight * scale));
         SKPointI offset = new((128 - scaledDimensions.Width) / 2, (128 - scaledDimensions.Height) / 2);
 
-        using (SKBitmap? scaleBitmap = sourceBitmap.Resize(scaledDimensions, SKFilterQuality.High))
-        using (SKBitmap targetBitmap = new(128, 128))
-        using (SKCanvas canvas = new(targetBitmap))
-        {
-            canvas.Clear(SKColors.Transparent);
-            canvas.DrawBitmap(scaleBitmap, offset.X, offset.Y);
-            targetBitmap.Encode(output, SKEncodedImageFormat.Png, 100);
-            output.Seek(0, SeekOrigin.Begin);
-        }
+        using SKBitmap? scaleBitmap = sourceBitmap.Resize(scaledDimensions, SKFilterQuality.High);
+        using SKBitmap targetBitmap = new(128, 128);
+        using SKCanvas canvas = new(targetBitmap);
+        canvas.Clear(SKColors.Transparent);
+        canvas.DrawBitmap(scaleBitmap, offset.X, offset.Y);
+        targetBitmap.Encode(output, SKEncodedImageFormat.Png, 100);
+        output.Seek(0, SeekOrigin.Begin);
 
-        State.Icon?.Dispose();
-        State.Icon = output;
-        State.ChangeScreen<SpecificationsStepViewModel>();
+        return output;
     }
 }

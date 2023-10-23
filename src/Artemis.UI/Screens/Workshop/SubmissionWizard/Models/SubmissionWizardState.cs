@@ -7,7 +7,7 @@ using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
 using DryIoc;
 
-namespace Artemis.UI.Screens.Workshop.SubmissionWizard;
+namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
 
 public class SubmissionWizardState
 {
@@ -34,7 +34,7 @@ public class SubmissionWizardState
     public List<string> Tags { get; set; } = new();
     public List<Stream> Images { get; set; } = new();
 
-    public object? EntrySource { get; set; }
+    public IEntrySource? EntrySource { get; set; }
 
     public void ChangeScreen<TSubmissionViewModel>() where TSubmissionViewModel : SubmissionViewModel
     {

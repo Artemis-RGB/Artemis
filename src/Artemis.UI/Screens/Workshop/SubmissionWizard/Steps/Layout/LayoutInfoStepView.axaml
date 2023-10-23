@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:layout="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout.LayoutInfoStepView"
+             x:DataType="layout:LayoutInfoStepViewModel">
+    <Grid RowDefinitions="Auto,*">
+        <StackPanel>
+            <StackPanel.Styles>
+                <Styles>
+                    <Style Selector="TextBlock">
+                        <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                    </Style>
+                </Styles>
+            </StackPanel.Styles>
+            <TextBlock Theme="{StaticResource TitleTextBlockStyle}" TextWrapping="Wrap">
+                Layout information
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap">
+                The information below is used by Artemis to automatically find your layout.
+                Some layouts can be shared across different devices and here you have a chance to set that up.
+            </TextBlock>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1"
+                      Grid.Column="0"
+                      Margin="0 10 0 0"
+                      Classes="with-padding"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto"
+                      VerticalAlignment="Top">
+            <ItemsRepeater ItemsSource="{CompiledBinding LayoutInfo}">
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl Content="{CompiledBinding}" />
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

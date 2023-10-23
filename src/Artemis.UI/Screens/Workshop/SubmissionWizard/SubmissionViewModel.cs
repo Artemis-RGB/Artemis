@@ -1,4 +1,5 @@
 using System.Reactive;
+using Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
 using Artemis.UI.Shared;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;

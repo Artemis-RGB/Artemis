@@ -1,0 +1,23 @@
+fragment category on Category {
+    name
+    icon
+}
+
+fragment layoutInfo on LayoutInfo {
+    id
+    deviceProvider
+    deviceType
+    model
+    vendor
+    logicalLayout
+    physicalLayout
+}
+
+fragment submittedEntry on Entry {
+    id
+    name
+    summary
+    entryType
+    downloads
+    createdAt
+}

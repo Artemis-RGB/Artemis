@@ -9,8 +9,7 @@ query GetEntryById($id: Long!) {
         createdAt
         description
         categories {
-            name
-            icon
+            ...category
         }
         latestRelease {
             id
