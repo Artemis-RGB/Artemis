@@ -1,0 +1,41 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:image="clr-namespace:Artemis.UI.Screens.Workshop.Image"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Image.ImageSubmissionView"
+             x:DataType="image:ImageSubmissionViewModel">
+    <UserControl.Resources>
+        <converters:BytesToStringConverter x:Key="BytesToStringConverter" />
+    </UserControl.Resources>
+    <Border Classes="card" Padding="0" Width="300" ClipToBounds="True" Margin="5">
+        <Grid RowDefinitions="230,*">
+            <Rectangle Grid.Row="0" Fill="{DynamicResource CheckerboardBrush}"/>
+            <Image Grid.Row="0" 
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"
+                   RenderOptions.BitmapInterpolationMode="HighQuality"
+                   Source="{CompiledBinding Bitmap}"/>
+            <StackPanel Grid.Row="1" Margin="12">
+                <TextBlock Text="{CompiledBinding FileName, FallbackValue=Unnamed image}" TextTrimming="CharacterEllipsis" />
+                <StackPanel>
+                    <TextBlock TextWrapping="Wrap" Classes="subtitle" Text="{CompiledBinding ImageDimensions, Mode=OneWay}" />
+                    <TextBlock TextWrapping="Wrap" Classes="subtitle" Text="{CompiledBinding FileSize, Converter={StaticResource BytesToStringConverter}, Mode=OneWay}" />
+                </StackPanel>
+            </StackPanel>
+            
+            <Button Grid.Row="1"
+                    VerticalAlignment="Bottom"
+                    HorizontalAlignment="Right"
+                    Margin="6"
+                    Classes="icon-button"
+                    Command="{CompiledBinding Remove}"
+                    ToolTip.Tip="Remove">
+                <avalonia:MaterialIcon Kind="Trash" />
+            </Button>
+        </Grid>
+    </Border>
+</UserControl>

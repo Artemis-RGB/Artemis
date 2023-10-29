@@ -9,7 +9,7 @@ using DryIoc;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
 
-public class SubmissionWizardState
+public class SubmissionWizardState : IDisposable
 {
     private readonly IContainer _container;
     private readonly IWindowService _windowService;
@@ -61,5 +61,12 @@ public class SubmissionWizardState
             ChangeScreen<LayoutSelectionStepViewModel>();
         else
             throw new NotImplementedException();
+    }
+
+    public void Dispose()
+    {
+        Icon?.Dispose();
+        foreach (Stream stream in Images)
+            stream.Dispose();
     }
 }

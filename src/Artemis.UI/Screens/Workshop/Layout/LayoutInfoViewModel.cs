@@ -1,32 +1,68 @@
 ﻿using System;
+using System.Linq;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Artemis.Core;
-using Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
+using Artemis.Core.DeviceProviders;
+using Artemis.Core.Services;
+using Artemis.UI.Screens.Workshop.Layout.Dialogs;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using PropertyChanged.SourceGenerator;
-using RGB.NET.Core;
-using KeyboardLayoutType = Artemis.Core.KeyboardLayoutType;
+using ReactiveUI;
+using ReactiveUI.Validation.Extensions;
 
 namespace Artemis.UI.Screens.Workshop.Layout;
 
-public partial class LayoutInfoViewModel : ViewModelBase
+public partial class LayoutInfoViewModel : ValidatableViewModelBase
 {
-    [Notify] private Guid _deviceProvider;
+    private readonly IWindowService _windowService;
+    private readonly ObservableAsPropertyHelper<string?> _deviceProviders;
     [Notify] private string? _vendor;
     [Notify] private string? _model;
-    [Notify] private KeyboardLayoutType? _physicalLayout;
-    [Notify] private string? _logicalLayout;
-
-    /// <inheritdoc />
-    public LayoutInfoViewModel(ArtemisLayout layout)
+    [Notify] private Guid _deviceProviderId;
+    [Notify] private string? _deviceProviderIdInput;
+    [Notify] private ICommand? _remove;
+    
+    public LayoutInfoViewModel(ArtemisLayout layout,
+        IDeviceService deviceService,
+        IWindowService windowService,
+        IPluginManagementService pluginManagementService)
     {
-        DisplayKeyboardLayout = layout.RgbLayout.Type == RGBDeviceType.Keyboard;
+        _windowService = windowService;
+        _vendor = layout.RgbLayout.Vendor;
+        _model = layout.RgbLayout.Model;
+
+        DeviceProvider? deviceProvider = deviceService.Devices.FirstOrDefault(d => d.Layout == layout)?.DeviceProvider;
+        if (deviceProvider != null)
+            _deviceProviderId = deviceProvider.Plugin.Guid;
+
+        _deviceProviders = this.WhenAnyValue(vm => vm.DeviceProviderId)
+            .Select(id => pluginManagementService.GetAllPlugins().FirstOrDefault(p => p.Guid == id)?.Features.Select(f => f.Name))
+            .Select(names => names != null ? string.Join(", ", names) : "")
+            .ToProperty(this, vm => vm.DeviceProviders);
+
+        this.WhenAnyValue(vm => vm.DeviceProviderId).Subscribe(g => DeviceProviderIdInput = g.ToString());
+        this.WhenAnyValue(vm => vm.DeviceProviderIdInput).Where(i => Guid.TryParse(i, out _)).Subscribe(i => DeviceProviderId = Guid.Parse(i!));
+
+        this.ValidationRule(vm => vm.Model, input => !string.IsNullOrWhiteSpace(input), "Device model is required");
+        this.ValidationRule(vm => vm.Vendor, input => !string.IsNullOrWhiteSpace(input), "Device vendor is required");
+        this.ValidationRule(vm => vm.DeviceProviderIdInput, input => Guid.TryParse(input, out _), "Must be a valid GUID formatted as: 00000000-0000-0000-0000-000000000000");
+        this.ValidationRule(vm => vm.DeviceProviderIdInput, input => !string.IsNullOrWhiteSpace(input), "Device provider ID is required");
     }
 
-    public LayoutInfoViewModel(ArtemisLayout layout, LayoutInfo layoutInfo)
-    {
-        DisplayKeyboardLayout = layout.RgbLayout.Type == RGBDeviceType.Keyboard;
-        
-    }
+    public string? DeviceProviders => _deviceProviders.Value;
 
-    public bool DisplayKeyboardLayout { get; }
+    public async Task BrowseDeviceProvider()
+    {
+        await _windowService.CreateContentDialog()
+            .WithTitle("Select device provider")
+            .WithViewModel(out DeviceProviderPickerDialogViewModel vm)
+            .ShowAsync();
+
+        DeviceProvider? deviceProvider = vm.DeviceProvider;
+        if (deviceProvider != null)
+            DeviceProviderId = deviceProvider.Plugin.Guid;
+    }
 }

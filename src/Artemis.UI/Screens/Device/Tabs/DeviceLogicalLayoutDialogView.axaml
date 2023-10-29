@@ -10,13 +10,13 @@
     <StackPanel>
         <TextBlock TextWrapping="Wrap">Artemis couldn't automatically determine the logical layout of your</TextBlock>
         <TextBlock TextWrapping="Wrap" Text="{CompiledBinding Device.RgbDevice.DeviceInfo.DeviceName, Mode=OneWay}" />
-        
+
         <TextBlock Margin="0 10" TextWrapping="Wrap">
             While not as important as the physical layout, setting the correct logical layout will allow Artemis to show the right keycaps (if a matching layout file is present)
         </TextBlock>
 
-        <AutoCompleteBox HorizontalAlignment="Stretch" 
-                         ItemsSource="{CompiledBinding Regions}" 
+        <AutoCompleteBox HorizontalAlignment="Stretch"
+                         ItemsSource="{CompiledBinding Regions}"
                          SelectedItem="{CompiledBinding SelectedRegion}"
                          ValueMemberBinding="{CompiledBinding EnglishName, DataType=globalization:RegionInfo}"
                          Watermark="Enter keyboard country name"
@@ -26,12 +26,10 @@
                          Name="RegionsAutoCompleteBox">
             <AutoCompleteBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type globalization:RegionInfo}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{CompiledBinding EnglishName}"></TextBlock>
-                        <TextBlock Text=" ("/>
-                        <TextBlock FontWeight="SemiBold" Text="{CompiledBinding TwoLetterISORegionName}"></TextBlock>
-                        <TextBlock Text=")"/>
-                    </StackPanel>
+                    <TextBlock>
+                        <Run Text="{CompiledBinding EnglishName}"></Run>
+                        <Run Text="(" /><Run FontWeight="SemiBold" Text="{CompiledBinding TwoLetterISORegionName}"></Run><Run Text=")" />
+                    </TextBlock>
                 </DataTemplate>
             </AutoCompleteBox.ItemTemplate>
         </AutoCompleteBox>

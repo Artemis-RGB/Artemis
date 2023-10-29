@@ -57,7 +57,7 @@ public partial class SpecificationsStepViewModel : SubmissionViewModel
             return;
 
         ApplyToState();
-        State.ChangeScreen<SubmitStepViewModel>();
+        State.ChangeScreen<ImagesStepViewModel>();
     }
 
     private void ApplyFromState()

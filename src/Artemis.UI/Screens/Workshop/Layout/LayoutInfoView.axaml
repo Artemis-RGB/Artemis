@@ -3,8 +3,55 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:layout="clr-namespace:Artemis.UI.Screens.Workshop.Layout"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Layout.LayoutInfoView"
              x:DataType="layout:LayoutInfoViewModel">
-    Welcome to Avalonia!
+    <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*">
+        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0 0 4 0">
+            <Label>Model</Label>
+            <TextBox Text="{CompiledBinding Model}"></TextBox>
+        </StackPanel>
+
+        <Grid Grid.Row="0" Grid.Column="1" Margin="4 0 0 4" ColumnDefinitions="*,*" RowDefinitions="*,*">
+            <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom">Vendor</Label>
+            <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{CompiledBinding Vendor}"></TextBox>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <Label>Device provider ID</Label>
+            <TextBox Text="{CompiledBinding DeviceProviderIdInput}"></TextBox>
+        </StackPanel>
+
+        <Button Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Classes="AppBarButton"
+                Command="{CompiledBinding BrowseDeviceProvider}"
+                ToolTip.Tip="Browse">
+            ...
+        </Button>
+
+        <TextBlock Grid.Row="2"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   Classes="subtitle"
+                   Margin="0 2"
+                   Text="{CompiledBinding DeviceProviders}"
+                   VerticalAlignment="Top">
+        </TextBlock>
+        
+        <Button Grid.Row="2"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Margin="0 5"
+                HorizontalAlignment="Right" 
+                VerticalAlignment="Top"
+                Command="{CompiledBinding Remove}" 
+                Classes="icon-button">
+            <avalonia:MaterialIcon Kind="Trash" />
+        </Button>
+    </Grid>
 </UserControl>

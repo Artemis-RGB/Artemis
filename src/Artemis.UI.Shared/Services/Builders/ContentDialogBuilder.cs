@@ -148,6 +148,16 @@ public class ContentDialogBuilder
         _contentDialog.FullSizeDesired = true;
         return this;
     }
+    
+    /// <summary>
+    ///     Changes the dialog to be full screen.
+    /// </summary>
+    /// <returns>The builder that can be used to further build the dialog.</returns>
+    public ContentDialogBuilder WithFullScreen()
+    {
+        _contentDialog.Classes.Add("fullscreen");
+        return this;
+    }
 
     /// <summary>
     ///     Asynchronously shows the content dialog.

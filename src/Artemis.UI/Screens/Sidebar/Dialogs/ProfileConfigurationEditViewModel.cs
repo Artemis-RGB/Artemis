@@ -181,7 +181,7 @@ public partial class ProfileConfigurationEditViewModel : DialogViewModelBase<Pro
     private async Task ExecuteBrowseBitmapFile()
     {
         string[]? result = await _windowService.CreateOpenFileDialog()
-            .HavingFilter(f => f.WithExtension("png").WithExtension("jpg").WithExtension("bmp").WithName("Bitmap image"))
+            .HavingFilter(f => f.WithBitmaps())
             .ShowAsync();
 
         if (result == null)

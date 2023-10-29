@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Artemis.Core;
-using Artemis.WebClient.Workshop;
-using KeyboardLayoutType = Artemis.WebClient.Workshop.KeyboardLayoutType;
+using Artemis.UI.Screens.Workshop.Layout;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
 
@@ -14,15 +14,16 @@ public class LayoutEntrySource : IEntrySource
     }
 
     public ArtemisLayout Layout { get; set; }
-    public List<LayoutInfo> LayoutInfo { get; } = new();
-}
+    public ObservableCollection<LayoutInfoViewModel> LayoutInfo { get; } = new();
+    public KeyboardLayoutType PhysicalLayout { get; set; }
 
-public class LayoutInfo
-{
-    public Guid DeviceProvider { get; set; }
-    public RGBDeviceType DeviceType { get; set; }
-    public string Model { get; set; }
-    public string Vendor { get; set; }
-    public string? LogicalLayout { get; set; }
-    public KeyboardLayoutType? PhysicalLayout { get; set; }
+    private List<LayoutCustomLedDataLogicalLayout> GetLogicalLayouts()
+    {
+        return Layout.Leds
+            .Where(l => l.LayoutCustomLedData.LogicalLayouts != null)
+            .SelectMany(l => l.LayoutCustomLedData.LogicalLayouts!)
+            .Where(l => !string.IsNullOrWhiteSpace(l.Name))
+            .DistinctBy(l => l.Name)
+            .ToList();
+    }
 }

@@ -5,7 +5,6 @@ using Artemis.Core.Services;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -14,6 +13,7 @@ using Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
 using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Services;
 using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 using SkiaSharp;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout;
@@ -36,11 +36,11 @@ public partial class LayoutSelectionStepViewModel : SubmissionViewModel
         );
 
         GoBack = ReactiveCommand.Create(() => State.ChangeScreen<EntryTypeStepViewModel>());
-        Continue = ReactiveCommand.Create(ExecuteContinue, this.WhenAnyValue(vm => vm.Layout).Select(p => p != null));
+        Continue = ReactiveCommand.CreateFromTask(ExecuteContinue, this.WhenAnyValue(vm => vm.Layout).Select(p => p != null));
 
         this.WhenAnyValue(vm => vm.SelectedDevice).WhereNotNull().Subscribe(d => Layout = d.Layout);
         this.WhenAnyValue(vm => vm.Layout).Subscribe(CreatePreviewDevice);
-        
+
         this.WhenActivated((CompositeDisposable _) =>
         {
             ShowGoBack = State.EntryId == null;
@@ -82,44 +82,64 @@ public partial class LayoutSelectionStepViewModel : SubmissionViewModel
         Layout = layout;
     }
 
-    private void ExecuteContinue()
+    private async Task ExecuteContinue()
     {
         if (Layout == null)
             return;
 
         State.EntrySource = new LayoutEntrySource(Layout);
-        State.Name = Layout.RgbLayout.Name ?? "";
-        State.Summary = !string.IsNullOrWhiteSpace(Layout.RgbLayout.Vendor)
-            ? $"{Layout.RgbLayout.Vendor} {Layout.RgbLayout.Type} device layout"
-            : $"{Layout.RgbLayout.Type} device layout";
-        
-        State.Categories = new List<long> {8}; // Device category, yes this could change but why would it
-        
-        State.Icon?.Dispose();
-        State.Icon = GetDeviceIcon();
-        
+        await Dispatcher.UIThread.InvokeAsync(SetDeviceImages, DispatcherPriority.Background);
         State.ChangeScreen<LayoutInfoStepViewModel>();
     }
 
-    private Stream GetDeviceIcon()
+    private void SetDeviceImages()
     {
-        // Go through the hassle of resizing the image to 128x128 without losing aspect ratio, padding is added for this
-        using RenderTargetBitmap image = Layout.RenderLayout(false);
-        using MemoryStream stream = new();
-        image.Save(stream);
-        stream.Seek(0, SeekOrigin.Begin);
+        if (Layout == null)
+            return;
+        
+        MemoryStream deviceWithoutLeds = new();
+        MemoryStream deviceWithLeds = new();
+        
+        using (RenderTargetBitmap image = Layout.RenderLayout(false))
+        {
+            image.Save(deviceWithoutLeds);
+            deviceWithoutLeds.Seek(0, SeekOrigin.Begin);
+        }
+        using (RenderTargetBitmap image = Layout.RenderLayout(true))
+        {
+            image.Save(deviceWithLeds);
+            deviceWithLeds.Seek(0, SeekOrigin.Begin);
+        }
 
+        State.Icon?.Dispose();
+        foreach (Stream stateImage in State.Images)
+            stateImage.Dispose();
+        State.Images.Clear();
+        
+        // Go through the hassle of resizing the image to 128x128 without losing aspect ratio, padding is added for this
+        State.Icon = ResizeImage(deviceWithoutLeds, 128);
+        State.Images.Add(deviceWithoutLeds);
+        State.Images.Add(deviceWithLeds);
+    }
+
+    private Stream ResizeImage(Stream image, int size)
+    {
         MemoryStream output = new();
-        using SKBitmap? sourceBitmap = SKBitmap.Decode(stream);
+        using MemoryStream input = new(); 
+        
+        image.CopyTo(input);
+        input.Seek(0, SeekOrigin.Begin);
+        
+        using SKBitmap? sourceBitmap = SKBitmap.Decode(input);
         int sourceWidth = sourceBitmap.Width;
         int sourceHeight = sourceBitmap.Height;
-        float scale = Math.Min((float) 128 / sourceWidth, (float) 128 / sourceHeight);
+        float scale = Math.Min((float) size / sourceWidth, (float) size / sourceHeight);
 
         SKSizeI scaledDimensions = new((int) Math.Floor(sourceWidth * scale), (int) Math.Floor(sourceHeight * scale));
-        SKPointI offset = new((128 - scaledDimensions.Width) / 2, (128 - scaledDimensions.Height) / 2);
+        SKPointI offset = new((size - scaledDimensions.Width) / 2, (size - scaledDimensions.Height) / 2);
 
         using SKBitmap? scaleBitmap = sourceBitmap.Resize(scaledDimensions, SKFilterQuality.High);
-        using SKBitmap targetBitmap = new(128, 128);
+        using SKBitmap targetBitmap = new(size, size);
         using SKCanvas canvas = new(targetBitmap);
         canvas.Clear(SKColors.Transparent);
         canvas.DrawBitmap(scaleBitmap, offset.X, offset.Y);

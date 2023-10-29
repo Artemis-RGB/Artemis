@@ -1,10 +1,12 @@
-﻿using Artemis.UI.Screens.Workshop.CurrentUser;
+﻿using System.Reactive.Disposables;
+using Artemis.UI.Screens.Workshop.CurrentUser;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using DryIoc;
 using PropertyChanged.SourceGenerator;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard;
 
@@ -26,6 +28,8 @@ public partial class SubmissionWizardViewModel : ActivatableViewModelBase, IWork
         WindowService = windowService;
         CurrentUserViewModel = currentUserViewModel;
         CurrentUserViewModel.AllowLogout = false;
+        
+        this.WhenActivated(d => _state.DisposeWith(d));
     }
 
     public IWindowService WindowService { get; }
