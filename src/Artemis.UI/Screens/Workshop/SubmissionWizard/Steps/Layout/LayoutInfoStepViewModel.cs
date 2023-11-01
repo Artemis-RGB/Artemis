@@ -6,7 +6,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Screens.Workshop.Layout;
-using Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
+using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
@@ -26,7 +26,7 @@ public partial class LayoutInfoStepViewModel : SubmissionViewModel
     public LayoutInfoStepViewModel(Func<ArtemisLayout, LayoutInfoViewModel> getLayoutInfoViewModel)
     {
         _getLayoutInfoViewModel = getLayoutInfoViewModel;
-        
+
         GoBack = ReactiveCommand.Create(() => State.ChangeScreen<LayoutSelectionStepViewModel>());
         Continue = ReactiveCommand.Create(ExecuteContinue, ValidationContext.Valid);
         Secondary = ReactiveCommand.Create(ExecuteAddLayoutInfo);
@@ -40,11 +40,11 @@ public partial class LayoutInfoStepViewModel : SubmissionViewModel
             _layout = layoutEntrySource.Layout;
             IsKeyboardLayout = _layout.RgbLayout.Type == RGBDeviceType.Keyboard;
             PhysicalLayout = layoutEntrySource.PhysicalLayout;
-            LayoutInfo = layoutEntrySource.LayoutInfo;
+            LayoutInfo = new ObservableCollection<LayoutInfoViewModel>(layoutEntrySource.LayoutInfo.Select(CreateLayoutInfoViewModel));
 
             if (!LayoutInfo.Any())
                 ExecuteAddLayoutInfo();
-            
+
             this.ValidationRule(
                 vm => vm.PhysicalLayout,
                 this.WhenAnyValue(vm => vm.IsKeyboardLayout, vm => vm.PhysicalLayout, (isKeyboard, layout) => !isKeyboard || layout != KeyboardLayoutType.Unknown),
@@ -56,6 +56,17 @@ public partial class LayoutInfoStepViewModel : SubmissionViewModel
                 "At least one layout info is required"
             ).DisposeWith(d);
         });
+    }
+
+    private LayoutInfoViewModel CreateLayoutInfoViewModel(LayoutInfo layoutInfo)
+    {
+        LayoutInfoViewModel vm = _getLayoutInfoViewModel(_layout ?? throw new InvalidOperationException());
+        vm.Model = layoutInfo.Model;
+        vm.Vendor = layoutInfo.Vendor;
+        vm.DeviceProviderId = layoutInfo.DeviceProviderId;
+        vm.Remove = ReactiveCommand.Create(() => LayoutInfo.Remove(vm));
+
+        return vm;
     }
 
     private void ExecuteAddLayoutInfo()
@@ -74,8 +85,9 @@ public partial class LayoutInfoStepViewModel : SubmissionViewModel
             return;
 
         layoutEntrySource.PhysicalLayout = PhysicalLayout;
-        
-        if (string.IsNullOrWhiteSpace(State.Name)) 
+        // layoutEntrySource.LayoutInfo = new List<LayoutInfo>(LayoutInfo.Select(i => i.ToLayoutInfo()));
+
+        if (string.IsNullOrWhiteSpace(State.Name))
             State.Name = layoutEntrySource.Layout.RgbLayout.Name ?? "";
         if (string.IsNullOrWhiteSpace(State.Summary))
         {
@@ -108,7 +120,6 @@ public partial class LayoutInfoStepViewModel : SubmissionViewModel
         }
 
         State.Categories = new List<long> {8}; // Device category, yes this could change but why would it
-        
         if (State.EntryId == null)
             State.ChangeScreen<SpecificationsStepViewModel>();
         else

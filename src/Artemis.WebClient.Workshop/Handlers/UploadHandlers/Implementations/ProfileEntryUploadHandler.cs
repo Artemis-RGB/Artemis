@@ -1,11 +1,10 @@
 ﻿using System.Net.Http.Headers;
-using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop.Entities;
 using Newtonsoft.Json;
 
-namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers.Implementations;
+namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 
 public class ProfileEntryUploadHandler : IEntryUploadHandler
 {
@@ -19,12 +18,12 @@ public class ProfileEntryUploadHandler : IEntryUploadHandler
     }
 
     /// <inheritdoc />
-    public async Task<EntryUploadResult> CreateReleaseAsync(long entryId, object file, Progress<StreamProgress> progress, CancellationToken cancellationToken)
+    public async Task<EntryUploadResult> CreateReleaseAsync(long entryId, IEntrySource entrySource, Progress<StreamProgress> progress, CancellationToken cancellationToken)
     {
-        if (file is not ProfileConfiguration profileConfiguration)
+        if (entrySource is not ProfileEntrySource source)
             throw new InvalidOperationException("Can only create releases for profile configurations");
 
-        await using Stream archiveStream = await _profileService.ExportProfile(profileConfiguration);
+        await using Stream archiveStream = await _profileService.ExportProfile(source.ProfileConfiguration);
 
         // Submit the archive
         HttpClient client = _httpClientFactory.CreateClient(WorkshopConstants.WORKSHOP_CLIENT_NAME);

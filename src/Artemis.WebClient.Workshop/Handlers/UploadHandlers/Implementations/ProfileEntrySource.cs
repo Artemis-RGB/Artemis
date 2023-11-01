@@ -1,6 +1,6 @@
 ﻿using Artemis.Core;
 
-namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
+namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 
 public class ProfileEntrySource : IEntrySource
 {

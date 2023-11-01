@@ -8,6 +8,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Workshop.Profile;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
+using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using Material.Icons;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;

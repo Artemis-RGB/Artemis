@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using Artemis.Core;
-using Artemis.UI.Screens.Workshop.Layout;
+﻿using Artemis.Core;
 
-namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
+namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 
 public class LayoutEntrySource : IEntrySource
 {
@@ -14,8 +10,8 @@ public class LayoutEntrySource : IEntrySource
     }
 
     public ArtemisLayout Layout { get; set; }
-    public ObservableCollection<LayoutInfoViewModel> LayoutInfo { get; } = new();
-    public KeyboardLayoutType PhysicalLayout { get; set; }
+    public List<LayoutInfo> LayoutInfo { get; set; } = new();
+    public Core.KeyboardLayoutType PhysicalLayout { get; set; }
 
     private List<LayoutCustomLedDataLogicalLayout> GetLogicalLayouts()
     {
@@ -26,4 +22,11 @@ public class LayoutEntrySource : IEntrySource
             .DistinctBy(l => l.Name)
             .ToList();
     }
+}
+
+public class LayoutInfo
+{
+    public string Vendor { get; set; } = string.Empty;
+    public string Model { get; set; } = string.Empty;
+    public Guid DeviceProviderId { get; set; }
 }

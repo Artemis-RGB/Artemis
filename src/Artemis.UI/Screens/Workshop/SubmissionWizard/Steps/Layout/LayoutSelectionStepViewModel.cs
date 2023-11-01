@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
 using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Services;
+using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using SkiaSharp;

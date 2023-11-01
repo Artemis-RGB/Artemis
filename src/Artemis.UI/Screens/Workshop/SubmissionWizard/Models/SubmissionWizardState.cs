@@ -5,6 +5,7 @@ using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
+using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using DryIoc;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
