@@ -11,7 +11,6 @@ using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
-using Artemis.WebClient.Workshop.Handlers.InstallationHandlers.Implementations;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using StrawberryShake;

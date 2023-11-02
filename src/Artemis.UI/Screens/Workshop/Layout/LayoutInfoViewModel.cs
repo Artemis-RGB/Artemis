@@ -9,6 +9,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Screens.Workshop.Layout.Dialogs;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
@@ -24,7 +25,7 @@ public partial class LayoutInfoViewModel : ValidatableViewModelBase
     [Notify] private Guid _deviceProviderId;
     [Notify] private string? _deviceProviderIdInput;
     [Notify] private ICommand? _remove;
-    
+
     public LayoutInfoViewModel(ArtemisLayout layout,
         IDeviceService deviceService,
         IWindowService windowService,
@@ -64,5 +65,15 @@ public partial class LayoutInfoViewModel : ValidatableViewModelBase
         DeviceProvider? deviceProvider = vm.DeviceProvider;
         if (deviceProvider != null)
             DeviceProviderId = deviceProvider.Plugin.Guid;
+    }
+
+    public LayoutInfo ToLayoutInfo()
+    {
+        return new LayoutInfo
+        {
+            Model = Model ?? string.Empty,
+            Vendor = Vendor ?? string.Empty,
+            DeviceProviderId = DeviceProviderId
+        };
     }
 }

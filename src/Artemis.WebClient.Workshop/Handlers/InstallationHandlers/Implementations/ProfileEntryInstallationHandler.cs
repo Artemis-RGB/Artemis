@@ -4,7 +4,7 @@ using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop.Services;
 
-namespace Artemis.WebClient.Workshop.Handlers.InstallationHandlers.Implementations;
+namespace Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
 
 public class ProfileEntryInstallationHandler : IEntryInstallationHandler
 {

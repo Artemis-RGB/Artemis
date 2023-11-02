@@ -64,7 +64,12 @@ public class ArtemisLedLayout
     
     private void ApplyLogicalLayout(LayoutCustomLedDataLogicalLayout logicalLayout)
     {
+        string? layoutDirectory = Path.GetDirectoryName(DeviceLayout.FilePath);
+        
         LogicalName = logicalLayout.Name;
-        Image = new Uri(Path.Combine(Path.GetDirectoryName(DeviceLayout.FilePath)!, logicalLayout.Image!), UriKind.Absolute);
+        if (layoutDirectory != null && logicalLayout.Image != null)
+            Image = new Uri(Path.Combine(layoutDirectory, logicalLayout.Image!), UriKind.Absolute);
+        else
+            Image = null;
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -131,12 +132,34 @@ public partial class UploadStepViewModel : SubmissionViewModel
             State.ChangeScreen<SubmitStepViewModel>();
             return null;
         }
-
+        
+        foreach (Stream image in State.Images.ToList())
+        {
+            // Upload image
+            try
+            {
+                ImageUploadResult imageUploadResult = await _workshopService.UploadEntryImage(entryId.Value, _progress, image, cancellationToken);
+                if (!imageUploadResult.IsSuccess)
+                    throw new ArtemisWorkshopException(imageUploadResult.Message);
+                State.Images.Remove(image);
+            }
+            catch (Exception e)
+            {
+                // It's not critical if this fails
+                await _windowService.ShowConfirmContentDialog("Failed to upload image", "Your submission will continue, you can try upload a new image afterwards\r\n" + e.Message, "Continue", null);
+            }
+            
+            if (cancellationToken.IsCancellationRequested)
+            {
+                State.ChangeScreen<SubmitStepViewModel>();
+                return null;
+            }
+        }
 
         if (State.Icon == null)
             return entryId;
 
-        // Upload image
+        // Upload icon
         try
         {
             ImageUploadResult imageUploadResult = await _workshopService.SetEntryIcon(entryId.Value, _progress, State.Icon, cancellationToken);
@@ -146,12 +169,7 @@ public partial class UploadStepViewModel : SubmissionViewModel
         catch (Exception e)
         {
             // It's not critical if this fails
-            await _windowService.ShowConfirmContentDialog(
-                "Failed to upload icon",
-                "Your submission will continue, you can try upload a new image afterwards\r\n" + e.Message,
-                "Continue",
-                null
-            );
+            await _windowService.ShowConfirmContentDialog("Failed to upload icon", "Your submission will continue, you can try upload a new image afterwards\r\n" + e.Message, "Continue", null);
         }
 
         return entryId;

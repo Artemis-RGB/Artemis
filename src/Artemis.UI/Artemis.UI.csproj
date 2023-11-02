@@ -44,7 +44,6 @@
         <PackageReference Include="ReactiveUI" Version="19.5.1" />
         <PackageReference Include="ReactiveUI.Validation" Version="3.1.7" />
         <PackageReference Include="RGB.NET.Core" Version="$(RGBDotNetVersion)" />
-        <PackageReference Include="RGB.NET.Layout" Version="$(RGBDotNetVersion)" />
         <PackageReference Include="SkiaSharp" Version="$(SkiaSharpVersion)" />
         <PackageReference Include="Splat.DryIoc" Version="14.7.1" />
         <PackageReference Include="TextMateSharp.Grammars" Version="1.0.56" />
@@ -52,5 +51,11 @@
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="RGB.NET.Layout">
+        <HintPath>..\..\..\RGB.NET\bin\net7.0\RGB.NET.Layout.dll</HintPath>
+      </Reference>
     </ItemGroup>
 </Project>

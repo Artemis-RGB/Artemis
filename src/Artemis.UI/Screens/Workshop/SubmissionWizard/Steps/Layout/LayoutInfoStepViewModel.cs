@@ -85,40 +85,15 @@ public partial class LayoutInfoStepViewModel : SubmissionViewModel
             return;
 
         layoutEntrySource.PhysicalLayout = PhysicalLayout;
-        // layoutEntrySource.LayoutInfo = new List<LayoutInfo>(LayoutInfo.Select(i => i.ToLayoutInfo()));
+        layoutEntrySource.LayoutInfo = new List<LayoutInfo>(LayoutInfo.Select(i => i.ToLayoutInfo()));
 
         if (string.IsNullOrWhiteSpace(State.Name))
             State.Name = layoutEntrySource.Layout.RgbLayout.Name ?? "";
         if (string.IsNullOrWhiteSpace(State.Summary))
-        {
             State.Summary = !string.IsNullOrWhiteSpace(layoutEntrySource.Layout.RgbLayout.Vendor)
                 ? $"{layoutEntrySource.Layout.RgbLayout.Vendor} {layoutEntrySource.Layout.RgbLayout.Type} device layout"
                 : $"{layoutEntrySource.Layout.RgbLayout.Type} device layout";
-        }
-
-        if (string.IsNullOrWhiteSpace(State.Description))
-        {
-            State.Description = $@"### Layout properties
-**Name**  
-{layoutEntrySource.Layout.RgbLayout.Name ?? "N/A"}  
-**Description**  
-{layoutEntrySource.Layout.RgbLayout.Description ?? "N/A"}  
-**Author**  
-{layoutEntrySource.Layout.RgbLayout.Author ?? "N/A"}  
-**Type**  
-{layoutEntrySource.Layout.RgbLayout.Type}  
-**Vendor**  
-{layoutEntrySource.Layout.RgbLayout.Vendor ?? "N/A"}  
-**Model**  
-{layoutEntrySource.Layout.RgbLayout.Model ?? "N/A"}  
-**Shape**  
-{layoutEntrySource.Layout.RgbLayout.Shape}  
-**Width**  
-{layoutEntrySource.Layout.RgbLayout.Width}mm  
-**Height**  
-{layoutEntrySource.Layout.RgbLayout.Height}mm";
-        }
-
+        
         State.Categories = new List<long> {8}; // Device category, yes this could change but why would it
         if (State.EntryId == null)
             State.ChangeScreen<SpecificationsStepViewModel>();

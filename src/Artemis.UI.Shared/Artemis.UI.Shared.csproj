@@ -29,4 +29,9 @@
     <ItemGroup>
         <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Reference Include="RGB.NET.Layout">
+        <HintPath>..\..\..\RGB.NET\bin\net7.0\RGB.NET.Layout.dll</HintPath>
+      </Reference>
+    </ItemGroup>
 </Project>

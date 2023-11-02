@@ -57,6 +57,27 @@ public class WorkshopService : IWorkshopService
     }
 
     /// <inheritdoc />
+    public async Task<ImageUploadResult> UploadEntryImage(long entryId, Progress<StreamProgress> progress, Stream image, CancellationToken cancellationToken)
+    {
+        image.Seek(0, SeekOrigin.Begin);
+
+        // Submit the archive
+        HttpClient client = _httpClientFactory.CreateClient(WorkshopConstants.WORKSHOP_CLIENT_NAME);
+
+        // Construct the request
+        MultipartFormDataContent content = new();
+        ProgressableStreamContent streamContent = new(image, progress);
+        streamContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+        content.Add(streamContent, "file", "file.png");
+
+        // Submit
+        HttpResponseMessage response = await client.PostAsync($"entries/{entryId}/image", content, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+            return ImageUploadResult.FromFailure($"{response.StatusCode} - {await response.Content.ReadAsStringAsync(cancellationToken)}");
+        return ImageUploadResult.FromSuccess();
+    }
+
+    /// <inheritdoc />
     public async Task<IWorkshopService.WorkshopStatus> GetWorkshopStatus(CancellationToken cancellationToken)
     {
         try

@@ -1,9 +1,7 @@
 using System.IO;
 using System.Reactive.Disposables;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Artemis.UI.Shared;
-using Artemis.UI.Shared.Services;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using PropertyChanged.SourceGenerator;
