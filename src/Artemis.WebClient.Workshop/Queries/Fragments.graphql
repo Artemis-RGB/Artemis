@@ -3,6 +3,12 @@ fragment category on Category {
     icon
 }
 
+fragment image on Image {
+    id
+    name
+    description    
+}
+
 fragment layoutInfo on LayoutInfo {
     id
     deviceProvider
@@ -20,4 +26,28 @@ fragment submittedEntry on Entry {
     entryType
     downloads
     createdAt
+}
+
+fragment entryDetails on Entry {
+    id
+    author
+    name
+    summary
+    entryType
+    downloads
+    createdAt
+    description
+    categories {
+        ...category
+    }
+    latestRelease {
+        id
+        version
+        downloadSize
+        md5Hash
+        createdAt
+    }
+    images {
+        ...image
+    }
 }

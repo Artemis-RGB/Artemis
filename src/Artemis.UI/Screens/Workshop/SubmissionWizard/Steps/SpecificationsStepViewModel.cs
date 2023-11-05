@@ -11,6 +11,7 @@ using Artemis.WebClient.Workshop;
 using DynamicData;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
+using EntrySpecificationsViewModel = Artemis.UI.Screens.Workshop.Entries.Details.EntrySpecificationsViewModel;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 

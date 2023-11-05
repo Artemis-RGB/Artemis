@@ -1,5 +1,4 @@
 using System.Linq;
-using Artemis.UI.Shared.Extensions;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -8,8 +7,9 @@ using Avalonia.ReactiveUI;
 using AvaloniaEdit.TextMate;
 using ReactiveUI;
 using TextMateSharp.Grammars;
+using VisualExtensions = Artemis.UI.Shared.Extensions.VisualExtensions;
 
-namespace Artemis.UI.Screens.Workshop.Entries;
+namespace Artemis.UI.Screens.Workshop.Entries.Details;
 
 public partial class EntrySpecificationsView : ReactiveUserControl<EntrySpecificationsViewModel>
 {
@@ -23,7 +23,7 @@ public partial class EntrySpecificationsView : ReactiveUserControl<EntrySpecific
 
         DescriptionEditor.Options.AllowScrollBelowDocument = false;
         RegistryOptions options = new(ThemeName.Dark);
-        TextMate.Installation? install = DescriptionEditor.InstallTextMate(options);
+        TextMate.Installation? install = TextMate.InstallTextMate(DescriptionEditor, options);
 
         install.SetGrammar(options.GetScopeByExtension(".md"));
 
@@ -45,8 +45,8 @@ public partial class EntrySpecificationsView : ReactiveUserControl<EntrySpecific
         if (_previewScrollViewer != null)
             _previewScrollViewer.PropertyChanged -= PreviewScrollViewerOnPropertyChanged;
 
-        _editorScrollViewer = DescriptionEditor.GetVisualChildrenOfType<ScrollViewer>().FirstOrDefault();
-        _previewScrollViewer = DescriptionPreview.GetVisualChildrenOfType<ScrollViewer>().FirstOrDefault();
+        _editorScrollViewer = VisualExtensions.GetVisualChildrenOfType<ScrollViewer>(DescriptionEditor).FirstOrDefault();
+        _previewScrollViewer = VisualExtensions.GetVisualChildrenOfType<ScrollViewer>(DescriptionPreview).FirstOrDefault();
 
         if (_editorScrollViewer != null)
             _editorScrollViewer.PropertyChanged += EditorScrollViewerOnPropertyChanged;

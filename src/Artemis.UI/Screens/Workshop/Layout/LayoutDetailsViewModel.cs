@@ -1,17 +1,11 @@
 using System;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Artemis.Core;
+using Artemis.UI.Screens.Workshop.Entries.Details;
 using Artemis.UI.Screens.Workshop.Parameters;
 using Artemis.UI.Shared.Routing;
-using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Builders;
-using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
 using PropertyChanged.SourceGenerator;
-using ReactiveUI;
 using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Layout;
@@ -19,24 +13,24 @@ namespace Artemis.UI.Screens.Workshop.Layout;
 public partial class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
 {
     private readonly IWorkshopClient _client;
-    private readonly INotificationService _notificationService;
-    private readonly IWindowService _windowService;
-    private readonly ObservableAsPropertyHelper<DateTimeOffset?> _updatedAt;
-    [Notify(Setter.Private)] private IGetEntryById_Entry? _entry;
+    private readonly Func<IGetEntryById_Entry, EntryInfoViewModel> _getEntryInfoViewModel;
+    private readonly Func<IGetEntryById_Entry, EntryReleasesViewModel> _getEntryReleasesViewModel;
+    private readonly Func<IGetEntryById_Entry, EntryImagesViewModel> _getEntryImagesViewModel;
+    [Notify] private IGetEntryById_Entry? _entry;
+    [Notify] private EntryInfoViewModel? _entryInfoViewModel;
+    [Notify] private EntryReleasesViewModel? _entryReleasesViewModel;
+    [Notify] private EntryImagesViewModel? _entryImagesViewModel;
 
-    public LayoutDetailsViewModel(IWorkshopClient client, INotificationService notificationService, IWindowService windowService)
+    public LayoutDetailsViewModel(IWorkshopClient client,
+        Func<IGetEntryById_Entry, EntryInfoViewModel> getEntryInfoViewModel,
+        Func<IGetEntryById_Entry, EntryReleasesViewModel> getEntryReleasesViewModel,
+        Func<IGetEntryById_Entry, EntryImagesViewModel> getEntryImagesViewModel)
     {
         _client = client;
-        _notificationService = notificationService;
-        _windowService = windowService;
-        _updatedAt = this.WhenAnyValue(vm => vm.Entry).Select(e => e?.LatestRelease?.CreatedAt ?? e?.CreatedAt).ToProperty(this, vm => vm.UpdatedAt);
-
-        DownloadLatestRelease = ReactiveCommand.CreateFromTask(ExecuteDownloadLatestRelease);
+        _getEntryInfoViewModel = getEntryInfoViewModel;
+        _getEntryReleasesViewModel = getEntryReleasesViewModel;
+        _getEntryImagesViewModel = getEntryImagesViewModel;
     }
-
-    public ReactiveCommand<Unit, Unit> DownloadLatestRelease { get; }
-
-    public DateTimeOffset? UpdatedAt => _updatedAt.Value;
 
     public override async Task OnNavigating(WorkshopDetailParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
@@ -50,10 +44,16 @@ public partial class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParam
             return;
 
         Entry = result.Data?.Entry;
-    }
-
-    private Task ExecuteDownloadLatestRelease(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
+        if (Entry == null)
+        {
+            EntryInfoViewModel = null;
+            EntryReleasesViewModel = null;
+        }
+        else
+        {
+            EntryInfoViewModel = _getEntryInfoViewModel(Entry);
+            EntryReleasesViewModel = _getEntryReleasesViewModel(Entry);
+            EntryImagesViewModel = _getEntryImagesViewModel(Entry);
+        }
     }
 }

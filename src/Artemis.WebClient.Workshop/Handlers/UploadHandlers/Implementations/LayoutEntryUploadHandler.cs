@@ -1,13 +1,23 @@
 ﻿using System.IO.Compression;
+using System.Net.Http.Headers;
 using Artemis.Core;
 using Artemis.UI.Shared.Utilities;
+using Artemis.WebClient.Workshop.Entities;
 using Artemis.WebClient.Workshop.Exceptions;
+using Newtonsoft.Json;
 using RGB.NET.Layout;
 
 namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 
 public class LayoutEntryUploadHandler : IEntryUploadHandler
 {
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public LayoutEntryUploadHandler(IHttpClientFactory httpClientFactory)
+    {
+        _httpClientFactory = httpClientFactory;
+    }
+    
     /// <inheritdoc />
     public async Task<EntryUploadResult> CreateReleaseAsync(long entryId, IEntrySource entrySource, Progress<StreamProgress> progress, CancellationToken cancellationToken)
     {
@@ -46,15 +56,28 @@ public class LayoutEntryUploadHandler : IEntryUploadHandler
         }
 
         archiveStream.Seek(0, SeekOrigin.Begin);
-
-        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        string filePath = Path.Combine(desktopPath, "layout-test.zip");
-        await using (FileStream fileStream = new(filePath, FileMode.Create, FileAccess.Write))
+        await using (FileStream fileStream = new(@"C:\Users\Robert\Desktop\layout-test.zip", FileMode.OpenOrCreate))
         {
-            archiveStream.WriteTo(fileStream);
+            await archiveStream.CopyToAsync(fileStream, cancellationToken);
         }
+        archiveStream.Seek(0, SeekOrigin.Begin);
+        
+        // Submit the archive
+        HttpClient client = _httpClientFactory.CreateClient(WorkshopConstants.WORKSHOP_CLIENT_NAME);
 
-        return new EntryUploadResult();
+        // Construct the request
+        MultipartFormDataContent content = new();
+        ProgressableStreamContent streamContent = new(archiveStream, progress);
+        streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
+        content.Add(streamContent, "file", "file.zip");
+
+        // Submit
+        HttpResponseMessage response = await client.PostAsync("releases/upload/" + entryId, content, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+            return EntryUploadResult.FromFailure($"{response.StatusCode} - {await response.Content.ReadAsStringAsync(cancellationToken)}");
+
+        Release? release = JsonConvert.DeserializeObject<Release>(await response.Content.ReadAsStringAsync(cancellationToken));
+        return release != null ? EntryUploadResult.FromSuccess(release) : EntryUploadResult.FromFailure("Failed to deserialize response");
     }
 
     private static void CopyImage(string layoutPath, string? imagePath, ZipArchive archive)

@@ -22,7 +22,7 @@ using ReactiveUI.Validation.Extensions;
 using ReactiveUI.Validation.Helpers;
 using StrawberryShake;
 
-namespace Artemis.UI.Screens.Workshop.Entries;
+namespace Artemis.UI.Screens.Workshop.Entries.Details;
 
 public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
 {
@@ -52,12 +52,12 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
             .Subscribe();
         SelectedCategories = selectedCategories;
 
-        this.ValidationRule(vm => vm.Name, s => !string.IsNullOrWhiteSpace(s), "Name is required");
-        this.ValidationRule(vm => vm.Summary, s => !string.IsNullOrWhiteSpace(s), "Summary is required");
-        ValidationHelper descriptionRule = this.ValidationRule(vm => vm.Description, s => !string.IsNullOrWhiteSpace(s), "Description is required");
+        this.ValidationRule<EntrySpecificationsViewModel, string>(vm => vm.Name, s => !string.IsNullOrWhiteSpace(s), "Name is required");
+        this.ValidationRule<EntrySpecificationsViewModel, string>(vm => vm.Summary, s => !string.IsNullOrWhiteSpace(s), "Summary is required");
+        ValidationHelper descriptionRule = this.ValidationRule<EntrySpecificationsViewModel, string>(vm => vm.Description, s => !string.IsNullOrWhiteSpace(s), "Description is required");
 
         // These don't use inputs that support validation messages, do so manually
-        ValidationHelper iconRule = this.ValidationRule(vm => vm.IconBitmap, s => s != null, "Icon required");
+        ValidationHelper iconRule = this.ValidationRule<EntrySpecificationsViewModel, Bitmap>(vm => vm.IconBitmap, s => s != null, "Icon required");
         ValidationHelper categoriesRule = this.ValidationRule(vm => vm.Categories, Categories.ToObservableChangeSet().AutoRefresh(c => c.IsSelected).Filter(c => c.IsSelected).IsNotEmpty(),
             "At least one category must be selected"
         );

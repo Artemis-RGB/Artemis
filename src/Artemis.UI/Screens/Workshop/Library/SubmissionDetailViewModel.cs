@@ -21,6 +21,7 @@ using Avalonia.Media.Imaging;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using StrawberryShake;
+using EntrySpecificationsViewModel = Artemis.UI.Screens.Workshop.Entries.Details.EntrySpecificationsViewModel;
 
 namespace Artemis.UI.Screens.Workshop.Library;
 

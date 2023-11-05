@@ -133,12 +133,12 @@ public partial class UploadStepViewModel : SubmissionViewModel
             return null;
         }
         
-        foreach (Stream image in State.Images.ToList())
+        foreach (ImageUploadRequest image in State.Images.ToList())
         {
             // Upload image
             try
             {
-                ImageUploadResult imageUploadResult = await _workshopService.UploadEntryImage(entryId.Value, _progress, image, cancellationToken);
+                ImageUploadResult imageUploadResult = await _workshopService.UploadEntryImage(entryId.Value, image, _progress, cancellationToken);
                 if (!imageUploadResult.IsSuccess)
                     throw new ArtemisWorkshopException(imageUploadResult.Message);
                 State.Images.Remove(image);

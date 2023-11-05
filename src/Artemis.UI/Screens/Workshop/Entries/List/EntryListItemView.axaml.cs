@@ -1,6 +1,6 @@
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Workshop.Entries;
+namespace Artemis.UI.Screens.Workshop.Entries.List;
 
 public partial class EntryListItemView : ReactiveUserControl<EntryListItemViewModel>
 {

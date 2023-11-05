@@ -4,7 +4,7 @@ using Artemis.UI.Shared;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Workshop.Entries;
+namespace Artemis.UI.Screens.Workshop.Entries.List;
 
 public partial class EntryListInputViewModel : ViewModelBase
 {

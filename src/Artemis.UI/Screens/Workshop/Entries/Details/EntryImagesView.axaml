@@ -1,0 +1,28 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             xmlns:details="clr-namespace:Artemis.UI.Screens.Workshop.Entries.Details"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Entries.Details.EntryImagesView"
+             x:DataType="details:EntryImagesViewModel">
+    <ItemsControl ItemsSource="{CompiledBinding Images}" Margin="0 -16 0 0">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <VirtualizingStackPanel />
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.DataTemplates>
+            <DataTemplate x:DataType="details:EntryImageViewModel">
+                <Border CornerRadius="6"
+                        Margin="0 16 0 0"
+                        MaxWidth="300"
+                        ClipToBounds="True">
+                    <Image Stretch="UniformToFill" asyncImageLoader:ImageLoader.Source="{CompiledBinding ThumbnailUrl, Mode=OneWay}" />
+                </Border>
+            </DataTemplate>
+        </ItemsControl.DataTemplates>
+    </ItemsControl>
+</UserControl>

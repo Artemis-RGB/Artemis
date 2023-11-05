@@ -58,4 +58,19 @@
         <HintPath>..\..\..\RGB.NET\bin\net7.0\RGB.NET.Layout.dll</HintPath>
       </Reference>
     </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Screens\Workshop\Entries\List\EntryListInputView.axaml.cs">
+        <DependentUpon>EntryListInputView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Screens\Workshop\Entries\List\EntryListItemView.axaml.cs">
+        <DependentUpon>EntryListItemView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Screens\Workshop\Entries\Details\EntrySpecificationsView.axaml.cs">
+        <DependentUpon>EntrySpecificationsView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
 </Project>

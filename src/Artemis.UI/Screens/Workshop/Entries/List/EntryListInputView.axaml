@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:entries="clr-namespace:Artemis.UI.Screens.Workshop.Entries"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:list="clr-namespace:Artemis.UI.Screens.Workshop.Entries.List"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Workshop.Entries.EntryListInputView"
-             x:DataType="entries:EntryListInputViewModel">
+             x:Class="Artemis.UI.Screens.Workshop.Entries.List.EntryListInputView"
+             x:DataType="list:EntryListInputViewModel">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MaxWidth="500" />

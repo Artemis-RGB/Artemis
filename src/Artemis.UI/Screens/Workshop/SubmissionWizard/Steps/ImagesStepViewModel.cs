@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Screens.Workshop.Image;
 using Artemis.UI.Shared.Services;
+using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using DynamicData;
 using ReactiveUI;
 
@@ -16,37 +17,39 @@ public class ImagesStepViewModel : SubmissionViewModel
 {
     private const long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
     private readonly IWindowService _windowService;
-    private readonly SourceList<Stream> _imageStreams;
+    private readonly Func<ImageUploadRequest, ImageSubmissionViewModel> _getImageSubmissionViewModel;
+    private readonly SourceList<ImageUploadRequest> _stateImages;
 
-    public ImagesStepViewModel(IWindowService windowService, Func<Stream, ImageSubmissionViewModel> imageSubmissionViewModel)
+    public ImagesStepViewModel(IWindowService windowService, Func<ImageUploadRequest, ImageSubmissionViewModel> getImageSubmissionViewModel)
     {
         _windowService = windowService;
+        _getImageSubmissionViewModel = getImageSubmissionViewModel;
 
         Continue = ReactiveCommand.Create(() => State.ChangeScreen<UploadStepViewModel>());
         GoBack = ReactiveCommand.Create(() => State.ChangeScreen<SpecificationsStepViewModel>());
         Secondary = ReactiveCommand.CreateFromTask(ExecuteAddImage);
         SecondaryText = "Add image";
 
-        _imageStreams = new SourceList<Stream>();
-        _imageStreams.Connect()
-            .Transform(p => CreateImageSubmissionViewModel(imageSubmissionViewModel, p))
+        _stateImages = new SourceList<ImageUploadRequest>();
+        _stateImages.Connect()
+            .Transform(p => CreateImageSubmissionViewModel(p))
             .Bind(out ReadOnlyObservableCollection<ImageSubmissionViewModel> images)
             .Subscribe();
         Images = images;
 
         this.WhenActivated((CompositeDisposable d) =>
         {
-            _imageStreams.Clear();
-            _imageStreams.AddRange(State.Images);
+            _stateImages.Clear();
+            _stateImages.AddRange(State.Images);
         });
     }
 
     public ReadOnlyObservableCollection<ImageSubmissionViewModel> Images { get; }
 
-    private ImageSubmissionViewModel CreateImageSubmissionViewModel(Func<Stream, ImageSubmissionViewModel> imageSubmissionViewModel, Stream stream)
+    private ImageSubmissionViewModel CreateImageSubmissionViewModel(ImageUploadRequest image)
     {
-        ImageSubmissionViewModel viewModel = imageSubmissionViewModel(stream);
-        viewModel.Remove = ReactiveCommand.Create(() => _imageStreams.Remove(stream));
+        ImageSubmissionViewModel viewModel = _getImageSubmissionViewModel(image);
+        viewModel.Remove = ReactiveCommand.Create(() => _stateImages.Remove(image));
         return viewModel;
     }
 
@@ -58,7 +61,7 @@ public class ImagesStepViewModel : SubmissionViewModel
 
         foreach (string path in result)
         {
-            if (_imageStreams.Items.Any(i => i is FileStream fs && fs.Name == path))
+            if (_stateImages.Items.Any(i => i.File is FileStream fs && fs.Name == path))
                 continue;
 
             FileStream stream = new(path, FileMode.Open, FileAccess.Read);
@@ -69,8 +72,9 @@ public class ImagesStepViewModel : SubmissionViewModel
                 continue;
             }
 
-            _imageStreams.Add(stream);
-            State.Images.Add(stream);
+            ImageUploadRequest request = new(stream, Path.GetFileName(path), string.Empty);
+            _stateImages.Add(request);
+            State.Images.Add(request);
         }
     }
 }

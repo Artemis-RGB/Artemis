@@ -26,8 +26,9 @@
         <Button Grid.Row="1"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
+                Margin="0 25 0 0"
                 HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
+                VerticalAlignment="Top"
                 Classes="AppBarButton"
                 Command="{CompiledBinding BrowseDeviceProvider}"
                 ToolTip.Tip="Browse">

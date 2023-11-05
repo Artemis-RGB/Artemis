@@ -17,7 +17,7 @@ using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using StrawberryShake;
 
-namespace Artemis.UI.Screens.Workshop.Entries;
+namespace Artemis.UI.Screens.Workshop.Entries.List;
 
 public abstract partial class EntryListViewModel : RoutableScreen<WorkshopListParameters>
 {
@@ -42,8 +42,8 @@ public abstract partial class EntryListViewModel : RoutableScreen<WorkshopListPa
         _route = route;
         _workshopClient = workshopClient;
         _notificationService = notificationService;
-        _showPagination = this.WhenAnyValue(vm => vm.TotalPages).Select(t => t > 1).ToProperty(this, vm => vm.ShowPagination);
-        _isLoading = this.WhenAnyValue(vm => vm.Page, vm => vm.LoadedPage, (p, c) => p != c).ToProperty(this, vm => vm.IsLoading);
+        _showPagination = this.WhenAnyValue<EntryListViewModel, int>(vm => vm.TotalPages).Select(t => t > 1).ToProperty(this, vm => vm.ShowPagination);
+        _isLoading = this.WhenAnyValue<EntryListViewModel, bool, int, int>(vm => vm.Page, vm => vm.LoadedPage, (p, c) => p != c).ToProperty(this, vm => vm.IsLoading);
 
         CategoriesViewModel = categoriesViewModel;
         InputViewModel = entryListInputViewModel;
@@ -56,7 +56,7 @@ public abstract partial class EntryListViewModel : RoutableScreen<WorkshopListPa
         Entries = entries;
 
         // Respond to page changes
-        this.WhenAnyValue(vm => vm.Page).Skip(1).Subscribe(p => Task.Run(() => router.Navigate($"{_route}/{p}")));
+        this.WhenAnyValue<EntryListViewModel, int>(vm => vm.Page).Skip(1).Subscribe(p => Task.Run(() => router.Navigate($"{_route}/{p}")));
 
         this.WhenActivated(d =>
         {

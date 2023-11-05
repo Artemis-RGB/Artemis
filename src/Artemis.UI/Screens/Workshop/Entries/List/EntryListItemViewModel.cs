@@ -1,17 +1,12 @@
 using System;
 using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.WebClient.Workshop;
-using Artemis.WebClient.Workshop.Services;
-using Avalonia.Media.Imaging;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Workshop.Entries;
+namespace Artemis.UI.Screens.Workshop.Entries.List;
 
 public class EntryListItemViewModel : ActivatableViewModelBase
 {

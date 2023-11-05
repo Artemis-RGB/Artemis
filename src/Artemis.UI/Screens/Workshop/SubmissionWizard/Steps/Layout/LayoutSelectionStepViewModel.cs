@@ -166,14 +166,14 @@ public partial class LayoutSelectionStepViewModel : SubmissionViewModel
         }
 
         State.Icon?.Dispose();
-        foreach (Stream stateImage in State.Images)
-            stateImage.Dispose();
+        foreach (ImageUploadRequest stateImage in State.Images)
+            stateImage.File.Dispose();
         State.Images.Clear();
 
         // Go through the hassle of resizing the image to 128x128 without losing aspect ratio, padding is added for this
         State.Icon = ResizeImage(deviceWithoutLeds, 128);
-        State.Images.Add(deviceWithoutLeds);
-        State.Images.Add(deviceWithLeds);
+        State.Images.Add(new ImageUploadRequest(deviceWithoutLeds, "Layout preview (no LEDs)", "A preview of the device without its LEDs"));
+        State.Images.Add(new ImageUploadRequest(deviceWithLeds, "Layout preview (with LEDs)", "A preview of the device with its LEDs"));
     }
 
     private Stream ResizeImage(Stream image, int size)

@@ -33,7 +33,7 @@ public class SubmissionWizardState : IDisposable
 
     public List<long> Categories { get; set; } = new();
     public List<string> Tags { get; set; } = new();
-    public List<Stream> Images { get; set; } = new();
+    public List<ImageUploadRequest> Images { get; set; } = new();
 
     public IEntrySource? EntrySource { get; set; }
 
@@ -67,7 +67,7 @@ public class SubmissionWizardState : IDisposable
     public void Dispose()
     {
         Icon?.Dispose();
-        foreach (Stream stream in Images)
-            stream.Dispose();
+        foreach (ImageUploadRequest image in Images)
+            image.File.Dispose();
     }
 }

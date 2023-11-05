@@ -6,9 +6,10 @@
              xmlns:entries1="clr-namespace:Artemis.UI.Screens.Workshop.Entries"
              xmlns:il="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:list="clr-namespace:Artemis.UI.Screens.Workshop.Entries.List"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="110"
-             x:Class="Artemis.UI.Screens.Workshop.Entries.EntryListItemView"
-             x:DataType="entries1:EntryListItemViewModel">
+             x:Class="Artemis.UI.Screens.Workshop.Entries.List.EntryListItemView"
+             x:DataType="list:EntryListItemViewModel">
     <UserControl.Resources>
         <converters:EntryIconUriConverter x:Key="EntryIconUriConverter" />
         <converters:DateTimeConverter x:Key="DateTimeConverter" />

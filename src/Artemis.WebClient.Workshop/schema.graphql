@@ -5,6 +5,8 @@ schema {
     mutation: Mutation
 }
 
+directive @tag(name: String!) on SCHEMA | SCALAR | OBJECT | FIELD_DEFINITION | ARGUMENT_DEFINITION | INTERFACE | UNION | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
+
 type Category {
     icon: String!
     id: Long!
@@ -50,8 +52,13 @@ type Entry {
 }
 
 type Image {
+    description: String
+    height: Int!
     id: UUID!
     mimeType: String!
+    name: String!
+    size: Long!
+    width: Int!
 }
 
 type LayoutInfo {
@@ -252,14 +259,39 @@ input EntryTypeOperationFilterInput {
 
 input ImageFilterInput {
     and: [ImageFilterInput!]
+    description: StringOperationFilterInput
+    height: IntOperationFilterInput
     id: UuidOperationFilterInput
     mimeType: StringOperationFilterInput
+    name: StringOperationFilterInput
     or: [ImageFilterInput!]
+    size: LongOperationFilterInput
+    width: IntOperationFilterInput
 }
 
 input ImageSortInput {
+    description: SortEnumType
+    height: SortEnumType
     id: SortEnumType
     mimeType: SortEnumType
+    name: SortEnumType
+    size: SortEnumType
+    width: SortEnumType
+}
+
+input IntOperationFilterInput {
+    eq: Int
+    gt: Int
+    gte: Int
+    in: [Int]
+    lt: Int
+    lte: Int
+    neq: Int
+    ngt: Int
+    ngte: Int
+    nin: [Int]
+    nlt: Int
+    nlte: Int
 }
 
 input LayoutInfoFilterInput {

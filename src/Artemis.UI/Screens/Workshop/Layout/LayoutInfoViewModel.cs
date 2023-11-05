@@ -51,6 +51,7 @@ public partial class LayoutInfoViewModel : ValidatableViewModelBase
         this.ValidationRule(vm => vm.Vendor, input => !string.IsNullOrWhiteSpace(input), "Device vendor is required");
         this.ValidationRule(vm => vm.DeviceProviderIdInput, input => Guid.TryParse(input, out _), "Must be a valid GUID formatted as: 00000000-0000-0000-0000-000000000000");
         this.ValidationRule(vm => vm.DeviceProviderIdInput, input => !string.IsNullOrWhiteSpace(input), "Device provider ID is required");
+        this.ValidationRule(vm => vm.DeviceProviderIdInput, input => input != "00000000-0000-0000-0000-000000000000", "Device provider ID is required");
     }
 
     public string? DeviceProviders => _deviceProviders.Value;
