@@ -69,7 +69,10 @@ public class WorkshopService : IWorkshopService
         ProgressableStreamContent streamContent = new(request.File, progress);
         streamContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
         content.Add(streamContent, "file", "file.png");
-        
+        content.Add(new StringContent(request.Name), "Name");
+        if (request.Description != null)
+            content.Add(new StringContent(request.Description), "Description");
+
         // Submit
         HttpResponseMessage response = await client.PostAsync($"entries/{entryId}/image", content, cancellationToken);
         if (!response.IsSuccessStatusCode)

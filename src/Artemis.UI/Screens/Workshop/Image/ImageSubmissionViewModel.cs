@@ -1,7 +1,10 @@
 using System.IO;
 using System.Reactive.Disposables;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Builders;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
@@ -13,6 +16,8 @@ namespace Artemis.UI.Screens.Workshop.Image;
 
 public partial class ImageSubmissionViewModel : ValidatableViewModelBase
 {
+    private readonly ImageUploadRequest _image;
+    private readonly IWindowService _windowService;
     [Notify(Setter.Private)] private Bitmap? _bitmap;
     [Notify(Setter.Private)] private string? _imageDimensions;
     [Notify(Setter.Private)] private long _fileSize;
@@ -20,25 +25,35 @@ public partial class ImageSubmissionViewModel : ValidatableViewModelBase
     [Notify] private string? _description;
     [Notify] private ICommand? _remove;
 
-    public ImageSubmissionViewModel(ImageUploadRequest image)
+    public ImageSubmissionViewModel(ImageUploadRequest image, IWindowService windowService)
     {
+        _image = image;
+        _windowService = windowService;
+        
         this.WhenActivated(d =>
         {
             Dispatcher.UIThread.Invoke(() =>
             {
-                image.File.Seek(0, SeekOrigin.Begin);
-                Bitmap = new Bitmap(image.File);
-                FileSize = image.File.Length;
+                _image.File.Seek(0, SeekOrigin.Begin);
+                Bitmap = new Bitmap(_image.File);
+                FileSize = _image.File.Length;
                 ImageDimensions = Bitmap.Size.Width + "x" + Bitmap.Size.Height;
-                Name = image.Name;
-                Description = image.Description;
+                Name = _image.Name;
+                Description = _image.Description;
 
                 Bitmap.DisposeWith(d);
             }, DispatcherPriority.Background);
         });
-        
-        this.ValidationRule(vm => vm.Name, input => !string.IsNullOrWhiteSpace(input), "Name is required");
-        this.ValidationRule(vm => vm.Name, input => input?.Length <= 50, "Name can be a maximum of 50 characters");
-        this.ValidationRule(vm => vm.Description, input => input?.Length <= 150, "Description can be a maximum of 150 characters");
+    }
+
+    public async Task Edit()
+    {
+        await _windowService.CreateContentDialog()
+            .WithTitle("Edit image properties")
+            .WithViewModel(out ImagePropertiesDialogViewModel vm, _image)
+            .HavingPrimaryButton(b => b.WithText("Confirm").WithCommand(vm.Confirm))
+            .WithCloseButtonText("Cancel")
+            .WithDefaultButton(ContentDialogButton.Primary)
+            .ShowAsync();
     }
 }

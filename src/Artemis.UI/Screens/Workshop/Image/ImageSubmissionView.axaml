@@ -28,9 +28,9 @@
                 </TextBlock>
             </StackPanel>
 
-            <StackPanel Grid.Row="1" Spacing="5" Margin="6" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+            <StackPanel Grid.Row="1" Spacing="5" Margin="6" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
                 <Button Classes="icon-button"
-                        Command="{CompiledBinding Remove}"
+                        Command="{CompiledBinding Edit}"
                         ToolTip.Tip="Edit">
                     <avalonia:MaterialIcon Kind="Edit" />
                 </Button>
