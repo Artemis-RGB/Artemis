@@ -36,7 +36,7 @@ public class WorkshopService : IWorkshopService
         }
     }
 
-    public async Task<ImageUploadResult> SetEntryIcon(long entryId, Progress<StreamProgress> progress, Stream icon, CancellationToken cancellationToken)
+    public async Task<ImageUploadResult> SetEntryIcon(long entryId, Stream icon, CancellationToken cancellationToken)
     {
         icon.Seek(0, SeekOrigin.Begin);
 
@@ -45,7 +45,7 @@ public class WorkshopService : IWorkshopService
 
         // Construct the request
         MultipartFormDataContent content = new();
-        ProgressableStreamContent streamContent = new(icon, progress);
+        StreamContent streamContent = new(icon);
         streamContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
         content.Add(streamContent, "file", "file.png");
 
@@ -57,7 +57,7 @@ public class WorkshopService : IWorkshopService
     }
 
     /// <inheritdoc />
-    public async Task<ImageUploadResult> UploadEntryImage(long entryId, ImageUploadRequest request, Progress<StreamProgress> progress, CancellationToken cancellationToken)
+    public async Task<ImageUploadResult> UploadEntryImage(long entryId, ImageUploadRequest request, CancellationToken cancellationToken)
     {
         request.File.Seek(0, SeekOrigin.Begin);
 
@@ -66,7 +66,7 @@ public class WorkshopService : IWorkshopService
 
         // Construct the request
         MultipartFormDataContent content = new();
-        ProgressableStreamContent streamContent = new(request.File, progress);
+        StreamContent streamContent = new(request.File);
         streamContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
         content.Add(streamContent, "file", "file.png");
         content.Add(new StringContent(request.Name), "Name");

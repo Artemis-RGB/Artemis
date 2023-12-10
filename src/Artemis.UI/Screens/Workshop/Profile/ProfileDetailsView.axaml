@@ -8,7 +8,7 @@
              x:Class="Artemis.UI.Screens.Workshop.Profile.ProfileDetailsView"
              x:DataType="profile:ProfileDetailsViewModel">
     <Grid ColumnDefinitions="300,*, 300" RowDefinitions="Auto,*">
-        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0 0 10 0" Spacing="10">
+        <StackPanel Grid.Row="1" Grid.Column="0" Spacing="10">
             <Border Classes="card" VerticalAlignment="Top">
                 <ContentControl Content="{CompiledBinding EntryInfoViewModel}" />
             </Border>
@@ -17,7 +17,7 @@
             </Border>
         </StackPanel>
 
-        <Border Classes="card" Grid.Row="1" Grid.Column="1">
+        <Border Classes="card" Grid.Row="1" Grid.Column="1" Margin="10 0">
             <mdxaml:MarkdownScrollViewer Markdown="{CompiledBinding Entry.Description}" MarkdownStyleName="FluentAvalonia">
                 <mdxaml:MarkdownScrollViewer.Styles>
                     <StyleInclude Source="/Styles/Markdown.axaml" />
@@ -25,8 +25,6 @@
             </mdxaml:MarkdownScrollViewer>
         </Border>
 
-        <StackPanel Grid.Row="1" Grid.Column="2" IsVisible="{CompiledBinding Entry.Images.Count}">
-            <ContentControl Content="{CompiledBinding EntryImagesViewModel}" />
-        </StackPanel>
+        <ContentControl Grid.Row="1" Grid.Column="2" IsVisible="{CompiledBinding Entry.Images.Count}" Content="{CompiledBinding EntryImagesViewModel}" />
     </Grid>
 </UserControl>

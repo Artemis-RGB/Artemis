@@ -18,7 +18,7 @@ public class ProfileEntryUploadHandler : IEntryUploadHandler
     }
 
     /// <inheritdoc />
-    public async Task<EntryUploadResult> CreateReleaseAsync(long entryId, IEntrySource entrySource, Progress<StreamProgress> progress, CancellationToken cancellationToken)
+    public async Task<EntryUploadResult> CreateReleaseAsync(long entryId, IEntrySource entrySource, CancellationToken cancellationToken)
     {
         if (entrySource is not ProfileEntrySource source)
             throw new InvalidOperationException("Can only create releases for profile configurations");
@@ -30,7 +30,7 @@ public class ProfileEntryUploadHandler : IEntryUploadHandler
 
         // Construct the request
         MultipartFormDataContent content = new();
-        ProgressableStreamContent streamContent = new(archiveStream, progress);
+        StreamContent streamContent = new(archiveStream);
         streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
         content.Add(streamContent, "file", "file.zip");
 

@@ -158,7 +158,7 @@ public partial class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailPa
         {
             using MemoryStream stream = new();
             EntrySpecificationsViewModel.IconBitmap.Save(stream);
-            ImageUploadResult imageResult = await _workshopService.SetEntryIcon(Entry.Id, new Progress<StreamProgress>(), stream, cancellationToken);
+            ImageUploadResult imageResult = await _workshopService.SetEntryIcon(Entry.Id, stream, cancellationToken);
             if (!imageResult.IsSuccess)
                 throw new ArtemisWorkshopException("Failed to upload image. " + imageResult.Message);
         }

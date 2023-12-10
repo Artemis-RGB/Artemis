@@ -8,21 +8,23 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Entries.Details.EntryImagesView"
              x:DataType="details:EntryImagesViewModel">
-    <ItemsControl ItemsSource="{CompiledBinding Images}" Margin="0 -16 0 0">
-        <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-                <VirtualizingStackPanel />
-            </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.DataTemplates>
-            <DataTemplate x:DataType="details:EntryImageViewModel">
-                <Border CornerRadius="6"
-                        Margin="0 16 0 0"
-                        MaxWidth="300"
-                        ClipToBounds="True">
-                    <Image Stretch="UniformToFill" asyncImageLoader:ImageLoader.Source="{CompiledBinding ThumbnailUrl, Mode=OneWay}" />
-                </Border>
-            </DataTemplate>
-        </ItemsControl.DataTemplates>
-    </ItemsControl>
+    <ScrollViewer Classes="with-padding" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <ItemsControl ItemsSource="{CompiledBinding Images}" Width="300">
+            <ItemsControl.Styles>
+                <Styles>
+                    <Style Selector="ItemsControl > ContentPresenter">
+                        <Setter Property="Margin" Value="0 0 0 10"></Setter>
+                    </Style>
+                    <Style Selector="ItemsControl > ContentPresenter:nth-last-child(1)">
+                        <Setter Property="Margin" Value="0 0 0 0"></Setter>
+                    </Style>
+                </Styles>
+            </ItemsControl.Styles>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </ScrollViewer>
 </UserControl>

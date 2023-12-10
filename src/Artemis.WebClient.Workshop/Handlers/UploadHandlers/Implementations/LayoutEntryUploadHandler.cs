@@ -19,7 +19,7 @@ public class LayoutEntryUploadHandler : IEntryUploadHandler
     }
     
     /// <inheritdoc />
-    public async Task<EntryUploadResult> CreateReleaseAsync(long entryId, IEntrySource entrySource, Progress<StreamProgress> progress, CancellationToken cancellationToken)
+    public async Task<EntryUploadResult> CreateReleaseAsync(long entryId, IEntrySource entrySource, CancellationToken cancellationToken)
     {
         if (entrySource is not LayoutEntrySource source)
             throw new InvalidOperationException("Can only create releases for layouts");
@@ -67,7 +67,7 @@ public class LayoutEntryUploadHandler : IEntryUploadHandler
 
         // Construct the request
         MultipartFormDataContent content = new();
-        ProgressableStreamContent streamContent = new(archiveStream, progress);
+        StreamContent streamContent = new(archiveStream);
         streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
         content.Add(streamContent, "file", "file.zip");
 

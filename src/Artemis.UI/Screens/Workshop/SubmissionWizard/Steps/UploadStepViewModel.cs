@@ -23,9 +23,6 @@ public partial class UploadStepViewModel : SubmissionViewModel
 {
     private readonly ILogger _logger;
     private readonly EntryUploadHandlerFactory _entryUploadHandlerFactory;
-    private readonly Progress<StreamProgress> _progress = new();
-    private readonly ObservableAsPropertyHelper<bool> _progressIndeterminate;
-    private readonly ObservableAsPropertyHelper<int> _progressPercentage;
     private readonly IRouter _router;
     private readonly IWindowService _windowService;
     private readonly IWorkshopClient _workshopClient;
@@ -40,7 +37,7 @@ public partial class UploadStepViewModel : SubmissionViewModel
         IWorkshopClient workshopClient,
         IWorkshopService workshopService,
         EntryUploadHandlerFactory entryUploadHandlerFactory,
-        IWindowService windowService, 
+        IWindowService windowService,
         IRouter router)
     {
         _logger = logger;
@@ -54,18 +51,8 @@ public partial class UploadStepViewModel : SubmissionViewModel
         ContinueText = "Finish";
         Continue = ReactiveCommand.CreateFromTask(ExecuteContinue, this.WhenAnyValue(vm => vm.Finished));
 
-        _progressPercentage = Observable.FromEventPattern<StreamProgress>(x => _progress.ProgressChanged += x, x => _progress.ProgressChanged -= x)
-            .Select(e => e.EventArgs.ProgressPercentage)
-            .ToProperty(this, vm => vm.ProgressPercentage);
-        _progressIndeterminate = Observable.FromEventPattern<StreamProgress>(x => _progress.ProgressChanged += x, x => _progress.ProgressChanged -= x)
-            .Select(e => e.EventArgs.ProgressPercentage == 0)
-            .ToProperty(this, vm => vm.ProgressIndeterminate);
-
         this.WhenActivated(d => Observable.FromAsync(ExecuteUpload).Subscribe().DisposeWith(d));
     }
-
-    public int ProgressPercentage => _progressPercentage.Value;
-    public bool ProgressIndeterminate => _progressIndeterminate.Value;
 
     private async Task ExecuteUpload(CancellationToken cancellationToken)
     {
@@ -79,7 +66,7 @@ public partial class UploadStepViewModel : SubmissionViewModel
         try
         {
             IEntryUploadHandler uploadHandler = _entryUploadHandlerFactory.CreateHandler(State.EntryType);
-            EntryUploadResult uploadResult = await uploadHandler.CreateReleaseAsync(_entryId.Value, State.EntrySource!, _progress, cancellationToken);
+            EntryUploadResult uploadResult = await uploadHandler.CreateReleaseAsync(_entryId.Value, State.EntrySource!, cancellationToken);
             if (!uploadResult.IsSuccess)
             {
                 string? message = uploadResult.Message;
@@ -96,7 +83,7 @@ public partial class UploadStepViewModel : SubmissionViewModel
         catch (Exception e)
         {
             _logger.Error(e, "Failed to upload submission for entry {EntryId}", _entryId);
-            
+
             // Something went wrong when creating a release :c
             // We'll keep the workshop entry so that the user can make changes and try again
             Failed = true;
@@ -109,6 +96,8 @@ public partial class UploadStepViewModel : SubmissionViewModel
 
     private async Task<long?> CreateEntry(CancellationToken cancellationToken)
     {
+        await Task.Delay(2000);
+        
         IOperationResult<IAddEntryResult> result = await _workshopClient.AddEntry.ExecuteAsync(new CreateEntryInput
         {
             EntryType = State.EntryType,
@@ -122,57 +111,40 @@ public partial class UploadStepViewModel : SubmissionViewModel
         long? entryId = result.Data?.AddEntry?.Id;
         if (result.IsErrorResult() || entryId == null)
         {
-            await _windowService.ShowConfirmContentDialog("Failed to create workshop entry",  string.Join("\r\n", result.Errors.Select(e => e.Message)), "Close", null);
-            State.ChangeScreen<SubmitStepViewModel>();
-            return null;
-        }
-
-        if (cancellationToken.IsCancellationRequested)
-        {
+            await _windowService.ShowConfirmContentDialog("Failed to create workshop entry", string.Join("\r\n", result.Errors.Select(e => e.Message)), "Close", null);
             State.ChangeScreen<SubmitStepViewModel>();
             return null;
         }
         
+        cancellationToken.ThrowIfCancellationRequested();
         foreach (ImageUploadRequest image in State.Images.ToList())
         {
-            // Upload image
-            try
-            {
-                ImageUploadResult imageUploadResult = await _workshopService.UploadEntryImage(entryId.Value, image, _progress, cancellationToken);
-                if (!imageUploadResult.IsSuccess)
-                    throw new ArtemisWorkshopException(imageUploadResult.Message);
-                State.Images.Remove(image);
-            }
-            catch (Exception e)
-            {
-                // It's not critical if this fails
-                await _windowService.ShowConfirmContentDialog("Failed to upload image", "Your submission will continue, you can try upload a new image afterwards\r\n" + e.Message, "Continue", null);
-            }
-            
-            if (cancellationToken.IsCancellationRequested)
-            {
-                State.ChangeScreen<SubmitStepViewModel>();
-                return null;
-            }
+            await TryImageUpload(async () => await _workshopService.UploadEntryImage(entryId.Value, image, cancellationToken));
+            cancellationToken.ThrowIfCancellationRequested();
         }
 
         if (State.Icon == null)
             return entryId;
 
         // Upload icon
+        await TryImageUpload(async () => await _workshopService.SetEntryIcon(entryId.Value, State.Icon, cancellationToken));
+       
+        return entryId;
+    }
+
+    private async Task TryImageUpload(Func<Task<ImageUploadResult>> action)
+    {
         try
         {
-            ImageUploadResult imageUploadResult = await _workshopService.SetEntryIcon(entryId.Value, _progress, State.Icon, cancellationToken);
-            if (!imageUploadResult.IsSuccess)
-                throw new ArtemisWorkshopException(imageUploadResult.Message);
+            ImageUploadResult result = await action();
+            if (!result.IsSuccess)
+                throw new ArtemisWorkshopException(result.Message);
         }
         catch (Exception e)
         {
             // It's not critical if this fails
-            await _windowService.ShowConfirmContentDialog("Failed to upload icon", "Your submission will continue, you can try upload a new image afterwards\r\n" + e.Message, "Continue", null);
+            await _windowService.ShowConfirmContentDialog("Failed to upload", "Your submission will continue, you can try upload a new image afterwards\r\n" + e.Message, "Continue", null);
         }
-
-        return entryId;
     }
 
     private async Task ExecuteContinue()

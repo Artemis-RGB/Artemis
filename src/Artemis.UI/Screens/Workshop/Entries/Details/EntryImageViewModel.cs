@@ -1,8 +1,9 @@
-﻿using Artemis.WebClient.Workshop;
+﻿using Artemis.UI.Shared;
+using Artemis.WebClient.Workshop;
 
 namespace Artemis.UI.Screens.Workshop.Entries.Details;
 
-public class EntryImageViewModel
+public class EntryImageViewModel : ViewModelBase
 {
     public EntryImageViewModel(IImage image)
     {

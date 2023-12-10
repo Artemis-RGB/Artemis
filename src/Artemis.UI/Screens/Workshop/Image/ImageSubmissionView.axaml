@@ -21,7 +21,7 @@
                    Source="{CompiledBinding Bitmap}" />
             <StackPanel Grid.Row="1" Margin="12">
                 <TextBlock Text="{CompiledBinding Name, FallbackValue=Unnamed image}" TextTrimming="CharacterEllipsis" />
-                <TextBlock TextWrapping="Wrap" Classes="subtitle" Text="{CompiledBinding Description}" />
+                <TextBlock TextWrapping="Wrap" Classes="subtitle" Text="{CompiledBinding Description, FallbackValue='No description'}" />
                 <Separator Margin="-4 10" />
                 <TextBlock TextWrapping="Wrap" Classes="subtitle">
                     <Run Text="{CompiledBinding ImageDimensions}" /> - <Run Text="{CompiledBinding FileSize, Converter={StaticResource BytesToStringConverter}, Mode=OneWay}" />

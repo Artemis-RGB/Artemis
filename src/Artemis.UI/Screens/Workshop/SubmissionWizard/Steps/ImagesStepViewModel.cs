@@ -9,6 +9,7 @@ using Artemis.UI.Screens.Workshop.Image;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using DynamicData;
+using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
@@ -49,7 +50,7 @@ public class ImagesStepViewModel : SubmissionViewModel
     private ImageSubmissionViewModel CreateImageSubmissionViewModel(ImageUploadRequest image)
     {
         ImageSubmissionViewModel viewModel = _getImageSubmissionViewModel(image);
-        viewModel.Remove = ReactiveCommand.Create(() => _stateImages.Remove(image));
+        viewModel.Remove = ReactiveCommand.Create(() => RemoveImage(image));
         return viewModel;
     }
 
@@ -73,8 +74,23 @@ public class ImagesStepViewModel : SubmissionViewModel
             }
 
             ImageUploadRequest request = new(stream, Path.GetFileName(path), string.Empty);
-            _stateImages.Add(request);
-            State.Images.Add(request);
+            AddImage(request);
+
+            // Show the dialog to give the image a name and description
+            if (await Images.Last().Edit() != ContentDialogResult.Primary)
+                RemoveImage(request); // user did not click confirm, remove again
         }
+    }
+
+    private void AddImage(ImageUploadRequest image)
+    {
+        _stateImages.Add(image);
+        State.Images.Add(image);
+    }
+
+    private void RemoveImage(ImageUploadRequest image)
+    {
+        _stateImages.Remove(image);
+        State.Images.Remove(image);
     }
 }

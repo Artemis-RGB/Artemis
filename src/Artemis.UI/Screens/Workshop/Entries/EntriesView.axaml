@@ -23,7 +23,7 @@
             </Styles>
         </controls:NavigationView.Styles>
         
-        <controls:Frame Name="TabFrame" IsNavigationStackEnabled="False" CacheSize="0" Padding="20">
+        <controls:Frame Name="TabFrame" IsNavigationStackEnabled="False" CacheSize="0" Padding="20 20 10 20">
             <controls:Frame.NavigationPageFactory>
                 <ui:PageFactory/>
             </controls:Frame.NavigationPageFactory>

@@ -7,18 +7,25 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Entries.Details.EntryImageView"
              x:DataType="details:EntryImageViewModel">
-    <Border Classes="card" Padding="0" Width="300" ClipToBounds="True" Margin="0 5 0 0">
+    <Border Classes="card" Padding="0">
         <Grid RowDefinitions="230,*">
-            <Rectangle Grid.Row="0" Fill="{DynamicResource CheckerboardBrush}" />
-            <Image Grid.Row="0"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Center"
-                   RenderOptions.BitmapInterpolationMode="HighQuality"
-                   asyncImageLoader:ImageLoader.Source="{CompiledBinding ThumbnailUrl, Mode=OneWay}"  />
-            <StackPanel Grid.Row="1" Margin="12">
-                <TextBlock Text="{CompiledBinding Image.Name}" TextTrimming="CharacterEllipsis" />
-                <TextBlock Classes="subtitle" Text="{CompiledBinding Image.Description}" TextWrapping="Wrap" />
-            </StackPanel>
+            <Border Grid.Row="0" ClipToBounds="True" CornerRadius="4 4 0 0" Padding="0">
+                <Rectangle RenderOptions.BitmapInterpolationMode="HighQuality">
+                    <Rectangle.Fill>
+                        <ImageBrush asyncImageLoader:ImageBrushLoader.Source="{CompiledBinding ThumbnailUrl}" Stretch="UniformToFill" />
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Border>
+            <Border Grid.Row="1" ClipToBounds="True" CornerRadius="0 0 4 4" Background="{DynamicResource ControlFillColorDefaultBrush}">
+                <StackPanel Margin="16">
+                    <TextBlock Text="{CompiledBinding Image.Name}" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Classes="subtitle"
+                               Text="{CompiledBinding Image.Description}"
+                               TextWrapping="Wrap"
+                               IsVisible="{CompiledBinding Image.Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+            </Border>
+
         </Grid>
     </Border>
 </UserControl>

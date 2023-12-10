@@ -30,6 +30,9 @@
         <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
     </ItemGroup>
     <ItemGroup>
+      <Reference Include="AsyncImageLoader.Avalonia">
+        <HintPath>..\..\..\..\Users\Robert\.nuget\packages\asyncimageloader.avalonia\3.2.1\lib\netstandard2.1\AsyncImageLoader.Avalonia.dll</HintPath>
+      </Reference>
       <Reference Include="RGB.NET.Layout">
         <HintPath>..\..\..\RGB.NET\bin\net7.0\RGB.NET.Layout.dll</HintPath>
       </Reference>
