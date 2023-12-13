@@ -107,7 +107,7 @@ public class ContentDialogBuilder
             _contentDialog.IsSecondaryButtonEnabled = builder.Command.CanExecute(builder.CommandParameter);
             builder.Command.CanExecuteChanged += (_, _) => _contentDialog.IsSecondaryButtonEnabled = builder.Command.CanExecute(builder.CommandParameter);
         }
-
+        
         return this;
     }
 
