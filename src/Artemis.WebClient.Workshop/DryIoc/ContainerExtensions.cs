@@ -1,7 +1,9 @@
 using System.Reflection;
+using Artemis.Core.Providers;
 using Artemis.WebClient.Workshop.Extensions;
 using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
+using Artemis.WebClient.Workshop.Providers;
 using Artemis.WebClient.Workshop.Repositories;
 using Artemis.WebClient.Workshop.Services;
 using Artemis.WebClient.Workshop.State;
@@ -46,6 +48,7 @@ public static class ContainerExtensions
         container.Register<IAuthenticationRepository, AuthenticationRepository>(Reuse.Singleton);
         container.Register<IAuthenticationService, AuthenticationService>(Reuse.Singleton);
         container.Register<IWorkshopService, WorkshopService>(Reuse.Singleton);
+        container.Register<ILayoutProvider, WorkshopLayoutProvider>(Reuse.Singleton);
         
         container.Register<EntryUploadHandlerFactory>(Reuse.Transient);
         container.RegisterMany(workshopAssembly, type => type.IsAssignableTo<IEntryUploadHandler>(), Reuse.Transient);

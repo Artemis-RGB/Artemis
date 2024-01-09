@@ -46,7 +46,7 @@ public partial class InstalledTabItemViewModel : ViewModelBase
 
     private async Task ExecuteViewLocal(CancellationToken cancellationToken)
     {
-        if (InstalledEntry.EntryType == EntryType.Profile && Guid.TryParse(InstalledEntry.LocalReference, out Guid profileId))
+        if (InstalledEntry.EntryType == EntryType.Profile && InstalledEntry.TryGetMetadata("ProfileId", out Guid profileId))
         {
             await _router.Navigate($"profile-editor/{profileId}");
         }

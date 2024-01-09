@@ -12,7 +12,7 @@ using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using ContentDialogButton = Artemis.UI.Shared.Services.Builders.ContentDialogButton;
 
-namespace Artemis.UI.Screens.Device;
+namespace Artemis.UI.Screens.Device.Layout;
 
 public partial class DeviceLogicalLayoutDialogViewModel : ContentDialogViewModelBase
 {
@@ -24,7 +24,7 @@ public partial class DeviceLogicalLayoutDialogViewModel : ContentDialogViewModel
     public DeviceLogicalLayoutDialogViewModel(ArtemisDevice device)
     {
         Device = device;
-        ApplyLogicalLayout = ReactiveCommand.Create(ExecuteApplyLogicalLayout, this.WhenAnyValue(vm => vm.SelectedRegion).Select(r => r != null));
+        ApplyLogicalLayout = ReactiveCommand.Create(ExecuteApplyLogicalLayout, this.WhenAnyValue<DeviceLogicalLayoutDialogViewModel, RegionInfo>(vm => vm.SelectedRegion).Select(r => r != null));
         Regions = new ObservableCollection<RegionInfo>(CultureInfo.GetCultures(CultureTypes.SpecificCultures)
             .Where(c => c.LCID != LOCALE_INVARIANT &&
                         c.LCID != LOCALE_NEUTRAL &&

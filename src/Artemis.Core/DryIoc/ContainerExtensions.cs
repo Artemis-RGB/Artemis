@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Artemis.Core.DryIoc.Factories;
+using Artemis.Core.Providers;
 using Artemis.Core.Services;
 using Artemis.Storage;
 using Artemis.Storage.Migrations.Interfaces;
@@ -35,7 +36,8 @@ public static class ContainerExtensions
 
         // Bind migrations
         container.RegisterMany(storageAssembly, type => type.IsAssignableTo<IStorageMigration>(), Reuse.Singleton, nonPublicServiceTypes: true);
-
+        
+        container.RegisterMany(coreAssembly, type => type.IsAssignableTo<ILayoutProvider>(), Reuse.Singleton);
         container.Register<IPluginSettingsFactory, PluginSettingsFactory>(Reuse.Singleton);
         container.Register(Made.Of(_ => ServiceInfo.Of<IPluginSettingsFactory>(), f => f.CreatePluginSettings(Arg.Index<Type>(0)), r => r.Parent.ImplementationType));
         container.Register<ILoggerFactory, LoggerFactory>(Reuse.Singleton);

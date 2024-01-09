@@ -5,9 +5,10 @@
              xmlns:device="clr-namespace:Artemis.UI.Screens.Device"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:shared="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             xmlns:leds="clr-namespace:Artemis.UI.Screens.Device.Leds"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Device.DeviceLedsTabView"
-             x:DataType="device:DeviceLedsTabViewModel">
+             x:Class="Artemis.UI.Screens.Device.Leds.DeviceLedsTabView"
+             x:DataType="leds:DeviceLedsTabViewModel">
     <UserControl.Resources>
         <converters:UriToFileNameConverter x:Key="UriToFileNameConverter" />
         <converters:LedIdToStringConverter x:Key="LedIdToStringConverter" />

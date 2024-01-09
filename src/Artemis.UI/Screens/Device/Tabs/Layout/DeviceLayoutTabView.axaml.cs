@@ -2,7 +2,7 @@
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Device;
+namespace Artemis.UI.Screens.Device.Layout;
 
 public partial class DeviceLayoutTabView : ReactiveUserControl<DeviceLayoutTabViewModel>
 {

@@ -63,7 +63,7 @@ public partial class LayoutSelectionStepViewModel : SubmissionViewModel
 
         try
         {
-            ArtemisLayout layout = new(selected[0], LayoutSource.User);
+            ArtemisLayout layout = new(selected[0]);
             if (!layout.IsValid)
             {
                 await _windowService.ShowConfirmContentDialog("Failed to load layout", "The selected file does not appear to be a valid RGB.NET layout file.", "Close", null);

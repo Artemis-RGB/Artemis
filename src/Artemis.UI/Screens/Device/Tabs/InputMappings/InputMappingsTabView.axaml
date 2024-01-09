@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:device="clr-namespace:Artemis.UI.Screens.Device"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:inputMappings="clr-namespace:Artemis.UI.Screens.Device.InputMappings"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Device.InputMappingsTabView"
-             x:DataType="device:InputMappingsTabViewModel">
+             x:Class="Artemis.UI.Screens.Device.InputMappings.InputMappingsTabView"
+             x:DataType="inputMappings:InputMappingsTabViewModel">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid RowDefinitions="Auto,Auto,*">
             <StackPanel Grid.Row="0">

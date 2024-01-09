@@ -5,9 +5,12 @@
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:device="clr-namespace:Artemis.UI.Screens.Device"
+             xmlns:providers="clr-namespace:Artemis.Core.Providers;assembly=Artemis.Core"
+             xmlns:layout="clr-namespace:Artemis.UI.Screens.Device.Layout"
+             xmlns:layoutProviders="clr-namespace:Artemis.UI.Screens.Device.Layout.LayoutProviders"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
-             x:Class="Artemis.UI.Screens.Device.DeviceLayoutTabView"
-             x:DataType="device:DeviceLayoutTabViewModel">
+             x:Class="Artemis.UI.Screens.Device.Layout.DeviceLayoutTabView"
+             x:DataType="layout:DeviceLayoutTabViewModel">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Border Classes="card" Margin="5">
             <Grid RowDefinitions="*,Auto">
@@ -28,6 +31,7 @@
                             </Button>
                         </StackPanel>
                     </Grid>
+
                     <Border Classes="card-separator" />
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Row="1" Grid.Column="0">
@@ -45,28 +49,43 @@
                             </Button>
                         </StackPanel>
                     </Grid>
+
                     <Border Classes="card-separator" />
-                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                    <Grid RowDefinitions="*,*,*" ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Row="1" Grid.Column="0">
-                            <TextBlock Text="Disable default layout" />
-                            <TextBlock Classes="subtitle" FontSize="12" Text="With this checked, Artemis will not load a layout for this device unless you specifically provide one." />
+                            <TextBlock Text="Layout provider" />
+                            <TextBlock Classes="subtitle" FontSize="12" Text="Choose between different ways to load a layout for this device." />
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
-                            <CheckBox HorizontalAlignment="Right" Margin="0,0,-10,0" IsChecked="{CompiledBinding Device.DisableDefaultLayout}"/>
+                            <StackPanel.Styles>
+                                <Style Selector="ComboBox.layoutProvider /template/ ContentControl#ContentPresenter">
+                                    <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate x:DataType="layoutProviders:ILayoutProviderViewModel">
+                                                <TextBlock Text="{CompiledBinding Name}" TextWrapping="Wrap" MaxWidth="350" />
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </StackPanel.Styles>
+                            <ComboBox Classes="layoutProvider"
+                                      Width="150"
+                                      SelectedItem="{CompiledBinding SelectedLayoutProvider}"
+                                      ItemsSource="{CompiledBinding LayoutProviders}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="layoutProviders:ILayoutProviderViewModel">
+                                        <StackPanel>
+                                            <TextBlock Text="{CompiledBinding Name}" TextWrapping="Wrap" MaxWidth="350" />
+                                            <TextBlock Classes="subtitle" Text="{CompiledBinding Description}" TextWrapping="Wrap" MaxWidth="350" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
                         </StackPanel>
                     </Grid>
-                    <Border Classes="card-separator" />
-                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-                        <StackPanel Grid.Row="1" Grid.Column="0">
-                            <TextBlock Text="Custom layout path" />
-                            <TextBlock Classes="subtitle" FontSize="12" Text="{CompiledBinding CustomLayoutPath, TargetNullValue=None}"/>
-                        </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
-                            <Button Content="Clear" Command="{CompiledBinding ClearCustomLayout}" IsEnabled="{CompiledBinding HasCustomLayout}" />
-                            <!-- 5 pixels of margin between the buttons -->
-                            <Button Margin="5,0,0,0" Content="Browse" Command="{CompiledBinding BrowseCustomLayout}" />
-                        </StackPanel>
-                    </Grid>
+                    
+                    <ContentControl Content="{CompiledBinding SelectedLayoutProvider}" ClipToBounds="False"></ContentControl>
+
                     <Border Classes="card-separator" />
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Row="1" Grid.Column="0">

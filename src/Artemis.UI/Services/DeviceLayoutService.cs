@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.Device;
+using Artemis.UI.Screens.Device.Layout;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.MainWindow;
 using Avalonia.Threading;
 using RGB.NET.Core;
+using DeviceLogicalLayoutDialogViewModel = Artemis.UI.Screens.Device.Layout.DeviceLogicalLayoutDialogViewModel;
 using KeyboardLayoutType = Artemis.Core.KeyboardLayoutType;
 
 namespace Artemis.UI.Services;
@@ -61,7 +63,7 @@ public class DeviceLayoutService : IDeviceLayoutService
 
         await Task.Delay(400);
         _deviceService.SaveDevice(artemisDevice);
-        _deviceService.ApplyDeviceLayout(artemisDevice, artemisDevice.GetBestDeviceLayout());
+        _deviceService.LoadDeviceLayout(artemisDevice);
     }
 
     private bool DeviceNeedsLayout(ArtemisDevice d)

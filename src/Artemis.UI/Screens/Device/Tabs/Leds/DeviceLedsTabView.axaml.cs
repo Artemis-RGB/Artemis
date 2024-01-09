@@ -1,7 +1,6 @@
-using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Device;
+namespace Artemis.UI.Screens.Device.Leds;
 
 public partial class DeviceLedsTabView : ReactiveUserControl<DeviceLedsTabViewModel>
 {

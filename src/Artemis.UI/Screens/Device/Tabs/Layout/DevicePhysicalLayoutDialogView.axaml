@@ -3,9 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:device="clr-namespace:Artemis.UI.Screens.Device"
+             xmlns:layout="clr-namespace:Artemis.UI.Screens.Device.Layout"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Device.DevicePhysicalLayoutDialogView"
-             x:DataType="device:DevicePhysicalLayoutDialogViewModel">
+             x:Class="Artemis.UI.Screens.Device.Layout.DevicePhysicalLayoutDialogView"
+             x:DataType="layout:DevicePhysicalLayoutDialogViewModel">
     <Grid RowDefinitions="Auto,*">
         <StackPanel Grid.Row="0">
             <StackPanel Orientation="Horizontal">

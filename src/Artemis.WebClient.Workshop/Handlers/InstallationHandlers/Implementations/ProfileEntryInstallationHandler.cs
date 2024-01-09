@@ -36,13 +36,13 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
 
         // Find existing installation to potentially replace the profile
         InstalledEntry? installedEntry = _workshopService.GetInstalledEntry(entry);
-        if (installedEntry != null && Guid.TryParse(installedEntry.LocalReference, out Guid profileId))
+        if (installedEntry != null && installedEntry.TryGetMetadata("ProfileId", out Guid profileId))
         {
             ProfileConfiguration? existing = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(c => c.ProfileId == profileId);
             if (existing != null)
             {
                 ProfileConfiguration overwritten = await _profileService.OverwriteProfile(stream, existing);
-                installedEntry.LocalReference = overwritten.ProfileId.ToString();
+                installedEntry.SetMetadata("ProfileId", overwritten.ProfileId);
 
                 // Update the release and return the profile configuration
                 UpdateRelease(releaseId, installedEntry);
@@ -56,8 +56,8 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         // Add the profile as a fresh import
         ProfileCategory category = _profileService.ProfileCategories.FirstOrDefault(c => c.Name == "Workshop") ?? _profileService.CreateProfileCategory("Workshop", true);
         ProfileConfiguration imported = await _profileService.ImportProfile(stream, category, true, true, null);
-        installedEntry.LocalReference = imported.ProfileId.ToString();
-
+        installedEntry.SetMetadata("ProfileId", imported.ProfileId);
+        
         // Update the release and return the profile configuration
         UpdateRelease(releaseId, installedEntry);
         return EntryInstallResult.FromSuccess(imported);
@@ -65,7 +65,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
 
     public async Task<EntryUninstallResult> UninstallAsync(InstalledEntry installedEntry, CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(installedEntry.LocalReference, out Guid profileId))
+        if (!installedEntry.TryGetMetadata("ProfileId", out Guid profileId))
             return EntryUninstallResult.FromFailure("Local reference does not contain a GUID");
 
         return await Task.Run(() =>

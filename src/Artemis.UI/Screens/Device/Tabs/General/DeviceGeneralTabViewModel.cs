@@ -4,6 +4,7 @@ using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Screens.Device.Layout;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using PropertyChanged.SourceGenerator;
@@ -11,7 +12,7 @@ using ReactiveUI;
 using RGB.NET.Core;
 using SkiaSharp;
 
-namespace Artemis.UI.Screens.Device;
+namespace Artemis.UI.Screens.Device.General;
 
 public partial class DeviceGeneralTabViewModel : ActivatableViewModelBase
 {
@@ -56,7 +57,7 @@ public partial class DeviceGeneralTabViewModel : ActivatableViewModelBase
         _initialGreenScale = Device.GreenScale;
         _initialBlueScale = Device.BlueScale;
 
-        this.WhenAnyValue(x => x.RedScale, x => x.GreenScale, x => x.BlueScale).Subscribe(_ => ApplyScaling());
+        this.WhenAnyValue<DeviceGeneralTabViewModel, float, float, float>(x => x.RedScale, x => x.GreenScale, x => x.BlueScale).Subscribe(_ => ApplyScaling());
 
         this.WhenActivated(d =>
         {
@@ -127,12 +128,12 @@ public partial class DeviceGeneralTabViewModel : ActivatableViewModelBase
             return;
         if (!Device.DeviceProvider.CanDetectPhysicalLayout && !await DevicePhysicalLayoutDialogViewModel.SelectPhysicalLayout(_windowService, Device))
             return;
-        if (!Device.DeviceProvider.CanDetectLogicalLayout && !await DeviceLogicalLayoutDialogViewModel.SelectLogicalLayout(_windowService, Device))
+        if (!Device.DeviceProvider.CanDetectLogicalLayout && !await Layout.DeviceLogicalLayoutDialogViewModel.SelectLogicalLayout(_windowService, Device))
             return;
 
         await Task.Delay(400);
         _deviceService.SaveDevice(Device);
-        _deviceService.ApplyDeviceLayout(Device, Device.GetBestDeviceLayout());
+        _deviceService.LoadDeviceLayout(Device);
     }
 
     private void Apply()

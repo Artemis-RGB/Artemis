@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:device="clr-namespace:Artemis.UI.Screens.Device"
              xmlns:globalization="clr-namespace:System.Globalization;assembly=System.Runtime"
+             xmlns:layout="clr-namespace:Artemis.UI.Screens.Device.Layout"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Device.DeviceLogicalLayoutDialogView"
-             x:DataType="device:DeviceLogicalLayoutDialogViewModel">
+             x:Class="Artemis.UI.Screens.Device.Layout.DeviceLogicalLayoutDialogView"
+             x:DataType="layout:DeviceLogicalLayoutDialogViewModel">
     <StackPanel>
         <TextBlock TextWrapping="Wrap">Artemis couldn't automatically determine the logical layout of your</TextBlock>
         <TextBlock TextWrapping="Wrap" Text="{CompiledBinding Device.RgbDevice.DeviceInfo.DeviceName, Mode=OneWay}" />

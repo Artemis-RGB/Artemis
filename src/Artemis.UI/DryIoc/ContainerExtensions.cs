@@ -1,6 +1,7 @@
 using System.Reflection;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.DryIoc.InstanceProviders;
+using Artemis.UI.Screens.Device.Layout.LayoutProviders;
 using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Services.Updating;
@@ -26,6 +27,7 @@ public static class ContainerExtensions
         
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<ViewModelBase>(), setup: Setup.With(preventDisposal: true));
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IToolViewModel>() && type.IsInterface, setup: Setup.With(preventDisposal: true));
+        container.RegisterMany(thisAssembly, type => type.IsAssignableTo<ILayoutProviderViewModel>() && type.IsInterface, setup: Setup.With(preventDisposal: true));
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IVmFactory>() && type != typeof(PropertyVmFactory));
 
         container.Register<NodeScriptWindowViewModelBase, NodeScriptWindowViewModel>(Reuse.Singleton);

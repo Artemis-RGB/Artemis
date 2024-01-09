@@ -7,7 +7,7 @@ using Artemis.UI.Shared.Services;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Device;
+namespace Artemis.UI.Screens.Device.Layout;
 
 public class DevicePhysicalLayoutDialogViewModel : ContentDialogViewModelBase
 {

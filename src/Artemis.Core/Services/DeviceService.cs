@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.DeviceProviders;
+using Artemis.Core.Providers;
 using Artemis.Core.Services.Models;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
@@ -18,15 +19,21 @@ internal class DeviceService : IDeviceService
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IDeviceRepository _deviceRepository;
     private readonly Lazy<IRenderService> _renderService;
+    private readonly Func<IEnumerable<ILayoutProvider>> _getLayoutProviders;
     private readonly List<ArtemisDevice> _enabledDevices = new();
     private readonly List<ArtemisDevice> _devices = new();
 
-    public DeviceService(ILogger logger, IPluginManagementService pluginManagementService, IDeviceRepository deviceRepository, Lazy<IRenderService> renderService)
+    public DeviceService(ILogger logger,
+        IPluginManagementService pluginManagementService,
+        IDeviceRepository deviceRepository,
+        Lazy<IRenderService> renderService,
+        Func<IEnumerable<ILayoutProvider>> getLayoutProviders)
     {
         _logger = logger;
         _pluginManagementService = pluginManagementService;
         _deviceRepository = deviceRepository;
         _renderService = renderService;
+        _getLayoutProviders = getLayoutProviders;
 
         EnabledDevices = new ReadOnlyCollection<ArtemisDevice>(_enabledDevices);
         Devices = new ReadOnlyCollection<ArtemisDevice>(_devices);
@@ -157,12 +164,23 @@ internal class DeviceService : IDeviceService
     }
 
     /// <inheritdoc />
-    public void ApplyDeviceLayout(ArtemisDevice device, ArtemisLayout? layout)
+    public void LoadDeviceLayout(ArtemisDevice device)
     {
-        if (layout == null || layout.Source == LayoutSource.Default)
-            device.ApplyLayout(layout, false, false);
+        ILayoutProvider? provider = _getLayoutProviders().FirstOrDefault(p => p.IsMatch(device));
+        if (provider == null)
+            _logger.Warning("Could not find a layout provider for type {LayoutType} of device {Device}", device.LayoutSelection.Type, device);
+
+        ArtemisLayout? layout = provider?.GetDeviceLayout(device);
+        if (layout != null && !layout.IsValid)
+        {
+            _logger.Warning("Got an invalid layout {Layout} from {LayoutProvider}", layout, provider!.GetType().FullName);
+            layout = null;
+        }
+        
+        if (layout == null)
+            device.ApplyLayout(null, false, false);
         else
-            device.ApplyLayout(layout, device.DeviceProvider.CreateMissingLedsSupported, device.DeviceProvider.RemoveExcessiveLedsSupported);
+            provider!.ApplyLayout(device, layout);
 
         UpdateLeds();
     }
@@ -230,7 +248,7 @@ internal class DeviceService : IDeviceService
             device = new ArtemisDevice(rgbDevice, deviceProvider);
         }
 
-        ApplyDeviceLayout(device, device.GetBestDeviceLayout());
+        LoadDeviceLayout(device);
         return device;
     }
 

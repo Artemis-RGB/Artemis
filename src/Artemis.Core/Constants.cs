@@ -62,6 +62,11 @@ public static class Constants
     ///     The full path to the Artemis user layouts folder
     /// </summary>
     public static readonly string LayoutsFolder = Path.Combine(DataFolder, "User Layouts");
+    
+    /// <summary>
+    ///     The full path to the Artemis user layouts folder
+    /// </summary>
+    public static readonly string WorkshopFolder = Path.Combine(DataFolder, "workshop");
 
     /// <summary>
     ///     The current API version for plugins
@@ -155,4 +160,5 @@ public static class Constants
     ///     Gets the graphics context to be used for rendering by SkiaSharp.
     /// </summary>
     public static IManagedGraphicsContext? ManagedGraphicsContext { get; internal set; }
+    
 }

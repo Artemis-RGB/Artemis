@@ -43,11 +43,10 @@ public interface IDeviceService : IArtemisService
     void AutoArrangeDevices();
     
     /// <summary>
-    ///     Apples the provided <see cref="ArtemisLayout" /> to the provided <see cref="ArtemisDevice" />
+    ///     Apples the best available to the provided <see cref="ArtemisDevice" />
     /// </summary>
     /// <param name="device"></param>
-    /// <param name="layout"></param>
-    void ApplyDeviceLayout(ArtemisDevice device, ArtemisLayout? layout);
+    void LoadDeviceLayout(ArtemisDevice device);
 
     /// <summary>
     ///     Enables the provided device

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading.Tasks;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 
-namespace Artemis.UI.Screens.Device;
+namespace Artemis.UI.Screens.Device.Layout;
 
 public partial class DeviceLogicalLayoutDialogView : ReactiveUserControl<DeviceLogicalLayoutDialogViewModel>
 {

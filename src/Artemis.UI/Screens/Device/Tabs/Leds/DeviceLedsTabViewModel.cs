@@ -8,7 +8,7 @@ using Artemis.UI.Shared;
 using DynamicData.Binding;
 using ReactiveUI;
 
-namespace Artemis.UI.Screens.Device;
+namespace Artemis.UI.Screens.Device.Leds;
 
 public class DeviceLedsTabViewModel : ActivatableViewModelBase
 {

@@ -2,7 +2,7 @@
 using Artemis.Core;
 using Artemis.UI.Shared;
 
-namespace Artemis.UI.Screens.Device;
+namespace Artemis.UI.Screens.Device.Leds;
 
 public class DeviceLedsTabLedViewModel : ViewModelBase
 {

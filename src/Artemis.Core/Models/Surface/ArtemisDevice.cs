@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using Artemis.Core.DeviceProviders;
+using Artemis.Core.Providers;
 using Artemis.Core.Services;
 using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
@@ -46,6 +46,7 @@ public class ArtemisDevice : CorePropertyChanged
         InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
         InputMappings = new Dictionary<ArtemisLed, ArtemisLed>();
         Categories = new HashSet<DeviceCategory>();
+        LayoutSelection = new LayoutSelection {Type = DefaultLayoutProvider.LayoutType};
 
         RgbDevice.ColorCorrections.Clear();
         RgbDevice.ColorCorrections.Add(new ScaleColorCorrection(this));
@@ -74,6 +75,7 @@ public class ArtemisDevice : CorePropertyChanged
         InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
         InputMappings = new Dictionary<ArtemisLed, ArtemisLed>();
         Categories = new HashSet<DeviceCategory>();
+        LayoutSelection = new LayoutSelection {Type = DefaultLayoutProvider.LayoutType};
 
         foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifiers)
             InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(identifierEntity.InputProvider, identifierEntity.Identifier));
@@ -152,6 +154,8 @@ public class ArtemisDevice : CorePropertyChanged
     ///     Gets a list containing the categories of this device
     /// </summary>
     public HashSet<DeviceCategory> Categories { get; }
+
+    public LayoutSelection LayoutSelection { get; }
 
     /// <summary>
     ///     Gets or sets the X-position of the device
@@ -294,19 +298,6 @@ public class ArtemisDevice : CorePropertyChanged
     }
 
     /// <summary>
-    ///     Gets or sets a boolean indicating whether falling back to default layouts is enabled or not
-    /// </summary>
-    public bool DisableDefaultLayout
-    {
-        get => DeviceEntity.DisableDefaultLayout;
-        set
-        {
-            DeviceEntity.DisableDefaultLayout = value;
-            OnPropertyChanged(nameof(DisableDefaultLayout));
-        }
-    }
-
-    /// <summary>
     ///     Gets or sets the logical layout of the device e.g. DE, UK or US.
     ///     <para>Only applicable to keyboards</para>
     /// </summary>
@@ -317,20 +308,6 @@ public class ArtemisDevice : CorePropertyChanged
         {
             DeviceEntity.LogicalLayout = value;
             OnPropertyChanged(nameof(LogicalLayout));
-        }
-    }
-
-    /// <summary>
-    ///     Gets or sets the path of the custom layout to load when calling <see cref="GetBestDeviceLayout" />
-    ///     for this device
-    /// </summary>
-    public string? CustomLayoutPath
-    {
-        get => DeviceEntity.CustomLayoutPath;
-        set
-        {
-            DeviceEntity.CustomLayoutPath = value;
-            OnPropertyChanged(nameof(CustomLayoutPath));
         }
     }
 
@@ -379,40 +356,6 @@ public class ArtemisDevice : CorePropertyChanged
         if (applyInputMapping && InputMappings.TryGetValue(artemisLed, out ArtemisLed? mappedLed))
             return mappedLed;
         return artemisLed;
-    }
-
-    /// <summary>
-    /// Returns the most preferred device layout for this device.
-    /// </summary>
-    /// <returns>The most preferred device layout for this device.</returns>
-    public ArtemisLayout? GetBestDeviceLayout()
-    {
-        ArtemisLayout? layout;
-
-        // Configured layout path takes precedence over all other options
-        if (CustomLayoutPath != null)
-        {
-            layout = new ArtemisLayout(CustomLayoutPath, LayoutSource.Configured);
-            if (layout.IsValid)
-                return layout;
-        }
-
-        // Look for a layout provided by the user
-        layout = DeviceProvider.LoadUserLayout(this);
-        if (layout.IsValid)
-            return layout;
-
-        if (DisableDefaultLayout)
-            return null;
-
-        // Look for a layout provided by the plugin
-        layout = DeviceProvider.LoadLayout(this);
-        if (layout.IsValid)
-            return layout;
-
-        // Finally fall back to a default layout
-        layout = ArtemisLayout.GetDefaultLayout(this);
-        return layout;
     }
 
     /// <summary>
@@ -481,7 +424,7 @@ public class ArtemisDevice : CorePropertyChanged
             throw new ArtemisCoreException($"Cannot apply layout with {nameof(createMissingLeds)} set to true because the device provider does not support it");
         if (layout != null && layout.IsValid && removeExcessiveLeds && !DeviceProvider.RemoveExcessiveLedsSupported)
             throw new ArtemisCoreException($"Cannot apply layout with {nameof(removeExcessiveLeds)} set to true because the device provider does not support it");
-        
+
         // Always clear the current layout
         ClearLayout();
 
@@ -534,6 +477,9 @@ public class ArtemisDevice : CorePropertyChanged
         DeviceEntity.Categories.Clear();
         foreach (DeviceCategory deviceCategory in Categories)
             DeviceEntity.Categories.Add((int) deviceCategory);
+
+        DeviceEntity.LayoutType = LayoutSelection.Type;
+        DeviceEntity.LayoutParameter = LayoutSelection.Parameter;
     }
 
     internal void Load()
@@ -547,6 +493,9 @@ public class ArtemisDevice : CorePropertyChanged
             Categories.Add((DeviceCategory) deviceEntityCategory);
         if (!Categories.Any())
             ApplyDefaultCategories();
+
+        LayoutSelection.Type = DeviceEntity.LayoutType;
+        LayoutSelection.Parameter = DeviceEntity.LayoutParameter;
 
         LoadInputMappings();
     }
@@ -573,7 +522,7 @@ public class ArtemisDevice : CorePropertyChanged
     {
         Leds = RgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
         LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
-        
+
         if (loadInputMappings)
             LoadInputMappings();
     }

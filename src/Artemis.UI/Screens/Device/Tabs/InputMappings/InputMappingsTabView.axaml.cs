@@ -1,7 +1,6 @@
-using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Device;
+namespace Artemis.UI.Screens.Device.InputMappings;
 
 public partial class InputMappingsTabView : ReactiveUserControl<InputMappingsTabViewModel>
 {

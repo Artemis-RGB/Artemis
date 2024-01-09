@@ -1,80 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Artemis.Core;
-using Artemis.Core.Services;
+using Artemis.UI.Screens.Device.Layout.LayoutProviders;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
-using Avalonia.Controls;
-using ReactiveUI;
+using PropertyChanged.SourceGenerator;
 using RGB.NET.Layout;
-using SkiaSharp;
 
-namespace Artemis.UI.Screens.Device;
+namespace Artemis.UI.Screens.Device.Layout;
 
-public class DeviceLayoutTabViewModel : ActivatableViewModelBase
+public partial class DeviceLayoutTabViewModel : ActivatableViewModelBase
 {
+    [Notify] private ILayoutProviderViewModel? _selectedLayoutProvider;
+
     private readonly IWindowService _windowService;
     private readonly INotificationService _notificationService;
-    private readonly IDeviceService _deviceService;
 
-    public DeviceLayoutTabViewModel(IWindowService windowService, INotificationService notificationService, IDeviceService deviceService, ArtemisDevice device)
+    public DeviceLayoutTabViewModel(IWindowService windowService, INotificationService notificationService, ArtemisDevice device, List<ILayoutProviderViewModel> layoutProviders)
     {
         _windowService = windowService;
         _notificationService = notificationService;
-        _deviceService = deviceService;
 
         Device = device;
         DisplayName = "Layout";
         DefaultLayoutPath = Device.DeviceProvider.LoadLayout(Device).FilePath;
 
-        this.WhenActivated(d =>
+        LayoutProviders = new ObservableCollection<ILayoutProviderViewModel>(layoutProviders);
+        foreach (ILayoutProviderViewModel layoutProviderViewModel in layoutProviders)
         {
-            Device.PropertyChanged += DeviceOnPropertyChanged;
-            Disposable.Create(() => Device.PropertyChanged -= DeviceOnPropertyChanged).DisposeWith(d);
-        });
+            layoutProviderViewModel.Device = Device;
+            if (layoutProviderViewModel.IsMatch(Device))
+                SelectedLayoutProvider = layoutProviderViewModel;
+        }
     }
 
     public ArtemisDevice Device { get; }
+    public ObservableCollection<ILayoutProviderViewModel> LayoutProviders { get; set; }
 
     public string DefaultLayoutPath { get; }
 
     public string? ImagePath => Device.Layout?.Image?.LocalPath;
-
-    public string? CustomLayoutPath => Device.CustomLayoutPath;
-
-    public bool HasCustomLayout => Device.CustomLayoutPath != null;
-
-    public void ClearCustomLayout()
-    {
-        Device.CustomLayoutPath = null;
-        _notificationService.CreateNotification()
-            .WithMessage("Cleared imported layout.")
-            .WithSeverity(NotificationSeverity.Informational);
-    }
-
-    public async Task BrowseCustomLayout()
-    {
-        string[]? files = await _windowService.CreateOpenFileDialog()
-            .WithTitle("Select device layout file")
-            .HavingFilter(f => f.WithName("Layout files").WithExtension("xml"))
-            .ShowAsync();
-
-        if (files?.Length > 0)
-        {
-            Device.CustomLayoutPath = files[0];
-            _notificationService.CreateNotification()
-                .WithTitle("Imported layout")
-                .WithMessage($"File loaded from {files[0]}")
-                .WithSeverity(NotificationSeverity.Informational);
-        }
-    }
 
     public async Task ExportLayout()
     {
@@ -144,20 +115,5 @@ public class DeviceLayoutTabViewModel : ActivatableViewModelBase
             .WithTitle("Copied!")
             .WithSeverity(NotificationSeverity.Informational)
             .Show();
-    }
-    
-    private void DeviceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName is nameof(Device.CustomLayoutPath) or nameof(Device.DisableDefaultLayout))
-        {
-            Task.Run(() =>
-            {
-                _deviceService.ApplyDeviceLayout(Device, Device.GetBestDeviceLayout());
-                _deviceService.SaveDevice(Device);
-            });
-            
-            this.RaisePropertyChanged(nameof(CustomLayoutPath));
-            this.RaisePropertyChanged(nameof(HasCustomLayout));
-        }
     }
 }

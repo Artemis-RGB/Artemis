@@ -6,13 +6,12 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Shared;
-using HidSharp.Reports.Units;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using RGB.NET.Core;
 using Unit = System.Reactive.Unit;
 
-namespace Artemis.UI.Screens.Device;
+namespace Artemis.UI.Screens.Device.InputMappings;
 
 public partial class InputMappingsTabViewModel : ActivatableViewModelBase
 {
