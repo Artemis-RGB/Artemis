@@ -16,7 +16,7 @@
       <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
       <PackageReference Include="ReactiveUI" Version="19.4.1" />
       <PackageReference Include="StrawberryShake.Server" Version="13.5.1" />
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.0" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
       <PackageReference Include="System.Reactive" Version="6.0.0" />
     </ItemGroup>
 
