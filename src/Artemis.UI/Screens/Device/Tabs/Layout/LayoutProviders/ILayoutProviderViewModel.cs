@@ -1,4 +1,5 @@
 using Artemis.Core;
+using Artemis.Core.Providers;
 
 namespace Artemis.UI.Screens.Device.Layout.LayoutProviders;
 
@@ -8,7 +9,9 @@ public interface ILayoutProviderViewModel
 
     string Description { get; }
 
-    bool IsMatch(ArtemisDevice device);
+    ILayoutProvider Provider { get; }
 
     ArtemisDevice Device { get; set; }
+
+    void Apply();
 }

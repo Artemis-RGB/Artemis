@@ -1,5 +1,6 @@
 ﻿using Artemis.Core;
 using Artemis.Core.Providers;
+using Artemis.Core.Services;
 using Artemis.WebClient.Workshop.Services;
 
 namespace Artemis.WebClient.Workshop.Providers;
@@ -7,11 +8,13 @@ namespace Artemis.WebClient.Workshop.Providers;
 public class WorkshopLayoutProvider : ILayoutProvider
 {
     public static string LayoutType = "Workshop";
-    
+
+    private readonly IDeviceService _deviceService;
     private readonly IWorkshopService _workshopService;
 
-    public WorkshopLayoutProvider(IWorkshopService workshopService)
+    public WorkshopLayoutProvider(IDeviceService deviceService, IWorkshopService workshopService)
     {
+        _deviceService = deviceService;
         _workshopService = workshopService;
     }
 
@@ -44,5 +47,17 @@ public class WorkshopLayoutProvider : ILayoutProvider
     private bool MatchesDevice(InstalledEntry entry, ArtemisDevice device)
     {
         return entry.TryGetMetadata("DeviceId", out HashSet<string>? deviceIds) && deviceIds.Contains(device.Identifier);
+    }
+
+    /// <summary>
+    /// Configures the provided device to use this layout provider.
+    /// </summary>
+    /// <param name="device">The device to apply the provider to.</param>
+    public void ConfigureDevice(ArtemisDevice device)
+    {
+        device.LayoutSelection.Type = LayoutType;
+        device.LayoutSelection.Parameter = null;
+        _deviceService.SaveDevice(device);
+        _deviceService.LoadDeviceLayout(device);
     }
 }

@@ -4,7 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Device.Layout.LayoutProviders.DefaultLayoutView">
-    <TextBlock Classes="subtitle" FontSize="12">
-        Loading the default layout from the plugin or User Layouts folder.
-    </TextBlock>
+    <StackPanel ClipToBounds="False">
+        <Border Classes="card-separator" />
+        <StackPanel>
+            <TextBlock Text="Current layout" />
+            <TextBlock Classes="subtitle" FontSize="12" Text="Loading the default layout from the plugin or User Layouts folder." TextWrapping="Wrap" />
+        </StackPanel>
+    </StackPanel>
 </UserControl>

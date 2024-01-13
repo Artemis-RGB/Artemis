@@ -2,7 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:device="clr-namespace:Artemis.UI.Screens.Device"
              xmlns:layoutProviders="clr-namespace:Artemis.UI.Screens.Device.Layout.LayoutProviders"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Device.Layout.LayoutProviders.CustomLayoutView"
@@ -12,7 +11,7 @@
         <Border Classes="card-separator" />
         <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
             <StackPanel Grid.Row="1" Grid.Column="0">
-                <TextBlock Text="Custom layout path" />
+                <TextBlock Text="Current layout" />
                 <TextBlock Classes="subtitle" FontSize="12" Text="{CompiledBinding Device.LayoutSelection.Parameter, TargetNullValue=None}" TextWrapping="Wrap" />
             </StackPanel>
             <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">

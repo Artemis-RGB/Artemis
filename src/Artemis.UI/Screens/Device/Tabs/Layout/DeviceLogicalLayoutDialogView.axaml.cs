@@ -11,7 +11,7 @@ public partial class DeviceLogicalLayoutDialogView : ReactiveUserControl<DeviceL
     public DeviceLogicalLayoutDialogView()
     {
         InitializeComponent();
-        
+
         RegionsAutoCompleteBox.ItemFilter += SearchRegions;
         Dispatcher.UIThread.InvokeAsync(DelayedAutoFocus);
     }
@@ -34,5 +34,4 @@ public partial class DeviceLogicalLayoutDialogView : ReactiveUserControl<DeviceL
                regionInfo.NativeName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
                regionInfo.TwoLetterISORegionName.Contains(search, StringComparison.OrdinalIgnoreCase);
     }
-
 }

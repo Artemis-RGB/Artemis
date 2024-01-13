@@ -13,8 +13,11 @@ public class DefaultLayoutViewModel : ViewModelBase, ILayoutProviderViewModel
         _layoutProvider = layoutProvider;
     }
 
+    /// <inheritdoc />
+    public ILayoutProvider Provider => _layoutProvider;
+
     public ArtemisDevice Device { get; set; } = null!;
-    
+
     /// <inheritdoc />
     public string Name => "Default";
 
@@ -22,8 +25,8 @@ public class DefaultLayoutViewModel : ViewModelBase, ILayoutProviderViewModel
     public string Description => "Attempts to load a layout from the default paths";
 
     /// <inheritdoc />
-    public bool IsMatch(ArtemisDevice device)
+    public void Apply()
     {
-        return _layoutProvider.IsMatch(device);
+        _layoutProvider.ConfigureDevice(Device);
     }
 }

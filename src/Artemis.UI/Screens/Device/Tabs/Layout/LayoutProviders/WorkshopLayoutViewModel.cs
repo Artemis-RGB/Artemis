@@ -1,4 +1,5 @@
 ﻿using Artemis.Core;
+using Artemis.Core.Providers;
 using Artemis.UI.Shared;
 using Artemis.WebClient.Workshop.Providers;
 
@@ -13,6 +14,9 @@ public class WorkshopLayoutViewModel : ViewModelBase, ILayoutProviderViewModel
         _layoutProvider = layoutProvider;
     }
 
+    /// <inheritdoc />
+    public ILayoutProvider Provider => _layoutProvider;
+
     public ArtemisDevice Device { get; set; } = null!;
 
     /// <inheritdoc />
@@ -22,8 +26,8 @@ public class WorkshopLayoutViewModel : ViewModelBase, ILayoutProviderViewModel
     public string Description => "Load a layout from the workshop";
 
     /// <inheritdoc />
-    public bool IsMatch(ArtemisDevice device)
+    public void Apply()
     {
-        return _layoutProvider.IsMatch(device);
+        _layoutProvider.ConfigureDevice(Device);
     }
 }

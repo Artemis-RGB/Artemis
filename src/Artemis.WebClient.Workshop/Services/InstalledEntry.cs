@@ -49,7 +49,7 @@ public class InstalledEntry
         ReleaseVersion = Entity.ReleaseVersion;
         InstalledAt = Entity.InstalledAt;
 
-        _metadata = new Dictionary<string, object>(Entity.Metadata);
+        _metadata = Entity.Metadata != null ? new Dictionary<string, object>(Entity.Metadata) : new Dictionary<string, object>();
     }
 
     internal void Save()

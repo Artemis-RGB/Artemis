@@ -11,6 +11,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using PropertyChanged.SourceGenerator;
+using ReactiveUI;
 using RGB.NET.Layout;
 
 namespace Artemis.UI.Screens.Device.Layout;
@@ -35,9 +36,16 @@ public partial class DeviceLayoutTabViewModel : ActivatableViewModelBase
         foreach (ILayoutProviderViewModel layoutProviderViewModel in layoutProviders)
         {
             layoutProviderViewModel.Device = Device;
-            if (layoutProviderViewModel.IsMatch(Device))
+            if (layoutProviderViewModel.Provider.IsMatch(Device))
                 SelectedLayoutProvider = layoutProviderViewModel;
         }
+
+        // When changing device provider to one that isn't currently on the device, apply it to the device immediately
+        this.WhenAnyValue(vm => vm.SelectedLayoutProvider).Subscribe(l =>
+        {
+            if (l != null && !l.Provider.IsMatch(Device))
+                l.Apply();
+        });
     }
 
     public ArtemisDevice Device { get; }
@@ -77,13 +85,13 @@ public partial class DeviceLayoutTabViewModel : ActivatableViewModelBase
         }
         else
         {
-            List<LedLayout> ledLayouts = Device.Leds.Select(x => new LedLayout()
+            List<LedLayout> ledLayouts = Device.Leds.Select(x => new LedLayout
             {
                 Id = x.RgbLed.Id.ToString(),
                 DescriptiveX = x.Rectangle.Left.ToString(),
                 DescriptiveY = x.Rectangle.Top.ToString(),
                 DescriptiveWidth = $"{x.Rectangle.Width}mm",
-                DescriptiveHeight = $"{x.Rectangle.Height}mm",
+                DescriptiveHeight = $"{x.Rectangle.Height}mm"
             }).ToList();
 
             DeviceLayout emptyLayout = new()
@@ -94,7 +102,7 @@ public partial class DeviceLayoutTabViewModel : ActivatableViewModelBase
                 Model = Device.RgbDevice.DeviceInfo.Model,
                 Width = Device.Rectangle.Width,
                 Height = Device.Rectangle.Height,
-                InternalLeds = ledLayouts,
+                InternalLeds = ledLayouts
             };
 
             XmlSerializer serializer = new(typeof(DeviceLayout));

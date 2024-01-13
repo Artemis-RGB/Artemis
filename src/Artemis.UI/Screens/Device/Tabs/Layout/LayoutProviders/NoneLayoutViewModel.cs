@@ -13,8 +13,11 @@ public class NoneLayoutViewModel : ViewModelBase, ILayoutProviderViewModel
         _layoutProvider = layoutProvider;
     }
 
+    /// <inheritdoc />
+    public ILayoutProvider Provider => _layoutProvider;
+
     public ArtemisDevice Device { get; set; } = null!;
-    
+
     /// <inheritdoc />
     public string Name => "None";
 
@@ -22,8 +25,8 @@ public class NoneLayoutViewModel : ViewModelBase, ILayoutProviderViewModel
     public string Description => "Do not load any layout";
 
     /// <inheritdoc />
-    public bool IsMatch(ArtemisDevice device)
+    public void Apply()
     {
-        return _layoutProvider.IsMatch(device);
+        _layoutProvider.ConfigureDevice(Device);
     }
 }
