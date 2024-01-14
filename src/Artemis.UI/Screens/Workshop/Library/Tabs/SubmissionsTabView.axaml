@@ -37,13 +37,18 @@
             </StackPanel>
 
             <ScrollViewer IsVisible="{CompiledBinding Entries.Count}">
-                <ItemsRepeater ItemsSource="{CompiledBinding Entries}">
-                    <ItemsRepeater.ItemTemplate>
+                <ItemsControl ItemsSource="{CompiledBinding Entries}">
+                    <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <ContentControl Content="{CompiledBinding}"/>
                         </DataTemplate>
-                    </ItemsRepeater.ItemTemplate>
-                </ItemsRepeater>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
             </ScrollViewer>
         </Panel>
     </Panel>

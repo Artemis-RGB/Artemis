@@ -8,13 +8,9 @@
              x:Class="Artemis.UI.Screens.Workshop.Entries.Details.EntryImageView"
              x:DataType="details:EntryImageViewModel">
     <Border Classes="card" Padding="0">
-        <Grid RowDefinitions="230,*">
+        <Grid RowDefinitions="Auto,*">
             <Border Grid.Row="0" ClipToBounds="True" CornerRadius="4 4 0 0" Padding="0">
-                <Rectangle RenderOptions.BitmapInterpolationMode="HighQuality">
-                    <Rectangle.Fill>
-                        <ImageBrush asyncImageLoader:ImageBrushLoader.Source="{CompiledBinding ThumbnailUrl}" Stretch="UniformToFill" />
-                    </Rectangle.Fill>
-                </Rectangle>
+                <Image asyncImageLoader:ImageLoader.Source="{CompiledBinding ThumbnailUrl}" Stretch="Uniform" HorizontalAlignment="Stretch" MaxHeight="250" />
             </Border>
             <Border Grid.Row="1" ClipToBounds="True" CornerRadius="0 0 4 4" Background="{DynamicResource ControlFillColorDefaultBrush}">
                 <StackPanel Margin="16">

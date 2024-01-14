@@ -8,6 +8,7 @@ using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
+using Artemis.WebClient.Workshop.Services;
 using Humanizer;
 using ReactiveUI;
 
@@ -32,6 +33,8 @@ public class EntryReleasesViewModel : ViewModelBase
     public IGetEntryById_Entry Entry { get; }
     public ReactiveCommand<Unit, Unit> DownloadLatestRelease { get; }
 
+    public Func<InstalledEntry, Task>? OnInstallationFinished { get; set; }
+
     private async Task ExecuteDownloadLatestRelease(CancellationToken cancellationToken)
     {
         if (Entry.LatestRelease == null)
@@ -46,8 +49,12 @@ public class EntryReleasesViewModel : ViewModelBase
 
         IEntryInstallationHandler installationHandler = _factory.CreateHandler(Entry.EntryType);
         EntryInstallResult result = await installationHandler.InstallAsync(Entry, Entry.LatestRelease, new Progress<StreamProgress>(), cancellationToken);
-        if (result.IsSuccess)
+        if (result.IsSuccess && result.Entry != null)
+        {
+            if (OnInstallationFinished != null)
+                await OnInstallationFinished(result.Entry);
             _notificationService.CreateNotification().WithTitle($"{Entry.EntryType.Humanize(LetterCasing.Sentence)} installed").WithSeverity(NotificationSeverity.Success).Show();
+        }
         else
         {
             _notificationService.CreateNotification()

@@ -46,7 +46,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
 
                 // Update the release and return the profile configuration
                 UpdateRelease(installedEntry, release);
-                return EntryInstallResult.FromSuccess(overwritten);
+                return EntryInstallResult.FromSuccess(installedEntry);
             }
         }
 
@@ -60,7 +60,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         
         // Update the release and return the profile configuration
         UpdateRelease(installedEntry, release);
-        return EntryInstallResult.FromSuccess(imported);
+        return EntryInstallResult.FromSuccess(installedEntry);
     }
 
     public async Task<EntryUninstallResult> UninstallAsync(InstalledEntry installedEntry, CancellationToken cancellationToken)

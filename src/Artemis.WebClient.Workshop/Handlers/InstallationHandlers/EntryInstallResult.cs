@@ -1,10 +1,12 @@
-﻿namespace Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
+﻿using Artemis.WebClient.Workshop.Services;
+
+namespace Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
 
 public class EntryInstallResult
 {
     public bool IsSuccess { get; set; }
     public string? Message { get; set; }
-    public object? Result { get; set; }
+    public InstalledEntry? Entry { get; set; }
 
     public static EntryInstallResult FromFailure(string? message)
     {
@@ -15,12 +17,12 @@ public class EntryInstallResult
         };
     }
 
-    public static EntryInstallResult FromSuccess(object installationResult)
+    public static EntryInstallResult FromSuccess(InstalledEntry installedEntry)
     {
         return new EntryInstallResult
         {
             IsSuccess = true,
-            Result = installationResult
+            Entry = installedEntry
         };
     }
 }

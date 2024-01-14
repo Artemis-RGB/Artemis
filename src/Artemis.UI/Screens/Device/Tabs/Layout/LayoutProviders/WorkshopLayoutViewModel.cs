@@ -2,10 +2,13 @@
 using System;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Providers;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Routing;
+using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Providers;
 using Artemis.WebClient.Workshop.Services;
@@ -19,11 +22,16 @@ public partial class WorkshopLayoutViewModel : ActivatableViewModelBase, ILayout
     [Notify] private InstalledEntry? _selectedEntry;
     private readonly WorkshopLayoutProvider _layoutProvider;
     private readonly IDeviceService _deviceService;
+    private readonly IWindowService _windowService;
+    private readonly IRouter _router;
 
-    public WorkshopLayoutViewModel(WorkshopLayoutProvider layoutProvider, IWorkshopService workshopService, IDeviceService deviceService)
+    public WorkshopLayoutViewModel(WorkshopLayoutProvider layoutProvider, IWorkshopService workshopService, IDeviceService deviceService, IWindowService windowService, IRouter router)
     {
         _layoutProvider = layoutProvider;
         _deviceService = deviceService;
+        _windowService = windowService;
+        _router = router;
+
         Entries = new ObservableCollection<InstalledEntry>(workshopService.GetInstalledEntries().Where(e => e.EntryType == EntryType.Layout));
 
         this.WhenAnyValue(vm => vm.SelectedEntry).Subscribe(ApplyEntry);
@@ -48,6 +56,15 @@ public partial class WorkshopLayoutViewModel : ActivatableViewModelBase, ILayout
     {
         _layoutProvider.ConfigureDevice(Device, null);
         Save();
+    }
+
+    public async Task<bool> BrowseLayouts()
+    {
+        if (!await _windowService.ShowConfirmContentDialog("Open workshop", "Do you want to close this window and view the workshop?"))
+            return false;
+
+        await _router.Navigate("workshop/entries/layouts/1");
+        return true;
     }
 
     private void ApplyEntry(InstalledEntry? entry)

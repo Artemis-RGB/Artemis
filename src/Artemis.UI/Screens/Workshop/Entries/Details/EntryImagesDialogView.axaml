@@ -8,5 +8,5 @@
              x:Class="Artemis.UI.Screens.Workshop.Entries.Details.EntryImagesDialogView"
              x:DataType="details:EntryImagesDialogViewModel"
              Margin="-25 -63 -25 -25">
-    <Image asyncImageLoader:ImageLoader.Source="{CompiledBinding CurrentImage.Url}" Stretch="None"/>
+    <Image asyncImageLoader:ImageLoader.Source="{CompiledBinding CurrentImage.Url}" Stretch="Uniform"/>
 </UserControl>

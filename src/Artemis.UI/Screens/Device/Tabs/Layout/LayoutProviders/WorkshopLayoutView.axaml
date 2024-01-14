@@ -14,7 +14,7 @@
                 <TextBlock Text="Current layout" />
                 <TextBlock Classes="subtitle" FontSize="12" Text="Loading the layout from a workshop entry" TextWrapping="Wrap" />
             </StackPanel>
-            <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
+            <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Spacing="5">
                 <StackPanel.Styles>
                     <Style Selector="ComboBox.layoutProvider /template/ ContentControl#ContentPresenter">
                         <Setter Property="ContentTemplate">
@@ -40,6 +40,7 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
+                <Button HorizontalAlignment="Right" Click="Button_OnClick">Browse workshop layouts</Button>
             </StackPanel>
         </Grid>
     </StackPanel>

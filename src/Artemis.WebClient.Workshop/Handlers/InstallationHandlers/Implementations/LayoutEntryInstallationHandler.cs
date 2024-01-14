@@ -41,28 +41,28 @@ public class LayoutEntryInstallationHandler : IEntryInstallationHandler
 
         // Ensure there is an installed entry
         InstalledEntry installedEntry = _workshopService.GetInstalledEntry(entry) ?? new InstalledEntry(entry, release);
-        DirectoryInfo entryDirectory = installedEntry.GetReleaseDirectory(release);
+        DirectoryInfo releaseDirectory = installedEntry.GetReleaseDirectory(release);
 
         // If the folder already exists, remove it so that if the layout now contains less files, old things dont stick around
-        if (entryDirectory.Exists)
-            entryDirectory.Delete(true);
-        entryDirectory.Create();
+        if (releaseDirectory.Exists)
+            releaseDirectory.Delete(true);
+        releaseDirectory.Create();
 
         // Extract the archive, we could go through the hoops of keeping track of progress but this should be so quick it doesn't matter
         stream.Seek(0, SeekOrigin.Begin);
         using ZipArchive archive = new(stream);
-        archive.ExtractToDirectory(entryDirectory.FullName);
+        archive.ExtractToDirectory(releaseDirectory.FullName);
 
-        ArtemisLayout layout = new(Path.Combine(entryDirectory.FullName, "layout.xml"));
+        ArtemisLayout layout = new(Path.Combine(releaseDirectory.FullName, "layout.xml"));
         if (layout.IsValid)
         {
             installedEntry.ApplyRelease(release);
             _workshopService.SaveInstalledEntry(installedEntry);
-            return EntryInstallResult.FromSuccess(layout);
+            return EntryInstallResult.FromSuccess(installedEntry);
         }
 
         // If the layout ended up being invalid yoink it out again, shoooo
-        entryDirectory.Delete(true);
+        releaseDirectory.Delete(true);
         _workshopService.RemoveInstalledEntry(installedEntry);
         return EntryInstallResult.FromFailure("Layout failed to load because it is invalid");
     }
