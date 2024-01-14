@@ -17,22 +17,17 @@
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
         <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="$(AvaloniaVersion)" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
-        <PackageReference Include="Avalonia.Xaml.Behaviors" Version="$(AvaloniaBehavioursVersion)" />
+        <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.2" />
         <PackageReference Include="DynamicData" Version="8.0.2" />
-        <PackageReference Include="FluentAvaloniaUI" Version="$(FluentAvaloniaVersion)" />
+        <PackageReference Include="FluentAvaloniaUI" Version="2.0.4" />
         <PackageReference Include="Material.Icons.Avalonia" Version="2.0.1" />
         <PackageReference Include="ReactiveUI" Version="19.5.1" />
         <PackageReference Include="ReactiveUI.Validation" Version="3.1.7" />
-        <PackageReference Include="RGB.NET.Core" Version="$(RGBDotNetVersion)" />
-        <PackageReference Include="SkiaSharp" Version="$(SkiaSharpVersion)" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <Reference Include="AsyncImageLoader.Avalonia">
-        <HintPath>..\..\..\..\Users\Robert\.nuget\packages\asyncimageloader.avalonia\3.2.1\lib\netstandard2.1\AsyncImageLoader.Avalonia.dll</HintPath>
-      </Reference>
       <Reference Include="RGB.NET.Layout">
         <HintPath>..\..\..\RGB.NET\bin\net7.0\RGB.NET.Layout.dll</HintPath>
       </Reference>
