@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Providers;
+using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
@@ -11,11 +12,12 @@ public class CustomLayoutViewModel : ViewModelBase, ILayoutProviderViewModel
 {
     private readonly CustomPathLayoutProvider _layoutProvider;
 
-    public CustomLayoutViewModel(IWindowService windowService, INotificationService notificationService, CustomPathLayoutProvider layoutProvider)
+    public CustomLayoutViewModel(IWindowService windowService, INotificationService notificationService, IDeviceService deviceService, CustomPathLayoutProvider layoutProvider)
     {
         _layoutProvider = layoutProvider;
         _windowService = windowService;
         _notificationService = notificationService;
+        _deviceService = deviceService;
     }
 
     /// <inheritdoc />
@@ -32,11 +34,13 @@ public class CustomLayoutViewModel : ViewModelBase, ILayoutProviderViewModel
     private readonly IWindowService _windowService;
 
     private readonly INotificationService _notificationService;
+    private readonly IDeviceService _deviceService;
 
     public void ClearCustomLayout()
     {
         _layoutProvider.ConfigureDevice(Device, null);
-
+        Save();
+        
         _notificationService.CreateNotification()
             .WithMessage("Cleared imported layout.")
             .WithSeverity(NotificationSeverity.Informational);
@@ -52,7 +56,8 @@ public class CustomLayoutViewModel : ViewModelBase, ILayoutProviderViewModel
         if (files?.Length > 0)
         {
             _layoutProvider.ConfigureDevice(Device, files[0]);
-
+            Save();
+            
             _notificationService.CreateNotification()
                 .WithTitle("Imported layout")
                 .WithMessage($"File loaded from {files[0]}")
@@ -64,5 +69,12 @@ public class CustomLayoutViewModel : ViewModelBase, ILayoutProviderViewModel
     public void Apply()
     {
         _layoutProvider.ConfigureDevice(Device, null);
+        Save();
+    }
+
+    private void Save()
+    {
+        _deviceService.SaveDevice(Device);
+        _deviceService.LoadDeviceLayout(Device);
     }
 }

@@ -57,7 +57,7 @@ internal class PluginManagementService : IPluginManagementService
 
         // Remove the old directory if it exists
         if (Directory.Exists(pluginDirectory.FullName))
-            pluginDirectory.DeleteRecursively();
+            pluginDirectory.Delete(true);
 
         // Extract everything in the same archive directory to the unique plugin directory
         Utilities.CreateAccessibleDirectory(pluginDirectory.FullName);

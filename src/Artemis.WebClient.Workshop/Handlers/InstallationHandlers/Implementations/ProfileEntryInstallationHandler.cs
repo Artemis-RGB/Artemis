@@ -19,7 +19,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         _workshopService = workshopService;
     }
 
-    public async Task<EntryInstallResult> InstallAsync(IGetEntryById_Entry entry, long releaseId, Progress<StreamProgress> progress, CancellationToken cancellationToken)
+    public async Task<EntryInstallResult> InstallAsync(IEntryDetails entry, IRelease release, Progress<StreamProgress> progress, CancellationToken cancellationToken)
     {
         using MemoryStream stream = new();
 
@@ -27,7 +27,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         try
         {
             HttpClient client = _httpClientFactory.CreateClient(WorkshopConstants.WORKSHOP_CLIENT_NAME);
-            await client.DownloadDataAsync($"releases/download/{releaseId}", stream, progress, cancellationToken);
+            await client.DownloadDataAsync($"releases/download/{release}", stream, progress, cancellationToken);
         }
         catch (Exception e)
         {
@@ -45,13 +45,13 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
                 installedEntry.SetMetadata("ProfileId", overwritten.ProfileId);
 
                 // Update the release and return the profile configuration
-                UpdateRelease(releaseId, installedEntry);
+                UpdateRelease(installedEntry, release);
                 return EntryInstallResult.FromSuccess(overwritten);
             }
         }
 
         // Ensure there is an installed entry
-        installedEntry ??= _workshopService.CreateInstalledEntry(entry);
+        installedEntry ??= new InstalledEntry(entry, release);
 
         // Add the profile as a fresh import
         ProfileCategory category = _profileService.ProfileCategories.FirstOrDefault(c => c.Name == "Workshop") ?? _profileService.CreateProfileCategory("Workshop", true);
@@ -59,7 +59,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         installedEntry.SetMetadata("ProfileId", imported.ProfileId);
         
         // Update the release and return the profile configuration
-        UpdateRelease(releaseId, installedEntry);
+        UpdateRelease(installedEntry, release);
         return EntryInstallResult.FromSuccess(imported);
     }
 
@@ -89,11 +89,9 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         }, cancellationToken);
     }
 
-    private void UpdateRelease(long releaseId, InstalledEntry installedEntry)
+    private void UpdateRelease(InstalledEntry installedEntry, IRelease release)
     {
-        installedEntry.ReleaseId = releaseId;
-        installedEntry.ReleaseVersion = "TODO";
-        installedEntry.InstalledAt = DateTimeOffset.UtcNow;
+        installedEntry.ApplyRelease(release);
         _workshopService.SaveInstalledEntry(installedEntry);
     }
 }

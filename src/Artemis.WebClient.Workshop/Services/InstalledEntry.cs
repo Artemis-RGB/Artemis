@@ -14,7 +14,7 @@ public class InstalledEntry
         Load();
     }
 
-    public InstalledEntry(IGetEntryById_Entry entry)
+    public InstalledEntry(IEntryDetails entry, IRelease release)
     {
         Entity = new EntryEntity();
 
@@ -23,6 +23,9 @@ public class InstalledEntry
 
         Author = entry.Author;
         Name = entry.Name;
+        InstalledAt = DateTimeOffset.Now;
+        ReleaseId = release.Id;
+        ReleaseVersion = release.Version;
     }
 
     public long EntryId { get; set; }
@@ -110,14 +113,30 @@ public class InstalledEntry
     /// <summary>
     /// Returns the directory info of the entry, where any files would be stored if applicable.
     /// </summary>
-    /// <param name="rootDirectory">A value indicating whether or not to return the root directory of the entry, and not the version.</param>
-    /// <returns>The directory info of the entry, where any files would be stored if applicable.</returns>
-    public DirectoryInfo GetDirectory(bool rootDirectory = false)
+    /// <returns>The directory info of the directory.</returns>
+    public DirectoryInfo GetDirectory()
     {
-        if (rootDirectory)
-            return new DirectoryInfo(Path.Combine(Constants.WorkshopFolder, EntryId.ToString()));
-        
-        string safeVersion = Path.GetInvalidFileNameChars().Aggregate(ReleaseVersion, (current, c) => current.Replace(c, '-'));
-        return new DirectoryInfo(Path.Combine(Constants.WorkshopFolder, EntryId.ToString(), safeVersion));
+        return new DirectoryInfo(Path.Combine(Constants.WorkshopFolder, $"{EntryId}-{StringUtilities.UrlFriendly(Name)}"));
+    }
+    
+    /// <summary>
+    /// Returns the directory info of a release of this entry, where any files would be stored if applicable.
+    /// </summary>
+    /// <param name="release">The release to use, if none provided the current release is used.</param>
+    /// <returns>The directory info of the directory.</returns>
+    public DirectoryInfo GetReleaseDirectory(IRelease? release = null)
+    {
+        return new DirectoryInfo(Path.Combine(GetDirectory().FullName, StringUtilities.UrlFriendly(release?.Version ?? ReleaseVersion)));
+    }
+
+    /// <summary>
+    /// Applies the provided release to the installed entry.
+    /// </summary>
+    /// <param name="release">The release to apply.</param>
+    public void ApplyRelease(IRelease release)
+    {
+        ReleaseId = release.Id;
+        ReleaseVersion = release.Version;
+        InstalledAt = DateTimeOffset.UtcNow;
     }
 }

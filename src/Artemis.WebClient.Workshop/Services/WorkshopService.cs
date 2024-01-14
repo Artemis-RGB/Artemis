@@ -133,7 +133,7 @@ public class WorkshopService : IWorkshopService
     }
 
     /// <inheritdoc />
-    public InstalledEntry? GetInstalledEntry(IGetEntryById_Entry entry)
+    public InstalledEntry? GetInstalledEntry(IEntryDetails entry)
     {
         EntryEntity? entity = _entryRepository.GetByEntryId(entry.Id);
         if (entity == null)
@@ -143,9 +143,9 @@ public class WorkshopService : IWorkshopService
     }
 
     /// <inheritdoc />
-    public InstalledEntry CreateInstalledEntry(IGetEntryById_Entry entry)
+    public void AddOrUpdateInstalledEntry(InstalledEntry entry, IRelease release)
     {
-        return new InstalledEntry(entry);
+        throw new NotImplementedException();
     }
 
     /// <inheritdoc />

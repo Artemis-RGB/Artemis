@@ -399,14 +399,6 @@ public class ArtemisDevice : CorePropertyChanged
     }
 
     /// <summary>
-    ///     Invokes the <see cref="DeviceUpdated" /> event
-    /// </summary>
-    protected virtual void OnDeviceUpdated()
-    {
-        DeviceUpdated?.Invoke(this, EventArgs.Empty);
-    }
-
-    /// <summary>
     ///     Applies the provided layout to the device
     /// </summary>
     /// <param name="layout">The layout to apply</param>
@@ -418,7 +410,7 @@ public class ArtemisDevice : CorePropertyChanged
     ///     A boolean indicating whether to remove excess LEDs present in the device but missing
     ///     in the layout
     /// </param>
-    internal void ApplyLayout(ArtemisLayout? layout, bool createMissingLeds, bool removeExcessiveLeds)
+    public void ApplyLayout(ArtemisLayout? layout, bool createMissingLeds, bool removeExcessiveLeds)
     {
         if (layout != null && layout.IsValid && createMissingLeds && !DeviceProvider.CreateMissingLedsSupported)
             throw new ArtemisCoreException($"Cannot apply layout with {nameof(createMissingLeds)} set to true because the device provider does not support it");
@@ -443,6 +435,14 @@ public class ArtemisDevice : CorePropertyChanged
         CreateArtemisLeds(true);
         // Calculate render properties with the new layout
         CalculateRenderProperties();
+    }
+
+    /// <summary>
+    ///     Invokes the <see cref="DeviceUpdated" /> event
+    /// </summary>
+    protected virtual void OnDeviceUpdated()
+    {
+        DeviceUpdated?.Invoke(this, EventArgs.Empty);
     }
 
     private void ClearLayout()

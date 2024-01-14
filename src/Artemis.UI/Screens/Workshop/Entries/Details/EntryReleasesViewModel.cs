@@ -45,7 +45,7 @@ public class EntryReleasesViewModel : ViewModelBase
             return;
 
         IEntryInstallationHandler installationHandler = _factory.CreateHandler(Entry.EntryType);
-        EntryInstallResult result = await installationHandler.InstallAsync(Entry, Entry.LatestRelease.Id, new Progress<StreamProgress>(), cancellationToken);
+        EntryInstallResult result = await installationHandler.InstallAsync(Entry, Entry.LatestRelease, new Progress<StreamProgress>(), cancellationToken);
         if (result.IsSuccess)
             _notificationService.CreateNotification().WithTitle($"{Entry.EntryType.Humanize(LetterCasing.Sentence)} installed").WithSeverity(NotificationSeverity.Success).Show();
         else

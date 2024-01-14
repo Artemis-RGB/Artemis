@@ -41,13 +41,17 @@ fragment entryDetails on Entry {
         ...category
     }
     latestRelease {
-        id
-        version
-        downloadSize
-        md5Hash
-        createdAt
+        ...release
     }
     images {
         ...image
     }
 }
+
+fragment release on Release {
+    id
+    version
+    downloadSize
+    md5Hash
+    createdAt
+} 

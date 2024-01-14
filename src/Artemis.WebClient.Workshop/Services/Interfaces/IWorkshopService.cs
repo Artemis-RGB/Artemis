@@ -1,4 +1,3 @@
-using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 
 namespace Artemis.WebClient.Workshop.Services;
@@ -13,11 +12,9 @@ public interface IWorkshopService
     Task NavigateToEntry(long entryId, EntryType entryType);
 
     List<InstalledEntry> GetInstalledEntries();
-    InstalledEntry? GetInstalledEntry(IGetEntryById_Entry entry);
-    InstalledEntry CreateInstalledEntry(IGetEntryById_Entry entry);
+    InstalledEntry? GetInstalledEntry(IEntryDetails entry);
     void RemoveInstalledEntry(InstalledEntry installedEntry);
     void SaveInstalledEntry(InstalledEntry entry);
-
 
     public record WorkshopStatus(bool IsReachable, string Message);
 }

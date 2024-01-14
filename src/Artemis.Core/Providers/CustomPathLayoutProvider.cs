@@ -1,17 +1,8 @@
-﻿using Artemis.Core.Services;
-using RGB.NET.Layout;
-
-namespace Artemis.Core.Providers;
+﻿namespace Artemis.Core.Providers;
 
 public class CustomPathLayoutProvider : ILayoutProvider
 {
     public static string LayoutType = "CustomPath";
-    private readonly IDeviceService _deviceService;
-
-    public CustomPathLayoutProvider(IDeviceService deviceService)
-    {
-        _deviceService = deviceService;
-    }
 
     /// <inheritdoc />
     public ArtemisLayout? GetDeviceLayout(ArtemisDevice device)
@@ -34,7 +25,7 @@ public class CustomPathLayoutProvider : ILayoutProvider
     }
 
     /// <summary>
-    /// Configures the provided device to use this layout provider.
+    ///     Configures the provided device to use this layout provider.
     /// </summary>
     /// <param name="device">The device to apply the provider to.</param>
     /// <param name="path">The path to the custom layout.</param>
@@ -42,7 +33,5 @@ public class CustomPathLayoutProvider : ILayoutProvider
     {
         device.LayoutSelection.Type = LayoutType;
         device.LayoutSelection.Parameter = path;
-        _deviceService.SaveDevice(device);
-        _deviceService.LoadDeviceLayout(device);
     }
 }

@@ -20,7 +20,7 @@ internal class DeviceService : IDeviceService
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IDeviceRepository _deviceRepository;
     private readonly Lazy<IRenderService> _renderService;
-    private readonly LazyEnumerable<ILayoutProvider> _layoutProviders;
+    private readonly Func<List<ILayoutProvider>> _getLayoutProviders;
     private readonly List<ArtemisDevice> _enabledDevices = new();
     private readonly List<ArtemisDevice> _devices = new();
 
@@ -28,13 +28,13 @@ internal class DeviceService : IDeviceService
         IPluginManagementService pluginManagementService,
         IDeviceRepository deviceRepository,
         Lazy<IRenderService> renderService,
-        LazyEnumerable<ILayoutProvider> layoutProviders)
+        Func<List<ILayoutProvider>> getLayoutProviders)
     {
         _logger = logger;
         _pluginManagementService = pluginManagementService;
         _deviceRepository = deviceRepository;
         _renderService = renderService;
-        _layoutProviders = layoutProviders;
+        _getLayoutProviders = getLayoutProviders;
 
         EnabledDevices = new ReadOnlyCollection<ArtemisDevice>(_enabledDevices);
         Devices = new ReadOnlyCollection<ArtemisDevice>(_devices);
@@ -167,7 +167,7 @@ internal class DeviceService : IDeviceService
     /// <inheritdoc />
     public void LoadDeviceLayout(ArtemisDevice device)
     {
-        ILayoutProvider? provider = _layoutProviders.FirstOrDefault(p => p.IsMatch(device));
+        ILayoutProvider? provider = _getLayoutProviders().FirstOrDefault(p => p.IsMatch(device));
         if (provider == null)
             _logger.Warning("Could not find a layout provider for type {LayoutType} of device {Device}", device.LayoutSelection.Type, device);
 

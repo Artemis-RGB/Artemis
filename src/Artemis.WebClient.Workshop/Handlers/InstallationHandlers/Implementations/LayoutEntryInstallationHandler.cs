@@ -1,10 +1,10 @@
-﻿using System.Data;
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using Artemis.Core;
+using Artemis.Core.Providers;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Extensions;
-using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Utilities;
+using Artemis.WebClient.Workshop.Providers;
 using Artemis.WebClient.Workshop.Services;
 
 namespace Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
@@ -14,15 +14,17 @@ public class LayoutEntryInstallationHandler : IEntryInstallationHandler
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IWorkshopService _workshopService;
     private readonly IDeviceService _deviceService;
+    private readonly DefaultLayoutProvider _defaultLayoutProvider;
 
-    public LayoutEntryInstallationHandler(IHttpClientFactory httpClientFactory, IWorkshopService workshopService, IDeviceService deviceService)
+    public LayoutEntryInstallationHandler(IHttpClientFactory httpClientFactory, IWorkshopService workshopService, IDeviceService deviceService, DefaultLayoutProvider defaultLayoutProvider)
     {
         _httpClientFactory = httpClientFactory;
         _workshopService = workshopService;
         _deviceService = deviceService;
+        _defaultLayoutProvider = defaultLayoutProvider;
     }
 
-    public async Task<EntryInstallResult> InstallAsync(IGetEntryById_Entry entry, long releaseId, Progress<StreamProgress> progress, CancellationToken cancellationToken)
+    public async Task<EntryInstallResult> InstallAsync(IEntryDetails entry, IRelease release, Progress<StreamProgress> progress, CancellationToken cancellationToken)
     {
         using MemoryStream stream = new();
 
@@ -30,7 +32,7 @@ public class LayoutEntryInstallationHandler : IEntryInstallationHandler
         try
         {
             HttpClient client = _httpClientFactory.CreateClient(WorkshopConstants.WORKSHOP_CLIENT_NAME);
-            await client.DownloadDataAsync($"releases/download/{releaseId}", stream, progress, cancellationToken);
+            await client.DownloadDataAsync($"releases/download/{release.Id}", stream, progress, cancellationToken);
         }
         catch (Exception e)
         {
@@ -38,8 +40,8 @@ public class LayoutEntryInstallationHandler : IEntryInstallationHandler
         }
 
         // Ensure there is an installed entry
-        InstalledEntry installedEntry = _workshopService.GetInstalledEntry(entry) ?? _workshopService.CreateInstalledEntry(entry);
-        DirectoryInfo entryDirectory = installedEntry.GetDirectory();
+        InstalledEntry installedEntry = _workshopService.GetInstalledEntry(entry) ?? new InstalledEntry(entry, release);
+        DirectoryInfo entryDirectory = installedEntry.GetReleaseDirectory(release);
 
         // If the folder already exists, remove it so that if the layout now contains less files, old things dont stick around
         if (entryDirectory.Exists)
@@ -53,7 +55,11 @@ public class LayoutEntryInstallationHandler : IEntryInstallationHandler
 
         ArtemisLayout layout = new(Path.Combine(entryDirectory.FullName, "layout.xml"));
         if (layout.IsValid)
+        {
+            installedEntry.ApplyRelease(release);
+            _workshopService.SaveInstalledEntry(installedEntry);
             return EntryInstallResult.FromSuccess(layout);
+        }
 
         // If the layout ended up being invalid yoink it out again, shoooo
         entryDirectory.Delete(true);
@@ -61,21 +67,26 @@ public class LayoutEntryInstallationHandler : IEntryInstallationHandler
         return EntryInstallResult.FromFailure("Layout failed to load because it is invalid");
     }
 
-    public async Task<EntryUninstallResult> UninstallAsync(InstalledEntry installedEntry, CancellationToken cancellationToken)
+    public Task<EntryUninstallResult> UninstallAsync(InstalledEntry installedEntry, CancellationToken cancellationToken)
     {
         // Remove the layout from any devices currently using it
         foreach (ArtemisDevice device in _deviceService.Devices)
         {
+            if (device.LayoutSelection.Type == WorkshopLayoutProvider.LayoutType && device.LayoutSelection.Parameter == installedEntry.EntryId.ToString())
+            {
+                _defaultLayoutProvider.ConfigureDevice(device);
+                _deviceService.SaveDevice(device);
+                _deviceService.LoadDeviceLayout(device);
+            }
         }
 
         // Remove from filesystem
-        DirectoryInfo directory = installedEntry.GetDirectory(true);
+        DirectoryInfo directory = installedEntry.GetDirectory();
         if (directory.Exists)
-            directory.Delete();
+            directory.Delete(true);
 
         // Remove entry
         _workshopService.RemoveInstalledEntry(installedEntry);
-
-        return EntryUninstallResult.FromSuccess();
+        return Task.FromResult(EntryUninstallResult.FromSuccess());
     }
 }
