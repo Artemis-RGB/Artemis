@@ -50,7 +50,7 @@ public partial class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewMod
 
         DisplayName = "Surface Editor";
         SurfaceDeviceViewModels = new ObservableCollection<SurfaceDeviceViewModel>(deviceService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => surfaceVmFactory.SurfaceDeviceViewModel(d, this)));
-        ListDeviceViewModels = new ObservableCollection<ListDeviceViewModel>(deviceService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => surfaceVmFactory.ListDeviceViewModel(d, this)));
+        ListDeviceViewModels = new ObservableCollection<ListDeviceViewModel>(deviceService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => surfaceVmFactory.ListDeviceViewModel(d)));
 
         AutoArrange = ReactiveCommand.CreateFromTask(ExecuteAutoArrange);
         IdentifyDevice = ReactiveCommand.Create<ArtemisDevice>(ExecuteIdentifyDevice);
@@ -163,7 +163,7 @@ public partial class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewMod
             return;
 
         SurfaceDeviceViewModels.Add(_surfaceVmFactory.SurfaceDeviceViewModel(e.Device, this));
-        ListDeviceViewModels.Add(_surfaceVmFactory.ListDeviceViewModel(e.Device, this));
+        ListDeviceViewModels.Add(_surfaceVmFactory.ListDeviceViewModel(e.Device));
         SurfaceDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
         ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
     }

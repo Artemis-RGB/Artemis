@@ -21,13 +21,12 @@ public partial class ListDeviceViewModel : ViewModelBase
     [Notify] private SKColor _color;
     [Notify] private bool _isSelected;
 
-    public ListDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel, IWindowService windowService, IDeviceService deviceService)
+    public ListDeviceViewModel(ArtemisDevice device, IWindowService windowService, IDeviceService deviceService)
     {
         _windowService = windowService;
         _deviceService = deviceService;
 
         Device = device;
-        SurfaceEditorViewModel = surfaceEditorViewModel;
         Color = SKColor.FromHsv(Random.NextSingle() * 360, 95, 100);
         DetectInput = ReactiveCommand.CreateFromTask(ExecuteDetectInput, this.WhenAnyValue(vm => vm.CanDetectInput));
     }
@@ -35,7 +34,6 @@ public partial class ListDeviceViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> DetectInput { get; }
 
     public ArtemisDevice Device { get; }
-    public SurfaceEditorViewModel SurfaceEditorViewModel { get; }
     public bool CanDetectInput => Device.DeviceType == RGBDeviceType.Keyboard || Device.DeviceType == RGBDeviceType.Mouse;
     
     private async Task ExecuteDetectInput()

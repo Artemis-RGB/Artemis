@@ -155,7 +155,7 @@ public class SidebarVmFactory : ISidebarVmFactory
 public interface ISurfaceVmFactory : IVmFactory
 {
     SurfaceDeviceViewModel SurfaceDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel);
-    ListDeviceViewModel ListDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel);
+    ListDeviceViewModel ListDeviceViewModel(ArtemisDevice device);
 }
 
 public class SurfaceVmFactory : ISurfaceVmFactory
@@ -172,9 +172,9 @@ public class SurfaceVmFactory : ISurfaceVmFactory
         return _container.Resolve<SurfaceDeviceViewModel>(new object[] {device, surfaceEditorViewModel});
     }
 
-    public ListDeviceViewModel ListDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel)
+    public ListDeviceViewModel ListDeviceViewModel(ArtemisDevice device)
     {
-        return _container.Resolve<ListDeviceViewModel>(new object[] {device, surfaceEditorViewModel});
+        return _container.Resolve<ListDeviceViewModel>(new object[] {device});
     }
 }
 
