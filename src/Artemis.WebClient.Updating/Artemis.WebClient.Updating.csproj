@@ -1,6 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\Artemis.props" />
-
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -9,11 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="DryIoc.dll" Version="5.4.2" />
+      <PackageReference Include="DryIoc.dll" Version="5.4.3" />
       <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.2.0" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
-      <PackageReference Include="StrawberryShake.Server" Version="13.5.1" />
+      <PackageReference Include="StrawberryShake.Server" Version="13.8.1" />
     </ItemGroup>
 
     <ItemGroup>

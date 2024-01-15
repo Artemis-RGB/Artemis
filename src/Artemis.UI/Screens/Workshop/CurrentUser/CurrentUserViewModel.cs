@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net.Http;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading;
@@ -10,7 +11,6 @@ using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Services;
 using Avalonia.Media.Imaging;
 using FluentAvalonia.UI.Controls;
-using Flurl.Http;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using Serilog;
@@ -21,6 +21,7 @@ public partial class CurrentUserViewModel : ActivatableViewModelBase
 {
     private readonly IAuthenticationService _authenticationService;
     private readonly ObservableAsPropertyHelper<bool> _isAnonymous;
+    private readonly HttpClient _httpClient;
     private readonly ILogger _logger;
     private readonly IWindowService _windowService;
     [Notify] private bool _allowLogout = true;
@@ -35,6 +36,7 @@ public partial class CurrentUserViewModel : ActivatableViewModelBase
         _logger = logger;
         _authenticationService = authenticationService;
         _windowService = windowService;
+        _httpClient = new HttpClient();
         Login = ReactiveCommand.CreateFromTask(ExecuteLogin);
 
         _isAnonymous = this.WhenAnyValue(vm => vm.Loading, vm => vm.Name, (l, n) => l || n == null).ToProperty(this, vm => vm.IsAnonymous);
@@ -106,7 +108,7 @@ public partial class CurrentUserViewModel : ActivatableViewModelBase
         try
         {
             Avatar?.Dispose();
-            Avatar = new Bitmap(await $"{WorkshopConstants.AUTHORITY_URL}/user/avatar/{userId}".GetStreamAsync());
+            Avatar = new Bitmap(await _httpClient.GetStreamAsync($"{WorkshopConstants.AUTHORITY_URL}/user/avatar/{userId}"));
         }
         catch (Exception)
         {

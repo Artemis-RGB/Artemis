@@ -25,7 +25,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.WebClient.Workshop"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{44482312-142F-44A4-992C-0AF0F26BAE54}"
 	ProjectSection(SolutionItems) = preProject
-		Artemis.props = Artemis.props
 		Artemis.sln.DotSettings = Artemis.sln.DotSettings
 		Artemis.sln.DotSettings.user = Artemis.sln.DotSettings.user
 	EndProjectSection

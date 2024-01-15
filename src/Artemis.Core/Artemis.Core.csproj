@@ -1,6 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\Artemis.props" />
-    
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <PreserveCompilationContext>false</PreserveCompilationContext>
@@ -38,36 +36,24 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="DryIoc.dll" Version="5.4.2" />
+        <PackageReference Include="DryIoc.dll" Version="5.4.3" />
         <PackageReference Include="EmbedIO" Version="3.5.2" />
         <PackageReference Include="HidSharp" Version="2.1.0" />
         <PackageReference Include="Humanizer.Core" Version="2.14.1" />
-        <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" />
-        <PackageReference Include="LiteDB" Version="5.0.17" />
+        <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
         <PackageReference Include="McMaster.NETCore.Plugins" Version="1.4.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="RGB.NET.Core" Version="$(RGBDotNetVersion)" />
-        <PackageReference Include="RGB.NET.Presets" Version="$(RGBDotNetVersion)" />
-        <PackageReference Include="Serilog" Version="3.0.1" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
+        <PackageReference Include="RGB.NET.Core" Version="2.0.4-prerelease.1" />
+        <PackageReference Include="RGB.NET.Layout" Version="2.0.4-prerelease.1" />
+        <PackageReference Include="RGB.NET.Presets" Version="2.0.4-prerelease.1" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
         <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-        <PackageReference Include="SkiaSharp" Version="$(SkiaSharpVersion)" />
-        <PackageReference Include="System.Buffers" Version="4.5.1" />
-        <PackageReference Include="System.IO.FileSystem.AccessControl" Version="5.0.0" />
-        <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-        <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-        <PackageReference Include="Unosquare.Swan.Lite" Version="3.1.0" />
+        <PackageReference Include="SkiaSharp" Version="2.88.7" />
     </ItemGroup>
 
     <ItemGroup>
         <None Include="Resources/intro-profile.json" CopyToOutputDirectory="PreserveNewest" />
         <None Include="DefaultLayouts/**" CopyToOutputDirectory="PreserveNewest" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="RGB.NET.Layout">
-        <HintPath>..\..\..\RGB.NET\bin\net7.0\RGB.NET.Layout.dll</HintPath>
-      </Reference>
     </ItemGroup>
 </Project>
