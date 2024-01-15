@@ -9,9 +9,9 @@
     <ItemGroup>
       <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.2.0" />
       <PackageReference Include="IdentityModel" Version="6.2.0" />
-      <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
-      <PackageReference Include="StrawberryShake.Server" Version="13.7.0" />
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+      <PackageReference Include="StrawberryShake.Server" Version="13.8.1" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
     </ItemGroup>
 
     <ItemGroup>
