@@ -21,13 +21,12 @@
         </None>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Avalonia.Win32" Version="11.0.9" />
-        <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
-        <PackageReference Include="Microsoft.Win32" Version="2.0.1" />
-        <!-- Note: Do NOT upgrade this compatibility package to 8.X before updating to net8, it WILL break -->
-        <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.2" />
-        <PackageReference Include="RawInput.Sharp" Version="0.1.3" />
-        <PackageReference Include="SkiaSharp.Vulkan.SharpVk" Version="2.88.7" />
+        <PackageReference Include="Avalonia.Win32" />
+        <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
+        <PackageReference Include="Microsoft.Win32" />
+        <PackageReference Include="Microsoft.Windows.Compatibility" />
+        <PackageReference Include="RawInput.Sharp" />
+        <PackageReference Include="SkiaSharp.Vulkan.SharpVk" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
