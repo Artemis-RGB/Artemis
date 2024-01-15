@@ -1,6 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\Artemis.props" />
-    
     <PropertyGroup>
         <OutputType>Library</OutputType>
         <TargetFramework>net7.0</TargetFramework>
@@ -12,11 +10,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="Avalonia" Version="11.0.5" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
-        <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="$(AvaloniaVersion)" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.5" />
+        <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.0.5" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.5" />
         <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.2" />
         <PackageReference Include="DynamicData" Version="8.0.2" />
         <PackageReference Include="FluentAvaloniaUI" Version="2.0.4" />
@@ -26,10 +24,5 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <Reference Include="RGB.NET.Layout">
-        <HintPath>..\..\..\RGB.NET\bin\net7.0\RGB.NET.Layout.dll</HintPath>
-      </Reference>
     </ItemGroup>
 </Project>

@@ -1,6 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\Artemis.props" />
-
     <PropertyGroup>
         <OutputType>Library</OutputType>
         <TargetFramework>net7.0</TargetFramework>
@@ -21,7 +19,7 @@
         <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.2.1" />
         <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.1" />
         <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="11.0.0" />
-        <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.5" />
         <PackageReference Include="Avalonia.Skia.Lottie" Version="11.0.0" />
         <PackageReference Include="AvaloniaEdit.TextMate" Version="11.0.1" />
         <PackageReference Include="Markdown.Avalonia.Tight" Version="11.0.2" />
