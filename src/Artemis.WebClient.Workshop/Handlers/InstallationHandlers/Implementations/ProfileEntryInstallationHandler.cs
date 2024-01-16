@@ -27,7 +27,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         try
         {
             HttpClient client = _httpClientFactory.CreateClient(WorkshopConstants.WORKSHOP_CLIENT_NAME);
-            await client.DownloadDataAsync($"releases/download/{release}", stream, progress, cancellationToken);
+            await client.DownloadDataAsync($"releases/download/{release.Id}", stream, progress, cancellationToken);
         }
         catch (Exception e)
         {
