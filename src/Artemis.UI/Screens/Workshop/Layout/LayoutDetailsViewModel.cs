@@ -1,46 +1,49 @@
 using System;
-using System.Reactive;
-using System.Reactive.Linq;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.Core.Services;
+using Artemis.UI.Screens.Workshop.Entries.Details;
+using Artemis.UI.Screens.Workshop.Layout.Dialogs;
 using Artemis.UI.Screens.Workshop.Parameters;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Builders;
-using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
-using ReactiveUI;
+using Artemis.WebClient.Workshop.Services;
+using PropertyChanged.SourceGenerator;
 using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Layout;
 
-public class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
+public partial class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
 {
     private readonly IWorkshopClient _client;
-    private readonly INotificationService _notificationService;
+    private readonly IDeviceService _deviceService;
     private readonly IWindowService _windowService;
-    private readonly ObservableAsPropertyHelper<DateTimeOffset?> _updatedAt;
-    private IGetEntryById_Entry? _entry;
+    private readonly Func<IGetEntryById_Entry, EntryInfoViewModel> _getEntryInfoViewModel;
+    private readonly Func<IGetEntryById_Entry, EntryReleasesViewModel> _getEntryReleasesViewModel;
+    private readonly Func<IGetEntryById_Entry, EntryImagesViewModel> _getEntryImagesViewModel;
+    [Notify] private IGetEntryById_Entry? _entry;
+    [Notify] private EntryInfoViewModel? _entryInfoViewModel;
+    [Notify] private EntryReleasesViewModel? _entryReleasesViewModel;
+    [Notify] private EntryImagesViewModel? _entryImagesViewModel;
 
-    public LayoutDetailsViewModel(IWorkshopClient client, INotificationService notificationService, IWindowService windowService)
+    public LayoutDetailsViewModel(IWorkshopClient client,
+        IDeviceService deviceService,
+        IWindowService windowService,
+        Func<IGetEntryById_Entry, EntryInfoViewModel> getEntryInfoViewModel,
+        Func<IGetEntryById_Entry, EntryReleasesViewModel> getEntryReleasesViewModel,
+        Func<IGetEntryById_Entry, EntryImagesViewModel> getEntryImagesViewModel)
     {
         _client = client;
-        _notificationService = notificationService;
+        _deviceService = deviceService;
         _windowService = windowService;
-        _updatedAt = this.WhenAnyValue(vm => vm.Entry).Select(e => e?.LatestRelease?.CreatedAt ?? e?.CreatedAt).ToProperty(this, vm => vm.UpdatedAt);
-
-        DownloadLatestRelease = ReactiveCommand.CreateFromTask(ExecuteDownloadLatestRelease);
-    }
-
-    public ReactiveCommand<Unit, Unit> DownloadLatestRelease { get; }
-
-    public DateTimeOffset? UpdatedAt => _updatedAt.Value;
-
-    public IGetEntryById_Entry? Entry
-    {
-        get => _entry;
-        private set => RaiseAndSetIfChanged(ref _entry, value);
+        _getEntryInfoViewModel = getEntryInfoViewModel;
+        _getEntryReleasesViewModel = getEntryReleasesViewModel;
+        _getEntryImagesViewModel = getEntryImagesViewModel;
     }
 
     public override async Task OnNavigating(WorkshopDetailParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
@@ -55,10 +58,36 @@ public class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
             return;
 
         Entry = result.Data?.Entry;
+        if (Entry == null)
+        {
+            EntryInfoViewModel = null;
+            EntryReleasesViewModel = null;
+        }
+        else
+        {
+            EntryInfoViewModel = _getEntryInfoViewModel(Entry);
+            EntryReleasesViewModel = _getEntryReleasesViewModel(Entry);
+            EntryImagesViewModel = _getEntryImagesViewModel(Entry);
+
+            EntryReleasesViewModel.OnInstallationFinished = OnInstallationFinished;
+        }
     }
 
-    private Task ExecuteDownloadLatestRelease(CancellationToken cancellationToken)
+    private async Task OnInstallationFinished(InstalledEntry installedEntry)
     {
-        return Task.CompletedTask;
+        // Find compatible devices
+        ArtemisLayout layout = new(Path.Combine(installedEntry.GetReleaseDirectory().FullName, "layout.xml"));
+        List<ArtemisDevice> devices = _deviceService.Devices.Where(d => d.RgbDevice.DeviceInfo.DeviceType == layout.RgbLayout.Type).ToList();
+
+        // If any are found, offer to apply
+        if (devices.Any())
+        {
+            await _windowService.CreateContentDialog()
+                .WithTitle("Apply layout to devices")
+                .WithViewModel(out DeviceSelectionDialogViewModel vm, devices, installedEntry)
+                .WithCloseButtonText(null)
+                .HavingPrimaryButton(b => b.WithText("Continue").WithCommand(vm.Apply))
+                .ShowAsync();
+        }
     }
 }

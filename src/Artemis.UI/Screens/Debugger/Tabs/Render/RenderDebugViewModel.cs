@@ -4,21 +4,21 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Avalonia.Media.Imaging;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using SkiaSharp;
 
 namespace Artemis.UI.Screens.Debugger.Render;
 
-public class RenderDebugViewModel : ActivatableViewModelBase
+public partial class RenderDebugViewModel : ActivatableViewModelBase
 {
     private readonly IRenderService _renderService;
-    private double _currentFps;
-
-    private Bitmap? _currentFrame;
     private string? _frameTargetPath;
-    private string? _renderer;
-    private int _renderHeight;
-    private int _renderWidth;
+    [Notify] private double _currentFps;
+    [Notify] private Bitmap? _currentFrame;
+    [Notify] private string? _renderer;
+    [Notify] private int _renderHeight;
+    [Notify] private int _renderWidth;
 
     public RenderDebugViewModel(IRenderService renderService)
     {
@@ -31,36 +31,6 @@ public class RenderDebugViewModel : ActivatableViewModelBase
             HandleActivation();
             Disposable.Create(HandleDeactivation).DisposeWith(disposables);
         });
-    }
-
-    public Bitmap? CurrentFrame
-    {
-        get => _currentFrame;
-        set => RaiseAndSetIfChanged(ref _currentFrame, value);
-    }
-
-    public double CurrentFps
-    {
-        get => _currentFps;
-        set => RaiseAndSetIfChanged(ref _currentFps, value);
-    }
-
-    public int RenderWidth
-    {
-        get => _renderWidth;
-        set => RaiseAndSetIfChanged(ref _renderWidth, value);
-    }
-
-    public int RenderHeight
-    {
-        get => _renderHeight;
-        set => RaiseAndSetIfChanged(ref _renderHeight, value);
-    }
-
-    public string? Renderer
-    {
-        get => _renderer;
-        set => RaiseAndSetIfChanged(ref _renderer, value);
     }
 
     private void HandleActivation()

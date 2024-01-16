@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net.Http;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading;
@@ -10,30 +11,32 @@ using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Services;
 using Avalonia.Media.Imaging;
 using FluentAvalonia.UI.Controls;
-using Flurl.Http;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using Serilog;
 
 namespace Artemis.UI.Screens.Workshop.CurrentUser;
 
-public class CurrentUserViewModel : ActivatableViewModelBase
+public partial class CurrentUserViewModel : ActivatableViewModelBase
 {
     private readonly IAuthenticationService _authenticationService;
     private readonly ObservableAsPropertyHelper<bool> _isAnonymous;
+    private readonly HttpClient _httpClient;
     private readonly ILogger _logger;
     private readonly IWindowService _windowService;
-    private bool _allowLogout = true;
-    private Bitmap? _avatar;
-    private string? _email;
-    private bool _loading = true;
-    private string? _name;
-    private string? _userId;
+    [Notify] private bool _allowLogout = true;
+    [Notify(Setter.Private)] private Bitmap? _avatar;
+    [Notify(Setter.Private)] private string? _email;
+    [Notify(Setter.Private)] private bool _loading = true;
+    [Notify(Setter.Private)] private string? _name;
+    [Notify(Setter.Private)] private string? _userId;
 
     public CurrentUserViewModel(ILogger logger, IAuthenticationService authenticationService, IWindowService windowService)
     {
         _logger = logger;
         _authenticationService = authenticationService;
         _windowService = windowService;
+        _httpClient = new HttpClient();
         Login = ReactiveCommand.CreateFromTask(ExecuteLogin);
 
         _isAnonymous = this.WhenAnyValue(vm => vm.Loading, vm => vm.Name, (l, n) => l || n == null).ToProperty(this, vm => vm.IsAnonymous);
@@ -46,43 +49,7 @@ public class CurrentUserViewModel : ActivatableViewModelBase
     }
 
     public bool IsAnonymous => _isAnonymous.Value;
-
-    public bool AllowLogout
-    {
-        get => _allowLogout;
-        set => RaiseAndSetIfChanged(ref _allowLogout, value);
-    }
-
-    public bool Loading
-    {
-        get => _loading;
-        private set => RaiseAndSetIfChanged(ref _loading, value);
-    }
-
-    public string? UserId
-    {
-        get => _userId;
-        private set => RaiseAndSetIfChanged(ref _userId, value);
-    }
-
-    public string? Name
-    {
-        get => _name;
-        private set => RaiseAndSetIfChanged(ref _name, value);
-    }
-
-    public string? Email
-    {
-        get => _email;
-        private set => RaiseAndSetIfChanged(ref _email, value);
-    }
-
-    public Bitmap? Avatar
-    {
-        get => _avatar;
-        private set => RaiseAndSetIfChanged(ref _avatar, value);
-    }
-
+    
     public ReactiveCommand<Unit, Unit> Login { get; }
 
     public void Logout()
@@ -141,7 +108,7 @@ public class CurrentUserViewModel : ActivatableViewModelBase
         try
         {
             Avatar?.Dispose();
-            Avatar = new Bitmap(await $"{WorkshopConstants.AUTHORITY_URL}/user/avatar/{userId}".GetStreamAsync());
+            Avatar = new Bitmap(await _httpClient.GetStreamAsync($"{WorkshopConstants.AUTHORITY_URL}/user/avatar/{userId}"));
         }
         catch (Exception)
         {

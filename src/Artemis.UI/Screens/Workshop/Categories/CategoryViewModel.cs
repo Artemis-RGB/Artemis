@@ -2,12 +2,13 @@ using System;
 using Artemis.UI.Shared;
 using Artemis.WebClient.Workshop;
 using Material.Icons;
+using PropertyChanged.SourceGenerator;
 
 namespace Artemis.UI.Screens.Workshop.Categories;
 
-public class CategoryViewModel : ViewModelBase
+public partial class CategoryViewModel : ViewModelBase
 {
-    private bool _isSelected;
+    [Notify] private bool _isSelected;
 
     public CategoryViewModel(IGetCategories_Categories category)
     {
@@ -20,10 +21,4 @@ public class CategoryViewModel : ViewModelBase
     public long Id { get; }
     public string Name { get; }
     public MaterialIconKind Icon { get; }
-
-    public bool IsSelected
-    {
-        get => _isSelected;
-        set => RaiseAndSetIfChanged(ref _isSelected, value);
-    }
 }

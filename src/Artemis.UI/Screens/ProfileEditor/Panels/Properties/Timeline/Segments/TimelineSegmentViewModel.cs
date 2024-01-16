@@ -12,11 +12,12 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Segments;
 
-public abstract class TimelineSegmentViewModel : ActivatableViewModelBase
+public abstract partial class TimelineSegmentViewModel : ActivatableViewModelBase
 {
     private static readonly TimeSpan NewSegmentLength = TimeSpan.FromSeconds(2);
     private readonly Dictionary<ILayerPropertyKeyframe, TimeSpan> _originalKeyframePositions = new();
@@ -25,10 +26,10 @@ public abstract class TimelineSegmentViewModel : ActivatableViewModelBase
     private TimeSpan _initialLength;
     private int _pixelsPerSecond;
     private RenderProfileElement? _profileElement;
-    private ReactiveCommand<Unit, Unit>? _removeSegment;
     private ObservableAsPropertyHelper<bool>? _showAddEnd;
     private ObservableAsPropertyHelper<bool>? _showAddMain;
     private ObservableAsPropertyHelper<bool>? _showAddStart;
+    [Notify] private ReactiveCommand<Unit, Unit>? _removeSegment;
 
     protected TimelineSegmentViewModel(IProfileEditorService profileEditorService, IWindowService windowService)
     {
@@ -95,12 +96,6 @@ public abstract class TimelineSegmentViewModel : ActivatableViewModelBase
     public abstract ResizeTimelineSegment.SegmentType Type { get; }
 
     public ReactiveCommand<Unit, Unit> EditTime { get; }
-
-    public ReactiveCommand<Unit, Unit>? RemoveSegment
-    {
-        get => _removeSegment;
-        set => RaiseAndSetIfChanged(ref _removeSegment, value);
-    }
 
     public void AddStartSegment()
     {

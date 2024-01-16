@@ -1,0 +1,57 @@
+fragment category on Category {
+    name
+    icon
+}
+
+fragment image on Image {
+    id
+    name
+    description    
+}
+
+fragment layoutInfo on LayoutInfo {
+    id
+    deviceProvider
+    deviceType
+    model
+    vendor
+    logicalLayout
+    physicalLayout
+}
+
+fragment submittedEntry on Entry {
+    id
+    name
+    summary
+    entryType
+    downloads
+    createdAt
+}
+
+fragment entryDetails on Entry {
+    id
+    author
+    name
+    summary
+    entryType
+    downloads
+    createdAt
+    description
+    categories {
+        ...category
+    }
+    latestRelease {
+        ...release
+    }
+    images {
+        ...image
+    }
+}
+
+fragment release on Release {
+    id
+    version
+    downloadSize
+    md5Hash
+    createdAt
+} 

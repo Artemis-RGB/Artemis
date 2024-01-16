@@ -15,7 +15,7 @@ public partial class RootView : ReactiveUserControl<RootViewModel>
         this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Screen).Subscribe(Navigate).DisposeWith(d));
     }
 
-    private void Navigate(RoutableScreen viewModel)
+    private void Navigate(RoutableScreen? viewModel)
     {
         try
         {

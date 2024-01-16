@@ -11,21 +11,22 @@ using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia;
 using Avalonia.Input;
 using Material.Icons;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using SkiaSharp;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools;
 
-public class TransformToolViewModel : ToolViewModel
+public partial class TransformToolViewModel : ToolViewModel
 {
     private readonly ObservableAsPropertyHelper<bool> _isEnabled;
     private readonly IProfileEditorService _profileEditorService;
-    private Point _anchor;
     private ObservableAsPropertyHelper<Layer?>? _layer;
-    private RelativePoint _relativeAnchor;
-    private double _rotation;
-    private Rect _shapeBounds;
     private TimeSpan _time;
+    [Notify] private Point _anchor;
+    [Notify] private RelativePoint _relativeAnchor;
+    [Notify] private double _rotation;
+    [Notify] private Rect _shapeBounds;
 
     /// <inheritdoc />
     public TransformToolViewModel(IProfileEditorService profileEditorService)
@@ -106,31 +107,7 @@ public class TransformToolViewModel : ToolViewModel
 
     /// <inheritdoc />
     public override string ToolTip => "Transform the shape of the current layer (Ctrl+T)";
-
-    public Rect ShapeBounds
-    {
-        get => _shapeBounds;
-        set => RaiseAndSetIfChanged(ref _shapeBounds, value);
-    }
-
-    public double Rotation
-    {
-        get => _rotation;
-        set => RaiseAndSetIfChanged(ref _rotation, value);
-    }
-
-    public RelativePoint RelativeAnchor
-    {
-        get => _relativeAnchor;
-        set => RaiseAndSetIfChanged(ref _relativeAnchor, value);
-    }
-
-    public Point Anchor
-    {
-        get => _anchor;
-        set => RaiseAndSetIfChanged(ref _anchor, value);
-    }
-
+    
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {

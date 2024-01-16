@@ -18,21 +18,23 @@ using Artemis.WebClient.Workshop.Exceptions;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using Artemis.WebClient.Workshop.Services;
 using Avalonia.Media.Imaging;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using StrawberryShake;
+using EntrySpecificationsViewModel = Artemis.UI.Screens.Workshop.Entries.Details.EntrySpecificationsViewModel;
 
 namespace Artemis.UI.Screens.Workshop.Library;
 
-public class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters>
+public partial class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters>
 {
     private readonly IWorkshopClient _client;
     private readonly Func<EntrySpecificationsViewModel> _getGetSpecificationsVm;
     private readonly IRouter _router;
     private readonly IWindowService _windowService;
     private readonly IWorkshopService _workshopService;
-    private IGetSubmittedEntryById_Entry? _entry;
-    private EntrySpecificationsViewModel? _entrySpecificationsViewModel;
-    private bool _hasChanges;
+    [Notify] private IGetSubmittedEntryById_Entry? _entry;
+    [Notify] private EntrySpecificationsViewModel? _entrySpecificationsViewModel;
+    [Notify(Setter.Private)] private bool _hasChanges;
 
     public SubmissionDetailViewModel(IWorkshopClient client, IWindowService windowService, IWorkshopService workshopService, IRouter router, Func<EntrySpecificationsViewModel> getSpecificationsVm) {
         _client = client;
@@ -53,24 +55,6 @@ public class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters
     public ReactiveCommand<Unit, Unit> ViewWorkshopPage { get; }
     public ReactiveCommand<Unit, Unit> SaveChanges { get; }
     public ReactiveCommand<Unit, Unit> DiscardChanges { get; }
-
-    public EntrySpecificationsViewModel? EntrySpecificationsViewModel
-    {
-        get => _entrySpecificationsViewModel;
-        set => RaiseAndSetIfChanged(ref _entrySpecificationsViewModel, value);
-    }
-
-    public IGetSubmittedEntryById_Entry? Entry
-    {
-        get => _entry;
-        set => RaiseAndSetIfChanged(ref _entry, value);
-    }
-
-    public bool HasChanges
-    {
-        get => _hasChanges;
-        private set => RaiseAndSetIfChanged(ref _hasChanges, value);
-    }
     
     public override async Task OnNavigating(WorkshopDetailParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
@@ -174,7 +158,7 @@ public class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters
         {
             using MemoryStream stream = new();
             EntrySpecificationsViewModel.IconBitmap.Save(stream);
-            ImageUploadResult imageResult = await _workshopService.SetEntryIcon(Entry.Id, new Progress<StreamProgress>(), stream, cancellationToken);
+            ImageUploadResult imageResult = await _workshopService.SetEntryIcon(Entry.Id, stream, cancellationToken);
             if (!imageResult.IsSuccess)
                 throw new ArtemisWorkshopException("Failed to upload image. " + imageResult.Message);
         }

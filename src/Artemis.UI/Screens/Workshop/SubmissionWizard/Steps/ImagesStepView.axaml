@@ -1,0 +1,34 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:steps="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.ImagesStepView"
+             x:DataType="steps:ImagesStepViewModel">
+  <Grid RowDefinitions="Auto,*">
+        <StackPanel Grid.Row="0">
+            <StackPanel.Styles>
+                <Styles>
+                    <Style Selector="TextBlock">
+                        <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                    </Style>
+                </Styles>
+            </StackPanel.Styles>
+            <TextBlock Theme="{StaticResource TitleTextBlockStyle}" TextWrapping="Wrap">Images</TextBlock>
+            <TextBlock TextWrapping="Wrap">
+                Optionally provide some images of your submission.
+            </TextBlock>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" Margin="0 20 0 0">
+            <ItemsControl ItemsSource="{CompiledBinding Images}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

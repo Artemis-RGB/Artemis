@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Artemis.Storage.Entities.Workshop;
 
@@ -16,6 +17,6 @@ public class EntryEntity
     public long ReleaseId { get; set; }
     public string ReleaseVersion { get; set; }
     public DateTimeOffset InstalledAt { get; set; }
-    
-    public string LocalReference { get; set; }
+
+    public Dictionary<string,object> Metadata { get; set; }
 }

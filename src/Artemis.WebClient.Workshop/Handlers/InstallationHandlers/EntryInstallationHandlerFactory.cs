@@ -1,5 +1,4 @@
-﻿using Artemis.WebClient.Workshop.Handlers.InstallationHandlers.Implementations;
-using DryIoc;
+﻿using DryIoc;
 
 namespace Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
 
@@ -17,6 +16,7 @@ public class EntryInstallationHandlerFactory
         return entryType switch
         {
             EntryType.Profile => _container.Resolve<ProfileEntryInstallationHandler>(),
+            EntryType.Layout => _container.Resolve<LayoutEntryInstallationHandler>(),
             _ => throw new NotSupportedException($"EntryType '{entryType}' is not supported.")
         };
     }

@@ -17,18 +17,19 @@ using Avalonia;
 using Avalonia.Input;
 using DynamicData;
 using DynamicData.Binding;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 
-public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineKeyframeViewModel
+public partial class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineKeyframeViewModel
 {
     private readonly IProfileEditorService _profileEditorService;
-    private bool _canPaste;
-    private bool _isFlyoutOpen;
     private ObservableAsPropertyHelper<bool>? _isSelected;
-    private string _timestamp;
-    private double _x;
+    [Notify] private bool _canPaste;
+    [Notify] private bool _isFlyoutOpen;
+    [Notify] private string _timestamp;
+    [Notify] private double _x;
 
     public TimelineKeyframeViewModel(LayerPropertyKeyframe<T> layerPropertyKeyframe, IProfileEditorService profileEditorService)
     {
@@ -60,31 +61,6 @@ public class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, ITimelineK
     public LayerPropertyKeyframe<T> LayerPropertyKeyframe { get; }
     public ObservableCollection<TimelineEasingViewModel> EasingViewModels { get; }
     
-
-    public double X
-    {
-        get => _x;
-        set => RaiseAndSetIfChanged(ref _x, value);
-    }
-
-    public string Timestamp
-    {
-        get => _timestamp;
-        set => RaiseAndSetIfChanged(ref _timestamp, value);
-    }
-
-    public bool IsFlyoutOpen
-    {
-        get => _isFlyoutOpen;
-        set => RaiseAndSetIfChanged(ref _isFlyoutOpen, value);
-    }
-
-    public bool CanPaste
-    {
-        get => _canPaste;
-        set => RaiseAndSetIfChanged(ref _canPaste, value);
-    }
-
     public void Update()
     {
         X = _pixelsPerSecond * LayerPropertyKeyframe.Position.TotalSeconds;

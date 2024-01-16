@@ -7,13 +7,14 @@ using Artemis.UI.Shared.Routing;
 using Artemis.WebClient.Workshop.Services;
 using DynamicData;
 using DynamicData.Binding;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.Library.Tabs;
 
-public class InstalledTabViewModel : RoutableScreen
+public partial class InstalledTabViewModel : RoutableScreen
 {
-    private string? _searchEntryInput;
+    [Notify] private string? _searchEntryInput;
 
     public InstalledTabViewModel(IWorkshopService workshopService, IRouter router, Func<InstalledEntry, InstalledTabItemViewModel> getInstalledTabItemViewModel)
     {
@@ -40,15 +41,8 @@ public class InstalledTabViewModel : RoutableScreen
 
     public bool Empty { get; }
     public ReactiveCommand<Unit, Unit> OpenWorkshop { get; }
-
     public ReadOnlyObservableCollection<InstalledTabItemViewModel> InstalledEntries { get; }
-
-    public string? SearchEntryInput
-    {
-        get => _searchEntryInput;
-        set => RaiseAndSetIfChanged(ref _searchEntryInput, value);
-    }
-
+    
     private Func<InstalledEntry, bool> CreatePredicate(string? text)
     {
         if (string.IsNullOrWhiteSpace(text))

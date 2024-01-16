@@ -8,18 +8,19 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Avalonia.Threading;
 using Humanizer;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using RGB.NET.Core;
 
 namespace Artemis.UI.Screens.Device;
 
-public class DeviceSettingsViewModel : ActivatableViewModelBase
+public partial class DeviceSettingsViewModel : ActivatableViewModelBase
 {
     private readonly IDeviceService _deviceService;
     private readonly DevicesTabViewModel _devicesTabViewModel;
     private readonly IDeviceVmFactory _deviceVmFactory;
     private readonly IWindowService _windowService;
-    private bool _togglingDevice;
+    [Notify] private bool _togglingDevice;
 
     public DeviceSettingsViewModel(ArtemisDevice device, DevicesTabViewModel devicesTabViewModel, IDeviceService deviceService, IWindowService windowService, IDeviceVmFactory deviceVmFactory)
     {
@@ -49,12 +50,6 @@ public class DeviceSettingsViewModel : ActivatableViewModelBase
     {
         get => Device.IsEnabled;
         set => Dispatcher.UIThread.InvokeAsync(async () => await UpdateIsDeviceEnabled(value));
-    }
-
-    public bool TogglingDevice
-    {
-        get => _togglingDevice;
-        set => RaiseAndSetIfChanged(ref _togglingDevice, value);
     }
 
     public void IdentifyDevice()

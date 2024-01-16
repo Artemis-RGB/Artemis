@@ -1,0 +1,33 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:details="clr-namespace:Artemis.UI.Screens.Workshop.Entries.Details"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Entries.Details.EntryImagesView"
+             x:DataType="details:EntryImagesViewModel">
+    <ScrollViewer Classes="with-padding" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <ItemsControl ItemsSource="{CompiledBinding Images}">
+            <ItemsControl.Styles>
+                <Styles>
+                    <Style Selector="ItemsControl > ContentPresenter">
+                        <Setter Property="Margin" Value="0 0 0 10"></Setter>
+                    </Style>
+                    <Style Selector="ItemsControl > ContentPresenter:nth-last-child(1)">
+                        <Setter Property="Margin" Value="0 0 0 0"></Setter>
+                    </Style>
+                </Styles>
+            </ItemsControl.Styles>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <ContentPresenter Content="{CompiledBinding}" Cursor="Hand" PointerPressed="InputElement_OnPointerPressed"></ContentPresenter>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </ScrollViewer>
+</UserControl>

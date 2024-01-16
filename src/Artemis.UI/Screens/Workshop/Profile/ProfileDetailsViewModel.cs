@@ -1,53 +1,35 @@
 using System;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Artemis.Core;
+using Artemis.UI.Screens.Workshop.Entries.Details;
 using Artemis.UI.Screens.Workshop.Parameters;
 using Artemis.UI.Shared.Routing;
-using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Builders;
-using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
-using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
-using Artemis.WebClient.Workshop.Handlers.InstallationHandlers.Implementations;
-using ReactiveUI;
+using PropertyChanged.SourceGenerator;
 using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Profile;
 
-public class ProfileDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
+public partial class ProfileDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
 {
     private readonly IWorkshopClient _client;
-    private readonly ProfileEntryInstallationHandler _installationHandler;
-    private readonly INotificationService _notificationService;
-    private readonly ObservableAsPropertyHelper<DateTimeOffset?> _updatedAt;
-    private readonly IWindowService _windowService;
-    private IGetEntryById_Entry? _entry;
+    private readonly Func<IGetEntryById_Entry, EntryInfoViewModel> _getEntryInfoViewModel;
+    private readonly Func<IGetEntryById_Entry, EntryReleasesViewModel> _getEntryReleasesViewModel;
+    private readonly Func<IGetEntryById_Entry, EntryImagesViewModel> _getEntryImagesViewModel;
+    [Notify] private IGetEntryById_Entry? _entry;
+    [Notify] private EntryInfoViewModel? _entryInfoViewModel;
+    [Notify] private EntryReleasesViewModel? _entryReleasesViewModel;
+    [Notify] private EntryImagesViewModel? _entryImagesViewModel;
 
-    public ProfileDetailsViewModel(IWorkshopClient client, ProfileEntryInstallationHandler installationHandler, INotificationService notificationService, IWindowService windowService)
+    public ProfileDetailsViewModel(IWorkshopClient client,
+        Func<IGetEntryById_Entry, EntryInfoViewModel> getEntryInfoViewModel,
+        Func<IGetEntryById_Entry, EntryReleasesViewModel> getEntryReleasesViewModel,
+        Func<IGetEntryById_Entry, EntryImagesViewModel> getEntryImagesViewModel)
     {
         _client = client;
-        _installationHandler = installationHandler;
-        _notificationService = notificationService;
-        _windowService = windowService;
-        _updatedAt = this.WhenAnyValue(vm => vm.Entry).Select(e => e?.LatestRelease?.CreatedAt ?? e?.CreatedAt).ToProperty(this, vm => vm.UpdatedAt);
-
-        DownloadLatestRelease = ReactiveCommand.CreateFromTask(ExecuteDownloadLatestRelease);
-        CopyShareLink = ReactiveCommand.CreateFromTask(ExecuteCopyShareLink);
-    }
-
-    public ReactiveCommand<Unit, Unit> CopyShareLink { get; set; }
-
-    public ReactiveCommand<Unit, Unit> DownloadLatestRelease { get; }
-
-    public DateTimeOffset? UpdatedAt => _updatedAt.Value;
-
-    public IGetEntryById_Entry? Entry
-    {
-        get => _entry;
-        private set => RaiseAndSetIfChanged(ref _entry, value);
+        _getEntryInfoViewModel = getEntryInfoViewModel;
+        _getEntryReleasesViewModel = getEntryReleasesViewModel;
+        _getEntryImagesViewModel = getEntryImagesViewModel;
     }
 
     public override async Task OnNavigating(WorkshopDetailParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
@@ -62,30 +44,16 @@ public class ProfileDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
             return;
 
         Entry = result.Data?.Entry;
-    }
-
-    private async Task ExecuteDownloadLatestRelease(CancellationToken cancellationToken)
-    {
-        if (Entry?.LatestRelease == null)
-            return;
-
-        bool confirm = await _windowService.ShowConfirmContentDialog("Install profile?", "The profile will be downloaded and added to your sidebar automatically.");
-        if (!confirm)
-            return;
-
-        EntryInstallResult result = await _installationHandler.InstallAsync(Entry, Entry.LatestRelease.Id, new Progress<StreamProgress>(), cancellationToken);
-        if (result.IsSuccess)
-            _notificationService.CreateNotification().WithTitle("Profile installed").WithSeverity(NotificationSeverity.Success).Show();
-        else
-            _notificationService.CreateNotification().WithTitle("Failed to install profile").WithMessage(result.Message).WithSeverity(NotificationSeverity.Error).Show();
-    }
-
-    private async Task ExecuteCopyShareLink(CancellationToken arg)
-    {
         if (Entry == null)
-            return;
-
-        await Shared.UI.Clipboard.SetTextAsync($"{WorkshopConstants.WORKSHOP_URL}/entries/{Entry.Id}/{StringUtilities.UrlFriendly(Entry.Name)}");
-        _notificationService.CreateNotification().WithTitle("Copied share link to clipboard.").Show();
+        {
+            EntryInfoViewModel = null;
+            EntryReleasesViewModel = null;
+        }
+        else
+        {
+            EntryInfoViewModel = _getEntryInfoViewModel(Entry);
+            EntryReleasesViewModel = _getEntryReleasesViewModel(Entry);
+            EntryImagesViewModel = _getEntryImagesViewModel(Entry);
+        }
     }
 }

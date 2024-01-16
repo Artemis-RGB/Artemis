@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Events;
+using Artemis.UI.Shared.Extensions;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -36,7 +35,7 @@ public class DeviceVisualizer : Control
     private ArtemisDevice? _oldDevice;
     private bool _loading;
     private Color[] _previousState = Array.Empty<Color>();
-
+    
     /// <inheritdoc />
     public DeviceVisualizer()
     {
@@ -69,11 +68,7 @@ public class DeviceVisualizer : Control
 
             // Render device and LED images 
             if (_deviceImage != null)
-                drawingContext.DrawImage(
-                    _deviceImage,
-                    new Rect(_deviceImage.Size),
-                    new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height)
-                );
+                drawingContext.DrawImage(_deviceImage, new Rect(_deviceImage.Size), new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height));
 
             if (!ShowColors)
                 return;
@@ -163,7 +158,7 @@ public class DeviceVisualizer : Control
     {
         if (Device == null || float.IsNaN(Device.RgbDevice.ActualSize.Width) || float.IsNaN(Device.RgbDevice.ActualSize.Height))
             return new Rect();
-        
+
         Rect deviceRect = new(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
         Geometry geometry = new RectangleGeometry(deviceRect);
         geometry.Transform = new RotateTransform(Device.Rotation);
@@ -305,7 +300,7 @@ public class DeviceVisualizer : Control
         {
             _deviceImage = await Task.Run(() => GetDeviceImage(device));
         }
-        catch (Exception e)
+        catch (Exception)
         {
             // ignored
         }
@@ -316,34 +311,15 @@ public class DeviceVisualizer : Control
 
     private RenderTargetBitmap? GetDeviceImage(ArtemisDevice device)
     {
-        string? path = device.Layout?.Image?.LocalPath;
-        if (path == null)
+        ArtemisLayout? layout = device.Layout;
+        if (layout == null)
             return null;
-        
-        if (BitmapCache.TryGetValue(path, out RenderTargetBitmap? existingBitmap))
+
+        if (BitmapCache.TryGetValue(layout.FilePath, out RenderTargetBitmap? existingBitmap))
             return existingBitmap;
-        if (!File.Exists(path))
-        {
-            BitmapCache[path] = null;
-            return null;
-        }
-
-        // Create a bitmap that'll be used to render the device and LED images just once
-        // Render 4 times the actual size of the device to make sure things look sharp when zoomed in
-        RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) device.RgbDevice.ActualSize.Width * 2, (int) device.RgbDevice.ActualSize.Height * 2));
-
-        using DrawingContext context = renderTargetBitmap.CreateDrawingContext();
-        using Bitmap bitmap = new(path);
-        using Bitmap scaledBitmap = bitmap.CreateScaledBitmap(renderTargetBitmap.PixelSize);
-
-        context.DrawImage(scaledBitmap, new Rect(scaledBitmap.Size));
-        lock (_deviceVisualizerLeds)
-        {
-            foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                deviceVisualizerLed.DrawBitmap(context, 2 * device.Scale);
-        }
-
-        // BitmapCache[path] = renderTargetBitmap;
+        
+        RenderTargetBitmap renderTargetBitmap = layout.RenderLayout(false);
+        BitmapCache[layout.FilePath] = renderTargetBitmap;
         return renderTargetBitmap;
     }
 

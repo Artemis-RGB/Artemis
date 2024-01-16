@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:workshop="clr-namespace:Artemis.UI.Screens.Debugger.Workshop"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Debugger.Workshop.WorkshopDebugView"
+             x:DataType="workshop:WorkshopDebugViewModel">
+    <ScrollViewer Classes="with-padding">
+        <StackPanel>
+            <Label>Workshop Status</Label>
+            <Border Classes="card-condensed">
+                <SelectableTextBlock Text="{CompiledBinding WorkshopStatus}" FontFamily="{StaticResource RobotoMono}" FontSize="13" />
+            </Border>
+
+            <Label Margin="0 10 0 0">Auth token (DO NOT SHARE)</Label>
+            <Border Classes="card-condensed">
+                <SelectableTextBlock Text="{CompiledBinding Token}" FontFamily="{StaticResource RobotoMono}" FontSize="13" TextWrapping="Wrap" />
+            </Border>
+            
+            <Label Margin="0 10 0 0">Email verified</Label>
+            <Border Classes="card-condensed">
+                <SelectableTextBlock Text="{CompiledBinding EmailVerified}" FontFamily="{StaticResource RobotoMono}" FontSize="13" />
+            </Border>
+            
+            <Label Margin="0 10 0 0">Claims</Label>
+            <Border Classes="card-condensed">
+                <SelectableTextBlock Text="{CompiledBinding Claims}" FontFamily="{StaticResource RobotoMono}" FontSize="13" />
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

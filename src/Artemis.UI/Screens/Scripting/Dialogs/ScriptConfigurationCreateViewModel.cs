@@ -5,15 +5,16 @@ using Artemis.Core.ScriptingProviders;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using FluentAvalonia.UI.Controls;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
 
 namespace Artemis.UI.Screens.Scripting.Dialogs;
 
-public class ScriptConfigurationCreateViewModel : ContentDialogViewModelBase
+public partial class ScriptConfigurationCreateViewModel : ContentDialogViewModelBase
 {
-    private string? _scriptName;
-    private ScriptingProvider _selectedScriptingProvider;
+    [Notify] private string? _scriptName;
+    [Notify] private ScriptingProvider _selectedScriptingProvider;
 
     public ScriptConfigurationCreateViewModel(IScriptingService scriptingService)
     {
@@ -26,19 +27,6 @@ public class ScriptConfigurationCreateViewModel : ContentDialogViewModelBase
 
     public ScriptConfiguration? ScriptConfiguration { get; private set; }
     public List<ScriptingProvider> ScriptingProviders { get; }
-
-    public string? ScriptName
-    {
-        get => _scriptName;
-        set => RaiseAndSetIfChanged(ref _scriptName, value);
-    }
-
-    public ScriptingProvider SelectedScriptingProvider
-    {
-        get => _selectedScriptingProvider;
-        set => RaiseAndSetIfChanged(ref _selectedScriptingProvider, value);
-    }
-
     public ReactiveCommand<Unit, Unit> Submit { get; }
 
     private void ExecuteSubmit()

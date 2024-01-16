@@ -6,16 +6,17 @@ using Artemis.Core.Services;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 
-public class ProfileAdaptionHintsLayerViewModel : ViewModelBase
+public partial class ProfileAdaptionHintsLayerViewModel : ViewModelBase
 {
     private readonly ObservableAsPropertyHelper<string> _adaptionHintText;
     private readonly IProfileService _profileService;
     private readonly IWindowService _windowService;
-    private int _adaptionHintCount;
+    [Notify(Setter.Private)] private int _adaptionHintCount;
 
     public ProfileAdaptionHintsLayerViewModel(Layer layer, IWindowService windowService, IProfileService profileService)
     {
@@ -29,15 +30,7 @@ public class ProfileAdaptionHintsLayerViewModel : ViewModelBase
     }
 
     public Layer Layer { get; }
-
     public ReactiveCommand<Unit, Unit> EditAdaptionHints { get; }
-
-    public int AdaptionHintCount
-    {
-        get => _adaptionHintCount;
-        private set => RaiseAndSetIfChanged(ref _adaptionHintCount, value);
-    }
-
     public string AdaptionHintText => _adaptionHintText.Value;
 
     private async Task ExecuteEditAdaptionHints()

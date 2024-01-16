@@ -5,7 +5,21 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="20">
-
+                <TextBox Width="200" Height="150" AcceptsReturn="True" xml:space="preserve">asdasdas asd
+asdasd
+asd
+asd
+asd
+as
+fdsfsdf
+sdg
+sdg
+sdg
+                </TextBox>
+                <TextBox Width="200" Height="150" AcceptsReturn="True" xml:space="preserve">asdasdas asd
+asdasd
+asd
+as</TextBox>
 
                 <!-- Add Controls for Previewer Here -->
                 <TextBox Text="99999999"
@@ -46,12 +60,10 @@
 
                         <Border Margin="{TemplateBinding BorderThickness}">
                             <Grid ColumnDefinitions="Auto,*,Auto">
-                                <ContentPresenter Grid.Column="0"
-                                                  Grid.ColumnSpan="1"
-                                                  Content="{TemplateBinding InnerLeftContent}" />
+                                <ContentPresenter Grid.Column="0" Content="{TemplateBinding InnerLeftContent}" />
                                 <Grid x:Name="PART_InnerGrid"
                                       Grid.Column="1"
-                                      RowDefinitions="Auto,Auto"
+                                      RowDefinitions="Auto,*"
                                       ColumnDefinitions="Auto,*,Auto"
                                       Cursor="IBeam"
                                       Margin="{TemplateBinding Padding}">

@@ -11,7 +11,7 @@ namespace Artemis.VisualScripting.Converters;
 public class JsonConverter : IValueConverter
 {
     /// <inheritdoc />
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         return JsonConvert.SerializeObject(value, Formatting.Indented);
     }
@@ -19,8 +19,7 @@ public class JsonConverter : IValueConverter
     /// <inheritdoc />
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value == null)
-            return null;
-        return JsonConvert.DeserializeObject(value.ToString(), targetType);
+        string? json = value?.ToString();
+        return json == null ? null : JsonConvert.DeserializeObject(json, targetType);
     }
 }

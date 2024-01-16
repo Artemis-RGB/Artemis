@@ -5,6 +5,8 @@ schema {
     mutation: Mutation
 }
 
+directive @tag(name: String!) on SCHEMA | SCALAR | OBJECT | FIELD_DEFINITION | ARGUMENT_DEFINITION | INTERFACE | UNION | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
+
 type Category {
     icon: String!
     id: Long!
@@ -42,6 +44,7 @@ type Entry {
     images: [Image!]!
     latestRelease: Release
     latestReleaseId: Long
+    layoutInfo: [LayoutInfo!]!
     name: String!
     releases: [Release!]!
     summary: String!
@@ -49,13 +52,32 @@ type Entry {
 }
 
 type Image {
+    description: String
+    height: Int!
     id: UUID!
     mimeType: String!
+    name: String!
+    size: Long!
+    width: Int!
+}
+
+type LayoutInfo {
+    deviceProvider: UUID!
+    deviceType: RGBDeviceType!
+    entry: Entry!
+    entryId: Long!
+    id: Long!
+    logicalLayout: String
+    model: String!
+    physicalLayout: KeyboardLayoutType
+    vendor: String!
 }
 
 type Mutation {
     addEntry(input: CreateEntryInput!): Entry
+    addLayoutInfo(input: CreateLayoutInfoInput!): LayoutInfo
     removeEntry(id: Long!): Entry
+    removeLayoutInfo(id: Long!): LayoutInfo!
     updateEntry(input: UpdateEntryInput!): Entry
 }
 
@@ -64,6 +86,8 @@ type Query {
     entries(order: [EntrySortInput!], search: String, skip: Int, take: Int, where: EntryFilterInput): EntriesCollectionSegment
     entry(id: Long!): Entry
     searchEntries(input: String!, order: [EntrySortInput!], type: EntryType, where: EntryFilterInput): [Entry!]!
+    searchKeyboardLayout(deviceProvider: UUID!, logicalLayout: String, model: String!, physicalLayout: KeyboardLayoutType!, vendor: String!): LayoutInfo
+    searchLayout(deviceProvider: UUID!, deviceType: RGBDeviceType!, model: String!, vendor: String!): LayoutInfo
     submittedEntries(order: [EntrySortInput!], where: EntryFilterInput): [Entry!]!
 }
 
@@ -93,6 +117,37 @@ enum EntryType {
     LAYOUT
     PLUGIN
     PROFILE
+}
+
+enum KeyboardLayoutType {
+    ABNT
+    ANSI
+    ISO
+    JIS
+    KS
+    UNKNOWN
+}
+
+enum RGBDeviceType {
+    ALL
+    COOLER
+    DRAM
+    FAN
+    GRAPHICS_CARD
+    HEADSET
+    HEADSET_STAND
+    KEYBOARD
+    KEYPAD
+    LED_CONTROLLER
+    LED_MATRIX
+    LED_STRIPE
+    MAINBOARD
+    MONITOR
+    MOUSE
+    MOUSEPAD
+    NONE
+    SPEAKER
+    UNKNOWN
 }
 
 enum SortEnumType {
@@ -131,6 +186,16 @@ input CreateEntryInput {
     tags: [String!]!
 }
 
+input CreateLayoutInfoInput {
+    deviceProvider: UUID!
+    deviceType: RGBDeviceType!
+    entryId: Long!
+    logicalLayout: String
+    model: String!
+    physicalLayout: KeyboardLayoutType
+    vendor: String!
+}
+
 input DateTimeOperationFilterInput {
     eq: DateTime
     gt: DateTime
@@ -161,6 +226,7 @@ input EntryFilterInput {
     images: ListFilterInputTypeOfImageFilterInput
     latestRelease: ReleaseFilterInput
     latestReleaseId: LongOperationFilterInput
+    layoutInfo: ListFilterInputTypeOfLayoutInfoFilterInput
     name: StringOperationFilterInput
     or: [EntryFilterInput!]
     releases: ListFilterInputTypeOfReleaseFilterInput
@@ -193,14 +259,53 @@ input EntryTypeOperationFilterInput {
 
 input ImageFilterInput {
     and: [ImageFilterInput!]
+    description: StringOperationFilterInput
+    height: IntOperationFilterInput
     id: UuidOperationFilterInput
     mimeType: StringOperationFilterInput
+    name: StringOperationFilterInput
     or: [ImageFilterInput!]
+    size: LongOperationFilterInput
+    width: IntOperationFilterInput
 }
 
 input ImageSortInput {
+    description: SortEnumType
+    height: SortEnumType
     id: SortEnumType
     mimeType: SortEnumType
+    name: SortEnumType
+    size: SortEnumType
+    width: SortEnumType
+}
+
+input IntOperationFilterInput {
+    eq: Int
+    gt: Int
+    gte: Int
+    in: [Int]
+    lt: Int
+    lte: Int
+    neq: Int
+    ngt: Int
+    ngte: Int
+    nin: [Int]
+    nlt: Int
+    nlte: Int
+}
+
+input LayoutInfoFilterInput {
+    and: [LayoutInfoFilterInput!]
+    deviceProvider: UuidOperationFilterInput
+    deviceType: RGBDeviceTypeOperationFilterInput
+    entry: EntryFilterInput
+    entryId: LongOperationFilterInput
+    id: LongOperationFilterInput
+    logicalLayout: StringOperationFilterInput
+    model: StringOperationFilterInput
+    or: [LayoutInfoFilterInput!]
+    physicalLayout: NullableOfKeyboardLayoutTypeOperationFilterInput
+    vendor: StringOperationFilterInput
 }
 
 input ListFilterInputTypeOfCategoryFilterInput {
@@ -215,6 +320,13 @@ input ListFilterInputTypeOfImageFilterInput {
     any: Boolean
     none: ImageFilterInput
     some: ImageFilterInput
+}
+
+input ListFilterInputTypeOfLayoutInfoFilterInput {
+    all: LayoutInfoFilterInput
+    any: Boolean
+    none: LayoutInfoFilterInput
+    some: LayoutInfoFilterInput
 }
 
 input ListFilterInputTypeOfReleaseFilterInput {
@@ -244,6 +356,20 @@ input LongOperationFilterInput {
     nin: [Long]
     nlt: Long
     nlte: Long
+}
+
+input NullableOfKeyboardLayoutTypeOperationFilterInput {
+    eq: KeyboardLayoutType
+    in: [KeyboardLayoutType]
+    neq: KeyboardLayoutType
+    nin: [KeyboardLayoutType]
+}
+
+input RGBDeviceTypeOperationFilterInput {
+    eq: RGBDeviceType
+    in: [RGBDeviceType!]
+    neq: RGBDeviceType
+    nin: [RGBDeviceType!]
 }
 
 input ReleaseFilterInput {

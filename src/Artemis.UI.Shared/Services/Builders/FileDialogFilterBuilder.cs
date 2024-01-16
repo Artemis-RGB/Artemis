@@ -2,6 +2,7 @@
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using SkiaSharp;
 
 namespace Artemis.UI.Shared.Services.Builders;
 
@@ -35,6 +36,29 @@ public class FileDialogFilterBuilder
         if (!_extensions.Contains(extension))
             _extensions.Add(extension);
         return this;
+    }
+
+    /// <summary>
+    ///     Adds all supported bitmap types to the filter. 
+    /// </summary>
+    public FileDialogFilterBuilder WithBitmaps()
+    {
+        // Formats from SKEncodedImageFormat
+        return WithExtension("astc")
+            .WithExtension("avif")
+            .WithExtension("bmp")
+            .WithExtension("dng")
+            .WithExtension("gif")
+            .WithExtension("heif")
+            .WithExtension("ico")
+            .WithExtension("jpg")
+            .WithExtension("jpeg")
+            .WithExtension("ktx")
+            .WithExtension("pkm")
+            .WithExtension("png")
+            .WithExtension("wbmp")
+            .WithExtension("webp")
+            .WithName("Bitmap image");
     }
 
     internal FilePickerFileType Build()

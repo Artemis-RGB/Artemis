@@ -47,6 +47,7 @@ public static class Constants
     ///     The full path to the Artemis logs folder
     /// </summary>
     public static readonly string LogsFolder = Path.Combine(DataFolder, "Logs");
+
     /// <summary>
     ///     The full path to the Artemis logs folder
     /// </summary>
@@ -61,6 +62,11 @@ public static class Constants
     ///     The full path to the Artemis user layouts folder
     /// </summary>
     public static readonly string LayoutsFolder = Path.Combine(DataFolder, "User Layouts");
+    
+    /// <summary>
+    ///     The full path to the Artemis user layouts folder
+    /// </summary>
+    public static readonly string WorkshopFolder = Path.Combine(DataFolder, "workshop");
 
     /// <summary>
     ///     The current API version for plugins
@@ -71,9 +77,9 @@ public static class Constants
     /// <summary>
     ///     The current version of the application
     /// </summary>
-    public static readonly string CurrentVersion = CoreAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion != "1.0.0"
-        ? CoreAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion
-        : "local";
+    public static readonly string CurrentVersion = CoreAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion.StartsWith("1.0.0")
+        ? "local"
+        : CoreAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
 
     /// <summary>
     ///     The plugin info used by core components of Artemis
@@ -151,8 +157,8 @@ public static class Constants
     public static ReadOnlyCollection<string> StartupArguments { get; set; } = null!;
 
     /// <summary>
-    ///     Gets the graphics context to be used for rendering by SkiaSharp. Can be set via
-    ///     <see cref="IRgbService.UpdateGraphicsContext" />.
+    ///     Gets the graphics context to be used for rendering by SkiaSharp.
     /// </summary>
     public static IManagedGraphicsContext? ManagedGraphicsContext { get; internal set; }
+    
 }

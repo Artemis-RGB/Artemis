@@ -8,14 +8,15 @@ using Artemis.UI.Shared.Routing;
 using ReactiveUI;
 using System;
 using System.Reactive.Linq;
+using PropertyChanged.SourceGenerator;
 
 namespace Artemis.UI.Screens.Workshop.Entries;
 
-public class EntriesViewModel : RoutableHostScreen<RoutableScreen>
+public partial class EntriesViewModel : RoutableHostScreen<RoutableScreen>
 {
     private readonly IRouter _router;
-    private RouteViewModel? _selectedTab;
     private ObservableAsPropertyHelper<bool>? _viewingDetails;
+    [Notify] private RouteViewModel? _selectedTab;
 
     public EntriesViewModel(IRouter router)
     {
@@ -43,12 +44,6 @@ public class EntriesViewModel : RoutableHostScreen<RoutableScreen>
 
     public bool ViewingDetails => _viewingDetails?.Value ?? false;
     public ObservableCollection<RouteViewModel> Tabs { get; }
-
-    public RouteViewModel? SelectedTab
-    {
-        get => _selectedTab;
-        set => RaiseAndSetIfChanged(ref _selectedTab, value);
-    }
 
     public override async Task OnNavigating(NavigationArguments args, CancellationToken cancellationToken)
     {

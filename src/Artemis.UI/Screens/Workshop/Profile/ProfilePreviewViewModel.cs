@@ -6,15 +6,16 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.Profile;
 
-public class ProfilePreviewViewModel : ActivatableViewModelBase
+public partial class ProfilePreviewViewModel : ActivatableViewModelBase
 {
     private readonly IProfileService _profileService;
     private readonly IWindowService _windowService;
-    private ProfileConfiguration? _profileConfiguration;
+    [Notify] private ProfileConfiguration? _profileConfiguration;
 
     public ProfilePreviewViewModel(IProfileService profileService, IDeviceService deviceService, IWindowService windowService)
     {
@@ -28,12 +29,6 @@ public class ProfilePreviewViewModel : ActivatableViewModelBase
     }
 
     public ObservableCollection<ArtemisDevice> Devices { get; }
-
-    public ProfileConfiguration? ProfileConfiguration
-    {
-        get => _profileConfiguration;
-        set => RaiseAndSetIfChanged(ref _profileConfiguration, value);
-    }
 
     private void Update()
     {

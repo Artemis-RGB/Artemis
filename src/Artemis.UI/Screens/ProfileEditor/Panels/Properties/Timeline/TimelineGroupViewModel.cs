@@ -5,14 +5,15 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using DynamicData;
 using DynamicData.Binding;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 
-public class TimelineGroupViewModel : ActivatableViewModelBase
+public partial class TimelineGroupViewModel : ActivatableViewModelBase
 {
-    private ReadOnlyObservableCollection<double> _keyframePositions;
     private int _pixelsPerSecond;
+    [Notify] private ReadOnlyObservableCollection<double> _keyframePositions;
 
     public TimelineGroupViewModel(PropertyGroupViewModel propertyGroupViewModel, IProfileEditorService profileEditorService)
     {
@@ -39,10 +40,4 @@ public class TimelineGroupViewModel : ActivatableViewModelBase
     public PropertyGroupViewModel PropertyGroupViewModel { get; }
 
     public ObservableCollection<PropertyViewModelBase>? Children => PropertyGroupViewModel.IsExpanded ? PropertyGroupViewModel.Children : null;
-
-    public ReadOnlyObservableCollection<double> KeyframePositions
-    {
-        get => _keyframePositions;
-        set => RaiseAndSetIfChanged(ref _keyframePositions, value);
-    }
 }

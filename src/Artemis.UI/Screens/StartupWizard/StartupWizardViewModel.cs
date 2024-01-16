@@ -13,21 +13,22 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Shared.Services;
 using DryIoc;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.StartupWizard;
 
-public class StartupWizardViewModel : DialogViewModelBase<bool>
+public partial class StartupWizardViewModel : DialogViewModelBase<bool>
 {
     private readonly IAutoRunProvider? _autoRunProvider;
     private readonly IProtocolProvider? _protocolProvider;
     private readonly ISettingsService _settingsService;
     private readonly IWindowService _windowService;
     private readonly IDeviceService _deviceService;
-    private int _currentStep;
-    private bool _showContinue;
-    private bool _showFinish;
-    private bool _showGoBack;
+    [Notify] private int _currentStep;
+    [Notify] private bool _showContinue;
+    [Notify] private bool _showFinish;
+    [Notify] private bool _showGoBack;
 
     public StartupWizardViewModel(IContainer container,
         ISettingsService settingsService,
@@ -90,31 +91,7 @@ public class StartupWizardViewModel : DialogViewModelBase<bool>
     public PluginSetting<bool> UIShowOnStartup => _settingsService.GetSetting("UI.ShowOnStartup", true);
     public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.Updating.AutoCheck", true);
     public PluginSetting<bool> UIAutoUpdate => _settingsService.GetSetting("UI.Updating.AutoInstall", true);
-
-    public int CurrentStep
-    {
-        get => _currentStep;
-        set => RaiseAndSetIfChanged(ref _currentStep, value);
-    }
-
-    public bool ShowContinue
-    {
-        get => _showContinue;
-        set => RaiseAndSetIfChanged(ref _showContinue, value);
-    }
-
-    public bool ShowGoBack
-    {
-        get => _showGoBack;
-        set => RaiseAndSetIfChanged(ref _showGoBack, value);
-    }
-
-    public bool ShowFinish
-    {
-        get => _showFinish;
-        set => RaiseAndSetIfChanged(ref _showFinish, value);
-    }
-
+    
     private void ExecuteGoBack()
     {
         if (CurrentStep > 1)

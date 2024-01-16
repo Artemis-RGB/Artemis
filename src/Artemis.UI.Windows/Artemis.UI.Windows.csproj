@@ -1,6 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\Artemis.props" />
-    
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net7.0-windows10.0.17763.0</TargetFramework>
@@ -23,18 +21,13 @@
         </None>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
-        <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
-        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
-        <PackageReference Include="Avalonia.Win32" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="Avalonia.Win32" Version="11.0.6" />
         <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
         <PackageReference Include="Microsoft.Win32" Version="2.0.1" />
+        <!-- Note: Do NOT upgrade this compatibility package to 8.X before updating to net8, it WILL break -->
         <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.5" />
-        <PackageReference Include="RawInput.Sharp" Version="0.1.1" />
-        <PackageReference Include="ReactiveUI" Version="19.4.1" />
-        <PackageReference Include="SkiaSharp.Vulkan.SharpVk" Version="$(SkiaSharpVersion)" />
+        <PackageReference Include="RawInput.Sharp" Version="0.1.3" />
+        <PackageReference Include="SkiaSharp.Vulkan.SharpVk" Version="2.88.7" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />

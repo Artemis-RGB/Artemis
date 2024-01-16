@@ -1,0 +1,27 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             xmlns:details="clr-namespace:Artemis.UI.Screens.Workshop.Entries.Details"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Entries.Details.EntryImageView"
+             x:DataType="details:EntryImageViewModel">
+    <Border Classes="card" Padding="0">
+        <Grid RowDefinitions="Auto,*">
+            <Border Grid.Row="0" ClipToBounds="True" CornerRadius="4 4 0 0" Padding="0">
+                <Image asyncImageLoader:ImageLoader.Source="{CompiledBinding ThumbnailUrl}" Stretch="Uniform" HorizontalAlignment="Stretch" MaxHeight="250" />
+            </Border>
+            <Border Grid.Row="1" ClipToBounds="True" CornerRadius="0 0 4 4" Background="{DynamicResource ControlFillColorDefaultBrush}">
+                <StackPanel Margin="16">
+                    <TextBlock Text="{CompiledBinding Image.Name}" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Classes="subtitle"
+                               Text="{CompiledBinding Image.Description}"
+                               TextWrapping="Wrap"
+                               IsVisible="{CompiledBinding Image.Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+            </Border>
+
+        </Grid>
+    </Border>
+</UserControl>

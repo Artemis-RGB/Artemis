@@ -4,7 +4,7 @@ using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop.Services;
 
-namespace Artemis.WebClient.Workshop.Handlers.InstallationHandlers.Implementations;
+namespace Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
 
 public class ProfileEntryInstallationHandler : IEntryInstallationHandler
 {
@@ -19,7 +19,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         _workshopService = workshopService;
     }
 
-    public async Task<EntryInstallResult> InstallAsync(IGetEntryById_Entry entry, long releaseId, Progress<StreamProgress> progress, CancellationToken cancellationToken)
+    public async Task<EntryInstallResult> InstallAsync(IEntryDetails entry, IRelease release, Progress<StreamProgress> progress, CancellationToken cancellationToken)
     {
         using MemoryStream stream = new();
 
@@ -27,7 +27,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         try
         {
             HttpClient client = _httpClientFactory.CreateClient(WorkshopConstants.WORKSHOP_CLIENT_NAME);
-            await client.DownloadDataAsync($"releases/download/{releaseId}", stream, progress, cancellationToken);
+            await client.DownloadDataAsync($"releases/download/{release}", stream, progress, cancellationToken);
         }
         catch (Exception e)
         {
@@ -36,36 +36,36 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
 
         // Find existing installation to potentially replace the profile
         InstalledEntry? installedEntry = _workshopService.GetInstalledEntry(entry);
-        if (installedEntry != null && Guid.TryParse(installedEntry.LocalReference, out Guid profileId))
+        if (installedEntry != null && installedEntry.TryGetMetadata("ProfileId", out Guid profileId))
         {
             ProfileConfiguration? existing = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(c => c.ProfileId == profileId);
             if (existing != null)
             {
                 ProfileConfiguration overwritten = await _profileService.OverwriteProfile(stream, existing);
-                installedEntry.LocalReference = overwritten.ProfileId.ToString();
+                installedEntry.SetMetadata("ProfileId", overwritten.ProfileId);
 
                 // Update the release and return the profile configuration
-                UpdateRelease(releaseId, installedEntry);
-                return EntryInstallResult.FromSuccess(overwritten);
+                UpdateRelease(installedEntry, release);
+                return EntryInstallResult.FromSuccess(installedEntry);
             }
         }
 
         // Ensure there is an installed entry
-        installedEntry ??= _workshopService.CreateInstalledEntry(entry);
+        installedEntry ??= new InstalledEntry(entry, release);
 
         // Add the profile as a fresh import
         ProfileCategory category = _profileService.ProfileCategories.FirstOrDefault(c => c.Name == "Workshop") ?? _profileService.CreateProfileCategory("Workshop", true);
         ProfileConfiguration imported = await _profileService.ImportProfile(stream, category, true, true, null);
-        installedEntry.LocalReference = imported.ProfileId.ToString();
-
+        installedEntry.SetMetadata("ProfileId", imported.ProfileId);
+        
         // Update the release and return the profile configuration
-        UpdateRelease(releaseId, installedEntry);
-        return EntryInstallResult.FromSuccess(imported);
+        UpdateRelease(installedEntry, release);
+        return EntryInstallResult.FromSuccess(installedEntry);
     }
 
     public async Task<EntryUninstallResult> UninstallAsync(InstalledEntry installedEntry, CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(installedEntry.LocalReference, out Guid profileId))
+        if (!installedEntry.TryGetMetadata("ProfileId", out Guid profileId))
             return EntryUninstallResult.FromFailure("Local reference does not contain a GUID");
 
         return await Task.Run(() =>
@@ -89,11 +89,9 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         }, cancellationToken);
     }
 
-    private void UpdateRelease(long releaseId, InstalledEntry installedEntry)
+    private void UpdateRelease(InstalledEntry installedEntry, IRelease release)
     {
-        installedEntry.ReleaseId = releaseId;
-        installedEntry.ReleaseVersion = "TODO";
-        installedEntry.InstalledAt = DateTimeOffset.UtcNow;
+        installedEntry.ApplyRelease(release);
         _workshopService.SaveInstalledEntry(installedEntry);
     }
 }

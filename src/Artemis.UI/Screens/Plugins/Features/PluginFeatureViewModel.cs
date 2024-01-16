@@ -16,16 +16,17 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Avalonia.Threading;
 using Material.Icons;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Plugins.Features;
 
-public class PluginFeatureViewModel : ActivatableViewModelBase
+public partial class PluginFeatureViewModel : ActivatableViewModelBase
 {
     private readonly ICoreService _coreService;
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IWindowService _windowService;
-    private bool _enabling;
+    [Notify] private bool _enabling;
 
     public PluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo,
         bool showShield,
@@ -73,15 +74,8 @@ public class PluginFeatureViewModel : ActivatableViewModelBase
 
     public PluginFeatureInfo FeatureInfo { get; }
     public Exception? LoadException => FeatureInfo.LoadException;
-
     public bool ShowShield { get; }
-
-    public bool Enabling
-    {
-        get => _enabling;
-        set => RaiseAndSetIfChanged(ref _enabling, value);
-    }
-
+    
     public bool IsEnabled
     {
         get => FeatureInfo.AlwaysEnabled || (FeatureInfo.Instance != null && FeatureInfo.Instance.IsEnabled);

@@ -11,20 +11,20 @@ using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Avalonia;
 using DynamicData;
 using DynamicData.Binding;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
-public class NodePickerViewModel : ActivatableViewModelBase
+public partial class NodePickerViewModel : ActivatableViewModelBase
 {
     private readonly INodeEditorService _nodeEditorService;
     private readonly NodeScript _nodeScript;
-
-    private bool _isVisible;
-    private Point _position;
-    private string? _searchText;
-    private object? _selectedNode;
-    private IPin? _targetPin;
+    [Notify] private bool _isVisible;
+    [Notify] private Point _position;
+    [Notify] private string? _searchText;
+    [Notify] private object? _selectedNode;
+    [Notify] private IPin? _targetPin;
 
     public NodePickerViewModel(NodeScript nodeScript, INodeService nodeService, INodeEditorService nodeEditorService)
     {
@@ -67,37 +67,7 @@ public class NodePickerViewModel : ActivatableViewModelBase
     }
 
     public ReadOnlyObservableCollection<NodeCategoryViewModel> Categories { get; }
-
-    public bool IsVisible
-    {
-        get => _isVisible;
-        set => RaiseAndSetIfChanged(ref _isVisible, value);
-    }
-
-    public Point Position
-    {
-        get => _position;
-        set => RaiseAndSetIfChanged(ref _position, value);
-    }
-
-    public string? SearchText
-    {
-        get => _searchText;
-        set => RaiseAndSetIfChanged(ref _searchText, value);
-    }
-
-    public IPin? TargetPin
-    {
-        get => _targetPin;
-        set => RaiseAndSetIfChanged(ref _targetPin, value);
-    }
-
-    public object? SelectedNode
-    {
-        get => _selectedNode;
-        set => RaiseAndSetIfChanged(ref _selectedNode, value);
-    }
-
+    
     public void CreateNode(NodeData data)
     {
         INode node = data.CreateNode(_nodeScript, null);

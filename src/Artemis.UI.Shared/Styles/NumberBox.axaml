@@ -27,22 +27,7 @@
         <Setter Property="Maximum" Value="{x:Static system:Double.MaxValue}"></Setter>
         <Setter Property="Minimum" Value="{x:Static system:Double.MinValue}"></Setter>
     </Style>
-    <Style Selector="controls|NumberBox /template/ TextBox.NumberBoxTextBoxStyle /template/ TextBlock#PART_Prefix">
-        <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundDisabled}"></Setter>
-        <Setter Property="Margin" Value="-4 0 -12 0"></Setter>
-    </Style>
-    <Style Selector="controls|NumberBox /template/ TextBox.NumberBoxTextBoxStyle /template/ TextBlock#PART_Suffix">
-        <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundDisabled}"></Setter>
-        <Setter Property="Margin" Value="-12 0 0 0"></Setter>
-    </Style>
-
-    <Style Selector="controls|NumberBox.condensed /template/ TextBox.NumberBoxTextBoxStyle /template/ TextBlock#PART_Prefix">
-        <Setter Property="Margin" Value="0 0 -4 0"></Setter>
-    </Style>
-    <Style Selector="controls|NumberBox.condensed /template/ TextBox.NumberBoxTextBoxStyle /template/ TextBlock#PART_Suffix">
-        <Setter Property="Margin" Value="-4 0 0 0"></Setter>
-    </Style>
-    <Style Selector="controls|NumberBox /template/ TextBox.NumberBoxTextBoxStyle">
+    <Style Selector="controls|NumberBox /template/ TextBox#InputBox">
         <Setter Property="attachedProperties:TextBoxAssist.PrefixText" Value="{TemplateBinding attachedProperties:NumberBoxAssist.PrefixText}"></Setter>
         <Setter Property="attachedProperties:TextBoxAssist.SuffixText" Value="{TemplateBinding attachedProperties:NumberBoxAssist.SuffixText}"></Setter>
     </Style>

@@ -21,11 +21,12 @@ using Avalonia;
 using Avalonia.Input;
 using DynamicData;
 using DynamicData.Binding;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
-public class NodeScriptViewModel : ActivatableViewModelBase
+public partial class NodeScriptViewModel : ActivatableViewModelBase
 {
     public const string CLIPBOARD_DATA_FORMAT = "Artemis.Nodes";
     
@@ -34,11 +35,10 @@ public class NodeScriptViewModel : ActivatableViewModelBase
     private readonly SourceList<NodeViewModel> _nodeViewModels;
     private readonly INodeVmFactory _nodeVmFactory;
     private readonly Subject<Point> _requestedPickerPositionSubject;
-
-    private DragCableViewModel? _dragViewModel;
     private List<NodeViewModel>? _initialNodeSelection;
-    private Matrix _panMatrix;
-    private Point _pastePosition;
+    [Notify] private DragCableViewModel? _dragViewModel;
+    [Notify] private Matrix _panMatrix;
+    [Notify] private Point _pastePosition;
 
     public NodeScriptViewModel(NodeScript nodeScript, bool isPreview, INodeVmFactory nodeVmFactory, INodeService nodeService, INodeEditorService nodeEditorService)
     {
@@ -111,25 +111,7 @@ public class NodeScriptViewModel : ActivatableViewModelBase
     public ReactiveCommand<Unit, Unit> DuplicateSelected { get; }
     public ReactiveCommand<Unit, Unit> CopySelected { get; }
     public ReactiveCommand<Unit, Unit> PasteSelected { get; }
-
-    public DragCableViewModel? DragViewModel
-    {
-        get => _dragViewModel;
-        set => RaiseAndSetIfChanged(ref _dragViewModel, value);
-    }
-
-    public Matrix PanMatrix
-    {
-        get => _panMatrix;
-        set => RaiseAndSetIfChanged(ref _panMatrix, value);
-    }
-
-    public Point PastePosition
-    {
-        get => _pastePosition;
-        set => RaiseAndSetIfChanged(ref _pastePosition, value);
-    }
-
+    
     public void DeleteSelectedNodes()
     {
         List<NodeViewModel> toRemove = NodeViewModels.Where(vm => vm.IsSelected && !vm.Node.IsDefaultNode && !vm.Node.IsExitNode).ToList();

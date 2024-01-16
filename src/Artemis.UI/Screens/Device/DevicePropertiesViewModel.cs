@@ -6,16 +6,17 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Shared;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using RGB.NET.Core;
 using SkiaSharp;
 
 namespace Artemis.UI.Screens.Device;
 
-public class DevicePropertiesViewModel : DialogViewModelBase<object>
+public partial class DevicePropertiesViewModel : DialogViewModelBase<object>
 {
     private readonly IDeviceVmFactory _deviceVmFactory;
-    private ArtemisDevice _device;
+    [Notify] private ArtemisDevice _device;
 
     public DevicePropertiesViewModel(ArtemisDevice device, IRenderService renderService, IDeviceService deviceService, IDeviceVmFactory deviceVmFactory)
     {
@@ -40,12 +41,6 @@ public class DevicePropertiesViewModel : DialogViewModelBase<object>
         });
 
         ClearSelectedLeds = ReactiveCommand.Create(ExecuteClearSelectedLeds);
-    }
-
-    public ArtemisDevice Device
-    {
-        get => _device;
-        set => RaiseAndSetIfChanged(ref _device, value);
     }
 
     public ObservableCollection<ArtemisLed> SelectedLeds { get; }

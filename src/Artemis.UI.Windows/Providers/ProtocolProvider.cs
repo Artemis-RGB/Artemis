@@ -9,17 +9,19 @@ namespace Artemis.UI.Windows.Providers;
 public class ProtocolProvider : IProtocolProvider
 {
     /// <inheritdoc />
-    public async Task AssociateWithProtocol(string protocol)
+    public Task AssociateWithProtocol(string protocol)
     {
         string key = $"HKEY_CURRENT_USER\\Software\\Classes\\{protocol}";
         Registry.SetValue($"{key}", null, "URL:artemis protocol");
         Registry.SetValue($"{key}", "URL Protocol", "");
         Registry.SetValue($"{key}\\DefaultIcon", null, $"\"{Constants.ExecutablePath}\",1");
         Registry.SetValue($"{key}\\shell\\open\\command", null, $"\"{Constants.ExecutablePath}\", \"--route=%1\"");
+        
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
-    public async Task DisassociateWithProtocol(string protocol)
+    public Task DisassociateWithProtocol(string protocol)
     {
         try
         {
@@ -30,5 +32,7 @@ public class ProtocolProvider : IProtocolProvider
         {
             // Ignore errors (which means that the protocol wasn't associated before)
         }
+        
+        return Task.CompletedTask;
     }
 }

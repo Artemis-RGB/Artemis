@@ -44,7 +44,7 @@ public class EnumEqualsNodeCustomViewModel : CustomNodeViewModel
 
     public ObservableCollection<EnumValueItem> EnumValues { get; } = new();
 
-    public EnumValueItem CurrentValue
+    public EnumValueItem? CurrentValue
     {
         get => EnumValues.FirstOrDefault(v => v.Value == _node.Storage);
         set

@@ -19,11 +19,12 @@ using Artemis.UI.Shared.Services.Builders;
 using DynamicData;
 using DynamicData.Binding;
 using Newtonsoft.Json;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
 
-public class SidebarCategoryViewModel : ActivatableViewModelBase
+public partial class SidebarCategoryViewModel : ActivatableViewModelBase
 {
     private readonly IProfileService _profileService;
     private readonly IRouter _router;
@@ -31,7 +32,7 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
     private readonly IWindowService _windowService;
     private ObservableAsPropertyHelper<bool>? _isCollapsed;
     private ObservableAsPropertyHelper<bool>? _isSuspended;
-    private SidebarProfileConfigurationViewModel? _selectedProfileConfiguration;
+    [Notify] private SidebarProfileConfigurationViewModel? _selectedProfileConfiguration;
 
     public SidebarCategoryViewModel(ProfileCategory profileCategory, IProfileService profileService, IWindowService windowService, ISidebarVmFactory vmFactory, IRouter router)
     {
@@ -102,16 +103,9 @@ public class SidebarCategoryViewModel : ActivatableViewModelBase
 
     public ProfileCategory ProfileCategory { get; }
     public ReadOnlyObservableCollection<SidebarProfileConfigurationViewModel> ProfileConfigurations { get; }
-
     public bool IsCollapsed => _isCollapsed?.Value ?? false;
     public bool IsSuspended => _isSuspended?.Value ?? false;
-
-    public SidebarProfileConfigurationViewModel? SelectedProfileConfiguration
-    {
-        get => _selectedProfileConfiguration;
-        set => RaiseAndSetIfChanged(ref _selectedProfileConfiguration, value);
-    }
-
+    
     public void AddProfileConfiguration(ProfileConfiguration profileConfiguration, int? index)
     {
         ProfileCategory oldCategory = profileConfiguration.Category;

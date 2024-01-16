@@ -10,8 +10,7 @@ query GetEntries($search: String $filter: EntryFilterInput $skip: Int $take: Int
             downloads
             createdAt            
             categories {
-                name
-                icon
+                ...category
             }
         }
     }

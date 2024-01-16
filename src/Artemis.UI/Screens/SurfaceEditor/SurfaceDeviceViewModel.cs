@@ -10,6 +10,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Screens.Device;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using RGB.NET.Core;
 using SkiaSharp;
@@ -17,16 +18,16 @@ using Point = Avalonia.Point;
 
 namespace Artemis.UI.Screens.SurfaceEditor;
 
-public class SurfaceDeviceViewModel : ActivatableViewModelBase
+public partial class SurfaceDeviceViewModel : ActivatableViewModelBase
 {
     private readonly IDeviceService _deviceService;
     private readonly ISettingsService _settingsService;
     private readonly IWindowService _windowService;
     private double _dragOffsetX;
     private double _dragOffsetY;
-    private bool _isSelected;
-    private float _x;
-    private float _y;
+    [Notify] private bool _isSelected;
+    [Notify] private float _x;
+    [Notify] private float _y;
 
     public SurfaceDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel, IDeviceService deviceService, ISettingsService settingsService, IWindowService windowService)
     {
@@ -48,28 +49,9 @@ public class SurfaceDeviceViewModel : ActivatableViewModelBase
     }
 
     public ReactiveCommand<Unit, Unit> DetectInput { get; }
-
     public ArtemisDevice Device { get; }
     public SurfaceEditorViewModel SurfaceEditorViewModel { get; }
     public bool CanDetectInput => Device.DeviceType == RGBDeviceType.Keyboard || Device.DeviceType == RGBDeviceType.Mouse;
-
-    public bool IsSelected
-    {
-        get => _isSelected;
-        set => RaiseAndSetIfChanged(ref _isSelected, value);
-    }
-
-    public float X
-    {
-        get => _x;
-        set => RaiseAndSetIfChanged(ref _x, value);
-    }
-
-    public float Y
-    {
-        get => _y;
-        set => RaiseAndSetIfChanged(ref _y, value);
-    }
 
     public void StartMouseDrag(Point mouseStartPosition)
     {

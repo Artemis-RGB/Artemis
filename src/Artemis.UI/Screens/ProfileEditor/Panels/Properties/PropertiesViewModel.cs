@@ -18,11 +18,12 @@ using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties;
 
-public class PropertiesViewModel : ActivatableViewModelBase
+public partial class PropertiesViewModel : ActivatableViewModelBase
 {
     private readonly Dictionary<LayerPropertyGroup, PropertyGroupViewModel> _cachedPropertyViewModels;
     private readonly IDataBindingVmFactory _dataBindingVmFactory;
@@ -32,11 +33,11 @@ public class PropertiesViewModel : ActivatableViewModelBase
     private readonly ISettingsService _settingsService;
     private readonly IWindowService _windowService;
     private DataBindingViewModel? _backgroundDataBindingViewModel;
-    private DataBindingViewModel? _dataBindingViewModel;
     private ObservableAsPropertyHelper<ILayerProperty?>? _layerProperty;
     private ObservableAsPropertyHelper<int>? _pixelsPerSecond;
     private ObservableAsPropertyHelper<RenderProfileElement?>? _profileElement;
     private ObservableAsPropertyHelper<bool>? _suspendedEditing;
+    [Notify] private DataBindingViewModel? _dataBindingViewModel;
 
     /// <inheritdoc />
     public PropertiesViewModel(IProfileEditorService profileEditorService,
@@ -103,13 +104,7 @@ public class PropertiesViewModel : ActivatableViewModelBase
     public PlaybackViewModel PlaybackViewModel { get; }
     public TimelineViewModel TimelineViewModel { get; }
     public ReactiveCommand<Unit, Unit> AddEffect { get; }
-
-    public DataBindingViewModel? DataBindingViewModel
-    {
-        get => _dataBindingViewModel;
-        set => RaiseAndSetIfChanged(ref _dataBindingViewModel, value);
-    }
-
+    
     public RenderProfileElement? ProfileElement => _profileElement?.Value;
     public ILayerProperty? LayerProperty => _layerProperty?.Value;
     public bool SuspendedEditing => _suspendedEditing?.Value ?? false;

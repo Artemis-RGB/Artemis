@@ -1,9 +1,7 @@
 ﻿using System;
-using System.IO;
 using Artemis.Core;
 using Avalonia;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using RGB.NET.Core;
 using Color = Avalonia.Media.Color;
 using Point = Avalonia.Point;
@@ -30,27 +28,7 @@ internal class DeviceVisualizerLed
 
     public ArtemisLed Led { get; }
     public Geometry? DisplayGeometry { get; private set; }
-
-    public void DrawBitmap(DrawingContext drawingContext, double scale)
-    {
-        if (Led.Layout?.Image == null || !File.Exists(Led.Layout.Image.LocalPath))
-            return;
-
-        try
-        {
-            using Bitmap bitmap = new(Led.Layout.Image.LocalPath);
-            using Bitmap scaledBitmap = bitmap.CreateScaledBitmap(new PixelSize((Led.RgbLed.Size.Width * scale).RoundToInt(), (Led.RgbLed.Size.Height * scale).RoundToInt()));
-            drawingContext.DrawImage(
-                scaledBitmap,
-                new Rect(Led.RgbLed.Location.X * scale, Led.RgbLed.Location.Y * scale, scaledBitmap.Size.Width, scaledBitmap.Size.Height)
-            );
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
+    
     public void RenderGeometry(DrawingContext drawingContext)
     {
         if (DisplayGeometry == null)

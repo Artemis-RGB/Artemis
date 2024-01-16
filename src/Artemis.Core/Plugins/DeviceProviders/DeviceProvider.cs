@@ -62,7 +62,7 @@ public abstract class DeviceProvider : PluginFeature
             device.DeviceType.ToString(),
             GetDeviceLayoutName(device)
         );
-        return new ArtemisLayout(filePath, LayoutSource.Plugin);
+        return new ArtemisLayout(filePath);
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ public abstract class DeviceProvider : PluginFeature
             device.DeviceType.ToString(),
             GetDeviceLayoutName(device)
         );
-        return new ArtemisLayout(filePath, LayoutSource.User);
+        return new ArtemisLayout(filePath);
     }
 
     /// <summary>

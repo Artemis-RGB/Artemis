@@ -4,7 +4,7 @@
         <StackPanel>
             <Border Classes="card" Margin="20">
                 <TextBlock>I'm in a panel yo!</TextBlock>
-            </Border>
+            </Border>  
             <Border Classes="card" Margin="20">
                 <StackPanel>
                     <TextBlock>I'm in a panel yo!</TextBlock>

@@ -14,20 +14,21 @@ using Artemis.UI.Shared.Services;
 using Avalonia.Threading;
 using FluentAvalonia.Core;
 using FluentAvalonia.UI.Controls;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using ContentDialogButton = Artemis.UI.Shared.Services.Builders.ContentDialogButton;
 
 namespace Artemis.UI.Screens.Plugins;
 
-public class PluginPrerequisitesInstallDialogViewModel : ContentDialogViewModelBase
+public partial class PluginPrerequisitesInstallDialogViewModel : ContentDialogViewModelBase
 {
-    private PluginPrerequisiteViewModel? _activePrerequisite;
-    private bool _canInstall;
-    private bool _showFailed;
-    private bool _showInstall = true;
-    private bool _showIntro = true;
-    private bool _showProgress;
     private CancellationTokenSource? _tokenSource;
+    [Notify] private PluginPrerequisiteViewModel? _activePrerequisite;
+    [Notify] private bool _canInstall;
+    [Notify] private bool _showFailed;
+    [Notify] private bool _showInstall = true;
+    [Notify] private bool _showIntro = true;
+    [Notify] private bool _showProgress;
 
     public PluginPrerequisitesInstallDialogViewModel(List<IPrerequisitesSubject> subjects, IPrerequisitesVmFactory prerequisitesVmFactory)
     {
@@ -50,43 +51,7 @@ public class PluginPrerequisitesInstallDialogViewModel : ContentDialogViewModelB
 
     public ReactiveCommand<Unit, Unit> Install { get; }
     public ObservableCollection<PluginPrerequisiteViewModel> Prerequisites { get; }
-
-    public PluginPrerequisiteViewModel? ActivePrerequisite
-    {
-        get => _activePrerequisite;
-        set => RaiseAndSetIfChanged(ref _activePrerequisite, value);
-    }
-
-    public bool ShowProgress
-    {
-        get => _showProgress;
-        set => RaiseAndSetIfChanged(ref _showProgress, value);
-    }
-
-    public bool ShowIntro
-    {
-        get => _showIntro;
-        set => RaiseAndSetIfChanged(ref _showIntro, value);
-    }
-
-    public bool ShowFailed
-    {
-        get => _showFailed;
-        set => RaiseAndSetIfChanged(ref _showFailed, value);
-    }
-
-    public bool ShowInstall
-    {
-        get => _showInstall;
-        set => RaiseAndSetIfChanged(ref _showInstall, value);
-    }
-
-    public bool CanInstall
-    {
-        get => _canInstall;
-        set => RaiseAndSetIfChanged(ref _canInstall, value);
-    }
-
+    
     public static async Task Show(IWindowService windowService, List<IPrerequisitesSubject> subjects)
     {
         await windowService.CreateContentDialog()

@@ -15,16 +15,17 @@ using Artemis.UI.Shared.Services.Builders;
 using Avalonia.ReactiveUI;
 using DynamicData;
 using DynamicData.Binding;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Settings;
 
-public class PluginsTabViewModel : RoutableScreen
+public partial class PluginsTabViewModel : RoutableScreen
 {
     private readonly INotificationService _notificationService;
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IWindowService _windowService;
-    private string? _searchPluginInput;
+    [Notify] private string? _searchPluginInput;
 
     public PluginsTabViewModel(IPluginManagementService pluginManagementService, INotificationService notificationService, IWindowService windowService, ISettingsVmFactory settingsVmFactory)
     {
@@ -62,13 +63,7 @@ public class PluginsTabViewModel : RoutableScreen
 
     public ReadOnlyObservableCollection<PluginSettingsViewModel> Plugins { get; }
     public ReactiveCommand<Unit, Unit> ImportPlugin { get; }
-
-    public string? SearchPluginInput
-    {
-        get => _searchPluginInput;
-        set => RaiseAndSetIfChanged(ref _searchPluginInput, value);
-    }
-
+    
     public void OpenUrl(string url)
     {
         Utilities.OpenUrl(url);

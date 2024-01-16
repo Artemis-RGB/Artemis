@@ -13,12 +13,13 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Avalonia;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using SkiaSharp;
 
 namespace Artemis.UI.Screens.SurfaceEditor;
 
-public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
+public partial class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
 {
     private readonly IDeviceService _deviceService;
     private readonly IRenderService _renderService;
@@ -26,11 +27,11 @@ public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
     private readonly ISettingsService _settingsService;
     private readonly ISurfaceVmFactory _surfaceVmFactory;
     private readonly IWindowService _windowService;
-    private bool _colorDevices;
-    private bool _colorFirstLedOnly;
     private List<SurfaceDeviceViewModel>? _initialSelection;
     private double _overlayOpacity;
     private bool _saving;
+    [Notify] private bool _colorDevices;
+    [Notify] private bool _colorFirstLedOnly;
 
     public SurfaceEditorViewModel(ICoreService coreService,
         ISurfaceVmFactory surfaceVmFactory,
@@ -49,7 +50,7 @@ public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
 
         DisplayName = "Surface Editor";
         SurfaceDeviceViewModels = new ObservableCollection<SurfaceDeviceViewModel>(deviceService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => surfaceVmFactory.SurfaceDeviceViewModel(d, this)));
-        ListDeviceViewModels = new ObservableCollection<ListDeviceViewModel>(deviceService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => surfaceVmFactory.ListDeviceViewModel(d, this)));
+        ListDeviceViewModels = new ObservableCollection<ListDeviceViewModel>(deviceService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => surfaceVmFactory.ListDeviceViewModel(d)));
 
         AutoArrange = ReactiveCommand.CreateFromTask(ExecuteAutoArrange);
         IdentifyDevice = ReactiveCommand.Create<ArtemisDevice>(ExecuteIdentifyDevice);
@@ -74,19 +75,7 @@ public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
     }
     
     public ViewModelBase? TitleBarViewModel => null;
-
-    public bool ColorDevices
-    {
-        get => _colorDevices;
-        set => RaiseAndSetIfChanged(ref _colorDevices, value);
-    }
-
-    public bool ColorFirstLedOnly
-    {
-        get => _colorFirstLedOnly;
-        set => RaiseAndSetIfChanged(ref _colorFirstLedOnly, value);
-    }
-
+    
     public ObservableCollection<SurfaceDeviceViewModel> SurfaceDeviceViewModels { get; }
     public ObservableCollection<ListDeviceViewModel> ListDeviceViewModels { get; }
 
@@ -174,7 +163,7 @@ public class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewModel
             return;
 
         SurfaceDeviceViewModels.Add(_surfaceVmFactory.SurfaceDeviceViewModel(e.Device, this));
-        ListDeviceViewModels.Add(_surfaceVmFactory.ListDeviceViewModel(e.Device, this));
+        ListDeviceViewModels.Add(_surfaceVmFactory.ListDeviceViewModel(e.Device));
         SurfaceDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
         ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
     }

@@ -4,14 +4,15 @@ using System.Reactive.Linq;
 using Artemis.Core.LayerBrushes;
 using Artemis.UI.Shared;
 using DynamicData;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Tree.Dialogs;
 
-public class LayerBrushPresetViewModel : ContentDialogViewModelBase
+public partial class LayerBrushPresetViewModel : ContentDialogViewModelBase
 {
     private readonly BaseLayerBrush _layerBrush;
-    private string? _searchText;
+    [Notify] private string? _searchText;
 
     public LayerBrushPresetViewModel(BaseLayerBrush layerBrush)
     {
@@ -30,12 +31,6 @@ public class LayerBrushPresetViewModel : ContentDialogViewModelBase
     }
 
     public ReadOnlyObservableCollection<ILayerBrushPreset> Presets { get; }
-
-    public string? SearchText
-    {
-        get => _searchText;
-        set => RaiseAndSetIfChanged(ref _searchText, value);
-    }
 
     public void SelectPreset(ILayerBrushPreset preset)
     {

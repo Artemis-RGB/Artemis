@@ -5,17 +5,20 @@ using System.Linq;
 using System.Reactive.Disposables;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Workshop.Entries;
+using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 using Artemis.WebClient.Workshop;
 using DynamicData;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
+using EntrySpecificationsViewModel = Artemis.UI.Screens.Workshop.Entries.Details.EntrySpecificationsViewModel;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 
-public class SpecificationsStepViewModel : SubmissionViewModel
+public partial class SpecificationsStepViewModel : SubmissionViewModel
 {
     private readonly Func<EntrySpecificationsViewModel> _getEntrySpecificationsViewModel;
-    private EntrySpecificationsViewModel? _entrySpecificationsViewModel;
+    [Notify] private EntrySpecificationsViewModel? _entrySpecificationsViewModel;
 
     public SpecificationsStepViewModel(Func<EntrySpecificationsViewModel> getEntrySpecificationsViewModel)
     {
@@ -29,12 +32,6 @@ public class SpecificationsStepViewModel : SubmissionViewModel
         });
     }
 
-    public EntrySpecificationsViewModel? EntrySpecificationsViewModel
-    {
-        get => _entrySpecificationsViewModel;
-        set => RaiseAndSetIfChanged(ref _entrySpecificationsViewModel, value);
-    }
-
     private void ExecuteGoBack()
     {
         // Apply what's there so far
@@ -43,6 +40,7 @@ public class SpecificationsStepViewModel : SubmissionViewModel
         switch (State.EntryType)
         {
             case EntryType.Layout:
+                State.ChangeScreen<LayoutInfoStepViewModel>();
                 break;
             case EntryType.Plugin:
                 break;
@@ -60,7 +58,7 @@ public class SpecificationsStepViewModel : SubmissionViewModel
             return;
 
         ApplyToState();
-        State.ChangeScreen<SubmitStepViewModel>();
+        State.ChangeScreen<ImagesStepViewModel>();
     }
 
     private void ApplyFromState()

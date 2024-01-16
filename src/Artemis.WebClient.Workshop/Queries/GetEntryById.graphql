@@ -1,23 +1,5 @@
 query GetEntryById($id: Long!) {
     entry(id: $id) {
-        id
-        author
-        name
-        summary
-        entryType
-        downloads
-        createdAt
-        description
-        categories {
-            name
-            icon
-        }
-        latestRelease {
-            id
-            version
-            downloadSize
-            md5Hash
-            createdAt            
-        }
+        ...entryDetails
     }
 }

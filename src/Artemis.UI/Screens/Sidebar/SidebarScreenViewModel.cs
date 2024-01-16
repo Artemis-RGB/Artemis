@@ -3,12 +3,13 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.UI.Shared;
 using Material.Icons;
+using PropertyChanged.SourceGenerator;
 
 namespace Artemis.UI.Screens.Sidebar;
 
-public class SidebarScreenViewModel : ViewModelBase
+public partial class SidebarScreenViewModel : ViewModelBase
 {
-    private bool _isExpanded;
+    [Notify] private bool _isExpanded;
 
     public SidebarScreenViewModel(MaterialIconKind icon, string displayName, string path, string? rootPath = null, ObservableCollection<SidebarScreenViewModel>? screens = null)
     {
@@ -22,15 +23,8 @@ public class SidebarScreenViewModel : ViewModelBase
     public MaterialIconKind Icon { get; }
     public string Path { get; }
     public string RootPath { get; }
-
     public ObservableCollection<SidebarScreenViewModel> Screens { get; }
-
-    public bool IsExpanded
-    {
-        get => _isExpanded;
-        set => RaiseAndSetIfChanged(ref _isExpanded, value);
-    }
-
+    
     public bool Matches(string? path)
     {
         if (path == null)

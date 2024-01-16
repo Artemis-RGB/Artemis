@@ -19,32 +19,32 @@ namespace Artemis.UI.Shared.Pagination;
 [TemplatePart("PART_PagesView", typeof(StackPanel))]
 public partial class Pagination : TemplatedControl
 {
+    private Button? _previousButton;
+    private Button? _nextButton;
+    private StackPanel? _pagesView;
+
     /// <inheritdoc />
     public Pagination()
     {
         PropertyChanged += OnPropertyChanged;
     }
 
-    public Button? PreviousButton { get; set; }
-    public Button? NextButton { get; set; }
-    public StackPanel? PagesView { get; set; }
-
     /// <inheritdoc />
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
-        if (PreviousButton != null)
-            PreviousButton.Click -= PreviousButtonOnClick;
-        if (NextButton != null)
-            NextButton.Click -= NextButtonOnClick;
+        if (_previousButton != null)
+            _previousButton.Click -= PreviousButtonOnClick;
+        if (_nextButton != null)
+            _nextButton.Click -= NextButtonOnClick;
 
-        PreviousButton = e.NameScope.Find<Button>("PART_PreviousButton");
-        NextButton = e.NameScope.Find<Button>("PART_NextButton");
-        PagesView = e.NameScope.Find<StackPanel>("PART_PagesView");
+        _previousButton = e.NameScope.Find<Button>("PART_PreviousButton");
+        _nextButton = e.NameScope.Find<Button>("PART_NextButton");
+        _pagesView = e.NameScope.Find<StackPanel>("PART_PagesView");
 
-        if (PreviousButton != null)
-            PreviousButton.Click += PreviousButtonOnClick;
-        if (NextButton != null)
-            NextButton.Click += NextButtonOnClick;
+        if (_previousButton != null)
+            _previousButton.Click += PreviousButtonOnClick;
+        if (_nextButton != null)
+            _nextButton.Click += NextButtonOnClick;
 
         Update();
     }
@@ -69,40 +69,40 @@ public partial class Pagination : TemplatedControl
 
     private void Update()
     {
-        if (PagesView == null)
+        if (_pagesView == null)
             return;
 
         List<int> pages = GetPages(Value, Maximum);
 
         // Remove extra children
-        while (PagesView.Children.Count > pages.Count)
+        while (_pagesView.Children.Count > pages.Count)
         {
-            PagesView.Children.RemoveAt(PagesView.Children.Count - 1);
+            _pagesView.Children.RemoveAt(_pagesView.Children.Count - 1);
         }
 
-        if (PagesView.Children.Count > pages.Count)
-            PagesView.Children.RemoveRange(0, PagesView.Children.Count - pages.Count);
+        if (_pagesView.Children.Count > pages.Count)
+            _pagesView.Children.RemoveRange(0, _pagesView.Children.Count - pages.Count);
 
         // Add/modify children
         for (int i = 0; i < pages.Count; i++)
         {
             int page = pages[i];
-            
+
             // -1 indicates an ellipsis (...)
             if (page == -1)
             {
-                if (PagesView.Children.ElementAtOrDefault(i) is not PaginationEllipsis)
+                if (_pagesView.Children.ElementAtOrDefault(i) is not PaginationEllipsis)
                 {
-                    if (PagesView.Children.Count - 1 >= i)
-                        PagesView.Children[i] = new PaginationEllipsis();
+                    if (_pagesView.Children.Count - 1 >= i)
+                        _pagesView.Children[i] = new PaginationEllipsis();
                     else
-                        PagesView.Children.Add(new PaginationEllipsis());
+                        _pagesView.Children.Add(new PaginationEllipsis());
                 }
             }
             // Anything else indicates a regular page
             else
             {
-                if (PagesView.Children.ElementAtOrDefault(i) is PaginationPage paginationPage)
+                if (_pagesView.Children.ElementAtOrDefault(i) is PaginationPage paginationPage)
                 {
                     paginationPage.Page = page;
                     paginationPage.Command = ReactiveCommand.Create(() => Value = page);
@@ -110,14 +110,14 @@ public partial class Pagination : TemplatedControl
                 }
 
                 paginationPage = new PaginationPage {Page = page, Command = ReactiveCommand.Create(() => Value = page)};
-                if (PagesView.Children.Count - 1 >= i)
-                    PagesView.Children[i] = paginationPage;
+                if (_pagesView.Children.Count - 1 >= i)
+                    _pagesView.Children[i] = paginationPage;
                 else
-                    PagesView.Children.Add(paginationPage);
+                    _pagesView.Children.Add(paginationPage);
             }
         }
 
-        foreach (Control child in PagesView.Children)
+        foreach (Control child in _pagesView.Children)
         {
             if (child is PaginationPage paginationPage)
                 ((IPseudoClasses) paginationPage.Classes).Set(":selected", paginationPage.Page == Value);

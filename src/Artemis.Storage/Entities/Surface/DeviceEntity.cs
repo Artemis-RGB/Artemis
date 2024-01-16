@@ -22,11 +22,11 @@ public class DeviceEntity
     public float GreenScale { get; set; }
     public float BlueScale { get; set; }
     public bool IsEnabled { get; set; }
-
-    public bool DisableDefaultLayout { get; set; }
+    
     public int PhysicalLayout { get; set; }
     public string LogicalLayout { get; set; }
-    public string CustomLayoutPath { get; set; }
+    public string LayoutType { get; set; }
+    public string LayoutParameter { get; set; }
 
     public List<DeviceInputIdentifierEntity> InputIdentifiers { get; set; }
     public List<InputMappingEntity> InputMappings { get; set; }

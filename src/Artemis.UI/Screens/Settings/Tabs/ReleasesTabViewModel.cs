@@ -16,13 +16,14 @@ using Artemis.WebClient.Updating;
 using Avalonia.ReactiveUI;
 using DynamicData;
 using DynamicData.Binding;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using Serilog;
 using StrawberryShake;
 
 namespace Artemis.UI.Screens.Settings;
 
-public class ReleasesTabViewModel : RoutableHostScreen<ReleaseDetailsViewModel>
+public partial class ReleasesTabViewModel : RoutableHostScreen<ReleaseDetailsViewModel>
 {
     private readonly ILogger _logger;
     private readonly IUpdateService _updateService;
@@ -30,8 +31,8 @@ public class ReleasesTabViewModel : RoutableHostScreen<ReleaseDetailsViewModel>
     private readonly INotificationService _notificationService;
     private readonly IRouter _router;
     private readonly SourceList<IGetReleases_PublishedReleases_Nodes> _releases;
-    private bool _loading;
-    private ReleaseViewModel? _selectedReleaseViewModel;
+    [Notify(Setter.Private)] private bool _loading;
+    [Notify] private ReleaseViewModel? _selectedReleaseViewModel;
 
     public ReleasesTabViewModel(ILogger logger, IUpdateService updateService, IUpdatingClient updatingClient, IReleaseVmFactory releaseVmFactory, INotificationService notificationService,
         IRouter router)
@@ -61,19 +62,7 @@ public class ReleasesTabViewModel : RoutableHostScreen<ReleaseDetailsViewModel>
 
     public ReadOnlyObservableCollection<ReleaseViewModel> ReleaseViewModels { get; }
     public string Channel { get; }
-
-    public ReleaseViewModel? SelectedReleaseViewModel
-    {
-        get => _selectedReleaseViewModel;
-        set => RaiseAndSetIfChanged(ref _selectedReleaseViewModel, value);
-    }
-
-    public bool Loading
-    {
-        get => _loading;
-        private set => RaiseAndSetIfChanged(ref _loading, value);
-    }
-
+    
     public async Task GetReleases(CancellationToken cancellationToken)
     {
         try

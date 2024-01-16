@@ -7,16 +7,19 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Workshop.Profile;
+using Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
+using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using Material.Icons;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using SkiaSharp;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 
-public class ProfileSelectionStepViewModel : SubmissionViewModel
+public partial class ProfileSelectionStepViewModel : SubmissionViewModel
 {
     private readonly IProfileService _profileService;
-    private ProfileConfiguration? _selectedProfile;
+    [Notify] private ProfileConfiguration? _selectedProfile;
 
     /// <inheritdoc />
     public ProfileSelectionStepViewModel(IProfileService profileService, ProfilePreviewViewModel profilePreviewViewModel)
@@ -37,19 +40,13 @@ public class ProfileSelectionStepViewModel : SubmissionViewModel
         this.WhenActivated((CompositeDisposable _) =>
         {
             ShowGoBack = State.EntryId == null;
-            if (State.EntrySource is ProfileConfiguration profileConfiguration)
-                SelectedProfile = Profiles.FirstOrDefault(p => p.ProfileId == profileConfiguration.ProfileId);
+            if (State.EntrySource is ProfileEntrySource profileEntrySource)
+                SelectedProfile = Profiles.FirstOrDefault(p => p.ProfileId == profileEntrySource.ProfileConfiguration.ProfileId);
         });
     }
 
     public ObservableCollection<ProfileConfiguration> Profiles { get; }
     public ProfilePreviewViewModel ProfilePreview { get; }
-
-    public ProfileConfiguration? SelectedProfile
-    {
-        get => _selectedProfile;
-        set => RaiseAndSetIfChanged(ref _selectedProfile, value);
-    }
 
     private void Update(ProfileConfiguration? profileConfiguration)
     {
@@ -71,7 +68,7 @@ public class ProfileSelectionStepViewModel : SubmissionViewModel
         if (SelectedProfile == null)
             return;
 
-        State.EntrySource = SelectedProfile;
+        State.EntrySource = new ProfileEntrySource(SelectedProfile);
         State.Name = SelectedProfile.Name;
         State.Icon = SelectedProfile.Icon.GetIconStream();
 

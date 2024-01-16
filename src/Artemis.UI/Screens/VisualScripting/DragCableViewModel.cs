@@ -3,16 +3,16 @@ using Artemis.Core;
 using Artemis.UI.Screens.VisualScripting.Pins;
 using Artemis.UI.Shared;
 using Avalonia;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
-public class DragCableViewModel : ActivatableViewModelBase
+public partial class DragCableViewModel : ActivatableViewModelBase
 {
-    private Point _dragPoint;
-
     private ObservableAsPropertyHelper<Point>? _fromPoint;
     private ObservableAsPropertyHelper<Point>? _toPoint;
+    [Notify] private Point _dragPoint;
 
     public DragCableViewModel(PinViewModel pinViewModel)
     {
@@ -35,10 +35,4 @@ public class DragCableViewModel : ActivatableViewModelBase
     public PinViewModel PinViewModel { get; }
     public Point FromPoint => _fromPoint?.Value ?? new Point(0, 0);
     public Point ToPoint => _toPoint?.Value ?? new Point(0, 0);
-
-    public Point DragPoint
-    {
-        get => _dragPoint;
-        set => RaiseAndSetIfChanged(ref _dragPoint, value);
-    }
 }

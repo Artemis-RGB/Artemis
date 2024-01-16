@@ -107,7 +107,7 @@ public class ContentDialogBuilder
             _contentDialog.IsSecondaryButtonEnabled = builder.Command.CanExecute(builder.CommandParameter);
             builder.Command.CanExecuteChanged += (_, _) => _contentDialog.IsSecondaryButtonEnabled = builder.Command.CanExecute(builder.CommandParameter);
         }
-
+        
         return this;
     }
 
@@ -146,6 +146,16 @@ public class ContentDialogBuilder
     public ContentDialogBuilder WithFullSize()
     {
         _contentDialog.FullSizeDesired = true;
+        return this;
+    }
+    
+    /// <summary>
+    ///     Changes the dialog to be full screen.
+    /// </summary>
+    /// <returns>The builder that can be used to further build the dialog.</returns>
+    public ContentDialogBuilder WithFullScreen()
+    {
+        _contentDialog.Classes.Add("fullscreen");
         return this;
     }
 

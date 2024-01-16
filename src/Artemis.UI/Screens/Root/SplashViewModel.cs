@@ -2,12 +2,13 @@
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
+using PropertyChanged.SourceGenerator;
 
 namespace Artemis.UI.Screens.Root;
 
-public class SplashViewModel : ViewModelBase
+public partial class SplashViewModel : ViewModelBase
 {
-    private string _status;
+    [Notify] private string _status;
 
     public SplashViewModel(ICoreService coreService, IPluginManagementService pluginManagementService)
     {
@@ -24,13 +25,7 @@ public class SplashViewModel : ViewModelBase
     }
 
     public ICoreService CoreService { get; }
-
-    public string Status
-    {
-        get => _status;
-        set => RaiseAndSetIfChanged(ref _status, value);
-    }
-
+    
     private void OnPluginManagementServiceOnPluginManagementLoaded(object? sender, PluginEventArgs args)
     {
         Status = "Initializing UI";

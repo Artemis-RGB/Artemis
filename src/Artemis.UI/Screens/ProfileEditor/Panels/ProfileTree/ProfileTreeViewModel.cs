@@ -11,17 +11,18 @@ using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree;
 
-public class ProfileTreeViewModel : TreeItemViewModel
+public partial class ProfileTreeViewModel : TreeItemViewModel
 {
     private ObservableAsPropertyHelper<bool>? _focusFolder;
     private ObservableAsPropertyHelper<bool>? _focusNone;
     private ObservableAsPropertyHelper<bool>? _focusSelection;
     private ObservableAsPropertyHelper<bool>? _keyBindingsEnabled;
-    private TreeItemViewModel? _selectedChild;
+    [Notify] private TreeItemViewModel? _selectedChild;
 
     public ProfileTreeViewModel(IWindowService windowService, IDeviceService deviceService, IProfileEditorService profileEditorService, IProfileEditorVmFactory profileEditorVmFactory)
         : base(null, null, windowService, deviceService, profileEditorService, profileEditorVmFactory)
@@ -67,12 +68,7 @@ public class ProfileTreeViewModel : TreeItemViewModel
     public bool FocusFolder => _focusFolder?.Value ?? false;
     public bool FocusSelection => _focusSelection?.Value ?? false;
     public bool KeyBindingsEnabled => _keyBindingsEnabled?.Value ?? false;
-
-    public TreeItemViewModel? SelectedChild
-    {
-        get => _selectedChild;
-        set => RaiseAndSetIfChanged(ref _selectedChild, value);
-    }
+    
 
     public ReactiveCommand<Unit, Unit> ClearSelection { get; }
     public ReactiveCommand<Unit, Unit> RenameSelected { get; }

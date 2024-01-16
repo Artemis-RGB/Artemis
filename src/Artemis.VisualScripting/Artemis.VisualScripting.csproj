@@ -1,6 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\Artemis.props" />
-
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -9,14 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
-        <PackageReference Include="Avalonia.Xaml.Behaviors" Version="$(AvaloniaBehavioursVersion)" />
-        <PackageReference Include="DryIoc.dll" Version="5.4.1" />
         <PackageReference Include="NoStringEvaluating" Version="2.5.2" />
-        <PackageReference Include="ReactiveUI" Version="19.4.1" />
-        <PackageReference Include="ReactiveUI.Validation" Version="3.1.7" />
-        <PackageReference Include="SkiaSharp" Version="$(SkiaSharpVersion)" />
     </ItemGroup>
 
     <ItemGroup>

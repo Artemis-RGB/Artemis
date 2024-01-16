@@ -14,18 +14,19 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.PropertyInput;
 using DynamicData;
 using DynamicData.Binding;
+using PropertyChanged.SourceGenerator;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties;
 
-public class PropertyGroupViewModel : PropertyViewModelBase, IDisposable
+public partial class PropertyGroupViewModel : PropertyViewModelBase, IDisposable
 {
     private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
     private readonly IPropertyInputService _propertyInputService;
-    private bool _hasChildren;
-    private bool _isExpanded;
-    private bool _isVisible;
     private ReadOnlyObservableCollection<ILayerPropertyKeyframe> _keyframes = null!;
     private IDisposable _keyframeSubscription = null!;
+    [Notify] private bool _hasChildren;
+    [Notify] private bool _isExpanded;
+    [Notify] private bool _isVisible;
 
     public PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory, IPropertyInputService propertyInputService)
     {
@@ -78,25 +79,7 @@ public class PropertyGroupViewModel : PropertyViewModelBase, IDisposable
 
     public TreeGroupViewModel TreeGroupViewModel { get; }
     public TimelineGroupViewModel TimelineGroupViewModel { get; }
-
-    public bool IsVisible
-    {
-        get => _isVisible;
-        set => RaiseAndSetIfChanged(ref _isVisible, value);
-    }
-
-    public bool IsExpanded
-    {
-        get => _isExpanded;
-        set => RaiseAndSetIfChanged(ref _isExpanded, value);
-    }
-
-    public bool HasChildren
-    {
-        get => _hasChildren;
-        set => RaiseAndSetIfChanged(ref _hasChildren, value);
-    }
-
+    
     public override ReadOnlyObservableCollection<ILayerPropertyKeyframe> Keyframes => _keyframes;
 
     public List<ILayerPropertyKeyframe> GetAllKeyframes(bool expandedOnly)

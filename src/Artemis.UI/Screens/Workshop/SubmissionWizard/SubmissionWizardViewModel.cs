@@ -1,16 +1,20 @@
-﻿using Artemis.UI.Screens.Workshop.CurrentUser;
+﻿using System.Reactive.Disposables;
+using Artemis.UI.Screens.Workshop.CurrentUser;
+using Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using DryIoc;
+using PropertyChanged.SourceGenerator;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard;
 
-public class SubmissionWizardViewModel : ActivatableViewModelBase, IWorkshopWizardViewModel
+public partial class SubmissionWizardViewModel : ActivatableViewModelBase, IWorkshopWizardViewModel
 {
     private readonly SubmissionWizardState _state;
     private SubmissionViewModel _screen;
-    private bool _shouldClose;
+    [Notify] private bool _shouldClose;
 
     public SubmissionWizardViewModel(IContainer container,
         IWindowService windowService,
@@ -24,6 +28,8 @@ public class SubmissionWizardViewModel : ActivatableViewModelBase, IWorkshopWiza
         WindowService = windowService;
         CurrentUserViewModel = currentUserViewModel;
         CurrentUserViewModel.AllowLogout = false;
+        
+        this.WhenActivated(d => _state.DisposeWith(d));
     }
 
     public IWindowService WindowService { get; }
@@ -37,11 +43,5 @@ public class SubmissionWizardViewModel : ActivatableViewModelBase, IWorkshopWiza
             value.State = _state;
             RaiseAndSetIfChanged(ref _screen, value);
         }
-    }
-
-    public bool ShouldClose
-    {
-        get => _shouldClose;
-        set => RaiseAndSetIfChanged(ref _shouldClose, value);
     }
 }

@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs;
+using Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
 using Artemis.UI.Shared.Services;
+using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using DynamicData;
 using DynamicData.Aggregation;
 using ReactiveUI;
@@ -34,12 +36,14 @@ public class ProfileAdaptionHintsStepViewModel : SubmissionViewModel
 
         this.WhenActivated((CompositeDisposable _) =>
         {
-            if (State.EntrySource is ProfileConfiguration profileConfiguration && profileConfiguration.Profile != null)
-                _layers.Edit(l =>
-                {
-                    l.Clear();
-                    l.AddRange(profileConfiguration.Profile.GetAllLayers().Select(getLayerViewModel));
-                });
+            if (State.EntrySource is not ProfileEntrySource profileEntrySource || profileEntrySource.ProfileConfiguration.Profile == null)
+                return;
+            
+            _layers.Edit(l =>
+            {
+                l.Clear();
+                l.AddRange(profileEntrySource.ProfileConfiguration.Profile.GetAllLayers().Select(getLayerViewModel));
+            });
         });
     }
 

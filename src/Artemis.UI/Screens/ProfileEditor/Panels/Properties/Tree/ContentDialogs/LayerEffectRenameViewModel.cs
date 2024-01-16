@@ -4,16 +4,17 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using FluentAvalonia.UI.Controls;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Tree.ContentDialogs;
 
-public class LayerEffectRenameViewModel : ContentDialogViewModelBase
+public partial class LayerEffectRenameViewModel : ContentDialogViewModelBase
 {
     private readonly BaseLayerEffect _layerEffect;
     private readonly IProfileEditorService _profileEditorService;
-    private string? _layerEffectName;
+    [Notify] private string? _layerEffectName;
 
     public LayerEffectRenameViewModel(IProfileEditorService profileEditorService, BaseLayerEffect layerEffect)
     {
@@ -23,12 +24,6 @@ public class LayerEffectRenameViewModel : ContentDialogViewModelBase
 
         Confirm = ReactiveCommand.Create(ExecuteConfirm, ValidationContext.Valid);
         this.ValidationRule(vm => vm.LayerEffectName, categoryName => !string.IsNullOrWhiteSpace(categoryName), "You must specify a valid name");
-    }
-
-    public string? LayerEffectName
-    {
-        get => _layerEffectName;
-        set => RaiseAndSetIfChanged(ref _layerEffectName, value);
     }
 
     public ReactiveCommand<Unit, Unit> Confirm { get; }

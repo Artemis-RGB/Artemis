@@ -8,10 +8,17 @@ using ReactiveUI;
 
 namespace Artemis.UI.Shared.TagsInput;
 
+/// <summary>
+/// Represents an input for tags.
+/// </summary>
 [TemplatePart("PART_TagInputBox", typeof(TextBox))]
 public partial class TagsInput : TemplatedControl
 {
-    public TextBox? TagInputBox { get; set; }
+    private TextBox? _tagInputBox;
+
+    /// <summary>
+    /// Gets the command that is to be called when removing a tag
+    /// </summary>
     public ICommand RemoveTag { get; }
 
     /// <inheritdoc />
@@ -23,18 +30,18 @@ public partial class TagsInput : TemplatedControl
     /// <inheritdoc />
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
-        if (TagInputBox != null)
+        if (_tagInputBox != null)
         {
-            TagInputBox.KeyDown -= TagInputBoxOnKeyDown;
-            TagInputBox.TextChanging -= TagInputBoxOnTextChanging;
+            _tagInputBox.KeyDown -= TagInputBoxOnKeyDown;
+            _tagInputBox.TextChanging -= TagInputBoxOnTextChanging;
         }
 
-        TagInputBox = e.NameScope.Find<TextBox>("PART_TagInputBox");
+        _tagInputBox = e.NameScope.Find<TextBox>("PART_TagInputBox");
 
-        if (TagInputBox != null)
+        if (_tagInputBox != null)
         {
-            TagInputBox.KeyDown += TagInputBoxOnKeyDown;
-            TagInputBox.TextChanging += TagInputBoxOnTextChanging;
+            _tagInputBox.KeyDown += TagInputBoxOnKeyDown;
+            _tagInputBox.TextChanging += TagInputBoxOnTextChanging;
         }
     }
 
@@ -42,21 +49,21 @@ public partial class TagsInput : TemplatedControl
     {
         Tags.Remove(t);
 
-        if (TagInputBox != null)
-            TagInputBox.IsEnabled = Tags.Count < MaxLength;
+        if (_tagInputBox != null)
+            _tagInputBox.IsEnabled = Tags.Count < MaxLength;
     }
 
     private void TagInputBoxOnTextChanging(object? sender, TextChangingEventArgs e)
     {
-        if (TagInputBox?.Text == null)
+        if (_tagInputBox?.Text == null)
             return;
 
-        TagInputBox.Text = CleanTagRegex().Replace(TagInputBox.Text.ToLower(), "");
+        _tagInputBox.Text = CleanTagRegex().Replace(_tagInputBox.Text.ToLower(), "");
     }
 
     private void TagInputBoxOnKeyDown(object? sender, KeyEventArgs e)
     {
-        if (TagInputBox == null)
+        if (_tagInputBox == null)
             return;
 
         if (e.Key == Key.Space)
@@ -64,13 +71,13 @@ public partial class TagsInput : TemplatedControl
         if (e.Key != Key.Enter)
             return;
 
-        if (string.IsNullOrWhiteSpace(TagInputBox.Text) || Tags.Contains(TagInputBox.Text) || Tags.Count >= MaxLength)
+        if (string.IsNullOrWhiteSpace(_tagInputBox.Text) || Tags.Contains(_tagInputBox.Text) || Tags.Count >= MaxLength)
             return;
 
-        Tags.Add(CleanTagRegex().Replace(TagInputBox.Text.ToLower(), ""));
+        Tags.Add(CleanTagRegex().Replace(_tagInputBox.Text.ToLower(), ""));
 
-        TagInputBox.Text = "";
-        TagInputBox.IsEnabled = Tags.Count < MaxLength;
+        _tagInputBox.Text = "";
+        _tagInputBox.IsEnabled = Tags.Count < MaxLength;
     }
 
     [GeneratedRegex("[\\s\\-]+")]

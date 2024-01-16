@@ -1,16 +1,18 @@
 ﻿using Artemis.UI.Screens.Workshop.CurrentUser;
+using Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
 using DryIoc;
+using PropertyChanged.SourceGenerator;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard;
 
-public class ReleaseWizardViewModel : ActivatableViewModelBase, IWorkshopWizardViewModel
+public partial class ReleaseWizardViewModel : ActivatableViewModelBase, IWorkshopWizardViewModel
 {
     private readonly SubmissionWizardState _state;
     private SubmissionViewModel? _screen;
-    private bool _shouldClose;
+    [Notify] private bool _shouldClose;
 
     public ReleaseWizardViewModel(IContainer container, IWindowService windowService, CurrentUserViewModel currentUserViewModel, IGetSubmittedEntryById_Entry entry)
     {
@@ -41,11 +43,5 @@ public class ReleaseWizardViewModel : ActivatableViewModelBase, IWorkshopWizardV
                 value.State = _state;
             RaiseAndSetIfChanged(ref _screen, value);
         }
-    }
-
-    public bool ShouldClose
-    {
-        get => _shouldClose;
-        set => RaiseAndSetIfChanged(ref _shouldClose, value);
     }
 }

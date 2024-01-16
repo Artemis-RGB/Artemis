@@ -11,23 +11,23 @@ using Avalonia;
 using Avalonia.Media;
 using DynamicData;
 using DynamicData.Binding;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
-public class CableViewModel : ActivatableViewModelBase
+public partial class CableViewModel : ActivatableViewModelBase
 {
     private readonly IPin _from;
     private readonly NodeScriptViewModel _nodeScriptViewModel;
     private readonly IPin _to;
     private ObservableAsPropertyHelper<Color>? _cableColor;
     private ObservableAsPropertyHelper<bool>? _connected;
-    private bool _displayValue;
     private ObservableAsPropertyHelper<Point>? _fromPoint;
-
-    private PinViewModel? _fromViewModel;
     private ObservableAsPropertyHelper<Point>? _toPoint;
-    private PinViewModel? _toViewModel;
+    [Notify] private PinViewModel? _fromViewModel;
+    [Notify] private PinViewModel? _toViewModel;
+    [Notify] private bool _displayValue;
 
     public CableViewModel(NodeScriptViewModel nodeScriptViewModel, IPin from, IPin to, ISettingsService settingsService)
     {
@@ -79,28 +79,8 @@ public class CableViewModel : ActivatableViewModelBase
     }
 
     public PluginSetting<bool> AlwaysShowValues { get; }
-
-    public PinViewModel? FromViewModel
-    {
-        get => _fromViewModel;
-        set => RaiseAndSetIfChanged(ref _fromViewModel, value);
-    }
-
-    public PinViewModel? ToViewModel
-    {
-        get => _toViewModel;
-        set => RaiseAndSetIfChanged(ref _toViewModel, value);
-    }
-
-    public bool DisplayValue
-    {
-        get => _displayValue;
-        set => RaiseAndSetIfChanged(ref _displayValue, value);
-    }
-
     public bool Connected => _connected?.Value ?? false;
     public bool IsFirst => _from.ConnectedTo.FirstOrDefault() == _to;
-
     public Point FromPoint => _fromPoint?.Value ?? new Point();
     public Point ToPoint => _toPoint?.Value ?? new Point();
     public Color CableColor => _cableColor?.Value ?? new Color(255, 255, 255, 255);

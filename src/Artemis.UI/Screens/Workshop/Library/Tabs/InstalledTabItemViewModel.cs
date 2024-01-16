@@ -8,17 +8,18 @@ using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
 using Artemis.WebClient.Workshop.Services;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.Library.Tabs;
 
-public class InstalledTabItemViewModel : ViewModelBase
+public partial class InstalledTabItemViewModel : ViewModelBase
 {
     private readonly IWorkshopService _workshopService;
     private readonly IRouter _router;
     private readonly EntryInstallationHandlerFactory _factory;
     private readonly IWindowService _windowService;
-    private bool _isRemoved;
+    [Notify(Setter.Private)] private bool _isRemoved;
 
     public InstalledTabItemViewModel(InstalledEntry installedEntry, IWorkshopService workshopService, IRouter router, EntryInstallationHandlerFactory factory, IWindowService windowService)
     {
@@ -33,12 +34,6 @@ public class InstalledTabItemViewModel : ViewModelBase
         Uninstall = ReactiveCommand.CreateFromTask(ExecuteUninstall);
     }
 
-    public bool IsRemoved
-    {
-        get => _isRemoved;
-        private set => RaiseAndSetIfChanged(ref _isRemoved, value);
-    }
-
     public InstalledEntry InstalledEntry { get; }
     public ReactiveCommand<Unit, Unit> ViewWorkshopPage { get; }
     public ReactiveCommand<Unit,Unit> ViewLocal { get; }
@@ -51,7 +46,7 @@ public class InstalledTabItemViewModel : ViewModelBase
 
     private async Task ExecuteViewLocal(CancellationToken cancellationToken)
     {
-        if (InstalledEntry.EntryType == EntryType.Profile && Guid.TryParse(InstalledEntry.LocalReference, out Guid profileId))
+        if (InstalledEntry.EntryType == EntryType.Profile && InstalledEntry.TryGetMetadata("ProfileId", out Guid profileId))
         {
             await _router.Navigate($"profile-editor/{profileId}");
         }

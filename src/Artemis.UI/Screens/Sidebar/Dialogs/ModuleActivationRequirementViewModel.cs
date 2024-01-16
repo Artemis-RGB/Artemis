@@ -4,15 +4,16 @@ using System.Timers;
 using Artemis.Core.Modules;
 using Artemis.UI.Shared;
 using Humanizer;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
 
-public class ModuleActivationRequirementViewModel : ActivatableViewModelBase
+public partial class ModuleActivationRequirementViewModel : ActivatableViewModelBase
 {
     private readonly IModuleActivationRequirement _activationRequirement;
-    private string _requirementDescription;
-    private bool _requirementMet;
+    [Notify] private string _requirementDescription;
+    [Notify] private bool _requirementMet;
 
     public ModuleActivationRequirementViewModel(IModuleActivationRequirement activationRequirement)
     {
@@ -30,18 +31,6 @@ public class ModuleActivationRequirementViewModel : ActivatableViewModelBase
     }
 
     public string RequirementName { get; }
-
-    public string RequirementDescription
-    {
-        get => _requirementDescription;
-        set => RaiseAndSetIfChanged(ref _requirementDescription, value);
-    }
-
-    public bool RequirementMet
-    {
-        get => _requirementMet;
-        set => RaiseAndSetIfChanged(ref _requirementMet, value);
-    }
 
     private void Update()
     {

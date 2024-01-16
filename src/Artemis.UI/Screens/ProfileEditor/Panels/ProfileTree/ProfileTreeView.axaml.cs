@@ -5,7 +5,6 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.LogicalTree;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.ReactiveUI;
@@ -40,7 +39,8 @@ public partial class ProfileTreeView : ReactiveUserControl<ProfileTreeViewModel>
 
     private void CreateDragAdorner(DragEventArgs e)
     {
-        if (_dragAdorner != null)
+        Window? window = this.FindAncestorOfType<Window>();
+        if (window == null || _dragAdorner != null)
             return;
 
         if (e.Source is not Control c)
@@ -55,7 +55,7 @@ public partial class ProfileTreeView : ReactiveUserControl<ProfileTreeViewModel>
         ITransform? originalTransform = container.RenderTransform;
         try
         {
-            _dragStartPosition = e.GetPosition(this.FindAncestorOfType<Window>());
+            _dragStartPosition = e.GetPosition(window);
             _elementDragOffset = e.GetPosition(container);
 
             RenderTargetBitmap renderTarget = new(new PixelSize((int) container.Bounds.Width, (int) container.Bounds.Height));
@@ -106,10 +106,11 @@ public partial class ProfileTreeView : ReactiveUserControl<ProfileTreeViewModel>
 
     private void UpdateDragAdorner(DragEventArgs e)
     {
-        if (_dragAdorner == null)
+        Window? window = this.FindAncestorOfType<Window>();
+        if (window == null || _dragAdorner == null)
             return;
 
-        Point position = e.GetPosition(this.FindAncestorOfType<Window>());
+        Point position = e.GetPosition(window);
         _dragAdorner.RenderTransform = new TranslateTransform(_dragStartPosition.X - _elementDragOffset.X, position.Y - _elementDragOffset.Y);
     }
 

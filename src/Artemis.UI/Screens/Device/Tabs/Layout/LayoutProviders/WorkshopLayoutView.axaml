@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:services="clr-namespace:Artemis.WebClient.Workshop.Services;assembly=Artemis.WebClient.Workshop"
+             xmlns:layoutProviders="clr-namespace:Artemis.UI.Screens.Device.Layout.LayoutProviders"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Device.Layout.LayoutProviders.WorkshopLayoutView"
+             x:DataType="layoutProviders:WorkshopLayoutViewModel">
+    <StackPanel ClipToBounds="False">
+        <Border Classes="card-separator" />
+        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+            <StackPanel Grid.Row="1" Grid.Column="0">
+                <TextBlock Text="Current layout" />
+                <TextBlock Classes="subtitle" FontSize="12" Text="Loading the layout from a workshop entry" TextWrapping="Wrap" />
+            </StackPanel>
+            <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Spacing="5">
+                <StackPanel.Styles>
+                    <Style Selector="ComboBox.layoutProvider /template/ ContentControl#ContentPresenter">
+                        <Setter Property="ContentTemplate">
+                            <Setter.Value>
+                                <DataTemplate x:DataType="services:InstalledEntry">
+                                    <TextBlock Text="{CompiledBinding Name}" TextWrapping="Wrap" MaxWidth="350" />
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </StackPanel.Styles>
+                <ComboBox Classes="layoutProvider"
+                          Width="350"
+                          SelectedItem="{CompiledBinding SelectedEntry}"
+                          ItemsSource="{CompiledBinding Entries}"
+                          PlaceholderText="Select an installed layout">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="services:InstalledEntry">
+                            <StackPanel>
+                                <TextBlock Text="{CompiledBinding Name}" TextWrapping="Wrap" MaxWidth="350" />
+                                <TextBlock Classes="subtitle" Text="{CompiledBinding Author}" TextWrapping="Wrap" MaxWidth="350" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button HorizontalAlignment="Right" Click="Button_OnClick">Browse workshop layouts</Button>
+            </StackPanel>
+        </Grid>
+    </StackPanel>
+</UserControl>

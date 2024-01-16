@@ -101,7 +101,7 @@
                             </Ellipse.Fill>
                         </Ellipse>
                         <TextBlock Grid.Row="0" Grid.Column="1" Padding="0">
-                            Diogo 'DrMeteor' Trindade
+                            Diogo Trindade
                         </TextBlock>
                         <TextBlock Classes="subtitle" Grid.Column="1" Grid.Row="1" Padding="0">
                             Main contributor
@@ -176,7 +176,6 @@
                             <TextBlock Classes="library-name">DryIoc</TextBlock>
                             <TextBlock Classes="library-name">FluentAvalonia</TextBlock>
                             <TextBlock Classes="library-name">EmbedIO</TextBlock>
-                            <TextBlock Classes="library-name">Furl.Http</TextBlock>
                             <TextBlock Classes="library-name">Humanizer</TextBlock>
                             <TextBlock Classes="library-name">LiteDB</TextBlock>
                             <TextBlock Classes="library-name">McMaster.NETCore.Plugins</TextBlock>
@@ -198,9 +197,6 @@
                             </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://unosquare.github.io/embedio/">
                                 https://unosquare.github.io/embedio/
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton NavigateUri="https://flurl.dev/">
-                                https://flurl.dev/
                             </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://github.com/Humanizr/Humanizer">
                                 https://github.com/Humanizr/Humanizer

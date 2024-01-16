@@ -17,28 +17,29 @@ using Artemis.UI.Shared.Services.ProfileEditor;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Material.Icons;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
 
-public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConfiguration?>
+public partial class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConfiguration?>
 {
     private readonly ObservableAsPropertyHelper<ModuleActivationRequirementsViewModel?> _moduleActivationRequirementsViewModel;
     private readonly ProfileCategory _profileCategory;
     private readonly IProfileEditorService _profileEditorService;
     private readonly IProfileService _profileService;
     private readonly IWindowService _windowService;
-    private Hotkey? _disableHotkey;
-    private Hotkey? _enableHotkey;
-    private bool _fadeInAndOut;
-    private ProfileConfigurationHotkeyMode _hotkeyMode;
-    private ProfileConfigurationIconType _iconType;
-    private ProfileConfiguration _profileConfiguration;
-    private string _profileName;
-    private Bitmap? _selectedBitmapSource;
     private string? _selectedIconPath;
-    private ProfileIconViewModel? _selectedMaterialIcon;
-    private ProfileModuleViewModel? _selectedModule;
+    [Notify] private ProfileConfigurationIconType _iconType;
+    [Notify] private Bitmap? _selectedBitmapSource;
+    [Notify] private ProfileIconViewModel? _selectedMaterialIcon;
+    [Notify] private Hotkey? _disableHotkey;
+    [Notify] private Hotkey? _enableHotkey;
+    [Notify] private bool _fadeInAndOut;
+    [Notify] private ProfileConfigurationHotkeyMode _hotkeyMode;
+    [Notify] private ProfileConfiguration _profileConfiguration;
+    [Notify] private string _profileName;
+    [Notify] private ProfileModuleViewModel? _selectedModule;
 
     public ProfileConfigurationEditViewModel(
         ProfileCategory profileCategory,
@@ -88,51 +89,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
     }
 
     public bool IsNew { get; }
-
-    public ProfileConfiguration ProfileConfiguration
-    {
-        get => _profileConfiguration;
-        set => RaiseAndSetIfChanged(ref _profileConfiguration, value);
-    }
-
-    public string ProfileName
-    {
-        get => _profileName;
-        set => RaiseAndSetIfChanged(ref _profileName, value);
-    }
-
-    public ProfileConfigurationHotkeyMode HotkeyMode
-    {
-        get => _hotkeyMode;
-        set => RaiseAndSetIfChanged(ref _hotkeyMode, value);
-    }
-
-    public Hotkey? EnableHotkey
-    {
-        get => _enableHotkey;
-        set => RaiseAndSetIfChanged(ref _enableHotkey, value);
-    }
-
-    public Hotkey? DisableHotkey
-    {
-        get => _disableHotkey;
-        set => RaiseAndSetIfChanged(ref _disableHotkey, value);
-    }
-
-    public bool FadeInAndOut
-    {
-        get => _fadeInAndOut;
-        set => RaiseAndSetIfChanged(ref _fadeInAndOut, value);
-    }
-
     public ObservableCollection<ProfileModuleViewModel?> Modules { get; }
-
-    public ProfileModuleViewModel? SelectedModule
-    {
-        get => _selectedModule;
-        set => RaiseAndSetIfChanged(ref _selectedModule, value);
-    }
-
     public NodeScriptViewModel VisualEditorViewModel { get; }
     public ModuleActivationRequirementsViewModel? ModuleActivationRequirementsViewModel => _moduleActivationRequirementsViewModel.Value;
 
@@ -179,37 +136,22 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
     }
 
     #region Icon
-
-    public ProfileConfigurationIconType IconType
-    {
-        get => _iconType;
-        set => RaiseAndSetIfChanged(ref _iconType, value);
-    }
-
-    public ProfileIconViewModel? SelectedMaterialIcon
-    {
-        get => _selectedMaterialIcon;
-        set => RaiseAndSetIfChanged(ref _selectedMaterialIcon, value);
-    }
-
-    public Bitmap? SelectedBitmapSource
-    {
-        get => _selectedBitmapSource;
-        set => RaiseAndSetIfChanged(ref _selectedBitmapSource, value);
-    }
-
+    
     private void LoadIcon()
     {
         // Preselect the icon based on streams if needed
         if (_profileConfiguration.Icon.IconType == ProfileConfigurationIconType.BitmapImage)
+        {
             try
             {
-                SelectedBitmapSource = new Bitmap(_profileConfiguration.Icon.GetIconStream());
+                Stream? iconStream = _profileConfiguration.Icon.GetIconStream();
+                SelectedBitmapSource = iconStream != null ? new Bitmap(iconStream) : null;
             }
             catch (Exception e)
             {
                 _windowService.ShowConfirmContentDialog("Failed to load profile icon", e.Message, "Meh", null);
             }
+        }
 
         // Prepare the contents of the dropdown box, it should be virtualized so no need to wait with this
         ObservableCollection<ProfileIconViewModel> icons = new(Enum.GetValues<MaterialIconKind>()
@@ -239,7 +181,7 @@ public class ProfileConfigurationEditViewModel : DialogViewModelBase<ProfileConf
     private async Task ExecuteBrowseBitmapFile()
     {
         string[]? result = await _windowService.CreateOpenFileDialog()
-            .HavingFilter(f => f.WithExtension("png").WithExtension("jpg").WithExtension("bmp").WithName("Bitmap image"))
+            .HavingFilter(f => f.WithBitmaps())
             .ShowAsync();
 
         if (result == null)

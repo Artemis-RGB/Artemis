@@ -4,18 +4,19 @@ using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.StatusBar;
 
-public class StatusBarViewModel : ActivatableViewModelBase
+public partial class StatusBarViewModel : ActivatableViewModelBase
 {
     private readonly IProfileEditorService _profileEditorService;
     private ObservableAsPropertyHelper<ProfileEditorHistory?>? _history;
     private ObservableAsPropertyHelper<int>? _pixelsPerSecond;
     private ObservableAsPropertyHelper<RenderProfileElement?>? _profileElement;
-    private bool _showStatusMessage;
-    private string? _statusMessage;
+    [Notify] private bool _showStatusMessage;
+    [Notify] private string? _statusMessage;
 
     public StatusBarViewModel(IProfileEditorService profileEditorService)
     {
@@ -54,17 +55,5 @@ public class StatusBarViewModel : ActivatableViewModelBase
     {
         get => _pixelsPerSecond?.Value ?? 0;
         set => _profileEditorService.ChangePixelsPerSecond(value);
-    }
-
-    public string? StatusMessage
-    {
-        get => _statusMessage;
-        set => RaiseAndSetIfChanged(ref _statusMessage, value);
-    }
-
-    public bool ShowStatusMessage
-    {
-        get => _showStatusMessage;
-        set => RaiseAndSetIfChanged(ref _showStatusMessage, value);
     }
 }

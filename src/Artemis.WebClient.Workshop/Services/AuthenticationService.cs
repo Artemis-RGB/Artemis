@@ -185,7 +185,7 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
                 return;
 
             // Start a HTTP listener, this port could be in use but chances are very slim
-            string redirectUri = "http://localhost:56789";
+            string redirectUri = "http://localhost:57461";
             using HttpListener listener = new();
             listener.Prefixes.Add(redirectUri + "/");
             listener.Start();

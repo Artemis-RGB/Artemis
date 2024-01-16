@@ -1,0 +1,83 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:details="clr-namespace:Artemis.UI.Screens.Workshop.Entries.Details"
+             xmlns:il="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Entries.Details.EntryInfoView"
+             x:DataType="details:EntryInfoViewModel">
+    <UserControl.Resources>
+        <converters:EntryIconUriConverter x:Key="EntryIconUriConverter" />
+        <converters:DateTimeConverter x:Key="DateTimeConverter" />
+    </UserControl.Resources>
+    <StackPanel>
+        <Panel>
+            <Border CornerRadius="6"
+                    HorizontalAlignment="Left"
+                    Margin="0 0 10 0"
+                    Width="80"
+                    Height="80"
+                    ClipToBounds="True">
+                <Image Stretch="UniformToFill" il:ImageLoader.Source="{CompiledBinding Entry.Id, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
+            </Border>
+            <Button Classes="icon-button"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Command="{CompiledBinding CopyShareLink}"
+                    ToolTip.Tip="Copy share link">
+                <avalonia:MaterialIcon Kind="ShareVariant" />
+            </Button>
+        </Panel>
+
+
+        <TextBlock Theme="{StaticResource TitleTextBlockStyle}"
+                   MaxLines="3"
+                   TextTrimming="CharacterEllipsis"
+                   Text="{CompiledBinding Entry.Name, FallbackValue=Title }" />
+
+        <TextBlock Classes="subtitle" TextTrimming="CharacterEllipsis" Text="{CompiledBinding Entry.Author, FallbackValue=Author}" />
+
+        <TextBlock Margin="0 8" TextWrapping="Wrap" Text="{CompiledBinding Entry.Summary, FallbackValue=Summary}" />
+
+        <!-- Categories -->
+        <ItemsControl ItemsSource="{CompiledBinding Entry.Categories}" Margin="0 0 -8 0">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal"></WrapPanel>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Margin="0 0 8 0">
+                        <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Margin="0 0 3 0"></avalonia:MaterialIcon>
+                        <TextBlock Text="{CompiledBinding Name}" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        
+        <Border Classes="card-separator"></Border>
+        
+        <TextBlock Margin="0 0 0 8">
+            <avalonia:MaterialIcon Kind="Downloads" />
+            <Run Classes="h5" Text="{CompiledBinding Entry.Downloads, FallbackValue=0}" />
+            <Run>downloads</Run>
+        </TextBlock>
+        
+        <TextBlock Classes="subtitle"
+                   ToolTip.Tip="{CompiledBinding Entry.CreatedAt, Converter={StaticResource DateTimeConverter}}">
+            <avalonia:MaterialIcon Kind="Calendar" />
+            <Run>Created</Run>
+            <Run Text="{CompiledBinding Entry.CreatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
+        </TextBlock>
+        <TextBlock Classes="subtitle"
+                   ToolTip.Tip="{CompiledBinding UpdatedAt, Converter={StaticResource DateTimeConverter}}">
+            <avalonia:MaterialIcon Kind="Update" />
+            <Run>Updated</Run>
+            <Run Text="{CompiledBinding UpdatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
+        </TextBlock>
+    </StackPanel>
+</UserControl>

@@ -8,20 +8,21 @@ using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Services;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using Serilog;
 using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Search;
 
-public class SearchViewModel : ViewModelBase
+public partial class SearchViewModel : ViewModelBase
 {
     private readonly ILogger _logger;
     private readonly IWorkshopService _workshopService;
     private readonly IDebugService _debugService;
     private readonly IWorkshopClient _workshopClient;
-    private bool _isLoading;
-    private SearchResultViewModel? _selectedEntry;
+    [Notify] private SearchResultViewModel? _selectedEntry;
+    [Notify] private bool _isLoading;
 
     public SearchViewModel(ILogger logger, IWorkshopClient workshopClient, IWorkshopService workshopService, CurrentUserViewModel currentUserViewModel, IDebugService debugService)
     {
@@ -38,19 +39,7 @@ public class SearchViewModel : ViewModelBase
     public CurrentUserViewModel CurrentUserViewModel { get; }
 
     public Func<string?, CancellationToken, Task<IEnumerable<object>>> SearchAsync { get; }
-
-    public SearchResultViewModel? SelectedEntry
-    {
-        get => _selectedEntry;
-        set => RaiseAndSetIfChanged(ref _selectedEntry, value);
-    }
-
-    public bool IsLoading
-    {
-        get => _isLoading;
-        set => RaiseAndSetIfChanged(ref _isLoading, value);
-    }
-
+    
     public void ShowDebugger()
     {
         _debugService.ShowDebugger();

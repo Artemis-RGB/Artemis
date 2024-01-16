@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:device="clr-namespace:Artemis.UI.Screens.Device"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             xmlns:leds="clr-namespace:Artemis.UI.Screens.Device.Leds"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Device.Leds.DeviceLedsTabView"
+             x:DataType="leds:DeviceLedsTabViewModel">
+    <UserControl.Resources>
+        <converters:UriToFileNameConverter x:Key="UriToFileNameConverter" />
+        <converters:LedIdToStringConverter x:Key="LedIdToStringConverter" />
+        <shared:ToStringConverter x:Key="ToStringConverter" />
+    </UserControl.Resources>
+    <DataGrid ItemsSource="{CompiledBinding LedViewModels}" CanUserSortColumns="True" AutoGenerateColumns="False">
+        <DataGrid.Columns>
+            <DataGridTemplateColumn CanUserSort="False" CanUserReorder="False" Header="Highlight">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <CheckBox IsChecked="{CompiledBinding IsSelected, Mode=TwoWay}" />
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTextColumn Binding="{CompiledBinding ArtemisLed.RgbLed.Id, Converter={StaticResource LedIdToStringConverter}, Mode=OneWay}" Header="LED ID" Width="Auto" />
+            <DataGridTextColumn Binding="{CompiledBinding ArtemisLed.RgbLed.Color, Converter={StaticResource ToStringConverter}, Mode=OneWay}" Header="Color (ARGB)" Width="Auto" CanUserSort="False" />
+            <DataGridTextColumn Binding="{CompiledBinding ArtemisLed.Layout.Image, Converter={StaticResource UriToFileNameConverter}, Mode=OneWay}" Header="Image file" CanUserSort="False" />
+            <DataGridTextColumn Binding="{CompiledBinding ArtemisLed.RgbLed.Shape}" Header="Shape" />
+            <DataGridTextColumn Binding="{CompiledBinding ArtemisLed.RgbLed.Location, Converter={StaticResource ToStringConverter}, Mode=OneWay}" Header="Location" Width="Auto" CanUserSort="False" />
+            <DataGridTextColumn Binding="{CompiledBinding ArtemisLed.RgbLed.Size, Converter={StaticResource ToStringConverter}, Mode=OneWay}" Header="Size" Width="Auto" CanUserSort="False" />
+            <DataGridTextColumn Binding="{CompiledBinding ArtemisLed.RgbLed.CustomData}" Header="LED data" Width="Auto" />
+        </DataGrid.Columns>
+    </DataGrid>
+</UserControl>

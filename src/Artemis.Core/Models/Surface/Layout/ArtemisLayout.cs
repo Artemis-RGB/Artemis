@@ -12,17 +12,18 @@ namespace Artemis.Core;
 /// </summary>
 public class ArtemisLayout
 {
+    private static readonly string DefaultLayoutPath = Path.Combine(Constants.ApplicationFolder, "DefaultLayouts", "Artemis");
+
     /// <summary>
     ///     Creates a new instance of the <see cref="ArtemisLayout" /> class
     /// </summary>
     /// <param name="filePath">The path of the layout XML file</param>
-    /// <param name="source">The source from where this layout is being loaded</param>
-    public ArtemisLayout(string filePath, LayoutSource source)
+    public ArtemisLayout(string filePath)
     {
         FilePath = filePath;
-        Source = source;
         Leds = new List<ArtemisLedLayout>();
-
+        IsDefaultLayout = filePath.StartsWith(DefaultLayoutPath);
+        
         LoadLayout();
     }
 
@@ -30,11 +31,6 @@ public class ArtemisLayout
     ///     Gets the file path the layout was (attempted to be) loaded from
     /// </summary>
     public string FilePath { get; }
-
-    /// <summary>
-    ///     Gets the source from where this layout was loaded
-    /// </summary>
-    public LayoutSource Source { get; }
 
     /// <summary>
     ///     Gets a boolean indicating whether a valid layout was loaded
@@ -60,6 +56,8 @@ public class ArtemisLayout
     ///     Gets the custom layout data embedded in the RGB.NET layout
     /// </summary>
     public LayoutCustomDeviceData LayoutCustomDeviceData { get; private set; } = null!;
+
+    public bool IsDefaultLayout { get; private set; }
 
     /// <summary>
     ///     Applies the layout to the provided device
@@ -121,29 +119,28 @@ public class ArtemisLayout
 
     internal static ArtemisLayout? GetDefaultLayout(ArtemisDevice device)
     {
-        string layoutFolder = Path.Combine(Constants.ApplicationFolder, "DefaultLayouts", "Artemis");
         if (device.DeviceType == RGBDeviceType.Keyboard)
         {
             // XL layout is defined by its programmable macro keys
             if (device.Leds.Any(l => l.RgbLed.Id >= LedId.Keyboard_Programmable1 && l.RgbLed.Id <= LedId.Keyboard_Programmable32))
             {
                 if (device.PhysicalLayout == KeyboardLayoutType.ANSI)
-                    return new ArtemisLayout(Path.Combine(layoutFolder, "Keyboard", "Artemis XL keyboard-ANSI.xml"), LayoutSource.Default);
-                return new ArtemisLayout(Path.Combine(layoutFolder, "Keyboard", "Artemis XL keyboard-ISO.xml"), LayoutSource.Default);
+                    return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Keyboard", "Artemis XL keyboard-ANSI.xml"));
+                return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Keyboard", "Artemis XL keyboard-ISO.xml"));
             }
 
             // L layout is defined by its numpad
             if (device.Leds.Any(l => l.RgbLed.Id >= LedId.Keyboard_NumLock && l.RgbLed.Id <= LedId.Keyboard_NumPeriodAndDelete))
             {
                 if (device.PhysicalLayout == KeyboardLayoutType.ANSI)
-                    return new ArtemisLayout(Path.Combine(layoutFolder + "Keyboard", "Artemis L keyboard-ANSI.xml"), LayoutSource.Default);
-                return new ArtemisLayout(Path.Combine(layoutFolder + "Keyboard", "Artemis L keyboard-ISO.xml"), LayoutSource.Default);
+                    return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Keyboard", "Artemis L keyboard-ANSI.xml"));
+                return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Keyboard", "Artemis L keyboard-ISO.xml"));
             }
 
             // No numpad will result in TKL
             if (device.PhysicalLayout == KeyboardLayoutType.ANSI)
-                return new ArtemisLayout(Path.Combine(layoutFolder + "Keyboard", "Artemis TKL keyboard-ANSI.xml"), LayoutSource.Default);
-            return new ArtemisLayout(Path.Combine(layoutFolder + "Keyboard", "Artemis TKL keyboard-ISO.xml"), LayoutSource.Default);
+                return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Keyboard", "Artemis TKL keyboard-ANSI.xml"));
+            return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Keyboard", "Artemis TKL keyboard-ISO.xml"));
         }
 
         // if (device.DeviceType == RGBDeviceType.Mouse)
@@ -151,21 +148,21 @@ public class ArtemisLayout
         //     if (device.Leds.Count == 1)
         //     {
         //         if (device.Leds.Any(l => l.RgbLed.Id == LedId.Logo))
-        //             return new ArtemisLayout(Path.Combine(layoutFolder + "Mouse", "1 LED mouse logo.xml"), LayoutSource.Default);
-        //         return new ArtemisLayout(Path.Combine(layoutFolder + "Mouse", "1 LED mouse.xml"), LayoutSource.Default);
+        //             return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Mouse", "1 LED mouse logo.xml"), LayoutSource.Default);
+        //         return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Mouse", "1 LED mouse.xml"), LayoutSource.Default);
         //     }
         //     if (device.Leds.Any(l => l.RgbLed.Id == LedId.Logo))
-        //         return new ArtemisLayout(Path.Combine(layoutFolder + "Mouse", "4 LED mouse logo.xml"), LayoutSource.Default);
-        //     return new ArtemisLayout(Path.Combine(layoutFolder + "Mouse", "4 LED mouse.xml"), LayoutSource.Default);
+        //         return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Mouse", "4 LED mouse logo.xml"), LayoutSource.Default);
+        //     return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Mouse", "4 LED mouse.xml"), LayoutSource.Default);
         // }
 
         if (device.DeviceType == RGBDeviceType.Headset)
         {
             if (device.Leds.Count == 1)
-                return new ArtemisLayout(Path.Combine(layoutFolder + "Headset", "Artemis 1 LED headset.xml"), LayoutSource.Default);
+                return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Headset", "Artemis 1 LED headset.xml"));
             if (device.Leds.Count == 2)
-                return new ArtemisLayout(Path.Combine(layoutFolder + "Headset", "Artemis 2 LED headset.xml"), LayoutSource.Default);
-            return new ArtemisLayout(Path.Combine(layoutFolder + "Headset", "Artemis 4 LED headset.xml"), LayoutSource.Default);
+                return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Headset", "Artemis 2 LED headset.xml"));
+            return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Headset", "Artemis 4 LED headset.xml"));
         }
 
         return null;
@@ -206,30 +203,10 @@ public class ArtemisLayout
         else
             Image = null;
     }
-}
 
-/// <summary>
-///     Represents a source from where a layout came
-/// </summary>
-public enum LayoutSource
-{
-    /// <summary>
-    ///     A layout loaded from config
-    /// </summary>
-    Configured,
-
-    /// <summary>
-    ///     A layout loaded from the user layout folder
-    /// </summary>
-    User,
-
-    /// <summary>
-    ///     A layout loaded from the plugin folder
-    /// </summary>
-    Plugin,
-
-    /// <summary>
-    ///     A default layout loaded as a fallback option
-    /// </summary>
-    Default
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return FilePath;
+    }
 }

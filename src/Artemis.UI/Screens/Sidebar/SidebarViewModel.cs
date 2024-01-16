@@ -16,19 +16,20 @@ using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
 using Material.Icons;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Sidebar;
 
-public class SidebarViewModel : ActivatableViewModelBase
+public partial class SidebarViewModel : ActivatableViewModelBase
 {
     public const string ROOT_SCREEN = "root";
 
     private readonly IRouter _router;
     private readonly IWindowService _windowService;
-    private ReadOnlyObservableCollection<SidebarCategoryViewModel> _sidebarCategories = new(new ObservableCollection<SidebarCategoryViewModel>());
-    private SidebarScreenViewModel? _selectedScreen;
     private bool _updating;
+    [Notify] private ReadOnlyObservableCollection<SidebarCategoryViewModel> _sidebarCategories = new(new ObservableCollection<SidebarCategoryViewModel>());
+    [Notify] private SidebarScreenViewModel? _selectedScreen;
 
     public SidebarViewModel(IRouter router, IProfileService profileService, IWindowService windowService, ISidebarVmFactory sidebarVmFactory)
     {
@@ -91,19 +92,6 @@ public class SidebarViewModel : ActivatableViewModelBase
     }
 
     public SidebarScreenViewModel SidebarScreen { get; }
-
-    public SidebarScreenViewModel? SelectedScreen
-    {
-        get => _selectedScreen;
-        set => RaiseAndSetIfChanged(ref _selectedScreen, value);
-    }
-
-    public ReadOnlyObservableCollection<SidebarCategoryViewModel> SidebarCategories
-    {
-        get => _sidebarCategories;
-        set => RaiseAndSetIfChanged(ref _sidebarCategories, value);
-    }
-
     public ReactiveCommand<Unit, Unit> AddCategory { get; }
 
     private async Task ExecuteAddCategory()

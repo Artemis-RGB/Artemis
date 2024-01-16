@@ -1,0 +1,15 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:image="clr-namespace:Artemis.UI.Screens.Workshop.Image"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Image.ImagePropertiesDialogView"
+             x:DataType="image:ImagePropertiesDialogViewModel">
+    <StackPanel Width="400">
+        <Label>Name</Label>
+        <TextBox Text="{CompiledBinding Name}" Watermark="Name" MaxLength="50"/>
+        <Label>Description</Label>
+        <TextBox AcceptsReturn="True" Height="150" Text="{CompiledBinding Description}" Watermark="Description" MaxLength="150" MaxLines="7"/>
+    </StackPanel>
+</UserControl>
