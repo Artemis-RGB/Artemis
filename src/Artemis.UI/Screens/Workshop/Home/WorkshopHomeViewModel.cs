@@ -25,12 +25,6 @@ public partial class WorkshopHomeViewModel : RoutableScreen
 
         this.WhenActivatedAsync(async d => WorkshopReachable = await workshopService.ValidateWorkshopStatus(d.AsCancellationToken()));
     }
-
-#if DEBUG
-    public bool ShowLayouts => true;
-# else
-    public bool ShowLayouts => false;
-#endif
     
     public ReactiveCommand<Unit, Unit> AddSubmission { get; }
     public ReactiveCommand<string, Unit> Navigate { get; }

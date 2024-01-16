@@ -15,12 +15,6 @@ public partial class EntryTypeStepViewModel : SubmissionViewModel
         GoBack = ReactiveCommand.Create(() => State.ChangeScreen<WelcomeStepViewModel>());
         Continue = ReactiveCommand.Create(ExecuteContinue, this.WhenAnyValue(vm => vm.SelectedEntryType).Select(e => e != null));
     }
-    
-#if DEBUG
-    public bool ShowLayouts => true;
-# else
-    public bool ShowLayouts => false;
-#endif
 
     private void ExecuteContinue()
     {

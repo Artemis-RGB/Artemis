@@ -36,8 +36,7 @@
             </RadioButton.Content>
         </RadioButton>
         <RadioButton GroupName="EntryType" 
-                     IsChecked="{CompiledBinding SelectedEntryType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static workshop:EntryType.Layout}}"
-                     IsVisible="{CompiledBinding ShowLayouts}">
+                     IsChecked="{CompiledBinding SelectedEntryType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static workshop:EntryType.Layout}}">
             <RadioButton.Content>
                 <StackPanel>
                     <TextBlock>Layout</TextBlock>
