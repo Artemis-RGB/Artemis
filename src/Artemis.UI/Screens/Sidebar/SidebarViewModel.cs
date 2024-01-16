@@ -42,9 +42,7 @@ public partial class SidebarViewModel : ActivatableViewModelBase
             new(MaterialIconKind.TestTube, "Workshop", "workshop", null, new ObservableCollection<SidebarScreenViewModel>
             {
                 new(MaterialIconKind.FolderVideo, "Profiles", "workshop/entries/profiles/1", "workshop/entries/profiles"),
-#if DEBUG
                 new(MaterialIconKind.KeyboardVariant, "Layouts", "workshop/entries/layouts/1", "workshop/entries/layouts"),
-#endif
                 new(MaterialIconKind.Bookshelf, "Library", "workshop/library"),
             }),
 

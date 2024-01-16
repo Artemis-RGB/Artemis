@@ -34,10 +34,8 @@ public static class Routes
                     {
                         new RouteRegistration<ProfileListViewModel>("profiles/{page:int}"),
                         new RouteRegistration<ProfileDetailsViewModel>("profiles/details/{entryId:long}"),
-#if DEBUG
                         new RouteRegistration<LayoutListViewModel>("layouts/{page:int}"),
                         new RouteRegistration<LayoutDetailsViewModel>("layouts/details/{entryId:long}"),
-#endif
                     }
                 },
                 new RouteRegistration<WorkshopLibraryViewModel>("library")
