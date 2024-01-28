@@ -79,6 +79,19 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
         await Dispatcher.UIThread.InvokeAsync(() => InternalNavigate(path, options));
     }
 
+    /// <inheritdoc />
+    public async Task Reload()
+    {
+        string path = _currentRouteSubject.Value ?? "blank";
+        
+        // Routing takes place on the UI thread with processing heavy tasks offloaded by the router itself
+        await Dispatcher.UIThread.InvokeAsync(async () =>
+        {
+            await InternalNavigate("blank", new RouterNavigationOptions {AddToHistory = false, RecycleScreens = false, EnableLogging = false});
+            await InternalNavigate(path, new RouterNavigationOptions {AddToHistory = false, RecycleScreens = false});
+        });
+    }
+
     private async Task InternalNavigate(string path, RouterNavigationOptions options)
     {
         if (_root == null)

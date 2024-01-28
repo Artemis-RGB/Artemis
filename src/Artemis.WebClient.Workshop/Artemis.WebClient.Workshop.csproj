@@ -39,7 +39,10 @@
       <GraphQL Update="Queries\RemoveEntry.graphql">
         <Generator>MSBuild:GenerateGraphQLCode</Generator>
       </GraphQL>
-      <GraphQL Update="Queries\UpdateEntry.graphql">
+      <GraphQL Update="Mutations\UpdateEntry.graphql">
+        <Generator>MSBuild:GenerateGraphQLCode</Generator>
+      </GraphQL>
+      <GraphQL Update="Mutations\UpdateEntryImage.graphql">
         <Generator>MSBuild:GenerateGraphQLCode</Generator>
       </GraphQL>
     </ItemGroup>

@@ -19,14 +19,16 @@ public static class ArtemisLayoutExtensions
     /// Renders the layout to a bitmap.
     /// </summary>
     /// <param name="layout">The layout to render</param>
+    /// <param name="previewLeds">A value indicating whether or not to draw LEDs on the image.</param>
+    /// <param name="scale">The scale at which to draw the layout.</param>
     /// <returns>The resulting bitmap.</returns>
-    public static RenderTargetBitmap RenderLayout(this ArtemisLayout layout, bool previewLeds)
+    public static RenderTargetBitmap RenderLayout(this ArtemisLayout layout, bool previewLeds, int scale = 2)
     {
         string? path = layout.Image?.LocalPath;
 
         // Create a bitmap that'll be used to render the device and LED images just once
         // Render 4 times the actual size of the device to make sure things look sharp when zoomed in
-        RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) layout.RgbLayout.Width * 2, (int) layout.RgbLayout.Height * 2));
+        RenderTargetBitmap renderTargetBitmap = new(new PixelSize((int) layout.RgbLayout.Width * scale, (int) layout.RgbLayout.Height * scale));
 
         using DrawingContext context = renderTargetBitmap.CreateDrawingContext();
 
@@ -45,8 +47,8 @@ public static class ArtemisLayoutExtensions
             if (ledPath == null || !File.Exists(ledPath))
                 continue;
             using Bitmap bitmap = new(ledPath);
-            using Bitmap scaledBitmap = bitmap.CreateScaledBitmap(new PixelSize((led.RgbLayout.Width * 2).RoundToInt(), (led.RgbLayout.Height * 2).RoundToInt()));
-            context.DrawImage(scaledBitmap, new Rect(led.RgbLayout.X * 2, led.RgbLayout.Y * 2, scaledBitmap.Size.Width, scaledBitmap.Size.Height));
+            using Bitmap scaledBitmap = bitmap.CreateScaledBitmap(new PixelSize((led.RgbLayout.Width * scale).RoundToInt(), (led.RgbLayout.Height * scale).RoundToInt()));
+            context.DrawImage(scaledBitmap, new Rect(led.RgbLayout.X * scale, led.RgbLayout.Y * scale, scaledBitmap.Size.Width, scaledBitmap.Size.Height));
         }
 
         if (!previewLeds)
@@ -55,14 +57,14 @@ public static class ArtemisLayoutExtensions
         // Draw LED geometry using a rainbow gradient
         ColorGradient colors = ColorGradient.GetUnicornBarf();
         colors.ToggleSeamless();
-        context.PushTransform(Matrix.CreateScale(2, 2));
+        context.PushTransform(Matrix.CreateScale(scale, scale));
         foreach (ArtemisLedLayout led in layout.Leds)
         {
             Geometry? geometry = CreateLedGeometry(led);
             if (geometry == null)
                 continue;
 
-            Color color = colors.GetColor((led.RgbLayout.X + led.RgbLayout.Width / 2) / layout.RgbLayout.Width).ToColor();
+            Color color = colors.GetColor((led.RgbLayout.X + led.RgbLayout.Width / scale) / layout.RgbLayout.Width).ToColor();
             SolidColorBrush fillBrush = new() {Color = color, Opacity = 0.4};
             SolidColorBrush penBrush = new() {Color = color};
             Pen pen = new(penBrush) {LineJoin = PenLineJoin.Round};

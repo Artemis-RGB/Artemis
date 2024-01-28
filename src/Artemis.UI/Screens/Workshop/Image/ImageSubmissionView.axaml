@@ -11,7 +11,7 @@
     <UserControl.Resources>
         <converters:BytesToStringConverter x:Key="BytesToStringConverter" />
     </UserControl.Resources>
-    <Border Classes="card" Padding="0" Width="300" ClipToBounds="True" Margin="5">
+    <Border Classes="card" Padding="0" ClipToBounds="True">
         <Grid RowDefinitions="230,*">
             <Rectangle Grid.Row="0" Fill="{DynamicResource CheckerboardBrush}" />
             <Image Grid.Row="0"

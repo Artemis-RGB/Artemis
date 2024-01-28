@@ -29,6 +29,7 @@ public partial class RoutingDebugViewModel : ActivatableViewModelBase
     {
         _router = router;
         DisplayName = "Routing";
+        Reload = ReactiveCommand.CreateFromTask(ExecutReload);
         Navigate = ReactiveCommand.CreateFromTask(ExecuteNavigate, this.WhenAnyValue(vm => vm.Route).Select(r => !string.IsNullOrWhiteSpace(r)));
 
         _formatter = new MessageTemplateTextFormatter(
@@ -48,6 +49,7 @@ public partial class RoutingDebugViewModel : ActivatableViewModelBase
     }
 
     public InlineCollection Lines { get; } = new();
+    public ReactiveCommand<Unit, Unit> Reload { get; }
     public ReactiveCommand<Unit, Unit> Navigate { get; }
 
     private void OnLogEventAdded(object? sender, LogEventEventArgs e)
@@ -86,6 +88,18 @@ public partial class RoutingDebugViewModel : ActivatableViewModelBase
     {
         if (Lines.Count > MAX_ENTRIES)
             Lines.RemoveRange(0, Lines.Count - MAX_ENTRIES);
+    }
+    
+    private async Task ExecutReload(CancellationToken arg)
+    {
+        try
+        {
+            await _router.Reload();
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
     }
 
     private async Task ExecuteNavigate(CancellationToken arg)

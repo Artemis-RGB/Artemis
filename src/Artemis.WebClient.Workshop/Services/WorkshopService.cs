@@ -81,6 +81,14 @@ public class WorkshopService : IWorkshopService
     }
 
     /// <inheritdoc />
+    public async Task DeleteEntryImage(Guid id, CancellationToken cancellationToken)
+    {
+        HttpClient client = _httpClientFactory.CreateClient(WorkshopConstants.WORKSHOP_CLIENT_NAME);
+        HttpResponseMessage response = await client.DeleteAsync($"images/{id}", cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
+
+    /// <inheritdoc />
     public async Task<IWorkshopService.WorkshopStatus> GetWorkshopStatus(CancellationToken cancellationToken)
     {
         try

@@ -16,7 +16,6 @@ namespace Artemis.UI.Screens.Workshop.SubmissionWizard.Steps;
 
 public class ImagesStepViewModel : SubmissionViewModel
 {
-    private const long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
     private readonly IWindowService _windowService;
     private readonly Func<ImageUploadRequest, ImageSubmissionViewModel> _getImageSubmissionViewModel;
     private readonly SourceList<ImageUploadRequest> _stateImages;
@@ -66,7 +65,7 @@ public class ImagesStepViewModel : SubmissionViewModel
                 continue;
 
             FileStream stream = new(path, FileMode.Open, FileAccess.Read);
-            if (stream.Length > MAX_FILE_SIZE)
+            if (stream.Length > ImageUploadRequest.MAX_FILE_SIZE)
             {
                 await _windowService.ShowConfirmContentDialog("File too big", $"File {path} exceeds maximum file size of 10 MB", "Skip file", null);
                 await stream.DisposeAsync();

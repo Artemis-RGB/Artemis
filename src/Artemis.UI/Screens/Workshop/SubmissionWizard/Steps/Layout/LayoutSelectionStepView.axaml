@@ -7,7 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout.LayoutSelectionStepView"
              x:DataType="layout:LayoutSelectionStepViewModel">
-    <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto,*, *">
         <StackPanel>
             <StackPanel.Styles>
                 <Styles>

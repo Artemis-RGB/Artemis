@@ -7,6 +7,7 @@ public interface IWorkshopService
     Task<Stream?> GetEntryIcon(long entryId, CancellationToken cancellationToken);
     Task<ImageUploadResult> SetEntryIcon(long entryId, Stream icon, CancellationToken cancellationToken);
     Task<ImageUploadResult> UploadEntryImage(long entryId, ImageUploadRequest request, CancellationToken cancellationToken);
+    Task DeleteEntryImage(Guid id, CancellationToken cancellationToken);
     Task<WorkshopStatus> GetWorkshopStatus(CancellationToken cancellationToken);
     Task<bool> ValidateWorkshopStatus(CancellationToken cancellationToken);
     Task NavigateToEntry(long entryId, EntryType entryType);
