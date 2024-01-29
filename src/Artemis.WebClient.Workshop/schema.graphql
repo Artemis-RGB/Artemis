@@ -426,7 +426,7 @@ input TagFilterInput {
 }
 
 input UpdateEntryImageInput {
-    description: String!
+    description: String
     id: UUID!
     name: String!
 }

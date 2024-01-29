@@ -228,7 +228,7 @@ public partial class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailPa
             // Update existing images
             else if (imageViewModel.HasChanges && imageViewModel.Id != null)
             {
-                if (imageViewModel.Name != null && imageViewModel.Description != null)
+                if (imageViewModel.Name != null)
                     await _client.UpdateEntryImage.ExecuteAsync(imageViewModel.Id.Value, imageViewModel.Name, imageViewModel.Description, cancellationToken);
             }
         }
