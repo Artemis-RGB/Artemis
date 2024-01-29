@@ -27,6 +27,12 @@ public interface IRouter
     /// <param name="options">Optional navigation options used to control navigation behaviour.</param>
     /// <returns>A task representing the operation</returns>
     Task Navigate(string path, RouterNavigationOptions? options = null);
+    
+    /// <summary>
+    /// Asynchronously reloads the current route
+    /// </summary>
+    /// <returns>A task representing the operation</returns>
+    Task Reload();
 
     /// <summary>
     ///     Asynchronously navigates back to the previous active route.

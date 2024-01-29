@@ -53,6 +53,8 @@ type Entry {
 
 type Image {
     description: String
+    entry: Entry
+    entryId: Long
     height: Int!
     id: UUID!
     mimeType: String!
@@ -79,6 +81,7 @@ type Mutation {
     removeEntry(id: Long!): Entry
     removeLayoutInfo(id: Long!): LayoutInfo!
     updateEntry(input: UpdateEntryInput!): Entry
+    updateEntryImage(input: UpdateEntryImageInput!): Image
 }
 
 type Query {
@@ -260,6 +263,8 @@ input EntryTypeOperationFilterInput {
 input ImageFilterInput {
     and: [ImageFilterInput!]
     description: StringOperationFilterInput
+    entry: EntryFilterInput
+    entryId: LongOperationFilterInput
     height: IntOperationFilterInput
     id: UuidOperationFilterInput
     mimeType: StringOperationFilterInput
@@ -271,6 +276,8 @@ input ImageFilterInput {
 
 input ImageSortInput {
     description: SortEnumType
+    entry: EntrySortInput
+    entryId: SortEnumType
     height: SortEnumType
     id: SortEnumType
     mimeType: SortEnumType
@@ -416,6 +423,12 @@ input TagFilterInput {
     id: LongOperationFilterInput
     name: StringOperationFilterInput
     or: [TagFilterInput!]
+}
+
+input UpdateEntryImageInput {
+    description: String
+    id: UUID!
+    name: String!
 }
 
 input UpdateEntryInput {

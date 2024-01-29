@@ -23,6 +23,11 @@
 
         <ScrollViewer Grid.Row="1" Margin="0 20 0 0">
             <ItemsControl ItemsSource="{CompiledBinding Images}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl Content="{CompiledBinding}" Margin="0 0 5 0" Width="300"></ContentControl>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />

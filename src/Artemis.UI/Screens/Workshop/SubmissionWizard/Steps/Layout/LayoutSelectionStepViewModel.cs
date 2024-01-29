@@ -145,7 +145,7 @@ public partial class LayoutSelectionStepViewModel : SubmissionViewModel
         return true;
     }
     
-    private void SetDeviceImages()
+    private async Task SetDeviceImages()
     {
         if (Layout == null)
             return;
@@ -153,15 +153,15 @@ public partial class LayoutSelectionStepViewModel : SubmissionViewModel
         MemoryStream deviceWithoutLeds = new();
         MemoryStream deviceWithLeds = new();
 
-        using (RenderTargetBitmap image = Layout.RenderLayout(false))
+        using (RenderTargetBitmap image = Layout.RenderLayout(false, 4))
         {
-            image.Save(deviceWithoutLeds);
+            await Task.Run(() => image.Save(deviceWithoutLeds));
             deviceWithoutLeds.Seek(0, SeekOrigin.Begin);
         }
 
-        using (RenderTargetBitmap image = Layout.RenderLayout(true))
+        using (RenderTargetBitmap image = Layout.RenderLayout(true, 4))
         {
-            image.Save(deviceWithLeds);
+            await Task.Run(() => image.Save(deviceWithLeds));
             deviceWithLeds.Seek(0, SeekOrigin.Begin);
         }
 

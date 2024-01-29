@@ -1,0 +1,5 @@
+mutation UpdateEntryImage ($id: UUID! $name: String! $description: String) {
+    updateEntryImage(input: {id: $id, name: $name description: $description}) {
+        id
+    }
+}

@@ -11,5 +11,8 @@ query GetSubmittedEntryById($id: Long!) {
         layoutInfo {
             ...layoutInfo
         }
+        images {
+            ...image
+        }
     }
 }

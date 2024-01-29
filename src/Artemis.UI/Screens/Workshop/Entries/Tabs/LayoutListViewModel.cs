@@ -12,10 +12,10 @@ public class LayoutListViewModel : List.EntryListViewModel
     public LayoutListViewModel(IWorkshopClient workshopClient,
         IRouter router,
         CategoriesViewModel categoriesViewModel,
-        List.EntryListInputViewModel entryListInputViewModel,
+        EntryListInputViewModel entryListInputViewModel,
         INotificationService notificationService,
         Func<IGetEntries_Entries_Items, EntryListItemViewModel> getEntryListViewModel)
-        : base("workshop/entries/layout", workshopClient, router, categoriesViewModel, entryListInputViewModel, notificationService, getEntryListViewModel)
+        : base("workshop/entries/layouts", workshopClient, router, categoriesViewModel, entryListInputViewModel, notificationService, getEntryListViewModel)
     {
         entryListInputViewModel.SearchWatermark = "Search layouts";
     }

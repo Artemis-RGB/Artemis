@@ -2,6 +2,8 @@
 
 public class ImageUploadRequest
 {
+    public const long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+    
     public ImageUploadRequest(Stream file, string name, string? description)
     {
         File = file;
