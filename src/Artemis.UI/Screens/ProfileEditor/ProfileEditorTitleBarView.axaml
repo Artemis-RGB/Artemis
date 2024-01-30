@@ -2,7 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
              xmlns:profileEditor="clr-namespace:Artemis.UI.Screens.ProfileEditor"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -10,12 +9,6 @@
              x:DataType="profileEditor:ProfileEditorTitleBarViewModel">
     <Grid ColumnDefinitions="*,Auto">
         <ContentControl Grid.Row="0" Grid.Column="0" Content="{CompiledBinding MenuBarViewModel}" windowing:AppWindow.AllowInteractionInTitleBar="True" HorizontalAlignment="Left" />
-        <Button Grid.Column="1" Classes="title-bar-button"
-                Command="{CompiledBinding ShowDebugger}"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                windowing:AppWindow.AllowInteractionInTitleBar="True">
-            <avalonia:MaterialIcon Kind="Bug" />
-        </Button>
+        <ContentControl Grid.Row="0" Grid.Column="1" Content="{CompiledBinding DefaultTitleBarViewModel}" HorizontalAlignment="Right" />
     </Grid>
 </UserControl>

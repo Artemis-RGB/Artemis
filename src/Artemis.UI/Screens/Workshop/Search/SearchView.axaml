@@ -4,15 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:search="clr-namespace:Artemis.UI.Screens.Workshop.Search"
              xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
-             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Search.SearchView"
              x:DataType="search:SearchViewModel">
     <UserControl.Styles>
         <StyleInclude Source="SearchViewStyles.axaml" />
     </UserControl.Styles>
-    <Panel Margin="0 5">
+    <Panel>
         <AutoCompleteBox Name="SearchBox"
+                         Margin="0 5"
                          MaxWidth="500"
                          Watermark="Search"
                          MinimumPopulateDelay="0:0:0.8"
@@ -28,18 +28,11 @@
             </AutoCompleteBox.ItemTemplate>
         </AutoCompleteBox>
         <ContentControl HorizontalAlignment="Right"
-                        Width="28"
-                        Height="28"
-                        Margin="0 0 75 0"
-                        Content="{CompiledBinding CurrentUserViewModel}"
+                        Content="{CompiledBinding DefaultTitleBarViewModel}"
                         windowing:AppWindow.AllowInteractionInTitleBar="True" />
 
-        <Border VerticalAlignment="Top" CornerRadius="4 4 0 0" ClipToBounds="True" MaxWidth="500">
+        <Border VerticalAlignment="Top" CornerRadius="4 4 0 0" ClipToBounds="True" MaxWidth="500" Margin="0 5">
             <ProgressBar IsIndeterminate="True" VerticalAlignment="Top" IsVisible="{CompiledBinding IsLoading}"></ProgressBar>
         </Border>
-        
-        <Button Classes="title-bar-button" Command="{CompiledBinding ShowDebugger}" Margin="0 -5 0 0" VerticalAlignment="Top" HorizontalAlignment="Right" windowing:AppWindow.AllowInteractionInTitleBar="True" >
-            <avalonia:MaterialIcon Kind="Bug"></avalonia:MaterialIcon>
-        </Button>
     </Panel>
 </UserControl>

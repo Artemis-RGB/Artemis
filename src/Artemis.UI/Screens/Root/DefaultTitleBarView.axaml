@@ -8,7 +8,15 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="root:DefaultTitleBarViewModel"
              x:Class="Artemis.UI.Screens.Root.DefaultTitleBarView">
-    <Button Classes="title-bar-button" Command="{CompiledBinding ShowDebugger}" VerticalAlignment="Top" HorizontalAlignment="Right" windowing:AppWindow.AllowInteractionInTitleBar="True" >
-        <avalonia:MaterialIcon Kind="Bug"></avalonia:MaterialIcon>
-    </Button>
+    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Height="42">
+        <ContentControl Width="28"
+                        Height="28"
+                        Margin="0 0 29 0"
+                        VerticalAlignment="Center"
+                        Content="{CompiledBinding CurrentUserViewModel}"
+                        windowing:AppWindow.AllowInteractionInTitleBar="True" />
+        <Button Classes="title-bar-button" Command="{CompiledBinding ShowDebugger}"  windowing:AppWindow.AllowInteractionInTitleBar="True" VerticalAlignment="Top">
+            <avalonia:MaterialIcon Kind="Bug"></avalonia:MaterialIcon>
+        </Button>
+    </StackPanel>
 </UserControl>

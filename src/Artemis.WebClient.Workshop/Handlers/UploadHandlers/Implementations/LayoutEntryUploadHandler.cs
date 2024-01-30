@@ -54,12 +54,6 @@ public class LayoutEntryUploadHandler : IEntryUploadHandler
                     CopyImage(layoutPath, customData.Image, archive);
             }
         }
-
-        archiveStream.Seek(0, SeekOrigin.Begin);
-        await using (FileStream fileStream = new(@"C:\Users\Robert\Desktop\layout-test.zip", FileMode.OpenOrCreate))
-        {
-            await archiveStream.CopyToAsync(fileStream, cancellationToken);
-        }
         archiveStream.Seek(0, SeekOrigin.Begin);
         
         // Submit the archive
