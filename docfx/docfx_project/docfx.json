@@ -3,16 +3,14 @@
     {
       "src": [
         {
+          "src": "../../src",
           "files": [
-            "Artemis.Core/bin/net7.0/Artemis.Core.dll",
-            "Artemis.UI.Shared/bin/net7.0/Artemis.UI.Shared.dll"
-          ],
-          "src": "../../src"
+            "**/Artemis.Core.csproj",
+            "**/Artemis.UI.Shared.csproj"
+          ]
         }
       ],
       "dest": "api",
-      "disableGitFeatures": false,
-      "disableDefaultFilter": false,
       "filter": "filterConfig.yml"
     }
   ],
@@ -20,13 +18,10 @@
     "content": [
       {
         "files": [
-          "api/**.yml"
-        ]
-      },
-      {
-        "files": [
-          "toc.yml",
-          "*.md"
+          "**/*.{md,yml}"
+        ],
+        "exclude": [
+          "_site/**"
         ]
       }
     ],
@@ -37,42 +32,20 @@
         ]
       }
     ],
-    "overwrite": [
-      {
-        "files": [
-          "apidoc/**.md"
-        ],
-        "exclude": [
-          "obj/**",
-          "_site/**"
-        ]
-      }
+    "output": "_site",
+    "template": [
+      "default",
+      "modern"
     ],
     "globalMetadata": {
       "_appTitle": "Artemis API Documentation",
       "_appName": "Artemis",
-      "_appFaviconPath": "images/application.ico",
-      "_appLogoPath": "images/application.ico",
-      "_appFooter": "<a href=\"https://artemis-rgb.com\" style=\"margin: 0 5px;\">\r    <i class=\"bi-globe\" role=\"img\" aria-label=\"GitHub\" style=\"margin: 0 10\"></i>\r</a>\r<a href=\"https://github.com/Artemis-RGB/Artemis\" style=\"margin: 0 5px;\">\r    <i class=\"bi-github\" role=\"img\" aria-label=\"GitHub\"></i>\r</a>\r<a href=\"https://artemis-rgb.com\" style=\"margin: 0 5px;\">\r    <i class=\"bi bi-layout-text-sidebar-reverse\" role=\"img\" aria-label=\"GitHub\"></i>\r</a>\r<a href=\"https://wiki.artemis-rgb.com/\" style=\"margin: 0 5px;\">\r    <i class=\"bi-chat-fill\" role=\"img\" aria-label=\"GitHub\"></i>\r</a>\r<a href=\"https://wiki.artemis-rgb.com/en/donating\" style=\"margin: 0 5px;\">\r    <i class=\"bi-gift-fill\" role=\"img\" aria-label=\"GitHub\"></i>\r</a>",
       "_copyrightFooter": "Content is available under the PolyForm Noncommercial License, by Artemis RGB.",
       "_enableSearch": true,
       "_disableSideFilter": false,
       "_enableNewTab": true,
       "_disableContribution": false,
       "_disableBreadcrumb": false
-    },
-    "dest": "_site",
-    "globalMetadataFiles": [],
-    "fileMetadataFiles": [],
-    "template": [
-      "default",
-      "templates/singulinkfx"
-    ],
-    "postProcessors": [],
-    "markdownEngineName": "markdig",
-    "noLangKeyword": false,
-    "keepFileLink": false,
-    "cleanupCacheHistory": false,
-    "disableGitFeatures": false
+    }
   }
 }
