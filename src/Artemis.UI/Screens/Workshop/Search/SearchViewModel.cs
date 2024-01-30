@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.UI.Screens.Root;
 using Artemis.UI.Screens.Workshop.CurrentUser;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
@@ -24,19 +25,19 @@ public partial class SearchViewModel : ViewModelBase
     [Notify] private SearchResultViewModel? _selectedEntry;
     [Notify] private bool _isLoading;
 
-    public SearchViewModel(ILogger logger, IWorkshopClient workshopClient, IWorkshopService workshopService, CurrentUserViewModel currentUserViewModel, IDebugService debugService)
+    public SearchViewModel(ILogger logger, IWorkshopClient workshopClient, IWorkshopService workshopService, IDebugService debugService, DefaultTitleBarViewModel defaultTitleBarViewModel)
     {
         _logger = logger;
         _workshopClient = workshopClient;
         _workshopService = workshopService;
         _debugService = debugService;
-        CurrentUserViewModel = currentUserViewModel;
+        DefaultTitleBarViewModel = defaultTitleBarViewModel;
         SearchAsync = ExecuteSearchAsync;
 
         this.WhenAnyValue(vm => vm.SelectedEntry).WhereNotNull().Subscribe(NavigateToEntry);
     }
 
-    public CurrentUserViewModel CurrentUserViewModel { get; }
+    public DefaultTitleBarViewModel DefaultTitleBarViewModel { get; }
 
     public Func<string?, CancellationToken, Task<IEnumerable<object>>> SearchAsync { get; }
     
