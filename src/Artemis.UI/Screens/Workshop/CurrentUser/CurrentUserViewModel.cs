@@ -21,7 +21,6 @@ public partial class CurrentUserViewModel : ActivatableViewModelBase
 {
     private readonly IAuthenticationService _authenticationService;
     private readonly ObservableAsPropertyHelper<bool> _isAnonymous;
-    private readonly HttpClient _httpClient;
     private readonly ILogger _logger;
     private readonly IWindowService _windowService;
     [Notify] private bool _allowLogout = true;
@@ -30,13 +29,13 @@ public partial class CurrentUserViewModel : ActivatableViewModelBase
     [Notify(Setter.Private)] private bool _loading = true;
     [Notify(Setter.Private)] private string? _name;
     [Notify(Setter.Private)] private string? _userId;
+    [Notify(Setter.Private)] private string? _avatarUrl;
 
     public CurrentUserViewModel(ILogger logger, IAuthenticationService authenticationService, IWindowService windowService)
     {
         _logger = logger;
         _authenticationService = authenticationService;
         _windowService = windowService;
-        _httpClient = new HttpClient();
         Login = ReactiveCommand.CreateFromTask(ExecuteLogin);
 
         _isAnonymous = this.WhenAnyValue(vm => vm.Loading, vm => vm.Name, (l, n) => l || n == null).ToProperty(this, vm => vm.IsAnonymous);
@@ -44,7 +43,7 @@ public partial class CurrentUserViewModel : ActivatableViewModelBase
         this.WhenActivated(d =>
         {
             Task.Run(AutoLogin);
-            _authenticationService.IsLoggedIn.Subscribe(_ => Task.Run(LoadCurrentUser)).DisposeWith(d);
+            _authenticationService.IsLoggedIn.Subscribe(_ => LoadCurrentUser()).DisposeWith(d);
         });
     }
 
@@ -66,7 +65,7 @@ public partial class CurrentUserViewModel : ActivatableViewModelBase
             .ShowAsync();
 
         if (result == ContentDialogResult.Primary)
-            await LoadCurrentUser();
+            LoadCurrentUser();
     }
 
     private async Task AutoLogin()
@@ -74,7 +73,7 @@ public partial class CurrentUserViewModel : ActivatableViewModelBase
         try
         {
             await _authenticationService.AutoLogin();
-            await LoadCurrentUser();
+            LoadCurrentUser();
         }
         catch (Exception e)
         {
@@ -86,33 +85,11 @@ public partial class CurrentUserViewModel : ActivatableViewModelBase
         }
     }
 
-    private async Task LoadCurrentUser()
+    private void LoadCurrentUser()
     {
         UserId = _authenticationService.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
         Name = _authenticationService.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
         Email = _authenticationService.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
-
-        if (UserId != null)
-        {
-            await LoadAvatar(UserId);
-        }
-        else
-        {
-            Avatar?.Dispose();
-            Avatar = null;
-        }
-    }
-
-    private async Task LoadAvatar(string userId)
-    {
-        try
-        {
-            Avatar?.Dispose();
-            Avatar = new Bitmap(await _httpClient.GetStreamAsync($"{WorkshopConstants.AUTHORITY_URL}/user/avatar/{userId}"));
-        }
-        catch (Exception)
-        {
-            // ignored
-        }
+        AvatarUrl = $"{WorkshopConstants.AUTHORITY_URL}/user/avatar/{UserId}";
     }
 }

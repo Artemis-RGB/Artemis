@@ -17,21 +17,21 @@
         </StackPanel.Styles>
 
         <StackPanel IsVisible="{CompiledBinding !Finished}">
-            <Lottie Path="/Assets/Animations/busy.json" Width="250" Height="250" Margin="0 100" ></Lottie>
+            <Lottie Path="/Assets/Animations/upload.json" Width="300" Height="300" Margin="0 75" ></Lottie>
             <TextBlock Theme="{StaticResource TitleTextBlockStyle}">Uploading your submission...</TextBlock>
         </StackPanel>
         
         <StackPanel IsVisible="{CompiledBinding Succeeded}">
             <Lottie Path="/Assets/Animations/success.json" RepeatCount="1" Width="250" Height="250" Margin="0 100"></Lottie>
             <TextBlock Theme="{StaticResource TitleTextBlockStyle}">All done! Hit finish to view your submission.</TextBlock>
-        </StackPanel>
+        </StackPanel> 
 
         <StackPanel IsVisible="{CompiledBinding Failed}">
             <TextBlock FontSize="140" Margin="0 100">😢</TextBlock>
             <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">
                 Unfortunately something went wrong while uploading your submission.
             </TextBlock>
-            <TextBlock>Hit finish to view your submission, from there you can try to upload a new release.</TextBlock>
+            <TextBlock Text="{CompiledBinding FailureMessage}"></TextBlock>
             <TextBlock Margin="0 10" Classes="subtitle">If this keeps occuring, hit us up on Discord</TextBlock>
         </StackPanel>
 
