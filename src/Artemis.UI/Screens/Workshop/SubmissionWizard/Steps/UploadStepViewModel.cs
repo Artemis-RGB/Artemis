@@ -5,6 +5,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.Core;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Utilities;
@@ -31,6 +32,7 @@ public partial class UploadStepViewModel : SubmissionViewModel
     [Notify] private bool _failed;
     [Notify] private bool _finished;
     [Notify] private bool _succeeded;
+    [Notify] private string? _failureMessage;
 
     /// <inheritdoc />
     public UploadStepViewModel(ILogger logger,
@@ -56,37 +58,33 @@ public partial class UploadStepViewModel : SubmissionViewModel
 
     private async Task ExecuteUpload(CancellationToken cancellationToken)
     {
-        // Use the existing entry or create a new one
-        _entryId = State.EntryId ?? await CreateEntry(cancellationToken);
-
-        // If a new entry had to be created but that failed, stop here, CreateEntry will send the user back
-        if (_entryId == null)
-            return;
-
         try
         {
+            // Use the existing entry or create a new one
+            _entryId = State.EntryId ?? await CreateEntry(cancellationToken);
+            if (_entryId == null)
+            {
+                Failed = true;
+                return;
+            }
+
+            // Create a release for the new entry
             IEntryUploadHandler uploadHandler = _entryUploadHandlerFactory.CreateHandler(State.EntryType);
             EntryUploadResult uploadResult = await uploadHandler.CreateReleaseAsync(_entryId.Value, State.EntrySource!, cancellationToken);
             if (!uploadResult.IsSuccess)
-            {
-                string? message = uploadResult.Message;
-                if (message != null)
-                    message += "\r\n\r\n";
-                else
-                    message = "";
-                message += "Your submission has still been saved, you may try to upload a new release";
-                await _windowService.ShowConfirmContentDialog("Failed to upload workshop entry", message, "Close", null);
-            }
+                throw new ArtemisWorkshopException(uploadResult.Message);
 
             Succeeded = true;
         }
         catch (Exception e)
         {
             _logger.Error(e, "Failed to upload submission for entry {EntryId}", _entryId);
-
-            // Something went wrong when creating a release :c
-            // We'll keep the workshop entry so that the user can make changes and try again
+            FailureMessage = e.Message;
             Failed = true;
+
+            // If something went wrong halfway through, delete the entry
+            if (_entryId != null)
+                await _workshopClient.RemoveEntry.ExecuteAsync(_entryId.Value, CancellationToken.None);
         }
         finally
         {
@@ -94,10 +92,12 @@ public partial class UploadStepViewModel : SubmissionViewModel
         }
     }
 
-    private async Task<long?> CreateEntry(CancellationToken cancellationToken)
+    private async Task<long> CreateEntry(CancellationToken cancellationToken)
     {
-        await Task.Delay(2000);
-        
+        // Let the UI settle before making the thread busy
+        await Task.Delay(500, cancellationToken);
+
+        // Create entry
         IOperationResult<IAddEntryResult> result = await _workshopClient.AddEntry.ExecuteAsync(new CreateEntryInput
         {
             EntryType = State.EntryType,
@@ -108,18 +108,16 @@ public partial class UploadStepViewModel : SubmissionViewModel
             Tags = State.Tags
         }, cancellationToken);
 
-        long? entryId = result.Data?.AddEntry?.Id;
-        if (result.IsErrorResult() || entryId == null)
-        {
-            await _windowService.ShowConfirmContentDialog("Failed to create workshop entry", string.Join("\r\n", result.Errors.Select(e => e.Message)), "Close", null);
-            State.ChangeScreen<SubmitStepViewModel>();
-            return null;
-        }
-        
+        result.EnsureNoErrors();
+        if (result.Data?.AddEntry == null)
+            throw new ArtemisWorkshopException("AddEntry returned result");
+        long entryId = result.Data.AddEntry.Id;
+
+        // Upload images
         cancellationToken.ThrowIfCancellationRequested();
         foreach (ImageUploadRequest image in State.Images.ToList())
         {
-            await TryImageUpload(async () => await _workshopService.UploadEntryImage(entryId.Value, image, cancellationToken));
+            await TryImageUpload(async () => await _workshopService.UploadEntryImage(entryId, image, cancellationToken));
             cancellationToken.ThrowIfCancellationRequested();
         }
 
@@ -127,8 +125,7 @@ public partial class UploadStepViewModel : SubmissionViewModel
             return entryId;
 
         // Upload icon
-        await TryImageUpload(async () => await _workshopService.SetEntryIcon(entryId.Value, State.Icon, cancellationToken));
-       
+        await TryImageUpload(async () => await _workshopService.SetEntryIcon(entryId, State.Icon, cancellationToken));
         return entryId;
     }
 
@@ -151,7 +148,7 @@ public partial class UploadStepViewModel : SubmissionViewModel
     {
         State.Close();
 
-        if (_entryId != null)
+        if (Succeeded && _entryId != null)
             await _router.Navigate($"workshop/library/submissions/{_entryId.Value}");
     }
 }
