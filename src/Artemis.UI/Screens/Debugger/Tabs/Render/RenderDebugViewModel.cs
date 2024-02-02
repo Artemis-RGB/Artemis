@@ -35,7 +35,7 @@ public partial class RenderDebugViewModel : ActivatableViewModelBase
 
     private void HandleActivation()
     {
-        Renderer = Constants.ManagedGraphicsContext != null ? Constants.ManagedGraphicsContext.GetType().Name : "Software";
+        Renderer = _renderService.GraphicsContext?.GetType().Name ?? "Software";
         _renderService.FrameRendered += RenderServiceOnFrameRendered;
     }
 

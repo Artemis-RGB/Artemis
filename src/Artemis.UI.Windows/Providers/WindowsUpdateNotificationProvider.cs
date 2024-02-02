@@ -60,10 +60,10 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
         Dispatcher.UIThread.Invoke(async () =>
         {
             _mainWindowService.OpenMainWindow();
-            if (releaseId != null)
+            if (releaseId != null && releaseId.Value != Guid.Empty)
                 await _router.Navigate($"settings/releases/{releaseId}");
             else
-                await _router.Navigate($"settings/releases");
+                await _router.Navigate("settings/releases");
         });
     }
 

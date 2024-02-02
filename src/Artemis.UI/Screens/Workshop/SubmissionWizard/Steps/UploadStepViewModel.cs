@@ -82,8 +82,8 @@ public partial class UploadStepViewModel : SubmissionViewModel
             FailureMessage = e.Message;
             Failed = true;
 
-            // If something went wrong halfway through, delete the entry
-            if (_entryId != null)
+            // If something went wrong halfway through, delete the entry if it was new
+            if (State.EntryId == null && _entryId != null)
                 await _workshopClient.RemoveEntry.ExecuteAsync(_entryId.Value, CancellationToken.None);
         }
         finally

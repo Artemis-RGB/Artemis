@@ -11,6 +11,7 @@ public class DataModelEventCycleNode : Node<DataModelPathEntity, DataModelEventC
     private int _currentIndex;
     private Type _currentType;
     private DataModelPath? _dataModelPath;
+    private IDataModelEvent? _subscribedEvent;
     private object? _lastPathValue;
     private bool _updating;
 
@@ -76,13 +77,19 @@ public class DataModelEventCycleNode : Node<DataModelPathEntity, DataModelEventC
     {
         DataModelPath? old = _dataModelPath;
 
-        if (old?.GetValue() is IDataModelEvent oldEvent)
-            oldEvent.EventTriggered -= OnEventTriggered;
+        if (_subscribedEvent != null)
+        {
+            _subscribedEvent.EventTriggered -= OnEventTriggered;
+            _subscribedEvent = null;
+        }
 
         _dataModelPath = Storage != null ? new DataModelPath(Storage) : null;
 
         if (_dataModelPath?.GetValue() is IDataModelEvent newEvent)
-            newEvent.EventTriggered += OnEventTriggered;
+        {
+            _subscribedEvent = newEvent;
+            _subscribedEvent.EventTriggered += OnEventTriggered;
+        }
 
         old?.Dispose();
     }
@@ -153,8 +160,12 @@ public class DataModelEventCycleNode : Node<DataModelPathEntity, DataModelEventC
     /// <inheritdoc />
     public void Dispose()
     {
-        if (_dataModelPath?.GetValue() is IDataModelEvent newEvent)
-            newEvent.EventTriggered -= OnEventTriggered;
+        if (_subscribedEvent != null)
+        {
+            _subscribedEvent.EventTriggered -= OnEventTriggered;
+            _subscribedEvent = null;
+        }
+
         _dataModelPath?.Dispose();
     }
 }
