@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:account="clr-namespace:Artemis.UI.Screens.Settings.Account"
+             mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Settings.Account.RemoveAccountView"
+             x:DataType="account:RemoveAccountViewModel">
+    <StackPanel Spacing="5" Width="350">
+        <Label>Please enter your email address to confirm</Label>
+        <TextBox Text="{CompiledBinding EmailAddress}"/>
+        <TextBlock Classes="danger" Margin="0 5 0 0" TextWrapping="Wrap">This is a destructive action that cannot be undone.</TextBlock>
+    </StackPanel>
+</UserControl>

@@ -129,11 +129,11 @@ public partial class UploadStepViewModel : SubmissionViewModel
         return entryId;
     }
 
-    private async Task TryImageUpload(Func<Task<ImageUploadResult>> action)
+    private async Task TryImageUpload(Func<Task<ApiResult>> action)
     {
         try
         {
-            ImageUploadResult result = await action();
+            ApiResult result = await action();
             if (!result.IsSuccess)
                 throw new ArtemisWorkshopException(result.Message);
         }

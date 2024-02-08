@@ -12,6 +12,7 @@ using Artemis.UI.Screens.Workshop.Parameters;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
+using Artemis.WebClient.Workshop.Models;
 using Artemis.WebClient.Workshop.Services;
 using PropertyChanged.SourceGenerator;
 using StrawberryShake;

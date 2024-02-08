@@ -1,21 +1,21 @@
 ﻿namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 
-public class ImageUploadResult
+public class ApiResult
 {
     public bool IsSuccess { get; set; }
     public string? Message { get; set; }
 
-    public static ImageUploadResult FromFailure(string? message)
+    public static ApiResult FromFailure(string? message)
     {
-        return new ImageUploadResult
+        return new ApiResult
         {
             IsSuccess = false,
             Message = message
         };
     }
 
-    public static ImageUploadResult FromSuccess()
+    public static ApiResult FromSuccess()
     {
-        return new ImageUploadResult {IsSuccess = true};
+        return new ApiResult {IsSuccess = true};
     }
 }

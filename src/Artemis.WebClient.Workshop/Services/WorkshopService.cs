@@ -2,8 +2,8 @@ using System.Net.Http.Headers;
 using Artemis.Storage.Entities.Workshop;
 using Artemis.Storage.Repositories.Interfaces;
 using Artemis.UI.Shared.Routing;
-using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
+using Artemis.WebClient.Workshop.Models;
 
 namespace Artemis.WebClient.Workshop.Services;
 
@@ -36,7 +36,7 @@ public class WorkshopService : IWorkshopService
         }
     }
 
-    public async Task<ImageUploadResult> SetEntryIcon(long entryId, Stream icon, CancellationToken cancellationToken)
+    public async Task<ApiResult> SetEntryIcon(long entryId, Stream icon, CancellationToken cancellationToken)
     {
         icon.Seek(0, SeekOrigin.Begin);
 
@@ -52,12 +52,12 @@ public class WorkshopService : IWorkshopService
         // Submit
         HttpResponseMessage response = await client.PostAsync($"entries/{entryId}/icon", content, cancellationToken);
         if (!response.IsSuccessStatusCode)
-            return ImageUploadResult.FromFailure($"{response.StatusCode} - {await response.Content.ReadAsStringAsync(cancellationToken)}");
-        return ImageUploadResult.FromSuccess();
+            return ApiResult.FromFailure($"{response.StatusCode} - {await response.Content.ReadAsStringAsync(cancellationToken)}");
+        return ApiResult.FromSuccess();
     }
 
     /// <inheritdoc />
-    public async Task<ImageUploadResult> UploadEntryImage(long entryId, ImageUploadRequest request, CancellationToken cancellationToken)
+    public async Task<ApiResult> UploadEntryImage(long entryId, ImageUploadRequest request, CancellationToken cancellationToken)
     {
         request.File.Seek(0, SeekOrigin.Begin);
 
@@ -76,8 +76,8 @@ public class WorkshopService : IWorkshopService
         // Submit
         HttpResponseMessage response = await client.PostAsync($"entries/{entryId}/image", content, cancellationToken);
         if (!response.IsSuccessStatusCode)
-            return ImageUploadResult.FromFailure($"{response.StatusCode} - {await response.Content.ReadAsStringAsync(cancellationToken)}");
-        return ImageUploadResult.FromSuccess();
+            return ApiResult.FromFailure($"{response.StatusCode} - {await response.Content.ReadAsStringAsync(cancellationToken)}");
+        return ApiResult.FromSuccess();
     }
 
     /// <inheritdoc />

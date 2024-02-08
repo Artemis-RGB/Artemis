@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Artemis.Core;
 using Artemis.WebClient.Workshop.Exceptions;
+using Artemis.WebClient.Workshop.Models;
 using Artemis.WebClient.Workshop.Repositories;
 using DynamicData;
 using IdentityModel;

@@ -7,6 +7,7 @@ using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Shared;
+using Artemis.WebClient.Workshop.Models;
 using Artemis.WebClient.Workshop.Providers;
 using Artemis.WebClient.Workshop.Services;
 using ReactiveUI;

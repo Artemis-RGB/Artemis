@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:account="clr-namespace:Artemis.UI.Screens.Settings.Account"
+             mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Settings.Account.ChangeEmailAddressView"
+             x:DataType="account:ChangeEmailAddressViewModel">
+    <StackPanel Spacing="5" Width="300">
+        <Label>New email address</Label>
+        <TextBox Text="{CompiledBinding EmailAddress}" />
+        <TextBlock Classes="subtitle" Margin="0 5 0 0" TextWrapping="Wrap">An email will be sent to the new address to confirm the change.</TextBlock>
+    </StackPanel>
+</UserControl>
