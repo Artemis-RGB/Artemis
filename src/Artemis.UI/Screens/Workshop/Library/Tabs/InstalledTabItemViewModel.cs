@@ -7,6 +7,7 @@ using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
+using Artemis.WebClient.Workshop.Models;
 using Artemis.WebClient.Workshop.Services;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;

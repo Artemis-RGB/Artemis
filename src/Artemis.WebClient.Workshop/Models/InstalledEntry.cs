@@ -2,7 +2,7 @@
 using Artemis.Core;
 using Artemis.Storage.Entities.Workshop;
 
-namespace Artemis.WebClient.Workshop.Services;
+namespace Artemis.WebClient.Workshop.Models;
 
 public class InstalledEntry
 {

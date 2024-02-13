@@ -10,6 +10,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
+using Artemis.WebClient.Workshop.Models;
 using Artemis.WebClient.Workshop.Providers;
 using Artemis.WebClient.Workshop.Services;
 using PropertyChanged.SourceGenerator;

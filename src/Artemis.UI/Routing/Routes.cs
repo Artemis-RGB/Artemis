@@ -64,6 +64,7 @@ public static class Routes
                         new RouteRegistration<ReleaseDetailsViewModel>("{releaseId:guid}")
                     }
                 },
+                new RouteRegistration<AccountTabViewModel>("account"),
                 new RouteRegistration<AboutTabViewModel>("about")
             }
         },

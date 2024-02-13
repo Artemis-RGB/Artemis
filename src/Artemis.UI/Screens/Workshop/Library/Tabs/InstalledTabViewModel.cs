@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using Artemis.UI.Shared.Routing;
+using Artemis.WebClient.Workshop.Models;
 using Artemis.WebClient.Workshop.Services;
 using DynamicData;
 using DynamicData.Binding;

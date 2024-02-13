@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Artemis.Core;
 using Artemis.WebClient.Workshop.Exceptions;
+using Artemis.WebClient.Workshop.Models;
 using Artemis.WebClient.Workshop.Repositories;
 using DynamicData;
 using IdentityModel;
@@ -122,7 +123,7 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
     public IObservable<Claim?> GetClaim(string type)
     {
         return _claims.Connect()
-            .Filter(c => c.Type == JwtClaimTypes.Email)
+            .Filter(c => c.Type == type)
             .ToCollection()
             .Select(f => f.FirstOrDefault());
     }

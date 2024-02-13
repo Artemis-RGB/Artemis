@@ -6,5 +6,6 @@ public static class WorkshopConstants
     // public const string WORKSHOP_URL = "https://localhost:7281";
     public const string AUTHORITY_URL = "https://identity.artemis-rgb.com";
     public const string WORKSHOP_URL = "https://workshop.artemis-rgb.com";
+    public const string IDENTITY_CLIENT_NAME = "IdentityApiClient";
     public const string WORKSHOP_CLIENT_NAME = "WorkshopApiClient";
 }

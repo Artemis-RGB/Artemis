@@ -33,6 +33,11 @@ public static class ContainerExtensions
             .AddWorkshopClient()
             .AddHttpMessageHandler<WorkshopClientStoreAccessor, AuthenticationDelegatingHandler>()
             .ConfigureHttpClient(client => client.BaseAddress = new Uri(WorkshopConstants.WORKSHOP_URL + "/graphql"));
+        
+        serviceCollection.AddHttpClient(WorkshopConstants.IDENTITY_CLIENT_NAME)
+            .AddHttpMessageHandler<AuthenticationDelegatingHandler>()
+            .ConfigureHttpClient(client => client.BaseAddress = new Uri(WorkshopConstants.AUTHORITY_URL));
+        
         serviceCollection.AddHttpClient(WorkshopConstants.WORKSHOP_CLIENT_NAME)
             .AddHttpMessageHandler<AuthenticationDelegatingHandler>()
             .ConfigureHttpClient(client => client.BaseAddress = new Uri(WorkshopConstants.WORKSHOP_URL));
@@ -49,7 +54,8 @@ public static class ContainerExtensions
         container.Register<IAuthenticationService, AuthenticationService>(Reuse.Singleton);
         container.Register<IWorkshopService, WorkshopService>(Reuse.Singleton);
         container.Register<ILayoutProvider, WorkshopLayoutProvider>(Reuse.Singleton);
-        
+        container.Register<IUserManagementService, UserManagementService>();
+
         container.Register<EntryUploadHandlerFactory>(Reuse.Transient);
         container.RegisterMany(workshopAssembly, type => type.IsAssignableTo<IEntryUploadHandler>(), Reuse.Transient);
         container.RegisterMany(workshopAssembly, type => type.IsAssignableTo<IEntryInstallationHandler>(), Reuse.Transient);

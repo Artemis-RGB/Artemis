@@ -155,10 +155,4 @@ public static class Constants
     ///     Gets the startup arguments provided to the application
     /// </summary>
     public static ReadOnlyCollection<string> StartupArguments { get; set; } = null!;
-
-    /// <summary>
-    ///     Gets the graphics context to be used for rendering by SkiaSharp.
-    /// </summary>
-    public static IManagedGraphicsContext? ManagedGraphicsContext { get; internal set; }
-    
 }
