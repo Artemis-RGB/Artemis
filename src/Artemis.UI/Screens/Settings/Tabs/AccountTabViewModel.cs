@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Screens.Settings.Account;
@@ -12,6 +13,7 @@ using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using Artemis.WebClient.Workshop.Services;
+using IdentityModel;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
@@ -22,6 +24,7 @@ public partial class AccountTabViewModel : RoutableScreen
     private readonly IWindowService _windowService;
     private readonly IAuthenticationService _authenticationService;
     private readonly IUserManagementService _userManagementService;
+    private ObservableAsPropertyHelper<bool>? _canChangePassword;
 
     [Notify(Setter.Private)] private string? _name;
     [Notify(Setter.Private)] private string? _email;
@@ -37,9 +40,15 @@ public partial class AccountTabViewModel : RoutableScreen
         DisplayName = "Account";
         IsLoggedIn = _authenticationService.IsLoggedIn;
         
+        this.WhenActivated(d =>
+        {
+            _canChangePassword = _authenticationService.GetClaim(JwtClaimTypes.AuthenticationMethod).Select(c => c?.Value == "pwd").ToProperty(this, vm => vm.CanChangePassword);
+            _canChangePassword.DisposeWith(d);
+        });
         this.WhenActivated(d => _authenticationService.IsLoggedIn.Subscribe(_ => LoadCurrentUser()).DisposeWith(d));
     }
 
+    public bool CanChangePassword => _canChangePassword?.Value ?? false;
     public IObservable<bool> IsLoggedIn { get; }
 
     public async Task Login()

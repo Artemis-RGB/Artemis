@@ -123,7 +123,7 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
     public IObservable<Claim?> GetClaim(string type)
     {
         return _claims.Connect()
-            .Filter(c => c.Type == JwtClaimTypes.Email)
+            .Filter(c => c.Type == type)
             .ToCollection()
             .Select(f => f.FirstOrDefault());
     }
