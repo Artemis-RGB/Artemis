@@ -13,6 +13,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.MainWindow;
+using Artemis.WebClient.Workshop.Services;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -41,6 +42,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         IMainWindowService mainWindowService,
         IDebugService debugService,
         IUpdateService updateService,
+        IWorkshopService workshopService,
         SidebarViewModel sidebarViewModel,
         DefaultTitleBarViewModel defaultTitleBarViewModel)
     {
@@ -76,6 +78,9 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         {
             if (_updateService.Initialize())
                 return;
+            
+            // Before initializing the core and files become in use, clean up orphaned files
+            workshopService.RemoveOrphanedFiles();
 
             coreService.Initialize();
             registrationService.RegisterBuiltInDataModelDisplays();

@@ -35,24 +35,4 @@
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Screens\Workshop\SubmissionWizard\Steps\Plugin\PluginSelectionStepView.axaml.cs">
-        <DependentUpon>PluginSelectionStepView.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-      <Compile Update="Screens\Workshop\SubmissionWizard\Steps\Plugin\PluginAdaptionHintsStepView.axaml.cs">
-        <DependentUpon>ProfileAdaptionHintsStepView.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-      <Compile Update="Screens\Workshop\SubmissionWizard\Steps\Plugin\PluginSelectionStepView.axaml.cs">
-        <DependentUpon>ProfileSelectionStepView.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-      <AdditionalFiles Include="Screens\Workshop\SubmissionWizard\Steps\Plugin\PluginAdaptionHintsStepView.axaml" />
-      <AdditionalFiles Include="Screens\Workshop\SubmissionWizard\Steps\Plugin\PluginSelectionStepView.axaml" />
-    </ItemGroup>
 </Project>

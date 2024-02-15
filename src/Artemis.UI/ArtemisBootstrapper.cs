@@ -13,6 +13,7 @@ using Artemis.UI.Shared.Services;
 using Artemis.VisualScripting.DryIoc;
 using Artemis.WebClient.Updating.DryIoc;
 using Artemis.WebClient.Workshop.DryIoc;
+using Artemis.WebClient.Workshop.Services;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;

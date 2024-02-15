@@ -34,6 +34,7 @@ public class EntryListItemViewModel : ActivatableViewModelBase
                 await _router.Navigate($"workshop/entries/profiles/details/{Entry.Id}");
                 break;
             case EntryType.Plugin:
+                await _router.Navigate($"workshop/entries/plugins/details/{Entry.Id}");
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

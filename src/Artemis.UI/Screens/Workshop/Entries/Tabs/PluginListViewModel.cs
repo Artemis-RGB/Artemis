@@ -7,17 +7,17 @@ using Artemis.WebClient.Workshop;
 
 namespace Artemis.UI.Screens.Workshop.Entries.Tabs;
 
-public class ProfileListViewModel : List.EntryListViewModel
+public class PluginListViewModel : EntryListViewModel
 {
-    public ProfileListViewModel(IWorkshopClient workshopClient,
+    public PluginListViewModel(IWorkshopClient workshopClient,
         IRouter router,
         CategoriesViewModel categoriesViewModel,
         EntryListInputViewModel entryListInputViewModel,
         INotificationService notificationService,
         Func<IGetEntries_Entries_Items, EntryListItemViewModel> getEntryListViewModel)
-        : base("workshop/entries/profiles", workshopClient, router, categoriesViewModel, entryListInputViewModel, notificationService, getEntryListViewModel)
+        : base("workshop/entries/plugins", workshopClient, router, categoriesViewModel, entryListInputViewModel, notificationService, getEntryListViewModel)
     {
-        entryListInputViewModel.SearchWatermark = "Search profiles";
+        entryListInputViewModel.SearchWatermark = "Search plugins";
     }
 
     protected override EntryFilterInput GetFilter()
@@ -26,7 +26,7 @@ public class ProfileListViewModel : List.EntryListViewModel
         {
             And = new[]
             {
-                new EntryFilterInput {EntryType = new EntryTypeOperationFilterInput {Eq = EntryType.Profile}},
+                new EntryFilterInput {EntryType = new EntryTypeOperationFilterInput {Eq = EntryType.Plugin}},
                 base.GetFilter()
             }
         };

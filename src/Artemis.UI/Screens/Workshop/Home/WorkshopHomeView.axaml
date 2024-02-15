@@ -57,6 +57,14 @@
                         </StackPanel>
                     </Button>
                     
+                    <Button Width="150" Height="180" Command="{CompiledBinding Navigate}" CommandParameter="workshop/entries/plugins/1" VerticalContentAlignment="Top">
+                        <StackPanel>
+                            <avalonia:MaterialIcon Kind="Plugin" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />
+                            <TextBlock TextWrapping="Wrap" FontSize="16" Margin="0 5">Plugins</TextBlock>
+                            <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8">Plugins add new functionality to Artemis.</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    
                     <Button Width="150" Height="180" Command="{CompiledBinding Navigate}" CommandParameter="workshop/library" VerticalContentAlignment="Top">
                         <StackPanel>
                             <avalonia:MaterialIcon Kind="Bookshelf" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />

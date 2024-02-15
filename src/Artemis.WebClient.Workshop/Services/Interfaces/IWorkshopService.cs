@@ -17,6 +17,7 @@ public interface IWorkshopService
     InstalledEntry? GetInstalledEntry(IEntryDetails entry);
     void RemoveInstalledEntry(InstalledEntry installedEntry);
     void SaveInstalledEntry(InstalledEntry entry);
+    void RemoveOrphanedFiles();
 
     public record WorkshopStatus(bool IsReachable, string Message);
 }
