@@ -72,7 +72,7 @@ internal class UserManagementService : IUserManagementService
         HttpResponseMessage response = await client.PostAsync("user/access-token", JsonContent.Create(new {Description = description, ExpirationDate = expirationDate}), cancellationToken);
         response.EnsureSuccessStatusCode();
         
-        string? result = await response.Content.ReadFromJsonAsync<string>(cancellationToken: cancellationToken);
+        string? result = await response.Content.ReadAsStringAsync(cancellationToken);
         if (result == null)
             throw new ArtemisWebClientException("Failed to deserialize access token");
         return result;

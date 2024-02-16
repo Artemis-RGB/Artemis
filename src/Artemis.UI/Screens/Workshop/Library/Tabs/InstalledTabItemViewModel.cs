@@ -1,7 +1,12 @@
 using System;
+using System.Linq;
 using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.Core;
+using Artemis.Core.Services;
+using Artemis.UI.DryIoc.Factories;
+using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
@@ -20,14 +25,24 @@ public partial class InstalledTabItemViewModel : ViewModelBase
     private readonly IRouter _router;
     private readonly EntryInstallationHandlerFactory _factory;
     private readonly IWindowService _windowService;
+    private readonly IPluginManagementService _pluginManagementService;
+    private readonly ISettingsVmFactory _settingsVmFactory;
     [Notify(Setter.Private)] private bool _isRemoved;
 
-    public InstalledTabItemViewModel(InstalledEntry installedEntry, IWorkshopService workshopService, IRouter router, EntryInstallationHandlerFactory factory, IWindowService windowService)
+    public InstalledTabItemViewModel(InstalledEntry installedEntry,
+        IWorkshopService workshopService,
+        IRouter router, 
+        EntryInstallationHandlerFactory factory, 
+        IWindowService windowService,
+        IPluginManagementService pluginManagementService,
+        ISettingsVmFactory settingsVmFactory)
     {
         _workshopService = workshopService;
         _router = router;
         _factory = factory;
         _windowService = windowService;
+        _pluginManagementService = pluginManagementService;
+        _settingsVmFactory = settingsVmFactory;
         InstalledEntry = installedEntry;
 
         ViewWorkshopPage = ReactiveCommand.CreateFromTask(ExecuteViewWorkshopPage);
@@ -58,9 +73,25 @@ public partial class InstalledTabItemViewModel : ViewModelBase
         bool confirmed = await _windowService.ShowConfirmContentDialog("Do you want to uninstall this entry?", "Both the entry and its contents will be removed.");
         if (!confirmed)
             return;
+
+        // Ideally the installation handler does this but it doesn't have access to the required view models
+        if (InstalledEntry.EntryType == EntryType.Plugin)
+            await UninstallPluginPrerequisites();
         
         IEntryInstallationHandler handler = _factory.CreateHandler(InstalledEntry.EntryType);
         await handler.UninstallAsync(InstalledEntry, cancellationToken);
         IsRemoved = true;
+    }
+
+    private async Task UninstallPluginPrerequisites()
+    {
+        if (!InstalledEntry.TryGetMetadata("PluginId", out Guid pluginId))
+            return;
+        Plugin? plugin = _pluginManagementService.GetAllPlugins().FirstOrDefault(p => p.Guid == pluginId);
+        if (plugin == null)
+            return;
+
+        PluginViewModel pluginViewModel = _settingsVmFactory.PluginViewModel(plugin, ReactiveCommand.Create(() => { }));
+        await pluginViewModel.ExecuteRemovePrerequisites(true);
     }
 }

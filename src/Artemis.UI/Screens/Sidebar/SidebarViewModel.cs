@@ -43,7 +43,7 @@ public partial class SidebarViewModel : ActivatableViewModelBase
             {
                 new(MaterialIconKind.FolderVideo, "Profiles", "workshop/entries/profiles/1", "workshop/entries/profiles"),
                 new(MaterialIconKind.KeyboardVariant, "Layouts", "workshop/entries/layouts/1", "workshop/entries/layouts"),
-                new(MaterialIconKind.Plugin, "Plugins", "workshop/entries/plugins/1", "workshop/entries/plugins"),
+                new(MaterialIconKind.Connection, "Plugins", "workshop/entries/plugins/1", "workshop/entries/plugins"),
                 new(MaterialIconKind.Bookshelf, "Library", "workshop/library"),
             }),
 

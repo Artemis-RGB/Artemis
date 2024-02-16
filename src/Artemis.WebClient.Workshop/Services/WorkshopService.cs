@@ -1,8 +1,10 @@
 using System.Net.Http.Headers;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Workshop;
 using Artemis.Storage.Repositories.Interfaces;
 using Artemis.UI.Shared.Routing;
+using Artemis.WebClient.Workshop.Exceptions;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using Artemis.WebClient.Workshop.Models;
 using Serilog;
@@ -15,13 +17,16 @@ public class WorkshopService : IWorkshopService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IRouter _router;
     private readonly IEntryRepository _entryRepository;
+    private readonly IPluginManagementService _pluginManagementService;
+    private bool _initialized;
 
-    public WorkshopService(ILogger logger, IHttpClientFactory httpClientFactory, IRouter router, IEntryRepository entryRepository)
+    public WorkshopService(ILogger logger, IHttpClientFactory httpClientFactory, IRouter router, IEntryRepository entryRepository, IPluginManagementService pluginManagementService)
     {
         _logger = logger;
         _httpClientFactory = httpClientFactory;
         _router = router;
         _entryRepository = entryRepository;
+        _pluginManagementService = pluginManagementService;
     }
 
     public async Task<Stream?> GetEntryIcon(long entryId, CancellationToken cancellationToken)
@@ -170,7 +175,17 @@ public class WorkshopService : IWorkshopService
     }
 
     /// <inheritdoc />
-    public void RemoveOrphanedFiles()
+    public void Initialize()
+    {
+        if (_initialized)
+            throw new ArtemisWorkshopException("Workshop service is already initialized");
+        
+        RemoveOrphanedFiles();
+        _pluginManagementService.AdditionalPluginDirectories.AddRange(GetInstalledEntries().Where(e => e.EntryType == EntryType.Plugin).Select(e => e.GetReleaseDirectory()));
+        _initialized = true;
+    }
+    
+    private void RemoveOrphanedFiles()
     {
         List<InstalledEntry> entries = GetInstalledEntries();
         foreach (string directory in Directory.GetDirectories(Constants.WorkshopFolder))

@@ -66,7 +66,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         OpenScreen = ReactiveCommand.Create<string?>(ExecuteOpenScreen);
         OpenDebugger = ReactiveCommand.CreateFromTask(ExecuteOpenDebugger);
         Exit = ReactiveCommand.CreateFromTask(ExecuteExit);
-        
+
         _titleBarViewModel = this.WhenAnyValue(vm => vm.Screen)
             .Select(s => s as IMainScreenViewModel)
             .Select(s => s?.WhenAnyValue(svm => svm.TitleBarViewModel) ?? Observable.Never<ViewModelBase>())
@@ -76,13 +76,15 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
 
         Task.Run(() =>
         {
+            // Before doing heavy lifting, initialize the update service which may prompt a restart
             if (_updateService.Initialize())
                 return;
-            
-            // Before initializing the core and files become in use, clean up orphaned files
-            workshopService.RemoveOrphanedFiles();
 
+            // Workshop service goes first so it has a chance to clean up old workshop entries and introduce new ones
+            workshopService.Initialize();
+            // Core is initialized now that everything is ready to go
             coreService.Initialize();
+
             registrationService.RegisterBuiltInDataModelDisplays();
             registrationService.RegisterBuiltInDataModelInputs();
             registrationService.RegisterBuiltInPropertyEditors();
@@ -140,7 +142,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
     {
         if (path != null)
             _router.ClearPreviousWindowRoute();
-        
+
         // The window will open on the UI thread at some point, respond to that to select the chosen screen
         MainWindowOpened += OnEventHandler;
         OpenMainWindow();
@@ -189,7 +191,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         _lifeTime.MainWindow.Activate();
         if (_lifeTime.MainWindow.WindowState == WindowState.Minimized)
             _lifeTime.MainWindow.WindowState = WindowState.Normal;
-        
+
         OnMainWindowOpened();
     }
 

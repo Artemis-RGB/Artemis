@@ -78,7 +78,10 @@ internal class PluginManagementService : IPluginManagementService
             File.Create(Path.Combine(pluginDirectory.FullName, "artemis.lock")).Close();
     }
 
+    public List<DirectoryInfo> AdditionalPluginDirectories { get; } = new();
+
     public bool LoadingPlugins { get; private set; }
+
 
     #region Built in plugins
 
@@ -273,6 +276,18 @@ internal class PluginManagementService : IPluginManagementService
             catch (Exception e)
             {
                 _logger.Warning(new ArtemisPluginException($"Failed to load plugin at {subDirectory}", e), "Plugin exception");
+            }
+        }
+
+        foreach (DirectoryInfo directory in AdditionalPluginDirectories)
+        {
+            try
+            {
+                LoadPlugin(directory);
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(new ArtemisPluginException($"Failed to load plugin at {directory}", e), "Plugin exception");
             }
         }
 

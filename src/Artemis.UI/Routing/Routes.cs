@@ -12,9 +12,9 @@ using Artemis.UI.Screens.Workshop.Home;
 using Artemis.UI.Screens.Workshop.Layout;
 using Artemis.UI.Screens.Workshop.Library;
 using Artemis.UI.Screens.Workshop.Library.Tabs;
-using Artemis.UI.Screens.Workshop.Plugin;
 using Artemis.UI.Screens.Workshop.Profile;
 using Artemis.UI.Shared.Routing;
+using PluginDetailsViewModel = Artemis.UI.Screens.Workshop.Plugins.PluginDetailsViewModel;
 
 namespace Artemis.UI.Routing;
 

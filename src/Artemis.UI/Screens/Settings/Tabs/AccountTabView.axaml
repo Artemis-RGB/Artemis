@@ -5,36 +5,41 @@
              xmlns:settings="clr-namespace:Artemis.UI.Screens.Settings"
              xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
              xmlns:loaders="clr-namespace:AsyncImageLoader.Loaders;assembly=AsyncImageLoader.Avalonia"
-             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:models="clr-namespace:Artemis.WebClient.Workshop.Models;assembly=Artemis.WebClient.Workshop"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              x:Class="Artemis.UI.Screens.Settings.AccountTabView"
              x:DataType="settings:AccountTabViewModel">
+    <UserControl.Resources>
+        <converters:DateTimeConverter x:Key="DateTimeConverter" />
+    </UserControl.Resources>
     <Panel>
-        <StackPanel IsVisible="{CompiledBinding !IsLoggedIn^}" Margin="0 50 0 0">
-            <StackPanel.Styles>
-                <Styles>
-                    <Style Selector="TextBlock">
-                        <Setter Property="TextAlignment" Value="Center"></Setter>
-                        <Setter Property="TextWrapping" Value="Wrap"></Setter>
-                    </Style>
-                </Styles>
-            </StackPanel.Styles>
-            <TextBlock Theme="{StaticResource TitleTextBlockStyle}">You are not logged in</TextBlock>
-            <TextBlock>
-                <Run>In order to manage your account you must be logged in.</Run>
-                <LineBreak />
-                <Run>Creating an account is free and we'll not bother you with a newsletter or crap like that.</Run>
-            </TextBlock>
-
-            <Lottie Path="/Assets/Animations/login-pending.json" RepeatCount="1" Width="350" Height="350"></Lottie>
-
-            <TextBlock>
-                <Run>Click Log In below to (create an account) and log in.</Run>
-                <LineBreak />
-                <Run>You'll also be able to log in with Google or Discord.</Run>
-            </TextBlock>
-            <Button HorizontalAlignment="Center" Command="{CompiledBinding Login}" Margin="0 25 0 0">Login</Button>
-        </StackPanel>
+        <!-- <StackPanel IsVisible="{CompiledBinding !IsLoggedIn^}" Margin="0 50 0 0"> -->
+        <!--     <StackPanel.Styles> -->
+        <!--         <Styles> -->
+        <!--             <Style Selector="TextBlock"> -->
+        <!--                 <Setter Property="TextAlignment" Value="Center"></Setter> -->
+        <!--                 <Setter Property="TextWrapping" Value="Wrap"></Setter> -->
+        <!--             </Style> -->
+        <!--         </Styles> -->
+        <!--     </StackPanel.Styles> -->
+        <!--     <TextBlock Theme="{StaticResource TitleTextBlockStyle}">You are not logged in</TextBlock> -->
+        <!--     <TextBlock> -->
+        <!--         <Run>In order to manage your account you must be logged in.</Run> -->
+        <!--         <LineBreak /> -->
+        <!--         <Run>Creating an account is free and we'll not bother you with a newsletter or crap like that.</Run> -->
+        <!--     </TextBlock> -->
+        <!-- -->
+        <!--     <Lottie Path="/Assets/Animations/login-pending.json" RepeatCount="1" Width="350" Height="350"></Lottie> -->
+        <!-- -->
+        <!--     <TextBlock> -->
+        <!--         <Run>Click Log In below to (create an account) and log in.</Run> -->
+        <!--         <LineBreak /> -->
+        <!--         <Run>You'll also be able to log in with Google or Discord.</Run> -->
+        <!--     </TextBlock> -->
+        <!--     <Button HorizontalAlignment="Center" Command="{CompiledBinding Login}" Margin="0 25 0 0">Login</Button> -->
+        <!-- </StackPanel> -->
 
         <ScrollViewer IsVisible="{CompiledBinding IsLoggedIn^}" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="15" MaxWidth="1000">
@@ -46,7 +51,7 @@
                             </asyncImageLoader:AdvancedImage.Loader>
                         </asyncImageLoader:AdvancedImage>
                     </Border>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Padding="0" VerticalAlignment="Bottom" Text="{CompiledBinding Name}" Classes="h3 no-margin"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Padding="0" VerticalAlignment="Bottom" Text="{CompiledBinding Name}" Classes="h3 no-margin" />
                     <TextBlock Classes="subtitle" Grid.Column="1" Grid.Row="1" Padding="0" VerticalAlignment="Top" Text="{CompiledBinding Email}" />
                 </Grid>
 
@@ -66,8 +71,8 @@
                                 <Button Width="150" Content="Change password" Command="{CompiledBinding ChangePasswordAddress}" />
                             </StackPanel>
                         </Grid>
-                        <Border Classes="card-separator"  IsVisible="{CompiledBinding CanChangePassword}"/>
-                        
+                        <Border Classes="card-separator" IsVisible="{CompiledBinding CanChangePassword}" />
+
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                             <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                 <TextBlock>
@@ -99,16 +104,45 @@
                     </StackPanel>
                 </Border>
 
-                <!-- <TextBlock Classes="card-title"> -->
-                <!--     Personal access tokens -->
-                <!-- </TextBlock> -->
-                <!-- <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0"> -->
-                <!--     <StackPanel> -->
-                <!--         <TextBlock>TODO :)</TextBlock> -->
-                <!--     </StackPanel> -->
-                <!-- </Border> -->
+                <TextBlock Classes="card-title">
+                    Personal access tokens
+                </TextBlock>
+                <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
+                    <StackPanel>
+                        <Button HorizontalAlignment="Right" Command="{CompiledBinding GenerateToken}">Generate token</Button>
+                        <Grid ColumnDefinitions="2*,*,*,*" Margin="12 6">
+                            <TextBlock Grid.Column="0">Description</TextBlock>
+                            <TextBlock Grid.Column="1">Created at</TextBlock>
+                            <TextBlock Grid.Column="2" Grid.ColumnSpan="2">Expires at</TextBlock>
+                        </Grid>
+
+                        <ItemsControl ItemsSource="{CompiledBinding PersonalAccessTokens}">
+                            <ItemsControl.Styles>
+                                <Style Selector="ContentPresenter:nth-child(even) > Border">
+                                    <Setter Property="Background" Value="{StaticResource ControlStrokeColorOnAccentDefault}"></Setter>
+                                </Style>
+                            </ItemsControl.Styles>
+                            <ItemsControl.DataTemplates>
+                                <DataTemplate DataType="models:PersonalAccessToken">
+                                    <Border CornerRadius="4" Padding="12 6">
+                                        <Grid ColumnDefinitions="2*,*,*,*">
+                                            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{CompiledBinding Description}" />
+                                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{CompiledBinding CreationTime, Converter={StaticResource DateTimeConverter}}" />
+                                            <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{CompiledBinding Expiration, Converter={StaticResource DateTimeConverter}}" />
+                                            <Button Grid.Column="3" HorizontalAlignment="Right"
+                                                    Classes="icon-button" 
+                                                    Command="{Binding $parent[settings:AccountTabView].DataContext.DeleteToken}" 
+                                                    CommandParameter="{CompiledBinding}">
+                                                <avalonia:MaterialIcon Kind="Trash" />
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.DataTemplates>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
             </StackPanel>
         </ScrollViewer>
     </Panel>
-
 </UserControl>

@@ -13,6 +13,11 @@ namespace Artemis.Core.Services;
 public interface IPluginManagementService : IArtemisService, IDisposable
 {
     /// <summary>
+    ///     Gets a list containing additional directories in which plugins are located, used while loading plugins.
+    /// </summary>
+    List<DirectoryInfo> AdditionalPluginDirectories { get; }
+    
+    /// <summary>
     ///     Indicates whether or not plugins are currently being loaded
     /// </summary>
     bool LoadingPlugins { get; }
