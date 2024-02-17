@@ -97,7 +97,7 @@ public class InstalledEntry
     /// <param name="value">The value to set.</param>
     public void SetMetadata(string key, object value)
     {
-        _metadata.Add(key, value);
+        _metadata[key] = value;
     }
 
     /// <summary>
@@ -118,7 +118,7 @@ public class InstalledEntry
     {
         return new DirectoryInfo(Path.Combine(Constants.WorkshopFolder, $"{EntryId}-{StringUtilities.UrlFriendly(Name)}"));
     }
-    
+
     /// <summary>
     /// Returns the directory info of a release of this entry, where any files would be stored if applicable.
     /// </summary>

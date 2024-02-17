@@ -14,11 +14,12 @@ public class EntryUninstallResult
         };
     }
 
-    public static EntryUninstallResult FromSuccess()
+    public static EntryUninstallResult FromSuccess(string? message = null)
     {
         return new EntryUninstallResult
         {
-            IsSuccess = true
+            IsSuccess = true,
+            Message = message
         };
     }
 }

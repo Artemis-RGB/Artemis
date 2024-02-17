@@ -35,4 +35,15 @@
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Screens\Workshop\Plugin\Dialogs\DeviceProviderPickerDialogView.axaml.cs">
+        <DependentUpon>DeviceProviderPickerDialogView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Screens\Workshop\Plugin\Dialogs\DeviceSelectionDialogView.axaml.cs">
+        <DependentUpon>DeviceSelectionDialogView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
 </Project>

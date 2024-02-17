@@ -15,6 +15,7 @@ public class EntryInstallationHandlerFactory
     {
         return entryType switch
         {
+            EntryType.Plugin => _container.Resolve<PluginEntryInstallationHandler>(),
             EntryType.Profile => _container.Resolve<ProfileEntryInstallationHandler>(),
             EntryType.Layout => _container.Resolve<LayoutEntryInstallationHandler>(),
             _ => throw new NotSupportedException($"EntryType '{entryType}' is not supported.")

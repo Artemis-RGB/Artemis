@@ -15,6 +15,7 @@ public class EntryUploadHandlerFactory
     {
         return entryType switch
         {
+            EntryType.Plugin => _container.Resolve<PluginEntryUploadHandler>(),
             EntryType.Profile => _container.Resolve<ProfileEntryUploadHandler>(),
             EntryType.Layout => _container.Resolve<LayoutEntryUploadHandler>(),
             _ => throw new NotSupportedException($"EntryType '{entryType}' is not supported.")

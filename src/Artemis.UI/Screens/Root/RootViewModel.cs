@@ -13,6 +13,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.MainWindow;
+using Artemis.WebClient.Workshop.Services;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -41,6 +42,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         IMainWindowService mainWindowService,
         IDebugService debugService,
         IUpdateService updateService,
+        IWorkshopService workshopService,
         SidebarViewModel sidebarViewModel,
         DefaultTitleBarViewModel defaultTitleBarViewModel)
     {
@@ -64,7 +66,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         OpenScreen = ReactiveCommand.Create<string?>(ExecuteOpenScreen);
         OpenDebugger = ReactiveCommand.CreateFromTask(ExecuteOpenDebugger);
         Exit = ReactiveCommand.CreateFromTask(ExecuteExit);
-        
+
         _titleBarViewModel = this.WhenAnyValue(vm => vm.Screen)
             .Select(s => s as IMainScreenViewModel)
             .Select(s => s?.WhenAnyValue(svm => svm.TitleBarViewModel) ?? Observable.Never<ViewModelBase>())
@@ -74,10 +76,15 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
 
         Task.Run(() =>
         {
+            // Before doing heavy lifting, initialize the update service which may prompt a restart
             if (_updateService.Initialize())
                 return;
 
+            // Workshop service goes first so it has a chance to clean up old workshop entries and introduce new ones
+            workshopService.Initialize();
+            // Core is initialized now that everything is ready to go
             coreService.Initialize();
+
             registrationService.RegisterBuiltInDataModelDisplays();
             registrationService.RegisterBuiltInDataModelInputs();
             registrationService.RegisterBuiltInPropertyEditors();
@@ -135,7 +142,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
     {
         if (path != null)
             _router.ClearPreviousWindowRoute();
-        
+
         // The window will open on the UI thread at some point, respond to that to select the chosen screen
         MainWindowOpened += OnEventHandler;
         OpenMainWindow();
@@ -184,7 +191,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         _lifeTime.MainWindow.Activate();
         if (_lifeTime.MainWindow.WindowState == WindowState.Minimized)
             _lifeTime.MainWindow.WindowState = WindowState.Normal;
-        
+
         OnMainWindowOpened();
     }
 

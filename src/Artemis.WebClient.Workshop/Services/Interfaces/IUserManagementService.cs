@@ -10,7 +10,7 @@ public interface IUserManagementService : IProtectedArtemisService
     Task<ApiResult> ChangeEmailAddress(string emailAddress, CancellationToken cancellationToken);
     Task<ApiResult> ChangeAvatar(Stream avatar, CancellationToken cancellationToken);
     Task<ApiResult> RemoveAccount(CancellationToken cancellationToken);
-    Task<string> CreatePersonAccessToken(string description, DateTimeOffset expirationDate, CancellationToken cancellationToken);
+    Task<string> CreatePersonAccessToken(string description, DateTime expirationDate, CancellationToken cancellationToken);
     Task<ApiResult> DeletePersonAccessToken(PersonalAccessToken personalAccessToken, CancellationToken cancellationToken);
     Task<List<PersonalAccessToken>> GetPersonAccessTokens(CancellationToken cancellationToken);
 }

@@ -11,6 +11,8 @@ using Artemis.UI.Exceptions;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
+using Artemis.WebClient.Workshop.Models;
+using Artemis.WebClient.Workshop.Services;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using Material.Icons;
@@ -24,6 +26,7 @@ public partial class PluginViewModel : ActivatableViewModelBase
     private readonly ICoreService _coreService;
     private readonly INotificationService _notificationService;
     private readonly IPluginManagementService _pluginManagementService;
+    private readonly IWorkshopService _workshopService;
     private readonly IWindowService _windowService;
     private Window? _settingsWindow;
     [Notify] private bool _canInstallPrerequisites;
@@ -36,13 +39,15 @@ public partial class PluginViewModel : ActivatableViewModelBase
         ICoreService coreService,
         IWindowService windowService,
         INotificationService notificationService,
-        IPluginManagementService pluginManagementService)
+        IPluginManagementService pluginManagementService,
+        IWorkshopService workshopService)
     {
         _plugin = plugin;
         _coreService = coreService;
         _windowService = windowService;
         _notificationService = notificationService;
         _pluginManagementService = pluginManagementService;
+        _workshopService = workshopService;
 
         Platforms = new ObservableCollection<PluginPlatformViewModel>();
         if (Plugin.Info.Platforms != null)
@@ -90,7 +95,7 @@ public partial class PluginViewModel : ActivatableViewModelBase
     public ObservableCollection<PluginPlatformViewModel> Platforms { get; }
     public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
     public bool IsEnabled => Plugin.IsEnabled;
-    
+
     public async Task UpdateEnabled(bool enable)
     {
         if (Enabling)
@@ -209,7 +214,7 @@ public partial class PluginViewModel : ActivatableViewModelBase
             await PluginPrerequisitesInstallDialogViewModel.Show(_windowService, subjects);
     }
 
-    private async Task ExecuteRemovePrerequisites(bool forPluginRemoval = false)
+    public async Task ExecuteRemovePrerequisites(bool forPluginRemoval = false)
     {
         List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
         subjects.AddRange(!forPluginRemoval ? Plugin.Features.Where(f => f.AlwaysEnabled) : Plugin.Features);
@@ -244,9 +249,6 @@ public partial class PluginViewModel : ActivatableViewModelBase
             return;
 
         // If the plugin or any of its features has uninstall actions, offer to run these
-        List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
-        subjects.AddRange(Plugin.Features);
-        if (subjects.Any(s => s.PlatformPrerequisites.Any(p => p.UninstallActions.Any())))
             await ExecuteRemovePrerequisites(true);
 
         try
@@ -259,6 +261,10 @@ public partial class PluginViewModel : ActivatableViewModelBase
             throw;
         }
 
+        InstalledEntry? entry = _workshopService.GetInstalledEntries().FirstOrDefault(e => e.TryGetMetadata("PluginId", out Guid pluginId) && pluginId == Plugin.Guid);
+        if (entry != null)
+            _workshopService.RemoveInstalledEntry(entry);
+        
         _notificationService.CreateNotification().WithTitle("Removed plugin.").Show();
     }
 
@@ -273,7 +279,7 @@ public partial class PluginViewModel : ActivatableViewModelBase
             _windowService.ShowExceptionDialog("Welp, we couldn\'t open the logs folder for you", e);
         }
     }
-    
+
     private async Task ShowUpdateEnableFailure(bool enable, Exception e)
     {
         string action = enable ? "enable" : "disable";

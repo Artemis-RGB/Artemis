@@ -24,7 +24,7 @@
             </Style>
         </Styles>
     </UserControl.Styles>
-    <Grid ColumnDefinitions="250,*">
+    <Grid ColumnDefinitions="350,*" Width="800">
         <Grid.RowDefinitions>
             <RowDefinition MinHeight="200" />
         </Grid.RowDefinitions>
@@ -37,8 +37,8 @@
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type prerequisites:PluginPrerequisiteViewModel}">
                     <StackPanel Margin="0 6" VerticalAlignment="Stretch">
-                        <TextBlock FontWeight="Bold" Text="{CompiledBinding PluginPrerequisite.Name}" TextWrapping="Wrap" />
-                        <TextBlock Text="{CompiledBinding PluginPrerequisite.Description}" TextWrapping="Wrap" />
+                        <TextBlock Text="{CompiledBinding PluginPrerequisite.Name}" TextWrapping="Wrap" />
+                        <TextBlock Text="{CompiledBinding PluginPrerequisite.Description}" TextWrapping="Wrap" Classes="subtitle"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>

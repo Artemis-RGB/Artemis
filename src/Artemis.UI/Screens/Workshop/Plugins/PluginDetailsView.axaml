@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia.Tight"
+             xmlns:plugins="clr-namespace:Artemis.UI.Screens.Workshop.Plugins"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Plugins.PluginDetailsView"
+             x:DataType="plugins:PluginDetailsViewModel">
+    <Grid ColumnDefinitions="300,*, 300" RowDefinitions="Auto,*">
+        <StackPanel Grid.Row="1" Grid.Column="0" Spacing="10">
+            <Border Classes="card" VerticalAlignment="Top">
+                <ContentControl Content="{CompiledBinding EntryInfoViewModel}" />
+            </Border>
+            <Border Classes="card" VerticalAlignment="Top" IsVisible="{CompiledBinding Entry.LatestRelease, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <ContentControl Content="{CompiledBinding EntryReleasesViewModel}" />
+            </Border>
+        </StackPanel>
+
+        <Border Classes="card" Grid.Row="1" Grid.Column="1" Margin="10 0">
+            <mdxaml:MarkdownScrollViewer Markdown="{CompiledBinding Entry.Description}" MarkdownStyleName="FluentAvalonia">
+                <mdxaml:MarkdownScrollViewer.Styles>
+                    <StyleInclude Source="/Styles/Markdown.axaml" />
+                </mdxaml:MarkdownScrollViewer.Styles>
+            </mdxaml:MarkdownScrollViewer>
+        </Border>
+
+        <ContentControl Grid.Row="1" Grid.Column="2" IsVisible="{CompiledBinding Entry.Images.Count}" Content="{CompiledBinding EntryImagesViewModel}" />
+    </Grid>
+</UserControl>

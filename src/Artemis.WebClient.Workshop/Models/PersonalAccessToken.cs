@@ -1,3 +1,9 @@
 namespace Artemis.WebClient.Workshop.Models;
 
-public record PersonalAccessToken(string Key, DateTime CreationTime, DateTime? Expiration, string? Description);
+public class PersonalAccessToken
+{
+    public string Key { get; init; }
+    public DateTime CreationTime { get; init; }
+    public DateTime? Expiration { get; init; }
+    public string? Description { get; init; }
+}

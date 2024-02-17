@@ -14,6 +14,7 @@ using Artemis.UI.Screens.Workshop.Library;
 using Artemis.UI.Screens.Workshop.Library.Tabs;
 using Artemis.UI.Screens.Workshop.Profile;
 using Artemis.UI.Shared.Routing;
+using PluginDetailsViewModel = Artemis.UI.Screens.Workshop.Plugins.PluginDetailsViewModel;
 
 namespace Artemis.UI.Routing;
 
@@ -32,6 +33,8 @@ public static class Routes
                 {
                     Children = new List<IRouterRegistration>
                     {
+                        new RouteRegistration<PluginListViewModel>("plugins/{page:int}"),
+                        new RouteRegistration<PluginDetailsViewModel>("plugins/details/{entryId:long}"),
                         new RouteRegistration<ProfileListViewModel>("profiles/{page:int}"),
                         new RouteRegistration<ProfileDetailsViewModel>("profiles/details/{entryId:long}"),
                         new RouteRegistration<LayoutListViewModel>("layouts/{page:int}"),

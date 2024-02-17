@@ -12,7 +12,7 @@ public class ProfileListViewModel : List.EntryListViewModel
     public ProfileListViewModel(IWorkshopClient workshopClient,
         IRouter router,
         CategoriesViewModel categoriesViewModel,
-        List.EntryListInputViewModel entryListInputViewModel,
+        EntryListInputViewModel entryListInputViewModel,
         INotificationService notificationService,
         Func<IGetEntries_Entries_Items, EntryListItemViewModel> getEntryListViewModel)
         : base("workshop/entries/profiles", workshopClient, router, categoriesViewModel, entryListInputViewModel, notificationService, getEntryListViewModel)
