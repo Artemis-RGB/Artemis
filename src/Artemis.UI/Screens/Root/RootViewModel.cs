@@ -62,7 +62,6 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         router.SetRoot(this);
         mainWindowService.ConfigureMainWindowProvider(this);
 
-        DisplayAccordingToSettings();
         OpenScreen = ReactiveCommand.Create<string?>(ExecuteOpenScreen);
         OpenDebugger = ReactiveCommand.CreateFromTask(ExecuteOpenDebugger);
         Exit = ReactiveCommand.CreateFromTask(ExecuteExit);
@@ -74,10 +73,17 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
             .Select(vm => vm ?? _defaultTitleBarViewModel)
             .ToProperty(this, vm => vm.TitleBarViewModel);
 
+        if (ShouldShowUI())
+        {
+            ShowSplashScreen();
+            _coreService.Initialized += (_, _) => Dispatcher.UIThread.InvokeAsync(OpenMainWindow);
+        }
+
         Task.Run(() =>
         {
             // Before doing heavy lifting, initialize the update service which may prompt a restart
-            if (_updateService.Initialize())
+            // Only initialize with an update check if we're not going to show the UI
+            if (_updateService.Initialize(!ShouldShowUI()))
                 return;
 
             // Workshop service goes first so it has a chance to clean up old workshop entries and introduce new ones
@@ -118,17 +124,13 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         OnMainWindowClosed();
     }
 
-    private void DisplayAccordingToSettings()
+    private bool ShouldShowUI()
     {
         bool autoRunning = Constants.StartupArguments.Contains("--autorun");
         bool minimized = Constants.StartupArguments.Contains("--minimized");
         bool showOnAutoRun = _settingsService.GetSetting("UI.ShowOnStartup", true).Value;
 
-        if ((autoRunning && !showOnAutoRun) || minimized)
-            return;
-
-        ShowSplashScreen();
-        _coreService.Initialized += (_, _) => Dispatcher.UIThread.InvokeAsync(OpenMainWindow);
+        return (autoRunning && showOnAutoRun) || !minimized;
     }
 
     private void ShowSplashScreen()

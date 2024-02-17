@@ -104,19 +104,19 @@ public class UpdateService : IUpdateService
     {
         ReleaseInstaller installer = _getReleaseInstaller(release.Id);
         await installer.InstallAsync(CancellationToken.None);
-        RestartForUpdate(true);
+        RestartForUpdate("AutoInstallUpdate", true);
     }
 
     private async void HandleAutoUpdateEvent(object? sender, EventArgs e)
     {
         if (Constants.CurrentVersion == "local")
             return;
-        
-        // The event can trigger from multiple sources with a timer acting as a fallback, only actual perform an action once per max 59 minutes
+
+        // The event can trigger from multiple sources with a timer acting as a fallback, only actually perform an action once per max 59 minutes
         if (DateTime.UtcNow - _lastAutoUpdateCheck < TimeSpan.FromMinutes(59))
             return;
         _lastAutoUpdateCheck = DateTime.UtcNow;
-        
+
         if (!_autoCheck.Value || _suspendAutoCheck)
             return;
 
@@ -157,7 +157,7 @@ public class UpdateService : IUpdateService
     public async Task<bool> CheckForUpdate()
     {
         _logger.Information("Performing auto-update check");
-        
+
         IOperationResult<IGetNextReleaseResult> result = await _updatingClient.GetNextRelease.ExecuteAsync(Constants.CurrentVersion, Channel, _updatePlatform);
         result.EnsureNoErrors();
 
@@ -171,7 +171,7 @@ public class UpdateService : IUpdateService
         // Unless auto install is enabled, only offer it once per session 
         if (!_autoInstall.Value)
             _suspendAutoCheck = true;
-        
+
         // If the window is open show the changelog, don't auto-update while the user is busy
         if (_mainWindowService.IsMainWindowOpen || !_autoInstall.Value)
         {
@@ -194,8 +194,10 @@ public class UpdateService : IUpdateService
     }
 
     /// <inheritdoc />
-    public void RestartForUpdate(bool silent)
+    public void RestartForUpdate(string source, bool silent)
     {
+        _logger.Information("Restarting for update required by {Source}, silent: {Silent}", source, silent);
+
         if (!Directory.Exists(Path.Combine(Constants.UpdatingFolder, "pending")))
             throw new ArtemisUIException("Cannot install update, none is pending.");
 
@@ -204,11 +206,11 @@ public class UpdateService : IUpdateService
     }
 
     /// <inheritdoc />
-    public bool Initialize()
+    public bool Initialize(bool performAutoUpdate)
     {
         if (Constants.CurrentVersion == "local")
             return false;
-        
+
         string? channelArgument = Constants.StartupArguments.FirstOrDefault(a => a.StartsWith("--channel="));
         if (channelArgument != null)
             Channel = channelArgument.Split("=")[1];
@@ -235,7 +237,7 @@ public class UpdateService : IUpdateService
             _logger.Information("Installing pending update");
             try
             {
-                RestartForUpdate(true);
+                RestartForUpdate("PendingFolder", true);
                 return true;
             }
             catch (Exception e)
@@ -246,9 +248,10 @@ public class UpdateService : IUpdateService
         }
 
         ProcessReleaseStatus();
-        
+
         // Trigger the auto update event so that it doesn't take an hour for the first check to happen
-        HandleAutoUpdateEvent(this, EventArgs.Empty);
+        if (performAutoUpdate)
+            HandleAutoUpdateEvent(this, EventArgs.Empty);
 
         _logger.Information("Update service initialized for {Channel} channel", Channel);
         return false;

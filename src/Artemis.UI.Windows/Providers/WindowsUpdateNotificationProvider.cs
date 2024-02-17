@@ -110,7 +110,7 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
         // If the main window is not open the user isn't busy, restart straight away
         if (!_mainWindowService.IsMainWindowOpen)
         {
-            _updateService.RestartForUpdate(true);
+            _updateService.RestartForUpdate("WindowsNotification", true);
             return;
         }
 
@@ -165,6 +165,6 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
         else if (action == "cancel")
             _cancellationTokenSource?.Cancel();
         else if (action == "restart-for-update")
-            _updateService.RestartForUpdate(false);
+            _updateService.RestartForUpdate("WindowsNotification", false);
     }
 }

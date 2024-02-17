@@ -17,7 +17,7 @@
             <TextBlock Grid.Row="1" Grid.Column="0" Text="{CompiledBinding Release.CreatedAt, Converter={StaticResource DateTimeConverter}}" VerticalAlignment="Center" Classes="subtitle" FontSize="13" />
             <avalonia:MaterialIcon Classes="status-icon" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Kind="CheckCircle" ToolTip.Tip="Current version"
                                    IsVisible="{CompiledBinding IsCurrentVersion}" />
-            <avalonia:MaterialIcon Classes="status-icon" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Kind="History" ToolTip.Tip="Previous version"
+            <avalonia:MaterialIcon Classes="status-icon" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Kind="History" ToolTip.Tip="Last previously installed version"
                                    IsVisible="{CompiledBinding IsPreviousVersion}" />
         </Grid>
         <StackPanel Margin="4" IsVisible="{CompiledBinding !ShowStatusIndicator}">

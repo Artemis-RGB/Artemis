@@ -179,12 +179,26 @@ public class WorkshopService : IWorkshopService
     {
         if (_initialized)
             throw new ArtemisWorkshopException("Workshop service is already initialized");
-        
-        RemoveOrphanedFiles();
-        _pluginManagementService.AdditionalPluginDirectories.AddRange(GetInstalledEntries().Where(e => e.EntryType == EntryType.Plugin).Select(e => e.GetReleaseDirectory()));
-        _initialized = true;
+
+        try
+        {
+            if (!Directory.Exists(Constants.WorkshopFolder))
+                Directory.CreateDirectory(Constants.WorkshopFolder);
+
+            RemoveOrphanedFiles();
+
+            _pluginManagementService.AdditionalPluginDirectories.AddRange(GetInstalledEntries()
+                .Where(e => e.EntryType == EntryType.Plugin)
+                .Select(e => e.GetReleaseDirectory()));
+
+            _initialized = true;
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Failed to initialize workshop service");
+        }
     }
-    
+
     private void RemoveOrphanedFiles()
     {
         List<InstalledEntry> entries = GetInstalledEntries();
