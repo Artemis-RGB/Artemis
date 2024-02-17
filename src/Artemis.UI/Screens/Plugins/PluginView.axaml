@@ -19,7 +19,10 @@
                                 Grid.RowSpan="3"
                                 VerticalAlignment="Top" />
 
-            <TextBlock Grid.Column="1" Grid.Row="0" Classes="h5 no-margin" Text="{CompiledBinding Plugin.Info.Name}" />
+            <TextBlock Grid.Column="1" Grid.Row="0" Classes="no-margin">
+                <Run Classes="h5" Text="{CompiledBinding Plugin.Info.Name}"/>
+                <Run Classes="subtitle" Text="{CompiledBinding Plugin.Info.Version}"/>
+            </TextBlock>
 
             <ItemsControl Grid.Column="2" Grid.Row="0" IsVisible="{CompiledBinding Platforms.Count}" ItemsSource="{CompiledBinding Platforms}" HorizontalAlignment="Right">
                 <ItemsControl.ItemsPanel>

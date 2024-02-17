@@ -66,7 +66,7 @@ internal class UserManagementService : IUserManagementService
     }
 
     /// <inheritdoc />
-    public async Task<string> CreatePersonAccessToken(string description, DateTimeOffset expirationDate, CancellationToken cancellationToken)
+    public async Task<string> CreatePersonAccessToken(string description, DateTime expirationDate, CancellationToken cancellationToken)
     {
         HttpClient client = _httpClientFactory.CreateClient(WorkshopConstants.IDENTITY_CLIENT_NAME);
         HttpResponseMessage response = await client.PostAsync("user/access-token", JsonContent.Create(new {Description = description, ExpirationDate = expirationDate}), cancellationToken);

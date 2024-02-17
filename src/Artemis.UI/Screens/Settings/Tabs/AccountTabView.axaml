@@ -15,31 +15,31 @@
         <converters:DateTimeConverter x:Key="DateTimeConverter" />
     </UserControl.Resources>
     <Panel>
-        <!-- <StackPanel IsVisible="{CompiledBinding !IsLoggedIn^}" Margin="0 50 0 0"> -->
-        <!--     <StackPanel.Styles> -->
-        <!--         <Styles> -->
-        <!--             <Style Selector="TextBlock"> -->
-        <!--                 <Setter Property="TextAlignment" Value="Center"></Setter> -->
-        <!--                 <Setter Property="TextWrapping" Value="Wrap"></Setter> -->
-        <!--             </Style> -->
-        <!--         </Styles> -->
-        <!--     </StackPanel.Styles> -->
-        <!--     <TextBlock Theme="{StaticResource TitleTextBlockStyle}">You are not logged in</TextBlock> -->
-        <!--     <TextBlock> -->
-        <!--         <Run>In order to manage your account you must be logged in.</Run> -->
-        <!--         <LineBreak /> -->
-        <!--         <Run>Creating an account is free and we'll not bother you with a newsletter or crap like that.</Run> -->
-        <!--     </TextBlock> -->
-        <!-- -->
-        <!--     <Lottie Path="/Assets/Animations/login-pending.json" RepeatCount="1" Width="350" Height="350"></Lottie> -->
-        <!-- -->
-        <!--     <TextBlock> -->
-        <!--         <Run>Click Log In below to (create an account) and log in.</Run> -->
-        <!--         <LineBreak /> -->
-        <!--         <Run>You'll also be able to log in with Google or Discord.</Run> -->
-        <!--     </TextBlock> -->
-        <!--     <Button HorizontalAlignment="Center" Command="{CompiledBinding Login}" Margin="0 25 0 0">Login</Button> -->
-        <!-- </StackPanel> -->
+        <StackPanel IsVisible="{CompiledBinding !IsLoggedIn^}" Margin="0 50 0 0">
+            <StackPanel.Styles>
+                <Styles>
+                    <Style Selector="TextBlock">
+                        <Setter Property="TextAlignment" Value="Center"></Setter>
+                        <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                    </Style>
+                </Styles>
+            </StackPanel.Styles>
+            <TextBlock Theme="{StaticResource TitleTextBlockStyle}">You are not logged in</TextBlock>
+            <TextBlock>
+                <Run>In order to manage your account you must be logged in.</Run>
+                <LineBreak />
+                <Run>Creating an account is free and we'll not bother you with a newsletter or crap like that.</Run>
+            </TextBlock>
+
+            <Lottie Path="/Assets/Animations/login-pending.json" RepeatCount="1" Width="350" Height="350"></Lottie>
+
+            <TextBlock>
+                <Run>Click Log In below to (create an account) and log in.</Run>
+                <LineBreak />
+                <Run>You'll also be able to log in with Google or Discord.</Run>
+            </TextBlock>
+            <Button HorizontalAlignment="Center" Command="{CompiledBinding Login}" Margin="0 25 0 0">Login</Button>
+        </StackPanel>
 
         <ScrollViewer IsVisible="{CompiledBinding IsLoggedIn^}" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="15" MaxWidth="1000">
@@ -109,16 +109,26 @@
                 </TextBlock>
                 <Border Classes="card" VerticalAlignment="Stretch" Margin="0,0,5,0">
                     <StackPanel>
-                        <Button HorizontalAlignment="Right" Command="{CompiledBinding GenerateToken}">Generate token</Button>
+                        <DockPanel Margin="0 0 0 10">
+                            <TextBlock VerticalAlignment="Center">
+                                Tokens be used to communicate with Artemis APIs without using a username and password
+                            </TextBlock>
+                            <Button HorizontalAlignment="Right" Command="{CompiledBinding GenerateToken}">Generate token</Button>
+                        </DockPanel>
+
                         <Grid ColumnDefinitions="2*,*,*,*" Margin="12 6">
                             <TextBlock Grid.Column="0">Description</TextBlock>
                             <TextBlock Grid.Column="1">Created at</TextBlock>
                             <TextBlock Grid.Column="2" Grid.ColumnSpan="2">Expires at</TextBlock>
                         </Grid>
+                        
+                        <TextBlock IsVisible="{CompiledBinding !PersonalAccessTokens.Count}" TextAlignment="Center" Classes="subtitle" Margin="0 10">
+                            You have no active personal access tokens.
+                        </TextBlock>
 
-                        <ItemsControl ItemsSource="{CompiledBinding PersonalAccessTokens}">
+                        <ItemsControl ItemsSource="{CompiledBinding PersonalAccessTokens}" IsVisible="{CompiledBinding PersonalAccessTokens.Count}">
                             <ItemsControl.Styles>
-                                <Style Selector="ContentPresenter:nth-child(even) > Border">
+                                <Style Selector="ContentPresenter:nth-child(odd) > Border">
                                     <Setter Property="Background" Value="{StaticResource ControlStrokeColorOnAccentDefault}"></Setter>
                                 </Style>
                             </ItemsControl.Styles>
@@ -130,8 +140,8 @@
                                             <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{CompiledBinding CreationTime, Converter={StaticResource DateTimeConverter}}" />
                                             <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{CompiledBinding Expiration, Converter={StaticResource DateTimeConverter}}" />
                                             <Button Grid.Column="3" HorizontalAlignment="Right"
-                                                    Classes="icon-button" 
-                                                    Command="{Binding $parent[settings:AccountTabView].DataContext.DeleteToken}" 
+                                                    Classes="icon-button"
+                                                    Command="{Binding $parent[settings:AccountTabView].DataContext.DeleteToken}"
                                                     CommandParameter="{CompiledBinding}">
                                                 <avalonia:MaterialIcon Kind="Trash" />
                                             </Button>

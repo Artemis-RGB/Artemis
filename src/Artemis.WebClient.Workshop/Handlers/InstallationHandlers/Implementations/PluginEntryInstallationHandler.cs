@@ -63,6 +63,14 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
         using ZipArchive archive = new(stream);
         archive.ExtractToDirectory(releaseDirectory.FullName);
 
+        // If there is already a version of the plugin installed, disable it
+        if (installedEntry.TryGetMetadata("PluginId", out Guid pluginId))
+        {
+            Plugin? currentVersion = _pluginManagementService.GetAllPlugins().FirstOrDefault(p => p.Guid == pluginId);
+            if (currentVersion != null)
+                _pluginManagementService.UnloadPlugin(currentVersion);
+        }
+
         // Load the plugin, next time during startup this will happen automatically
         try
         {
