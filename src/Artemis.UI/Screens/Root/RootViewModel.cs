@@ -94,8 +94,6 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
             registrationService.RegisterBuiltInDataModelDisplays();
             registrationService.RegisterBuiltInDataModelInputs();
             registrationService.RegisterBuiltInPropertyEditors();
-
-            _router.Navigate("home");
         });
     }
 
@@ -130,7 +128,9 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         bool minimized = Constants.StartupArguments.Contains("--minimized");
         bool showOnAutoRun = _settingsService.GetSetting("UI.ShowOnStartup", true).Value;
 
-        return (autoRunning && showOnAutoRun) || !minimized;
+        if (autoRunning)
+            return showOnAutoRun;
+        return !minimized;
     }
 
     private void ShowSplashScreen()
