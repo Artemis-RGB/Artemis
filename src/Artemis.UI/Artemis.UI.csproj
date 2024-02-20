@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Library</OutputType>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <OutputPath>bin/</OutputPath>
         <Platforms>x64</Platforms>
@@ -19,11 +19,11 @@
         <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.2.1" />
         <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6" />
         <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="11.0.0.2" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.6" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.9" />
         <PackageReference Include="Avalonia.Skia.Lottie" Version="11.0.0" />
         <PackageReference Include="AvaloniaEdit.TextMate" Version="11.0.6" />
         <PackageReference Include="Markdown.Avalonia.Tight" Version="11.0.2" />
-        <PackageReference Include="Octopus.Octodiff" Version="2.0.544" />
+        <PackageReference Include="Octopus.Octodiff" Version="2.0.546" />
         <PackageReference Include="PropertyChanged.SourceGenerator" Version="1.1.0">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
