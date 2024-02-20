@@ -26,6 +26,7 @@ public partial class SettingsViewModel : RoutableHostScreen<RoutableScreen>, IMa
             new("Plugins", "settings/plugins"),
             new("Devices", "settings/devices"),
             new("Releases", "settings/releases"),
+            new("Account", "settings/account"),
             new("About", "settings/about"),
         };
         

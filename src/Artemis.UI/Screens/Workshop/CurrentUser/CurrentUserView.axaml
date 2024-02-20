@@ -34,8 +34,8 @@
                  Name="UserMenu">
             <Ellipse.ContextFlyout>
                 <Flyout>
-                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="*,*,*" MinWidth="300">
-                        <Ellipse Grid.Column="0" Grid.RowSpan="3" Height="50" Width="50" Margin="0 0 8 0" VerticalAlignment="Top">
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="*,*,*,*" MinWidth="300">
+                        <Ellipse Grid.Column="0" Grid.RowSpan="4" Height="50" Width="50" Margin="0 0 8 0" VerticalAlignment="Top">
                             <Ellipse.Fill>
                                 <ImageBrush asyncImageLoader:ImageBrushLoader.Source="{CompiledBinding AvatarUrl}" />
                             </Ellipse.Fill>
@@ -46,10 +46,20 @@
                             IsVisible="{CompiledBinding AllowLogout}"
                             Grid.Column="1"
                             Grid.Row="2"
+                            Margin="-8 4 0 0"
+                            Padding="6 4"
+                            Click="Signout_OnClick">
+                            Sign out
+                        </controls:HyperlinkButton>
+                        
+                        <controls:HyperlinkButton
+                            IsVisible="{CompiledBinding AllowLogout}"
+                            Grid.Column="1"
+                            Grid.Row="3"
                             Margin="-8 0 0 0"
                             Padding="6 4"
-                            Click="Button_OnClick">
-                            Sign out
+                            Click="Manage_OnClick">
+                            Manage account
                         </controls:HyperlinkButton>
                     </Grid>
                 </Flyout>

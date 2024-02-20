@@ -1,23 +1,32 @@
 using System.Net.Http.Headers;
+using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Workshop;
 using Artemis.Storage.Repositories.Interfaces;
 using Artemis.UI.Shared.Routing;
-using Artemis.UI.Shared.Utilities;
+using Artemis.WebClient.Workshop.Exceptions;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
+using Artemis.WebClient.Workshop.Models;
+using Serilog;
 
 namespace Artemis.WebClient.Workshop.Services;
 
 public class WorkshopService : IWorkshopService
 {
+    private readonly ILogger _logger;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IRouter _router;
     private readonly IEntryRepository _entryRepository;
+    private readonly IPluginManagementService _pluginManagementService;
+    private bool _initialized;
 
-    public WorkshopService(IHttpClientFactory httpClientFactory, IRouter router, IEntryRepository entryRepository)
+    public WorkshopService(ILogger logger, IHttpClientFactory httpClientFactory, IRouter router, IEntryRepository entryRepository, IPluginManagementService pluginManagementService)
     {
+        _logger = logger;
         _httpClientFactory = httpClientFactory;
         _router = router;
         _entryRepository = entryRepository;
+        _pluginManagementService = pluginManagementService;
     }
 
     public async Task<Stream?> GetEntryIcon(long entryId, CancellationToken cancellationToken)
@@ -36,7 +45,7 @@ public class WorkshopService : IWorkshopService
         }
     }
 
-    public async Task<ImageUploadResult> SetEntryIcon(long entryId, Stream icon, CancellationToken cancellationToken)
+    public async Task<ApiResult> SetEntryIcon(long entryId, Stream icon, CancellationToken cancellationToken)
     {
         icon.Seek(0, SeekOrigin.Begin);
 
@@ -52,12 +61,12 @@ public class WorkshopService : IWorkshopService
         // Submit
         HttpResponseMessage response = await client.PostAsync($"entries/{entryId}/icon", content, cancellationToken);
         if (!response.IsSuccessStatusCode)
-            return ImageUploadResult.FromFailure($"{response.StatusCode} - {await response.Content.ReadAsStringAsync(cancellationToken)}");
-        return ImageUploadResult.FromSuccess();
+            return ApiResult.FromFailure($"{response.StatusCode} - {await response.Content.ReadAsStringAsync(cancellationToken)}");
+        return ApiResult.FromSuccess();
     }
 
     /// <inheritdoc />
-    public async Task<ImageUploadResult> UploadEntryImage(long entryId, ImageUploadRequest request, CancellationToken cancellationToken)
+    public async Task<ApiResult> UploadEntryImage(long entryId, ImageUploadRequest request, CancellationToken cancellationToken)
     {
         request.File.Seek(0, SeekOrigin.Begin);
 
@@ -76,8 +85,8 @@ public class WorkshopService : IWorkshopService
         // Submit
         HttpResponseMessage response = await client.PostAsync($"entries/{entryId}/image", content, cancellationToken);
         if (!response.IsSuccessStatusCode)
-            return ImageUploadResult.FromFailure($"{response.StatusCode} - {await response.Content.ReadAsStringAsync(cancellationToken)}");
-        return ImageUploadResult.FromSuccess();
+            return ApiResult.FromFailure($"{response.StatusCode} - {await response.Content.ReadAsStringAsync(cancellationToken)}");
+        return ApiResult.FromSuccess();
     }
 
     /// <inheritdoc />
@@ -117,6 +126,7 @@ public class WorkshopService : IWorkshopService
         return status.IsReachable;
     }
 
+    /// <inheritdoc />
     public async Task NavigateToEntry(long entryId, EntryType entryType)
     {
         switch (entryType)
@@ -135,6 +145,7 @@ public class WorkshopService : IWorkshopService
         }
     }
 
+    /// <inheritdoc />
     public List<InstalledEntry> GetInstalledEntries()
     {
         return _entryRepository.GetAll().Select(e => new InstalledEntry(e)).ToList();
@@ -151,12 +162,6 @@ public class WorkshopService : IWorkshopService
     }
 
     /// <inheritdoc />
-    public void AddOrUpdateInstalledEntry(InstalledEntry entry, IRelease release)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc />
     public void RemoveInstalledEntry(InstalledEntry installedEntry)
     {
         _entryRepository.Remove(installedEntry.Entity);
@@ -167,5 +172,63 @@ public class WorkshopService : IWorkshopService
     {
         entry.Save();
         _entryRepository.Save(entry.Entity);
+    }
+
+    /// <inheritdoc />
+    public void Initialize()
+    {
+        if (_initialized)
+            throw new ArtemisWorkshopException("Workshop service is already initialized");
+
+        try
+        {
+            if (!Directory.Exists(Constants.WorkshopFolder))
+                Directory.CreateDirectory(Constants.WorkshopFolder);
+
+            RemoveOrphanedFiles();
+
+            _pluginManagementService.AdditionalPluginDirectories.AddRange(GetInstalledEntries()
+                .Where(e => e.EntryType == EntryType.Plugin)
+                .Select(e => e.GetReleaseDirectory()));
+
+            _initialized = true;
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Failed to initialize workshop service");
+        }
+    }
+
+    private void RemoveOrphanedFiles()
+    {
+        List<InstalledEntry> entries = GetInstalledEntries();
+        foreach (string directory in Directory.GetDirectories(Constants.WorkshopFolder))
+        {
+            InstalledEntry? installedEntry = entries.FirstOrDefault(e => e.GetDirectory().FullName == directory);
+            if (installedEntry == null)
+                RemoveOrphanedDirectory(directory);
+            else
+            {
+                DirectoryInfo currentReleaseDirectory = installedEntry.GetReleaseDirectory();
+                foreach (string releaseDirectory in Directory.GetDirectories(directory))
+                {
+                    if (releaseDirectory != currentReleaseDirectory.FullName)
+                        RemoveOrphanedDirectory(releaseDirectory);
+                }
+            }
+        }
+    }
+
+    private void RemoveOrphanedDirectory(string directory)
+    {
+        _logger.Information("Removing orphaned workshop entry at {Directory}", directory);
+        try
+        {
+            Directory.Delete(directory, true);
+        }
+        catch (Exception e)
+        {
+            _logger.Warning(e, "Failed to remove orphaned workshop entry at {Directory}", directory);
+        }
     }
 }

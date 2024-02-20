@@ -1,12 +1,13 @@
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
+using Artemis.WebClient.Workshop.Models;
 
 namespace Artemis.WebClient.Workshop.Services;
 
 public interface IWorkshopService
 {
     Task<Stream?> GetEntryIcon(long entryId, CancellationToken cancellationToken);
-    Task<ImageUploadResult> SetEntryIcon(long entryId, Stream icon, CancellationToken cancellationToken);
-    Task<ImageUploadResult> UploadEntryImage(long entryId, ImageUploadRequest request, CancellationToken cancellationToken);
+    Task<ApiResult> SetEntryIcon(long entryId, Stream icon, CancellationToken cancellationToken);
+    Task<ApiResult> UploadEntryImage(long entryId, ImageUploadRequest request, CancellationToken cancellationToken);
     Task DeleteEntryImage(Guid id, CancellationToken cancellationToken);
     Task<WorkshopStatus> GetWorkshopStatus(CancellationToken cancellationToken);
     Task<bool> ValidateWorkshopStatus(CancellationToken cancellationToken);
@@ -16,6 +17,7 @@ public interface IWorkshopService
     InstalledEntry? GetInstalledEntry(IEntryDetails entry);
     void RemoveInstalledEntry(InstalledEntry installedEntry);
     void SaveInstalledEntry(InstalledEntry entry);
+    void Initialize();
 
     public record WorkshopStatus(bool IsReachable, string Message);
 }

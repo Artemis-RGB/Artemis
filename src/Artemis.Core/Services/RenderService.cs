@@ -123,6 +123,7 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
             return;
         }
 
+        _logger.Information("Applying {Name} graphics context", _preferredGraphicsContext.Value);
         if (_preferredGraphicsContext.Value == "Software")
         {
             GraphicsContext = null;

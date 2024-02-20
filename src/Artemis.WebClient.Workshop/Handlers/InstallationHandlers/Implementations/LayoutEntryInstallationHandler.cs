@@ -4,6 +4,7 @@ using Artemis.Core.Providers;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Utilities;
+using Artemis.WebClient.Workshop.Models;
 using Artemis.WebClient.Workshop.Providers;
 using Artemis.WebClient.Workshop.Services;
 

@@ -78,7 +78,10 @@ internal class PluginManagementService : IPluginManagementService
             File.Create(Path.Combine(pluginDirectory.FullName, "artemis.lock")).Close();
     }
 
+    public List<DirectoryInfo> AdditionalPluginDirectories { get; } = new();
+
     public bool LoadingPlugins { get; private set; }
+
 
     #region Built in plugins
 
@@ -273,6 +276,18 @@ internal class PluginManagementService : IPluginManagementService
             catch (Exception e)
             {
                 _logger.Warning(new ArtemisPluginException($"Failed to load plugin at {subDirectory}", e), "Plugin exception");
+            }
+        }
+
+        foreach (DirectoryInfo directory in AdditionalPluginDirectories)
+        {
+            try
+            {
+                LoadPlugin(directory);
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(new ArtemisPluginException($"Failed to load plugin at {directory}", e), "Plugin exception");
             }
         }
 
@@ -597,7 +612,7 @@ internal class PluginManagementService : IPluginManagementService
         using StreamReader reader = new(metaDataFileEntry.Open());
         PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
         if (!pluginInfo.Main.EndsWith(".dll"))
-            throw new ArtemisPluginException("Main entry in plugin.json must point to a .dll file" + fileName);
+            throw new ArtemisPluginException("Main entry in plugin.json must point to a .dll file");
 
         Plugin? existing = _plugins.FirstOrDefault(p => p.Guid == pluginInfo.Guid);
         if (existing != null)

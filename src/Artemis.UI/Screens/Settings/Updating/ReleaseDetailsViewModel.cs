@@ -87,7 +87,7 @@ public partial class ReleaseDetailsViewModel : RoutableScreen<ReleaseDetailsView
 
     private void ExecuteRestart()
     {
-        _updateService.RestartForUpdate(false);
+        _updateService.RestartForUpdate("ReleaseDetails", false);
     }
 
     private async Task ExecuteInstall(CancellationToken cancellationToken)

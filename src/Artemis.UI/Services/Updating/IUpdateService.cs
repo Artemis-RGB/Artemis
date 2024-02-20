@@ -42,12 +42,14 @@ public interface IUpdateService : IArtemisUIService
     /// <summary>
     ///     Restarts the application to install a pending update.
     /// </summary>
+    /// <param name="source">The source from which the restart is requested.</param>
     /// <param name="silent">A boolean indicating whether to perform a silent install of the update.</param>
-    void RestartForUpdate(bool silent);
+    void RestartForUpdate(string source, bool silent);
 
     /// <summary>
     ///     Initializes the update service.
     /// </summary>
+    /// <param name="performAutoUpdate"></param>
     /// <returns>A boolean indicating whether a restart will occur to install a pending update.</returns>
-    bool Initialize();
+    bool Initialize(bool performAutoUpdate);
 }

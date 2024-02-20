@@ -1,4 +1,5 @@
-﻿using Artemis.WebClient.Workshop.Services;
+﻿using Artemis.WebClient.Workshop.Models;
+using Artemis.WebClient.Workshop.Services;
 
 namespace Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
 

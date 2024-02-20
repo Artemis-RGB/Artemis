@@ -1,5 +1,6 @@
 ﻿using Artemis.Core;
 using Artemis.Core.Providers;
+using Artemis.WebClient.Workshop.Models;
 using Artemis.WebClient.Workshop.Services;
 
 namespace Artemis.WebClient.Workshop.Providers;

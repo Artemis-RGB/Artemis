@@ -24,7 +24,7 @@
             </Style>
         </Styles>
     </UserControl.Styles>
-    <Grid ColumnDefinitions="250,*">
+    <Grid ColumnDefinitions="350,*" Width="800">
         <Grid.RowDefinitions>
             <RowDefinition MinHeight="200" />
         </Grid.RowDefinitions>
@@ -36,7 +36,7 @@
                  IsHitTestVisible="False">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type prerequisites:PluginPrerequisiteViewModel}">
-                    <Grid ColumnDefinitions="Auto,*" Margin="0 6">
+                    <Grid ColumnDefinitions="Auto,*" Margin="-6 0 20 0">
                         <Border Grid.Row="0" Grid.Column="0" Classes="status-border" IsVisible="{CompiledBinding !IsMet}" Background="#ff3838">
                             <avalonia:MaterialIcon Kind="Close" />
                         </Border>
@@ -45,8 +45,8 @@
                         </Border>
 
                         <StackPanel Margin="8 0 0 0" Grid.Column="1" VerticalAlignment="Stretch">
-                            <TextBlock FontWeight="Bold" Text="{CompiledBinding PluginPrerequisite.Name}" TextWrapping="Wrap" />
-                            <TextBlock Text="{CompiledBinding PluginPrerequisite.Description}" TextWrapping="Wrap" />
+                            <TextBlock Text="{CompiledBinding PluginPrerequisite.Name}" TextWrapping="Wrap" />
+                            <TextBlock Text="{CompiledBinding PluginPrerequisite.Description}" TextWrapping="Wrap" Classes="subtitle"/>
                         </StackPanel>
                     </Grid>
                 </DataTemplate>
@@ -74,12 +74,14 @@
                     Grid.Column="1"
                     Margin="10 0"
                     IsVisible="{CompiledBinding ShowFailed, Mode=OneWay}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock>Installing</TextBlock>
-                <TextBlock Text="{CompiledBinding ActivePrerequisite.PluginPrerequisite.Name, Mode=OneWay}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                <TextBlock>failed.</TextBlock>
-            </StackPanel>
-            <TextBlock TextWrapping="Wrap">You may try again to see if that helps, otherwise install the prerequisite manually or contact the plugin developer.</TextBlock>
+            <TextBlock TextWrapping="Wrap" >
+                <Run>Installing</Run>
+                <Run Text="{CompiledBinding ActivePrerequisite.PluginPrerequisite.Name, Mode=OneWay}" FontWeight="SemiBold" />
+                <Run>failed.</Run>
+                <LineBreak/>
+                <LineBreak/>
+                <Run>You may try again to see if that helps, otherwise install the prerequisite manually or contact the plugin developer.</Run>
+            </TextBlock>
         </StackPanel>
     </Grid>
 </UserControl>

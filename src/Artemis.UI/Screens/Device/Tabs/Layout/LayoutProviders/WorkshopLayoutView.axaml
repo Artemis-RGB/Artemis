@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:services="clr-namespace:Artemis.WebClient.Workshop.Services;assembly=Artemis.WebClient.Workshop"
              xmlns:layoutProviders="clr-namespace:Artemis.UI.Screens.Device.Layout.LayoutProviders"
+             xmlns:models="clr-namespace:Artemis.WebClient.Workshop.Models;assembly=Artemis.WebClient.Workshop"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Device.Layout.LayoutProviders.WorkshopLayoutView"
              x:DataType="layoutProviders:WorkshopLayoutViewModel">
@@ -19,7 +20,7 @@
                     <Style Selector="ComboBox.layoutProvider /template/ ContentControl#ContentPresenter">
                         <Setter Property="ContentTemplate">
                             <Setter.Value>
-                                <DataTemplate x:DataType="services:InstalledEntry">
+                                <DataTemplate x:DataType="models:InstalledEntry">
                                     <TextBlock Text="{CompiledBinding Name}" TextWrapping="Wrap" MaxWidth="350" />
                                 </DataTemplate>
                             </Setter.Value>
@@ -32,7 +33,7 @@
                           ItemsSource="{CompiledBinding Entries}"
                           PlaceholderText="Select an installed layout">
                     <ComboBox.ItemTemplate>
-                        <DataTemplate x:DataType="services:InstalledEntry">
+                        <DataTemplate x:DataType="models:InstalledEntry">
                             <StackPanel>
                                 <TextBlock Text="{CompiledBinding Name}" TextWrapping="Wrap" MaxWidth="350" />
                                 <TextBlock Classes="subtitle" Text="{CompiledBinding Author}" TextWrapping="Wrap" MaxWidth="350" />

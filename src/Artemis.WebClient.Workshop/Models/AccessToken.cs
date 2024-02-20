@@ -1,8 +1,7 @@
-using Artemis.Core;
 using Artemis.WebClient.Workshop.Exceptions;
 using IdentityModel.Client;
 
-namespace Artemis.WebClient.Workshop.Services;
+namespace Artemis.WebClient.Workshop.Models;
 
 internal class AuthenticationToken
 {

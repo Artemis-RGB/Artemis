@@ -64,6 +64,7 @@ public partial class PluginPrerequisitesUninstallDialogViewModel : ContentDialog
     public static async Task Show(IWindowService windowService, List<IPrerequisitesSubject> subjects, string cancelLabel = "Cancel")
     {
         await windowService.CreateContentDialog()
+            .WithFullScreen()
             .WithTitle("Plugin prerequisites")
             .WithViewModel(out PluginPrerequisitesUninstallDialogViewModel vm, subjects)
             .WithCloseButtonText(cancelLabel)

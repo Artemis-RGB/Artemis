@@ -27,6 +27,7 @@ public class LayoutListViewModel : List.EntryListViewModel
             And = new[]
             {
                 new EntryFilterInput {EntryType = new EntryTypeOperationFilterInput {Eq = EntryType.Layout}},
+                new EntryFilterInput(){LatestReleaseId = new LongOperationFilterInput {Gt = 0}},
                 base.GetFilter()
             }
         };

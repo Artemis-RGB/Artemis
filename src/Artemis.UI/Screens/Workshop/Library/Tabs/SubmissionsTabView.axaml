@@ -36,20 +36,24 @@
                 <Button HorizontalAlignment="Center" Command="{CompiledBinding AddSubmission}">Submit new entry</Button>
             </StackPanel>
 
-            <ScrollViewer IsVisible="{CompiledBinding Entries.Count}">
-                <ItemsControl ItemsSource="{CompiledBinding Entries}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <ContentControl Content="{CompiledBinding}"/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-            </ScrollViewer>
+            <StackPanel Spacing="15">
+                <Button HorizontalAlignment="Right" Command="{CompiledBinding AddSubmission}">Submit new entry</Button>
+                <ScrollViewer IsVisible="{CompiledBinding Entries.Count}">
+                    <ItemsControl ItemsSource="{CompiledBinding Entries}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{CompiledBinding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+
         </Panel>
     </Panel>
 

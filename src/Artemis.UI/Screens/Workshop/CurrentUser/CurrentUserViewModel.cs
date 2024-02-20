@@ -6,6 +6,7 @@ using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Services;
@@ -23,6 +24,7 @@ public partial class CurrentUserViewModel : ActivatableViewModelBase
     private readonly ObservableAsPropertyHelper<bool> _isAnonymous;
     private readonly ILogger _logger;
     private readonly IWindowService _windowService;
+    private readonly IRouter _router;
     [Notify] private bool _allowLogout = true;
     [Notify(Setter.Private)] private Bitmap? _avatar;
     [Notify(Setter.Private)] private string? _email;
@@ -31,11 +33,12 @@ public partial class CurrentUserViewModel : ActivatableViewModelBase
     [Notify(Setter.Private)] private string? _userId;
     [Notify(Setter.Private)] private string? _avatarUrl;
 
-    public CurrentUserViewModel(ILogger logger, IAuthenticationService authenticationService, IWindowService windowService)
+    public CurrentUserViewModel(ILogger logger, IAuthenticationService authenticationService, IWindowService windowService, IRouter router)
     {
         _logger = logger;
         _authenticationService = authenticationService;
         _windowService = windowService;
+        _router = router;
         Login = ReactiveCommand.CreateFromTask(ExecuteLogin);
 
         _isAnonymous = this.WhenAnyValue(vm => vm.Loading, vm => vm.Name, (l, n) => l || n == null).ToProperty(this, vm => vm.IsAnonymous);
@@ -91,5 +94,10 @@ public partial class CurrentUserViewModel : ActivatableViewModelBase
         Name = _authenticationService.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
         Email = _authenticationService.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
         AvatarUrl = $"{WorkshopConstants.AUTHORITY_URL}/user/avatar/{UserId}";
+    }
+
+    public void ManageAccount()
+    {
+        _router.Navigate("settings/account");
     }
 }

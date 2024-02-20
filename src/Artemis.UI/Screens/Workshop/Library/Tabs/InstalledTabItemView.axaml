@@ -20,7 +20,7 @@
             HorizontalAlignment="Stretch"
             HorizontalContentAlignment="Stretch"
             Command="{CompiledBinding ViewWorkshopPage}">
-        <Grid ColumnDefinitions="Auto,*,*,*,Auto">
+        <Grid ColumnDefinitions="Auto,2*,*,*,*,Auto">
             <Border Grid.Column="0"
                     CornerRadius="6"
                     VerticalAlignment="Center"
@@ -42,12 +42,13 @@
             </StackPanel>
             
             <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{CompiledBinding InstalledEntry.EntryType}"></TextBlock>
-            <TextBlock Grid.Column="3" VerticalAlignment="Center">
+            <TextBlock Grid.Column="3" VerticalAlignment="Center" Text="{CompiledBinding InstalledEntry.ReleaseVersion}"></TextBlock>
+            <TextBlock Grid.Column="4" VerticalAlignment="Center">
                 <Run>Installed</Run>
                 <Run Text="{CompiledBinding InstalledEntry.InstalledAt, FallbackValue=01-01-1337, Mode=OneWay, Converter={StaticResource DateTimeConverter}}" />
             </TextBlock>
             
-            <StackPanel Grid.Column="4" VerticalAlignment="Center" Orientation="Horizontal" Spacing="6">
+            <StackPanel Grid.Column="5" VerticalAlignment="Center" Orientation="Horizontal" Spacing="6">
                 <Button Command="{CompiledBinding ViewLocal}">Open</Button>
                 <Button Command="{CompiledBinding Uninstall}" Theme="{StaticResource TransparentButton}" Height="32">
                     <avalonia:MaterialIcon Kind="Trash"/>

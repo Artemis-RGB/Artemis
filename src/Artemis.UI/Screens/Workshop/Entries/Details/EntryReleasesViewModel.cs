@@ -8,7 +8,7 @@ using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
-using Artemis.WebClient.Workshop.Services;
+using Artemis.WebClient.Workshop.Models;
 using Humanizer;
 using ReactiveUI;
 
@@ -28,11 +28,13 @@ public class EntryReleasesViewModel : ViewModelBase
 
         Entry = entry;
         DownloadLatestRelease = ReactiveCommand.CreateFromTask(ExecuteDownloadLatestRelease);
+        OnInstallationStarted = Confirm;
     }
 
     public IGetEntryById_Entry Entry { get; }
     public ReactiveCommand<Unit, Unit> DownloadLatestRelease { get; }
 
+    public Func<IEntryDetails, Task<bool>> OnInstallationStarted { get; set; }
     public Func<InstalledEntry, Task>? OnInstallationFinished { get; set; }
 
     private async Task ExecuteDownloadLatestRelease(CancellationToken cancellationToken)
@@ -40,11 +42,7 @@ public class EntryReleasesViewModel : ViewModelBase
         if (Entry.LatestRelease == null)
             return;
         
-        bool confirm = await _windowService.ShowConfirmContentDialog(
-            "Install latest release",
-            $"Are you sure you want to download and install version {Entry.LatestRelease.Version} of {Entry.Name}?"
-        );
-        if (!confirm)
+        if (await OnInstallationStarted(Entry))
             return;
 
         IEntryInstallationHandler installationHandler = _factory.CreateHandler(Entry.EntryType);
@@ -62,5 +60,15 @@ public class EntryReleasesViewModel : ViewModelBase
                 .WithMessage(result.Message)
                 .WithSeverity(NotificationSeverity.Error).Show();
         }
+    }
+
+    private async Task<bool> Confirm(IEntryDetails entryDetails)
+    {
+        bool confirm = await _windowService.ShowConfirmContentDialog(
+            "Install latest release",
+            $"Are you sure you want to download and install version {entryDetails.LatestRelease?.Version} of {entryDetails.Name}?"
+        );
+        
+        return !confirm;
     }
 }

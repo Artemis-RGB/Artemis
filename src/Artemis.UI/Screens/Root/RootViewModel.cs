@@ -13,6 +13,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.MainWindow;
+using Artemis.WebClient.Workshop.Services;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -41,6 +42,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         IMainWindowService mainWindowService,
         IDebugService debugService,
         IUpdateService updateService,
+        IWorkshopService workshopService,
         SidebarViewModel sidebarViewModel,
         DefaultTitleBarViewModel defaultTitleBarViewModel)
     {
@@ -60,11 +62,10 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         router.SetRoot(this);
         mainWindowService.ConfigureMainWindowProvider(this);
 
-        DisplayAccordingToSettings();
         OpenScreen = ReactiveCommand.Create<string?>(ExecuteOpenScreen);
         OpenDebugger = ReactiveCommand.CreateFromTask(ExecuteOpenDebugger);
         Exit = ReactiveCommand.CreateFromTask(ExecuteExit);
-        
+
         _titleBarViewModel = this.WhenAnyValue(vm => vm.Screen)
             .Select(s => s as IMainScreenViewModel)
             .Select(s => s?.WhenAnyValue(svm => svm.TitleBarViewModel) ?? Observable.Never<ViewModelBase>())
@@ -72,17 +73,27 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
             .Select(vm => vm ?? _defaultTitleBarViewModel)
             .ToProperty(this, vm => vm.TitleBarViewModel);
 
+        if (ShouldShowUI())
+        {
+            ShowSplashScreen();
+            _coreService.Initialized += (_, _) => Dispatcher.UIThread.InvokeAsync(OpenMainWindow);
+        }
+
         Task.Run(() =>
         {
-            if (_updateService.Initialize())
+            // Before doing heavy lifting, initialize the update service which may prompt a restart
+            // Only initialize with an update check if we're not going to show the UI
+            if (_updateService.Initialize(!ShouldShowUI()))
                 return;
 
+            // Workshop service goes first so it has a chance to clean up old workshop entries and introduce new ones
+            workshopService.Initialize();
+            // Core is initialized now that everything is ready to go
             coreService.Initialize();
+
             registrationService.RegisterBuiltInDataModelDisplays();
             registrationService.RegisterBuiltInDataModelInputs();
             registrationService.RegisterBuiltInPropertyEditors();
-
-            _router.Navigate("home");
         });
     }
 
@@ -111,17 +122,15 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         OnMainWindowClosed();
     }
 
-    private void DisplayAccordingToSettings()
+    private bool ShouldShowUI()
     {
         bool autoRunning = Constants.StartupArguments.Contains("--autorun");
         bool minimized = Constants.StartupArguments.Contains("--minimized");
         bool showOnAutoRun = _settingsService.GetSetting("UI.ShowOnStartup", true).Value;
 
-        if ((autoRunning && !showOnAutoRun) || minimized)
-            return;
-
-        ShowSplashScreen();
-        _coreService.Initialized += (_, _) => Dispatcher.UIThread.InvokeAsync(OpenMainWindow);
+        if (autoRunning)
+            return showOnAutoRun;
+        return !minimized;
     }
 
     private void ShowSplashScreen()
@@ -135,7 +144,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
     {
         if (path != null)
             _router.ClearPreviousWindowRoute();
-        
+
         // The window will open on the UI thread at some point, respond to that to select the chosen screen
         MainWindowOpened += OnEventHandler;
         OpenMainWindow();
@@ -184,7 +193,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         _lifeTime.MainWindow.Activate();
         if (_lifeTime.MainWindow.WindowState == WindowState.Minimized)
             _lifeTime.MainWindow.WindowState = WindowState.Normal;
-        
+
         OnMainWindowOpened();
     }
 

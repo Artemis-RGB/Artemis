@@ -30,16 +30,21 @@ public partial class PluginPrerequisitesInstallDialogViewModel : ContentDialogVi
     [Notify] private bool _showIntro = true;
     [Notify] private bool _showProgress;
 
+    private bool _finished;
+
     public PluginPrerequisitesInstallDialogViewModel(List<IPrerequisitesSubject> subjects, IPrerequisitesVmFactory prerequisitesVmFactory)
     {
         Prerequisites = new ObservableCollection<PluginPrerequisiteViewModel>();
         foreach (PluginPrerequisite prerequisite in subjects.SelectMany(prerequisitesSubject => prerequisitesSubject.PlatformPrerequisites))
             Prerequisites.Add(prerequisitesVmFactory.PluginPrerequisiteViewModel(prerequisite, false));
-        Install = ReactiveCommand.CreateFromTask(ExecuteInstall, this.WhenAnyValue(vm => vm.CanInstall));
+        Install = ReactiveCommand.Create(ExecuteInstall, this.WhenAnyValue(vm => vm.CanInstall));
 
         Dispatcher.UIThread.Post(() => CanInstall = Prerequisites.Any(p => !p.PluginPrerequisite.IsMet()), DispatcherPriority.Background);
         this.WhenActivated(d =>
         {
+            if (ContentDialog != null)
+                ContentDialog.Closing += ContentDialogOnClosing;
+
             Disposable.Create(() =>
             {
                 _tokenSource?.Cancel();
@@ -51,11 +56,12 @@ public partial class PluginPrerequisitesInstallDialogViewModel : ContentDialogVi
 
     public ReactiveCommand<Unit, Unit> Install { get; }
     public ObservableCollection<PluginPrerequisiteViewModel> Prerequisites { get; }
-    
+
     public static async Task Show(IWindowService windowService, List<IPrerequisitesSubject> subjects)
     {
         await windowService.CreateContentDialog()
             .WithTitle("Plugin prerequisites")
+            .WithFullScreen()
             .WithViewModel(out PluginPrerequisitesInstallDialogViewModel vm, subjects)
             .WithCloseButtonText("Cancel")
             .HavingPrimaryButton(b => b.WithText("Install").WithCommand(vm.Install))
@@ -63,12 +69,8 @@ public partial class PluginPrerequisitesInstallDialogViewModel : ContentDialogVi
             .ShowAsync();
     }
 
-    private async Task ExecuteInstall()
+    private void ExecuteInstall()
     {
-        Deferral? deferral = null;
-        if (ContentDialog != null)
-            ContentDialog.Closing += (_, args) => deferral = args.GetDeferral();
-
         CanInstall = false;
         ShowFailed = false;
         ShowIntro = false;
@@ -77,6 +79,11 @@ public partial class PluginPrerequisitesInstallDialogViewModel : ContentDialogVi
         _tokenSource?.Dispose();
         _tokenSource = new CancellationTokenSource();
 
+        Dispatcher.UIThread.InvokeAsync(async () => await InstallPrerequisites(_tokenSource.Token));
+    }
+
+    private async Task InstallPrerequisites(CancellationToken cancellationToken)
+    {
         try
         {
             foreach (PluginPrerequisiteViewModel pluginPrerequisiteViewModel in Prerequisites)
@@ -86,7 +93,9 @@ public partial class PluginPrerequisitesInstallDialogViewModel : ContentDialogVi
                     continue;
 
                 ActivePrerequisite = pluginPrerequisiteViewModel;
-                await ActivePrerequisite.Install(_tokenSource.Token);
+                await ActivePrerequisite.Install(cancellationToken);
+
+                cancellationToken.ThrowIfCancellationRequested();
 
                 if (!ActivePrerequisite.IsMet)
                 {
@@ -98,19 +107,33 @@ public partial class PluginPrerequisitesInstallDialogViewModel : ContentDialogVi
 
                 // Wait after the task finished for the user to process what happened
                 if (pluginPrerequisiteViewModel != Prerequisites.Last())
-                    await Task.Delay(250);
+                    await Task.Delay(250, cancellationToken);
                 else
-                    await Task.Delay(1000);
+                    await Task.Delay(1000, cancellationToken);
             }
 
-            if (deferral != null)
-                deferral.Complete();
-            else
-                ContentDialog?.Hide(ContentDialogResult.Primary);
+            _finished = true;
+            ContentDialog?.Hide(ContentDialogResult.Primary);
         }
-        catch (OperationCanceledException)
+        catch (TaskCanceledException e)
         {
             // ignored
+        }
+    }
+
+    private void ContentDialogOnClosing(ContentDialog sender, ContentDialogClosingEventArgs args)
+    {
+        // Cancel button is allowed to close
+        if (args.Result == ContentDialogResult.None)
+        {
+            _tokenSource?.Cancel();
+            _tokenSource?.Dispose();
+            _tokenSource = null;
+        }
+        else
+        {
+            // Keep dialog open until either ready
+            args.Cancel = !_finished;
         }
     }
 }

@@ -18,7 +18,7 @@ public sealed class Layer : RenderProfileElement
 {
     private const string BROKEN_STATE_BRUSH_NOT_FOUND = "Failed to load layer brush, ensure the plugin is enabled";
     private const string BROKEN_STATE_INIT_FAILED = "Failed to initialize layer brush";
-    
+
     private readonly List<Layer> _renderCopies = new();
     private LayerGeneralProperties _general = new();
     private LayerTransformProperties _transform = new();
@@ -735,6 +735,9 @@ public sealed class Layer : RenderProfileElement
         if (Disposed)
             throw new ObjectDisposedException("Layer");
 
+        if (_leds.Contains(led))
+            return;
+
         _leds.Add(led);
         CalculateRenderProperties();
     }
@@ -761,7 +764,9 @@ public sealed class Layer : RenderProfileElement
         if (Disposed)
             throw new ObjectDisposedException("Layer");
 
-        _leds.Remove(led);
+        if (!_leds.Remove(led))
+            return;
+        
         CalculateRenderProperties();
     }
 
@@ -772,6 +777,9 @@ public sealed class Layer : RenderProfileElement
     {
         if (Disposed)
             throw new ObjectDisposedException("Layer");
+
+        if (!_leds.Any())
+            return;
 
         _leds.Clear();
         CalculateRenderProperties();
@@ -790,7 +798,7 @@ public sealed class Layer : RenderProfileElement
         {
             ArtemisLed? match = availableLeds.FirstOrDefault(a => a.Device.Identifier == ledEntity.DeviceIdentifier &&
                                                                   a.RgbLed.Id.ToString() == ledEntity.LedName);
-            if (match != null)
+            if (match != null && !leds.Contains(match))
                 leds.Add(match);
             else
                 _missingLeds.Add(ledEntity);
