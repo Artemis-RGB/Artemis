@@ -11,7 +11,8 @@
         }
       ],
       "dest": "api",
-      "filter": "filterConfig.yml"
+      "filter": "filterConfig.yml",
+      "namespaceLayout": "nested"
     }
   ],
   "build": {
@@ -35,11 +36,14 @@
     "output": "_site",
     "template": [
       "default",
-      "modern"
+      "modern",
+      "artemis-template"
     ],
     "globalMetadata": {
       "_appTitle": "Artemis API Documentation",
       "_appName": "Artemis",
+      "_appLogoPath": "images/application.ico",
+      "_appFaviconPath": "images/application.ico",
       "_copyrightFooter": "Content is available under the PolyForm Noncommercial License, by Artemis RGB.",
       "_enableSearch": true,
       "_disableSideFilter": false,
