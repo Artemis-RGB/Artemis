@@ -43,9 +43,9 @@
         <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
         <PackageReference Include="McMaster.NETCore.Plugins" Version="1.4.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="RGB.NET.Core" Version="2.0.4-prerelease.1" />
-        <PackageReference Include="RGB.NET.Layout" Version="2.0.4-prerelease.1" />
-        <PackageReference Include="RGB.NET.Presets" Version="2.0.4-prerelease.1" />
+        <PackageReference Include="RGB.NET.Core" Version="2.0.4-prerelease.16" />
+        <PackageReference Include="RGB.NET.Layout" Version="2.0.4-prerelease.16" />
+        <PackageReference Include="RGB.NET.Presets" Version="2.0.4-prerelease.16" />
         <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
         <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
