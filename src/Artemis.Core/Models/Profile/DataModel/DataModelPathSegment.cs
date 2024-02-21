@@ -55,16 +55,15 @@ public class DataModelPathSegment : IDisposable
     /// <summary>
     ///     Gets the previous segment in the path
     /// </summary>
-    public DataModelPathSegment? Previous => Node?.Previous?.Value;
+    public DataModelPathSegment? Previous { get; set; }
 
     /// <summary>
     ///     Gets the next segment in the path
     /// </summary>
-    public DataModelPathSegment? Next => Node?.Next?.Value;
+    public DataModelPathSegment? Next { get; set; }
 
     internal Func<object, object>? Accessor { get; set; }
-    internal LinkedListNode<DataModelPathSegment>? Node { get; set; }
-
+    
     /// <summary>
     ///     Returns the current value of the path up to this segment
     /// </summary>

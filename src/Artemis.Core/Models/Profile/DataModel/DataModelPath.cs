@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -13,7 +14,7 @@ namespace Artemis.Core;
 /// </summary>
 public class DataModelPath : IStorageModel, IDisposable
 {
-    private readonly LinkedList<DataModelPathSegment> _segments;
+    private readonly List<DataModelPathSegment> _segments;
     private Expression<Func<object, object>>? _accessorLambda;
     private bool _disposed;
 
@@ -27,7 +28,7 @@ public class DataModelPath : IStorageModel, IDisposable
         Path = "";
         Entity = new DataModelPathEntity();
 
-        _segments = new LinkedList<DataModelPathSegment>();
+        _segments = new List<DataModelPathSegment>();
 
         Save();
         Initialize();
@@ -45,7 +46,7 @@ public class DataModelPath : IStorageModel, IDisposable
         Path = path ?? throw new ArgumentNullException(nameof(path));
         Entity = new DataModelPathEntity();
 
-        _segments = new LinkedList<DataModelPathSegment>();
+        _segments = new List<DataModelPathSegment>();
 
         Save();
         Initialize();
@@ -65,7 +66,7 @@ public class DataModelPath : IStorageModel, IDisposable
         Path = dataModelPath.Path;
         Entity = new DataModelPathEntity();
 
-        _segments = new LinkedList<DataModelPathSegment>();
+        _segments = new List<DataModelPathSegment>();
 
         Save();
         Initialize();
@@ -81,7 +82,7 @@ public class DataModelPath : IStorageModel, IDisposable
         Path = entity.Path;
         Entity = entity;
 
-        _segments = new LinkedList<DataModelPathSegment>();
+        _segments = new List<DataModelPathSegment>();
 
         Load();
         Initialize();
@@ -106,12 +107,12 @@ public class DataModelPath : IStorageModel, IDisposable
     /// <summary>
     ///     Gets a boolean indicating whether all <see cref="Segments" /> are valid
     /// </summary>
-    public bool IsValid => Segments.Any() && Segments.All(p => p.Type != DataModelPathSegmentType.Invalid);
-
+    public bool IsValid => _segments.Count != 0 && _segments.All(p => p.Type != DataModelPathSegmentType.Invalid);
+    
     /// <summary>
     ///     Gets a read-only list of all segments of this path
     /// </summary>
-    public IReadOnlyCollection<DataModelPathSegment> Segments => _segments.ToList().AsReadOnly();
+    public IReadOnlyCollection<DataModelPathSegment> Segments => _segments;
 
     /// <summary>
     ///     Gets the entity used for persistent storage
@@ -254,10 +255,14 @@ public class DataModelPath : IStorageModel, IDisposable
             return;
 
         Target.AddDataModelPath(this);
+        Debug.Assert(_segments.Count == 0, "Segments should be cleared before initializing");
 
         DataModelPathSegment startSegment = new(this, "target", "target");
-        startSegment.Node = _segments.AddFirst(startSegment);
+        _segments.Add(startSegment);
 
+        //store the previous segment to link them together
+        DataModelPathSegment previous = startSegment;
+        
         // On an empty path don't bother processing segments
         if (!string.IsNullOrWhiteSpace(Path))
         {
@@ -265,10 +270,14 @@ public class DataModelPath : IStorageModel, IDisposable
             for (int index = 0; index < segments.Length; index++)
             {
                 string identifier = segments[index];
-                LinkedListNode<DataModelPathSegment> node = _segments.AddLast(
-                    new DataModelPathSegment(this, identifier, string.Join('.', segments.Take(index + 1)))
-                );
-                node.Value.Node = node;
+                DataModelPathSegment segment = new(this, identifier, string.Join('.', segments.Take(index + 1)));
+                // Set the 'next' pointer on the previous segment to the current segment
+                previous.Next = segment;
+                // Set the 'previous' pointer on the current segment to the previous segment
+                segment.Previous = previous;
+                _segments.Add(segment);
+                // The current segment becomes the previous segment for the next iteration
+                previous = segment;
             }
         }
 
