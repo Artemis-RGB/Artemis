@@ -36,6 +36,7 @@ public static class ContainerExtensions
 
         // Bind migrations
         container.RegisterMany(storageAssembly, type => type.IsAssignableTo<IStorageMigration>(), Reuse.Singleton, nonPublicServiceTypes: true);
+        container.RegisterMany(coreAssembly, type => type.IsAssignableTo<IProfileMigration>(), Reuse.Singleton, nonPublicServiceTypes: true);
         
         container.RegisterMany(coreAssembly, type => type.IsAssignableTo<ILayoutProvider>(), Reuse.Singleton);
         container.Register<IPluginSettingsFactory, PluginSettingsFactory>(Reuse.Singleton);
