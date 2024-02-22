@@ -29,7 +29,6 @@ internal class PluginRepository : IPluginRepository
     public void SavePlugin(PluginEntity pluginEntity)
     {
         _repository.Upsert(pluginEntity);
-        _repository.Database.Checkpoint();
     }
 
     public void AddSetting(PluginSettingEntity pluginSettingEntity)

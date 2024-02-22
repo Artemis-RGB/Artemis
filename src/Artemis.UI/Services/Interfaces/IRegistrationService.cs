@@ -6,5 +6,4 @@ public interface IRegistrationService : IArtemisUIService
     void RegisterBuiltInDataModelInputs();
     void RegisterBuiltInPropertyEditors();
     void RegisterControllers();
-    void RegisterBuiltInNodeTypes();
 }

@@ -15,7 +15,7 @@ public class NodeEntity
     {
         Id = nodeEntity.Id;
         Type = nodeEntity.Type;
-        PluginId = nodeEntity.PluginId;
+        ProviderId = nodeEntity.ProviderId;
 
         Name = nodeEntity.Name;
         Description = nodeEntity.Description;
@@ -29,7 +29,7 @@ public class NodeEntity
 
     public Guid Id { get; set; }
     public string Type { get; set; }
-    public Guid PluginId { get; set; }
+    public string ProviderId { get; set; }
 
     public string Name { get; set; }
     public string Description { get; set; }

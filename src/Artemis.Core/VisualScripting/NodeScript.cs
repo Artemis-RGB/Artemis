@@ -161,6 +161,7 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
         {
             foreach (INode node in _nodes)
             {
+                // ReSharper disable once SuspiciousTypeConversion.Global - Provided by plugins
                 if (node is IDisposable disposable)
                     disposable.Dispose();
             }
@@ -181,6 +182,7 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
             foreach (INode removeNode in removeNodes)
             {
                 RemoveNode(removeNode);
+                // ReSharper disable once SuspiciousTypeConversion.Global - Provided by plugins
                 if (removeNode is IDisposable disposable)
                     disposable.Dispose();
             }
@@ -312,7 +314,7 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
             NodeEntity nodeEntity = new()
             {
                 Id = node.Id,
-                PluginId = NodeTypeStore.GetPlugin(node)?.Guid ?? Constants.CorePlugin.Guid,
+                ProviderId = node.NodeData?.Provider.Id ?? Constants.CorePluginFeature.Id,
                 Type = node.GetType().Name,
                 X = node.X,
                 Y = node.Y,

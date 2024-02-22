@@ -18,11 +18,13 @@ using DynamicData;
 using DynamicData.Binding;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
+using Serilog;
 
 namespace Artemis.UI.Screens.VisualScripting;
 
 public partial class NodeViewModel : ActivatableViewModelBase
 {
+    private readonly ILogger _logger;
     private readonly INodeEditorService _nodeEditorService;
     private readonly IWindowService _windowService;
     private ObservableAsPropertyHelper<bool>? _hasInputPins;
@@ -39,8 +41,9 @@ public partial class NodeViewModel : ActivatableViewModelBase
     [Notify] private bool _displayCustomViewModelBelow;
     [Notify] private VerticalAlignment _customViewModelVerticalAlignment;
 
-    public NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node, INodeVmFactory nodeVmFactory, INodeEditorService nodeEditorService, IWindowService windowService)
+    public NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node, ILogger logger, INodeVmFactory nodeVmFactory, INodeEditorService nodeEditorService, IWindowService windowService)
     {
+        _logger = logger;
         _nodeEditorService = nodeEditorService;
         _windowService = windowService;
         NodeScriptViewModel = nodeScriptViewModel;
@@ -137,26 +140,40 @@ public partial class NodeViewModel : ActivatableViewModelBase
             });
 
             // Set up the custom node VM if needed
-            if (Node is ICustomViewModelNode customViewModelNode)
-            {
-                CustomNodeViewModel = customViewModelNode.GetCustomViewModel(nodeScriptViewModel.NodeScript);
-                if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.AbovePins)
-                    DisplayCustomViewModelAbove = true;
-                else if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.BelowPins)
-                    DisplayCustomViewModelBelow = true;
-                else
-                {
-                    DisplayCustomViewModelBetween = true;
-                    
-                    if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.BetweenPinsTop)
-                        CustomViewModelVerticalAlignment = VerticalAlignment.Top;
-                    else if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.BetweenPinsTop)
-                        CustomViewModelVerticalAlignment = VerticalAlignment.Center;
-                    else
-                        CustomViewModelVerticalAlignment = VerticalAlignment.Bottom;
-                }
-            }
+            SetupCustomNodeViewModel();
+            
         });
+    }
+
+    private void SetupCustomNodeViewModel()
+    {
+        if (Node is not ICustomViewModelNode customViewModelNode)
+            return;
+
+        try
+        {
+            CustomNodeViewModel = customViewModelNode.GetCustomViewModel(NodeScriptViewModel.NodeScript);
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Failed to instantiate custom node view model");
+        }
+       
+        if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.AbovePins)
+            DisplayCustomViewModelAbove = true;
+        else if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.BelowPins)
+            DisplayCustomViewModelBelow = true;
+        else
+        {
+            DisplayCustomViewModelBetween = true;
+                    
+            if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.BetweenPinsTop)
+                CustomViewModelVerticalAlignment = VerticalAlignment.Top;
+            else if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.BetweenPinsTop)
+                CustomViewModelVerticalAlignment = VerticalAlignment.Center;
+            else
+                CustomViewModelVerticalAlignment = VerticalAlignment.Bottom;
+        }
     }
 
     public bool IsStaticNode => _isStaticNode?.Value ?? true;

@@ -14,6 +14,11 @@ public interface INode : INotifyPropertyChanged, IBreakableModel
     ///     Gets or sets the ID of the node.
     /// </summary>
     Guid Id { get; set; }
+    
+    /// <summary>
+    /// Gets
+    /// </summary>
+    NodeData? NodeData { get; set; }
 
     /// <summary>
     ///     Gets the name of the node

@@ -22,7 +22,7 @@ public class M0021GradientNodes : IStorageMigration
         {
             Id = Guid.NewGuid(),
             Type = "ColorGradientNode",
-            PluginId = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"),
+            ProviderId = "Artemis.Plugins.Nodes.General.GeneralNodesProvider-d9e1ee78",
             Name = "Color Gradient",
             Description = "Outputs a color gradient with the given colors",
             X = exitNode.X,
