@@ -68,7 +68,7 @@ jobs:
           New-Item -ItemType "Directory" -Path build/${{ matrix.rid }}/Plugins/
           Get-ChildItem -File -Recurse -Filter *.csproj Artemis.Plugins/src/ | 
           Foreach-Object -Parallel {
-              dotnet publish --configuration Release -p:SolutionDir=${{ github.workspace }}/Artemis/Artemis.Plugins/src --runtime ${{ matrix.rid }} --output build-plugins/$($_.BaseName) --no-self-contained $($_.FullName);
+              dotnet publish --configuration Release --runtime ${{ matrix.rid }} --output build-plugins/$($_.BaseName) --no-self-contained $($_.FullName);
               Compress-Archive -Path "build-plugins/$($_.BaseName)" -DestinationPath "build/${{ matrix.rid }}/Plugins/$($_.BaseName).zip";
           }
         shell: pwsh
