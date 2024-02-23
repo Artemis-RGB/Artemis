@@ -24,6 +24,6 @@ public class PluginEntity
 /// </summary>
 public class PluginFeatureEntity
 {
-    public string Type { get; set; }
+    public string Type { get; set; } = string.Empty;
     public bool IsEnabled { get; set; }
 }

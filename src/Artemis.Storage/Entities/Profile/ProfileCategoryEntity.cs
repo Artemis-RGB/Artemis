@@ -7,7 +7,7 @@ public class ProfileCategoryEntity
 {
     public Guid Id { get; set; }
 
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     public bool IsCollapsed { get; set; }
     public bool IsSuspended { get; set; }
     public int Order { get; set; }

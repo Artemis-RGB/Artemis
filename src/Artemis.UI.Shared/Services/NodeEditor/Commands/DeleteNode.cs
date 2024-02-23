@@ -29,6 +29,7 @@ public class DeleteNode : INodeEditorCommand, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
+        // ReSharper disable once SuspiciousTypeConversion.Global - Provided by plugins
         if (_isRemoved && _node is IDisposable disposableNode)
             disposableNode.Dispose();
     }

@@ -65,7 +65,7 @@ public class LayerBrushDescriptor
         BaseLayerBrush brush = (BaseLayerBrush) Provider.Plugin.Resolve(LayerBrushType);
         brush.Layer = layer;
         brush.Descriptor = this;
-        brush.LayerBrushEntity = entity ?? new LayerBrushEntity {ProviderId = Provider.Id, BrushType = LayerBrushType.FullName};
+        brush.LayerBrushEntity = entity ?? new LayerBrushEntity {ProviderId = Provider.Id, BrushType = LayerBrushType.FullName ?? throw new InvalidOperationException()};
 
         brush.Initialize();
         return brush;

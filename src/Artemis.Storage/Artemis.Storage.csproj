@@ -3,10 +3,12 @@
         <TargetFramework>net8.0</TargetFramework>
         <PreserveCompilationContext>false</PreserveCompilationContext>
         <Platforms>x64</Platforms>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="LiteDB" />
         <PackageReference Include="Serilog" />
+        <PackageReference Include="Newtonsoft.Json" />
     </ItemGroup>
 </Project>

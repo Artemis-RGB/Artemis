@@ -5,10 +5,10 @@ namespace Artemis.Storage.Entities.Profile;
 
 public class PropertyEntity
 {
-    public string Identifier { get; set; }
-    public string Value { get; set; }
+    public string Identifier { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
     public bool KeyframesEnabled { get; set; }
 
-    public DataBindingEntity DataBinding { get; set; }
+    public DataBindingEntity? DataBinding { get; set; }
     public List<KeyframeEntity> KeyframeEntities { get; set; } = new();
 }

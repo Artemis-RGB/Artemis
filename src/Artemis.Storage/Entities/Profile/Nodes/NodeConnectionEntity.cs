@@ -20,12 +20,12 @@ public class NodeConnectionEntity
         TargetPinId = nodeConnectionEntity.TargetPinId;
     }
 
-    public string SourceType { get; set; }
+    public string SourceType { get; set; } = string.Empty;
     public Guid SourceNode { get; set; }
     public Guid TargetNode { get; set; }
     public int SourcePinCollectionId { get; set; }
     public int SourcePinId { get; set; }
-    public string TargetType { get; set; }
+    public string TargetType { get; set; } = string.Empty;
     public int TargetPinCollectionId { get; set; }
     public int TargetPinId { get; set; }
 }

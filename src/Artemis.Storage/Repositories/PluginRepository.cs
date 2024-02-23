@@ -21,7 +21,7 @@ internal class PluginRepository : IPluginRepository
         _repository.Insert(pluginEntity);
     }
 
-    public PluginEntity GetPluginByGuid(Guid pluginGuid)
+    public PluginEntity? GetPluginByGuid(Guid pluginGuid)
     {
         return _repository.FirstOrDefault<PluginEntity>(p => p.Id == pluginGuid);
     }
@@ -29,7 +29,6 @@ internal class PluginRepository : IPluginRepository
     public void SavePlugin(PluginEntity pluginEntity)
     {
         _repository.Upsert(pluginEntity);
-        _repository.Database.Checkpoint();
     }
 
     public void AddSetting(PluginSettingEntity pluginSettingEntity)
@@ -37,12 +36,12 @@ internal class PluginRepository : IPluginRepository
         _repository.Insert(pluginSettingEntity);
     }
 
-    public PluginSettingEntity GetSettingByGuid(Guid pluginGuid)
+    public PluginSettingEntity? GetSettingByGuid(Guid pluginGuid)
     {
         return _repository.FirstOrDefault<PluginSettingEntity>(p => p.PluginGuid == pluginGuid);
     }
 
-    public PluginSettingEntity GetSettingByNameAndGuid(string name, Guid pluginGuid)
+    public PluginSettingEntity? GetSettingByNameAndGuid(string name, Guid pluginGuid)
     {
         return _repository.FirstOrDefault<PluginSettingEntity>(p => p.Name == name && p.PluginGuid == pluginGuid);
     }

@@ -42,6 +42,7 @@ internal class LayerBrushService : ILayerBrushService
             BrushType = "SolidBrush"
         });
 
+        defaultReference.Value ??= new LayerBrushReference();
         defaultReference.Value.LayerBrushProviderId ??= "Artemis.Plugins.LayerBrushes.Color.ColorBrushProvider-92a9d6ba";
         defaultReference.Value.BrushType ??= "SolidBrush";
         return LayerBrushStore.Get(defaultReference.Value.LayerBrushProviderId, defaultReference.Value.BrushType)?.LayerBrushDescriptor;
