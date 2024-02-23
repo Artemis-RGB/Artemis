@@ -63,6 +63,11 @@ public abstract class NodeProvider : PluginFeature
         NodeTypeStore.Add(nodeData);
     }
     
+    /// <summary>
+    /// Adds a color for lines of the provided type.
+    /// </summary>
+    /// <param name="color">The color to add.</param>
+    /// <typeparam name="T">The type to use the color for.</typeparam>
     protected TypeColorRegistration RegisterTypeColor<T>(SKColor color)
     {
         return NodeTypeStore.AddColor(typeof(T), color, this);

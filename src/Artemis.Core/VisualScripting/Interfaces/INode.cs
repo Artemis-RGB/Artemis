@@ -18,7 +18,7 @@ public interface INode : INotifyPropertyChanged, IBreakableModel
     /// <summary>
     /// Gets
     /// </summary>
-    NodeData? NodeData { get; set; }
+    NodeData NodeData { get; set; }
 
     /// <summary>
     ///     Gets the name of the node

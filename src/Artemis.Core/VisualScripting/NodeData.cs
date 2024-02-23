@@ -149,7 +149,5 @@ public class NodeData
     /// </summary>
     public Type? OutputType { get; }
 
-    private readonly Func<INodeScript, NodeEntity?, INode> _create;
-
     #endregion
 }
