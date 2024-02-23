@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.Core.Nodes;
 using Artemis.Storage.Entities.Profile.Nodes;
 
 namespace Artemis.Core;
@@ -10,9 +11,9 @@ public class NodeData
 {
     #region Constructors
 
-    internal NodeData(Plugin plugin, Type type, string name, string description, string category, string helpUrl, Type? inputType, Type? outputType, Func<INodeScript, NodeEntity?, INode> create)
+    internal NodeData(NodeProvider provider, Type type, string name, string description, string category, string helpUrl, Type? inputType, Type? outputType)
     {
-        Plugin = plugin;
+        Provider = provider;
         Type = type;
         Name = name;
         Description = description;
@@ -20,7 +21,6 @@ public class NodeData
         HelpUrl = helpUrl;
         InputType = inputType;
         OutputType = outputType;
-        _create = create;
     }
 
     #endregion
@@ -35,14 +35,31 @@ public class NodeData
     /// <returns>The returning node of type <see cref="Type" /></returns>
     public INode CreateNode(INodeScript script, NodeEntity? entity)
     {
-        INode node = _create(script, entity);
+        INode node = (INode) Provider.Plugin.Resolve(Type);
+        node.NodeData = this;
         if (string.IsNullOrWhiteSpace(node.Name))
             node.Name = Name;
         if (string.IsNullOrWhiteSpace(node.Description))
             node.Description = Description;
         if (string.IsNullOrWhiteSpace(node.HelpUrl))
             node.HelpUrl = HelpUrl;
+        
+        if (entity != null)
+        {
+            node.X = entity.X;
+            node.Y = entity.Y;
+            try
+            {
+                if (node is Node nodeImplementation)
+                    nodeImplementation.DeserializeStorage(entity.Storage);
+            }
+            catch
+            {
+                // ignored
+            }
+        }
 
+        node.TryInitialize(script);
         return node;
     }
 
@@ -91,11 +108,11 @@ public class NodeData
     }
 
     #region Properties & Fields
-
+    
     /// <summary>
-    ///     Gets the plugin that provided this node data
+    ///     Gets the node provider that provided this node data
     /// </summary>
-    public Plugin Plugin { get; }
+    public NodeProvider Provider { get; }
 
     /// <summary>
     ///     Gets the type of <see cref="INode" /> this data represents
@@ -131,8 +148,6 @@ public class NodeData
     ///     Gets the primary output of the node this data represents
     /// </summary>
     public Type? OutputType { get; }
-
-    private readonly Func<INodeScript, NodeEntity?, INode> _create;
 
     #endregion
 }

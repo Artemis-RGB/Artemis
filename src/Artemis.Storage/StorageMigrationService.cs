@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Storage.Migrations.Interfaces;
+using Artemis.Storage.Migrations;
 using LiteDB;
 using Serilog;
 

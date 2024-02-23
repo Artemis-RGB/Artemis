@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Reflection;
+﻿using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Controllers;
@@ -13,10 +10,8 @@ using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.PropertyInput;
-using Artemis.VisualScripting.Nodes.Mathematics;
 using Avalonia;
 using DryIoc;
-using SkiaSharp;
 
 namespace Artemis.UI.Services;
 
@@ -26,7 +21,6 @@ public class RegistrationService : IRegistrationService
     private readonly IInputService _inputService;
     private readonly IContainer _container;
     private readonly IRouter _router;
-    private readonly INodeService _nodeService;
     private readonly IPropertyInputService _propertyInputService;
     private readonly IWebServerService _webServerService;
     private bool _registeredBuiltInPropertyEditors;
@@ -36,7 +30,6 @@ public class RegistrationService : IRegistrationService
         IInputService inputService,
         IPropertyInputService propertyInputService,
         IProfileEditorService profileEditorService,
-        INodeService nodeService,
         IDataModelUIService dataModelUIService,
         IWebServerService webServerService,
         IDeviceLayoutService deviceLayoutService // here to make sure it is instantiated
@@ -46,13 +39,11 @@ public class RegistrationService : IRegistrationService
         _router = router;
         _inputService = inputService;
         _propertyInputService = propertyInputService;
-        _nodeService = nodeService;
         _dataModelUIService = dataModelUIService;
         _webServerService = webServerService;
 
         CreateCursorResources();
         RegisterRoutes();
-        RegisterBuiltInNodeTypes();
         RegisterControllers();
     }
 
@@ -104,23 +95,5 @@ public class RegistrationService : IRegistrationService
     public void RegisterControllers()
     {
         _webServerService.AddController<RemoteController>(Constants.CorePlugin.Features.First().Instance!);
-    }
-
-    public void RegisterBuiltInNodeTypes()
-    {
-        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(bool), new SKColor(0xFFCD3232));
-        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(string), new SKColor(0xFFFFD700));
-        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(Numeric), new SKColor(0xFF32CD32));
-        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(float), new SKColor(0xFFFF7C00));
-        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(SKColor), new SKColor(0xFFAD3EED));
-        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(IList), new SKColor(0xFFED3E61));
-        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(Enum), new SKColor(0xFF1E90FF));
-        _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(ColorGradient), new SKColor(0xFF00B2A9));
-
-        foreach (Type nodeType in typeof(SumNumericsNode).Assembly.GetTypes().Where(t => typeof(INode).IsAssignableFrom(t) && t.IsPublic && !t.IsAbstract && !t.IsInterface))
-        {
-            if (nodeType.GetCustomAttribute(typeof(NodeAttribute)) != null)
-                _nodeService.RegisterNodeType(Constants.CorePlugin, nodeType);
-        }
     }
 }

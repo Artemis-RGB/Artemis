@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Artemis.Storage.Migrations.Interfaces;
 using LiteDB;
 
-namespace Artemis.Storage.Migrations;
+namespace Artemis.Storage.Migrations.Storage;
 
 public class M0020AvaloniaReset : IStorageMigration
 {

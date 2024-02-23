@@ -104,4 +104,14 @@ public interface IDataModelUIService : IArtemisSharedUIService
     /// <param name="updateCallback">A function to call whenever the input was updated (submitted or not)</param>
     /// <returns>The most appropriate input view model for the provided <paramref name="propertyType" /></returns>
     DataModelInputViewModel? GetDataModelInputViewModel(Type propertyType, DataModelPropertyAttribute? description, object? initialValue, Action<object?, bool> updateCallback);
+
+    /// <summary>
+    ///     Gets a boolean indicating whether or not to show full paths when displaying data model paths.
+    /// </summary>
+    PluginSetting<bool> ShowFullPaths { get; }
+
+    /// <summary>
+    ///     Gets a boolean indicating whether or not to show values when displaying data model paths.
+    /// </summary>
+    PluginSetting<bool> ShowDataModelValues { get; }
 }

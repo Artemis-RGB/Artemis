@@ -9,12 +9,12 @@ namespace Artemis.Core;
 /// </summary>
 public class NodeTypeRegistration
 {
-    internal NodeTypeRegistration(NodeData nodeData, Plugin plugin)
+    internal NodeTypeRegistration(NodeData nodeData, PluginFeature pluginFeature)
     {
         NodeData = nodeData;
-        Plugin = plugin;
+        PluginFeature = pluginFeature;
 
-        Plugin.Disabled += OnDisabled;
+        PluginFeature.Disabled += OnDisabled;
     }
 
     /// <summary>
@@ -23,9 +23,9 @@ public class NodeTypeRegistration
     public NodeData NodeData { get; }
 
     /// <summary>
-    ///     Gets the plugin the node is associated with
+    ///     Gets the plugin feature the node is associated with
     /// </summary>
-    public Plugin Plugin { get; }
+    public PluginFeature PluginFeature { get; }
 
     /// <summary>
     ///     Gets a boolean indicating whether the registration is in the internal Core store
@@ -39,12 +39,12 @@ public class NodeTypeRegistration
     /// <returns><see langword="true" /> if the entity matches this registration; otherwise <see langword="false" />.</returns>
     public bool MatchesEntity(NodeEntity entity)
     {
-        return Plugin.Guid == entity.PluginId && NodeData.Type.Name == entity.Type;
+        return PluginFeature.Id == entity.ProviderId && NodeData.Type.Name == entity.Type;
     }
 
     private void OnDisabled(object? sender, EventArgs e)
     {
-        Plugin.Disabled -= OnDisabled;
+        PluginFeature.Disabled -= OnDisabled;
         if (IsInStore)
             NodeTypeStore.Remove(this);
     }
@@ -55,13 +55,13 @@ public class NodeTypeRegistration
 /// </summary>
 public class TypeColorRegistration
 {
-    internal TypeColorRegistration(Type type, SKColor color, Plugin plugin)
+    internal TypeColorRegistration(Type type, SKColor color, PluginFeature pluginFeature)
     {
         Type = type;
         Color = color;
-        Plugin = plugin;
+        PluginFeature = pluginFeature;
 
-        Plugin.Disabled += OnDisabled;
+        PluginFeature.Disabled += OnDisabled;
     }
 
     /// <summary>
@@ -80,9 +80,9 @@ public class TypeColorRegistration
     public SKColor DarkenedColor => Color.Darken(0.35f);
 
     /// <summary>
-    ///     Gets the plugin type color is associated with
+    ///     Gets the plugin feature this type color is associated with
     /// </summary>
-    public Plugin Plugin { get; }
+    public PluginFeature PluginFeature { get; }
 
     /// <summary>
     ///     Gets a boolean indicating whether the registration is in the internal Core store
@@ -91,7 +91,7 @@ public class TypeColorRegistration
 
     private void OnDisabled(object? sender, EventArgs e)
     {
-        Plugin.Disabled -= OnDisabled;
+        PluginFeature.Disabled -= OnDisabled;
         if (IsInStore)
             NodeTypeStore.RemoveColor(this);
     }

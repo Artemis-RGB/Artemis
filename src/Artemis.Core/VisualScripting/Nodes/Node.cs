@@ -41,6 +41,9 @@ public abstract class Node : BreakableModel, INode
         set => SetAndNotify(ref _id, value);
     }
 
+    /// <inheritdoc />
+    public NodeData? NodeData { get; set; }
+
     private string _name;
 
     /// <inheritdoc />
@@ -103,8 +106,6 @@ public abstract class Node : BreakableModel, INode
 
     /// <inheritdoc />
     public override string BrokenDisplayName => Name;
-
-    internal IContainer Container { get; set; } = null!;
 
     #endregion
 
