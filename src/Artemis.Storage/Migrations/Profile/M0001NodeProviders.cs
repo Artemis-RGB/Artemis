@@ -1,4 +1,3 @@
-using LiteDB;
 using Newtonsoft.Json.Linq;
 
 namespace Artemis.Storage.Migrations.Profile;
@@ -21,9 +20,7 @@ internal class M0001NodeProviders : IProfileMigration
         if (folders != null)
         {
             foreach (JToken folder in folders)
-            {
                 MigrateProfileElement(folder);
-            }
         }
 
         if (layers != null)
@@ -36,12 +33,6 @@ internal class M0001NodeProviders : IProfileMigration
                 MigratePropertyGroup(layer["LayerBrush"]?["PropertyGroup"]);
             }
         }
-    }
-
-    /// <inheritdoc />
-    public void Migrate(BsonDocument profileBson)
-    {
-        throw new System.NotImplementedException();
     }
 
     private void MigrateProfileElement(JToken profileElement)

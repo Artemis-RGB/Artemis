@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Artemis.Storage.Migrations.Interfaces;
 using LiteDB;
 
-namespace Artemis.Storage.Migrations;
+namespace Artemis.Storage.Migrations.Storage;
 
 public class M0023LayoutProviders : IStorageMigration
 {

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
+using Artemis.Storage.Migrations;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -523,10 +524,10 @@ internal class ProfileService : IProfileService
     public async Task<ProfileConfiguration> OverwriteProfile(MemoryStream archiveStream, ProfileConfiguration profileConfiguration)
     {
         ProfileConfiguration imported = await ImportProfile(archiveStream, profileConfiguration.Category, true, true, null, profileConfiguration.Order + 1);
-        
+
         DeleteProfile(profileConfiguration);
         SaveProfileCategory(imported.Category);
-        
+
         return imported;
     }
 
