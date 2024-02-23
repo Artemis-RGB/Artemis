@@ -141,39 +141,7 @@ public partial class NodeViewModel : ActivatableViewModelBase
 
             // Set up the custom node VM if needed
             SetupCustomNodeViewModel();
-            
         });
-    }
-
-    private void SetupCustomNodeViewModel()
-    {
-        if (Node is not ICustomViewModelNode customViewModelNode)
-            return;
-
-        try
-        {
-            CustomNodeViewModel = customViewModelNode.GetCustomViewModel(NodeScriptViewModel.NodeScript);
-        }
-        catch (Exception e)
-        {
-            _logger.Error(e, "Failed to instantiate custom node view model");
-        }
-       
-        if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.AbovePins)
-            DisplayCustomViewModelAbove = true;
-        else if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.BelowPins)
-            DisplayCustomViewModelBelow = true;
-        else
-        {
-            DisplayCustomViewModelBetween = true;
-                    
-            if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.BetweenPinsTop)
-                CustomViewModelVerticalAlignment = VerticalAlignment.Top;
-            else if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.BetweenPinsTop)
-                CustomViewModelVerticalAlignment = VerticalAlignment.Center;
-            else
-                CustomViewModelVerticalAlignment = VerticalAlignment.Bottom;
-        }
     }
 
     public bool IsStaticNode => _isStaticNode?.Value ?? true;
@@ -225,5 +193,36 @@ public partial class NodeViewModel : ActivatableViewModelBase
     {
         if (Node.BrokenState != null && Node.BrokenStateException != null)
             _windowService.ShowExceptionDialog(Node.BrokenState, Node.BrokenStateException);
+    }
+
+    private void SetupCustomNodeViewModel()
+    {
+        if (Node is not ICustomViewModelNode customViewModelNode)
+            return;
+
+        try
+        {
+            CustomNodeViewModel = customViewModelNode.GetCustomViewModel(NodeScriptViewModel.NodeScript);
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Failed to instantiate custom node view model");
+        }
+
+        if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.AbovePins)
+            DisplayCustomViewModelAbove = true;
+        else if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.BelowPins)
+            DisplayCustomViewModelBelow = true;
+        else
+        {
+            DisplayCustomViewModelBetween = true;
+
+            if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.BetweenPinsTop)
+                CustomViewModelVerticalAlignment = VerticalAlignment.Top;
+            else if (customViewModelNode.ViewModelPosition == CustomNodeViewModelPosition.BetweenPinsTop)
+                CustomViewModelVerticalAlignment = VerticalAlignment.Center;
+            else
+                CustomViewModelVerticalAlignment = VerticalAlignment.Bottom;
+        }
     }
 }

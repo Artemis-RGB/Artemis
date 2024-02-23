@@ -25,6 +25,8 @@ public abstract class Node<TStorage, TViewModel> : Node<TStorage>, ICustomViewMo
     /// <param name="nodeScript"></param>
     public virtual TViewModel GetViewModel(NodeScript nodeScript)
     {
+        if (NodeData == null)
+            throw new ArtemisCoreException("Nodes without node data (default nodes or exit nodes) cannot have custom view models");
         return NodeData.Provider.Plugin.Container.Resolve<TViewModel>(args: new object[] {this, nodeScript});
     }
 

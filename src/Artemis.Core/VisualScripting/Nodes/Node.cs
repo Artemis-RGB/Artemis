@@ -42,7 +42,7 @@ public abstract class Node : BreakableModel, INode
     }
 
     /// <inheritdoc />
-    public NodeData NodeData { get; set; }
+    public NodeData? NodeData { get; set; }
 
     private string _name;
 
