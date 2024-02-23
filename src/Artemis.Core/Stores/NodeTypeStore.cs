@@ -13,16 +13,13 @@ internal class NodeTypeStore
 
     public static NodeTypeRegistration Add(NodeData nodeData)
     {
-        if (nodeData.Plugin == null)
-            throw new ArtemisCoreException("Cannot add a data binding modifier type that is not associated with a plugin");
-
         NodeTypeRegistration typeRegistration;
         lock (Registrations)
         {
             if (Registrations.Any(r => r.NodeData == nodeData))
                 throw new ArtemisCoreException($"Data binding modifier type store already contains modifier '{nodeData.Name}'");
 
-            typeRegistration = new NodeTypeRegistration(nodeData, nodeData.Plugin) {IsInStore = true};
+            typeRegistration = new NodeTypeRegistration(nodeData, nodeData.Provider) {IsInStore = true};
             Registrations.Add(typeRegistration);
         }
 
@@ -60,24 +57,12 @@ internal class NodeTypeStore
         }
     }
 
-    public static Plugin? GetPlugin(INode node)
-    {
-        Type nodeType = node.GetType();
-        lock (Registrations)
-        {
-            return Registrations.FirstOrDefault(r => r.NodeData.Type == nodeType)?.Plugin;
-        }
-    }
-
-    public static TypeColorRegistration AddColor(Type type, SKColor color, Plugin plugin)
+    public static TypeColorRegistration AddColor(Type type, SKColor color, PluginFeature pluginFeature)
     {
         TypeColorRegistration typeColorRegistration;
         lock (ColorRegistrations)
         {
-            if (ColorRegistrations.Any(r => r.Type == type))
-                throw new ArtemisCoreException($"Node color store already contains a color for '{type.Name}'");
-
-            typeColorRegistration = new TypeColorRegistration(type, color, plugin) {IsInStore = true};
+            typeColorRegistration = new TypeColorRegistration(type, color, pluginFeature) {IsInStore = true};
             ColorRegistrations.Add(typeColorRegistration);
         }
 

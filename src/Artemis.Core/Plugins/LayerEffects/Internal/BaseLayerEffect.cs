@@ -231,7 +231,7 @@ public abstract class BaseLayerEffect : BreakableModel, IDisposable, IStorageMod
             return;
 
         LayerEffectEntity.ProviderId = Descriptor.Provider.Id;
-        LayerEffectEntity.EffectType = GetType().FullName;
+        LayerEffectEntity.EffectType = GetType().FullName ?? throw new InvalidOperationException();
         BaseProperties?.ApplyToEntity();
         LayerEffectEntity.PropertyGroup = BaseProperties?.PropertyGroupEntity;
     }

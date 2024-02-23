@@ -8,8 +8,8 @@ public interface IEntryRepository : IRepository
 {
     void Add(EntryEntity entryEntity);
     void Remove(EntryEntity entryEntity);
-    EntryEntity Get(Guid id);
-    EntryEntity GetByEntryId(long entryId);
+    EntryEntity? Get(Guid id);
+    EntryEntity? GetByEntryId(long entryId);
     List<EntryEntity> GetAll();
     void Save(EntryEntity entryEntity);
     void Save(IEnumerable<EntryEntity> entryEntities);

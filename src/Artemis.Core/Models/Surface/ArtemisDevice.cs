@@ -46,7 +46,7 @@ public class ArtemisDevice : CorePropertyChanged
         InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
         InputMappings = new Dictionary<ArtemisLed, ArtemisLed>();
         Categories = new HashSet<DeviceCategory>();
-        LayoutSelection = new LayoutSelection {Type = DefaultLayoutProvider.LayoutType};
+        LayoutSelection = new LayoutSelection {Type = DefaultLayoutProvider.LAYOUT_TYPE};
 
         RgbDevice.ColorCorrections.Clear();
         RgbDevice.ColorCorrections.Add(new ScaleColorCorrection(this));
@@ -75,7 +75,7 @@ public class ArtemisDevice : CorePropertyChanged
         InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
         InputMappings = new Dictionary<ArtemisLed, ArtemisLed>();
         Categories = new HashSet<DeviceCategory>();
-        LayoutSelection = new LayoutSelection {Type = DefaultLayoutProvider.LayoutType};
+        LayoutSelection = new LayoutSelection {Type = DefaultLayoutProvider.LAYOUT_TYPE};
 
         foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifiers)
             InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(identifierEntity.InputProvider, identifierEntity.Identifier));
@@ -155,6 +155,9 @@ public class ArtemisDevice : CorePropertyChanged
     /// </summary>
     public HashSet<DeviceCategory> Categories { get; }
 
+    /// <summary>
+    ///     Gets the layout selection applied to this device
+    /// </summary>
     public LayoutSelection LayoutSelection { get; }
 
     /// <summary>

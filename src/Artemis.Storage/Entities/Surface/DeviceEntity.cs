@@ -11,8 +11,8 @@ public class DeviceEntity
         Categories = new List<int>();
     }
 
-    public string Id { get; set; }
-    public string DeviceProvider { get; set; }
+    public string Id { get; set; } = string.Empty;
+    public string DeviceProvider { get; set; } = string.Empty;
     public float X { get; set; }
     public float Y { get; set; }
     public float Rotation { get; set; }
@@ -24,9 +24,9 @@ public class DeviceEntity
     public bool IsEnabled { get; set; }
     
     public int PhysicalLayout { get; set; }
-    public string LogicalLayout { get; set; }
-    public string LayoutType { get; set; }
-    public string LayoutParameter { get; set; }
+    public string? LogicalLayout { get; set; }
+    public string? LayoutType { get; set; }
+    public string? LayoutParameter { get; set; }
 
     public List<DeviceInputIdentifierEntity> InputIdentifiers { get; set; }
     public List<InputMappingEntity> InputMappings { get; set; }
@@ -41,6 +41,6 @@ public class InputMappingEntity
 
 public class DeviceInputIdentifierEntity
 {
-    public string InputProvider { get; set; }
-    public object Identifier { get; set; }
+    public string InputProvider { get; set; } = string.Empty;
+    public object Identifier { get; set; } = string.Empty;
 }

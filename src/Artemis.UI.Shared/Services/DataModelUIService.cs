@@ -18,16 +18,20 @@ internal class DataModelUIService : IDataModelUIService
     private readonly IContainer _container;
     private readonly List<DataModelVisualizationRegistration> _registeredDataModelDisplays;
     private readonly List<DataModelVisualizationRegistration> _registeredDataModelEditors;
+    private readonly PluginSetting<bool> _showFullPaths;
+    private readonly PluginSetting<bool> _showDataModelValues;
 
-    public DataModelUIService(IDataModelService dataModelService, IContainer container)
+    public DataModelUIService(IDataModelService dataModelService, IContainer container, ISettingsService settingsService)
     {
         _dataModelService = dataModelService;
         _container = container;
         _registeredDataModelEditors = new List<DataModelVisualizationRegistration>();
         _registeredDataModelDisplays = new List<DataModelVisualizationRegistration>();
-
+        
         RegisteredDataModelEditors = new ReadOnlyCollection<DataModelVisualizationRegistration>(_registeredDataModelEditors);
         RegisteredDataModelDisplays = new ReadOnlyCollection<DataModelVisualizationRegistration>(_registeredDataModelDisplays);
+        ShowFullPaths = settingsService.GetSetting("ProfileEditor.ShowFullPaths", true);
+        ShowDataModelValues = settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
     }
 
     private DataModelInputViewModel InstantiateDataModelInputViewModel(DataModelVisualizationRegistration registration, DataModelPropertyAttribute? description, object? initialValue)
@@ -43,7 +47,9 @@ internal class DataModelUIService : IDataModelUIService
 
     public IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelEditors { get; }
     public IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelDisplays { get; }
-
+    public PluginSetting<bool> ShowFullPaths { get; }
+    public PluginSetting<bool> ShowDataModelValues { get; }
+    
     public DataModelPropertiesViewModel GetMainDataModelVisualization()
     {
         DataModelPropertiesViewModel viewModel = new(null, null, null);

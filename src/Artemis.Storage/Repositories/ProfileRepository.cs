@@ -31,7 +31,7 @@ internal class ProfileRepository : IProfileRepository
         return _repository.Query<ProfileEntity>().ToList();
     }
 
-    public ProfileEntity Get(Guid id)
+    public ProfileEntity? Get(Guid id)
     {
         return _repository.FirstOrDefault<ProfileEntity>(p => p.Id == id);
     }

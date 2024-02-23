@@ -2,6 +2,4 @@
 
 namespace Artemis.Storage.Entities.Profile.Conditions;
 
-public class PlayOnceConditionEntity : IConditionEntity
-{
-}
+public class PlayOnceConditionEntity : IConditionEntity;

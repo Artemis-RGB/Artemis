@@ -1,8 +1,14 @@
 ﻿namespace Artemis.Core.Providers;
 
+/// <summary>
+/// Represents a layout provider that loads a layout from the plugin and falls back to a default layout.
+/// </summary>
 public class DefaultLayoutProvider : ILayoutProvider
 {
-    public static string LayoutType = "Default";
+    /// <summary>
+    /// The layout type of this layout provider.
+    /// </summary>
+    public const string LAYOUT_TYPE = "Default";
 
     /// <inheritdoc />
     public ArtemisLayout? GetDeviceLayout(ArtemisDevice device)
@@ -26,7 +32,7 @@ public class DefaultLayoutProvider : ILayoutProvider
     /// <inheritdoc />
     public bool IsMatch(ArtemisDevice device)
     {
-        return device.LayoutSelection.Type == LayoutType;
+        return device.LayoutSelection.Type == LAYOUT_TYPE;
     }
 
     /// <summary>
@@ -35,7 +41,7 @@ public class DefaultLayoutProvider : ILayoutProvider
     /// <param name="device">The device to apply the provider to.</param>
     public void ConfigureDevice(ArtemisDevice device)
     {
-        device.LayoutSelection.Type = LayoutType;
+        device.LayoutSelection.Type = LAYOUT_TYPE;
         device.LayoutSelection.Parameter = null;
     }
 }

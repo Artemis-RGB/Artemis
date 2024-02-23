@@ -10,10 +10,8 @@ using Artemis.UI.Screens.Root;
 using Artemis.UI.Shared.DataModelPicker;
 using Artemis.UI.Shared.DryIoc;
 using Artemis.UI.Shared.Services;
-using Artemis.VisualScripting.DryIoc;
 using Artemis.WebClient.Updating.DryIoc;
 using Artemis.WebClient.Workshop.DryIoc;
-using Artemis.WebClient.Workshop.Services;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -49,7 +47,6 @@ public static class ArtemisBootstrapper
         _container.RegisterSharedUI();
         _container.RegisterUpdatingClient();
         _container.RegisterWorkshopClient();
-        _container.RegisterNoStringEvaluating();
         configureServices?.Invoke(_container);
 
         _container.UseDryIocDependencyResolver();

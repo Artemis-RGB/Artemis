@@ -27,12 +27,12 @@ internal class EntryRepository : IEntryRepository
         _repository.Delete<EntryEntity>(entryEntity.Id);
     }
 
-    public EntryEntity Get(Guid id)
+    public EntryEntity? Get(Guid id)
     {
         return _repository.FirstOrDefault<EntryEntity>(s => s.Id == id);
     }
 
-    public EntryEntity GetByEntryId(long entryId)
+    public EntryEntity? GetByEntryId(long entryId)
     {
         return _repository.FirstOrDefault<EntryEntity>(s => s.EntryId == entryId);
     }

@@ -5,8 +5,8 @@ namespace Artemis.Storage.Entities.Profile;
 
 public class LedEntity
 {
-    public string LedName { get; set; }
-    public string DeviceIdentifier { get; set; }
+    public string LedName { get; set; } = string.Empty;
+    public string DeviceIdentifier { get; set; } = string.Empty;
 
     public int? PhysicalLayout { get; set; }
 
@@ -14,7 +14,7 @@ public class LedEntity
 
     private sealed class LedEntityEqualityComparer : IEqualityComparer<LedEntity>
     {
-        public bool Equals(LedEntity x, LedEntity y)
+        public bool Equals(LedEntity? x, LedEntity? y)
         {
             if (ReferenceEquals(x, y))
                 return true;

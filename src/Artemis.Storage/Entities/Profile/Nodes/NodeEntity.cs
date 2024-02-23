@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +15,7 @@ public class NodeEntity
     {
         Id = nodeEntity.Id;
         Type = nodeEntity.Type;
-        PluginId = nodeEntity.PluginId;
+        ProviderId = nodeEntity.ProviderId;
 
         Name = nodeEntity.Name;
         Description = nodeEntity.Description;
@@ -28,15 +28,15 @@ public class NodeEntity
     }
 
     public Guid Id { get; set; }
-    public string Type { get; set; }
-    public Guid PluginId { get; set; }
+    public string Type { get; set; } = string.Empty;
+    public string ProviderId { get; set; } = string.Empty;
 
-    public string Name { get; set; }
-    public string Description { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
     public bool IsExitNode { get; set; }
     public double X { get; set; }
     public double Y { get; set; }
-    public string Storage { get; set; }
+    public string Storage { get; set; } = string.Empty;
 
     public List<NodePinCollectionEntity> PinCollections { get; set; }
 }

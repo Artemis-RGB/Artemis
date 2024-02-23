@@ -100,7 +100,7 @@ public interface IWebServerService : IArtemisService
     /// <summary>
     ///     Removes an existing Web API controller and restarts the web server
     /// </summary>
-    /// <typeparam name="T">The type of Web API controller to remove</typeparam>
+    /// <param name="registration">The registration of the controller to remove.</param>
     void RemoveController(WebApiControllerRegistration registration);
 
     /// <summary>

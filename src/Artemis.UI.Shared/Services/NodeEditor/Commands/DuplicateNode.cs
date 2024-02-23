@@ -87,6 +87,7 @@ public class DuplicateNode : INodeEditorCommand, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
+        // ReSharper disable once SuspiciousTypeConversion.Global - Provided by plugins
         if (!_executed && _copy is IDisposable disposableNode)
             disposableNode.Dispose();
     }
