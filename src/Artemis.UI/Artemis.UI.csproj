@@ -15,20 +15,20 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.2.1" />
-        <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6" />
-        <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="11.0.0.2" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.9" />
-        <PackageReference Include="Avalonia.Skia.Lottie" Version="11.0.0" />
-        <PackageReference Include="AvaloniaEdit.TextMate" Version="11.0.6" />
-        <PackageReference Include="Markdown.Avalonia.Tight" Version="11.0.2" />
-        <PackageReference Include="Octopus.Octodiff" Version="2.0.546" />
-        <PackageReference Include="PropertyChanged.SourceGenerator" Version="1.1.0">
+        <PackageReference Include="AsyncImageLoader.Avalonia" />
+        <PackageReference Include="Avalonia.AvaloniaEdit" />
+        <PackageReference Include="Avalonia.Controls.PanAndZoom" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Skia.Lottie" />
+        <PackageReference Include="AvaloniaEdit.TextMate" />
+        <PackageReference Include="Markdown.Avalonia.Tight" />
+        <PackageReference Include="Octopus.Octodiff" />
+        <PackageReference Include="PropertyChanged.SourceGenerator">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Splat.DryIoc" Version="14.8.12" />
-        <PackageReference Include="TextMateSharp.Grammars" Version="1.0.56" />
+        <PackageReference Include="Splat.DryIoc" />
+        <PackageReference Include="TextMateSharp.Grammars" />
     </ItemGroup>
 
     <ItemGroup>
