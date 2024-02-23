@@ -57,6 +57,9 @@ public class ArtemisLayout
     /// </summary>
     public LayoutCustomDeviceData LayoutCustomDeviceData { get; private set; } = null!;
 
+    /// <summary>
+    ///     Gets a boolean indicating whether this layout is a default layout or not
+    /// </summary>
     public bool IsDefaultLayout { get; private set; }
 
     /// <summary>

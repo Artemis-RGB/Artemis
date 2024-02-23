@@ -16,7 +16,7 @@ public class ProfileEntity
 
     public Guid Id { get; set; }
 
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     public bool IsFreshImport { get; set; }
 
     public List<FolderEntity> Folders { get; set; }
@@ -28,7 +28,7 @@ public class ProfileEntity
         Guid oldGuid = Id;
         Id = guid;
 
-        FolderEntity rootFolder = Folders.FirstOrDefault(f => f.ParentId == oldGuid);
+        FolderEntity? rootFolder = Folders.FirstOrDefault(f => f.ParentId == oldGuid);
         if (rootFolder != null)
             rootFolder.ParentId = Id;
     }

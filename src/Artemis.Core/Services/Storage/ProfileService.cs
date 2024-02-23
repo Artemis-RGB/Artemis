@@ -221,7 +221,7 @@ internal class ProfileService : IProfileService
             return profileConfiguration.Profile;
         }
 
-        ProfileEntity profileEntity;
+        ProfileEntity? profileEntity;
         try
         {
             profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
@@ -280,7 +280,7 @@ internal class ProfileService : IProfileService
     {
         DeactivateProfile(profileConfiguration);
 
-        ProfileEntity profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
+        ProfileEntity? profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
         if (profileEntity == null)
             return;
 
@@ -353,7 +353,7 @@ internal class ProfileService : IProfileService
 
         DeactivateProfile(profileConfiguration);
         SaveProfileCategory(profileConfiguration.Category);
-        ProfileEntity profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
+        ProfileEntity? profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
         if (profileEntity != null)
             _profileRepository.Remove(profileEntity);
 

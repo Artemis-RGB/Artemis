@@ -25,7 +25,7 @@ internal class DeviceRepository : IDeviceRepository
         _repository.Delete<DeviceEntity>(deviceEntity.Id);
     }
 
-    public DeviceEntity Get(string id)
+    public DeviceEntity? Get(string id)
     {
         return _repository.FirstOrDefault<DeviceEntity>(s => s.Id == id);
     }

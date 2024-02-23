@@ -2,7 +2,7 @@
 
 public class DataModelPathEntity
 {
-    public string Path { get; set; }
-    public string DataModelId { get; set; }
-    public string Type { get; set; }
+    public string Path { get; set; } = string.Empty;
+    public string? DataModelId { get; set; }
+    public string? Type { get; set; }
 }

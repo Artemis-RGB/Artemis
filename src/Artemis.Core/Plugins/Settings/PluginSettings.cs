@@ -41,7 +41,7 @@ public class PluginSettings
             if (_settingEntities.ContainsKey(name))
                 return (PluginSetting<T>) _settingEntities[name];
             // Try to find in database
-            PluginSettingEntity settingEntity = _pluginRepository.GetSettingByNameAndGuid(name, Plugin.Guid);
+            PluginSettingEntity? settingEntity = _pluginRepository.GetSettingByNameAndGuid(name, Plugin.Guid);
             // If not found, create a new one
             if (settingEntity == null)
             {

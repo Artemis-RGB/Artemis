@@ -10,7 +10,7 @@ namespace Artemis.Storage.Migrations;
 
 public class M0022TransitionNodes : IStorageMigration
 {
-    private void MigrateNodeScript(NodeScriptEntity nodeScript)
+    private void MigrateNodeScript(NodeScriptEntity? nodeScript)
     {
         if (nodeScript == null)
             return;
@@ -28,7 +28,7 @@ public class M0022TransitionNodes : IStorageMigration
         }
     }
 
-    private void MigratePropertyGroup(PropertyGroupEntity propertyGroup)
+    private void MigratePropertyGroup(PropertyGroupEntity? propertyGroup)
     {
         if (propertyGroup == null)
             return;
@@ -39,7 +39,7 @@ public class M0022TransitionNodes : IStorageMigration
             MigrateNodeScript(property.DataBinding?.NodeScript);
     }
 
-    private void MigrateDisplayCondition(IConditionEntity conditionEntity)
+    private void MigrateDisplayCondition(IConditionEntity? conditionEntity)
     {
         if (conditionEntity is EventConditionEntity eventConditionEntity)
             MigrateNodeScript(eventConditionEntity.Script);
@@ -70,14 +70,14 @@ public class M0022TransitionNodes : IStorageMigration
                 MigratePropertyGroup(layer.GeneralPropertyGroup);
                 MigratePropertyGroup(layer.TransformPropertyGroup);
                 foreach (LayerEffectEntity layerEffectEntity in layer.LayerEffects)
-                    MigratePropertyGroup(layerEffectEntity?.PropertyGroup);
+                    MigratePropertyGroup(layerEffectEntity.PropertyGroup);
                 MigrateDisplayCondition(layer.DisplayCondition);
             }
 
             foreach (FolderEntity folder in profileEntity.Folders)
             {
                 foreach (LayerEffectEntity folderLayerEffect in folder.LayerEffects)
-                    MigratePropertyGroup(folderLayerEffect?.PropertyGroup);
+                    MigratePropertyGroup(folderLayerEffect.PropertyGroup);
                 MigrateDisplayCondition(folder.DisplayCondition);
             }
 

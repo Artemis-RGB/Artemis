@@ -34,7 +34,7 @@ internal class ProfileCategoryRepository : IProfileCategoryRepository
         return _repository.Query<ProfileCategoryEntity>().ToList();
     }
 
-    public ProfileCategoryEntity Get(Guid id)
+    public ProfileCategoryEntity? Get(Guid id)
     {
         return _repository.FirstOrDefault<ProfileCategoryEntity>(p => p.Id == id);
     }
@@ -52,7 +52,7 @@ internal class ProfileCategoryRepository : IProfileCategoryRepository
         _repository.Upsert(profileCategoryEntity);
     }
 
-    public Stream GetProfileIconStream(Guid id)
+    public Stream? GetProfileIconStream(Guid id)
     {
         if (!_profileIcons.Exists(id))
             return null;

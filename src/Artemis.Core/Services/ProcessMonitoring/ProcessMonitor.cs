@@ -7,6 +7,9 @@ using System.Threading;
 
 namespace Artemis.Core.Services;
 
+/// <summary>
+/// Represents a monitor that efficiently keeps track of running processes.
+/// </summary>
 public static partial class ProcessMonitor
 {
     #region Properties & Fields
@@ -15,8 +18,11 @@ public static partial class ProcessMonitor
 
     private static Timer? _timer;
 
-    private static Dictionary<int, ProcessInfo> _processes = new();
+    private static readonly Dictionary<int, ProcessInfo> _processes = new();
 
+    /// <summary>
+    /// Gets an immutable array of the current processes.
+    /// </summary>
     public static ImmutableArray<ProcessInfo> Processes
     {
         get
@@ -25,9 +31,17 @@ public static partial class ProcessMonitor
                 return _processes.Values.ToImmutableArray();
         }
     }
+
+    /// <summary>
+    /// Gets the date time at which the last update took place.
+    /// </summary>
     public static DateTime LastUpdate { get; private set; }
 
     private static TimeSpan _updateInterval = TimeSpan.FromSeconds(1);
+
+    /// <summary>
+    /// Gets or sets the interval at which to update the list of processes.
+    /// </summary>
     public static TimeSpan UpdateInterval
     {
         get => _updateInterval;
@@ -40,6 +54,9 @@ public static partial class ProcessMonitor
         }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether the monitoring has started.
+    /// </summary>
     public static bool IsStarted
     {
         get
@@ -53,7 +70,14 @@ public static partial class ProcessMonitor
 
     #region Events
 
+    /// <summary>
+    /// Occurs when a new process is started.
+    /// </summary>
     public static event EventHandler<ProcessEventArgs>? ProcessStarted;
+
+    /// <summary>
+    /// Occurs when a process is stopped.
+    /// </summary>
     public static event EventHandler<ProcessEventArgs>? ProcessStopped;
 
     #endregion
@@ -69,6 +93,9 @@ public static partial class ProcessMonitor
 
     #region Methods
 
+    /// <summary>
+    /// Starts monitoring processes.
+    /// </summary>
     public static void Start()
     {
         lock (LOCK)
@@ -87,6 +114,9 @@ public static partial class ProcessMonitor
         }
     }
 
+    /// <summary>
+    /// Stops monitoring processes.
+    /// </summary>
     public static void Stop()
     {
         lock (LOCK)
@@ -100,7 +130,7 @@ public static partial class ProcessMonitor
                 FreeBuffer();
         }
     }
-    
+
     /// <summary>
     ///     Returns whether the specified process is running
     /// </summary>
@@ -111,7 +141,7 @@ public static partial class ProcessMonitor
     {
         if (!IsStarted || (processName == null && processLocation == null))
             return false;
-        
+
         lock (LOCK)
         {
             return _processes.Values.Any(x => IsProcessRunning(x, processName, processLocation));
@@ -130,19 +160,19 @@ public static partial class ProcessMonitor
                 OnProcessStopped(info);
             }
     }
-        
+
     private static bool IsProcessRunning(ProcessInfo info, string? processName, string? processLocation)
     {
         if (processName != null && processLocation != null)
             return string.Equals(info.ProcessName, processName, StringComparison.InvariantCultureIgnoreCase) &&
                    string.Equals(Path.GetDirectoryName(info.Executable), processLocation, StringComparison.InvariantCultureIgnoreCase);
-        
+
         if (processName != null)
             return string.Equals(info.ProcessName, processName, StringComparison.InvariantCultureIgnoreCase);
-        
+
         if (processLocation != null)
             return string.Equals(Path.GetDirectoryName(info.Executable), processLocation, StringComparison.InvariantCultureIgnoreCase);
-        
+
         return false;
     }
 
@@ -152,7 +182,10 @@ public static partial class ProcessMonitor
         {
             ProcessStarted?.Invoke(null, new ProcessEventArgs(processInfo));
         }
-        catch { /* Subscribers are idiots! */ }
+        catch
+        {
+            /* Subscribers are idiots! */
+        }
     }
 
     private static void OnProcessStopped(ProcessInfo processInfo)
@@ -161,7 +194,10 @@ public static partial class ProcessMonitor
         {
             ProcessStopped?.Invoke(null, new ProcessEventArgs(processInfo));
         }
-        catch { /* Subscribers are idiots! */ }
+        catch
+        {
+            /* Subscribers are idiots! */
+        }
     }
 
     #endregion
