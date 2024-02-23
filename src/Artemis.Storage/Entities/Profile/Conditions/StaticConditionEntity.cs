@@ -7,5 +7,5 @@ public class StaticConditionEntity : IConditionEntity
 {
     public int PlayMode { get; set; }
     public int StopMode { get; set; }
-    public NodeScriptEntity Script { get; set; }
+    public NodeScriptEntity? Script { get; set; }
 }

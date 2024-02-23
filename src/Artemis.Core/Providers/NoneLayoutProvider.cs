@@ -1,8 +1,14 @@
 ﻿namespace Artemis.Core.Providers;
 
+/// <summary>
+/// Represents a layout provider that does not load a layout.
+/// </summary>
 public class NoneLayoutProvider : ILayoutProvider
 {
-    public static string LayoutType = "None";
+    /// <summary>
+    /// The layout type of this layout provider.
+    /// </summary>
+    public const string LAYOUT_TYPE = "None";
 
     /// <inheritdoc />
     public ArtemisLayout? GetDeviceLayout(ArtemisDevice device)
@@ -19,7 +25,7 @@ public class NoneLayoutProvider : ILayoutProvider
     /// <inheritdoc />
     public bool IsMatch(ArtemisDevice device)
     {
-        return device.LayoutSelection.Type == LayoutType;
+        return device.LayoutSelection.Type == LAYOUT_TYPE;
     }
 
     /// <summary>
@@ -28,7 +34,7 @@ public class NoneLayoutProvider : ILayoutProvider
     /// <param name="device">The device to apply the provider to.</param>
     public void ConfigureDevice(ArtemisDevice device)
     {
-        device.LayoutSelection.Type = LayoutType;
+        device.LayoutSelection.Type = LAYOUT_TYPE;
         device.LayoutSelection.Parameter = null;
     }
 }

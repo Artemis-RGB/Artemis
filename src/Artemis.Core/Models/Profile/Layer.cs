@@ -248,8 +248,8 @@ public sealed class Layer : RenderProfileElement
             typeof(PropertyGroupDescriptionAttribute)
         )!;
 
-        LayerEntity.GeneralPropertyGroup ??= new PropertyGroupEntity {Identifier = generalAttribute.Identifier};
-        LayerEntity.TransformPropertyGroup ??= new PropertyGroupEntity {Identifier = transformAttribute.Identifier};
+        LayerEntity.GeneralPropertyGroup ??= new PropertyGroupEntity {Identifier = generalAttribute.Identifier!};
+        LayerEntity.TransformPropertyGroup ??= new PropertyGroupEntity {Identifier = transformAttribute.Identifier!};
 
         General.Initialize(this, null, generalAttribute, LayerEntity.GeneralPropertyGroup);
         Transform.Initialize(this, null, transformAttribute, LayerEntity.TransformPropertyGroup);

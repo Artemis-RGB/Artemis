@@ -12,9 +12,9 @@ public class M0021GradientNodes : IStorageMigration
 {
     private void MigrateDataBinding(PropertyEntity property)
     {
-        NodeScriptEntity script = property.DataBinding.NodeScript;
-        NodeEntity exitNode = script.Nodes.FirstOrDefault(s => s.IsExitNode);
-        if (exitNode == null)
+        NodeScriptEntity? script = property.DataBinding?.NodeScript;
+        NodeEntity? exitNode = script?.Nodes.FirstOrDefault(s => s.IsExitNode);
+        if (script == null || exitNode == null)
             return;
 
         // Create a new node at the same position of the exit node
@@ -59,8 +59,11 @@ public class M0021GradientNodes : IStorageMigration
         exitNode.Y += 30;
     }
 
-    private void MigrateDataBinding(PropertyGroupEntity propertyGroup)
+    private void MigrateDataBinding(PropertyGroupEntity? propertyGroup)
     {
+        if (propertyGroup == null)
+            return;
+        
         foreach (PropertyGroupEntity propertyGroupPropertyGroup in propertyGroup.PropertyGroups)
             MigrateDataBinding(propertyGroupPropertyGroup);
 
@@ -80,7 +83,7 @@ public class M0021GradientNodes : IStorageMigration
         foreach (ProfileEntity profileEntity in profiles)
         {
             foreach (LayerEntity layer in profileEntity.Layers.Where(le => le.LayerBrush != null))
-                MigrateDataBinding(layer.LayerBrush.PropertyGroup);
+                MigrateDataBinding(layer.LayerBrush?.PropertyGroup);
 
             repository.Update(profileEntity);
         }

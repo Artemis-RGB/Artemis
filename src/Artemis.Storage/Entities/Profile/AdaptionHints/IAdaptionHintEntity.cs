@@ -1,5 +1,3 @@
 ﻿namespace Artemis.Storage.Entities.Profile.AdaptionHints;
 
-public interface IAdaptionHintEntity
-{
-}
+public interface IAdaptionHintEntity;

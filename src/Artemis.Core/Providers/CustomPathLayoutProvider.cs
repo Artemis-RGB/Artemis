@@ -1,8 +1,14 @@
 ﻿namespace Artemis.Core.Providers;
 
+/// <summary>
+/// Represents a layout provider that loads a layout from a custom path.
+/// </summary>
 public class CustomPathLayoutProvider : ILayoutProvider
 {
-    public static string LayoutType = "CustomPath";
+    /// <summary>
+    /// The layout type of this layout provider.
+    /// </summary>
+    public const string LAYOUT_TYPE = "CustomPath";
 
     /// <inheritdoc />
     public ArtemisLayout? GetDeviceLayout(ArtemisDevice device)
@@ -21,7 +27,7 @@ public class CustomPathLayoutProvider : ILayoutProvider
     /// <inheritdoc />
     public bool IsMatch(ArtemisDevice device)
     {
-        return device.LayoutSelection.Type == LayoutType;
+        return device.LayoutSelection.Type == LAYOUT_TYPE;
     }
 
     /// <summary>
@@ -31,7 +37,7 @@ public class CustomPathLayoutProvider : ILayoutProvider
     /// <param name="path">The path to the custom layout.</param>
     public void ConfigureDevice(ArtemisDevice device, string? path)
     {
-        device.LayoutSelection.Type = LayoutType;
+        device.LayoutSelection.Type = LAYOUT_TYPE;
         device.LayoutSelection.Parameter = path;
     }
 }

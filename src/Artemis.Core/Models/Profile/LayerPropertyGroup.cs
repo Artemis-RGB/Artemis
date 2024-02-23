@@ -240,7 +240,8 @@ public abstract class LayerPropertyGroup : IDisposable
         foreach (LayerPropertyGroup layerPropertyGroup in LayerPropertyGroups)
         {
             layerPropertyGroup.ApplyToEntity();
-            PropertyGroupEntity.PropertyGroups.Add(layerPropertyGroup.PropertyGroupEntity);
+            if (layerPropertyGroup.PropertyGroupEntity != null)
+                PropertyGroupEntity.PropertyGroups.Add(layerPropertyGroup.PropertyGroupEntity);
         }
     }
 
