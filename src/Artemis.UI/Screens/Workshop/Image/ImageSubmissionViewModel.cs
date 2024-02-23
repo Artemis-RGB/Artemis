@@ -93,6 +93,14 @@ public partial class ImageSubmissionViewModel : ValidatableViewModelBase
         Name = vm.Name;
         Description = vm.Description;
 
+        // TODO: Just get rid of this stupid mechanism
+        if (ImageUploadRequest != null)
+        {
+            if (Name != null)
+                ImageUploadRequest.Name = Name;
+            ImageUploadRequest.Description = Description;
+        }
+
         return result;
     }
 }
