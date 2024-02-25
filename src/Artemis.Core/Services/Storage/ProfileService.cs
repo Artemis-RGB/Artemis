@@ -458,19 +458,23 @@ internal class ProfileService : IProfileService
         if (profileEntry == null)
             throw new ArtemisCoreException("Could not import profile, profile.json missing");
 
+        // Deserialize profile configuration to JObject
         await using Stream configurationStream = configurationEntry.Open();
         using StreamReader configurationReader = new(configurationStream);
-        ProfileConfigurationEntity? configurationEntity = JsonConvert.DeserializeObject<ProfileConfigurationEntity>(await configurationReader.ReadToEndAsync(), IProfileService.ExportSettings);
-        if (configurationEntity == null)
-            throw new ArtemisCoreException("Could not import profile, failed to deserialize configuration.json");
-
+        JObject? configurationJson = JsonConvert.DeserializeObject<JObject>(await configurationReader.ReadToEndAsync(), IProfileService.ExportSettings);
+        // Deserialize profile to JObject
         await using Stream profileStream = profileEntry.Open();
         using StreamReader profileReader = new(profileStream);
         JObject? profileJson = JsonConvert.DeserializeObject<JObject>(await profileReader.ReadToEndAsync(), IProfileService.ExportSettings);
 
         // Before deserializing, apply any pending migrations
-        MigrateProfile(configurationEntity, profileJson);
+        MigrateProfile(configurationJson, profileJson);
 
+        // Deserialize profile configuration to ProfileConfigurationEntity
+        ProfileConfigurationEntity? configurationEntity = configurationJson?.ToObject<ProfileConfigurationEntity>(JsonSerializer.Create(IProfileService.ExportSettings));
+        if (configurationEntity == null)
+            throw new ArtemisCoreException("Could not import profile, failed to deserialize configuration.json");
+        // Deserialize profile to ProfileEntity
         ProfileEntity? profileEntity = profileJson?.ToObject<ProfileEntity>(JsonSerializer.Create(IProfileService.ExportSettings));
         if (profileEntity == null)
             throw new ArtemisCoreException("Could not import profile, failed to deserialize profile.json");
@@ -555,18 +559,20 @@ internal class ProfileService : IProfileService
         }
     }
 
-    private void MigrateProfile(ProfileConfigurationEntity configurationEntity, JObject? profileJson)
+    private void MigrateProfile(JObject? configurationJson, JObject? profileJson)
     {
-        if (profileJson == null)
+        if (configurationJson == null || profileJson == null)
             return;
 
+        configurationJson["Version"] ??= 0;
+        
         foreach (IProfileMigration profileMigrator in _profileMigrators.OrderBy(m => m.Version))
         {
-            if (profileMigrator.Version <= configurationEntity.Version)
+            if (profileMigrator.Version <= configurationJson["Version"]!.Value<int>())
                 continue;
 
-            profileMigrator.Migrate(profileJson);
-            configurationEntity.Version = profileMigrator.Version;
+            profileMigrator.Migrate(configurationJson, profileJson);
+            configurationJson["Version"] = profileMigrator.Version;
         }
     }
 

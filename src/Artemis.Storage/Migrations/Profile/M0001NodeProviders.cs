@@ -12,7 +12,7 @@ internal class M0001NodeProviders : IProfileMigration
     public int Version => 1;
 
     /// <inheritdoc />
-    public void Migrate(JObject profileJson)
+    public void Migrate(JObject configurationJson, JObject profileJson)
     {
         JArray? folders = (JArray?) profileJson["Folders"]?["$values"];
         JArray? layers = (JArray?) profileJson["Layers"]?["$values"];
