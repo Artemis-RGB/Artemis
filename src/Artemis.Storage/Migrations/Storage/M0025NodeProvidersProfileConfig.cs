@@ -1,4 +1,5 @@
-﻿using LiteDB;
+﻿using System.Collections.Generic;
+using LiteDB;
 
 namespace Artemis.Storage.Migrations.Storage;
 
@@ -9,6 +10,7 @@ public class M0025NodeProvidersProfileConfig : IStorageMigration
     public void Apply(LiteRepository repository)
     {
         ILiteCollection<BsonDocument> categoryCollection = repository.Database.GetCollection("ProfileCategoryEntity");
+        List<BsonDocument> toUpdate = new();
         foreach (BsonDocument profileCategoryBson in categoryCollection.FindAll())
         {
             BsonArray? profiles = profileCategoryBson["ProfileConfigurations"]?.AsArray;
@@ -19,9 +21,11 @@ public class M0025NodeProvidersProfileConfig : IStorageMigration
                     profile["Version"] = 2;
                     MigrateNodeScript(profile["ActivationCondition"]?.AsDocument);
                 }
+                toUpdate.Add(profileCategoryBson);
             }
-            categoryCollection.Update(profileCategoryBson);
         }
+        
+        categoryCollection.Update(toUpdate);
     }
     
     private void MigrateNodeScript(BsonDocument? nodeScript)
