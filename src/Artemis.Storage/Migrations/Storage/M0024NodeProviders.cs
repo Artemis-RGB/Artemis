@@ -10,28 +10,33 @@ public class M0024NodeProviders : IStorageMigration
 
     public void Apply(LiteRepository repository)
     {
-        List<ProfileCategoryEntity> profileCategories = repository.Query<ProfileCategoryEntity>().ToList();
-        foreach (ProfileCategoryEntity profileCategory in profileCategories)
+        ILiteCollection<BsonDocument> categoryCollection = repository.Database.GetCollection("ProfileCategoryEntity");
+        List<BsonDocument> categoriesToUpdate = new();
+        foreach (BsonDocument profileCategoryBson in categoryCollection.FindAll())
         {
-            foreach (ProfileConfigurationEntity profileConfigurationEntity in profileCategory.ProfileConfigurations)
+            BsonArray? profiles = profileCategoryBson["ProfileConfigurations"]?.AsArray;
+            if (profiles != null)
             {
-                profileConfigurationEntity.Version = 1;
+                foreach (BsonValue profile in profiles)
+                    profile["Version"] = 1;
+                categoriesToUpdate.Add(profileCategoryBson);
             }
-            repository.Update(profileCategory);
         }
+        categoryCollection.Update(categoriesToUpdate);
 
         ILiteCollection<BsonDocument> collection = repository.Database.GetCollection("ProfileEntity");
+        List<BsonDocument> profilesToUpdate = new();
         foreach (BsonDocument profileBson in collection.FindAll())
         {
             BsonArray? folders = profileBson["Folders"]?.AsArray;
             BsonArray? layers = profileBson["Layers"]?.AsArray;
-
+        
             if (folders != null)
             {
                 foreach (BsonValue folder in folders)
                     MigrateProfileElement(folder.AsDocument);
             }
-
+        
             if (layers != null)
             {
                 foreach (BsonValue layer in layers)
@@ -42,9 +47,11 @@ public class M0024NodeProviders : IStorageMigration
                     MigratePropertyGroup(layer.AsDocument["LayerBrush"]?["PropertyGroup"].AsDocument);
                 }
             }
-
-            collection.Update(profileBson);
+            
+            profilesToUpdate.Add(profileBson);
         }
+
+        collection.Update(profilesToUpdate);
     }
 
     private void MigrateProfileElement(BsonDocument profileElement)
