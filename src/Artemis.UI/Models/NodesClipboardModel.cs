@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using Artemis.Core;
 using Artemis.Storage.Entities.Profile.Nodes;
 
 namespace Artemis.UI.Models;
 
-public class NodesClipboardModel
+public class NodesClipboardModel: IClipboardModel
 {
     public NodesClipboardModel(NodeScript nodeScript, List<INode> nodes)
     {
@@ -18,6 +19,7 @@ public class NodesClipboardModel
         Connections = nodeScript.Entity.Connections.Where(e => nodes.Any(n => n.Id == e.SourceNode) && nodes.Any(n => n.Id == e.TargetNode)).ToList();
     }
 
+    [JsonConstructor]
     public NodesClipboardModel()
     {
         Nodes = new List<NodeEntity>();

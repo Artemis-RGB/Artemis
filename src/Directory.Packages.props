@@ -33,7 +33,6 @@
     <PackageVersion Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
     <PackageVersion Include="Microsoft.Win32" Version="2.0.1" />
     <PackageVersion Include="Microsoft.Windows.Compatibility" Version="8.0.2" />
-    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="NoStringEvaluating" Version="2.5.2" />
     <PackageVersion Include="Octopus.Octodiff" Version="2.0.546" />
     <PackageVersion Include="PropertyChanged.SourceGenerator" Version="1.1.0" />
@@ -52,6 +51,7 @@
     <PackageVersion Include="Splat.DryIoc" Version="14.8.12" />
     <PackageVersion Include="StrawberryShake.Server" Version="13.9.0" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.3.1" />
+    <PackageVersion Include="System.Text.Json" Version="8.0.2" />
     <PackageVersion Include="TextMateSharp.Grammars" Version="1.0.56" />
   </ItemGroup>
 </Project>

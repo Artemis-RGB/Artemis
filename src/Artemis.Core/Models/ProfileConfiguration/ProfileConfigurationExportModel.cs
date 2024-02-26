@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Text.Json.Serialization;
 using Artemis.Core.JsonConverters;
 using Artemis.Storage.Entities.Profile;
-using Newtonsoft.Json;
 
 namespace Artemis.Core;
 
@@ -19,7 +19,7 @@ public class ProfileConfigurationExportModel : IDisposable
     /// <summary>
     ///     Gets or sets the storage entity of the profile
     /// </summary>
-    [JsonProperty(Required = Required.Always)]
+    [JsonRequired]
     public ProfileEntity ProfileEntity { get; set; } = null!;
 
     /// <summary>

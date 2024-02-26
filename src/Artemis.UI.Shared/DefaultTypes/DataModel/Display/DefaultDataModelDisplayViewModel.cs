@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Artemis.Core;
 using Artemis.UI.Shared.DataModelVisualization;
-using Newtonsoft.Json;
 
 namespace Artemis.UI.Shared.DefaultTypes.DataModel.Display;
 
@@ -11,16 +12,12 @@ namespace Artemis.UI.Shared.DefaultTypes.DataModel.Display;
 /// </summary>
 internal class DefaultDataModelDisplayViewModel : DataModelDisplayViewModel<object>
 {
-    private readonly JsonSerializerSettings _serializerSettings;
+    private readonly JsonSerializerOptions _serializerSettings;
     private string _display;
 
     public DefaultDataModelDisplayViewModel()
     {
-        _serializerSettings = new JsonSerializerSettings
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            PreserveReferencesHandling = PreserveReferencesHandling.None
-        };
+        _serializerSettings = new JsonSerializerOptions() {ReferenceHandler = ReferenceHandler.IgnoreCycles};
         _display = "null";
     }
 
@@ -35,7 +32,7 @@ internal class DefaultDataModelDisplayViewModel : DataModelDisplayViewModel<obje
         if (DisplayValue is Enum enumDisplayValue)
             Display = EnumUtilities.HumanizeValue(enumDisplayValue);
         else if (DisplayValue is not string)
-            Display = JsonConvert.SerializeObject(DisplayValue, _serializerSettings);
+            Display = JsonSerializer.Serialize(DisplayValue, _serializerSettings);
         else
             Display = DisplayValue?.ToString() ?? "null";
     }

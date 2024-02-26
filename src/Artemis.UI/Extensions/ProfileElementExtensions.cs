@@ -19,7 +19,7 @@ public static class ProfileElementExtensions
     public static async Task CopyToClipboard(this Folder folder)
     {
         DataObject dataObject = new();
-        string copy = CoreJson.SerializeObject(new FolderClipboardModel(folder), true);
+        string copy = CoreJson.SerializeObject(new FolderClipboardModel(folder));
         dataObject.Set(ClipboardDataFormat, copy);
         await Shared.UI.Clipboard.SetDataObjectAsync(dataObject);
     }
@@ -27,7 +27,7 @@ public static class ProfileElementExtensions
     public static async Task CopyToClipboard(this Layer layer)
     {
         DataObject dataObject = new();
-        string copy = CoreJson.SerializeObject(layer.LayerEntity, true);
+        string copy = CoreJson.SerializeObject(layer.LayerEntity);
         dataObject.Set(ClipboardDataFormat, copy);
         await Shared.UI.Clipboard.SetDataObjectAsync(dataObject);
     }
@@ -39,7 +39,7 @@ public static class ProfileElementExtensions
         if (bytes == null!)
             return null;
 
-        object? entity = CoreJson.DeserializeObject(Encoding.Unicode.GetString(bytes), true);
+        object? entity = CoreJson.DeserializeObject<IClipboardModel>(Encoding.Unicode.GetString(bytes));
         switch (entity)
         {
             case FolderClipboardModel folderClipboardModel:

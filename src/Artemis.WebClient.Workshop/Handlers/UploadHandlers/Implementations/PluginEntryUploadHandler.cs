@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Headers;
+using Artemis.Core;
 using Artemis.WebClient.Workshop.Entities;
-using Newtonsoft.Json;
 
 namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 
@@ -34,7 +34,7 @@ public class PluginEntryUploadHandler : IEntryUploadHandler
         if (!response.IsSuccessStatusCode)
             return EntryUploadResult.FromFailure($"{response.StatusCode} - {await response.Content.ReadAsStringAsync(cancellationToken)}");
 
-        Release? release = JsonConvert.DeserializeObject<Release>(await response.Content.ReadAsStringAsync(cancellationToken));
+        Release? release = CoreJson.DeserializeObject<Release>(await response.Content.ReadAsStringAsync(cancellationToken));
         return release != null ? EntryUploadResult.FromSuccess(release) : EntryUploadResult.FromFailure("Failed to deserialize response");
     }
 }

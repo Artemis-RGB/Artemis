@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.Json;
 using Artemis.Storage.Entities.Profile;
-using Newtonsoft.Json;
 
 namespace Artemis.Core;
 
@@ -324,7 +324,7 @@ public class LayerProperty<T> : CorePropertyChanged, ILayerProperty
         // Reference types make a deep clone (ab)using JSON
         else
         {
-            string json = CoreJson.SerializeObject(DefaultValue, true);
+            string json = CoreJson.SerializeObject(DefaultValue);
             SetCurrentValue(CoreJson.DeserializeObject<T>(json)!);
         }
     }

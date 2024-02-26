@@ -37,7 +37,7 @@ public class LayerTreeItemViewModel : TreeItemViewModel
     {
         await ProfileEditorService.SaveProfileAsync();
 
-        LayerEntity copy = CoreJson.DeserializeObject<LayerEntity>(CoreJson.SerializeObject(Layer.LayerEntity, true), true)!;
+        LayerEntity copy = CoreJson.DeserializeObject<LayerEntity>(CoreJson.SerializeObject(Layer.LayerEntity))!;
         copy.Id = Guid.NewGuid();
         copy.Name = Layer.Parent.GetNewFolderName(copy.Name + " - copy");
 

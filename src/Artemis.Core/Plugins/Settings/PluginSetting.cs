@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Text.Json;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
-using Newtonsoft.Json;
 
 namespace Artemis.Core;
 
@@ -25,7 +25,7 @@ public class PluginSetting<T> : CorePropertyChanged, IPluginSetting
         {
             _value = CoreJson.DeserializeObject<T>(pluginSettingEntity.Value)!;
         }
-        catch (JsonReaderException)
+        catch (JsonException)
         {
             _value = default!;
         }

@@ -36,7 +36,7 @@ public class FolderTreeItemViewModel : TreeItemViewModel
     {
         await ProfileEditorService.SaveProfileAsync();
 
-        FolderEntity copy = CoreJson.DeserializeObject<FolderEntity>(CoreJson.SerializeObject(Folder.FolderEntity, true), true)!;
+        FolderEntity copy = CoreJson.DeserializeObject<FolderEntity>(CoreJson.SerializeObject(Folder.FolderEntity))!;
         copy.Id = Guid.NewGuid();
         copy.Name = Folder.Parent.GetNewFolderName(copy.Name + " - copy");
 

@@ -1,10 +1,8 @@
 ﻿using System.IO.Compression;
 using System.Net.Http.Headers;
 using Artemis.Core;
-using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop.Entities;
 using Artemis.WebClient.Workshop.Exceptions;
-using Newtonsoft.Json;
 using RGB.NET.Layout;
 
 namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers;
@@ -70,7 +68,7 @@ public class LayoutEntryUploadHandler : IEntryUploadHandler
         if (!response.IsSuccessStatusCode)
             return EntryUploadResult.FromFailure($"{response.StatusCode} - {await response.Content.ReadAsStringAsync(cancellationToken)}");
 
-        Release? release = JsonConvert.DeserializeObject<Release>(await response.Content.ReadAsStringAsync(cancellationToken));
+        Release? release = CoreJson.DeserializeObject<Release>(await response.Content.ReadAsStringAsync(cancellationToken));
         return release != null ? EntryUploadResult.FromSuccess(release) : EntryUploadResult.FromFailure("Failed to deserialize response");
     }
 

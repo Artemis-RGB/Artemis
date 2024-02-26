@@ -1,32 +1,34 @@
 using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace Artemis.Core.JsonConverters;
-
-/// <summary>
-///     An int converter that, if required, will round float values
-/// </summary>
-internal class ForgivingIntConverter : JsonConverter<int>
+namespace Artemis.Core.JsonConverters
 {
-    public override bool CanWrite => false;
-
-    public override void WriteJson(JsonWriter writer, int value, JsonSerializer serializer)
+    /// <summary>
+    /// An int converter that, if required, will round float values
+    /// </summary>
+    internal class ForgivingIntConverter : JsonConverter<int>
     {
-        throw new NotImplementedException();
-    }
+        public override int Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Null)
+                throw new JsonException("Cannot convert null value.");
 
-    public override int ReadJson(JsonReader reader, Type objectType, int existingValue, bool hasExistingValue, JsonSerializer serializer)
-    {
-        JValue? jsonValue = serializer.Deserialize<JValue>(reader);
-        if (jsonValue == null)
-            throw new JsonReaderException("Failed to deserialize forgiving int value");
+            if (reader.TokenType == JsonTokenType.Number)
+            {
+                if (reader.TryGetInt32(out int intValue))
+                    return intValue;
 
-        if (jsonValue.Type == JTokenType.Float)
-            return (int) Math.Round(jsonValue.Value<double>());
-        if (jsonValue.Type == JTokenType.Integer)
-            return jsonValue.Value<int>();
+                if (reader.TryGetDouble(out double doubleValue))
+                    return (int)Math.Round(doubleValue);
+            }
 
-        throw new JsonReaderException("Failed to deserialize forgiving int value");
+            throw new JsonException("Failed to deserialize forgiving int value");
+        }
+
+        public override void Write(Utf8JsonWriter writer, int value, JsonSerializerOptions options)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

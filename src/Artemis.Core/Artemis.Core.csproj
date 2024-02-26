@@ -42,7 +42,6 @@
         <PackageReference Include="Humanizer.Core" />
         <PackageReference Include="JetBrains.Annotations" />
         <PackageReference Include="McMaster.NETCore.Plugins" />
-        <PackageReference Include="Newtonsoft.Json" />
         <PackageReference Include="RGB.NET.Core" />
         <PackageReference Include="RGB.NET.Layout" />
         <PackageReference Include="RGB.NET.Presets" />
@@ -50,6 +49,7 @@
         <PackageReference Include="Serilog.Sinks.Debug" />
         <PackageReference Include="Serilog.Sinks.File" />
         <PackageReference Include="SkiaSharp" />
+        <PackageReference Include="System.Text.Json" />
     </ItemGroup>
 
     <ItemGroup>

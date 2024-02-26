@@ -1,44 +1,31 @@
 ﻿using System;
 using System.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace Artemis.Core.JsonConverters;
-
-/// <inheritdoc />
-public class StreamConverter : JsonConverter<Stream>
+namespace Artemis.Core.JsonConverters
 {
-    #region Overrides of JsonConverter<Stream>
-
-    /// <inheritdoc />
-    public override void WriteJson(JsonWriter writer, Stream? value, JsonSerializer serializer)
+    internal class StreamConverter : JsonConverter<Stream>
     {
-        if (value == null)
+        public override void Write(Utf8JsonWriter writer, Stream value, JsonSerializerOptions options)
         {
-            writer.WriteNull();
-            return;
+            using MemoryStream memoryStream = new();
+            value.Position = 0;
+            value.CopyTo(memoryStream);
+            writer.WriteBase64StringValue(memoryStream.ToArray());
         }
 
-        using MemoryStream memoryStream = new();
-        value.Position = 0;
-        value.CopyTo(memoryStream);
-        writer.WriteValue(memoryStream.ToArray());
+        public override Stream Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType != JsonTokenType.String)
+                throw new JsonException($"Expected a string token, but got {reader.TokenType}.");
+
+            string base64 = reader.GetString() ?? string.Empty;
+
+            if (typeToConvert == typeof(MemoryStream))
+                return new MemoryStream(Convert.FromBase64String(base64));
+
+            throw new InvalidOperationException("StreamConverter only supports reading to MemoryStream");
+        }
     }
-
-    /// <inheritdoc />
-    public override Stream? ReadJson(JsonReader reader, Type objectType, Stream? existingValue, bool hasExistingValue, JsonSerializer serializer)
-    {
-        if (reader.Value is not string base64)
-            return null;
-
-        if (existingValue == null || !hasExistingValue || !existingValue.CanRead)
-            return new MemoryStream(Convert.FromBase64String(base64));
-
-        using MemoryStream memoryStream = new(Convert.FromBase64String(base64));
-        existingValue.Position = 0;
-        memoryStream.CopyTo(existingValue);
-        existingValue.Position = 0;
-        return existingValue;
-    }
-
-    #endregion
 }

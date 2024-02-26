@@ -1,88 +1,95 @@
-using Newtonsoft.Json.Linq;
+using System;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Serilog.Core;
 
-namespace Artemis.Storage.Migrations.Profile;
-
-/// <summary>
-/// Migrates nodes to be provider-based.
-/// This requires giving them a ProviderId and updating the their namespaces to match the namespace of the new plugin. 
-/// </summary>
-internal class M0001NodeProviders : IProfileMigration
+namespace Artemis.Storage.Migrations.Profile
 {
-    /// <inheritdoc />
-    public int Version => 1;
-
-    /// <inheritdoc />
-    public void Migrate(JObject configurationJson, JObject profileJson)
+    /// <summary>
+    /// Migrates nodes to be provider-based.
+    /// This requires giving them a ProviderId and updating the their namespaces to match the namespace of the new plugin. 
+    /// </summary>
+    internal class M0001NodeProviders : IProfileMigration
     {
-        JArray? folders = (JArray?) profileJson["Folders"]?["$values"];
-        JArray? layers = (JArray?) profileJson["Layers"]?["$values"];
+        /// <inheritdoc />
+        public int Version => 1;
 
-        if (folders != null)
+        /// <inheritdoc />
+        public void Migrate(JsonObject configurationJson, JsonObject profileJson)
         {
-            foreach (JToken folder in folders)
-                MigrateProfileElement(folder);
-        }
+            JsonArray? folders = (JsonArray?) profileJson["Folders"]?["values"];
+            JsonArray? layers = (JsonArray?) profileJson["Layers"]?["values"];
 
-        if (layers != null)
-        {
-            foreach (JToken layer in layers)
+            if (folders != null)
             {
-                MigrateProfileElement(layer);
-                MigratePropertyGroup(layer["GeneralPropertyGroup"]);
-                MigratePropertyGroup(layer["TransformPropertyGroup"]);
-                MigratePropertyGroup(layer["LayerBrush"]?["PropertyGroup"]);
+                foreach (JsonValue folder in folders)
+                    MigrateProfileElement(folder);
+            }
+
+            if (layers != null)
+            {
+                foreach (JsonValue layer in layers)
+                {
+                    MigrateProfileElement(layer);
+                    MigratePropertyGroup(layer["GeneralPropertyGroup"]);
+                    MigratePropertyGroup(layer["TransformPropertyGroup"]);
+                    MigratePropertyGroup(layer["LayerBrush"]?["PropertyGroup"]);
+                }
             }
         }
-    }
 
-    private void MigrateProfileElement(JToken profileElement)
-    {
-        JArray? layerEffects = (JArray?) profileElement["LayerEffects"]?["$values"];
-        if (layerEffects != null)
+        private void MigrateProfileElement(JsonNode profileElement)
         {
-            foreach (JToken layerEffect in layerEffects)
-                MigratePropertyGroup(layerEffect["PropertyGroup"]);
+            JsonArray? layerEffects = (JsonArray?) profileElement["LayerEffects"]?["values"];
+            if (layerEffects != null)
+            {
+                foreach (JsonValue layerEffect in layerEffects)
+                    MigratePropertyGroup(layerEffect["PropertyGroup"]);
+            }
+
+            JsonNode? displayCondition = profileElement["DisplayCondition"];
+            if (displayCondition != null)
+                MigrateNodeScript(displayCondition["Script"]);
         }
 
-        JToken? displayCondition = profileElement["DisplayCondition"];
-        if (displayCondition != null)
-            MigrateNodeScript(displayCondition["Script"]);
-    }
-
-    private void MigratePropertyGroup(JToken? propertyGroup)
-    {
-        if (propertyGroup == null || !propertyGroup.HasValues)
-            return;
-
-        JArray? properties = (JArray?) propertyGroup["Properties"]?["$values"];
-        JArray? propertyGroups = (JArray?) propertyGroup["PropertyGroups"]?["$values"];
-
-        if (properties != null)
+        private void MigratePropertyGroup(JsonNode? propertyGroup)
         {
-            foreach (JToken property in properties)
-                MigrateNodeScript(property["DataBinding"]?["NodeScript"]);
+            if (propertyGroup == null)
+                return;
+
+            JsonArray? properties = (JsonArray?) propertyGroup["Properties"]?["values"];
+            JsonArray? propertyGroups = (JsonArray?) propertyGroup["PropertyGroups"]?["values"];
+
+            if (properties != null)
+            {
+                foreach (JsonValue property in properties)
+                    MigrateNodeScript(property["DataBinding"]?["NodeScript"]);
+            }
+
+            if (propertyGroups != null)
+            {
+                foreach (JsonValue childPropertyGroup in propertyGroups)
+                    MigratePropertyGroup(childPropertyGroup);
+            }
         }
 
-        if (propertyGroups != null)
+        private void MigrateNodeScript(JsonNode? nodeScript)
         {
-            foreach (JToken childPropertyGroup in propertyGroups)
-                MigratePropertyGroup(childPropertyGroup);
-        }
-    }
+            if (nodeScript == null)
+                return;
 
-    private void MigrateNodeScript(JToken? nodeScript)
-    {
-        if (nodeScript == null || !nodeScript.HasValues)
-            return;
+            JsonArray? nodes = nodeScript["Nodes"]?.AsArray();
+            if (nodes == null)
+                return;
 
-        JArray? nodes = (JArray?) nodeScript["Nodes"]?["$values"];
-        if (nodes == null)
-            return;
-
-        foreach (JToken node in nodes)
-        {
-            node["Type"] = node["Type"]?.Value<string>()?.Replace("Artemis.VisualScripting.Nodes", "Artemis.Plugins.Nodes.General.Nodes");
-            node["ProviderId"] = "Artemis.Plugins.Nodes.General.GeneralNodesProvider-d9e1ee78";
+            foreach (JsonNode? jsonNode in nodes)
+            {
+                if (jsonNode == null)
+                    continue;
+                JsonObject nodeObject = jsonNode.AsObject();
+                nodeObject["Type"] = nodeObject["Type"]?.GetValue<string>().Replace("Artemis.VisualScripting.Nodes", "Artemis.Plugins.Nodes.General.Nodes");
+                nodeObject["ProviderId"] = "Artemis.Plugins.Nodes.General.GeneralNodesProvider-d9e1ee78";
+            }
         }
     }
 }

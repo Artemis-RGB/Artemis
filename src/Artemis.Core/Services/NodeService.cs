@@ -4,7 +4,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Artemis.Storage.Entities.Profile.Nodes;
-using Newtonsoft.Json;
 using SkiaSharp;
 
 namespace Artemis.Core.Services;
@@ -42,12 +41,12 @@ internal class NodeService : INodeService
     public string ExportScript(NodeScript nodeScript)
     {
         nodeScript.Save();
-        return JsonConvert.SerializeObject(nodeScript.Entity, IProfileService.ExportSettings);
+        return CoreJson.SerializeObject(nodeScript.Entity);
     }
 
     public void ImportScript(string json, NodeScript target)
     {
-        NodeScriptEntity? entity = JsonConvert.DeserializeObject<NodeScriptEntity>(json);
+        NodeScriptEntity? entity = CoreJson.DeserializeObject<NodeScriptEntity>(json);
         if (entity == null)
             throw new ArtemisCoreException("Failed to load node script");
 

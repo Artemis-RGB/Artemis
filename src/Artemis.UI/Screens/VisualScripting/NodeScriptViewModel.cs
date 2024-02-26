@@ -277,7 +277,7 @@ public partial class NodeScriptViewModel : ActivatableViewModelBase
     {
         List<INode> nodes = NodeViewModels.Where(vm => vm.IsSelected).Select(vm => vm.Node).Where(n => !n.IsDefaultNode && !n.IsExitNode).ToList();
         DataObject dataObject = new();
-        string copy = CoreJson.SerializeObject(new NodesClipboardModel(NodeScript, nodes), true);
+        string copy = CoreJson.SerializeObject(new NodesClipboardModel(NodeScript, nodes));
         dataObject.Set(CLIPBOARD_DATA_FORMAT, copy);
         await Shared.UI.Clipboard.SetDataObjectAsync(dataObject);   
     }
@@ -288,7 +288,7 @@ public partial class NodeScriptViewModel : ActivatableViewModelBase
         if (bytes == null!)
             return;
 
-        NodesClipboardModel? nodesClipboardModel = CoreJson.DeserializeObject<NodesClipboardModel>(Encoding.Unicode.GetString(bytes), true);
+        NodesClipboardModel? nodesClipboardModel = CoreJson.DeserializeObject<NodesClipboardModel>(Encoding.Unicode.GetString(bytes));
         if (nodesClipboardModel == null)
             return;
         

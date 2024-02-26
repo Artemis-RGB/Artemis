@@ -18,7 +18,6 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using DynamicData;
 using DynamicData.Binding;
-using Newtonsoft.Json;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
@@ -162,7 +161,7 @@ public partial class SidebarCategoryViewModel : ActivatableViewModelBase
             // Removing this at some point in the future
             if (result[0].EndsWith("json"))
             {
-                ProfileConfigurationExportModel? exportModel = JsonConvert.DeserializeObject<ProfileConfigurationExportModel>(await File.ReadAllTextAsync(result[0]), IProfileService.ExportSettings);
+                ProfileConfigurationExportModel? exportModel = CoreJson.DeserializeObject<ProfileConfigurationExportModel>(await File.ReadAllTextAsync(result[0]));
                 if (exportModel == null)
                 {
                     await _windowService.ShowConfirmContentDialog("Import profile", "Failed to import this profile, make sure it is a valid Artemis profile.", "Confirm", null);
@@ -235,8 +234,8 @@ public partial class SidebarCategoryViewModel : ActivatableViewModelBase
     {
         MemoryStream archiveStream = new();
 
-        string configurationJson = JsonConvert.SerializeObject(exportModel.ProfileConfigurationEntity, IProfileService.ExportSettings);
-        string profileJson = JsonConvert.SerializeObject(exportModel.ProfileEntity, IProfileService.ExportSettings);
+        string configurationJson = CoreJson.SerializeObject(exportModel.ProfileConfigurationEntity);
+        string profileJson = CoreJson.SerializeObject(exportModel.ProfileEntity);
 
         // Create a ZIP archive
         using (ZipArchive archive = new(archiveStream, ZipArchiveMode.Create, true))

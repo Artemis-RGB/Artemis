@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace Artemis.Storage.Migrations.Profile;
 
@@ -12,24 +12,27 @@ internal class M0002NodeProvidersProfileConfig : IProfileMigration
     public int Version => 2;
 
     /// <inheritdoc />
-    public void Migrate(JObject configurationJson, JObject profileJson)
+    public void Migrate(JsonObject configurationJson, JsonObject profileJson)
     {
         MigrateNodeScript(configurationJson["ActivationCondition"]);
     }
     
-    private void MigrateNodeScript(JToken? nodeScript)
+    private void MigrateNodeScript(JsonNode? nodeScript)
     {
-        if (nodeScript == null || !nodeScript.HasValues)
+        if (nodeScript == null)
             return;
 
-        JArray? nodes = (JArray?) nodeScript["Nodes"]?["$values"];
+        JsonArray? nodes = nodeScript["Nodes"]?.AsArray();
         if (nodes == null)
             return;
 
-        foreach (JToken node in nodes)
+        foreach (JsonNode? jsonNode in nodes)
         {
-            node["Type"] = node["Type"]?.Value<string>()?.Replace("Artemis.VisualScripting.Nodes", "Artemis.Plugins.Nodes.General.Nodes");
-            node["ProviderId"] = "Artemis.Plugins.Nodes.General.GeneralNodesProvider-d9e1ee78";
+            if (jsonNode == null)
+                continue;
+            JsonObject nodeObject = jsonNode.AsObject();
+            nodeObject["Type"] = nodeObject["Type"]?.GetValue<string>().Replace("Artemis.VisualScripting.Nodes", "Artemis.Plugins.Nodes.General.Nodes");
+            nodeObject["ProviderId"] = "Artemis.Plugins.Nodes.General.GeneralNodesProvider-d9e1ee78";
         }
     }
 }

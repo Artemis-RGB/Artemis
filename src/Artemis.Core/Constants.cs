@@ -4,10 +4,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using Artemis.Core.JsonConverters;
-using Artemis.Core.Services;
-using Artemis.Core.SkiaSharp;
-using Newtonsoft.Json;
 
 namespace Artemis.Core;
 
@@ -62,7 +60,7 @@ public static class Constants
     ///     The full path to the Artemis user layouts folder
     /// </summary>
     public static readonly string LayoutsFolder = Path.Combine(DataFolder, "User Layouts");
-    
+
     /// <summary>
     ///     The full path to the Artemis user layouts folder
     /// </summary>
@@ -97,17 +95,11 @@ public static class Constants
     internal static readonly CorePluginFeature CorePluginFeature = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Core")};
     internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Effect Placeholder")};
 
-    internal static JsonSerializerSettings JsonConvertSettings = new()
+    internal static JsonSerializerOptions JsonConvertSettings = new()
     {
-        Converters = new List<JsonConverter> {new SKColorConverter(), new NumericJsonConverter(), new ForgivingIntConverter()}
+        Converters = {new SKColorConverter(), new NumericJsonConverter(), new ForgivingIntConverter()}
     };
-
-    internal static JsonSerializerSettings JsonConvertTypedSettings = new()
-    {
-        TypeNameHandling = TypeNameHandling.All,
-        Converters = new List<JsonConverter> {new SKColorConverter(), new NumericJsonConverter(), new ForgivingIntConverter()}
-    };
-
+    
     /// <summary>
     ///     A read-only collection containing all primitive numeric types
     /// </summary>
