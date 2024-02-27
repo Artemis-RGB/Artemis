@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -150,7 +148,7 @@ public partial class SidebarCategoryViewModel : ActivatableViewModelBase
     private async Task ExecuteImportProfile()
     {
         string[]? result = await _windowService.CreateOpenFileDialog()
-            .HavingFilter(f => f.WithExtension("zip").WithExtension("json").WithName("Artemis profile"))
+            .HavingFilter(f => f.WithExtension("zip").WithName("Artemis profile"))
             .ShowAsync();
 
         if (result == null)
@@ -158,24 +156,8 @@ public partial class SidebarCategoryViewModel : ActivatableViewModelBase
 
         try
         {
-            // Removing this at some point in the future
-            if (result[0].EndsWith("json"))
-            {
-                ProfileConfigurationExportModel? exportModel = CoreJson.Deserialize<ProfileConfigurationExportModel>(await File.ReadAllTextAsync(result[0]));
-                if (exportModel == null)
-                {
-                    await _windowService.ShowConfirmContentDialog("Import profile", "Failed to import this profile, make sure it is a valid Artemis profile.", "Confirm", null);
-                    return;
-                }
-
-                await using Stream convertedFileStream = await ConvertLegacyExport(exportModel);
-                await _profileService.ImportProfile(convertedFileStream, ProfileCategory, true, true);
-            }
-            else
-            {
-                await using FileStream fileStream = File.OpenRead(result[0]);
-                await _profileService.ImportProfile(fileStream, ProfileCategory, true, true);
-            }
+            await using FileStream fileStream = File.OpenRead(result[0]);
+            await _profileService.ImportProfile(fileStream, ProfileCategory, true, true);
         }
         catch (Exception e)
         {
@@ -228,39 +210,5 @@ public partial class SidebarCategoryViewModel : ActivatableViewModelBase
             categories[i].Order = i + 1;
             _profileService.SaveProfileCategory(categories[i]);
         }
-    }
-    
-    private async Task<Stream> ConvertLegacyExport(ProfileConfigurationExportModel exportModel)
-    {
-        MemoryStream archiveStream = new();
-
-        string configurationJson = CoreJson.Serialize(exportModel.ProfileConfigurationEntity);
-        string profileJson = CoreJson.Serialize(exportModel.ProfileEntity);
-
-        // Create a ZIP archive
-        using (ZipArchive archive = new(archiveStream, ZipArchiveMode.Create, true))
-        {
-            ZipArchiveEntry configurationEntry = archive.CreateEntry("configuration.json");
-            await using (Stream entryStream = configurationEntry.Open())
-            {
-                await entryStream.WriteAsync(Encoding.Default.GetBytes(configurationJson));
-            }
-
-            ZipArchiveEntry profileEntry = archive.CreateEntry("profile.json");
-            await using (Stream entryStream = profileEntry.Open())
-            {
-                await entryStream.WriteAsync(Encoding.Default.GetBytes(profileJson));
-            }
-
-            if (exportModel.ProfileImage != null)
-            {
-                ZipArchiveEntry iconEntry = archive.CreateEntry("icon.png");
-                await using Stream entryStream = iconEntry.Open();
-                await exportModel.ProfileImage.CopyToAsync(entryStream);
-            }
-        }
-
-        archiveStream.Seek(0, SeekOrigin.Begin);
-        return archiveStream;
     }
 }
