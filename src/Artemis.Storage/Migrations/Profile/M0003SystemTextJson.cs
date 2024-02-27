@@ -54,7 +54,7 @@ internal class M0003SystemTextJson : IProfileMigration
 
     private void FilterType(JsonObject jsonObject)
     {
-        // If there only a type, replace or remove it depending on whether there's a matching JsonDerivedType
+        // Replace or remove $type depending on whether there's a matching JsonDerivedType
         // This could be done with reflection but that would mean this migration automatically gains new behaviour over time.
         JsonNode? type = jsonObject["$type"];
         if (type != null)
