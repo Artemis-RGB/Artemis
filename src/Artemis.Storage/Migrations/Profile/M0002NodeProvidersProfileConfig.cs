@@ -16,13 +16,10 @@ internal class M0002NodeProvidersProfileConfig : IProfileMigration
     {
         MigrateNodeScript(configurationJson["ActivationCondition"]);
     }
-    
+
     private void MigrateNodeScript(JsonNode? nodeScript)
     {
-        if (nodeScript == null)
-            return;
-
-        JsonArray? nodes = nodeScript["Nodes"]?.AsArray();
+        JsonArray? nodes = nodeScript?["Nodes"]?["$values"]?.AsArray();
         if (nodes == null)
             return;
 

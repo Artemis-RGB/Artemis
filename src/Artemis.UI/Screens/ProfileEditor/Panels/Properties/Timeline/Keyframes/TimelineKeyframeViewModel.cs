@@ -135,7 +135,7 @@ public partial class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, IT
         else
             keyframes.AddRange(_profileEditorService.SelectedKeyframes.Select(k => new KeyframeClipboardModel(k)));
 
-        string copy = CoreJson.SerializeObject(keyframes);
+        string copy = CoreJson.Serialize(keyframes);
         DataObject dataObject = new();
         dataObject.Set(KeyframeClipboardModel.ClipboardDataFormat, copy);
         await Shared.UI.Clipboard.SetDataObjectAsync(dataObject);

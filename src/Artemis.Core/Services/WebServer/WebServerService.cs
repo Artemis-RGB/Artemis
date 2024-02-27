@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.Core.Modules;
 using EmbedIO;
 using EmbedIO.WebApi;
 using Serilog;
@@ -21,7 +23,7 @@ internal class WebServerService : IWebServerService, IDisposable
     private readonly PluginSetting<bool> _webServerEnabledSetting;
     private readonly PluginSetting<int> _webServerPortSetting;
     private readonly object _webserverLock = new();
-    private readonly JsonSerializerOptions _jsonOptions = new() {WriteIndented = true};
+    private readonly JsonSerializerOptions _jsonOptions = new(CoreJson.GetJsonSerializerOptions()) {ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true};
     private CancellationTokenSource? _cts;
 
     public WebServerService(ILogger logger, ICoreService coreService, ISettingsService settingsService, IPluginManagementService pluginManagementService)
@@ -239,7 +241,17 @@ internal class WebServerService : IWebServerService, IDisposable
         PluginsModule.AddPluginEndPoint(endPoint);
         return endPoint;
     }
-    
+
+    [Obsolete("Use AddJsonEndPoint<T>(PluginFeature feature, string endPointName, Action<T> requestHandler) instead")]
+    public DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(Module<T> module, string endPointName) where T : DataModel, new()
+    {
+        if (module == null) throw new ArgumentNullException(nameof(module));
+        if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
+        DataModelJsonPluginEndPoint<T> endPoint = new(module, endPointName, PluginsModule);
+        PluginsModule.AddPluginEndPoint(endPoint);
+        return endPoint;
+    }
+
     public void RemovePluginEndPoint(PluginEndPoint endPoint)
     {
         PluginsModule.RemovePluginEndPoint(endPoint);
@@ -307,7 +319,7 @@ internal class WebServerService : IWebServerService, IDisposable
         context.Response.ContentType = MimeType.Json;
         await using TextWriter writer = context.OpenResponseText();
 
-        string response = CoreJson.SerializeObject(new Dictionary<string, object?>
+        string response = CoreJson.Serialize(new Dictionary<string, object?>
         {
             {"StatusCode", context.Response.StatusCode},
             {"StackTrace", exception.StackTrace},

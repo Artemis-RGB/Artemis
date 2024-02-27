@@ -9,22 +9,16 @@ namespace Artemis.Core;
 /// </summary>
 public static class CoreJson
 {
-    #region Serialize
-
     /// <summary>
     ///     Serializes the specified object to a JSON string.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <returns>A JSON string representation of the object.</returns>
     [DebuggerStepThrough]
-    public static string SerializeObject(object? value)
+    public static string Serialize(object? value)
     {
         return JsonSerializer.Serialize(value, Constants.JsonConvertSettings);
     }
-
-    #endregion
-
-    #region Deserialize
     
     /// <summary>
     ///     Deserializes the JSON to the specified .NET type.
@@ -34,10 +28,17 @@ public static class CoreJson
     /// <returns>The deserialized object from the JSON string.</returns>
     [DebuggerStepThrough]
     [return: MaybeNull]
-    public static T DeserializeObject<T>(string value)
+    public static T Deserialize<T>(string value)
     {
         return JsonSerializer.Deserialize<T>(value, Constants.JsonConvertSettings);
     }
-
-    #endregion
+    
+    /// <summary>
+    /// Gets a copy of the JSON serializer options used by Artemis Core
+    /// </summary>
+    /// <returns>A copy of the JSON serializer options used by Artemis Core</returns>
+    public static JsonSerializerOptions GetJsonSerializerOptions()
+    {
+        return new JsonSerializerOptions(Constants.JsonConvertSettings);
+    }
 }

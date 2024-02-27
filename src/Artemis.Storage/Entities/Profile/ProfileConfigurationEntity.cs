@@ -1,5 +1,6 @@
 ﻿using System;
 using Artemis.Storage.Entities.Profile.Nodes;
+using Serilog.Core;
 
 namespace Artemis.Storage.Entities.Profile;
 
@@ -26,5 +27,5 @@ public class ProfileConfigurationEntity
     public Guid ProfileId { get; set; }
 
     public bool FadeInAndOut { get; set; }
-    public int Version { get; set; }
+    public int Version { get; set; } = StorageMigrationService.PROFILE_VERSION;
 }

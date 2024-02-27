@@ -1,7 +1,4 @@
-using System;
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using Serilog.Core;
 
 namespace Artemis.Storage.Migrations.Profile
 {
@@ -17,34 +14,37 @@ namespace Artemis.Storage.Migrations.Profile
         /// <inheritdoc />
         public void Migrate(JsonObject configurationJson, JsonObject profileJson)
         {
-            JsonArray? folders = (JsonArray?) profileJson["Folders"]?["values"];
-            JsonArray? layers = (JsonArray?) profileJson["Layers"]?["values"];
+            JsonArray? folders = profileJson["Folders"]?["$values"]?.AsArray();
+            JsonArray? layers = profileJson["Layers"]?["$values"]?.AsArray();
 
             if (folders != null)
             {
-                foreach (JsonValue folder in folders)
+                foreach (JsonNode? folder in folders)
                     MigrateProfileElement(folder);
             }
 
             if (layers != null)
             {
-                foreach (JsonValue layer in layers)
+                foreach (JsonNode? layer in layers)
                 {
                     MigrateProfileElement(layer);
-                    MigratePropertyGroup(layer["GeneralPropertyGroup"]);
-                    MigratePropertyGroup(layer["TransformPropertyGroup"]);
-                    MigratePropertyGroup(layer["LayerBrush"]?["PropertyGroup"]);
+                    MigratePropertyGroup(layer?["GeneralPropertyGroup"]);
+                    MigratePropertyGroup(layer?["TransformPropertyGroup"]);
+                    MigratePropertyGroup(layer?["LayerBrush"]?["PropertyGroup"]);
                 }
             }
         }
 
-        private void MigrateProfileElement(JsonNode profileElement)
+        private void MigrateProfileElement(JsonNode? profileElement)
         {
-            JsonArray? layerEffects = (JsonArray?) profileElement["LayerEffects"]?["values"];
+            if (profileElement == null)
+                return;
+            
+            JsonArray? layerEffects = profileElement["LayerEffects"]?["$values"]?.AsArray();
             if (layerEffects != null)
             {
-                foreach (JsonValue layerEffect in layerEffects)
-                    MigratePropertyGroup(layerEffect["PropertyGroup"]);
+                foreach (JsonNode? layerEffect in layerEffects)
+                    MigratePropertyGroup(layerEffect?["PropertyGroup"]);
             }
 
             JsonNode? displayCondition = profileElement["DisplayCondition"];
@@ -57,28 +57,24 @@ namespace Artemis.Storage.Migrations.Profile
             if (propertyGroup == null)
                 return;
 
-            JsonArray? properties = (JsonArray?) propertyGroup["Properties"]?["values"];
-            JsonArray? propertyGroups = (JsonArray?) propertyGroup["PropertyGroups"]?["values"];
-
+            JsonArray? properties = propertyGroup["Properties"]?["$values"]?.AsArray();
+            JsonArray? propertyGroups = propertyGroup["PropertyGroups"]?["$values"]?.AsArray();
             if (properties != null)
             {
-                foreach (JsonValue property in properties)
-                    MigrateNodeScript(property["DataBinding"]?["NodeScript"]);
+                foreach (JsonNode? property in properties)
+                    MigrateNodeScript(property?["DataBinding"]?["NodeScript"]);
             }
 
             if (propertyGroups != null)
             {
-                foreach (JsonValue childPropertyGroup in propertyGroups)
+                foreach (JsonNode? childPropertyGroup in propertyGroups)
                     MigratePropertyGroup(childPropertyGroup);
             }
         }
 
         private void MigrateNodeScript(JsonNode? nodeScript)
         {
-            if (nodeScript == null)
-                return;
-
-            JsonArray? nodes = nodeScript["Nodes"]?.AsArray();
+            JsonArray? nodes = nodeScript?["Nodes"]?["$values"]?.AsArray();
             if (nodes == null)
                 return;
 

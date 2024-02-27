@@ -127,7 +127,7 @@ internal class PluginManagementService : IPluginManagementService
             throw new ArtemisPluginException("Couldn't find a plugin.json in " + zipFile.FullName);
 
         using StreamReader reader = new(metaDataFileEntry.Open());
-        PluginInfo builtInPluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
+        PluginInfo builtInPluginInfo = CoreJson.Deserialize<PluginInfo>(reader.ReadToEnd())!;
         string preferred = builtInPluginInfo.PreferredPluginDirectory;
 
         // Find the matching plugin in the plugin folder
@@ -360,7 +360,7 @@ internal class PluginManagementService : IPluginManagementService
             _logger.Warning(new ArtemisPluginException("Couldn't find the plugins metadata file at " + metadataFile), "Plugin exception");
 
         // PluginInfo contains the ID which we need to move on
-        PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile))!;
+        PluginInfo pluginInfo = CoreJson.Deserialize<PluginInfo>(File.ReadAllText(metadataFile))!;
 
         if (!pluginInfo.IsCompatible)
             return null;
@@ -610,7 +610,7 @@ internal class PluginManagementService : IPluginManagementService
             throw new ArtemisPluginException("Couldn't find a plugin.json in " + fileName);
 
         using StreamReader reader = new(metaDataFileEntry.Open());
-        PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
+        PluginInfo pluginInfo = CoreJson.Deserialize<PluginInfo>(reader.ReadToEnd())!;
         if (!pluginInfo.Main.EndsWith(".dll"))
             throw new ArtemisPluginException("Main entry in plugin.json must point to a .dll file");
 

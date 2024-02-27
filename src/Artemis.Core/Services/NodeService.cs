@@ -41,12 +41,12 @@ internal class NodeService : INodeService
     public string ExportScript(NodeScript nodeScript)
     {
         nodeScript.Save();
-        return CoreJson.SerializeObject(nodeScript.Entity);
+        return CoreJson.Serialize(nodeScript.Entity);
     }
 
     public void ImportScript(string json, NodeScript target)
     {
-        NodeScriptEntity? entity = CoreJson.DeserializeObject<NodeScriptEntity>(json);
+        NodeScriptEntity? entity = CoreJson.Deserialize<NodeScriptEntity>(json);
         if (entity == null)
             throw new ArtemisCoreException("Failed to load node script");
 

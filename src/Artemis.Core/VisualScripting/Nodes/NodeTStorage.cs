@@ -41,12 +41,12 @@ public abstract class Node<TStorage> : Node
     /// <inheritdoc />
     public override string SerializeStorage()
     {
-        return CoreJson.SerializeObject(Storage);
+        return CoreJson.Serialize(Storage);
     }
 
     /// <inheritdoc />
     public override void DeserializeStorage(string serialized)
     {
-        Storage = CoreJson.DeserializeObject<TStorage>(serialized) ?? default(TStorage);
+        Storage = CoreJson.Deserialize<TStorage>(serialized) ?? default(TStorage);
     }
 }

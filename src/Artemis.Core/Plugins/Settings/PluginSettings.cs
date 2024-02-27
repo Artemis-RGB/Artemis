@@ -49,7 +49,7 @@ public class PluginSettings
                 {
                     Name = name,
                     PluginGuid = Plugin.Guid,
-                    Value = CoreJson.SerializeObject(defaultValue)
+                    Value = CoreJson.Serialize(defaultValue)
                 };
                 _pluginRepository.AddSetting(settingEntity);
             }

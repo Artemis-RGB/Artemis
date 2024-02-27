@@ -15,6 +15,7 @@ using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Models;
 using Artemis.UI.Screens.VisualScripting.Pins;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Services.NodeEditor;
 using Artemis.UI.Shared.Services.NodeEditor.Commands;
 using Avalonia;
@@ -277,18 +278,14 @@ public partial class NodeScriptViewModel : ActivatableViewModelBase
     {
         List<INode> nodes = NodeViewModels.Where(vm => vm.IsSelected).Select(vm => vm.Node).Where(n => !n.IsDefaultNode && !n.IsExitNode).ToList();
         DataObject dataObject = new();
-        string copy = CoreJson.SerializeObject(new NodesClipboardModel(NodeScript, nodes));
+        string copy = CoreJson.Serialize(new NodesClipboardModel(NodeScript, nodes));
         dataObject.Set(CLIPBOARD_DATA_FORMAT, copy);
         await Shared.UI.Clipboard.SetDataObjectAsync(dataObject);   
     }
 
     private async Task ExecutePasteSelected()
     {
-        byte[]? bytes = (byte[]?) await Shared.UI.Clipboard.GetDataAsync(CLIPBOARD_DATA_FORMAT);
-        if (bytes == null!)
-            return;
-
-        NodesClipboardModel? nodesClipboardModel = CoreJson.DeserializeObject<NodesClipboardModel>(Encoding.Unicode.GetString(bytes));
+        NodesClipboardModel? nodesClipboardModel = await Shared.UI.Clipboard.GetJsonAsync<NodesClipboardModel>(CLIPBOARD_DATA_FORMAT);
         if (nodesClipboardModel == null)
             return;
         

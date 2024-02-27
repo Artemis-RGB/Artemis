@@ -92,14 +92,6 @@ public static class Constants
     /// </summary>
     public static readonly Plugin CorePlugin = new(CorePluginInfo, new DirectoryInfo(ApplicationFolder), null);
 
-    internal static readonly CorePluginFeature CorePluginFeature = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Core")};
-    internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Effect Placeholder")};
-
-    internal static JsonSerializerOptions JsonConvertSettings = new()
-    {
-        Converters = {new SKColorConverter(), new NumericJsonConverter(), new ForgivingIntConverter()}
-    };
-    
     /// <summary>
     ///     A read-only collection containing all primitive numeric types
     /// </summary>
@@ -147,4 +139,8 @@ public static class Constants
     ///     Gets the startup arguments provided to the application
     /// </summary>
     public static ReadOnlyCollection<string> StartupArguments { get; set; } = null!;
+    
+    internal static readonly CorePluginFeature CorePluginFeature = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Core")};
+    internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Effect Placeholder")};
+    internal static readonly JsonSerializerOptions JsonConvertSettings = new() {Converters = {new SKColorConverter(), new NumericJsonConverter()}};
 }

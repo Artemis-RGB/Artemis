@@ -23,7 +23,7 @@ public class PluginSetting<T> : CorePropertyChanged, IPluginSetting
         Name = pluginSettingEntity.Name;
         try
         {
-            _value = CoreJson.DeserializeObject<T>(pluginSettingEntity.Value)!;
+            _value = CoreJson.Deserialize<T>(pluginSettingEntity.Value)!;
         }
         catch (JsonException)
         {
@@ -76,7 +76,7 @@ public class PluginSetting<T> : CorePropertyChanged, IPluginSetting
     public string Name { get; }
 
     /// <inheritdoc />
-    public bool HasChanged => CoreJson.SerializeObject(Value) != _pluginSettingEntity.Value;
+    public bool HasChanged => CoreJson.Serialize(Value) != _pluginSettingEntity.Value;
 
     /// <inheritdoc />
     public bool AutoSave { get; set; }
@@ -84,7 +84,7 @@ public class PluginSetting<T> : CorePropertyChanged, IPluginSetting
     /// <inheritdoc />
     public void RejectChanges()
     {
-        Value = CoreJson.DeserializeObject<T>(_pluginSettingEntity.Value);
+        Value = CoreJson.Deserialize<T>(_pluginSettingEntity.Value);
     }
 
     /// <inheritdoc />
@@ -93,7 +93,7 @@ public class PluginSetting<T> : CorePropertyChanged, IPluginSetting
         if (!HasChanged)
             return;
 
-        _pluginSettingEntity.Value = CoreJson.SerializeObject(Value);
+        _pluginSettingEntity.Value = CoreJson.Serialize(Value);
         _pluginRepository.SaveSetting(_pluginSettingEntity);
         OnSettingSaved();
     }

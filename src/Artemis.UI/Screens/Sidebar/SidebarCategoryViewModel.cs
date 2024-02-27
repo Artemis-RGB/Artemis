@@ -161,7 +161,7 @@ public partial class SidebarCategoryViewModel : ActivatableViewModelBase
             // Removing this at some point in the future
             if (result[0].EndsWith("json"))
             {
-                ProfileConfigurationExportModel? exportModel = CoreJson.DeserializeObject<ProfileConfigurationExportModel>(await File.ReadAllTextAsync(result[0]));
+                ProfileConfigurationExportModel? exportModel = CoreJson.Deserialize<ProfileConfigurationExportModel>(await File.ReadAllTextAsync(result[0]));
                 if (exportModel == null)
                 {
                     await _windowService.ShowConfirmContentDialog("Import profile", "Failed to import this profile, make sure it is a valid Artemis profile.", "Confirm", null);
@@ -234,8 +234,8 @@ public partial class SidebarCategoryViewModel : ActivatableViewModelBase
     {
         MemoryStream archiveStream = new();
 
-        string configurationJson = CoreJson.SerializeObject(exportModel.ProfileConfigurationEntity);
-        string profileJson = CoreJson.SerializeObject(exportModel.ProfileEntity);
+        string configurationJson = CoreJson.Serialize(exportModel.ProfileConfigurationEntity);
+        string profileJson = CoreJson.Serialize(exportModel.ProfileEntity);
 
         // Create a ZIP archive
         using (ZipArchive archive = new(archiveStream, ZipArchiveMode.Create, true))

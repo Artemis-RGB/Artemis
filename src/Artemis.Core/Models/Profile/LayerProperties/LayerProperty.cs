@@ -324,8 +324,8 @@ public class LayerProperty<T> : CorePropertyChanged, ILayerProperty
         // Reference types make a deep clone (ab)using JSON
         else
         {
-            string json = CoreJson.SerializeObject(DefaultValue);
-            SetCurrentValue(CoreJson.DeserializeObject<T>(json)!);
+            string json = CoreJson.Serialize(DefaultValue);
+            SetCurrentValue(CoreJson.Deserialize<T>(json)!);
         }
     }
 
@@ -420,7 +420,7 @@ public class LayerProperty<T> : CorePropertyChanged, ILayerProperty
 
         try
         {
-            T? value = CoreJson.DeserializeObject<T>(keyframeEntity.Value);
+            T? value = CoreJson.Deserialize<T>(keyframeEntity.Value);
             if (value == null)
                 return null;
 
@@ -625,7 +625,7 @@ public class LayerProperty<T> : CorePropertyChanged, ILayerProperty
             try
             {
                 if (Entity.Value != null)
-                    BaseValue = CoreJson.DeserializeObject<T>(Entity.Value)!;
+                    BaseValue = CoreJson.Deserialize<T>(Entity.Value)!;
             }
             catch (JsonException)
             {
@@ -664,7 +664,7 @@ public class LayerProperty<T> : CorePropertyChanged, ILayerProperty
         if (!_isInitialized)
             throw new ArtemisCoreException("Layer property is not yet initialized");
 
-        Entity.Value = CoreJson.SerializeObject(BaseValue);
+        Entity.Value = CoreJson.Serialize(BaseValue);
         Entity.KeyframesEnabled = KeyframesEnabled;
         Entity.KeyframeEntities.Clear();
         Entity.KeyframeEntities.AddRange(Keyframes.Select(k => k.GetKeyframeEntity()));

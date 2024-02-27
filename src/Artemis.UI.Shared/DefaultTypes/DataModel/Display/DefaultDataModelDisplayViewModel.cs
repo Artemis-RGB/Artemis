@@ -17,7 +17,10 @@ internal class DefaultDataModelDisplayViewModel : DataModelDisplayViewModel<obje
 
     public DefaultDataModelDisplayViewModel()
     {
-        _serializerSettings = new JsonSerializerOptions() {ReferenceHandler = ReferenceHandler.IgnoreCycles};
+        _serializerSettings = CoreJson.GetJsonSerializerOptions();
+        _serializerSettings.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        _serializerSettings.WriteIndented = true;
+
         _display = "null";
     }
 

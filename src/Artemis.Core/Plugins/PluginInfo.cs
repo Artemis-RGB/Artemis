@@ -29,6 +29,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     private Uri? _license;
     private string? _licenseName;
 
+    [JsonConstructor]
     internal PluginInfo()
     {
     }
@@ -37,6 +38,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     ///     The plugins GUID
     /// </summary>
     [JsonRequired]
+    [JsonInclude] 
     public Guid Guid
     {
         get => _guid;
@@ -47,6 +49,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     ///     The name of the plugin
     /// </summary>
     [JsonRequired]
+    [JsonInclude] 
     public string Name
     {
         get => _name;
@@ -130,6 +133,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     ///     The version of the plugin
     /// </summary>
     [JsonRequired]
+    [JsonInclude] 
     public string Version
     {
         get => _version;
@@ -140,6 +144,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     ///     The main entry DLL, should contain a class implementing Plugin
     /// </summary>
     [JsonRequired]
+    [JsonInclude] 
     public string Main
     {
         get => _main;
@@ -159,6 +164,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets a boolean indicating whether this plugin requires elevated admin privileges
     /// </summary>
+    [JsonInclude] 
     public bool RequiresAdmin
     {
         get => _requiresAdmin;
@@ -177,6 +183,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets
     /// </summary>
+    [JsonInclude] 
     public PluginPlatform? Platforms
     {
         get => _platforms;
@@ -186,6 +193,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets the API version the plugin was built for
     /// </summary>
+    [JsonInclude] 
     public Version? Api
     {
         get => _api;
@@ -195,6 +203,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets the plugin this info is associated with
     /// </summary>
+    [JsonIgnore]
     public Plugin Plugin
     {
         get => _plugin;
@@ -204,6 +213,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets a string representing either a full path pointing to an svg or the markdown icon
     /// </summary>
+    [JsonIgnore]
     public string? ResolvedIcon
     {
         get
@@ -228,9 +238,11 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public List<PluginPrerequisite> Prerequisites { get; } = new();
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IEnumerable<PluginPrerequisite> PlatformPrerequisites => Prerequisites.Where(p => p.AppliesToPlatform());
 
     /// <inheritdoc />

@@ -410,8 +410,8 @@ internal class ProfileService : IProfileService
         if (profileEntity == null)
             throw new ArtemisCoreException("Could not locate profile entity");
 
-        string configurationJson = CoreJson.SerializeObject(profileConfiguration.Entity);
-        string profileJson = CoreJson.SerializeObject(profileEntity);
+        string configurationJson = CoreJson.Serialize(profileConfiguration.Entity);
+        string profileJson = CoreJson.Serialize(profileEntity);
 
         MemoryStream archiveStream = new();
 
@@ -461,11 +461,11 @@ internal class ProfileService : IProfileService
         // Deserialize profile configuration to JObject
         await using Stream configurationStream = configurationEntry.Open();
         using StreamReader configurationReader = new(configurationStream);
-        JsonObject? configurationJson = CoreJson.DeserializeObject<JsonObject>(await configurationReader.ReadToEndAsync());
+        JsonObject? configurationJson = CoreJson.Deserialize<JsonObject>(await configurationReader.ReadToEndAsync());
         // Deserialize profile to JObject
         await using Stream profileStream = profileEntry.Open();
         using StreamReader profileReader = new(profileStream);
-        JsonObject? profileJson = CoreJson.DeserializeObject<JsonObject>(await profileReader.ReadToEndAsync());
+        JsonObject? profileJson = CoreJson.Deserialize<JsonObject>(await profileReader.ReadToEndAsync());
 
         // Before deserializing, apply any pending migrations
         MigrateProfile(configurationJson, profileJson);
