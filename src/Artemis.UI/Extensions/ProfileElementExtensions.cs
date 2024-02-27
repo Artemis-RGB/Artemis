@@ -1,11 +1,7 @@
-﻿using System;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.Storage.Entities.Profile;
 using Artemis.UI.Models;
 using Artemis.UI.Shared.Extensions;
-using Avalonia;
 using Avalonia.Input;
 
 namespace Artemis.UI.Extensions;
@@ -28,7 +24,7 @@ public static class ProfileElementExtensions
     public static async Task CopyToClipboard(this Layer layer)
     {
         DataObject dataObject = new();
-        string copy = CoreJson.Serialize(layer.LayerEntity);
+        string copy = CoreJson.Serialize(new LayerClipboardModel(layer));
         dataObject.Set(ClipboardDataFormat, copy);
         await Shared.UI.Clipboard.SetDataObjectAsync(dataObject);
     }
