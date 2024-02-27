@@ -69,7 +69,7 @@ internal class M0003SystemTextJson : IProfileMigration
             else if (type.GetValue<string>() == "Artemis.Storage.Entities.Profile.AdaptionHints.SingleLedAdaptionHintEntity, Artemis.Storage")
                 jsonObject["$type"] = "SingleLed";
             // Conditions
-            if (type.GetValue<string>() == "Artemis.Storage.Entities.Profile.Conditions.AlwaysOnConditionEntity, Artemis.Storage")
+            else if (type.GetValue<string>() == "Artemis.Storage.Entities.Profile.Conditions.AlwaysOnConditionEntity, Artemis.Storage")
                 jsonObject["$type"] = "AlwaysOn";
             else if (type.GetValue<string>() == "Artemis.Storage.Entities.Profile.Conditions.EventConditionEntity, Artemis.Storage")
                 jsonObject["$type"] = "Event";
