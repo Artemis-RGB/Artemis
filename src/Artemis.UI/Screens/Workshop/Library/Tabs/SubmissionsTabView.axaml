@@ -36,9 +36,9 @@
                 <Button HorizontalAlignment="Center" Command="{CompiledBinding AddSubmission}">Submit new entry</Button>
             </StackPanel>
 
-            <StackPanel Spacing="15">
-                <Button HorizontalAlignment="Right" Command="{CompiledBinding AddSubmission}">Submit new entry</Button>
-                <ScrollViewer IsVisible="{CompiledBinding Entries.Count}">
+            <Grid RowDefinitions="Auto,*">
+                <Button Grid.Row="0" Margin="0 0 0 15" HorizontalAlignment="Right" Command="{CompiledBinding AddSubmission}">Submit new entry</Button>
+                <ScrollViewer Grid.Row="1" IsVisible="{CompiledBinding Entries.Count}">
                     <ItemsControl ItemsSource="{CompiledBinding Entries}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -52,7 +52,7 @@
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
                 </ScrollViewer>
-            </StackPanel>
+            </Grid>
 
         </Panel>
     </Panel>
