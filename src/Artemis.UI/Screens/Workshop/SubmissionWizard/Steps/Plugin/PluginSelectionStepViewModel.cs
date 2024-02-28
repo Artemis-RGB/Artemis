@@ -55,7 +55,7 @@ public partial class PluginSelectionStepViewModel : SubmissionViewModel
             throw new ArtemisPluginException("Couldn't find a plugin.json in " + files[0]);
 
         using StreamReader reader = new(metaDataFileEntry.Open());
-        PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
+        PluginInfo pluginInfo = CoreJson.Deserialize<PluginInfo>(reader.ReadToEnd())!;
         if (!pluginInfo.Main.EndsWith(".dll"))
             throw new ArtemisPluginException("Main entry in plugin.json must point to a .dll file");
 

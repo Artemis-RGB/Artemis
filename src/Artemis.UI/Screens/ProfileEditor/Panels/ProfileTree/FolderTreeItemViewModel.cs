@@ -6,6 +6,7 @@ using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Extensions;
+using Artemis.UI.Models;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
@@ -36,11 +37,9 @@ public class FolderTreeItemViewModel : TreeItemViewModel
     {
         await ProfileEditorService.SaveProfileAsync();
 
-        FolderEntity copy = CoreJson.DeserializeObject<FolderEntity>(CoreJson.SerializeObject(Folder.FolderEntity, true), true)!;
-        copy.Id = Guid.NewGuid();
-        copy.Name = Folder.Parent.GetNewFolderName(copy.Name + " - copy");
+        FolderClipboardModel copy = CoreJson.Deserialize<FolderClipboardModel>(CoreJson.Serialize(new FolderClipboardModel(Folder)))!;
+        Folder copied = copy.Paste(Folder.Profile, Folder.Parent);
 
-        Folder copied = new(Folder.Profile, Folder.Parent, copy);
         ProfileEditorService.ExecuteCommand(new AddProfileElement(copied, Folder.Parent, Folder.Order - 1));
     }
 

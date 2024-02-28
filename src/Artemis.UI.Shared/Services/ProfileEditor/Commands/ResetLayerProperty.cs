@@ -32,12 +32,12 @@ public class ResetLayerProperty<T> : IProfileEditorCommand
     /// <inheritdoc />
     public void Execute()
     {
-        string json = CoreJson.SerializeObject(_layerProperty.DefaultValue, true);
+        string json = CoreJson.Serialize(_layerProperty.DefaultValue);
 
         if (_keyframesEnabled)
             _layerProperty.KeyframesEnabled = false;
 
-        _layerProperty.SetCurrentValue(CoreJson.DeserializeObject<T>(json)!);
+        _layerProperty.SetCurrentValue(CoreJson.Deserialize<T>(json)!);
     }
 
     /// <inheritdoc />

@@ -164,7 +164,7 @@ public sealed class Folder : RenderProfileElement
         if (Parent == null)
             throw new ArtemisCoreException("Cannot create a copy of a folder without a parent");
 
-        FolderEntity entityCopy = CoreJson.DeserializeObject<FolderEntity>(CoreJson.SerializeObject(FolderEntity, true), true)!;
+        FolderEntity entityCopy = CoreJson.Deserialize<FolderEntity>(CoreJson.Serialize(FolderEntity))!;
         entityCopy.Id = Guid.NewGuid();
         entityCopy.Name += " - Copy";
 

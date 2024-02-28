@@ -69,7 +69,7 @@ public class LayerPropertyKeyframe<T> : CorePropertyChanged, ILayerPropertyKeyfr
     {
         return new KeyframeEntity
         {
-            Value = CoreJson.SerializeObject(Value),
+            Value = CoreJson.Serialize(Value),
             Position = Position,
             EasingFunction = (int) EasingFunction
         };

@@ -4,8 +4,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using Humanizer;
-using Newtonsoft.Json;
 
 namespace Artemis.Core.Modules;
 

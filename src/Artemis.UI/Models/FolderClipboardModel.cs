@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Artemis.Core;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
@@ -7,7 +8,7 @@ using Artemis.UI.Exceptions;
 
 namespace Artemis.UI.Models;
 
-public class FolderClipboardModel
+public class FolderClipboardModel: IClipboardModel
 {
     public FolderClipboardModel(Folder folder)
     {
@@ -20,7 +21,7 @@ public class FolderClipboardModel
             Layers.Add(allLayer.LayerEntity);
     }
 
-    // ReSharper disable once UnusedMember.Global - For JSON.NET
+    [JsonConstructor]
     public FolderClipboardModel()
     {
         FolderEntity = null;

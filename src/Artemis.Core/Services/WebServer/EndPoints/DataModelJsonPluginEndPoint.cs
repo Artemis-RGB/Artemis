@@ -1,9 +1,13 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Artemis.Core.Modules;
 using EmbedIO;
-using Newtonsoft.Json;
 
 namespace Artemis.Core.Services;
 
@@ -15,10 +19,12 @@ namespace Artemis.Core.Services;
 public class DataModelJsonPluginEndPoint<T> : PluginEndPoint where T : DataModel, new()
 {
     private readonly Module<T> _module;
+    private readonly Action<T, T> _update;
 
     internal DataModelJsonPluginEndPoint(Module<T> module, string name, PluginsModule pluginsModule) : base(module, name, pluginsModule)
     {
         _module = module ?? throw new ArgumentNullException(nameof(module));
+        _update = CreateUpdateAction();
 
         ThrowOnFail = true;
         Accepts = MimeType.Json;
@@ -31,8 +37,6 @@ public class DataModelJsonPluginEndPoint<T> : PluginEndPoint where T : DataModel
     /// </summary>
     public bool ThrowOnFail { get; set; }
 
-    #region Overrides of PluginEndPoint
-
     /// <inheritdoc />
     protected override async Task ProcessRequest(IHttpContext context)
     {
@@ -44,7 +48,9 @@ public class DataModelJsonPluginEndPoint<T> : PluginEndPoint where T : DataModel
         using TextReader reader = context.OpenRequestText();
         try
         {
-            JsonConvert.PopulateObject(await reader.ReadToEndAsync(), _module.DataModel);
+            T? dataModel = CoreJson.Deserialize<T>(await reader.ReadToEndAsync());
+            if (dataModel != null)
+                _update(dataModel, _module.DataModel);
         }
         catch (JsonException)
         {
@@ -53,5 +59,26 @@ public class DataModelJsonPluginEndPoint<T> : PluginEndPoint where T : DataModel
         }
     }
 
-    #endregion
+    private Action<T, T> CreateUpdateAction()
+    {
+        ParameterExpression sourceParameter = Expression.Parameter(typeof(T), "source");
+        ParameterExpression targetParameter = Expression.Parameter(typeof(T), "target");
+
+        IEnumerable<BinaryExpression> assignments = typeof(T)
+            .GetProperties()
+            .Where(prop => prop.CanWrite && prop.GetSetMethod() != null &&
+                           prop.GetSetMethod()!.IsPublic &&
+                           !prop.IsDefined(typeof(JsonIgnoreAttribute), false) &&
+                           !prop.PropertyType.IsAssignableTo(typeof(IDataModelEvent)))
+            .Select(prop =>
+            {
+                MemberExpression sourceProperty = Expression.Property(sourceParameter, prop);
+                MemberExpression targetProperty = Expression.Property(targetParameter, prop);
+                return Expression.Assign(targetProperty, sourceProperty);
+            });
+
+        BlockExpression body = Expression.Block(assignments);
+
+        return Expression.Lambda<Action<T, T>>(body, sourceParameter, targetParameter).Compile();
+    }
 }

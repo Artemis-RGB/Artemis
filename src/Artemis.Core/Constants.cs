@@ -4,10 +4,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using Artemis.Core.JsonConverters;
-using Artemis.Core.Services;
-using Artemis.Core.SkiaSharp;
-using Newtonsoft.Json;
 
 namespace Artemis.Core;
 
@@ -62,7 +60,7 @@ public static class Constants
     ///     The full path to the Artemis user layouts folder
     /// </summary>
     public static readonly string LayoutsFolder = Path.Combine(DataFolder, "User Layouts");
-    
+
     /// <summary>
     ///     The full path to the Artemis user layouts folder
     /// </summary>
@@ -93,20 +91,6 @@ public static class Constants
     ///     The plugin used by core components of Artemis
     /// </summary>
     public static readonly Plugin CorePlugin = new(CorePluginInfo, new DirectoryInfo(ApplicationFolder), null);
-
-    internal static readonly CorePluginFeature CorePluginFeature = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Core")};
-    internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Effect Placeholder")};
-
-    internal static JsonSerializerSettings JsonConvertSettings = new()
-    {
-        Converters = new List<JsonConverter> {new SKColorConverter(), new NumericJsonConverter(), new ForgivingIntConverter()}
-    };
-
-    internal static JsonSerializerSettings JsonConvertTypedSettings = new()
-    {
-        TypeNameHandling = TypeNameHandling.All,
-        Converters = new List<JsonConverter> {new SKColorConverter(), new NumericJsonConverter(), new ForgivingIntConverter()}
-    };
 
     /// <summary>
     ///     A read-only collection containing all primitive numeric types
@@ -155,4 +139,8 @@ public static class Constants
     ///     Gets the startup arguments provided to the application
     /// </summary>
     public static ReadOnlyCollection<string> StartupArguments { get; set; } = null!;
+    
+    internal static readonly CorePluginFeature CorePluginFeature = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Core")};
+    internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Effect Placeholder")};
+    internal static readonly JsonSerializerOptions JsonConvertSettings = new() {Converters = {new SKColorConverter(), new NumericJsonConverter()}};
 }

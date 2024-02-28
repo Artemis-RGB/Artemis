@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Storage.Entities.Plugins;
 using Humanizer;
-using Newtonsoft.Json;
 
 namespace Artemis.Core;
 
 /// <summary>
 ///     Represents basic info about a plugin feature and contains a reference to the instance of said feature
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
 public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
 {
     private string? _description;
@@ -64,7 +62,6 @@ public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     The name of the feature
     /// </summary>
-    [JsonProperty(Required = Required.Always)]
     public string Name
     {
         get => _name;
@@ -74,7 +71,6 @@ public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     A short description of the feature
     /// </summary>
-    [JsonProperty]
     public string? Description
     {
         get => _description;
@@ -85,7 +81,6 @@ public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
     ///     Marks the feature to always be enabled as long as the plugin is enabled and cannot be disabled.
     ///     <para>Note: always <see langword="true" /> if this is the plugin's only feature</para>
     /// </summary>
-    [JsonProperty]
     public bool AlwaysEnabled { get; internal set; }
 
     /// <summary>
