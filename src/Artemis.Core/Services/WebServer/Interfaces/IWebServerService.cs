@@ -43,7 +43,7 @@ public interface IWebServerService : IArtemisService
     /// <param name="requestHandler"></param>
     /// <returns>The resulting end point</returns>
     JsonPluginEndPoint<T> AddResponsiveJsonEndPoint<T>(PluginFeature feature, string endPointName, Func<T, object?> requestHandler);
-
+    
     /// <summary>
     ///     Adds a new endpoint that directly maps received JSON to the data model of the provided <paramref name="module" />.
     /// </summary>
@@ -51,8 +51,9 @@ public interface IWebServerService : IArtemisService
     /// <param name="module">The module whose datamodel to apply the received JSON to</param>
     /// <param name="endPointName">The name of the end point, must be unique</param>
     /// <returns>The resulting end point</returns>
+    [Obsolete("This way of updating is too unpredictable in combination with nested events, use AddJsonEndPoint<T> to update manually instead")]
     DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(Module<T> module, string endPointName) where T : DataModel, new();
-
+    
     /// <summary>
     ///     Adds a new endpoint for the given plugin feature receiving an a <see cref="string" />.
     /// </summary>

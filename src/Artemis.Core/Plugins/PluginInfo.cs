@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using Artemis.Core.JsonConverters;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Artemis.Core;
 
 /// <summary>
 ///     Represents basic info about a plugin and contains a reference to the instance of said plugin
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
 public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
 {
     private Version? _api;
@@ -28,10 +25,11 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     private string _version = null!;
     private Uri? _website;
     private Uri? _helpPage;
-    private bool _hotReloadSupported;
+    private bool _hotReloadSupported = true;
     private Uri? _license;
     private string? _licenseName;
 
+    [JsonConstructor]
     internal PluginInfo()
     {
     }
@@ -39,7 +37,8 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     The plugins GUID
     /// </summary>
-    [JsonProperty(Required = Required.Always)]
+    [JsonRequired]
+    [JsonInclude] 
     public Guid Guid
     {
         get => _guid;
@@ -49,7 +48,8 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     The name of the plugin
     /// </summary>
-    [JsonProperty(Required = Required.Always)]
+    [JsonRequired]
+    [JsonInclude] 
     public string Name
     {
         get => _name;
@@ -59,7 +59,6 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     A short description of the plugin
     /// </summary>
-    [JsonProperty]
     public string? Description
     {
         get => _description;
@@ -69,7 +68,6 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets or sets the author of this plugin
     /// </summary>
-    [JsonProperty]
     public string? Author
     {
         get => _author;
@@ -79,7 +77,6 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets or sets the website of this plugin or its author
     /// </summary>
-    [JsonProperty]
     public Uri? Website
     {
         get => _website;
@@ -89,7 +86,6 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets or sets the repository of this plugin
     /// </summary>
-    [JsonProperty]
     public Uri? Repository
     {
         get => _repository;
@@ -99,7 +95,6 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets or sets the help page of this plugin
     /// </summary>
-    [JsonProperty]
     public Uri? HelpPage
     {
         get => _helpPage;
@@ -109,7 +104,6 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets or sets the help page of this plugin
     /// </summary>
-    [JsonProperty]
     public Uri? License
     {
         get => _license;
@@ -119,7 +113,6 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets or sets the author of this plugin
     /// </summary>
-    [JsonProperty]
     public string? LicenseName
     {
         get => _licenseName;
@@ -130,7 +123,6 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     ///     The plugins display icon that's shown in the settings see <see href="https://materialdesignicons.com" /> for
     ///     available icons
     /// </summary>
-    [JsonProperty]
     public string? Icon
     {
         get => _icon;
@@ -140,7 +132,8 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     The version of the plugin
     /// </summary>
-    [JsonProperty(Required = Required.Always)]
+    [JsonRequired]
+    [JsonInclude] 
     public string Version
     {
         get => _version;
@@ -150,7 +143,8 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     The main entry DLL, should contain a class implementing Plugin
     /// </summary>
-    [JsonProperty(Required = Required.Always)]
+    [JsonRequired]
+    [JsonInclude] 
     public string Main
     {
         get => _main;
@@ -161,8 +155,6 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     ///     Gets or sets a boolean indicating whether this plugin should automatically enable all its features when it is first
     ///     loaded
     /// </summary>
-    [DefaultValue(true)]
-    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
     public bool AutoEnableFeatures
     {
         get => _autoEnableFeatures;
@@ -172,7 +164,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets a boolean indicating whether this plugin requires elevated admin privileges
     /// </summary>
-    [JsonProperty]
+    [JsonInclude] 
     public bool RequiresAdmin
     {
         get => _requiresAdmin;
@@ -182,8 +174,6 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     /// Gets or sets a boolean indicating whether hot reloading this plugin is supported
     /// </summary>
-    [DefaultValue(true)]
-    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
     public bool HotReloadSupported
     {
         get => _hotReloadSupported;
@@ -193,7 +183,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets
     /// </summary>
-    [JsonProperty]
+    [JsonInclude] 
     public PluginPlatform? Platforms
     {
         get => _platforms;
@@ -203,8 +193,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets the API version the plugin was built for
     /// </summary>
-    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
-    [JsonConverter(typeof(ForgivingVersionConverter))]
+    [JsonInclude] 
     public Version? Api
     {
         get => _api;
@@ -214,6 +203,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets the plugin this info is associated with
     /// </summary>
+    [JsonIgnore]
     public Plugin Plugin
     {
         get => _plugin;
@@ -223,6 +213,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets a string representing either a full path pointing to an svg or the markdown icon
     /// </summary>
+    [JsonIgnore]
     public string? ResolvedIcon
     {
         get
@@ -247,9 +238,11 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public List<PluginPrerequisite> Prerequisites { get; } = new();
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IEnumerable<PluginPrerequisite> PlatformPrerequisites => Prerequisites.Where(p => p.AppliesToPlatform());
 
     /// <inheritdoc />

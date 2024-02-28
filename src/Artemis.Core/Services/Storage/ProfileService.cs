@@ -5,13 +5,13 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Migrations;
 using Artemis.Storage.Repositories.Interfaces;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Serilog;
 using SkiaSharp;
 
@@ -410,8 +410,8 @@ internal class ProfileService : IProfileService
         if (profileEntity == null)
             throw new ArtemisCoreException("Could not locate profile entity");
 
-        string configurationJson = JsonConvert.SerializeObject(profileConfiguration.Entity, IProfileService.ExportSettings);
-        string profileJson = JsonConvert.SerializeObject(profileEntity, IProfileService.ExportSettings);
+        string configurationJson = CoreJson.Serialize(profileConfiguration.Entity);
+        string profileJson = CoreJson.Serialize(profileEntity);
 
         MemoryStream archiveStream = new();
 
@@ -461,21 +461,21 @@ internal class ProfileService : IProfileService
         // Deserialize profile configuration to JObject
         await using Stream configurationStream = configurationEntry.Open();
         using StreamReader configurationReader = new(configurationStream);
-        JObject? configurationJson = JsonConvert.DeserializeObject<JObject>(await configurationReader.ReadToEndAsync(), IProfileService.ExportSettings);
+        JsonObject? configurationJson = CoreJson.Deserialize<JsonObject>(await configurationReader.ReadToEndAsync());
         // Deserialize profile to JObject
         await using Stream profileStream = profileEntry.Open();
         using StreamReader profileReader = new(profileStream);
-        JObject? profileJson = JsonConvert.DeserializeObject<JObject>(await profileReader.ReadToEndAsync(), IProfileService.ExportSettings);
+        JsonObject? profileJson = CoreJson.Deserialize<JsonObject>(await profileReader.ReadToEndAsync());
 
         // Before deserializing, apply any pending migrations
         MigrateProfile(configurationJson, profileJson);
 
         // Deserialize profile configuration to ProfileConfigurationEntity
-        ProfileConfigurationEntity? configurationEntity = configurationJson?.ToObject<ProfileConfigurationEntity>(JsonSerializer.Create(IProfileService.ExportSettings));
+        ProfileConfigurationEntity? configurationEntity = configurationJson?.Deserialize<ProfileConfigurationEntity>(Constants.JsonConvertSettings);
         if (configurationEntity == null)
             throw new ArtemisCoreException("Could not import profile, failed to deserialize configuration.json");
         // Deserialize profile to ProfileEntity
-        ProfileEntity? profileEntity = profileJson?.ToObject<ProfileEntity>(JsonSerializer.Create(IProfileService.ExportSettings));
+        ProfileEntity? profileEntity = profileJson?.Deserialize<ProfileEntity>(Constants.JsonConvertSettings);
         if (profileEntity == null)
             throw new ArtemisCoreException("Could not import profile, failed to deserialize profile.json");
 
@@ -559,7 +559,7 @@ internal class ProfileService : IProfileService
         }
     }
 
-    private void MigrateProfile(JObject? configurationJson, JObject? profileJson)
+    private void MigrateProfile(JsonObject? configurationJson, JsonObject? profileJson)
     {
         if (configurationJson == null || profileJson == null)
             return;
@@ -568,7 +568,7 @@ internal class ProfileService : IProfileService
         
         foreach (IProfileMigration profileMigrator in _profileMigrators.OrderBy(m => m.Version))
         {
-            if (profileMigrator.Version <= configurationJson["Version"]!.Value<int>())
+            if (profileMigrator.Version <= configurationJson["Version"]!.GetValue<int>())
                 continue;
 
             profileMigrator.Migrate(configurationJson, profileJson);

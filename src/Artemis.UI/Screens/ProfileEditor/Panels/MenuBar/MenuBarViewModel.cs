@@ -14,7 +14,6 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
-using Newtonsoft.Json;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 

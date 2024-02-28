@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using SkiaSharp;
 
 namespace Artemis.Core.Services;
@@ -12,11 +11,6 @@ namespace Artemis.Core.Services;
 /// </summary>
 public interface IProfileService : IArtemisService
 {
-    /// <summary>
-    ///     Gets the JSON serializer settings used to import/export profiles.
-    /// </summary>
-    public static JsonSerializerSettings ExportSettings { get; } = new() {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
-
     /// <summary>
     ///     Gets a read only collection containing all the profile categories.
     /// </summary>

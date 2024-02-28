@@ -1,5 +1,4 @@
 ﻿using System;
-using Newtonsoft.Json;
 
 namespace Artemis.Core;
 
@@ -10,7 +9,6 @@ public sealed class OutputPin<T> : Pin
 {
     #region Constructors
 
-    [JsonConstructor]
     internal OutputPin(INode node, string name)
         : base(node, name)
     {

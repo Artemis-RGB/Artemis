@@ -1,8 +1,7 @@
 ﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using Artemis.Core.Services;
-using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop.Entities;
-using Newtonsoft.Json;
 
 namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 
@@ -39,7 +38,7 @@ public class ProfileEntryUploadHandler : IEntryUploadHandler
         if (!response.IsSuccessStatusCode)
             return EntryUploadResult.FromFailure($"{response.StatusCode} - {await response.Content.ReadAsStringAsync(cancellationToken)}");
 
-        Release? release = JsonConvert.DeserializeObject<Release>(await response.Content.ReadAsStringAsync(cancellationToken));
+        Release? release = await response.Content.ReadFromJsonAsync<Release>(cancellationToken);
         return release != null ? EntryUploadResult.FromSuccess(release) : EntryUploadResult.FromFailure("Failed to deserialize response");
     }
 }

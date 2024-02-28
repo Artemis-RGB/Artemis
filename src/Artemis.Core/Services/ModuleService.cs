@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using Artemis.Core.Modules;
-using Newtonsoft.Json;
 using Serilog;
 
 namespace Artemis.Core.Services;

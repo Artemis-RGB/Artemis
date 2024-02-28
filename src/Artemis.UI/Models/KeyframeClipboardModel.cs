@@ -1,10 +1,10 @@
-﻿using Artemis.Core;
+﻿using System.Text.Json.Serialization;
+using Artemis.Core;
 using Artemis.Storage.Entities.Profile;
-using Newtonsoft.Json;
 
 namespace Artemis.UI.Models;
 
-public class KeyframeClipboardModel
+public class KeyframeClipboardModel: IClipboardModel
 {
     public const string ClipboardDataFormat = "Artemis.Keyframes";
 

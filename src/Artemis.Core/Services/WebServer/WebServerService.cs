@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core.Modules;
 using EmbedIO;
 using EmbedIO.WebApi;
-using Newtonsoft.Json;
 using Serilog;
 
 namespace Artemis.Core.Services;
@@ -22,6 +23,7 @@ internal class WebServerService : IWebServerService, IDisposable
     private readonly PluginSetting<bool> _webServerEnabledSetting;
     private readonly PluginSetting<int> _webServerPortSetting;
     private readonly object _webserverLock = new();
+    private readonly JsonSerializerOptions _jsonOptions = new(CoreJson.GetJsonSerializerOptions()) {ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true};
     private CancellationTokenSource? _cts;
 
     public WebServerService(ILogger logger, ICoreService coreService, ISettingsService settingsService, IPluginManagementService pluginManagementService)
@@ -120,7 +122,7 @@ internal class WebServerService : IWebServerService, IDisposable
             Server = null;
         }
 
-        WebApiModule apiModule = new("/", JsonNetSerializer);
+        WebApiModule apiModule = new("/", SystemTextJsonSerializer);
         PluginsModule.ServerUrl = $"http://localhost:{_webServerPortSetting.Value}/";
         WebServer server = new WebServer(o => o.WithUrlPrefix($"http://*:{_webServerPortSetting.Value}/").WithMode(HttpListenerMode.EmbedIO))
             .WithLocalSessionManager()
@@ -138,7 +140,7 @@ internal class WebServerService : IWebServerService, IDisposable
         // Add registered controllers to the API module
         foreach (WebApiControllerRegistration registration in _controllers)
             apiModule.RegisterController(registration.ControllerType, (Func<WebApiController>) registration.UntypedFactory);
-        
+
         // Listen for state changes.
         server.StateChanged += (s, e) => _logger.Verbose("WebServer new state - {state}", e.NewState);
 
@@ -173,7 +175,7 @@ internal class WebServerService : IWebServerService, IDisposable
             OnWebServerStarted();
         }
     }
-    
+
     private void AutoStartWebServer()
     {
         try
@@ -240,6 +242,7 @@ internal class WebServerService : IWebServerService, IDisposable
         return endPoint;
     }
 
+    [Obsolete("Use AddJsonEndPoint<T>(PluginFeature feature, string endPointName, Action<T> requestHandler) instead")]
     public DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(Module<T> module, string endPointName) where T : DataModel, new()
     {
         if (module == null) throw new ArgumentNullException(nameof(module));
@@ -316,7 +319,7 @@ internal class WebServerService : IWebServerService, IDisposable
         context.Response.ContentType = MimeType.Json;
         await using TextWriter writer = context.OpenResponseText();
 
-        string response = JsonConvert.SerializeObject(new Dictionary<string, object?>
+        string response = CoreJson.Serialize(new Dictionary<string, object?>
         {
             {"StatusCode", context.Response.StatusCode},
             {"StackTrace", exception.StackTrace},
@@ -331,17 +334,16 @@ internal class WebServerService : IWebServerService, IDisposable
         await writer.WriteAsync(response);
     }
 
-    private async Task JsonNetSerializer(IHttpContext context, object? data)
+    private async Task SystemTextJsonSerializer(IHttpContext context, object? data)
     {
         context.Response.ContentType = MimeType.Json;
         await using TextWriter writer = context.OpenResponseText();
-        string json = JsonConvert.SerializeObject(data, new JsonSerializerSettings {PreserveReferencesHandling = PreserveReferencesHandling.Objects});
-        await writer.WriteAsync(json);
+        await writer.WriteAsync(JsonSerializer.Serialize(data, _jsonOptions));
     }
 
     private async Task HandleHttpExceptionJson(IHttpContext context, IHttpException httpException)
     {
-        await context.SendStringAsync(JsonConvert.SerializeObject(httpException, Formatting.Indented), MimeType.Json, Encoding.UTF8);
+        await context.SendStringAsync(JsonSerializer.Serialize(httpException, _jsonOptions), MimeType.Json, Encoding.UTF8);
     }
 
     #endregion

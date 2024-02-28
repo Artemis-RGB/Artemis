@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using EmbedIO;
-using Newtonsoft.Json;
 
 namespace Artemis.Core.Services;
 

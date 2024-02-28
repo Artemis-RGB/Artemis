@@ -1,24 +1,26 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace Artemis.Core.JsonConverters;
-
-internal class NumericJsonConverter : JsonConverter<Numeric>
+namespace Artemis.Core.JsonConverters
 {
-    #region Overrides of JsonConverter<Numeric>
-
-    /// <inheritdoc />
-    public override void WriteJson(JsonWriter writer, Numeric value, JsonSerializer serializer)
+    internal class NumericJsonConverter : JsonConverter<Numeric>
     {
-        float floatValue = value;
-        writer.WriteValue(floatValue);
-    }
+        public override void Write(Utf8JsonWriter writer, Numeric value, JsonSerializerOptions options)
+        {
+            float floatValue = value;
+            writer.WriteNumberValue(floatValue);
+        }
 
-    /// <inheritdoc />
-    public override Numeric ReadJson(JsonReader reader, Type objectType, Numeric existingValue, bool hasExistingValue, JsonSerializer serializer)
-    {
-        return new Numeric(reader.Value);
-    }
+        public override Numeric Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType != JsonTokenType.Number)
+            {
+                throw new JsonException($"Expected a number token, but got {reader.TokenType}.");
+            }
 
-    #endregion
+            float floatValue = reader.GetSingle();
+            return new Numeric(floatValue);
+        }
+    }
 }

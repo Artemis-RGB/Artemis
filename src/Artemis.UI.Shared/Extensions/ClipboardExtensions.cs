@@ -24,6 +24,6 @@ public static class ClipboardExtensions
     public static async Task<T?> GetJsonAsync<T>(this IClipboard clipboard, string format)
     {
         byte[]? bytes = (byte[]?) await clipboard.GetDataAsync(format);
-        return bytes == null ? default : CoreJson.DeserializeObject<T>(Encoding.Unicode.GetString(bytes), true);
+        return bytes == null ? default : CoreJson.Deserialize<T>(Encoding.Unicode.GetString(bytes).TrimEnd('\0'));
     }
 }

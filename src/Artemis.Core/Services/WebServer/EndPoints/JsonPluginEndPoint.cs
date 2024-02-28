@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using EmbedIO;
-using Newtonsoft.Json;
 
 namespace Artemis.Core.Services;
 
@@ -52,7 +52,7 @@ public class JsonPluginEndPoint<T> : PluginEndPoint
         object? response = null;
         try
         {
-            T? deserialized = JsonConvert.DeserializeObject<T>(await reader.ReadToEndAsync());
+            T? deserialized = JsonSerializer.Deserialize<T>(await reader.ReadToEndAsync());
             if (deserialized == null)
                 throw new JsonException("Deserialization returned null");
 
@@ -74,7 +74,7 @@ public class JsonPluginEndPoint<T> : PluginEndPoint
         }
 
         await using TextWriter writer = context.OpenResponseText();
-        await writer.WriteAsync(JsonConvert.SerializeObject(response));
+        await writer.WriteAsync(JsonSerializer.Serialize(response));
     }
 
     #endregion
