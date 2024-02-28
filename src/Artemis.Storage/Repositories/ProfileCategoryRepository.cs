@@ -31,12 +31,24 @@ internal class ProfileCategoryRepository : IProfileCategoryRepository
 
     public List<ProfileCategoryEntity> GetAll()
     {
-        return _repository.Query<ProfileCategoryEntity>().ToList();
+        List<ProfileCategoryEntity> categories = _repository.Query<ProfileCategoryEntity>().ToList();
+        
+        // Update all profile versions to the current version, profile migrations don't apply to LiteDB so anything loadable is assumed to be up to date
+        foreach (ProfileCategoryEntity profileCategoryEntity in categories)
+            UpdateProfileVersions(profileCategoryEntity);
+
+        return categories;
     }
 
     public ProfileCategoryEntity? Get(Guid id)
     {
-        return _repository.FirstOrDefault<ProfileCategoryEntity>(p => p.Id == id);
+        ProfileCategoryEntity? result = _repository.FirstOrDefault<ProfileCategoryEntity>(p => p.Id == id);
+        if (result == null)
+            return null;
+        
+        // Update all profile versions to the current version, profile migrations don't apply to LiteDB so anything loadable is assumed to be up to date
+        UpdateProfileVersions(result);
+        return result;
     }
 
     public ProfileCategoryEntity IsUnique(string name, Guid? id)
@@ -71,5 +83,11 @@ internal class ProfileCategoryRepository : IProfileCategoryRepository
             _profileIcons.Delete(profileConfigurationEntity.FileIconId);
 
         _profileIcons.Upload(profileConfigurationEntity.FileIconId, profileConfigurationEntity.FileIconId + ".png", stream);
+    }
+    
+    private static void UpdateProfileVersions(ProfileCategoryEntity profileCategoryEntity)
+    {
+        foreach (ProfileConfigurationEntity profileConfigurationEntity in profileCategoryEntity.ProfileConfigurations)
+            profileConfigurationEntity.Version = StorageMigrationService.PROFILE_VERSION;
     }
 }
