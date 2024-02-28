@@ -10,7 +10,7 @@ namespace Artemis.Core;
 /// </summary>
 public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
 {
-    private Version? _api;
+    private Version? _api = new(1, 0, 0);
     private string? _author;
     private bool _autoEnableFeatures = true;
     private string? _description;
@@ -38,7 +38,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     ///     The plugins GUID
     /// </summary>
     [JsonRequired]
-    [JsonInclude] 
+    [JsonInclude]
     public Guid Guid
     {
         get => _guid;
@@ -49,7 +49,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     ///     The name of the plugin
     /// </summary>
     [JsonRequired]
-    [JsonInclude] 
+    [JsonInclude]
     public string Name
     {
         get => _name;
@@ -91,7 +91,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
         get => _repository;
         set => SetAndNotify(ref _repository, value);
     }
-    
+
     /// <summary>
     ///     Gets or sets the help page of this plugin
     /// </summary>
@@ -100,7 +100,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
         get => _helpPage;
         set => SetAndNotify(ref _helpPage, value);
     }
-    
+
     /// <summary>
     ///     Gets or sets the help page of this plugin
     /// </summary>
@@ -109,7 +109,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
         get => _license;
         set => SetAndNotify(ref _license, value);
     }
-    
+
     /// <summary>
     ///     Gets or sets the author of this plugin
     /// </summary>
@@ -133,7 +133,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     ///     The version of the plugin
     /// </summary>
     [JsonRequired]
-    [JsonInclude] 
+    [JsonInclude]
     public string Version
     {
         get => _version;
@@ -144,7 +144,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     ///     The main entry DLL, should contain a class implementing Plugin
     /// </summary>
     [JsonRequired]
-    [JsonInclude] 
+    [JsonInclude]
     public string Main
     {
         get => _main;
@@ -164,7 +164,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets a boolean indicating whether this plugin requires elevated admin privileges
     /// </summary>
-    [JsonInclude] 
+    [JsonInclude]
     public bool RequiresAdmin
     {
         get => _requiresAdmin;
@@ -183,7 +183,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets
     /// </summary>
-    [JsonInclude] 
+    [JsonInclude]
     public PluginPlatform? Platforms
     {
         get => _platforms;
@@ -193,7 +193,7 @@ public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets the API version the plugin was built for
     /// </summary>
-    [JsonInclude] 
+    [JsonInclude]
     public Version? Api
     {
         get => _api;
