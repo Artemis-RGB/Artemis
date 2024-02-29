@@ -18,7 +18,7 @@ internal class M0003SystemTextJson : IProfileMigration
         ConvertToSystemTextJson(profileJson);
     }
 
-    private void ConvertToSystemTextJson(JsonObject jsonObject)
+    internal static void ConvertToSystemTextJson(JsonObject jsonObject)
     {
         FilterType(jsonObject);
         
@@ -52,7 +52,7 @@ internal class M0003SystemTextJson : IProfileMigration
         }
     }
 
-    private void FilterType(JsonObject jsonObject)
+    internal static void FilterType(JsonObject jsonObject)
     {
         // Replace or remove $type depending on whether there's a matching JsonDerivedType
         // This could be done with reflection but that would mean this migration automatically gains new behaviour over time.
