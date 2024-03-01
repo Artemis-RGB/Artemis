@@ -12,9 +12,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
       - name: Setup DocFX
@@ -26,7 +26,7 @@ jobs:
       - name: Build DocFX
         run: docfx docfx/docfx_project/docfx.json
       - name: Upload to FTP
-        uses: SamKirkland/FTP-Deploy-Action@4.3.2
+        uses: maverage/FTP-Deploy-Action@4.3.5
         with:
           server: www360.your-server.de
           protocol: ftps

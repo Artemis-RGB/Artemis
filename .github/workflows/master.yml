@@ -13,7 +13,7 @@ jobs:
       version-number: ${{ steps.get-version.outputs.version-number }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Get Version String
@@ -49,16 +49,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout Artemis
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: Artemis
       - name: Checkout Plugins
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: Artemis-RGB/Artemis.Plugins
           path: Artemis.Plugins
       - name: Setup .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
       - name: Publish Artemis
@@ -73,7 +73,7 @@ jobs:
           }
         shell: pwsh
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: artemis-${{ matrix.rid }}-${{ needs.version.outputs.version-number }}
           path: build/${{ matrix.rid }}
