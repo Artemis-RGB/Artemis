@@ -13,7 +13,7 @@ jobs:
       version-number: ${{ steps.get-version.outputs.version-number }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Get Version String
@@ -35,11 +35,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Pack Artemis.Core
         run: dotnet pack -c Release -p:Version=${{ needs.version.outputs.version-number }} -p:BuildingNuget=True src/Artemis.Core/Artemis.Core.csproj
       - name: Pack Artemis.UI.Shared

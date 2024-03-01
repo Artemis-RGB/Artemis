@@ -9,7 +9,7 @@ namespace Artemis.Storage;
 
 public class StorageMigrationService
 {
-    public const int PROFILE_VERSION = 3;
+    public const int PROFILE_VERSION = 4;
     
     private readonly ILogger _logger;
     private readonly IList<IStorageMigration> _migrations;
