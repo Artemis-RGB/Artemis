@@ -1,11 +1,18 @@
 ﻿using System.Collections.Generic;
 using Artemis.Storage.Migrations.Profile;
 using LiteDB;
+using Serilog;
 
 namespace Artemis.Storage.Migrations.Storage;
 
 public class M0026NodeStorage : IStorageMigration
 {
+    private readonly ILogger _logger;
+
+    public M0026NodeStorage(ILogger logger)
+    {
+        _logger = logger;
+    }
     public int UserVersion => 26;
 
     public void Apply(LiteRepository repository)
@@ -106,7 +113,7 @@ public class M0026NodeStorage : IStorageMigration
         foreach (BsonValue node in nodes)
         {
             // Migrate the storage of the node 
-            node["Storage"] = M0004NodeStorage.MigrateNodeStorageJson(node.AsDocument["Storage"]?.AsString);
+            node["Storage"] = M0004NodeStorage.MigrateNodeStorageJson(node.AsDocument["Storage"]?.AsString, _logger);
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Serilog;
 
 namespace Artemis.Storage.Migrations.Profile
 {
@@ -11,6 +12,13 @@ namespace Artemis.Storage.Migrations.Profile
     /// </summary>
     internal class M0004NodeStorage : IProfileMigration
     {
+        private readonly ILogger _logger;
+
+        public M0004NodeStorage(ILogger logger)
+        {
+            _logger = logger;
+        }
+        
         /// <inheritdoc />
         public int Version => 4;
 
@@ -89,11 +97,11 @@ namespace Artemis.Storage.Migrations.Profile
                     continue;
                 
                 JsonObject nodeObject = jsonNode.AsObject();
-                nodeObject["Storage"] = MigrateNodeStorageJson(nodeObject["Storage"]?.GetValue<string>());
+                nodeObject["Storage"] = MigrateNodeStorageJson(nodeObject["Storage"]?.GetValue<string>(), _logger);
             }
         }
         
-        internal static string? MigrateNodeStorageJson(string? json)
+        internal static string? MigrateNodeStorageJson(string? json, ILogger logger)
         {
             if (string.IsNullOrEmpty(json))
                 return json;
@@ -131,6 +139,7 @@ namespace Artemis.Storage.Migrations.Profile
             }
             catch (Exception e)
             {
+                logger.Error(e, "Failed to migrate node storage JSON");
                 return json;
             }
         }

@@ -9,13 +9,8 @@ namespace Artemis.Core;
 /// <summary>
 ///     Represents basic info about a plugin feature and contains a reference to the instance of said feature
 /// </summary>
-public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
+public class PluginFeatureInfo : IPrerequisitesSubject
 {
-    private string? _description;
-    private PluginFeature? _instance;
-    private Exception? _loadException;
-    private string _name = null!;
-
     internal PluginFeatureInfo(Plugin plugin, Type featureType, PluginFeatureEntity pluginFeatureEntity, PluginFeatureAttribute? attribute)
     {
         Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin));
@@ -53,29 +48,17 @@ public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
     /// <summary>
     ///     Gets the exception thrown while loading
     /// </summary>
-    public Exception? LoadException
-    {
-        get => _loadException;
-        internal set => SetAndNotify(ref _loadException, value);
-    }
+    public Exception? LoadException { get; internal set; }
 
     /// <summary>
     ///     The name of the feature
     /// </summary>
-    public string Name
-    {
-        get => _name;
-        internal set => SetAndNotify(ref _name, value);
-    }
+    public string Name { get; }
 
     /// <summary>
     ///     A short description of the feature
     /// </summary>
-    public string? Description
-    {
-        get => _description;
-        set => SetAndNotify(ref _description, value);
-    }
+    public string? Description { get; }
 
     /// <summary>
     ///     Marks the feature to always be enabled as long as the plugin is enabled and cannot be disabled.
@@ -92,19 +75,7 @@ public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
     ///     Gets the feature this info is associated with
     ///     <para>Note: <see langword="null" /> if the associated <see cref="Plugin" /> is disabled</para>
     /// </summary>
-    public PluginFeature? Instance
-    {
-        get => _instance;
-        internal set => SetAndNotify(ref _instance, value);
-    }
-    
-    internal PluginFeatureEntity Entity { get; }
-
-    /// <inheritdoc />
-    public override string ToString()
-    {
-        return Instance?.Id ?? "Uninitialized feature";
-    }
+    public PluginFeature? Instance { get; internal set; }
 
     /// <inheritdoc />
     public List<PluginPrerequisite> Prerequisites { get; } = new();
@@ -117,4 +88,12 @@ public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
     {
         return PlatformPrerequisites.All(p => p.IsMet());
     }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return Instance?.Id ?? "Uninitialized feature";
+    }
+
+    internal PluginFeatureEntity Entity { get; }
 }
