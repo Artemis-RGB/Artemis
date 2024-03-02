@@ -162,7 +162,7 @@ public partial class ProfileConfigurationEditViewModel : DialogViewModelBase<Pro
         // Preselect the icon or fall back to a random one
         SelectedMaterialIcon = !IsNew && Enum.TryParse(_profileConfiguration.Icon.IconName, out MaterialIconKind enumValue)
             ? icons.FirstOrDefault(m => m.Icon == enumValue)
-            : icons.ElementAt(new Random().Next(0, icons.Count - 1));
+            : icons.ElementAt(Random.Shared.Next(0, icons.Count - 1));
     }
 
     private async Task SaveIcon()

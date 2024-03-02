@@ -160,9 +160,11 @@ public sealed class Layer : RenderProfileElement
     public LayerAdapter Adapter { get; }
 
     /// <inheritdoc />
-    public override bool ShouldBeEnabled => !Suspended && DisplayConditionMet;
+    public override bool ShouldBeEnabled => !Suspended && DisplayConditionMet && HasBounds;
 
     internal override RenderElementEntity RenderElementEntity => LayerEntity;
+
+    private bool HasBounds => Bounds.Width > 0 && Bounds.Height > 0;
 
     /// <inheritdoc />
     public override List<ILayerProperty> GetAllLayerProperties()
@@ -383,7 +385,7 @@ public sealed class Layer : RenderProfileElement
 
             if (ShouldBeEnabled)
                 Enable();
-            else if (Suspended || (Timeline.IsFinished && !_renderCopies.Any()))
+            else if (Suspended || !HasBounds || (Timeline.IsFinished && !_renderCopies.Any()))
                 Disable();
 
             if (!Enabled || Timeline.Delta == TimeSpan.Zero)

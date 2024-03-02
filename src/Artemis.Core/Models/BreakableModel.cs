@@ -61,6 +61,9 @@ public abstract class BreakableModel : CorePropertyChanged, IBreakableModel
     /// <inheritdoc />
     public void SetBrokenState(string state, Exception? exception = null)
     {
+        if (state == BrokenState && BrokenStateException?.StackTrace == exception?.StackTrace)
+            return;
+        
         BrokenState = state ?? throw new ArgumentNullException(nameof(state));
         BrokenStateException = exception;
         OnBrokenStateChanged();
