@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
@@ -156,6 +157,16 @@ public class StaticCondition : CorePropertyChanged, INodeScriptCondition
     public void LoadNodeScript()
     {
         Script.Load();
+    }
+
+    #endregion
+
+    #region Implementation of IPluginFeatureDependent
+
+    /// <inheritdoc />
+    public List<PluginFeature> GetFeatureDependencies()
+    {
+        return Script.GetFeatureDependencies();
     }
 
     #endregion

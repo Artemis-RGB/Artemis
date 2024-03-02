@@ -65,10 +65,10 @@ public partial class ProfileSelectionStepViewModel : SubmissionViewModel
 
     private void ExecuteContinue()
     {
-        if (SelectedProfile == null)
+        if (SelectedProfile?.Profile == null)
             return;
 
-        State.EntrySource = new ProfileEntrySource(SelectedProfile);
+        State.EntrySource = new ProfileEntrySource(SelectedProfile, SelectedProfile.Profile.GetFeatureDependencies().Distinct().ToList());
         State.Name = SelectedProfile.Name;
         State.Icon = SelectedProfile.Icon.GetIconStream();
 

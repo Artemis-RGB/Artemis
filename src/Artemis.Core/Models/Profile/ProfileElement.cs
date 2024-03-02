@@ -9,7 +9,7 @@ namespace Artemis.Core;
 /// <summary>
 ///     Represents an element of a <see cref="Profile" />
 /// </summary>
-public abstract class ProfileElement : BreakableModel, IDisposable
+public abstract class ProfileElement : BreakableModel, IDisposable, IPluginFeatureDependent
 {
     internal readonly List<ProfileElement> ChildrenList;
     private Guid _entityId;
@@ -121,6 +121,9 @@ public abstract class ProfileElement : BreakableModel, IDisposable
     {
         return $"{nameof(EntityId)}: {EntityId}, {nameof(Order)}: {Order}, {nameof(Name)}: {Name}";
     }
+
+    /// <inheritdoc />
+    public abstract List<PluginFeature> GetFeatureDependencies();
 
     /// <summary>
     ///     Occurs when a child was added to the <see cref="Children" /> list

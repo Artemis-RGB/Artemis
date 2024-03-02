@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 
@@ -79,6 +80,16 @@ public class PlayOnceCondition : ICondition
     public void OverrideTimeline(TimeSpan position)
     {
         ProfileElement.Timeline.Override(position, false);
+    }
+
+    #endregion
+
+    #region Implementation of IPluginFeatureDependent
+
+    /// <inheritdoc />
+    public List<PluginFeature> GetFeatureDependencies()
+    {
+        return [];
     }
 
     #endregion

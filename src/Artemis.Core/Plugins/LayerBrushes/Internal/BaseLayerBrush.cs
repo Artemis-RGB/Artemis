@@ -9,7 +9,7 @@ namespace Artemis.Core.LayerBrushes;
 /// <summary>
 ///     For internal use only, please use <see cref="LayerBrush{T}" /> or <see cref="PerLedLayerBrush{T}" /> or instead
 /// </summary>
-public abstract class BaseLayerBrush : BreakableModel, IDisposable
+public abstract class BaseLayerBrush : BreakableModel, IDisposable, IPluginFeatureDependent
 {
     private LayerBrushType _brushType;
     private ILayerBrushConfigurationDialog? _configurationDialog;
@@ -199,6 +199,18 @@ public abstract class BaseLayerBrush : BreakableModel, IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+
+    #region Implementation of IPluginFeatureDependent
+
+    /// <inheritdoc />
+    public List<PluginFeature> GetFeatureDependencies()
+    {
+        if (BaseProperties == null)
+            return [Descriptor.Provider];
+        return [Descriptor.Provider, ..BaseProperties.GetFeatureDependencies()];
+    }
+
+    #endregion
 }
 
 /// <summary>

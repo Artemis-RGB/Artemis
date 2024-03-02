@@ -171,6 +171,12 @@ public sealed class Profile : ProfileElement
         return $"[Profile] {nameof(Name)}: {Name}";
     }
 
+    /// <inheritdoc />
+    public override List<PluginFeature> GetFeatureDependencies()
+    {
+        return [..GetRootFolder().GetFeatureDependencies(), ..Scripts.Select(c => c.ScriptingProvider)];
+    }
+
     /// <summary>
     ///     Populates all the LEDs on the elements in this profile
     /// </summary>
