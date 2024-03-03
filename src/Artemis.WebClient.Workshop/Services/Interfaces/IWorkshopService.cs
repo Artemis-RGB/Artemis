@@ -14,7 +14,7 @@ public interface IWorkshopService
     Task NavigateToEntry(long entryId, EntryType entryType);
 
     List<InstalledEntry> GetInstalledEntries();
-    InstalledEntry? GetInstalledEntry(IEntryDetails entry);
+    InstalledEntry? GetInstalledEntry(long entryId);
     void RemoveInstalledEntry(InstalledEntry installedEntry);
     void SaveInstalledEntry(InstalledEntry entry);
     void Initialize();

@@ -5,8 +5,6 @@ schema {
     mutation: Mutation
 }
 
-directive @tag(name: String!) on SCHEMA | SCALAR | OBJECT | FIELD_DEFINITION | ARGUMENT_DEFINITION | INTERFACE | UNION | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
-
 type Category {
     icon: String!
     id: Long!
@@ -35,6 +33,7 @@ type Entry {
     authorId: UUID!
     categories: [Category!]!
     createdAt: DateTime!
+    dependantReleases: [Release!]!
     description: String!
     downloads: Long!
     entryType: EntryType!
@@ -46,6 +45,7 @@ type Entry {
     latestReleaseId: Long
     layoutInfo: [LayoutInfo!]!
     name: String!
+    pluginInfo: PluginInfo
     releases: [Release!]!
     summary: String!
     tags: [Tag!]!
@@ -84,10 +84,33 @@ type Mutation {
     updateEntryImage(input: UpdateEntryImageInput!): Image
 }
 
+type PluginInfo {
+    api: Int
+    entry: Entry!
+    entryId: Long!
+    helpPage: String
+    platforms: PluginPlatform
+    pluginGuid: UUID!
+    repository: String
+    requiresAdmin: Boolean!
+    website: String
+}
+
+"A segment of a collection."
+type PluginInfosCollectionSegment {
+    "A flattened list of the items."
+    items: [PluginInfo!]
+    "Information to aid in pagination."
+    pageInfo: CollectionSegmentInfo!
+    totalCount: Int!
+}
+
 type Query {
     categories(order: [CategorySortInput!], where: CategoryFilterInput): [Category!]!
     entries(order: [EntrySortInput!], search: String, skip: Int, take: Int, where: EntryFilterInput): EntriesCollectionSegment
     entry(id: Long!): Entry
+    pluginInfo(pluginGuid: UUID!): PluginInfo
+    pluginInfos(order: [PluginInfoSortInput!], skip: Int, take: Int, where: PluginInfoFilterInput): PluginInfosCollectionSegment
     searchEntries(input: String!, order: [EntrySortInput!], type: EntryType, where: EntryFilterInput): [Entry!]!
     searchKeyboardLayout(deviceProvider: UUID!, logicalLayout: String, model: String!, physicalLayout: KeyboardLayoutType!, vendor: String!): LayoutInfo
     searchLayout(deviceProvider: UUID!, deviceType: RGBDeviceType!, model: String!, vendor: String!): LayoutInfo
@@ -96,6 +119,7 @@ type Query {
 
 type Release {
     createdAt: DateTime!
+    dependencies: [Entry!]!
     downloadSize: Long!
     downloads: Long!
     entry: Entry!
@@ -131,11 +155,18 @@ enum KeyboardLayoutType {
     UNKNOWN
 }
 
+enum PluginPlatform {
+    LINUX
+    OSX
+    WINDOWS
+}
+
 enum RGBDeviceType {
     ALL
     COOLER
     DRAM
     FAN
+    GAME_CONTROLLER
     GRAPHICS_CARD
     HEADSET
     HEADSET_STAND
@@ -165,6 +196,11 @@ scalar DateTime
 scalar Long
 
 scalar UUID
+
+input BooleanOperationFilterInput {
+    eq: Boolean
+    neq: Boolean
+}
 
 input CategoryFilterInput {
     and: [CategoryFilterInput!]
@@ -220,6 +256,7 @@ input EntryFilterInput {
     authorId: UuidOperationFilterInput
     categories: ListFilterInputTypeOfCategoryFilterInput
     createdAt: DateTimeOperationFilterInput
+    dependantReleases: ListFilterInputTypeOfReleaseFilterInput
     description: StringOperationFilterInput
     downloads: LongOperationFilterInput
     entryType: EntryTypeOperationFilterInput
@@ -232,6 +269,7 @@ input EntryFilterInput {
     layoutInfo: ListFilterInputTypeOfLayoutInfoFilterInput
     name: StringOperationFilterInput
     or: [EntryFilterInput!]
+    pluginInfo: PluginInfoFilterInput
     releases: ListFilterInputTypeOfReleaseFilterInput
     summary: StringOperationFilterInput
     tags: ListFilterInputTypeOfTagFilterInput
@@ -250,6 +288,7 @@ input EntrySortInput {
     latestRelease: ReleaseSortInput
     latestReleaseId: SortEnumType
     name: SortEnumType
+    pluginInfo: PluginInfoSortInput
     summary: SortEnumType
 }
 
@@ -322,6 +361,13 @@ input ListFilterInputTypeOfCategoryFilterInput {
     some: CategoryFilterInput
 }
 
+input ListFilterInputTypeOfEntryFilterInput {
+    all: EntryFilterInput
+    any: Boolean
+    none: EntryFilterInput
+    some: EntryFilterInput
+}
+
 input ListFilterInputTypeOfImageFilterInput {
     all: ImageFilterInput
     any: Boolean
@@ -372,6 +418,39 @@ input NullableOfKeyboardLayoutTypeOperationFilterInput {
     nin: [KeyboardLayoutType]
 }
 
+input NullableOfPluginPlatformOperationFilterInput {
+    eq: PluginPlatform
+    in: [PluginPlatform]
+    neq: PluginPlatform
+    nin: [PluginPlatform]
+}
+
+input PluginInfoFilterInput {
+    and: [PluginInfoFilterInput!]
+    api: IntOperationFilterInput
+    entry: EntryFilterInput
+    entryId: LongOperationFilterInput
+    helpPage: StringOperationFilterInput
+    or: [PluginInfoFilterInput!]
+    platforms: NullableOfPluginPlatformOperationFilterInput
+    pluginGuid: UuidOperationFilterInput
+    repository: StringOperationFilterInput
+    requiresAdmin: BooleanOperationFilterInput
+    website: StringOperationFilterInput
+}
+
+input PluginInfoSortInput {
+    api: SortEnumType
+    entry: EntrySortInput
+    entryId: SortEnumType
+    helpPage: SortEnumType
+    platforms: SortEnumType
+    pluginGuid: SortEnumType
+    repository: SortEnumType
+    requiresAdmin: SortEnumType
+    website: SortEnumType
+}
+
 input RGBDeviceTypeOperationFilterInput {
     eq: RGBDeviceType
     in: [RGBDeviceType!]
@@ -382,6 +461,7 @@ input RGBDeviceTypeOperationFilterInput {
 input ReleaseFilterInput {
     and: [ReleaseFilterInput!]
     createdAt: DateTimeOperationFilterInput
+    dependencies: ListFilterInputTypeOfEntryFilterInput
     downloadSize: LongOperationFilterInput
     downloads: LongOperationFilterInput
     entry: EntryFilterInput

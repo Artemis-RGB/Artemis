@@ -20,7 +20,7 @@ public class EntryReleasesViewModel : ViewModelBase
     private readonly IWindowService _windowService;
     private readonly INotificationService _notificationService;
 
-    public EntryReleasesViewModel(IGetEntryById_Entry entry, EntryInstallationHandlerFactory factory, IWindowService windowService, INotificationService notificationService)
+    public EntryReleasesViewModel(IEntryDetails entry, EntryInstallationHandlerFactory factory, IWindowService windowService, INotificationService notificationService)
     {
         _factory = factory;
         _windowService = windowService;
@@ -31,7 +31,7 @@ public class EntryReleasesViewModel : ViewModelBase
         OnInstallationStarted = Confirm;
     }
 
-    public IGetEntryById_Entry Entry { get; }
+    public IEntryDetails Entry { get; }
     public ReactiveCommand<Unit, Unit> DownloadLatestRelease { get; }
 
     public Func<IEntryDetails, Task<bool>> OnInstallationStarted { get; set; }

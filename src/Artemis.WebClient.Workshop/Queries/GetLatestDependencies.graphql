@@ -1,0 +1,9 @@
+query GetLatestDependencies($id: Long!) {
+    entry(id: $id) {
+        latestRelease {
+            dependencies {
+                ...entrySummary
+            }
+        }
+    }
+}

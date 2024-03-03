@@ -152,9 +152,9 @@ public class WorkshopService : IWorkshopService
     }
 
     /// <inheritdoc />
-    public InstalledEntry? GetInstalledEntry(IEntryDetails entry)
+    public InstalledEntry? GetInstalledEntry(long entryId)
     {
-        EntryEntity? entity = _entryRepository.GetByEntryId(entry.Id);
+        EntryEntity? entity = _entryRepository.GetByEntryId(entryId);
         if (entity == null)
             return null;
 

@@ -21,7 +21,7 @@ namespace Artemis.UI.Screens.Workshop.Entries.List;
 
 public abstract partial class EntryListViewModel : RoutableScreen<WorkshopListParameters>
 {
-    private readonly SourceList<IGetEntries_Entries_Items> _entries = new();
+    private readonly SourceList<IEntrySummary> _entries = new();
     private readonly ObservableAsPropertyHelper<bool> _isLoading;
     private readonly INotificationService _notificationService;
     private readonly string _route;
@@ -37,13 +37,13 @@ public abstract partial class EntryListViewModel : RoutableScreen<WorkshopListPa
         CategoriesViewModel categoriesViewModel,
         EntryListInputViewModel entryListInputViewModel,
         INotificationService notificationService,
-        Func<IGetEntries_Entries_Items, EntryListItemViewModel> getEntryListViewModel)
+        Func<IEntrySummary, EntryListItemViewModel> getEntryListViewModel)
     {
         _route = route;
         _workshopClient = workshopClient;
         _notificationService = notificationService;
-        _showPagination = this.WhenAnyValue<EntryListViewModel, int>(vm => vm.TotalPages).Select(t => t > 1).ToProperty(this, vm => vm.ShowPagination);
-        _isLoading = this.WhenAnyValue<EntryListViewModel, bool, int, int>(vm => vm.Page, vm => vm.LoadedPage, (p, c) => p != c).ToProperty(this, vm => vm.IsLoading);
+        _showPagination = this.WhenAnyValue(vm => vm.TotalPages).Select(t => t > 1).ToProperty(this, vm => vm.ShowPagination);
+        _isLoading = this.WhenAnyValue(vm => vm.Page, vm => vm.LoadedPage, (p, c) => p != c).ToProperty(this, vm => vm.IsLoading);
 
         CategoriesViewModel = categoriesViewModel;
         InputViewModel = entryListInputViewModel;

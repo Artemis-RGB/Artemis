@@ -14,7 +14,7 @@ public class LayoutListViewModel : List.EntryListViewModel
         CategoriesViewModel categoriesViewModel,
         EntryListInputViewModel entryListInputViewModel,
         INotificationService notificationService,
-        Func<IGetEntries_Entries_Items, EntryListItemViewModel> getEntryListViewModel)
+        Func<IEntrySummary, EntryListItemViewModel> getEntryListViewModel)
         : base("workshop/entries/layouts", workshopClient, router, categoriesViewModel, entryListInputViewModel, notificationService, getEntryListViewModel)
     {
         entryListInputViewModel.SearchWatermark = "Search layouts";

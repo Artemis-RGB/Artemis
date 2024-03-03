@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.Workshop.Entries.Details;
+using Artemis.UI.Screens.Workshop.Entries.List;
 using Artemis.UI.Screens.Workshop.Parameters;
 using Artemis.UI.Screens.Workshop.Plugins.Dialogs;
 using Artemis.UI.Shared.Routing;
@@ -21,20 +24,23 @@ public partial class PluginDetailsViewModel : RoutableScreen<WorkshopDetailParam
     private readonly IWorkshopClient _client;
     private readonly IWindowService _windowService;
     private readonly IPluginManagementService _pluginManagementService;
-    private readonly Func<IGetEntryById_Entry, EntryInfoViewModel> _getEntryInfoViewModel;
-    private readonly Func<IGetEntryById_Entry, EntryReleasesViewModel> _getEntryReleasesViewModel;
-    private readonly Func<IGetEntryById_Entry, EntryImagesViewModel> _getEntryImagesViewModel;
-    [Notify] private IGetEntryById_Entry? _entry;
+    private readonly Func<IEntryDetails, EntryInfoViewModel> _getEntryInfoViewModel;
+    private readonly Func<IEntryDetails, EntryReleasesViewModel> _getEntryReleasesViewModel;
+    private readonly Func<IEntryDetails, EntryImagesViewModel> _getEntryImagesViewModel;
+    private readonly Func<IEntrySummary, EntryListItemViewModel> _getEntryListViewModel;
+    [Notify] private IEntryDetails? _entry;
     [Notify] private EntryInfoViewModel? _entryInfoViewModel;
     [Notify] private EntryReleasesViewModel? _entryReleasesViewModel;
     [Notify] private EntryImagesViewModel? _entryImagesViewModel;
-
+    [Notify] private ReadOnlyObservableCollection<EntryListItemViewModel>? _dependants;
+    
     public PluginDetailsViewModel(IWorkshopClient client,
         IWindowService windowService,
         IPluginManagementService pluginManagementService,
-        Func<IGetEntryById_Entry, EntryInfoViewModel> getEntryInfoViewModel,
-        Func<IGetEntryById_Entry, EntryReleasesViewModel> getEntryReleasesViewModel,
-        Func<IGetEntryById_Entry, EntryImagesViewModel> getEntryImagesViewModel)
+        Func<IEntryDetails, EntryInfoViewModel> getEntryInfoViewModel,
+        Func<IEntryDetails, EntryReleasesViewModel> getEntryReleasesViewModel,
+        Func<IEntryDetails, EntryImagesViewModel> getEntryImagesViewModel,
+        Func<IEntrySummary, EntryListItemViewModel> getEntryListViewModel)
     {
         _client = client;
         _windowService = windowService;
@@ -42,6 +48,7 @@ public partial class PluginDetailsViewModel : RoutableScreen<WorkshopDetailParam
         _getEntryInfoViewModel = getEntryInfoViewModel;
         _getEntryReleasesViewModel = getEntryReleasesViewModel;
         _getEntryImagesViewModel = getEntryImagesViewModel;
+        _getEntryListViewModel = getEntryListViewModel;
     }
 
     public override async Task OnNavigating(WorkshopDetailParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
@@ -56,20 +63,20 @@ public partial class PluginDetailsViewModel : RoutableScreen<WorkshopDetailParam
             return;
 
         Entry = result.Data?.Entry;
-        if (Entry == null)
-        {
-            EntryInfoViewModel = null;
-            EntryReleasesViewModel = null;
-        }
-        else
-        {
-            EntryInfoViewModel = _getEntryInfoViewModel(Entry);
-            EntryReleasesViewModel = _getEntryReleasesViewModel(Entry);
-            EntryImagesViewModel = _getEntryImagesViewModel(Entry);
+        EntryInfoViewModel = Entry != null ? _getEntryInfoViewModel(Entry) : null;
+        EntryReleasesViewModel = Entry != null ? _getEntryReleasesViewModel(Entry) : null;
+        EntryImagesViewModel = Entry != null ? _getEntryImagesViewModel(Entry) : null;
 
+        if (EntryReleasesViewModel != null)
+        {
             EntryReleasesViewModel.OnInstallationStarted = OnInstallationStarted;
             EntryReleasesViewModel.OnInstallationFinished = OnInstallationFinished;
         }
+        
+        IReadOnlyList<IEntrySummary>? dependants = (await _client.GetDependantEntries.ExecuteAsync(entryId, 0, 25, cancellationToken)).Data?.Entries?.Items;
+        Dependants = dependants != null && dependants.Any()
+            ? new ReadOnlyObservableCollection<EntryListItemViewModel>(new ObservableCollection<EntryListItemViewModel>(dependants.Select(_getEntryListViewModel)))
+            : null;
     }
 
     private async Task<bool> OnInstallationStarted(IEntryDetails entryDetails)
