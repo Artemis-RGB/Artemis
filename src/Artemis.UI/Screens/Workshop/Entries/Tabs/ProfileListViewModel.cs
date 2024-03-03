@@ -14,7 +14,7 @@ public class ProfileListViewModel : List.EntryListViewModel
         CategoriesViewModel categoriesViewModel,
         EntryListInputViewModel entryListInputViewModel,
         INotificationService notificationService,
-        Func<IGetEntries_Entries_Items, EntryListItemViewModel> getEntryListViewModel)
+        Func<IEntrySummary, EntryListItemViewModel> getEntryListViewModel)
         : base("workshop/entries/profiles", workshopClient, router, categoriesViewModel, entryListInputViewModel, notificationService, getEntryListViewModel)
     {
         entryListInputViewModel.SearchWatermark = "Search profiles";

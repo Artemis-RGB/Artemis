@@ -160,9 +160,11 @@ public sealed class Layer : RenderProfileElement
     public LayerAdapter Adapter { get; }
 
     /// <inheritdoc />
-    public override bool ShouldBeEnabled => !Suspended && DisplayConditionMet;
+    public override bool ShouldBeEnabled => !Suspended && DisplayConditionMet && HasBounds;
 
     internal override RenderElementEntity RenderElementEntity => LayerEntity;
+
+    private bool HasBounds => Bounds.Width > 0 && Bounds.Height > 0;
 
     /// <inheritdoc />
     public override List<ILayerProperty> GetAllLayerProperties()
@@ -185,6 +187,16 @@ public sealed class Layer : RenderProfileElement
     public override string ToString()
     {
         return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
+    }
+
+    /// <inheritdoc />
+    public override IEnumerable<PluginFeature> GetFeatureDependencies()
+    {
+        return LayerEffects.SelectMany(e => e.GetFeatureDependencies())
+            .Concat(LayerBrush?.GetFeatureDependencies() ?? [])
+            .Concat(General.GetFeatureDependencies())
+            .Concat(Transform.GetFeatureDependencies())
+            .Concat(DisplayCondition.GetFeatureDependencies());
     }
 
     /// <summary>
@@ -383,7 +395,7 @@ public sealed class Layer : RenderProfileElement
 
             if (ShouldBeEnabled)
                 Enable();
-            else if (Suspended || (Timeline.IsFinished && !_renderCopies.Any()))
+            else if (Suspended || !HasBounds || (Timeline.IsFinished && !_renderCopies.Any()))
                 Disable();
 
             if (!Enabled || Timeline.Delta == TimeSpan.Zero)
@@ -766,7 +778,7 @@ public sealed class Layer : RenderProfileElement
 
         if (!_leds.Remove(led))
             return;
-        
+
         CalculateRenderProperties();
     }
 

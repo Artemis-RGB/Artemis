@@ -24,10 +24,10 @@ public partial class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParam
     private readonly IWorkshopClient _client;
     private readonly IDeviceService _deviceService;
     private readonly IWindowService _windowService;
-    private readonly Func<IGetEntryById_Entry, EntryInfoViewModel> _getEntryInfoViewModel;
-    private readonly Func<IGetEntryById_Entry, EntryReleasesViewModel> _getEntryReleasesViewModel;
-    private readonly Func<IGetEntryById_Entry, EntryImagesViewModel> _getEntryImagesViewModel;
-    [Notify] private IGetEntryById_Entry? _entry;
+    private readonly Func<IEntryDetails, EntryInfoViewModel> _getEntryInfoViewModel;
+    private readonly Func<IEntryDetails, EntryReleasesViewModel> _getEntryReleasesViewModel;
+    private readonly Func<IEntryDetails, EntryImagesViewModel> _getEntryImagesViewModel;
+    [Notify] private IEntryDetails? _entry;
     [Notify] private EntryInfoViewModel? _entryInfoViewModel;
     [Notify] private EntryReleasesViewModel? _entryReleasesViewModel;
     [Notify] private EntryImagesViewModel? _entryImagesViewModel;
@@ -35,9 +35,9 @@ public partial class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParam
     public LayoutDetailsViewModel(IWorkshopClient client,
         IDeviceService deviceService,
         IWindowService windowService,
-        Func<IGetEntryById_Entry, EntryInfoViewModel> getEntryInfoViewModel,
-        Func<IGetEntryById_Entry, EntryReleasesViewModel> getEntryReleasesViewModel,
-        Func<IGetEntryById_Entry, EntryImagesViewModel> getEntryImagesViewModel)
+        Func<IEntryDetails, EntryInfoViewModel> getEntryInfoViewModel,
+        Func<IEntryDetails, EntryReleasesViewModel> getEntryReleasesViewModel,
+        Func<IEntryDetails, EntryImagesViewModel> getEntryImagesViewModel)
     {
         _client = client;
         _deviceService = deviceService;
@@ -59,19 +59,12 @@ public partial class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParam
             return;
 
         Entry = result.Data?.Entry;
-        if (Entry == null)
-        {
-            EntryInfoViewModel = null;
-            EntryReleasesViewModel = null;
-        }
-        else
-        {
-            EntryInfoViewModel = _getEntryInfoViewModel(Entry);
-            EntryReleasesViewModel = _getEntryReleasesViewModel(Entry);
-            EntryImagesViewModel = _getEntryImagesViewModel(Entry);
+        EntryInfoViewModel = Entry != null ? _getEntryInfoViewModel(Entry) : null;
+        EntryReleasesViewModel = Entry != null ? _getEntryReleasesViewModel(Entry) : null;
+        EntryImagesViewModel = Entry != null ? _getEntryImagesViewModel(Entry) : null;
 
+        if (EntryReleasesViewModel != null)
             EntryReleasesViewModel.OnInstallationFinished = OnInstallationFinished;
-        }
     }
 
     private async Task OnInstallationFinished(InstalledEntry installedEntry)

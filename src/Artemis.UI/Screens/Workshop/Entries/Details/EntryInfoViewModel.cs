@@ -10,10 +10,10 @@ namespace Artemis.UI.Screens.Workshop.Entries.Details;
 public class EntryInfoViewModel : ViewModelBase
 {
     private readonly INotificationService _notificationService;
-    public IGetEntryById_Entry Entry { get; }
+    public IEntryDetails Entry { get; }
     public DateTimeOffset? UpdatedAt { get; }
     
-    public EntryInfoViewModel(IGetEntryById_Entry entry, INotificationService notificationService)
+    public EntryInfoViewModel(IEntryDetails entry, INotificationService notificationService)
     {
         _notificationService = notificationService;
         Entry = entry;

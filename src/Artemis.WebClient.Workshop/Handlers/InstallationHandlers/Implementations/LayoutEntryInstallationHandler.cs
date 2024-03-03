@@ -41,7 +41,7 @@ public class LayoutEntryInstallationHandler : IEntryInstallationHandler
         }
 
         // Ensure there is an installed entry
-        InstalledEntry installedEntry = _workshopService.GetInstalledEntry(entry) ?? new InstalledEntry(entry, release);
+        InstalledEntry installedEntry = _workshopService.GetInstalledEntry(entry.Id) ?? new InstalledEntry(entry, release);
         DirectoryInfo releaseDirectory = installedEntry.GetReleaseDirectory(release);
 
         // If the folder already exists, remove it so that if the layout now contains less files, old things dont stick around

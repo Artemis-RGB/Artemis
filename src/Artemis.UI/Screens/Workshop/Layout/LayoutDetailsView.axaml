@@ -17,13 +17,17 @@
             </Border>
         </StackPanel>
 
-        <Border Classes="card" Grid.Row="1" Grid.Column="1" Margin="10 0">
-            <mdxaml:MarkdownScrollViewer Markdown="{CompiledBinding Entry.Description}" MarkdownStyleName="FluentAvalonia">
-                <mdxaml:MarkdownScrollViewer.Styles>
-                    <StyleInclude Source="/Styles/Markdown.axaml" />
-                </mdxaml:MarkdownScrollViewer.Styles>
-            </mdxaml:MarkdownScrollViewer>
-        </Border>
+        <ScrollViewer Grid.Row="1" Grid.Column="1">
+            <StackPanel  Margin="10 0" Spacing="10">
+                <Border Classes="card">
+                    <mdxaml:MarkdownScrollViewer Markdown="{CompiledBinding Entry.Description}" MarkdownStyleName="FluentAvalonia">
+                        <mdxaml:MarkdownScrollViewer.Styles>
+                            <StyleInclude Source="/Styles/Markdown.axaml" />
+                        </mdxaml:MarkdownScrollViewer.Styles>
+                    </mdxaml:MarkdownScrollViewer>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
 
         <ContentControl Grid.Row="1" Grid.Column="2" IsVisible="{CompiledBinding Entry.Images.Count}" Content="{CompiledBinding EntryImagesViewModel}" />
     </Grid>

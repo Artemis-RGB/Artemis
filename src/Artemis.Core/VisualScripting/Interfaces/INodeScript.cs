@@ -8,7 +8,7 @@ namespace Artemis.Core;
 /// <summary>
 ///     Represents a node script
 /// </summary>
-public interface INodeScript : INotifyPropertyChanged, IDisposable, IStorageModel
+public interface INodeScript : INotifyPropertyChanged, IDisposable, IStorageModel, IPluginFeatureDependent
 {
     /// <summary>
     ///     Gets the name of the node script.

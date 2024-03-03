@@ -13,6 +13,6 @@ public interface IAuthenticationService : IProtectedArtemisService
     Task<string?> GetBearer();
     Task<bool> AutoLogin(bool force = false);
     Task Login(CancellationToken cancellationToken);
-    void Logout();
+    Task Logout();
     bool GetIsEmailVerified();
 }

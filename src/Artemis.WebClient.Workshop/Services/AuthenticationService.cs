@@ -258,12 +258,21 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
     }
 
     /// <inheritdoc />
-    public void Logout()
+    public async Task Logout()
     {
+        DiscoveryDocumentResponse disco = await GetDiscovery();
+      
+        // Open the web browser for the user to log out
+        if (disco.EndSessionEndpoint != null)
+        {
+            RequestUrl authRequestUrl = new(disco.EndSessionEndpoint);
+            string url = authRequestUrl.CreateEndSessionUrl(_token?.IdentityToken);
+            Utilities.OpenUrl(url);
+        }
+
         _token = null;
         _claims.Clear();
         SetStoredRefreshToken(null);
-
         _isLoggedInSubject.OnNext(false);
     }
 

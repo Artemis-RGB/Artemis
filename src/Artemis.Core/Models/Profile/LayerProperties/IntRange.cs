@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Artemis.Core;
 
@@ -14,12 +15,13 @@ public readonly struct IntRange
     /// </summary>
     /// <param name="start">The start value of the range</param>
     /// <param name="end">The end value of the range</param>
+    [JsonConstructor]
     public IntRange(int start, int end)
     {
         Start = start;
         End = end;
 
-        _rand = new Random();
+        _rand = Random.Shared;
     }
 
     /// <summary>

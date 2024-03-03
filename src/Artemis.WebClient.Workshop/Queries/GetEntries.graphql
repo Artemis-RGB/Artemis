@@ -2,16 +2,7 @@ query GetEntries($search: String $filter: EntryFilterInput $skip: Int $take: Int
     entries(search: $search where: $filter skip: $skip take: $take, order: $order) {
         totalCount
         items {
-            id
-            author
-            name
-            summary
-            entryType
-            downloads
-            createdAt            
-            categories {
-                ...category
-            }
+            ...entrySummary
         }
     }
 }

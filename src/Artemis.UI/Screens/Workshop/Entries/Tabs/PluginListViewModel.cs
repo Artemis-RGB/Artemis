@@ -14,7 +14,7 @@ public class PluginListViewModel : EntryListViewModel
         CategoriesViewModel categoriesViewModel,
         EntryListInputViewModel entryListInputViewModel,
         INotificationService notificationService,
-        Func<IGetEntries_Entries_Items, EntryListItemViewModel> getEntryListViewModel)
+        Func<IEntrySummary, EntryListItemViewModel> getEntryListViewModel)
         : base("workshop/entries/plugins", workshopClient, router, categoriesViewModel, entryListInputViewModel, notificationService, getEntryListViewModel)
     {
         entryListInputViewModel.SearchWatermark = "Search plugins";

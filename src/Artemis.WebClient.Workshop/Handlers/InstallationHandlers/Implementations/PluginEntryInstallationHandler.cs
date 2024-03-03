@@ -25,7 +25,7 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
     public async Task<EntryInstallResult> InstallAsync(IEntryDetails entry, IRelease release, Progress<StreamProgress> progress, CancellationToken cancellationToken)
     {
         // Ensure there is an installed entry
-        InstalledEntry? installedEntry = _workshopService.GetInstalledEntry(entry);
+        InstalledEntry? installedEntry = _workshopService.GetInstalledEntry(entry.Id);
         if (installedEntry != null)
         {
             // If the folder already exists, we're not going to reinstall the plugin since files may be in use, consider our job done

@@ -54,6 +54,12 @@ public class LayerProperty<T> : CorePropertyChanged, ILayerProperty
         return $"{Path} - {CurrentValue} ({PropertyType})";
     }
 
+    /// <inheritdoc />
+    public IEnumerable<PluginFeature> GetFeatureDependencies()
+    {
+        return DataBinding.GetFeatureDependencies();
+    }
+
     /// <summary>
     ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
     /// </summary>

@@ -11,7 +11,7 @@ namespace Artemis.Core;
 ///         initialize these for you.
 ///     </para>
 /// </summary>
-public interface ILayerProperty : IStorageModel, IDisposable
+public interface ILayerProperty : IStorageModel, IDisposable, IPluginFeatureDependent
 {
     /// <summary>
     ///     Gets the description attribute applied to this property

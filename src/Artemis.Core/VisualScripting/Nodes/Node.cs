@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Events;
-using DryIoc;
 
 namespace Artemis.Core;
 
@@ -401,6 +400,16 @@ public abstract class Node : BreakableModel, INode
     /// <param name="serialized">The serialized object</param>
     public virtual void DeserializeStorage(string serialized)
     {
+    }
+
+    #endregion
+
+    #region Implementation of IPluginFeatureDependent
+
+    /// <inheritdoc />
+    public virtual IEnumerable<PluginFeature> GetFeatureDependencies()
+    {
+        return NodeData == null ? [] : [NodeData.Provider];
     }
 
     #endregion

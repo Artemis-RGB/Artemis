@@ -28,6 +28,20 @@ fragment submittedEntry on Entry {
     createdAt
 }
 
+fragment entrySummary on Entry {
+    id
+    author
+    name
+    summary
+    entryType
+    downloads
+    createdAt
+    latestReleaseId
+    categories {
+        ...category
+    }
+}
+
 fragment entryDetails on Entry {
     id
     author

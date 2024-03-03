@@ -36,7 +36,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         }
 
         // Find existing installation to potentially replace the profile
-        InstalledEntry? installedEntry = _workshopService.GetInstalledEntry(entry);
+        InstalledEntry? installedEntry = _workshopService.GetInstalledEntry(entry.Id);
         if (installedEntry != null && installedEntry.TryGetMetadata("ProfileId", out Guid profileId))
         {
             ProfileConfiguration? existing = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(c => c.ProfileId == profileId);

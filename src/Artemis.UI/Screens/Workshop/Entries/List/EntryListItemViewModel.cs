@@ -1,26 +1,39 @@
 using System;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.WebClient.Workshop;
+using Artemis.WebClient.Workshop.Models;
+using Artemis.WebClient.Workshop.Services;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.Entries.List;
 
-public class EntryListItemViewModel : ActivatableViewModelBase
+public partial class EntryListItemViewModel : ActivatableViewModelBase
 {
     private readonly IRouter _router;
+    [Notify] private bool _isInstalled;
+    [Notify] private bool _updateAvailable;
 
-    public EntryListItemViewModel(IGetEntries_Entries_Items entry, IRouter router)
+    public EntryListItemViewModel(IEntrySummary entry, IRouter router, IWorkshopService workshopService)
     {
         _router = router;
 
         Entry = entry;
         NavigateToEntry = ReactiveCommand.CreateFromTask(ExecuteNavigateToEntry);
+
+        this.WhenActivated((CompositeDisposable _) =>
+        {
+            InstalledEntry? installedEntry = workshopService.GetInstalledEntry(entry.Id);
+            IsInstalled = installedEntry != null;
+            UpdateAvailable = installedEntry != null && installedEntry.ReleaseId != entry.LatestReleaseId;
+        });
     }
 
-    public IGetEntries_Entries_Items Entry { get; }
+    public IEntrySummary Entry { get; }
     public ReactiveCommand<Unit, Unit> NavigateToEntry { get; }
 
     private async Task ExecuteNavigateToEntry()

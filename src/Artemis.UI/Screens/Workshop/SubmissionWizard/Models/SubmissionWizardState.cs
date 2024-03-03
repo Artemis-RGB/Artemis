@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Artemis.Core;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Plugin;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
@@ -37,7 +38,7 @@ public class SubmissionWizardState : IDisposable
     public List<ImageUploadRequest> Images { get; set; } = new();
 
     public IEntrySource? EntrySource { get; set; }
-
+    
     public void ChangeScreen<TSubmissionViewModel>() where TSubmissionViewModel : SubmissionViewModel
     {
         try

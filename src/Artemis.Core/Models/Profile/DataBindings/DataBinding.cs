@@ -243,4 +243,14 @@ public class DataBinding<TLayerProperty> : IDataBinding
     }
 
     #endregion
+
+    #region Implementation of IPluginFeatureDependent
+
+    /// <inheritdoc />
+    public IEnumerable<PluginFeature> GetFeatureDependencies()
+    {
+        return Script.GetFeatureDependencies();
+    }
+
+    #endregion
 }
