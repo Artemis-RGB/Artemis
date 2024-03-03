@@ -347,9 +347,9 @@ public abstract class LayerPropertyGroup : IDisposable, IPluginFeatureDependent
     #region Implementation of IPluginFeatureDependent
 
     /// <inheritdoc />
-    public List<PluginFeature> GetFeatureDependencies()
+    public IEnumerable<PluginFeature> GetFeatureDependencies()
     {
-        return [..LayerProperties.SelectMany(p => p.GetFeatureDependencies()), ..LayerPropertyGroups.SelectMany(g => g.GetFeatureDependencies())];
+        return LayerProperties.SelectMany(p => p.GetFeatureDependencies()).Concat(LayerPropertyGroups.SelectMany(g => g.GetFeatureDependencies()));
     }
 
     #endregion

@@ -9,13 +9,13 @@ namespace Artemis.Core;
 /// <summary>
 ///     Represents the configuration of a profile, contained in a <see cref="ProfileCategory" />
 /// </summary>
-public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
+public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, IPluginFeatureDependent
 {
     /// <summary>
     /// Represents an empty profile.
     /// </summary>
     public static readonly ProfileConfiguration Empty = new(ProfileCategory.Empty, "Empty", "Empty");
-    
+
     private ActivationBehaviour _activationBehaviour;
     private bool _activationConditionMet;
     private ProfileCategory _category;
@@ -146,7 +146,7 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
         get => _activationConditionMet;
         private set => SetAndNotify(ref _activationConditionMet, value);
     }
-    
+
     /// <summary>
     ///     Gets the profile of this profile configuration
     /// </summary>
@@ -159,8 +159,8 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
     /// <summary>
     ///    Gets or sets a boolean indicating whether this profile should fade in and out when enabling or disabling
     /// </summary>
-    public bool FadeInAndOut 
-    { 
+    public bool FadeInAndOut
+    {
         get => _fadeInAndOut;
         set => SetAndNotify(ref _fadeInAndOut, value);
     }
@@ -188,7 +188,7 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
     ///     alongside any activation requirements of the <see cref="Module" />, if set
     /// </summary>
     public NodeScript<bool> ActivationCondition { get; }
-
+    
     /// <summary>
     ///     Gets the entity used by this profile config
     /// </summary>
@@ -245,6 +245,19 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable
     public override string ToString()
     {
         return $"[ProfileConfiguration] {nameof(Name)}: {Name}";
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<PluginFeature> GetFeatureDependencies()
+    {
+        if (_disposed)
+            throw new ObjectDisposedException("ProfileConfiguration");
+        if (Profile == null)
+            throw new InvalidOperationException("Cannot determine feature dependencies when the profile is not loaded.");
+
+        return ActivationCondition.GetFeatureDependencies()
+            .Concat(Profile.GetFeatureDependencies())
+            .Concat(Module != null ? [Module] : []);
     }
 
     internal void LoadModules(List<Module> enabledModules)

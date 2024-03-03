@@ -172,9 +172,9 @@ public sealed class Profile : ProfileElement
     }
 
     /// <inheritdoc />
-    public override List<PluginFeature> GetFeatureDependencies()
+    public override IEnumerable<PluginFeature> GetFeatureDependencies()
     {
-        return [..GetRootFolder().GetFeatureDependencies(), ..Scripts.Select(c => c.ScriptingProvider)];
+        return GetRootFolder().GetFeatureDependencies().Concat(Scripts.Select(c => c.ScriptingProvider));
     }
 
     /// <summary>

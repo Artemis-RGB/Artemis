@@ -190,15 +190,13 @@ public sealed class Layer : RenderProfileElement
     }
 
     /// <inheritdoc />
-    public override List<PluginFeature> GetFeatureDependencies()
+    public override IEnumerable<PluginFeature> GetFeatureDependencies()
     {
-        return [
-            ..LayerEffects.SelectMany(e => e.GetFeatureDependencies()), 
-            ..LayerBrush?.GetFeatureDependencies() ?? [], 
-            ..General.GetFeatureDependencies(), 
-            ..Transform.GetFeatureDependencies(),
-            ..DisplayCondition.GetFeatureDependencies()
-        ];
+        return LayerEffects.SelectMany(e => e.GetFeatureDependencies())
+            .Concat(LayerBrush?.GetFeatureDependencies() ?? [])
+            .Concat(General.GetFeatureDependencies())
+            .Concat(Transform.GetFeatureDependencies())
+            .Concat(DisplayCondition.GetFeatureDependencies());
     }
 
     /// <summary>

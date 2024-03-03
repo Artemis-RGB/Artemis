@@ -180,13 +180,11 @@ public sealed class Folder : RenderProfileElement
     }
 
     /// <inheritdoc />
-    public override List<PluginFeature> GetFeatureDependencies()
+    public override IEnumerable<PluginFeature> GetFeatureDependencies()
     {
-        return [
-            ..LayerEffects.SelectMany(e => e.GetFeatureDependencies()), 
-            ..Children.SelectMany(c => c.GetFeatureDependencies()),
-            ..DisplayCondition.GetFeatureDependencies()
-        ];
+        return LayerEffects.SelectMany(e => e.GetFeatureDependencies())
+            .Concat(Children.SelectMany(c => c.GetFeatureDependencies()))
+            .Concat(DisplayCondition.GetFeatureDependencies());
     }
 
     #region Rendering

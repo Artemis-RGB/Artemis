@@ -164,7 +164,7 @@ public class StaticCondition : CorePropertyChanged, INodeScriptCondition
     #region Implementation of IPluginFeatureDependent
 
     /// <inheritdoc />
-    public List<PluginFeature> GetFeatureDependencies()
+    public IEnumerable<PluginFeature> GetFeatureDependencies()
     {
         return Script.GetFeatureDependencies();
     }

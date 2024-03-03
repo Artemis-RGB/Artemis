@@ -189,7 +189,7 @@ public class DataModelPath : IStorageModel, IDisposable, IPluginFeatureDependent
     }
 
     /// <inheritdoc />
-    public List<PluginFeature> GetFeatureDependencies()
+    public IEnumerable<PluginFeature> GetFeatureDependencies()
     {
         if (Target == null)
             return [];

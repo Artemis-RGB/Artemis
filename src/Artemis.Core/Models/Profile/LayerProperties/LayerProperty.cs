@@ -55,7 +55,7 @@ public class LayerProperty<T> : CorePropertyChanged, ILayerProperty
     }
 
     /// <inheritdoc />
-    public List<PluginFeature> GetFeatureDependencies()
+    public IEnumerable<PluginFeature> GetFeatureDependencies()
     {
         return DataBinding.GetFeatureDependencies();
     }

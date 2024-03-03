@@ -123,7 +123,7 @@ public abstract class ProfileElement : BreakableModel, IDisposable, IPluginFeatu
     }
 
     /// <inheritdoc />
-    public abstract List<PluginFeature> GetFeatureDependencies();
+    public abstract IEnumerable<PluginFeature> GetFeatureDependencies();
 
     /// <summary>
     ///     Occurs when a child was added to the <see cref="Children" /> list

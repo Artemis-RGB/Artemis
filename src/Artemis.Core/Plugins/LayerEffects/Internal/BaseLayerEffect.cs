@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
@@ -240,11 +241,13 @@ public abstract class BaseLayerEffect : BreakableModel, IDisposable, IStorageMod
     #region Implementation of IPluginFeatureDependent
 
     /// <inheritdoc />
-    public List<PluginFeature> GetFeatureDependencies()
+    public IEnumerable<PluginFeature> GetFeatureDependencies()
     {
-        if (BaseProperties == null)
-            return [Descriptor.Provider];
-        return [Descriptor.Provider, ..BaseProperties.GetFeatureDependencies()];
+        IEnumerable<PluginFeature> result = [Descriptor.Provider];
+        if (BaseProperties != null)
+            result = result.Concat(BaseProperties.GetFeatureDependencies());
+
+        return result;
     }
 
     #endregion

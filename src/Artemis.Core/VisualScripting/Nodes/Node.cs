@@ -407,7 +407,7 @@ public abstract class Node : BreakableModel, INode
     #region Implementation of IPluginFeatureDependent
 
     /// <inheritdoc />
-    public virtual List<PluginFeature> GetFeatureDependencies()
+    public virtual IEnumerable<PluginFeature> GetFeatureDependencies()
     {
         return NodeData == null ? [] : [NodeData.Provider];
     }

@@ -329,9 +329,9 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
     #region Implementation of IPluginFeatureDependent
 
     /// <inheritdoc />
-    public List<PluginFeature> GetFeatureDependencies()
+    public IEnumerable<PluginFeature> GetFeatureDependencies()
     {
-        return [..EventPath?.GetFeatureDependencies() ?? [], ..Script.GetFeatureDependencies()];
+        return Script.GetFeatureDependencies().Concat(EventPath?.GetFeatureDependencies() ?? []);
     }
 
     #endregion

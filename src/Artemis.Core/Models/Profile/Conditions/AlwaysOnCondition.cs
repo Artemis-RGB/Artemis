@@ -87,7 +87,7 @@ public class AlwaysOnCondition : ICondition
     #region Implementation of IPluginFeatureDependent
 
     /// <inheritdoc />
-    public List<PluginFeature> GetFeatureDependencies()
+    public IEnumerable<PluginFeature> GetFeatureDependencies()
     {
         return [];
     }
