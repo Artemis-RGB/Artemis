@@ -189,6 +189,16 @@ public sealed class Layer : RenderProfileElement
         return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
     }
 
+    /// <inheritdoc />
+    public override IEnumerable<PluginFeature> GetFeatureDependencies()
+    {
+        return LayerEffects.SelectMany(e => e.GetFeatureDependencies())
+            .Concat(LayerBrush?.GetFeatureDependencies() ?? [])
+            .Concat(General.GetFeatureDependencies())
+            .Concat(Transform.GetFeatureDependencies())
+            .Concat(DisplayCondition.GetFeatureDependencies());
+    }
+
     /// <summary>
     ///     Occurs when a property affecting the rendering properties of this layer has been updated
     /// </summary>
@@ -768,7 +778,7 @@ public sealed class Layer : RenderProfileElement
 
         if (!_leds.Remove(led))
             return;
-        
+
         CalculateRenderProperties();
     }
 

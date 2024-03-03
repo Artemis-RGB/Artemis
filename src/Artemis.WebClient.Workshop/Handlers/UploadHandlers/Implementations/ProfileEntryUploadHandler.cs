@@ -31,6 +31,7 @@ public class ProfileEntryUploadHandler : IEntryUploadHandler
         MultipartFormDataContent content = new();
         StreamContent streamContent = new(archiveStream);
         streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
+        content.Add(JsonContent.Create(source.Dependencies.Select(d => new {PluginId = d.Plugin.Guid, FeatureId = d.Id}).ToList()), "ReleaseDependencies");
         content.Add(streamContent, "file", "file.zip");
 
         // Submit

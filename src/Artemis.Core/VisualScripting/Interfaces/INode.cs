@@ -8,7 +8,7 @@ namespace Artemis.Core;
 /// <summary>
 ///     Represents a kind of node inside a <see cref="INodeScript" />
 /// </summary>
-public interface INode : INotifyPropertyChanged, IBreakableModel
+public interface INode : INotifyPropertyChanged, IBreakableModel, IPluginFeatureDependent
 {
     /// <summary>
     ///     Gets or sets the ID of the node.

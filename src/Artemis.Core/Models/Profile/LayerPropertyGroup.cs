@@ -15,7 +15,7 @@ namespace Artemis.Core;
 ///         initialize these for you.
 ///     </para>
 /// </summary>
-public abstract class LayerPropertyGroup : IDisposable
+public abstract class LayerPropertyGroup : IDisposable, IPluginFeatureDependent
 {
     private readonly List<ILayerProperty> _layerProperties;
     private readonly List<LayerPropertyGroup> _layerPropertyGroups;
@@ -343,4 +343,14 @@ public abstract class LayerPropertyGroup : IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+
+    #region Implementation of IPluginFeatureDependent
+
+    /// <inheritdoc />
+    public IEnumerable<PluginFeature> GetFeatureDependencies()
+    {
+        return LayerProperties.SelectMany(p => p.GetFeatureDependencies()).Concat(LayerPropertyGroups.SelectMany(g => g.GetFeatureDependencies()));
+    }
+
+    #endregion
 }

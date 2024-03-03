@@ -401,6 +401,16 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
     }
 
     #endregion
+
+    #region Implementation of IPluginFeatureDependent
+
+    /// <inheritdoc />
+    public IEnumerable<PluginFeature> GetFeatureDependencies()
+    {
+        return Nodes.SelectMany(n => n.GetFeatureDependencies());
+    }
+
+    #endregion
 }
 
 /// <summary>

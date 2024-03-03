@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
@@ -7,7 +9,7 @@ namespace Artemis.Core.LayerEffects;
 /// <summary>
 ///     For internal use only, please use <see cref="LayerEffect{T}" /> instead
 /// </summary>
-public abstract class BaseLayerEffect : BreakableModel, IDisposable, IStorageModel
+public abstract class BaseLayerEffect : BreakableModel, IDisposable, IStorageModel, IPluginFeatureDependent
 {
     private ILayerEffectConfigurationDialog? _configurationDialog;
     private LayerEffectDescriptor _descriptor;
@@ -164,7 +166,7 @@ public abstract class BaseLayerEffect : BreakableModel, IDisposable, IStorageMod
     // Not only is this needed to initialize properties on the layer effects, it also prevents implementing anything
     // but LayerEffect<T> outside the core
     internal abstract void Initialize();
-    
+
     internal void InternalUpdate(Timeline timeline)
     {
         BaseProperties?.Update(timeline);
@@ -235,4 +237,18 @@ public abstract class BaseLayerEffect : BreakableModel, IDisposable, IStorageMod
         BaseProperties?.ApplyToEntity();
         LayerEffectEntity.PropertyGroup = BaseProperties?.PropertyGroupEntity;
     }
+
+    #region Implementation of IPluginFeatureDependent
+
+    /// <inheritdoc />
+    public IEnumerable<PluginFeature> GetFeatureDependencies()
+    {
+        IEnumerable<PluginFeature> result = [Descriptor.Provider];
+        if (BaseProperties != null)
+            result = result.Concat(BaseProperties.GetFeatureDependencies());
+
+        return result;
+    }
+
+    #endregion
 }

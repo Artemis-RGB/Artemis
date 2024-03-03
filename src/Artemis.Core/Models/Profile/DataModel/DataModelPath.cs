@@ -11,7 +11,7 @@ namespace Artemis.Core;
 /// <summary>
 ///     Represents a path that points to a property in data model
 /// </summary>
-public class DataModelPath : IStorageModel, IDisposable
+public class DataModelPath : IStorageModel, IDisposable, IPluginFeatureDependent
 {
     private readonly LinkedList<DataModelPathSegment> _segments;
     private Expression<Func<object, object>>? _accessorLambda;
@@ -186,6 +186,14 @@ public class DataModelPath : IStorageModel, IDisposable
     public override string ToString()
     {
         return string.IsNullOrWhiteSpace(Path) ? "this" : Path;
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<PluginFeature> GetFeatureDependencies()
+    {
+        if (Target == null)
+            return [];
+        return [Target.Module];
     }
 
     /// <summary>

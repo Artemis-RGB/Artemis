@@ -179,6 +179,14 @@ public sealed class Folder : RenderProfileElement
         return $"[Folder] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
     }
 
+    /// <inheritdoc />
+    public override IEnumerable<PluginFeature> GetFeatureDependencies()
+    {
+        return LayerEffects.SelectMany(e => e.GetFeatureDependencies())
+            .Concat(Children.SelectMany(c => c.GetFeatureDependencies()))
+            .Concat(DisplayCondition.GetFeatureDependencies());
+    }
+
     #region Rendering
 
     /// <inheritdoc />

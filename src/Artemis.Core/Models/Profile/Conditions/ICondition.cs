@@ -6,7 +6,7 @@ namespace Artemis.Core;
 /// <summary>
 ///     Represents a condition applied to a <see cref="ProfileElement" />
 /// </summary>
-public interface ICondition : IDisposable, IStorageModel
+public interface ICondition : IDisposable, IStorageModel, IPluginFeatureDependent
 {
     /// <summary>
     ///     Gets the entity used to store this condition
