@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="LiteDB" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
         <PackageReference Include="Serilog" />
         <PackageReference Include="System.Text.Json" />
     </ItemGroup>

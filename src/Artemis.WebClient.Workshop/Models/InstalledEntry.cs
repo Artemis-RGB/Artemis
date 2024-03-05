@@ -1,12 +1,16 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Artemis.Core;
 using Artemis.Storage.Entities.Workshop;
+using Artemis.WebClient.Workshop.Exceptions;
 
 namespace Artemis.WebClient.Workshop.Models;
 
 public class InstalledEntry
 {
-    private Dictionary<string, object> _metadata = new();
+    private static readonly JsonSerializerOptions JsonSerializerOptions = CoreJson.GetJsonSerializerOptions();
+    private Dictionary<string, JsonNode> _metadata = new();
 
     internal InstalledEntry(EntryEntity entity)
     {
@@ -52,7 +56,7 @@ public class InstalledEntry
         ReleaseVersion = Entity.ReleaseVersion;
         InstalledAt = Entity.InstalledAt;
 
-        _metadata = Entity.Metadata != null ? new Dictionary<string, object>(Entity.Metadata) : new Dictionary<string, object>();
+        _metadata = Entity.Metadata != null ? new Dictionary<string, JsonNode>(Entity.Metadata) : new Dictionary<string, JsonNode>();
     }
 
     internal void Save()
@@ -67,7 +71,7 @@ public class InstalledEntry
         Entity.ReleaseVersion = ReleaseVersion;
         Entity.InstalledAt = InstalledAt;
 
-        Entity.Metadata = new Dictionary<string, object>(_metadata);
+        Entity.Metadata = new Dictionary<string, JsonNode>(_metadata);
     }
 
     /// <summary>
@@ -80,14 +84,29 @@ public class InstalledEntry
     /// <returns><see langword="true"/> if the metadata contains an element with the specified key; otherwise, <see langword="false"/>.</returns>
     public bool TryGetMetadata<T>(string key, [NotNullWhen(true)] out T? value)
     {
-        if (!_metadata.TryGetValue(key, out object? objectValue) || objectValue is not T result)
+        if (!_metadata.TryGetValue(key, out JsonNode? jsonNode))
         {
             value = default;
             return false;
         }
 
-        value = result;
-        return true;
+        try
+        {
+            T? deserialized = jsonNode.Deserialize<T>(JsonSerializerOptions);
+            if (deserialized != null)
+            {
+                value = deserialized;
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+        catch (Exception)
+        {
+            value = default;
+            return false;
+        }
     }
 
     /// <summary>
@@ -97,7 +116,8 @@ public class InstalledEntry
     /// <param name="value">The value to set.</param>
     public void SetMetadata(string key, object value)
     {
-        _metadata[key] = value;
+        JsonNode? jsonNode = JsonSerializer.SerializeToNode(value, JsonSerializerOptions);
+        _metadata[key] = jsonNode ?? throw new ArtemisWorkshopException("Failed to serialize metadata value");
     }
 
     /// <summary>

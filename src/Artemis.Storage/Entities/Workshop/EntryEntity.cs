@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Artemis.Storage.Entities.Workshop;
 
@@ -17,5 +18,5 @@ public class EntryEntity
     public string ReleaseVersion { get; set; } = string.Empty;
     public DateTimeOffset InstalledAt { get; set; }
 
-    public Dictionary<string,object>? Metadata { get; set; }
+    public Dictionary<string,JsonNode>? Metadata { get; set; }
 }

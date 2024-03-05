@@ -113,7 +113,7 @@ public abstract class InputProvider : IDisposable
     /// </summary>
     /// <param name="identifier">A value that can be used to identify this device</param>
     /// <param name="deviceType">The type of device this identifier belongs to</param>
-    protected virtual void OnIdentifierReceived(object identifier, InputDeviceType deviceType)
+    protected virtual void OnIdentifierReceived(string identifier, InputDeviceType deviceType)
     {
         IdentifierReceived?.Invoke(this, new InputProviderIdentifierEventArgs(identifier, deviceType));
     }

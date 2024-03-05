@@ -42,5 +42,5 @@ public class InputMappingEntity
 public class DeviceInputIdentifierEntity
 {
     public string InputProvider { get; set; } = string.Empty;
-    public object Identifier { get; set; } = string.Empty;
+    public string Identifier { get; set; } = string.Empty;
 }

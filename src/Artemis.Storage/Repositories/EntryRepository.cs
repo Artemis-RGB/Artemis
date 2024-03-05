@@ -1,54 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Artemis.Storage.Entities.Workshop;
 using Artemis.Storage.Repositories.Interfaces;
-using LiteDB;
 
 namespace Artemis.Storage.Repositories;
 
 internal class EntryRepository : IEntryRepository
 {
-    private readonly LiteRepository _repository;
+    private readonly ArtemisDbContext _dbContext;
 
-    public EntryRepository(LiteRepository repository)
+    public EntryRepository(ArtemisDbContext dbContext)
     {
-        _repository = repository;
-        _repository.Database.GetCollection<EntryEntity>().EnsureIndex(s => s.Id);
-        _repository.Database.GetCollection<EntryEntity>().EnsureIndex(s => s.EntryId);
+        _dbContext = dbContext;
     }
 
     public void Add(EntryEntity entryEntity)
     {
-        _repository.Insert(entryEntity);
+        _dbContext.Entries.Add(entryEntity);
+        SaveChanges();
     }
 
     public void Remove(EntryEntity entryEntity)
     {
-        _repository.Delete<EntryEntity>(entryEntity.Id);
+        _dbContext.Entries.Remove(entryEntity);
+        SaveChanges();
     }
 
     public EntryEntity? Get(Guid id)
     {
-        return _repository.FirstOrDefault<EntryEntity>(s => s.Id == id);
+        return _dbContext.Entries.FirstOrDefault(s => s.Id == id);
     }
 
     public EntryEntity? GetByEntryId(long entryId)
     {
-        return _repository.FirstOrDefault<EntryEntity>(s => s.EntryId == entryId);
+        return _dbContext.Entries.FirstOrDefault(s => s.EntryId == entryId);
     }
 
     public List<EntryEntity> GetAll()
     {
-        return _repository.Query<EntryEntity>().ToList();
+        return _dbContext.Entries.ToList();
     }
 
-    public void Save(EntryEntity entryEntity)
+    public void SaveChanges()
     {
-        _repository.Upsert(entryEntity);
-    }
-
-    public void Save(IEnumerable<EntryEntity> entryEntities)
-    {
-        _repository.Upsert(entryEntities);
+        _dbContext.SaveChanges();
     }
 }

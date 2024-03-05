@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
 using LiteDB;
@@ -8,36 +9,37 @@ namespace Artemis.Storage.Repositories;
 
 internal class ProfileRepository : IProfileRepository
 {
-    private readonly LiteRepository _repository;
+    private readonly ArtemisDbContext _dbContext;
 
-    public ProfileRepository(LiteRepository repository)
+    public ProfileRepository(ArtemisDbContext dbContext)
     {
-        _repository = repository;
-        _repository.Database.GetCollection<ProfileEntity>().EnsureIndex(s => s.Name);
+        _dbContext = dbContext;
     }
 
-    public void Add(ProfileEntity profileEntity)
+    public void Add(ProfileContainerEntity profileContainerEntity)
     {
-        _repository.Insert(profileEntity);
+        _dbContext.Profiles.Add(profileContainerEntity);
+        SaveChanges();
     }
 
-    public void Remove(ProfileEntity profileEntity)
+    public void Remove(ProfileContainerEntity profileContainerEntity)
     {
-        _repository.Delete<ProfileEntity>(profileEntity.Id);
+        _dbContext.Profiles.Remove(profileContainerEntity);
+        SaveChanges();
     }
 
-    public List<ProfileEntity> GetAll()
+    public List<ProfileContainerEntity> GetAll()
     {
-        return _repository.Query<ProfileEntity>().ToList();
+        return _dbContext.Profiles.ToList();
     }
 
-    public ProfileEntity? Get(Guid id)
+    public ProfileContainerEntity? Get(Guid id)
     {
-        return _repository.FirstOrDefault<ProfileEntity>(p => p.Id == id);
+        return _dbContext.Profiles.FirstOrDefault(c => c.Profile.Id == id);
     }
 
-    public void Save(ProfileEntity profileEntity)
+    public void SaveChanges()
     {
-        _repository.Upsert(profileEntity);
+        _dbContext.SaveChanges();
     }
 }

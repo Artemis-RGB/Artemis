@@ -145,19 +145,7 @@ public interface IPluginManagementService : IArtemisService, IDisposable
     /// <param name="device"></param>
     /// <returns></returns>
     DeviceProvider GetDeviceProviderByDevice(IRGBDevice device);
-
-    /// <summary>
-    ///     Queues the provided plugin to be deleted the next time Artemis starts, before plugins are loaded
-    /// </summary>
-    /// <param name="plugin">The plugin to delete</param>
-    void QueuePluginDeletion(Plugin plugin);
-
-    /// <summary>
-    ///     Removes the provided plugin for the deletion queue it was added to via <see cref="QueuePluginDeletion" />
-    /// </summary>
-    /// <param name="plugin">The plugin to dequeue</param>
-    void DequeuePluginDeletion(Plugin plugin);
-
+    
     /// <summary>
     ///     Occurs when built-in plugins are being loaded
     /// </summary>

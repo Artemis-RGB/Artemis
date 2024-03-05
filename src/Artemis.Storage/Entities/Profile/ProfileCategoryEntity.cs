@@ -12,5 +12,12 @@ public class ProfileCategoryEntity
     public bool IsSuspended { get; set; }
     public int Order { get; set; }
 
-    public List<ProfileConfigurationEntity> ProfileConfigurations { get; set; } = new();
+    public List<ProfileContainerEntity> ProfileConfigurations { get; set; } = new();
+}
+
+public class ProfileContainerEntity
+{
+    public byte[] Icon { get; set; } = Array.Empty<byte>();
+    public ProfileConfigurationEntity ProfileConfiguration { get; set; } = new();
+    public ProfileEntity Profile { get; set; } = new();
 }

@@ -171,7 +171,7 @@ public class WorkshopService : IWorkshopService
     public void SaveInstalledEntry(InstalledEntry entry)
     {
         entry.Save();
-        _entryRepository.Save(entry.Entity);
+        _entryRepository.SaveChanges();
     }
 
     /// <inheritdoc />

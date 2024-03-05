@@ -31,11 +31,9 @@ public static class ContainerExtensions
 
         // Bind storage
         container.RegisterDelegate(() => StorageManager.CreateRepository(Constants.DataFolder), Reuse.Singleton);
-        container.Register<StorageMigrationService>(Reuse.Singleton);
         container.RegisterMany(storageAssembly, type => type.IsAssignableTo<IRepository>(), Reuse.Singleton);
 
         // Bind migrations
-        container.RegisterMany(storageAssembly, type => type.IsAssignableTo<IStorageMigration>(), Reuse.Singleton, nonPublicServiceTypes: true);
         container.RegisterMany(storageAssembly, type => type.IsAssignableTo<IProfileMigration>(), Reuse.Singleton, nonPublicServiceTypes: true);
         
         container.RegisterMany(coreAssembly, type => type.IsAssignableTo<ILayoutProvider>(), Reuse.Singleton);

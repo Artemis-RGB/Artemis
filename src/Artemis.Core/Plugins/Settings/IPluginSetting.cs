@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 
 namespace Artemis.Core;
 
@@ -7,6 +8,11 @@ namespace Artemis.Core;
 /// </summary>
 public interface IPluginSetting
 {
+    /// <summary>
+    ///  The JSON serializer options used when serializing settings
+    /// </summary>
+    protected static readonly JsonSerializerOptions SerializerOptions = CoreJson.GetJsonSerializerOptions();
+
     /// <summary>
     ///     The name of the setting, unique to this plugin
     /// </summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Nodes;
 
 namespace Artemis.Storage.Entities.Plugins;
 
@@ -11,5 +12,5 @@ public class PluginSettingEntity
     public Guid PluginGuid { get; set; }
 
     public string Name { get; set; } = string.Empty;
-    public string Value { get; set; } = string.Empty;
+    public JsonNode Value { get; set; } = new JsonObject();
 }

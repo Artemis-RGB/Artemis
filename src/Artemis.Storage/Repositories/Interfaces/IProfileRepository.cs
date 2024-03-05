@@ -6,9 +6,9 @@ namespace Artemis.Storage.Repositories.Interfaces;
 
 public interface IProfileRepository : IRepository
 {
-    void Add(ProfileEntity profileEntity);
-    void Remove(ProfileEntity profileEntity);
-    List<ProfileEntity> GetAll();
-    ProfileEntity? Get(Guid id);
-    void Save(ProfileEntity profileEntity);
+    void Add(ProfileContainerEntity profileContainerEntity);
+    void Remove(ProfileContainerEntity profileContainerEntity);
+    List<ProfileContainerEntity> GetAll();
+    ProfileContainerEntity? Get(Guid id);
+    void SaveChanges();
 }

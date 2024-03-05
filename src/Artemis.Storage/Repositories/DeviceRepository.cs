@@ -1,47 +1,43 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
-using LiteDB;
 
 namespace Artemis.Storage.Repositories;
 
 internal class DeviceRepository : IDeviceRepository
 {
-    private readonly LiteRepository _repository;
+    private readonly ArtemisDbContext _dbContext;
 
-    public DeviceRepository(LiteRepository repository)
+    public DeviceRepository(ArtemisDbContext dbContext)
     {
-        _repository = repository;
-        _repository.Database.GetCollection<DeviceEntity>().EnsureIndex(s => s.Id);
+        _dbContext = dbContext;
     }
 
     public void Add(DeviceEntity deviceEntity)
     {
-        _repository.Insert(deviceEntity);
+        _dbContext.Devices.Add(deviceEntity);
+        SaveChanges();
     }
 
     public void Remove(DeviceEntity deviceEntity)
     {
-        _repository.Delete<DeviceEntity>(deviceEntity.Id);
+        _dbContext.Devices.Remove(deviceEntity);
+        SaveChanges();
     }
 
     public DeviceEntity? Get(string id)
     {
-        return _repository.FirstOrDefault<DeviceEntity>(s => s.Id == id);
+        return _dbContext.Devices.FirstOrDefault(d => d.Id == id);
     }
 
     public List<DeviceEntity> GetAll()
     {
-        return _repository.Query<DeviceEntity>().Include(s => s.InputIdentifiers).ToList();
+        return _dbContext.Devices.ToList();
     }
 
-    public void Save(DeviceEntity deviceEntity)
+    public void SaveChanges()
     {
-        _repository.Upsert(deviceEntity);
-    }
-
-    public void Save(IEnumerable<DeviceEntity> deviceEntities)
-    {
-        _repository.Upsert(deviceEntities);
+        _dbContext.SaveChanges();
     }
 }
