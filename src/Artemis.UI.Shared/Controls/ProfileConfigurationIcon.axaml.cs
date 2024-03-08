@@ -46,17 +46,10 @@ public partial class ProfileConfigurationIcon : UserControl, IDisposable
                     ? new MaterialIcon {Kind = parsedIcon!}
                     : new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
             }
+            else if (ConfigurationIcon.IconBytes != null)
+                Dispatcher.UIThread.Post(() => LoadFromBitmap(ConfigurationIcon, new MemoryStream(ConfigurationIcon.IconBytes)), DispatcherPriority.ApplicationIdle);
             else
-            {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    Stream? stream = ConfigurationIcon?.GetIconStream();
-                    if (stream == null || ConfigurationIcon == null)
-                        Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
-                    else
-                        LoadFromBitmap(ConfigurationIcon, stream);
-                }, DispatcherPriority.ApplicationIdle);
-            }
+                Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
         }
         catch (Exception)
         {

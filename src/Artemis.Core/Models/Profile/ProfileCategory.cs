@@ -175,7 +175,7 @@ public class ProfileCategory : CorePropertyChanged, IStorageModel
         Order = Entity.Order;
 
         _profileConfigurations.Clear();
-        foreach (ProfileConfigurationEntity entityProfileConfiguration in Entity.ProfileConfigurations)
+        foreach (ProfileContainerEntity entityProfileConfiguration in Entity.ProfileConfigurations)
             _profileConfigurations.Add(new ProfileConfiguration(this, entityProfileConfiguration));
     }
 
@@ -186,13 +186,10 @@ public class ProfileCategory : CorePropertyChanged, IStorageModel
         Entity.IsCollapsed = IsCollapsed;
         Entity.IsSuspended = IsSuspended;
         Entity.Order = Order;
-
+        
         Entity.ProfileConfigurations.Clear();
-        foreach (ProfileConfiguration profileConfiguration in ProfileConfigurations)
-        {
-            profileConfiguration.Save();
+        foreach (ProfileConfiguration profileConfiguration in _profileConfigurations)
             Entity.ProfileConfigurations.Add(profileConfiguration.Entity);
-        }
     }
 
     #endregion

@@ -24,6 +24,8 @@ public class PluginEntity
 /// </summary>
 public class PluginFeatureEntity
 {
+    public Guid Id { get; set; }
+    
     public string Type { get; set; } = string.Empty;
     public bool IsEnabled { get; set; }
 }

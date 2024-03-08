@@ -19,13 +19,7 @@ public interface IPluginSetting
     string Name { get; }
 
     /// <summary>
-    ///     Determines whether the setting has been changed
-    /// </summary>
-    bool HasChanged { get; }
-
-    /// <summary>
-    ///     Gets or sets whether changes must automatically be saved
-    ///     <para>Note: When set to <c>true</c> <see cref="HasChanged" /> is always <c>false</c></para>
+    ///     Gets or sets whether changes must automatically be saved     
     /// </summary>
     bool AutoSave { get; set; }
 

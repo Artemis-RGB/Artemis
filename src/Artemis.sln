@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Storage.Migrator", "Artemis.Storage.Migrator\Artemis.Storage.Migrator.csproj", "{D7B0966D-774A-40E4-9455-00C1261ACB6A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -71,6 +73,10 @@ Global
 		{2B982C2E-3CBC-4DAB-9167-CCCA4C78E92B}.Debug|x64.Build.0 = Debug|x64
 		{2B982C2E-3CBC-4DAB-9167-CCCA4C78E92B}.Release|x64.ActiveCfg = Release|x64
 		{2B982C2E-3CBC-4DAB-9167-CCCA4C78E92B}.Release|x64.Build.0 = Release|x64
+		{D7B0966D-774A-40E4-9455-00C1261ACB6A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D7B0966D-774A-40E4-9455-00C1261ACB6A}.Debug|x64.Build.0 = Debug|Any CPU
+		{D7B0966D-774A-40E4-9455-00C1261ACB6A}.Release|x64.ActiveCfg = Release|Any CPU
+		{D7B0966D-774A-40E4-9455-00C1261ACB6A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

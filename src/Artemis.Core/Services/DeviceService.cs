@@ -202,7 +202,7 @@ internal class DeviceService : IDeviceService
         _enabledDevices.Add(device);
         device.IsEnabled = true;
         device.Save();
-        _deviceRepository.Save(device.DeviceEntity);
+        _deviceRepository.SaveChanges();
 
         OnDeviceEnabled(new DeviceEventArgs(device));
         UpdateLeds();
@@ -217,7 +217,7 @@ internal class DeviceService : IDeviceService
         _enabledDevices.Remove(device);
         device.IsEnabled = false;
         device.Save();
-        _deviceRepository.Save(device.DeviceEntity);
+        _deviceRepository.SaveChanges();
 
         OnDeviceDisabled(new DeviceEventArgs(device));
         UpdateLeds();
@@ -227,7 +227,7 @@ internal class DeviceService : IDeviceService
     public void SaveDevice(ArtemisDevice artemisDevice)
     {
         artemisDevice.Save();
-        _deviceRepository.Save(artemisDevice.DeviceEntity);
+        _deviceRepository.SaveChanges();
         UpdateLeds();
     }
 
@@ -236,7 +236,7 @@ internal class DeviceService : IDeviceService
     {
         foreach (ArtemisDevice artemisDevice in _devices)
             artemisDevice.Save();
-        _deviceRepository.Save(_devices.Select(d => d.DeviceEntity));
+        _deviceRepository.SaveChanges();
         UpdateLeds();
     }
 
@@ -254,6 +254,8 @@ internal class DeviceService : IDeviceService
         {
             _logger.Information("No device config found for {DeviceInfo}, device hash: {DeviceHashCode}. Adding a new entry", rgbDevice.DeviceInfo, deviceIdentifier);
             device = new ArtemisDevice(rgbDevice, deviceProvider);
+            _deviceRepository.Add(device.DeviceEntity);
+            _deviceRepository.SaveChanges();
         }
 
         LoadDeviceLayout(device);

@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using Artemis.Storage.Entities.General;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Entities.Profile;
@@ -14,8 +18,16 @@ public class ArtemisDbContext : DbContext
     public DbSet<PluginEntity> Plugins => Set<PluginEntity>();
     public DbSet<PluginSettingEntity> PluginSettings => Set<PluginSettingEntity>();
     public DbSet<ProfileCategoryEntity> ProfileCategories => Set<ProfileCategoryEntity>();
-    public DbSet<ProfileContainerEntity> Profiles => Set<ProfileContainerEntity>();
     public DbSet<ReleaseEntity> Releases => Set<ReleaseEntity>();
+
+    public string DataFolder { get; set; } = string.Empty;
+    public JsonSerializerOptions JsonSerializerOptions { get; set; } = JsonSerializerOptions.Default;
+
+    /// <inheritdoc />
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlite($"Data Source={Path.Combine(DataFolder, "artemis.db")}");
+    }
 
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -23,15 +35,23 @@ public class ArtemisDbContext : DbContext
         modelBuilder.Entity<DeviceEntity>()
             .OwnsOne(d => d.InputIdentifiers, builder => builder.ToJson())
             .OwnsOne(d => d.InputMappings, builder => builder.ToJson());
-            
-        modelBuilder.Entity<EntryEntity>()
-            .OwnsOne(e => e.Metadata, builder => builder.ToJson());
 
-        modelBuilder.Entity<PluginSettingEntity>()
-            .OwnsOne(s => s.Value, builder => builder.ToJson());
+        modelBuilder.Entity<EntryEntity>()
+            .Property(e => e.Metadata)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, JsonSerializerOptions),
+                v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, JsonSerializerOptions) ?? new Dictionary<string, object>());
 
         modelBuilder.Entity<ProfileContainerEntity>()
-            .OwnsOne(c => c.ProfileConfiguration, builder => builder.ToJson())
-            .OwnsOne(c => c.Profile, builder => builder.ToJson());
+            .Property(e => e.ProfileConfiguration)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, JsonSerializerOptions),
+                v => JsonSerializer.Deserialize<ProfileConfigurationEntity>(v, JsonSerializerOptions) ?? new ProfileConfigurationEntity());
+        
+        modelBuilder.Entity<ProfileContainerEntity>()
+            .Property(e => e.Profile)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, JsonSerializerOptions),
+                v => JsonSerializer.Deserialize<ProfileEntity>(v, JsonSerializerOptions) ?? new ProfileEntity());
     }
 }

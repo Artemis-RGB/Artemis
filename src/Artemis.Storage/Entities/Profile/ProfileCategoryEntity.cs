@@ -14,10 +14,3 @@ public class ProfileCategoryEntity
 
     public List<ProfileContainerEntity> ProfileConfigurations { get; set; } = new();
 }
-
-public class ProfileContainerEntity
-{
-    public byte[] Icon { get; set; } = Array.Empty<byte>();
-    public ProfileConfigurationEntity ProfileConfiguration { get; set; } = new();
-    public ProfileEntity Profile { get; set; } = new();
-}

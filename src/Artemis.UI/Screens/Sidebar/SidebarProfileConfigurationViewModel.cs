@@ -40,15 +40,6 @@ public class SidebarProfileConfigurationViewModel : ActivatableViewModelBase
             .Select(p => p == null)
             .ToProperty(this, vm => vm.IsDisabled)
             .DisposeWith(d));
-
-        try
-        {
-            _profileService.LoadProfileConfigurationIcon(ProfileConfiguration);
-        }
-        catch (Exception)
-        {
-            // ignored, too bad but don't crash over corrupt icons
-        }
     }
 
     public ProfileConfiguration ProfileConfiguration { get; }

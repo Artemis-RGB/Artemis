@@ -25,7 +25,6 @@ internal class ProfileService : IProfileService
     private readonly IDeviceService _deviceService;
     private readonly List<ArtemisKeyboardKeyEventArgs> _pendingKeyboardEvents = new();
     private readonly List<ProfileCategory> _profileCategories;
-    private readonly IProfileRepository _profileRepository;
     private readonly List<IProfileMigration> _profileMigrators;
     private readonly List<Exception> _renderExceptions = new();
     private readonly List<Exception> _updateExceptions = new();
@@ -38,17 +37,17 @@ internal class ProfileService : IProfileService
         IPluginManagementService pluginManagementService,
         IInputService inputService,
         IDeviceService deviceService,
-        IProfileRepository profileRepository,
         List<IProfileMigration> profileMigrators)
     {
         _logger = logger;
         _profileCategoryRepository = profileCategoryRepository;
         _pluginManagementService = pluginManagementService;
         _deviceService = deviceService;
-        _profileRepository = profileRepository;
         _profileMigrators = profileMigrators;
         _profileCategories = new List<ProfileCategory>(_profileCategoryRepository.GetAll().Select(c => new ProfileCategory(c)).OrderBy(c => c.Order));
 
+        ProfileCategories = new ReadOnlyCollection<ProfileCategory>(_profileCategories);
+        
         _deviceService.LedsChanged += DeviceServiceOnLedsChanged;
         _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureToggled;
         _pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureToggled;
@@ -166,50 +165,7 @@ internal class ProfileService : IProfileService
     }
 
     /// <inheritdoc />
-    public ReadOnlyCollection<ProfileCategory> ProfileCategories
-    {
-        get
-        {
-            lock (_profileRepository)
-            {
-                return _profileCategories.AsReadOnly();
-            }
-        }
-    }
-
-    /// <inheritdoc />
-    public ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations
-    {
-        get
-        {
-            lock (_profileRepository)
-            {
-                return _profileCategories.SelectMany(c => c.ProfileConfigurations).ToList().AsReadOnly();
-            }
-        }
-    }
-
-    /// <inheritdoc />
-    public void LoadProfileConfigurationIcon(ProfileConfiguration profileConfiguration)
-    {
-        if (profileConfiguration.Icon.IconType == ProfileConfigurationIconType.MaterialIcon)
-            return;
-
-        using Stream? stream = _profileCategoryRepository.GetProfileIconStream(profileConfiguration.Entity.FileIconId);
-        if (stream != null)
-            profileConfiguration.Icon.SetIconByStream(stream);
-    }
-
-    /// <inheritdoc />
-    public void SaveProfileConfigurationIcon(ProfileConfiguration profileConfiguration)
-    {
-        if (profileConfiguration.Icon.IconType == ProfileConfigurationIconType.MaterialIcon)
-            return;
-
-        using Stream? stream = profileConfiguration.Icon.GetIconStream();
-        if (stream != null)
-            _profileCategoryRepository.SaveProfileIconStream(profileConfiguration.Entity, stream);
-    }
+    public ReadOnlyCollection<ProfileCategory> ProfileCategories { get; }
 
     /// <inheritdoc />
     public ProfileConfiguration CloneProfileConfiguration(ProfileConfiguration profileConfiguration)
@@ -226,21 +182,7 @@ internal class ProfileService : IProfileService
             return profileConfiguration.Profile;
         }
 
-        ProfileEntity? profileEntity;
-        try
-        {
-            profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
-        }
-        catch (Exception e)
-        {
-            profileConfiguration.SetBrokenState("Failed to activate profile", e);
-            throw;
-        }
-
-        if (profileEntity == null)
-            throw new ArtemisCoreException($"Cannot find profile named: {profileConfiguration.Name} ID: {profileConfiguration.Entity.ProfileId}");
-
-        Profile profile = new(profileConfiguration, profileEntity);
+        Profile profile = new(profileConfiguration, profileConfiguration.Entity.Profile);
         profile.PopulateLeds(_deviceService.EnabledDevices);
 
         if (profile.IsFreshImport)
@@ -285,39 +227,34 @@ internal class ProfileService : IProfileService
     {
         DeactivateProfile(profileConfiguration);
 
-        ProfileEntity? profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
-        if (profileEntity == null)
-            return;
+        ProfileCategory category = profileConfiguration.Category;
 
-        profileConfiguration.Category.RemoveProfileConfiguration(profileConfiguration);
-        _profileRepository.Remove(profileEntity);
-        SaveProfileCategory(profileConfiguration.Category);
+        category.RemoveProfileConfiguration(profileConfiguration);
+        category.Entity.ProfileConfigurations.Remove(profileConfiguration.Entity);
+
+        _profileCategoryRepository.SaveChanges();
     }
 
     /// <inheritdoc />
     public ProfileCategory CreateProfileCategory(string name, bool addToTop = false)
     {
         ProfileCategory profileCategory;
-        lock (_profileRepository)
+        if (addToTop)
         {
-            if (addToTop)
+            profileCategory = new ProfileCategory(name, 1);
+            foreach (ProfileCategory category in _profileCategories)
             {
-                profileCategory = new ProfileCategory(name, 1);
-                foreach (ProfileCategory category in _profileCategories)
-                {
-                    category.Order++;
-                    category.Save();
-                    _profileCategoryRepository.Save(category.Entity);
-                }
+                category.Order++;
+                category.Save();
             }
-            else
-            {
-                profileCategory = new ProfileCategory(name, _profileCategories.Count + 1);
-            }
-
-            _profileCategories.Add(profileCategory);
-            SaveProfileCategory(profileCategory);
         }
+        else
+        {
+            profileCategory = new ProfileCategory(name, _profileCategories.Count + 1);
+        }
+
+        _profileCategoryRepository.Add(profileCategory.Entity);
+        _profileCategories.Add(profileCategory);
 
         OnProfileCategoryAdded(new ProfileCategoryEventArgs(profileCategory));
         return profileCategory;
@@ -326,15 +263,11 @@ internal class ProfileService : IProfileService
     /// <inheritdoc />
     public void DeleteProfileCategory(ProfileCategory profileCategory)
     {
-        List<ProfileConfiguration> profileConfigurations = profileCategory.ProfileConfigurations.ToList();
-        foreach (ProfileConfiguration profileConfiguration in profileConfigurations)
+        foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations.ToList())
             RemoveProfileConfiguration(profileConfiguration);
 
-        lock (_profileRepository)
-        {
-            _profileCategories.Remove(profileCategory);
-            _profileCategoryRepository.Remove(profileCategory.Entity);
-        }
+        _profileCategories.Remove(profileCategory);
+        _profileCategoryRepository.Remove(profileCategory.Entity);
 
         OnProfileCategoryRemoved(new ProfileCategoryEventArgs(profileCategory));
     }
@@ -343,24 +276,20 @@ internal class ProfileService : IProfileService
     public ProfileConfiguration CreateProfileConfiguration(ProfileCategory category, string name, string icon)
     {
         ProfileConfiguration configuration = new(category, name, icon);
-        ProfileEntity entity = new();
-        _profileRepository.Add(entity);
 
-        configuration.Entity.ProfileId = entity.Id;
         category.AddProfileConfiguration(configuration, 0);
+        SaveProfileCategory(category);
         return configuration;
     }
 
     /// <inheritdoc />
     public void RemoveProfileConfiguration(ProfileConfiguration profileConfiguration)
     {
-        profileConfiguration.Category.RemoveProfileConfiguration(profileConfiguration);
+        ProfileCategory category = profileConfiguration.Category;
+        category.RemoveProfileConfiguration(profileConfiguration);
 
         DeactivateProfile(profileConfiguration);
         SaveProfileCategory(profileConfiguration.Category);
-        ProfileEntity? profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
-        if (profileEntity != null)
-            _profileRepository.Remove(profileEntity);
 
         profileConfiguration.Dispose();
     }
@@ -369,7 +298,7 @@ internal class ProfileService : IProfileService
     public void SaveProfileCategory(ProfileCategory profileCategory)
     {
         profileCategory.Save();
-        _profileCategoryRepository.Save(profileCategory.Entity);
+        _profileCategoryRepository.SaveChanges();
 
         lock (_profileCategories)
         {
@@ -392,11 +321,13 @@ internal class ProfileService : IProfileService
         profile.IsFreshImport = false;
         profile.ProfileEntity.IsFreshImport = false;
 
-        _profileRepository.Save(profile.ProfileEntity);
+        SaveProfileCategory(profile.Configuration.Category);
 
         // If the provided profile is external (cloned or from the workshop?) but it is loaded locally too, reload the local instance
         // A bit dodge but it ensures local instances always represent the latest stored version
-        ProfileConfiguration? localInstance = ProfileConfigurations.FirstOrDefault(p => p.Profile != null && p.Profile != profile && p.ProfileId == profile.ProfileEntity.Id);
+        ProfileConfiguration? localInstance = ProfileCategories
+            .SelectMany(c => c.ProfileConfigurations)
+            .FirstOrDefault(p => p.Profile != null && p.Profile != profile && p.ProfileId == profile.ProfileEntity.Id);
         if (localInstance == null)
             return;
         DeactivateProfile(localInstance);
@@ -406,12 +337,8 @@ internal class ProfileService : IProfileService
     /// <inheritdoc />
     public async Task<Stream> ExportProfile(ProfileConfiguration profileConfiguration)
     {
-        ProfileEntity? profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
-        if (profileEntity == null)
-            throw new ArtemisCoreException("Could not locate profile entity");
-
-        string configurationJson = CoreJson.Serialize(profileConfiguration.Entity);
-        string profileJson = CoreJson.Serialize(profileEntity);
+        string configurationJson = CoreJson.Serialize(profileConfiguration.Entity.ProfileConfiguration);
+        string profileJson = CoreJson.Serialize(profileConfiguration.Entity.Profile);
 
         MemoryStream archiveStream = new();
 
@@ -430,12 +357,11 @@ internal class ProfileService : IProfileService
                 await entryStream.WriteAsync(Encoding.Default.GetBytes(profileJson));
             }
 
-            await using Stream? iconStream = profileConfiguration.Icon.GetIconStream();
-            if (iconStream != null)
+            if (profileConfiguration.Icon.IconBytes != null)
             {
                 ZipArchiveEntry iconEntry = archive.CreateEntry("icon.png");
                 await using Stream entryStream = iconEntry.Open();
-                await iconStream.CopyToAsync(entryStream);
+                await entryStream.WriteAsync(profileConfiguration.Icon.IconBytes);
             }
         }
 
@@ -495,26 +421,26 @@ internal class ProfileService : IProfileService
         if (markAsFreshImport)
             profileEntity.IsFreshImport = true;
 
-        if (_profileRepository.Get(profileEntity.Id) == null)
-            _profileRepository.Add(profileEntity);
-        else
+        if (makeUnique && ProfileCategories.SelectMany(c => c.ProfileConfigurations).Any(c => c.ProfileId == profileEntity.Id))
             throw new ArtemisCoreException($"Cannot import this profile without {nameof(makeUnique)} being true");
 
-        // A new GUID will be given on save
-        configurationEntity.FileIconId = Guid.Empty;
-        ProfileConfiguration profileConfiguration = new(category, configurationEntity);
-        if (nameAffix != null)
-            profileConfiguration.Name = $"{profileConfiguration.Name} - {nameAffix}";
-
+        ProfileContainerEntity containerEntity = new() {ProfileConfiguration = configurationEntity, Profile = profileEntity};
         // If an icon was provided, import that as well
         if (iconEntry != null)
         {
             await using Stream iconStream = iconEntry.Open();
-            profileConfiguration.Icon.SetIconByStream(iconStream);
-            SaveProfileConfigurationIcon(profileConfiguration);
+            using MemoryStream ms = new();
+            await iconStream.CopyToAsync(ms);
+            containerEntity.Icon = ms.ToArray();
         }
 
-        profileConfiguration.Entity.ProfileId = profileEntity.Id;
+        // A new GUID will be given on save
+        configurationEntity.FileIconId = Guid.Empty;
+        ProfileConfiguration profileConfiguration = new(category, containerEntity);
+        if (nameAffix != null)
+            profileConfiguration.Name = $"{profileConfiguration.Name} - {nameAffix}";
+
+        profileConfiguration.Entity.ProfileConfiguration.ProfileId = profileEntity.Id;
         category.AddProfileConfiguration(profileConfiguration, targetIndex);
 
         List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>();
@@ -548,7 +474,7 @@ internal class ProfileService : IProfileService
             renderProfileElement.Save();
 
         _logger.Debug("Adapt profile - Saving " + profile);
-        _profileRepository.Save(profile.ProfileEntity);
+        SaveProfileCategory(profile.Configuration.Category);
     }
 
     private void InputServiceOnKeyboardKeyUp(object? sender, ArtemisKeyboardKeyEventArgs e)
@@ -565,7 +491,7 @@ internal class ProfileService : IProfileService
             return;
 
         configurationJson["Version"] ??= 0;
-        
+
         foreach (IProfileMigration profileMigrator in _profileMigrators.OrderBy(m => m.Version))
         {
             if (profileMigrator.Version <= configurationJson["Version"]!.GetValue<int>())
@@ -581,27 +507,27 @@ internal class ProfileService : IProfileService
     /// </summary>
     private void ActiveProfilesPopulateLeds()
     {
-        foreach (ProfileConfiguration profileConfiguration in ProfileConfigurations)
+        foreach (ProfileCategory profileCategory in ProfileCategories)
         {
-            if (profileConfiguration.Profile == null) continue;
-            profileConfiguration.Profile.PopulateLeds(_deviceService.EnabledDevices);
+            foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
+            {
+                if (profileConfiguration.Profile == null) continue;
+                profileConfiguration.Profile.PopulateLeds(_deviceService.EnabledDevices);
 
-            if (!profileConfiguration.Profile.IsFreshImport) continue;
-            _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profileConfiguration.Profile);
-            AdaptProfile(profileConfiguration.Profile);
+                if (!profileConfiguration.Profile.IsFreshImport) continue;
+                _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profileConfiguration.Profile);
+                AdaptProfile(profileConfiguration.Profile);
+            }
         }
     }
 
     private void UpdateModules()
     {
-        lock (_profileRepository)
+        List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>();
+        foreach (ProfileCategory profileCategory in ProfileCategories)
         {
-            List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>();
-            foreach (ProfileCategory profileCategory in _profileCategories)
-            {
-                foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
-                    profileConfiguration.LoadModules(modules);
-            }
+            foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
+                profileConfiguration.LoadModules(modules);
         }
     }
 

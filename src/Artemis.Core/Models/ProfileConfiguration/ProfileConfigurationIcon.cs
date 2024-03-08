@@ -10,13 +10,13 @@ namespace Artemis.Core;
 /// </summary>
 public class ProfileConfigurationIcon : CorePropertyChanged, IStorageModel
 {
-    private readonly ProfileConfigurationEntity _entity;
+    private readonly ProfileContainerEntity _entity;
     private bool _fill;
     private string? _iconName;
-    private Stream? _iconStream;
+    private byte[]? _iconBytes;
     private ProfileConfigurationIconType _iconType;
 
-    internal ProfileConfigurationIcon(ProfileConfigurationEntity entity)
+    internal ProfileConfigurationIcon(ProfileContainerEntity entity)
     {
         _entity = entity;
     }
@@ -49,15 +49,24 @@ public class ProfileConfigurationIcon : CorePropertyChanged, IStorageModel
     }
 
     /// <summary>
+    ///   Gets or sets the icon bytes if <see cref="IconType" /> is <see cref="ProfileConfigurationIconType.BitmapImage" />
+    /// </summary>
+    public byte[]? IconBytes
+    {
+        get => _iconBytes;
+        private set => SetAndNotify(ref _iconBytes, value);
+    }
+
+    /// <summary>
     ///     Updates the <see cref="IconName" /> to the provided value and changes the <see cref="IconType" /> is
     ///     <see cref="ProfileConfigurationIconType.MaterialIcon" />
     /// </summary>
     /// <param name="iconName">The name of the icon</param>
     public void SetIconByName(string iconName)
     {
-        if (iconName == null) throw new ArgumentNullException(nameof(iconName));
+        ArgumentNullException.ThrowIfNull(iconName);
 
-        _iconStream?.Dispose();
+        IconBytes = null;
         IconName = iconName;
         IconType = ProfileConfigurationIconType.MaterialIcon;
 
@@ -65,40 +74,25 @@ public class ProfileConfigurationIcon : CorePropertyChanged, IStorageModel
     }
 
     /// <summary>
-    ///     Updates the stream returned by <see cref="GetIconStream" /> to the provided stream
+    ///     Updates the <see cref="IconBytes" /> to the provided value and changes the <see cref="IconType" /> is
     /// </summary>
     /// <param name="stream">The stream to copy</param>
     public void SetIconByStream(Stream stream)
     {
-        if (stream == null) throw new ArgumentNullException(nameof(stream));
+        ArgumentNullException.ThrowIfNull(stream);
 
-        _iconStream?.Dispose();
-        _iconStream = new MemoryStream();
         if (stream.CanSeek)
             stream.Seek(0, SeekOrigin.Begin);
-        stream.CopyTo(_iconStream);
-        _iconStream.Seek(0, SeekOrigin.Begin);
+
+        using (MemoryStream ms = new())
+        {
+            stream.CopyTo(ms);
+            IconBytes = ms.ToArray();
+        }
 
         IconName = null;
         IconType = ProfileConfigurationIconType.BitmapImage;
         OnIconUpdated();
-    }
-
-    /// <summary>
-    ///     Creates a copy of the stream containing the icon
-    /// </summary>
-    /// <returns>A stream containing the icon</returns>
-    public Stream? GetIconStream()
-    {
-        if (_iconStream == null)
-            return null;
-
-        MemoryStream stream = new();
-        _iconStream.CopyTo(stream);
-
-        stream.Seek(0, SeekOrigin.Begin);
-        _iconStream.Seek(0, SeekOrigin.Begin);
-        return stream;
     }
 
     /// <summary>
@@ -119,21 +113,24 @@ public class ProfileConfigurationIcon : CorePropertyChanged, IStorageModel
     /// <inheritdoc />
     public void Load()
     {
-        IconType = (ProfileConfigurationIconType) _entity.IconType;
-        Fill = _entity.IconFill;
+        IconType = (ProfileConfigurationIconType) _entity.ProfileConfiguration.IconType;
+        Fill = _entity.ProfileConfiguration.IconFill;
         if (IconType != ProfileConfigurationIconType.MaterialIcon)
             return;
 
-        IconName = _entity.MaterialIcon;
+        IconName = _entity.ProfileConfiguration.MaterialIcon;
+        IconBytes = IconType == ProfileConfigurationIconType.BitmapImage ? _entity.Icon : null;
+
         OnIconUpdated();
     }
 
     /// <inheritdoc />
     public void Save()
     {
-        _entity.IconType = (int) IconType;
-        _entity.MaterialIcon = IconType == ProfileConfigurationIconType.MaterialIcon ? IconName : null;
-        _entity.IconFill = Fill;
+        _entity.ProfileConfiguration.IconType = (int) IconType;
+        _entity.ProfileConfiguration.MaterialIcon = IconType == ProfileConfigurationIconType.MaterialIcon ? IconName : null;
+        _entity.ProfileConfiguration.IconFill = Fill;
+        _entity.Icon = IconBytes ?? Array.Empty<byte>();
     }
 
     #endregion

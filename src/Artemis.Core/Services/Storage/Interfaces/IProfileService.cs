@@ -17,11 +17,6 @@ public interface IProfileService : IArtemisService
     ReadOnlyCollection<ProfileCategory> ProfileCategories { get; }
 
     /// <summary>
-    ///     Gets a read only collection containing all the profile configurations.
-    /// </summary>
-    ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations { get; }
-
-    /// <summary>
     ///     Gets or sets the focused profile configuration which is rendered exclusively.
     /// </summary>
     ProfileConfiguration? FocusProfile { get; set; }
@@ -100,16 +95,6 @@ public interface IProfileService : IArtemisService
     /// </summary>
     /// <param name="profileConfiguration"></param>
     void RemoveProfileConfiguration(ProfileConfiguration profileConfiguration);
-
-    /// <summary>
-    ///     Loads the icon of this profile configuration if needed and puts it into <c>ProfileConfiguration.Icon.FileIcon</c>.
-    /// </summary>
-    void LoadProfileConfigurationIcon(ProfileConfiguration profileConfiguration);
-
-    /// <summary>
-    ///     Saves the current icon of this profile.
-    /// </summary>
-    void SaveProfileConfigurationIcon(ProfileConfiguration profileConfiguration);
 
     /// <summary>
     ///     Writes the profile to persistent storage.

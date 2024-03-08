@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
 
@@ -24,7 +23,7 @@ public class PluginSetting<T> : CorePropertyChanged, IPluginSetting
         Name = pluginSettingEntity.Name;
         try
         {
-            _value = pluginSettingEntity.Value.Deserialize<T>(IPluginSetting.SerializerOptions) ?? default!;
+            _value = CoreJson.Deserialize<T>(pluginSettingEntity.Value)!;
         }
         catch (JsonException)
         {
@@ -77,7 +76,7 @@ public class PluginSetting<T> : CorePropertyChanged, IPluginSetting
     public string Name { get; }
 
     /// <inheritdoc />
-    public bool HasChanged => !JsonNode.DeepEquals(JsonSerializer.SerializeToNode(Value, IPluginSetting.SerializerOptions), _pluginSettingEntity.Value);
+    public bool HasChanged => CoreJson.Serialize(Value) != _pluginSettingEntity.Value;
 
     /// <inheritdoc />
     public bool AutoSave { get; set; }
@@ -85,7 +84,7 @@ public class PluginSetting<T> : CorePropertyChanged, IPluginSetting
     /// <inheritdoc />
     public void RejectChanges()
     {
-        Value = _pluginSettingEntity.Value.Deserialize<T>(IPluginSetting.SerializerOptions) ?? default!;
+        Value = CoreJson.Deserialize<T>(_pluginSettingEntity.Value);
     }
 
     /// <inheritdoc />
@@ -94,7 +93,7 @@ public class PluginSetting<T> : CorePropertyChanged, IPluginSetting
         if (!HasChanged)
             return;
 
-        _pluginSettingEntity.Value = JsonSerializer.SerializeToNode(Value, IPluginSetting.SerializerOptions) ?? new JsonObject();
+        _pluginSettingEntity.Value = CoreJson.Serialize(Value);
         _pluginRepository.SaveChanges();
         OnSettingSaved();
     }

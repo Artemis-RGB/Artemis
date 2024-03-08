@@ -59,4 +59,12 @@ public static class StorageManager
             throw new Exception($"LiteDB threw error code {e.ErrorCode}. See inner exception for more details", e);
         }
     }
+
+    public static ArtemisDbContext CreateDbContext(string dataFolder)
+    {
+        return new ArtemisDbContext()
+        {
+            DataFolder = dataFolder
+        };
+    }
 }

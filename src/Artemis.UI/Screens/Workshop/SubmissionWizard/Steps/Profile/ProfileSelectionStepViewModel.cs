@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -27,10 +28,7 @@ public partial class ProfileSelectionStepViewModel : SubmissionViewModel
         _profileService = profileService;
 
         // Use copies of the profiles, the originals are used by the core and could be disposed
-        Profiles = new ObservableCollection<ProfileConfiguration>(_profileService.ProfileConfigurations.Select(_profileService.CloneProfileConfiguration));
-        foreach (ProfileConfiguration profileConfiguration in Profiles)
-            _profileService.LoadProfileConfigurationIcon(profileConfiguration);
-
+        Profiles = new ObservableCollection<ProfileConfiguration>(_profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).Select(_profileService.CloneProfileConfiguration));
         ProfilePreview = profilePreviewViewModel;
 
         GoBack = ReactiveCommand.Create(() => State.ChangeScreen<EntryTypeStepViewModel>());
@@ -70,7 +68,7 @@ public partial class ProfileSelectionStepViewModel : SubmissionViewModel
 
         State.EntrySource = new ProfileEntrySource(SelectedProfile, SelectedProfile.GetFeatureDependencies().Distinct().ToList());
         State.Name = SelectedProfile.Name;
-        State.Icon = SelectedProfile.Icon.GetIconStream();
+        State.Icon = SelectedProfile.Icon.IconBytes != null ? new MemoryStream(SelectedProfile.Icon.IconBytes) : null;
 
         // Render the material icon of the profile
         if (State.Icon == null && SelectedProfile.Icon.IconName != null)

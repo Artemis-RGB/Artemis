@@ -807,7 +807,7 @@ internal class PluginManagementService : IPluginManagementService
                 plugin.Entity.Features.Add(featureInfo.Instance!.Entity);
         }
 
-        _pluginRepository.SavePlugin(plugin.Entity);
+        _pluginRepository.SaveChanges();
     }
 
     #endregion
