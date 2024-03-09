@@ -14,8 +14,6 @@ class Program
             .WithoutThrowOnRegisteringDisposableTransient());
 
         container.RegisterCore();
-        
         container.Resolve<ArtemisDbContext>().Database.EnsureCreated();
-        
     }
 }

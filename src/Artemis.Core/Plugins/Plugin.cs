@@ -23,14 +23,14 @@ public class Plugin : CorePropertyChanged, IDisposable
 
     private bool _isEnabled;
 
-    internal Plugin(PluginInfo info, DirectoryInfo directory, PluginEntity? pluginEntity)
+    internal Plugin(PluginInfo info, DirectoryInfo directory, PluginEntity pluginEntity, bool loadedFromStorage)
     {
         Info = info;
         Directory = directory;
-        Entity = pluginEntity ?? new PluginEntity {Id = Guid};
+        Entity = pluginEntity;
         Info.Plugin = this;
 
-        _loadedFromStorage = pluginEntity != null;
+        _loadedFromStorage = loadedFromStorage;
         _features = new List<PluginFeatureInfo>();
         _profilers = new List<Profiler>();
 

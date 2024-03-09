@@ -30,7 +30,6 @@ public static class ContainerExtensions
         container.RegisterMany(coreAssembly, type => type.IsAssignableTo<IProtectedArtemisService>(), Reuse.Singleton, setup: Setup.With(condition: HasAccessToProtectedService));
 
         // Bind storage
-        container.RegisterDelegate(() => StorageManager.CreateRepository(Constants.DataFolder), Reuse.Singleton);
         container.RegisterDelegate(() => StorageManager.CreateDbContext(Constants.DataFolder), Reuse.Transient);
         container.RegisterMany(storageAssembly, type => type.IsAssignableTo<IRepository>(), Reuse.Singleton);
         

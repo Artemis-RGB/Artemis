@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using Artemis.Core.JsonConverters;
+using Artemis.Storage.Entities.Plugins;
 
 namespace Artemis.Core;
 
@@ -90,7 +91,7 @@ public static class Constants
     /// <summary>
     ///     The plugin used by core components of Artemis
     /// </summary>
-    public static readonly Plugin CorePlugin = new(CorePluginInfo, new DirectoryInfo(ApplicationFolder), null);
+    public static readonly Plugin CorePlugin = new(CorePluginInfo, new DirectoryInfo(ApplicationFolder), new PluginEntity(){Id = CorePluginInfo.Guid}, false);
 
     /// <summary>
     ///     A read-only collection containing all primitive numeric types

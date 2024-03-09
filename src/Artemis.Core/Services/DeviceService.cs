@@ -255,7 +255,6 @@ internal class DeviceService : IDeviceService
             _logger.Information("No device config found for {DeviceInfo}, device hash: {DeviceHashCode}. Adding a new entry", rgbDevice.DeviceInfo, deviceIdentifier);
             device = new ArtemisDevice(rgbDevice, deviceProvider);
             _deviceRepository.Add(device.DeviceEntity);
-            _deviceRepository.SaveChanges();
         }
 
         LoadDeviceLayout(device);

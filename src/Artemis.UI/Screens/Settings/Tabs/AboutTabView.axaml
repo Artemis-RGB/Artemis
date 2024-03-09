@@ -174,16 +174,15 @@
                         <StackPanel Grid.Row="0" Grid.Column="0">
                             <TextBlock Classes="library-name">Avalonia</TextBlock>
                             <TextBlock Classes="library-name">DryIoc</TextBlock>
+                            <TextBlock Classes="library-name">Entity Framework Core</TextBlock>
                             <TextBlock Classes="library-name">FluentAvalonia</TextBlock>
                             <TextBlock Classes="library-name">EmbedIO</TextBlock>
                             <TextBlock Classes="library-name">Humanizer</TextBlock>
-                            <TextBlock Classes="library-name">LiteDB</TextBlock>
                             <TextBlock Classes="library-name">McMaster.NETCore.Plugins</TextBlock>
-                            <TextBlock Classes="library-name">Newtonsoft.Json</TextBlock>
                             <TextBlock Classes="library-name">RGB.NET</TextBlock>
                             <TextBlock Classes="library-name">Serilog</TextBlock>
                             <TextBlock Classes="library-name">SkiaSharp</TextBlock>
-                            <TextBlock Classes="library-name">Unclassified.NetRevisionTask</TextBlock>
+                            <TextBlock Classes="library-name">SQLite</TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Column="1">
                             <controls:HyperlinkButton NavigateUri="https://avaloniaui.net/">
@@ -191,6 +190,9 @@
                             </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://github.com/dadhi/DryIoc">
                                 https://github.com/dadhi/DryIoc
+                            </controls:HyperlinkButton>
+                            <controls:HyperlinkButton NavigateUri="https://learn.microsoft.com/en-us/ef/core/">
+                                https://learn.microsoft.com/en-us/ef/core/
                             </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://github.com/amwx/FluentAvalonia">
                                 https://github.com/amwx/FluentAvalonia
@@ -201,14 +203,8 @@
                             <controls:HyperlinkButton NavigateUri="https://github.com/Humanizr/Humanizer">
                                 https://github.com/Humanizr/Humanizer
                             </controls:HyperlinkButton>
-                            <controls:HyperlinkButton NavigateUri="https://www.litedb.org/">
-                                https://www.litedb.org/
-                            </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://github.com/natemcmaster/DotNetCorePlugins">
                                 https://github.com/natemcmaster/DotNetCorePlugins
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton NavigateUri="https://www.newtonsoft.com/json">
-                                https://www.newtonsoft.com/json
                             </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://github.com/DarthAffe/RGB.NET">
                                 https://github.com/DarthAffe/RGB.NET
@@ -218,9 +214,9 @@
                             </controls:HyperlinkButton>
                             <controls:HyperlinkButton NavigateUri="https://github.com/mono/SkiaSharp">
                                 https://github.com/mono/SkiaSharp
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton NavigateUri="https://unclassified.software/en/apps/netrevisiontask">
-                                https://unclassified.software/en/apps/netrevisiontask
+                            </controls:HyperlinkButton>    
+                            <controls:HyperlinkButton NavigateUri="https://www.sqlite.org/">
+                                https://www.sqlite.org/
                             </controls:HyperlinkButton>
                         </StackPanel>
                     </Grid>

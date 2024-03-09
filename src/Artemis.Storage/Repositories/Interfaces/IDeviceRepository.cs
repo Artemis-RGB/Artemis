@@ -8,6 +8,6 @@ public interface IDeviceRepository : IRepository
     void Add(DeviceEntity deviceEntity);
     void Remove(DeviceEntity deviceEntity);
     DeviceEntity? Get(string id);
-    List<DeviceEntity> GetAll();
+    IEnumerable<DeviceEntity> GetAll();
     void SaveChanges();
 }

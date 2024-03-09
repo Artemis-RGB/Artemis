@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using LiteDB;
+using Microsoft.EntityFrameworkCore;
 
 namespace Artemis.Storage;
 
 public static class StorageManager
 {
+    private static bool _ranMigrations;
     private static bool _inUse;
 
     /// <summary>
@@ -19,7 +20,7 @@ public static class StorageManager
         if (_inUse)
             throw new Exception("Storage is already in use, can't backup now.");
 
-        string database = Path.Combine(dataFolder, "database.db");
+        string database = Path.Combine(dataFolder, "artemis.db");
         if (!File.Exists(database))
             return;
 
@@ -36,35 +37,20 @@ public static class StorageManager
             oldest.Delete();
         }
 
-        File.Copy(database, Path.Combine(backupFolder, $"database-{DateTime.Now:yyyy-dd-M--HH-mm-ss}.db"));
+        File.Copy(database, Path.Combine(backupFolder, $"artemis-{DateTime.Now:yyyy-dd-M--HH-mm-ss}.db"));
     }
-
-    /// <summary>
-    ///     Creates the LiteRepository that will be managed by dependency injection
-    /// </summary>
-    /// <param name="dataFolder">The Artemis data folder</param>
-    public static LiteRepository CreateRepository(string dataFolder)
-    {
-        if (_inUse)
-            throw new Exception("Storage is already in use, use dependency injection to get the repository.");
-
-        try
-        {
-            _inUse = true;
-            return new LiteRepository($"FileName={Path.Combine(dataFolder, "database.db")}");
-        }
-        catch (LiteException e)
-        {
-            // I don't like this way of error reporting, now I need to use reflection if I want a meaningful error message
-            throw new Exception($"LiteDB threw error code {e.ErrorCode}. See inner exception for more details", e);
-        }
-    }
-
+    
     public static ArtemisDbContext CreateDbContext(string dataFolder)
     {
-        return new ArtemisDbContext()
-        {
-            DataFolder = dataFolder
-        };
+        _inUse = true;
+
+        ArtemisDbContext dbContext = new() {DataFolder = dataFolder};
+        if (_ranMigrations)
+            return dbContext;
+
+        dbContext.Database.Migrate();
+        _ranMigrations = true;
+
+        return dbContext;
     }
 }

@@ -41,7 +41,7 @@ internal class PluginManagementService : IPluginManagementService
         _pluginRepository = pluginRepository;
         _deviceRepository = deviceRepository;
         _plugins = new List<Plugin>();
-        
+
         StartHotReload();
     }
 
@@ -372,7 +372,15 @@ internal class PluginManagementService : IPluginManagementService
         }
 
         // Load the entity and fall back on creating a new one
-        Plugin plugin = new(pluginInfo, directory, _pluginRepository.GetPluginByGuid(pluginInfo.Guid));
+        PluginEntity? entity = _pluginRepository.GetPluginByGuid(pluginInfo.Guid);
+        bool loadedFromStorage = entity != null;
+        if (entity == null)
+        {
+            entity = new PluginEntity {Id = pluginInfo.Guid};
+            _pluginRepository.AddPlugin(entity);
+        }
+
+        Plugin plugin = new(pluginInfo, directory, entity, loadedFromStorage);
         OnPluginLoading(new PluginEventArgs(plugin));
 
         // Locate the main assembly entry
@@ -796,7 +804,7 @@ internal class PluginManagementService : IPluginManagementService
     }
 
     #endregion
-    
+
     #region Storage
 
     private void SavePlugin(Plugin plugin)

@@ -31,9 +31,9 @@ internal class DeviceRepository : IDeviceRepository
         return _dbContext.Devices.FirstOrDefault(d => d.Id == id);
     }
 
-    public List<DeviceEntity> GetAll()
+    public IEnumerable<DeviceEntity> GetAll()
     {
-        return _dbContext.Devices.ToList();
+        return _dbContext.Devices;
     }
 
     public void SaveChanges()

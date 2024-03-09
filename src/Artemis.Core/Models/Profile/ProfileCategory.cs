@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core;
@@ -15,7 +16,6 @@ public class ProfileCategory : CorePropertyChanged, IStorageModel
     /// </summary>
     public static readonly ProfileCategory Empty = new("Empty", -1);
     
-    private readonly List<ProfileConfiguration> _profileConfigurations = new();
     private bool _isCollapsed;
     private bool _isSuspended;
     private string _name;
@@ -31,14 +31,16 @@ public class ProfileCategory : CorePropertyChanged, IStorageModel
         _name = name;
         _order = order;
         Entity = new ProfileCategoryEntity();
-        ProfileConfigurations = new ReadOnlyCollection<ProfileConfiguration>(_profileConfigurations);
+        ProfileConfigurations = new ReadOnlyCollection<ProfileConfiguration>([]);
+        
+        Save();
     }
 
     internal ProfileCategory(ProfileCategoryEntity entity)
     {
         _name = null!;
         Entity = entity;
-        ProfileConfigurations = new ReadOnlyCollection<ProfileConfiguration>(_profileConfigurations);
+        ProfileConfigurations = new ReadOnlyCollection<ProfileConfiguration>([]);
 
         Load();
     }
@@ -83,7 +85,7 @@ public class ProfileCategory : CorePropertyChanged, IStorageModel
     /// <summary>
     ///     Gets a read only collection of the profiles inside this category
     /// </summary>
-    public ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations { get; }
+    public ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations { get; private set; }
 
     /// <summary>
     ///     Gets the unique ID of this category
@@ -98,27 +100,30 @@ public class ProfileCategory : CorePropertyChanged, IStorageModel
     /// </summary>
     public void AddProfileConfiguration(ProfileConfiguration configuration, int? targetIndex)
     {
+        List<ProfileConfiguration> targetList = ProfileConfigurations.ToList();
+        
         // TODO: Look into this, it doesn't seem to make sense
         // Removing the original will shift every item in the list forwards, keep that in mind with the target index
-        if (configuration.Category == this && targetIndex != null && targetIndex.Value > _profileConfigurations.IndexOf(configuration))
+        if (configuration.Category == this && targetIndex != null && targetIndex.Value > targetList.IndexOf(configuration))
             targetIndex -= 1;
 
         configuration.Category.RemoveProfileConfiguration(configuration);
-
+        
         if (targetIndex != null)
         {
-            targetIndex = Math.Clamp(targetIndex.Value, 0, _profileConfigurations.Count);
-            _profileConfigurations.Insert(targetIndex.Value, configuration);
+            targetIndex = Math.Clamp(targetIndex.Value, 0, targetList.Count);
+            targetList.Insert(targetIndex.Value, configuration);
         }
         else
         {
-            _profileConfigurations.Add(configuration);
+            targetList.Add(configuration);
         }
 
         configuration.Category = this;
+        ProfileConfigurations = new ReadOnlyCollection<ProfileConfiguration>(targetList);
 
-        for (int index = 0; index < _profileConfigurations.Count; index++)
-            _profileConfigurations[index].Order = index;
+        for (int index = 0; index < ProfileConfigurations.Count; index++)
+            ProfileConfigurations[index].Order = index;
         OnProfileConfigurationAdded(new ProfileConfigurationEventArgs(configuration));
     }
 
@@ -156,11 +161,10 @@ public class ProfileCategory : CorePropertyChanged, IStorageModel
 
     internal void RemoveProfileConfiguration(ProfileConfiguration configuration)
     {
-        if (!_profileConfigurations.Remove(configuration))
-            return;
-
-        for (int index = 0; index < _profileConfigurations.Count; index++)
-            _profileConfigurations[index].Order = index;
+        ProfileConfigurations = new ReadOnlyCollection<ProfileConfiguration>(ProfileConfigurations.Where(pc => pc != configuration).ToList());
+        for (int index = 0; index < ProfileConfigurations.Count; index++)
+            ProfileConfigurations[index].Order = index;
+        
         OnProfileConfigurationRemoved(new ProfileConfigurationEventArgs(configuration));
     }
 
@@ -174,9 +178,7 @@ public class ProfileCategory : CorePropertyChanged, IStorageModel
         IsSuspended = Entity.IsSuspended;
         Order = Entity.Order;
 
-        _profileConfigurations.Clear();
-        foreach (ProfileContainerEntity entityProfileConfiguration in Entity.ProfileConfigurations)
-            _profileConfigurations.Add(new ProfileConfiguration(this, entityProfileConfiguration));
+        ProfileConfigurations = new ReadOnlyCollection<ProfileConfiguration>(Entity.ProfileConfigurations.Select(pc => new ProfileConfiguration(this, pc)).ToList());
     }
 
     /// <inheritdoc />
@@ -188,7 +190,7 @@ public class ProfileCategory : CorePropertyChanged, IStorageModel
         Entity.Order = Order;
         
         Entity.ProfileConfigurations.Clear();
-        foreach (ProfileConfiguration profileConfiguration in _profileConfigurations)
+        foreach (ProfileConfiguration profileConfiguration in ProfileConfigurations)
             Entity.ProfileConfigurations.Add(profileConfiguration.Entity);
     }
 

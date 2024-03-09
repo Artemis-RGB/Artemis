@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.AdaptionHints;
-using LiteDB;
 
 namespace Artemis.Storage.Entities.Profile;
 
@@ -24,9 +23,6 @@ public class LayerEntity : RenderElementEntity
     public PropertyGroupEntity? GeneralPropertyGroup { get; set; }
     public PropertyGroupEntity? TransformPropertyGroup { get; set; }
     public LayerBrushEntity? LayerBrush { get; set; }
-
-    [BsonRef("ProfileEntity")]
-    public ProfileEntity Profile { get; set; } = null!;
 
     public Guid ProfileId { get; set; }
 }

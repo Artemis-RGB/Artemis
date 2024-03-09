@@ -87,7 +87,7 @@ public partial class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewMod
     public ReactiveCommand<ArtemisDevice, Unit> SendToBack { get; }
     public ReactiveCommand<ArtemisDevice, Unit> SendBackward { get; }
 
-    public double MaxTextureSize => 4096 / _settingsService.GetSetting("Core.RenderScale", 0.25).Value;
+    public double MaxTextureSize => 4096 / _settingsService.GetSetting("Core.RenderScale", 0.5).Value;
 
     public void UpdateSelection(List<SurfaceDeviceViewModel> devices, bool expand, bool invert)
     {

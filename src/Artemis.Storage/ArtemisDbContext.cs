@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
@@ -47,7 +46,7 @@ public class ArtemisDbContext : DbContext
             .HasConversion(
                 v => JsonSerializer.Serialize(v, JsonSerializerOptions),
                 v => JsonSerializer.Deserialize<ProfileConfigurationEntity>(v, JsonSerializerOptions) ?? new ProfileConfigurationEntity());
-        
+
         modelBuilder.Entity<ProfileContainerEntity>()
             .Property(e => e.Profile)
             .HasConversion(

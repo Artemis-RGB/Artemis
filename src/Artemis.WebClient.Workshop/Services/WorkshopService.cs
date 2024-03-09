@@ -171,7 +171,12 @@ public class WorkshopService : IWorkshopService
     public void SaveInstalledEntry(InstalledEntry entry)
     {
         entry.Save();
-        _entryRepository.SaveChanges();
+        
+        // Upsert for plebs
+        if (entry.Entity.Id == Guid.Empty)
+            _entryRepository.Add(entry.Entity);
+        else
+            _entryRepository.SaveChanges();
     }
 
     /// <inheritdoc />

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -24,7 +25,6 @@ internal class ProfileService : IProfileService
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IDeviceService _deviceService;
     private readonly List<ArtemisKeyboardKeyEventArgs> _pendingKeyboardEvents = new();
-    private readonly List<ProfileCategory> _profileCategories;
     private readonly List<IProfileMigration> _profileMigrators;
     private readonly List<Exception> _renderExceptions = new();
     private readonly List<Exception> _updateExceptions = new();
@@ -44,17 +44,16 @@ internal class ProfileService : IProfileService
         _pluginManagementService = pluginManagementService;
         _deviceService = deviceService;
         _profileMigrators = profileMigrators;
-        _profileCategories = new List<ProfileCategory>(_profileCategoryRepository.GetAll().Select(c => new ProfileCategory(c)).OrderBy(c => c.Order));
 
-        ProfileCategories = new ReadOnlyCollection<ProfileCategory>(_profileCategories);
-        
+        ProfileCategories = new ReadOnlyCollection<ProfileCategory>(_profileCategoryRepository.GetAll().Select(c => new ProfileCategory(c)).OrderBy(c => c.Order).ToList());
+
         _deviceService.LedsChanged += DeviceServiceOnLedsChanged;
         _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureToggled;
         _pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureToggled;
 
         inputService.KeyboardKeyUp += InputServiceOnKeyboardKeyUp;
 
-        if (!_profileCategories.Any())
+        if (!ProfileCategories.Any())
             CreateDefaultProfileCategories();
         UpdateModules();
     }
@@ -76,55 +75,52 @@ internal class ProfileService : IProfileService
             return;
         }
 
-        lock (_profileCategories)
+        // Iterate the children in reverse because the first category must be rendered last to end up on top
+        for (int i = ProfileCategories.Count - 1; i > -1; i--)
         {
-            // Iterate the children in reverse because the first category must be rendered last to end up on top
-            for (int i = _profileCategories.Count - 1; i > -1; i--)
+            ProfileCategory profileCategory = ProfileCategories[i];
+            for (int j = profileCategory.ProfileConfigurations.Count - 1; j > -1; j--)
             {
-                ProfileCategory profileCategory = _profileCategories[i];
-                for (int j = profileCategory.ProfileConfigurations.Count - 1; j > -1; j--)
+                ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
+
+                // Process hotkeys that where pressed since this profile last updated
+                ProcessPendingKeyEvents(profileConfiguration);
+
+                bool shouldBeActive = profileConfiguration.ShouldBeActive(false);
+                if (shouldBeActive)
                 {
-                    ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
+                    profileConfiguration.Update();
+                    shouldBeActive = profileConfiguration.ActivationConditionMet;
+                }
 
-                    // Process hotkeys that where pressed since this profile last updated
-                    ProcessPendingKeyEvents(profileConfiguration);
-
-                    bool shouldBeActive = profileConfiguration.ShouldBeActive(false);
-                    if (shouldBeActive)
+                try
+                {
+                    // Make sure the profile is active or inactive according to the parameters above
+                    if (shouldBeActive && profileConfiguration.Profile == null && profileConfiguration.BrokenState != "Failed to activate profile")
+                        profileConfiguration.TryOrBreak(() => ActivateProfile(profileConfiguration), "Failed to activate profile");
+                    if (shouldBeActive && profileConfiguration.Profile != null && !profileConfiguration.Profile.ShouldDisplay)
+                        profileConfiguration.Profile.ShouldDisplay = true;
+                    else if (!shouldBeActive && profileConfiguration.Profile != null)
                     {
-                        profileConfiguration.Update();
-                        shouldBeActive = profileConfiguration.ActivationConditionMet;
+                        if (!profileConfiguration.FadeInAndOut)
+                            DeactivateProfile(profileConfiguration);
+                        else if (!profileConfiguration.Profile.ShouldDisplay && profileConfiguration.Profile.Opacity <= 0)
+                            DeactivateProfile(profileConfiguration);
+                        else if (profileConfiguration.Profile.Opacity > 0)
+                            RequestDeactivation(profileConfiguration);
                     }
 
-                    try
-                    {
-                        // Make sure the profile is active or inactive according to the parameters above
-                        if (shouldBeActive && profileConfiguration.Profile == null && profileConfiguration.BrokenState != "Failed to activate profile")
-                            profileConfiguration.TryOrBreak(() => ActivateProfile(profileConfiguration), "Failed to activate profile");
-                        if (shouldBeActive && profileConfiguration.Profile != null && !profileConfiguration.Profile.ShouldDisplay)
-                            profileConfiguration.Profile.ShouldDisplay = true;
-                        else if (!shouldBeActive && profileConfiguration.Profile != null)
-                        {
-                            if (!profileConfiguration.FadeInAndOut)
-                                DeactivateProfile(profileConfiguration);
-                            else if (!profileConfiguration.Profile.ShouldDisplay && profileConfiguration.Profile.Opacity <= 0)
-                                DeactivateProfile(profileConfiguration);
-                            else if (profileConfiguration.Profile.Opacity > 0)
-                                RequestDeactivation(profileConfiguration);
-                        }
-
-                        profileConfiguration.Profile?.Update(deltaTime);
-                    }
-                    catch (Exception e)
-                    {
-                        _updateExceptions.Add(e);
-                    }
+                    profileConfiguration.Profile?.Update(deltaTime);
+                }
+                catch (Exception e)
+                {
+                    _updateExceptions.Add(e);
                 }
             }
-
-            LogProfileUpdateExceptions();
-            _pendingKeyboardEvents.Clear();
         }
+
+        LogProfileUpdateExceptions();
+        _pendingKeyboardEvents.Clear();
     }
 
     /// <inheritdoc />
@@ -137,35 +133,32 @@ internal class ProfileService : IProfileService
             return;
         }
 
-        lock (_profileCategories)
+        // Iterate the children in reverse because the first category must be rendered last to end up on top
+        for (int i = ProfileCategories.Count - 1; i > -1; i--)
         {
-            // Iterate the children in reverse because the first category must be rendered last to end up on top
-            for (int i = _profileCategories.Count - 1; i > -1; i--)
+            ProfileCategory profileCategory = ProfileCategories[i];
+            for (int j = profileCategory.ProfileConfigurations.Count - 1; j > -1; j--)
             {
-                ProfileCategory profileCategory = _profileCategories[i];
-                for (int j = profileCategory.ProfileConfigurations.Count - 1; j > -1; j--)
+                try
                 {
-                    try
-                    {
-                        ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
-                        // Ensure all criteria are met before rendering
-                        bool fadingOut = profileConfiguration.Profile?.ShouldDisplay == false && profileConfiguration.Profile?.Opacity > 0;
-                        if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && (profileConfiguration.ActivationConditionMet || fadingOut))
-                            profileConfiguration.Profile?.Render(canvas, SKPointI.Empty, null);
-                    }
-                    catch (Exception e)
-                    {
-                        _renderExceptions.Add(e);
-                    }
+                    ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
+                    // Ensure all criteria are met before rendering
+                    bool fadingOut = profileConfiguration.Profile?.ShouldDisplay == false && profileConfiguration.Profile?.Opacity > 0;
+                    if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && (profileConfiguration.ActivationConditionMet || fadingOut))
+                        profileConfiguration.Profile?.Render(canvas, SKPointI.Empty, null);
+                }
+                catch (Exception e)
+                {
+                    _renderExceptions.Add(e);
                 }
             }
-
-            LogProfileRenderExceptions();
         }
+
+        LogProfileRenderExceptions();
     }
 
     /// <inheritdoc />
-    public ReadOnlyCollection<ProfileCategory> ProfileCategories { get; }
+    public ReadOnlyCollection<ProfileCategory> ProfileCategories { get; private set; }
 
     /// <inheritdoc />
     public ProfileConfiguration CloneProfileConfiguration(ProfileConfiguration profileConfiguration)
@@ -242,7 +235,7 @@ internal class ProfileService : IProfileService
         if (addToTop)
         {
             profileCategory = new ProfileCategory(name, 1);
-            foreach (ProfileCategory category in _profileCategories)
+            foreach (ProfileCategory category in ProfileCategories)
             {
                 category.Order++;
                 category.Save();
@@ -250,11 +243,11 @@ internal class ProfileService : IProfileService
         }
         else
         {
-            profileCategory = new ProfileCategory(name, _profileCategories.Count + 1);
+            profileCategory = new ProfileCategory(name, ProfileCategories.Count + 1);
         }
 
         _profileCategoryRepository.Add(profileCategory.Entity);
-        _profileCategories.Add(profileCategory);
+        ProfileCategories = new ReadOnlyCollection<ProfileCategory>([..ProfileCategories, profileCategory]);
 
         OnProfileCategoryAdded(new ProfileCategoryEventArgs(profileCategory));
         return profileCategory;
@@ -266,7 +259,7 @@ internal class ProfileService : IProfileService
         foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations.ToList())
             RemoveProfileConfiguration(profileConfiguration);
 
-        _profileCategories.Remove(profileCategory);
+        ProfileCategories = new ReadOnlyCollection<ProfileCategory>(ProfileCategories.Where(c => c != profileCategory).ToList());
         _profileCategoryRepository.Remove(profileCategory.Entity);
 
         OnProfileCategoryRemoved(new ProfileCategoryEventArgs(profileCategory));
@@ -299,16 +292,14 @@ internal class ProfileService : IProfileService
     {
         profileCategory.Save();
         _profileCategoryRepository.SaveChanges();
-
-        lock (_profileCategories)
-        {
-            _profileCategories.Sort((a, b) => a.Order - b.Order);
-        }
+        ProfileCategories = new ReadOnlyCollection<ProfileCategory>(ProfileCategories.OrderBy(c => c.Order).ToList());
     }
 
     /// <inheritdoc />
     public void SaveProfile(Profile profile, bool includeChildren)
     {
+        Stopwatch sw = new();
+        sw.Start();
         _logger.Debug("Updating profile - Saving {Profile}", profile);
         profile.Save();
         if (includeChildren)
@@ -329,9 +320,17 @@ internal class ProfileService : IProfileService
             .SelectMany(c => c.ProfileConfigurations)
             .FirstOrDefault(p => p.Profile != null && p.Profile != profile && p.ProfileId == profile.ProfileEntity.Id);
         if (localInstance == null)
+        {
+            sw.Stop();
+            _logger.Debug("Updated profile - Saved {Profile} in {Time}ms", profile, sw.Elapsed.TotalMilliseconds);
             return;
+        }
+
         DeactivateProfile(localInstance);
         ActivateProfile(localInstance);
+        
+        sw.Stop();
+        _logger.Debug("Updated profile - Saved {Profile} in {Time}ms", profile, sw.Elapsed.TotalMilliseconds);
     }
 
     /// <inheritdoc />
@@ -479,10 +478,7 @@ internal class ProfileService : IProfileService
 
     private void InputServiceOnKeyboardKeyUp(object? sender, ArtemisKeyboardKeyEventArgs e)
     {
-        lock (_profileCategories)
-        {
-            _pendingKeyboardEvents.Add(e);
-        }
+        _pendingKeyboardEvents.Add(e);
     }
 
     private void MigrateProfile(JsonObject? configurationJson, JsonObject? profileJson)

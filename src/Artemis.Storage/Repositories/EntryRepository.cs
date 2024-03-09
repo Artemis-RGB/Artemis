@@ -37,9 +37,9 @@ internal class EntryRepository : IEntryRepository
         return _dbContext.Entries.FirstOrDefault(s => s.EntryId == entryId);
     }
 
-    public List<EntryEntity> GetAll()
+    public IEnumerable<EntryEntity> GetAll()
     {
-        return _dbContext.Entries.ToList();
+        return _dbContext.Entries;
     }
 
     public void SaveChanges()

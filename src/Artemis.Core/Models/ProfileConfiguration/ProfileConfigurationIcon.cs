@@ -115,12 +115,12 @@ public class ProfileConfigurationIcon : CorePropertyChanged, IStorageModel
     {
         IconType = (ProfileConfigurationIconType) _entity.ProfileConfiguration.IconType;
         Fill = _entity.ProfileConfiguration.IconFill;
-        if (IconType != ProfileConfigurationIconType.MaterialIcon)
-            return;
 
-        IconName = _entity.ProfileConfiguration.MaterialIcon;
-        IconBytes = IconType == ProfileConfigurationIconType.BitmapImage ? _entity.Icon : null;
-
+        if (IconType == ProfileConfigurationIconType.MaterialIcon)
+            IconName = _entity.ProfileConfiguration.MaterialIcon;
+        else
+            IconBytes = _entity.Icon;
+        
         OnIconUpdated();
     }
 

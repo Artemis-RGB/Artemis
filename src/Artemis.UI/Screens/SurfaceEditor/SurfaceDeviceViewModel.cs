@@ -97,7 +97,7 @@ public partial class SurfaceDeviceViewModel : ActivatableViewModelBase
         if (x < 0 || y < 0)
             return false;
 
-        double maxTextureSize = 4096 / _settingsService.GetSetting("Core.RenderScale", 0.25).Value;
+        double maxTextureSize = 4096 / _settingsService.GetSetting("Core.RenderScale", 0.5).Value;
         if (x + Device.Rectangle.Width > maxTextureSize || y + Device.Rectangle.Height > maxTextureSize)
             return false;
 

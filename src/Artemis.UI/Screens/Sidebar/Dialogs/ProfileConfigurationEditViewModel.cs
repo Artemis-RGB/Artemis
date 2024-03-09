@@ -122,6 +122,7 @@ public partial class ProfileConfigurationEditViewModel : DialogViewModelBase<Pro
         ProfileConfiguration.FadeInAndOut = FadeInAndOut;
 
         await SaveIcon();
+        ProfileConfiguration.Save();
 
         _profileService.SaveProfileCategory(_profileCategory);
         Close(ProfileConfiguration);

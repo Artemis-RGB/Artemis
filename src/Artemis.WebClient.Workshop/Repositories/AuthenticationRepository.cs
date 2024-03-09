@@ -1,31 +1,30 @@
-using Artemis.WebClient.Workshop.Entities;
-using LiteDB;
+using Artemis.Core;
+using Artemis.Core.Services;
 
 namespace Artemis.WebClient.Workshop.Repositories;
 
 internal class AuthenticationRepository : IAuthenticationRepository
 {
-    private readonly LiteRepository _repository;
+    private readonly PluginSetting<string> _refreshToken;
 
-    public AuthenticationRepository(LiteRepository repository)
+    public AuthenticationRepository(ISettingsService settingsService)
     {
-        _repository = repository;
-        _repository.Database.GetCollection<RefreshTokenEntity>().EnsureIndex(s => s.RefreshToken);
+        // Of course anyone can grab these indirectly, but that goes for whatever we do.
+        // ISettingsService is a protected service so we at least don't make it very straightforward.
+        _refreshToken = settingsService.GetSetting<string>("Workshop.RefreshToken");
     }
 
     /// <inheritdoc />
     public void SetRefreshToken(string? refreshToken)
     {
-        _repository.Database.GetCollection<RefreshTokenEntity>().DeleteAll();
-
-        if (refreshToken != null)
-            _repository.Insert(new RefreshTokenEntity {RefreshToken = refreshToken});
+        _refreshToken.Value = refreshToken;
+        _refreshToken.Save();
     }
 
     /// <inheritdoc />
     public string? GetRefreshToken()
     {
-        return _repository.Query<RefreshTokenEntity>().FirstOrDefault()?.RefreshToken;
+        return _refreshToken.Value;
     }
 }
 
