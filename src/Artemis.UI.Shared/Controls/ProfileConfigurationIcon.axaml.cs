@@ -59,20 +59,27 @@ public partial class ProfileConfigurationIcon : UserControl, IDisposable
 
     private void LoadFromBitmap(Core.ProfileConfigurationIcon configurationIcon, Stream stream)
     {
-        _stream = stream;
-        if (!configurationIcon.Fill)
+        try
         {
-            Content = new Image {Source = new Bitmap(stream)};
-            return;
-        }
+            _stream = stream;
+            if (!configurationIcon.Fill)
+            {
+                Content = new Image {Source = new Bitmap(stream)};
+                return;
+            }
 
-        Content = new Border
+            Content = new Border
+            {
+                Background = TextElement.GetForeground(this),
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                OpacityMask = new ImageBrush(new Bitmap(stream))
+            };
+        }
+        catch (Exception)
         {
-            Background = TextElement.GetForeground(this),
-            VerticalAlignment = VerticalAlignment.Stretch,
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            OpacityMask = new ImageBrush(new Bitmap(stream))
-        };
+            Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
+        }
     }
 
     private void OnDetachedFromLogicalTree(object? sender, LogicalTreeAttachmentEventArgs e)

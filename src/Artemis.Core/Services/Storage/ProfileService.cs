@@ -434,7 +434,6 @@ internal class ProfileService : IProfileService
         }
 
         // A new GUID will be given on save
-        configurationEntity.FileIconId = Guid.Empty;
         ProfileConfiguration profileConfiguration = new(category, containerEntity);
         if (nameAffix != null)
             profileConfiguration.Name = $"{profileConfiguration.Name} - {nameAffix}";

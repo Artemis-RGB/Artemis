@@ -1,12 +1,12 @@
-﻿using System;
-using Artemis.Storage.Entities.Profile.Nodes;
+﻿using Artemis.Storage.Migrator.Legacy.Entities.Profile.Nodes;
 
-namespace Artemis.Storage.Entities.Profile;
+namespace Artemis.Storage.Migrator.Legacy.Entities.Profile;
 
 public class ProfileConfigurationEntity
 {
     public string Name { get; set; } = string.Empty;
     public string? MaterialIcon { get; set; }
+    public Guid FileIconId { get; set; }
     public int IconType { get; set; }
     public bool IconFill { get; set; }
     public int Order { get; set; }
