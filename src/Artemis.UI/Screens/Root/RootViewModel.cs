@@ -19,6 +19,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using ReactiveUI;
+using Serilog;
 
 namespace Artemis.UI.Screens.Root;
 
@@ -28,13 +29,15 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
     private readonly IDebugService _debugService;
     private readonly DefaultTitleBarViewModel _defaultTitleBarViewModel;
     private readonly IClassicDesktopStyleApplicationLifetime _lifeTime;
+    private readonly ILogger _logger;
     private readonly IRouter _router;
     private readonly ISettingsService _settingsService;
     private readonly IUpdateService _updateService;
     private readonly IWindowService _windowService;
     private readonly ObservableAsPropertyHelper<ViewModelBase?> _titleBarViewModel;
 
-    public RootViewModel(IRouter router,
+    public RootViewModel(ILogger logger,
+        IRouter router,
         ICoreService coreService,
         ISettingsService settingsService,
         IRegistrationService registrationService,
@@ -50,6 +53,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         WindowSizeSetting = settingsService.GetSetting<WindowSize?>("WindowSize");
         SidebarViewModel = sidebarViewModel;
 
+        _logger = logger;
         _router = router;
         _coreService = coreService;
         _settingsService = settingsService;
@@ -81,19 +85,27 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
 
         Task.Run(() =>
         {
-            // Before doing heavy lifting, initialize the update service which may prompt a restart
-            // Only initialize with an update check if we're not going to show the UI
-            if (_updateService.Initialize(!ShouldShowUI()))
-                return;
+            try
+            {
+                // Before doing heavy lifting, initialize the update service which may prompt a restart
+                // Only initialize with an update check if we're not going to show the UI
+                if (_updateService.Initialize(!ShouldShowUI()))
+                    return;
 
-            // Workshop service goes first so it has a chance to clean up old workshop entries and introduce new ones
-            workshopService.Initialize();
-            // Core is initialized now that everything is ready to go
-            coreService.Initialize();
+                // Workshop service goes first so it has a chance to clean up old workshop entries and introduce new ones
+                workshopService.Initialize();
+                // Core is initialized now that everything is ready to go
+                coreService.Initialize();
 
-            registrationService.RegisterBuiltInDataModelDisplays();
-            registrationService.RegisterBuiltInDataModelInputs();
-            registrationService.RegisterBuiltInPropertyEditors();
+                registrationService.RegisterBuiltInDataModelDisplays();
+                registrationService.RegisterBuiltInDataModelInputs();
+                registrationService.RegisterBuiltInPropertyEditors();
+            }
+            catch (Exception e)
+            {
+                _logger.Fatal(e, "Error during initialization");
+                _windowService.ShowExceptionDialog("Fatal error occured during initialization", e);
+            }
         });
     }
 
