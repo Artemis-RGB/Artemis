@@ -21,6 +21,7 @@
         <PackageReference Include="Material.Icons.Avalonia" />
         <PackageReference Include="ReactiveUI" />
         <PackageReference Include="ReactiveUI.Validation" />
+        <PackageReference Include="JetBrains.Annotations" PrivateAssets="All"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />

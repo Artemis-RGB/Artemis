@@ -9,5 +9,6 @@ public interface IDeviceRepository : IRepository
     void Remove(DeviceEntity deviceEntity);
     DeviceEntity? Get(string id);
     IEnumerable<DeviceEntity> GetAll();
-    void SaveChanges();
+    void Save(DeviceEntity deviceEntity);
+    void SaveRange(IEnumerable<DeviceEntity> deviceEntities);
 }

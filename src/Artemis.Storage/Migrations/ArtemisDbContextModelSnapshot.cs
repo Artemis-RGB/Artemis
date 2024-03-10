@@ -28,9 +28,15 @@ namespace Artemis.Storage.Migrations
 
                     b.Property<string>("Version")
                         .IsRequired()
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InstalledAt");
+
+                    b.HasIndex("Version")
+                        .IsUnique();
 
                     b.ToTable("Releases");
                 });
@@ -44,7 +50,13 @@ namespace Artemis.Storage.Migrations
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("INTEGER");
 
+                    b.Property<Guid>("PluginGuid")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PluginGuid")
+                        .IsUnique();
 
                     b.ToTable("Plugins");
                 });
@@ -69,7 +81,7 @@ namespace Artemis.Storage.Migrations
 
                     b.HasIndex("PluginEntityId");
 
-                    b.ToTable("PluginFeatureEntity");
+                    b.ToTable("PluginFeatures");
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.Plugins.PluginSettingEntity", b =>
@@ -80,6 +92,7 @@ namespace Artemis.Storage.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(128)
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("PluginGuid")
@@ -90,6 +103,11 @@ namespace Artemis.Storage.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PluginGuid");
+
+                    b.HasIndex("Name", "PluginGuid")
+                        .IsUnique();
 
                     b.ToTable("PluginSettings");
                 });
@@ -108,12 +126,16 @@ namespace Artemis.Storage.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Order")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("ProfileCategories");
                 });
@@ -143,12 +165,13 @@ namespace Artemis.Storage.Migrations
 
                     b.HasIndex("ProfileCategoryId");
 
-                    b.ToTable("ProfileContainerEntity");
+                    b.ToTable("ProfileContainers");
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.Surface.DeviceEntity", b =>
                 {
                     b.Property<string>("Id")
+                        .HasMaxLength(512)
                         .HasColumnType("TEXT");
 
                     b.Property<float>("BlueScale")
@@ -160,6 +183,7 @@ namespace Artemis.Storage.Migrations
 
                     b.Property<string>("DeviceProvider")
                         .IsRequired()
+                        .HasMaxLength(512)
                         .HasColumnType("TEXT");
 
                     b.Property<float>("GreenScale")
@@ -169,12 +193,15 @@ namespace Artemis.Storage.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("LayoutParameter")
+                        .HasMaxLength(512)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("LayoutType")
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("LogicalLayout")
+                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("PhysicalLayout")
@@ -223,7 +250,6 @@ namespace Artemis.Storage.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Metadata")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -238,6 +264,9 @@ namespace Artemis.Storage.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EntryId")
+                        .IsUnique();
 
                     b.ToTable("Entries");
                 });

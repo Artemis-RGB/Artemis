@@ -5,34 +5,24 @@ using Artemis.Storage.Repositories.Interfaces;
 
 namespace Artemis.Storage.Repositories;
 
-public class ReleaseRepository : IReleaseRepository
+public class ReleaseRepository(Func<ArtemisDbContext> getContext) : IReleaseRepository
 {
-    private readonly ArtemisDbContext _dbContext;
-
-    public ReleaseRepository(ArtemisDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public bool SaveVersionInstallDate(string version)
     {
-        ReleaseEntity? release = _dbContext.Releases.FirstOrDefault(r => r.Version == version);
+        using ArtemisDbContext dbContext = getContext();
+        
+        ReleaseEntity? release = dbContext.Releases.FirstOrDefault(r => r.Version == version);
         if (release != null)
             return false;
 
-        _dbContext.Releases.Add(new ReleaseEntity {Version = version, InstalledAt = DateTimeOffset.UtcNow});
-        _dbContext.SaveChanges();
+        dbContext.Releases.Add(new ReleaseEntity {Version = version, InstalledAt = DateTimeOffset.UtcNow});
+        dbContext.SaveChanges();
         return true;
     }
 
     public ReleaseEntity? GetPreviousInstalledVersion()
     {
-        return _dbContext.Releases.OrderByDescending(r => r.InstalledAt).Skip(1).FirstOrDefault();
+        using ArtemisDbContext dbContext = getContext();
+        return dbContext.Releases.OrderByDescending(r => r.InstalledAt).Skip(1).FirstOrDefault();
     }
-}
-
-public interface IReleaseRepository : IRepository
-{
-    bool SaveVersionInstallDate(string version);
-    ReleaseEntity? GetPreviousInstalledVersion();
 }

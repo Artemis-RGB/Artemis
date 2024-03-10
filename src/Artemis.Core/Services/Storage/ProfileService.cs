@@ -22,6 +22,7 @@ internal class ProfileService : IProfileService
 {
     private readonly ILogger _logger;
     private readonly IProfileCategoryRepository _profileCategoryRepository;
+    private readonly IProfileRepository _profileRepository;
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IDeviceService _deviceService;
     private readonly List<ArtemisKeyboardKeyEventArgs> _pendingKeyboardEvents = new();
@@ -34,6 +35,7 @@ internal class ProfileService : IProfileService
 
     public ProfileService(ILogger logger,
         IProfileCategoryRepository profileCategoryRepository,
+        IProfileRepository profileRepository,
         IPluginManagementService pluginManagementService,
         IInputService inputService,
         IDeviceService deviceService,
@@ -41,6 +43,7 @@ internal class ProfileService : IProfileService
     {
         _logger = logger;
         _profileCategoryRepository = profileCategoryRepository;
+        _profileRepository = profileRepository;
         _pluginManagementService = pluginManagementService;
         _deviceService = deviceService;
         _profileMigrators = profileMigrators;
@@ -214,20 +217,7 @@ internal class ProfileService : IProfileService
 
         profileConfiguration.Profile.ShouldDisplay = false;
     }
-
-    /// <inheritdoc />
-    public void DeleteProfile(ProfileConfiguration profileConfiguration)
-    {
-        DeactivateProfile(profileConfiguration);
-
-        ProfileCategory category = profileConfiguration.Category;
-
-        category.RemoveProfileConfiguration(profileConfiguration);
-        category.Entity.ProfileConfigurations.Remove(profileConfiguration.Entity);
-
-        _profileCategoryRepository.SaveChanges();
-    }
-
+    
     /// <inheritdoc />
     public ProfileCategory CreateProfileCategory(string name, bool addToTop = false)
     {
@@ -240,6 +230,8 @@ internal class ProfileService : IProfileService
                 category.Order++;
                 category.Save();
             }
+
+            _profileCategoryRepository.SaveRange(ProfileCategories.Select(c => c.Entity).ToList());
         }
         else
         {
@@ -274,32 +266,32 @@ internal class ProfileService : IProfileService
         SaveProfileCategory(category);
         return configuration;
     }
-
+    
     /// <inheritdoc />
     public void RemoveProfileConfiguration(ProfileConfiguration profileConfiguration)
     {
-        ProfileCategory category = profileConfiguration.Category;
-        category.RemoveProfileConfiguration(profileConfiguration);
-
         DeactivateProfile(profileConfiguration);
-        SaveProfileCategory(profileConfiguration.Category);
 
-        profileConfiguration.Dispose();
+        ProfileCategory category = profileConfiguration.Category;
+
+        category.RemoveProfileConfiguration(profileConfiguration);
+        category.Save();
+
+        _profileRepository.Remove(profileConfiguration.Entity);
+        _profileCategoryRepository.Save(category.Entity);
     }
 
     /// <inheritdoc />
     public void SaveProfileCategory(ProfileCategory profileCategory)
     {
         profileCategory.Save();
-        _profileCategoryRepository.SaveChanges();
+        _profileCategoryRepository.Save(profileCategory.Entity);
         ProfileCategories = new ReadOnlyCollection<ProfileCategory>(ProfileCategories.OrderBy(c => c.Order).ToList());
     }
 
     /// <inheritdoc />
     public void SaveProfile(Profile profile, bool includeChildren)
     {
-        Stopwatch sw = new();
-        sw.Start();
         _logger.Debug("Updating profile - Saving {Profile}", profile);
         profile.Save();
         if (includeChildren)
@@ -312,7 +304,7 @@ internal class ProfileService : IProfileService
         profile.IsFreshImport = false;
         profile.ProfileEntity.IsFreshImport = false;
 
-        SaveProfileCategory(profile.Configuration.Category);
+        _profileRepository.Save(profile.Configuration.Entity);
 
         // If the provided profile is external (cloned or from the workshop?) but it is loaded locally too, reload the local instance
         // A bit dodge but it ensures local instances always represent the latest stored version
@@ -320,17 +312,10 @@ internal class ProfileService : IProfileService
             .SelectMany(c => c.ProfileConfigurations)
             .FirstOrDefault(p => p.Profile != null && p.Profile != profile && p.ProfileId == profile.ProfileEntity.Id);
         if (localInstance == null)
-        {
-            sw.Stop();
-            _logger.Debug("Updated profile - Saved {Profile} in {Time}ms", profile, sw.Elapsed.TotalMilliseconds);
             return;
-        }
 
         DeactivateProfile(localInstance);
         ActivateProfile(localInstance);
-        
-        sw.Stop();
-        _logger.Debug("Updated profile - Saved {Profile} in {Time}ms", profile, sw.Elapsed.TotalMilliseconds);
     }
 
     /// <inheritdoc />
@@ -393,7 +378,7 @@ internal class ProfileService : IProfileService
         JsonObject? profileJson = CoreJson.Deserialize<JsonObject>(await profileReader.ReadToEndAsync());
 
         // Before deserializing, apply any pending migrations
-        MigrateProfile(configurationJson, profileJson);
+        _profileRepository.MigrateProfile(configurationJson, profileJson);
 
         // Deserialize profile configuration to ProfileConfigurationEntity
         ProfileConfigurationEntity? configurationEntity = configurationJson?.Deserialize<ProfileConfigurationEntity>(Constants.JsonConvertSettings);
@@ -453,7 +438,7 @@ internal class ProfileService : IProfileService
     {
         ProfileConfiguration imported = await ImportProfile(archiveStream, profileConfiguration.Category, true, true, null, profileConfiguration.Order + 1);
 
-        DeleteProfile(profileConfiguration);
+        RemoveProfileConfiguration(profileConfiguration);
         SaveProfileCategory(imported.Category);
 
         return imported;
@@ -479,24 +464,7 @@ internal class ProfileService : IProfileService
     {
         _pendingKeyboardEvents.Add(e);
     }
-
-    private void MigrateProfile(JsonObject? configurationJson, JsonObject? profileJson)
-    {
-        if (configurationJson == null || profileJson == null)
-            return;
-
-        configurationJson["Version"] ??= 0;
-
-        foreach (IProfileMigration profileMigrator in _profileMigrators.OrderBy(m => m.Version))
-        {
-            if (profileMigrator.Version <= configurationJson["Version"]!.GetValue<int>())
-                continue;
-
-            profileMigrator.Migrate(configurationJson, profileJson);
-            configurationJson["Version"] = profileMigrator.Version;
-        }
-    }
-
+    
     /// <summary>
     ///     Populates all missing LEDs on all currently active profiles
     /// </summary>

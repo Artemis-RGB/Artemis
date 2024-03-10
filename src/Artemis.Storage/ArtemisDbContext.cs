@@ -15,8 +15,10 @@ public class ArtemisDbContext : DbContext
     public DbSet<DeviceEntity> Devices => Set<DeviceEntity>();
     public DbSet<EntryEntity> Entries => Set<EntryEntity>();
     public DbSet<PluginEntity> Plugins => Set<PluginEntity>();
+    public DbSet<PluginFeatureEntity> PluginFeatures => Set<PluginFeatureEntity>();
     public DbSet<PluginSettingEntity> PluginSettings => Set<PluginSettingEntity>();
     public DbSet<ProfileCategoryEntity> ProfileCategories => Set<ProfileCategoryEntity>();
+    public DbSet<ProfileContainerEntity> ProfileContainers => Set<ProfileContainerEntity>();
     public DbSet<ReleaseEntity> Releases => Set<ReleaseEntity>();
 
     public string DataFolder { get; set; } = string.Empty;

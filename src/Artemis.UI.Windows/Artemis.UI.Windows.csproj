@@ -30,6 +30,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
+        <ProjectReference Include="..\Artemis.Storage.Legacy\Artemis.Storage.Legacy.csproj" />
         <ProjectReference Include="..\Artemis.UI\Artemis.UI.csproj" />
     </ItemGroup>
 </Project>

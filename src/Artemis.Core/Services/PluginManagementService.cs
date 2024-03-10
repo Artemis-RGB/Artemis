@@ -372,12 +372,12 @@ internal class PluginManagementService : IPluginManagementService
         }
 
         // Load the entity and fall back on creating a new one
-        PluginEntity? entity = _pluginRepository.GetPluginByGuid(pluginInfo.Guid);
+        PluginEntity? entity = _pluginRepository.GetPluginByPluginGuid(pluginInfo.Guid);
         bool loadedFromStorage = entity != null;
         if (entity == null)
         {
-            entity = new PluginEntity {Id = pluginInfo.Guid};
-            _pluginRepository.AddPlugin(entity);
+            entity = new PluginEntity {PluginGuid = pluginInfo.Guid};
+            _pluginRepository.SavePlugin(entity);
         }
 
         Plugin plugin = new(pluginInfo, directory, entity, loadedFromStorage);
@@ -815,7 +815,7 @@ internal class PluginManagementService : IPluginManagementService
                 plugin.Entity.Features.Add(featureInfo.Instance!.Entity);
         }
 
-        _pluginRepository.SaveChanges();
+        _pluginRepository.SavePlugin(plugin.Entity);
     }
 
     #endregion

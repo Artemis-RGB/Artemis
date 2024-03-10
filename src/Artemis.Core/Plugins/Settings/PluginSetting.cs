@@ -94,7 +94,7 @@ public class PluginSetting<T> : CorePropertyChanged, IPluginSetting
             return;
 
         _pluginSettingEntity.Value = CoreJson.Serialize(Value);
-        _pluginRepository.SaveChanges();
+        _pluginRepository.SaveSetting(_pluginSettingEntity);
         OnSettingSaved();
     }
 

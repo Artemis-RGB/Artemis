@@ -54,13 +54,7 @@ public interface IProfileService : IArtemisService
     /// </summary>
     /// <param name="profileConfiguration">The profile configuration of the profile to activate.</param>
     void DeactivateProfile(ProfileConfiguration profileConfiguration);
-
-    /// <summary>
-    ///     Permanently deletes the profile of the given <see cref="ProfileConfiguration" />.
-    /// </summary>
-    /// <param name="profileConfiguration">The profile configuration of the profile to delete.</param>
-    void DeleteProfile(ProfileConfiguration profileConfiguration);
-
+    
     /// <summary>
     ///     Saves the provided <see cref="ProfileCategory" /> and it's <see cref="ProfileConfiguration" />s but not the
     ///     <see cref="Profile" />s themselves.

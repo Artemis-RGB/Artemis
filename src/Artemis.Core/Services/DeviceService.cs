@@ -202,7 +202,7 @@ internal class DeviceService : IDeviceService
         _enabledDevices.Add(device);
         device.IsEnabled = true;
         device.Save();
-        _deviceRepository.SaveChanges();
+        _deviceRepository.Save(device.DeviceEntity);
 
         OnDeviceEnabled(new DeviceEventArgs(device));
         UpdateLeds();
@@ -217,7 +217,7 @@ internal class DeviceService : IDeviceService
         _enabledDevices.Remove(device);
         device.IsEnabled = false;
         device.Save();
-        _deviceRepository.SaveChanges();
+        _deviceRepository.Save(device.DeviceEntity);
 
         OnDeviceDisabled(new DeviceEventArgs(device));
         UpdateLeds();
@@ -227,7 +227,7 @@ internal class DeviceService : IDeviceService
     public void SaveDevice(ArtemisDevice artemisDevice)
     {
         artemisDevice.Save();
-        _deviceRepository.SaveChanges();
+        _deviceRepository.Save(artemisDevice.DeviceEntity);
         UpdateLeds();
     }
 
@@ -236,7 +236,7 @@ internal class DeviceService : IDeviceService
     {
         foreach (ArtemisDevice artemisDevice in _devices)
             artemisDevice.Save();
-        _deviceRepository.SaveChanges();
+        _deviceRepository.SaveRange(_devices.Select(d => d.DeviceEntity));
         UpdateLeds();
     }
 

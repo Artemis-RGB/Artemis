@@ -309,13 +309,7 @@ public class Plugin : CorePropertyChanged, IDisposable
     {
         FeatureRemoved?.Invoke(this, e);
     }
-
-    internal void ApplyToEntity()
-    {
-        Entity.Id = Guid;
-        Entity.IsEnabled = IsEnabled;
-    }
-
+    
     internal void AddFeature(PluginFeatureInfo featureInfo)
     {
         if (featureInfo.Plugin != this)

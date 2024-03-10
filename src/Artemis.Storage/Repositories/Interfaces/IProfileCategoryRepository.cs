@@ -12,5 +12,6 @@ public interface IProfileCategoryRepository : IRepository
     List<ProfileCategoryEntity> GetAll();
     ProfileCategoryEntity? Get(Guid id);
     bool IsUnique(string name, Guid? id);
-    void SaveChanges();
+    void Save(ProfileCategoryEntity profileCategoryEntity);
+    void SaveRange(List<ProfileCategoryEntity> profileCategoryEntities);
 }

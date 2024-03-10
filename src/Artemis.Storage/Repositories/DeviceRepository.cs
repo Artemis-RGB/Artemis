@@ -1,43 +1,50 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
 
 namespace Artemis.Storage.Repositories;
 
-internal class DeviceRepository : IDeviceRepository
+internal class DeviceRepository(Func<ArtemisDbContext> getContext) : IDeviceRepository
 {
-    private readonly ArtemisDbContext _dbContext;
-
-    public DeviceRepository(ArtemisDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public void Add(DeviceEntity deviceEntity)
     {
-        _dbContext.Devices.Add(deviceEntity);
-        SaveChanges();
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.Devices.Add(deviceEntity);
+        dbContext.SaveChanges();
     }
 
     public void Remove(DeviceEntity deviceEntity)
     {
-        _dbContext.Devices.Remove(deviceEntity);
-        SaveChanges();
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.Devices.Remove(deviceEntity);
+        dbContext.SaveChanges();
     }
 
     public DeviceEntity? Get(string id)
     {
-        return _dbContext.Devices.FirstOrDefault(d => d.Id == id);
+        using ArtemisDbContext dbContext = getContext();
+        return dbContext.Devices.FirstOrDefault(d => d.Id == id);
     }
 
     public IEnumerable<DeviceEntity> GetAll()
     {
-        return _dbContext.Devices;
+        using ArtemisDbContext dbContext = getContext();
+        return dbContext.Devices;
     }
-
-    public void SaveChanges()
+    
+    public void Save(DeviceEntity deviceEntity)
     {
-        _dbContext.SaveChanges();
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.Update(deviceEntity);
+        dbContext.SaveChanges();
+    }
+    
+    public void SaveRange(IEnumerable<DeviceEntity> deviceEntities)
+    {
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.UpdateRange(deviceEntities);
+        dbContext.SaveChanges();
     }
 }

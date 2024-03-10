@@ -11,5 +11,5 @@ public interface IEntryRepository : IRepository
     EntryEntity? Get(Guid id);
     EntryEntity? GetByEntryId(long entryId);
     IEnumerable<EntryEntity> GetAll();
-    void SaveChanges();
+    void Save(EntryEntity entryEntity);
 }

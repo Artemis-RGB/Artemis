@@ -7,47 +7,63 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Artemis.Storage.Repositories;
 
-internal class ProfileCategoryRepository : IProfileCategoryRepository
+internal class ProfileCategoryRepository(Func<ArtemisDbContext> getContext, IProfileRepository profileRepository) : IProfileCategoryRepository
 {
-    private readonly ArtemisDbContext _dbContext;
-
-    public ProfileCategoryRepository(ArtemisDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
+    private bool _migratedProfiles;
 
     public void Add(ProfileCategoryEntity profileCategoryEntity)
     {
-        _dbContext.ProfileCategories.Add(profileCategoryEntity);
-        SaveChanges();
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.ProfileCategories.Add(profileCategoryEntity);
+        dbContext.SaveChanges();
     }
 
     public void Remove(ProfileCategoryEntity profileCategoryEntity)
     {
-        _dbContext.ProfileCategories.Remove(profileCategoryEntity);
-        SaveChanges();
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.ProfileCategories.Remove(profileCategoryEntity);
+        dbContext.SaveChanges();
     }
 
     public List<ProfileCategoryEntity> GetAll()
     {
-        return _dbContext.ProfileCategories.Include(c => c.ProfileConfigurations).ToList();
+        if (!_migratedProfiles)
+        {
+            profileRepository.MigrateProfiles();
+            _migratedProfiles = true;
+        }
+
+        using ArtemisDbContext dbContext = getContext();
+        return dbContext.ProfileCategories.Include(c => c.ProfileConfigurations).ToList();
     }
 
     public ProfileCategoryEntity? Get(Guid id)
     {
-        return _dbContext.ProfileCategories.Include(c => c.ProfileConfigurations).FirstOrDefault(c => c.Id == id);
+        using ArtemisDbContext dbContext = getContext();
+        return dbContext.ProfileCategories.Include(c => c.ProfileConfigurations).FirstOrDefault(c => c.Id == id);
+    }
+
+    public void Save(ProfileCategoryEntity profileCategoryEntity)
+    {
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.Update(profileCategoryEntity);
+        dbContext.SaveChanges();
+    }
+
+    public void SaveRange(List<ProfileCategoryEntity> profileCategoryEntities)
+    {
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.UpdateRange(profileCategoryEntities);
+        dbContext.SaveChanges();
     }
 
     public bool IsUnique(string name, Guid? id)
     {
+        using ArtemisDbContext dbContext = getContext();
+
         name = name.Trim();
-        if (id == null)
-            return _dbContext.ProfileCategories.Any(p => p.Name == name);
-        return _dbContext.ProfileCategories.Any(p => p.Name == name && p.Id != id.Value);
-    }
-    
-    public void SaveChanges()
-    {
-        _dbContext.SaveChanges();
+        return id == null
+            ? dbContext.ProfileCategories.Any(p => p.Name == name)
+            : dbContext.ProfileCategories.Any(p => p.Name == name && p.Id != id.Value);
     }
 }

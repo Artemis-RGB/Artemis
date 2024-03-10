@@ -6,44 +6,44 @@ using Artemis.Storage.Repositories.Interfaces;
 
 namespace Artemis.Storage.Repositories;
 
-internal class EntryRepository : IEntryRepository
+internal class EntryRepository(Func<ArtemisDbContext> getContext) : IEntryRepository
 {
-    private readonly ArtemisDbContext _dbContext;
-
-    public EntryRepository(ArtemisDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public void Add(EntryEntity entryEntity)
     {
-        _dbContext.Entries.Add(entryEntity);
-        SaveChanges();
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.Entries.Add(entryEntity);
+        dbContext.SaveChanges();
     }
 
     public void Remove(EntryEntity entryEntity)
     {
-        _dbContext.Entries.Remove(entryEntity);
-        SaveChanges();
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.Entries.Remove(entryEntity);
+        dbContext.SaveChanges();
     }
 
     public EntryEntity? Get(Guid id)
     {
-        return _dbContext.Entries.FirstOrDefault(s => s.Id == id);
+        using ArtemisDbContext dbContext = getContext();
+        return dbContext.Entries.FirstOrDefault(s => s.Id == id);
     }
 
     public EntryEntity? GetByEntryId(long entryId)
     {
-        return _dbContext.Entries.FirstOrDefault(s => s.EntryId == entryId);
+        using ArtemisDbContext dbContext = getContext();
+        return dbContext.Entries.FirstOrDefault(s => s.EntryId == entryId);
     }
 
     public IEnumerable<EntryEntity> GetAll()
     {
-        return _dbContext.Entries;
+        using ArtemisDbContext dbContext = getContext();
+        return dbContext.Entries;
     }
-
-    public void SaveChanges()
+    
+    public void Save(EntryEntity entryEntity)
     {
-        _dbContext.SaveChanges();
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.Update(entryEntity);
+        dbContext.SaveChanges();
     }
 }
