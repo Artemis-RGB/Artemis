@@ -23,6 +23,6 @@ public class ReleaseRepository(Func<ArtemisDbContext> getContext) : IReleaseRepo
     public ReleaseEntity? GetPreviousInstalledVersion()
     {
         using ArtemisDbContext dbContext = getContext();
-        return dbContext.Releases.OrderByDescending(r => r.InstalledAt).Skip(1).FirstOrDefault();
+        return dbContext.Releases.AsEnumerable().OrderByDescending(r => r.InstalledAt).Skip(1).FirstOrDefault();
     }
 }
