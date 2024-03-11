@@ -37,7 +37,7 @@ internal class EntryRepository(Func<ArtemisDbContext> getContext) : IEntryReposi
     public IEnumerable<EntryEntity> GetAll()
     {
         using ArtemisDbContext dbContext = getContext();
-        return dbContext.Entries;
+        return dbContext.Entries.AsEnumerable();
     }
     
     public void Save(EntryEntity entryEntity)

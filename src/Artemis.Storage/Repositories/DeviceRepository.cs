@@ -31,7 +31,7 @@ internal class DeviceRepository(Func<ArtemisDbContext> getContext) : IDeviceRepo
     public IEnumerable<DeviceEntity> GetAll()
     {
         using ArtemisDbContext dbContext = getContext();
-        return dbContext.Devices;
+        return dbContext.Devices.AsEnumerable();
     }
     
     public void Save(DeviceEntity deviceEntity)

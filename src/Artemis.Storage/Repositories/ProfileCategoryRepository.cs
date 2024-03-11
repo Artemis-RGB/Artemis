@@ -25,7 +25,7 @@ internal class ProfileCategoryRepository(Func<ArtemisDbContext> getContext, IPro
         dbContext.SaveChanges();
     }
 
-    public List<ProfileCategoryEntity> GetAll()
+    public IEnumerable<ProfileCategoryEntity> GetAll()
     {
         if (!_migratedProfiles)
         {
@@ -34,7 +34,7 @@ internal class ProfileCategoryRepository(Func<ArtemisDbContext> getContext, IPro
         }
 
         using ArtemisDbContext dbContext = getContext();
-        return dbContext.ProfileCategories.Include(c => c.ProfileConfigurations).ToList();
+        return dbContext.ProfileCategories.Include(c => c.ProfileConfigurations).AsEnumerable();
     }
 
     public ProfileCategoryEntity? Get(Guid id)
