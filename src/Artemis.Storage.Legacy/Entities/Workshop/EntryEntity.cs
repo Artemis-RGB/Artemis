@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Nodes;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Artemis.Storage.Legacy.Entities.Workshop;
 
@@ -16,7 +17,7 @@ internal class EntryEntity
     public string ReleaseVersion { get; set; } = string.Empty;
     public DateTimeOffset InstalledAt { get; set; }
 
-    public Dictionary<string, JsonNode>? Metadata { get; set; }
+    public Dictionary<string, object>? Metadata { get; set; }
 
     public Storage.Entities.Workshop.EntryEntity Migrate()
     {
@@ -31,7 +32,7 @@ internal class EntryEntity
             ReleaseId = ReleaseId,
             ReleaseVersion = ReleaseVersion,
             InstalledAt = InstalledAt,
-            Metadata = Metadata ?? new Dictionary<string, JsonNode>()
+            Metadata = Metadata?.ToDictionary(kvp => kvp.Key, kvp => JsonSerializer.SerializeToNode(kvp.Value) ?? new JsonObject())
         };
     }
 }
