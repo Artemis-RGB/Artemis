@@ -41,37 +41,6 @@ internal class PluginManagementService : IPluginManagementService
         _pluginRepository = pluginRepository;
         _deviceRepository = deviceRepository;
         _plugins = new List<Plugin>();
-
-        StartHotReload();
-    }
-
-    private void CopyBuiltInPlugin(ZipArchive zipArchive, string targetDirectory)
-    {
-        ZipArchiveEntry metaDataFileEntry = zipArchive.Entries.First(e => e.Name == "plugin.json");
-        DirectoryInfo pluginDirectory = new(Path.Combine(Constants.PluginsFolder, targetDirectory));
-        bool createLockFile = File.Exists(Path.Combine(pluginDirectory.FullName, "artemis.lock"));
-
-        // Remove the old directory if it exists
-        if (Directory.Exists(pluginDirectory.FullName))
-            pluginDirectory.Delete(true);
-
-        // Extract everything in the same archive directory to the unique plugin directory
-        Utilities.CreateAccessibleDirectory(pluginDirectory.FullName);
-        string metaDataDirectory = metaDataFileEntry.FullName.Replace(metaDataFileEntry.Name, "");
-        foreach (ZipArchiveEntry zipArchiveEntry in zipArchive.Entries)
-        {
-            if (zipArchiveEntry.FullName.StartsWith(metaDataDirectory) && !zipArchiveEntry.FullName.EndsWith("/"))
-            {
-                string target = Path.Combine(pluginDirectory.FullName, zipArchiveEntry.FullName.Remove(0, metaDataDirectory.Length));
-                // Create folders
-                Utilities.CreateAccessibleDirectory(Path.GetDirectoryName(target)!);
-                // Extract files
-                zipArchiveEntry.ExtractToFile(target);
-            }
-        }
-
-        if (createLockFile)
-            File.Create(Path.Combine(pluginDirectory.FullName, "artemis.lock")).Close();
     }
 
     public List<DirectoryInfo> AdditionalPluginDirectories { get; } = new();
@@ -153,6 +122,35 @@ internal class PluginManagementService : IPluginManagementService
                 }
             }
         }
+    }
+
+    private void CopyBuiltInPlugin(ZipArchive zipArchive, string targetDirectory)
+    {
+        ZipArchiveEntry metaDataFileEntry = zipArchive.Entries.First(e => e.Name == "plugin.json");
+        DirectoryInfo pluginDirectory = new(Path.Combine(Constants.PluginsFolder, targetDirectory));
+        bool createLockFile = File.Exists(Path.Combine(pluginDirectory.FullName, "artemis.lock"));
+
+        // Remove the old directory if it exists
+        if (Directory.Exists(pluginDirectory.FullName))
+            pluginDirectory.Delete(true);
+
+        // Extract everything in the same archive directory to the unique plugin directory
+        Utilities.CreateAccessibleDirectory(pluginDirectory.FullName);
+        string metaDataDirectory = metaDataFileEntry.FullName.Replace(metaDataFileEntry.Name, "");
+        foreach (ZipArchiveEntry zipArchiveEntry in zipArchive.Entries)
+        {
+            if (zipArchiveEntry.FullName.StartsWith(metaDataDirectory) && !zipArchiveEntry.FullName.EndsWith("/"))
+            {
+                string target = Path.Combine(pluginDirectory.FullName, zipArchiveEntry.FullName.Remove(0, metaDataDirectory.Length));
+                // Create folders
+                Utilities.CreateAccessibleDirectory(Path.GetDirectoryName(target)!);
+                // Extract files
+                zipArchiveEntry.ExtractToFile(target);
+            }
+        }
+
+        if (createLockFile)
+            File.Create(Path.Combine(pluginDirectory.FullName, "artemis.lock")).Close();
     }
 
     #endregion
@@ -444,7 +442,9 @@ internal class PluginManagementService : IPluginManagementService
             _logger.Warning("Plugin {plugin} contains no features", plugin);
 
         // It is appropriate to call this now that we have the features of this plugin
-        plugin.AutoEnableIfNew();
+        bool autoEnabled = plugin.AutoEnableIfNew();
+        if (autoEnabled)
+            _pluginRepository.SavePlugin(entity);
 
         List<Type> bootstrappers = plugin.Assembly.GetTypes().Where(t => typeof(PluginBootstrapper).IsAssignableFrom(t)).ToList();
         if (bootstrappers.Count > 1)
@@ -894,7 +894,7 @@ internal class PluginManagementService : IPluginManagementService
 
     #region Hot Reload
 
-    private void StartHotReload()
+    public void StartHotReload()
     {
         // Watch for changes in the plugin directory, "plugin.json".
         // If this file is changed, reload the plugin.

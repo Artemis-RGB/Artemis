@@ -98,26 +98,15 @@ public class ProfileCategory : CorePropertyChanged, IStorageModel
     /// <summary>
     ///     Adds a profile configuration to this category
     /// </summary>
-    public void AddProfileConfiguration(ProfileConfiguration configuration, int? targetIndex)
+    public void AddProfileConfiguration(ProfileConfiguration configuration, ProfileConfiguration? target)
     {
-        List<ProfileConfiguration> targetList = ProfileConfigurations.ToList();
-        
-        // TODO: Look into this, it doesn't seem to make sense
-        // Removing the original will shift every item in the list forwards, keep that in mind with the target index
-        if (configuration.Category == this && targetIndex != null && targetIndex.Value > targetList.IndexOf(configuration))
-            targetIndex -= 1;
-
+        List<ProfileConfiguration> targetList = ProfileConfigurations.Where(c => c!= configuration).ToList();
         configuration.Category.RemoveProfileConfiguration(configuration);
         
-        if (targetIndex != null)
-        {
-            targetIndex = Math.Clamp(targetIndex.Value, 0, targetList.Count);
-            targetList.Insert(targetIndex.Value, configuration);
-        }
+        if (target != null)
+            targetList.Insert(targetList.IndexOf(target), configuration);
         else
-        {
             targetList.Add(configuration);
-        }
 
         configuration.Category = this;
         ProfileConfigurations = new ReadOnlyCollection<ProfileConfiguration>(targetList);

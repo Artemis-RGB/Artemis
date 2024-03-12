@@ -47,7 +47,7 @@ public partial class ProfileConfigurationIcon : UserControl, IDisposable
                     : new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
             }
             else if (ConfigurationIcon.IconBytes != null)
-                Dispatcher.UIThread.Post(() => LoadFromBitmap(ConfigurationIcon, new MemoryStream(ConfigurationIcon.IconBytes)), DispatcherPriority.ApplicationIdle);
+                Dispatcher.UIThread.Post(LoadFromBitmap, DispatcherPriority.ApplicationIdle);
             else
                 Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
         }
@@ -57,14 +57,17 @@ public partial class ProfileConfigurationIcon : UserControl, IDisposable
         }
     }
 
-    private void LoadFromBitmap(Core.ProfileConfigurationIcon configurationIcon, Stream stream)
+    private void LoadFromBitmap()
     {
         try
         {
-            _stream = stream;
-            if (!configurationIcon.Fill)
+            if (ConfigurationIcon?.IconBytes == null)
+                return;
+
+            _stream = new MemoryStream(ConfigurationIcon.IconBytes);
+            if (!ConfigurationIcon.Fill)
             {
-                Content = new Image {Source = new Bitmap(stream)};
+                Content = new Image {Source = new Bitmap(_stream)};
                 return;
             }
 
@@ -73,7 +76,7 @@ public partial class ProfileConfigurationIcon : UserControl, IDisposable
                 Background = TextElement.GetForeground(this),
                 VerticalAlignment = VerticalAlignment.Stretch,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
-                OpacityMask = new ImageBrush(new Bitmap(stream))
+                OpacityMask = new ImageBrush(new Bitmap(_stream))
             };
         }
         catch (Exception)

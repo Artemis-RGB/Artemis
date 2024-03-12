@@ -115,9 +115,9 @@ public interface IProfileService : IArtemisService
     ///     any changes are made to it.
     /// </param>
     /// <param name="nameAffix">Text to add after the name of the profile (separated by a dash).</param>
-    /// <param name="targetIndex">The index at which to import the profile into the category.</param>
+    /// <param name="target">The profile before which to import the profile into the category.</param>
     /// <returns>The resulting profile configuration.</returns>
-    Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix = "imported", int targetIndex = 0);
+    Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix = "imported", ProfileConfiguration? target = null);
     
     /// <summary>
     ///     Imports the provided ZIP archive stream into the provided profile configuration

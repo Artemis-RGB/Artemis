@@ -357,10 +357,10 @@ public class Plugin : CorePropertyChanged, IDisposable
         return Entity.Features.Any(f => f.IsEnabled) || Features.Any(f => f.AlwaysEnabled);
     }
 
-    internal void AutoEnableIfNew()
+    internal bool AutoEnableIfNew()
     {
         if (_loadedFromStorage)
-            return;
+            return false;
 
         // Enabled is preset to true if the plugin meets the following criteria
         // - Requires no admin rights
@@ -371,11 +371,13 @@ public class Plugin : CorePropertyChanged, IDisposable
                            Info.ArePrerequisitesMet();
 
         if (!Entity.IsEnabled)
-            return;
+            return false;
 
         // Also auto-enable any non-device provider feature
         foreach (PluginFeatureInfo pluginFeatureInfo in Features)
             pluginFeatureInfo.Entity.IsEnabled = !pluginFeatureInfo.FeatureType.IsAssignableTo(typeof(DeviceProvider));
+
+        return true;
     }
 
     /// <inheritdoc />

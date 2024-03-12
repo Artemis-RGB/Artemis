@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Artemis.Storage.Entities.General;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Entities.Profile;
@@ -41,7 +42,7 @@ public class ArtemisDbContext : DbContext
             .Property(e => e.Metadata)
             .HasConversion(
                 v => JsonSerializer.Serialize(v, JsonSerializerOptions),
-                v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, JsonSerializerOptions) ?? new Dictionary<string, object>());
+                v => JsonSerializer.Deserialize<Dictionary<string, JsonNode>>(v, JsonSerializerOptions) ?? new Dictionary<string, JsonNode>());
 
         modelBuilder.Entity<ProfileContainerEntity>()
             .Property(e => e.ProfileConfiguration)

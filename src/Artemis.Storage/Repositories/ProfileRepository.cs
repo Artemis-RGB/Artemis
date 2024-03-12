@@ -8,10 +8,11 @@ using Artemis.Storage.Exceptions;
 using Artemis.Storage.Migrations;
 using Artemis.Storage.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace Artemis.Storage.Repositories;
 
-public class ProfileRepository(Func<ArtemisDbContext> getContext, List<IProfileMigration> profileMigrators) : IProfileRepository
+public class ProfileRepository(ILogger logger, Func<ArtemisDbContext> getContext, List<IProfileMigration> profileMigrators) : IProfileRepository
 {
     public void Add(ProfileContainerEntity profileContainerEntity)
     {
@@ -83,6 +84,8 @@ public class ProfileRepository(Func<ArtemisDbContext> getContext, List<IProfileM
         {
             if (profileMigrator.Version <= configurationJson["Version"]!.GetValue<int>())
                 continue;
+            
+            logger.Information("Migrating profile from version {OldVersion} to {NewVersion}", configurationJson["Version"], profileMigrator.Version);
 
             profileMigrator.Migrate(configurationJson, profileJson);
             configurationJson["Version"] = profileMigrator.Version;

@@ -71,6 +71,7 @@ internal class CoreService : ICoreService
         // Initialize the services
         _pluginManagementService.CopyBuiltInPlugins();
         _pluginManagementService.LoadPlugins(IsElevated);
+        _pluginManagementService.StartHotReload();
         _renderService.Initialize();
         
         OnInitialized();

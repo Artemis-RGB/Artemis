@@ -262,7 +262,7 @@ internal class ProfileService : IProfileService
     {
         ProfileConfiguration configuration = new(category, name, icon);
 
-        category.AddProfileConfiguration(configuration, 0);
+        category.AddProfileConfiguration(configuration, category.ProfileConfigurations.FirstOrDefault());
         SaveProfileCategory(category);
         return configuration;
     }
@@ -354,7 +354,7 @@ internal class ProfileService : IProfileService
     }
 
     /// <inheritdoc />
-    public async Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix, int targetIndex = 0)
+    public async Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix, ProfileConfiguration? target)
     {
         using ZipArchive archive = new(archiveStream, ZipArchiveMode.Read, true);
 
@@ -424,7 +424,7 @@ internal class ProfileService : IProfileService
             profileConfiguration.Name = $"{profileConfiguration.Name} - {nameAffix}";
 
         profileConfiguration.Entity.ProfileConfiguration.ProfileId = profileEntity.Id;
-        category.AddProfileConfiguration(profileConfiguration, targetIndex);
+        category.AddProfileConfiguration(profileConfiguration, target);
 
         List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>();
         profileConfiguration.LoadModules(modules);
@@ -436,7 +436,7 @@ internal class ProfileService : IProfileService
     /// <inheritdoc />
     public async Task<ProfileConfiguration> OverwriteProfile(MemoryStream archiveStream, ProfileConfiguration profileConfiguration)
     {
-        ProfileConfiguration imported = await ImportProfile(archiveStream, profileConfiguration.Category, true, true, null, profileConfiguration.Order + 1);
+        ProfileConfiguration imported = await ImportProfile(archiveStream, profileConfiguration.Category, true, true, null, profileConfiguration);
 
         RemoveProfileConfiguration(profileConfiguration);
         SaveProfileCategory(imported.Category);
