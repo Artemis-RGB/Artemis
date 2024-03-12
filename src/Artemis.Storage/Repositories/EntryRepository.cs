@@ -34,10 +34,10 @@ internal class EntryRepository(Func<ArtemisDbContext> getContext) : IEntryReposi
         return dbContext.Entries.FirstOrDefault(s => s.EntryId == entryId);
     }
 
-    public IEnumerable<EntryEntity> GetAll()
+    public List<EntryEntity> GetAll()
     {
         using ArtemisDbContext dbContext = getContext();
-        return dbContext.Entries.AsEnumerable();
+        return dbContext.Entries.ToList();
     }
     
     public void Save(EntryEntity entryEntity)

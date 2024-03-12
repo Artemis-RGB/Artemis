@@ -8,7 +8,7 @@ public interface IDeviceRepository : IRepository
     void Add(DeviceEntity deviceEntity);
     void Remove(DeviceEntity deviceEntity);
     DeviceEntity? Get(string id);
-    IEnumerable<DeviceEntity> GetAll();
+    List<DeviceEntity> GetAll();
     void Save(DeviceEntity deviceEntity);
     void SaveRange(IEnumerable<DeviceEntity> deviceEntities);
 }

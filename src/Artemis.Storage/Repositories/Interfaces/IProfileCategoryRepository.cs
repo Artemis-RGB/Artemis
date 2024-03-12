@@ -8,7 +8,7 @@ public interface IProfileCategoryRepository : IRepository
 {
     void Add(ProfileCategoryEntity profileCategoryEntity);
     void Remove(ProfileCategoryEntity profileCategoryEntity);
-    IEnumerable<ProfileCategoryEntity> GetAll();
+    List<ProfileCategoryEntity> GetAll();
     ProfileCategoryEntity? Get(Guid id);
     bool IsUnique(string name, Guid? id);
     void Save(ProfileCategoryEntity profileCategoryEntity);

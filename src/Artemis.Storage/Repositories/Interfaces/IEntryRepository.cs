@@ -10,6 +10,6 @@ public interface IEntryRepository : IRepository
     void Remove(EntryEntity entryEntity);
     EntryEntity? Get(Guid id);
     EntryEntity? GetByEntryId(long entryId);
-    IEnumerable<EntryEntity> GetAll();
+    List<EntryEntity> GetAll();
     void Save(EntryEntity entryEntity);
 }

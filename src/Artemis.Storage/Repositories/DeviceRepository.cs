@@ -28,10 +28,10 @@ internal class DeviceRepository(Func<ArtemisDbContext> getContext) : IDeviceRepo
         return dbContext.Devices.FirstOrDefault(d => d.Id == id);
     }
 
-    public IEnumerable<DeviceEntity> GetAll()
+    public List<DeviceEntity> GetAll()
     {
         using ArtemisDbContext dbContext = getContext();
-        return dbContext.Devices.AsEnumerable();
+        return dbContext.Devices.ToList();
     }
     
     public void Save(DeviceEntity deviceEntity)
