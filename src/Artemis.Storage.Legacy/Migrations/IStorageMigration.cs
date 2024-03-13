@@ -1,6 +1,6 @@
 ﻿using LiteDB;
 
-namespace Artemis.Storage.Migrations;
+namespace Artemis.Storage.Legacy.Migrations;
 
 public interface IStorageMigration
 {

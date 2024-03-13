@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using Artemis.Storage.Entities.Profile;
-using Artemis.Storage.Entities.Profile.Abstract;
-using Artemis.Storage.Entities.Profile.Conditions;
-using Artemis.Storage.Entities.Profile.Nodes;
+﻿using Artemis.Storage.Legacy.Entities.Profile;
+using Artemis.Storage.Legacy.Entities.Profile.Conditions;
+using Artemis.Storage.Legacy.Entities.Profile.Nodes;
 using LiteDB;
 
-namespace Artemis.Storage.Migrations.Storage;
+namespace Artemis.Storage.Legacy.Migrations.Storage;
 
-public class M0022TransitionNodes : IStorageMigration
+internal class M0022TransitionNodes : IStorageMigration
 {
     private void MigrateNodeScript(NodeScriptEntity? nodeScript)
     {

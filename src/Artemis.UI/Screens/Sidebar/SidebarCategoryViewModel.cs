@@ -103,10 +103,10 @@ public partial class SidebarCategoryViewModel : ActivatableViewModelBase
     public bool IsCollapsed => _isCollapsed?.Value ?? false;
     public bool IsSuspended => _isSuspended?.Value ?? false;
     
-    public void AddProfileConfiguration(ProfileConfiguration profileConfiguration, int? index)
+    public void AddProfileConfiguration(ProfileConfiguration profileConfiguration, ProfileConfiguration? target)
     {
         ProfileCategory oldCategory = profileConfiguration.Category;
-        ProfileCategory.AddProfileConfiguration(profileConfiguration, index);
+        ProfileCategory.AddProfileConfiguration(profileConfiguration, target);
 
         _profileService.SaveProfileCategory(ProfileCategory);
         // If the profile moved to a new category, also save the old category

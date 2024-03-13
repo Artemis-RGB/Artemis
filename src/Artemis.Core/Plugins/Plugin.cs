@@ -23,14 +23,14 @@ public class Plugin : CorePropertyChanged, IDisposable
 
     private bool _isEnabled;
 
-    internal Plugin(PluginInfo info, DirectoryInfo directory, PluginEntity? pluginEntity)
+    internal Plugin(PluginInfo info, DirectoryInfo directory, PluginEntity pluginEntity, bool loadedFromStorage)
     {
         Info = info;
         Directory = directory;
-        Entity = pluginEntity ?? new PluginEntity {Id = Guid};
+        Entity = pluginEntity;
         Info.Plugin = this;
 
-        _loadedFromStorage = pluginEntity != null;
+        _loadedFromStorage = loadedFromStorage;
         _features = new List<PluginFeatureInfo>();
         _profilers = new List<Profiler>();
 
@@ -309,13 +309,7 @@ public class Plugin : CorePropertyChanged, IDisposable
     {
         FeatureRemoved?.Invoke(this, e);
     }
-
-    internal void ApplyToEntity()
-    {
-        Entity.Id = Guid;
-        Entity.IsEnabled = IsEnabled;
-    }
-
+    
     internal void AddFeature(PluginFeatureInfo featureInfo)
     {
         if (featureInfo.Plugin != this)
@@ -363,10 +357,10 @@ public class Plugin : CorePropertyChanged, IDisposable
         return Entity.Features.Any(f => f.IsEnabled) || Features.Any(f => f.AlwaysEnabled);
     }
 
-    internal void AutoEnableIfNew()
+    internal bool AutoEnableIfNew()
     {
         if (_loadedFromStorage)
-            return;
+            return false;
 
         // Enabled is preset to true if the plugin meets the following criteria
         // - Requires no admin rights
@@ -377,11 +371,13 @@ public class Plugin : CorePropertyChanged, IDisposable
                            Info.ArePrerequisitesMet();
 
         if (!Entity.IsEnabled)
-            return;
+            return false;
 
         // Also auto-enable any non-device provider feature
         foreach (PluginFeatureInfo pluginFeatureInfo in Features)
             pluginFeatureInfo.Entity.IsEnabled = !pluginFeatureInfo.FeatureType.IsAssignableTo(typeof(DeviceProvider));
+
+        return true;
     }
 
     /// <inheritdoc />

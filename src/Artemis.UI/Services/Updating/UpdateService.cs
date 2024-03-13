@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.Storage.Repositories;
+using Artemis.Storage.Repositories.Interfaces;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.WebClient.Updating;

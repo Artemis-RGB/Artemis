@@ -17,11 +17,6 @@ public interface IProfileService : IArtemisService
     ReadOnlyCollection<ProfileCategory> ProfileCategories { get; }
 
     /// <summary>
-    ///     Gets a read only collection containing all the profile configurations.
-    /// </summary>
-    ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations { get; }
-
-    /// <summary>
     ///     Gets or sets the focused profile configuration which is rendered exclusively.
     /// </summary>
     ProfileConfiguration? FocusProfile { get; set; }
@@ -59,13 +54,7 @@ public interface IProfileService : IArtemisService
     /// </summary>
     /// <param name="profileConfiguration">The profile configuration of the profile to activate.</param>
     void DeactivateProfile(ProfileConfiguration profileConfiguration);
-
-    /// <summary>
-    ///     Permanently deletes the profile of the given <see cref="ProfileConfiguration" />.
-    /// </summary>
-    /// <param name="profileConfiguration">The profile configuration of the profile to delete.</param>
-    void DeleteProfile(ProfileConfiguration profileConfiguration);
-
+    
     /// <summary>
     ///     Saves the provided <see cref="ProfileCategory" /> and it's <see cref="ProfileConfiguration" />s but not the
     ///     <see cref="Profile" />s themselves.
@@ -102,16 +91,6 @@ public interface IProfileService : IArtemisService
     void RemoveProfileConfiguration(ProfileConfiguration profileConfiguration);
 
     /// <summary>
-    ///     Loads the icon of this profile configuration if needed and puts it into <c>ProfileConfiguration.Icon.FileIcon</c>.
-    /// </summary>
-    void LoadProfileConfigurationIcon(ProfileConfiguration profileConfiguration);
-
-    /// <summary>
-    ///     Saves the current icon of this profile.
-    /// </summary>
-    void SaveProfileConfigurationIcon(ProfileConfiguration profileConfiguration);
-
-    /// <summary>
     ///     Writes the profile to persistent storage.
     /// </summary>
     /// <param name="profile"></param>
@@ -136,9 +115,9 @@ public interface IProfileService : IArtemisService
     ///     any changes are made to it.
     /// </param>
     /// <param name="nameAffix">Text to add after the name of the profile (separated by a dash).</param>
-    /// <param name="targetIndex">The index at which to import the profile into the category.</param>
+    /// <param name="target">The profile before which to import the profile into the category.</param>
     /// <returns>The resulting profile configuration.</returns>
-    Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix = "imported", int targetIndex = 0);
+    Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix = "imported", ProfileConfiguration? target = null);
     
     /// <summary>
     ///     Imports the provided ZIP archive stream into the provided profile configuration

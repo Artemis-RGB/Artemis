@@ -40,7 +40,7 @@
         <PackageReference Include="EmbedIO" />
         <PackageReference Include="HidSharp" />
         <PackageReference Include="Humanizer.Core" />
-        <PackageReference Include="JetBrains.Annotations" />
+        <PackageReference Include="JetBrains.Annotations" PrivateAssets="All"/>
         <PackageReference Include="McMaster.NETCore.Plugins" />
         <PackageReference Include="RGB.NET.Core" />
         <PackageReference Include="RGB.NET.Layout" />

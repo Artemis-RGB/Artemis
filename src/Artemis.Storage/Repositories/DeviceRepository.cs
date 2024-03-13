@@ -1,47 +1,50 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
-using LiteDB;
 
 namespace Artemis.Storage.Repositories;
 
-internal class DeviceRepository : IDeviceRepository
+internal class DeviceRepository(Func<ArtemisDbContext> getContext) : IDeviceRepository
 {
-    private readonly LiteRepository _repository;
-
-    public DeviceRepository(LiteRepository repository)
-    {
-        _repository = repository;
-        _repository.Database.GetCollection<DeviceEntity>().EnsureIndex(s => s.Id);
-    }
-
     public void Add(DeviceEntity deviceEntity)
     {
-        _repository.Insert(deviceEntity);
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.Devices.Add(deviceEntity);
+        dbContext.SaveChanges();
     }
 
     public void Remove(DeviceEntity deviceEntity)
     {
-        _repository.Delete<DeviceEntity>(deviceEntity.Id);
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.Devices.Remove(deviceEntity);
+        dbContext.SaveChanges();
     }
 
     public DeviceEntity? Get(string id)
     {
-        return _repository.FirstOrDefault<DeviceEntity>(s => s.Id == id);
+        using ArtemisDbContext dbContext = getContext();
+        return dbContext.Devices.FirstOrDefault(d => d.Id == id);
     }
 
     public List<DeviceEntity> GetAll()
     {
-        return _repository.Query<DeviceEntity>().Include(s => s.InputIdentifiers).ToList();
+        using ArtemisDbContext dbContext = getContext();
+        return dbContext.Devices.ToList();
     }
-
+    
     public void Save(DeviceEntity deviceEntity)
     {
-        _repository.Upsert(deviceEntity);
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.Update(deviceEntity);
+        dbContext.SaveChanges();
     }
-
-    public void Save(IEnumerable<DeviceEntity> deviceEntities)
+    
+    public void SaveRange(IEnumerable<DeviceEntity> deviceEntities)
     {
-        _repository.Upsert(deviceEntities);
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.UpdateRange(deviceEntities);
+        dbContext.SaveChanges();
     }
 }

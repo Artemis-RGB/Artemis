@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using Artemis.Storage.Entities.Profile;
-using LiteDB;
+﻿using LiteDB;
 
-namespace Artemis.Storage.Migrations.Storage;
+namespace Artemis.Storage.Legacy.Migrations.Storage;
 
-public class M0024NodeProviders : IStorageMigration
+internal class M0024NodeProviders : IStorageMigration
 {
     public int UserVersion => 24;
 
@@ -22,6 +20,7 @@ public class M0024NodeProviders : IStorageMigration
                 categoriesToUpdate.Add(profileCategoryBson);
             }
         }
+
         categoryCollection.Update(categoriesToUpdate);
 
         ILiteCollection<BsonDocument> collection = repository.Database.GetCollection("ProfileEntity");
@@ -30,15 +29,12 @@ public class M0024NodeProviders : IStorageMigration
         {
             BsonArray? folders = profileBson["Folders"]?.AsArray;
             BsonArray? layers = profileBson["Layers"]?.AsArray;
-        
+
             if (folders != null)
-            {
                 foreach (BsonValue folder in folders)
                     MigrateProfileElement(folder.AsDocument);
-            }
-        
+
             if (layers != null)
-            {
                 foreach (BsonValue layer in layers)
                 {
                     MigrateProfileElement(layer.AsDocument);
@@ -46,8 +42,7 @@ public class M0024NodeProviders : IStorageMigration
                     MigratePropertyGroup(layer.AsDocument["TransformPropertyGroup"].AsDocument);
                     MigratePropertyGroup(layer.AsDocument["LayerBrush"]?["PropertyGroup"].AsDocument);
                 }
-            }
-            
+
             profilesToUpdate.Add(profileBson);
         }
 
@@ -58,10 +53,8 @@ public class M0024NodeProviders : IStorageMigration
     {
         BsonArray? layerEffects = profileElement["LayerEffects"]?.AsArray;
         if (layerEffects != null)
-        {
             foreach (BsonValue layerEffect in layerEffects)
                 MigratePropertyGroup(layerEffect.AsDocument["PropertyGroup"].AsDocument);
-        }
 
         BsonValue? displayCondition = profileElement["DisplayCondition"];
         if (displayCondition != null)
@@ -77,16 +70,12 @@ public class M0024NodeProviders : IStorageMigration
         BsonArray? propertyGroups = propertyGroup["PropertyGroups"]?.AsArray;
 
         if (properties != null)
-        {
             foreach (BsonValue property in properties)
                 MigrateNodeScript(property.AsDocument["DataBinding"]?["NodeScript"]?.AsDocument);
-        }
 
         if (propertyGroups != null)
-        {
             foreach (BsonValue childPropertyGroup in propertyGroups)
                 MigratePropertyGroup(childPropertyGroup.AsDocument);
-        }
     }
 
     private void MigrateNodeScript(BsonDocument? nodeScript)

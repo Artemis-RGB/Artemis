@@ -122,8 +122,8 @@ public partial class ProfileConfigurationEditViewModel : DialogViewModelBase<Pro
         ProfileConfiguration.FadeInAndOut = FadeInAndOut;
 
         await SaveIcon();
+        ProfileConfiguration.Save();
 
-        _profileService.SaveProfileConfigurationIcon(ProfileConfiguration);
         _profileService.SaveProfileCategory(_profileCategory);
         Close(ProfileConfiguration);
     }
@@ -144,7 +144,7 @@ public partial class ProfileConfigurationEditViewModel : DialogViewModelBase<Pro
         {
             try
             {
-                Stream? iconStream = _profileConfiguration.Icon.GetIconStream();
+                Stream? iconStream = _profileConfiguration.Icon.IconBytes != null ? new MemoryStream(_profileConfiguration.Icon.IconBytes) : null;
                 SelectedBitmapSource = iconStream != null ? new Bitmap(iconStream) : null;
             }
             catch (Exception e)

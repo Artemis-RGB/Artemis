@@ -1,5 +1,6 @@
 using System;
 using Artemis.Core.Services;
+using Artemis.Storage.Legacy;
 using Artemis.UI.Linux.DryIoc;
 using Artemis.UI.Linux.Providers.Input;
 using Avalonia;
@@ -20,7 +21,10 @@ public class App : Application
     public override void Initialize()
     {
         _container = ArtemisBootstrapper.Bootstrap(this, c => c.RegisterProviders());
+        
         Program.CreateLogger(_container);
+        LegacyMigrationService.MigrateToSqlite(_container);
+        
         RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
         AvaloniaXamlLoader.Load(this);
     }

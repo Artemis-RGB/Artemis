@@ -40,7 +40,7 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
         _graphicsContextProviders = graphicsContextProviders;
 
         _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 30);
-        _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.25);
+        _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.5);
         _preferredGraphicsContext = settingsService.GetSetting("Core.PreferredGraphicsContext", "Software");
         _targetFrameRateSetting.SettingChanged += OnRenderSettingsChanged;
         _renderScaleSetting.SettingChanged += RenderScaleSettingOnSettingChanged;

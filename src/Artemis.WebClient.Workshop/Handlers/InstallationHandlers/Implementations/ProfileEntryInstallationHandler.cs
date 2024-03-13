@@ -74,9 +74,9 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
             try
             {
                 // Find the profile if still there
-                ProfileConfiguration? profile = _profileService.ProfileConfigurations.FirstOrDefault(c => c.ProfileId == profileId);
+                ProfileConfiguration? profile = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(c => c.ProfileId == profileId);
                 if (profile != null)
-                    _profileService.DeleteProfile(profile);
+                    _profileService.RemoveProfileConfiguration(profile);
 
                 // Remove the release
                 _workshopService.RemoveInstalledEntry(installedEntry);

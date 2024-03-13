@@ -1,43 +1,104 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Nodes;
+using Artemis.Storage.Entities;
 using Artemis.Storage.Entities.Profile;
+using Artemis.Storage.Exceptions;
+using Artemis.Storage.Migrations;
 using Artemis.Storage.Repositories.Interfaces;
-using LiteDB;
+using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace Artemis.Storage.Repositories;
 
-internal class ProfileRepository : IProfileRepository
+public class ProfileRepository(ILogger logger, Func<ArtemisDbContext> getContext, List<IProfileMigration> profileMigrators) : IProfileRepository
 {
-    private readonly LiteRepository _repository;
-
-    public ProfileRepository(LiteRepository repository)
+    public void Add(ProfileContainerEntity profileContainerEntity)
     {
-        _repository = repository;
-        _repository.Database.GetCollection<ProfileEntity>().EnsureIndex(s => s.Name);
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.ProfileContainers.Add(profileContainerEntity);
+        dbContext.SaveChanges();
     }
 
-    public void Add(ProfileEntity profileEntity)
+    public void Remove(ProfileContainerEntity profileContainerEntity)
     {
-        _repository.Insert(profileEntity);
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.ProfileContainers.Remove(profileContainerEntity);
+        dbContext.SaveChanges();
     }
 
-    public void Remove(ProfileEntity profileEntity)
+    public void Save(ProfileContainerEntity profileContainerEntity)
     {
-        _repository.Delete<ProfileEntity>(profileEntity.Id);
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.Update(profileContainerEntity);
+        dbContext.SaveChanges();
     }
 
-    public List<ProfileEntity> GetAll()
+    public void SaveRange(List<ProfileContainerEntity> profileContainerEntities)
     {
-        return _repository.Query<ProfileEntity>().ToList();
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.UpdateRange(profileContainerEntities);
+        dbContext.SaveChanges();
     }
 
-    public ProfileEntity? Get(Guid id)
+    public void MigrateProfiles()
     {
-        return _repository.FirstOrDefault<ProfileEntity>(p => p.Id == id);
+        using ArtemisDbContext dbContext = getContext();
+        int max = profileMigrators.Max(m => m.Version);
+
+        // Query the ProfileContainerEntity table directly, grabbing the ID, profile, and configuration
+        List<RawProfileContainer> containers = dbContext.Database
+            .SqlQueryRaw<RawProfileContainer>("SELECT Id, Profile, ProfileConfiguration FROM ProfileContainers WHERE json_extract(ProfileConfiguration, '$.Version') < {0}", max)
+            .ToList();
+
+        foreach (RawProfileContainer rawProfileContainer in containers)
+        {
+            try
+            {
+                JsonObject? profileConfiguration = JsonNode.Parse(rawProfileContainer.ProfileConfiguration)?.AsObject();
+                JsonObject? profile = JsonNode.Parse(rawProfileContainer.Profile)?.AsObject();
+
+                if (profileConfiguration == null || profile == null)
+                {
+                    logger.Error("Failed to parse profile or profile configuration of profile container {Id}", rawProfileContainer.Id);
+                    continue;
+                }
+
+                MigrateProfile(profileConfiguration, profile);
+                rawProfileContainer.Profile = profile.ToString();
+                rawProfileContainer.ProfileConfiguration = profileConfiguration.ToString();
+
+                // Write the updated containers back to the database
+                dbContext.Database.ExecuteSqlRaw(
+                    "UPDATE ProfileContainers SET Profile = {0}, ProfileConfiguration = {1} WHERE Id = {2}",
+                    rawProfileContainer.Profile,
+                    rawProfileContainer.ProfileConfiguration,
+                    rawProfileContainer.Id);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Failed to migrate profile container {Id}", rawProfileContainer.Id);
+            }
+        }
     }
 
-    public void Save(ProfileEntity profileEntity)
+    public void MigrateProfile(JsonObject? configurationJson, JsonObject? profileJson)
     {
-        _repository.Upsert(profileEntity);
+        if (configurationJson == null || profileJson == null)
+            return;
+
+        configurationJson["Version"] ??= 0;
+
+        foreach (IProfileMigration profileMigrator in profileMigrators.OrderBy(m => m.Version))
+        {
+            if (profileMigrator.Version <= configurationJson["Version"]!.GetValue<int>())
+                continue;
+
+            logger.Information("Migrating profile '{Name}' from version {OldVersion} to {NewVersion}", configurationJson["Name"], configurationJson["Version"], profileMigrator.Version);
+
+            profileMigrator.Migrate(configurationJson, profileJson);
+            configurationJson["Version"] = profileMigrator.Version;
+        }
     }
 }

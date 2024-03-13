@@ -29,7 +29,6 @@ internal class CoreService : ICoreService
     // ReSharper disable UnusedParameter.Local
     public CoreService(IContainer container,
         ILogger logger,
-        StorageMigrationService _1, // injected to ensure migration runs early
         ISettingsService settingsService,
         IPluginManagementService pluginManagementService,
         IProfileService profileService,
@@ -72,6 +71,7 @@ internal class CoreService : ICoreService
         // Initialize the services
         _pluginManagementService.CopyBuiltInPlugins();
         _pluginManagementService.LoadPlugins(IsElevated);
+        _pluginManagementService.StartHotReload();
         _renderService.Initialize();
         
         OnInitialized();

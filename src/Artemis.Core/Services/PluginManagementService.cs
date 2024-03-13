@@ -30,52 +30,17 @@ internal class PluginManagementService : IPluginManagementService
     private readonly ILogger _logger;
     private readonly IPluginRepository _pluginRepository;
     private readonly List<Plugin> _plugins;
-    private readonly IQueuedActionRepository _queuedActionRepository;
     private FileSystemWatcher? _hotReloadWatcher;
     private bool _disposed;
     private bool _isElevated;
 
-    public PluginManagementService(IContainer container, ILogger logger, IPluginRepository pluginRepository, IDeviceRepository deviceRepository, IQueuedActionRepository queuedActionRepository)
+    public PluginManagementService(IContainer container, ILogger logger, IPluginRepository pluginRepository, IDeviceRepository deviceRepository)
     {
         _container = container;
         _logger = logger;
         _pluginRepository = pluginRepository;
         _deviceRepository = deviceRepository;
-        _queuedActionRepository = queuedActionRepository;
         _plugins = new List<Plugin>();
-
-        ProcessPluginDeletionQueue();
-
-        StartHotReload();
-    }
-
-    private void CopyBuiltInPlugin(ZipArchive zipArchive, string targetDirectory)
-    {
-        ZipArchiveEntry metaDataFileEntry = zipArchive.Entries.First(e => e.Name == "plugin.json");
-        DirectoryInfo pluginDirectory = new(Path.Combine(Constants.PluginsFolder, targetDirectory));
-        bool createLockFile = File.Exists(Path.Combine(pluginDirectory.FullName, "artemis.lock"));
-
-        // Remove the old directory if it exists
-        if (Directory.Exists(pluginDirectory.FullName))
-            pluginDirectory.Delete(true);
-
-        // Extract everything in the same archive directory to the unique plugin directory
-        Utilities.CreateAccessibleDirectory(pluginDirectory.FullName);
-        string metaDataDirectory = metaDataFileEntry.FullName.Replace(metaDataFileEntry.Name, "");
-        foreach (ZipArchiveEntry zipArchiveEntry in zipArchive.Entries)
-        {
-            if (zipArchiveEntry.FullName.StartsWith(metaDataDirectory) && !zipArchiveEntry.FullName.EndsWith("/"))
-            {
-                string target = Path.Combine(pluginDirectory.FullName, zipArchiveEntry.FullName.Remove(0, metaDataDirectory.Length));
-                // Create folders
-                Utilities.CreateAccessibleDirectory(Path.GetDirectoryName(target)!);
-                // Extract files
-                zipArchiveEntry.ExtractToFile(target);
-            }
-        }
-
-        if (createLockFile)
-            File.Create(Path.Combine(pluginDirectory.FullName, "artemis.lock")).Close();
     }
 
     public List<DirectoryInfo> AdditionalPluginDirectories { get; } = new();
@@ -157,6 +122,35 @@ internal class PluginManagementService : IPluginManagementService
                 }
             }
         }
+    }
+
+    private void CopyBuiltInPlugin(ZipArchive zipArchive, string targetDirectory)
+    {
+        ZipArchiveEntry metaDataFileEntry = zipArchive.Entries.First(e => e.Name == "plugin.json");
+        DirectoryInfo pluginDirectory = new(Path.Combine(Constants.PluginsFolder, targetDirectory));
+        bool createLockFile = File.Exists(Path.Combine(pluginDirectory.FullName, "artemis.lock"));
+
+        // Remove the old directory if it exists
+        if (Directory.Exists(pluginDirectory.FullName))
+            pluginDirectory.Delete(true);
+
+        // Extract everything in the same archive directory to the unique plugin directory
+        Utilities.CreateAccessibleDirectory(pluginDirectory.FullName);
+        string metaDataDirectory = metaDataFileEntry.FullName.Replace(metaDataFileEntry.Name, "");
+        foreach (ZipArchiveEntry zipArchiveEntry in zipArchive.Entries)
+        {
+            if (zipArchiveEntry.FullName.StartsWith(metaDataDirectory) && !zipArchiveEntry.FullName.EndsWith("/"))
+            {
+                string target = Path.Combine(pluginDirectory.FullName, zipArchiveEntry.FullName.Remove(0, metaDataDirectory.Length));
+                // Create folders
+                Utilities.CreateAccessibleDirectory(Path.GetDirectoryName(target)!);
+                // Extract files
+                zipArchiveEntry.ExtractToFile(target);
+            }
+        }
+
+        if (createLockFile)
+            File.Create(Path.Combine(pluginDirectory.FullName, "artemis.lock")).Close();
     }
 
     #endregion
@@ -376,7 +370,15 @@ internal class PluginManagementService : IPluginManagementService
         }
 
         // Load the entity and fall back on creating a new one
-        Plugin plugin = new(pluginInfo, directory, _pluginRepository.GetPluginByGuid(pluginInfo.Guid));
+        PluginEntity? entity = _pluginRepository.GetPluginByPluginGuid(pluginInfo.Guid);
+        bool loadedFromStorage = entity != null;
+        if (entity == null)
+        {
+            entity = new PluginEntity {PluginGuid = pluginInfo.Guid};
+            _pluginRepository.SavePlugin(entity);
+        }
+
+        Plugin plugin = new(pluginInfo, directory, entity, loadedFromStorage);
         OnPluginLoading(new PluginEventArgs(plugin));
 
         // Locate the main assembly entry
@@ -440,7 +442,9 @@ internal class PluginManagementService : IPluginManagementService
             _logger.Warning("Plugin {plugin} contains no features", plugin);
 
         // It is appropriate to call this now that we have the features of this plugin
-        plugin.AutoEnableIfNew();
+        bool autoEnabled = plugin.AutoEnableIfNew();
+        if (autoEnabled)
+            _pluginRepository.SavePlugin(entity);
 
         List<Type> bootstrappers = plugin.Assembly.GetTypes().Where(t => typeof(PluginBootstrapper).IsAssignableFrom(t)).ToList();
         if (bootstrappers.Count > 1)
@@ -801,58 +805,6 @@ internal class PluginManagementService : IPluginManagementService
 
     #endregion
 
-    #region Queued actions
-
-    public void QueuePluginDeletion(Plugin plugin)
-    {
-        _queuedActionRepository.Add(new QueuedActionEntity
-        {
-            Type = "DeletePlugin",
-            CreatedAt = DateTimeOffset.Now,
-            Parameters = new Dictionary<string, object>
-            {
-                {"pluginGuid", plugin.Guid.ToString()},
-                {"plugin", plugin.ToString()},
-                {"directory", plugin.Directory.FullName}
-            }
-        });
-    }
-
-    public void DequeuePluginDeletion(Plugin plugin)
-    {
-        QueuedActionEntity? queuedActionEntity = _queuedActionRepository.GetByType("DeletePlugin").FirstOrDefault(q => q.Parameters["pluginGuid"].Equals(plugin.Guid.ToString()));
-        if (queuedActionEntity != null)
-            _queuedActionRepository.Remove(queuedActionEntity);
-    }
-
-    private void ProcessPluginDeletionQueue()
-    {
-        foreach (QueuedActionEntity queuedActionEntity in _queuedActionRepository.GetByType("DeletePlugin"))
-        {
-            string? directory = queuedActionEntity.Parameters["directory"].ToString();
-            try
-            {
-                if (Directory.Exists(directory))
-                {
-                    _logger.Information("Queued plugin deletion - deleting folder - {plugin}", queuedActionEntity.Parameters["plugin"]);
-                    Directory.Delete(directory!, true);
-                }
-                else
-                {
-                    _logger.Information("Queued plugin deletion - folder already deleted - {plugin}", queuedActionEntity.Parameters["plugin"]);
-                }
-
-                _queuedActionRepository.Remove(queuedActionEntity);
-            }
-            catch (Exception e)
-            {
-                _logger.Warning(e, "Queued plugin deletion failed - {plugin}", queuedActionEntity.Parameters["plugin"]);
-            }
-        }
-    }
-
-    #endregion
-
     #region Storage
 
     private void SavePlugin(Plugin plugin)
@@ -942,7 +894,7 @@ internal class PluginManagementService : IPluginManagementService
 
     #region Hot Reload
 
-    private void StartHotReload()
+    public void StartHotReload()
     {
         // Watch for changes in the plugin directory, "plugin.json".
         // If this file is changed, reload the plugin.

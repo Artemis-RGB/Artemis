@@ -12,7 +12,7 @@ public class InputProviderIdentifierEventArgs : EventArgs
     /// </summary>
     /// <param name="identifier">A value that can be used to identify this device</param>
     /// <param name="deviceType">The type of device this identifier belongs to</param>
-    public InputProviderIdentifierEventArgs(object identifier, InputDeviceType deviceType)
+    public InputProviderIdentifierEventArgs(string identifier, InputDeviceType deviceType)
     {
         Identifier = identifier;
         DeviceType = deviceType;
@@ -21,7 +21,7 @@ public class InputProviderIdentifierEventArgs : EventArgs
     /// <summary>
     ///     Gets a value that can be used to identify this device
     /// </summary>
-    public object Identifier { get; }
+    public string Identifier { get; }
 
     /// <summary>
     ///     Gets the type of device this identifier belongs to

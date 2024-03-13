@@ -10,5 +10,5 @@ public interface IDeviceRepository : IRepository
     DeviceEntity? Get(string id);
     List<DeviceEntity> GetAll();
     void Save(DeviceEntity deviceEntity);
-    void Save(IEnumerable<DeviceEntity> deviceEntities);
+    void SaveRange(IEnumerable<DeviceEntity> deviceEntities);
 }

@@ -22,20 +22,18 @@ public static class ContainerExtensions
     /// <param name="container">The builder building the current container</param>
     public static void RegisterCore(this IContainer container)
     {
-        Assembly[] coreAssembly = {typeof(IArtemisService).Assembly};
-        Assembly[] storageAssembly = {typeof(IRepository).Assembly};
+        Assembly[] coreAssembly = [typeof(IArtemisService).Assembly];
+        Assembly[] storageAssembly = [typeof(IRepository).Assembly];
 
         // Bind all services as singletons
         container.RegisterMany(coreAssembly, type => type.IsAssignableTo<IArtemisService>(), Reuse.Singleton);
         container.RegisterMany(coreAssembly, type => type.IsAssignableTo<IProtectedArtemisService>(), Reuse.Singleton, setup: Setup.With(condition: HasAccessToProtectedService));
 
         // Bind storage
-        container.RegisterDelegate(() => StorageManager.CreateRepository(Constants.DataFolder), Reuse.Singleton);
-        container.Register<StorageMigrationService>(Reuse.Singleton);
+        container.RegisterDelegate(() => StorageManager.CreateDbContext(Constants.DataFolder), Reuse.Transient);
         container.RegisterMany(storageAssembly, type => type.IsAssignableTo<IRepository>(), Reuse.Singleton);
-
+        
         // Bind migrations
-        container.RegisterMany(storageAssembly, type => type.IsAssignableTo<IStorageMigration>(), Reuse.Singleton, nonPublicServiceTypes: true);
         container.RegisterMany(storageAssembly, type => type.IsAssignableTo<IProfileMigration>(), Reuse.Singleton, nonPublicServiceTypes: true);
         
         container.RegisterMany(coreAssembly, type => type.IsAssignableTo<ILayoutProvider>(), Reuse.Singleton);

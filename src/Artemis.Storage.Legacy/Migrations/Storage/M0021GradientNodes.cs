@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Artemis.Storage.Entities.Profile;
-using Artemis.Storage.Entities.Profile.Nodes;
+﻿using Artemis.Storage.Legacy.Entities.Profile;
+using Artemis.Storage.Legacy.Entities.Profile.Nodes;
 using LiteDB;
 
-namespace Artemis.Storage.Migrations.Storage;
+namespace Artemis.Storage.Legacy.Migrations.Storage;
 
-public class M0021GradientNodes : IStorageMigration
+internal class M0021GradientNodes : IStorageMigration
 {
     private void MigrateDataBinding(PropertyEntity property)
     {
@@ -62,7 +59,7 @@ public class M0021GradientNodes : IStorageMigration
     {
         if (propertyGroup == null)
             return;
-        
+
         foreach (PropertyGroupEntity propertyGroupPropertyGroup in propertyGroup.PropertyGroups)
             MigrateDataBinding(propertyGroupPropertyGroup);
 

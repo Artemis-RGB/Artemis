@@ -1,59 +1,44 @@
 ﻿using System;
+using System.Linq;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
-using LiteDB;
+using Microsoft.EntityFrameworkCore;
 
 namespace Artemis.Storage.Repositories;
 
-internal class PluginRepository : IPluginRepository
+internal class PluginRepository(Func<ArtemisDbContext> getContext) : IPluginRepository
 {
-    private readonly LiteRepository _repository;
-
-    public PluginRepository(LiteRepository repository)
+    public PluginEntity? GetPluginByPluginGuid(Guid pluginGuid)
     {
-        _repository = repository;
-
-        _repository.Database.GetCollection<PluginSettingEntity>().EnsureIndex(s => new {s.Name, s.PluginGuid}, true);
-    }
-
-    public void AddPlugin(PluginEntity pluginEntity)
-    {
-        _repository.Insert(pluginEntity);
-    }
-
-    public PluginEntity? GetPluginByGuid(Guid pluginGuid)
-    {
-        return _repository.FirstOrDefault<PluginEntity>(p => p.Id == pluginGuid);
-    }
-
-    public void SavePlugin(PluginEntity pluginEntity)
-    {
-        _repository.Upsert(pluginEntity);
-    }
-
-    public void AddSetting(PluginSettingEntity pluginSettingEntity)
-    {
-        _repository.Insert(pluginSettingEntity);
-    }
-
-    public PluginSettingEntity? GetSettingByGuid(Guid pluginGuid)
-    {
-        return _repository.FirstOrDefault<PluginSettingEntity>(p => p.PluginGuid == pluginGuid);
+        using ArtemisDbContext dbContext = getContext();
+        return dbContext.Plugins.Include(p => p.Features).FirstOrDefault(p => p.PluginGuid == pluginGuid);
     }
 
     public PluginSettingEntity? GetSettingByNameAndGuid(string name, Guid pluginGuid)
     {
-        return _repository.FirstOrDefault<PluginSettingEntity>(p => p.Name == name && p.PluginGuid == pluginGuid);
+        using ArtemisDbContext dbContext = getContext();
+        return dbContext.PluginSettings.FirstOrDefault(p => p.Name == name && p.PluginGuid == pluginGuid);
     }
 
-    public void SaveSetting(PluginSettingEntity pluginSettingEntity)
-    {
-        _repository.Upsert(pluginSettingEntity);
-    }
-
-    /// <inheritdoc />
     public void RemoveSettings(Guid pluginGuid)
     {
-        _repository.DeleteMany<PluginSettingEntity>(s => s.PluginGuid == pluginGuid);
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.PluginSettings.RemoveRange(dbContext.PluginSettings.Where(s => s.PluginGuid == pluginGuid));
+        dbContext.SaveChanges();
     }
+    
+    public void SaveSetting(PluginSettingEntity pluginSettingEntity)
+    {
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.PluginSettings.Update(pluginSettingEntity);
+        dbContext.SaveChanges();
+    }
+
+    public void SavePlugin(PluginEntity pluginEntity)
+    {
+        using ArtemisDbContext dbContext = getContext();
+        dbContext.Update(pluginEntity);
+        dbContext.SaveChanges();
+    }
+
 }

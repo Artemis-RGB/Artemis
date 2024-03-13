@@ -12,7 +12,7 @@ internal class ScriptingService : IScriptingService
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IProfileService _profileService;
     private readonly List<ScriptingProvider> _scriptingProviders;
-    
+
     public ScriptingService(IPluginManagementService pluginManagementService, IProfileService profileService)
     {
         _pluginManagementService = pluginManagementService;
@@ -29,10 +29,13 @@ internal class ScriptingService : IScriptingService
         // No need to sub to Deactivated, scripts will deactivate themselves
         profileService.ProfileActivated += ProfileServiceOnProfileActivated;
 
-        foreach (ProfileConfiguration profileConfiguration in _profileService.ProfileConfigurations)
+        foreach (ProfileCategory profileCategory in _profileService.ProfileCategories)
         {
-            if (profileConfiguration.Profile != null)
-                InitializeProfileScripts(profileConfiguration.Profile);
+            foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
+            {
+                if (profileConfiguration.Profile != null)
+                    InitializeProfileScripts(profileConfiguration.Profile);
+            }
         }
     }
 
@@ -112,11 +115,14 @@ internal class ScriptingService : IScriptingService
     {
         _scriptingProviders.Clear();
         _scriptingProviders.AddRange(_pluginManagementService.GetFeaturesOfType<ScriptingProvider>());
-
-        foreach (ProfileConfiguration profileConfiguration in _profileService.ProfileConfigurations)
+        
+        foreach (ProfileCategory profileCategory in _profileService.ProfileCategories)
         {
-            if (profileConfiguration.Profile != null)
-                InitializeProfileScripts(profileConfiguration.Profile);
+            foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
+            {
+                if (profileConfiguration.Profile != null)
+                    InitializeProfileScripts(profileConfiguration.Profile);
+            }
         }
     }
 

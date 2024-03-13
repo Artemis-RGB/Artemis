@@ -37,13 +37,13 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
         _name = name;
         _category = category;
 
-        Entity = new ProfileConfigurationEntity();
+        Entity = new ProfileContainerEntity();
         Icon = new ProfileConfigurationIcon(Entity);
         Icon.SetIconByName(icon);
         ActivationCondition = new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", this);
     }
 
-    internal ProfileConfiguration(ProfileCategory category, ProfileConfigurationEntity entity)
+    internal ProfileConfiguration(ProfileCategory category, ProfileContainerEntity entity)
     {
         // Will be loaded from the entity
         _name = null!;
@@ -192,12 +192,12 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// <summary>
     ///     Gets the entity used by this profile config
     /// </summary>
-    public ProfileConfigurationEntity Entity { get; }
+    public ProfileContainerEntity Entity { get; }
 
     /// <summary>
     ///     Gets the ID of the profile of this profile configuration
     /// </summary>
-    public Guid ProfileId => Entity.ProfileId;
+    public Guid ProfileId => Entity.Profile.Id;
 
     #region Overrides of BreakableModel
 
@@ -265,8 +265,8 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
         if (_disposed)
             throw new ObjectDisposedException("ProfileConfiguration");
 
-        Module = enabledModules.FirstOrDefault(m => m.Id == Entity.ModuleId);
-        IsMissingModule = Module == null && Entity.ModuleId != null;
+        Module = enabledModules.FirstOrDefault(m => m.Id == Entity.ProfileConfiguration.ModuleId);
+        IsMissingModule = Module == null && Entity.ProfileConfiguration.ModuleId != null;
     }
 
     /// <inheritdoc />
@@ -284,20 +284,20 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
         if (_disposed)
             throw new ObjectDisposedException("ProfileConfiguration");
 
-        Name = Entity.Name;
-        IsSuspended = Entity.IsSuspended;
-        ActivationBehaviour = (ActivationBehaviour) Entity.ActivationBehaviour;
-        HotkeyMode = (ProfileConfigurationHotkeyMode) Entity.HotkeyMode;
-        FadeInAndOut = Entity.FadeInAndOut;
-        Order = Entity.Order;
+        Name = Entity.ProfileConfiguration.Name;
+        IsSuspended = Entity.ProfileConfiguration.IsSuspended;
+        ActivationBehaviour = (ActivationBehaviour) Entity.ProfileConfiguration.ActivationBehaviour;
+        HotkeyMode = (ProfileConfigurationHotkeyMode) Entity.ProfileConfiguration.HotkeyMode;
+        FadeInAndOut = Entity.ProfileConfiguration.FadeInAndOut;
+        Order = Entity.ProfileConfiguration.Order;
 
         Icon.Load();
 
-        if (Entity.ActivationCondition != null)
-            ActivationCondition.LoadFromEntity(Entity.ActivationCondition);
+        if (Entity.ProfileConfiguration.ActivationCondition != null)
+            ActivationCondition.LoadFromEntity(Entity.ProfileConfiguration.ActivationCondition);
 
-        EnableHotkey = Entity.EnableHotkey != null ? new Hotkey(Entity.EnableHotkey) : null;
-        DisableHotkey = Entity.DisableHotkey != null ? new Hotkey(Entity.DisableHotkey) : null;
+        EnableHotkey = Entity.ProfileConfiguration.EnableHotkey != null ? new Hotkey(Entity.ProfileConfiguration.EnableHotkey) : null;
+        DisableHotkey = Entity.ProfileConfiguration.DisableHotkey != null ? new Hotkey(Entity.ProfileConfiguration.DisableHotkey) : null;
     }
 
     /// <inheritdoc />
@@ -306,26 +306,26 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
         if (_disposed)
             throw new ObjectDisposedException("ProfileConfiguration");
 
-        Entity.Name = Name;
-        Entity.IsSuspended = IsSuspended;
-        Entity.ActivationBehaviour = (int) ActivationBehaviour;
-        Entity.HotkeyMode = (int) HotkeyMode;
-        Entity.ProfileCategoryId = Category.Entity.Id;
-        Entity.FadeInAndOut = FadeInAndOut;
-        Entity.Order = Order;
+        Entity.ProfileConfiguration.Name = Name;
+        Entity.ProfileConfiguration.IsSuspended = IsSuspended;
+        Entity.ProfileConfiguration.ActivationBehaviour = (int) ActivationBehaviour;
+        Entity.ProfileConfiguration.HotkeyMode = (int) HotkeyMode;
+        Entity.ProfileConfiguration.ProfileCategoryId = Category.Entity.Id;
+        Entity.ProfileConfiguration.FadeInAndOut = FadeInAndOut;
+        Entity.ProfileConfiguration.Order = Order;
 
         Icon.Save();
 
         ActivationCondition.Save();
-        Entity.ActivationCondition = ActivationCondition.Entity;
+        Entity.ProfileConfiguration.ActivationCondition = ActivationCondition.Entity;
 
         EnableHotkey?.Save();
-        Entity.EnableHotkey = EnableHotkey?.Entity;
+        Entity.ProfileConfiguration.EnableHotkey = EnableHotkey?.Entity;
         DisableHotkey?.Save();
-        Entity.DisableHotkey = DisableHotkey?.Entity;
+        Entity.ProfileConfiguration.DisableHotkey = DisableHotkey?.Entity;
 
         if (!IsMissingModule)
-            Entity.ModuleId = Module?.Id;
+            Entity.ProfileConfiguration.ModuleId = Module?.Id;
     }
 
     #endregion
