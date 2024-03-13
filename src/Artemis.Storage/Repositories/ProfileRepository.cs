@@ -54,22 +54,32 @@ public class ProfileRepository(ILogger logger, Func<ArtemisDbContext> getContext
 
         foreach (RawProfileContainer rawProfileContainer in containers)
         {
-            JsonObject? profileConfiguration = JsonNode.Parse(rawProfileContainer.ProfileConfiguration)?.AsObject();
-            JsonObject? profile = JsonNode.Parse(rawProfileContainer.Profile)?.AsObject();
-            
-            if (profileConfiguration == null || profile == null)
-                throw new ArtemisStorageException("Failed to parse profile or profile configuration");
+            try
+            {
+                JsonObject? profileConfiguration = JsonNode.Parse(rawProfileContainer.ProfileConfiguration)?.AsObject();
+                JsonObject? profile = JsonNode.Parse(rawProfileContainer.Profile)?.AsObject();
 
-            MigrateProfile(profileConfiguration, profile);
-            rawProfileContainer.Profile = profile.ToString();
-            rawProfileContainer.ProfileConfiguration = profileConfiguration.ToString();
+                if (profileConfiguration == null || profile == null)
+                {
+                    logger.Error("Failed to parse profile or profile configuration of profile container {Id}", rawProfileContainer.Id);
+                    continue;
+                }
 
-            // Write the updated containers back to the database
-            dbContext.Database.ExecuteSqlRaw(
-                "UPDATE ProfileContainers SET Profile = {0}, ProfileConfiguration = {1} WHERE Id = {2}",
-                rawProfileContainer.Profile,
-                rawProfileContainer.ProfileConfiguration,
-                rawProfileContainer.Id);
+                MigrateProfile(profileConfiguration, profile);
+                rawProfileContainer.Profile = profile.ToString();
+                rawProfileContainer.ProfileConfiguration = profileConfiguration.ToString();
+
+                // Write the updated containers back to the database
+                dbContext.Database.ExecuteSqlRaw(
+                    "UPDATE ProfileContainers SET Profile = {0}, ProfileConfiguration = {1} WHERE Id = {2}",
+                    rawProfileContainer.Profile,
+                    rawProfileContainer.ProfileConfiguration,
+                    rawProfileContainer.Id);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Failed to migrate profile container {Id}", rawProfileContainer.Id);
+            }
         }
     }
 
@@ -84,8 +94,8 @@ public class ProfileRepository(ILogger logger, Func<ArtemisDbContext> getContext
         {
             if (profileMigrator.Version <= configurationJson["Version"]!.GetValue<int>())
                 continue;
-            
-            logger.Information("Migrating profile from version {OldVersion} to {NewVersion}", configurationJson["Version"], profileMigrator.Version);
+
+            logger.Information("Migrating profile '{Name}' from version {OldVersion} to {NewVersion}", configurationJson["Name"], configurationJson["Version"], profileMigrator.Version);
 
             profileMigrator.Migrate(configurationJson, profileJson);
             configurationJson["Version"] = profileMigrator.Version;

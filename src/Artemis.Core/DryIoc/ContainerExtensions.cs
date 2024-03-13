@@ -22,8 +22,8 @@ public static class ContainerExtensions
     /// <param name="container">The builder building the current container</param>
     public static void RegisterCore(this IContainer container)
     {
-        Assembly[] coreAssembly = {typeof(IArtemisService).Assembly};
-        Assembly[] storageAssembly = {typeof(IRepository).Assembly};
+        Assembly[] coreAssembly = [typeof(IArtemisService).Assembly];
+        Assembly[] storageAssembly = [typeof(IRepository).Assembly];
 
         // Bind all services as singletons
         container.RegisterMany(coreAssembly, type => type.IsAssignableTo<IArtemisService>(), Reuse.Singleton);

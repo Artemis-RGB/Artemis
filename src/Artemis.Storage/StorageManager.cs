@@ -49,6 +49,7 @@ public static class StorageManager
             return dbContext;
 
         dbContext.Database.Migrate();
+        dbContext.Database.ExecuteSqlRaw("PRAGMA optimize");
         _ranMigrations = true;
 
         return dbContext;

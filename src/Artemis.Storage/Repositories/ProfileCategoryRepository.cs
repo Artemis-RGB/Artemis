@@ -39,6 +39,12 @@ internal class ProfileCategoryRepository(Func<ArtemisDbContext> getContext, IPro
 
     public ProfileCategoryEntity? Get(Guid id)
     {
+        if (!_migratedProfiles)
+        {
+            profileRepository.MigrateProfiles();
+            _migratedProfiles = true;
+        }
+        
         using ArtemisDbContext dbContext = getContext();
         return dbContext.ProfileCategories.Include(c => c.ProfileConfigurations).FirstOrDefault(c => c.Id == id);
     }
