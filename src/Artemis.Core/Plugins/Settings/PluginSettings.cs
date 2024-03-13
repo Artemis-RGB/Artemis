@@ -31,10 +31,13 @@ public class PluginSettings
     ///     Gets the setting with the provided name. If the setting does not exist yet, it is created.
     /// </summary>
     /// <typeparam name="T">The type of the setting, can be any serializable type</typeparam>
-    /// <param name="name">The name of the setting</param>
+    /// <param name="name">The name of the setting, may not be longer than 128 characters</param>
     /// <param name="defaultValue">The default value to use if the setting does not exist yet</param>
     public PluginSetting<T> GetSetting<T>(string name, T? defaultValue = default)
     {
+        if (name.Length > 128)
+            throw new ArtemisCoreException("Setting name cannot be longer than 128 characters");
+
         lock (_settingEntities)
         {
             // Return cached value if available
@@ -51,7 +54,7 @@ public class PluginSettings
                     PluginGuid = Plugin.Guid,
                     Value = CoreJson.Serialize(defaultValue)
                 };
-                _pluginRepository.AddSetting(settingEntity);
+                _pluginRepository.SaveSetting(settingEntity);
             }
 
             PluginSetting<T> pluginSetting = new(_pluginRepository, settingEntity);

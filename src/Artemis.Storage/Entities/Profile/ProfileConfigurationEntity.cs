@@ -1,6 +1,5 @@
 ﻿using System;
 using Artemis.Storage.Entities.Profile.Nodes;
-using Serilog.Core;
 
 namespace Artemis.Storage.Entities.Profile;
 
@@ -8,7 +7,6 @@ public class ProfileConfigurationEntity
 {
     public string Name { get; set; } = string.Empty;
     public string? MaterialIcon { get; set; }
-    public Guid FileIconId { get; set; }
     public int IconType { get; set; }
     public bool IconFill { get; set; }
     public int Order { get; set; }
@@ -27,5 +25,5 @@ public class ProfileConfigurationEntity
     public Guid ProfileId { get; set; }
 
     public bool FadeInAndOut { get; set; }
-    public int Version { get; set; } = StorageMigrationService.PROFILE_VERSION;
+    public int Version { get; set; }
 }

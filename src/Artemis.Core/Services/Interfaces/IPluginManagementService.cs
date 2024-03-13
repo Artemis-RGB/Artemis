@@ -16,7 +16,7 @@ public interface IPluginManagementService : IArtemisService, IDisposable
     ///     Gets a list containing additional directories in which plugins are located, used while loading plugins.
     /// </summary>
     List<DirectoryInfo> AdditionalPluginDirectories { get; }
-    
+
     /// <summary>
     ///     Indicates whether or not plugins are currently being loaded
     /// </summary>
@@ -32,6 +32,11 @@ public interface IPluginManagementService : IArtemisService, IDisposable
     ///     Loads all installed plugins. If plugins already loaded this will reload them all
     /// </summary>
     void LoadPlugins(bool isElevated);
+
+    /// <summary>
+    ///    Starts monitoring plugin directories for changes and reloads plugins when changes are detected
+    /// </summary>
+    void StartHotReload();
 
     /// <summary>
     ///     Unloads all installed plugins.
@@ -145,18 +150,6 @@ public interface IPluginManagementService : IArtemisService, IDisposable
     /// <param name="device"></param>
     /// <returns></returns>
     DeviceProvider GetDeviceProviderByDevice(IRGBDevice device);
-
-    /// <summary>
-    ///     Queues the provided plugin to be deleted the next time Artemis starts, before plugins are loaded
-    /// </summary>
-    /// <param name="plugin">The plugin to delete</param>
-    void QueuePluginDeletion(Plugin plugin);
-
-    /// <summary>
-    ///     Removes the provided plugin for the deletion queue it was added to via <see cref="QueuePluginDeletion" />
-    /// </summary>
-    /// <param name="plugin">The plugin to dequeue</param>
-    void DequeuePluginDeletion(Plugin plugin);
 
     /// <summary>
     ///     Occurs when built-in plugins are being loaded

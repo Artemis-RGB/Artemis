@@ -236,7 +236,7 @@ internal class DeviceService : IDeviceService
     {
         foreach (ArtemisDevice artemisDevice in _devices)
             artemisDevice.Save();
-        _deviceRepository.Save(_devices.Select(d => d.DeviceEntity));
+        _deviceRepository.SaveRange(_devices.Select(d => d.DeviceEntity));
         UpdateLeds();
     }
 
@@ -254,6 +254,7 @@ internal class DeviceService : IDeviceService
         {
             _logger.Information("No device config found for {DeviceInfo}, device hash: {DeviceHashCode}. Adding a new entry", rgbDevice.DeviceInfo, deviceIdentifier);
             device = new ArtemisDevice(rgbDevice, deviceProvider);
+            _deviceRepository.Add(device.DeviceEntity);
         }
 
         LoadDeviceLayout(device);

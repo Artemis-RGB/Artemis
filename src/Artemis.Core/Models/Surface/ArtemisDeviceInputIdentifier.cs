@@ -14,7 +14,7 @@ public class ArtemisDeviceInputIdentifier
     ///     used by
     /// </param>
     /// <param name="identifier">A value used to identify the device</param>
-    internal ArtemisDeviceInputIdentifier(string inputProvider, object identifier)
+    internal ArtemisDeviceInputIdentifier(string inputProvider, string identifier)
     {
         InputProvider = inputProvider;
         Identifier = identifier;
@@ -28,5 +28,5 @@ public class ArtemisDeviceInputIdentifier
     /// <summary>
     ///     Gets or sets a value used to identify the device
     /// </summary>
-    public object Identifier { get; set; }
+    public string Identifier { get; set; }
 }

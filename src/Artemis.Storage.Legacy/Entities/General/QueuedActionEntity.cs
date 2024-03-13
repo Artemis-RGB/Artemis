@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Artemis.Storage.Legacy.Entities.General;
 
-namespace Artemis.Storage.Entities.General;
-
-public class QueuedActionEntity
+internal class QueuedActionEntity
 {
     public QueuedActionEntity()
     {

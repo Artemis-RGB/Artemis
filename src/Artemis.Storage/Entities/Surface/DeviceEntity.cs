@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Artemis.Storage.Entities.Surface;
 
@@ -11,8 +12,12 @@ public class DeviceEntity
         Categories = new List<int>();
     }
 
+    [MaxLength(512)]
     public string Id { get; set; } = string.Empty;
+
+    [MaxLength(512)]
     public string DeviceProvider { get; set; } = string.Empty;
+
     public float X { get; set; }
     public float Y { get; set; }
     public float Rotation { get; set; }
@@ -22,10 +27,16 @@ public class DeviceEntity
     public float GreenScale { get; set; }
     public float BlueScale { get; set; }
     public bool IsEnabled { get; set; }
-    
+
     public int PhysicalLayout { get; set; }
+
+    [MaxLength(32)]
     public string? LogicalLayout { get; set; }
+
+    [MaxLength(64)]
     public string? LayoutType { get; set; }
+
+    [MaxLength(512)]
     public string? LayoutParameter { get; set; }
 
     public List<DeviceInputIdentifierEntity> InputIdentifiers { get; set; }
@@ -42,5 +53,5 @@ public class InputMappingEntity
 public class DeviceInputIdentifierEntity
 {
     public string InputProvider { get; set; } = string.Empty;
-    public object Identifier { get; set; } = string.Empty;
+    public string Identifier { get; set; } = string.Empty;
 }

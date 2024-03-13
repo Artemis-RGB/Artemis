@@ -68,8 +68,8 @@ public class SidebarCategoryViewDropHandler : DropHandlerBase
             {
                 int index = vm.ProfileConfigurations.IndexOf(targetItem);
                 if (!before)
-                    index++;
-                vm.AddProfileConfiguration(sourceItem.ProfileConfiguration, index);
+                    targetItem = index < vm.ProfileConfigurations.Count - 1 ? vm.ProfileConfigurations[index + 1] : null;
+                vm.AddProfileConfiguration(sourceItem.ProfileConfiguration, targetItem?.ProfileConfiguration);
             }
             else
             {

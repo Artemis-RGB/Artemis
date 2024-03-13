@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using LiteDB;
+﻿using LiteDB;
 
-namespace Artemis.Storage.Migrations.Storage;
+namespace Artemis.Storage.Legacy.Migrations.Storage;
 
-public class M0020AvaloniaReset : IStorageMigration
+internal class M0020AvaloniaReset : IStorageMigration
 {
     public int UserVersion => 20;
 

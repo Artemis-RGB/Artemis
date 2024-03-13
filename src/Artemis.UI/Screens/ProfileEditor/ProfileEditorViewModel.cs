@@ -186,7 +186,7 @@ public partial class ProfileEditorViewModel : RoutableScreen<ProfileEditorViewMo
     /// <inheritdoc />
     public override async Task OnNavigating(ProfileEditorViewModelParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
-        ProfileConfiguration? profileConfiguration = _profileService.ProfileConfigurations.FirstOrDefault(c => c.ProfileId == parameters.ProfileId);
+        ProfileConfiguration? profileConfiguration = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(c => c.ProfileId == parameters.ProfileId);
 
         // If the profile doesn't exist, cancel navigation
         if (profileConfiguration == null)

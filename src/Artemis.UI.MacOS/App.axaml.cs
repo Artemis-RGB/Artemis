@@ -1,3 +1,4 @@
+using Artemis.Storage.Legacy;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -14,7 +15,10 @@ public class App : Application
     public override void Initialize()
     {
         _container = ArtemisBootstrapper.Bootstrap(this);
+        
         Program.CreateLogger(_container);
+        LegacyMigrationService.MigrateToSqlite(_container);
+        
         RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
         AvaloniaXamlLoader.Load(this);
     }

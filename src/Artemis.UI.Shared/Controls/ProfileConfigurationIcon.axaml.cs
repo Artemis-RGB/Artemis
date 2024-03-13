@@ -46,17 +46,10 @@ public partial class ProfileConfigurationIcon : UserControl, IDisposable
                     ? new MaterialIcon {Kind = parsedIcon!}
                     : new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
             }
+            else if (ConfigurationIcon.IconBytes != null)
+                Dispatcher.UIThread.Post(LoadFromBitmap, DispatcherPriority.ApplicationIdle);
             else
-            {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    Stream? stream = ConfigurationIcon?.GetIconStream();
-                    if (stream == null || ConfigurationIcon == null)
-                        Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
-                    else
-                        LoadFromBitmap(ConfigurationIcon, stream);
-                }, DispatcherPriority.ApplicationIdle);
-            }
+                Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
         }
         catch (Exception)
         {
@@ -64,22 +57,32 @@ public partial class ProfileConfigurationIcon : UserControl, IDisposable
         }
     }
 
-    private void LoadFromBitmap(Core.ProfileConfigurationIcon configurationIcon, Stream stream)
+    private void LoadFromBitmap()
     {
-        _stream = stream;
-        if (!configurationIcon.Fill)
+        try
         {
-            Content = new Image {Source = new Bitmap(stream)};
-            return;
-        }
+            if (ConfigurationIcon?.IconBytes == null)
+                return;
 
-        Content = new Border
+            _stream = new MemoryStream(ConfigurationIcon.IconBytes);
+            if (!ConfigurationIcon.Fill)
+            {
+                Content = new Image {Source = new Bitmap(_stream)};
+                return;
+            }
+
+            Content = new Border
+            {
+                Background = TextElement.GetForeground(this),
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                OpacityMask = new ImageBrush(new Bitmap(_stream))
+            };
+        }
+        catch (Exception)
         {
-            Background = TextElement.GetForeground(this),
-            VerticalAlignment = VerticalAlignment.Stretch,
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            OpacityMask = new ImageBrush(new Bitmap(stream))
-        };
+            Content = new MaterialIcon {Kind = MaterialIconKind.QuestionMark};
+        }
     }
 
     private void OnDetachedFromLogicalTree(object? sender, LogicalTreeAttachmentEventArgs e)

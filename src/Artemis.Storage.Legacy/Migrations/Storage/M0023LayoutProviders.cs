@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using LiteDB;
+﻿using LiteDB;
 
-namespace Artemis.Storage.Migrations.Storage;
+namespace Artemis.Storage.Legacy.Migrations.Storage;
 
-public class M0023LayoutProviders : IStorageMigration
+internal class M0023LayoutProviders : IStorageMigration
 {
     public int UserVersion => 23;
 
@@ -20,9 +19,13 @@ public class M0023LayoutProviders : IStorageMigration
                 bsonDocument.Add("LayoutParameter", new BsonValue(customLayoutPath.AsString));
             }
             else if (bsonDocument.TryGetValue("DisableDefaultLayout", out BsonValue disableDefaultLayout) && disableDefaultLayout.AsBoolean)
+            {
                 bsonDocument.Add("LayoutType", new BsonValue("None"));
+            }
             else
+            {
                 bsonDocument.Add("LayoutType", new BsonValue("Default"));
+            }
 
             bsonDocument.Remove("CustomLayoutPath");
             bsonDocument.Remove("DisableDefaultLayout");

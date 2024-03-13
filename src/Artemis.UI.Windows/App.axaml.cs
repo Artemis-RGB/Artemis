@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.Storage.Legacy;
 using Artemis.UI.Windows.DryIoc;
 using Artemis.UI.Windows.Providers.Input;
 using Avalonia;
@@ -34,7 +35,10 @@ public class App : Application
         }
 
         _container = ArtemisBootstrapper.Bootstrap(this, c => c.RegisterProviders());
+        
         Program.CreateLogger(_container);
+        LegacyMigrationService.MigrateToSqlite(_container);
+        
         RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
         AvaloniaXamlLoader.Load(this);
     }
