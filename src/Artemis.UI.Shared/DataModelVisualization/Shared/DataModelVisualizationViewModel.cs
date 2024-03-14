@@ -8,7 +8,6 @@ using System.Text;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.UI.Shared.Services;
-using Avalonia;
 using ReactiveUI;
 
 namespace Artemis.UI.Shared.DataModelVisualization.Shared;
@@ -282,12 +281,8 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
             foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(t => t.MetadataToken))
             {
                 string childPath = AppendToPath(propertyInfo.Name);
-                if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))
-                    continue;
-                if (propertyInfo.GetCustomAttribute<DataModelIgnoreAttribute>() != null)
-                    continue;
-                MethodInfo? getMethod = propertyInfo.GetGetMethod();
-                if (getMethod == null || getMethod.GetParameters().Any())
+                
+                if (!ShouldIncludePath(childPath, propertyInfo))
                     continue;
 
                 DataModelVisualizationViewModel? child = CreateChild(dataModelUIService, childPath, GetChildDepth());
@@ -329,6 +324,27 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
         List<DataModelVisualizationViewModel> toRemoveDynamic = Children.Where(c => c.DataModelPath != null && !c.DataModelPath.IsValid).ToList();
         foreach (DataModelVisualizationViewModel dataModelVisualizationViewModel in toRemoveDynamic)
             Children.Remove(dataModelVisualizationViewModel);
+    }
+
+    private bool ShouldIncludePath(string childPath, PropertyInfo propertyInfo)
+    {
+        // Outdated plugins can cause unpredictable exceptions when resolving types
+        try
+        {
+            if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))
+                return false;
+            if (propertyInfo.GetCustomAttribute<DataModelIgnoreAttribute>() != null)
+                return false;
+            MethodInfo? getMethod = propertyInfo.GetGetMethod();
+            if (getMethod == null || getMethod.GetParameters().Any())
+                return false;
+
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     private DataModelVisualizationViewModel? CreateChild(IDataModelUIService dataModelUIService, string path, int depth)
