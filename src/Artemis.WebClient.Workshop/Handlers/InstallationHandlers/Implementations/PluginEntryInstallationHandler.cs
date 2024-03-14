@@ -63,11 +63,17 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
         using ZipArchive archive = new(stream);
         archive.ExtractToDirectory(releaseDirectory.FullName);
 
-        // If there is already a version of the plugin installed, disable it
-        if (installedEntry.TryGetMetadata("PluginId", out Guid pluginId))
+        PluginInfo pluginInfo = CoreJson.Deserialize<PluginInfo>(await File.ReadAllTextAsync(Path.Combine(releaseDirectory.FullName, "plugin.json"), cancellationToken))!;
+
+        // If there is already a version of the plugin installed, remove it
+        Plugin? currentVersion = _pluginManagementService.GetAllPlugins().FirstOrDefault(p => p.Guid == pluginInfo.Guid);
+        if (currentVersion != null)
         {
-            Plugin? currentVersion = _pluginManagementService.GetAllPlugins().FirstOrDefault(p => p.Guid == pluginId);
-            if (currentVersion != null)
+            // If the current version isn't from the workshop, remove it first
+            if (currentVersion.Directory.FullName.StartsWith(Constants.PluginsFolder))
+                _pluginManagementService.RemovePlugin(currentVersion, false);
+            // If the current version is from the workshop only unload it, the old folder will be orphaned and cleaned up later
+            else
                 _pluginManagementService.UnloadPlugin(currentVersion);
         }
 
@@ -95,6 +101,8 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
             _workshopService.RemoveInstalledEntry(installedEntry);
             return EntryInstallResult.FromFailure(e.Message);
         }
+
+        installedEntry.ApplyRelease(release);
 
         _workshopService.SaveInstalledEntry(installedEntry);
         return EntryInstallResult.FromSuccess(installedEntry);
