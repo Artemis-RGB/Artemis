@@ -24,6 +24,14 @@ public static class LegacyMigrationService
             logger.Information("No legacy database found, nothing to migrate");
             return;
         }
+
+        // If the legacy database has already been migrated, but the old DB failed to be deleted, we don't want to migrate again
+        // In a future update we'll clean up the old DB if it's still there, for now lets leave people's files alone
+        if (File.Exists(Path.Combine(Constants.DataFolder, "legacy.db")))
+        {
+            logger.Information("Legacy database already migrated, nothing to do");
+            return;
+        }
         
         using ArtemisDbContext dbContext = container.Resolve<ArtemisDbContext>();
         MigrateToSqlite(logger, dbContext);
