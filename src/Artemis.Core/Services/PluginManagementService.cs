@@ -451,7 +451,7 @@ internal class PluginManagementService : IPluginManagementService
 
         // It is appropriate to call this now that we have the features of this plugin
         bool autoEnabled = plugin.AutoEnableIfNew();
-        
+
         if (autoEnabled || addedNewFeature)
             _pluginRepository.SavePlugin(entity);
 
@@ -671,7 +671,19 @@ internal class PluginManagementService : IPluginManagementService
                 UnloadPlugin(plugin);
         }
 
-        directory.Delete(true);
+        // Delete plugin.json since that should never be in use and prevents future loads
+        File.Delete(Path.Combine(directory.FullName, "plugin.json"));
+
+        try
+        {
+            // Give a good effort to remove the directory, files may be in use though :\
+            directory.Delete(true);
+        }
+        catch (Exception e)
+        {
+            _logger.Warning(e, "Failed to fully remove plugin directory {Directory}", directory.FullName);
+        }
+
         if (removeSettings)
             RemovePluginSettings(plugin);
     }
