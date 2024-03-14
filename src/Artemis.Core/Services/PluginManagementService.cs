@@ -425,10 +425,18 @@ internal class PluginManagementService : IPluginManagementService
             );
         }
 
+        bool addedNewFeature = false;
         foreach (Type featureType in featureTypes)
         {
             // Load the enabled state and if not found, default to true
-            PluginFeatureEntity featureEntity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName) ?? new PluginFeatureEntity {Type = featureType.FullName!};
+            PluginFeatureEntity? featureEntity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName);
+            if (featureEntity == null)
+            {
+                featureEntity = new PluginFeatureEntity {Type = featureType.FullName!};
+                entity.Features.Add(featureEntity);
+                addedNewFeature = true;
+            }
+
             PluginFeatureInfo feature = new(plugin, featureType, featureEntity, (PluginFeatureAttribute?) Attribute.GetCustomAttribute(featureType, typeof(PluginFeatureAttribute)));
 
             // If the plugin only has a single feature, it should always be enabled
@@ -443,7 +451,8 @@ internal class PluginManagementService : IPluginManagementService
 
         // It is appropriate to call this now that we have the features of this plugin
         bool autoEnabled = plugin.AutoEnableIfNew();
-        if (autoEnabled)
+        
+        if (autoEnabled || addedNewFeature)
             _pluginRepository.SavePlugin(entity);
 
         List<Type> bootstrappers = plugin.Assembly.GetTypes().Where(t => typeof(PluginBootstrapper).IsAssignableFrom(t)).ToList();
