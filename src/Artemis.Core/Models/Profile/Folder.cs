@@ -363,9 +363,7 @@ public sealed class Folder : RenderProfileElement
         FolderEntity.Name = Name;
         FolderEntity.IsExpanded = IsExpanded;
         FolderEntity.Suspended = Suspended;
-
-        FolderEntity.ProfileId = Profile.EntityId;
-
+        
         SaveRenderElement();
     }
 

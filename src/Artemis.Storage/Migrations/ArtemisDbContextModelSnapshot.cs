@@ -38,7 +38,7 @@ namespace Artemis.Storage.Migrations
                     b.HasIndex("Version")
                         .IsUnique();
 
-                    b.ToTable("Releases");
+                    b.ToTable("Releases", (string)null);
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.Plugins.PluginEntity", b =>
@@ -58,7 +58,7 @@ namespace Artemis.Storage.Migrations
                     b.HasIndex("PluginGuid")
                         .IsUnique();
 
-                    b.ToTable("Plugins");
+                    b.ToTable("Plugins", (string)null);
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.Plugins.PluginFeatureEntity", b =>
@@ -81,7 +81,7 @@ namespace Artemis.Storage.Migrations
 
                     b.HasIndex("PluginEntityId");
 
-                    b.ToTable("PluginFeatures");
+                    b.ToTable("PluginFeatures", (string)null);
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.Plugins.PluginSettingEntity", b =>
@@ -109,7 +109,7 @@ namespace Artemis.Storage.Migrations
                     b.HasIndex("Name", "PluginGuid")
                         .IsUnique();
 
-                    b.ToTable("PluginSettings");
+                    b.ToTable("PluginSettings", (string)null);
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.Profile.ProfileCategoryEntity", b =>
@@ -137,7 +137,7 @@ namespace Artemis.Storage.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("ProfileCategories");
+                    b.ToTable("ProfileCategories", (string)null);
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.Profile.ProfileContainerEntity", b =>
@@ -165,7 +165,7 @@ namespace Artemis.Storage.Migrations
 
                     b.HasIndex("ProfileCategoryId");
 
-                    b.ToTable("ProfileContainers");
+                    b.ToTable("ProfileContainers", (string)null);
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.Surface.DeviceEntity", b =>
@@ -227,7 +227,7 @@ namespace Artemis.Storage.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Devices");
+                    b.ToTable("Devices", (string)null);
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.Workshop.EntryEntity", b =>
@@ -268,7 +268,7 @@ namespace Artemis.Storage.Migrations
                     b.HasIndex("EntryId")
                         .IsUnique();
 
-                    b.ToTable("Entries");
+                    b.ToTable("Entries", (string)null);
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.Plugins.PluginFeatureEntity", b =>
@@ -291,7 +291,7 @@ namespace Artemis.Storage.Migrations
 
             modelBuilder.Entity("Artemis.Storage.Entities.Surface.DeviceEntity", b =>
                 {
-                    b.OwnsOne("System.Collections.Generic.List<Artemis.Storage.Entities.Surface.DeviceInputIdentifierEntity>", "InputIdentifiers", b1 =>
+                    b.OwnsOne("Artemis.Storage.Entities.Surface.DeviceEntity.InputIdentifiers#System.Collections.Generic.List<Artemis.Storage.Entities.Surface.DeviceInputIdentifierEntity>", "InputIdentifiers", b1 =>
                         {
                             b1.Property<string>("DeviceEntityId")
                                 .HasColumnType("TEXT");
@@ -301,7 +301,7 @@ namespace Artemis.Storage.Migrations
 
                             b1.HasKey("DeviceEntityId");
 
-                            b1.ToTable("Devices");
+                            b1.ToTable("Devices", (string)null);
 
                             b1.ToJson("InputIdentifiers");
 
@@ -309,7 +309,7 @@ namespace Artemis.Storage.Migrations
                                 .HasForeignKey("DeviceEntityId");
                         });
 
-                    b.OwnsOne("System.Collections.Generic.List<Artemis.Storage.Entities.Surface.InputMappingEntity>", "InputMappings", b1 =>
+                    b.OwnsOne("Artemis.Storage.Entities.Surface.DeviceEntity.InputMappings#System.Collections.Generic.List<Artemis.Storage.Entities.Surface.InputMappingEntity>", "InputMappings", b1 =>
                         {
                             b1.Property<string>("DeviceEntityId")
                                 .HasColumnType("TEXT");
@@ -319,7 +319,7 @@ namespace Artemis.Storage.Migrations
 
                             b1.HasKey("DeviceEntityId");
 
-                            b1.ToTable("Devices");
+                            b1.ToTable("Devices", (string)null);
 
                             b1.ToJson("InputMappings");
 

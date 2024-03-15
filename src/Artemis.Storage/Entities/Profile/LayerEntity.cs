@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.AdaptionHints;
 
@@ -23,6 +22,4 @@ public class LayerEntity : RenderElementEntity
     public PropertyGroupEntity? GeneralPropertyGroup { get; set; }
     public PropertyGroupEntity? TransformPropertyGroup { get; set; }
     public LayerBrushEntity? LayerBrush { get; set; }
-
-    public Guid ProfileId { get; set; }
 }
