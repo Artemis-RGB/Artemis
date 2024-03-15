@@ -41,6 +41,9 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
         Icon = new ProfileConfigurationIcon(Entity);
         Icon.SetIconByName(icon);
         ActivationCondition = new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", this);
+
+        Entity.Profile.Id = Guid.NewGuid();
+        Entity.ProfileConfiguration.ProfileId = Entity.Profile.Id;
     }
 
     internal ProfileConfiguration(ProfileCategory category, ProfileContainerEntity entity)
@@ -188,7 +191,7 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     ///     alongside any activation requirements of the <see cref="Module" />, if set
     /// </summary>
     public NodeScript<bool> ActivationCondition { get; }
-    
+
     /// <summary>
     ///     Gets the entity used by this profile config
     /// </summary>

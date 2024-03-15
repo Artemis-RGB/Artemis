@@ -105,6 +105,9 @@ public partial class SidebarCategoryViewModel : ActivatableViewModelBase
     
     public void AddProfileConfiguration(ProfileConfiguration profileConfiguration, ProfileConfiguration? target)
     {
+        if (profileConfiguration == target)
+            return;
+        
         ProfileCategory oldCategory = profileConfiguration.Category;
         ProfileCategory.AddProfileConfiguration(profileConfiguration, target);
 

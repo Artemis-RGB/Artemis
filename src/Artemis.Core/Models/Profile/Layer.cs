@@ -321,7 +321,6 @@ public sealed class Layer : RenderProfileElement
         LayerEntity.Order = Order;
         LayerEntity.Suspended = Suspended;
         LayerEntity.Name = Name;
-        LayerEntity.ProfileId = Profile.EntityId;
 
         General.ApplyToEntity();
         Transform.ApplyToEntity();

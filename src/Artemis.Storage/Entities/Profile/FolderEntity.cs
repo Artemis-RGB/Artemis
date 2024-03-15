@@ -1,5 +1,4 @@
-﻿using System;
-using Artemis.Storage.Entities.Profile.Abstract;
+﻿using Artemis.Storage.Entities.Profile.Abstract;
 
 namespace Artemis.Storage.Entities.Profile;
 
@@ -9,6 +8,4 @@ public class FolderEntity : RenderElementEntity
     public string? Name { get; set; }
     public bool IsExpanded { get; set; }
     public bool Suspended { get; set; }
-
-    public Guid ProfileId { get; set; }
 }

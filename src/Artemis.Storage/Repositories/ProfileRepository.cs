@@ -30,6 +30,8 @@ public class ProfileRepository(ILogger logger, Func<ArtemisDbContext> getContext
 
     public void Save(ProfileContainerEntity profileContainerEntity)
     {
+        profileContainerEntity.ProfileConfiguration.Version = profileMigrators.Max(m => m.Version);
+        
         using ArtemisDbContext dbContext = getContext();
         dbContext.Update(profileContainerEntity);
         dbContext.SaveChanges();
@@ -37,6 +39,9 @@ public class ProfileRepository(ILogger logger, Func<ArtemisDbContext> getContext
 
     public void SaveRange(List<ProfileContainerEntity> profileContainerEntities)
     {
+        foreach (ProfileContainerEntity profileContainerEntity in profileContainerEntities)
+            profileContainerEntity.ProfileConfiguration.Version = profileMigrators.Max(m => m.Version);
+        
         using ArtemisDbContext dbContext = getContext();
         dbContext.UpdateRange(profileContainerEntities);
         dbContext.SaveChanges();
