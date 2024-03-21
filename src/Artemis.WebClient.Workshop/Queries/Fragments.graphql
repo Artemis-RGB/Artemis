@@ -69,3 +69,10 @@ fragment release on Release {
     md5Hash
     createdAt
 } 
+
+fragment pluginInfo on PluginInfo {
+    requiresAdmin
+    supportsWindows
+    supportsLinux
+    supportsOSX
+}

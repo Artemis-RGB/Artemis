@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia.Tight"
              xmlns:plugins="clr-namespace:Artemis.UI.Screens.Workshop.Plugins"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Plugins.PluginDetailsView"
              x:DataType="plugins:PluginDetailsViewModel">
@@ -12,13 +13,29 @@
             <Border Classes="card" VerticalAlignment="Top">
                 <ContentControl Content="{CompiledBinding EntryInfoViewModel}" />
             </Border>
+
+            <Border Classes="card" VerticalAlignment="Top" IsVisible="{CompiledBinding Entry.PluginInfo, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <StackPanel>
+                    <TextBlock>Admin required</TextBlock>
+                    <TextBlock Text="Yes" IsVisible="{CompiledBinding Entry.PluginInfo.RequiresAdmin}" />
+                    <TextBlock Text="No" IsVisible="{CompiledBinding !Entry.PluginInfo.RequiresAdmin}" />
+
+                    <TextBlock Margin="0 15 0 5">Supported platforms</TextBlock>
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <avalonia:MaterialIcon Kind="MicrosoftWindows" IsVisible="{CompiledBinding Entry.PluginInfo.SupportsWindows}" />
+                        <avalonia:MaterialIcon Kind="Linux" IsVisible="{CompiledBinding Entry.PluginInfo.SupportsLinux}" />
+                        <avalonia:MaterialIcon Kind="Apple" IsVisible="{CompiledBinding Entry.PluginInfo.SupportsOSX}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
             <Border Classes="card" VerticalAlignment="Top" IsVisible="{CompiledBinding Entry.LatestRelease, Converter={x:Static ObjectConverters.IsNotNull}}">
                 <ContentControl Content="{CompiledBinding EntryReleasesViewModel}" />
             </Border>
         </StackPanel>
 
         <ScrollViewer Grid.Row="1" Grid.Column="1">
-            <StackPanel  Margin="10 0" Spacing="10">
+            <StackPanel Margin="10 0" Spacing="10">
                 <Border Classes="card">
                     <mdxaml:MarkdownScrollViewer Markdown="{CompiledBinding Entry.Description}" MarkdownStyleName="FluentAvalonia">
                         <mdxaml:MarkdownScrollViewer.Styles>

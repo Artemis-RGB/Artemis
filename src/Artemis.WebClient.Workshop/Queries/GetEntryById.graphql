@@ -3,3 +3,21 @@ query GetEntryById($id: Long!) {
         ...entryDetails
     }
 }
+
+query GetPluginEntryById($id: Long!) {
+    entry(id: $id) {
+        ...entryDetails
+        pluginInfo {
+            ...pluginInfo
+        }        
+    }
+}
+
+query GetLayoutEntryById($id: Long!) {
+    entry(id: $id) {
+        ...entryDetails
+        layoutInfo {
+            ...layoutInfo
+        }
+    }
+}

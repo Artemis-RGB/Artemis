@@ -20,57 +20,64 @@ namespace Artemis.UI.Routing;
 
 public static class Routes
 {
-    public static List<IRouterRegistration> ArtemisRoutes = new()
-    {
+    public static List<IRouterRegistration> ArtemisRoutes =
+    [
         new RouteRegistration<BlankViewModel>("blank"),
         new RouteRegistration<HomeViewModel>("home"),
         new RouteRegistration<WorkshopViewModel>("workshop")
         {
-            Children = new List<IRouterRegistration>
-            {
+            Children =
+            [
                 new RouteRegistration<WorkshopOfflineViewModel>("offline/{message:string}"),
                 new RouteRegistration<EntriesViewModel>("entries")
                 {
-                    Children = new List<IRouterRegistration>
-                    {
-                        new RouteRegistration<PluginListViewModel>("plugins/{page:int}"),
-                        new RouteRegistration<PluginDetailsViewModel>("plugins/details/{entryId:long}"),
-                        new RouteRegistration<ProfileListViewModel>("profiles/{page:int}"),
-                        new RouteRegistration<ProfileDetailsViewModel>("profiles/details/{entryId:long}"),
-                        new RouteRegistration<LayoutListViewModel>("layouts/{page:int}"),
-                        new RouteRegistration<LayoutDetailsViewModel>("layouts/details/{entryId:long}"),
-                    }
+                    Children =
+                    [
+                        new RouteRegistration<PluginListViewModel>("plugins")
+                        {
+                            Children = [new RouteRegistration<PluginDetailsViewModel>("details/{entryId:long}")]
+                        },
+                        new RouteRegistration<ProfileListViewModel>("profiles")
+                        {
+                            Children = [new RouteRegistration<ProfileDetailsViewModel>("details/{entryId:long}")]
+                        },
+                        new RouteRegistration<LayoutListViewModel>("layouts")
+                        {
+                            Children = [new RouteRegistration<LayoutDetailsViewModel>("details/{entryId:long}")]
+                        },
+                    ]
                 },
+
                 new RouteRegistration<WorkshopLibraryViewModel>("library")
                 {
-                    Children = new List<IRouterRegistration>
-                    {
+                    Children =
+                    [
                         new RouteRegistration<InstalledTabViewModel>("installed"),
                         new RouteRegistration<SubmissionsTabViewModel>("submissions"),
-                        new RouteRegistration<SubmissionDetailViewModel>("submissions/{entryId:long}"),
-                    }
+                        new RouteRegistration<SubmissionDetailViewModel>("submissions/{entryId:long}")
+                    ]
                 }
-            }
+            ]
         },
+
         new RouteRegistration<SurfaceEditorViewModel>("surface-editor"),
         new RouteRegistration<SettingsViewModel>("settings")
         {
-            Children = new List<IRouterRegistration>
-            {
+            Children =
+            [
                 new RouteRegistration<GeneralTabViewModel>("general"),
                 new RouteRegistration<PluginsTabViewModel>("plugins"),
                 new RouteRegistration<DevicesTabViewModel>("devices"),
                 new RouteRegistration<ReleasesTabViewModel>("releases")
                 {
-                    Children = new List<IRouterRegistration>
-                    {
-                        new RouteRegistration<ReleaseDetailsViewModel>("{releaseId:guid}")
-                    }
+                    Children = [new RouteRegistration<ReleaseDetailsViewModel>("{releaseId:guid}")]
                 },
+
                 new RouteRegistration<AccountTabViewModel>("account"),
                 new RouteRegistration<AboutTabViewModel>("about")
-            }
+            ]
         },
+
         new RouteRegistration<ProfileEditorViewModel>("profile-editor/{profileConfigurationId:guid}")
-    };
+    ];
 }

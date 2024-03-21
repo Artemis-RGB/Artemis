@@ -9,6 +9,7 @@ public static class StorageManager
 {
     private static bool _ranMigrations;
     private static bool _inUse;
+    private static object _factoryLock = new();
 
     /// <summary>
     ///     Creates a backup of the database if the last backup is older than 10 minutes
@@ -39,19 +40,22 @@ public static class StorageManager
 
         File.Copy(database, Path.Combine(backupFolder, $"artemis-{DateTime.Now:yyyy-dd-M--HH-mm-ss}.db"));
     }
-    
+
     public static ArtemisDbContext CreateDbContext(string dataFolder)
     {
-        _inUse = true;
+        lock (_factoryLock)
+        {
+            _inUse = true;
 
-        ArtemisDbContext dbContext = new() {DataFolder = dataFolder};
-        if (_ranMigrations)
+            ArtemisDbContext dbContext = new() {DataFolder = dataFolder};
+            if (_ranMigrations)
+                return dbContext;
+
+            dbContext.Database.Migrate();
+            dbContext.Database.ExecuteSqlRaw("PRAGMA optimize");
+            _ranMigrations = true;
+
             return dbContext;
-
-        dbContext.Database.Migrate();
-        dbContext.Database.ExecuteSqlRaw("PRAGMA optimize");
-        _ranMigrations = true;
-
-        return dbContext;
+        }
     }
 }

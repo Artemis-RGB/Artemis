@@ -3,11 +3,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tabs="clr-namespace:Artemis.UI.Screens.Workshop.Entries.Tabs"
-             xmlns:pagination="clr-namespace:Artemis.UI.Shared.Pagination;assembly=Artemis.UI.Shared"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:ui="clr-namespace:Artemis.UI"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Entries.Tabs.PluginListView"
              x:DataType="tabs:PluginListViewModel">
-     <UserControl.Styles>
+    <UserControl.Styles>
         <Styles>
             <Style Selector="StackPanel.empty-state > TextBlock">
                 <Setter Property="TextAlignment" Value="Center"></Setter>
@@ -15,51 +16,52 @@
             </Style>
         </Styles>
     </UserControl.Styles>
-    <Grid ColumnDefinitions="300,*" RowDefinitions="Auto,*,Auto">
-        <StackPanel Grid.Column="0" Grid.RowSpan="3" Margin="0 0 10 0" VerticalAlignment="Top">
-            <Border Classes="card" VerticalAlignment="Stretch">
-                <StackPanel>
-                    <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Categories</TextBlock>
-                    <Border Classes="card-separator" />
-                    <ContentControl Content="{CompiledBinding CategoriesViewModel}"></ContentControl>
-                </StackPanel>
-            </Border>
-        </StackPanel>
-
-        <ProgressBar Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" Margin="0 0 20 0" IsVisible="{CompiledBinding IsLoading}" IsIndeterminate="True" />
-        <ContentControl Grid.Column="1" Grid.Row="0" Margin="0 0 20 8" Content="{CompiledBinding InputViewModel}"/>
-       
-        <ScrollViewer Grid.Column="1" Grid.Row="1">
-            <ItemsControl ItemsSource="{CompiledBinding Entries}" Margin="0 0 20 0">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <ContentControl Content="{CompiledBinding}" Margin="0 0 0 5"></ContentControl>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
-        
-        <Panel Grid.Column="1" Grid.Row="1" IsVisible="{CompiledBinding !IsLoading}">
-            <StackPanel IsVisible="{CompiledBinding !Entries.Count}" Margin="0 50 0 0" Classes="empty-state">
-                <TextBlock Theme="{StaticResource TitleTextBlockStyle}">Looks like your current filters gave no results</TextBlock>
-                <TextBlock>
-                    <Run>Modify or clear your filters to view other plugins</Run>
-                </TextBlock>
-                <Lottie Path="/Assets/Animations/empty.json" RepeatCount="1" Width="350" Height="350"></Lottie>
+    
+    <Panel>
+        <Grid ColumnDefinitions="300,*" RowDefinitions="Auto,*,Auto" IsVisible="{CompiledBinding Screen, Converter={x:Static ObjectConverters.IsNull}}">
+            <StackPanel Grid.Column="0" Grid.RowSpan="3" Margin="0 0 10 0" VerticalAlignment="Top">
+                <Border Classes="card" VerticalAlignment="Stretch">
+                    <StackPanel>
+                        <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Categories</TextBlock>
+                        <Border Classes="card-separator" />
+                        <ContentControl Content="{CompiledBinding CategoriesViewModel}"></ContentControl>
+                    </StackPanel>
+                </Border>
             </StackPanel>
-        </Panel>
 
-        <pagination:Pagination Grid.Column="1"
-                               Grid.Row="2"
-                               Margin="0 20 0 10"
-                               IsVisible="{CompiledBinding ShowPagination}"
-                               Value="{CompiledBinding Page}"
-                               Maximum="{CompiledBinding TotalPages}"
-                               HorizontalAlignment="Center" />
-    </Grid>
+            <ProgressBar Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" Margin="0 0 20 0" IsVisible="{CompiledBinding FetchingMore}" IsIndeterminate="True" />
+            <ContentControl Grid.Column="1" Grid.Row="0" Margin="0 0 20 8" Content="{CompiledBinding InputViewModel}" />
+
+            <ScrollViewer Name="EntriesScrollViewer" Grid.Column="1" Grid.Row="1" ScrollChanged="ScrollViewer_OnScrollChanged">
+                <ItemsControl ItemsSource="{CompiledBinding Entries}" Margin="0 0 20 0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl Content="{CompiledBinding}" Margin="0 0 0 5"></ContentControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <Panel Grid.Column="1" Grid.Row="1" IsVisible="{CompiledBinding !Initializing}">
+                <StackPanel IsVisible="{CompiledBinding !Entries.Count}" Margin="0 50 0 0" Classes="empty-state">
+                    <TextBlock Theme="{StaticResource TitleTextBlockStyle}">Looks like your current filters gave no results</TextBlock>
+                    <TextBlock>
+                        <Run>Modify or clear your filters to view other plugins</Run>
+                    </TextBlock>
+                    <Lottie Path="/Assets/Animations/empty.json" RepeatCount="1" Width="350" Height="350"></Lottie>
+                </StackPanel>
+            </Panel>
+        </Grid>
+        
+        <controls:Frame Name="RouterFrame" IsNavigationStackEnabled="False" CacheSize="0" IsVisible="{CompiledBinding Screen, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <controls:Frame.NavigationPageFactory>
+                <ui:PageFactory />
+            </controls:Frame.NavigationPageFactory>
+        </controls:Frame>
+    </Panel>
 </UserControl>

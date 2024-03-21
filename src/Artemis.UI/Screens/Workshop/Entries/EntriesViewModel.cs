@@ -24,9 +24,9 @@ public partial class EntriesViewModel : RoutableHostScreen<RoutableScreen>
 
         Tabs = new ObservableCollection<RouteViewModel>
         {
-            new("Profiles", "workshop/entries/profiles/1", "workshop/entries/profiles"),
-            new("Layouts", "workshop/entries/layouts/1", "workshop/entries/layouts"),
-            new("Plugins", "workshop/entries/plugins/1", "workshop/entries/plugins"),
+            new("Profiles", "workshop/entries/profiles", "workshop/entries/profiles"),
+            new("Layouts", "workshop/entries/layouts", "workshop/entries/layouts"),
+            new("Plugins", "workshop/entries/plugins", "workshop/entries/plugins"),
         };
 
         this.WhenActivated(d =>
