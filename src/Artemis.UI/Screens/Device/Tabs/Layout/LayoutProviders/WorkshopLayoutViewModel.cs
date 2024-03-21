@@ -64,7 +64,7 @@ public partial class WorkshopLayoutViewModel : ActivatableViewModelBase, ILayout
         if (!await _windowService.ShowConfirmContentDialog("Open workshop", "Do you want to close this window and view the workshop?"))
             return false;
 
-        await _router.Navigate("workshop/entries/layouts/1");
+        await _router.Navigate("workshop/entries/layouts");
         return true;
     }
 

@@ -10,12 +10,11 @@ namespace Artemis.UI.Screens.Workshop.Entries.Tabs;
 public class PluginListViewModel : EntryListViewModel
 {
     public PluginListViewModel(IWorkshopClient workshopClient,
-        IRouter router,
         CategoriesViewModel categoriesViewModel,
         EntryListInputViewModel entryListInputViewModel,
         INotificationService notificationService,
         Func<IEntrySummary, EntryListItemViewModel> getEntryListViewModel)
-        : base("workshop/entries/plugins", workshopClient, router, categoriesViewModel, entryListInputViewModel, notificationService, getEntryListViewModel)
+        : base("workshop/entries/plugins", workshopClient, categoriesViewModel, entryListInputViewModel, notificationService, getEntryListViewModel)
     {
         entryListInputViewModel.SearchWatermark = "Search plugins";
     }

@@ -41,9 +41,9 @@ public partial class SidebarViewModel : ActivatableViewModelBase
             new(MaterialIconKind.HomeOutline, "Home", "home"),
             new(MaterialIconKind.TestTube, "Workshop", "workshop", null, new ObservableCollection<SidebarScreenViewModel>
             {
-                new(MaterialIconKind.FolderVideo, "Profiles", "workshop/entries/profiles/1", "workshop/entries/profiles"),
-                new(MaterialIconKind.KeyboardVariant, "Layouts", "workshop/entries/layouts/1", "workshop/entries/layouts"),
-                new(MaterialIconKind.Connection, "Plugins", "workshop/entries/plugins/1", "workshop/entries/plugins"),
+                new(MaterialIconKind.FolderVideo, "Profiles", "workshop/entries/profiles", "workshop/entries/profiles"),
+                new(MaterialIconKind.KeyboardVariant, "Layouts", "workshop/entries/layouts", "workshop/entries/layouts"),
+                new(MaterialIconKind.Connection, "Plugins", "workshop/entries/plugins", "workshop/entries/plugins"),
                 new(MaterialIconKind.Bookshelf, "Library", "workshop/library"),
             }),
 

@@ -28,7 +28,7 @@ public partial class PluginDetailsViewModel : RoutableScreen<WorkshopDetailParam
     private readonly Func<IEntryDetails, EntryReleasesViewModel> _getEntryReleasesViewModel;
     private readonly Func<IEntryDetails, EntryImagesViewModel> _getEntryImagesViewModel;
     private readonly Func<IEntrySummary, EntryListItemViewModel> _getEntryListViewModel;
-    [Notify] private IEntryDetails? _entry;
+    [Notify] private IGetPluginEntryById_Entry? _entry;
     [Notify] private EntryInfoViewModel? _entryInfoViewModel;
     [Notify] private EntryReleasesViewModel? _entryReleasesViewModel;
     [Notify] private EntryImagesViewModel? _entryImagesViewModel;
@@ -58,7 +58,7 @@ public partial class PluginDetailsViewModel : RoutableScreen<WorkshopDetailParam
 
     private async Task GetEntry(long entryId, CancellationToken cancellationToken)
     {
-        IOperationResult<IGetEntryByIdResult> result = await _client.GetEntryById.ExecuteAsync(entryId, cancellationToken);
+        IOperationResult<IGetPluginEntryByIdResult> result = await _client.GetPluginEntryById.ExecuteAsync(entryId, cancellationToken);
         if (result.IsErrorResult())
             return;
 

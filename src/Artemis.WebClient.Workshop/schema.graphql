@@ -28,6 +28,26 @@ type EntriesCollectionSegment {
     totalCount: Int!
 }
 
+"A connection to a list of items."
+type EntriesV2Connection {
+    "A list of edges."
+    edges: [EntriesV2Edge!]
+    "A flattened list of the nodes."
+    nodes: [Entry!]
+    "Information to aid in pagination."
+    pageInfo: PageInfo!
+    "Identifies the total count of items in the connection."
+    totalCount: Int!
+}
+
+"An edge in a connection."
+type EntriesV2Edge {
+    "A cursor for use in pagination."
+    cursor: String!
+    "The item at the end of the edge."
+    node: Entry!
+}
+
 type Entry {
     author: String!
     authorId: UUID!
@@ -84,15 +104,29 @@ type Mutation {
     updateEntryImage(input: UpdateEntryImageInput!): Image
 }
 
+"Information about pagination in a connection."
+type PageInfo {
+    "When paginating forwards, the cursor to continue."
+    endCursor: String
+    "Indicates whether more edges exist following the set defined by the clients arguments."
+    hasNextPage: Boolean!
+    "Indicates whether more edges exist prior the set defined by the clients arguments."
+    hasPreviousPage: Boolean!
+    "When paginating backwards, the cursor to continue."
+    startCursor: String
+}
+
 type PluginInfo {
     api: Int
     entry: Entry!
     entryId: Long!
     helpPage: String
-    platforms: PluginPlatform
     pluginGuid: UUID!
     repository: String
     requiresAdmin: Boolean!
+    supportsLinux: Boolean!
+    supportsOSX: Boolean!
+    supportsWindows: Boolean!
     website: String
 }
 
@@ -108,6 +142,19 @@ type PluginInfosCollectionSegment {
 type Query {
     categories(order: [CategorySortInput!], where: CategoryFilterInput): [Category!]!
     entries(order: [EntrySortInput!], search: String, skip: Int, take: Int, where: EntryFilterInput): EntriesCollectionSegment
+    entriesV2(
+        "Returns the elements in the list that come after the specified cursor."
+        after: String,
+        "Returns the elements in the list that come before the specified cursor."
+        before: String,
+        "Returns the first _n_ elements from the list."
+        first: Int,
+        "Returns the last _n_ elements from the list."
+        last: Int,
+        order: [EntrySortInput!],
+        search: String,
+        where: EntryFilterInput
+    ): EntriesV2Connection
     entry(id: Long!): Entry
     pluginInfo(pluginGuid: UUID!): PluginInfo
     pluginInfos(order: [PluginInfoSortInput!], skip: Int, take: Int, where: PluginInfoFilterInput): PluginInfosCollectionSegment
@@ -153,12 +200,6 @@ enum KeyboardLayoutType {
     JIS
     KS
     UNKNOWN
-}
-
-enum PluginPlatform {
-    LINUX
-    OSX
-    WINDOWS
 }
 
 enum RGBDeviceType {
@@ -418,13 +459,6 @@ input NullableOfKeyboardLayoutTypeOperationFilterInput {
     nin: [KeyboardLayoutType]
 }
 
-input NullableOfPluginPlatformOperationFilterInput {
-    eq: PluginPlatform
-    in: [PluginPlatform]
-    neq: PluginPlatform
-    nin: [PluginPlatform]
-}
-
 input PluginInfoFilterInput {
     and: [PluginInfoFilterInput!]
     api: IntOperationFilterInput
@@ -432,10 +466,12 @@ input PluginInfoFilterInput {
     entryId: LongOperationFilterInput
     helpPage: StringOperationFilterInput
     or: [PluginInfoFilterInput!]
-    platforms: NullableOfPluginPlatformOperationFilterInput
     pluginGuid: UuidOperationFilterInput
     repository: StringOperationFilterInput
     requiresAdmin: BooleanOperationFilterInput
+    supportsLinux: BooleanOperationFilterInput
+    supportsOSX: BooleanOperationFilterInput
+    supportsWindows: BooleanOperationFilterInput
     website: StringOperationFilterInput
 }
 
@@ -444,10 +480,12 @@ input PluginInfoSortInput {
     entry: EntrySortInput
     entryId: SortEnumType
     helpPage: SortEnumType
-    platforms: SortEnumType
     pluginGuid: SortEnumType
     repository: SortEnumType
     requiresAdmin: SortEnumType
+    supportsLinux: SortEnumType
+    supportsOSX: SortEnumType
+    supportsWindows: SortEnumType
     website: SortEnumType
 }
 

@@ -41,7 +41,7 @@
             
             <StackPanel Margin="30 -75 30 0" Grid.Row="1">
                 <StackPanel Spacing="10" Orientation="Horizontal" VerticalAlignment="Top">
-                    <Button Width="150" Height="180" Command="{CompiledBinding Navigate}" CommandParameter="workshop/entries/profiles/1" VerticalContentAlignment="Top">
+                    <Button Width="150" Height="180" Command="{CompiledBinding Navigate}" CommandParameter="workshop/entries/profiles" VerticalContentAlignment="Top">
                         <StackPanel>
                             <avalonia:MaterialIcon Kind="FolderVideo" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />
                             <TextBlock TextWrapping="Wrap" FontSize="16" Margin="0 5">Profiles</TextBlock>
@@ -49,7 +49,7 @@
                         </StackPanel>
                     </Button>
 
-                    <Button Width="150" Height="180" Command="{CompiledBinding Navigate}" CommandParameter="workshop/entries/layouts/1" VerticalContentAlignment="Top">
+                    <Button Width="150" Height="180" Command="{CompiledBinding Navigate}" CommandParameter="workshop/entries/layouts" VerticalContentAlignment="Top">
                         <StackPanel>
                             <avalonia:MaterialIcon Kind="KeyboardVariant" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />
                             <TextBlock TextWrapping="Wrap" FontSize="16" Margin="0 5">Layouts</TextBlock>
@@ -57,7 +57,7 @@
                         </StackPanel>
                     </Button>
                     
-                    <Button Width="150" Height="180" Command="{CompiledBinding Navigate}" CommandParameter="workshop/entries/plugins/1" VerticalContentAlignment="Top">
+                    <Button Width="150" Height="180" Command="{CompiledBinding Navigate}" CommandParameter="workshop/entries/plugins" VerticalContentAlignment="Top">
                         <StackPanel>
                             <avalonia:MaterialIcon Kind="Connection" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />
                             <TextBlock TextWrapping="Wrap" FontSize="16" Margin="0 5">Plugins</TextBlock>

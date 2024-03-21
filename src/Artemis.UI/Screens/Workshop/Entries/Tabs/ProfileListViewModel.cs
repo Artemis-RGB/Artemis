@@ -10,12 +10,11 @@ namespace Artemis.UI.Screens.Workshop.Entries.Tabs;
 public class ProfileListViewModel : List.EntryListViewModel
 {
     public ProfileListViewModel(IWorkshopClient workshopClient,
-        IRouter router,
         CategoriesViewModel categoriesViewModel,
         EntryListInputViewModel entryListInputViewModel,
         INotificationService notificationService,
         Func<IEntrySummary, EntryListItemViewModel> getEntryListViewModel)
-        : base("workshop/entries/profiles", workshopClient, router, categoriesViewModel, entryListInputViewModel, notificationService, getEntryListViewModel)
+        : base("workshop/entries/profiles", workshopClient, categoriesViewModel, entryListInputViewModel, notificationService, getEntryListViewModel)
     {
         entryListInputViewModel.SearchWatermark = "Search profiles";
     }

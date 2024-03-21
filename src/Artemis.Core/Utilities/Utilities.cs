@@ -13,6 +13,8 @@ namespace Artemis.Core;
 /// </summary>
 public static class Utilities
 {
+    private static bool _shuttingDown;
+
     /// <summary>
     ///     Call this before even initializing the Core to make sure the folders required for operation are in place
     /// </summary>
@@ -33,7 +35,11 @@ public static class Utilities
     /// </summary>
     public static void Shutdown()
     {
+        if (_shuttingDown)
+            return;
+        
         // Request a graceful shutdown, whatever UI we're running can pick this up
+        _shuttingDown = true;
         OnShutdownRequested();
     }
 
@@ -45,9 +51,13 @@ public static class Utilities
     /// <param name="extraArgs">A list of extra arguments to pass to Artemis when restarting</param>
     public static void Restart(bool elevate, TimeSpan delay, params string[] extraArgs)
     {
+        if (_shuttingDown)
+            return;
+
         if (!OperatingSystem.IsWindows() && elevate)
             throw new ArtemisCoreException("Elevation on non-Windows platforms is not supported.");
 
+        _shuttingDown = true;
         OnRestartRequested(new RestartEventArgs(elevate, delay, extraArgs.ToList()));
     }
 
@@ -106,12 +116,12 @@ public static class Utilities
     ///     Occurs when the core has requested an application shutdown
     /// </summary>
     public static event EventHandler? ShutdownRequested;
-    
+
     /// <summary>
     ///     Occurs when the core has requested an application restart
     /// </summary>
     public static event EventHandler<RestartEventArgs>? RestartRequested;
-    
+
     /// <summary>
     ///     Occurs when the core has requested a pending application update to be applied
     /// </summary>
@@ -151,7 +161,7 @@ public static class Utilities
     {
         ShutdownRequested?.Invoke(null, EventArgs.Empty);
     }
-    
+
     private static void OnUpdateRequested(UpdateEventArgs e)
     {
         UpdateRequested?.Invoke(null, e);

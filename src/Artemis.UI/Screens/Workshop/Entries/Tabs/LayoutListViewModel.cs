@@ -10,12 +10,11 @@ namespace Artemis.UI.Screens.Workshop.Entries.Tabs;
 public class LayoutListViewModel : List.EntryListViewModel
 {
     public LayoutListViewModel(IWorkshopClient workshopClient,
-        IRouter router,
         CategoriesViewModel categoriesViewModel,
         EntryListInputViewModel entryListInputViewModel,
         INotificationService notificationService,
         Func<IEntrySummary, EntryListItemViewModel> getEntryListViewModel)
-        : base("workshop/entries/layouts", workshopClient, router, categoriesViewModel, entryListInputViewModel, notificationService, getEntryListViewModel)
+        : base("workshop/entries/layouts", workshopClient, categoriesViewModel, entryListInputViewModel, notificationService, getEntryListViewModel)
     {
         entryListInputViewModel.SearchWatermark = "Search layouts";
     }

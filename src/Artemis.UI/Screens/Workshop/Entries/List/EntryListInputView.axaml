@@ -2,8 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:entries="clr-namespace:Artemis.UI.Screens.Workshop.Entries"
-             xmlns:system="clr-namespace:System;assembly=System.Runtime"
              xmlns:list="clr-namespace:Artemis.UI.Screens.Workshop.Entries.List"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Entries.List.EntryListInputView"
@@ -23,15 +21,6 @@
                 <ComboBoxItem>Recently updated</ComboBoxItem>
                 <ComboBoxItem>Recently added</ComboBoxItem>
                 <ComboBoxItem>Download count</ComboBoxItem>
-            </ComboBox>
-        </StackPanel>
-        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="5">
-            <TextBlock VerticalAlignment="Center">Show per page</TextBlock>
-            <ComboBox Width="65" SelectedItem="{CompiledBinding EntriesPerPage}">
-                <system:Int32>10</system:Int32>
-                <system:Int32>20</system:Int32>
-                <system:Int32>50</system:Int32>
-                <system:Int32>100</system:Int32>
             </ComboBox>
         </StackPanel>
         <TextBlock Grid.Column="3" VerticalAlignment="Center" Margin="5 0 0 0" MinWidth="75" TextAlignment="Right">

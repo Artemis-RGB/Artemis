@@ -6,3 +6,19 @@ query GetEntries($search: String $filter: EntryFilterInput $skip: Int $take: Int
         }
     }
 }
+
+query GetEntriesv2($search: String $filter: EntryFilterInput $order: [EntrySortInput!] $first: Int $after: String) {
+    entriesV2(search: $search where: $filter order: $order first: $first after: $after) {
+        totalCount
+        pageInfo {
+            hasNextPage
+            endCursor            
+        }
+        edges {
+            cursor
+            node {
+                ...entrySummary
+            }
+        }
+    }
+}
