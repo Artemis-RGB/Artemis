@@ -6,6 +6,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Workshop.Categories;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
@@ -15,29 +16,28 @@ using DynamicData;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using StrawberryShake;
+using Vector = Avalonia.Vector;
 
 namespace Artemis.UI.Screens.Workshop.Entries.List;
 
-public abstract partial class EntryListViewModel : RoutableHostScreen<RoutableScreen>
+public partial class EntryListViewModel : RoutableScreen
 {
     private readonly SourceList<IEntrySummary> _entries = new();
     private readonly INotificationService _notificationService;
     private readonly IWorkshopClient _workshopClient;
-    private readonly string _route;
     private IGetEntriesv2_EntriesV2_PageInfo? _currentPageInfo;
 
     [Notify] private bool _initializing = true;
     [Notify] private bool _fetchingMore;
     [Notify] private int _entriesPerFetch;
+    [Notify] private Vector _scrollOffset;
 
-    protected EntryListViewModel(string route,
-        IWorkshopClient workshopClient,
+    protected EntryListViewModel(IWorkshopClient workshopClient,
         CategoriesViewModel categoriesViewModel,
         EntryListInputViewModel entryListInputViewModel,
         INotificationService notificationService,
         Func<IEntrySummary, EntryListItemViewModel> getEntryListViewModel)
     {
-        _route = route;
         _workshopClient = workshopClient;
         _notificationService = notificationService;
 
@@ -50,37 +50,31 @@ public abstract partial class EntryListViewModel : RoutableHostScreen<RoutableSc
             .Subscribe();
         Entries = entries;
 
+        // Respond to filter query input changes
         this.WhenActivated(d =>
         {
-            // Respond to filter query input changes
             InputViewModel.WhenAnyValue(vm => vm.Search).Skip(1).Throttle(TimeSpan.FromMilliseconds(200)).Subscribe(_ => Reset()).DisposeWith(d);
             CategoriesViewModel.WhenAnyValue(vm => vm.CategoryFilters).Skip(1).Subscribe(_ => Reset()).DisposeWith(d);
+        });
+        
+        // Load entries when the view model is first activated
+        this.WhenActivatedAsync(async _ =>
+        {
+            if (_entries.Count == 0)
+            {
+                await Task.Delay(250);
+                await FetchMore(CancellationToken.None);
+                Initializing = false;
+            }
         });
     }
 
     public CategoriesViewModel CategoriesViewModel { get; }
     public EntryListInputViewModel InputViewModel { get; }
+    public EntryType? EntryType { get; set; }
 
     public ReadOnlyObservableCollection<EntryListItemViewModel> Entries { get; }
-
-    public override async Task OnNavigating(NavigationArguments args, CancellationToken cancellationToken)
-    {
-        if (_entries.Count == 0)
-        {
-            await Task.Delay(250, cancellationToken);
-            await FetchMore(cancellationToken);
-            Initializing = false;
-        }
-    }
-
-    public override Task OnClosing(NavigationArguments args)
-    {
-        // Clear search if not navigating to a child
-        if (!args.Path.StartsWith(_route))
-            InputViewModel.ClearLastSearch();
-        return base.OnClosing(args);
-    }
-
+    
     public async Task FetchMore(CancellationToken cancellationToken)
     {
         if (FetchingMore || _currentPageInfo != null && !_currentPageInfo.HasNextPage)
@@ -119,12 +113,19 @@ public abstract partial class EntryListViewModel : RoutableHostScreen<RoutableSc
         }
     }
 
-    protected virtual EntryFilterInput GetFilter()
+    private EntryFilterInput GetFilter()
     {
-        return new EntryFilterInput {And = CategoriesViewModel.CategoryFilters};
+        return new EntryFilterInput
+        {
+            And =
+            [
+                new EntryFilterInput {EntryType = new EntryTypeOperationFilterInput {Eq = EntryType}},
+                ..CategoriesViewModel.CategoryFilters ?? []
+            ]
+        };
     }
 
-    protected virtual IReadOnlyList<EntrySortInput> GetSort()
+    private IReadOnlyList<EntrySortInput> GetSort()
     {
         // Sort by created at
         if (InputViewModel.SortBy == 1)

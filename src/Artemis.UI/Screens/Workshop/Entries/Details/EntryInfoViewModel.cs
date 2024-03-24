@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Shared;
@@ -12,12 +13,12 @@ public class EntryInfoViewModel : ViewModelBase
     private readonly INotificationService _notificationService;
     public IEntryDetails Entry { get; }
     public DateTimeOffset? UpdatedAt { get; }
-    
+
     public EntryInfoViewModel(IEntryDetails entry, INotificationService notificationService)
     {
         _notificationService = notificationService;
         Entry = entry;
-        UpdatedAt = Entry.LatestRelease?.CreatedAt ?? Entry.CreatedAt;
+        UpdatedAt = Entry.Releases.Any() ? Entry.Releases.Max(r => r.CreatedAt) : Entry.CreatedAt;
     }
 
     public async Task CopyShareLink()

@@ -12,7 +12,7 @@
             <Border Classes="card" VerticalAlignment="Top">
                 <ContentControl Content="{CompiledBinding EntryInfoViewModel}" />
             </Border>
-            <Border Classes="card" VerticalAlignment="Top" IsVisible="{CompiledBinding Entry.LatestRelease, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <Border Classes="card" VerticalAlignment="Top" IsVisible="{CompiledBinding Entry.Releases.Count}">
                 <ContentControl Content="{CompiledBinding EntryReleasesViewModel}" />
             </Border>
         </StackPanel>

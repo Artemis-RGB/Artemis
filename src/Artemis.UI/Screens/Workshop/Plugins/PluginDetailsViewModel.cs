@@ -33,7 +33,7 @@ public partial class PluginDetailsViewModel : RoutableScreen<WorkshopDetailParam
     [Notify] private EntryReleasesViewModel? _entryReleasesViewModel;
     [Notify] private EntryImagesViewModel? _entryImagesViewModel;
     [Notify] private ReadOnlyObservableCollection<EntryListItemViewModel>? _dependants;
-    
+
     public PluginDetailsViewModel(IWorkshopClient client,
         IWindowService windowService,
         IPluginManagementService pluginManagementService,
@@ -72,18 +72,21 @@ public partial class PluginDetailsViewModel : RoutableScreen<WorkshopDetailParam
             EntryReleasesViewModel.OnInstallationStarted = OnInstallationStarted;
             EntryReleasesViewModel.OnInstallationFinished = OnInstallationFinished;
         }
-        
+
         IReadOnlyList<IEntrySummary>? dependants = (await _client.GetDependantEntries.ExecuteAsync(entryId, 0, 25, cancellationToken)).Data?.Entries?.Items;
         Dependants = dependants != null && dependants.Any()
-            ? new ReadOnlyObservableCollection<EntryListItemViewModel>(new ObservableCollection<EntryListItemViewModel>(dependants.Select(_getEntryListViewModel)))
+            ? new ReadOnlyObservableCollection<EntryListItemViewModel>(new ObservableCollection<EntryListItemViewModel>(dependants
+                .Select(_getEntryListViewModel)
+                .OrderByDescending(d => d.Entry.Downloads)
+                .Take(10)))
             : null;
     }
 
-    private async Task<bool> OnInstallationStarted(IEntryDetails entryDetails)
+    private async Task<bool> OnInstallationStarted(IEntryDetails entryDetails, IRelease release)
     {
         bool confirm = await _windowService.ShowConfirmContentDialog(
             "Installing plugin",
-            $"You are about to install version {entryDetails.LatestRelease?.Version} of {entryDetails.Name}. \r\n\r\n" +
+            $"You are about to install version {release.Version} of {entryDetails.Name}. \r\n\r\n" +
             "Plugins are NOT verified by Artemis and could harm your PC, if you have doubts about a plugin please ask on Discord!",
             "I trust this plugin, install it"
         );

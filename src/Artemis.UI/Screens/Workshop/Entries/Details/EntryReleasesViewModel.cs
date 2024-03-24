@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Shared;
+using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Utilities;
@@ -19,34 +22,49 @@ public class EntryReleasesViewModel : ViewModelBase
     private readonly EntryInstallationHandlerFactory _factory;
     private readonly IWindowService _windowService;
     private readonly INotificationService _notificationService;
+    private readonly IRouter _router;
 
-    public EntryReleasesViewModel(IEntryDetails entry, EntryInstallationHandlerFactory factory, IWindowService windowService, INotificationService notificationService)
+    public EntryReleasesViewModel(IEntryDetails entry, EntryInstallationHandlerFactory factory, IWindowService windowService, INotificationService notificationService, IRouter router)
     {
         _factory = factory;
         _windowService = windowService;
         _notificationService = notificationService;
+        _router = router;
 
         Entry = entry;
+        LatestRelease = Entry.Releases.MaxBy(r => r.CreatedAt);
+        OtherReleases = Entry.Releases.OrderByDescending(r => r.CreatedAt).Skip(1).Take(4).Cast<IRelease>().ToList();
+
         DownloadLatestRelease = ReactiveCommand.CreateFromTask(ExecuteDownloadLatestRelease);
         OnInstallationStarted = Confirm;
+        NavigateToRelease = ReactiveCommand.CreateFromTask<IRelease>(ExecuteNavigateToRelease);
     }
 
     public IEntryDetails Entry { get; }
-    public ReactiveCommand<Unit, Unit> DownloadLatestRelease { get; }
+    public IRelease? LatestRelease { get; }
+    public List<IRelease> OtherReleases { get; }
 
-    public Func<IEntryDetails, Task<bool>> OnInstallationStarted { get; set; }
+    public ReactiveCommand<Unit, Unit> DownloadLatestRelease { get; }
+    public ReactiveCommand<IRelease, Unit> NavigateToRelease { get; }
+    
+    public Func<IEntryDetails, IRelease, Task<bool>> OnInstallationStarted { get; set; }
     public Func<InstalledEntry, Task>? OnInstallationFinished { get; set; }
+
+    private async Task ExecuteNavigateToRelease(IRelease release)
+    {
+        await _router.Navigate($"workshop/entries/{Entry.Id}/releases/{release.Id}");
+    }
 
     private async Task ExecuteDownloadLatestRelease(CancellationToken cancellationToken)
     {
-        if (Entry.LatestRelease == null)
+        if (LatestRelease == null)
             return;
-        
-        if (await OnInstallationStarted(Entry))
+
+        if (await OnInstallationStarted(Entry, LatestRelease))
             return;
 
         IEntryInstallationHandler installationHandler = _factory.CreateHandler(Entry.EntryType);
-        EntryInstallResult result = await installationHandler.InstallAsync(Entry, Entry.LatestRelease, new Progress<StreamProgress>(), cancellationToken);
+        EntryInstallResult result = await installationHandler.InstallAsync(Entry, LatestRelease, new Progress<StreamProgress>(), cancellationToken);
         if (result.IsSuccess && result.Entry != null)
         {
             if (OnInstallationFinished != null)
@@ -62,13 +80,13 @@ public class EntryReleasesViewModel : ViewModelBase
         }
     }
 
-    private async Task<bool> Confirm(IEntryDetails entryDetails)
+    private async Task<bool> Confirm(IEntryDetails entryDetails, IRelease release)
     {
         bool confirm = await _windowService.ShowConfirmContentDialog(
             "Install latest release",
-            $"Are you sure you want to download and install version {entryDetails.LatestRelease?.Version} of {entryDetails.Name}?"
+            $"Are you sure you want to download and install version {release.Version} of {entryDetails.Name}?"
         );
-        
+
         return !confirm;
     }
 }

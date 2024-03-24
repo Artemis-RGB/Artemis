@@ -12,7 +12,7 @@
             <Border Classes="card" VerticalAlignment="Top">
                 <ContentControl Content="{CompiledBinding EntryInfoViewModel}" />
             </Border>
-            <Border Classes="card" VerticalAlignment="Top" IsVisible="{CompiledBinding Entry.LatestRelease, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <Border Classes="card" VerticalAlignment="Top" IsVisible="{CompiledBinding Entry.Releases.Count}">
                 <ContentControl Content="{CompiledBinding EntryReleasesViewModel}" />
             </Border>
         </StackPanel>
@@ -32,7 +32,13 @@
                         <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Required plugins</TextBlock>
                         <Border Classes="card-separator" />
                         <ScrollViewer>
-                            <ItemsControl ItemsSource="{CompiledBinding Dependencies}"></ItemsControl>
+                            <ItemsControl ItemsSource="{CompiledBinding Dependencies}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Spacing="5"></StackPanel>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
                         </ScrollViewer>
                     </StackPanel>
                 </Border>

@@ -19,7 +19,7 @@ public partial class RootView : ReactiveUserControl<RootViewModel>
     {
         try
         {
-            Dispatcher.UIThread.Invoke(() => RootFrame.NavigateFromObject(viewModel));
+            RootFrame.NavigateFromObject(viewModel);
         }
         catch (Exception)
         {

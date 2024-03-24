@@ -2,6 +2,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:avalonia="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
         xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia">
+    <Design.PreviewWith>
+        <avalonia:MarkdownScrollViewer>
+            Test
+        </avalonia:MarkdownScrollViewer>
+    </Design.PreviewWith>
     <Style Selector="ScrollViewer > StackPanel">
         <Setter Property="Margin" Value="0 0 15 0"></Setter>
     </Style>
