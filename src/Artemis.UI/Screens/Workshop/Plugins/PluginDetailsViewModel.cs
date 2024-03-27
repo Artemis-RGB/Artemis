@@ -19,7 +19,7 @@ using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Plugins;
 
-public partial class PluginDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
+public partial class PluginDetailsViewModel : RoutableHostScreen<RoutableScreen, WorkshopDetailParameters>
 {
     private readonly IWorkshopClient _client;
     private readonly IWindowService _windowService;
@@ -27,7 +27,6 @@ public partial class PluginDetailsViewModel : RoutableScreen<WorkshopDetailParam
     private readonly Func<IEntryDetails, EntryInfoViewModel> _getEntryInfoViewModel;
     private readonly Func<IEntryDetails, EntryReleasesViewModel> _getEntryReleasesViewModel;
     private readonly Func<IEntryDetails, EntryImagesViewModel> _getEntryImagesViewModel;
-    private readonly Func<IEntrySummary, EntryListItemViewModel> _getEntryListViewModel;
     [Notify] private IGetPluginEntryById_Entry? _entry;
     [Notify] private EntryInfoViewModel? _entryInfoViewModel;
     [Notify] private EntryReleasesViewModel? _entryReleasesViewModel;
@@ -37,23 +36,26 @@ public partial class PluginDetailsViewModel : RoutableScreen<WorkshopDetailParam
     public PluginDetailsViewModel(IWorkshopClient client,
         IWindowService windowService,
         IPluginManagementService pluginManagementService,
+        PluginDescriptionViewModel pluginDescriptionViewModel,
         Func<IEntryDetails, EntryInfoViewModel> getEntryInfoViewModel,
         Func<IEntryDetails, EntryReleasesViewModel> getEntryReleasesViewModel,
-        Func<IEntryDetails, EntryImagesViewModel> getEntryImagesViewModel,
-        Func<IEntrySummary, EntryListItemViewModel> getEntryListViewModel)
+        Func<IEntryDetails, EntryImagesViewModel> getEntryImagesViewModel)
     {
+        PluginDescriptionViewModel = pluginDescriptionViewModel;
         _client = client;
         _windowService = windowService;
         _pluginManagementService = pluginManagementService;
         _getEntryInfoViewModel = getEntryInfoViewModel;
         _getEntryReleasesViewModel = getEntryReleasesViewModel;
         _getEntryImagesViewModel = getEntryImagesViewModel;
-        _getEntryListViewModel = getEntryListViewModel;
     }
 
+    public PluginDescriptionViewModel PluginDescriptionViewModel { get; }
+    
     public override async Task OnNavigating(WorkshopDetailParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
-        await GetEntry(parameters.EntryId, cancellationToken);
+        if (Entry?.Id != parameters.EntryId)
+            await GetEntry(parameters.EntryId, cancellationToken);
     }
 
     private async Task GetEntry(long entryId, CancellationToken cancellationToken)
@@ -73,13 +75,7 @@ public partial class PluginDetailsViewModel : RoutableScreen<WorkshopDetailParam
             EntryReleasesViewModel.OnInstallationFinished = OnInstallationFinished;
         }
 
-        IReadOnlyList<IEntrySummary>? dependants = (await _client.GetDependantEntries.ExecuteAsync(entryId, 0, 25, cancellationToken)).Data?.Entries?.Items;
-        Dependants = dependants != null && dependants.Any()
-            ? new ReadOnlyObservableCollection<EntryListItemViewModel>(new ObservableCollection<EntryListItemViewModel>(dependants
-                .Select(_getEntryListViewModel)
-                .OrderByDescending(d => d.Entry.Downloads)
-                .Take(10)))
-            : null;
+        await PluginDescriptionViewModel.SetEntry(Entry, cancellationToken);
     }
 
     private async Task<bool> OnInstallationStarted(IEntryDetails entryDetails, IRelease release)

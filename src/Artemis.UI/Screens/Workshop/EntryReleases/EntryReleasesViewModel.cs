@@ -52,7 +52,20 @@ public class EntryReleasesViewModel : ViewModelBase
 
     private async Task ExecuteNavigateToRelease(IRelease release)
     {
-        await _router.Navigate($"workshop/entries/{Entry.Id}/releases/{release.Id}");
+        switch (Entry.EntryType)
+        {
+            case EntryType.Profile:
+                await _router.Navigate($"workshop/entries/profiles/details/{Entry.Id}/releases/{release.Id}");
+                break;
+            case EntryType.Layout:
+                await _router.Navigate($"workshop/entries/layouts/details/{Entry.Id}/releases/{release.Id}");
+                break;
+            case EntryType.Plugin:
+                await _router.Navigate($"workshop/entries/plugins/details/{Entry.Id}/releases/{release.Id}");
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(Entry.EntryType));
+        }
     }
 
     private async Task ExecuteDownloadLatestRelease(CancellationToken cancellationToken)

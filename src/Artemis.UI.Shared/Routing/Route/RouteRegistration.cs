@@ -18,6 +18,17 @@ public class RouteRegistration<TViewModel> : IRouterRegistration where TViewMode
         Route = new Route(path);
     }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="RouteRegistration{TViewModel}" /> class.
+    /// </summary>
+    /// <param name="path">The path of the route.</param>
+    /// <param name="children">The children of the route.</param>
+    public RouteRegistration(string path, List<IRouterRegistration> children)
+    {
+        Route = new Route(path);
+        Children = children;
+    }
+
     /// <inheritdoc />
     public override string ToString()
     {

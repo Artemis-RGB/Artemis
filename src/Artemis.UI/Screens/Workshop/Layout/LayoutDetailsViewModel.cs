@@ -19,7 +19,7 @@ using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Layout;
 
-public partial class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParameters>
+public partial class LayoutDetailsViewModel : RoutableHostScreen<RoutableScreen, WorkshopDetailParameters>
 {
     private readonly IWorkshopClient _client;
     private readonly IDeviceService _deviceService;
@@ -35,10 +35,12 @@ public partial class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParam
     public LayoutDetailsViewModel(IWorkshopClient client,
         IDeviceService deviceService,
         IWindowService windowService,
+        LayoutDescriptionViewModel layoutDescriptionViewModel,
         Func<IEntryDetails, EntryInfoViewModel> getEntryInfoViewModel,
         Func<IEntryDetails, EntryReleasesViewModel> getEntryReleasesViewModel,
         Func<IEntryDetails, EntryImagesViewModel> getEntryImagesViewModel)
     {
+        LayoutDescriptionViewModel = layoutDescriptionViewModel;
         _client = client;
         _deviceService = deviceService;
         _windowService = windowService;
@@ -47,9 +49,12 @@ public partial class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParam
         _getEntryImagesViewModel = getEntryImagesViewModel;
     }
 
+    public LayoutDescriptionViewModel LayoutDescriptionViewModel { get; }
+
     public override async Task OnNavigating(WorkshopDetailParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
-        await GetEntry(parameters.EntryId, cancellationToken);
+        if (Entry?.Id != parameters.EntryId)
+            await GetEntry(parameters.EntryId, cancellationToken);
     }
 
     private async Task GetEntry(long entryId, CancellationToken cancellationToken)
@@ -65,6 +70,8 @@ public partial class LayoutDetailsViewModel : RoutableScreen<WorkshopDetailParam
 
         if (EntryReleasesViewModel != null)
             EntryReleasesViewModel.OnInstallationFinished = OnInstallationFinished;
+
+        LayoutDescriptionViewModel.Entry = Entry;
     }
 
     private async Task OnInstallationFinished(InstalledEntry installedEntry)

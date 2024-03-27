@@ -1,0 +1,6 @@
+query GetReleaseById($id: Long!) {
+    release(id: $id) {
+        ...release
+        changelog
+    }
+}

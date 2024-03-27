@@ -56,6 +56,10 @@
         <DependentUpon>LayoutListView.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
+      <Compile Update="Screens\Workshop\EntryReleases\EntryReleasesView.axaml.cs">
+        <DependentUpon>EntryReleasesView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

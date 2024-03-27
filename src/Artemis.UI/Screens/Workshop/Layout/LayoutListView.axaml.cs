@@ -12,14 +12,8 @@ public partial class LayoutListView : ReactiveUserControl<LayoutListViewModel>
     public LayoutListView()
     {
         InitializeComponent();
-        this.WhenActivated(d =>
-        {
-            ViewModel.WhenAnyValue(vm => vm.Screen).Subscribe(Navigate).DisposeWith(d);
-        });
-    }
-    
-    private void Navigate(RoutableScreen? viewModel)
-    {
-        RouterFrame.NavigateFromObject(viewModel ?? ViewModel?.EntryListViewModel);
+        this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Screen)
+            .Subscribe(screen => RouterFrame.NavigateFromObject(screen ?? ViewModel?.EntryListViewModel))
+            .DisposeWith(d));
     }
 }

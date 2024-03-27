@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:plugins="clr-namespace:Artemis.UI.Screens.Workshop.Plugins"
+             xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia.Tight"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Plugins.PluginDescriptionView"
+             x:DataType="plugins:PluginDescriptionViewModel">
+    <StackPanel Spacing="10">
+        <Border Classes="card">
+            <mdxaml:MarkdownScrollViewer Markdown="{CompiledBinding Entry.Description}" MarkdownStyleName="FluentAvalonia">
+                <mdxaml:MarkdownScrollViewer.Styles>
+                    <StyleInclude Source="/Styles/Markdown.axaml" />
+                </mdxaml:MarkdownScrollViewer.Styles>
+            </mdxaml:MarkdownScrollViewer>
+        </Border>
+
+        <Border Classes="card" VerticalAlignment="Top" IsVisible="{CompiledBinding Dependants, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <StackPanel>
+                <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Used by these profiles</TextBlock>
+                <Border Classes="card-separator" />
+                <ScrollViewer>
+                    <ItemsControl ItemsSource="{CompiledBinding Dependants}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="5"></StackPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

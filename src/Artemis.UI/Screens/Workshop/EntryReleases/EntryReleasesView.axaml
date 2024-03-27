@@ -25,12 +25,7 @@
                 CommandParameter="{CompiledBinding LatestRelease}">
             <Grid ColumnDefinitions="Auto,*">
                 <!-- Icon -->
-                <avalonia:MaterialIcon Grid.Column="0"
-                                       Margin="0 6"
-                                       Width="50"
-                                       Height="50"
-                                       Kind="BoxStar">
-                </avalonia:MaterialIcon>
+                <avalonia:MaterialIcon Grid.Column="0" Margin="0 6" Width="50" Height="50" Kind="BoxStar"/>
 
                 <!-- Body -->
                 <StackPanel Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
@@ -62,12 +57,8 @@
                             Command="{Binding $parent[details:EntryReleasesView].DataContext.NavigateToRelease}"
                             CommandParameter="{CompiledBinding}">
                         <Grid ColumnDefinitions="Auto,*">
-                            <avalonia:MaterialIcon Grid.Column="0"
-                                                   Margin="0 6"
-                                                   Width="25"
-                                                   Height="25"
-                                                   Kind="Archive">
-                            </avalonia:MaterialIcon>
+                            <!-- Icon -->
+                            <avalonia:MaterialIcon Grid.Column="0" Margin="0 6" Width="25" Height="25" Kind="Archive"/>
 
                             <!-- Body -->
                             <StackPanel Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
