@@ -124,7 +124,7 @@
                     </Grid>
 
                     <Grid Grid.Column="2" ColumnDefinitions="*,*" RowDefinitions="*,*" Classes="info-container" HorizontalAlignment="Right">
-                        <avalonia:MaterialIcon Kind="BoxOutline" Grid.Column="0" Grid.RowSpan="2" Classes="info-icon" />
+                        <avalonia:MaterialIcon Kind="File" Grid.Column="0" Grid.RowSpan="2" Classes="info-icon" />
                         <TextBlock Grid.Column="1" Grid.Row="0" Classes="info-title">File size</TextBlock>
                         <TextBlock Grid.Column="1"
                                    Grid.Row="1"

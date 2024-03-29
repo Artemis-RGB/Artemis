@@ -2,78 +2,38 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:details="clr-namespace:Artemis.UI.Screens.Workshop.Entries.Details"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:sharedConverters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:workshop="clr-namespace:Artemis.WebClient.Workshop;assembly=Artemis.WebClient.Workshop"
+             xmlns:entryReleases="clr-namespace:Artemis.UI.Screens.Workshop.EntryReleases"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.Workshop.Entries.Details.EntryReleasesView"
-             x:DataType="details:EntryReleasesViewModel">
+             x:Class="Artemis.UI.Screens.Workshop.EntryReleases.EntryReleasesView"
+             x:DataType="entryReleases:EntryReleasesViewModel">
     <UserControl.Resources>
         <converters:DateTimeConverter x:Key="DateTimeConverter" />
         <sharedConverters:BytesToStringConverter x:Key="BytesToStringConverter" />
     </UserControl.Resources>
+    
     <StackPanel>
         <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Releases</TextBlock>
         <Border Classes="card-separator" />
 
-        <Button Margin="0 0 0 5"
-                HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Stretch"
-                Command="{CompiledBinding NavigateToRelease}"
-                CommandParameter="{CompiledBinding LatestRelease}">
-            <Grid ColumnDefinitions="Auto,*">
-                <!-- Icon -->
-                <avalonia:MaterialIcon Grid.Column="0" Margin="0 6" Width="50" Height="50" Kind="BoxStar"/>
-
-                <!-- Body -->
-                <StackPanel Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
-                    <TextBlock Text="{CompiledBinding LatestRelease.Version, FallbackValue=Version}"></TextBlock>
-                    <TextBlock Classes="subtitle">
-                        <avalonia:MaterialIcon Kind="File" />
-                        <Run Text="{CompiledBinding LatestRelease.DownloadSize, Converter={StaticResource BytesToStringConverter}, Mode=OneWay}"></Run>
-                    </TextBlock>
-                    <TextBlock Classes="subtitle"
-                               ToolTip.Tip="{CompiledBinding LatestRelease.CreatedAt, Converter={StaticResource DateTimeConverter}}">
-                        <avalonia:MaterialIcon Kind="Calendar" />
-                        <Run>Created</Run>
-                        <Run Text="{CompiledBinding LatestRelease.CreatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
-                    </TextBlock>
-                </StackPanel>
-            </Grid>
-        </Button>
-
-        <ItemsControl ItemsSource="{CompiledBinding OtherReleases}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Spacing="5" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
+        <ListBox ItemsSource="{CompiledBinding Releases}" SelectedItem="{CompiledBinding SelectedRelease}" Classes="release-list">
+            <ListBox.ItemTemplate>
                 <DataTemplate x:DataType="workshop:IRelease">
-                    <Button HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Stretch"
-                            Command="{Binding $parent[details:EntryReleasesView].DataContext.NavigateToRelease}"
-                            CommandParameter="{CompiledBinding}">
-                        <Grid ColumnDefinitions="Auto,*">
-                            <!-- Icon -->
-                            <avalonia:MaterialIcon Grid.Column="0" Margin="0 6" Width="25" Height="25" Kind="Archive"/>
-
-                            <!-- Body -->
-                            <StackPanel Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
-                                <TextBlock Text="{CompiledBinding Version, FallbackValue=Version}"></TextBlock>
-                                <TextBlock Classes="subtitle" ToolTip.Tip="{CompiledBinding CreatedAt, Converter={StaticResource DateTimeConverter}}">
-                                    <avalonia:MaterialIcon Kind="Calendar" />
-                                    <Run>Created</Run>
-                                    <Run Text="{CompiledBinding CreatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
-                                </TextBlock>
-                            </StackPanel>
-                        </Grid>
-                    </Button>
+                    <Grid ColumnDefinitions="Auto,*" Margin="0 5">
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{CompiledBinding Version}"></TextBlock>
+                            <TextBlock Classes="subtitle" ToolTip.Tip="{CompiledBinding CreatedAt, Converter={StaticResource DateTimeConverter}}">
+                                <avalonia:MaterialIcon Kind="Calendar" />
+                                <Run>Created</Run>
+                                <Run Text="{CompiledBinding CreatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-
+            </ListBox.ItemTemplate>
+        </ListBox>
     </StackPanel>
 </UserControl>

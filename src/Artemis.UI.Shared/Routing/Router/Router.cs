@@ -162,6 +162,28 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
     }
 
     /// <inheritdoc />
+    public async Task<bool> GoUp()
+    {
+        string? currentPath = _currentRouteSubject.Value;
+        
+        // Keep removing segments until we find a parent route that resolves
+        while (currentPath != null && currentPath.Contains('/'))
+        {
+            string parentPath = currentPath[..currentPath.LastIndexOf('/')];
+            RouteResolution resolution = Resolve(parentPath);
+            if (resolution.Success)
+            {
+                await Navigate(parentPath, new RouterNavigationOptions {AddToHistory = false});
+                return true;
+            }
+
+            currentPath = parentPath;
+        }
+
+        return false;
+    }
+
+    /// <inheritdoc />
     public void ClearHistory()
     {
         _backStack.Clear();

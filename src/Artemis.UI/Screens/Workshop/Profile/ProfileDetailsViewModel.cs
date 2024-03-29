@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Screens.Workshop.Entries.Details;
+using Artemis.UI.Screens.Workshop.EntryReleases;
 using Artemis.UI.Screens.Workshop.Parameters;
 using Artemis.UI.Shared.Routing;
 using Artemis.WebClient.Workshop;
@@ -31,12 +32,13 @@ public partial class ProfileDetailsViewModel : RoutableHostScreen<RoutableScreen
         Func<IEntryDetails, EntryReleasesViewModel> getEntryReleasesViewModel,
         Func<IEntryDetails, EntryImagesViewModel> getEntryImagesViewModel)
     {
-        ProfileDescriptionViewModel = profileDescriptionViewModel;
-
         _client = client;
         _getEntryInfoViewModel = getEntryInfoViewModel;
         _getEntryReleasesViewModel = getEntryReleasesViewModel;
         _getEntryImagesViewModel = getEntryImagesViewModel;
+
+        ProfileDescriptionViewModel = profileDescriptionViewModel;
+        RecycleScreen = false;
     }
 
     public ProfileDescriptionViewModel ProfileDescriptionViewModel { get; }

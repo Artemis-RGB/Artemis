@@ -1,10 +1,9 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
 
-namespace Artemis.UI.Screens.Workshop.Entries.Details;
+namespace Artemis.UI.Screens.Workshop.EntryReleases;
 
-public partial class EntryReleasesView : UserControl
+public partial class EntryReleasesView : ReactiveUserControl<EntryReleasesViewModel>
 {
     public EntryReleasesView()
     {

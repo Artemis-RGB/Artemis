@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.Workshop.Entries.Details;
+using Artemis.UI.Screens.Workshop.EntryReleases;
 using Artemis.UI.Screens.Workshop.Layout.Dialogs;
 using Artemis.UI.Screens.Workshop.Parameters;
 using Artemis.UI.Shared.Routing;
@@ -40,13 +41,15 @@ public partial class LayoutDetailsViewModel : RoutableHostScreen<RoutableScreen,
         Func<IEntryDetails, EntryReleasesViewModel> getEntryReleasesViewModel,
         Func<IEntryDetails, EntryImagesViewModel> getEntryImagesViewModel)
     {
-        LayoutDescriptionViewModel = layoutDescriptionViewModel;
         _client = client;
         _deviceService = deviceService;
         _windowService = windowService;
         _getEntryInfoViewModel = getEntryInfoViewModel;
         _getEntryReleasesViewModel = getEntryReleasesViewModel;
         _getEntryImagesViewModel = getEntryImagesViewModel;
+
+        LayoutDescriptionViewModel = layoutDescriptionViewModel;
+        RecycleScreen = false;
     }
 
     public LayoutDescriptionViewModel LayoutDescriptionViewModel { get; }

@@ -8,6 +8,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.Workshop.Entries.Details;
 using Artemis.UI.Screens.Workshop.Entries.List;
+using Artemis.UI.Screens.Workshop.EntryReleases;
 using Artemis.UI.Screens.Workshop.Parameters;
 using Artemis.UI.Screens.Workshop.Plugins.Dialogs;
 using Artemis.UI.Shared.Routing;
@@ -41,13 +42,15 @@ public partial class PluginDetailsViewModel : RoutableHostScreen<RoutableScreen,
         Func<IEntryDetails, EntryReleasesViewModel> getEntryReleasesViewModel,
         Func<IEntryDetails, EntryImagesViewModel> getEntryImagesViewModel)
     {
-        PluginDescriptionViewModel = pluginDescriptionViewModel;
         _client = client;
         _windowService = windowService;
         _pluginManagementService = pluginManagementService;
         _getEntryInfoViewModel = getEntryInfoViewModel;
         _getEntryReleasesViewModel = getEntryReleasesViewModel;
         _getEntryImagesViewModel = getEntryImagesViewModel;
+        
+        PluginDescriptionViewModel = pluginDescriptionViewModel;
+        RecycleScreen = false;
     }
 
     public PluginDescriptionViewModel PluginDescriptionViewModel { get; }
