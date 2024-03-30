@@ -65,5 +65,6 @@
     <ItemGroup>
       <UpToDateCheckInput Remove="Screens\Workshop\Entries\Tabs\PluginListView.axaml" />
       <UpToDateCheckInput Remove="Screens\Workshop\Entries\Tabs\ProfileListView.axaml" />
+      <UpToDateCheckInput Remove="Screens\Workshop\Plugins\Dialogs\PluginDialogView.axaml" />
     </ItemGroup>
 </Project>

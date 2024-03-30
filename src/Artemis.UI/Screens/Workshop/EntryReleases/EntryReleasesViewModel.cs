@@ -16,37 +16,33 @@ namespace Artemis.UI.Screens.Workshop.EntryReleases;
 public partial class EntryReleasesViewModel : ActivatableViewModelBase
 {
     private readonly IRouter _router;
-    [Notify] private IRelease? _selectedRelease;
+    [Notify] private EntryReleaseItemViewModel? _selectedRelease;
 
-    public EntryReleasesViewModel(IEntryDetails entry, IRouter router)
+    public EntryReleasesViewModel(IEntryDetails entry, IRouter router, Func<IRelease, EntryReleaseItemViewModel> getEntryReleaseItemViewModel)
     {
         _router = router;
 
         Entry = entry;
-        Releases = Entry.Releases.OrderByDescending(r => r.CreatedAt).Take(5).Cast<IRelease>().ToList();
+        Releases = Entry.Releases.OrderByDescending(r => r.CreatedAt).Take(5).Select(r => getEntryReleaseItemViewModel(r)).ToList();
         NavigateToRelease = ReactiveCommand.CreateFromTask<IRelease>(ExecuteNavigateToRelease);
 
         this.WhenActivated(d =>
         {
             router.CurrentPath.Subscribe(p => SelectedRelease = p != null && p.Contains("releases") && float.TryParse(p.Split('/').Last(), out float releaseId)
-                    ? Releases.FirstOrDefault(r => r.Id == releaseId)
+                    ? Releases.FirstOrDefault(r => r.Release.Id == releaseId)
                     : null)
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.SelectedRelease)
                 .WhereNotNull()
-                .Subscribe(s => ExecuteNavigateToRelease(s))
+                .Subscribe(s => ExecuteNavigateToRelease(s.Release))
                 .DisposeWith(d);
         });
     }
 
     public IEntryDetails Entry { get; }
-    public List<IRelease> Releases { get; }
-
+    public List<EntryReleaseItemViewModel> Releases { get; }
     public ReactiveCommand<IRelease, Unit> NavigateToRelease { get; }
-
-    public Func<IEntryDetails, IRelease, Task<bool>> OnInstallationStarted { get; set; }
-    public Func<InstalledEntry, Task>? OnInstallationFinished { get; set; }
 
     private async Task ExecuteNavigateToRelease(IRelease release)
     {

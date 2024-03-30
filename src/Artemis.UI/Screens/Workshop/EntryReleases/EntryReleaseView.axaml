@@ -46,7 +46,7 @@
                         <avalonia:MaterialIcon Kind="ArrowBack" />
                     </Button>
                     <TextBlock Grid.Row="0" Grid.Column="1" Classes="h4 no-margin">Release info</TextBlock>
-                    <Panel Grid.Column="2">
+                    <StackPanel Grid.Column="2">
                         <!-- Install progress -->
                         <StackPanel Orientation="Horizontal"
                                     Spacing="5"
@@ -66,14 +66,15 @@
                         </StackPanel>
 
                         <!-- Install button -->
-                        <Button IsVisible="{CompiledBinding !InstallationInProgress}"
-                                HorizontalAlignment="Right"
-                                Classes="accent"
-                                Width="80"
-                                Command="{CompiledBinding Install}">
-                            Install
-                        </Button>
-                    </Panel>
+                        <Panel IsVisible="{CompiledBinding !InstallationInProgress}" HorizontalAlignment="Right">
+                            <Button IsVisible="{CompiledBinding !IsCurrentVersion}" Classes="accent" Width="80" Command="{CompiledBinding Install}">
+                                Install
+                            </Button>
+                            <Button IsVisible="{CompiledBinding IsCurrentVersion}" Classes="accent" Width="80" Command="{CompiledBinding Reinstall}">
+                                Re-install
+                            </Button>
+                        </Panel>
+                    </StackPanel>
                 </Grid>
                 <Border Classes="card-separator" />
                 <Grid Margin="-5 -10" ColumnDefinitions="*,*,*">

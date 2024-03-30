@@ -30,6 +30,7 @@ namespace Artemis.UI.Routing
                 new RouteRegistration<EntriesViewModel>("entries", [
                     new RouteRegistration<PluginListViewModel>("plugins", [
                         new RouteRegistration<PluginDetailsViewModel>("details/{entryId:long}", [
+                            new RouteRegistration<PluginManageViewModel>("manage"),
                             new RouteRegistration<EntryReleaseViewModel>("releases/{releaseId:long}")
                         ])
                     ]),
@@ -40,6 +41,7 @@ namespace Artemis.UI.Routing
                     ]),
                     new RouteRegistration<LayoutListViewModel>("layouts", [
                         new RouteRegistration<LayoutDetailsViewModel>("details/{entryId:long}", [
+                            new RouteRegistration<LayoutManageViewModel>("manage"),
                             new RouteRegistration<EntryReleaseViewModel>("releases/{releaseId:long}")
                         ])
                     ])

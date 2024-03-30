@@ -32,7 +32,6 @@
             </Button>
         </Panel>
 
-
         <TextBlock Theme="{StaticResource TitleTextBlockStyle}"
                    MaxLines="3"
                    TextTrimming="CharacterEllipsis"
@@ -79,5 +78,9 @@
             <Run>Updated</Run>
             <Run Text="{CompiledBinding UpdatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
         </TextBlock>
+        
+        <Button IsVisible="{CompiledBinding CanBeManaged}" Command="{CompiledBinding GoToManage}" Margin="0 10 0 0" HorizontalAlignment="Stretch">
+            Manage installation
+        </Button>
     </StackPanel>
 </UserControl>
