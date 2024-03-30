@@ -83,6 +83,10 @@
                     </Grid>
 
                     <ContentControl Content="{CompiledBinding SelectedLayoutProvider}" ClipToBounds="False" />
+                    <TextBlock TextAlignment="Right"
+                               Classes="danger"
+                               Text="{CompiledBinding Device.LayoutSelection.ErrorState}"
+                               IsVisible="{CompiledBinding Device.LayoutSelection.ErrorState, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
                     <Border Classes="card-separator" />
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
