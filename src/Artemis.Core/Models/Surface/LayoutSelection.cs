@@ -7,6 +7,7 @@ public class LayoutSelection : CorePropertyChanged
 {
     private string? _type;
     private string? _parameter;
+    private string? _errorState;
 
     /// <summary>
     ///     Gets or sets what kind of layout reference this is.
@@ -24,5 +25,14 @@ public class LayoutSelection : CorePropertyChanged
     {
         get => _parameter;
         set => SetAndNotify(ref _parameter, value);
+    }
+
+    /// <summary>
+    ///     Gets or sets the error state of the layout reference.
+    /// </summary>
+    public string? ErrorState
+    {
+        get => _errorState;
+        set => SetAndNotify(ref _errorState, value);
     }
 }

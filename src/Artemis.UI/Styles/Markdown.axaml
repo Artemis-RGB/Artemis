@@ -1,10 +1,11 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:avalonia="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
-        xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia">
+        xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia"
+        xmlns:controls="clr-namespace:Markdown.Avalonia.Controls;assembly=Markdown.Avalonia">
     <Design.PreviewWith>
-        <avalonia:MarkdownScrollViewer>
-            Test
+        <avalonia:MarkdownScrollViewer MarkdownStyleName="FluentAvalonia">
+            Markdown.Xaml support ```inline code ``` and block code.
         </avalonia:MarkdownScrollViewer>
     </Design.PreviewWith>
     <Style Selector="ScrollViewer > StackPanel">
@@ -63,6 +64,23 @@
             <Setter Property="FontSize" Value="14" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Margin" Value="0,10,0,5" />
+        </Style.Setters>
+    </Style>
+
+    <Style Selector="ctxt|CCode">
+        <Style.Setters>
+            <Setter Property="Foreground" Value="#CE9178" />
+            <Setter Property="Background" Value="#333333" />
+            <Setter Property="Padding" Value="4 3 4 -1"></Setter>
+            <Setter Property="Margin" Value="0 2 0 0"></Setter>
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="TextVerticalAlignment" Value="Bottom"></Setter>
+        </Style.Setters>
+    </Style>
+
+    <Style Selector="controls|Rule">
+        <Style.Setters>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonBorderBrush}"/>
         </Style.Setters>
     </Style>
 </Styles>

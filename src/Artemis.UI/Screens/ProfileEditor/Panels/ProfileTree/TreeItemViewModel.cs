@@ -34,7 +34,7 @@ public abstract partial class TreeItemViewModel : ActivatableViewModelBase
     private RenderProfileElement? _currentProfileElement;
     private ObservableAsPropertyHelper<bool>? _isFocused;
     private TimeSpan _time;
-    
+
     [Notify] private bool _canPaste;
     [Notify] private bool _isExpanded;
     [Notify] private bool _isFlyoutOpen;
@@ -100,7 +100,7 @@ public abstract partial class TreeItemViewModel : ActivatableViewModelBase
     public ReactiveCommand<Unit, Unit> Paste { get; }
     public ReactiveCommand<Unit, Unit> Delete { get; }
     public abstract bool SupportsChildren { get; }
-    
+
     public async Task ShowBrokenStateExceptions()
     {
         if (ProfileElement == null)
@@ -117,7 +117,7 @@ public abstract partial class TreeItemViewModel : ActivatableViewModelBase
                 return;
         }
     }
-    
+
     public void InsertElement(TreeItemViewModel elementViewModel, int targetIndex)
     {
         if (elementViewModel.Parent == this && Children.IndexOf(elementViewModel) == targetIndex)
@@ -239,26 +239,22 @@ public abstract partial class TreeItemViewModel : ActivatableViewModelBase
         await _windowService.ShowDialogAsync<LayerHintsDialogViewModel, bool>(layer);
         await ProfileEditorService.SaveProfileAsync();
     }
-    
+
     private void ExecuteApplyAdaptionHints()
     {
         if (ProfileElement is not Layer layer)
             return;
-        
+
         ProfileEditorService.ExecuteCommand(new ApplyAdaptionHints(layer, _deviceService.EnabledDevices.ToList()));
     }
 
     private async void UpdateCanPaste(bool isFlyoutOpen)
     {
-        string[] formats = await Shared.UI.Clipboard.GetFormatsAsync();
-        //diogotr7: This can be null on Linux sometimes. I'm not sure why.
-        if (formats == null!)
-        {
-            CanPaste = false;
-            return;
-        }
-
-        CanPaste = formats.Contains(ProfileElementExtensions.ClipboardDataFormat);
+        string[]? formats = await Shared.UI.Clipboard.GetFormatsAsync();
+        
+        // Can be null on some platforms
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        CanPaste = formats != null && formats.Contains(ProfileElementExtensions.ClipboardDataFormat);
     }
 
     private bool GetIsFocused(ProfileEditorFocusMode focusMode, RenderProfileElement? currentProfileElement)

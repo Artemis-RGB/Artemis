@@ -174,8 +174,11 @@ public partial class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, IT
 
     private async void UpdateCanPaste(bool isFlyoutOpen)
     {
-        string[] formats = await Shared.UI.Clipboard.GetFormatsAsync();
-        CanPaste = formats.Contains("Artemis.Keyframes");
+        string[]? formats = await Shared.UI.Clipboard.GetFormatsAsync();
+        
+        // Can be null on some platforms
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        CanPaste = formats != null && formats.Contains("Artemis.Keyframes");
     }
 
     #endregion
