@@ -100,6 +100,7 @@ type Mutation {
     addLayoutInfo(input: CreateLayoutInfoInput!): LayoutInfo
     removeEntry(id: Long!): Entry
     removeLayoutInfo(id: Long!): LayoutInfo!
+    removeRelease(id: Long!): Release!
     updateEntry(input: UpdateEntryInput!): Entry
     updateEntryImage(input: UpdateEntryImageInput!): Image
     updateRelease(input: UpdateReleaseInput!): Release

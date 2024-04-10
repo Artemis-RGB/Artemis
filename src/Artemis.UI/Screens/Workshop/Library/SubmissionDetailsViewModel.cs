@@ -8,8 +8,7 @@ using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Screens.Workshop.Image;
-using Artemis.UI.Screens.Workshop.Parameters;
-using Artemis.UI.Screens.Workshop.SubmissionWizard;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
@@ -25,7 +24,7 @@ using EntrySpecificationsViewModel = Artemis.UI.Screens.Workshop.Entries.Details
 
 namespace Artemis.UI.Screens.Workshop.Library;
 
-public partial class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailParameters>
+public partial class SubmissionDetailsViewModel : RoutableScreen
 {
     private readonly IWorkshopClient _client;
     private readonly IWindowService _windowService;
@@ -40,7 +39,7 @@ public partial class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailPa
     [Notify] private EntrySpecificationsViewModel? _entrySpecificationsViewModel;
     [Notify(Setter.Private)] private bool _hasChanges;
 
-    public SubmissionDetailViewModel(IWorkshopClient client,
+    public SubmissionDetailsViewModel(IWorkshopClient client,
         IWindowService windowService,
         IWorkshopService workshopService,
         IRouter router,
@@ -56,34 +55,23 @@ public partial class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailPa
         _getExistingImageSubmissionViewModel = getExistingImageSubmissionViewModel;
         _getImageSubmissionViewModel = getImageSubmissionViewModel;
 
-        CreateRelease = ReactiveCommand.CreateFromTask(ExecuteCreateRelease);
-        DeleteSubmission = ReactiveCommand.CreateFromTask(ExecuteDeleteSubmission);
-        ViewWorkshopPage = ReactiveCommand.CreateFromTask(ExecuteViewWorkshopPage);
         AddImage = ReactiveCommand.CreateFromTask(ExecuteAddImage);
         DiscardChanges = ReactiveCommand.CreateFromTask(ExecuteDiscardChanges, this.WhenAnyValue(vm => vm.HasChanges));
         SaveChanges = ReactiveCommand.CreateFromTask(ExecuteSaveChanges, this.WhenAnyValue(vm => vm.HasChanges));
     }
-
+    
     public ObservableCollection<ImageSubmissionViewModel> Images { get; } = new();
-    public ReactiveCommand<Unit, Unit> CreateRelease { get; }
-    public ReactiveCommand<Unit, Unit> DeleteSubmission { get; }
-    public ReactiveCommand<Unit, Unit> ViewWorkshopPage { get; }
     public ReactiveCommand<Unit, Unit> AddImage { get; }
     public ReactiveCommand<Unit, Unit> SaveChanges { get; }
     public ReactiveCommand<Unit, Unit> DiscardChanges { get; }
 
-    public override async Task OnNavigating(WorkshopDetailParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
+    public async Task SetEntry(IGetSubmittedEntryById_Entry? entry, CancellationToken cancellationToken)
     {
-        IOperationResult<IGetSubmittedEntryByIdResult> result = await _client.GetSubmittedEntryById.ExecuteAsync(parameters.EntryId, cancellationToken);
-        if (result.IsErrorResult())
-            return;
-
-        Entry = result.Data?.Entry;
+        Entry = entry;
         await ApplyDetailsFromEntry(cancellationToken);
-        ApplyImagesFromEntry();
     }
 
-    public override async Task OnClosing(NavigationArguments args)
+    public async Task OnClosing(NavigationArguments args)
     {
         if (!HasChanges)
             return;
@@ -243,30 +231,7 @@ public partial class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailPa
         HasChanges = false;
         await _router.Reload();
     }
-
-    private async Task ExecuteCreateRelease(CancellationToken cancellationToken)
-    {
-        if (Entry != null)
-            await _windowService.ShowDialogAsync<ReleaseWizardViewModel>(Entry);
-    }
-
-    private async Task ExecuteDeleteSubmission(CancellationToken cancellationToken)
-    {
-        if (Entry == null)
-            return;
-
-        bool confirmed = await _windowService.ShowConfirmContentDialog(
-            "Delete submission?",
-            "You cannot undo this by yourself.\r\n" +
-            "Users that have already downloaded your submission will keep it.");
-        if (!confirmed)
-            return;
-
-        IOperationResult<IRemoveEntryResult> result = await _client.RemoveEntry.ExecuteAsync(Entry.Id, cancellationToken);
-        result.EnsureNoErrors();
-        await _router.Navigate("workshop/library/submissions");
-    }
-
+    
     private async Task ExecuteAddImage(CancellationToken arg)
     {
         string[]? result = await _windowService.CreateOpenFileDialog().WithAllowMultiple().HavingFilter(f => f.WithBitmaps()).ShowAsync();
@@ -295,12 +260,6 @@ public partial class SubmissionDetailViewModel : RoutableScreen<WorkshopDetailPa
 
             AddImageViewModel(viewModel);
         }
-    }
-
-    private async Task ExecuteViewWorkshopPage()
-    {
-        if (Entry != null)
-            await _workshopService.NavigateToEntry(Entry.Id, Entry.EntryType);
     }
 
     private void InputChanged(object? sender, EventArgs e)

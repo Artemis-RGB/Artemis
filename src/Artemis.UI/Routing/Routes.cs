@@ -49,7 +49,9 @@ namespace Artemis.UI.Routing
                 new RouteRegistration<WorkshopLibraryViewModel>("library", [
                     new RouteRegistration<InstalledTabViewModel>("installed"),
                     new RouteRegistration<SubmissionsTabViewModel>("submissions"),
-                    new RouteRegistration<SubmissionDetailViewModel>("submissions/{entryId:long}")
+                    new RouteRegistration<SubmissionManagementViewModel>("submissions/{entryId:long}", [
+                        new RouteRegistration<SubmissionReleaseViewModel>("releases/{releaseId:long}")
+                    ])
                 ])
             ]),
             new RouteRegistration<SurfaceEditorViewModel>("surface-editor"),
