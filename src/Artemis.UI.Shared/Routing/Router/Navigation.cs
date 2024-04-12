@@ -109,11 +109,10 @@ internal class Navigation
             // Navigate the child too
             if (resolution.Child != null)
                 await NavigateResolution(resolution.Child, args, childScreen);
-            // Make sure there is no child
-            else if (childScreen.InternalScreen != null)
-                childScreen.InternalChangeScreen(null);
+            // Without a resolution, navigate to the default screen (which may be null)
+            else if (childScreen.InternalScreen != childScreen.InternalDefaultScreen)
+                childScreen.InternalChangeScreen(childScreen.InternalDefaultScreen);
         }
-
 
         Completed = true;
     }

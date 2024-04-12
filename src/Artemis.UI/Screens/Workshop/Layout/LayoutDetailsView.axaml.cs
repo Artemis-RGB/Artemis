@@ -11,7 +11,8 @@ public partial class LayoutDetailsView : ReactiveUserControl<LayoutDetailsViewMo
     {
         InitializeComponent();
         this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Screen)
-            .Subscribe(screen => RouterFrame.NavigateFromObject(screen ?? ViewModel?.LayoutDescriptionViewModel))
+            .WhereNotNull()
+            .Subscribe(screen => RouterFrame.NavigateFromObject(screen))
             .DisposeWith(d));
     }
 }

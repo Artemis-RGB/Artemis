@@ -17,32 +17,32 @@ namespace Artemis.UI.Screens.Workshop.Profile;
 public partial class ProfileDetailsViewModel : RoutableHostScreen<RoutableScreen, WorkshopDetailParameters>
 {
     private readonly IWorkshopClient _client;
-    private readonly Func<IEntryDetails, EntryInfoViewModel> _getEntryInfoViewModel;
+    private readonly ProfileDescriptionViewModel _profileDescriptionViewModel;
     private readonly Func<IEntryDetails, EntryReleasesViewModel> _getEntryReleasesViewModel;
     private readonly Func<IEntryDetails, EntryImagesViewModel> _getEntryImagesViewModel;
 
     [Notify] private IEntryDetails? _entry;
-    [Notify] private EntryInfoViewModel? _entryInfoViewModel;
     [Notify] private EntryReleasesViewModel? _entryReleasesViewModel;
     [Notify] private EntryImagesViewModel? _entryImagesViewModel;
 
     public ProfileDetailsViewModel(IWorkshopClient client,
         ProfileDescriptionViewModel profileDescriptionViewModel,
-        Func<IEntryDetails, EntryInfoViewModel> getEntryInfoViewModel,
+        EntryInfoViewModel entryInfoViewModel,
         Func<IEntryDetails, EntryReleasesViewModel> getEntryReleasesViewModel,
         Func<IEntryDetails, EntryImagesViewModel> getEntryImagesViewModel)
     {
         _client = client;
-        _getEntryInfoViewModel = getEntryInfoViewModel;
+        _profileDescriptionViewModel = profileDescriptionViewModel;
         _getEntryReleasesViewModel = getEntryReleasesViewModel;
         _getEntryImagesViewModel = getEntryImagesViewModel;
 
-        ProfileDescriptionViewModel = profileDescriptionViewModel;
+        EntryInfoViewModel = entryInfoViewModel;
         RecycleScreen = false;
     }
 
-    public ProfileDescriptionViewModel ProfileDescriptionViewModel { get; }
-
+    public override RoutableScreen DefaultScreen => _profileDescriptionViewModel;
+    public EntryInfoViewModel EntryInfoViewModel { get; }
+    
     public override async Task OnNavigating(WorkshopDetailParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
         if (Entry?.Id != parameters.EntryId)
@@ -51,15 +51,19 @@ public partial class ProfileDetailsViewModel : RoutableHostScreen<RoutableScreen
 
     private async Task GetEntry(long entryId, CancellationToken cancellationToken)
     {
+        Task grace = Task.Delay(300, cancellationToken);
         IOperationResult<IGetEntryByIdResult> result = await _client.GetEntryById.ExecuteAsync(entryId, cancellationToken);
         if (result.IsErrorResult())
             return;
 
+        // Let the UI settle to avoid lag when deep linking
+        await grace;
+        
         Entry = result.Data?.Entry;
-        EntryInfoViewModel = Entry != null ? _getEntryInfoViewModel(Entry) : null;
+        EntryInfoViewModel.SetEntry(Entry);
         EntryReleasesViewModel = Entry != null ? _getEntryReleasesViewModel(Entry) : null;
         EntryImagesViewModel = Entry != null ? _getEntryImagesViewModel(Entry) : null;
 
-        await ProfileDescriptionViewModel.SetEntry(Entry, cancellationToken);
+        await _profileDescriptionViewModel.SetEntry(Entry, cancellationToken);
     }
 }

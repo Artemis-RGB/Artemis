@@ -11,7 +11,8 @@ public partial class SubmissionManagementView : ReactiveUserControl<SubmissionMa
     {
         InitializeComponent();
         this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Screen)
-            .Subscribe(screen => RouterFrame.NavigateFromObject(screen ?? ViewModel?.DetailsViewModel))
+            .WhereNotNull()
+            .Subscribe(screen => RouterFrame.NavigateFromObject(screen))
             .DisposeWith(d));
     }
 }

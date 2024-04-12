@@ -6,11 +6,12 @@ namespace Artemis.UI.Screens.Workshop.Plugins;
 
 public class PluginListViewModel : RoutableHostScreen<RoutableScreen>
 {
-    public EntryListViewModel EntryListViewModel { get; }
+    private readonly EntryListViewModel _entryListViewModel;
+    public override RoutableScreen DefaultScreen => _entryListViewModel;
 
     public PluginListViewModel(EntryListViewModel entryListViewModel)
     {
-        EntryListViewModel = entryListViewModel;
-        EntryListViewModel.EntryType = EntryType.Plugin;
+        _entryListViewModel = entryListViewModel;
+        _entryListViewModel.EntryType = EntryType.Plugin;
     }
 }

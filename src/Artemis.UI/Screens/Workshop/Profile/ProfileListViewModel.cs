@@ -6,11 +6,12 @@ namespace Artemis.UI.Screens.Workshop.Profile;
 
 public class ProfileListViewModel : RoutableHostScreen<RoutableScreen>
 {
-    public EntryListViewModel EntryListViewModel { get; }
+    private readonly EntryListViewModel _entryListViewModel;
+    public override RoutableScreen DefaultScreen => _entryListViewModel;
 
     public ProfileListViewModel(EntryListViewModel entryListViewModel)
     {
-        EntryListViewModel = entryListViewModel;
-        EntryListViewModel.EntryType = EntryType.Profile;
+        _entryListViewModel = entryListViewModel;
+        _entryListViewModel.EntryType = EntryType.Profile;
     }
 }

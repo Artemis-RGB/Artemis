@@ -11,7 +11,8 @@ public partial class PluginDetailsView : ReactiveUserControl<PluginDetailsViewMo
     {
         InitializeComponent();
         this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Screen)
-            .Subscribe(screen => RouterFrame.NavigateFromObject(screen ?? ViewModel?.PluginDescriptionViewModel))
+            .WhereNotNull()
+            .Subscribe(screen => RouterFrame.NavigateFromObject(screen))
             .DisposeWith(d));
     }
 }

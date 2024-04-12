@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.WebClient.Workshop;
+using Artemis.WebClient.Workshop.Extensions;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
@@ -25,14 +26,15 @@ public partial class EntryReleasesViewModel : ActivatableViewModelBase
 
         this.WhenActivated(d =>
         {
-            router.CurrentPath.Subscribe(p => SelectedRelease = p != null && p.Contains("releases") && float.TryParse(p.Split('/').Last(), out float releaseId)
-                    ? Releases.FirstOrDefault(r => r.Release.Id == releaseId)
-                    : null)
+            router.CurrentPath.Subscribe(p =>
+                    SelectedRelease = p != null && p.StartsWith(Entry.GetEntryPath()) && float.TryParse(p.Split('/').Last(), out float releaseId)
+                        ? Releases.FirstOrDefault(r => r.Release.Id == releaseId)
+                        : null)
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.SelectedRelease)
                 .WhereNotNull()
-                .Subscribe(s => _router.Navigate($"/releases/{s.Release.Id}"))
+                .Subscribe(s => _router.Navigate($"{Entry.GetEntryPath()}/releases/{s.Release.Id}"))
                 .DisposeWith(d);
         });
     }

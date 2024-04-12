@@ -14,31 +14,31 @@ namespace Artemis.UI.Screens.Workshop.Layout;
 public partial class LayoutDetailsViewModel : RoutableHostScreen<RoutableScreen, WorkshopDetailParameters>
 {
     private readonly IWorkshopClient _client;
-    private readonly Func<IEntryDetails, EntryInfoViewModel> _getEntryInfoViewModel;
+    private readonly LayoutDescriptionViewModel _layoutDescriptionViewModel;
     private readonly Func<IEntryDetails, EntryReleasesViewModel> _getEntryReleasesViewModel;
     private readonly Func<IEntryDetails, EntryImagesViewModel> _getEntryImagesViewModel;
     [Notify] private IEntryDetails? _entry;
-    [Notify] private EntryInfoViewModel? _entryInfoViewModel;
     [Notify] private EntryReleasesViewModel? _entryReleasesViewModel;
     [Notify] private EntryImagesViewModel? _entryImagesViewModel;
 
     public LayoutDetailsViewModel(IWorkshopClient client,
         LayoutDescriptionViewModel layoutDescriptionViewModel,
-        Func<IEntryDetails, EntryInfoViewModel> getEntryInfoViewModel,
+        EntryInfoViewModel entryInfoViewModel,
         Func<IEntryDetails, EntryReleasesViewModel> getEntryReleasesViewModel,
         Func<IEntryDetails, EntryImagesViewModel> getEntryImagesViewModel)
     {
         _client = client;
-        _getEntryInfoViewModel = getEntryInfoViewModel;
+        _layoutDescriptionViewModel = layoutDescriptionViewModel;
         _getEntryReleasesViewModel = getEntryReleasesViewModel;
         _getEntryImagesViewModel = getEntryImagesViewModel;
 
-        LayoutDescriptionViewModel = layoutDescriptionViewModel;
         RecycleScreen = false;
+        EntryInfoViewModel = entryInfoViewModel;
     }
 
-    public LayoutDescriptionViewModel LayoutDescriptionViewModel { get; }
-
+    public override RoutableScreen DefaultScreen => _layoutDescriptionViewModel;
+    public EntryInfoViewModel EntryInfoViewModel { get; }
+    
     public override async Task OnNavigating(WorkshopDetailParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
         if (Entry?.Id != parameters.EntryId)
@@ -47,14 +47,18 @@ public partial class LayoutDetailsViewModel : RoutableHostScreen<RoutableScreen,
 
     private async Task GetEntry(long entryId, CancellationToken cancellationToken)
     {
+        Task grace = Task.Delay(300, cancellationToken);
         IOperationResult<IGetEntryByIdResult> result = await _client.GetEntryById.ExecuteAsync(entryId, cancellationToken);
         if (result.IsErrorResult())
             return;
+        
+        // Let the UI settle to avoid lag when deep linking
+        await grace;
 
         Entry = result.Data?.Entry;
-        EntryInfoViewModel = Entry != null ? _getEntryInfoViewModel(Entry) : null;
+        EntryInfoViewModel.SetEntry(Entry);
         EntryReleasesViewModel = Entry != null ? _getEntryReleasesViewModel(Entry) : null;
         EntryImagesViewModel = Entry != null ? _getEntryImagesViewModel(Entry) : null;
-        LayoutDescriptionViewModel.Entry = Entry;
+        _layoutDescriptionViewModel.Entry = Entry;
     }
 }

@@ -11,7 +11,8 @@ public partial class ProfileDetailsView : ReactiveUserControl<ProfileDetailsView
     {
         InitializeComponent();
         this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Screen)
-            .Subscribe(screen => RouterFrame.NavigateFromObject(screen ?? ViewModel?.ProfileDescriptionViewModel))
+            .WhereNotNull()
+            .Subscribe(screen => RouterFrame.NavigateFromObject(screen))
             .DisposeWith(d));
     }
 }

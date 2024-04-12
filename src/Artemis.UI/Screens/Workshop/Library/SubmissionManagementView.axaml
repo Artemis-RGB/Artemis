@@ -13,68 +13,73 @@
     <UserControl.Resources>
         <converters:DateTimeConverter x:Key="DateTimeConverter" />
     </UserControl.Resources>
-    <Grid ColumnDefinitions="300,*" RowDefinitions="*, Auto">
-        <StackPanel Grid.Column="0" Grid.Row="0" Spacing="10" Margin="0 0 10 0">
-            <Border Classes="card" VerticalAlignment="Top">
-                <StackPanel>
-                    <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Management</TextBlock>
-                    <Border Classes="card-separator" />
+    <Panel>
+        <ProgressBar HorizontalAlignment="Stretch"
+                     VerticalAlignment="Top"
+                     IsVisible="{CompiledBinding Entry, Converter={x:Static ObjectConverters.IsNull}}"
+                     IsIndeterminate="True" />
+        <Grid ColumnDefinitions="300,*" RowDefinitions="*, Auto" IsVisible="{CompiledBinding Entry, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <StackPanel Grid.Column="0" Grid.Row="0" Spacing="10" Margin="0 0 10 0">
+                <Border Classes="card" VerticalAlignment="Top">
+                    <StackPanel>
+                        <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Management</TextBlock>
+                        <Border Classes="card-separator" />
 
-                    <TextBlock Margin="0 0 0 8">
-                        <avalonia:MaterialIcon Kind="Downloads" />
-                        <Run Classes="h5" Text="{CompiledBinding Entry.Downloads, FallbackValue=0}" />
-                        <Run>downloads</Run>
-                    </TextBlock>
+                        <TextBlock Margin="0 0 0 8">
+                            <avalonia:MaterialIcon Kind="Downloads" />
+                            <Run Classes="h5" Text="{CompiledBinding Entry.Downloads, FallbackValue=0}" />
+                            <Run>downloads</Run>
+                        </TextBlock>
 
-                    <TextBlock Classes="subtitle" ToolTip.Tip="{CompiledBinding Entry.CreatedAt, Converter={StaticResource DateTimeConverter}}">
-                        <avalonia:MaterialIcon Kind="Calendar" />
-                        <Run>Created</Run>
-                        <Run Text="{CompiledBinding Entry.CreatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
-                    </TextBlock>
+                        <TextBlock Classes="subtitle" ToolTip.Tip="{CompiledBinding Entry.CreatedAt, Converter={StaticResource DateTimeConverter}}">
+                            <avalonia:MaterialIcon Kind="Calendar" />
+                            <Run>Created</Run>
+                            <Run Text="{CompiledBinding Entry.CreatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
+                        </TextBlock>
 
-                    <Border Classes="card-separator" />
+                        <Border Classes="card-separator" />
 
-                    <StackPanel Spacing="5">
-                        <Button HorizontalAlignment="Stretch" Command="{CompiledBinding CreateRelease}">
-                            Create new release
-                        </Button>
-                        <Button Classes="danger" HorizontalAlignment="Stretch" Command="{CompiledBinding DeleteSubmission}">
-                            Delete submission
-                        </Button>
+                        <StackPanel Spacing="5">
+                            <Button HorizontalAlignment="Stretch" Command="{CompiledBinding CreateRelease}">
+                                Create new release
+                            </Button>
+                            <Button Classes="danger" HorizontalAlignment="Stretch" Command="{CompiledBinding DeleteSubmission}">
+                                Delete submission
+                            </Button>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
-            </Border>
-            <Border Classes="card" IsVisible="{CompiledBinding Releases.Count}">
-                <StackPanel>
-                    <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Releases</TextBlock>
-                    <Border Classes="card-separator" />
+                </Border>
+                <Border Classes="card" IsVisible="{CompiledBinding Releases.Count}">
+                    <StackPanel>
+                        <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Releases</TextBlock>
+                        <Border Classes="card-separator" />
 
-                    <ListBox ItemsSource="{CompiledBinding Releases}" SelectedItem="{CompiledBinding SelectedRelease}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Margin="0 5">
-                                    <TextBlock Text="{CompiledBinding Version}"></TextBlock>
-                                    <TextBlock Classes="subtitle" ToolTip.Tip="{CompiledBinding CreatedAt, Converter={StaticResource DateTimeConverter}}">
-                                        <avalonia:MaterialIcon Kind="Calendar" />
-                                        <Run>Created</Run>
-                                        <Run Text="{CompiledBinding CreatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
-                                    </TextBlock>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </StackPanel>
-            </Border>
-            <controls:HyperlinkButton Command="{CompiledBinding ViewWorkshopPage}" HorizontalAlignment="Center">
-                View workshop page
-            </controls:HyperlinkButton>
-        </StackPanel>
+                        <ListBox ItemsSource="{CompiledBinding Releases}" SelectedItem="{CompiledBinding SelectedRelease}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0 5">
+                                        <TextBlock Text="{CompiledBinding Version}"></TextBlock>
+                                        <TextBlock Classes="subtitle" ToolTip.Tip="{CompiledBinding CreatedAt, Converter={StaticResource DateTimeConverter}}">
+                                            <avalonia:MaterialIcon Kind="Calendar" />
+                                            <Run>Created</Run>
+                                            <Run Text="{CompiledBinding CreatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                </Border>
+                <controls:HyperlinkButton Command="{CompiledBinding ViewWorkshopPage}" HorizontalAlignment="Center">
+                    View workshop page
+                </controls:HyperlinkButton>
+            </StackPanel>
 
-        <controls:Frame Grid.Column="1" Grid.Row="0" Name="RouterFrame" IsNavigationStackEnabled="False" CacheSize="0">
-            <controls:Frame.NavigationPageFactory>
-                <ui:PageFactory />
-            </controls:Frame.NavigationPageFactory>
-        </controls:Frame>
-    </Grid>
-
+            <controls:Frame Grid.Column="1" Grid.Row="0" Name="RouterFrame" IsNavigationStackEnabled="False" CacheSize="0">
+                <controls:Frame.NavigationPageFactory>
+                    <ui:PageFactory />
+                </controls:Frame.NavigationPageFactory>
+            </controls:Frame>
+        </Grid>
+    </Panel>
 </UserControl>

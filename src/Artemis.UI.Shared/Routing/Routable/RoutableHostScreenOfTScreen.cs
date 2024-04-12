@@ -25,7 +25,13 @@ public abstract class RoutableHostScreen<TScreen> : RoutableScreen, IRoutableHos
         protected set => RaiseAndSetIfChanged(ref _recycleScreen, value);
     }
 
+    /// <summary>
+    ///     Gets the screen to show when no other screen is active.
+    /// </summary>
+    public virtual TScreen? DefaultScreen { get; }
+
     IRoutableScreen? IRoutableHostScreen.InternalScreen => Screen;
+    IRoutableScreen? IRoutableHostScreen.InternalDefaultScreen => DefaultScreen;
 
     void IRoutableHostScreen.InternalChangeScreen(IRoutableScreen? screen)
     {

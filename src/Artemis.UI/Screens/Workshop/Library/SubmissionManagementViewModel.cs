@@ -22,6 +22,7 @@ public partial class SubmissionManagementViewModel : RoutableHostScreen<Routable
     private readonly IWindowService _windowService;
     private readonly IRouter _router;
     private readonly IWorkshopService _workshopService;
+    private readonly SubmissionDetailsViewModel _detailsViewModel;
 
     [Notify] private IGetSubmittedEntryById_Entry? _entry;
     [Notify] private List<IGetSubmittedEntryById_Entry_Releases>? _releases;
@@ -29,7 +30,7 @@ public partial class SubmissionManagementViewModel : RoutableHostScreen<Routable
 
     public SubmissionManagementViewModel(IWorkshopClient client, IRouter router, IWindowService windowService, IWorkshopService workshopService, SubmissionDetailsViewModel detailsViewModel)
     {
-        DetailsViewModel = detailsViewModel;
+        _detailsViewModel = detailsViewModel;
         _client = client;
         _router = router;
         _windowService = windowService;
@@ -39,12 +40,12 @@ public partial class SubmissionManagementViewModel : RoutableHostScreen<Routable
         {
             this.WhenAnyValue(vm => vm.SelectedRelease)
                 .WhereNotNull()
-                .Subscribe(r => _router.Navigate($"/releases/{r.Id}"))
+                .Subscribe(r => _router.Navigate($"workshop/library/submissions/{Entry?.Id}/releases/{r.Id}"))
                 .DisposeWith(d);
         });
     }
 
-    public SubmissionDetailsViewModel DetailsViewModel { get; }
+    public override RoutableScreen DefaultScreen => _detailsViewModel;
 
     public async Task ViewWorkshopPage()
     {
@@ -79,7 +80,7 @@ public partial class SubmissionManagementViewModel : RoutableHostScreen<Routable
     {
         // If there is a 2nd parameter, it's a release ID
         SelectedRelease = args.RouteParameters.Length > 1 ? Releases?.FirstOrDefault(r => r.Id == (long) args.RouteParameters[1]) : null;
-        
+       
         IOperationResult<IGetSubmittedEntryByIdResult> result = await _client.GetSubmittedEntryById.ExecuteAsync(parameters.EntryId, cancellationToken);
         if (result.IsErrorResult())
             return;
@@ -87,11 +88,11 @@ public partial class SubmissionManagementViewModel : RoutableHostScreen<Routable
         Entry = result.Data?.Entry;
         Releases = Entry?.Releases.OrderByDescending(r => r.CreatedAt).ToList();
 
-        await DetailsViewModel.SetEntry(Entry, cancellationToken);
+        await _detailsViewModel.SetEntry(Entry, cancellationToken);
     }
 
     public override async Task OnClosing(NavigationArguments args)
     {
-        await DetailsViewModel.OnClosing(args);
+        await _detailsViewModel.OnClosing(args);
     }
 }
