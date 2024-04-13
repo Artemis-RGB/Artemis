@@ -22,11 +22,10 @@ public partial class SubmissionReleaseViewModel : RoutableScreen<ReleaseDetailPa
     private readonly IRouter _router;
     private readonly IWindowService _windowService;
     private readonly INotificationService _notificationService;
-    private readonly ObservableAsPropertyHelper<bool> _hasChanges;
 
     [Notify] private IGetReleaseById_Release? _release;
-    [Notify] private string _changelog = string.Empty;
-    [Notify] private TextDocument? _markdownDocument;
+    [Notify] private string? _changelog;
+    [Notify] private bool _hasChanges;
 
     public SubmissionReleaseViewModel(IWorkshopClient client, IRouter router, IWindowService windowService, INotificationService notificationService)
     {
@@ -34,22 +33,12 @@ public partial class SubmissionReleaseViewModel : RoutableScreen<ReleaseDetailPa
         _router = router;
         _windowService = windowService;
         _notificationService = notificationService;
-        _hasChanges = this.WhenAnyValue(vm => vm.Changelog, vm => vm.Release, (current, release) => current != release?.Changelog).ToProperty(this, vm => vm.HasChanges);
+        this.WhenAnyValue(vm => vm.Changelog, vm => vm.Release, (current, release) => current != release?.Changelog).Subscribe(hasChanges => HasChanges = hasChanges);
 
         Discard = ReactiveCommand.Create(ExecuteDiscard, this.WhenAnyValue(vm => vm.HasChanges));
         Save = ReactiveCommand.CreateFromTask(ExecuteSave, this.WhenAnyValue(vm => vm.HasChanges));
-
-        this.WhenActivated(d =>
-        {
-            Disposable.Create(() =>
-            {
-                if (MarkdownDocument != null)
-                    MarkdownDocument.TextChanged -= MarkdownDocumentOnTextChanged;
-            }).DisposeWith(d);
-        });
     }
 
-    public bool HasChanges => _hasChanges.Value;
     public ReactiveCommand<Unit, Unit> Discard { get; set; }
     public ReactiveCommand<Unit, Unit> Save { get; set; }
 
@@ -57,9 +46,17 @@ public partial class SubmissionReleaseViewModel : RoutableScreen<ReleaseDetailPa
     {
         IOperationResult<IGetReleaseByIdResult> result = await _client.GetReleaseById.ExecuteAsync(parameters.ReleaseId, cancellationToken);
         Release = result.Data?.Release;
-        Changelog = Release?.Changelog ?? string.Empty;
+        Changelog = Release?.Changelog;
+    }
+    
+    public override async Task OnClosing(NavigationArguments args)
+    {
+        if (!HasChanges)
+            return;
 
-        SetupMarkdownDocument();
+        bool confirmed = await _windowService.ShowConfirmContentDialog("You have unsaved changes", "Do you want to discard your unsaved changes?");
+        if (!confirmed)
+            args.Cancel();
     }
 
     public async Task DeleteRelease()
@@ -81,6 +78,7 @@ public partial class SubmissionReleaseViewModel : RoutableScreen<ReleaseDetailPa
             .WithHorizontalPosition(HorizontalAlignment.Left)
             .Show();
         
+        HasChanges = false;
         await Close();
     }
 
@@ -100,25 +98,13 @@ public partial class SubmissionReleaseViewModel : RoutableScreen<ReleaseDetailPa
             .WithSeverity(NotificationSeverity.Success)
             .WithHorizontalPosition(HorizontalAlignment.Left)
             .Show();
+
+        HasChanges = false;
     }
 
     private void ExecuteDiscard()
     {
-        Changelog = Release?.Changelog ?? string.Empty;
-        SetupMarkdownDocument();
-    }
-
-    private void SetupMarkdownDocument()
-    {
-        if (MarkdownDocument != null)
-            MarkdownDocument.TextChanged -= MarkdownDocumentOnTextChanged;
-
-        MarkdownDocument = new TextDocument(new StringTextSource(Changelog));
-        MarkdownDocument.TextChanged += MarkdownDocumentOnTextChanged;
-    }
-
-    private void MarkdownDocumentOnTextChanged(object? sender, EventArgs e)
-    {
-        Changelog = MarkdownDocument?.Text ?? string.Empty;
+        Changelog = Release?.Changelog;
+        HasChanges = false;
     }
 }

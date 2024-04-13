@@ -64,6 +64,6 @@ public class ProfileAdaptionHintsStepViewModel : SubmissionViewModel
         if (State.EntryId == null)
             State.ChangeScreen<SpecificationsStepViewModel>();
         else
-            State.ChangeScreen<UploadStepViewModel>();
+            State.ChangeScreen<ChangelogStepViewModel>();
     }
 }

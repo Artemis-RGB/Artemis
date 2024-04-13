@@ -70,7 +70,7 @@ public partial class UploadStepViewModel : SubmissionViewModel
 
             // Create a release for the new entry
             IEntryUploadHandler uploadHandler = _entryUploadHandlerFactory.CreateHandler(State.EntryType);
-            EntryUploadResult uploadResult = await uploadHandler.CreateReleaseAsync(_entryId.Value, State.EntrySource!, cancellationToken);
+            EntryUploadResult uploadResult = await uploadHandler.CreateReleaseAsync(_entryId.Value, State.EntrySource!, State.Changelog, cancellationToken);
             if (!uploadResult.IsSuccess)
                 throw new ArtemisWorkshopException(uploadResult.Message);
 

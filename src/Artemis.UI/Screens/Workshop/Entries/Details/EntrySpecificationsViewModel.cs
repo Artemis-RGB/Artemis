@@ -35,7 +35,6 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
     [Notify] private string _summary = string.Empty;
     [Notify] private string _description = string.Empty;
     [Notify] private Bitmap? _iconBitmap;
-    [Notify] private TextDocument? _markdownDocument;
     [Notify(Setter.Private)] private bool _iconChanged;
 
     public EntrySpecificationsViewModel(IWorkshopClient workshopClient, IWindowService windowService)
@@ -69,15 +68,7 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
         {
             // Load categories
             await PopulateCategories();
-
-            MarkdownDocument = new TextDocument(new StringTextSource(Description));
-            MarkdownDocument.TextChanged += MarkdownDocumentOnTextChanged;
-            Disposable.Create(() =>
-            {
-                MarkdownDocument.TextChanged -= MarkdownDocumentOnTextChanged;
-                MarkdownDocument = null;
-                ClearIcon();
-            }).DisposeWith(d);
+            Disposable.Create(ClearIcon).DisposeWith(d);
         });
     }
 
@@ -92,12 +83,7 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
     public bool DescriptionValid => _descriptionValid.Value;
 
     public List<long> PreselectedCategories { get; set; } = new();
-
-    private void MarkdownDocumentOnTextChanged(object? sender, EventArgs e)
-    {
-        Description = MarkdownDocument?.Text ?? string.Empty;
-    }
-
+    
     private async Task ExecuteSelectIcon()
     {
         string[]? result = await _windowService.CreateOpenFileDialog()

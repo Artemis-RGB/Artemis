@@ -36,6 +36,8 @@ public partial class SubmissionManagementViewModel : RoutableHostScreen<Routable
         _windowService = windowService;
         _workshopService = workshopService;
 
+        RecycleScreen = false;
+        
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.SelectedRelease)

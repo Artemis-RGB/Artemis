@@ -9,7 +9,7 @@
              x:DataType="profile:ProfileDescriptionViewModel">
     <StackPanel Spacing="10">
         <Border Classes="card">
-            <mdxaml:MarkdownScrollViewer Markdown="{CompiledBinding Entry.Description}" MarkdownStyleName="FluentAvalonia">
+            <mdxaml:MarkdownScrollViewer Markdown="{CompiledBinding Entry.Description}" MarkdownStyleName="FluentAvalonia" Name="MarkdownScrollViewer" >
                 <mdxaml:MarkdownScrollViewer.Styles>
                     <StyleInclude Source="/Styles/Markdown.axaml" />
                 </mdxaml:MarkdownScrollViewer.Styles>

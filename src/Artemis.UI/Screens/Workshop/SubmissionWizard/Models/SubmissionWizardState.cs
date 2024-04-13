@@ -38,6 +38,7 @@ public class SubmissionWizardState : IDisposable
     public List<ImageUploadRequest> Images { get; set; } = new();
 
     public IEntrySource? EntrySource { get; set; }
+    public string? Changelog { get; set; }
     
     public void ChangeScreen<TSubmissionViewModel>() where TSubmissionViewModel : SubmissionViewModel
     {

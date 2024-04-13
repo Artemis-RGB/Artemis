@@ -53,7 +53,7 @@ public partial class WorkshopLibraryViewModel : RoutableHostScreen<RoutableScree
     public void GoBack()
     {
         if (ViewingDetails)
-            _router.GoBack();
+            _router.Navigate("workshop/library/submissions");
         else
             _router.Navigate("workshop");
     }
