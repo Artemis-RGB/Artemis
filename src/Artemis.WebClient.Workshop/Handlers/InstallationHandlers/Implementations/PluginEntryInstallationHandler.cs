@@ -22,7 +22,7 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
         _pluginManagementService = pluginManagementService;
     }
 
-    public async Task<EntryInstallResult> InstallAsync(IEntryDetails entry, IRelease release, Progress<StreamProgress> progress, CancellationToken cancellationToken)
+    public async Task<EntryInstallResult> InstallAsync(IEntrySummary entry, IRelease release, Progress<StreamProgress> progress, CancellationToken cancellationToken)
     {
         // Ensure there is an installed entry
         InstalledEntry? installedEntry = _workshopService.GetInstalledEntry(entry.Id);

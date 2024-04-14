@@ -45,6 +45,12 @@ public interface IRouter
     /// </summary>
     /// <returns>A task containing a boolean value which indicates whether there was a forward path to go back to.</returns>
     Task<bool> GoForward();
+    
+    /// <summary>
+    ///     Asynchronously navigates upwards to the parent route.
+    /// </summary>
+    /// <returns></returns>
+    Task<bool> GoUp();
 
     /// <summary>
     ///     Clears the navigation history.

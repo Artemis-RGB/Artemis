@@ -172,6 +172,8 @@ public class WorkshopService : IWorkshopService
     {
         entry.Save();
         _entryRepository.Save(entry.Entity);
+        
+        OnInstalledEntrySaved?.Invoke(this, entry);
     }
 
     /// <inheritdoc />
@@ -231,4 +233,6 @@ public class WorkshopService : IWorkshopService
             _logger.Warning(e, "Failed to remove orphaned workshop entry at {Directory}", directory);
         }
     }
+    
+    public event EventHandler<InstalledEntry>? OnInstalledEntrySaved;
 }

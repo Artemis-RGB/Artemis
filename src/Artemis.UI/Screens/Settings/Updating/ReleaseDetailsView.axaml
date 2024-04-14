@@ -43,7 +43,7 @@
         <Border Grid.Row="0" Classes="card" Margin="0 0 0 10">
             <StackPanel>
                 <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Classes="h4 no-margin">Release info</TextBlock>
+                    <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Release info</TextBlock>
 
                     <Panel Grid.Column="1" IsVisible="{CompiledBinding InstallationAvailable}">
                         <!-- Install progress -->
@@ -124,7 +124,7 @@
                     </Grid>
 
                     <Grid Grid.Column="2" ColumnDefinitions="*,*" RowDefinitions="*,*" Classes="info-container" HorizontalAlignment="Right">
-                        <avalonia:MaterialIcon Kind="BoxOutline" Grid.Column="0" Grid.RowSpan="2" Classes="info-icon" />
+                        <avalonia:MaterialIcon Kind="File" Grid.Column="0" Grid.RowSpan="2" Classes="info-icon" />
                         <TextBlock Grid.Column="1" Grid.Row="0" Classes="info-title">File size</TextBlock>
                         <TextBlock Grid.Column="1"
                                    Grid.Row="1"
@@ -149,5 +149,4 @@
             </Grid>
         </Border>
     </Grid>
-
 </UserControl>

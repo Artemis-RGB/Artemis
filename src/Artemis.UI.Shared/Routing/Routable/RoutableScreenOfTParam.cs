@@ -14,6 +14,11 @@ namespace Artemis.UI.Shared.Routing;
 public abstract class RoutableScreen<TParam> : RoutableScreen, IRoutableScreen where TParam : new()
 {
     /// <summary>
+    /// Gets or sets the parameter source of the screen.
+    /// </summary>
+    protected ParameterSource ParameterSource { get; set; } = ParameterSource.Segment;
+
+    /// <summary>
     ///     Called while navigating to this screen.
     /// </summary>
     /// <param name="parameters">An object containing the parameters of the navigation action.</param>
@@ -26,15 +31,16 @@ public abstract class RoutableScreen<TParam> : RoutableScreen, IRoutableScreen w
     {
         return Task.CompletedTask;
     }
-    
+
     async Task IRoutableScreen.InternalOnNavigating(NavigationArguments args, CancellationToken cancellationToken)
     {
         Func<object[], TParam> activator = GetParameterActivator();
 
-        if (args.SegmentParameters.Length != _parameterPropertyCount)
-            throw new ArtemisRoutingException($"Did not retrieve the required amount of parameters, expects {_parameterPropertyCount}, got {args.SegmentParameters.Length}.");
+        object[] routeParameters = ParameterSource == ParameterSource.Segment ? args.SegmentParameters : args.RouteParameters;
+        if (routeParameters.Length != _parameterPropertyCount)
+            throw new ArtemisRoutingException($"Did not retrieve the required amount of parameters, expects {_parameterPropertyCount}, got {routeParameters.Length}.");
 
-        TParam parameters = activator(args.SegmentParameters);
+        TParam parameters = activator(routeParameters);
         await OnNavigating(args, cancellationToken);
         await OnNavigating(parameters, args, cancellationToken);
     }
@@ -97,4 +103,20 @@ public abstract class RoutableScreen<TParam> : RoutableScreen, IRoutableScreen w
     }
 
     #endregion
+}
+
+/// <summary>
+/// Enum representing the source of parameters in the RoutableScreen class.
+/// </summary>
+public enum ParameterSource
+{
+    /// <summary>
+    /// Represents the source where parameters are obtained from the segment of the route.
+    /// </summary>
+    Segment,
+
+    /// <summary>
+    /// Represents the source where parameters are obtained from the entire route.
+    /// </summary>
+    Route
 }

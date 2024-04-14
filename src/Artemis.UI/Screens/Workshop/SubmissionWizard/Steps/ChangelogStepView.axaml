@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Artemis.UI.Controls"
+             xmlns:steps="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.ChangelogStepView"
+             x:DataType="steps:ChangelogStepViewModel">
+    <Grid RowDefinitions="Auto,*">
+        <StackPanel Grid.Row="0">
+            <StackPanel.Styles>
+                <Styles>
+                    <Style Selector="TextBlock">
+                        <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                    </Style>
+                </Styles>
+            </StackPanel.Styles>
+            <TextBlock Theme="{StaticResource TitleTextBlockStyle}" TextWrapping="Wrap">Changelog</TextBlock>
+            <TextBlock TextWrapping="Wrap">
+                If you want to inform your users what has changed in this release, you can provide a changelog. This is optional but recommended.
+            </TextBlock>
+        </StackPanel>
+
+       <controls:SplitMarkdownEditor Grid.Row="1" Markdown="{CompiledBinding Changelog}"/>
+    </Grid>
+</UserControl>

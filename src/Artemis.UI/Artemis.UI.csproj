@@ -44,5 +44,27 @@
         <DependentUpon>DeviceSelectionDialogView.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
+      <Compile Update="Screens\Workshop\Layout\LayoutListView.axaml.cs">
+        <DependentUpon>LayoutListView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Screens\Workshop\Plugins\PluginListView.axaml.cs">
+        <DependentUpon>LayoutListView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Screens\Workshop\Profile\ProfileListView.axaml.cs">
+        <DependentUpon>LayoutListView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Screens\Workshop\EntryReleases\EntryReleasesView.axaml.cs">
+        <DependentUpon>EntryReleasesView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Screens\Workshop\Entries\Tabs\PluginListView.axaml" />
+      <UpToDateCheckInput Remove="Screens\Workshop\Entries\Tabs\ProfileListView.axaml" />
+      <UpToDateCheckInput Remove="Screens\Workshop\Plugins\Dialogs\PluginDialogView.axaml" />
     </ItemGroup>
 </Project>

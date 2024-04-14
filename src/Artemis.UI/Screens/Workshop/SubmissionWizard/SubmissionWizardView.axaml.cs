@@ -25,7 +25,7 @@ public partial class SubmissionWizardView : ReactiveAppWindow<SubmissionWizardVi
     {
         try
         {
-            Dispatcher.UIThread.Invoke(() => Frame.NavigateFromObject(viewModel));
+            Frame.NavigateFromObject(viewModel);
         }
         catch (Exception e)
         {

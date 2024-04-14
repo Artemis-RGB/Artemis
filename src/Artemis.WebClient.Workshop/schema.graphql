@@ -100,8 +100,10 @@ type Mutation {
     addLayoutInfo(input: CreateLayoutInfoInput!): LayoutInfo
     removeEntry(id: Long!): Entry
     removeLayoutInfo(id: Long!): LayoutInfo!
+    removeRelease(id: Long!): Release!
     updateEntry(input: UpdateEntryInput!): Entry
     updateEntryImage(input: UpdateEntryImageInput!): Image
+    updateRelease(input: UpdateReleaseInput!): Release
 }
 
 "Information about pagination in a connection."
@@ -158,6 +160,7 @@ type Query {
     entry(id: Long!): Entry
     pluginInfo(pluginGuid: UUID!): PluginInfo
     pluginInfos(order: [PluginInfoSortInput!], skip: Int, take: Int, where: PluginInfoFilterInput): PluginInfosCollectionSegment
+    release(id: Long!): Release
     searchEntries(input: String!, order: [EntrySortInput!], type: EntryType, where: EntryFilterInput): [Entry!]!
     searchKeyboardLayout(deviceProvider: UUID!, logicalLayout: String, model: String!, physicalLayout: KeyboardLayoutType!, vendor: String!): LayoutInfo
     searchLayout(deviceProvider: UUID!, deviceType: RGBDeviceType!, model: String!, vendor: String!): LayoutInfo
@@ -165,6 +168,7 @@ type Query {
 }
 
 type Release {
+    changelog: String
     createdAt: DateTime!
     dependencies: [Entry!]!
     downloadSize: Long!
@@ -498,6 +502,7 @@ input RGBDeviceTypeOperationFilterInput {
 
 input ReleaseFilterInput {
     and: [ReleaseFilterInput!]
+    changelog: StringOperationFilterInput
     createdAt: DateTimeOperationFilterInput
     dependencies: ListFilterInputTypeOfEntryFilterInput
     downloadSize: LongOperationFilterInput
@@ -511,6 +516,7 @@ input ReleaseFilterInput {
 }
 
 input ReleaseSortInput {
+    changelog: SortEnumType
     createdAt: SortEnumType
     downloadSize: SortEnumType
     downloads: SortEnumType
@@ -556,6 +562,11 @@ input UpdateEntryInput {
     name: String!
     summary: String!
     tags: [String!]!
+}
+
+input UpdateReleaseInput {
+    changelog: String
+    id: Long!
 }
 
 input UuidOperationFilterInput {

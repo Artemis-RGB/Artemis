@@ -14,7 +14,7 @@ public class PluginEntryUploadHandler : IEntryUploadHandler
     }
 
     /// <inheritdoc />
-    public async Task<EntryUploadResult> CreateReleaseAsync(long entryId, IEntrySource entrySource, CancellationToken cancellationToken)
+    public async Task<EntryUploadResult> CreateReleaseAsync(long entryId, IEntrySource entrySource, string? changelog, CancellationToken cancellationToken)
     {
         if (entrySource is not PluginEntrySource source)
             throw new InvalidOperationException("Can only create releases for plugins");
@@ -27,6 +27,8 @@ public class PluginEntryUploadHandler : IEntryUploadHandler
         MultipartFormDataContent content = new();
         StreamContent streamContent = new(fileStream);
         streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
+        if (!string.IsNullOrWhiteSpace(changelog))
+            content.Add(new StringContent(changelog), "Changelog");
         content.Add(streamContent, "file", "file.zip");
 
         // Submit

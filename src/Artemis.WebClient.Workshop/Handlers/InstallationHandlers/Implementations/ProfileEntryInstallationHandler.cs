@@ -20,7 +20,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         _workshopService = workshopService;
     }
 
-    public async Task<EntryInstallResult> InstallAsync(IEntryDetails entry, IRelease release, Progress<StreamProgress> progress, CancellationToken cancellationToken)
+    public async Task<EntryInstallResult> InstallAsync(IEntrySummary entry, IRelease release, Progress<StreamProgress> progress, CancellationToken cancellationToken)
     {
         using MemoryStream stream = new();
 

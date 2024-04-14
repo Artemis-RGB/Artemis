@@ -53,8 +53,8 @@ public partial class EntriesViewModel : RoutableHostScreen<RoutableScreen>
 
     public void GoBack()
     {
-        if (ViewingDetails)
-            _router.GoBack();
+        if (ViewingDetails && SelectedTab != null)
+            _router.Navigate(SelectedTab.Path);
         else
             _router.Navigate("workshop");
     }

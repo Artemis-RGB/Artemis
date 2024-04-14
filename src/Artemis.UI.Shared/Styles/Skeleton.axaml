@@ -8,6 +8,7 @@
             </Grid.RowDefinitions>
             <Grid Margin="20" Grid.Column="0">
                 <StackPanel>
+                    <TextBlock Theme="{StaticResource TitleTextBlockStyle}">TitleTextBlockStyle</TextBlock>
                     <TextBlock Classes="h1">This is heading 1</TextBlock>
                     <TextBlock Classes="h2">This is heading 2</TextBlock>
                     <TextBlock Classes="h3">This is heading 3</TextBlock>
@@ -22,6 +23,7 @@
             
             <Grid Margin="20" Grid.Column="1">
                 <StackPanel>
+                    <Border Width="400" Classes="skeleton-text title"></Border>
                     <Border Width="400" Classes="skeleton-text h1"></Border>
                     <Border Width="400" Classes="skeleton-text h2"></Border>
                     <Border Width="400" Classes="skeleton-text h3"></Border>
@@ -39,6 +41,7 @@
                             <Setter Property="Background" Value="#55ff0000"></Setter>
                         </Style>
                     </StackPanel.Styles>
+                    <TextBlock Theme="{StaticResource TitleTextBlockStyle}">TitleTextBlockStyle</TextBlock>
                     <TextBlock Classes="h1">This is heading 1</TextBlock>
                     <TextBlock Classes="h2">This is heading 2</TextBlock>
                     <TextBlock Classes="h3">This is heading 3</TextBlock>
@@ -51,6 +54,7 @@
             
             <Grid Margin="20" Grid.Column="0" Row="1">
                 <StackPanel Spacing="2">
+                    <Border Width="400" Classes="skeleton-text title no-margin"></Border>
                     <Border Width="400" Classes="skeleton-text h1 no-margin"></Border>
                     <Border Width="400" Classes="skeleton-text h2 no-margin"></Border>
                     <Border Width="400" Classes="skeleton-text h3 no-margin"></Border>
@@ -68,6 +72,7 @@
                             <Setter Property="Background" Value="#55ff0000"></Setter>
                         </Style>
                     </StackPanel.Styles>
+                    <TextBlock Theme="{StaticResource TitleTextBlockStyle}">TitleTextBlockStyle</TextBlock>
                     <TextBlock Classes="h1 no-margin">This is heading 1</TextBlock>
                     <TextBlock Classes="h2 no-margin">This is heading 2</TextBlock>
                     <TextBlock Classes="h3 no-margin">This is heading 3</TextBlock>
@@ -125,6 +130,11 @@
         </Style.Animations>
     </Style>
     
+    <Style Selector="Border.skeleton-text.title">
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Margin" Value="0 5 0 5" />
+        <Setter Property="CornerRadius" Value="8" />
+    </Style>
     <Style Selector="Border.skeleton-text.h1">
         <Setter Property="Height" Value="65" />
         <Setter Property="Margin" Value="0 10 0 20" />

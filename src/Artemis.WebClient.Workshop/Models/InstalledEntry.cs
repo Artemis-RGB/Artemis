@@ -16,7 +16,7 @@ public class InstalledEntry
         Load();
     }
 
-    public InstalledEntry(IEntryDetails entry, IRelease release)
+    public InstalledEntry(IEntrySummary entry, IRelease release)
     {
         Entity = new EntryEntity();
 

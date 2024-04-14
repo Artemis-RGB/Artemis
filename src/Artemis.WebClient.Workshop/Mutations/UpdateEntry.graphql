@@ -3,3 +3,16 @@ mutation UpdateEntry ($input: UpdateEntryInput!) {
         id
     }
 }
+
+
+mutation UpdateRelease($input: UpdateReleaseInput!) {
+    updateRelease(input: $input) {
+        id
+    }
+}
+
+mutation RemoveRelease($input: Long!) {
+    removeRelease(id: $input) {
+        id
+    }
+}

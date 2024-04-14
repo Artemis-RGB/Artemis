@@ -54,11 +54,11 @@ fragment entryDetails on Entry {
     categories {
         ...category
     }
-    latestRelease {
-        ...release
-    }
     images {
         ...image
+    }
+    releases {
+        ...release
     }
 }
 

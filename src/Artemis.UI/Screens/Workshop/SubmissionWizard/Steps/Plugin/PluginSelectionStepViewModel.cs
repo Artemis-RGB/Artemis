@@ -78,6 +78,6 @@ public partial class PluginSelectionStepViewModel : SubmissionViewModel
         if (State.EntryId == null)
             State.ChangeScreen<SpecificationsStepViewModel>();
         else
-            State.ChangeScreen<UploadStepViewModel>();
+            State.ChangeScreen<ChangelogStepViewModel>();
     }
 }

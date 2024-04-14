@@ -8,7 +8,7 @@ using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard;
 
-public partial class ReleaseWizardView: ReactiveAppWindow<ReleaseWizardViewModel>
+public partial class ReleaseWizardView : ReactiveAppWindow<ReleaseWizardViewModel>
 {
     public ReleaseWizardView()
     {
@@ -25,7 +25,7 @@ public partial class ReleaseWizardView: ReactiveAppWindow<ReleaseWizardViewModel
     {
         try
         {
-            Dispatcher.UIThread.Invoke(() => Frame.NavigateFromObject(viewModel));
+            Frame.NavigateFromObject(viewModel);
         }
         catch (Exception e)
         {
