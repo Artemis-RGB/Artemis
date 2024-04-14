@@ -27,7 +27,7 @@ public partial class EntryReleasesViewModel : ActivatableViewModelBase
         this.WhenActivated(d =>
         {
             router.CurrentPath.Subscribe(p =>
-                    SelectedRelease = p != null && p.StartsWith(Entry.GetEntryPath()) && float.TryParse(p.Split('/').Last(), out float releaseId)
+                    SelectedRelease = p != null && p.StartsWith($"{Entry.GetEntryPath()}/releases") && float.TryParse(p.Split('/').Last(), out float releaseId)
                         ? Releases.FirstOrDefault(r => r.Release.Id == releaseId)
                         : null)
                 .DisposeWith(d);

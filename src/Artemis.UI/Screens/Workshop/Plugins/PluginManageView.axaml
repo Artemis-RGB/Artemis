@@ -13,7 +13,7 @@
                 <Button Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Classes="icon-button" Command="{CompiledBinding Close}">
                     <avalonia:MaterialIcon Kind="ArrowBack" />
                 </Button>
-                <TextBlock Grid.Row="0" Grid.Column="1" Classes="h4 no-margin">Manage plugin</TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="1" Theme="{StaticResource SubtitleTextBlockStyle}">Manage plugin</TextBlock>
             </Grid>
             
             <Border Classes="card-separator" />
