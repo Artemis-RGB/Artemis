@@ -17,7 +17,7 @@ public class ProfileEntryUploadHandler : IEntryUploadHandler
     }
 
     /// <inheritdoc />
-    public async Task<EntryUploadResult> CreateReleaseAsync(long entryId, IEntrySource entrySource, CancellationToken cancellationToken)
+    public async Task<EntryUploadResult> CreateReleaseAsync(long entryId, IEntrySource entrySource, string? changelog, CancellationToken cancellationToken)
     {
         if (entrySource is not ProfileEntrySource source)
             throw new InvalidOperationException("Can only create releases for profile configurations");
@@ -32,6 +32,8 @@ public class ProfileEntryUploadHandler : IEntryUploadHandler
         StreamContent streamContent = new(archiveStream);
         streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
         content.Add(JsonContent.Create(source.Dependencies.Select(d => new {PluginId = d.Plugin.Guid, FeatureId = d.Id}).ToList()), "ReleaseDependencies");
+        if (!string.IsNullOrWhiteSpace(changelog))
+            content.Add(new StringContent(changelog), "Changelog");
         content.Add(streamContent, "file", "file.zip");
 
         // Submit

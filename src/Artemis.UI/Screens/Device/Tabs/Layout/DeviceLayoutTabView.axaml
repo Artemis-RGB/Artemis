@@ -9,100 +9,111 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              x:Class="Artemis.UI.Screens.Device.Layout.DeviceLayoutTabView"
              x:DataType="layout:DeviceLayoutTabViewModel">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Border Classes="card" Margin="5">
-            <Grid RowDefinitions="*,Auto">
-                <StackPanel Grid.Row="0">
-                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-                        <StackPanel Grid.Row="0" Grid.Column="0">
-                            <TextBlock Text="Default layout file path" />
-                            <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="{CompiledBinding DefaultLayoutPath}" />
-                        </StackPanel>
-                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <Button
-                                Classes="icon-button"
-                                HorizontalAlignment="Right"
-                                IsEnabled="{CompiledBinding !!DefaultLayoutPath}"
-                                ToolTip.Tip="Copy layout file path to clipboard"
-                                Click="LayoutPathButton_OnClick">
-                                <avalonia:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
-                            </Button>
-                        </StackPanel>
-                    </Grid>
+    <Grid RowDefinitions="Auto,*">
+        <controls:InfoBar Grid.Row="0"
+                          Title="Failed to apply layout"
+                          IsOpen="{CompiledBinding Device.LayoutSelection.ErrorState, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                          Message="{CompiledBinding Device.LayoutSelection.ErrorState}"
+                          Severity="Error"
+                          IsClosable="False" 
+                          Margin="5 0"/>
 
-                    <Border Classes="card-separator" />
-                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-                        <StackPanel Grid.Row="1" Grid.Column="0">
-                            <TextBlock Text="Image file path" />
-                            <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="{CompiledBinding ImagePath, TargetNullValue=None}" />
-                        </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
-                            <Button
-                                Classes="icon-button"
-                                HorizontalAlignment="Right"
-                                IsEnabled="{CompiledBinding !!ImagePath}"
-                                ToolTip.Tip="Copy image file path to clipboard"
-                                Click="ImagePathButton_OnClick">
-                                <avalonia:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
-                            </Button>
-                        </StackPanel>
-                    </Grid>
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <Border Classes="card" Margin="5">
+                <Grid RowDefinitions="*,Auto">
+                    <StackPanel Grid.Row="0">
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                <TextBlock Text="Default layout file path" />
+                                <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="{CompiledBinding DefaultLayoutPath}" />
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                <Button
+                                    Classes="icon-button"
+                                    HorizontalAlignment="Right"
+                                    IsEnabled="{CompiledBinding !!DefaultLayoutPath}"
+                                    ToolTip.Tip="Copy layout file path to clipboard"
+                                    Click="LayoutPathButton_OnClick">
+                                    <avalonia:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
 
-                    <Border Classes="card-separator" />
-                    <Grid RowDefinitions="*,*,*" ColumnDefinitions="*,Auto">
-                        <StackPanel Grid.Row="1" Grid.Column="0">
-                            <TextBlock Text="Layout provider" />
-                            <TextBlock Classes="subtitle" FontSize="12" Text="Choose between different ways to load a layout for this device." />
-                        </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
-                            <StackPanel.Styles>
-                                <Style Selector="ComboBox.layoutProvider /template/ ContentControl#ContentPresenter">
-                                    <Setter Property="ContentTemplate">
-                                        <Setter.Value>
-                                            <DataTemplate x:DataType="layoutProviders:ILayoutProviderViewModel">
+                        <Border Classes="card-separator" />
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Row="1" Grid.Column="0">
+                                <TextBlock Text="Image file path" />
+                                <TextBlock Classes="subtitle" FontSize="12" TextWrapping="Wrap" Text="{CompiledBinding ImagePath, TargetNullValue=None}" />
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
+                                <Button
+                                    Classes="icon-button"
+                                    HorizontalAlignment="Right"
+                                    IsEnabled="{CompiledBinding !!ImagePath}"
+                                    ToolTip.Tip="Copy image file path to clipboard"
+                                    Click="ImagePathButton_OnClick">
+                                    <avalonia:MaterialIcon Kind="ContentCopy" Width="18" Height="18" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+
+                        <Border Classes="card-separator" />
+                        <Grid RowDefinitions="*,*,*" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Row="1" Grid.Column="0">
+                                <TextBlock Text="Layout provider" />
+                                <TextBlock Classes="subtitle" FontSize="12" Text="Choose between different ways to load a layout for this device." />
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
+                                <StackPanel.Styles>
+                                    <Style Selector="ComboBox.layoutProvider /template/ ContentControl#ContentPresenter">
+                                        <Setter Property="ContentTemplate">
+                                            <Setter.Value>
+                                                <DataTemplate x:DataType="layoutProviders:ILayoutProviderViewModel">
+                                                    <TextBlock Text="{CompiledBinding Name}" TextWrapping="Wrap" MaxWidth="350" />
+                                                </DataTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </StackPanel.Styles>
+                                <ComboBox Classes="layoutProvider"
+                                          Width="150"
+                                          SelectedItem="{CompiledBinding SelectedLayoutProvider}"
+                                          ItemsSource="{CompiledBinding LayoutProviders}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="layoutProviders:ILayoutProviderViewModel">
+                                            <StackPanel>
                                                 <TextBlock Text="{CompiledBinding Name}" TextWrapping="Wrap" MaxWidth="350" />
-                                            </DataTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </StackPanel.Styles>
-                            <ComboBox Classes="layoutProvider"
-                                      Width="150"
-                                      SelectedItem="{CompiledBinding SelectedLayoutProvider}"
-                                      ItemsSource="{CompiledBinding LayoutProviders}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate x:DataType="layoutProviders:ILayoutProviderViewModel">
-                                        <StackPanel>
-                                            <TextBlock Text="{CompiledBinding Name}" TextWrapping="Wrap" MaxWidth="350" />
-                                            <TextBlock Classes="subtitle" Text="{CompiledBinding Description}" TextWrapping="Wrap" MaxWidth="350" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-                        </StackPanel>
-                    </Grid>
+                                                <TextBlock Classes="subtitle" Text="{CompiledBinding Description}" TextWrapping="Wrap" MaxWidth="350" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
 
-                    <ContentControl Content="{CompiledBinding SelectedLayoutProvider}" ClipToBounds="False" />
+                        <ContentControl Content="{CompiledBinding SelectedLayoutProvider}" ClipToBounds="False" />
 
-                    <Border Classes="card-separator" />
-                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-                        <StackPanel Grid.Row="1" Grid.Column="0">
-                            <TextBlock Text="Export current layout" />
-                            <TextBlock Classes="subtitle" FontSize="12" Text="If there is a layout used, export that. Otherwise, export the LEDs present." />
-                        </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
-                            <Button HorizontalAlignment="Right" Content="Export" Command="{CompiledBinding ExportLayout}" />
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
-                <controls:HyperlinkButton
-                    Grid.Row="1"
-                    Content="Learn more about layouts on the wiki"
-                    NavigateUri="https://wiki.artemis-rgb.com/en/guides/developer/layouts?mtm_campaign=artemis&amp;mtm_kwd=device-properties"
-                    Margin="0 20"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Bottom" />
-            </Grid>
-        </Border>
-    </ScrollViewer>
+                        <Border Classes="card-separator" />
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Row="1" Grid.Column="0">
+                                <TextBlock Text="Export current layout" />
+                                <TextBlock Classes="subtitle" FontSize="12" Text="If there is a layout used, export that. Otherwise, export the LEDs present." />
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
+                                <Button HorizontalAlignment="Right" Content="Export" Command="{CompiledBinding ExportLayout}" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                    <controls:HyperlinkButton
+                        Grid.Row="1"
+                        Content="Learn more about layouts on the wiki"
+                        NavigateUri="https://wiki.artemis-rgb.com/en/guides/developer/layouts?mtm_campaign=artemis&amp;mtm_kwd=device-properties"
+                        Margin="0 20"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom" />
+                </Grid>
+            </Border>
+        </ScrollViewer>
+    </Grid>
+
 </UserControl>

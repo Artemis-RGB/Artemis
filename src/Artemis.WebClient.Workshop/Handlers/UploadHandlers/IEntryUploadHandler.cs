@@ -1,8 +1,6 @@
-﻿using Artemis.UI.Shared.Utilities;
-
-namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers;
+﻿namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 
 public interface IEntryUploadHandler
 {
-    Task<EntryUploadResult> CreateReleaseAsync(long entryId, IEntrySource entrySource, CancellationToken cancellationToken);
+    Task<EntryUploadResult> CreateReleaseAsync(long entryId, IEntrySource entrySource, string? changelog, CancellationToken cancellationToken);
 }

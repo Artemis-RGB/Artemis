@@ -17,17 +17,13 @@ public partial class ReleasesTabView : ReactiveUserControl<ReleasesTabViewModel>
 
     private void Navigate(ViewModelBase viewModel)
     {
-        Dispatcher.UIThread.Invoke(() =>
+        try
         {
-            try
-            {
-                ReleaseFrame.NavigateFromObject(viewModel);
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-        });
+            ReleaseFrame.NavigateFromObject(viewModel);
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
     }
-
 }

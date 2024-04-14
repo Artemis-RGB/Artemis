@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:layout="clr-namespace:Artemis.UI.Screens.Workshop.Layout"
+             xmlns:surfaceEditor="clr-namespace:Artemis.UI.Screens.SurfaceEditor"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Layout.LayoutManageView"
+             x:DataType="layout:LayoutManageViewModel">
+    <Border Classes="card" VerticalAlignment="Top">
+        <StackPanel>
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Classes="icon-button" Command="{CompiledBinding Close}">
+                    <avalonia:MaterialIcon Kind="ArrowBack" />
+                </Button>
+                <TextBlock Grid.Row="0" Grid.Column="1" Theme="{StaticResource SubtitleTextBlockStyle}">Manage layout</TextBlock>
+            </Grid>
+
+            <Border Classes="card-separator" />
+
+            <TextBlock IsVisible="{CompiledBinding !Devices.Count}">
+                This layout is made for devices of type
+                <Run FontWeight="Bold" Text="{CompiledBinding Layout.RgbLayout.Type}"/>.<LineBreak/>
+                Unfortunately, none were detected.
+            </TextBlock>
+            <StackPanel IsVisible="{CompiledBinding Devices.Count}">
+                <TextBlock>
+                    Select the devices on which you would like to apply the downloaded layout.
+                </TextBlock>
+                <ItemsControl Name="EffectDescriptorsList" ItemsSource="{CompiledBinding Devices}" Margin="0 10">
+                    <ItemsControl.DataTemplates>
+                        <DataTemplate DataType="{x:Type surfaceEditor:ListDeviceViewModel}">
+                            <CheckBox IsChecked="{CompiledBinding IsSelected}">
+                                <TextBlock Text="{CompiledBinding Device.RgbDevice.DeviceInfo.DeviceName}"></TextBlock>
+                            </CheckBox>
+                        </DataTemplate>
+                    </ItemsControl.DataTemplates>
+                </ItemsControl>
+                
+                <Button Command="{CompiledBinding Apply}">Apply</Button>
+            </StackPanel>
+            
+        </StackPanel>
+    </Border>
+</UserControl>

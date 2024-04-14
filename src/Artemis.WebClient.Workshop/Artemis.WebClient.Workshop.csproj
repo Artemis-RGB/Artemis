@@ -48,6 +48,9 @@
       <GraphQL Update="Mutations\CreateEntry.graphql">
         <Generator>MSBuild:GenerateGraphQLCode</Generator>
       </GraphQL>
+      <GraphQL Update="Queries\GetReleaseById.graphql">
+        <Generator>MSBuild:GenerateGraphQLCode</Generator>
+      </GraphQL>
     </ItemGroup>
 
     <ItemGroup>

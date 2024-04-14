@@ -20,4 +20,6 @@ public interface IWorkshopService
     void Initialize();
 
     public record WorkshopStatus(bool IsReachable, string Message);
+    
+    event EventHandler<InstalledEntry>? OnInstalledEntrySaved;
 }

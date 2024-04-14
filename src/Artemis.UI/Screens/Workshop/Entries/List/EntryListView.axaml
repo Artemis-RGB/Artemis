@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:list="clr-namespace:Artemis.UI.Screens.Workshop.Entries.List"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Entries.List.EntryListView"
+             x:DataType="list:EntryListViewModel">
+    <UserControl.Styles>
+        <Styles>
+            <Style Selector="StackPanel.empty-state > TextBlock">
+                <Setter Property="TextAlignment" Value="Center"></Setter>
+                <Setter Property="TextWrapping" Value="Wrap"></Setter>
+            </Style>
+        </Styles>
+    </UserControl.Styles>
+
+    <Grid ColumnDefinitions="300,*" RowDefinitions="Auto,*,Auto">
+        <StackPanel Grid.Column="0" Grid.RowSpan="3" Margin="0 0 10 0" VerticalAlignment="Top">
+            <Border Classes="card" VerticalAlignment="Stretch">
+                <StackPanel>
+                    <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Categories</TextBlock>
+                    <Border Classes="card-separator" />
+                    <ContentControl Content="{CompiledBinding CategoriesViewModel}"></ContentControl>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <ProgressBar Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" Margin="0 0 20 0" IsVisible="{CompiledBinding FetchingMore}" IsIndeterminate="True" />
+        <ContentControl Grid.Column="1" Grid.Row="0" Margin="0 0 20 8" Content="{CompiledBinding InputViewModel}" />
+
+        <ScrollViewer Name="EntriesScrollViewer" Grid.Column="1" Grid.Row="1" ScrollChanged="ScrollViewer_OnScrollChanged" Offset="{CompiledBinding ScrollOffset}">
+            <ItemsControl ItemsSource="{CompiledBinding Entries}" Margin="0 0 20 0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl Content="{CompiledBinding}" Margin="0 0 0 5"></ContentControl>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <Panel Grid.Column="1" Grid.Row="1" IsVisible="{CompiledBinding !Initializing}">
+            <StackPanel IsVisible="{CompiledBinding !Entries.Count}" Margin="0 50 0 0" Classes="empty-state">
+                <TextBlock Theme="{StaticResource TitleTextBlockStyle}">Looks like your current filters gave no results</TextBlock>
+                <TextBlock>
+                    <Run>Modify or clear your filters to view other entries</Run>
+                </TextBlock>
+                <Lottie Path="/Assets/Animations/empty.json" RepeatCount="1" Width="350" Height="350"></Lottie>
+            </StackPanel>
+        </Panel>
+    </Grid>
+</UserControl>

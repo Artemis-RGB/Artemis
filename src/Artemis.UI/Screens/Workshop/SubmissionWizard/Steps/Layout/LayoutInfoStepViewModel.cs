@@ -98,6 +98,6 @@ public partial class LayoutInfoStepViewModel : SubmissionViewModel
         if (State.EntryId == null)
             State.ChangeScreen<SpecificationsStepViewModel>();
         else
-            State.ChangeScreen<UploadStepViewModel>();
+            State.ChangeScreen<ChangelogStepViewModel>();
     }
 }

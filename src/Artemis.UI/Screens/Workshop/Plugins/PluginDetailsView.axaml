@@ -2,9 +2,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia.Tight"
              xmlns:plugins="clr-namespace:Artemis.UI.Screens.Workshop.Plugins"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:ui="clr-namespace:Artemis.UI"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Plugins.PluginDetailsView"
              x:DataType="plugins:PluginDetailsViewModel">
@@ -15,47 +16,44 @@
             </Border>
 
             <Border Classes="card" VerticalAlignment="Top" IsVisible="{CompiledBinding Entry.PluginInfo, Converter={x:Static ObjectConverters.IsNotNull}}">
-                <StackPanel>
-                    <TextBlock>Admin required</TextBlock>
-                    <TextBlock Text="Yes" IsVisible="{CompiledBinding Entry.PluginInfo.RequiresAdmin}" />
-                    <TextBlock Text="No" IsVisible="{CompiledBinding !Entry.PluginInfo.RequiresAdmin}" />
-
-                    <TextBlock Margin="0 15 0 5">Supported platforms</TextBlock>
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <avalonia:MaterialIcon Kind="MicrosoftWindows" IsVisible="{CompiledBinding Entry.PluginInfo.SupportsWindows}" />
-                        <avalonia:MaterialIcon Kind="Linux" IsVisible="{CompiledBinding Entry.PluginInfo.SupportsLinux}" />
-                        <avalonia:MaterialIcon Kind="Apple" IsVisible="{CompiledBinding Entry.PluginInfo.SupportsOSX}" />
+                <Panel>
+                    <StackPanel IsVisible="{CompiledBinding Entry, Converter={x:Static ObjectConverters.IsNull}}">
+                        <Border Width="110" Classes="skeleton-text"></Border>
+                        <Border Width="35" Classes="skeleton-text"></Border>
+                        
+                        <Border Margin="0 16 0 3" Width="130" Classes="skeleton-text"></Border>
+                        <Border Width="60" Classes="skeleton-text"></Border>
                     </StackPanel>
-                </StackPanel>
+                    
+                    <StackPanel IsVisible="{CompiledBinding Entry, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <TextBlock>Admin required</TextBlock>
+                        <TextBlock Text="Yes" IsVisible="{CompiledBinding Entry.PluginInfo.RequiresAdmin}" />
+                        <TextBlock Text="No" IsVisible="{CompiledBinding !Entry.PluginInfo.RequiresAdmin}" />
+
+                        <TextBlock Margin="0 15 0 5">Supported platforms</TextBlock>
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <avalonia:MaterialIcon Kind="MicrosoftWindows" IsVisible="{CompiledBinding Entry.PluginInfo.SupportsWindows}" />
+                            <avalonia:MaterialIcon Kind="Linux" IsVisible="{CompiledBinding Entry.PluginInfo.SupportsLinux}" />
+                            <avalonia:MaterialIcon Kind="Apple" IsVisible="{CompiledBinding Entry.PluginInfo.SupportsOSX}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Panel>
+               
             </Border>
 
-            <Border Classes="card" VerticalAlignment="Top" IsVisible="{CompiledBinding Entry.LatestRelease, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <Border Classes="card" VerticalAlignment="Top" IsVisible="{CompiledBinding Entry.Releases.Count, FallbackValue=False}">
                 <ContentControl Content="{CompiledBinding EntryReleasesViewModel}" />
             </Border>
         </StackPanel>
 
         <ScrollViewer Grid.Row="1" Grid.Column="1">
-            <StackPanel Margin="10 0" Spacing="10">
-                <Border Classes="card">
-                    <mdxaml:MarkdownScrollViewer Markdown="{CompiledBinding Entry.Description}" MarkdownStyleName="FluentAvalonia">
-                        <mdxaml:MarkdownScrollViewer.Styles>
-                            <StyleInclude Source="/Styles/Markdown.axaml" />
-                        </mdxaml:MarkdownScrollViewer.Styles>
-                    </mdxaml:MarkdownScrollViewer>
-                </Border>
-
-                <Border Classes="card" VerticalAlignment="Top" IsVisible="{CompiledBinding Dependants, Converter={x:Static ObjectConverters.IsNotNull}}">
-                    <StackPanel>
-                        <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Used by these profiles</TextBlock>
-                        <Border Classes="card-separator" />
-                        <ScrollViewer>
-                            <ItemsControl ItemsSource="{CompiledBinding Dependants}"></ItemsControl>
-                        </ScrollViewer>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
+            <controls:Frame Name="RouterFrame" IsNavigationStackEnabled="False" CacheSize="0" Margin="10 0">
+                <controls:Frame.NavigationPageFactory>
+                    <ui:PageFactory />
+                </controls:Frame.NavigationPageFactory>
+            </controls:Frame>
         </ScrollViewer>
 
-        <ContentControl Grid.Row="1" Grid.Column="2" IsVisible="{CompiledBinding Entry.Images.Count}" Content="{CompiledBinding EntryImagesViewModel}" />
+        <ContentControl Grid.Row="1" Grid.Column="2" IsVisible="{CompiledBinding Entry.Images.Count, FallbackValue=False}" Content="{CompiledBinding EntryImagesViewModel}" />
     </Grid>
 </UserControl>

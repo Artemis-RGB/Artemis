@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -72,7 +73,13 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
     /// <inheritdoc />
     public async Task Navigate(string path, RouterNavigationOptions? options = null)
     {
-        path = path.ToLower().Trim(' ', '/', '\\');
+        if (path.StartsWith('/') && _currentRouteSubject.Value != null)
+            path = _currentRouteSubject.Value + path;
+        if (path.StartsWith("../") && _currentRouteSubject.Value != null)
+            path = NavigateUp(_currentRouteSubject.Value, path);
+        else
+            path = path.ToLower().Trim(' ', '/', '\\');
+      
         options ??= new RouterNavigationOptions();
 
         // Routing takes place on the UI thread with processing heavy tasks offloaded by the router itself
@@ -162,6 +169,28 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
     }
 
     /// <inheritdoc />
+    public async Task<bool> GoUp()
+    {
+        string? currentPath = _currentRouteSubject.Value;
+        
+        // Keep removing segments until we find a parent route that resolves
+        while (currentPath != null && currentPath.Contains('/'))
+        {
+            string parentPath = currentPath[..currentPath.LastIndexOf('/')];
+            RouteResolution resolution = Resolve(parentPath);
+            if (resolution.Success)
+            {
+                await Navigate(parentPath, new RouterNavigationOptions {AddToHistory = false});
+                return true;
+            }
+
+            currentPath = parentPath;
+        }
+
+        return false;
+    }
+
+    /// <inheritdoc />
     public void ClearHistory()
     {
         _backStack.Clear();
@@ -193,6 +222,24 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
         _mainWindowService.MainWindowClosed -= MainWindowServiceOnMainWindowClosed;
 
         _logger.Debug("Router disposed, should that be? Stacktrace: \r\n{StackTrace}", Environment.StackTrace);
+    }
+    
+    
+    private string NavigateUp(string current, string path)
+    {
+        string[] pathParts = current.Split('/');
+        string[] navigateParts = path.Split('/');
+        int upCount = navigateParts.TakeWhile(part => part == "..").Count();
+
+        if (upCount >= pathParts.Length)
+        {
+            throw new InvalidOperationException("Cannot navigate up beyond the root");
+        }
+
+        IEnumerable<string> remainingCurrentPathParts = pathParts.Take(pathParts.Length - upCount);
+        IEnumerable<string> remainingNavigatePathParts = navigateParts.Skip(upCount);
+
+        return string.Join("/", remainingCurrentPathParts.Concat(remainingNavigatePathParts));
     }
 
     private void MainWindowServiceOnMainWindowOpened(object? sender, EventArgs e)

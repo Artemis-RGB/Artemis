@@ -9,5 +9,6 @@ internal interface IRoutableHostScreen : IRoutableScreen
 {
     bool RecycleScreen { get; }
     IRoutableScreen? InternalScreen { get; }
+    IRoutableScreen? InternalDefaultScreen { get; }
     void InternalChangeScreen(IRoutableScreen? screen);
 }

@@ -184,13 +184,14 @@ internal class DeviceService : IDeviceService
                 device.ApplyLayout(null, false, false);
             else
                 provider?.ApplyLayout(device, layout);
+            
+            UpdateLeds();
         }
         catch (Exception e)
         {
+            device.LayoutSelection.ErrorState = e.Message;
             _logger.Error(e, "Failed to apply device layout");
         }
-
-        UpdateLeds();
     }
 
     /// <inheritdoc />

@@ -18,9 +18,9 @@ public partial class WorkshopLibraryView : ReactiveUserControl<WorkshopLibraryVi
 
     private void Navigate(ViewModelBase viewModel)
     {
-        Dispatcher.UIThread.Invoke(() => TabFrame.NavigateFromObject(viewModel));
+        TabFrame.NavigateFromObject(viewModel);
     }
-    
+
     private void NavigationView_OnBackRequested(object? sender, NavigationViewBackRequestedEventArgs e)
     {
         ViewModel?.GoBack();

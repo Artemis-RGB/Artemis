@@ -1,0 +1,132 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia.Tight"
+             xmlns:entryReleases="clr-namespace:Artemis.UI.Screens.Workshop.EntryReleases"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:sharedConverters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.EntryReleases.EntryReleaseView"
+             x:DataType="entryReleases:EntryReleaseViewModel">
+    <UserControl.Resources>
+        <converters:DateTimeConverter x:Key="DateTimeConverter" />
+        <sharedConverters:BytesToStringConverter x:Key="BytesToStringConverter" />
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="Grid.info-container">
+            <Setter Property="Margin" Value="10" />
+        </Style>
+        <Style Selector="avalonia|MaterialIcon.info-icon">
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="Margin" Value="0 3 10 0" />
+        </Style>
+        <Style Selector="TextBlock.info-title">
+            <Setter Property="Margin" Value="0 0 0 5" />
+            <Setter Property="Opacity" Value="0.8" />
+        </Style>
+        <Style Selector="TextBlock.info-body">
+        </Style>
+        <Style Selector="TextBlock.info-link">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight3}" />
+        </Style>
+        <Style Selector="TextBlock.info-link:pointerover">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight1}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,Auto">
+        <Border Grid.Row="0" Classes="card" Margin="0 0 0 10">
+            <StackPanel>
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Button Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Classes="icon-button" Margin="0 0 5 0" Command="{CompiledBinding Close}">
+                        <avalonia:MaterialIcon Kind="ArrowBack" />
+                    </Button>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Theme="{StaticResource SubtitleTextBlockStyle}">Release info</TextBlock>
+                    <StackPanel Grid.Column="2">
+                        <!-- Install progress -->
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="5"
+                                    IsVisible="{CompiledBinding InstallationInProgress}">
+                            <ProgressBar VerticalAlignment="Center"
+                                         Width="300"
+                                         Value="{CompiledBinding InstallProgress, FallbackValue=0}">
+                            </ProgressBar>
+                            <Button
+                                Classes="accent"
+                                Margin="15 0 0 0"
+                                Width="80"
+                                VerticalAlignment="Center"
+                                Command="{CompiledBinding Cancel}">
+                                Cancel
+                            </Button>
+                        </StackPanel>
+
+                        <!-- Install button -->
+                        <Panel IsVisible="{CompiledBinding !InstallationInProgress}" HorizontalAlignment="Right">
+                            <Button IsVisible="{CompiledBinding !IsCurrentVersion}" Classes="accent" Width="80" Command="{CompiledBinding Install}">
+                                Install
+                            </Button>
+                            <Button IsVisible="{CompiledBinding IsCurrentVersion}" Classes="accent" Width="80" Command="{CompiledBinding Reinstall}">
+                                Re-install
+                            </Button>
+                        </Panel>
+                    </StackPanel>
+                </Grid>
+                <Border Classes="card-separator" />
+                <Grid Margin="-5 -10" ColumnDefinitions="*,*,*">
+                    <Grid Grid.Column="0" ColumnDefinitions="*,*" RowDefinitions="*,*" Classes="info-container" HorizontalAlignment="Left">
+                        <avalonia:MaterialIcon Kind="TickNetworkOutline" Grid.Column="0" Grid.RowSpan="2" Classes="info-icon" />
+                        <TextBlock Grid.Column="1" Grid.Row="0" Classes="info-title">Version</TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Grid.Row="1"
+                                   Classes="info-body"
+                                   Cursor="Hand"
+                                   Text="{CompiledBinding Release.Version}" />
+                    </Grid>
+
+                    <Grid Grid.Column="1" ColumnDefinitions="*,*" RowDefinitions="*,*,*" Classes="info-container" HorizontalAlignment="Center">
+                        <avalonia:MaterialIcon Kind="Calendar" Grid.Column="0" Grid.RowSpan="2" Classes="info-icon" />
+                        <TextBlock Grid.Column="1" Grid.Row="0" Classes="info-title">Release date</TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Grid.Row="1"
+                                   Classes="info-body"
+                                   Text="{CompiledBinding Release.CreatedAt, Converter={StaticResource DateTimeConverter}}" />
+                    </Grid>
+
+                    <Grid Grid.Column="2" ColumnDefinitions="*,*" RowDefinitions="*,*" Classes="info-container" HorizontalAlignment="Right">
+                        <avalonia:MaterialIcon Kind="File" Grid.Column="0" Grid.RowSpan="2" Classes="info-icon" />
+                        <TextBlock Grid.Column="1" Grid.Row="0" Classes="info-title">File size</TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Grid.Row="1"
+                                   Classes="info-body"
+                                   Text="{CompiledBinding Release.DownloadSize, Converter={StaticResource BytesToStringConverter}, Mode=OneWay}" />
+                    </Grid>
+                </Grid>
+
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Classes="card">
+            <Grid RowDefinitions="Auto,Auto,*">
+                <TextBlock Grid.Row="0" Classes="h5 no-margin">Release notes</TextBlock>
+                <Border Grid.Row="1" Classes="card-separator" />
+
+                <TextBlock Grid.Row="2" Classes="subtitle" IsVisible="{CompiledBinding Release.Changelog, Converter={x:Static StringConverters.IsNullOrEmpty}}">
+                    There are no release notes for this release.
+                </TextBlock>
+                <mdxaml:MarkdownScrollViewer Grid.Row="2"
+                                             Markdown="{CompiledBinding Release.Changelog}"
+                                             MarkdownStyleName="FluentAvalonia"
+                                             IsVisible="{CompiledBinding Release.Changelog, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <mdxaml:MarkdownScrollViewer.Styles>
+                        <StyleInclude Source="/Styles/Markdown.axaml" />
+                    </mdxaml:MarkdownScrollViewer.Styles>
+                </mdxaml:MarkdownScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

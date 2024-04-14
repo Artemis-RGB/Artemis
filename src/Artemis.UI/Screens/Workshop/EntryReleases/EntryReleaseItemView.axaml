@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:entryReleases="clr-namespace:Artemis.UI.Screens.Workshop.EntryReleases"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.EntryReleases.EntryReleaseItemView"
+             x:DataType="entryReleases:EntryReleaseItemViewModel">
+    <UserControl.Resources>
+        <converters:DateTimeConverter x:Key="DateTimeConverter" />
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="avalonia|MaterialIcon.status-icon">
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight1}" />
+        </Style>
+    </UserControl.Styles>
+    
+    <Grid ColumnDefinitions="Auto,*" Margin="0 5">
+        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+            <TextBlock Text="{CompiledBinding Release.Version}"></TextBlock>
+            <TextBlock Classes="subtitle" ToolTip.Tip="{CompiledBinding Release.CreatedAt, Converter={StaticResource DateTimeConverter}}">
+                <avalonia:MaterialIcon Kind="Calendar" />
+                <Run>Created</Run>
+                <Run Text="{CompiledBinding Release.CreatedAt, Converter={StaticResource DateTimeConverter}, ConverterParameter='humanize'}"></Run>
+            </TextBlock>
+        </StackPanel>
+        <avalonia:MaterialIcon Classes="status-icon" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Kind="CheckCircle" ToolTip.Tip="Current version" IsVisible="{CompiledBinding IsCurrentVersion}" />
+    </Grid>
+</UserControl>

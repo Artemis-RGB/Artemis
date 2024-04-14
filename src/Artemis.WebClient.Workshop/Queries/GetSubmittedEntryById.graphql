@@ -14,5 +14,10 @@ query GetSubmittedEntryById($id: Long!) {
         images {
             ...image
         }
+        releases {
+            id
+            version
+            createdAt
+        }
     }
 }

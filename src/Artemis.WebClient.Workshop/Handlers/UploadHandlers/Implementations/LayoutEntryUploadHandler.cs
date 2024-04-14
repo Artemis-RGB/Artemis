@@ -18,7 +18,7 @@ public class LayoutEntryUploadHandler : IEntryUploadHandler
     }
     
     /// <inheritdoc />
-    public async Task<EntryUploadResult> CreateReleaseAsync(long entryId, IEntrySource entrySource, CancellationToken cancellationToken)
+    public async Task<EntryUploadResult> CreateReleaseAsync(long entryId, IEntrySource entrySource, string? changelog, CancellationToken cancellationToken)
     {
         if (entrySource is not LayoutEntrySource source)
             throw new InvalidOperationException("Can only create releases for layouts");
@@ -62,6 +62,8 @@ public class LayoutEntryUploadHandler : IEntryUploadHandler
         MultipartFormDataContent content = new();
         StreamContent streamContent = new(archiveStream);
         streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
+        if (!string.IsNullOrWhiteSpace(changelog))
+            content.Add(new StringContent(changelog), "Changelog");
         content.Add(streamContent, "file", "file.zip");
 
         // Submit
