@@ -82,7 +82,18 @@ public partial class SubmissionManagementViewModel : RoutableHostScreen<Routable
     {
         // If there is a 2nd parameter, it's a release ID
         SelectedRelease = args.RouteParameters.Length > 1 ? Releases?.FirstOrDefault(r => r.Id == (long) args.RouteParameters[1]) : null;
-       
+        
+        // OnNavigating may just be getting called to update the selected release
+        if (Entry?.Id == parameters.EntryId)
+        {
+            // Reapply the entry when closing a release, this is mainly because the entry icon probably got disposed
+            if (SelectedRelease == null)
+                await _detailsViewModel.SetEntry(Entry, cancellationToken);
+            
+            // No need to reload the entry since it's the same
+            return;
+        }
+
         IOperationResult<IGetSubmittedEntryByIdResult> result = await _client.GetSubmittedEntryById.ExecuteAsync(parameters.EntryId, cancellationToken);
         if (result.IsErrorResult())
             return;

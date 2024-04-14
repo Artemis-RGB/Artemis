@@ -43,7 +43,7 @@
         <Border Grid.Row="0" Classes="card" Margin="0 0 0 10">
             <StackPanel>
                 <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Classes="h4 no-margin">Release info</TextBlock>
+                    <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Release info</TextBlock>
 
                     <Panel Grid.Column="1" IsVisible="{CompiledBinding InstallationAvailable}">
                         <!-- Install progress -->

@@ -79,6 +79,8 @@ public partial class SubmissionDetailsViewModel : RoutableScreen
         bool confirmed = await _windowService.ShowConfirmContentDialog("You have unsaved changes", "Do you want to discard your unsaved changes?");
         if (!confirmed)
             args.Cancel();
+        else
+            await ExecuteDiscardChanges();
     }
 
     private async Task ApplyDetailsFromEntry(CancellationToken cancellationToken)
@@ -94,6 +96,7 @@ public partial class SubmissionDetailsViewModel : RoutableScreen
         if (Entry == null)
         {
             EntrySpecificationsViewModel = null;
+            ApplyImagesFromEntry();
             return;
         }
 
@@ -176,7 +179,6 @@ public partial class SubmissionDetailsViewModel : RoutableScreen
     private async Task ExecuteDiscardChanges()
     {
         await ApplyDetailsFromEntry(CancellationToken.None);
-        ApplyImagesFromEntry();
     }
 
     private async Task ExecuteSaveChanges(CancellationToken cancellationToken)

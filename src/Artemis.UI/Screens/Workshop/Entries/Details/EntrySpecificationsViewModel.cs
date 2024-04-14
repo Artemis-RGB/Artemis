@@ -64,12 +64,7 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
         _categoriesValid = categoriesRule.ValidationChanged.Select(c => c.IsValid).ToProperty(this, vm => vm.CategoriesValid);
         _descriptionValid = descriptionRule.ValidationChanged.Select(c => c.IsValid).ToProperty(this, vm => vm.DescriptionValid);
 
-        this.WhenActivatedAsync(async d =>
-        {
-            // Load categories
-            await PopulateCategories();
-            Disposable.Create(ClearIcon).DisposeWith(d);
-        });
+        this.WhenActivatedAsync(async _ => await PopulateCategories());
     }
 
     public ReactiveCommand<Unit, Unit> SelectIcon { get; }
@@ -96,12 +91,6 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
         IconBitmap?.Dispose();
         IconBitmap = BitmapExtensions.LoadAndResize(result[0], 128);
         IconChanged = true;
-    }
-
-    private void ClearIcon()
-    {
-        IconBitmap?.Dispose();
-        IconBitmap = null;
     }
 
     private async Task PopulateCategories()

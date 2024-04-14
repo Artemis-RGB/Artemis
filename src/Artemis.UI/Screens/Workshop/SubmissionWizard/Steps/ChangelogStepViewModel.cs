@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout;
+using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Plugin;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 using Artemis.WebClient.Workshop;
 using PropertyChanged.SourceGenerator;
@@ -32,7 +33,7 @@ public partial class ChangelogStepViewModel : SubmissionViewModel
         if (State.EntryType == EntryType.Layout)
             State.ChangeScreen<LayoutInfoStepViewModel>();
         else if (State.EntryType == EntryType.Plugin)
-            State.ChangeScreen<SpecificationsStepViewModel>();
+            State.ChangeScreen<PluginSelectionStepViewModel>();
         else if (State.EntryType == EntryType.Profile)
             State.ChangeScreen<ProfileAdaptionHintsStepViewModel>();
     }

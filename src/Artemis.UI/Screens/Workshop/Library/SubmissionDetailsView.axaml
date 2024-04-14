@@ -7,8 +7,10 @@
              x:Class="Artemis.UI.Screens.Workshop.Library.SubmissionDetailsView"
              x:DataType="library:SubmissionDetailsViewModel">
     <Grid ColumnDefinitions="*,300" RowDefinitions="*, Auto">
-        <ContentControl Grid.Column="0" Grid.Row="0" Content="{CompiledBinding EntrySpecificationsViewModel}"></ContentControl>
-
+        <Border Classes="card" Grid.Column="0" Grid.Row="0">
+            <ContentControl Content="{CompiledBinding EntrySpecificationsViewModel}"></ContentControl>
+        </Border>
+        
         <Border Grid.Column="1" Grid.Row="0" Classes="card" Margin="10 0 0 0">
             <Grid RowDefinitions="*,Auto">
                 <ScrollViewer Grid.Row="0" Classes="with-padding" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">

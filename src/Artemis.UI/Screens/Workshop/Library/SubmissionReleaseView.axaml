@@ -5,24 +5,95 @@
              xmlns:library="clr-namespace:Artemis.UI.Screens.Workshop.Library"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:controls1="clr-namespace:Artemis.UI.Controls"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:sharedConverters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Library.SubmissionReleaseView"
              x:DataType="library:SubmissionReleaseViewModel">
+    <UserControl.Resources>
+        <converters:DateTimeConverter x:Key="DateTimeConverter" />
+        <sharedConverters:BytesToStringConverter x:Key="BytesToStringConverter" />
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="Grid.info-container">
+            <Setter Property="Margin" Value="10" />
+        </Style>
+        <Style Selector="avalonia|MaterialIcon.info-icon">
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="Margin" Value="0 3 10 0" />
+        </Style>
+        <Style Selector="TextBlock.info-title">
+            <Setter Property="Margin" Value="0 0 0 5" />
+            <Setter Property="Opacity" Value="0.8" />
+        </Style>
+        <Style Selector="TextBlock.info-body">
+        </Style>
+        <Style Selector="TextBlock.info-link">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight3}" />
+        </Style>
+        <Style Selector="TextBlock.info-link:pointerover">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorLight1}" />
+        </Style>
+    </UserControl.Styles>
+    
     <Grid RowDefinitions="Auto,*,Auto">
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="5">
-            <Button VerticalAlignment="Center" Classes="icon-button" Command="{CompiledBinding Close}">
-                <avalonia:MaterialIcon Kind="ArrowBack" />
-            </Button>
-            <TextBlock Classes="h3 no-margin" Text="{CompiledBinding Release.Version}" />
-        </StackPanel>
+        <Border Grid.Row="0" Classes="card" Margin="0 0 0 10">
+            <StackPanel>
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Button Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Classes="icon-button" Command="{CompiledBinding Close}" Margin="0 0 5 0">
+                        <avalonia:MaterialIcon Kind="ArrowBack" />
+                    </Button>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Theme="{StaticResource SubtitleTextBlockStyle}">Release management</TextBlock>
+                    <Button Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Classes="danger" Command="{CompiledBinding DeleteRelease}">Delete release</Button>
+                </Grid>
+                <Border Classes="card-separator" />
+                <Grid Margin="-5 -10" ColumnDefinitions="*,*,*">
+                    <Grid Grid.Column="0" ColumnDefinitions="*,*" RowDefinitions="*,*" Classes="info-container" HorizontalAlignment="Left">
+                        <avalonia:MaterialIcon Kind="TickNetworkOutline" Grid.Column="0" Grid.RowSpan="2" Classes="info-icon" />
+                        <TextBlock Grid.Column="1" Grid.Row="0" Classes="info-title">Version</TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Grid.Row="1"
+                                   Classes="info-body"
+                                   Cursor="Hand"
+                                   Text="{CompiledBinding Release.Version}" />
+                    </Grid>
 
-        <controls1:SplitMarkdownEditor Grid.Row="1" Title="Changelog" Markdown="{CompiledBinding Changelog}"/>
+                    <Grid Grid.Column="1" ColumnDefinitions="*,*" RowDefinitions="*,*,*" Classes="info-container" HorizontalAlignment="Center">
+                        <avalonia:MaterialIcon Kind="Calendar" Grid.Column="0" Grid.RowSpan="2" Classes="info-icon" />
+                        <TextBlock Grid.Column="1" Grid.Row="0" Classes="info-title">Release date</TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Grid.Row="1"
+                                   Classes="info-body"
+                                   Text="{CompiledBinding Release.CreatedAt, Converter={StaticResource DateTimeConverter}}" />
+                    </Grid>
+
+                    <Grid Grid.Column="2" ColumnDefinitions="*,*" RowDefinitions="*,*" Classes="info-container" HorizontalAlignment="Right">
+                        <avalonia:MaterialIcon Kind="File" Grid.Column="0" Grid.RowSpan="2" Classes="info-icon" />
+                        <TextBlock Grid.Column="1" Grid.Row="0" Classes="info-title">File size</TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Grid.Row="1"
+                                   Classes="info-body"
+                                   Text="{CompiledBinding Release.DownloadSize, Converter={StaticResource BytesToStringConverter}, Mode=OneWay}" />
+                    </Grid>
+                </Grid>
+
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Classes="card">
+            <Grid RowDefinitions="Auto,Auto,*">
+                <TextBlock Grid.Row="0" Classes="h5 no-margin">Release notes</TextBlock>
+                <Border Grid.Row="1" Classes="card-separator" />
+
+                <controls1:SplitMarkdownEditor Grid.Row="2" Title="Changelog" Markdown="{CompiledBinding Changelog}"/>
+            </Grid>
+        </Border>
         
         <StackPanel Grid.Row="2" Margin="0 10 0 0" Orientation="Horizontal" Spacing="5" HorizontalAlignment="Right">
-            <Button Classes="danger" Command="{CompiledBinding DeleteRelease}">Delete release</Button>
             <Button Command="{CompiledBinding Discard}">Discard changes</Button>
             <Button Command="{CompiledBinding Save}">Save</Button>
         </StackPanel>
     </Grid>
-
 </UserControl>
