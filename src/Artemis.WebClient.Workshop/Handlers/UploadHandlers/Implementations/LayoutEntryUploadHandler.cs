@@ -11,12 +11,14 @@ namespace Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 public class LayoutEntryUploadHandler : IEntryUploadHandler
 {
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IWorkshopClient _workshopClient;
 
-    public LayoutEntryUploadHandler(IHttpClientFactory httpClientFactory)
+    public LayoutEntryUploadHandler(IHttpClientFactory httpClientFactory, IWorkshopClient workshopClient)
     {
         _httpClientFactory = httpClientFactory;
+        _workshopClient = workshopClient;
     }
-    
+
     /// <inheritdoc />
     public async Task<EntryUploadResult> CreateReleaseAsync(long entryId, IEntrySource entrySource, string? changelog, CancellationToken cancellationToken)
     {
@@ -41,8 +43,10 @@ public class LayoutEntryUploadHandler : IEntryUploadHandler
             await using (Stream layoutArchiveStream = archiveEntry.Open())
                 await layoutStream.CopyToAsync(layoutArchiveStream, cancellationToken);
 
+            List<string> imagePaths = [];
+
             // Add the layout image to the archive
-            CopyImage(layoutPath, source.Layout.LayoutCustomDeviceData.DeviceImage, archive);
+            CopyImage(layoutPath, source.Layout.LayoutCustomDeviceData.DeviceImage, archive, imagePaths);
 
             // Add the LED images to the archive
             foreach (ArtemisLedLayout ledLayout in source.Layout.Leds)
@@ -50,11 +54,12 @@ public class LayoutEntryUploadHandler : IEntryUploadHandler
                 if (ledLayout.LayoutCustomLedData.LogicalLayouts == null)
                     continue;
                 foreach (LayoutCustomLedDataLogicalLayout customData in ledLayout.LayoutCustomLedData.LogicalLayouts)
-                    CopyImage(layoutPath, customData.Image, archive);
+                    CopyImage(layoutPath, customData.Image, archive, imagePaths);
             }
         }
+
         archiveStream.Seek(0, SeekOrigin.Begin);
-        
+
         // Submit the archive
         HttpClient client = _httpClientFactory.CreateClient(WorkshopConstants.WORKSHOP_CLIENT_NAME);
 
@@ -71,16 +76,53 @@ public class LayoutEntryUploadHandler : IEntryUploadHandler
         if (!response.IsSuccessStatusCode)
             return EntryUploadResult.FromFailure($"{response.StatusCode} - {await response.Content.ReadAsStringAsync(cancellationToken)}");
 
+        // Determine layout info, here we're combining user supplied data with what we can infer from the layout
+        List<LayoutInfoInput> layoutInfo = GetLayoutInfoInput(source);
+
+        // Submit layout info, overwriting the existing layout info
+        await _workshopClient.SetLayoutInfo.ExecuteAsync(new SetLayoutInfoInput {EntryId = entryId, LayoutInfo = layoutInfo}, cancellationToken);
+
         Release? release = await response.Content.ReadFromJsonAsync<Release>(cancellationToken);
         return release != null ? EntryUploadResult.FromSuccess(release) : EntryUploadResult.FromFailure("Failed to deserialize response");
     }
 
-    private static void CopyImage(string layoutPath, string? imagePath, ZipArchive archive)
+    private static List<LayoutInfoInput> GetLayoutInfoInput(LayoutEntrySource source)
     {
-        if (imagePath == null)
+        RGBDeviceType deviceType = Enum.Parse<RGBDeviceType>(source.Layout.RgbLayout.Type.ToString(), true);
+        KeyboardLayoutType physicalLayout = Enum.Parse<KeyboardLayoutType>(source.PhysicalLayout.ToString(), true);
+
+        List<string> logicalLayouts = source.Layout.Leds.SelectMany(l => l.GetLogicalLayoutNames()).Distinct().ToList();
+        if (logicalLayouts.Any())
+        {
+            return logicalLayouts.SelectMany(logicalLayout => source.LayoutInfo.Select(i => new LayoutInfoInput
+            {
+                PhysicalLayout = deviceType == RGBDeviceType.Keyboard ? physicalLayout : null,
+                LogicalLayout = logicalLayout,
+                Model = i.Model,
+                Vendor = i.Vendor,
+                DeviceType = deviceType,
+                DeviceProvider = i.DeviceProviderId
+            })).ToList();
+        }
+
+        return source.LayoutInfo.Select(i => new LayoutInfoInput
+        {
+            PhysicalLayout = deviceType == RGBDeviceType.Keyboard ? physicalLayout : null,
+            LogicalLayout = null,
+            Model = i.Model,
+            Vendor = i.Vendor,
+            DeviceType = deviceType,
+            DeviceProvider = i.DeviceProviderId
+        }).ToList();
+    }
+
+    private static void CopyImage(string layoutPath, string? imagePath, ZipArchive archive, List<string> imagePaths)
+    {
+        if (imagePath == null || imagePaths.Contains(imagePath))
             return;
 
         string fullPath = Path.Combine(layoutPath, imagePath);
         archive.CreateEntryFromFile(fullPath, imagePath);
+        imagePaths.Add(imagePath);
     }
 }

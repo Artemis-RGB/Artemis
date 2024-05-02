@@ -24,6 +24,11 @@
                 The information below is used by Artemis to automatically find your layout.
                 Some layouts can be shared across different devices and here you have a chance to set that up.
             </TextBlock>
+            <TextBlock TextWrapping="Wrap" Classes="warning" Margin="0 10 0 0">
+                <Run>Ensure you enter the model and vendor</Run>
+                <Run FontWeight="Bold">exactly</Run>
+                <Run>as detected on the device by Artemis.</Run>
+            </TextBlock>
         </StackPanel>
 
         <StackPanel Grid.Row="1"

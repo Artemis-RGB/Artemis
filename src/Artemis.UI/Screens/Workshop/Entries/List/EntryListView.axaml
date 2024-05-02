@@ -15,8 +15,8 @@
         </Styles>
     </UserControl.Styles>
 
-    <Grid ColumnDefinitions="300,*" RowDefinitions="Auto,*,Auto">
-        <StackPanel Grid.Column="0" Grid.RowSpan="3" Margin="0 0 10 0" VerticalAlignment="Top">
+    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,*,Auto">
+        <StackPanel Grid.Column="0" Grid.RowSpan="3" Margin="0 0 10 0" VerticalAlignment="Top" Width="300" IsVisible="{CompiledBinding ShowCategoryFilter}">
             <Border Classes="card" VerticalAlignment="Stretch">
                 <StackPanel>
                     <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Categories</TextBlock>

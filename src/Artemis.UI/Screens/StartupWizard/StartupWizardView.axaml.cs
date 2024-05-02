@@ -29,10 +29,12 @@ public partial class StartupWizardView : ReactiveAppWindow<StartupWizardViewMode
         else if (step == 2)
             Frame.NavigateToType(typeof(DevicesStep), null, new FrameNavigationOptions());
         else if (step == 3)
-            Frame.NavigateToType(typeof(LayoutStep), null, new FrameNavigationOptions());
+            Frame.NavigateToType(typeof(LayoutsStep), null, new FrameNavigationOptions());
         else if (step == 4)
-            Frame.NavigateToType(typeof(SettingsStep), null, new FrameNavigationOptions());
+            Frame.NavigateToType(typeof(SurfaceStep), null, new FrameNavigationOptions());
         else if (step == 5)
+            Frame.NavigateToType(typeof(SettingsStep), null, new FrameNavigationOptions());
+        else if (step == 6)
             Frame.NavigateToType(typeof(FinishStep), null, new FrameNavigationOptions());
     }
 }

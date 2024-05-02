@@ -31,13 +31,14 @@ public partial class LayoutInfoViewModel : ValidatableViewModelBase
         IWindowService windowService,
         IPluginManagementService pluginManagementService)
     {
+        ArtemisDevice? device = deviceService.Devices.FirstOrDefault(d => d.Layout == layout);
+        
         _windowService = windowService;
-        _vendor = layout.RgbLayout.Vendor;
-        _model = layout.RgbLayout.Model;
+        _vendor = device?.RgbDevice.DeviceInfo.Manufacturer ?? layout.RgbLayout.Vendor;
+        _model = device?.RgbDevice.DeviceInfo.Model ?? layout.RgbLayout.Model;
 
-        DeviceProvider? deviceProvider = deviceService.Devices.FirstOrDefault(d => d.Layout == layout)?.DeviceProvider;
-        if (deviceProvider != null)
-            _deviceProviderId = deviceProvider.Plugin.Guid;
+        if (device != null)
+            _deviceProviderId = device.DeviceProvider.Plugin.Guid;
 
         _deviceProviders = this.WhenAnyValue(vm => vm.DeviceProviderId)
             .Select(id => pluginManagementService.GetAllPlugins().FirstOrDefault(p => p.Guid == id)?.Features.Select(f => f.Name))
