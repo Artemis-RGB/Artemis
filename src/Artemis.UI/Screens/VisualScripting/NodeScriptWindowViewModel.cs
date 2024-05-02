@@ -66,7 +66,7 @@ public class NodeScriptWindowViewModel : NodeScriptWindowViewModelBase
         {
             _keyBindingsEnabled = Shared.UI.CurrentKeyBindingsEnabled.ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
 
-            Timer updateTimer = new(TimeSpan.FromMilliseconds(25.0 / 1000));
+            Timer updateTimer = new(TimeSpan.FromMilliseconds(25));
             Timer saveTimer = new(TimeSpan.FromMinutes(2));
 
             updateTimer.Elapsed += (_, _) => Update();

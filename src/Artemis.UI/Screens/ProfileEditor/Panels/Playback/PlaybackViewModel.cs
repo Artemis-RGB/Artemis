@@ -57,7 +57,7 @@ public partial class PlaybackViewModel : ActivatableViewModelBase
             _keyBindingsEnabled = Shared.UI.CurrentKeyBindingsEnabled.ToProperty(this, vm => vm.KeyBindingsEnabled).DisposeWith(d);
             
             // Update timer
-            Timer updateTimer = new(TimeSpan.FromMilliseconds(60.0 / 1000));
+            Timer updateTimer = new(TimeSpan.FromMilliseconds(16));
             updateTimer.Elapsed += (_, _) => Update();
             updateTimer.DisposeWith(d);
             _profileEditorService.Playing.Subscribe(_ => _lastUpdate = DateTime.Now).DisposeWith(d);
