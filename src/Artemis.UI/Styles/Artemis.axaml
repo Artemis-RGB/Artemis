@@ -7,12 +7,14 @@
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
     <!-- Third party styles -->
     <styling:FluentAvaloniaTheme PreferSystemTheme="False" PreferUserAccentColor="True"/>
+
     <avalonia:MaterialIconStyles />
     
     <!-- <FluentTheme Mode="Dark"></FluentTheme> -->
     <StyleInclude Source="avares://Artemis.UI.Shared/Styles/Artemis.axaml" />
     <StyleInclude Source="avares://AsyncImageLoader.Avalonia/AdvancedImage.axaml" />
     <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
+    <StyleInclude Source="avares://FluentAvalonia.ProgressRing/Styling/Controls/ProgressRing.axaml" />
     
     <!-- Adjust the ScrollViewer padding in AvaloniaEdit so scrollbar doesn't overlap text -->
     <Style Selector="aedit|TextEditor /template/ ScrollViewer ScrollContentPresenter">

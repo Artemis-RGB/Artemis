@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:layout="clr-namespace:Artemis.UI.Screens.Workshop.Layout"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.Layout.LayoutListDefaultView"
+             x:DataType="layout:LayoutListDefaultViewModel">
+    <Grid ColumnDefinitions="400,*">
+        <Border Grid.Column="0" Classes="card" Margin="0 0 10 0" VerticalAlignment="Top">
+            <StackPanel>
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" 
+                            Content="Auto-install layouts" 
+                            Command="{CompiledBinding LayoutFinderViewModel.SearchAll}"
+                            ToolTip.Tip="Search layouts and if found install them automatically"/>
+                    <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Detected devices</TextBlock>
+                </DockPanel>
+                <Border Classes="card-separator" />
+                <ContentControl Content="{CompiledBinding LayoutFinderViewModel}"></ContentControl>
+            </StackPanel>
+        </Border>
+        <ContentControl Grid.Column="1" Content="{CompiledBinding EntryListViewModel}"></ContentControl>
+    </Grid>
+</UserControl>

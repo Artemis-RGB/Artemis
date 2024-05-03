@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:layoutFinder="clr-namespace:Artemis.UI.Screens.Workshop.LayoutFinder"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.LayoutFinder.LayoutFinderView"
+             x:DataType="layoutFinder:LayoutFinderViewModel">
+    <ItemsControl ItemsSource="{CompiledBinding DeviceViewModels}">
+        <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="layoutFinder:LayoutFinderDeviceViewModel">
+                <StackPanel Classes="device-view-model-container">
+                    <!-- Your existing item template goes here -->
+                    <ContentControl Content="{CompiledBinding}"/>
+                    <Border Classes="card-separator" Name="Separator" />
+                </StackPanel>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+        <ItemsControl.Styles>
+            <Styles>
+                <Style Selector="ContentPresenter:nth-last-child(1) Border#Separator">
+                    <Setter Property="IsVisible" Value="False" />
+                </Style>
+            </Styles>
+        </ItemsControl.Styles>
+    </ItemsControl>
+</UserControl>

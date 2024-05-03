@@ -101,6 +101,7 @@ type Mutation {
     removeEntry(id: Long!): Entry
     removeLayoutInfo(id: Long!): LayoutInfo!
     removeRelease(id: Long!): Release!
+    setLayoutInfo(input: SetLayoutInfoInput!): [LayoutInfo!]!
     updateEntry(input: UpdateEntryInput!): Entry
     updateEntryImage(input: UpdateEntryImageInput!): Image
     updateRelease(input: UpdateReleaseInput!): Release
@@ -399,6 +400,15 @@ input LayoutInfoFilterInput {
     vendor: StringOperationFilterInput
 }
 
+input LayoutInfoInput {
+    deviceProvider: UUID!
+    deviceType: RGBDeviceType!
+    logicalLayout: String
+    model: String!
+    physicalLayout: KeyboardLayoutType
+    vendor: String!
+}
+
 input ListFilterInputTypeOfCategoryFilterInput {
     all: CategoryFilterInput
     any: Boolean
@@ -525,6 +535,11 @@ input ReleaseSortInput {
     id: SortEnumType
     md5Hash: SortEnumType
     version: SortEnumType
+}
+
+input SetLayoutInfoInput {
+    entryId: Long!
+    layoutInfo: [LayoutInfoInput!]!
 }
 
 input StringOperationFilterInput {

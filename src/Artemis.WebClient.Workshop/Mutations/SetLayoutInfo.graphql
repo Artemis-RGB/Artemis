@@ -1,0 +1,5 @@
+mutation SetLayoutInfo ($input: SetLayoutInfoInput!) {
+    setLayoutInfo(input: $input) {
+        id
+    }    
+}

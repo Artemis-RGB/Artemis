@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using RGB.NET.Layout;
@@ -15,7 +16,7 @@ public class ArtemisLedLayout
         DeviceLayout = deviceLayout;
         RgbLayout = led;
         LayoutCustomLedData = (LayoutCustomLedData?) led.CustomData ?? new LayoutCustomLedData();
-        
+
         // Default to the first logical layout for images
         LayoutCustomLedDataLogicalLayout? defaultLogicalLayout = LayoutCustomLedData.LogicalLayouts?.FirstOrDefault();
         if (defaultLogicalLayout != null)
@@ -46,7 +47,14 @@ public class ArtemisLedLayout
     ///     Gets the custom layout data embedded in the RGB.NET layout
     /// </summary>
     public LayoutCustomLedData LayoutCustomLedData { get; }
-    
+
+    /// <summary>
+    ///   Gets the logical layout names available for this LED
+    /// </summary>
+    public IEnumerable<string> GetLogicalLayoutNames()
+    {
+        return LayoutCustomLedData.LogicalLayouts?.Where(l => l.Name != null).Select(l => l.Name!) ?? [];
+    }
 
     internal void ApplyCustomLedData(ArtemisDevice artemisDevice)
     {
@@ -61,11 +69,11 @@ public class ArtemisLedLayout
 
         ApplyLogicalLayout(logicalLayout);
     }
-    
+
     private void ApplyLogicalLayout(LayoutCustomLedDataLogicalLayout logicalLayout)
     {
         string? layoutDirectory = Path.GetDirectoryName(DeviceLayout.FilePath);
-        
+
         LogicalName = logicalLayout.Name;
         if (layoutDirectory != null && logicalLayout.Image != null)
             Image = new Uri(Path.Combine(layoutDirectory, logicalLayout.Image!), UriKind.Absolute);

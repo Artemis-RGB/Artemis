@@ -3,9 +3,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.StartupWizard.Steps;
 
-public partial class LayoutStep : UserControl
+public partial class SurfaceStep : UserControl
 {
-    public LayoutStep()
+    public SurfaceStep()
     {
         InitializeComponent();
     }

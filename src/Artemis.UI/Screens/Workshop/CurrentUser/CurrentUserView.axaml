@@ -42,16 +42,7 @@
                         </Ellipse>
                         <TextBlock Grid.Column="1" Grid.Row="0" Text="{CompiledBinding Name}" Margin="0 4 0 0"></TextBlock>
                         <TextBlock Grid.Column="1" Grid.Row="1" Text="{CompiledBinding Email}"></TextBlock>
-                        <controls:HyperlinkButton
-                            IsVisible="{CompiledBinding AllowLogout}"
-                            Grid.Column="1"
-                            Grid.Row="2"
-                            Margin="-8 4 0 0"
-                            Padding="6 4"
-                            Click="Signout_OnClick">
-                            Sign out
-                        </controls:HyperlinkButton>
-                        
+
                         <controls:HyperlinkButton
                             IsVisible="{CompiledBinding AllowLogout}"
                             Grid.Column="1"
@@ -60,6 +51,15 @@
                             Padding="6 4"
                             Click="Manage_OnClick">
                             Manage account
+                        </controls:HyperlinkButton>
+                        <controls:HyperlinkButton
+                            IsVisible="{CompiledBinding AllowLogout}"
+                            Grid.Column="1"
+                            Grid.Row="2"
+                            Margin="-8 4 0 0"
+                            Padding="6 4"
+                            Click="Signout_OnClick">
+                            Sign out
                         </controls:HyperlinkButton>
                     </Grid>
                 </Flyout>

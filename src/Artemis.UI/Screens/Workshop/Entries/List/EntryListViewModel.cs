@@ -54,6 +54,7 @@ public partial class EntryListViewModel : RoutableScreen
         this.WhenActivated(d =>
         {
             InputViewModel.WhenAnyValue(vm => vm.Search).Skip(1).Throttle(TimeSpan.FromMilliseconds(200)).Subscribe(_ => Reset()).DisposeWith(d);
+            InputViewModel.WhenAnyValue(vm => vm.SortBy).Skip(1).Throttle(TimeSpan.FromMilliseconds(200)).Subscribe(_ => Reset()).DisposeWith(d);
             CategoriesViewModel.WhenAnyValue(vm => vm.CategoryFilters).Skip(1).Subscribe(_ => Reset()).DisposeWith(d);
         });
         
@@ -71,6 +72,7 @@ public partial class EntryListViewModel : RoutableScreen
 
     public CategoriesViewModel CategoriesViewModel { get; }
     public EntryListInputViewModel InputViewModel { get; }
+    public bool ShowCategoryFilter { get; set; } = true;
     public EntryType? EntryType { get; set; }
 
     public ReadOnlyObservableCollection<EntryListItemViewModel> Entries { get; }

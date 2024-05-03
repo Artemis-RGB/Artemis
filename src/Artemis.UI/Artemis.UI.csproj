@@ -21,6 +21,7 @@
         <PackageReference Include="Avalonia.Desktop" />
         <PackageReference Include="Avalonia.Skia.Lottie" />
         <PackageReference Include="AvaloniaEdit.TextMate" />
+        <PackageReference Include="FluentAvalonia.ProgressRing" />
         <PackageReference Include="Markdown.Avalonia.Tight" />
         <PackageReference Include="Octopus.Octodiff" />
         <PackageReference Include="PropertyChanged.SourceGenerator">

@@ -9,6 +9,7 @@ using Artemis.Core.DeviceProviders;
 using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.Plugins;
+using Artemis.UI.Screens.Workshop.LayoutFinder;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Shared.Services;
@@ -35,7 +36,8 @@ public partial class StartupWizardViewModel : DialogViewModelBase<bool>
         IPluginManagementService pluginManagementService,
         IWindowService windowService,
         IDeviceService deviceService,
-        ISettingsVmFactory settingsVmFactory)
+        ISettingsVmFactory settingsVmFactory,
+        LayoutFinderViewModel layoutFinderViewModel)
     {
         _settingsService = settingsService;
         _windowService = windowService;
@@ -54,6 +56,7 @@ public partial class StartupWizardViewModel : DialogViewModelBase<bool>
             .Where(p => p.Info.IsCompatible && p.Features.Any(f => f.AlwaysEnabled && f.FeatureType.IsAssignableTo(typeof(DeviceProvider))))
             .OrderBy(p => p.Info.Name)
             .Select(p => settingsVmFactory.PluginViewModel(p, ReactiveCommand.Create(() => new Unit()))));
+        LayoutFinderViewModel = layoutFinderViewModel;
 
         CurrentStep = 1;
         SetupButtons();
@@ -82,7 +85,8 @@ public partial class StartupWizardViewModel : DialogViewModelBase<bool>
 
     public string Version { get; }
     public ObservableCollection<PluginViewModel> DeviceProviders { get; }
-
+    public LayoutFinderViewModel LayoutFinderViewModel { get; }
+    
     public bool IsAutoRunSupported => _autoRunProvider != null;
 
     public PluginSetting<bool> UIAutoRun => _settingsService.GetSetting("UI.AutoRun", false);
@@ -98,7 +102,7 @@ public partial class StartupWizardViewModel : DialogViewModelBase<bool>
             CurrentStep--;
 
         // Skip the settings step if none of it's contents are supported
-        if (CurrentStep == 4 && !IsAutoRunSupported)
+        if (CurrentStep == 5 && !IsAutoRunSupported)
             CurrentStep--;
 
         SetupButtons();
@@ -106,11 +110,11 @@ public partial class StartupWizardViewModel : DialogViewModelBase<bool>
 
     private void ExecuteContinue()
     {
-        if (CurrentStep < 5)
+        if (CurrentStep < 6)
             CurrentStep++;
 
         // Skip the settings step if none of it's contents are supported
-        if (CurrentStep == 4 && !IsAutoRunSupported)
+        if (CurrentStep == 5 && !IsAutoRunSupported)
             CurrentStep++;
 
         SetupButtons();
@@ -118,9 +122,9 @@ public partial class StartupWizardViewModel : DialogViewModelBase<bool>
 
     private void SetupButtons()
     {
-        ShowContinue = CurrentStep != 3 && CurrentStep < 5;
+        ShowContinue = CurrentStep != 4 && CurrentStep < 6;
         ShowGoBack = CurrentStep > 1;
-        ShowFinish = CurrentStep == 5;
+        ShowFinish = CurrentStep == 6;
     }
 
     private void ExecuteSkipOrFinishWizard()

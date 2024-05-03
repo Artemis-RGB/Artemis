@@ -7,11 +7,10 @@ namespace Artemis.UI.Screens.Workshop.Layout;
 public class LayoutListViewModel : RoutableHostScreen<RoutableScreen>
 {
     private readonly EntryListViewModel _entryListViewModel;
-    public override RoutableScreen DefaultScreen => _entryListViewModel;
+    public override RoutableScreen DefaultScreen { get; }
 
-    public LayoutListViewModel(EntryListViewModel entryListViewModel)
+    public LayoutListViewModel(LayoutListDefaultViewModel defaultViewModel)
     {
-        _entryListViewModel = entryListViewModel;
-        _entryListViewModel.EntryType = EntryType.Layout;
+        DefaultScreen = defaultViewModel;
     }
 }

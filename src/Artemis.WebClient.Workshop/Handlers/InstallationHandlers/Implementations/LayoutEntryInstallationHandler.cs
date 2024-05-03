@@ -52,7 +52,7 @@ public class LayoutEntryInstallationHandler : IEntryInstallationHandler
         // Extract the archive, we could go through the hoops of keeping track of progress but this should be so quick it doesn't matter
         stream.Seek(0, SeekOrigin.Begin);
         using ZipArchive archive = new(stream);
-        archive.ExtractToDirectory(releaseDirectory.FullName);
+        archive.ExtractToDirectory(releaseDirectory.FullName, true);
 
         ArtemisLayout layout = new(Path.Combine(releaseDirectory.FullName, "layout.xml"));
         if (layout.IsValid)

@@ -23,8 +23,7 @@ public class Profiler
     ///     Gets the name of this profiler
     /// </summary>
     public string Name { get; }
-
-
+    
     /// <summary>
     ///     Gets a dictionary containing measurements by their identifiers
     /// </summary>

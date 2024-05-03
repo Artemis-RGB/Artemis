@@ -1,0 +1,23 @@
+query SearchLayout($deviceType: RGBDeviceType!, $deviceProvider: UUID!, $model: String!, $vendor: String!) {
+    searchLayout(deviceProvider: $deviceProvider, deviceType: $deviceType, model: $model, vendor: $vendor) {
+        entry {
+            ...entrySummary
+            latestRelease {
+                ...release
+            }
+        }
+    }
+}
+
+query SearchKeyboardLayout($deviceProvider: UUID!, $model: String!, $vendor: String!, $logicalLayout: String,  $physicalLayout: KeyboardLayoutType!) {
+    searchKeyboardLayout(deviceProvider: $deviceProvider, logicalLayout: $logicalLayout, model: $model, physicalLayout: $physicalLayout, vendor: $vendor) {
+        entry {
+            ...entrySummary
+            latestRelease {
+                ...release
+            }
+        }
+        logicalLayout
+        physicalLayout
+    }
+}
