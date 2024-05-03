@@ -385,31 +385,5 @@ public class DataModelPath : IStorageModel, IDisposable, IPluginFeatureDependent
             Entity.Type = pathType.FullName;
     }
 
-    #region Equality members
-
-    /// <inheritdoc cref="Equals(object)" />
-    /// >
-    protected bool Equals(DataModelPath other)
-    {
-        return ReferenceEquals(Target, other.Target) && Path == other.Path;
-    }
-
-    /// <inheritdoc />
-    public override bool Equals(object? obj)
-    {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != GetType()) return false;
-        return Equals((DataModelPath) obj);
-    }
-
-    /// <inheritdoc />
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Target, Path);
-    }
-
-    #endregion
-
     #endregion
 }
