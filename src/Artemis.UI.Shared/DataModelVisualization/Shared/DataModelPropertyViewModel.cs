@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.UI.Shared.Services;
@@ -69,6 +70,17 @@ public class DataModelPropertyViewModel : DataModelVisualizationViewModel
         DisplayValueType = DisplayValue != null ? DisplayValue.GetType() : DataModelPath?.GetPropertyType();
 
         DisplayViewModel?.UpdateValue(DisplayValue);
+    }
+
+    /// <inheritdoc />
+    public override IEnumerable<DataModelVisualizationViewModel> GetSearchResults(string search)
+    {
+        if (PropertyDescription?.Name != null && PropertyDescription.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
+            return [this];
+        if (DisplayValue != null && DisplayValue.ToString()?.Contains(search, StringComparison.OrdinalIgnoreCase) == true)
+            return [this];
+
+        return [];
     }
 
     /// <inheritdoc />

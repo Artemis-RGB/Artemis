@@ -145,6 +145,13 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
     public abstract void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration? configuration);
 
     /// <summary>
+    ///   Gets the search results for the provided search string
+    /// </summary>
+    /// <param name="search">The search string</param>
+    /// <returns>The search results</returns>
+    public abstract IEnumerable<DataModelVisualizationViewModel> GetSearchResults(string search);
+
+    /// <summary>
     ///     Gets the current value of the property being visualized
     /// </summary>
     /// <returns>The current value of the property being visualized</returns>
@@ -281,7 +288,7 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
             foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(t => t.MetadataToken))
             {
                 string childPath = AppendToPath(propertyInfo.Name);
-                
+
                 if (!ShouldIncludePath(childPath, propertyInfo))
                     continue;
 

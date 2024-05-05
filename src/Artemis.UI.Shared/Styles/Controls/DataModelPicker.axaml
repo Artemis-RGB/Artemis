@@ -11,38 +11,43 @@
     <Style Selector="dataModelPicker|DataModelPicker">
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid RowDefinitions="Auto,Auto,*" Width="600" Height="400" Margin="10">
-                    <TextBox Grid.Row="0" Watermark="Search - not yet implemented 😱" Name="SearchBox" IsEnabled="False" />
+                <Grid RowDefinitions="Auto,Auto,*" MinWidth="600" MaxHeight="1200" Height="400" Margin="10">
+                    <TextBox Grid.Row="0" Watermark="Search" Name="SearchBox" Classes="search-box" />
 
                     <Border Grid.Row="1" Classes="card card-condensed" Margin="0 10">
                         <Panel>
                             <Grid ColumnDefinitions="Auto,*"
                                   RowDefinitions="*"
                                   MinHeight="38"
-                                  IsVisible="{CompiledBinding DataModelPath, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                  IsVisible="{CompiledBinding ElementName=CurrentPathDisplay, Path=Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                                 <avalonia:MaterialIcon Grid.Column="0"
-													   Grid.Row="0" 
-                                                       Name="CurrentPathIcon" 
-                                                       Kind="QuestionMarkCircle" 
+                                                       Grid.Row="0"
+                                                       Name="CurrentPathIcon"
+                                                       Kind="QuestionMarkCircle"
                                                        Height="22"
                                                        Width="22"
-                                                       Margin="5 0 15 0" 
-                                                       IsVisible="{CompiledBinding !IsEventPicker, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                                       Margin="5 0 15 0"
+                                                       IsVisible="{CompiledBinding !IsEventPicker, RelativeSource={RelativeSource TemplatedParent}}" />
                                 <avalonia:MaterialIcon Grid.Column="0"
-                                                       Grid.Row="0" 
+                                                       Grid.Row="0"
                                                        Name="EventIcon"
                                                        Kind="LightningBolt"
                                                        Height="22"
-                                                       Width="22" 
+                                                       Width="22"
                                                        Margin="5 0 15 0"
-                                                       IsVisible="{CompiledBinding IsEventPicker, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                                       IsVisible="{CompiledBinding IsEventPicker, RelativeSource={RelativeSource TemplatedParent}}" />
                                 <StackPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Center">
                                     <TextBlock Name="CurrentPathDisplay" Classes="BodyStrongTextBlockStyle" MaxHeight="50" />
-                                    <TextBlock Name="CurrentPathDescription" Classes="BodyTextBlockStyle" Foreground="{DynamicResource TextFillColorSecondary}" MaxHeight="50" />
+                                    <TextBlock Name="CurrentPathDescription"
+                                               IsVisible="{CompiledBinding ElementName=CurrentPathDescription, Path=Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                               Classes="BodyTextBlockStyle"
+                                               Foreground="{DynamicResource TextFillColorSecondary}"
+                                               MaxHeight="50" />
                                 </StackPanel>
                             </Grid>
                             <Grid MinHeight="38"
-                                  IsVisible="{CompiledBinding DataModelPath, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNull}}" ColumnDefinitions="*,Auto"
+                                  IsVisible="{CompiledBinding ElementName=CurrentPathDisplay, Path=Text, Converter={x:Static StringConverters.IsNullOrEmpty}}"
+                                  ColumnDefinitions="*,Auto"
                                   RowDefinitions="*,*">
                                 <TextBlock Grid.Column="0" Grid.Row="0" Classes="BodyStrongTextBlockStyle">Welcome to the data model picker</TextBlock>
                                 <TextBlock Grid.Column="0" Grid.Row="1" Foreground="{DynamicResource TextFillColorSecondary}">Select a value from the data model below</TextBlock>
@@ -53,7 +58,8 @@
 
                     <TreeView Grid.Row="2"
                               Name="DataModelTreeView"
-                              ItemsSource="{CompiledBinding DataModelViewModel.Children, RelativeSource={RelativeSource TemplatedParent}}">
+                              ItemsSource="{CompiledBinding DataModelViewModel.Children, RelativeSource={RelativeSource TemplatedParent}}"
+                              IsVisible="False">
                         <TreeView.Styles>
                             <Style Selector="TreeViewItem">
                                 <Setter Property="IsExpanded" Value="{CompiledBinding IsVisualizationExpanded, Mode=TwoWay, DataType=dataModel:DataModelVisualizationViewModel}" />
@@ -69,7 +75,7 @@
                                                FontFamily="{StaticResource RobotoMono}"
                                                FontSize="13"
                                                HorizontalAlignment="Right"
-                                               Margin="0 0 10 0" />
+                                               Margin="10 0"/>
                                 </Grid>
                             </TreeDataTemplate>
 
@@ -79,10 +85,10 @@
                                         <TextBlock Text="{CompiledBinding PropertyDescription.Name}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
                                         <TextBlock Text=" changed"
                                                    ToolTip.Tip="{CompiledBinding PropertyDescription.Description}"
-                                                   IsVisible="{CompiledBinding IsEventPicker, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type dataModelPicker:DataModelPicker}}}"/>
+                                                   IsVisible="{CompiledBinding IsEventPicker, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type dataModelPicker:DataModelPicker}}}" />
                                     </StackPanel>
 
-                                    <ContentControl Grid.Column="1" Content="{CompiledBinding DisplayViewModel}" FontFamily="{StaticResource RobotoMono}" FontSize="13" Margin="0 0 10 0" />
+                                    <ContentControl Grid.Column="1" Content="{CompiledBinding DisplayViewModel}" FontFamily="{StaticResource RobotoMono}" FontSize="13" Margin="10 0" />
                                 </Grid>
                             </TreeDataTemplate>
 
@@ -94,7 +100,7 @@
                                                FontFamily="{StaticResource RobotoMono}"
                                                FontSize="13"
                                                HorizontalAlignment="Right"
-                                               Margin="0 0 10 0" />
+                                               Margin="10 0" />
                                 </Grid>
                             </TreeDataTemplate>
 
@@ -103,10 +109,46 @@
                             </TreeDataTemplate>
                         </TreeView.DataTemplates>
                     </TreeView>
-                    <StackPanel Grid.Row="2" VerticalAlignment="Center" Spacing="20" IsVisible="False">
-                        <avalonia:MaterialIcon Kind="CloseCircle" Width="64" Height="64"></avalonia:MaterialIcon>
-                        <TextBlock Classes="h4" TextAlignment="Center">No parts of the data model match your search</TextBlock>
-                    </StackPanel>
+
+                    <Panel Name="SearchContainer" Grid.Row="2">
+                        <ListBox Name="SearchListBox">
+                            <ListBox.DataTemplates>
+                                <DataTemplate DataType="{x:Type dataModel:DataModelPropertyViewModel}">
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                            <TextBlock Text="{CompiledBinding DisplayPath}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
+                                            <TextBlock Text=" changed"
+                                                       ToolTip.Tip="{CompiledBinding PropertyDescription.Description}"
+                                                       IsVisible="{CompiledBinding IsEventPicker, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type dataModelPicker:DataModelPicker}}}" />
+                                        </StackPanel>
+
+                                        <ContentControl Grid.Column="1" Content="{CompiledBinding DisplayViewModel}" FontFamily="{StaticResource RobotoMono}" FontSize="13" Margin="10 0"/>
+                                    </Grid>
+                                </DataTemplate>
+
+                                <DataTemplate DataType="{x:Type dataModel:DataModelListViewModel}">
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <TextBlock Grid.Column="0" Text="{CompiledBinding DisplayPath}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{CompiledBinding CountDisplay, Mode=OneWay}"
+                                                   FontFamily="{StaticResource RobotoMono}"
+                                                   FontSize="13"
+                                                   HorizontalAlignment="Right"
+                                                   Margin="10 0"/>
+                                    </Grid>
+                                </DataTemplate>
+                                
+                                <TreeDataTemplate DataType="{x:Type dataModel:DataModelEventViewModel}" ItemsSource="{CompiledBinding Children}">
+                                    <TextBlock Text="{CompiledBinding DisplayPath}" ToolTip.Tip="{CompiledBinding PropertyDescription.Description}" />
+                                </TreeDataTemplate>
+                            </ListBox.DataTemplates>
+                        </ListBox>
+
+                        <StackPanel Name="SearchEmpty" VerticalAlignment="Center" Spacing="20" IsVisible="False">
+                            <avalonia:MaterialIcon Kind="CloseCircle" Width="64" Height="64"></avalonia:MaterialIcon>
+                            <TextBlock Classes="h4" TextAlignment="Center">No parts of the data model match your search</TextBlock>
+                        </StackPanel>
+                    </Panel>
                 </Grid>
 
             </ControlTemplate>
