@@ -35,10 +35,10 @@ public class App : Application
         }
 
         _container = ArtemisBootstrapper.Bootstrap(this, c => c.RegisterProviders());
-        
+
         Program.CreateLogger(_container);
         LegacyMigrationService.MigrateToSqlite(_container);
-        
+
         RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
         AvaloniaXamlLoader.Load(this);
     }
@@ -47,10 +47,13 @@ public class App : Application
     {
         if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop || Design.IsDesignMode || _shutDown)
             return;
-
-        _applicationStateManager = new ApplicationStateManager(_container!, desktop.Args ?? Array.Empty<string>());
+        if (_container == null)
+            throw new InvalidOperationException("Container is null");
+        
+        _applicationStateManager = new ApplicationStateManager(_container, desktop.Args ?? Array.Empty<string>());
+        _suspensionManager = new SuspensionManager(_container);
         ArtemisBootstrapper.Initialize();
-        RegisterProviders(_container!);
+        RegisterProviders(_container);
     }
 
     private void RegisterProviders(IContainer container)
@@ -117,8 +120,10 @@ public class App : Application
     }
 
     // ReSharper disable NotAccessedField.Local
-    private ApplicationStateManager? _applicationStateManager;
 
+    private ApplicationStateManager? _applicationStateManager;
+    private SuspensionManager? _suspensionManager;
     private Mutex? _artemisMutex;
+
     // ReSharper restore NotAccessedField.Local
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using RGB.NET.Core;
 
 namespace Artemis.Core.DeviceProviders;
@@ -15,7 +16,7 @@ public abstract class DeviceProvider : PluginFeature
     ///     The RGB.NET device provider backing this Artemis device provider
     /// </summary>
     public abstract IRGBDeviceProvider RgbDeviceProvider { get; }
-    
+
     /// <summary>
     ///     A boolean indicating whether this device provider detects the physical layout of connected keyboards.
     ///     <para>
@@ -47,6 +48,11 @@ public abstract class DeviceProvider : PluginFeature
     ///     <para>Note: Defaults to <see langword="true" />.</para>
     /// </summary>
     public bool RemoveExcessiveLedsSupported { get; protected set; } = true;
+
+    /// <summary>
+    ///     Gets or sets a boolean indicating whether suspending the device provider is supported
+    /// </summary>
+    public bool SuspendSupported { get; protected set; }
 
     /// <summary>
     ///     Loads a layout for the specified device and wraps it in an <see cref="ArtemisLayout" />
@@ -108,5 +114,13 @@ public abstract class DeviceProvider : PluginFeature
             fileName = $"{fileName}-{device.PhysicalLayout.ToString().ToUpper()}";
 
         return fileName + ".xml";
+    }
+
+    /// <summary>
+    /// Called when the device provider is being suspended, like when the system is going to sleep.
+    /// Note: This will be called while the plugin is disabled.
+    /// </summary>
+    public virtual void Suspend()
+    {
     }
 }
