@@ -21,7 +21,7 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
 {
     private const string CLIENT_ID = "artemis.desktop";
     private readonly IAuthenticationRepository _authenticationRepository;
-    private readonly SemaphoreSlim _authLock = new(1);
+    private readonly SemaphoreSlim _authLock = new(1, 1);
     private readonly SourceList<Claim> _claims;
 
     private readonly IDiscoveryCache _discoveryCache;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.UI.Shared.Services;
 using ReactiveUI;
 
@@ -60,6 +61,12 @@ public class DataModelListItemViewModel : DataModelVisualizationViewModel
     {
         get => _displayValue;
         internal set => this.RaiseAndSetIfChanged(ref _displayValue, value);
+    }
+
+    /// <inheritdoc />
+    public override IEnumerable<DataModelVisualizationViewModel> GetSearchResults(string search)
+    {
+        return [];
     }
 
     /// <inheritdoc />

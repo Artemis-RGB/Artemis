@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.UI.Shared.Services;
@@ -52,12 +54,18 @@ public class DataModelPropertiesViewModel : DataModelVisualizationViewModel
         // Always populate properties   
         PopulateProperties(dataModelUIService, configuration);
 
-        // Only update children if the parent is expanded
-        if (Parent != null && !Parent.IsRootViewModel && !Parent.IsVisualizationExpanded)
+        // Only update children if the parent is expanded or when searching
+        if (Parent != null && !Parent.IsRootViewModel && !Parent.IsVisualizationExpanded && (configuration == null || !configuration.UpdateAllChildren))
             return;
-
+        
         foreach (DataModelVisualizationViewModel dataModelVisualizationViewModel in Children)
             dataModelVisualizationViewModel.Update(dataModelUIService, configuration);
+    }
+
+    /// <inheritdoc />
+    public override IEnumerable<DataModelVisualizationViewModel> GetSearchResults(string search)
+    {
+        return Children.SelectMany(c => c.GetSearchResults(search));
     }
 
     /// <inheritdoc />

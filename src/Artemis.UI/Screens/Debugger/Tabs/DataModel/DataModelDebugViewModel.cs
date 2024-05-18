@@ -100,7 +100,7 @@ public partial class DataModelDebugViewModel : ActivatableViewModelBase
 
         lock (MainDataModel)
         {
-            MainDataModel.Update(_dataModelUIService, new DataModelUpdateConfiguration(true));
+            MainDataModel.Update(_dataModelUIService, new DataModelUpdateConfiguration(true, false));
         }
     }
 

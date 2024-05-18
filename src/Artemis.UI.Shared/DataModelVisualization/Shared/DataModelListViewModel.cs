@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Artemis.Core;
 using Artemis.Core.Modules;
@@ -117,6 +118,17 @@ public class DataModelListViewModel : DataModelVisualizationViewModel
             ListChildren.RemoveAt(ListChildren.Count - 1);
 
         CountDisplay = $"{ListChildren.Count} {(ListChildren.Count == 1 ? "item" : "items")}";
+    }
+
+    /// <inheritdoc />
+    public override IEnumerable<DataModelVisualizationViewModel> GetSearchResults(string search)
+    {
+        if (PropertyDescription?.Name != null && PropertyDescription.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
+            return [this];
+        if (PropertyDescription?.Description != null && PropertyDescription.Description.Contains(search, StringComparison.OrdinalIgnoreCase))
+            return [this];
+        
+        return [];
     }
 
     /// <inheritdoc />

@@ -24,6 +24,7 @@
         <PackageReference Include="Avalonia.Win32" />
         <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
         <PackageReference Include="Microsoft.Win32" />
+        <PackageReference Include="Microsoft.Win32.SystemEvents" />
         <PackageReference Include="Microsoft.Windows.Compatibility" />
         <PackageReference Include="RawInput.Sharp" />
         <PackageReference Include="SkiaSharp.Vulkan.SharpVk" />

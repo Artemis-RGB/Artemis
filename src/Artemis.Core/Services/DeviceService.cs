@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.Providers;
 using Artemis.Core.Services.Models;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
-using DryIoc;
 using RGB.NET.Core;
 using Serilog;
 
@@ -21,8 +21,10 @@ internal class DeviceService : IDeviceService
     private readonly IDeviceRepository _deviceRepository;
     private readonly Lazy<IRenderService> _renderService;
     private readonly Func<List<ILayoutProvider>> _getLayoutProviders;
-    private readonly List<ArtemisDevice> _enabledDevices = new();
-    private readonly List<ArtemisDevice> _devices = new();
+    private readonly List<ArtemisDevice> _enabledDevices = [];
+    private readonly List<ArtemisDevice> _devices = [];
+    private readonly List<DeviceProvider> _suspendedDeviceProviders = [];
+    private readonly object _suspensionLock = new();
 
     public DeviceService(ILogger logger,
         IPluginManagementService pluginManagementService,
@@ -69,7 +71,7 @@ internal class DeviceService : IDeviceService
                 OnDeviceRemoved(new DeviceEventArgs(device));
             }
 
-            List<Exception> providerExceptions = new();
+            List<Exception> providerExceptions = [];
 
             void DeviceProviderOnException(object? sender, ExceptionEventArgs e)
             {
@@ -95,7 +97,7 @@ internal class DeviceService : IDeviceService
                 return;
             }
 
-            List<ArtemisDevice> addedDevices = new();
+            List<ArtemisDevice> addedDevices = [];
             foreach (IRGBDevice rgbDevice in rgbDeviceProvider.Devices)
             {
                 ArtemisDevice artemisDevice = GetArtemisDevice(rgbDevice);
@@ -184,7 +186,7 @@ internal class DeviceService : IDeviceService
                 device.ApplyLayout(null, false, false);
             else
                 provider?.ApplyLayout(device, layout);
-            
+
             UpdateLeds();
         }
         catch (Exception e)
@@ -239,6 +241,83 @@ internal class DeviceService : IDeviceService
             artemisDevice.Save();
         _deviceRepository.SaveRange(_devices.Select(d => d.DeviceEntity));
         UpdateLeds();
+    }
+
+    /// <inheritdoc />
+    public void SuspendDeviceProviders()
+    {
+        lock (_suspensionLock)
+        {
+            _logger.Information("Suspending all device providers");
+
+            bool wasPaused = _renderService.Value.IsPaused;
+            try
+            {
+                _renderService.Value.IsPaused = true;
+                foreach (DeviceProvider deviceProvider in _pluginManagementService.GetFeaturesOfType<DeviceProvider>().Where(d => d.SuspendSupported))
+                    SuspendDeviceProvider(deviceProvider);
+            }
+            finally
+            {
+                _renderService.Value.IsPaused = wasPaused;
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public void ResumeDeviceProviders()
+    {
+        lock (_suspensionLock)
+        {
+            _logger.Information("Resuming all device providers");
+
+            bool wasPaused = _renderService.Value.IsPaused;
+            try
+            {
+                _renderService.Value.IsPaused = true;
+                foreach (DeviceProvider deviceProvider in _suspendedDeviceProviders.ToList())
+                    ResumeDeviceProvider(deviceProvider);
+            }
+            finally
+            {
+                _renderService.Value.IsPaused = wasPaused;
+            }
+        }
+    }
+
+    private void SuspendDeviceProvider(DeviceProvider deviceProvider)
+    {
+        if (_suspendedDeviceProviders.Contains(deviceProvider))
+        {
+            _logger.Warning("Device provider {DeviceProvider} is already suspended", deviceProvider.Info.Name);
+            return;
+        }
+
+        try
+        {
+            _pluginManagementService.DisablePluginFeature(deviceProvider, false);
+            deviceProvider.Suspend();
+            _suspendedDeviceProviders.Add(deviceProvider);
+            _logger.Information("Device provider {DeviceProvider} suspended", deviceProvider.Info.Name);
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Device provider {DeviceProvider} failed to suspend", deviceProvider.Info.Name);
+        }
+    }
+
+    private void ResumeDeviceProvider(DeviceProvider deviceProvider)
+    {
+        try
+        {
+            _pluginManagementService.EnablePluginFeature(deviceProvider, false, true);
+            _suspendedDeviceProviders.Remove(deviceProvider);
+            _logger.Information("Device provider {DeviceProvider} resumed", deviceProvider.Info.Name);
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Device provider {DeviceProvider} failed to resume", deviceProvider.Info.Name);
+        }
     }
 
     private ArtemisDevice GetArtemisDevice(IRGBDevice rgbDevice)

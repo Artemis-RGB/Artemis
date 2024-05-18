@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Artemis.Core.DeviceProviders;
 
 namespace Artemis.Core.Services;
@@ -70,6 +71,16 @@ public interface IDeviceService : IArtemisService
     ///     Saves the configuration of all current devices to persistent storage
     /// </summary>
     void SaveDevices();
+
+    /// <summary>
+    ///     Suspends all active device providers
+    /// </summary>
+    void SuspendDeviceProviders();
+
+    /// <summary>
+    ///     Resumes all previously active device providers
+    /// </summary>
+    void ResumeDeviceProviders();
 
     /// <summary>
     ///     Occurs when a single device was added.

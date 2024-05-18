@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -69,12 +70,19 @@ public class DataModelPicker : TemplatedControl
     public static readonly StyledProperty<bool> IsEventPickerProperty =
         AvaloniaProperty.Register<DataModelPicker, bool>(nameof(IsEventPicker));
 
+    private readonly ObservableCollection<DataModelVisualizationViewModel> _searchResults = [];
     private TextBlock? _currentPathDescription;
     private TextBlock? _currentPathDisplay;
 
     private MaterialIcon? _currentPathIcon;
     private TreeView? _dataModelTreeView;
+    private ListBox? _searchListBox;
+    private TextBox? _searchBox;
+    private Panel? _searchContainer;
+    private StackPanel? _searchEmpty;
     private DispatcherTimer? _updateTimer;
+    private string? _lastSearch;
+    private bool _firstUpdate;
 
     static DataModelPicker()
     {
@@ -200,7 +208,14 @@ public class DataModelPicker : TemplatedControl
         if (DataModelUIService == null)
             return;
 
-        DataModelViewModel?.Update(DataModelUIService, new DataModelUpdateConfiguration(!IsEventPicker));
+        DataModelViewModel?.Update(DataModelUIService, new DataModelUpdateConfiguration(!IsEventPicker, !string.IsNullOrEmpty(_searchBox?.Text)));
+        ApplySearch();
+
+        if (_firstUpdate)
+        {
+            _firstUpdate = false;
+            UpdateCurrentPath(true);
+        }
     }
 
     private void GetDataModel()
@@ -229,14 +244,15 @@ public class DataModelPicker : TemplatedControl
         if (DataModelUIService == null || DataModelViewModel == null)
             return;
 
-        DataModelViewModel.Update(DataModelUIService, new DataModelUpdateConfiguration(IsEventPicker));
+        DataModelViewModel.Update(DataModelUIService, new DataModelUpdateConfiguration(!IsEventPicker, !string.IsNullOrEmpty(_searchBox?.Text)));
         DataModelViewModel.ApplyTypeFilter(true, FilterTypes?.ToArray() ?? Type.EmptyTypes);
+        ApplySearch();
     }
 
-    private void DataModelTreeViewOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private void TreeViewOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        // Multi-select isn't a think so grab the first one
-        object? selected = _dataModelTreeView?.SelectedItems[0];
+        // Multi-select isn't a thing so grab the first one
+        object? selected = e.AddedItems[0];
         if (selected == null)
             return;
 
@@ -255,12 +271,48 @@ public class DataModelPicker : TemplatedControl
             treeViewItem.IsExpanded = !treeViewItem.IsExpanded;
     }
 
+    private void ApplySearch()
+    {
+        if (DataModelViewModel == null || string.IsNullOrWhiteSpace(_searchBox?.Text))
+        {
+            if (_dataModelTreeView != null)
+                _dataModelTreeView.IsVisible = true;
+            if (_searchContainer != null)
+                _searchContainer.IsVisible = false;
+            return;
+        }
+
+        if (_dataModelTreeView != null)
+            _dataModelTreeView.IsVisible = false;
+        if (_searchContainer != null)
+            _searchContainer.IsVisible = true;
+
+        if (_searchBox.Text != _lastSearch)
+        {
+            _searchResults.Clear();
+            foreach (DataModelVisualizationViewModel searchResult in DataModelViewModel.GetSearchResults(_searchBox.Text).DistinctBy(r => r.Path).Take(20))
+                _searchResults.Add(searchResult);
+            _lastSearch = _searchBox.Text;
+        }
+
+        if (_searchListBox != null)
+        {
+            _searchListBox.IsVisible = _searchResults.Count > 0;
+            _searchListBox.SelectedItem = _searchResults.FirstOrDefault(r => r.DataModelPath?.Path == DataModelPath?.Path);
+        }
+
+        if (_searchEmpty != null)
+            _searchEmpty.IsVisible = _searchResults.Count == 0;
+        
+       
+    }
+
     private void UpdateCurrentPath(bool selectCurrentPath)
     {
-        if (DataModelPath == null)
+        if (DataModelPath == null || _dataModelTreeView == null)
             return;
 
-        if (_dataModelTreeView != null && selectCurrentPath)
+        if (selectCurrentPath)
         {
             // Expand the path
             DataModel? start = DataModelPath.Target;
@@ -286,7 +338,7 @@ public class DataModelPicker : TemplatedControl
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         if (_dataModelTreeView != null)
-            _dataModelTreeView.SelectionChanged -= DataModelTreeViewOnSelectionChanged;
+            _dataModelTreeView.SelectionChanged -= TreeViewOnSelectionChanged;
         if (_dataModelTreeView != null)
             _dataModelTreeView.DoubleTapped -= DataModelTreeViewOnDoubleTapped;
 
@@ -294,11 +346,22 @@ public class DataModelPicker : TemplatedControl
         _currentPathDisplay = e.NameScope.Find<TextBlock>("CurrentPathDisplay");
         _currentPathDescription = e.NameScope.Find<TextBlock>("CurrentPathDescription");
         _dataModelTreeView = e.NameScope.Find<TreeView>("DataModelTreeView");
+        _searchBox = e.NameScope.Find<TextBox>("SearchBox");
+        _searchContainer = e.NameScope.Find<Panel>("SearchContainer");
+        _searchListBox = e.NameScope.Find<ListBox>("SearchListBox");
+        _searchEmpty = e.NameScope.Find<StackPanel>("SearchEmpty");
 
         if (_dataModelTreeView != null)
-            _dataModelTreeView.SelectionChanged += DataModelTreeViewOnSelectionChanged;
-        if (_dataModelTreeView != null)
+        {
+            _dataModelTreeView.SelectionChanged += TreeViewOnSelectionChanged;
             _dataModelTreeView.DoubleTapped += DataModelTreeViewOnDoubleTapped;
+        }
+
+        if (_searchListBox != null)
+        {
+            _searchListBox.ItemsSource = _searchResults;
+            _searchListBox.SelectionChanged += TreeViewOnSelectionChanged;
+        }
     }
 
     #region Overrides of Visual
@@ -307,17 +370,23 @@ public class DataModelPicker : TemplatedControl
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         GetDataModel();
-        UpdateCurrentPath(true);
+        
         _updateTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Background, Update);
         _updateTimer.Start();
+        _firstUpdate = true;
     }
 
     /// <inheritdoc />
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         DataModelViewModel?.Dispose();
+
         _updateTimer?.Stop();
         _updateTimer = null;
+
+        _lastSearch = null;
+        if (_searchBox != null)
+            _searchBox.Text = null;
     }
 
     #endregion
