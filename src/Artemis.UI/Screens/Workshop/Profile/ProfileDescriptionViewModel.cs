@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Screens.Workshop.Entries.List;
+using Artemis.UI.Screens.Workshop.EntryReleases;
 using Artemis.UI.Shared.Routing;
 using Artemis.WebClient.Workshop;
 using PropertyChanged.SourceGenerator;
@@ -18,11 +19,15 @@ public partial class ProfileDescriptionViewModel : RoutableScreen
     [Notify] private IEntryDetails? _entry;
     [Notify] private List<EntryListItemViewModel>? _dependencies;
 
-    public ProfileDescriptionViewModel(IWorkshopClient client, Func<IEntrySummary, EntryListItemViewModel> getEntryListViewModel)
+    public ProfileDescriptionViewModel(IWorkshopClient client, EntryReleaseInfoViewModel releaseInfoViewModel, Func<IEntrySummary, EntryListItemViewModel> getEntryListViewModel)
     {
         _client = client;
         _getEntryListViewModel = getEntryListViewModel;
+        ReleaseInfoViewModel = releaseInfoViewModel;
+        ReleaseInfoViewModel.InDetailsScreen = false;
     }
+
+    public EntryReleaseInfoViewModel ReleaseInfoViewModel { get; }
 
     public async Task SetEntry(IEntryDetails? entry, CancellationToken cancellationToken)
     {

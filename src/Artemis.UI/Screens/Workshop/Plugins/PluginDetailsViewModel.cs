@@ -64,5 +64,6 @@ public partial class PluginDetailsViewModel : RoutableHostScreen<RoutableScreen,
         EntryImagesViewModel = Entry != null ? _getEntryImagesViewModel(Entry) : null;
 
         await _pluginDescriptionViewModel.SetEntry(Entry, cancellationToken);
+        _pluginDescriptionViewModel.ReleaseInfoViewModel.Release =  result.Data?.Entry?.LatestRelease;
     }
 }

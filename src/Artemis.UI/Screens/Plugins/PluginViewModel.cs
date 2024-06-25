@@ -249,7 +249,7 @@ public partial class PluginViewModel : ActivatableViewModelBase
             return;
 
         // If the plugin or any of its features has uninstall actions, offer to run these
-            await ExecuteRemovePrerequisites(true);
+        await ExecuteRemovePrerequisites(true);
 
         try
         {
@@ -264,7 +264,7 @@ public partial class PluginViewModel : ActivatableViewModelBase
         InstalledEntry? entry = _workshopService.GetInstalledEntries().FirstOrDefault(e => e.TryGetMetadata("PluginId", out Guid pluginId) && pluginId == Plugin.Guid);
         if (entry != null)
             _workshopService.RemoveInstalledEntry(entry);
-        
+
         _notificationService.CreateNotification().WithTitle("Removed plugin.").Show();
     }
 
@@ -302,5 +302,20 @@ public partial class PluginViewModel : ActivatableViewModelBase
             if (!IsEnabled)
                 _settingsWindow?.Close();
         });
+    }
+
+    public async Task AutoEnable()
+    {
+        if (IsEnabled)
+            return;
+        
+        await UpdateEnabled(true);
+        
+        // If enabling failed, don't offer to show the settings
+        if (!IsEnabled || Plugin.ConfigurationDialog == null)
+            return;
+
+        if (await _windowService.ShowConfirmContentDialog("Open plugin settings", "This plugin has settings, would you like to view them?", "Yes", "No"))
+            ExecuteOpenSettings();
     }
 }

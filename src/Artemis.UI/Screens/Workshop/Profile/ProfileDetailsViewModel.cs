@@ -65,5 +65,6 @@ public partial class ProfileDetailsViewModel : RoutableHostScreen<RoutableScreen
         EntryImagesViewModel = Entry != null ? _getEntryImagesViewModel(Entry) : null;
 
         await _profileDescriptionViewModel.SetEntry(Entry, cancellationToken);
+        _profileDescriptionViewModel.ReleaseInfoViewModel.Release =  result.Data?.Entry?.LatestRelease;
     }
 }

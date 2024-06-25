@@ -1,6 +1,9 @@
 query GetEntryById($id: Long!) {
     entry(id: $id) {
         ...entryDetails
+        latestRelease {
+            ...releaseDetails
+        }
     }
 }
 
@@ -9,7 +12,10 @@ query GetPluginEntryById($id: Long!) {
         ...entryDetails
         pluginInfo {
             ...pluginInfo
-        }        
+        }
+        latestRelease {
+            ...releaseDetails
+        }
     }
 }
 
