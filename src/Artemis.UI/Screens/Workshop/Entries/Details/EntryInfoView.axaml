@@ -15,24 +15,29 @@
     </UserControl.Resources>
     <Panel>
         <StackPanel IsVisible="{CompiledBinding Entry, Converter={x:Static ObjectConverters.IsNull}}">
-            <Border Classes="skeleton-text" Margin="0 0 10 0" Width="80" Height="80"></Border>
-            <Border Classes="skeleton-text title" HorizontalAlignment="Stretch"/>
-            <Border Classes="skeleton-text" Width="120"/>
-            <Border Classes="skeleton-text" Width="140" Margin="0 8"/>
-            <Border Classes="skeleton-text" Width="80"/>
+            <Border Classes="skeleton-text" 
+                    HorizontalAlignment="Center"
+                    Margin="30 30 30 0"
+                    Width="80"
+                    Height="80">
+            </Border>
+            <Border Classes="skeleton-text title" HorizontalAlignment="Stretch" Margin="0 20" />
+            <Border Classes="skeleton-text" Width="120" />
+            <Border Classes="skeleton-text" Width="140" Margin="0 8" />
+            <Border Classes="skeleton-text" Width="80" />
             <Border Classes="card-separator" Margin="0 15 0 17"></Border>
-            <Border Classes="skeleton-text" Width="120"/>
+            <Border Classes="skeleton-text" Width="120" />
             <StackPanel Margin="0 10 0 0">
-                <Border Classes="skeleton-text" Width="160"/>
-                <Border Classes="skeleton-text" Width="160"/>    
+                <Border Classes="skeleton-text" Width="160" />
+                <Border Classes="skeleton-text" Width="160" />
             </StackPanel>
             <Border Classes="skeleton-button"></Border>
         </StackPanel>
         <StackPanel IsVisible="{CompiledBinding Entry, Converter={x:Static ObjectConverters.IsNotNull}}">
             <Panel>
                 <Border CornerRadius="6"
-                        HorizontalAlignment="Left"
-                        Margin="0 0 10 0"
+                        HorizontalAlignment="Center"
+                        Margin="30 30 30 0"
                         Width="80"
                         Height="80"
                         ClipToBounds="True">
@@ -46,11 +51,13 @@
                     <avalonia:MaterialIcon Kind="ShareVariant" />
                 </Button>
             </Panel>
-            
+
             <TextBlock Theme="{StaticResource TitleTextBlockStyle}"
                        MaxLines="3"
                        TextTrimming="CharacterEllipsis"
-                       Text="{CompiledBinding Entry.Name, FallbackValue=Title}"/>
+                       TextAlignment="Center"
+                       Text="{CompiledBinding Entry.Name, FallbackValue=Title}"
+                       Margin="0 15" />
 
             <TextBlock Classes="subtitle" TextTrimming="CharacterEllipsis" Text="{CompiledBinding Entry.Author, FallbackValue=Author}" />
 

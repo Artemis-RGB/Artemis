@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Artemis.UI.Shared.Routing;
 using Artemis.WebClient.Workshop.Models;
@@ -15,29 +16,39 @@ namespace Artemis.UI.Screens.Workshop.Library.Tabs;
 
 public partial class InstalledTabViewModel : RoutableScreen
 {
+    private SourceList<InstalledEntry> _installedEntries = new();
+    
     [Notify] private string? _searchEntryInput;
 
     public InstalledTabViewModel(IWorkshopService workshopService, IRouter router, Func<InstalledEntry, InstalledTabItemViewModel> getInstalledTabItemViewModel)
     {
-        SourceList<InstalledEntry> installedEntries = new();
         IObservable<Func<InstalledEntry, bool>> pluginFilter = this.WhenAnyValue(vm => vm.SearchEntryInput).Throttle(TimeSpan.FromMilliseconds(100)).Select(CreatePredicate);
 
-        installedEntries.Connect()
+        _installedEntries.Connect()
             .Filter(pluginFilter)
             .Sort(SortExpressionComparer<InstalledEntry>.Descending(p => p.InstalledAt))
             .Transform(getInstalledTabItemViewModel)
-            .AutoRefresh(vm => vm.IsRemoved)
-            .Filter(vm => !vm.IsRemoved)
             .Bind(out ReadOnlyObservableCollection<InstalledTabItemViewModel> installedEntryViewModels)
             .Subscribe();
         
         List<InstalledEntry> entries = workshopService.GetInstalledEntries();
-        installedEntries.AddRange(entries);
+        _installedEntries.AddRange(entries);
         
         Empty = entries.Count == 0;
         InstalledEntries = installedEntryViewModels;
         
+        this.WhenActivated(d =>
+        {
+            workshopService.OnEntryUninstalled += WorkshopServiceOnOnEntryUninstalled;
+            Disposable.Create(() => workshopService.OnEntryUninstalled -= WorkshopServiceOnOnEntryUninstalled).DisposeWith(d);
+        });
+        
         OpenWorkshop = ReactiveCommand.CreateFromTask(async () => await router.Navigate("workshop"));
+    }
+
+    private void WorkshopServiceOnOnEntryUninstalled(object? sender, InstalledEntry e)
+    {
+        _installedEntries.Remove(e);
     }
 
     public bool Empty { get; }

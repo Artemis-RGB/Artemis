@@ -187,6 +187,11 @@ public interface IPluginManagementService : IArtemisService, IDisposable
     event EventHandler<PluginEventArgs> PluginDisabled;
 
     /// <summary>
+    ///     Occurs when a plugin is removed
+    /// </summary>
+    event EventHandler<PluginEventArgs> PluginRemoved; 
+
+    /// <summary>
     ///     Occurs when a plugin feature is being enabled
     /// </summary>
     public event EventHandler<PluginFeatureEventArgs> PluginFeatureEnabling;

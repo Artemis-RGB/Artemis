@@ -26,7 +26,6 @@ internal class ProfileService : IProfileService
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IDeviceService _deviceService;
     private readonly List<ArtemisKeyboardKeyEventArgs> _pendingKeyboardEvents = new();
-    private readonly List<IProfileMigration> _profileMigrators;
     private readonly List<Exception> _renderExceptions = new();
     private readonly List<Exception> _updateExceptions = new();
 
@@ -38,15 +37,13 @@ internal class ProfileService : IProfileService
         IProfileRepository profileRepository,
         IPluginManagementService pluginManagementService,
         IInputService inputService,
-        IDeviceService deviceService,
-        List<IProfileMigration> profileMigrators)
+        IDeviceService deviceService)
     {
         _logger = logger;
         _profileCategoryRepository = profileCategoryRepository;
         _profileRepository = profileRepository;
         _pluginManagementService = pluginManagementService;
         _deviceService = deviceService;
-        _profileMigrators = profileMigrators;
 
         ProfileCategories = new ReadOnlyCollection<ProfileCategory>(_profileCategoryRepository.GetAll().Select(c => new ProfileCategory(c)).OrderBy(c => c.Order).ToList());
 
@@ -264,6 +261,8 @@ internal class ProfileService : IProfileService
 
         category.AddProfileConfiguration(configuration, category.ProfileConfigurations.FirstOrDefault());
         SaveProfileCategory(category);
+        
+        OnProfileAdded(new ProfileConfigurationEventArgs(configuration));
         return configuration;
     }
     
@@ -279,6 +278,8 @@ internal class ProfileService : IProfileService
 
         _profileRepository.Remove(profileConfiguration.Entity);
         _profileCategoryRepository.Save(category.Entity);
+        
+        OnProfileRemoved(new ProfileConfigurationEventArgs(profileConfiguration));
     }
 
     /// <inheritdoc />
@@ -436,8 +437,9 @@ internal class ProfileService : IProfileService
     /// <inheritdoc />
     public async Task<ProfileConfiguration> OverwriteProfile(MemoryStream archiveStream, ProfileConfiguration profileConfiguration)
     {
-        ProfileConfiguration imported = await ImportProfile(archiveStream, profileConfiguration.Category, true, true, null, profileConfiguration);
-
+        ProfileConfiguration imported = await ImportProfile(archiveStream, profileConfiguration.Category, true, false, null, profileConfiguration);
+        imported.Name = profileConfiguration.Name;
+        
         RemoveProfileConfiguration(profileConfiguration);
         SaveProfileCategory(imported.Category);
 
@@ -588,6 +590,8 @@ internal class ProfileService : IProfileService
     public event EventHandler<ProfileConfigurationEventArgs>? ProfileDeactivated;
     public event EventHandler<ProfileCategoryEventArgs>? ProfileCategoryAdded;
     public event EventHandler<ProfileCategoryEventArgs>? ProfileCategoryRemoved;
+    public event EventHandler<ProfileConfigurationEventArgs>? ProfileRemoved;
+    public event EventHandler<ProfileConfigurationEventArgs>? ProfileAdded;
 
     protected virtual void OnProfileActivated(ProfileConfigurationEventArgs e)
     {
@@ -610,4 +614,14 @@ internal class ProfileService : IProfileService
     }
 
     #endregion
+
+    protected virtual void OnProfileRemoved(ProfileConfigurationEventArgs e)
+    {
+        ProfileRemoved?.Invoke(this, e);
+    }
+
+    protected virtual void OnProfileAdded(ProfileConfigurationEventArgs e)
+    {
+        ProfileAdded?.Invoke(this, e);
+    }
 }

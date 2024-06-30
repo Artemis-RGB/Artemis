@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:dialogs="clr-namespace:Artemis.UI.Screens.Workshop.EntryReleases.Dialogs"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Workshop.EntryReleases.Dialogs.DependenciesDialogView"
+             x:DataType="dialogs:DependenciesDialogViewModel">
+    <StackPanel>
+        <TextBlock IsVisible="{CompiledBinding Multiple}">
+            <Run Text="Some or all of the required" />
+            <Run Text="{CompiledBinding EntryTypePlural}" />
+            <Run Text="are not installed. This" />
+            <Run Text="{CompiledBinding DependantType}" />
+            <Run Text="will not work properly without them. The missing" />
+            <Run Text="{CompiledBinding EntryTypePlural}" />
+            <Run Text="are listed below and you can click on them to view them" />
+        </TextBlock>
+        <TextBlock IsVisible="{CompiledBinding !Multiple}">
+            <Run Text="A required" />
+            <Run Text="{CompiledBinding EntryType}" />
+            <Run Text="is not installed. This" />
+            <Run Text="{CompiledBinding DependantType}" />
+            <Run Text="will not work properly without it. The missing" />
+            <Run Text="{CompiledBinding EntryType}" />
+            <Run Text="is listed below and you can click on it to view it" />
+        </TextBlock>
+        
+        <ScrollViewer MaxHeight="500" Margin="0 30 0 0">
+            <ItemsControl ItemsSource="{CompiledBinding Dependencies}" >
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl Content="{CompiledBinding}" Margin="0 0 0 5"></ContentControl>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </StackPanel>
+</UserControl>

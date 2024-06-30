@@ -11,6 +11,11 @@ namespace Artemis.Core.Services;
 public interface IDeviceService : IArtemisService
 {
     /// <summary>
+    ///     Gets a read-only collection containing all enabled but suspended device providers
+    /// </summary>
+    IReadOnlyCollection<DeviceProvider> SuspendedDeviceProviders { get; }
+
+    /// <summary>
     ///     Gets a read-only collection containing all enabled devices
     /// </summary>
     IReadOnlyCollection<ArtemisDevice> EnabledDevices { get; }
@@ -42,7 +47,7 @@ public interface IDeviceService : IArtemisService
     ///     Applies auto-arranging logic to the surface
     /// </summary>
     void AutoArrangeDevices();
-    
+
     /// <summary>
     ///     Apples the best available to the provided <see cref="ArtemisDevice" />
     /// </summary>
@@ -111,7 +116,7 @@ public interface IDeviceService : IArtemisService
     ///     Occurs when a device provider was removed.
     /// </summary>
     event EventHandler<DeviceProviderEventArgs> DeviceProviderRemoved;
-    
+
     /// <summary>
     ///     Occurs when the surface has had modifications to its LED collection
     /// </summary>

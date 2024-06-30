@@ -1,13 +1,14 @@
 using System;
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
+using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.Plugins;
+using Artemis.UI.Screens.Workshop.EntryReleases.Dialogs;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
@@ -17,7 +18,6 @@ using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
 using Artemis.WebClient.Workshop.Models;
 using Artemis.WebClient.Workshop.Services;
-using Humanizer;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
@@ -30,13 +30,12 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
     private readonly IWindowService _windowService;
     private readonly IWorkshopService _workshopService;
     private readonly IPluginManagementService _pluginManagementService;
-    private readonly EntryInstallationHandlerFactory _factory;
     private readonly ISettingsVmFactory _settingsVmFactory;
     private readonly Progress<StreamProgress> _progress = new();
-    private readonly ObservableAsPropertyHelper<bool> _isCurrentVersion;
 
     [Notify] private IReleaseDetails? _release;
     [Notify] private float _installProgress;
+    [Notify] private bool _isCurrentVersion;
     [Notify] private bool _installationInProgress;
     [Notify] private bool _inDetailsScreen;
 
@@ -47,7 +46,6 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
         IWindowService windowService,
         IWorkshopService workshopService,
         IPluginManagementService pluginManagementService,
-        EntryInstallationHandlerFactory factory,
         ISettingsVmFactory settingsVmFactory)
     {
         _router = router;
@@ -55,18 +53,31 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
         _windowService = windowService;
         _workshopService = workshopService;
         _pluginManagementService = pluginManagementService;
-        _factory = factory;
         _settingsVmFactory = settingsVmFactory;
         _progress.ProgressChanged += (_, f) => InstallProgress = f.ProgressPercentage;
 
-        _isCurrentVersion = this.WhenAnyValue(vm => vm.Release, vm => vm.InstallationInProgress, (release, _) => release)
-            .Select(r => r != null && _workshopService.GetInstalledEntry(r.Entry.Id)?.ReleaseId == r.Id)
-            .ToProperty(this, vm => vm.IsCurrentVersion);
+        this.WhenActivated(d =>
+        {
+            _workshopService.OnEntryInstalled += WorkshopServiceOnOnEntryInstalled;
+            _workshopService.OnEntryUninstalled += WorkshopServiceOnOnEntryInstalled;
+            Disposable.Create(() =>
+            {
+                _workshopService.OnEntryInstalled -= WorkshopServiceOnOnEntryInstalled;
+                _workshopService.OnEntryUninstalled -= WorkshopServiceOnOnEntryInstalled;
+            }).DisposeWith(d);
+
+            IsCurrentVersion = Release != null && _workshopService.GetInstalledEntry(Release.Entry.Id)?.ReleaseId == Release.Id;
+        });
+
+        this.WhenAnyValue(vm => vm.Release).Subscribe(r => IsCurrentVersion = r != null && _workshopService.GetInstalledEntry(r.Entry.Id)?.ReleaseId == r.Id);
 
         InDetailsScreen = true;
     }
 
-    public bool IsCurrentVersion => _isCurrentVersion.Value;
+    private void WorkshopServiceOnOnEntryInstalled(object? sender, InstalledEntry e)
+    {
+        IsCurrentVersion = Release != null && _workshopService.GetInstalledEntry(Release.Entry.Id)?.ReleaseId == Release.Id;
+    }
 
     public async Task Close()
     {
@@ -79,15 +90,15 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
             return;
 
         // If the entry has missing dependencies, show a dialog
-        foreach (IGetEntryById_Entry_LatestRelease_Dependencies dependency in Release.Dependencies)
+        List<IEntrySummary> missing = Release.Dependencies.Where(d => _workshopService.GetInstalledEntry(d.Id) == null).Cast<IEntrySummary>().ToList();
+        if (missing.Count > 0)
         {
-            if (_workshopService.GetInstalledEntry(dependency.Id) == null)
-            {
-                if (await _windowService.ShowConfirmContentDialog("Missing dependencies",
-                        $"One or more dependencies are missing, this {Release.Entry.EntryType.Humanize(LetterCasing.LowerCase)} won't work without them", "View dependencies"))
-                    await _router.GoUp();
-                return;
-            }
+            await _windowService.CreateContentDialog()
+                .WithTitle("Requirements missing")
+                .WithViewModel(out DependenciesDialogViewModel _, Release.Entry, missing)
+                .WithCloseButtonText("Cancel installation")
+                .ShowAsync();
+            return;
         }
 
         _cts = new CancellationTokenSource();
@@ -95,8 +106,7 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
         InstallationInProgress = true;
         try
         {
-            IEntryInstallationHandler handler = _factory.CreateHandler(Release.Entry.EntryType);
-            EntryInstallResult result = await handler.InstallAsync(Release.Entry, Release, _progress, _cts.Token);
+            EntryInstallResult result = await _workshopService.InstallEntry(Release.Entry, Release, _progress, _cts.Token);
             if (result.IsSuccess)
             {
                 _notificationService.CreateNotification().WithTitle("Installation succeeded").WithSeverity(NotificationSeverity.Success).Show();
@@ -145,8 +155,9 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
             if (installedEntry.EntryType == EntryType.Plugin)
                 await UninstallPluginPrerequisites(installedEntry);
 
-            IEntryInstallationHandler handler = _factory.CreateHandler(installedEntry.EntryType);
-            await handler.UninstallAsync(installedEntry, CancellationToken.None);
+            await _workshopService.UninstallEntry(installedEntry, CancellationToken.None);
+            
+            _notificationService.CreateNotification().WithTitle("Entry uninstalled").WithSeverity(NotificationSeverity.Success).Show();
         }
         finally
         {

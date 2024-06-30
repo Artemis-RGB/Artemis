@@ -11,8 +11,6 @@ using Artemis.UI.Exceptions;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
-using Artemis.WebClient.Workshop.Models;
-using Artemis.WebClient.Workshop.Services;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using Material.Icons;
@@ -26,7 +24,6 @@ public partial class PluginViewModel : ActivatableViewModelBase
     private readonly ICoreService _coreService;
     private readonly INotificationService _notificationService;
     private readonly IPluginManagementService _pluginManagementService;
-    private readonly IWorkshopService _workshopService;
     private readonly IWindowService _windowService;
     private Window? _settingsWindow;
     [Notify] private bool _canInstallPrerequisites;
@@ -39,15 +36,13 @@ public partial class PluginViewModel : ActivatableViewModelBase
         ICoreService coreService,
         IWindowService windowService,
         INotificationService notificationService,
-        IPluginManagementService pluginManagementService,
-        IWorkshopService workshopService)
+        IPluginManagementService pluginManagementService)
     {
         _plugin = plugin;
         _coreService = coreService;
         _windowService = windowService;
         _notificationService = notificationService;
         _pluginManagementService = pluginManagementService;
-        _workshopService = workshopService;
 
         Platforms = new ObservableCollection<PluginPlatformViewModel>();
         if (Plugin.Info.Platforms != null)
@@ -260,11 +255,7 @@ public partial class PluginViewModel : ActivatableViewModelBase
             _windowService.ShowExceptionDialog("Failed to remove plugin", e);
             throw;
         }
-
-        InstalledEntry? entry = _workshopService.GetInstalledEntries().FirstOrDefault(e => e.TryGetMetadata("PluginId", out Guid pluginId) && pluginId == Plugin.Guid);
-        if (entry != null)
-            _workshopService.RemoveInstalledEntry(entry);
-
+        
         _notificationService.CreateNotification().WithTitle("Removed plugin.").Show();
     }
 

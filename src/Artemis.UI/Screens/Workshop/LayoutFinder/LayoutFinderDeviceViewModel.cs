@@ -11,7 +11,6 @@ using Artemis.WebClient.Workshop.Models;
 using Artemis.WebClient.Workshop.Providers;
 using Artemis.WebClient.Workshop.Services;
 using Material.Icons;
-using Material.Icons.Avalonia;
 using PropertyChanged.SourceGenerator;
 using StrawberryShake;
 
@@ -23,7 +22,6 @@ public partial class LayoutFinderDeviceViewModel : ViewModelBase
     private readonly IDeviceService _deviceService;
     private readonly IWorkshopService _workshopService;
     private readonly WorkshopLayoutProvider _layoutProvider;
-    private readonly EntryInstallationHandlerFactory _factory;
 
     [Notify] private bool _searching;
     [Notify] private bool _hasLayout;
@@ -33,18 +31,12 @@ public partial class LayoutFinderDeviceViewModel : ViewModelBase
     [Notify] private string? _logicalLayout;
     [Notify] private string? _physicalLayout;
 
-    public LayoutFinderDeviceViewModel(ArtemisDevice device,
-        IWorkshopClient client,
-        IDeviceService deviceService,
-        IWorkshopService workshopService,
-        WorkshopLayoutProvider layoutProvider,
-        EntryInstallationHandlerFactory factory)
+    public LayoutFinderDeviceViewModel(ArtemisDevice device, IWorkshopClient client, IDeviceService deviceService, IWorkshopService workshopService, WorkshopLayoutProvider layoutProvider)
     {
         _client = client;
         _deviceService = deviceService;
         _workshopService = workshopService;
         _layoutProvider = layoutProvider;
-        _factory = factory;
 
         Device = device;
         DeviceIcon = DetermineDeviceIcon();
@@ -116,8 +108,7 @@ public partial class LayoutFinderDeviceViewModel : ViewModelBase
         InstalledEntry? installedEntry = _workshopService.GetInstalledEntry(entry.Id);
         if (installedEntry == null)
         {
-            IEntryInstallationHandler installationHandler = _factory.CreateHandler(EntryType.Layout);
-            EntryInstallResult result = await installationHandler.InstallAsync(entry, release, new Progress<StreamProgress>(), CancellationToken.None);
+            EntryInstallResult result = await _workshopService.InstallEntry(entry, release, new Progress<StreamProgress>(), CancellationToken.None);
             installedEntry = result.Entry;
         }
 

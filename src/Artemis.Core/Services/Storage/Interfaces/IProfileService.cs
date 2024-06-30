@@ -30,7 +30,7 @@ public interface IProfileService : IArtemisService
     /// Gets or sets a value indicating whether the currently focused profile should receive updates.
     /// </summary>
     bool UpdateFocusProfile { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets whether profiles are rendered each frame by calling their Render method
     /// </summary>
@@ -54,7 +54,7 @@ public interface IProfileService : IArtemisService
     /// </summary>
     /// <param name="profileConfiguration">The profile configuration of the profile to activate.</param>
     void DeactivateProfile(ProfileConfiguration profileConfiguration);
-    
+
     /// <summary>
     ///     Saves the provided <see cref="ProfileCategory" /> and it's <see cref="ProfileConfiguration" />s but not the
     ///     <see cref="Profile" />s themselves.
@@ -117,8 +117,9 @@ public interface IProfileService : IArtemisService
     /// <param name="nameAffix">Text to add after the name of the profile (separated by a dash).</param>
     /// <param name="target">The profile before which to import the profile into the category.</param>
     /// <returns>The resulting profile configuration.</returns>
-    Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix = "imported", ProfileConfiguration? target = null);
-    
+    Task<ProfileConfiguration> ImportProfile(Stream archiveStream, ProfileCategory category, bool makeUnique, bool markAsFreshImport, string? nameAffix = "imported",
+        ProfileConfiguration? target = null);
+
     /// <summary>
     ///     Imports the provided ZIP archive stream into the provided profile configuration
     /// </summary>
@@ -163,5 +164,14 @@ public interface IProfileService : IArtemisService
     ///     Occurs whenever a profile category is removed.
     /// </summary>
     public event EventHandler<ProfileCategoryEventArgs>? ProfileCategoryRemoved;
-    
+
+    /// <summary>
+    ///     Occurs whenever a profile is added.
+    /// </summary>
+    public event EventHandler<ProfileConfigurationEventArgs>? ProfileRemoved;
+
+    /// <summary>
+    ///     Occurs whenever a profile is removed.
+    /// </summary>
+    public event EventHandler<ProfileConfigurationEventArgs>? ProfileAdded;
 }
