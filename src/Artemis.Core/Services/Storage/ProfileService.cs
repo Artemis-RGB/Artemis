@@ -435,18 +435,6 @@ internal class ProfileService : IProfileService
     }
 
     /// <inheritdoc />
-    public async Task<ProfileConfiguration> OverwriteProfile(MemoryStream archiveStream, ProfileConfiguration profileConfiguration)
-    {
-        ProfileConfiguration imported = await ImportProfile(archiveStream, profileConfiguration.Category, true, false, null, profileConfiguration);
-        imported.Name = profileConfiguration.Name;
-        
-        RemoveProfileConfiguration(profileConfiguration);
-        SaveProfileCategory(imported.Category);
-
-        return imported;
-    }
-
-    /// <inheritdoc />
     public void AdaptProfile(Profile profile)
     {
         List<ArtemisDevice> devices = _deviceService.EnabledDevices.ToList();

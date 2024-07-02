@@ -121,14 +121,6 @@ public interface IProfileService : IArtemisService
         ProfileConfiguration? target = null);
 
     /// <summary>
-    ///     Imports the provided ZIP archive stream into the provided profile configuration
-    /// </summary>
-    /// <param name="archiveStream">The zip archive containing the profile to import.</param>
-    /// <param name="profileConfiguration">The profile configuration to overwrite.</param>
-    /// <returns>The resulting profile configuration.</returns>
-    Task<ProfileConfiguration> OverwriteProfile(MemoryStream archiveStream, ProfileConfiguration profileConfiguration);
-
-    /// <summary>
     ///     Adapts a given profile to the currently active devices.
     /// </summary>
     /// <param name="profile">The profile to adapt.</param>

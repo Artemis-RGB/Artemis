@@ -42,11 +42,16 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
             ProfileConfiguration? existing = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(c => c.ProfileId == profileId);
             if (existing != null)
             {
-                ProfileConfiguration overwritten = await _profileService.OverwriteProfile(stream, existing);
+                ProfileConfiguration overwritten = await _profileService.ImportProfile(stream, existing.Category, true, false, null, existing);
+                overwritten.Name = existing.Name;
+                
+                // Update the release
                 installedEntry.SetMetadata("ProfileId", overwritten.ProfileId);
-
-                // Update the release and return the profile configuration
                 UpdateRelease(installedEntry, release);
+                
+                // With everything updated, remove the old profile
+                _profileService.RemoveProfileConfiguration(existing);
+                
                 return EntryInstallResult.FromSuccess(installedEntry);
             }
         }
