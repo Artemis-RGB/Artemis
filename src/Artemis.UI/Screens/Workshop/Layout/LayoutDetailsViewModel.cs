@@ -1,4 +1,5 @@
 using System;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Screens.Workshop.Entries.Details;
@@ -7,6 +8,7 @@ using Artemis.UI.Screens.Workshop.Parameters;
 using Artemis.UI.Shared.Routing;
 using Artemis.WebClient.Workshop;
 using PropertyChanged.SourceGenerator;
+using ReactiveUI;
 using StrawberryShake;
 
 namespace Artemis.UI.Screens.Workshop.Layout;
@@ -31,7 +33,7 @@ public partial class LayoutDetailsViewModel : RoutableHostScreen<RoutableScreen,
         _layoutDescriptionViewModel = layoutDescriptionViewModel;
         _getEntryReleasesViewModel = getEntryReleasesViewModel;
         _getEntryImagesViewModel = getEntryImagesViewModel;
-
+        
         RecycleScreen = false;
         EntryInfoViewModel = entryInfoViewModel;
     }
@@ -60,5 +62,6 @@ public partial class LayoutDetailsViewModel : RoutableHostScreen<RoutableScreen,
         EntryReleasesViewModel = Entry != null ? _getEntryReleasesViewModel(Entry) : null;
         EntryImagesViewModel = Entry != null ? _getEntryImagesViewModel(Entry) : null;
         _layoutDescriptionViewModel.Entry = Entry;
+        _layoutDescriptionViewModel.ReleaseInfoViewModel.Release =  result.Data?.Entry?.LatestRelease;
     }
 }

@@ -114,7 +114,7 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
             return;
         }
 
-        NavigationArguments args = new(this, resolution.Path, resolution.GetAllParameters());
+        NavigationArguments args = new(this, options, resolution.Path, resolution.GetAllParameters());
 
         if (!await RequestClose(_root, args))
             return;
@@ -169,7 +169,7 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
     }
 
     /// <inheritdoc />
-    public async Task<bool> GoUp()
+    public async Task<bool> GoUp(RouterNavigationOptions? options = null)
     {
         string? currentPath = _currentRouteSubject.Value;
         
@@ -180,7 +180,7 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
             RouteResolution resolution = Resolve(parentPath);
             if (resolution.Success)
             {
-                await Navigate(parentPath, new RouterNavigationOptions {AddToHistory = false});
+                await Navigate(parentPath, options);
                 return true;
             }
 

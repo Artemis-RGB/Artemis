@@ -42,11 +42,16 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
             ProfileConfiguration? existing = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(c => c.ProfileId == profileId);
             if (existing != null)
             {
-                ProfileConfiguration overwritten = await _profileService.OverwriteProfile(stream, existing);
+                ProfileConfiguration overwritten = await _profileService.ImportProfile(stream, existing.Category, true, false, null, existing);
+                overwritten.Name = existing.Name;
+                
+                // Update the release
                 installedEntry.SetMetadata("ProfileId", overwritten.ProfileId);
-
-                // Update the release and return the profile configuration
                 UpdateRelease(installedEntry, release);
+                
+                // With everything updated, remove the old profile
+                _profileService.RemoveProfileConfiguration(existing);
+                
                 return EntryInstallResult.FromSuccess(installedEntry);
             }
         }
@@ -58,7 +63,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         ProfileCategory category = _profileService.ProfileCategories.FirstOrDefault(c => c.Name == "Workshop") ?? _profileService.CreateProfileCategory("Workshop", true);
         ProfileConfiguration imported = await _profileService.ImportProfile(stream, category, true, true, null);
         installedEntry.SetMetadata("ProfileId", imported.ProfileId);
-        
+
         // Update the release and return the profile configuration
         UpdateRelease(installedEntry, release);
         return EntryInstallResult.FromSuccess(installedEntry);
@@ -66,17 +71,17 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
 
     public async Task<EntryUninstallResult> UninstallAsync(InstalledEntry installedEntry, CancellationToken cancellationToken)
     {
-        if (!installedEntry.TryGetMetadata("ProfileId", out Guid profileId))
-            return EntryUninstallResult.FromFailure("Local reference does not contain a GUID");
-
         return await Task.Run(() =>
         {
             try
             {
                 // Find the profile if still there
-                ProfileConfiguration? profile = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(c => c.ProfileId == profileId);
-                if (profile != null)
-                    _profileService.RemoveProfileConfiguration(profile);
+                if (installedEntry.TryGetMetadata("ProfileId", out Guid profileId))
+                {
+                    ProfileConfiguration? profile = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(c => c.ProfileId == profileId);
+                    if (profile != null)
+                        _profileService.RemoveProfileConfiguration(profile);
+                }
 
                 // Remove the release
                 _workshopService.RemoveInstalledEntry(installedEntry);

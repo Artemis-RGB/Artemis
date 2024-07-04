@@ -50,7 +50,7 @@ public interface IRouter
     ///     Asynchronously navigates upwards to the parent route.
     /// </summary>
     /// <returns></returns>
-    Task<bool> GoUp();
+    Task<bool> GoUp(RouterNavigationOptions? options = null);
 
     /// <summary>
     ///     Clears the navigation history.

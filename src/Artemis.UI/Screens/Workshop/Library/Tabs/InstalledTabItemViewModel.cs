@@ -11,7 +11,6 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
-using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
 using Artemis.WebClient.Workshop.Models;
 using Artemis.WebClient.Workshop.Services;
 using PropertyChanged.SourceGenerator;
@@ -23,23 +22,19 @@ public partial class InstalledTabItemViewModel : ViewModelBase
 {
     private readonly IWorkshopService _workshopService;
     private readonly IRouter _router;
-    private readonly EntryInstallationHandlerFactory _factory;
     private readonly IWindowService _windowService;
     private readonly IPluginManagementService _pluginManagementService;
     private readonly ISettingsVmFactory _settingsVmFactory;
-    [Notify(Setter.Private)] private bool _isRemoved;
 
     public InstalledTabItemViewModel(InstalledEntry installedEntry,
         IWorkshopService workshopService,
         IRouter router, 
-        EntryInstallationHandlerFactory factory, 
         IWindowService windowService,
         IPluginManagementService pluginManagementService,
         ISettingsVmFactory settingsVmFactory)
     {
         _workshopService = workshopService;
         _router = router;
-        _factory = factory;
         _windowService = windowService;
         _pluginManagementService = pluginManagementService;
         _settingsVmFactory = settingsVmFactory;
@@ -78,9 +73,7 @@ public partial class InstalledTabItemViewModel : ViewModelBase
         if (InstalledEntry.EntryType == EntryType.Plugin)
             await UninstallPluginPrerequisites();
         
-        IEntryInstallationHandler handler = _factory.CreateHandler(InstalledEntry.EntryType);
-        await handler.UninstallAsync(InstalledEntry, cancellationToken);
-        IsRemoved = true;
+        await _workshopService.UninstallEntry(InstalledEntry, cancellationToken);
     }
 
     private async Task UninstallPluginPrerequisites()

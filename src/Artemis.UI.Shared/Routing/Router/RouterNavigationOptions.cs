@@ -36,6 +36,11 @@ public class RouterNavigationOptions
     public bool EnableLogging { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets any additional arguments to pass to the screen.
+    /// </summary>
+    public object? AdditionalArguments { get; set; }
+
+    /// <summary>
     /// Determines whether the given two paths are considered equal using these navigation options.
     /// </summary>
     /// <param name="current">The current path.</param>

@@ -686,6 +686,8 @@ internal class PluginManagementService : IPluginManagementService
 
         if (removeSettings)
             RemovePluginSettings(plugin);
+        
+        OnPluginRemoved(new PluginEventArgs(plugin));
     }
 
     public void RemovePluginSettings(Plugin plugin)
@@ -850,6 +852,7 @@ internal class PluginManagementService : IPluginManagementService
     public event EventHandler<PluginEventArgs>? PluginEnabling;
     public event EventHandler<PluginEventArgs>? PluginEnabled;
     public event EventHandler<PluginEventArgs>? PluginDisabled;
+    public event EventHandler<PluginEventArgs>? PluginRemoved;
 
     public event EventHandler<PluginFeatureEventArgs>? PluginFeatureEnabling;
     public event EventHandler<PluginFeatureEventArgs>? PluginFeatureEnabled;
@@ -889,6 +892,11 @@ internal class PluginManagementService : IPluginManagementService
     protected virtual void OnPluginDisabled(PluginEventArgs e)
     {
         PluginDisabled?.Invoke(this, e);
+    }
+    
+    protected virtual void OnPluginRemoved(PluginEventArgs e)
+    {
+        PluginRemoved?.Invoke(this, e);
     }
 
     protected virtual void OnPluginFeatureEnabling(PluginFeatureEventArgs e)

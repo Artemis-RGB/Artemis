@@ -26,6 +26,8 @@ public partial class StartupWizardViewModel : DialogViewModelBase<bool>
     private readonly ISettingsService _settingsService;
     private readonly IWindowService _windowService;
     private readonly IDeviceService _deviceService;
+    private readonly Func<PluginFeatureInfo, WizardPluginFeatureViewModel> _getPluginFeatureViewModel;
+    
     [Notify] private int _currentStep;
     [Notify] private bool _showContinue;
     [Notify] private bool _showFinish;
@@ -36,12 +38,13 @@ public partial class StartupWizardViewModel : DialogViewModelBase<bool>
         IPluginManagementService pluginManagementService,
         IWindowService windowService,
         IDeviceService deviceService,
-        ISettingsVmFactory settingsVmFactory,
-        LayoutFinderViewModel layoutFinderViewModel)
+        LayoutFinderViewModel layoutFinderViewModel,
+        Func<PluginFeatureInfo, WizardPluginFeatureViewModel> getPluginFeatureViewModel)
     {
         _settingsService = settingsService;
         _windowService = windowService;
         _deviceService = deviceService;
+        _getPluginFeatureViewModel = getPluginFeatureViewModel;
         _autoRunProvider = container.Resolve<IAutoRunProvider>(IfUnresolved.ReturnDefault);
         _protocolProvider = container.Resolve<IProtocolProvider>(IfUnresolved.ReturnDefault);
 
@@ -51,11 +54,12 @@ public partial class StartupWizardViewModel : DialogViewModelBase<bool>
         SelectLayout = ReactiveCommand.Create<string>(ExecuteSelectLayout);
         Version = $"Version {Constants.CurrentVersion}";
 
-        // Take all compatible plugins that have an always-enabled device provider
-        DeviceProviders = new ObservableCollection<PluginViewModel>(pluginManagementService.GetAllPlugins()
-            .Where(p => p.Info.IsCompatible && p.Features.Any(f => f.AlwaysEnabled && f.FeatureType.IsAssignableTo(typeof(DeviceProvider))))
-            .OrderBy(p => p.Info.Name)
-            .Select(p => settingsVmFactory.PluginViewModel(p, ReactiveCommand.Create(() => new Unit()))));
+        // Take all compatible device providers and create a view model for them
+        DeviceProviders = new ObservableCollection<WizardPluginFeatureViewModel>(pluginManagementService.GetAllPlugins()
+            .Where(p => p.Info.IsCompatible)
+            .SelectMany(p => p.Features.Where(f => f.FeatureType.IsAssignableTo(typeof(DeviceProvider))))
+            .OrderBy(f => f.Name)
+            .Select(f => _getPluginFeatureViewModel(f)));
         LayoutFinderViewModel = layoutFinderViewModel;
 
         CurrentStep = 1;
@@ -84,7 +88,7 @@ public partial class StartupWizardViewModel : DialogViewModelBase<bool>
     public ReactiveCommand<string, Unit> SelectLayout { get; }
 
     public string Version { get; }
-    public ObservableCollection<PluginViewModel> DeviceProviders { get; }
+    public ObservableCollection<WizardPluginFeatureViewModel> DeviceProviders { get; }
     public LayoutFinderViewModel LayoutFinderViewModel { get; }
     
     public bool IsAutoRunSupported => _autoRunProvider != null;

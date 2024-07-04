@@ -38,12 +38,14 @@ internal class DeviceService : IDeviceService
         _renderService = renderService;
         _getLayoutProviders = getLayoutProviders;
 
+        SuspendedDeviceProviders = new ReadOnlyCollection<DeviceProvider>(_suspendedDeviceProviders);
         EnabledDevices = new ReadOnlyCollection<ArtemisDevice>(_enabledDevices);
         Devices = new ReadOnlyCollection<ArtemisDevice>(_devices);
 
         RenderScale.RenderScaleMultiplierChanged += RenderScaleOnRenderScaleMultiplierChanged;
     }
 
+    public IReadOnlyCollection<DeviceProvider> SuspendedDeviceProviders { get; }
     public IReadOnlyCollection<ArtemisDevice> EnabledDevices { get; }
     public IReadOnlyCollection<ArtemisDevice> Devices { get; }
 

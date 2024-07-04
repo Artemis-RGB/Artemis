@@ -18,7 +18,10 @@ public class WorkshopLayoutProvider : ILayoutProvider
     /// <inheritdoc />
     public ArtemisLayout? GetDeviceLayout(ArtemisDevice device)
     {
-        InstalledEntry? layoutEntry = _workshopService.GetInstalledEntries().FirstOrDefault(e => e.EntryId.ToString() == device.LayoutSelection.Parameter);
+        if (!long.TryParse(device.LayoutSelection.Parameter, out long entryId))
+            return null;
+        
+        InstalledEntry? layoutEntry = _workshopService.GetInstalledEntry(entryId);
         if (layoutEntry == null)
             return null;
 

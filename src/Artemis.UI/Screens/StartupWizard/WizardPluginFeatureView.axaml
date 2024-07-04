@@ -1,0 +1,79 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:startupWizard="clr-namespace:Artemis.UI.Screens.StartupWizard"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.StartupWizard.WizardPluginFeatureView"
+             x:DataType="startupWizard:WizardPluginFeatureViewModel">
+    <Grid RowDefinitions="*,Auto">
+        <Grid Grid.Row="0" RowDefinitions="Auto,Auto,*" ColumnDefinitions="80,*, Auto">
+            <shared:ArtemisIcon Icon="{CompiledBinding Plugin.Info.ResolvedIcon}"
+                                Width="48"
+                                Height="48"
+                                Margin="0 5 0 0"
+                                Grid.Row="0"
+                                Grid.RowSpan="3"
+                                VerticalAlignment="Top" />
+
+            <TextBlock Grid.Column="1" Grid.Row="0" Classes="no-margin">
+                <Run Classes="h5" Text="{CompiledBinding PluginFeature.Name}" />
+                <Run Classes="subtitle" Text="{CompiledBinding Plugin.Info.Name}" />
+            </TextBlock>
+
+            <ItemsControl Grid.Column="2" Grid.Row="0" IsVisible="{CompiledBinding Platforms.Count}" ItemsSource="{CompiledBinding Platforms}" HorizontalAlignment="Right">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="5" Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+
+            <TextBlock Grid.Column="1"
+                       Grid.ColumnSpan="2"
+                       Grid.Row="1"
+                       Classes="subtitle"
+                       Text="{CompiledBinding Plugin.Info.Author}"
+                       IsVisible="{CompiledBinding Plugin.Info.Author, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            <TextBlock Grid.Column="1"
+                       Grid.ColumnSpan="2"
+                       Grid.Row="2"
+                       TextWrapping="Wrap"
+                       Margin="0 5"
+                       Text="{CompiledBinding Plugin.Info.Description}" />
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+            <Button  Grid.Row="0"
+                     Grid.Column="0"
+                     IsVisible="{CompiledBinding OpenSettings.CanExecute^}" Command="{CompiledBinding OpenSettings}">
+                Settings
+            </Button>
+            <CheckBox Name="EnabledToggle"
+                      Grid.Row="0"
+                      Grid.Column="1"
+                      HorizontalAlignment="Right"
+                      IsVisible="{CompiledBinding !Enabling}"
+                      IsChecked="{CompiledBinding IsEnabled, Mode=OneWay}"
+                      IsEnabled="{CompiledBinding Plugin.Info.IsCompatible}">
+                <StackPanel x:Name="EnableText" Orientation="Horizontal">
+                    <TextBlock>Enable feature</TextBlock>
+                    <avalonia:MaterialIcon Kind="ShieldHalfFull"
+                                           Margin="5 0 0 0"
+                                           ToolTip.Tip="Plugin requires admin rights"
+                                           IsVisible="{CompiledBinding Plugin.Info.RequiresAdmin}" />
+                </StackPanel>
+            </CheckBox>
+
+            <ProgressBar Grid.Row="0"
+                         Grid.Column="1"
+                         HorizontalAlignment="Right"
+                         IsVisible="{CompiledBinding Enabling}"
+                         IsIndeterminate="True" />
+        </Grid>
+    </Grid>
+</UserControl>

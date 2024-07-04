@@ -73,5 +73,11 @@ public partial class PluginManageViewModel : RoutableScreen<WorkshopDetailParame
 
         PluginViewModel = _settingsVmFactory.PluginViewModel(plugin, ReactiveCommand.Create(() => { }));
         PluginFeatures = new ObservableCollection<PluginFeatureViewModel>(plugin.Features.Select(f => _settingsVmFactory.PluginFeatureViewModel(f, false)));
+
+        // If additional arguments were provided and it is a boolean, auto-enable the plugin
+        if (args.Options.AdditionalArguments is true)
+        {
+            await PluginViewModel.AutoEnable();
+        }
     }
 }

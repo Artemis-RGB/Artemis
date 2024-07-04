@@ -8,9 +8,10 @@ namespace Artemis.UI.Shared.Routing;
 /// </summary>
 public class NavigationArguments
 {
-    internal NavigationArguments(IRouter router, string path, object[] routeParameters)
+    internal NavigationArguments(IRouter router, RouterNavigationOptions options, string path, object[] routeParameters)
     {
         Router = router;
+        Options = options;
         Path = path;
         RouteParameters = routeParameters;
         SegmentParameters = Array.Empty<object>();
@@ -20,6 +21,11 @@ public class NavigationArguments
     /// Gets the router in which the navigation is taking place.
     /// </summary>
     public IRouter Router { get; }
+
+    /// <summary>
+    /// Gets the options that are being used for this navigation.
+    /// </summary>
+    public RouterNavigationOptions Options { get; }
 
     /// <summary>
     /// Gets the path of the route that is being navigated to.

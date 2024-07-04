@@ -11,8 +11,6 @@ using Artemis.UI.Exceptions;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
-using Artemis.WebClient.Workshop.Models;
-using Artemis.WebClient.Workshop.Services;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using Material.Icons;
@@ -26,7 +24,6 @@ public partial class PluginViewModel : ActivatableViewModelBase
     private readonly ICoreService _coreService;
     private readonly INotificationService _notificationService;
     private readonly IPluginManagementService _pluginManagementService;
-    private readonly IWorkshopService _workshopService;
     private readonly IWindowService _windowService;
     private Window? _settingsWindow;
     [Notify] private bool _canInstallPrerequisites;
@@ -39,15 +36,13 @@ public partial class PluginViewModel : ActivatableViewModelBase
         ICoreService coreService,
         IWindowService windowService,
         INotificationService notificationService,
-        IPluginManagementService pluginManagementService,
-        IWorkshopService workshopService)
+        IPluginManagementService pluginManagementService)
     {
         _plugin = plugin;
         _coreService = coreService;
         _windowService = windowService;
         _notificationService = notificationService;
         _pluginManagementService = pluginManagementService;
-        _workshopService = workshopService;
 
         Platforms = new ObservableCollection<PluginPlatformViewModel>();
         if (Plugin.Info.Platforms != null)
@@ -249,7 +244,7 @@ public partial class PluginViewModel : ActivatableViewModelBase
             return;
 
         // If the plugin or any of its features has uninstall actions, offer to run these
-            await ExecuteRemovePrerequisites(true);
+        await ExecuteRemovePrerequisites(true);
 
         try
         {
@@ -260,10 +255,6 @@ public partial class PluginViewModel : ActivatableViewModelBase
             _windowService.ShowExceptionDialog("Failed to remove plugin", e);
             throw;
         }
-
-        InstalledEntry? entry = _workshopService.GetInstalledEntries().FirstOrDefault(e => e.TryGetMetadata("PluginId", out Guid pluginId) && pluginId == Plugin.Guid);
-        if (entry != null)
-            _workshopService.RemoveInstalledEntry(entry);
         
         _notificationService.CreateNotification().WithTitle("Removed plugin.").Show();
     }
@@ -302,5 +293,20 @@ public partial class PluginViewModel : ActivatableViewModelBase
             if (!IsEnabled)
                 _settingsWindow?.Close();
         });
+    }
+
+    public async Task AutoEnable()
+    {
+        if (IsEnabled)
+            return;
+        
+        await UpdateEnabled(true);
+        
+        // If enabling failed, don't offer to show the settings
+        if (!IsEnabled || Plugin.ConfigurationDialog == null)
+            return;
+
+        if (await _windowService.ShowConfirmContentDialog("Open plugin settings", "This plugin has settings, would you like to view them?", "Yes", "No"))
+            ExecuteOpenSettings();
     }
 }

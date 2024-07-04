@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
+﻿using System.Reactive.Disposables;
 using Artemis.UI.Shared;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Models;
@@ -22,19 +20,24 @@ public partial class EntryReleaseItemViewModel : ActivatableViewModelBase
         _entry = entry;
 
         Release = release;
-        UpdateIsCurrentVersion();
 
         this.WhenActivated(d =>
         {
-            Observable.FromEventPattern<InstalledEntry>(x => _workshopService.OnInstalledEntrySaved += x, x => _workshopService.OnInstalledEntrySaved -= x)
-                .Subscribe(_ => UpdateIsCurrentVersion())
-                .DisposeWith(d);
+            _workshopService.OnEntryInstalled += WorkshopServiceOnOnEntryInstalled;
+            _workshopService.OnEntryUninstalled += WorkshopServiceOnOnEntryInstalled;
+            Disposable.Create(() =>
+            {
+                _workshopService.OnEntryInstalled -= WorkshopServiceOnOnEntryInstalled;
+                _workshopService.OnEntryUninstalled -= WorkshopServiceOnOnEntryInstalled;
+            }).DisposeWith(d);
+
+            IsCurrentVersion = _workshopService.GetInstalledEntry(_entry.Id)?.ReleaseId == Release.Id;
         });
     }
 
     public IRelease Release { get; }
 
-    private void UpdateIsCurrentVersion()
+    private void WorkshopServiceOnOnEntryInstalled(object? sender, InstalledEntry e)
     {
         IsCurrentVersion = _workshopService.GetInstalledEntry(_entry.Id)?.ReleaseId == Release.Id;
     }

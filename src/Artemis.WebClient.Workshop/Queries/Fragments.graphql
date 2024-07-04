@@ -70,6 +70,17 @@ fragment release on Release {
     createdAt
 } 
 
+fragment releaseDetails on Release {
+    ...release
+    changelog
+    entry {
+        ...entrySummary
+    }
+    dependencies {
+        ...entrySummary
+    }
+}
+
 fragment pluginInfo on PluginInfo {
     requiresAdmin
     supportsWindows

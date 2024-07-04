@@ -4,7 +4,9 @@ using Artemis.Core.Services;
 using Artemis.Storage.Entities.Workshop;
 using Artemis.Storage.Repositories.Interfaces;
 using Artemis.UI.Shared.Routing;
+using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop.Exceptions;
+using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using Artemis.WebClient.Workshop.Models;
 using Serilog;
@@ -17,16 +19,26 @@ public class WorkshopService : IWorkshopService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IRouter _router;
     private readonly IEntryRepository _entryRepository;
-    private readonly IPluginManagementService _pluginManagementService;
+    private readonly Lazy<IPluginManagementService> _pluginManagementService;
+    private readonly Lazy<IProfileService> _profileService;
+    private readonly EntryInstallationHandlerFactory _factory;
     private bool _initialized;
 
-    public WorkshopService(ILogger logger, IHttpClientFactory httpClientFactory, IRouter router, IEntryRepository entryRepository, IPluginManagementService pluginManagementService)
+    public WorkshopService(ILogger logger,
+        IHttpClientFactory httpClientFactory,
+        IRouter router,
+        IEntryRepository entryRepository,
+        Lazy<IPluginManagementService> pluginManagementService,
+        Lazy<IProfileService> profileService,
+        EntryInstallationHandlerFactory factory)
     {
         _logger = logger;
         _httpClientFactory = httpClientFactory;
         _router = router;
         _entryRepository = entryRepository;
         _pluginManagementService = pluginManagementService;
+        _profileService = profileService;
+        _factory = factory;
     }
 
     public async Task<Stream?> GetEntryIcon(long entryId, CancellationToken cancellationToken)
@@ -146,6 +158,32 @@ public class WorkshopService : IWorkshopService
     }
 
     /// <inheritdoc />
+    public async Task<EntryInstallResult> InstallEntry(IEntrySummary entry, IRelease release, Progress<StreamProgress> progress, CancellationToken cancellationToken)
+    {
+        IEntryInstallationHandler handler = _factory.CreateHandler(entry.EntryType);
+        EntryInstallResult result = await handler.InstallAsync(entry, release, progress, cancellationToken);
+        if (result.IsSuccess && result.Entry != null)
+            OnEntryInstalled?.Invoke(this, result.Entry);
+        else
+            _logger.Warning("Failed to install entry {EntryId}: {Message}", entry.Id, result.Message);
+        
+        return result;
+    }
+
+    /// <inheritdoc />
+    public async Task<EntryUninstallResult> UninstallEntry(InstalledEntry installedEntry, CancellationToken cancellationToken)
+    {
+        IEntryInstallationHandler handler = _factory.CreateHandler(installedEntry.EntryType);
+        EntryUninstallResult result = await handler.UninstallAsync(installedEntry, cancellationToken);
+        if (result.IsSuccess)
+            OnEntryUninstalled?.Invoke(this, installedEntry);
+        else
+            _logger.Warning("Failed to uninstall entry {EntryId}: {Message}", installedEntry.EntryId, result.Message);
+
+        return result;
+    }
+
+    /// <inheritdoc />
     public List<InstalledEntry> GetInstalledEntries()
     {
         return _entryRepository.GetAll().Select(e => new InstalledEntry(e)).ToList();
@@ -162,6 +200,18 @@ public class WorkshopService : IWorkshopService
     }
 
     /// <inheritdoc />
+    public InstalledEntry? GetInstalledEntryByPlugin(Plugin plugin)
+    {
+        return GetInstalledEntries().FirstOrDefault(e => e.TryGetMetadata("PluginId", out Guid pluginId) && pluginId == plugin.Guid);
+    }
+
+    /// <inheritdoc />
+    public InstalledEntry? GetInstalledEntryByProfile(ProfileConfiguration profileConfiguration)
+    {
+        return GetInstalledEntries().FirstOrDefault(e => e.TryGetMetadata("ProfileId", out Guid pluginId) && pluginId == profileConfiguration.ProfileId);
+    }
+
+    /// <inheritdoc />
     public void RemoveInstalledEntry(InstalledEntry installedEntry)
     {
         _entryRepository.Remove(installedEntry.Entity);
@@ -172,7 +222,7 @@ public class WorkshopService : IWorkshopService
     {
         entry.Save();
         _entryRepository.Save(entry.Entity);
-        
+
         OnInstalledEntrySaved?.Invoke(this, entry);
     }
 
@@ -189,9 +239,12 @@ public class WorkshopService : IWorkshopService
 
             RemoveOrphanedFiles();
 
-            _pluginManagementService.AdditionalPluginDirectories.AddRange(GetInstalledEntries()
+            _pluginManagementService.Value.AdditionalPluginDirectories.AddRange(GetInstalledEntries()
                 .Where(e => e.EntryType == EntryType.Plugin)
                 .Select(e => e.GetReleaseDirectory()));
+
+            _pluginManagementService.Value.PluginRemoved += PluginManagementServiceOnPluginRemoved;
+            _profileService.Value.ProfileRemoved += ProfileServiceOnProfileRemoved;
 
             _initialized = true;
         }
@@ -233,6 +286,28 @@ public class WorkshopService : IWorkshopService
             _logger.Warning(e, "Failed to remove orphaned workshop entry at {Directory}", directory);
         }
     }
-    
+
+    private void ProfileServiceOnProfileRemoved(object? sender, ProfileConfigurationEventArgs e)
+    {
+        InstalledEntry? entry = GetInstalledEntryByProfile(e.ProfileConfiguration);
+        if (entry == null)
+            return;
+
+        _logger.Information("Profile {Profile} was removed, uninstalling entry", e.ProfileConfiguration);
+        Task.Run(() => UninstallEntry(entry, CancellationToken.None));
+    }
+
+    private void PluginManagementServiceOnPluginRemoved(object? sender, PluginEventArgs e)
+    {
+        InstalledEntry? entry = GetInstalledEntryByPlugin(e.Plugin);
+        if (entry == null)
+            return;
+
+        _logger.Information("Plugin {Plugin} was removed, uninstalling entry", e.Plugin);
+        Task.Run(() => UninstallEntry(entry, CancellationToken.None));
+    }
+
     public event EventHandler<InstalledEntry>? OnInstalledEntrySaved;
+    public event EventHandler<InstalledEntry>? OnEntryUninstalled;
+    public event EventHandler<InstalledEntry>? OnEntryInstalled;
 }

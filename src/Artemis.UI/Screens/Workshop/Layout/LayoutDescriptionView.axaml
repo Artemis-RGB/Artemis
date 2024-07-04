@@ -9,6 +9,10 @@
              x:DataType="layout:LayoutDescriptionViewModel">
     <StackPanel Spacing="10">
         <Border Classes="card">
+            <ContentControl Content="{CompiledBinding ReleaseInfoViewModel}"/>
+        </Border>
+        
+        <Border Classes="card">
             <mdxaml:MarkdownScrollViewer Markdown="{CompiledBinding Entry.Description}" MarkdownStyleName="FluentAvalonia">
                 <mdxaml:MarkdownScrollViewer.Styles>
                     <StyleInclude Source="/Styles/Markdown.axaml" />
