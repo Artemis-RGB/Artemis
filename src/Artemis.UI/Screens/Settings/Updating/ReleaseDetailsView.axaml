@@ -7,6 +7,7 @@
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia.Tight"
+             xmlns:ui="clr-namespace:Artemis.UI"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="1400"
              x:Class="Artemis.UI.Screens.Settings.Updating.ReleaseDetailsView"
              x:DataType="updating:ReleaseDetailsViewModel">
@@ -14,6 +15,7 @@
         <shared:BytesToStringConverter x:Key="BytesToStringConverter" />
         <converters:SubstringConverter x:Key="SubstringConverter" />
         <converters:DateTimeConverter x:Key="DateTimeConverter" />
+        <ui:ArtemisLinkCommand x:Key="ArtemisLinkCommand" />
     </UserControl.Resources>
     <UserControl.Styles>
         <Style Selector="Grid.info-container">
@@ -142,6 +144,9 @@
                 <Border Grid.Row="1" Classes="card-separator" />
 
                 <mdxaml:MarkdownScrollViewer Grid.Row="2" Markdown="{CompiledBinding Release.Changelog}" MarkdownStyleName="FluentAvalonia">
+                    <mdxaml:MarkdownScrollViewer.Engine>
+                        <mdxaml:Markdown HyperlinkCommand="{StaticResource ArtemisLinkCommand}" />
+                    </mdxaml:MarkdownScrollViewer.Engine>
                     <mdxaml:MarkdownScrollViewer.Styles>
                         <StyleInclude Source="/Styles/Markdown.axaml"/>
                     </mdxaml:MarkdownScrollViewer.Styles>

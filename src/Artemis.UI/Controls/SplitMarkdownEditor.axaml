@@ -5,8 +5,13 @@
              xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
              xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia.Tight"
              xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:input="clr-namespace:System.Windows.Input;assembly=System.ObjectModel"
+             xmlns:ui="clr-namespace:Artemis.UI"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Controls.SplitMarkdownEditor">
+    <UserControl.Resources>
+        <ui:ArtemisLinkCommand x:Key="ArtemisLinkCommand" />
+    </UserControl.Resources>
     <Grid RowDefinitions="Auto,*">
         <Grid Row="0" ColumnDefinitions="Auto,*">
             <Label Grid.Column="0" Name="DescriptionEditorLabel" Target="DescriptionEditor" Margin="0 28 0 0" />
@@ -41,6 +46,9 @@
                                              Markdown="{CompiledBinding Document.Text, Mode=OneWay, ElementName=DescriptionEditor}"
                                              MarkdownStyleName="FluentAvalonia"
                                              SaveScrollValueWhenContentUpdated="True">
+                    <mdxaml:MarkdownScrollViewer.Engine>
+                        <mdxaml:Markdown HyperlinkCommand="{StaticResource ArtemisLinkCommand}" />
+                    </mdxaml:MarkdownScrollViewer.Engine>
                     <mdxaml:MarkdownScrollViewer.Styles>
                         <StyleInclude Source="/Styles/Markdown.axaml" />
                     </mdxaml:MarkdownScrollViewer.Styles>

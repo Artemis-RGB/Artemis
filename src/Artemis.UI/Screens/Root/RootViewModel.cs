@@ -65,7 +65,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
 
         router.SetRoot(this);
         mainWindowService.ConfigureMainWindowProvider(this);
-
+        
         OpenScreen = ReactiveCommand.Create<string?>(ExecuteOpenScreen);
         OpenDebugger = ReactiveCommand.CreateFromTask(ExecuteOpenDebugger);
         Exit = ReactiveCommand.CreateFromTask(ExecuteExit);
@@ -107,6 +107,9 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
                 _windowService.ShowExceptionDialog("Fatal error occured during initialization", e);
             }
         });
+        
+        // This isn't pretty, but it's the most straightforward way to make sure the ArtemisLinkCommand has access to the router
+        ArtemisLinkCommand.Router = router;
     }
 
     public SidebarViewModel SidebarViewModel { get; }
