@@ -4,9 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:plugins="clr-namespace:Artemis.UI.Screens.Workshop.Plugins"
              xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia.Tight"
+             xmlns:ui="clr-namespace:Artemis.UI"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Plugins.PluginDescriptionView"
              x:DataType="plugins:PluginDescriptionViewModel">
+    <UserControl.Resources>
+        <ui:ArtemisLinkCommand x:Key="ArtemisLinkCommand" />
+    </UserControl.Resources>
     <StackPanel Spacing="10">
         <Border Classes="card">
             <ContentControl Content="{CompiledBinding ReleaseInfoViewModel}"/>
@@ -14,6 +18,9 @@
         
         <Border Classes="card">
             <mdxaml:MarkdownScrollViewer Markdown="{CompiledBinding Entry.Description}" MarkdownStyleName="FluentAvalonia">
+                <mdxaml:MarkdownScrollViewer.Engine>
+                    <mdxaml:Markdown HyperlinkCommand="{StaticResource ArtemisLinkCommand}" />
+                </mdxaml:MarkdownScrollViewer.Engine>
                 <mdxaml:MarkdownScrollViewer.Styles>
                     <StyleInclude Source="/Styles/Markdown.axaml" />
                 </mdxaml:MarkdownScrollViewer.Styles>
