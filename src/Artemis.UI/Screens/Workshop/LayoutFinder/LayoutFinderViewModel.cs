@@ -19,13 +19,14 @@ namespace Artemis.UI.Screens.Workshop.LayoutFinder;
 public partial class LayoutFinderViewModel : ActivatableViewModelBase
 {
     private readonly ILogger _logger;
-    private readonly SourceList<IRGBDeviceInfo> _devices;
     [Notify] private ReadOnlyObservableCollection<LayoutFinderDeviceViewModel> _deviceViewModels;
 
     public LayoutFinderViewModel(ILogger logger, IDeviceService deviceService, Func<ArtemisDevice, LayoutFinderDeviceViewModel> getDeviceViewModel)
     {
         _logger = logger;
         SearchAll = ReactiveCommand.CreateFromTask(ExecuteSearchAll);
+        DeviceViewModels = new ReadOnlyObservableCollection<LayoutFinderDeviceViewModel>([]);
+        
         this.WhenActivated((CompositeDisposable _) =>
         {
             IEnumerable<LayoutFinderDeviceViewModel> deviceGroups = deviceService.EnabledDevices.Select(getDeviceViewModel);

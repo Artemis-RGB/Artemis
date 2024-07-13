@@ -27,3 +27,9 @@ query GetLayoutEntryById($id: Long!) {
         }
     }
 }
+
+query GetEntrySummaryById($id: Long!) {
+    entry(id: $id) {
+        ...entrySummary
+    }
+}

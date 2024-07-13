@@ -15,8 +15,17 @@
         </Styles>
     </UserControl.Styles>
 
-    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,*,Auto">
-        <StackPanel Grid.Column="0" Grid.RowSpan="3" Margin="0 0 10 0" VerticalAlignment="Top" Width="300" IsVisible="{CompiledBinding ShowCategoryFilter}">
+    <Grid RowDefinitions="Auto,*,Auto" HorizontalAlignment="Stretch" MaxWidth="1330">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Grid.RowSpan="3"
+                    Margin="0 0 10 0" 
+                    VerticalAlignment="Top" 
+                    HorizontalAlignment="Right" 
+                    Width="300"
+                    IsVisible="{CompiledBinding ShowCategoryFilter}">
             <Border Classes="card" VerticalAlignment="Stretch">
                 <StackPanel>
                     <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Categories</TextBlock>
@@ -27,7 +36,7 @@
         </StackPanel>
 
         <ProgressBar Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" Margin="0 0 20 0" IsVisible="{CompiledBinding FetchingMore}" IsIndeterminate="True" />
-        <ContentControl Grid.Column="1" Grid.Row="0" Margin="0 0 20 8" Content="{CompiledBinding InputViewModel}" />
+        <ContentControl Grid.Column="1" Grid.Row="0" Margin="0 0 20 8" Content="{CompiledBinding InputViewModel}"/>
 
         <ScrollViewer Name="EntriesScrollViewer" Grid.Column="1" Grid.Row="1" ScrollChanged="ScrollViewer_OnScrollChanged" Offset="{CompiledBinding ScrollOffset}">
             <ItemsControl ItemsSource="{CompiledBinding Entries}" Margin="0 0 20 0">
@@ -38,7 +47,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <ContentControl Content="{CompiledBinding}" Margin="0 0 0 5"></ContentControl>
+                        <ContentControl Content="{CompiledBinding}" Margin="0 0 0 8"></ContentControl>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

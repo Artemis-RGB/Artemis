@@ -3,41 +3,44 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tabs="clr-namespace:Artemis.UI.Screens.Workshop.Library.Tabs"
-             xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
-             xmlns:avalonia1="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:il="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Library.Tabs.SubmissionsTabItemView"
              x:DataType="tabs:SubmissionsTabItemViewModel">
-    <UserControl.Resources>
+     <UserControl.Resources>
         <converters:EntryIconUriConverter x:Key="EntryIconUriConverter" />
         <converters:DateTimeConverter x:Key="DateTimeConverter" />
     </UserControl.Resources>
-    <Button MinHeight="80"
-            MaxHeight="110"
-            Padding="12 6"
-            Margin="0 0 0 5"
+    <Button MinHeight="110"
+            MaxHeight="140"
+            Padding="12"
             HorizontalAlignment="Stretch"
             HorizontalContentAlignment="Stretch"
-            Command="{CompiledBinding NavigateToEntry}">
-        <Grid ColumnDefinitions="Auto,*,Auto">
+            Command="{CompiledBinding NavigateToEntry}"
+            IsVisible="{CompiledBinding Entry, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="*, Auto">
             <!-- Icon -->
             <Border Grid.Column="0"
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
                     CornerRadius="6"
                     VerticalAlignment="Center"
                     Margin="0 0 10 0"
-                    Width="50"
-                    Height="50"
+                    Width="80"
+                    Height="80"
                     ClipToBounds="True">
-                <Image Stretch="UniformToFill" asyncImageLoader:ImageLoader.Source="{CompiledBinding Entry.Id, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
+                <Image Stretch="UniformToFill" il:ImageLoader.Source="{CompiledBinding Entry.Id, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
             </Border>
 
             <!-- Body -->
-            <Grid Grid.Column="1" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
-                <TextBlock Grid.Row="0"
-                           Classes="h5 no-margin"
-                           TextTrimming="CharacterEllipsis"
-                           Text="{CompiledBinding Entry.Name, FallbackValue=Title}" />
+            <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
+                <TextBlock Grid.Row="0" Margin="0 0 0 5" TextTrimming="CharacterEllipsis">
+                    <Run Classes="h5" Text="{CompiledBinding Entry.Name, FallbackValue=Title}" />
+                    <Run Classes="subtitle">by you</Run>
+                    <Run Classes="subtitle" Text="{CompiledBinding Emoji}" />
+                </TextBlock>
                 <TextBlock Grid.Row="1"
                            Classes="subtitle"
                            TextWrapping="Wrap"
@@ -54,7 +57,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <avalonia1:MaterialIcon Kind="{CompiledBinding Icon}" Margin="0 0 3 0"></avalonia1:MaterialIcon>
+                                <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Margin="0 0 3 0"></avalonia:MaterialIcon>
                                 <TextBlock Text="{CompiledBinding Name}" TextTrimming="CharacterEllipsis" />
                             </StackPanel>
                         </DataTemplate>
@@ -63,10 +66,10 @@
             </Grid>
 
             <!-- Info -->
-            <StackPanel Grid.Column="2" Margin="0 0 4 0">
+            <StackPanel Grid.Column="2" Grid.Row="0" Margin="0 0 4 0" HorizontalAlignment="Right">
                 <TextBlock TextAlignment="Right" Text="{CompiledBinding Entry.CreatedAt, FallbackValue=01-01-1337, Converter={StaticResource DateTimeConverter}}" />
                 <TextBlock TextAlignment="Right">
-                    <avalonia1:MaterialIcon Kind="Downloads" />
+                    <avalonia:MaterialIcon Kind="Downloads" />
                     <Run Classes="h5" Text="{CompiledBinding Entry.Downloads, FallbackValue=0}" />
                     <Run>downloads</Run>
                 </TextBlock>

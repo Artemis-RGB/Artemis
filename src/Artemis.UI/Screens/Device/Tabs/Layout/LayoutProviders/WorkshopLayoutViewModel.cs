@@ -36,7 +36,7 @@ public partial class WorkshopLayoutViewModel : ActivatableViewModelBase, ILayout
         Entries = new ObservableCollection<InstalledEntry>(workshopService.GetInstalledEntries().Where(e => e.EntryType == EntryType.Layout));
 
         this.WhenAnyValue(vm => vm.SelectedEntry).Subscribe(ApplyEntry);
-        this.WhenActivated((CompositeDisposable _) => SelectedEntry = Entries.FirstOrDefault(e => e.EntryId.ToString() == Device.LayoutSelection.Parameter));
+        this.WhenActivated((CompositeDisposable _) => SelectedEntry = Entries.FirstOrDefault(e => e.Id.ToString() == Device.LayoutSelection.Parameter));
     }
 
     /// <inheritdoc />
@@ -70,7 +70,7 @@ public partial class WorkshopLayoutViewModel : ActivatableViewModelBase, ILayout
 
     private void ApplyEntry(InstalledEntry? entry)
     {
-        if (entry == null || Device.LayoutSelection.Parameter == entry.EntryId.ToString())
+        if (entry == null || Device.LayoutSelection.Parameter == entry.Id.ToString())
             return;
         _layoutProvider.ConfigureDevice(Device, entry);
         Save();

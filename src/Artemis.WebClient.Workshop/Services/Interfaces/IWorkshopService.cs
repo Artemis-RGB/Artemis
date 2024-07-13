@@ -124,7 +124,7 @@ public interface IWorkshopService
     /// Initializes the workshop service.
     /// </summary>
     void Initialize();
-
+    
     /// <summary>
     /// Represents the status of the workshop.
     /// </summary>
@@ -133,4 +133,5 @@ public interface IWorkshopService
     public event EventHandler<InstalledEntry>? OnInstalledEntrySaved;
     public event EventHandler<InstalledEntry>? OnEntryUninstalled;
     public event EventHandler<InstalledEntry>? OnEntryInstalled;
+    
 }

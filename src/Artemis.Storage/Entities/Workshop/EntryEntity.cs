@@ -15,10 +15,18 @@ public class EntryEntity
 
     public string Author { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-
+    public string Summary { get; set; } = string.Empty;
+    public long Downloads { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public long? LatestReleaseId { get; set; }
+    
     public long ReleaseId { get; set; }
     public string ReleaseVersion { get; set; } = string.Empty;
     public DateTimeOffset InstalledAt { get; set; }
-
+    public bool AutoUpdate { get; set; }
+    
     public Dictionary<string, JsonNode>? Metadata { get; set; }
+    public List<EntryCategoryEntity>? Categories { get; set; }
 }
+
+public record EntryCategoryEntity(string Name, string Icon);

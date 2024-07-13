@@ -15,8 +15,16 @@
         </Styles>
     </UserControl.Styles>
     
-    <Panel>
-        <StackPanel IsVisible="{CompiledBinding Empty}" Margin="0 50 0 0" Classes="empty-state">
+    <Grid RowDefinitions="Auto,*">
+        <Grid Grid.Row="0" Grid.Column="0" MaxWidth="1000" Margin="0 22 0 10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MinWidth="165" MaxWidth="400" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBox Classes="search-box" Text="{CompiledBinding SearchEntryInput}" Watermark="Search library" Margin="0 0 10 0" />
+        </Grid>
+        
+        <StackPanel Grid.Row="1" Grid.Column="0" IsVisible="{CompiledBinding Empty}" Margin="0 50 0 0" Classes="empty-state">
             <TextBlock Theme="{StaticResource TitleTextBlockStyle}">Not much here yet, huh!</TextBlock>
             <TextBlock>
                 <Run>Any entries you download from the workshop you can later manage here</Run>
@@ -24,21 +32,34 @@
             <Lottie Path="/Assets/Animations/empty.json" RepeatCount="1" Width="350" Height="350"></Lottie>
             <Button HorizontalAlignment="Center" Command="{CompiledBinding OpenWorkshop}">Browse the Workshop</Button>
         </StackPanel>
-        
-        <ScrollViewer IsVisible="{CompiledBinding !Empty}">
-            <ItemsControl ItemsSource="{CompiledBinding InstalledEntries}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <ContentControl Content="{CompiledBinding}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
+
+        <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
+            <ItemsControl ItemsSource="{CompiledBinding EntryGroups}" MaxWidth="1000">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <VirtualizingStackPanel />
+                        <StackPanel Spacing="10"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}" Text="{Binding Key}" Margin="0 0 0 5"/>
+                            <ItemsControl ItemsSource="{Binding Items}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <ContentControl Content="{Binding}" Margin="0 0 0 8" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-    </Panel>
-    
+    </Grid>
 </UserControl>

@@ -73,7 +73,7 @@ public class LayoutEntryInstallationHandler : IEntryInstallationHandler
         // Remove the layout from any devices currently using it
         foreach (ArtemisDevice device in _deviceService.Devices)
         {
-            if (device.LayoutSelection.Type == WorkshopLayoutProvider.LayoutType && device.LayoutSelection.Parameter == installedEntry.EntryId.ToString())
+            if (device.LayoutSelection.Type == WorkshopLayoutProvider.LayoutType && device.LayoutSelection.Parameter == installedEntry.Id.ToString())
             {
                 _defaultLayoutProvider.ConfigureDevice(device);
                 _deviceService.SaveDevice(device);

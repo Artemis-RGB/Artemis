@@ -8,7 +8,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              x:Class="Artemis.UI.Screens.Workshop.Layout.LayoutDetailsView"
              x:DataType="layout:LayoutDetailsViewModel">
-    <Grid ColumnDefinitions="300,*, 300" RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto,*" ColumnDefinitions="300,*,300" MaxWidth="1600" HorizontalAlignment="Stretch">
         <StackPanel Grid.Row="1" Grid.Column="0" Spacing="10">
             <Border Classes="card" VerticalAlignment="Top">
                 <ContentControl Content="{CompiledBinding EntryInfoViewModel}" />

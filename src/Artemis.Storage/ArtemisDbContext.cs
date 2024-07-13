@@ -43,6 +43,12 @@ public class ArtemisDbContext : DbContext
             .HasConversion(
                 v => JsonSerializer.Serialize(v, JsonSerializerOptions),
                 v => JsonSerializer.Deserialize<Dictionary<string, JsonNode>>(v, JsonSerializerOptions) ?? new Dictionary<string, JsonNode>());
+        
+        modelBuilder.Entity<EntryEntity>()
+            .Property(e => e.Categories)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, JsonSerializerOptions),
+                v => JsonSerializer.Deserialize<List<EntryCategoryEntity>>(v, JsonSerializerOptions) ?? new List<EntryCategoryEntity>());
 
         modelBuilder.Entity<ProfileContainerEntity>()
             .Property(e => e.ProfileConfiguration)

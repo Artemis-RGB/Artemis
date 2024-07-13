@@ -178,7 +178,7 @@ public class WorkshopService : IWorkshopService
         if (result.IsSuccess)
             OnEntryUninstalled?.Invoke(this, installedEntry);
         else
-            _logger.Warning("Failed to uninstall entry {EntryId}: {Message}", installedEntry.EntryId, result.Message);
+            _logger.Warning("Failed to uninstall entry {EntryId}: {Message}", installedEntry.Id, result.Message);
 
         return result;
     }
