@@ -18,6 +18,9 @@ public class InstalledEntry : CorePropertyChanged, IEntrySummary
     private DateTimeOffset _createdAt;
     private long? _latestReleaseId;
     private IReadOnlyList<IGetDependantEntries_Entries_Items_Categories> _categories;
+    private long _releaseId;
+    private string _releaseVersion = string.Empty;
+    private bool _autoUpdate;
 
     internal InstalledEntry(EntryEntity entity)
     {
@@ -36,12 +39,26 @@ public class InstalledEntry : CorePropertyChanged, IEntrySummary
         AutoUpdate = true;
     }
 
-    public long ReleaseId { get; set; }
-    public string ReleaseVersion { get; set; } = string.Empty;
-    public DateTimeOffset InstalledAt { get; set; }
-    public bool AutoUpdate { get; set; }
-
     internal EntryEntity Entity { get; }
+    public DateTimeOffset InstalledAt { get; set; }
+
+    public long ReleaseId
+    {
+        get => _releaseId;
+        set => SetAndNotify(ref _releaseId, value);
+    }
+
+    public string ReleaseVersion
+    {
+        get => _releaseVersion;
+        set => SetAndNotify(ref _releaseVersion, value);
+    }
+
+    public bool AutoUpdate
+    {
+        get => _autoUpdate;
+        set => SetAndNotify(ref _autoUpdate, value);
+    }
 
     internal void Load()
     {
@@ -233,4 +250,10 @@ public class InstalledEntry : CorePropertyChanged, IEntrySummary
     }
 
     #endregion
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"[{EntryType}] {Id} - {Name}";
+    }
 }

@@ -30,7 +30,7 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
         {
             // If the folder already exists, we're not going to reinstall the plugin since files may be in use, consider our job done
             if (installedEntry.GetReleaseDirectory(release).Exists)
-                return EntryInstallResult.FromSuccess(installedEntry);
+                return ApplyAndSave(installedEntry, release);
         }
         else
         {
@@ -102,10 +102,7 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
             return EntryInstallResult.FromFailure(e.Message);
         }
 
-        installedEntry.ApplyRelease(release);
-
-        _workshopService.SaveInstalledEntry(installedEntry);
-        return EntryInstallResult.FromSuccess(installedEntry);
+        return ApplyAndSave(installedEntry, release);
     }
 
     public Task<EntryUninstallResult> UninstallAsync(InstalledEntry installedEntry, CancellationToken cancellationToken)
@@ -134,5 +131,12 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
         // Remove entry
         _workshopService.RemoveInstalledEntry(installedEntry);
         return Task.FromResult(EntryUninstallResult.FromSuccess(message));
+    }
+
+    private EntryInstallResult ApplyAndSave(InstalledEntry installedEntry, IRelease release)
+    {
+        installedEntry.ApplyRelease(release);
+        _workshopService.SaveInstalledEntry(installedEntry);
+        return EntryInstallResult.FromSuccess(installedEntry);
     }
 }

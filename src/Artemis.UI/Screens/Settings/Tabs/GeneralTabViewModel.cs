@@ -102,6 +102,7 @@ public class GeneralTabViewModel : RoutableScreen
 
     public bool IsAutoRunSupported => _autoRunProvider != null;
     public bool IsWindows11 => OSVersionHelper.IsWindows11();
+    public bool IsWindows => OSVersionHelper.IsWindows();
 
     public ObservableCollection<LayerBrushDescriptor> LayerBrushDescriptors { get; }
     public ObservableCollection<string> GraphicsContexts { get; }
@@ -158,6 +159,7 @@ public class GeneralTabViewModel : RoutableScreen
     public PluginSetting<bool> UIShowOnStartup => _settingsService.GetSetting("UI.ShowOnStartup", true);
     public PluginSetting<bool> EnableMica => _settingsService.GetSetting("UI.EnableMica", true);
     public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.Updating.AutoCheck", true);
+    public PluginSetting<bool> WorkshopShowNotifications => _settingsService.GetSetting("Workshop.ShowNotifications", true);
     public PluginSetting<bool> UIAutoUpdate => _settingsService.GetSetting("UI.Updating.AutoInstall", true);
     public PluginSetting<bool> ProfileEditorShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
     public PluginSetting<LogEventLevel> CoreLoggingLevel => _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information);

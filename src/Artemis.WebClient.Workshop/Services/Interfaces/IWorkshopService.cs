@@ -133,5 +133,6 @@ public interface IWorkshopService
     public event EventHandler<InstalledEntry>? OnInstalledEntrySaved;
     public event EventHandler<InstalledEntry>? OnEntryUninstalled;
     public event EventHandler<InstalledEntry>? OnEntryInstalled;
-    
+
+    void SetAutoUpdate(InstalledEntry installedEntry, bool autoUpdate);
 }

@@ -33,3 +33,11 @@ query GetEntrySummaryById($id: Long!) {
         ...entrySummary
     }
 }
+
+query GetEntryLatestReleaseById($id: Long!) {
+    entry(id: $id) {
+        latestRelease {
+            ...releaseDetails
+        }
+    }
+}

@@ -58,6 +58,18 @@ public class BasicUpdateNotificationProvider : IUpdateNotificationProvider
     }
 
     /// <inheritdoc />
+    public void ShowWorkshopNotification(int updatedEntries)
+    {
+        _notificationService.CreateNotification()
+            .WithTitle(updatedEntries == 1 ? "Workshop update installed" : "Workshop updates installed")
+            .WithMessage(updatedEntries == 1 ? "A workshop update has been installed" : $"{updatedEntries} workshop updates have been installed")
+            .WithSeverity(NotificationSeverity.Success)
+            .WithTimeout(TimeSpan.FromSeconds(15))
+            .HavingButton(b => b.WithText("View library").WithAction(async () => await _router.Navigate("settings/workshop")))
+            .Show();
+    }
+
+    /// <inheritdoc />
     public void ShowNotification(Guid releaseId, string releaseVersion)
     {
         if (_mainWindowService.IsMainWindowOpen)

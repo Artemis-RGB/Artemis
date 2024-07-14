@@ -194,11 +194,26 @@
                                     Auto-install updates
                                 </TextBlock>
                                 <TextBlock Classes="subtitle" TextWrapping="Wrap">
-                                    If enabled, new updates will automatically be installed.
+                                    Automatically install new versions of Artemis in the background when available.
                                 </TextBlock>
                             </StackPanel>
                             <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
                                 <ToggleSwitch IsEnabled="{CompiledBinding UICheckForUpdates.Value}" IsChecked="{CompiledBinding UIAutoUpdate.Value}" MinWidth="0" OnContent="Yes" OffContent="No" />
+                            </StackPanel>
+                        </Grid>
+                        <Border Classes="card-separator" />
+                        
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto" IsVisible="{CompiledBinding IsWindows}">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock>
+                                    Show workshop update notifications
+                                </TextBlock>
+                                <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                    Show a desktop notification whenever workshop updates are installed.
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                <ToggleSwitch IsChecked="{CompiledBinding WorkshopShowNotifications.Value}" MinWidth="0" OnContent="Yes" OffContent="No" />
                             </StackPanel>
                         </Grid>
                         <Border Classes="card-separator" />

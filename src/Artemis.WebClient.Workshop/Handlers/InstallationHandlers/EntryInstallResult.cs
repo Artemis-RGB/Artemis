@@ -26,4 +26,10 @@ public class EntryInstallResult
             Entry = installedEntry
         };
     }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"{nameof(IsSuccess)}: {IsSuccess}, {nameof(Message)}: {Message}";
+    }
 }

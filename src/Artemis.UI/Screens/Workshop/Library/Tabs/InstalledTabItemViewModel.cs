@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -9,6 +10,7 @@ using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Plugins;
+using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
@@ -25,16 +27,19 @@ public partial class InstalledTabItemViewModel : ActivatableViewModelBase
 {
     private readonly IWorkshopClient _client;
     private readonly IWorkshopService _workshopService;
+    private readonly IWorkshopUpdateService _workshopUpdateService;
     private readonly IRouter _router;
     private readonly IWindowService _windowService;
     private readonly IPluginManagementService _pluginManagementService;
     private readonly ISettingsVmFactory _settingsVmFactory;
 
     [Notify] private bool _updateAvailable;
+    [Notify] private bool _autoUpdate;
 
     public InstalledTabItemViewModel(InstalledEntry entry,
         IWorkshopClient client,
         IWorkshopService workshopService,
+        IWorkshopUpdateService workshopUpdateService,
         IRouter router,
         IWindowService windowService,
         IPluginManagementService pluginManagementService,
@@ -42,10 +47,13 @@ public partial class InstalledTabItemViewModel : ActivatableViewModelBase
     {
         _client = client;
         _workshopService = workshopService;
+        _workshopUpdateService = workshopUpdateService;
         _router = router;
         _windowService = windowService;
         _pluginManagementService = pluginManagementService;
         _settingsVmFactory = settingsVmFactory;
+        _autoUpdate = entry.AutoUpdate;
+        
         Entry = entry;
 
         this.WhenActivatedAsync(async _ =>
@@ -65,6 +73,8 @@ public partial class InstalledTabItemViewModel : ActivatableViewModelBase
                 UpdateAvailable = Entry.ReleaseId != Entry.LatestReleaseId;
             }
         });
+        
+        this.WhenAnyValue(vm => vm.AutoUpdate).Skip(1).Subscribe(_ => AutoUpdateToggled());
     }
 
     public InstalledEntry Entry { get; }
@@ -107,5 +117,19 @@ public partial class InstalledTabItemViewModel : ActivatableViewModelBase
 
         PluginViewModel pluginViewModel = _settingsVmFactory.PluginViewModel(plugin, ReactiveCommand.Create(() => { }));
         await pluginViewModel.ExecuteRemovePrerequisites(true);
+    }
+
+    private void AutoUpdateToggled()
+    {
+        _workshopService.SetAutoUpdate(Entry, AutoUpdate);
+        
+        if (!AutoUpdate)
+            return;
+        
+        Task.Run(async () =>
+        {
+            await _workshopUpdateService.AutoUpdateEntry(Entry);
+            UpdateAvailable = Entry.ReleaseId != Entry.LatestReleaseId;
+        });
     }
 }

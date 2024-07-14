@@ -165,7 +165,7 @@ public class WorkshopService : IWorkshopService
         if (result.IsSuccess && result.Entry != null)
             OnEntryInstalled?.Invoke(this, result.Entry);
         else
-            _logger.Warning("Failed to install entry {EntryId}: {Message}", entry.Id, result.Message);
+            _logger.Warning("Failed to install entry {Entry}: {Message}", entry, result.Message);
         
         return result;
     }
@@ -254,6 +254,16 @@ public class WorkshopService : IWorkshopService
         }
     }
 
+    /// <inheritdoc />
+    public void SetAutoUpdate(InstalledEntry installedEntry, bool autoUpdate)
+    {
+        if (installedEntry.AutoUpdate == autoUpdate)
+            return;
+        
+        installedEntry.AutoUpdate = autoUpdate;
+        SaveInstalledEntry(installedEntry);
+    }
+
     private void RemoveOrphanedFiles()
     {
         List<InstalledEntry> entries = GetInstalledEntries();
@@ -308,6 +318,8 @@ public class WorkshopService : IWorkshopService
     }
 
     public event EventHandler<InstalledEntry>? OnInstalledEntrySaved;
+
     public event EventHandler<InstalledEntry>? OnEntryUninstalled;
+
     public event EventHandler<InstalledEntry>? OnEntryInstalled;
 }
