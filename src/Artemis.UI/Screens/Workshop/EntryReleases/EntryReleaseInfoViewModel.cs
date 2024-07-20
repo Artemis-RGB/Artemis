@@ -127,7 +127,9 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
                 await Manage();
             }
             else if (!_cts.IsCancellationRequested)
+            {
                 _notificationService.CreateNotification().WithTitle("Installation failed").WithMessage(result.Message).WithSeverity(NotificationSeverity.Error).Show();
+            }
         }
         catch (Exception e)
         {

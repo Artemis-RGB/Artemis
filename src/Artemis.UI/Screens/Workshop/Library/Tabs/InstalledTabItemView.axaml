@@ -35,11 +35,22 @@
 
             <!-- Body -->
             <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
-                <TextBlock Grid.Row="0" Margin="0 0 0 5" TextTrimming="CharacterEllipsis">
-                    <Run Classes="h5" Text="{CompiledBinding Entry.Name, FallbackValue=Title}" />
-                    <Run Classes="subtitle">by</Run>
-                    <Run Classes="subtitle" Text="{CompiledBinding Entry.Author, FallbackValue=Author}" />
-                </TextBlock>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <TextBlock Margin="0 0 0 5" TextTrimming="CharacterEllipsis">
+                        <Run Classes="h5" Text="{CompiledBinding Entry.Name, FallbackValue=Title}" />
+                        <Run Classes="subtitle">by</Run>
+                        <Run Classes="subtitle" Text="{CompiledBinding Entry.Author, FallbackValue=Author}" />
+                    </TextBlock>
+                    <avalonia:MaterialIcon
+                        IsVisible="{CompiledBinding Entry.IsOfficial}"
+                        Kind="ShieldStar"
+                        Foreground="{DynamicResource SystemAccentColorLight1}"
+                        Margin="2 -2 0 0"
+                        Width="18"
+                        Height="18"
+                        HorizontalAlignment="Left"
+                        ToolTip.Tip="Official entry by the Artemis team" />
+                </StackPanel>
                 <TextBlock Grid.Row="1"
                            Classes="subtitle"
                            TextWrapping="Wrap"

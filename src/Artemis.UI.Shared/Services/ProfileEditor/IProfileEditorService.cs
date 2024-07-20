@@ -174,11 +174,6 @@ public interface IProfileEditorService : IArtemisSharedUIService
     ProfileEditorCommandScope CreateCommandScope(string name);
 
     /// <summary>
-    ///     Saves the current profile.
-    /// </summary>
-    void SaveProfile();
-
-    /// <summary>
     ///     Asynchronously saves the current profile.
     /// </summary>
     /// <returns>A task representing the save action.</returns>

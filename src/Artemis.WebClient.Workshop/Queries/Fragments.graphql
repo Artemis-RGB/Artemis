@@ -31,6 +31,7 @@ fragment submittedEntry on Entry {
 fragment entrySummary on Entry {
     id
     author
+    isOfficial
     name
     summary
     entryType
@@ -45,6 +46,7 @@ fragment entrySummary on Entry {
 fragment entryDetails on Entry {
     id
     author
+    isOfficial
     name
     summary
     entryType

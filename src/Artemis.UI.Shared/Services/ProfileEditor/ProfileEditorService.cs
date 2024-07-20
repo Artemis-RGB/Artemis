@@ -391,19 +391,12 @@ internal class ProfileEditorService : IProfileEditorService
         _pixelsPerSecondSubject.OnNext(pixelsPerSecond);
     }
 
-
-    /// <inheritdoc />
-    public void SaveProfile()
-    {
-        Profile? profile = _profileConfigurationSubject.Value?.Profile;
-        if (profile != null)
-            _profileService.SaveProfile(profile, true);
-    }
-
     /// <inheritdoc />
     public async Task SaveProfileAsync()
     {
-        await Task.Run(SaveProfile);
+        Profile? profile = _profileConfigurationSubject.Value?.Profile;
+        if (profile != null)
+            await Task.Run(() => _profileService.SaveProfile(profile, true));
     }
 
     /// <inheritdoc />

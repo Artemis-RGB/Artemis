@@ -11,6 +11,7 @@ public class InstalledEntry : CorePropertyChanged, IEntrySummary
     private Dictionary<string, JsonNode> _metadata = new();
     private long _id;
     private string _author;
+    private bool _isOfficial;
     private string _name;
     private string _summary;
     private EntryType _entryType;
@@ -175,6 +176,7 @@ public class InstalledEntry : CorePropertyChanged, IEntrySummary
     {
         Id = entry.Id;
         Author = entry.Author;
+        IsOfficial = entry.IsOfficial;
         Name = entry.Name;
         Summary = entry.Summary;
         EntryType = entry.EntryType;
@@ -198,6 +200,13 @@ public class InstalledEntry : CorePropertyChanged, IEntrySummary
     {
         get => _author;
         private set => SetAndNotify(ref _author, value);
+    }
+
+    /// <inheritdoc />
+    public bool IsOfficial
+    {
+        get => _isOfficial;
+        private set => SetAndNotify(ref _isOfficial, value);
     }
 
     /// <inheritdoc />

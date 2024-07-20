@@ -50,6 +50,22 @@ namespace Artemis.Storage.Migrations
                 type: "TEXT",
                 nullable: false,
                 defaultValue: "");
+
+            // Enable auto-update on all entries that are not profiles
+            migrationBuilder.Sql("UPDATE Entries SET AutoUpdate = 1 WHERE EntryType != 2");
+            
+            // Enable auto-update on all entries of profiles that are fresh imports
+            migrationBuilder.Sql("""
+                UPDATE Entries
+                SET AutoUpdate = 1
+                WHERE EntryType = 2
+                AND EXISTS (
+                    SELECT 1
+                    FROM ProfileContainers
+                    WHERE json_extract(ProfileContainers.Profile, '$.Id') = json_extract(Entries.Metadata, '$.ProfileId')
+                    AND json_extract(ProfileContainers.Profile, '$.IsFreshImport') = 1
+                );
+            """);
         }
 
         /// <inheritdoc />

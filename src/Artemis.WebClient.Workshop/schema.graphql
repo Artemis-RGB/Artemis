@@ -61,6 +61,7 @@ type Entry {
     iconId: UUID
     id: Long!
     images: [Image!]!
+    isOfficial: Boolean!
     latestRelease: Release
     latestReleaseId: Long
     layoutInfo: [LayoutInfo!]!
@@ -124,6 +125,7 @@ type PluginInfo {
     entry: Entry!
     entryId: Long!
     helpPage: String
+    minmumVersion: String
     pluginGuid: UUID!
     repository: String
     requiresAdmin: Boolean!
@@ -310,6 +312,7 @@ input EntryFilterInput {
     iconId: UuidOperationFilterInput
     id: LongOperationFilterInput
     images: ListFilterInputTypeOfImageFilterInput
+    isOfficial: BooleanOperationFilterInput
     latestRelease: ReleaseFilterInput
     latestReleaseId: LongOperationFilterInput
     layoutInfo: ListFilterInputTypeOfLayoutInfoFilterInput
@@ -331,6 +334,7 @@ input EntrySortInput {
     icon: ImageSortInput
     iconId: SortEnumType
     id: SortEnumType
+    isOfficial: SortEnumType
     latestRelease: ReleaseSortInput
     latestReleaseId: SortEnumType
     name: SortEnumType
@@ -479,6 +483,7 @@ input PluginInfoFilterInput {
     entry: EntryFilterInput
     entryId: LongOperationFilterInput
     helpPage: StringOperationFilterInput
+    minmumVersion: StringOperationFilterInput
     or: [PluginInfoFilterInput!]
     pluginGuid: UuidOperationFilterInput
     repository: StringOperationFilterInput
@@ -494,6 +499,7 @@ input PluginInfoSortInput {
     entry: EntrySortInput
     entryId: SortEnumType
     helpPage: SortEnumType
+    minmumVersion: SortEnumType
     pluginGuid: SortEnumType
     repository: SortEnumType
     requiresAdmin: SortEnumType

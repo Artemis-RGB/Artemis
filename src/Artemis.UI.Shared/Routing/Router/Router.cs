@@ -79,7 +79,7 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
             path = NavigateUp(_currentRouteSubject.Value, path);
         else
             path = path.ToLower().Trim(' ', '/', '\\');
-      
+
         options ??= new RouterNavigationOptions();
 
         // Routing takes place on the UI thread with processing heavy tasks offloaded by the router itself
@@ -90,7 +90,7 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
     public async Task Reload()
     {
         string path = _currentRouteSubject.Value ?? "blank";
-        
+
         // Routing takes place on the UI thread with processing heavy tasks offloaded by the router itself
         await Dispatcher.UIThread.InvokeAsync(async () =>
         {
@@ -128,8 +128,12 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
         await navigation.Navigate(args);
 
         // If it was cancelled before completion, don't add it to history or update the current path
+        // Do reload the current path because it may have been partially navigated away from
         if (navigation.Cancelled)
+        {
+            await Reload();
             return;
+        }
 
         if (options.AddToHistory && previousPath != null)
         {
@@ -172,7 +176,7 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
     public async Task<bool> GoUp(RouterNavigationOptions? options = null)
     {
         string? currentPath = _currentRouteSubject.Value;
-        
+
         // Keep removing segments until we find a parent route that resolves
         while (currentPath != null && currentPath.Contains('/'))
         {
@@ -223,8 +227,8 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
 
         _logger.Debug("Router disposed, should that be? Stacktrace: \r\n{StackTrace}", Environment.StackTrace);
     }
-    
-    
+
+
     private string NavigateUp(string current, string path)
     {
         string[] pathParts = current.Split('/');
