@@ -261,6 +261,9 @@ namespace Artemis.Storage.Migrations
                     b.Property<DateTimeOffset>("InstalledAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsOfficial")
+                        .HasColumnType("INTEGER");
+
                     b.Property<long?>("LatestReleaseId")
                         .HasColumnType("INTEGER");
 

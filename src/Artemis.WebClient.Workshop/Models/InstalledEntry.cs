@@ -65,6 +65,7 @@ public class InstalledEntry : CorePropertyChanged, IEntrySummary
     {
         Id = Entity.EntryId;
         Author = Entity.Author;
+        IsOfficial = Entity.IsOfficial;
         Name = Entity.Name;
         Summary = Entity.Summary;
         EntryType = (EntryType) Entity.EntryType;
@@ -87,6 +88,7 @@ public class InstalledEntry : CorePropertyChanged, IEntrySummary
         Entity.EntryType = (int) EntryType;
 
         Entity.Author = Author;
+        Entity.IsOfficial = IsOfficial;
         Entity.Name = Name;
         Entity.Summary = Summary;
         Entity.Downloads = Downloads;

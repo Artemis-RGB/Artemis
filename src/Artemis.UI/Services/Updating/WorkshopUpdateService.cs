@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Services.Interfaces;
-using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
@@ -19,13 +18,11 @@ public class WorkshopUpdateService : IWorkshopUpdateService
 {
     private readonly ILogger _logger;
     private readonly IWorkshopClient _client;
-    private readonly INotificationService _notificationService;
     private readonly IWorkshopService _workshopService;
     private readonly Lazy<IUpdateNotificationProvider> _updateNotificationProvider;
     private readonly PluginSetting<bool> _showNotifications;
 
-    public WorkshopUpdateService(ILogger logger, IWorkshopClient client, IWorkshopService workshopService, ISettingsService settingsService,
-        Lazy<IUpdateNotificationProvider> updateNotificationProvider)
+    public WorkshopUpdateService(ILogger logger, IWorkshopClient client, IWorkshopService workshopService, ISettingsService settingsService, Lazy<IUpdateNotificationProvider> updateNotificationProvider)
     {
         _logger = logger;
         _client = client;
@@ -69,15 +66,27 @@ public class WorkshopUpdateService : IWorkshopUpdateService
 
         _logger.Information("Auto-updating entry {Entry} to version {Version}", entry, latestRelease.Version);
 
-        EntryInstallResult updateResult = await _workshopService.InstallEntry(entry, latestRelease, new Progress<StreamProgress>(), CancellationToken.None);
+        try
+        {
+            EntryInstallResult updateResult = await _workshopService.InstallEntry(entry, latestRelease, new Progress<StreamProgress>(), CancellationToken.None);
 
-        // This happens during installation too but not on our reference of the entry
-        if (updateResult.IsSuccess)
-            entry.ApplyRelease(latestRelease);
+            // This happens during installation too but not on our reference of the entry
+            if (updateResult.IsSuccess)
+                entry.ApplyRelease(latestRelease);
 
-        _logger.Information("Auto-update result: {Result}", updateResult);
+            if (updateResult.IsSuccess)
+                _logger.Information("Auto-update successful for entry {Entry}", entry);
+            else
+                _logger.Warning("Auto-update failed for entry {Entry}: {Message}", entry, updateResult.Message);
 
-        return updateResult.IsSuccess;
+            return updateResult.IsSuccess;
+        }
+        catch (Exception e)
+        {
+            _logger.Warning(e, "Auto-update failed for entry {Entry}", entry);
+        }
+
+        return false;
     }
 
     /// <inheritdoc />

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Artemis.Storage.Migrations
 {
     [DbContext(typeof(ArtemisDbContext))]
-    [Migration("20240706131336_ExpandInstalledEntry")]
-    partial class ExpandInstalledEntry
+    [Migration("20240722084220_AutoUpdating")]
+    partial class AutoUpdating
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -263,6 +263,9 @@ namespace Artemis.Storage.Migrations
 
                     b.Property<DateTimeOffset>("InstalledAt")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsOfficial")
+                        .HasColumnType("INTEGER");
 
                     b.Property<long?>("LatestReleaseId")
                         .HasColumnType("INTEGER");

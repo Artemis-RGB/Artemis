@@ -39,7 +39,7 @@
                 <TextBlock Grid.Row="0" Margin="0 0 0 5" TextTrimming="CharacterEllipsis">
                     <Run Classes="h5" Text="{CompiledBinding Entry.Name, FallbackValue=Title}" />
                     <Run Classes="subtitle">by you</Run>
-                    <Run Classes="subtitle" Text="{CompiledBinding Emoji}" />
+                    <Run Text="{CompiledBinding Emoji}" />
                 </TextBlock>
                 <TextBlock Grid.Row="1"
                            Classes="subtitle"

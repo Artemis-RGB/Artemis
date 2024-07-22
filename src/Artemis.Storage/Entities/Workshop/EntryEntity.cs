@@ -14,6 +14,7 @@ public class EntryEntity
     public int EntryType { get; set; }
 
     public string Author { get; set; } = string.Empty;
+    public bool IsOfficial { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Summary { get; set; } = string.Empty;
     public long Downloads { get; set; }

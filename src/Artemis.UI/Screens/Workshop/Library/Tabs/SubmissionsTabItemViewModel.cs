@@ -11,7 +11,7 @@ namespace Artemis.UI.Screens.Workshop.Library.Tabs;
 
 public class SubmissionsTabItemViewModel : ViewModelBase
 {
-    private static readonly string[] Emojis = ["❤️", "🧡", "💛", "💚", "💙", "💜", "🤍", "💔", "❣️", "💕", "💞", "💓", "💗", "💖", "💘", "💝", "😍", "🥰"];
+    private static readonly string[] Emojis = ["❤️", "🧡", "💛", "💚", "💙", "💜", "💔", "❣️", "💕", "💞", "💓", "💗", "💖", "💘", "💝", "😍", "🥰"];
     private readonly IRouter _router;
 
     public SubmissionsTabItemViewModel(IGetSubmittedEntries_SubmittedEntries entry, IRouter router)

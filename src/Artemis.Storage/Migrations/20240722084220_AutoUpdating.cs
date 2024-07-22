@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Artemis.Storage.Migrations
 {
     /// <inheritdoc />
-    public partial class ExpandInstalledEntry : Migration
+    public partial class AutoUpdating : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,6 +38,13 @@ namespace Artemis.Storage.Migrations
                 nullable: false,
                 defaultValue: 0L);
 
+            migrationBuilder.AddColumn<bool>(
+                name: "IsOfficial",
+                table: "Entries",
+                type: "INTEGER",
+                nullable: false,
+                defaultValue: false);
+
             migrationBuilder.AddColumn<long>(
                 name: "LatestReleaseId",
                 table: "Entries",
@@ -50,7 +57,7 @@ namespace Artemis.Storage.Migrations
                 type: "TEXT",
                 nullable: false,
                 defaultValue: "");
-
+            
             // Enable auto-update on all entries that are not profiles
             migrationBuilder.Sql("UPDATE Entries SET AutoUpdate = 1 WHERE EntryType != 2");
             
@@ -85,6 +92,10 @@ namespace Artemis.Storage.Migrations
 
             migrationBuilder.DropColumn(
                 name: "Downloads",
+                table: "Entries");
+
+            migrationBuilder.DropColumn(
+                name: "IsOfficial",
                 table: "Entries");
 
             migrationBuilder.DropColumn(
