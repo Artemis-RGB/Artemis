@@ -39,8 +39,9 @@
         <PackageReference Include="DryIoc.dll" />
         <PackageReference Include="EmbedIO" />
         <PackageReference Include="HidSharp" />
+        <PackageReference Include="HPPH.SkiaSharp" />
         <PackageReference Include="Humanizer.Core" />
-        <PackageReference Include="JetBrains.Annotations" PrivateAssets="All"/>
+        <PackageReference Include="JetBrains.Annotations" PrivateAssets="All" />
         <PackageReference Include="McMaster.NETCore.Plugins" />
         <PackageReference Include="RGB.NET.Core" />
         <PackageReference Include="RGB.NET.Layout" />
