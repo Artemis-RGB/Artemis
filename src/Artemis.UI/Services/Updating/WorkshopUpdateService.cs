@@ -54,14 +54,16 @@ public class WorkshopUpdateService : IWorkshopUpdateService
             _updateNotificationProvider.Value.ShowWorkshopNotification(updatedEntries);
     }
 
-    public async Task<bool> AutoUpdateEntry(InstalledEntry entry)
+    public async Task<bool> AutoUpdateEntry(InstalledEntry installedEntry)
     {
         // Query the latest version
-        IOperationResult<IGetEntryLatestReleaseByIdResult> latestReleaseResult = await _client.GetEntryLatestReleaseById.ExecuteAsync(entry.Id);
-
+        IOperationResult<IGetEntryLatestReleaseByIdResult> latestReleaseResult = await _client.GetEntryLatestReleaseById.ExecuteAsync(installedEntry.Id);
+        IGetEntryById_Entry_LatestRelease_Entry? entry = latestReleaseResult.Data?.Entry?.LatestRelease?.Entry;
+        if (entry == null)
+            return false;
         if (latestReleaseResult.Data?.Entry?.LatestRelease is not IRelease latestRelease)
             return false;
-        if (latestRelease.Id == entry.ReleaseId)
+        if (latestRelease.Id == installedEntry.ReleaseId)
             return false;
 
         _logger.Information("Auto-updating entry {Entry} to version {Version}", entry, latestRelease.Version);
@@ -72,7 +74,7 @@ public class WorkshopUpdateService : IWorkshopUpdateService
 
             // This happens during installation too but not on our reference of the entry
             if (updateResult.IsSuccess)
-                entry.ApplyRelease(latestRelease);
+                installedEntry.ApplyRelease(latestRelease);
 
             if (updateResult.IsSuccess)
                 _logger.Information("Auto-update successful for entry {Entry}", entry);
