@@ -6,7 +6,6 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="650"
              x:Class="Artemis.UI.Screens.Workshop.Library.Tabs.SubmissionsTabView"
              x:DataType="tabs:SubmissionsTabViewModel">
-
     <UserControl.Styles>
         <Styles>
             <Style Selector="StackPanel.empty-state > TextBlock">
@@ -26,8 +25,16 @@
             <Button HorizontalAlignment="Center" Command="{CompiledBinding Login}">Log in</Button>
         </StackPanel>
 
-        <Panel IsVisible="{CompiledBinding IsLoggedIn^}">
-            <StackPanel IsVisible="{CompiledBinding !Entries.Count}" Margin="0 50 0 0" Classes="empty-state">
+        <Grid IsVisible="{CompiledBinding IsLoggedIn^}" RowDefinitions="Auto,*">
+            <Grid Grid.Row="0" Grid.Column="0" MaxWidth="1000" Margin="0 22 0 10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="165" MaxWidth="400" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBox Classes="search-box" Text="{CompiledBinding SearchEntryInput}" Watermark="Search submissions" Margin="0 0 10 0" />
+            </Grid>
+
+            <StackPanel Grid.Row="1" Grid.Column="0" IsVisible="{CompiledBinding Empty}" Margin="0 50 0 0" Classes="empty-state">
                 <TextBlock Theme="{StaticResource TitleTextBlockStyle}">Oh boy, it's empty here 🤔</TextBlock>
                 <TextBlock>
                     <Run>Any entries you submit to the workshop you can later manage here</Run>
@@ -36,25 +43,35 @@
                 <Button HorizontalAlignment="Center" Command="{CompiledBinding AddSubmission}">Submit new entry</Button>
             </StackPanel>
 
-            <Grid RowDefinitions="Auto,*">
-                <Button Grid.Row="0" Margin="0 0 0 15" HorizontalAlignment="Right" Command="{CompiledBinding AddSubmission}">Submit new entry</Button>
-                <ScrollViewer Grid.Row="1" IsVisible="{CompiledBinding Entries.Count}">
-                    <ItemsControl ItemsSource="{CompiledBinding Entries}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <ContentControl Content="{CompiledBinding}" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <VirtualizingStackPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </ScrollViewer>
-            </Grid>
-
-        </Panel>
+            <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
+                <ItemsControl ItemsSource="{CompiledBinding EntryGroups}" MaxWidth="1000">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="10"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}" Text="{Binding Key}" Margin="0 0 0 5"/>
+                                <ItemsControl ItemsSource="{Binding Items}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <ContentControl Content="{Binding}" Margin="0 0 0 8" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <VirtualizingStackPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
     </Panel>
 
 </UserControl>

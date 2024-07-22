@@ -55,6 +55,6 @@ public class WorkshopLayoutProvider : ILayoutProvider
             throw new InvalidOperationException($"Cannot use a workshop entry of type {entry.EntryType} as a layout");
 
         device.LayoutSelection.Type = LayoutType;
-        device.LayoutSelection.Parameter = entry?.EntryId.ToString();
+        device.LayoutSelection.Parameter = entry?.Id.ToString();
     }
 }

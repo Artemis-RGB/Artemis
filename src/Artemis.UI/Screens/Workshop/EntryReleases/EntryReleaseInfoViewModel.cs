@@ -101,20 +101,35 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
             return;
         }
 
+        // If not the latest version, warn and offer to disable auto-updates
+        bool disableAutoUpdates = false;
+        if (Release.Id != Release.Entry.LatestReleaseId)
+        {
+            disableAutoUpdates = await _windowService.ShowConfirmContentDialog(
+                "You are installing an older version of this entry",
+                "Would you like to disable auto-updates for this entry?",
+                "Yes",
+                "No"
+            );
+        }
+
         _cts = new CancellationTokenSource();
         InstallProgress = 0;
         InstallationInProgress = true;
         try
         {
             EntryInstallResult result = await _workshopService.InstallEntry(Release.Entry, Release, _progress, _cts.Token);
-            if (result.IsSuccess)
+            if (result.IsSuccess && result.Entry != null)
             {
+                _workshopService.SetAutoUpdate(result.Entry, !disableAutoUpdates);
                 _notificationService.CreateNotification().WithTitle("Installation succeeded").WithSeverity(NotificationSeverity.Success).Show();
                 InstallationInProgress = false;
                 await Manage();
             }
             else if (!_cts.IsCancellationRequested)
+            {
                 _notificationService.CreateNotification().WithTitle("Installation failed").WithMessage(result.Message).WithSeverity(NotificationSeverity.Error).Show();
+            }
         }
         catch (Exception e)
         {
@@ -156,7 +171,7 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
                 await UninstallPluginPrerequisites(installedEntry);
 
             await _workshopService.UninstallEntry(installedEntry, CancellationToken.None);
-            
+
             _notificationService.CreateNotification().WithTitle("Entry uninstalled").WithSeverity(NotificationSeverity.Success).Show();
         }
         finally

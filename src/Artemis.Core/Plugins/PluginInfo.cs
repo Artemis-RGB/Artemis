@@ -117,6 +117,11 @@ public class PluginInfo : IPrerequisitesSubject
     public Version? Api { get; internal init; } = new(1, 0, 0);
 
     /// <summary>
+    /// Gets the minimum version of Artemis required by this plugin
+    /// </summary>
+    public Version? MinimumVersion { get; internal init; } = new(1, 0, 0);
+
+    /// <summary>
     /// Gets the plugin this info is associated with
     /// </summary>
     [JsonIgnore]
@@ -132,7 +137,7 @@ public class PluginInfo : IPrerequisitesSubject
     /// Gets a boolean indicating whether this plugin is compatible with the current operating system and API version
     /// </summary>
     [JsonIgnore]
-    public bool IsCompatible => Platforms.MatchesCurrentOperatingSystem() && Api != null && Api.Major >= Constants.PluginApiVersion;
+    public bool IsCompatible => Platforms.MatchesCurrentOperatingSystem() && Api != null && Api.Major >= Constants.PluginApiVersion && MatchesMinimumVersion();
 
     /// <inheritdoc />
     [JsonIgnore]
@@ -155,5 +160,14 @@ public class PluginInfo : IPrerequisitesSubject
     public override string ToString()
     {
         return $"{Name} v{Version} - {Guid}";
+    }
+    
+    private bool MatchesMinimumVersion()
+    {
+        if (Constants.CurrentVersion == "local")
+            return true;
+        
+        Version currentVersion = new(Constants.CurrentVersion);
+        return currentVersion >= MinimumVersion;
     }
 }

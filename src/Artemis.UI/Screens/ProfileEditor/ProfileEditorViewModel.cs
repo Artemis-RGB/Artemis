@@ -15,8 +15,11 @@ using Artemis.UI.Screens.ProfileEditor.StatusBar;
 using Artemis.UI.Screens.ProfileEditor.VisualEditor;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
+using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.UI.Shared.Services.ProfileEditor;
+using Artemis.WebClient.Workshop.Models;
+using Artemis.WebClient.Workshop.Services;
 using DynamicData;
 using DynamicData.Binding;
 using PropertyChanged.SourceGenerator;
@@ -30,10 +33,12 @@ public partial class ProfileEditorViewModel : RoutableScreen<ProfileEditorViewMo
     private readonly IProfileService _profileService;
     private readonly ISettingsService _settingsService;
     private readonly IMainWindowService _mainWindowService;
+    private readonly IWorkshopService _workshopService;
+    private readonly IWindowService _windowService;
     private readonly SourceList<IToolViewModel> _tools;
     private ObservableAsPropertyHelper<ProfileEditorHistory?>? _history;
     private ObservableAsPropertyHelper<bool>? _suspendedEditing;
-    
+
     [Notify] private ProfileConfiguration? _profileConfiguration;
 
     /// <inheritdoc />
@@ -48,12 +53,16 @@ public partial class ProfileEditorViewModel : RoutableScreen<ProfileEditorViewMo
         StatusBarViewModel statusBarViewModel,
         IEnumerable<IToolViewModel> toolViewModels,
         IMainWindowService mainWindowService,
-        IInputService inputService)
+        IInputService inputService,
+        IWorkshopService workshopService,
+        IWindowService windowService)
     {
         _profileService = profileService;
         _profileEditorService = profileEditorService;
         _settingsService = settingsService;
         _mainWindowService = mainWindowService;
+        _workshopService = workshopService;
+        _windowService = windowService;
 
         _tools = new SourceList<IToolViewModel>();
         _tools.AddRange(toolViewModels);
@@ -144,7 +153,7 @@ public partial class ProfileEditorViewModel : RoutableScreen<ProfileEditorViewMo
     {
         if (!Shared.UI.KeyBindingsEnabled || !_mainWindowService.IsMainWindowFocused)
             return;
-        
+
         if (e.Modifiers == KeyboardModifierKey.Control && e.Key == KeyboardKey.Z)
             History?.Undo.Execute().Subscribe();
         else if (e.Modifiers == KeyboardModifierKey.Control && e.Key == KeyboardKey.Y)
@@ -193,6 +202,23 @@ public partial class ProfileEditorViewModel : RoutableScreen<ProfileEditorViewMo
         {
             args.Cancel();
             return;
+        }
+
+        // If the profile is from the workshop, warn the user that auto-updates will be disabled
+        InstalledEntry? workshopEntry = _workshopService.GetInstalledEntryByProfile(profileConfiguration);
+        if (workshopEntry != null && workshopEntry.AutoUpdate)
+        {
+            bool confirmed = await _windowService.ShowConfirmContentDialog(
+                "Editing a workshop profile",
+                "You are about to edit a profile from the workshop, to preserve your changes auto-updating will be disabled.",
+                "Disable auto-update");
+            if (confirmed)
+                _workshopService.SetAutoUpdate(workshopEntry, false);
+            else
+            {
+                args.Cancel();
+                return;
+            }
         }
 
         await _profileEditorService.ChangeCurrentProfileConfiguration(profileConfiguration);

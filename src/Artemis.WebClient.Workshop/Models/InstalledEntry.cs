@@ -6,9 +6,22 @@ using Artemis.Storage.Entities.Workshop;
 
 namespace Artemis.WebClient.Workshop.Models;
 
-public class InstalledEntry
+public class InstalledEntry : CorePropertyChanged, IEntrySummary
 {
     private Dictionary<string, JsonNode> _metadata = new();
+    private long _id;
+    private string _author;
+    private bool _isOfficial;
+    private string _name;
+    private string _summary;
+    private EntryType _entryType;
+    private long _downloads;
+    private DateTimeOffset _createdAt;
+    private long? _latestReleaseId;
+    private IReadOnlyList<IGetDependantEntries_Entries_Items_Categories> _categories;
+    private long _releaseId;
+    private string _releaseVersion = string.Empty;
+    private bool _autoUpdate;
 
     internal InstalledEntry(EntryEntity entity)
     {
@@ -20,55 +33,74 @@ public class InstalledEntry
     {
         Entity = new EntryEntity();
 
-        EntryId = entry.Id;
-        EntryType = entry.EntryType;
-
-        Author = entry.Author;
-        Name = entry.Name;
+        ApplyEntrySummary(entry);
         InstalledAt = DateTimeOffset.Now;
         ReleaseId = release.Id;
         ReleaseVersion = release.Version;
+        AutoUpdate = true;
     }
 
-    public long EntryId { get; set; }
-    public EntryType EntryType { get; set; }
-
-    public string Author { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-
-    public long ReleaseId { get; set; }
-    public string ReleaseVersion { get; set; } = string.Empty;
+    internal EntryEntity Entity { get; }
     public DateTimeOffset InstalledAt { get; set; }
 
-    internal EntryEntity Entity { get; }
+    public long ReleaseId
+    {
+        get => _releaseId;
+        set => SetAndNotify(ref _releaseId, value);
+    }
+
+    public string ReleaseVersion
+    {
+        get => _releaseVersion;
+        set => SetAndNotify(ref _releaseVersion, value);
+    }
+
+    public bool AutoUpdate
+    {
+        get => _autoUpdate;
+        set => SetAndNotify(ref _autoUpdate, value);
+    }
 
     internal void Load()
     {
-        EntryId = Entity.EntryId;
-        EntryType = (EntryType) Entity.EntryType;
-
+        Id = Entity.EntryId;
         Author = Entity.Author;
+        IsOfficial = Entity.IsOfficial;
         Name = Entity.Name;
-
+        Summary = Entity.Summary;
+        EntryType = (EntryType) Entity.EntryType;
+        Downloads = Entity.Downloads;
+        CreatedAt = Entity.CreatedAt;
+        LatestReleaseId = Entity.LatestReleaseId;
+        Categories = Entity.Categories?.Select(c => new GetDependantEntries_Entries_Items_Categories_Category(c.Name, c.Icon)).ToList() ?? [];
+        
         ReleaseId = Entity.ReleaseId;
         ReleaseVersion = Entity.ReleaseVersion;
         InstalledAt = Entity.InstalledAt;
+        AutoUpdate = Entity.AutoUpdate;
 
-        _metadata = Entity.Metadata != null ? new Dictionary<string, JsonNode>(Entity.Metadata) : new Dictionary<string, JsonNode>();
+        _metadata = Entity.Metadata != null ? new Dictionary<string, JsonNode>(Entity.Metadata) : [];
     }
 
     internal void Save()
     {
-        Entity.EntryId = EntryId;
+        Entity.EntryId = Id;
         Entity.EntryType = (int) EntryType;
 
         Entity.Author = Author;
+        Entity.IsOfficial = IsOfficial;
         Entity.Name = Name;
+        Entity.Summary = Summary;
+        Entity.Downloads = Downloads;
+        Entity.CreatedAt = CreatedAt;
+        Entity.LatestReleaseId = LatestReleaseId;
+        Entity.Categories = Categories.Select(c => new EntryCategoryEntity(c.Name, c.Icon)).ToList();
 
         Entity.ReleaseId = ReleaseId;
         Entity.ReleaseVersion = ReleaseVersion;
         Entity.InstalledAt = InstalledAt;
-
+        Entity.AutoUpdate = AutoUpdate;
+        
         Entity.Metadata = new Dictionary<string, JsonNode>(_metadata);
     }
 
@@ -118,7 +150,7 @@ public class InstalledEntry
     /// <returns>The directory info of the directory.</returns>
     public DirectoryInfo GetDirectory()
     {
-        return new DirectoryInfo(Path.Combine(Constants.WorkshopFolder, $"{EntryId}-{StringUtilities.UrlFriendly(Name)}"));
+        return new DirectoryInfo(Path.Combine(Constants.WorkshopFolder, $"{Id}-{StringUtilities.UrlFriendly(Name)}"));
     }
 
     /// <summary>
@@ -140,5 +172,99 @@ public class InstalledEntry
         ReleaseId = release.Id;
         ReleaseVersion = release.Version;
         InstalledAt = DateTimeOffset.UtcNow;
+    }
+    
+    public void ApplyEntrySummary(IEntrySummary entry)
+    {
+        Id = entry.Id;
+        Author = entry.Author;
+        IsOfficial = entry.IsOfficial;
+        Name = entry.Name;
+        Summary = entry.Summary;
+        EntryType = entry.EntryType;
+        Downloads = entry.Downloads;
+        CreatedAt = entry.CreatedAt;
+        LatestReleaseId = entry.LatestReleaseId;
+        Categories = entry.Categories;
+    }
+
+    #region Implementation of IEntrySummary
+
+    /// <inheritdoc />
+    public long Id
+    {
+        get => _id;
+        private set => SetAndNotify(ref _id, value);
+    }
+
+    /// <inheritdoc />
+    public string Author
+    {
+        get => _author;
+        private set => SetAndNotify(ref _author, value);
+    }
+
+    /// <inheritdoc />
+    public bool IsOfficial
+    {
+        get => _isOfficial;
+        private set => SetAndNotify(ref _isOfficial, value);
+    }
+
+    /// <inheritdoc />
+    public string Name  
+    {
+        get => _name;
+        private set => SetAndNotify(ref _name, value);
+    }
+
+    /// <inheritdoc />
+    public string Summary
+    {
+        get => _summary;
+        private set => SetAndNotify(ref _summary, value);
+    }
+
+    /// <inheritdoc />
+    public EntryType EntryType  
+    {
+        get => _entryType;
+        private set => SetAndNotify(ref _entryType, value);
+    }
+
+    /// <inheritdoc />
+    public long Downloads
+    {
+        get => _downloads;
+        private set => SetAndNotify(ref _downloads, value);
+    }
+
+    /// <inheritdoc />
+    public DateTimeOffset CreatedAt
+    {
+        get => _createdAt;
+        private set => SetAndNotify(ref _createdAt, value);
+    }
+
+    /// <inheritdoc />
+    public long? LatestReleaseId
+    {
+        get => _latestReleaseId;
+        private set => SetAndNotify(ref _latestReleaseId, value);
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyList<IGetDependantEntries_Entries_Items_Categories> Categories
+    {
+        get => _categories;
+        private set => SetAndNotify(ref _categories, value);
+    }
+
+    #endregion
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"[{EntryType}] {Id} - {Name}";
     }
 }

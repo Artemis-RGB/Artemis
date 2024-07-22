@@ -35,7 +35,7 @@
                     <ItemsControl ItemsSource="{CompiledBinding Dependants}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Spacing="5"></StackPanel>
+                                <StackPanel Spacing="8"></StackPanel>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>

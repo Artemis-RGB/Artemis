@@ -1,17 +1,15 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Notifications;
-using Artemis.UI.Screens.Settings;
+using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services.MainWindow;
 using Avalonia.Threading;
 using Microsoft.Toolkit.Uwp.Notifications;
-using ReactiveUI;
 
 namespace Artemis.UI.Windows.Providers;
 
@@ -20,16 +18,32 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
     private readonly Func<Guid, ReleaseInstaller> _getReleaseInstaller;
     private readonly IMainWindowService _mainWindowService;
     private readonly IUpdateService _updateService;
+    private readonly IWorkshopUpdateService _workshopUpdateService;
     private readonly IRouter _router;
     private CancellationTokenSource? _cancellationTokenSource;
 
-    public WindowsUpdateNotificationProvider(IMainWindowService mainWindowService, IUpdateService updateService, IRouter router, Func<Guid, ReleaseInstaller> getReleaseInstaller)
+    public WindowsUpdateNotificationProvider(IMainWindowService mainWindowService,
+        IUpdateService updateService,
+        IWorkshopUpdateService workshopUpdateService,
+        IRouter router, Func<Guid, ReleaseInstaller> getReleaseInstaller)
     {
         _mainWindowService = mainWindowService;
         _updateService = updateService;
+        _workshopUpdateService = workshopUpdateService;
         _router = router;
         _getReleaseInstaller = getReleaseInstaller;
         ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompatOnOnActivated;
+    }
+
+    /// <inheritdoc />
+    public void ShowWorkshopNotification(int updatedEntries)
+    {
+        new ToastContentBuilder().AddText(updatedEntries == 1 ? "Workshop update installed" : "Workshop updates installed")
+            .AddText(updatedEntries == 1 ? "A workshop update has been installed" : $"{updatedEntries} workshop updates have been installed")
+            .AddArgument("action", "view-library")
+            .AddButton(new ToastButton().SetContent("View changes").AddArgument("action", "view-library"))
+            .AddButton(new ToastButton().SetContent("Don't show again").AddArgument("action", "disable-workshop-notifications"))
+            .Show();
     }
 
     /// <inheritdoc />
@@ -57,14 +71,8 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
 
     private void ViewRelease(Guid? releaseId)
     {
-        Dispatcher.UIThread.Invoke(async () =>
-        {
-            _mainWindowService.OpenMainWindow();
-            if (releaseId != null && releaseId.Value != Guid.Empty)
-                await _router.Navigate($"settings/releases/{releaseId}");
-            else
-                await _router.Navigate("settings/releases");
-        });
+        string route = releaseId != null && releaseId.Value != Guid.Empty ? $"settings/releases/{releaseId}" : "settings/releases";
+        NavigateToRoute(route);
     }
 
     private async Task InstallRelease(Guid releaseId, string releaseVersion)
@@ -153,11 +161,9 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
         ToastArguments args = ToastArguments.Parse(e.Argument);
 
         Guid releaseId = args.Contains("releaseId") ? Guid.Parse(args.Get("releaseId")) : Guid.Empty;
-        string releaseVersion = args.Get("releaseVersion");
-        string action = "view-changes";
-        if (args.Contains("action"))
-            action = args.Get("action");
-
+        string releaseVersion = args.Contains("releaseVersion") ? args.Get("releaseVersion") : string.Empty;
+        string action = args.Contains("action") ? args.Get("action") : "view-changes";
+        
         if (action == "install")
             await InstallRelease(releaseId, releaseVersion);
         else if (action == "view-changes")
@@ -166,5 +172,18 @@ public class WindowsUpdateNotificationProvider : IUpdateNotificationProvider
             _cancellationTokenSource?.Cancel();
         else if (action == "restart-for-update")
             _updateService.RestartForUpdate("WindowsNotification", false);
+        else if (action == "disable-workshop-notifications")
+            _workshopUpdateService.DisableNotifications();
+        else if (action == "view-library")
+            NavigateToRoute("workshop/library");
+    }
+
+    private void NavigateToRoute(string route)
+    {
+        Dispatcher.UIThread.Invoke(async () =>
+        {
+            _mainWindowService.OpenMainWindow();
+            await _router.Navigate(route);
+        });
     }
 }

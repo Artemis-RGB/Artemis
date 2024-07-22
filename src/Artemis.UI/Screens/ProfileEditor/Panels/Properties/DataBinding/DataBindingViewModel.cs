@@ -12,7 +12,6 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
-using Avalonia.Threading;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.DataBinding;
@@ -23,9 +22,9 @@ public class DataBindingViewModel : ActivatableViewModelBase
     private readonly IProfileEditorService _profileEditorService;
     private readonly IWindowService _windowService;
     private ObservableAsPropertyHelper<bool>? _dataBindingEnabled;
-    private bool _editorOpen;
     private ObservableAsPropertyHelper<ILayerProperty?>? _layerProperty;
     private ObservableAsPropertyHelper<NodeScriptViewModel?>? _nodeScriptViewModel;
+    private bool _editorOpen;
     private bool _playing;
 
     public DataBindingViewModel(IProfileEditorService profileEditorService, INodeVmFactory nodeVmFactory, IWindowService windowService, ISettingsService settingsService)
@@ -106,6 +105,6 @@ public class DataBindingViewModel : ActivatableViewModelBase
     private void Save()
     {
         if (!_editorOpen)
-            _profileEditorService.SaveProfile();
+            _profileEditorService.SaveProfileAsync();
     }
 }

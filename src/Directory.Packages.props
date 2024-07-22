@@ -53,7 +53,7 @@
     <PackageVersion Include="Serilog" Version="4.0.0" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageVersion Include="Serilog.Sinks.Debug" Version="3.0.0" />
-    <PackageVersion Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageVersion Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageVersion Include="SkiaSharp" Version="2.88.8" />
     <PackageVersion Include="SkiaSharp.Vulkan.SharpVk" Version="2.88.8" />
     <PackageVersion Include="Splat.DryIoc" Version="15.1.1" />

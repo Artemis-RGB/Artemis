@@ -8,8 +8,10 @@ using Artemis.Core.Services;
 using Artemis.Storage.Repositories;
 using Artemis.Storage.Repositories.Interfaces;
 using Artemis.UI.Exceptions;
+using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.MainWindow;
 using Artemis.WebClient.Updating;
+using Artemis.WebClient.Workshop.Services;
 using Serilog;
 using StrawberryShake;
 using Timer = System.Timers.Timer;
@@ -26,6 +28,7 @@ public class UpdateService : IUpdateService
     private readonly ILogger _logger;
     private readonly IMainWindowService _mainWindowService;
     private readonly IReleaseRepository _releaseRepository;
+    private readonly IWorkshopUpdateService _workshopUpdateService;
     private readonly Lazy<IUpdateNotificationProvider> _updateNotificationProvider;
     private readonly Platform _updatePlatform;
     private readonly IUpdatingClient _updatingClient;
@@ -38,6 +41,7 @@ public class UpdateService : IUpdateService
         IMainWindowService mainWindowService,
         IUpdatingClient updatingClient,
         IReleaseRepository releaseRepository,
+        IWorkshopUpdateService workshopUpdateService,
         Lazy<IUpdateNotificationProvider> updateNotificationProvider,
         Func<Guid, ReleaseInstaller> getReleaseInstaller)
     {
@@ -45,6 +49,7 @@ public class UpdateService : IUpdateService
         _mainWindowService = mainWindowService;
         _updatingClient = updatingClient;
         _releaseRepository = releaseRepository;
+        _workshopUpdateService = workshopUpdateService;
         _updateNotificationProvider = updateNotificationProvider;
         _getReleaseInstaller = getReleaseInstaller;
 
@@ -65,72 +70,7 @@ public class UpdateService : IUpdateService
         timer.Elapsed += HandleAutoUpdateEvent;
         timer.Start();
     }
-
-    private void ProcessReleaseStatus()
-    {
-        string currentVersion = Constants.CurrentVersion;
-        bool updated = _releaseRepository.SaveVersionInstallDate(currentVersion);
-        PreviousVersion = _releaseRepository.GetPreviousInstalledVersion()?.Version;
-
-        if (!Directory.Exists(Constants.UpdatingFolder))
-            return;
-
-        // Clean up the update folder, leaving only the last ZIP
-        foreach (string file in Directory.GetFiles(Constants.UpdatingFolder))
-        {
-            if (Path.GetExtension(file) != ".zip" || Path.GetFileName(file) == $"{currentVersion}.zip")
-                continue;
-
-            try
-            {
-                _logger.Debug("Cleaning up old update file at {FilePath}", file);
-                File.Delete(file);
-            }
-            catch (Exception e)
-            {
-                _logger.Warning(e, "Failed to clean up old update file at {FilePath}", file);
-            }
-        }
-
-        if (updated)
-            _updateNotificationProvider.Value.ShowInstalledNotification(currentVersion);
-    }
-
-    private void ShowUpdateNotification(IGetNextRelease_NextPublishedRelease release)
-    {
-        _updateNotificationProvider.Value.ShowNotification(release.Id, release.Version);
-    }
-
-    private async Task AutoInstallUpdate(IGetNextRelease_NextPublishedRelease release)
-    {
-        ReleaseInstaller installer = _getReleaseInstaller(release.Id);
-        await installer.InstallAsync(CancellationToken.None);
-        RestartForUpdate("AutoInstallUpdate", true);
-    }
-
-    private async void HandleAutoUpdateEvent(object? sender, EventArgs e)
-    {
-        if (Constants.CurrentVersion == "local")
-            return;
-
-        // The event can trigger from multiple sources with a timer acting as a fallback, only actually perform an action once per max 59 minutes
-        if (DateTime.UtcNow - _lastAutoUpdateCheck < TimeSpan.FromMinutes(59))
-            return;
-        _lastAutoUpdateCheck = DateTime.UtcNow;
-
-        if (!_autoCheck.Value || _suspendAutoCheck)
-            return;
-
-        try
-        {
-            await CheckForUpdate();
-        }
-        catch (Exception ex)
-        {
-            _logger.Warning(ex, "Auto update-check failed");
-        }
-    }
-
+    
     /// <inheritdoc />
     public string Channel { get; private set; } = "master";
 
@@ -139,7 +79,7 @@ public class UpdateService : IUpdateService
 
     /// <inheritdoc />
     public IGetNextRelease_NextPublishedRelease? CachedLatestRelease { get; private set; }
-
+    
     /// <inheritdoc />
     public async Task CacheLatestRelease()
     {
@@ -256,5 +196,87 @@ public class UpdateService : IUpdateService
 
         _logger.Information("Update service initialized for {Channel} channel", Channel);
         return false;
+    }
+
+    private async Task<bool> AutoCheckForUpdates()
+    {
+        // Don't perform auto-updates if the current version is local
+        if (Constants.CurrentVersion == "local")
+            return false;
+        
+        // Don't perform auto-updates if the setting is disabled or an update was found but not yet installed
+        if (!_autoCheck.Value || _suspendAutoCheck)
+            return false;
+
+        try
+        {
+            return await CheckForUpdate() && _autoInstall.Value;
+        }
+        catch (Exception ex)
+        {
+            _logger.Warning(ex, "Auto update-check failed");
+        }
+
+        return false;
+    }
+
+    private void ProcessReleaseStatus()
+    {
+        string currentVersion = Constants.CurrentVersion;
+        bool updated = _releaseRepository.SaveVersionInstallDate(currentVersion);
+        PreviousVersion = _releaseRepository.GetPreviousInstalledVersion()?.Version;
+
+        if (!Directory.Exists(Constants.UpdatingFolder))
+            return;
+
+        // Clean up the update folder, leaving only the last ZIP
+        foreach (string file in Directory.GetFiles(Constants.UpdatingFolder))
+        {
+            if (Path.GetExtension(file) != ".zip" || Path.GetFileName(file) == $"{currentVersion}.zip")
+                continue;
+
+            try
+            {
+                _logger.Debug("Cleaning up old update file at {FilePath}", file);
+                File.Delete(file);
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "Failed to clean up old update file at {FilePath}", file);
+            }
+        }
+
+        if (updated)
+            _updateNotificationProvider.Value.ShowInstalledNotification(currentVersion);
+    }
+
+    private void ShowUpdateNotification(IGetNextRelease_NextPublishedRelease release)
+    {
+        _updateNotificationProvider.Value.ShowNotification(release.Id, release.Version);
+    }
+
+    private async Task AutoInstallUpdate(IGetNextRelease_NextPublishedRelease release)
+    {
+        ReleaseInstaller installer = _getReleaseInstaller(release.Id);
+        await installer.InstallAsync(CancellationToken.None);
+        RestartForUpdate("AutoInstallUpdate", true);
+    }
+
+    private async void HandleAutoUpdateEvent(object? sender, EventArgs e)
+    {
+        // The event can trigger from multiple sources with a timer acting as a fallback, only actually perform an action once per max 59 minutes
+        if (DateTime.UtcNow - _lastAutoUpdateCheck < TimeSpan.FromMinutes(59))
+            return;
+        
+        _lastAutoUpdateCheck = DateTime.UtcNow;
+        
+        if (await AutoCheckForUpdates())
+        {
+            _logger.Information("Auto-installing update, not performing workshop update check");
+        }
+        else
+        {
+            await _workshopUpdateService.AutoUpdateEntries();
+        }
     }
 }

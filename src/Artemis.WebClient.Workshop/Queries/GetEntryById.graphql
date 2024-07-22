@@ -27,3 +27,17 @@ query GetLayoutEntryById($id: Long!) {
         }
     }
 }
+
+query GetEntrySummaryById($id: Long!) {
+    entry(id: $id) {
+        ...entrySummary
+    }
+}
+
+query GetEntryLatestReleaseById($id: Long!) {
+    entry(id: $id) {
+        latestRelease {
+            ...releaseDetails
+        }
+    }
+}

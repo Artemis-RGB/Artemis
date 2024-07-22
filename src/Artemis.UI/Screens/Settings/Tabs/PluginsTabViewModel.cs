@@ -23,12 +23,14 @@ namespace Artemis.UI.Screens.Settings;
 public partial class PluginsTabViewModel : RoutableScreen
 {
     private readonly INotificationService _notificationService;
+    private readonly IRouter _router;
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IWindowService _windowService;
     [Notify] private string? _searchPluginInput;
 
-    public PluginsTabViewModel(IPluginManagementService pluginManagementService, INotificationService notificationService, IWindowService windowService, ISettingsVmFactory settingsVmFactory)
+    public PluginsTabViewModel(IRouter router, IPluginManagementService pluginManagementService, INotificationService notificationService, IWindowService windowService, ISettingsVmFactory settingsVmFactory)
     {
+        _router = router;
         _pluginManagementService = pluginManagementService;
         _notificationService = notificationService;
         _windowService = windowService;
@@ -112,5 +114,10 @@ public partial class PluginsTabViewModel : RoutableScreen
 
         return data => data.Info.Name.Contains(text, StringComparison.InvariantCultureIgnoreCase) ||
                        (data.Info.Description != null && data.Info.Description.Contains(text, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    public async Task GetMorePlugins()
+    {
+        await _router.Navigate("workshop/entries/plugins");
     }
 }
