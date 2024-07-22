@@ -58,7 +58,7 @@ public class WorkshopUpdateService : IWorkshopUpdateService
     {
         // Query the latest version
         IOperationResult<IGetEntryLatestReleaseByIdResult> latestReleaseResult = await _client.GetEntryLatestReleaseById.ExecuteAsync(installedEntry.Id);
-        IGetEntryById_Entry_LatestRelease_Entry? entry = latestReleaseResult.Data?.Entry?.LatestRelease?.Entry;
+        IEntrySummary? entry = latestReleaseResult.Data?.Entry?.LatestRelease?.Entry;
         if (entry == null)
             return false;
         if (latestReleaseResult.Data?.Entry?.LatestRelease is not IRelease latestRelease)
