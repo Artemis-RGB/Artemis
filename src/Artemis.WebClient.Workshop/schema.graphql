@@ -56,11 +56,13 @@ type Entry {
     dependantReleases: [Release!]!
     description: String!
     downloads: Long!
+    downvoteCount: Int!
     entryType: EntryType!
     icon: Image
     iconId: UUID
     id: Long!
     images: [Image!]!
+    isDefault: Boolean!
     isOfficial: Boolean!
     latestRelease: Release
     latestReleaseId: Long
@@ -68,8 +70,10 @@ type Entry {
     name: String!
     pluginInfo: PluginInfo
     releases: [Release!]!
+    score: Int!
     summary: String!
     tags: [Tag!]!
+    upvoteCount: Int!
 }
 
 type Image {
@@ -99,6 +103,8 @@ type LayoutInfo {
 type Mutation {
     addEntry(input: CreateEntryInput!): Entry
     addLayoutInfo(input: CreateLayoutInfoInput!): LayoutInfo
+    castVote(input: CastVoteInput!): Entry
+    clearVote(entryId: Long!): Entry
     removeEntry(id: Long!): Entry
     removeLayoutInfo(id: Long!): LayoutInfo!
     removeRelease(id: Long!): Release!
@@ -168,6 +174,7 @@ type Query {
     searchKeyboardLayout(deviceProvider: UUID!, logicalLayout: String, model: String!, physicalLayout: KeyboardLayoutType!, vendor: String!): LayoutInfo
     searchLayout(deviceProvider: UUID!, deviceType: RGBDeviceType!, model: String!, vendor: String!): LayoutInfo
     submittedEntries(order: [EntrySortInput!], where: EntryFilterInput): [Entry!]!
+    votes(order: [VoteSortInput!], where: VoteFilterInput): [Vote!]!
 }
 
 type Release {
@@ -186,6 +193,15 @@ type Release {
 type Tag {
     id: Long!
     name: String!
+}
+
+type Vote {
+    entry: Entry!
+    entryId: Long!
+    id: Long!
+    upvote: Boolean!
+    userId: UUID!
+    votedAt: DateTime!
 }
 
 enum ApplyPolicy {
@@ -250,6 +266,11 @@ input BooleanOperationFilterInput {
     neq: Boolean
 }
 
+input CastVoteInput {
+    entryId: Long!
+    upvote: Boolean!
+}
+
 input CategoryFilterInput {
     and: [CategoryFilterInput!]
     icon: StringOperationFilterInput
@@ -268,6 +289,7 @@ input CreateEntryInput {
     categories: [Long!]!
     description: String!
     entryType: EntryType!
+    isDefault: Boolean!
     name: String!
     summary: String!
     tags: [String!]!
@@ -307,11 +329,13 @@ input EntryFilterInput {
     dependantReleases: ListFilterInputTypeOfReleaseFilterInput
     description: StringOperationFilterInput
     downloads: LongOperationFilterInput
+    downvoteCount: IntOperationFilterInput
     entryType: EntryTypeOperationFilterInput
     icon: ImageFilterInput
     iconId: UuidOperationFilterInput
     id: LongOperationFilterInput
     images: ListFilterInputTypeOfImageFilterInput
+    isDefault: BooleanOperationFilterInput
     isOfficial: BooleanOperationFilterInput
     latestRelease: ReleaseFilterInput
     latestReleaseId: LongOperationFilterInput
@@ -320,8 +344,10 @@ input EntryFilterInput {
     or: [EntryFilterInput!]
     pluginInfo: PluginInfoFilterInput
     releases: ListFilterInputTypeOfReleaseFilterInput
+    score: IntOperationFilterInput
     summary: StringOperationFilterInput
     tags: ListFilterInputTypeOfTagFilterInput
+    upvoteCount: IntOperationFilterInput
 }
 
 input EntrySortInput {
@@ -330,16 +356,20 @@ input EntrySortInput {
     createdAt: SortEnumType
     description: SortEnumType
     downloads: SortEnumType
+    downvoteCount: SortEnumType
     entryType: SortEnumType
     icon: ImageSortInput
     iconId: SortEnumType
     id: SortEnumType
+    isDefault: SortEnumType
     isOfficial: SortEnumType
     latestRelease: ReleaseSortInput
     latestReleaseId: SortEnumType
     name: SortEnumType
     pluginInfo: PluginInfoSortInput
+    score: SortEnumType
     summary: SortEnumType
+    upvoteCount: SortEnumType
 }
 
 input EntryTypeOperationFilterInput {
@@ -580,6 +610,7 @@ input UpdateEntryInput {
     categories: [Long!]!
     description: String!
     id: Long!
+    isDefault: Boolean!
     name: String!
     summary: String!
     tags: [String!]!
@@ -603,4 +634,24 @@ input UuidOperationFilterInput {
     nin: [UUID]
     nlt: UUID
     nlte: UUID
+}
+
+input VoteFilterInput {
+    and: [VoteFilterInput!]
+    entry: EntryFilterInput
+    entryId: LongOperationFilterInput
+    id: LongOperationFilterInput
+    or: [VoteFilterInput!]
+    upvote: BooleanOperationFilterInput
+    userId: UuidOperationFilterInput
+    votedAt: DateTimeOperationFilterInput
+}
+
+input VoteSortInput {
+    entry: EntrySortInput
+    entryId: SortEnumType
+    id: SortEnumType
+    upvote: SortEnumType
+    userId: SortEnumType
+    votedAt: SortEnumType
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Artemis.UI.Shared;
@@ -18,12 +17,12 @@ public partial class EntryListItemViewModel : ActivatableViewModelBase
     [Notify] private bool _isInstalled;
     [Notify] private bool _updateAvailable;
 
-    public EntryListItemViewModel(IEntrySummary entry, IRouter router, IWorkshopService workshopService)
+    public EntryListItemViewModel(IEntrySummary entry, IRouter router, IWorkshopService workshopService, Func<IEntrySummary, EntryVoteViewModel> getEntryVoteViewModel)
     {
         _router = router;
 
         Entry = entry;
-        NavigateToEntry = ReactiveCommand.CreateFromTask(ExecuteNavigateToEntry);
+        VoteViewModel = getEntryVoteViewModel(entry);
 
         this.WhenActivated((CompositeDisposable _) =>
         {
@@ -34,9 +33,9 @@ public partial class EntryListItemViewModel : ActivatableViewModelBase
     }
 
     public IEntrySummary Entry { get; }
-    public ReactiveCommand<Unit, Unit> NavigateToEntry { get; }
+    public EntryVoteViewModel VoteViewModel { get; }
 
-    private async Task ExecuteNavigateToEntry()
+    public async Task NavigateToEntry()
     {
         switch (Entry.EntryType)
         {

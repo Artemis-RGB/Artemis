@@ -1,0 +1,6 @@
+query GetVotes {
+    votes {
+        entryId
+        upvote
+    }
+}

@@ -10,6 +10,7 @@ using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Plugins;
+using Artemis.UI.Screens.Workshop.Entries;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
@@ -35,6 +36,7 @@ public partial class InstalledTabItemViewModel : ActivatableViewModelBase
 
     [Notify] private bool _updateAvailable;
     [Notify] private bool _autoUpdate;
+    [Notify] private EntryVoteViewModel _voteViewModel;
 
     public InstalledTabItemViewModel(InstalledEntry entry,
         IWorkshopClient client,
@@ -43,7 +45,8 @@ public partial class InstalledTabItemViewModel : ActivatableViewModelBase
         IRouter router,
         IWindowService windowService,
         IPluginManagementService pluginManagementService,
-        ISettingsVmFactory settingsVmFactory)
+        ISettingsVmFactory settingsVmFactory,
+        Func<IEntrySummary, EntryVoteViewModel> getEntryVoteViewModel)
     {
         _client = client;
         _workshopService = workshopService;
@@ -53,9 +56,9 @@ public partial class InstalledTabItemViewModel : ActivatableViewModelBase
         _pluginManagementService = pluginManagementService;
         _settingsVmFactory = settingsVmFactory;
         _autoUpdate = entry.AutoUpdate;
-        
-        Entry = entry;
 
+        Entry = entry;
+       
         this.WhenActivatedAsync(async _ =>
         {
             // Grab the latest entry summary from the workshop
@@ -65,6 +68,7 @@ public partial class InstalledTabItemViewModel : ActivatableViewModelBase
                 if (entrySummary.Data?.Entry != null)
                 {
                     Entry.ApplyEntrySummary(entrySummary.Data.Entry);
+                    VoteViewModel = getEntryVoteViewModel(entrySummary.Data.Entry);
                     _workshopService.SaveInstalledEntry(Entry);
                 }
             }
@@ -73,7 +77,7 @@ public partial class InstalledTabItemViewModel : ActivatableViewModelBase
                 UpdateAvailable = Entry.ReleaseId != Entry.LatestReleaseId;
             }
         });
-        
+
         this.WhenAnyValue(vm => vm.AutoUpdate).Skip(1).Subscribe(_ => AutoUpdateToggled());
     }
 
@@ -122,10 +126,10 @@ public partial class InstalledTabItemViewModel : ActivatableViewModelBase
     private void AutoUpdateToggled()
     {
         _workshopService.SetAutoUpdate(Entry, AutoUpdate);
-        
+
         if (!AutoUpdate)
             return;
-        
+
         Task.Run(async () =>
         {
             await _workshopUpdateService.AutoUpdateEntry(Entry);
