@@ -53,7 +53,6 @@ public static class ContainerExtensions
         container.Register<IAuthenticationRepository, AuthenticationRepository>(Reuse.Singleton);
         container.Register<IAuthenticationService, AuthenticationService>(Reuse.Singleton);
         container.Register<IWorkshopService, WorkshopService>(Reuse.Singleton);
-        container.Register<IVoteClient, VoteClient>(Reuse.Singleton);
         container.Register<ILayoutProvider, WorkshopLayoutProvider>(Reuse.Singleton);
         container.Register<IUserManagementService, UserManagementService>();
 

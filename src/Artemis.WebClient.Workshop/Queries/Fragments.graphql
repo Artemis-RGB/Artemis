@@ -36,8 +36,6 @@ fragment entrySummary on Entry {
     summary
     entryType
     downloads
-    upvoteCount
-    downvoteCount
     createdAt
     latestReleaseId
     categories {
@@ -53,8 +51,6 @@ fragment entryDetails on Entry {
     summary
     entryType
     downloads
-    upvoteCount
-    downvoteCount
     createdAt
     description
     categories {

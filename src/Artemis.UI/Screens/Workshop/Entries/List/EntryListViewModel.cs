@@ -137,9 +137,6 @@ public partial class EntryListViewModel : RoutableScreen
         if (InputViewModel.SortBy == 2)
             return new[] {new EntrySortInput {Downloads = SortEnumType.Desc}};
 
-        // Sort by score
-        if (InputViewModel.SortBy == 3)
-            return new[] {new EntrySortInput {Score = SortEnumType.Desc}};
 
         // Sort by latest release, then by created at
         return new[]
