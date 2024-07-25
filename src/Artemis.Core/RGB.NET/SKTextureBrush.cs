@@ -20,7 +20,7 @@ internal class SKTextureBrush : AbstractBrush
     #region Methods
 
     /// <inheritdoc />
-    protected override Color GetColorAtPoint(in Rectangle rectangle, in RenderTarget renderTarget)
+    protected override Color GetColorAtPoint(Rectangle rectangle, RenderTarget renderTarget)
     {
         return Texture?.GetColorAtRenderTarget(renderTarget) ?? Color.Transparent;
     }
