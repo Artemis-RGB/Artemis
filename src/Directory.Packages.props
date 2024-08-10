@@ -59,7 +59,7 @@
     <PackageVersion Include="Splat.DryIoc" Version="15.1.1" />
     <PackageVersion Include="StrawberryShake.Server" Version="13.9.6" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.6.2" />
-    <PackageVersion Include="System.Text.Json" Version="8.0.3" />
+    <PackageVersion Include="System.Text.Json" Version="8.0.4" />
     <PackageVersion Include="TextMateSharp.Grammars" Version="1.0.57" />
   </ItemGroup>
 </Project>
