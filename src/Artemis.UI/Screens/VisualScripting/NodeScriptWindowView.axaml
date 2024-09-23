@@ -169,13 +169,13 @@
             <TextBlock Classes="h4" Text="{CompiledBinding NodeScript.Name}" />
             <TextBlock Classes="subtitle" Margin="10 0 0 13" Text="{CompiledBinding NodeScript.Description}" VerticalAlignment="Bottom" />
         </StackPanel>
-        <controls:HyperlinkButton Grid.Row="1"
+        <HyperlinkButton Grid.Row="1"
                                   Grid.Column="1"
                                   VerticalAlignment="Top"
                                   HorizontalAlignment="Right"
                                   NavigateUri="https://wiki.artemis-rgb.com/en/guides/user/profiles/nodes?mtm_campaign=artemis&amp;mtm_kwd=script-editor">
             Learn more about visual scripts
-        </controls:HyperlinkButton>
+        </HyperlinkButton>
 
         <Border Classes="card-condensed" Grid.Row="2" Grid.ColumnSpan="2">
             <ContentControl Content="{CompiledBinding NodeScriptViewModel}" />

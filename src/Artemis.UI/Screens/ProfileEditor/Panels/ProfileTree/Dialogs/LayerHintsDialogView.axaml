@@ -22,12 +22,12 @@
                 <TextBlock Classes="h4" Text="{CompiledBinding Layer.Name}" TextWrapping="Wrap" />
             </StackPanel>
 
-            <controls:HyperlinkButton Grid.Row="0"
+            <HyperlinkButton Grid.Row="0"
                                       Grid.Column="1"
                                       VerticalAlignment="Top"
                                       NavigateUri="https://wiki.artemis-rgb.com/guides/user/profiles/layers/adaption-hints?mtm_campaign=artemis&amp;mtm_kwd=profile-editor">
                 Learn more about adaption hints
-            </controls:HyperlinkButton>
+            </HyperlinkButton>
 
             <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Classes="subtitle" TextWrapping="Wrap">
                 Add hints below to help decide where to place this layer when the profile is imported.

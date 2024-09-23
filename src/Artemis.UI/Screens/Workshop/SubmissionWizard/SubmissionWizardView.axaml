@@ -22,9 +22,9 @@
             <TextBlock Grid.Row="0" Grid.Column="1" FontSize="36" VerticalAlignment="Bottom" Text="Not logged in" IsVisible="{CompiledBinding CurrentUserViewModel.IsAnonymous}" />
 
             <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
-                <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View Wiki" NavigateUri="https://wiki.artemis-rgb.com?mtm_campaign=artemis&amp;mtm_kwd=workshop-wizard">
+                <HyperlinkButton Classes="icon-button" ToolTip.Tip="View Wiki" NavigateUri="https://wiki.artemis-rgb.com?mtm_campaign=artemis&amp;mtm_kwd=workshop-wizard">
                     <avalonia:MaterialIcon Kind="BookOpenOutline" />
-                </controls:HyperlinkButton>
+                </HyperlinkButton>
             </StackPanel>
 
             <TextBlock Grid.Row="1"

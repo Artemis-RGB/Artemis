@@ -25,15 +25,15 @@
                 </TextBlock>
 
                 <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
-                    <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View website" NavigateUri="https://artemis-rgb.com?mtm_campaign=artemis&amp;mtm_kwd=about">
+                    <HyperlinkButton Classes="icon-button" ToolTip.Tip="View website" NavigateUri="https://artemis-rgb.com?mtm_campaign=artemis&amp;mtm_kwd=about">
                         <avalonia:MaterialIcon Kind="Web" />
-                    </controls:HyperlinkButton>
-                    <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View GitHub repository" NavigateUri="https://github.com/Artemis-RGB/Artemis">
+                    </HyperlinkButton>
+                    <HyperlinkButton Classes="icon-button" ToolTip.Tip="View GitHub repository" NavigateUri="https://github.com/Artemis-RGB/Artemis">
                         <avalonia:MaterialIcon Kind="Github" />
-                    </controls:HyperlinkButton>
-                    <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View Wiki" NavigateUri="https://wiki.artemis-rgb.com?mtm_campaign=artemis&amp;mtm_kwd=about">
+                    </HyperlinkButton>
+                    <HyperlinkButton Classes="icon-button" ToolTip.Tip="View Wiki" NavigateUri="https://wiki.artemis-rgb.com?mtm_campaign=artemis&amp;mtm_kwd=about">
                         <avalonia:MaterialIcon Kind="BookOpenOutline" />
-                    </controls:HyperlinkButton>
+                    </HyperlinkButton>
                 </StackPanel>
 
                 <SelectableTextBlock Grid.Row="1"
@@ -42,12 +42,12 @@
                                      Classes="subtitle"
                                      Text="{CompiledBinding Version}" />
 
-                <controls:HyperlinkButton Grid.Row="1"
+                <HyperlinkButton Grid.Row="1"
                                           Grid.Column="2"
                                           VerticalAlignment="Top"
                                           NavigateUri="https://github.com/Artemis-RGB/Artemis/blob/master/LICENSE">
                     PolyForm Noncommercial License 1.0.0
-                </controls:HyperlinkButton>
+                </HyperlinkButton>
             </Grid>
 
             <Border Classes="card" Margin="0 20 0 10">
@@ -65,9 +65,9 @@
                             Project owner, main contributor
                         </TextBlock>
                         <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" Margin="-6">
-                            <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View GitHub profile" NavigateUri="https://github.com/RobertBeekman/">
+                            <HyperlinkButton Classes="icon-button" ToolTip.Tip="View GitHub profile" NavigateUri="https://github.com/RobertBeekman/">
                                 <avalonia:MaterialIcon Kind="Github" Width="20" Height="20" />
-                            </controls:HyperlinkButton>
+                            </HyperlinkButton>
                         </StackPanel>
                     </Grid>
 
@@ -86,9 +86,9 @@
                             RGB.NET, main contributor
                         </TextBlock>
                         <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" Margin="-6">
-                            <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View GitHub profile" NavigateUri="https://github.com/DarthAffe/">
+                            <HyperlinkButton Classes="icon-button" ToolTip.Tip="View GitHub profile" NavigateUri="https://github.com/DarthAffe/">
                                 <avalonia:MaterialIcon Kind="Github" Width="20" Height="20" />
-                            </controls:HyperlinkButton>
+                            </HyperlinkButton>
                         </StackPanel>
                     </Grid>
 
@@ -107,9 +107,9 @@
                             Main contributor
                         </TextBlock>
                         <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" Margin="-6">
-                            <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View GitHub profile" NavigateUri="https://github.com/diogotr7/">
+                            <HyperlinkButton Classes="icon-button" ToolTip.Tip="View GitHub profile" NavigateUri="https://github.com/diogotr7/">
                                 <avalonia:MaterialIcon Kind="Github" Width="20" Height="20" />
-                            </controls:HyperlinkButton>
+                            </HyperlinkButton>
                         </StackPanel>
                     </Grid>
 
@@ -128,9 +128,9 @@
                             Graphics design
                         </TextBlock>
                         <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" Margin="-6">
-                            <controls:HyperlinkButton Classes="icon-button" ToolTip.Tip="View website" NavigateUri="https://kwer.online/">
+                            <HyperlinkButton Classes="icon-button" ToolTip.Tip="View website" NavigateUri="https://kwer.online/">
                                 <avalonia:MaterialIcon Kind="Web" Width="20" Height="20" />
-                            </controls:HyperlinkButton>
+                            </HyperlinkButton>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -185,39 +185,39 @@
                             <TextBlock Classes="library-name">SQLite</TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Column="1">
-                            <controls:HyperlinkButton NavigateUri="https://avaloniaui.net/">
+                            <HyperlinkButton NavigateUri="https://avaloniaui.net/">
                                 https://avaloniaui.net/
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton NavigateUri="https://github.com/dadhi/DryIoc">
+                            </HyperlinkButton>
+                            <HyperlinkButton NavigateUri="https://github.com/dadhi/DryIoc">
                                 https://github.com/dadhi/DryIoc
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton NavigateUri="https://learn.microsoft.com/en-us/ef/core/">
+                            </HyperlinkButton>
+                            <HyperlinkButton NavigateUri="https://learn.microsoft.com/en-us/ef/core/">
                                 https://learn.microsoft.com/en-us/ef/core/
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton NavigateUri="https://github.com/amwx/FluentAvalonia">
+                            </HyperlinkButton>
+                            <HyperlinkButton NavigateUri="https://github.com/amwx/FluentAvalonia">
                                 https://github.com/amwx/FluentAvalonia
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton NavigateUri="https://unosquare.github.io/embedio/">
+                            </HyperlinkButton>
+                            <HyperlinkButton NavigateUri="https://unosquare.github.io/embedio/">
                                 https://unosquare.github.io/embedio/
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton NavigateUri="https://github.com/Humanizr/Humanizer">
+                            </HyperlinkButton>
+                            <HyperlinkButton NavigateUri="https://github.com/Humanizr/Humanizer">
                                 https://github.com/Humanizr/Humanizer
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton NavigateUri="https://github.com/natemcmaster/DotNetCorePlugins">
+                            </HyperlinkButton>
+                            <HyperlinkButton NavigateUri="https://github.com/natemcmaster/DotNetCorePlugins">
                                 https://github.com/natemcmaster/DotNetCorePlugins
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton NavigateUri="https://github.com/DarthAffe/RGB.NET">
+                            </HyperlinkButton>
+                            <HyperlinkButton NavigateUri="https://github.com/DarthAffe/RGB.NET">
                                 https://github.com/DarthAffe/RGB.NET
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton NavigateUri="https://serilog.net/">
+                            </HyperlinkButton>
+                            <HyperlinkButton NavigateUri="https://serilog.net/">
                                 https://serilog.net/
-                            </controls:HyperlinkButton>
-                            <controls:HyperlinkButton NavigateUri="https://github.com/mono/SkiaSharp">
+                            </HyperlinkButton>
+                            <HyperlinkButton NavigateUri="https://github.com/mono/SkiaSharp">
                                 https://github.com/mono/SkiaSharp
-                            </controls:HyperlinkButton>    
-                            <controls:HyperlinkButton NavigateUri="https://www.sqlite.org/">
+                            </HyperlinkButton>    
+                            <HyperlinkButton NavigateUri="https://www.sqlite.org/">
                                 https://www.sqlite.org/
-                            </controls:HyperlinkButton>
+                            </HyperlinkButton>
                         </StackPanel>
                     </Grid>
                 </StackPanel>

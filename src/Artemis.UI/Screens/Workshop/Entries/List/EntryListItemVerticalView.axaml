@@ -1,0 +1,76 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:il="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:list="clr-namespace:Artemis.UI.Screens.Workshop.Entries.List"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             mc:Ignorable="d"
+             x:Class="Artemis.UI.Screens.Workshop.Entries.List.EntryListItemVerticalView"
+             x:DataType="list:EntryListItemViewModel">
+    <UserControl.Styles>
+        <StyleInclude Source="/Screens/Workshop/Search/SearchViewStyles.axaml" />
+    </UserControl.Styles>
+    <UserControl.Resources>
+        <converters:EntryIconUriConverter x:Key="EntryIconUriConverter" />
+    </UserControl.Resources>
+    <Button Command="{CompiledBinding NavigateToEntry}" Padding="12">
+        <Grid RowDefinitions="Auto,43,Auto,Auto,*" ColumnDefinitions="Auto,*" Width="150" Height="200">
+            <Border Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    CornerRadius="6"
+                    Width="60"
+                    Height="60"
+                    Margin="0 5"
+                    ClipToBounds="True"
+                    HorizontalAlignment="Left">
+                <Image Stretch="UniformToFill" il:ImageLoader.Source="{CompiledBinding Entry.Id, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
+            </Border>
+
+            <TextBlock Grid.Row="1"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="2"
+                       MaxLines="2"
+                       TextWrapping="Wrap"
+                       TextTrimming="CharacterEllipsis"
+                       FontSize="16"
+                       VerticalAlignment="Center"
+                       Text="{CompiledBinding Entry.Name, FallbackValue=Title that is super long and should be wrapped}" />
+
+            <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0 1">
+                <TextBlock Classes="subtitle" MaxLines="1" TextTrimming="CharacterEllipsis" Text="{CompiledBinding Entry.Author, FallbackValue=Author}"/>
+                <avalonia:MaterialIcon IsVisible="{CompiledBinding Entry.IsOfficial}"
+                                       Kind="ShieldStar"
+                                       Foreground="{DynamicResource SystemAccentColorLight1}"
+                                       Margin="2 0 0 0"
+                                       Width="18"
+                                       Height="18"
+                                       HorizontalAlignment="Left"
+                                       ToolTip.Tip="Official entry by the Artemis team" />
+            </StackPanel>
+
+            <TextBlock Grid.Row="3"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="2"
+                       MaxLines="2"
+                       TextWrapping="Wrap"
+                       TextTrimming="CharacterEllipsis"
+                       FontSize="12"
+                       Opacity="0.8"
+                       Text="{CompiledBinding Entry.Summary, FallbackValue=Summary that is super long and should be wrapped}" />
+
+            <Border Grid.Row="4" Grid.Column="0" Classes="badge" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+                <TextBlock>
+                    <Run Text="{CompiledBinding Entry.Downloads, FallbackValue=0}" />
+                    <Run>downloads</Run>
+                </TextBlock>
+            </Border>
+            <Border Grid.Row="4" Grid.Column="1" Classes="badge" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                <TextBlock Text="{CompiledBinding Entry.EntryType, FallbackValue=Type}"></TextBlock>
+            </Border>
+
+        </Grid>
+    </Button>
+</UserControl>

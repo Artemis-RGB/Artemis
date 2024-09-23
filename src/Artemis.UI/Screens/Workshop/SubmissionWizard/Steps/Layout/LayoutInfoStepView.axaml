@@ -39,7 +39,7 @@
             <shared:EnumComboBox Value="{CompiledBinding PhysicalLayout}"></shared:EnumComboBox>
         </StackPanel>
         
-        <controls:HyperlinkButton Grid.Row="1"
+        <HyperlinkButton Grid.Row="1"
                                   Grid.Column="0"
                                   IsVisible="{CompiledBinding IsKeyboardLayout}"
                                   Margin="0 10 0 0"
@@ -47,7 +47,7 @@
                                   HorizontalAlignment="Right"
                                   NavigateUri="https://wiki.artemis-rgb.com/en/guides/developer/layouts/keyboard-layouts?mtm_campaign=artemis&amp;mtm_kwd=workshop-wizard">
             Learn about physical layouts
-        </controls:HyperlinkButton>
+        </HyperlinkButton>
 
         <ScrollViewer Grid.Row="2"
                       Grid.Column="0"

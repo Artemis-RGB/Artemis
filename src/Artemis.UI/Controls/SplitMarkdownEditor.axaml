@@ -17,7 +17,7 @@
             <Label Grid.Column="0" Name="DescriptionEditorLabel" Target="DescriptionEditor" Margin="0 28 0 0" />
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                 <CheckBox Name="SynchronizedScrolling" IsChecked="True" VerticalAlignment="Bottom">Synchronized scrolling</CheckBox>
-                <fa:HyperlinkButton
+                <HyperlinkButton
                     Margin="0 0 0 -20"
                     Content="Markdown supported"
                     NavigateUri="https://wiki.artemis-rgb.com/guides/user/markdown?mtm_campaign=artemis&amp;mtm_kwd=markdown-editor"
