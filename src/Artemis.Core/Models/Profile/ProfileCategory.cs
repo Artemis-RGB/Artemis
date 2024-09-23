@@ -167,7 +167,7 @@ public class ProfileCategory : CorePropertyChanged, IStorageModel
         IsSuspended = Entity.IsSuspended;
         Order = Entity.Order;
 
-        ProfileConfigurations = new ReadOnlyCollection<ProfileConfiguration>(Entity.ProfileConfigurations.Select(pc => new ProfileConfiguration(this, pc)).ToList());
+        ProfileConfigurations = new ReadOnlyCollection<ProfileConfiguration>(Entity.ProfileConfigurations.Select(pc => new ProfileConfiguration(this, pc)).OrderBy(pc => pc.Order).ToList());
     }
 
     /// <inheritdoc />
@@ -180,7 +180,10 @@ public class ProfileCategory : CorePropertyChanged, IStorageModel
         
         Entity.ProfileConfigurations.Clear();
         foreach (ProfileConfiguration profileConfiguration in ProfileConfigurations)
+        {
+            profileConfiguration.Save();
             Entity.ProfileConfigurations.Add(profileConfiguration.Entity);
+        }
     }
 
     #endregion
