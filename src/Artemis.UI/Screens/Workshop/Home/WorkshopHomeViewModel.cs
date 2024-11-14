@@ -48,10 +48,10 @@ public partial class WorkshopHomeViewModel : RoutableScreen
             {
                 p.Clear();
                 if (popularResult.Data?.PopularEntries != null)
-                    p.AddRange(popularResult.Data.PopularEntries);
+                    p.AddRange(popularResult.Data.PopularEntries.Take(8));
             });
 
-            IOperationResult<IGetEntriesv2Result> latestResult = await client.GetEntriesv2.ExecuteAsync(null, null, [new EntrySortInput {CreatedAt = SortEnumType.Desc}], 25, null);
+            IOperationResult<IGetEntriesv2Result> latestResult = await client.GetEntriesv2.ExecuteAsync(null, null, [new EntrySortInput {CreatedAt = SortEnumType.Desc}], 8, null);
             latest.Edit(l =>
             {
                 l.Clear();
