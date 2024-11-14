@@ -1,7 +1,9 @@
-﻿using SkiaSharp;
+﻿using HPPH;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace Artemis.Core.ColorScience;
 
@@ -16,7 +18,7 @@ public static class ColorQuantizer
     /// <param name="colors">The colors to quantize</param>
     /// <param name="amount">How many colors to return. Must be a power of two.</param>
     /// <returns><paramref name="amount"/> colors.</returns>
-    public static SKColor[] Quantize(in Span<SKColor> colors, int amount)
+    public static SKColor[] Quantize(Span<SKColor> colors, int amount)
     {
         if (!BitOperations.IsPow2(amount))
             throw new ArgumentException("Must be power of two", nameof(amount));
@@ -31,31 +33,12 @@ public static class ColorQuantizer
     /// <param name="colors">The colors to quantize</param>
     /// <param name="splits">How many splits to execute. Each split doubles the number of colors returned.</param>
     /// <returns>Up to (2 ^ <paramref name="splits"/>) number of colors.</returns>
-    public static SKColor[] QuantizeSplit(in Span<SKColor> colors, int splits)
+    public static SKColor[] QuantizeSplit(Span<SKColor> colors, int splits)
     {
         if (colors.Length < (1 << splits)) throw new ArgumentException($"The color array must at least contain ({(1 << splits)}) to perform {splits} splits.");
 
-        Span<ColorCube> cubes = new ColorCube[1 << splits];
-        cubes[0] = new ColorCube(colors, 0, colors.Length, SortTarget.None);
-
-        int currentIndex = 0;
-        for (int i = 0; i < splits; i++)
-        {
-            int currentCubeCount = 1 << i;
-            Span<ColorCube> currentCubes = cubes.Slice(0, currentCubeCount);
-            for (int j = 0; j < currentCubes.Length; j++)
-            {
-                currentCubes[j].Split(colors, out ColorCube a, out ColorCube b);
-                currentCubes[j] = a;
-                cubes[++currentIndex] = b;
-            }
-        }
-
-        SKColor[] result = new SKColor[cubes.Length];
-        for (int i = 0; i < cubes.Length; i++)
-            result[i] = cubes[i].GetAverageColor(colors);
-
-        return result;
+        // DarthAffe 22.07.2024: This is not ideal as it allocates an additional array, but i don't see a way to get SKColors out here
+        return MemoryMarshal.Cast<ColorBGRA, SKColor>(MemoryMarshal.Cast<SKColor, ColorBGRA>(colors).CreateSimpleColorPalette(1 << splits)).ToArray();
     }
 
     /// <summary>
