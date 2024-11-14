@@ -12,6 +12,20 @@ namespace Artemis.Core.ColorScience;
 /// </summary>
 public static class ColorQuantizer
 {
+    /// <inheritdoc cref="Quantize(Span{SKColor}, int)"/>
+    [Obsolete("Use Quantize(Span<SKColor> colors, int amount) in-parameter instead")]
+    public static SKColor[] Quantize(in Span<SKColor> colors, int amount)
+    {
+        return Quantize(colors, amount);
+    }
+
+    /// <inheritdoc cref="QuantizeSplit(Span{SKColor}, int)"/>
+    [Obsolete("Use QuantizeSplit(Span<SKColor> colors, int splits) without the in-parameter instead")]
+    public static SKColor[] QuantizeSplit(in Span<SKColor> colors, int splits)
+    {
+        return QuantizeSplit(colors, splits);
+    }
+    
     /// <summary>
     /// Quantizes a span of colors into the desired amount of representative colors.
     /// </summary>
@@ -26,7 +40,7 @@ public static class ColorQuantizer
         int splits = BitOperations.Log2((uint)amount);
         return QuantizeSplit(colors, splits);
     }
-
+   
     /// <summary>
     /// Quantizes a span of colors, splitting the average <paramref name="splits"/> number of times.
     /// </summary>
