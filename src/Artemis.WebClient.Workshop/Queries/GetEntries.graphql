@@ -1,18 +1,9 @@
-query GetEntries($search: String $filter: EntryFilterInput $skip: Int $take: Int $order: [EntrySortInput!]) {
-    entries(search: $search where: $filter skip: $skip take: $take, order: $order) {
-        totalCount
-        items {
-            ...entrySummary
-        }
-    }
-}
-
 query GetEntriesv2($search: String $filter: EntryFilterInput $order: [EntrySortInput!] $first: Int $after: String) {
     entriesV2(search: $search where: $filter order: $order first: $first after: $after) {
         totalCount
         pageInfo {
             hasNextPage
-            endCursor            
+            endCursor
         }
         edges {
             cursor
@@ -20,5 +11,11 @@ query GetEntriesv2($search: String $filter: EntryFilterInput $order: [EntrySortI
                 ...entrySummary
             }
         }
+    }
+}
+
+query GetPopularEntries {
+    popularEntries {
+        ...entrySummary
     }
 }

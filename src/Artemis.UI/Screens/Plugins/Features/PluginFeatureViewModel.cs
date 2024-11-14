@@ -9,7 +9,6 @@ using Artemis.Core.DeviceProviders;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.Core.Modules;
-using Artemis.Core.ScriptingProviders;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
@@ -99,8 +98,6 @@ public partial class PluginFeatureViewModel : ActivatableViewModelBase
                 return MaterialIconKind.Brush;
             if (FeatureInfo.FeatureType.IsAssignableTo(typeof(LayerEffectProvider)))
                 return MaterialIconKind.AutoAwesome;
-            if (FeatureInfo.FeatureType.IsAssignableTo(typeof(ScriptingProvider)))
-                return MaterialIconKind.Code;
             return MaterialIconKind.Extension;
         }
     }
@@ -117,8 +114,6 @@ public partial class PluginFeatureViewModel : ActivatableViewModelBase
                 return "Layer Brush";
             if (FeatureInfo.FeatureType.IsAssignableTo(typeof(LayerEffectProvider)))
                 return "Layer Effect";
-            if (FeatureInfo.FeatureType.IsAssignableTo(typeof(ScriptingProvider)))
-                return "Scripting Provider";
             return "Miscellaneous feature";
         }
     }

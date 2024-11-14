@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Artemis.Core.DryIoc.Factories;
-using Artemis.Core.ScriptingProviders;
-using Artemis.Storage;
 using DryIoc;
 using HidSharp;
-using RGB.NET.Core;
 using Serilog;
 using Serilog.Events;
-using SkiaSharp;
 
 namespace Artemis.Core.Services;
 
@@ -33,7 +28,6 @@ internal class CoreService : ICoreService
         IPluginManagementService pluginManagementService,
         IProfileService profileService,
         IModuleService moduleService,
-        IScriptingService scriptingService,
         IRenderService renderService)
     {
         Constants.CorePlugin.Container = container;

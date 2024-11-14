@@ -8,7 +8,6 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Screens.Scripting;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
@@ -64,7 +63,6 @@ public partial class MenuBarViewModel : ActivatableViewModelBase
         AddFolder = ReactiveCommand.Create(ExecuteAddFolder);
         AddLayer = ReactiveCommand.Create(ExecuteAddLayer);
         ViewProperties = ReactiveCommand.CreateFromTask(ExecuteViewProperties, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
-        ViewScripts = ReactiveCommand.CreateFromTask(ExecuteViewScripts, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
         AdaptProfile = ReactiveCommand.CreateFromTask(ExecuteAdaptProfile, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
         ToggleSuspended = ReactiveCommand.Create(ExecuteToggleSuspended, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
         DeleteProfile = ReactiveCommand.CreateFromTask(ExecuteDeleteProfile, this.WhenAnyValue(vm => vm.ProfileConfiguration).Select(c => c != null));
@@ -81,7 +79,6 @@ public partial class MenuBarViewModel : ActivatableViewModelBase
     public ReactiveCommand<Unit, Unit> AddLayer { get; }
     public ReactiveCommand<Unit, Unit> ToggleSuspended { get; }
     public ReactiveCommand<Unit, Unit> ViewProperties { get; }
-    public ReactiveCommand<Unit, Unit> ViewScripts { get; }
     public ReactiveCommand<Unit, Unit> AdaptProfile { get; }
     public ReactiveCommand<Unit, Unit> DeleteProfile { get; }
     public ReactiveCommand<Unit, Unit> ExportProfile { get; }
@@ -133,16 +130,7 @@ public partial class MenuBarViewModel : ActivatableViewModelBase
 
         await _windowService.ShowDialogAsync<ProfileConfigurationEditViewModel, ProfileConfiguration?>(ProfileConfiguration.Category, ProfileConfiguration);
     }
-
-    private async Task ExecuteViewScripts()
-    {
-        if (ProfileConfiguration?.Profile == null)
-            return;
-
-        await _windowService.ShowDialogAsync<ScriptsDialogViewModel, object?>(ProfileConfiguration.Profile);
-        await _profileEditorService.SaveProfileAsync();
-    }
-
+    
     private async Task ExecuteAdaptProfile()
     {
         if (ProfileConfiguration?.Profile == null)

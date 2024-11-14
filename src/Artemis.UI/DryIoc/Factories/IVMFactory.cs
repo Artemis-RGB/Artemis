@@ -3,7 +3,6 @@ using System.Reactive;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
-using Artemis.Core.ScriptingProviders;
 using Artemis.UI.Screens.Device;
 using Artemis.UI.Screens.Device.General;
 using Artemis.UI.Screens.Device.InputMappings;
@@ -21,7 +20,6 @@ using Artemis.UI.Screens.ProfileEditor.Properties.DataBinding;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
-using Artemis.UI.Screens.Scripting;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Settings.Updating;
 using Artemis.UI.Screens.Sidebar;
@@ -467,32 +465,6 @@ public class LayerHintVmFactory : ILayerHintVmFactory
     public SingleLedAdaptionHintViewModel SingleLedAdaptionHintViewModel(Layer layer, SingleLedAdaptionHint adaptionHint)
     {
         return _container.Resolve<SingleLedAdaptionHintViewModel>(new object[] {layer, adaptionHint});
-    }
-}
-
-public interface IScriptVmFactory : IVmFactory
-{
-    ScriptConfigurationViewModel ScriptConfigurationViewModel(ScriptConfiguration scriptConfiguration);
-    ScriptConfigurationViewModel ScriptConfigurationViewModel(Profile profile, ScriptConfiguration scriptConfiguration);
-}
-
-public class ScriptVmFactory : IScriptVmFactory
-{
-    private readonly IContainer _container;
-
-    public ScriptVmFactory(IContainer container)
-    {
-        _container = container;
-    }
-
-    public ScriptConfigurationViewModel ScriptConfigurationViewModel(ScriptConfiguration scriptConfiguration)
-    {
-        return _container.Resolve<ScriptConfigurationViewModel>(new object[] {scriptConfiguration});
-    }
-
-    public ScriptConfigurationViewModel ScriptConfigurationViewModel(Profile profile, ScriptConfiguration scriptConfiguration)
-    {
-        return _container.Resolve<ScriptConfigurationViewModel>(new object[] {profile, scriptConfiguration});
     }
 }
 

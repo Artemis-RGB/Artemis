@@ -24,12 +24,12 @@
         </TextBlock>
 
 
-        <controls:HyperlinkButton Grid.Row="0"
+        <HyperlinkButton Grid.Row="0"
                                   Grid.Column="1"
                                   VerticalAlignment="Top"
                                   NavigateUri="https://wiki.artemis-rgb.com/guides/user/profiles/layers/adaption-hints?mtm_campaign=artemis&amp;mtm_kwd=workshop-wizard">
             Learn more about adaption hints
-        </controls:HyperlinkButton>
+        </HyperlinkButton>
 
         <ScrollViewer Grid.Row="2"
                       Grid.Column="0"

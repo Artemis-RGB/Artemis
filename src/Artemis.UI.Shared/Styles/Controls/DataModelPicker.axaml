@@ -51,7 +51,7 @@
                                   RowDefinitions="*,*">
                                 <TextBlock Grid.Column="0" Grid.Row="0" Classes="BodyStrongTextBlockStyle">Welcome to the data model picker</TextBlock>
                                 <TextBlock Grid.Column="0" Grid.Row="1" Foreground="{DynamicResource TextFillColorSecondary}">Select a value from the data model below</TextBlock>
-                                <controls:HyperlinkButton Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Learn more</controls:HyperlinkButton>
+                                <HyperlinkButton Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">Learn more</HyperlinkButton>
                             </Grid>
                         </Panel>
                     </Border>

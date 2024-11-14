@@ -10,7 +10,7 @@
     <Border Classes="router-container">
         <Grid RowDefinitions="200,*,*">
             <ProgressBar ZIndex="999" IsIndeterminate="True" IsVisible="{CompiledBinding !WorkshopReachable}" Grid.Row="0" VerticalAlignment="Top"></ProgressBar>
-            
+
             <Image Grid.Row="0"
                    Grid.RowSpan="2"
                    VerticalAlignment="Top"
@@ -38,7 +38,7 @@
                     <DropShadowEffect Color="Black" OffsetX="2" OffsetY="2" BlurRadius="5"></DropShadowEffect>
                 </TextBlock.Effect>
             </TextBlock>
-            
+
             <StackPanel Margin="30 -75 30 0" Grid.Row="1">
                 <StackPanel Spacing="10" Orientation="Horizontal" VerticalAlignment="Top">
                     <Button Width="150" Height="180" Command="{CompiledBinding Navigate}" CommandParameter="workshop/entries/profiles" VerticalContentAlignment="Top">
@@ -56,7 +56,7 @@
                             <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8">Layouts make your devices look great in the editor.</TextBlock>
                         </StackPanel>
                     </Button>
-                    
+
                     <Button Width="150" Height="180" Command="{CompiledBinding Navigate}" CommandParameter="workshop/entries/plugins" VerticalContentAlignment="Top">
                         <StackPanel>
                             <avalonia:MaterialIcon Kind="Connection" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />
@@ -64,7 +64,7 @@
                             <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8">Plugins add new functionality to Artemis.</TextBlock>
                         </StackPanel>
                     </Button>
-                    
+
                     <Button Width="150" Height="180" Command="{CompiledBinding Navigate}" CommandParameter="workshop/library" VerticalContentAlignment="Top">
                         <StackPanel>
                             <avalonia:MaterialIcon Kind="Bookshelf" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />
@@ -72,7 +72,7 @@
                             <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8">Manage your submissions and downloaded content.</TextBlock>
                         </StackPanel>
                     </Button>
-                    
+
                     <Button Width="150" Height="180" Command="{CompiledBinding AddSubmission}" VerticalContentAlignment="Top">
                         <StackPanel>
                             <avalonia:MaterialIcon Kind="CloudUpload" HorizontalAlignment="Left" Width="60" Height="60" Margin="0 5" />
@@ -85,10 +85,26 @@
                 </StackPanel>
 
                 <TextBlock Classes="h4" Margin="0 15 0 5">Featured submissions</TextBlock>
-                <TextBlock>Not yet implemented, here we'll show submissions we think are worth some extra attention.</TextBlock>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Padding="0 0 0 20">
+                    <ItemsControl ItemsSource="{CompiledBinding PopularEntries}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="10" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </ScrollViewer>
 
-                <TextBlock Classes="h4" Margin="0 15 0 5">Recently updated</TextBlock>
-                <TextBlock>Not yet implemented, here we'll a few of the most recent uploads/updates to the workshop.</TextBlock>
+                <TextBlock Classes="h4" Margin="0 15 0 5">Recently added</TextBlock>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Padding="0 0 0 20">
+                    <ItemsControl ItemsSource="{CompiledBinding LatestEntries}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="10" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </ScrollViewer>
             </StackPanel>
         </Grid>
     </Border>

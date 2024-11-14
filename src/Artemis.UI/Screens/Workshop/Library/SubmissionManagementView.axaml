@@ -70,9 +70,9 @@
                         </ListBox>
                     </StackPanel>
                 </Border>
-                <controls:HyperlinkButton Command="{CompiledBinding ViewWorkshopPage}" HorizontalAlignment="Center">
+                <HyperlinkButton Command="{CompiledBinding ViewWorkshopPage}" HorizontalAlignment="Center">
                     View workshop page
-                </controls:HyperlinkButton>
+                </HyperlinkButton>
             </StackPanel>
 
             <controls:Frame Grid.Column="1" Grid.Row="0" Name="RouterFrame" IsNavigationStackEnabled="False" CacheSize="0">

@@ -29,10 +29,10 @@
                            TextWrapping="Wrap"
                            Text="{CompiledBinding Channel, StringFormat='Found no releases for the \'{0}\' channel.'}">
                 </TextBlock>
-                <controls:HyperlinkButton NavigateUri="https://wiki.artemis-rgb.com/en/channels?mtm_campaign=artemis&amp;mtm_kwd=releases"
+                <HyperlinkButton NavigateUri="https://wiki.artemis-rgb.com/en/channels?mtm_campaign=artemis&amp;mtm_kwd=releases"
                                           HorizontalAlignment="Center">
                     Learn more about channels on the wiki
-                </controls:HyperlinkButton>
+                </HyperlinkButton>
             </StackPanel>
 
             <Grid ColumnDefinitions="300,*" Margin="10" IsVisible="{CompiledBinding ReleaseViewModels.Count}">

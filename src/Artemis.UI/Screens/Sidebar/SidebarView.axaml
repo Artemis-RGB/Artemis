@@ -54,7 +54,7 @@
         <!-- Bottom buttons -->
         <Border Grid.Row="4" Margin="8" Height="1" Background="{DynamicResource ButtonBorderBrush}"></Border>
         <WrapPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5 0 5 5">
-            <ui:HyperlinkButton Classes="icon-button"
+            <HyperlinkButton Classes="icon-button"
                                 Width="44"
                                 Height="44"
                                 ToolTip.Tip="View website"
@@ -62,8 +62,8 @@
                                 ToolTip.VerticalOffset="-5"
                                 NavigateUri="https://artemis-rgb.com?mtm_campaign=artemis&amp;mtm_kwd=sidebar">
                 <avalonia:MaterialIcon Kind="Web" Width="20" Height="20" />
-            </ui:HyperlinkButton>
-            <ui:HyperlinkButton Classes="icon-button"
+            </HyperlinkButton>
+            <HyperlinkButton Classes="icon-button"
                                 Width="44"
                                 Height="44"
                                 ToolTip.Tip="View GitHub repository"
@@ -71,8 +71,8 @@
                                 ToolTip.VerticalOffset="-5"
                                 NavigateUri="https://github.com/Artemis-RGB/Artemis">
                 <avalonia:MaterialIcon Kind="Github" Width="20" Height="20" />
-            </ui:HyperlinkButton>
-            <ui:HyperlinkButton Classes="icon-button"
+            </HyperlinkButton>
+            <HyperlinkButton Classes="icon-button"
                                 Width="44"
                                 Height="44"
                                 ToolTip.Tip="View Wiki"
@@ -80,8 +80,8 @@
                                 ToolTip.VerticalOffset="-5"
                                 NavigateUri="https://wiki.artemis-rgb.com?mtm_campaign=artemis&amp;mtm_kwd=sidebar">
                 <avalonia:MaterialIcon Kind="BookOpenOutline" Width="20" Height="20" />
-            </ui:HyperlinkButton>
-            <ui:HyperlinkButton Classes="icon-button"
+            </HyperlinkButton>
+            <HyperlinkButton Classes="icon-button"
                                 Width="44"
                                 Height="44"
                                 ToolTip.Tip="Join our Discord"
@@ -89,8 +89,8 @@
                                 ToolTip.VerticalOffset="-5"
                                 NavigateUri="https://discord.gg/S3MVaC9">
                 <avalonia:MaterialIcon Kind="Chat" Width="20" Height="20" />
-            </ui:HyperlinkButton>
-            <ui:HyperlinkButton Classes="icon-button"
+            </HyperlinkButton>
+            <HyperlinkButton Classes="icon-button"
                                 Width="44"
                                 Height="44"
                                 ToolTip.Tip="View donation options"
@@ -98,7 +98,7 @@
                                 ToolTip.VerticalOffset="-5"
                                 NavigateUri="https://wiki.artemis-rgb.com/en/donating?mtm_campaign=artemis&amp;mtm_kwd=sidebar">
                 <avalonia:MaterialIcon Kind="Gift" Width="20" Height="20" />
-            </ui:HyperlinkButton>
+            </HyperlinkButton>
         </WrapPanel>
     </Grid>
 </UserControl>

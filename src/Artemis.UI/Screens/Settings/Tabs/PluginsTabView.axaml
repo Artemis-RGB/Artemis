@@ -17,9 +17,9 @@
             <TextBox Classes="clearButton" Text="{CompiledBinding SearchPluginInput}" Watermark="Search plugins" Margin="0 0 10 0" />
 
             <StackPanel Spacing="5" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
-                <controls:HyperlinkButton VerticalAlignment="Top" Command="{CompiledBinding GetMorePlugins}">
+                <HyperlinkButton VerticalAlignment="Top" Command="{CompiledBinding GetMorePlugins}">
                     Get more plugins
-                </controls:HyperlinkButton>
+                </HyperlinkButton>
                 <Button Classes="accent" Command="{CompiledBinding ImportPlugin}">Import plugin</Button>
             </StackPanel>
         </Grid>

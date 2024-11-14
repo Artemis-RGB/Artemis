@@ -67,5 +67,8 @@
       <UpToDateCheckInput Remove="Screens\Workshop\Entries\Tabs\PluginListView.axaml" />
       <UpToDateCheckInput Remove="Screens\Workshop\Entries\Tabs\ProfileListView.axaml" />
       <UpToDateCheckInput Remove="Screens\Workshop\Plugins\Dialogs\PluginDialogView.axaml" />
+      <UpToDateCheckInput Remove="Screens\Scripting\Dialogs\ScriptConfigurationCreateView.axaml" />
+      <UpToDateCheckInput Remove="Screens\Scripting\Dialogs\ScriptConfigurationEditView.axaml" />
+      <UpToDateCheckInput Remove="Screens\Scripting\ScriptsDialogView.axaml" />
     </ItemGroup>
 </Project>

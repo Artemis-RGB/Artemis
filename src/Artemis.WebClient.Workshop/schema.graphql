@@ -61,12 +61,14 @@ type Entry {
     iconId: UUID
     id: Long!
     images: [Image!]!
+    isDefault: Boolean!
     isOfficial: Boolean!
     latestRelease: Release
     latestReleaseId: Long
     layoutInfo: [LayoutInfo!]!
     name: String!
     pluginInfo: PluginInfo
+    popularityScore: Float!
     releases: [Release!]!
     summary: String!
     tags: [Tag!]!
@@ -146,7 +148,7 @@ type PluginInfosCollectionSegment {
 
 type Query {
     categories(order: [CategorySortInput!], where: CategoryFilterInput): [Category!]!
-    entries(order: [EntrySortInput!], search: String, skip: Int, take: Int, where: EntryFilterInput): EntriesCollectionSegment
+    entries(order: [EntrySortInput!], popular: Boolean, search: String, skip: Int, take: Int, where: EntryFilterInput): EntriesCollectionSegment
     entriesV2(
         "Returns the elements in the list that come after the specified cursor."
         after: String,
@@ -157,12 +159,14 @@ type Query {
         "Returns the last _n_ elements from the list."
         last: Int,
         order: [EntrySortInput!],
+        popular: Boolean,
         search: String,
         where: EntryFilterInput
     ): EntriesV2Connection
     entry(id: Long!): Entry
     pluginInfo(pluginGuid: UUID!): PluginInfo
     pluginInfos(order: [PluginInfoSortInput!], skip: Int, take: Int, where: PluginInfoFilterInput): PluginInfosCollectionSegment
+    popularEntries(where: EntryFilterInput): [Entry!]!
     release(id: Long!): Release
     searchEntries(input: String!, order: [EntrySortInput!], type: EntryType, where: EntryFilterInput): [Entry!]!
     searchKeyboardLayout(deviceProvider: UUID!, logicalLayout: String, model: String!, physicalLayout: KeyboardLayoutType!, vendor: String!): LayoutInfo
@@ -268,6 +272,7 @@ input CreateEntryInput {
     categories: [Long!]!
     description: String!
     entryType: EntryType!
+    isDefault: Boolean!
     name: String!
     summary: String!
     tags: [String!]!
@@ -312,6 +317,7 @@ input EntryFilterInput {
     iconId: UuidOperationFilterInput
     id: LongOperationFilterInput
     images: ListFilterInputTypeOfImageFilterInput
+    isDefault: BooleanOperationFilterInput
     isOfficial: BooleanOperationFilterInput
     latestRelease: ReleaseFilterInput
     latestReleaseId: LongOperationFilterInput
@@ -319,6 +325,7 @@ input EntryFilterInput {
     name: StringOperationFilterInput
     or: [EntryFilterInput!]
     pluginInfo: PluginInfoFilterInput
+    popularityScore: FloatOperationFilterInput
     releases: ListFilterInputTypeOfReleaseFilterInput
     summary: StringOperationFilterInput
     tags: ListFilterInputTypeOfTagFilterInput
@@ -334,11 +341,13 @@ input EntrySortInput {
     icon: ImageSortInput
     iconId: SortEnumType
     id: SortEnumType
+    isDefault: SortEnumType
     isOfficial: SortEnumType
     latestRelease: ReleaseSortInput
     latestReleaseId: SortEnumType
     name: SortEnumType
     pluginInfo: PluginInfoSortInput
+    popularityScore: SortEnumType
     summary: SortEnumType
 }
 
@@ -347,6 +356,21 @@ input EntryTypeOperationFilterInput {
     in: [EntryType!]
     neq: EntryType
     nin: [EntryType!]
+}
+
+input FloatOperationFilterInput {
+    eq: Float
+    gt: Float
+    gte: Float
+    in: [Float]
+    lt: Float
+    lte: Float
+    neq: Float
+    ngt: Float
+    ngte: Float
+    nin: [Float]
+    nlt: Float
+    nlte: Float
 }
 
 input ImageFilterInput {
@@ -580,6 +604,7 @@ input UpdateEntryInput {
     categories: [Long!]!
     description: String!
     id: Long!
+    isDefault: Boolean!
     name: String!
     summary: String!
     tags: [String!]!

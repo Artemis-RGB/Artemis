@@ -3,7 +3,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:home="clr-namespace:Artemis.UI.Screens.Home"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="900"
              x:Class="Artemis.UI.Screens.Home.HomeView"
@@ -42,17 +41,17 @@
 								Under Settings > Plugins you can find your currently installed plugins, these default plugins are created by Artemis developers. We're also keeping track of a list of third-party plugins on our wiki.
 							</TextBlock>
 						</StackPanel>
-						<controls:HyperlinkButton Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Right" Command="{CompiledBinding GetMorePlugins}">
-							<controls:HyperlinkButton.ContextMenu>
+						<HyperlinkButton Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Right" Command="{CompiledBinding GetMorePlugins}">
+							<HyperlinkButton.ContextMenu>
 								<ContextMenu>
 									<MenuItem Header="Test"></MenuItem>
 								</ContextMenu>
-							</controls:HyperlinkButton.ContextMenu>
+							</HyperlinkButton.ContextMenu>
 							<StackPanel Orientation="Horizontal">
 								<avalonia:MaterialIcon Kind="OpenInBrowser" />
 								<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Get more plugins</TextBlock>
 							</StackPanel>
-						</controls:HyperlinkButton>
+						</HyperlinkButton>
 					</Grid>
 				</Border>
 
@@ -68,30 +67,30 @@
 
 						<DockPanel Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">
 							<Grid Margin="8" RowDefinitions="*,*">
-								<controls:HyperlinkButton Grid.Row="0" NavigateUri="https://github.com/Artemis-RGB/Artemis">
+								<HyperlinkButton Grid.Row="0" NavigateUri="https://github.com/Artemis-RGB/Artemis">
 									<StackPanel Orientation="Horizontal">
 										<avalonia:MaterialIcon Kind="Github" />
 										<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">GitHub</TextBlock>
 									</StackPanel>
-								</controls:HyperlinkButton>
-								<controls:HyperlinkButton Grid.Row="0" HorizontalAlignment="Right" NavigateUri="https://artemis-rgb.com?mtm_campaign=artemis&amp;mtm_kwd=home">
+								</HyperlinkButton>
+								<HyperlinkButton Grid.Row="0" HorizontalAlignment="Right" NavigateUri="https://artemis-rgb.com?mtm_campaign=artemis&amp;mtm_kwd=home">
 									<StackPanel Orientation="Horizontal">
 										<avalonia:MaterialIcon Kind="Web" />
 										<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Website</TextBlock>
 									</StackPanel>
-								</controls:HyperlinkButton>
-								<controls:HyperlinkButton Grid.Row="1" NavigateUri="https://discordapp.com/invite/S3MVaC9">
+								</HyperlinkButton>
+								<HyperlinkButton Grid.Row="1" NavigateUri="https://discordapp.com/invite/S3MVaC9">
 									<StackPanel Orientation="Horizontal">
 										<avalonia:MaterialIcon Kind="Chat" />
 										<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Discord</TextBlock>
 									</StackPanel>
-								</controls:HyperlinkButton>
-								<controls:HyperlinkButton Grid.Row="1" HorizontalAlignment="Right" NavigateUri="mailto:spoinky.nl@gmail.com">
+								</HyperlinkButton>
+								<HyperlinkButton Grid.Row="1" HorizontalAlignment="Right" NavigateUri="mailto:spoinky.nl@gmail.com">
 									<StackPanel Orientation="Horizontal">
 										<avalonia:MaterialIcon Kind="Email" />
 										<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">E-mail</TextBlock>
 									</StackPanel>
-								</controls:HyperlinkButton>
+								</HyperlinkButton>
 							</Grid>
 						</DockPanel>
 					</Grid>
@@ -106,7 +105,7 @@
 							</TextBlock>
 						</StackPanel>
 
-						<controls:HyperlinkButton Grid.Row="1"
+						<HyperlinkButton Grid.Row="1"
 												  Grid.Column="0"
 												  HorizontalAlignment="Center"
 												  NavigateUri="https://wiki.artemis-rgb.com/en/donating?mtm_campaign=artemis&amp;mtm_kwd=home">
@@ -114,7 +113,7 @@
 								<avalonia:MaterialIcon Kind="Gift" />
 								<TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Donate</TextBlock>
 							</StackPanel>
-						</controls:HyperlinkButton>
+						</HyperlinkButton>
 						<TextBlock Grid.Row="1"
 								   Grid.Column="1"
 						           Classes="subtitle"

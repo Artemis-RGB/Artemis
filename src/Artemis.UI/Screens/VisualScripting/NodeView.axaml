@@ -39,18 +39,18 @@
                     Background="{DynamicResource ContentDialogBackground}">
                 <Border Background="{DynamicResource TaskDialogHeaderBackground}">
                     <Grid Classes="node-header" VerticalAlignment="Top" ColumnDefinitions="Auto,*,Auto,Auto">
-                        <controls:HyperlinkButton Grid.Column="0" 
+                        <HyperlinkButton Grid.Column="0" 
                                                   Classes="icon-button icon-button-small broken-state-button"
                                                   Margin="5 0 0 0"
                                                   Command="{CompiledBinding ShowBrokenState}"
                                                   IsVisible="{CompiledBinding Node.BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
                                                   ToolTip.Tip="{CompiledBinding Node.BrokenState}">
                             <avalonia:MaterialIcon Kind="AlertCircle" />
-                        </controls:HyperlinkButton>
+                        </HyperlinkButton>
 
                         <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="10 0 0 0" Text="{CompiledBinding Node.Name}" ToolTip.Tip="{CompiledBinding Node.Description}" />
       
-                        <controls:HyperlinkButton Grid.Column="2" 
+                        <HyperlinkButton Grid.Column="2" 
                                                   IsVisible="{CompiledBinding Node.HelpUrl, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                                   VerticalAlignment="Center" 
                                                   Classes="icon-button icon-button-small"
@@ -58,7 +58,7 @@
                                                   ToolTip.Tip="View node help" 
                                                   NavigateUri="{CompiledBinding Node.HelpUrl}">
                             <avalonia:MaterialIcon Kind="Help" />
-                        </controls:HyperlinkButton>
+                        </HyperlinkButton>
                         <Button Grid.Column="3" VerticalAlignment="Center" Classes="icon-button icon-button-small" Margin="5" Command="{CompiledBinding DeleteNode}">
                             <avalonia:MaterialIcon Kind="Close"></avalonia:MaterialIcon>
                         </Button>

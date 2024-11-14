@@ -9,14 +9,14 @@
              x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.FolderTreeItemView"
              x:DataType="profileTree:FolderTreeItemViewModel">
     <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto">
-        <controls:HyperlinkButton Grid.Column="0" 
+        <HyperlinkButton Grid.Column="0" 
                                   Classes="icon-button icon-button-small broken-state-button"
                                   Margin="0 0 5 0"
                                   Command="{CompiledBinding ShowBrokenStateExceptions}"
                                   IsVisible="{CompiledBinding ProfileElement.BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
                                   ToolTip.Tip="{CompiledBinding ProfileElement.BrokenState, FallbackValue=''}">
             <avalonia:MaterialIcon Kind="AlertCircle" />
-        </controls:HyperlinkButton>
+        </HyperlinkButton>
         <avalonia:MaterialIcon Grid.Column="1"
                                Kind="Folder"
                                Margin="0 0 5 0"

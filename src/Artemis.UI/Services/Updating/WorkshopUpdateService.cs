@@ -22,7 +22,8 @@ public class WorkshopUpdateService : IWorkshopUpdateService
     private readonly Lazy<IUpdateNotificationProvider> _updateNotificationProvider;
     private readonly PluginSetting<bool> _showNotifications;
 
-    public WorkshopUpdateService(ILogger logger, IWorkshopClient client, IWorkshopService workshopService, ISettingsService settingsService, Lazy<IUpdateNotificationProvider> updateNotificationProvider)
+    public WorkshopUpdateService(ILogger logger, IWorkshopClient client, IWorkshopService workshopService, ISettingsService settingsService,
+        Lazy<IUpdateNotificationProvider> updateNotificationProvider)
     {
         _logger = logger;
         _client = client;
@@ -56,20 +57,19 @@ public class WorkshopUpdateService : IWorkshopUpdateService
 
     public async Task<bool> AutoUpdateEntry(InstalledEntry installedEntry)
     {
-        // Query the latest version
-        IOperationResult<IGetEntryLatestReleaseByIdResult> latestReleaseResult = await _client.GetEntryLatestReleaseById.ExecuteAsync(installedEntry.Id);
-        IEntrySummary? entry = latestReleaseResult.Data?.Entry?.LatestRelease?.Entry;
-        if (entry == null)
-            return false;
-        if (latestReleaseResult.Data?.Entry?.LatestRelease is not IRelease latestRelease)
-            return false;
-        if (latestRelease.Id == installedEntry.ReleaseId)
-            return false;
-
-        _logger.Information("Auto-updating entry {Entry} to version {Version}", entry, latestRelease.Version);
-
         try
         {
+            // Query the latest version
+            IOperationResult<IGetEntryLatestReleaseByIdResult> latestReleaseResult = await _client.GetEntryLatestReleaseById.ExecuteAsync(installedEntry.Id);
+            IEntrySummary? entry = latestReleaseResult.Data?.Entry?.LatestRelease?.Entry;
+            if (entry == null)
+                return false;
+            if (latestReleaseResult.Data?.Entry?.LatestRelease is not IRelease latestRelease)
+                return false;
+            if (latestRelease.Id == installedEntry.ReleaseId)
+                return false;
+
+            _logger.Information("Auto-updating entry {Entry} to version {Version}", entry, latestRelease.Version);
             EntryInstallResult updateResult = await _workshopService.InstallEntry(entry, latestRelease, new Progress<StreamProgress>(), CancellationToken.None);
 
             // This happens during installation too but not on our reference of the entry
@@ -85,7 +85,7 @@ public class WorkshopUpdateService : IWorkshopUpdateService
         }
         catch (Exception e)
         {
-            _logger.Warning(e, "Auto-update failed for entry {Entry}", entry);
+            _logger.Warning(e, "Auto-update failed for entry {Entry}", installedEntry);
         }
 
         return false;

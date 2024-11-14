@@ -27,7 +27,7 @@
         <Setter Property="SelectionForeground" Value="{DynamicResource TextOnAccentFillColorSelectedTextBrush}" />
     </Style>
     
-    <Style Selector="controls|ContentDialog.fullscreen controls|FABorder#BackgroundElement">
+    <Style Selector="controls|ContentDialog.fullscreen Border#BackgroundElement">
         <Setter Property="MaxWidth" Value="99999"></Setter>
         <Setter Property="MaxHeight" Value="99999"></Setter>
         <Setter Property="Margin" Value="100"></Setter>

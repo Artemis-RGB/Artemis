@@ -28,24 +28,24 @@
             <TextBlock Grid.Row="0" Grid.Column="1" FontSize="28" VerticalAlignment="Bottom" Text="{CompiledBinding Plugin.Info.Name}" />
 
             <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
-                <controls:HyperlinkButton Classes="icon-button"
+                <HyperlinkButton Classes="icon-button"
                                           IsVisible="{CompiledBinding Plugin.Info.HelpPage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                           NavigateUri="{CompiledBinding Plugin.Info.HelpPage}"
                                           ToolTip.Tip="{CompiledBinding Plugin.Info.HelpPage}">
                     <avalonia:MaterialIcon Kind="Quiz" />
-                </controls:HyperlinkButton>
-                <controls:HyperlinkButton Classes="icon-button"
+                </HyperlinkButton>
+                <HyperlinkButton Classes="icon-button"
                                           IsVisible="{CompiledBinding Plugin.Info.Website, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                           NavigateUri="{CompiledBinding Plugin.Info.Website}"
                                           ToolTip.Tip="{CompiledBinding Plugin.Info.Website}">
                     <avalonia:MaterialIcon Kind="Web" />
-                </controls:HyperlinkButton>
-                <controls:HyperlinkButton Classes="icon-button"
+                </HyperlinkButton>
+                <HyperlinkButton Classes="icon-button"
                                           IsVisible="{CompiledBinding Plugin.Info.Repository, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                           NavigateUri="{CompiledBinding Plugin.Info.Repository}"
                                           ToolTip.Tip="{CompiledBinding Plugin.Info.Repository}">
                     <avalonia:MaterialIcon Kind="Git" />
-                </controls:HyperlinkButton>
+                </HyperlinkButton>
             </StackPanel>
 
             <TextBlock Grid.Row="1"
@@ -54,7 +54,7 @@
                        Classes="subtitle"
                        Text="{CompiledBinding Plugin.Info.Version}" />
 
-            <controls:HyperlinkButton Grid.Row="1"
+            <HyperlinkButton Grid.Row="1"
                                       Grid.Column="2"
                                       IsVisible="{CompiledBinding Plugin.Info.License, Converter={x:Static ObjectConverters.IsNotNull}}"
                                       VerticalAlignment="Top"

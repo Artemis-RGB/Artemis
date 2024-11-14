@@ -3,18 +3,17 @@
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
     <Design.PreviewWith>
-
-        <controls:HyperlinkButton Grid.Column="0" Classes="icon-button icon-button-small broken-state-button" Margin="50">
+        <HyperlinkButton Grid.Column="0" Classes="icon-button icon-button-small broken-state-button" Margin="50">
             <avalonia:MaterialIcon Kind="AlertCircle" />
-        </controls:HyperlinkButton>
+        </HyperlinkButton>
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
-    <Style Selector="controls|HyperlinkButton.broken-state-button avalonia|MaterialIcon">
+    <Style Selector="HyperlinkButton.broken-state-button avalonia|MaterialIcon">
         <Setter Property="Foreground" Value="#E74C4C" />
     </Style>
 
-    <Style Selector="controls|HyperlinkButton.broken-state-button:pointerover avalonia|MaterialIcon">
+    <Style Selector="HyperlinkButton.broken-state-button:pointerover avalonia|MaterialIcon">
         <Setter Property="Foreground" Value="#B93F3F" />
     </Style>
 </Styles>

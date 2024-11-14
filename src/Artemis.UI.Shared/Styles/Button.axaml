@@ -25,14 +25,14 @@
                 </ToggleButton>
 
                 <TextBlock Margin="0 5 0 0">HyperlinkButton.icon-button</TextBlock>
-                <controls:HyperlinkButton Classes="icon-button">
+                <HyperlinkButton Classes="icon-button">
                     <avalonia:MaterialIcon Kind="Web" />
-                </controls:HyperlinkButton>
+                </HyperlinkButton>
 
                 <TextBlock Margin="0 5 0 0">HyperlinkButton.icon-button icon-button-small</TextBlock>
-                <controls:HyperlinkButton Classes="icon-button icon-button-small">
+                <HyperlinkButton Classes="icon-button icon-button-small">
                     <avalonia:MaterialIcon Kind="Web" />
-                </controls:HyperlinkButton>
+                </HyperlinkButton>
 
 
 				<TextBlock Margin="0 5 0 0">Button.window-button</TextBlock>
@@ -93,7 +93,7 @@
         <Setter Property="Height" Value="20" />
     </Style>
 
-    <Style Selector="controls|HyperlinkButton.icon-button">
+    <Style Selector="HyperlinkButton.icon-button">
         <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}" />
     </Style>
 
@@ -113,24 +113,24 @@
         <Setter Property="Background" Value="#D64848"></Setter>
     </Style>
     
-    <Style Selector="Button.danger:pointerover">
-        <Style Selector="^ /template/ controls|FABorder#Root">
-            <Setter Property="Background" Value="#D65757"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPointerOver}" />
-        </Style>
-    </Style>
-
-    <Style Selector="Button.danger:pressed">
-        <Style Selector="^ /template/ controls|FABorder#Root">
-            <Setter Property="Background" Value="#D64848" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPressed}" />
-        </Style>
-    </Style>
-
-    <Style Selector="Button.danger:disabled">
-        <Style Selector="^ /template/ controls|FABorder#Root">
-            <Setter Property="Background" Value="#D79D9C" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushDisabled}" />
-        </Style>
-    </Style>
+    <!-- <Style Selector="Button.danger:pointerover"> -->
+    <!--     <Style Selector="^ /template/ controls|FABorder#Root"> -->
+    <!--         <Setter Property="Background" Value="#D65757"/> -->
+    <!--         <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPointerOver}" /> -->
+    <!--     </Style> -->
+    <!-- </Style> -->
+    <!-- -->
+    <!-- <Style Selector="Button.danger:pressed"> -->
+    <!--     <Style Selector="^ /template/ controls|FABorder#Root"> -->
+    <!--         <Setter Property="Background" Value="#D64848" /> -->
+    <!--         <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPressed}" /> -->
+    <!--     </Style> -->
+    <!-- </Style> -->
+    <!-- -->
+    <!-- <Style Selector="Button.danger:disabled"> -->
+    <!--     <Style Selector="^ /template/ controls|FABorder#Root"> -->
+    <!--         <Setter Property="Background" Value="#D79D9C" /> -->
+    <!--         <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushDisabled}" /> -->
+    <!--     </Style> -->
+    <!-- </Style> -->
 </Styles>

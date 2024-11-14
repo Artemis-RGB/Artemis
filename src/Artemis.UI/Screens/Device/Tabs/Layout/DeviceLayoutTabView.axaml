@@ -104,7 +104,7 @@
                             </StackPanel>
                         </Grid>
                     </StackPanel>
-                    <controls:HyperlinkButton
+                    <HyperlinkButton
                         Grid.Row="1"
                         Content="Learn more about layouts on the wiki"
                         NavigateUri="https://wiki.artemis-rgb.com/en/guides/developer/layouts?mtm_campaign=artemis&amp;mtm_kwd=device-properties"

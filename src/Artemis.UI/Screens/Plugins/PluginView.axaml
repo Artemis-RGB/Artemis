@@ -87,30 +87,30 @@
                     </DropDownButton.Flyout>
                 </DropDownButton>
                 
-                <controls:HyperlinkButton Classes="icon-button icon-button-large"
+                <HyperlinkButton Classes="icon-button icon-button-large"
                                           IsVisible="{CompiledBinding Plugin.ConfigurationDialog, Converter={x:Static ObjectConverters.IsNotNull}}"
                                           Command="{CompiledBinding OpenSettings}"
                                           ToolTip.Tip="Open settings">
                     <avalonia:MaterialIcon Kind="Cog" />
-                </controls:HyperlinkButton>
-                <controls:HyperlinkButton Classes="icon-button icon-button-large"
+                </HyperlinkButton>
+                <HyperlinkButton Classes="icon-button icon-button-large"
                                           IsVisible="{CompiledBinding Plugin.Info.HelpPage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                           NavigateUri="{CompiledBinding Plugin.Info.HelpPage}"
                                           ToolTip.Tip="{CompiledBinding Plugin.Info.HelpPage}">
                     <avalonia:MaterialIcon Kind="Quiz" />
-                </controls:HyperlinkButton>
-                <controls:HyperlinkButton Classes="icon-button icon-button-large"
+                </HyperlinkButton>
+                <HyperlinkButton Classes="icon-button icon-button-large"
                                           IsVisible="{CompiledBinding Plugin.Info.Website, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                           NavigateUri="{CompiledBinding Plugin.Info.Website}"
                                           ToolTip.Tip="{CompiledBinding Plugin.Info.Website}">
                     <avalonia:MaterialIcon Kind="Web" />
-                </controls:HyperlinkButton>
-                <controls:HyperlinkButton Classes="icon-button icon-button-large"
+                </HyperlinkButton>
+                <HyperlinkButton Classes="icon-button icon-button-large"
                                           IsVisible="{CompiledBinding Plugin.Info.Repository, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                           NavigateUri="{CompiledBinding Plugin.Info.Repository}"
                                           ToolTip.Tip="{CompiledBinding Plugin.Info.Repository}">
                     <avalonia:MaterialIcon Kind="Git" />
-                </controls:HyperlinkButton>
+                </HyperlinkButton>
             </StackPanel>
 
             <CheckBox Name="EnabledToggle"

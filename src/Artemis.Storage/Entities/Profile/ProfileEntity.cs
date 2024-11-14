@@ -11,7 +11,6 @@ public class ProfileEntity
     {
         Folders = new List<FolderEntity>();
         Layers = new List<LayerEntity>();
-        ScriptConfigurations = new List<ScriptConfigurationEntity>();
     }
 
     public Guid Id { get; set; }
@@ -21,7 +20,6 @@ public class ProfileEntity
 
     public List<FolderEntity> Folders { get; set; }
     public List<LayerEntity> Layers { get; set; }
-    public List<ScriptConfigurationEntity> ScriptConfigurations { get; set; }
 
     public void UpdateGuid(Guid guid)
     {
