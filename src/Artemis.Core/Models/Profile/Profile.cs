@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using Artemis.Core.ScriptingProviders;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
@@ -14,15 +12,10 @@ namespace Artemis.Core;
 public sealed class Profile : ProfileElement
 {
     private readonly object _lock = new();
-    private readonly ObservableCollection<ScriptConfiguration> _scriptConfigurations;
-    private readonly ObservableCollection<ProfileScript> _scripts;
     private bool _isFreshImport;
 
     internal Profile(ProfileConfiguration configuration, ProfileEntity profileEntity) : base(null!)
     {
-        _scripts = new ObservableCollection<ProfileScript>();
-        _scriptConfigurations = new ObservableCollection<ScriptConfiguration>();
-
         Opacity = 0d;
         ShouldDisplay = true;
         Configuration = configuration;
@@ -31,8 +24,6 @@ public sealed class Profile : ProfileElement
         EntityId = profileEntity.Id;
 
         Exceptions = new List<Exception>();
-        Scripts = new ReadOnlyObservableCollection<ProfileScript>(_scripts);
-        ScriptConfigurations = new ReadOnlyObservableCollection<ScriptConfiguration>(_scriptConfigurations);
 
         Load();
     }
@@ -41,17 +32,7 @@ public sealed class Profile : ProfileElement
     ///     Gets the profile configuration of this profile
     /// </summary>
     public ProfileConfiguration Configuration { get; }
-
-    /// <summary>
-    ///     Gets a collection of all active scripts assigned to this profile
-    /// </summary>
-    public ReadOnlyObservableCollection<ProfileScript> Scripts { get; }
-
-    /// <summary>
-    ///     Gets a collection of all script configurations assigned to this profile
-    /// </summary>
-    public ReadOnlyObservableCollection<ScriptConfiguration> ScriptConfigurations { get; }
-
+    
     /// <summary>
     ///     Gets or sets a boolean indicating whether this profile is freshly imported i.e. no changes have been made to it
     ///     since import
@@ -85,14 +66,8 @@ public sealed class Profile : ProfileElement
             if (Disposed)
                 throw new ObjectDisposedException("Profile");
 
-            foreach (ProfileScript profileScript in Scripts)
-                profileScript.OnProfileUpdating(deltaTime);
-
             foreach (ProfileElement profileElement in Children)
                 profileElement.Update(deltaTime);
-
-            foreach (ProfileScript profileScript in Scripts)
-                profileScript.OnProfileUpdated(deltaTime);
 
             const double OPACITY_PER_SECOND = 1;
 
@@ -110,9 +85,6 @@ public sealed class Profile : ProfileElement
         {
             if (Disposed)
                 throw new ObjectDisposedException("Profile");
-
-            foreach (ProfileScript profileScript in Scripts)
-                profileScript.OnProfileRendering(canvas, canvas.LocalClipBounds);
 
             SKPaint? opacityPaint = null;
             bool applyOpacityLayer = Configuration.FadeInAndOut && Opacity < 1;
@@ -132,9 +104,6 @@ public sealed class Profile : ProfileElement
                 canvas.Restore();
                 opacityPaint?.Dispose();
             }
-
-            foreach (ProfileScript profileScript in Scripts)
-                profileScript.OnProfileRendered(canvas, canvas.LocalClipBounds);
 
             if (!Exceptions.Any())
                 return;
@@ -174,7 +143,7 @@ public sealed class Profile : ProfileElement
     /// <inheritdoc />
     public override IEnumerable<PluginFeature> GetFeatureDependencies()
     {
-        return GetRootFolder().GetFeatureDependencies().Concat(Scripts.Select(c => c.ScriptingProvider));
+        return GetRootFolder().GetFeatureDependencies();
     }
 
     /// <summary>
@@ -205,10 +174,7 @@ public sealed class Profile : ProfileElement
     {
         if (!disposing)
             return;
-
-        while (Scripts.Count > 0)
-            RemoveScript(Scripts[0]);
-
+        
         foreach (ProfileElement profileElement in Children)
             profileElement.Dispose();
         ChildrenList.Clear();
@@ -238,59 +204,9 @@ public sealed class Profile : ProfileElement
                 AddChild(new Folder(this, this, rootFolder));
         }
 
-        while (_scriptConfigurations.Any())
-            RemoveScriptConfiguration(_scriptConfigurations[0]);
-        foreach (ScriptConfiguration scriptConfiguration in ProfileEntity.ScriptConfigurations.Select(e => new ScriptConfiguration(e)))
-            AddScriptConfiguration(scriptConfiguration);
-
         // Load node scripts last since they may rely on the profile structure being in place
         foreach (RenderProfileElement renderProfileElement in GetAllRenderElements())
             renderProfileElement.LoadNodeScript();
-    }
-
-    /// <summary>
-    ///     Removes a script configuration from the profile, if the configuration has an active script it is also removed.
-    /// </summary>
-    internal void RemoveScriptConfiguration(ScriptConfiguration scriptConfiguration)
-    {
-        if (!_scriptConfigurations.Contains(scriptConfiguration))
-            return;
-
-        Script? script = scriptConfiguration.Script;
-        if (script != null)
-            RemoveScript((ProfileScript) script);
-
-        _scriptConfigurations.Remove(scriptConfiguration);
-    }
-
-    /// <summary>
-    ///     Adds a script configuration to the profile but does not instantiate it's script.
-    /// </summary>
-    internal void AddScriptConfiguration(ScriptConfiguration scriptConfiguration)
-    {
-        if (!_scriptConfigurations.Contains(scriptConfiguration))
-            _scriptConfigurations.Add(scriptConfiguration);
-    }
-
-    /// <summary>
-    ///     Adds a script that has a script configuration belonging to this profile.
-    /// </summary>
-    internal void AddScript(ProfileScript script)
-    {
-        if (!_scriptConfigurations.Contains(script.ScriptConfiguration))
-            throw new ArtemisCoreException("Cannot add a script to a profile whose script configuration doesn't belong to the same profile.");
-
-        if (!_scripts.Contains(script))
-            _scripts.Add(script);
-    }
-
-    /// <summary>
-    ///     Removes a script from the profile and disposes it.
-    /// </summary>
-    internal void RemoveScript(ProfileScript script)
-    {
-        _scripts.Remove(script);
-        script.Dispose();
     }
 
     internal override void Save()
@@ -310,12 +226,5 @@ public sealed class Profile : ProfileElement
 
         ProfileEntity.Layers.Clear();
         ProfileEntity.Layers.AddRange(GetAllLayers().Select(f => f.LayerEntity));
-
-        ProfileEntity.ScriptConfigurations.Clear();
-        foreach (ScriptConfiguration scriptConfiguration in ScriptConfigurations)
-        {
-            scriptConfiguration.Save();
-            ProfileEntity.ScriptConfigurations.Add(scriptConfiguration.Entity);
-        }
     }
 }

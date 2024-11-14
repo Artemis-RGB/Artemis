@@ -31,11 +31,6 @@
                     <avalonia:MaterialIcon Kind="Settings" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="_View Scripts" Command="{CompiledBinding ViewScripts}">
-                <MenuItem.Icon>
-                    <avalonia:MaterialIcon Kind="BookEdit" />
-                </MenuItem.Icon>
-            </MenuItem>
             <MenuItem Header="Adapt Profile" Command="{CompiledBinding AdaptProfile}">
                 <MenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Magic" />
