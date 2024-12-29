@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:steps="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.StartupWizard.Steps.WelcomeStepView"
+             x:DataType="steps:WelcomeStepViewModel">
+    <Border Classes="card">
+        <StackPanel>
+            <TextBlock Classes="h4">Welcome to the Artemis startup wizard!</TextBlock>
+
+            <TextBlock TextWrapping="Wrap">
+                In this wizard we'll walk you through the initial configuration of Artemis.
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap">
+                Before you can start you need to tell Artemis which devices you want to use and where they are placed on your desk.
+            </TextBlock>
+            <TextBlock Classes="subtitle" TextWrapping="Wrap" Margin="0 15 0 0">
+                PS: You can also skip the wizard and set things up yourself.
+            </TextBlock>
+        </StackPanel>
+    </Border>
+</UserControl>

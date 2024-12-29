@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:startupWizard="clr-namespace:Artemis.UI.Screens.StartupWizard"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:steps="clr-namespace:Artemis.UI.Screens.StartupWizard.Steps"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.StartupWizard.Steps.SurfaceStep"
-             x:DataType="startupWizard:StartupWizardViewModel">
+             x:Class="Artemis.UI.Screens.StartupWizard.Steps.SurfaceStepView"
+             x:DataType="steps:SurfaceStepViewModel">
 
     <Grid RowDefinitions="Auto,*,Auto,Auto" ColumnDefinitions="*,*">
         <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Classes="card">

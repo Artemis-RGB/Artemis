@@ -4,6 +4,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         xmlns:startupWizard="clr-namespace:Artemis.UI.Screens.StartupWizard"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:ui="clr-namespace:Artemis.UI"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Artemis.UI.Screens.StartupWizard.StartupWizardView"
         x:DataType="startupWizard:StartupWizardViewModel"
@@ -12,14 +14,50 @@
         Width="1000"
         Height="735"
         WindowStartupLocation="CenterOwner">
-    <Grid Margin="15" RowDefinitions="*,Auto" ColumnDefinitions="Auto,*">
-        <controls:Frame Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Name="Frame" />
+    <Grid Margin="15" RowDefinitions="Auto,*,Auto" ColumnDefinitions="Auto,*">
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" RowDefinitions="*,*" ColumnDefinitions="Auto,*,Auto">
+            <Image Grid.Column="0" Grid.RowSpan="2" Width="65" Height="65" VerticalAlignment="Center" Source="/Assets/Images/Logo/bow.png" Margin="0 0 20 0" />
+            <TextBlock Grid.Row="0" Grid.Column="1" FontSize="36" VerticalAlignment="Bottom">
+                Artemis 2
+            </TextBlock>
 
-        <Button Grid.Row="1" Grid.Column="0" Command="{CompiledBinding SkipOrFinishWizard}" IsVisible="{CompiledBinding !ShowFinish}">Skip &amp; close</Button>
-        <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Spacing="5" Margin="0 15 0 0">
-            <Button Command="{CompiledBinding GoBack}" IsEnabled="{CompiledBinding ShowGoBack}">Back</Button>
-            <Button Command="{CompiledBinding Continue}" IsVisible="{CompiledBinding !ShowFinish}" IsEnabled="{CompiledBinding ShowContinue}" Width="80">Continue</Button>
-            <Button Command="{CompiledBinding SkipOrFinishWizard}" IsVisible="{CompiledBinding ShowFinish}" Width="80">Finish</Button>
+            <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
+                <HyperlinkButton Classes="icon-button" ToolTip.Tip="View website" NavigateUri="https://artemis-rgb.com?mtm_campaign=artemis&amp;mtm_kwd=wizard">
+                    <avalonia:MaterialIcon Kind="Web" />
+                </HyperlinkButton>
+                <HyperlinkButton Classes="icon-button" ToolTip.Tip="View GitHub repository" NavigateUri="https://github.com/Artemis-RGB/Artemis">
+                    <avalonia:MaterialIcon Kind="Github" />
+                </HyperlinkButton>
+                <HyperlinkButton Classes="icon-button" ToolTip.Tip="View Wiki" NavigateUri="https://wiki.artemis-rgb.com?mtm_campaign=artemis&amp;mtm_kwd=wizard">
+                    <avalonia:MaterialIcon Kind="BookOpenOutline" />
+                </HyperlinkButton>
+            </StackPanel>
+
+            <TextBlock Grid.Row="1"
+                       Grid.Column="1"
+                       VerticalAlignment="Top"
+                       Classes="subtitle"
+                       Text="{CompiledBinding Version}" />
+
+            <HyperlinkButton Grid.Row="1"
+                             Grid.Column="2"
+                             VerticalAlignment="Top"
+                             NavigateUri="https://github.com/Artemis-RGB/Artemis/blob/master/LICENSE">
+                PolyForm Noncommercial License 1.0.0
+            </HyperlinkButton>
+        </Grid>
+
+        <controls:Frame Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Name="Frame" IsNavigationStackEnabled="False" CacheSize="0">
+            <controls:Frame.NavigationPageFactory>
+                <ui:PageFactory/>
+            </controls:Frame.NavigationPageFactory>
+        </controls:Frame>
+
+        <Button Grid.Row="2" Grid.Column="0" Command="{CompiledBinding SkipOrFinishWizard}" IsVisible="{CompiledBinding !Screen.ShowFinish}">Skip &amp; close</Button>
+        <StackPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Spacing="5" Margin="0 15 0 0">
+            <Button Command="{CompiledBinding Screen.GoBack}" IsEnabled="{CompiledBinding Screen.ShowGoBack}">Back</Button>
+            <Button Command="{CompiledBinding Screen.Continue}" IsVisible="{CompiledBinding !Screen.ShowFinish}" Width="80">Continue</Button>
+            <Button Command="{CompiledBinding SkipOrFinishWizard}" IsVisible="{CompiledBinding Screen.ShowFinish}" Width="80">Finish</Button>
         </StackPanel>
     </Grid>
 

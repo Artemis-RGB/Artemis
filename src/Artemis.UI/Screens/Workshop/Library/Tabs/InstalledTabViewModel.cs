@@ -25,7 +25,10 @@ public partial class InstalledTabViewModel : RoutableScreen
 
     public InstalledTabViewModel(IWorkshopService workshopService, IRouter router, Func<InstalledEntry, InstalledTabItemViewModel> getInstalledTabItemViewModel)
     {
-        IObservable<Func<InstalledEntry, bool>> searchFilter = this.WhenAnyValue(vm => vm.SearchEntryInput).Throttle(TimeSpan.FromMilliseconds(100)).Select(CreatePredicate);
+        IObservable<Func<InstalledEntry, bool>> searchFilter = this.WhenAnyValue(vm => vm.SearchEntryInput)
+            .Throttle(TimeSpan.FromMilliseconds(100))
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Select(CreatePredicate);
 
         _entries.Connect()
             .Filter(searchFilter)

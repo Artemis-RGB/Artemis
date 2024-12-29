@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:startupWizard="clr-namespace:Artemis.UI.Screens.StartupWizard"
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:steps="clr-namespace:Artemis.UI.Screens.StartupWizard.Steps"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.StartupWizard.Steps.FinishStep"
-             x:DataType="startupWizard:StartupWizardViewModel">
+             x:Class="Artemis.UI.Screens.StartupWizard.Steps.FinishStepView"
+             x:DataType="steps:FinishStepViewModel">
     <Border Classes="card" VerticalAlignment="Top">
         <StackPanel>
             <TextBlock Classes="h4">All finished!</TextBlock>
