@@ -18,23 +18,19 @@ public partial class StartupWizardView : ReactiveAppWindow<StartupWizardViewMode
         this.AttachDevTools();
 #endif
 
-        this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.CurrentStep).Subscribe(ApplyCurrentStep).DisposeWith(d));
+        this.WhenActivated(d => ViewModel.WhenAnyValue(vm => vm.Screen).WhereNotNull().Subscribe(Navigate).DisposeWith(d));
     }
 
 
-    private void ApplyCurrentStep(int step)
+    private void Navigate(WizardStepViewModel viewModel)
     {
-        if (step == 1)
-            Frame.NavigateToType(typeof(WelcomeStep), null, new FrameNavigationOptions());
-        else if (step == 2)
-            Frame.NavigateToType(typeof(DevicesStep), null, new FrameNavigationOptions());
-        else if (step == 3)
-            Frame.NavigateToType(typeof(LayoutsStep), null, new FrameNavigationOptions());
-        else if (step == 4)
-            Frame.NavigateToType(typeof(SurfaceStep), null, new FrameNavigationOptions());
-        else if (step == 5)
-            Frame.NavigateToType(typeof(SettingsStep), null, new FrameNavigationOptions());
-        else if (step == 6)
-            Frame.NavigateToType(typeof(FinishStep), null, new FrameNavigationOptions());
+        try
+        {
+            Frame.NavigateFromObject(viewModel);
+        }
+        catch (Exception e)
+        {
+            ViewModel?.WindowService.ShowExceptionDialog("Wizard screen failed to activate", e);
+        }
     }
 }

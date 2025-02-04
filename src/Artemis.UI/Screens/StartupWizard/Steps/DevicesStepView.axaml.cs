@@ -1,13 +1,14 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
 
 namespace Artemis.UI.Screens.StartupWizard.Steps;
 
-public partial class LayoutsStep : UserControl
+public partial class DevicesStepView : ReactiveUserControl<DevicesStepViewModel>
 {
-    public LayoutsStep()
+    public DevicesStepView()
     {
         InitializeComponent();
     }
+
 }

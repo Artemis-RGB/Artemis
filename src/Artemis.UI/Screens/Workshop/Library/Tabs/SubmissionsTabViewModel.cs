@@ -38,7 +38,10 @@ public partial class SubmissionsTabViewModel : RoutableScreen
         IWorkshopService workshopService, 
         Func<IGetSubmittedEntries_SubmittedEntries, SubmissionsTabItemViewModel> getSubmissionsTabItemViewModel)
     {
-        IObservable<Func<IGetSubmittedEntries_SubmittedEntries, bool>> searchFilter = this.WhenAnyValue(vm => vm.SearchEntryInput).Throttle(TimeSpan.FromMilliseconds(100)).Select(CreatePredicate);
+        IObservable<Func<IGetSubmittedEntries_SubmittedEntries, bool>> searchFilter = this.WhenAnyValue(vm => vm.SearchEntryInput)
+            .Throttle(TimeSpan.FromMilliseconds(100))
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Select(CreatePredicate);
         
         _client = client;
         _windowService = windowService;

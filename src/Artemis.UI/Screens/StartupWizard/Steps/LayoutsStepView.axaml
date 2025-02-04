@@ -3,11 +3,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:startupWizard="clr-namespace:Artemis.UI.Screens.StartupWizard"
+             xmlns:steps="clr-namespace:Artemis.UI.Screens.StartupWizard.Steps"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.StartupWizard.Steps.LayoutsStep"
-             x:DataType="startupWizard:StartupWizardViewModel">
+             x:Class="Artemis.UI.Screens.StartupWizard.Steps.LayoutsStepView"
+             x:DataType="steps:LayoutsStepViewModel">
     <Border Classes="card">
-        <Grid RowDefinitions="Auto,Auto,Auto">
+        <Grid RowDefinitions="Auto,Auto,*">
             <StackPanel Grid.Row="0">
                 <TextBlock TextWrapping="Wrap">
                     Device layouts provide Artemis with an image of your devices and exact LED positions. <LineBreak />
