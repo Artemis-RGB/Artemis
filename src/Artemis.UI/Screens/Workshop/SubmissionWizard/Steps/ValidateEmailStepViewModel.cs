@@ -26,7 +26,7 @@ public class ValidateEmailStepViewModel : SubmissionViewModel
 
         Continue = ReactiveCommand.Create(() =>{}, Observable.Never<bool>());
         Refresh = ReactiveCommand.CreateFromTask(ExecuteRefresh);
-        Resend = ReactiveCommand.Create(() => Utilities.OpenUrl(WorkshopConstants.AUTHORITY_URL + "/account/confirm/resend"));
+        Resend = ReactiveCommand.Create(() => Utilities.OpenUrl(WorkshopConstants.AUTHORITY_URL + "/account/email/confirm/resend"));
 
         ShowGoBack = false;
         ShowHeader = false;

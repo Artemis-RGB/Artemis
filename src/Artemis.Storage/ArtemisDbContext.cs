@@ -8,6 +8,7 @@ using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Entities.Workshop;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Artemis.Storage;
 
@@ -35,9 +36,17 @@ public class ArtemisDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<DeviceEntity>()
-            .OwnsOne(d => d.InputIdentifiers, builder => builder.ToJson())
-            .OwnsOne(d => d.InputMappings, builder => builder.ToJson());
-
+            .Property(e => e.InputIdentifiers)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, JsonSerializerOptions),
+                v => JsonSerializer.Deserialize<List<DeviceInputIdentifierEntity>>(v, JsonSerializerOptions) ?? new List<DeviceInputIdentifierEntity>());
+        
+        modelBuilder.Entity<DeviceEntity>()
+            .Property(e => e.InputMappings)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, JsonSerializerOptions),
+                v => JsonSerializer.Deserialize<List<InputMappingEntity>>(v, JsonSerializerOptions) ?? new List<InputMappingEntity>());
+        
         modelBuilder.Entity<EntryEntity>()
             .Property(e => e.Metadata)
             .HasConversion(
