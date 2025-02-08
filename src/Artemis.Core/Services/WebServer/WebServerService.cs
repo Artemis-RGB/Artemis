@@ -2,14 +2,21 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core.Modules;
-using EmbedIO;
-using EmbedIO.WebApi;
+using GenHTTP.Api.Infrastructure;
+using GenHTTP.Api.Protocol;
+using GenHTTP.Engine.Internal;
+using GenHTTP.Modules.Controllers;
+using GenHTTP.Modules.ErrorHandling;
+using GenHTTP.Modules.Layouting;
+using GenHTTP.Modules.Layouting.Provider;
+using GenHTTP.Modules.Security;
 using Serilog;
 
 namespace Artemis.Core.Services;
@@ -19,19 +26,16 @@ internal class WebServerService : IWebServerService, IDisposable
     private readonly List<WebApiControllerRegistration> _controllers;
     private readonly ILogger _logger;
     private readonly ICoreService _coreService;
-    private readonly List<WebModuleRegistration> _modules;
     private readonly PluginSetting<bool> _webServerEnabledSetting;
     private readonly PluginSetting<int> _webServerPortSetting;
-    private readonly object _webserverLock = new();
-    private readonly JsonSerializerOptions _jsonOptions = new(CoreJson.GetJsonSerializerOptions()) {ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true};
-    private CancellationTokenSource? _cts;
+    private readonly SemaphoreSlim _webserverSemaphore = new(1, 1);
+    internal static readonly JsonSerializerOptions JsonOptions = new(CoreJson.GetJsonSerializerOptions()) {ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true};
 
     public WebServerService(ILogger logger, ICoreService coreService, ISettingsService settingsService, IPluginManagementService pluginManagementService)
     {
         _logger = logger;
         _coreService = coreService;
         _controllers = new List<WebApiControllerRegistration>();
-        _modules = new List<WebModuleRegistration>();
 
         _webServerEnabledSetting = settingsService.GetSetting("WebServer.Enabled", true);
         _webServerPortSetting = settingsService.GetSetting("WebServer.Port", 9696);
@@ -66,12 +70,12 @@ internal class WebServerService : IWebServerService, IDisposable
 
     private void WebServerEnabledSettingOnSettingChanged(object? sender, EventArgs e)
     {
-        StartWebServer();
+        _ = StartWebServer();
     }
 
     private void WebServerPortSettingOnSettingChanged(object? sender, EventArgs e)
     {
-        StartWebServer();
+        _ = StartWebServer();
     }
 
     private void PluginManagementServiceOnPluginFeatureDisabled(object? sender, PluginFeatureEventArgs e)
@@ -82,77 +86,63 @@ internal class WebServerService : IWebServerService, IDisposable
             mustRestart = true;
             _controllers.RemoveAll(c => c.Feature == e.PluginFeature);
         }
-
-        if (_modules.Any(m => m.Feature == e.PluginFeature))
-        {
-            mustRestart = true;
-            _modules.RemoveAll(m => m.Feature == e.PluginFeature);
-        }
-
+        
         if (mustRestart)
-            StartWebServer();
+            _ = StartWebServer();
     }
 
     /// <inheritdoc />
     public void Dispose()
     {
-        Server?.Dispose();
+        Server?.DisposeAsync();
         _webServerPortSetting.SettingChanged -= WebServerPortSettingOnSettingChanged;
     }
 
-    public WebServer? Server { get; private set; }
+    public IServer? Server { get; private set; }
     public PluginsModule PluginsModule { get; }
     public event EventHandler? WebServerStarting;
 
 
     #region Web server managament
 
-    private WebServer CreateWebServer()
+    private async Task <IServer> CreateWebServer()
     {
         if (Server != null)
         {
-            if (_cts != null)
-            {
-                _cts.Cancel();
-                _cts = null;
-            }
-
-            Server.Dispose();
+            await Server.DisposeAsync();
             OnWebServerStopped();
             Server = null;
         }
 
-        WebApiModule apiModule = new("/", SystemTextJsonSerializer);
         PluginsModule.ServerUrl = $"http://localhost:{_webServerPortSetting.Value}/";
-        WebServer server = new WebServer(o => o.WithUrlPrefix($"http://*:{_webServerPortSetting.Value}/").WithMode(HttpListenerMode.EmbedIO))
-            .WithLocalSessionManager()
-            .WithModule(PluginsModule);
 
-        // Add registered modules
-        foreach (WebModuleRegistration? webModule in _modules)
-            server = server.WithModule(webModule.CreateInstance());
-
-        server = server
-            .WithModule(apiModule)
-            .HandleHttpException((context, exception) => HandleHttpExceptionJson(context, exception))
-            .HandleUnhandledException(JsonExceptionHandlerCallback);
-
+        LayoutBuilder serverLayout = Layout.Create()
+            .Add(PluginsModule)
+            .Add(ErrorHandler.Structured())
+            .Add(CorsPolicy.Permissive());
+       
         // Add registered controllers to the API module
         foreach (WebApiControllerRegistration registration in _controllers)
-            apiModule.RegisterController(registration.ControllerType, (Func<WebApiController>) registration.UntypedFactory);
+        {
+            serverLayout = serverLayout.Add(registration.Path, Controller.From(registration.Factory()));
+        }
 
-        // Listen for state changes.
-        server.StateChanged += (s, e) => _logger.Verbose("WebServer new state - {state}", e.NewState);
-
+        IServer server = Host.Create()
+            .Handler(serverLayout.Build())
+            .Bind(IPAddress.Loopback, (ushort) _webServerPortSetting.Value)
+            .Development()
+            .Build();
+       
         // Store the URL in a webserver.txt file so that remote applications can find it
-        File.WriteAllText(Path.Combine(Constants.DataFolder, "webserver.txt"), PluginsModule.ServerUrl);
+        await File.WriteAllTextAsync(Path.Combine(Constants.DataFolder, "webserver.txt"), PluginsModule.ServerUrl);
 
         return server;
     }
 
-    private void StartWebServer()
+    private async Task StartWebServer()
     {
-        lock (_webserverLock)
+        await _webserverSemaphore.WaitAsync();
+        try
         {
             // Don't create the webserver until after the core service is initialized, this avoids lots of useless re-creates during initialize
             if (!_coreService.IsInitialized)
@@ -161,7 +151,7 @@ internal class WebServerService : IWebServerService, IDisposable
             if (!_webServerEnabledSetting.Value)
                 return;
 
-            Server = CreateWebServer();
+            Server = await CreateWebServer();
 
             if (Constants.StartupArguments.Contains("--disable-webserver"))
             {
@@ -170,17 +160,28 @@ internal class WebServerService : IWebServerService, IDisposable
             }
 
             OnWebServerStarting();
-            _cts = new CancellationTokenSource();
-            Server.Start(_cts.Token);
+            try
+            {
+                await Server.StartAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "Failed to start webserver");
+                throw;
+            }
             OnWebServerStarted();
+        }
+        finally
+        {
+            _webserverSemaphore.Release();
         }
     }
 
-    private void AutoStartWebServer()
+    private async Task AutoStartWebServer()
     {
         try
         {
-            StartWebServer();
+            await StartWebServer();
         }
         catch (Exception exception)
         {
@@ -232,7 +233,7 @@ internal class WebServerService : IWebServerService, IDisposable
         return endPoint;
     }
 
-    public RawPluginEndPoint AddRawEndPoint(PluginFeature feature, string endPointName, Func<IHttpContext, Task> requestHandler)
+    public RawPluginEndPoint AddRawEndPoint(PluginFeature feature, string endPointName, Func<IRequest, Task<IResponse>> requestHandler)
     {
         if (feature == null) throw new ArgumentNullException(nameof(feature));
         if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
@@ -256,18 +257,18 @@ internal class WebServerService : IWebServerService, IDisposable
     {
         PluginsModule.RemovePluginEndPoint(endPoint);
     }
-
+    
     #endregion
 
     #region Controller management
 
-    public WebApiControllerRegistration AddController<T>(PluginFeature feature) where T : WebApiController
+    public WebApiControllerRegistration AddController<T>(PluginFeature feature, string path) where T : class
     {
         if (feature == null) throw new ArgumentNullException(nameof(feature));
 
-        WebApiControllerRegistration<T> registration = new(this, feature);
+        WebApiControllerRegistration<T> registration = new(this, feature, path);
         _controllers.Add(registration);
-        StartWebServer();
+        _ = StartWebServer();
 
         return registration;
     }
@@ -275,75 +276,7 @@ internal class WebServerService : IWebServerService, IDisposable
     public void RemoveController(WebApiControllerRegistration registration)
     {
         _controllers.Remove(registration);
-        StartWebServer();
-    }
-
-    #endregion
-
-    #region Module management
-
-    public WebModuleRegistration AddModule(PluginFeature feature, Func<IWebModule> create)
-    {
-        if (feature == null) throw new ArgumentNullException(nameof(feature));
-
-        WebModuleRegistration registration = new(this, feature, create);
-        _modules.Add(registration);
-        StartWebServer();
-
-        return registration;
-    }
-
-    public WebModuleRegistration AddModule<T>(PluginFeature feature) where T : IWebModule
-    {
-        if (feature == null) throw new ArgumentNullException(nameof(feature));
-
-        WebModuleRegistration registration = new(this, feature, typeof(T));
-        _modules.Add(registration);
-        StartWebServer();
-
-        return registration;
-    }
-
-    public void RemoveModule(WebModuleRegistration registration)
-    {
-        _modules.Remove(registration);
-        StartWebServer();
-    }
-
-    #endregion
-
-    #region Handlers
-
-    private async Task JsonExceptionHandlerCallback(IHttpContext context, Exception exception)
-    {
-        context.Response.ContentType = MimeType.Json;
-        await using TextWriter writer = context.OpenResponseText();
-
-        string response = CoreJson.Serialize(new Dictionary<string, object?>
-        {
-            {"StatusCode", context.Response.StatusCode},
-            {"StackTrace", exception.StackTrace},
-            {"Type", exception.GetType().FullName},
-            {"Message", exception.Message},
-            {"Data", exception.Data},
-            {"InnerException", exception.InnerException},
-            {"HelpLink", exception.HelpLink},
-            {"Source", exception.Source},
-            {"HResult", exception.HResult}
-        });
-        await writer.WriteAsync(response);
-    }
-
-    private async Task SystemTextJsonSerializer(IHttpContext context, object? data)
-    {
-        context.Response.ContentType = MimeType.Json;
-        await using TextWriter writer = context.OpenResponseText();
-        await writer.WriteAsync(JsonSerializer.Serialize(data, _jsonOptions));
-    }
-
-    private async Task HandleHttpExceptionJson(IHttpContext context, IHttpException httpException)
-    {
-        await context.SendStringAsync(JsonSerializer.Serialize(httpException, _jsonOptions), MimeType.Json, Encoding.UTF8);
+        _ = StartWebServer();
     }
 
     #endregion

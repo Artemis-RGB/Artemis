@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Net.Http;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using EmbedIO;
+using GenHTTP.Api.Protocol;
+using GenHTTP.Modules.Basics;
+using GenHTTP.Modules.IO;
+using StringContent = GenHTTP.Modules.IO.Strings.StringContent;
 
 namespace Artemis.Core.Services;
 
@@ -45,12 +49,12 @@ public abstract class PluginEndPoint
     /// <summary>
     ///     Gets the mime type of the input this end point accepts
     /// </summary>
-    public string? Accepts { get; protected set; }
+    public ContentType Accepts { get; protected set; }
 
     /// <summary>
     ///     Gets the mime type of the output this end point returns
     /// </summary>
-    public string? Returns { get; protected set; }
+    public ContentType Returns { get; protected set; }
 
     /// <summary>
     ///     Occurs whenever a request threw an unhandled exception
@@ -70,8 +74,8 @@ public abstract class PluginEndPoint
     /// <summary>
     ///     Called whenever the end point has to process a request
     /// </summary>
-    /// <param name="context">The HTTP context of the request</param>
-    protected abstract Task ProcessRequest(IHttpContext context);
+    /// <param name="request">The HTTP context of the request</param>
+    protected abstract Task<IResponse> ProcessRequest(IRequest request);
 
     /// <summary>
     ///     Invokes the <see cref="RequestException" /> event
@@ -85,31 +89,36 @@ public abstract class PluginEndPoint
     /// <summary>
     ///     Invokes the <see cref="ProcessingRequest" /> event
     /// </summary>
-    protected virtual void OnProcessingRequest(IHttpContext context)
+    protected virtual void OnProcessingRequest(IRequest request)
     {
-        ProcessingRequest?.Invoke(this, new EndpointRequestEventArgs(context));
+        ProcessingRequest?.Invoke(this, new EndpointRequestEventArgs(request));
     }
 
     /// <summary>
     ///     Invokes the <see cref="ProcessedRequest" /> event
     /// </summary>
-    protected virtual void OnProcessedRequest(IHttpContext context)
+    protected virtual void OnProcessedRequest(IRequest request)
     {
-        ProcessedRequest?.Invoke(this, new EndpointRequestEventArgs(context));
+        ProcessedRequest?.Invoke(this, new EndpointRequestEventArgs(request));
     }
 
-    internal async Task InternalProcessRequest(IHttpContext context)
+    internal async Task<IResponse> InternalProcessRequest(IRequest context)
     {
         try
         {
             OnProcessingRequest(context);
-            await ProcessRequest(context);
+            IResponse response = await ProcessRequest(context);
             OnProcessedRequest(context);
+            return response;
         }
         catch (Exception e)
         {
             OnRequestException(e);
-            throw;
+            return context.Respond()
+                .Status(ResponseStatus.InternalServerError)
+                .Content(new StringContent(e.ToString()))
+                .Type(ContentType.TextPlain)
+                .Build();
         }
     }
 

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Artemis.Core.Modules;
-using EmbedIO;
-using EmbedIO.WebApi;
+using GenHTTP.Api.Infrastructure;
+using GenHTTP.Api.Protocol;
 
 namespace Artemis.Core.Services;
 
@@ -14,7 +14,7 @@ public interface IWebServerService : IArtemisService
     /// <summary>
     ///     Gets the current instance of the web server, replaced when <see cref="WebServerStarting" /> occurs.
     /// </summary>
-    WebServer? Server { get; }
+    IServer? Server { get; }
 
     /// <summary>
     ///     Gets the plugins module containing all plugin end points
@@ -84,7 +84,7 @@ public interface IWebServerService : IArtemisService
     /// <param name="endPointName">The name of the end point, must be unique</param>
     /// <param name="requestHandler"></param>
     /// <returns>The resulting end point</returns>
-    RawPluginEndPoint AddRawEndPoint(PluginFeature feature, string endPointName, Func<IHttpContext, Task> requestHandler);
+    RawPluginEndPoint AddRawEndPoint(PluginFeature feature, string endPointName, Func<IRequest, Task<IResponse>> requestHandler);
 
     /// <summary>
     ///     Removes an existing endpoint
@@ -96,30 +96,14 @@ public interface IWebServerService : IArtemisService
     ///     Adds a new Web API controller and restarts the web server
     /// </summary>
     /// <typeparam name="T">The type of Web API controller to remove</typeparam>
-    WebApiControllerRegistration AddController<T>(PluginFeature feature) where T : WebApiController;
+    WebApiControllerRegistration AddController<T>(PluginFeature feature, string path) where T : class;
 
     /// <summary>
     ///     Removes an existing Web API controller and restarts the web server
     /// </summary>
     /// <param name="registration">The registration of the controller to remove.</param>
     void RemoveController(WebApiControllerRegistration registration);
-
-    /// <summary>
-    ///     Adds a new EmbedIO module and restarts the web server
-    /// </summary>
-    WebModuleRegistration AddModule(PluginFeature feature, Func<IWebModule> create);
-
-    /// <summary>
-    ///     Removes a EmbedIO module and restarts the web server
-    /// </summary>
-    void RemoveModule(WebModuleRegistration create);
-
-    /// <summary>
-    ///     Adds a new EmbedIO module and restarts the web server
-    /// </summary>
-    /// <typeparam name="T">The type of module to add</typeparam>
-    WebModuleRegistration AddModule<T>(PluginFeature feature) where T : IWebModule;
-
+    
     /// <summary>
     ///     Occurs when the web server has been created and is about to start. This is the ideal place to add your own modules.
     /// </summary>

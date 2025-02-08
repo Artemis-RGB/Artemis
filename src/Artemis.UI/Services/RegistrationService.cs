@@ -94,6 +94,6 @@ public class RegistrationService : IRegistrationService
 
     public void RegisterControllers()
     {
-        _webServerService.AddController<RemoteController>(Constants.CorePlugin.Features.First().Instance!);
+        _webServerService.AddController<RemoteController>(Constants.CorePlugin.Features.First().Instance!, "remote");
     }
 }

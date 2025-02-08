@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Artemis.Core.Modules;
-using EmbedIO;
+using GenHTTP.Api.Protocol;
 
 namespace Artemis.Core.Services;
 
@@ -27,7 +26,7 @@ public class DataModelJsonPluginEndPoint<T> : PluginEndPoint where T : DataModel
         _update = CreateUpdateAction();
 
         ThrowOnFail = true;
-        Accepts = MimeType.Json;
+        Accepts = ContentType.ApplicationJson;
     }
 
     /// <summary>
@@ -38,17 +37,16 @@ public class DataModelJsonPluginEndPoint<T> : PluginEndPoint where T : DataModel
     public bool ThrowOnFail { get; set; }
 
     /// <inheritdoc />
-    protected override async Task ProcessRequest(IHttpContext context)
+    protected override async Task<IResponse> ProcessRequest(IRequest request)
     {
-        if (context.Request.HttpVerb != HttpVerbs.Post && context.Request.HttpVerb != HttpVerbs.Put)
-            throw HttpException.MethodNotAllowed("This end point only accepts POST and PUT calls");
+        if (request.Method != RequestMethod.Post && request.Method != RequestMethod.Put)
+            return request.Respond().Status(ResponseStatus.MethodNotAllowed).Build();
+        if (request.Content == null)
+            return request.Respond().Status(ResponseStatus.BadRequest).Build();
 
-        context.Response.ContentType = MimeType.Json;
-
-        using TextReader reader = context.OpenRequestText();
         try
         {
-            T? dataModel = CoreJson.Deserialize<T>(await reader.ReadToEndAsync());
+            T? dataModel = await JsonSerializer.DeserializeAsync<T>(request.Content, WebServerService.JsonOptions);
             if (dataModel != null)
                 _update(dataModel, _module.DataModel);
         }
@@ -57,6 +55,8 @@ public class DataModelJsonPluginEndPoint<T> : PluginEndPoint where T : DataModel
             if (ThrowOnFail)
                 throw;
         }
+
+        return request.Respond().Status(ResponseStatus.NoContent).Build();
     }
 
     private Action<T, T> CreateUpdateAction()

@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-using EmbedIO;
+using GenHTTP.Api.Content;
+using GenHTTP.Api.Protocol;
+using GenHTTP.Modules.Basics;
+using GenHTTP.Modules.Conversion.Serializers.Json;
+using GenHTTP.Modules.IO.Strings;
 
 namespace Artemis.Core.Services;
 
@@ -10,14 +15,20 @@ namespace Artemis.Core.Services;
 ///     Represents an EmbedIO web module used to process web requests and forward them to the right
 ///     <see cref="PluginEndPoint" />.
 /// </summary>
-public class PluginsModule : WebModuleBase
+public class PluginsModule : IHandler
 {
     private readonly Dictionary<string, Dictionary<string, PluginEndPoint>> _pluginEndPoints;
 
-    internal PluginsModule(string baseRoute) : base(baseRoute)
+    internal PluginsModule(string baseRoute)
     {
+        BaseRoute = baseRoute;
         _pluginEndPoints = new Dictionary<string, Dictionary<string, PluginEndPoint>>(comparer: StringComparer.InvariantCultureIgnoreCase);
     }
+
+    /// <summary>
+    /// Gets the base route of the module
+    /// </summary>
+    public string BaseRoute { get; }
 
     internal void AddPluginEndPoint(PluginEndPoint registration)
     {
@@ -42,44 +53,39 @@ public class PluginsModule : WebModuleBase
             return;
         registrations.Remove(registration.Name);
     }
-
-    #region Overrides of WebModuleBase
-
+    
     /// <inheritdoc />
-    protected override async Task OnRequestAsync(IHttpContext context)
+    public ValueTask PrepareAsync()
     {
-        if (context.Route.SubPath == null)
-            return;
-
-        // Split the sub path
-        string[] pathParts = context.Route.SubPath.Substring(1).Split('/');
-        // Expect a plugin ID and an endpoint
-        if (pathParts.Length != 2)
-            return;
-
-        // Find a matching plugin
-        if (!_pluginEndPoints.TryGetValue(pathParts[0], out Dictionary<string, PluginEndPoint>? endPoints))
-            throw HttpException.NotFound($"Found no plugin with ID {pathParts[0]}.");
-
-        // Find a matching endpoint
-        if (!endPoints.TryGetValue(pathParts[1], out PluginEndPoint? endPoint))
-            throw HttpException.NotFound($"Found no endpoint called {pathParts[1]} for plugin with ID {pathParts[0]}.");
-
-        // If Accept-Charset contains a wildcard, remove the header so we default to UTF8
-        // This is a workaround for an EmbedIO ehh issue
-        string? acceptCharset = context.Request.Headers["Accept-Charset"];
-        if (acceptCharset != null && acceptCharset.Contains("*"))
-            context.Request.Headers.Remove("Accept-Charset");
-
-        // It is up to the registration how the request is eventually handled, it might even set a response here
-        await endPoint.InternalProcessRequest(context);
-
-        // No need to return ourselves, assume the request is fully handled by the end point
-        context.SetHandled();
+        return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public override bool IsFinalHandler => false;
+    public async ValueTask<IResponse?> HandleAsync(IRequest request)
+    {
+        // Expect a plugin ID and an endpoint
+        if (request.Target.Path.Parts.Count != 2)
+            return null;
+        
+        // Find a matching plugin, if none found let another handler have a go :)
+        if (!_pluginEndPoints.TryGetValue(request.Target.Path.Parts[0].Value, out Dictionary<string, PluginEndPoint>? endPoints))
+            return null;
+
+        // Find a matching endpoint
+        if (!endPoints.TryGetValue(request.Target.Path.Parts[1].Value, out PluginEndPoint? endPoint))
+        {
+            return request.Respond()
+                .Status(ResponseStatus.NotFound)
+                .Content(new StringContent($"Found no endpoint called {request.Target.Path.Parts[1].Value} for plugin with ID {request.Target.Path.Parts[0].Value}."))
+                .Type(ContentType.TextPlain)
+                .Build();
+        }
+
+        // It is up to the registration how the request is eventually handled
+        return await endPoint.InternalProcessRequest(request);
+    }
+
+    #region Overrides of WebModuleBase
 
     internal string? ServerUrl { get; set; }
 

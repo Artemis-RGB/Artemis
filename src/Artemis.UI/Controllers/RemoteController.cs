@@ -1,17 +1,18 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services.MainWindow;
 using Avalonia.Threading;
-using EmbedIO;
-using EmbedIO.Routing;
-using EmbedIO.WebApi;
+using GenHTTP.Api.Protocol;
+using GenHTTP.Modules.Controllers;
+using GenHTTP.Modules.Reflection;
 
 namespace Artemis.UI.Controllers;
 
-public class RemoteController : WebApiController
+public class RemoteController
 {
     private readonly ICoreService _coreService;
     private readonly IMainWindowService _mainWindowService;
@@ -24,17 +25,27 @@ public class RemoteController : WebApiController
         _router = router;
     }
 
-    [Route(HttpVerbs.Any, "/status")]
-    public void GetStatus()
+    public void Index()
     {
-        HttpContext.Response.StatusCode = 200;
+        // HTTP 204 No Content
     }
 
-    [Route(HttpVerbs.Post, "/remote/bring-to-foreground")]
-    public void PostBringToForeground()
+    [ControllerAction(RequestMethod.Get)]
+    public void Status()
     {
-        using StreamReader reader = new(Request.InputStream);
-        string route = reader.ReadToEnd();
+        // HTTP 204 No Content
+    }
+
+    [ControllerAction(RequestMethod.Post)]
+    public void BringToForeground(IRequest request)
+    {
+        // Get the route from the request content stream
+        string? route = null;
+        if (request.Content != null)
+        {
+            using StreamReader reader = new(request.Content);
+            route = reader.ReadToEnd();
+        }
 
         Dispatcher.UIThread.InvokeAsync(async () =>
         {
@@ -44,14 +55,14 @@ public class RemoteController : WebApiController
         });
     }
 
-    [Route(HttpVerbs.Post, "/remote/restart")]
-    public void PostRestart([FormField] string[] args)
+    [ControllerAction(RequestMethod.Post)]
+    public void Restart(List<string> args)
     {
-        Utilities.Restart(_coreService.IsElevated, TimeSpan.FromMilliseconds(500), args);
+        Utilities.Restart(_coreService.IsElevated, TimeSpan.FromMilliseconds(500), args.ToArray());
     }
 
-    [Route(HttpVerbs.Post, "/remote/shutdown")]
-    public void PostShutdown()
+    [ControllerAction(RequestMethod.Post)]
+    public void Shutdown()
     {
         Utilities.Shutdown();
     }

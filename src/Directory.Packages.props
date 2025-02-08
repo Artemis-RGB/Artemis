@@ -14,6 +14,8 @@
     <PackageVersion Include="Avalonia.ReactiveUI" Version="11.2.3" />
     <PackageVersion Include="Avalonia.Skia.Lottie" Version="11.0.0" />
     <PackageVersion Include="Avalonia.Win32" Version="11.2.3" />
+    <PackageVersion Include="GenHTTP.Core" Version="9.6.2" />
+    <PackageVersion Include="GenHTTP.Modules.Controllers" Version="9.6.2" />
     <PackageVersion Include="HPPH.SkiaSharp" Version="1.0.0" />
     <PackageVersion Include="Microsoft.Win32.SystemEvents" Version="9.0.1" />
     <PackageVersion Include="Avalonia.Xaml.Behaviors" Version="11.2.0.8" />
@@ -21,7 +23,6 @@
     <PackageVersion Include="DryIoc.Microsoft.DependencyInjection" Version="6.2.0" />
     <PackageVersion Include="DryIoc.dll" Version="5.4.3" />
     <PackageVersion Include="DynamicData" Version="9.1.1" />
-    <PackageVersion Include="EmbedIO" Version="3.5.2" />
     <PackageVersion Include="FluentAvalonia.ProgressRing" Version="1.69.2" />
     <PackageVersion Include="FluentAvaloniaUI" Version="2.2.0" />
     <PackageVersion Include="HidSharp" Version="2.1.0" />
