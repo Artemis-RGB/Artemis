@@ -15,7 +15,7 @@
     <PackageVersion Include="Avalonia.Skia.Lottie" Version="11.0.0" />
     <PackageVersion Include="Avalonia.Win32" Version="11.2.3" />
     <PackageVersion Include="GenHTTP.Core" Version="9.6.2" />
-    <PackageVersion Include="GenHTTP.Modules.Controllers" Version="9.6.2" />
+    <PackageVersion Include="GenHTTP.Modules.Webservices" Version="9.6.2" />
     <PackageVersion Include="HPPH.SkiaSharp" Version="1.0.0" />
     <PackageVersion Include="Microsoft.Win32.SystemEvents" Version="9.0.1" />
     <PackageVersion Include="Avalonia.Xaml.Behaviors" Version="11.2.0.8" />

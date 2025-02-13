@@ -17,19 +17,19 @@ public class JsonPluginEndPoint<T> : PluginEndPoint
     private readonly Action<T>? _requestHandler;
     private readonly Func<T, object?>? _responseRequestHandler;
 
-    internal JsonPluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule, Action<T> requestHandler) : base(pluginFeature, name, pluginsModule)
+    internal JsonPluginEndPoint(PluginFeature pluginFeature, string name, PluginsHandler pluginsHandler, Action<T> requestHandler) : base(pluginFeature, name, pluginsHandler)
     {
         _requestHandler = requestHandler;
         ThrowOnFail = true;
-        Accepts = ContentType.ApplicationJson;
+        Accepts = FlexibleContentType.Get(ContentType.ApplicationJson);
     }
 
-    internal JsonPluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule, Func<T, object?> responseRequestHandler) : base(pluginFeature, name, pluginsModule)
+    internal JsonPluginEndPoint(PluginFeature pluginFeature, string name, PluginsHandler pluginsHandler, Func<T, object?> responseRequestHandler) : base(pluginFeature, name, pluginsHandler)
     {
         _responseRequestHandler = responseRequestHandler;
         ThrowOnFail = true;
-        Accepts = ContentType.ApplicationJson;
-        Returns = ContentType.ApplicationJson;
+        Accepts = FlexibleContentType.Get(ContentType.ApplicationJson);
+        Returns = FlexibleContentType.Get(ContentType.ApplicationJson);
     }
 
     /// <summary>

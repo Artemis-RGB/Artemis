@@ -16,17 +16,17 @@ public class StringPluginEndPoint : PluginEndPoint
     private readonly Action<string>? _requestHandler;
     private readonly Func<string, string?>? _responseRequestHandler;
 
-    internal StringPluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule, Action<string> requestHandler) : base(pluginFeature, name, pluginsModule)
+    internal StringPluginEndPoint(PluginFeature pluginFeature, string name, PluginsHandler pluginsHandler, Action<string> requestHandler) : base(pluginFeature, name, pluginsHandler)
     {
         _requestHandler = requestHandler;
-        Accepts = ContentType.TextPlain;
+        Accepts = FlexibleContentType.Get(ContentType.TextPlain);
     }
 
-    internal StringPluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule, Func<string, string?> requestHandler) : base(pluginFeature, name, pluginsModule)
+    internal StringPluginEndPoint(PluginFeature pluginFeature, string name, PluginsHandler pluginsHandler, Func<string, string?> requestHandler) : base(pluginFeature, name, pluginsHandler)
     {
         _responseRequestHandler = requestHandler;
-        Accepts = ContentType.TextPlain;
-        Returns = ContentType.TextPlain;
+        Accepts = FlexibleContentType.Get(ContentType.TextPlain);
+        Returns = FlexibleContentType.Get(ContentType.TextPlain);
     }
 
     #region Overrides of PluginEndPoint

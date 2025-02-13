@@ -12,14 +12,14 @@ using GenHTTP.Modules.IO.Strings;
 namespace Artemis.Core.Services;
 
 /// <summary>
-///     Represents an EmbedIO web module used to process web requests and forward them to the right
+///     Represents an GenHTTP handler used to process web requests and forward them to the right
 ///     <see cref="PluginEndPoint" />.
 /// </summary>
-public class PluginsModule : IHandler
+public class PluginsHandler : IHandler
 {
     private readonly Dictionary<string, Dictionary<string, PluginEndPoint>> _pluginEndPoints;
 
-    internal PluginsModule(string baseRoute)
+    internal PluginsHandler(string baseRoute)
     {
         BaseRoute = baseRoute;
         _pluginEndPoints = new Dictionary<string, Dictionary<string, PluginEndPoint>>(comparer: StringComparer.InvariantCultureIgnoreCase);
@@ -63,20 +63,30 @@ public class PluginsModule : IHandler
     /// <inheritdoc />
     public async ValueTask<IResponse?> HandleAsync(IRequest request)
     {
-        // Expect a plugin ID and an endpoint
-        if (request.Target.Path.Parts.Count != 2)
+        // Used to be part of the RemoteController but moved here to avoid the /remote/ prefix enforced by GenHTTP
+        if (request.Target.Current?.Value != "plugins")
+            return null;
+      
+        request.Target.Advance();
+        string? pluginId = request.Target.Current?.Value;
+        if (pluginId == null)
             return null;
         
         // Find a matching plugin, if none found let another handler have a go :)
-        if (!_pluginEndPoints.TryGetValue(request.Target.Path.Parts[0].Value, out Dictionary<string, PluginEndPoint>? endPoints))
+        if (!_pluginEndPoints.TryGetValue(pluginId, out Dictionary<string, PluginEndPoint>? endPoints))
             return null;
-
+        
+        request.Target.Advance();
+        string? endPointName = request.Target.Current?.Value;
+        if (endPointName == null)
+            return null;
+        
         // Find a matching endpoint
-        if (!endPoints.TryGetValue(request.Target.Path.Parts[1].Value, out PluginEndPoint? endPoint))
+        if (!endPoints.TryGetValue(endPointName, out PluginEndPoint? endPoint))
         {
             return request.Respond()
                 .Status(ResponseStatus.NotFound)
-                .Content(new StringContent($"Found no endpoint called {request.Target.Path.Parts[1].Value} for plugin with ID {request.Target.Path.Parts[0].Value}."))
+                .Content(new StringContent($"Found no endpoint called {endPointName} for plugin with ID {pluginId}."))
                 .Type(ContentType.TextPlain)
                 .Build();
         }

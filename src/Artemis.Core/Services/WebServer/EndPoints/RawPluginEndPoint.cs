@@ -14,7 +14,7 @@ namespace Artemis.Core.Services;
 public class RawPluginEndPoint : PluginEndPoint
 {
     /// <inheritdoc />
-    internal RawPluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule, Func<IRequest, Task<IResponse>> requestHandler) : base(pluginFeature, name, pluginsModule)
+    internal RawPluginEndPoint(PluginFeature pluginFeature, string name, PluginsHandler pluginsHandler, Func<IRequest, Task<IResponse>> requestHandler) : base(pluginFeature, name, pluginsHandler)
     {
         RequestHandler = requestHandler;
     }
@@ -29,7 +29,7 @@ public class RawPluginEndPoint : PluginEndPoint
     /// </summary>
     public void SetAcceptType(ContentType type)
     {
-        Accepts = type;
+        Accepts = FlexibleContentType.Get(type);
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public class RawPluginEndPoint : PluginEndPoint
     /// </summary>
     public void SetReturnType(ContentType type)
     {
-        Returns = type;
+        Returns = FlexibleContentType.Get(type);
     }
 
     #region Overrides of PluginEndPoint

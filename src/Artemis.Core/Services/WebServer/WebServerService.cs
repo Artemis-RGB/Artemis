@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using Artemis.Core.Modules;
 using GenHTTP.Api.Infrastructure;
 using GenHTTP.Api.Protocol;
 using GenHTTP.Engine.Internal;
-using GenHTTP.Modules.Controllers;
+using GenHTTP.Modules.Conversion;
+using GenHTTP.Modules.Conversion.Serializers;
 using GenHTTP.Modules.ErrorHandling;
 using GenHTTP.Modules.Layouting;
 using GenHTTP.Modules.Layouting.Provider;
+using GenHTTP.Modules.Practices;
 using GenHTTP.Modules.Security;
+using GenHTTP.Modules.Webservices;
 using Serilog;
 
 namespace Artemis.Core.Services;
@@ -29,7 +30,13 @@ internal class WebServerService : IWebServerService, IDisposable
     private readonly PluginSetting<bool> _webServerEnabledSetting;
     private readonly PluginSetting<int> _webServerPortSetting;
     private readonly SemaphoreSlim _webserverSemaphore = new(1, 1);
-    internal static readonly JsonSerializerOptions JsonOptions = new(CoreJson.GetJsonSerializerOptions()) {ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true};
+
+    internal static readonly JsonSerializerOptions JsonOptions = new(CoreJson.GetJsonSerializerOptions())
+    {
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        WriteIndented = true,
+        Converters = {new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)}
+    };
 
     public WebServerService(ILogger logger, ICoreService coreService, ISettingsService settingsService, IPluginManagementService pluginManagementService)
     {
@@ -43,7 +50,7 @@ internal class WebServerService : IWebServerService, IDisposable
         _webServerPortSetting.SettingChanged += WebServerPortSettingOnSettingChanged;
         pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureDisabled;
 
-        PluginsModule = new PluginsModule("/plugins");
+        PluginsHandler = new PluginsHandler("plugins");
         if (coreService.IsInitialized)
             AutoStartWebServer();
         else
@@ -86,7 +93,7 @@ internal class WebServerService : IWebServerService, IDisposable
             mustRestart = true;
             _controllers.RemoveAll(c => c.Feature == e.PluginFeature);
         }
-        
+
         if (mustRestart)
             _ = StartWebServer();
     }
@@ -99,13 +106,13 @@ internal class WebServerService : IWebServerService, IDisposable
     }
 
     public IServer? Server { get; private set; }
-    public PluginsModule PluginsModule { get; }
+    public PluginsHandler PluginsHandler { get; }
     public event EventHandler? WebServerStarting;
 
 
     #region Web server managament
 
-    private async Task <IServer> CreateWebServer()
+    private async Task<IServer> CreateWebServer()
     {
         if (Server != null)
         {
@@ -114,27 +121,29 @@ internal class WebServerService : IWebServerService, IDisposable
             Server = null;
         }
 
-        PluginsModule.ServerUrl = $"http://localhost:{_webServerPortSetting.Value}/";
-
+        PluginsHandler.ServerUrl = $"http://localhost:{_webServerPortSetting.Value}/";
+        
         LayoutBuilder serverLayout = Layout.Create()
-            .Add(PluginsModule)
+            .Add(PluginsHandler)
             .Add(ErrorHandler.Structured())
             .Add(CorsPolicy.Permissive());
-       
-        // Add registered controllers to the API module
+
+        // Add registered controllers to the API module as services.
+        // GenHTTP also has controllers but services are more flexible and match EmbedIO's approach more closely.
+        SerializationBuilder serialization = Serialization.Default(JsonOptions);
         foreach (WebApiControllerRegistration registration in _controllers)
         {
-            serverLayout = serverLayout.Add(registration.Path, Controller.From(registration.Factory()));
+            serverLayout = serverLayout.AddService(registration.Path, registration.Factory(), serializers: serialization);
         }
 
         IServer server = Host.Create()
             .Handler(serverLayout.Build())
             .Bind(IPAddress.Loopback, (ushort) _webServerPortSetting.Value)
-            .Development()
+            .Defaults()
             .Build();
-       
+
         // Store the URL in a webserver.txt file so that remote applications can find it
-        await File.WriteAllTextAsync(Path.Combine(Constants.DataFolder, "webserver.txt"), PluginsModule.ServerUrl);
+        await File.WriteAllTextAsync(Path.Combine(Constants.DataFolder, "webserver.txt"), PluginsHandler.ServerUrl);
 
         return server;
     }
@@ -169,6 +178,7 @@ internal class WebServerService : IWebServerService, IDisposable
                 _logger.Warning(e, "Failed to start webserver");
                 throw;
             }
+
             OnWebServerStarted();
         }
         finally
@@ -198,8 +208,8 @@ internal class WebServerService : IWebServerService, IDisposable
         if (feature == null) throw new ArgumentNullException(nameof(feature));
         if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
         if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-        JsonPluginEndPoint<T> endPoint = new(feature, endPointName, PluginsModule, requestHandler);
-        PluginsModule.AddPluginEndPoint(endPoint);
+        JsonPluginEndPoint<T> endPoint = new(feature, endPointName, PluginsHandler, requestHandler);
+        PluginsHandler.AddPluginEndPoint(endPoint);
         return endPoint;
     }
 
@@ -208,8 +218,8 @@ internal class WebServerService : IWebServerService, IDisposable
         if (feature == null) throw new ArgumentNullException(nameof(feature));
         if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
         if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-        JsonPluginEndPoint<T> endPoint = new(feature, endPointName, PluginsModule, requestHandler);
-        PluginsModule.AddPluginEndPoint(endPoint);
+        JsonPluginEndPoint<T> endPoint = new(feature, endPointName, PluginsHandler, requestHandler);
+        PluginsHandler.AddPluginEndPoint(endPoint);
         return endPoint;
     }
 
@@ -218,8 +228,8 @@ internal class WebServerService : IWebServerService, IDisposable
         if (feature == null) throw new ArgumentNullException(nameof(feature));
         if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
         if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-        StringPluginEndPoint endPoint = new(feature, endPointName, PluginsModule, requestHandler);
-        PluginsModule.AddPluginEndPoint(endPoint);
+        StringPluginEndPoint endPoint = new(feature, endPointName, PluginsHandler, requestHandler);
+        PluginsHandler.AddPluginEndPoint(endPoint);
         return endPoint;
     }
 
@@ -228,8 +238,8 @@ internal class WebServerService : IWebServerService, IDisposable
         if (feature == null) throw new ArgumentNullException(nameof(feature));
         if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
         if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-        StringPluginEndPoint endPoint = new(feature, endPointName, PluginsModule, requestHandler);
-        PluginsModule.AddPluginEndPoint(endPoint);
+        StringPluginEndPoint endPoint = new(feature, endPointName, PluginsHandler, requestHandler);
+        PluginsHandler.AddPluginEndPoint(endPoint);
         return endPoint;
     }
 
@@ -238,26 +248,16 @@ internal class WebServerService : IWebServerService, IDisposable
         if (feature == null) throw new ArgumentNullException(nameof(feature));
         if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
         if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-        RawPluginEndPoint endPoint = new(feature, endPointName, PluginsModule, requestHandler);
-        PluginsModule.AddPluginEndPoint(endPoint);
-        return endPoint;
-    }
-
-    [Obsolete("Use AddJsonEndPoint<T>(PluginFeature feature, string endPointName, Action<T> requestHandler) instead")]
-    public DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(Module<T> module, string endPointName) where T : DataModel, new()
-    {
-        if (module == null) throw new ArgumentNullException(nameof(module));
-        if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
-        DataModelJsonPluginEndPoint<T> endPoint = new(module, endPointName, PluginsModule);
-        PluginsModule.AddPluginEndPoint(endPoint);
+        RawPluginEndPoint endPoint = new(feature, endPointName, PluginsHandler, requestHandler);
+        PluginsHandler.AddPluginEndPoint(endPoint);
         return endPoint;
     }
 
     public void RemovePluginEndPoint(PluginEndPoint endPoint)
     {
-        PluginsModule.RemovePluginEndPoint(endPoint);
+        PluginsHandler.RemovePluginEndPoint(endPoint);
     }
-    
+
     #endregion
 
     #region Controller management

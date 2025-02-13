@@ -38,7 +38,7 @@
     <ItemGroup>
         <PackageReference Include="DryIoc.dll" />
         <PackageReference Include="GenHTTP.Core" />
-        <PackageReference Include="GenHTTP.Modules.Controllers" />
+        <PackageReference Include="GenHTTP.Modules.Webservices" />
         <PackageReference Include="HidSharp" />
         <PackageReference Include="HPPH.SkiaSharp" />
         <PackageReference Include="Humanizer.Core" />

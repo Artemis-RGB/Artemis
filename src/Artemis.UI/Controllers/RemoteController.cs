@@ -7,8 +7,7 @@ using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services.MainWindow;
 using Avalonia.Threading;
 using GenHTTP.Api.Protocol;
-using GenHTTP.Modules.Controllers;
-using GenHTTP.Modules.Reflection;
+using GenHTTP.Modules.Webservices;
 
 namespace Artemis.UI.Controllers;
 
@@ -25,18 +24,7 @@ public class RemoteController
         _router = router;
     }
 
-    public void Index()
-    {
-        // HTTP 204 No Content
-    }
-
-    [ControllerAction(RequestMethod.Get)]
-    public void Status()
-    {
-        // HTTP 204 No Content
-    }
-
-    [ControllerAction(RequestMethod.Post)]
+    [ResourceMethod(RequestMethod.Post, "bring-to-foreground")]
     public void BringToForeground(IRequest request)
     {
         // Get the route from the request content stream
@@ -55,13 +43,13 @@ public class RemoteController
         });
     }
 
-    [ControllerAction(RequestMethod.Post)]
+    [ResourceMethod(RequestMethod.Post, "restart")]
     public void Restart(List<string> args)
     {
         Utilities.Restart(_coreService.IsElevated, TimeSpan.FromMilliseconds(500), args.ToArray());
     }
 
-    [ControllerAction(RequestMethod.Post)]
+    [ResourceMethod(RequestMethod.Post, "shutdown")]
     public void Shutdown()
     {
         Utilities.Shutdown();

@@ -10,15 +10,15 @@ using StringContent = GenHTTP.Modules.IO.Strings.StringContent;
 namespace Artemis.Core.Services;
 
 /// <summary>
-///     Represents a base type for plugin end points to be targeted by the <see cref="PluginsModule" />
+///     Represents a base type for plugin end points to be targeted by the <see cref="PluginsHandler" />
 /// </summary>
 public abstract class PluginEndPoint
 {
-    private readonly PluginsModule _pluginsModule;
+    private readonly PluginsHandler _pluginsHandler;
 
-    internal PluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule)
+    internal PluginEndPoint(PluginFeature pluginFeature, string name, PluginsHandler pluginsHandler)
     {
-        _pluginsModule = pluginsModule;
+        _pluginsHandler = pluginsHandler;
         PluginFeature = pluginFeature;
         Name = name;
 
@@ -33,7 +33,7 @@ public abstract class PluginEndPoint
     /// <summary>
     ///     Gets the full URL of the end point
     /// </summary>
-    public string Url => $"{_pluginsModule.ServerUrl?.TrimEnd('/')}{_pluginsModule.BaseRoute}{PluginFeature.Plugin.Guid}/{Name}";
+    public string Url => $"{_pluginsHandler.ServerUrl}{_pluginsHandler.BaseRoute}/{PluginFeature.Plugin.Guid}/{Name}";
 
     /// <summary>
     ///     Gets the plugin the end point is associated with
@@ -46,15 +46,15 @@ public abstract class PluginEndPoint
     /// </summary>
     public PluginInfo PluginInfo => PluginFeature.Plugin.Info;
 
-    /// <summary>
+    /// <summary><summary>
     ///     Gets the mime type of the input this end point accepts
     /// </summary>
-    public ContentType Accepts { get; protected set; }
+    public FlexibleContentType Accepts { get; protected set; }
 
     /// <summary>
     ///     Gets the mime type of the output this end point returns
     /// </summary>
-    public ContentType Returns { get; protected set; }
+    public FlexibleContentType Returns { get; protected set; }
 
     /// <summary>
     ///     Occurs whenever a request threw an unhandled exception
@@ -107,6 +107,13 @@ public abstract class PluginEndPoint
         try
         {
             OnProcessingRequest(context);
+            
+            if (!Equals(context.ContentType, Accepts))
+            {
+                OnRequestException(new Exception("Unsupported media type"));
+                return context.Respond().Status(ResponseStatus.UnsupportedMediaType).Build();
+            }
+
             IResponse response = await ProcessRequest(context);
             OnProcessedRequest(context);
             return response;
@@ -125,6 +132,6 @@ public abstract class PluginEndPoint
     private void OnDisabled(object? sender, EventArgs e)
     {
         PluginFeature.Disabled -= OnDisabled;
-        _pluginsModule.RemovePluginEndPoint(this);
+        _pluginsHandler.RemovePluginEndPoint(this);
     }
 }
