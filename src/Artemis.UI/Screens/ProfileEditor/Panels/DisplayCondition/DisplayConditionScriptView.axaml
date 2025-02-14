@@ -7,7 +7,7 @@
              x:Class="Artemis.UI.Screens.ProfileEditor.DisplayCondition.DisplayConditionScriptView"
              x:DataType="displayCondition:DisplayConditionScriptViewModel">
     <UserControl.Styles>
-        <Style Selector="ComboBox.condition-type /template/ ContentControl#ContentPresenter">
+        <Style Selector="ComboBox.condition-type /template/ ContentPresenter#ContentPresenter">
             <Setter Property="ContentTemplate">
                 <Setter.Value>
                     <DataTemplate DataType="{x:Type displayCondition:ConditionTypeViewModel}">
@@ -35,7 +35,13 @@
                             <TextBlock Text="{CompiledBinding Description}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" MaxWidth="350" />
                         </StackPanel>
                     </DataTemplate>
+
                 </ComboBox.ItemTemplate>
+                <ComboBox.SelectionBoxItemTemplate>
+                    <DataTemplate DataType="{x:Type displayCondition:ConditionTypeViewModel}">
+                        <TextBlock Text="{CompiledBinding Name}" TextWrapping="Wrap" MaxWidth="350" />
+                    </DataTemplate>
+                </ComboBox.SelectionBoxItemTemplate>
             </ComboBox>
             <ContentControl Grid.Row="2" Content="{CompiledBinding ConditionViewModel}" />
         </Grid>

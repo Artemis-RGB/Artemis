@@ -38,6 +38,14 @@
         <Setter Property="VerticalScrollBarVisibility" Value="Disabled"></Setter>
     </Style>
     
+    <!-- Workaround for https://github.com/amwx/FluentAvalonia/issues/648 -->
+    <Style Selector="controls|FontIcon">
+        <Setter Property="Width" Value="24" />
+    </Style>
+    <Style Selector="controls|SymbolIcon">
+        <Setter Property="Width" Value="24" />
+    </Style>
+    
     <Styles.Resources>
         <ResourceDictionary>
             <FontFamily x:Key="RobotoMono">avares://Artemis.UI/Assets/Fonts#Roboto Mono</FontFamily>

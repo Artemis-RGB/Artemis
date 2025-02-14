@@ -267,7 +267,7 @@
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
                             <StackPanel.Styles>
-                                <Style Selector="ComboBox.brush /template/ ContentControl#ContentPresenter">
+                                <Style Selector="ComboBox.brush /template/ ContentPresenter#ContentPresenter">
                                     <Setter Property="ContentTemplate">
                                         <Setter.Value>
                                             <DataTemplate DataType="{x:Type layerBrushes:LayerBrushDescriptor}">
