@@ -21,7 +21,7 @@ public class LinuxInputProvider : InputProvider
 
         foreach (LinuxInputDevice deviceDefinition in LinuxInputDeviceFinder.Find())
         {
-            LinuxInputDeviceReader? reader = new(deviceDefinition);
+            LinuxInputDeviceReader? reader = new(deviceDefinition, logger);
             reader.InputEvent += OnInputEvent;
             _readers.Add(reader);
         }
