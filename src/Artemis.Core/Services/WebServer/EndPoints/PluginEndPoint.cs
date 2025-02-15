@@ -1,20 +1,24 @@
 ﻿using System;
+using System.Net.Http;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using EmbedIO;
+using GenHTTP.Api.Protocol;
+using GenHTTP.Modules.Basics;
+using GenHTTP.Modules.IO;
+using StringContent = GenHTTP.Modules.IO.Strings.StringContent;
 
 namespace Artemis.Core.Services;
 
 /// <summary>
-///     Represents a base type for plugin end points to be targeted by the <see cref="PluginsModule" />
+///     Represents a base type for plugin end points to be targeted by the <see cref="PluginsHandler" />
 /// </summary>
 public abstract class PluginEndPoint
 {
-    private readonly PluginsModule _pluginsModule;
+    private readonly PluginsHandler _pluginsHandler;
 
-    internal PluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule)
+    internal PluginEndPoint(PluginFeature pluginFeature, string name, PluginsHandler pluginsHandler)
     {
-        _pluginsModule = pluginsModule;
+        _pluginsHandler = pluginsHandler;
         PluginFeature = pluginFeature;
         Name = name;
 
@@ -29,7 +33,7 @@ public abstract class PluginEndPoint
     /// <summary>
     ///     Gets the full URL of the end point
     /// </summary>
-    public string Url => $"{_pluginsModule.ServerUrl?.TrimEnd('/')}{_pluginsModule.BaseRoute}{PluginFeature.Plugin.Guid}/{Name}";
+    public string Url => $"{_pluginsHandler.ServerUrl}{_pluginsHandler.BaseRoute}/{PluginFeature.Plugin.Guid}/{Name}";
 
     /// <summary>
     ///     Gets the plugin the end point is associated with
@@ -42,15 +46,15 @@ public abstract class PluginEndPoint
     /// </summary>
     public PluginInfo PluginInfo => PluginFeature.Plugin.Info;
 
-    /// <summary>
+    /// <summary><summary>
     ///     Gets the mime type of the input this end point accepts
     /// </summary>
-    public string? Accepts { get; protected set; }
+    public FlexibleContentType Accepts { get; protected set; }
 
     /// <summary>
     ///     Gets the mime type of the output this end point returns
     /// </summary>
-    public string? Returns { get; protected set; }
+    public FlexibleContentType Returns { get; protected set; }
 
     /// <summary>
     ///     Occurs whenever a request threw an unhandled exception
@@ -70,8 +74,8 @@ public abstract class PluginEndPoint
     /// <summary>
     ///     Called whenever the end point has to process a request
     /// </summary>
-    /// <param name="context">The HTTP context of the request</param>
-    protected abstract Task ProcessRequest(IHttpContext context);
+    /// <param name="request">The HTTP context of the request</param>
+    protected abstract Task<IResponse> ProcessRequest(IRequest request);
 
     /// <summary>
     ///     Invokes the <see cref="RequestException" /> event
@@ -85,37 +89,49 @@ public abstract class PluginEndPoint
     /// <summary>
     ///     Invokes the <see cref="ProcessingRequest" /> event
     /// </summary>
-    protected virtual void OnProcessingRequest(IHttpContext context)
+    protected virtual void OnProcessingRequest(IRequest request)
     {
-        ProcessingRequest?.Invoke(this, new EndpointRequestEventArgs(context));
+        ProcessingRequest?.Invoke(this, new EndpointRequestEventArgs(request));
     }
 
     /// <summary>
     ///     Invokes the <see cref="ProcessedRequest" /> event
     /// </summary>
-    protected virtual void OnProcessedRequest(IHttpContext context)
+    protected virtual void OnProcessedRequest(IRequest request)
     {
-        ProcessedRequest?.Invoke(this, new EndpointRequestEventArgs(context));
+        ProcessedRequest?.Invoke(this, new EndpointRequestEventArgs(request));
     }
 
-    internal async Task InternalProcessRequest(IHttpContext context)
+    internal async Task<IResponse> InternalProcessRequest(IRequest context)
     {
         try
         {
             OnProcessingRequest(context);
-            await ProcessRequest(context);
+            
+            if (!Equals(context.ContentType, Accepts))
+            {
+                OnRequestException(new Exception("Unsupported media type"));
+                return context.Respond().Status(ResponseStatus.UnsupportedMediaType).Build();
+            }
+
+            IResponse response = await ProcessRequest(context);
             OnProcessedRequest(context);
+            return response;
         }
         catch (Exception e)
         {
             OnRequestException(e);
-            throw;
+            return context.Respond()
+                .Status(ResponseStatus.InternalServerError)
+                .Content(new StringContent(e.ToString()))
+                .Type(ContentType.TextPlain)
+                .Build();
         }
     }
 
     private void OnDisabled(object? sender, EventArgs e)
     {
         PluginFeature.Disabled -= OnDisabled;
-        _pluginsModule.RemovePluginEndPoint(this);
+        _pluginsHandler.RemovePluginEndPoint(this);
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using EmbedIO;
+using GenHTTP.Api.Protocol;
 
 namespace Artemis.Core.Services;
 
@@ -8,13 +8,13 @@ namespace Artemis.Core.Services;
 /// </summary>
 public class EndpointRequestEventArgs : EventArgs
 {
-    internal EndpointRequestEventArgs(IHttpContext context)
+    internal EndpointRequestEventArgs(IRequest request)
     {
-        Context = context;
+        Request = request;
     }
 
     /// <summary>
     ///     Gets the HTTP context of the request
     /// </summary>
-    public IHttpContext Context { get; }
+    public IRequest Request { get; }
 }

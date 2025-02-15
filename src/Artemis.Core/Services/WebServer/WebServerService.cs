@@ -2,14 +2,22 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using Artemis.Core.Modules;
-using EmbedIO;
-using EmbedIO.WebApi;
+using GenHTTP.Api.Infrastructure;
+using GenHTTP.Api.Protocol;
+using GenHTTP.Engine.Internal;
+using GenHTTP.Modules.Conversion;
+using GenHTTP.Modules.Conversion.Serializers;
+using GenHTTP.Modules.ErrorHandling;
+using GenHTTP.Modules.Layouting;
+using GenHTTP.Modules.Layouting.Provider;
+using GenHTTP.Modules.Practices;
+using GenHTTP.Modules.Security;
+using GenHTTP.Modules.Webservices;
 using Serilog;
 
 namespace Artemis.Core.Services;
@@ -19,19 +27,22 @@ internal class WebServerService : IWebServerService, IDisposable
     private readonly List<WebApiControllerRegistration> _controllers;
     private readonly ILogger _logger;
     private readonly ICoreService _coreService;
-    private readonly List<WebModuleRegistration> _modules;
     private readonly PluginSetting<bool> _webServerEnabledSetting;
     private readonly PluginSetting<int> _webServerPortSetting;
-    private readonly object _webserverLock = new();
-    private readonly JsonSerializerOptions _jsonOptions = new(CoreJson.GetJsonSerializerOptions()) {ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true};
-    private CancellationTokenSource? _cts;
+    private readonly SemaphoreSlim _webserverSemaphore = new(1, 1);
+
+    internal static readonly JsonSerializerOptions JsonOptions = new(CoreJson.GetJsonSerializerOptions())
+    {
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        WriteIndented = true,
+        Converters = {new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)}
+    };
 
     public WebServerService(ILogger logger, ICoreService coreService, ISettingsService settingsService, IPluginManagementService pluginManagementService)
     {
         _logger = logger;
         _coreService = coreService;
         _controllers = new List<WebApiControllerRegistration>();
-        _modules = new List<WebModuleRegistration>();
 
         _webServerEnabledSetting = settingsService.GetSetting("WebServer.Enabled", true);
         _webServerPortSetting = settingsService.GetSetting("WebServer.Port", 9696);
@@ -39,7 +50,7 @@ internal class WebServerService : IWebServerService, IDisposable
         _webServerPortSetting.SettingChanged += WebServerPortSettingOnSettingChanged;
         pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureDisabled;
 
-        PluginsModule = new PluginsModule("/plugins");
+        PluginsHandler = new PluginsHandler("plugins");
         if (coreService.IsInitialized)
             AutoStartWebServer();
         else
@@ -66,12 +77,12 @@ internal class WebServerService : IWebServerService, IDisposable
 
     private void WebServerEnabledSettingOnSettingChanged(object? sender, EventArgs e)
     {
-        StartWebServer();
+        _ = StartWebServer();
     }
 
     private void WebServerPortSettingOnSettingChanged(object? sender, EventArgs e)
     {
-        StartWebServer();
+        _ = StartWebServer();
     }
 
     private void PluginManagementServiceOnPluginFeatureDisabled(object? sender, PluginFeatureEventArgs e)
@@ -83,76 +94,64 @@ internal class WebServerService : IWebServerService, IDisposable
             _controllers.RemoveAll(c => c.Feature == e.PluginFeature);
         }
 
-        if (_modules.Any(m => m.Feature == e.PluginFeature))
-        {
-            mustRestart = true;
-            _modules.RemoveAll(m => m.Feature == e.PluginFeature);
-        }
-
         if (mustRestart)
-            StartWebServer();
+            _ = StartWebServer();
     }
 
     /// <inheritdoc />
     public void Dispose()
     {
-        Server?.Dispose();
+        Server?.DisposeAsync();
         _webServerPortSetting.SettingChanged -= WebServerPortSettingOnSettingChanged;
     }
 
-    public WebServer? Server { get; private set; }
-    public PluginsModule PluginsModule { get; }
+    public IServer? Server { get; private set; }
+    public PluginsHandler PluginsHandler { get; }
     public event EventHandler? WebServerStarting;
 
 
     #region Web server managament
 
-    private WebServer CreateWebServer()
+    private async Task<IServer> CreateWebServer()
     {
         if (Server != null)
         {
-            if (_cts != null)
-            {
-                _cts.Cancel();
-                _cts = null;
-            }
-
-            Server.Dispose();
+            await Server.DisposeAsync();
             OnWebServerStopped();
             Server = null;
         }
 
-        WebApiModule apiModule = new("/", SystemTextJsonSerializer);
-        PluginsModule.ServerUrl = $"http://localhost:{_webServerPortSetting.Value}/";
-        WebServer server = new WebServer(o => o.WithUrlPrefix($"http://*:{_webServerPortSetting.Value}/").WithMode(HttpListenerMode.EmbedIO))
-            .WithLocalSessionManager()
-            .WithModule(PluginsModule);
+        PluginsHandler.ServerUrl = $"http://localhost:{_webServerPortSetting.Value}/";
+        
+        LayoutBuilder serverLayout = Layout.Create()
+            .Add(PluginsHandler)
+            .Add(new StatusHandler())
+            .Add(CorsPolicy.Permissive());
 
-        // Add registered modules
-        foreach (WebModuleRegistration? webModule in _modules)
-            server = server.WithModule(webModule.CreateInstance());
-
-        server = server
-            .WithModule(apiModule)
-            .HandleHttpException((context, exception) => HandleHttpExceptionJson(context, exception))
-            .HandleUnhandledException(JsonExceptionHandlerCallback);
-
-        // Add registered controllers to the API module
+        // Add registered controllers to the API module as services.
+        // GenHTTP also has controllers but services are more flexible and match EmbedIO's approach more closely.
+        SerializationBuilder serialization = Serialization.Default(JsonOptions);
         foreach (WebApiControllerRegistration registration in _controllers)
-            apiModule.RegisterController(registration.ControllerType, (Func<WebApiController>) registration.UntypedFactory);
+        {
+            serverLayout = serverLayout.AddService(registration.Path, registration.Factory(), serializers: serialization);
+        }
 
-        // Listen for state changes.
-        server.StateChanged += (s, e) => _logger.Verbose("WebServer new state - {state}", e.NewState);
+        IServer server = Host.Create()
+            .Handler(serverLayout.Build())
+            .Bind(IPAddress.Loopback, (ushort) _webServerPortSetting.Value)
+            .Defaults()
+            .Build();
 
         // Store the URL in a webserver.txt file so that remote applications can find it
-        File.WriteAllText(Path.Combine(Constants.DataFolder, "webserver.txt"), PluginsModule.ServerUrl);
+        await File.WriteAllTextAsync(Path.Combine(Constants.DataFolder, "webserver.txt"), PluginsHandler.ServerUrl);
 
         return server;
     }
 
-    private void StartWebServer()
+    private async Task StartWebServer()
     {
-        lock (_webserverLock)
+        await _webserverSemaphore.WaitAsync();
+        try
         {
             // Don't create the webserver until after the core service is initialized, this avoids lots of useless re-creates during initialize
             if (!_coreService.IsInitialized)
@@ -161,7 +160,7 @@ internal class WebServerService : IWebServerService, IDisposable
             if (!_webServerEnabledSetting.Value)
                 return;
 
-            Server = CreateWebServer();
+            Server = await CreateWebServer();
 
             if (Constants.StartupArguments.Contains("--disable-webserver"))
             {
@@ -170,17 +169,29 @@ internal class WebServerService : IWebServerService, IDisposable
             }
 
             OnWebServerStarting();
-            _cts = new CancellationTokenSource();
-            Server.Start(_cts.Token);
+            try
+            {
+                await Server.StartAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "Failed to start webserver");
+                throw;
+            }
+
             OnWebServerStarted();
+        }
+        finally
+        {
+            _webserverSemaphore.Release();
         }
     }
 
-    private void AutoStartWebServer()
+    private async Task AutoStartWebServer()
     {
         try
         {
-            StartWebServer();
+            await StartWebServer();
         }
         catch (Exception exception)
         {
@@ -197,8 +208,8 @@ internal class WebServerService : IWebServerService, IDisposable
         if (feature == null) throw new ArgumentNullException(nameof(feature));
         if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
         if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-        JsonPluginEndPoint<T> endPoint = new(feature, endPointName, PluginsModule, requestHandler);
-        PluginsModule.AddPluginEndPoint(endPoint);
+        JsonPluginEndPoint<T> endPoint = new(feature, endPointName, PluginsHandler, requestHandler);
+        PluginsHandler.AddPluginEndPoint(endPoint);
         return endPoint;
     }
 
@@ -207,8 +218,8 @@ internal class WebServerService : IWebServerService, IDisposable
         if (feature == null) throw new ArgumentNullException(nameof(feature));
         if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
         if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-        JsonPluginEndPoint<T> endPoint = new(feature, endPointName, PluginsModule, requestHandler);
-        PluginsModule.AddPluginEndPoint(endPoint);
+        JsonPluginEndPoint<T> endPoint = new(feature, endPointName, PluginsHandler, requestHandler);
+        PluginsHandler.AddPluginEndPoint(endPoint);
         return endPoint;
     }
 
@@ -217,8 +228,8 @@ internal class WebServerService : IWebServerService, IDisposable
         if (feature == null) throw new ArgumentNullException(nameof(feature));
         if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
         if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-        StringPluginEndPoint endPoint = new(feature, endPointName, PluginsModule, requestHandler);
-        PluginsModule.AddPluginEndPoint(endPoint);
+        StringPluginEndPoint endPoint = new(feature, endPointName, PluginsHandler, requestHandler);
+        PluginsHandler.AddPluginEndPoint(endPoint);
         return endPoint;
     }
 
@@ -227,47 +238,37 @@ internal class WebServerService : IWebServerService, IDisposable
         if (feature == null) throw new ArgumentNullException(nameof(feature));
         if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
         if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-        StringPluginEndPoint endPoint = new(feature, endPointName, PluginsModule, requestHandler);
-        PluginsModule.AddPluginEndPoint(endPoint);
+        StringPluginEndPoint endPoint = new(feature, endPointName, PluginsHandler, requestHandler);
+        PluginsHandler.AddPluginEndPoint(endPoint);
         return endPoint;
     }
 
-    public RawPluginEndPoint AddRawEndPoint(PluginFeature feature, string endPointName, Func<IHttpContext, Task> requestHandler)
+    public RawPluginEndPoint AddRawEndPoint(PluginFeature feature, string endPointName, Func<IRequest, Task<IResponse>> requestHandler)
     {
         if (feature == null) throw new ArgumentNullException(nameof(feature));
         if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
         if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-        RawPluginEndPoint endPoint = new(feature, endPointName, PluginsModule, requestHandler);
-        PluginsModule.AddPluginEndPoint(endPoint);
-        return endPoint;
-    }
-
-    [Obsolete("Use AddJsonEndPoint<T>(PluginFeature feature, string endPointName, Action<T> requestHandler) instead")]
-    public DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(Module<T> module, string endPointName) where T : DataModel, new()
-    {
-        if (module == null) throw new ArgumentNullException(nameof(module));
-        if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
-        DataModelJsonPluginEndPoint<T> endPoint = new(module, endPointName, PluginsModule);
-        PluginsModule.AddPluginEndPoint(endPoint);
+        RawPluginEndPoint endPoint = new(feature, endPointName, PluginsHandler, requestHandler);
+        PluginsHandler.AddPluginEndPoint(endPoint);
         return endPoint;
     }
 
     public void RemovePluginEndPoint(PluginEndPoint endPoint)
     {
-        PluginsModule.RemovePluginEndPoint(endPoint);
+        PluginsHandler.RemovePluginEndPoint(endPoint);
     }
 
     #endregion
 
     #region Controller management
 
-    public WebApiControllerRegistration AddController<T>(PluginFeature feature) where T : WebApiController
+    public WebApiControllerRegistration AddController<T>(PluginFeature feature, string path) where T : class
     {
         if (feature == null) throw new ArgumentNullException(nameof(feature));
 
-        WebApiControllerRegistration<T> registration = new(this, feature);
+        WebApiControllerRegistration<T> registration = new(this, feature, path);
         _controllers.Add(registration);
-        StartWebServer();
+        _ = StartWebServer();
 
         return registration;
     }
@@ -275,75 +276,7 @@ internal class WebServerService : IWebServerService, IDisposable
     public void RemoveController(WebApiControllerRegistration registration)
     {
         _controllers.Remove(registration);
-        StartWebServer();
-    }
-
-    #endregion
-
-    #region Module management
-
-    public WebModuleRegistration AddModule(PluginFeature feature, Func<IWebModule> create)
-    {
-        if (feature == null) throw new ArgumentNullException(nameof(feature));
-
-        WebModuleRegistration registration = new(this, feature, create);
-        _modules.Add(registration);
-        StartWebServer();
-
-        return registration;
-    }
-
-    public WebModuleRegistration AddModule<T>(PluginFeature feature) where T : IWebModule
-    {
-        if (feature == null) throw new ArgumentNullException(nameof(feature));
-
-        WebModuleRegistration registration = new(this, feature, typeof(T));
-        _modules.Add(registration);
-        StartWebServer();
-
-        return registration;
-    }
-
-    public void RemoveModule(WebModuleRegistration registration)
-    {
-        _modules.Remove(registration);
-        StartWebServer();
-    }
-
-    #endregion
-
-    #region Handlers
-
-    private async Task JsonExceptionHandlerCallback(IHttpContext context, Exception exception)
-    {
-        context.Response.ContentType = MimeType.Json;
-        await using TextWriter writer = context.OpenResponseText();
-
-        string response = CoreJson.Serialize(new Dictionary<string, object?>
-        {
-            {"StatusCode", context.Response.StatusCode},
-            {"StackTrace", exception.StackTrace},
-            {"Type", exception.GetType().FullName},
-            {"Message", exception.Message},
-            {"Data", exception.Data},
-            {"InnerException", exception.InnerException},
-            {"HelpLink", exception.HelpLink},
-            {"Source", exception.Source},
-            {"HResult", exception.HResult}
-        });
-        await writer.WriteAsync(response);
-    }
-
-    private async Task SystemTextJsonSerializer(IHttpContext context, object? data)
-    {
-        context.Response.ContentType = MimeType.Json;
-        await using TextWriter writer = context.OpenResponseText();
-        await writer.WriteAsync(JsonSerializer.Serialize(data, _jsonOptions));
-    }
-
-    private async Task HandleHttpExceptionJson(IHttpContext context, IHttpException httpException)
-    {
-        await context.SendStringAsync(JsonSerializer.Serialize(httpException, _jsonOptions), MimeType.Json, Encoding.UTF8);
+        _ = StartWebServer();
     }
 
     #endregion

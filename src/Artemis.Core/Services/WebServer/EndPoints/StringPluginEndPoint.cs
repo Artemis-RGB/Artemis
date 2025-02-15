@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using EmbedIO;
+using GenHTTP.Api.Protocol;
+using GenHTTP.Modules.Basics;
+using GenHTTP.Modules.IO.Strings;
 
 namespace Artemis.Core.Services;
 
@@ -14,35 +16,37 @@ public class StringPluginEndPoint : PluginEndPoint
     private readonly Action<string>? _requestHandler;
     private readonly Func<string, string?>? _responseRequestHandler;
 
-    internal StringPluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule, Action<string> requestHandler) : base(pluginFeature, name, pluginsModule)
+    internal StringPluginEndPoint(PluginFeature pluginFeature, string name, PluginsHandler pluginsHandler, Action<string> requestHandler) : base(pluginFeature, name, pluginsHandler)
     {
         _requestHandler = requestHandler;
-        Accepts = MimeType.PlainText;
+        Accepts = FlexibleContentType.Get(ContentType.TextPlain);
     }
 
-    internal StringPluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule, Func<string, string?> requestHandler) : base(pluginFeature, name, pluginsModule)
+    internal StringPluginEndPoint(PluginFeature pluginFeature, string name, PluginsHandler pluginsHandler, Func<string, string?> requestHandler) : base(pluginFeature, name, pluginsHandler)
     {
         _responseRequestHandler = requestHandler;
-        Accepts = MimeType.PlainText;
-        Returns = MimeType.PlainText;
+        Accepts = FlexibleContentType.Get(ContentType.TextPlain);
+        Returns = FlexibleContentType.Get(ContentType.TextPlain);
     }
 
     #region Overrides of PluginEndPoint
 
     /// <inheritdoc />
-    protected override async Task ProcessRequest(IHttpContext context)
+    protected override async Task<IResponse> ProcessRequest(IRequest request)
     {
-        if (context.Request.HttpVerb != HttpVerbs.Post && context.Request.HttpVerb != HttpVerbs.Put)
-            throw HttpException.MethodNotAllowed("This end point only accepts POST and PUT calls");
+        if (request.Method != RequestMethod.Post && request.Method != RequestMethod.Put)
+            return request.Respond().Status(ResponseStatus.MethodNotAllowed).Build();
 
-        context.Response.ContentType = MimeType.PlainText;
+        if (request.Content == null)
+            return request.Respond().Status(ResponseStatus.BadRequest).Build();
 
-        using TextReader reader = context.OpenRequestText();
+        // Read the request as a string
+        using StreamReader reader = new(request.Content);
         string? response;
         if (_requestHandler != null)
         {
             _requestHandler(await reader.ReadToEndAsync());
-            return;
+            return request.Respond().Status(ResponseStatus.Ok).Build();
         }
 
         if (_responseRequestHandler != null)
@@ -50,8 +54,13 @@ public class StringPluginEndPoint : PluginEndPoint
         else
             throw new ArtemisCoreException("String plugin end point has no request handler");
 
-        await using TextWriter writer = context.OpenResponseText();
-        await writer.WriteAsync(response);
+        if (response == null)
+            return request.Respond().Status(ResponseStatus.NoContent).Build();
+        return request.Respond()
+            .Status(ResponseStatus.Ok)
+            .Content(new StringContent(response))
+            .Type(ContentType.TextPlain)
+            .Build();
     }
 
     #endregion
