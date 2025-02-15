@@ -28,6 +28,7 @@ public class RemoteController
     public void BringToForeground(IRequest request)
     {
         // Get the route from the request content stream
+        // TODO: Use [FromBody] attribute instead once GenHTTP allows omitting null values
         string? route = null;
         if (request.Content != null)
         {

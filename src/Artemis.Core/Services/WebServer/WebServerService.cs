@@ -125,6 +125,7 @@ internal class WebServerService : IWebServerService, IDisposable
         
         LayoutBuilder serverLayout = Layout.Create()
             .Add(PluginsHandler)
+            .Add(new StatusHandler())
             .Add(CorsPolicy.Permissive());
 
         // Add registered controllers to the API module as services.
