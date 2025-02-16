@@ -167,6 +167,7 @@ public class GeneralTabViewModel : RoutableScreen
     public PluginSetting<double> CoreRenderScale => _settingsService.GetSetting("Core.RenderScale", 0.5);
     public PluginSetting<int> CoreTargetFrameRate => _settingsService.GetSetting("Core.TargetFrameRate", 30);
     public PluginSetting<bool> WebServerEnabled => _settingsService.GetSetting("WebServer.Enabled", true);
+    public PluginSetting<bool> WebServerRemoteAccess => _settingsService.GetSetting("WebServer.RemoteAccess", false);
     public PluginSetting<int> WebServerPort => _settingsService.GetSetting("WebServer.Port", 9696);
 
     private void ExecuteShowLogs()

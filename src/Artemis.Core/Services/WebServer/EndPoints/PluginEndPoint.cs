@@ -33,7 +33,7 @@ public abstract class PluginEndPoint
     /// <summary>
     ///     Gets the full URL of the end point
     /// </summary>
-    public string Url => $"{_pluginsHandler.ServerUrl}{_pluginsHandler.BaseRoute}/{PluginFeature.Plugin.Guid}/{Name}";
+    public string Url => $"/{_pluginsHandler.BaseRoute}/{PluginFeature.Plugin.Guid}/{Name}";
 
     /// <summary>
     ///     Gets the plugin the end point is associated with

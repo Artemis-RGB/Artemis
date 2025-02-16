@@ -96,9 +96,7 @@ public class PluginsHandler : IHandler
     }
 
     #region Overrides of WebModuleBase
-
-    internal string? ServerUrl { get; set; }
-
+    
     /// <summary>
     ///     Gets a read only collection containing all current plugin end points
     /// </summary>

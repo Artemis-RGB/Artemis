@@ -145,6 +145,22 @@
                         </StackPanel>
                     </Grid>
                     <Border Classes="card-separator" />
+                    
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0">
+                            <TextBlock>Enable remote access</TextBlock>
+                            <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                By default the web server can only be accessed by applications running on your own computer, e.g. supported games. 
+                            </TextBlock>
+                            <TextBlock Classes="subtitle warning" TextWrapping="Wrap">
+                                Enabling remote access allows you to access Artemis from other devices on your network, depending on your router even the outside world. 
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <ToggleSwitch IsChecked="{CompiledBinding WebServerRemoteAccess.Value}" OnContent="Yes" OffContent="No" MinWidth="0" Margin="0 -10" />
+                        </StackPanel>
+                    </Grid>
+                    <Border Classes="card-separator" />
 
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Column="0">

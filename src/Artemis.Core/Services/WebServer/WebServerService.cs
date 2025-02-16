@@ -28,6 +28,7 @@ internal class WebServerService : IWebServerService, IDisposable
     private readonly ILogger _logger;
     private readonly ICoreService _coreService;
     private readonly PluginSetting<bool> _webServerEnabledSetting;
+    private readonly PluginSetting<bool> _webServerRemoteAccessSetting;
     private readonly PluginSetting<int> _webServerPortSetting;
     private readonly SemaphoreSlim _webserverSemaphore = new(1, 1);
 
@@ -45,9 +46,11 @@ internal class WebServerService : IWebServerService, IDisposable
         _controllers = new List<WebApiControllerRegistration>();
 
         _webServerEnabledSetting = settingsService.GetSetting("WebServer.Enabled", true);
+        _webServerRemoteAccessSetting = settingsService.GetSetting("WebServer.RemoteAccess", false);
         _webServerPortSetting = settingsService.GetSetting("WebServer.Port", 9696);
-        _webServerEnabledSetting.SettingChanged += WebServerEnabledSettingOnSettingChanged;
-        _webServerPortSetting.SettingChanged += WebServerPortSettingOnSettingChanged;
+        _webServerEnabledSetting.SettingChanged += WebServerSettingsOnSettingChanged;
+        _webServerRemoteAccessSetting.SettingChanged += WebServerSettingsOnSettingChanged;
+        _webServerPortSetting.SettingChanged += WebServerSettingsOnSettingChanged;
         pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureDisabled;
 
         PluginsHandler = new PluginsHandler("plugins");
@@ -75,12 +78,7 @@ internal class WebServerService : IWebServerService, IDisposable
         WebServerStarted?.Invoke(this, EventArgs.Empty);
     }
 
-    private void WebServerEnabledSettingOnSettingChanged(object? sender, EventArgs e)
-    {
-        _ = StartWebServer();
-    }
-
-    private void WebServerPortSettingOnSettingChanged(object? sender, EventArgs e)
+    private void WebServerSettingsOnSettingChanged(object? sender, EventArgs e)
     {
         _ = StartWebServer();
     }
@@ -102,7 +100,6 @@ internal class WebServerService : IWebServerService, IDisposable
     public void Dispose()
     {
         Server?.DisposeAsync();
-        _webServerPortSetting.SettingChanged -= WebServerPortSettingOnSettingChanged;
     }
 
     public IServer? Server { get; private set; }
@@ -120,8 +117,6 @@ internal class WebServerService : IWebServerService, IDisposable
             OnWebServerStopped();
             Server = null;
         }
-
-        PluginsHandler.ServerUrl = $"http://localhost:{_webServerPortSetting.Value}/";
         
         LayoutBuilder serverLayout = Layout.Create()
             .Add(PluginsHandler)
@@ -138,12 +133,12 @@ internal class WebServerService : IWebServerService, IDisposable
 
         IServer server = Host.Create()
             .Handler(serverLayout.Build())
-            .Bind(IPAddress.Loopback, (ushort) _webServerPortSetting.Value)
+            .Bind(_webServerRemoteAccessSetting.Value ? IPAddress.Any : IPAddress.Loopback, (ushort) _webServerPortSetting.Value)
             .Defaults()
             .Build();
 
         // Store the URL in a webserver.txt file so that remote applications can find it
-        await File.WriteAllTextAsync(Path.Combine(Constants.DataFolder, "webserver.txt"), PluginsHandler.ServerUrl);
+        await File.WriteAllTextAsync(Path.Combine(Constants.DataFolder, "webserver.txt"), $"http://localhost:{_webServerPortSetting.Value}/");
 
         return server;
     }
