@@ -33,7 +33,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="plugins:PluginSettingsViewModel">
-                        <ContentControl Content="{CompiledBinding}" Height="200" />
+                        <ContentControl Content="{CompiledBinding}" MinHeight="200" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
