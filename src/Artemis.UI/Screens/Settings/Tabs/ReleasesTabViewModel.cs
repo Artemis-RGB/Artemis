@@ -62,7 +62,7 @@ public partial class ReleasesTabViewModel : RoutableHostScreen<ReleaseDetailsVie
 
     public ReadOnlyObservableCollection<ReleaseViewModel> ReleaseViewModels { get; }
     public string Channel { get; }
-    
+
     public async Task GetReleases(CancellationToken cancellationToken)
     {
         try
@@ -97,7 +97,7 @@ public partial class ReleasesTabViewModel : RoutableHostScreen<ReleaseDetailsVie
             Loading = false;
         }
     }
-    
+
     /// <inheritdoc />
     public override async Task OnNavigating(NavigationArguments args, CancellationToken cancellationToken)
     {
@@ -109,10 +109,6 @@ public partial class ReleasesTabViewModel : RoutableHostScreen<ReleaseDetailsVie
             SelectedReleaseViewModel = ReleaseViewModels.FirstOrDefault(vm => vm.Release.Id == releaseId);
         // Otherwise forward to the last release
         else
-        {
-            ReleaseViewModel? lastRelease = ReleaseViewModels.FirstOrDefault(r => r.IsCurrentVersion) ?? ReleaseViewModels.FirstOrDefault();
-            if (lastRelease != null)
-                await _router.Navigate($"settings/releases/{lastRelease.Release.Id}");
-        }
+            SelectedReleaseViewModel = ReleaseViewModels.FirstOrDefault(r => r.IsCurrentVersion) ?? ReleaseViewModels.FirstOrDefault();
     }
 }
