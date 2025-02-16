@@ -155,19 +155,30 @@ public class PluginInfo : IPrerequisitesSubject
     {
         return PlatformPrerequisites.All(p => p.IsMet());
     }
-    
+
     /// <inheritdoc />
     public override string ToString()
     {
         return $"{Name} v{Version} - {Guid}";
     }
-    
+
     private bool MatchesMinimumVersion()
     {
         if (Constants.CurrentVersion == "local")
             return true;
-        
+
         Version currentVersion = new(Constants.CurrentVersion);
         return currentVersion >= MinimumVersion;
+    }
+
+    /// <summary>
+    ///     Returns a boolean indicating whether this plugin info matches the provided search string
+    /// </summary>
+    /// <param name="search">The search string to match</param>
+    /// <returns>A boolean indicating whether this plugin info matches the provided search string</returns>
+    public bool MatchesSearch(string search)
+    {
+        return Name.Contains(search, StringComparison.InvariantCultureIgnoreCase) ||
+               (Description != null && Description.Contains(search, StringComparison.InvariantCultureIgnoreCase));
     }
 }

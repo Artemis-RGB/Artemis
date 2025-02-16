@@ -112,8 +112,7 @@ public partial class PluginsTabViewModel : RoutableScreen
         if (string.IsNullOrWhiteSpace(text))
             return _ => true;
 
-        return data => data.Info.Name.Contains(text, StringComparison.InvariantCultureIgnoreCase) ||
-                       (data.Info.Description != null && data.Info.Description.Contains(text, StringComparison.InvariantCultureIgnoreCase));
+        return data => data.Info.MatchesSearch(text) || data.Features.Any(f => f.MatchesSearch(text));
     }
 
     public async Task GetMorePlugins()

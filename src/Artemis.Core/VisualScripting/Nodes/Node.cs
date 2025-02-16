@@ -92,6 +92,9 @@ public abstract class Node : BreakableModel, INode
     /// <inheritdoc />
     public virtual bool IsDefaultNode => false;
 
+    /// <inheritdoc />
+    public bool IsLoading { get; set; }
+
     private readonly List<IPin> _pins = new();
 
     /// <inheritdoc />

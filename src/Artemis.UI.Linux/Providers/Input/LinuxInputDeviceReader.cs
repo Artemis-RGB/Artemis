@@ -1,20 +1,24 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Artemis.UI.Linux.Providers.Input;
 
 internal class LinuxInputDeviceReader
 {
+    private readonly ILogger _logger;
     private readonly byte[] _buffer;
     private readonly CancellationTokenSource _cts;
     private readonly FileStream _stream;
     private readonly Task _task;
 
-    public LinuxInputDeviceReader(LinuxInputDevice inputDevice)
+    public LinuxInputDeviceReader(LinuxInputDevice inputDevice, ILogger logger)
     {
+        _logger = logger;
         InputDevice = inputDevice;
 
         _buffer = new byte[Marshal.SizeOf<LinuxInputEventArgs>()];
@@ -50,9 +54,10 @@ internal class LinuxInputDeviceReader
 
                 InputEvent?.Invoke(this, MemoryMarshal.Read<LinuxInputEventArgs>(_buffer));
             }
-            catch
+            catch(Exception e)
             {
-                // ignored
+                _logger.Error("Error reading device input from {fileName}. Did you unplug a device? Stopping reader. {e}", InputDevice.EventPath, e);
+                return;
             }
         }
     }

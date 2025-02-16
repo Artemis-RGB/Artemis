@@ -10,7 +10,7 @@
              x:DataType="propertyInput:BrushPropertyInputViewModel">
 
 	<UserControl.Styles>
-		<Style Selector="ComboBox.brush /template/ ContentControl#ContentPresenter">
+		<Style Selector="ComboBox.brush /template/ ContentPresenter#ContentPresenter">
 			<Setter Property="ContentTemplate">
 				<Setter.Value>
 					<DataTemplate DataType="{x:Type layerBrushes:LayerBrushDescriptor}">

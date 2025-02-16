@@ -46,6 +46,7 @@ public class NodeData
         
         if (entity != null)
         {
+            node.IsLoading = true;
             node.X = entity.X;
             node.Y = entity.Y;
             try

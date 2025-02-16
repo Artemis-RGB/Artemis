@@ -17,7 +17,7 @@
             </StackPanel>
             <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Spacing="5">
                 <StackPanel.Styles>
-                    <Style Selector="ComboBox.layoutProvider /template/ ContentControl#ContentPresenter">
+                    <Style Selector="ComboBox.layoutProvider /template/ ContentPresenter#ContentPresenter">
                         <Setter Property="ContentTemplate">
                             <Setter.Value>
                                 <DataTemplate x:DataType="models:InstalledEntry">

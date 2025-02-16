@@ -39,6 +39,11 @@ public interface INode : INotifyPropertyChanged, IBreakableModel, IPluginFeature
     ///     Gets a boolean indicating whether the node is a default node that connot be removed
     /// </summary>
     bool IsDefaultNode { get; }
+    
+    /// <summary>
+    ///     Gets a boolean indicating whether the node is currently loading, use this to disable pin type changes etc.
+    /// </summary>
+    bool IsLoading { get; set; }
 
     /// <summary>
     ///     Gets or sets the X-position of the node

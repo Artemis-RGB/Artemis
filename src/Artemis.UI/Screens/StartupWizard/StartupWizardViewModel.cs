@@ -1,5 +1,6 @@
 ﻿using System;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Screens.StartupWizard.Steps;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
@@ -11,11 +12,13 @@ namespace Artemis.UI.Screens.StartupWizard;
 public partial class StartupWizardViewModel : DialogViewModelBase<bool>
 {
     private readonly IContainer _container;
+    private readonly ISettingsService _settingsService;
     [Notify] private WizardStepViewModel _screen;
 
-    public StartupWizardViewModel(IContainer container, IWindowService windowService)
+    public StartupWizardViewModel(IContainer container, IWindowService windowService, ISettingsService settingsService)
     {
         _container = container;
+        _settingsService = settingsService;
         _screen = _container.Resolve<WelcomeStepViewModel>();
         _screen.Wizard = this;
 
@@ -41,6 +44,10 @@ public partial class StartupWizardViewModel : DialogViewModelBase<bool>
 
     public void SkipOrFinishWizard()
     {
+        PluginSetting<bool> setting = _settingsService.GetSetting("UI.SetupWizardCompleted", false);
+        setting.Value = true;
+        setting.Save();
+        
         Close(true);
     }
 }

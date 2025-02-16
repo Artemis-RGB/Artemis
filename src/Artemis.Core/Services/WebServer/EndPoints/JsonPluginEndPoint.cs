@@ -1,8 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using EmbedIO;
+using GenHTTP.Api.Protocol;
+using GenHTTP.Modules.Basics;
+using GenHTTP.Modules.Conversion.Serializers.Json;
 
 namespace Artemis.Core.Services;
 
@@ -16,19 +17,19 @@ public class JsonPluginEndPoint<T> : PluginEndPoint
     private readonly Action<T>? _requestHandler;
     private readonly Func<T, object?>? _responseRequestHandler;
 
-    internal JsonPluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule, Action<T> requestHandler) : base(pluginFeature, name, pluginsModule)
+    internal JsonPluginEndPoint(PluginFeature pluginFeature, string name, PluginsHandler pluginsHandler, Action<T> requestHandler) : base(pluginFeature, name, pluginsHandler)
     {
         _requestHandler = requestHandler;
         ThrowOnFail = true;
-        Accepts = MimeType.Json;
+        Accepts = FlexibleContentType.Get(ContentType.ApplicationJson);
     }
 
-    internal JsonPluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule, Func<T, object?> responseRequestHandler) : base(pluginFeature, name, pluginsModule)
+    internal JsonPluginEndPoint(PluginFeature pluginFeature, string name, PluginsHandler pluginsHandler, Func<T, object?> responseRequestHandler) : base(pluginFeature, name, pluginsHandler)
     {
         _responseRequestHandler = responseRequestHandler;
         ThrowOnFail = true;
-        Accepts = MimeType.Json;
-        Returns = MimeType.Json;
+        Accepts = FlexibleContentType.Get(ContentType.ApplicationJson);
+        Returns = FlexibleContentType.Get(ContentType.ApplicationJson);
     }
 
     /// <summary>
@@ -41,25 +42,25 @@ public class JsonPluginEndPoint<T> : PluginEndPoint
     #region Overrides of PluginEndPoint
 
     /// <inheritdoc />
-    protected override async Task ProcessRequest(IHttpContext context)
+    protected override async Task<IResponse> ProcessRequest(IRequest request)
     {
-        if (context.Request.HttpVerb != HttpVerbs.Post && context.Request.HttpVerb != HttpVerbs.Put)
-            throw HttpException.MethodNotAllowed("This end point only accepts POST and PUT calls");
+        if (request.Method != RequestMethod.Post && request.Method != RequestMethod.Put)
+            return request.Respond().Status(ResponseStatus.MethodNotAllowed).Build();
 
-        context.Response.ContentType = MimeType.Json;
+        if (request.Content == null)
+            return request.Respond().Status(ResponseStatus.BadRequest).Build();
 
-        using TextReader reader = context.OpenRequestText();
         object? response = null;
         try
         {
-            T? deserialized = JsonSerializer.Deserialize<T>(await reader.ReadToEndAsync());
+            T? deserialized = await JsonSerializer.DeserializeAsync<T>(request.Content, WebServerService.JsonOptions);
             if (deserialized == null)
                 throw new JsonException("Deserialization returned null");
 
             if (_requestHandler != null)
             {
                 _requestHandler(deserialized);
-                return;
+                return request.Respond().Status(ResponseStatus.NoContent).Build();
             }
 
             if (_responseRequestHandler != null)
@@ -73,8 +74,14 @@ public class JsonPluginEndPoint<T> : PluginEndPoint
                 throw;
         }
 
-        await using TextWriter writer = context.OpenResponseText();
-        await writer.WriteAsync(JsonSerializer.Serialize(response));
+        // TODO: Cache options
+        if (response == null)
+            return request.Respond().Status(ResponseStatus.NoContent).Build();
+        return request.Respond()
+            .Status(ResponseStatus.Ok)
+            .Content(new JsonContent(response, WebServerService.JsonOptions))
+            .Type(ContentType.ApplicationJson)
+            .Build();
     }
 
     #endregion

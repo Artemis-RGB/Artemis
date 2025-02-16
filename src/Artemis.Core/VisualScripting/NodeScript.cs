@@ -206,6 +206,8 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
         }
 
         LoadConnections();
+        foreach (INode node in Nodes)
+            node.IsLoading = false;
     }
 
     internal void LoadFromEntity(NodeScriptEntity entity)
@@ -216,6 +218,7 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
 
     private void LoadExistingNode(INode node, NodeEntity nodeEntity)
     {
+        node.IsLoading = true;
         node.Id = nodeEntity.Id;
         node.X = nodeEntity.X;
         node.Y = nodeEntity.Y;

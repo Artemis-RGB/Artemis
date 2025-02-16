@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Routing;
@@ -42,14 +43,11 @@ public partial class SettingsViewModel : RoutableHostScreen<RoutableScreen>, IMa
     public ViewModelBase? TitleBarViewModel => null;
     
     /// <inheritdoc />
-    public override async Task OnNavigating(NavigationArguments args, CancellationToken cancellationToken)
+    public override Task OnNavigating(NavigationArguments args, CancellationToken cancellationToken)
     {
-        // Display tab change on navigate
-        SelectedTab = SettingTabs.FirstOrDefault(t => t.Matches(args.Path));
-        
-        // Always show a tab, if there is none forward to the first
-        if (SelectedTab == null)
-            await _router.Navigate(SettingTabs.First().Path);
+        // Display tab change on navigate, if there is none forward to the first
+        SelectedTab = SettingTabs.FirstOrDefault(t => t.Matches(args.Path)) ?? SettingTabs.FirstOrDefault();
+        return Task.CompletedTask;
     }
 
     public void GoBack()
