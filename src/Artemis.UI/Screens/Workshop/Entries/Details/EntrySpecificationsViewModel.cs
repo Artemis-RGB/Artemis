@@ -11,6 +11,7 @@ using Artemis.UI.Screens.Workshop.Categories;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
+using Artemis.WebClient.Workshop.Services;
 using Avalonia.Media.Imaging;
 using AvaloniaEdit.Document;
 using DynamicData;
@@ -34,10 +35,11 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
     [Notify] private string _name = string.Empty;
     [Notify] private string _summary = string.Empty;
     [Notify] private string _description = string.Empty;
+    [Notify] private bool _isDefault;
     [Notify] private Bitmap? _iconBitmap;
     [Notify(Setter.Private)] private bool _iconChanged;
 
-    public EntrySpecificationsViewModel(IWorkshopClient workshopClient, IWindowService windowService)
+    public EntrySpecificationsViewModel(IWorkshopClient workshopClient, IWindowService windowService, IAuthenticationService authenticationService)
     {
         _workshopClient = workshopClient;
         _windowService = windowService;
@@ -65,8 +67,9 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
         _descriptionValid = descriptionRule.ValidationChanged.Select(c => c.IsValid).ToProperty(this, vm => vm.DescriptionValid);
 
         this.WhenActivatedAsync(async _ => await PopulateCategories());
+        IsAdministrator = authenticationService.GetRoles().Contains("Administrator");
     }
-
+    
     public ReactiveCommand<Unit, Unit> SelectIcon { get; }
 
     public ObservableCollection<CategoryViewModel> Categories { get; } = new();
@@ -76,7 +79,8 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
     public bool CategoriesValid => _categoriesValid.Value ;
     public bool IconValid => _iconValid.Value;
     public bool DescriptionValid => _descriptionValid.Value;
-
+    public bool IsAdministrator { get; }
+    
     public List<long> PreselectedCategories { get; set; } = new();
     
     private async Task ExecuteSelectIcon()

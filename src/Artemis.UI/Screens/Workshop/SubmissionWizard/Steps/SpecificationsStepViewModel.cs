@@ -65,6 +65,7 @@ public partial class SpecificationsStepViewModel : SubmissionViewModel
         viewModel.Name = State.Name;
         viewModel.Summary = State.Summary;
         viewModel.Description = State.Description;
+        viewModel.IsDefault = State.IsDefault;
 
         // Tags
         viewModel.Tags.Clear();
@@ -93,6 +94,7 @@ public partial class SpecificationsStepViewModel : SubmissionViewModel
         State.Name = EntrySpecificationsViewModel.Name;
         State.Summary = EntrySpecificationsViewModel.Summary;
         State.Description = EntrySpecificationsViewModel.Description;
+        State.IsDefault = EntrySpecificationsViewModel.IsDefault;
 
         // Categories and tasks
         State.Categories = EntrySpecificationsViewModel.Categories.Where(c => c.IsSelected).Select(c => c.Id).ToList();

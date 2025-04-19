@@ -283,6 +283,12 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
         return emailVerified?.Value.ToLower() == "true";
     }
 
+    /// <inheritdoc />
+    public List<string> GetRoles()
+    {
+        return Claims.Where(c => c.Type == JwtClaimTypes.Role).Select(c => c.Value).ToList();
+    }
+
     private async Task<bool> InternalAutoLogin(bool force = false)
     {
         if (!force && _isLoggedInSubject.Value)

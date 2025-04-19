@@ -63,6 +63,8 @@
 
                     <Label Target="Summary" Margin="0 5 0 0">Summary</Label>
                     <TextBox Name="Summary" Text="{CompiledBinding Summary}"></TextBox>
+                    
+                    <CheckBox IsVisible="{CompiledBinding IsAdministrator}" IsChecked="{CompiledBinding IsDefault}">Download by default (admin only)</CheckBox>
                 </StackPanel>
             </Grid>
 

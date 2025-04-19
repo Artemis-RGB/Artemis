@@ -26,6 +26,10 @@ fragment submittedEntry on Entry {
     entryType
     downloads
     createdAt
+    isDefault
+    latestRelease {
+        ...release
+    }
 }
 
 fragment entrySummary on Entry {
@@ -38,6 +42,9 @@ fragment entrySummary on Entry {
     downloads
     createdAt
     latestReleaseId
+    latestRelease {
+        ...release
+    }
     categories {
         ...category
     }

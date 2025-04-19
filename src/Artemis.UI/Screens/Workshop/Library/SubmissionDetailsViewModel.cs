@@ -59,7 +59,7 @@ public partial class SubmissionDetailsViewModel : RoutableScreen
         DiscardChanges = ReactiveCommand.CreateFromTask(ExecuteDiscardChanges, this.WhenAnyValue(vm => vm.HasChanges));
         SaveChanges = ReactiveCommand.CreateFromTask(ExecuteSaveChanges, this.WhenAnyValue(vm => vm.HasChanges));
     }
-    
+
     public ObservableCollection<ImageSubmissionViewModel> Images { get; } = new();
     public ReactiveCommand<Unit, Unit> AddImage { get; }
     public ReactiveCommand<Unit, Unit> SaveChanges { get; }
@@ -105,6 +105,7 @@ public partial class SubmissionDetailsViewModel : RoutableScreen
         specificationsViewModel.Name = Entry.Name;
         specificationsViewModel.Summary = Entry.Summary;
         specificationsViewModel.Description = Entry.Description;
+        specificationsViewModel.IsDefault = Entry.IsDefault;
         specificationsViewModel.PreselectedCategories = Entry.Categories.Select(c => c.Id).ToList();
 
         specificationsViewModel.Tags.Clear();
@@ -169,6 +170,7 @@ public partial class SubmissionDetailsViewModel : RoutableScreen
         HasChanges = EntrySpecificationsViewModel.Name != Entry.Name ||
                      EntrySpecificationsViewModel.Description != Entry.Description ||
                      EntrySpecificationsViewModel.Summary != Entry.Summary ||
+                     EntrySpecificationsViewModel.IsDefault != Entry.IsDefault ||
                      EntrySpecificationsViewModel.IconChanged ||
                      !tags.SequenceEqual(Entry.Tags.Select(t => t.Name).OrderBy(t => t)) ||
                      !categories.SequenceEqual(Entry.Categories.Select(c => c.Id).OrderBy(c => c)) ||
@@ -192,6 +194,7 @@ public partial class SubmissionDetailsViewModel : RoutableScreen
             Name = EntrySpecificationsViewModel.Name,
             Summary = EntrySpecificationsViewModel.Summary,
             Description = EntrySpecificationsViewModel.Description,
+            IsDefault = EntrySpecificationsViewModel.IsDefault,
             Categories = EntrySpecificationsViewModel.SelectedCategories,
             Tags = EntrySpecificationsViewModel.Tags
         };
@@ -233,7 +236,7 @@ public partial class SubmissionDetailsViewModel : RoutableScreen
         HasChanges = false;
         await _router.Reload();
     }
-    
+
     private async Task ExecuteAddImage(CancellationToken arg)
     {
         string[]? result = await _windowService.CreateOpenFileDialog().WithAllowMultiple().HavingFilter(f => f.WithBitmaps()).ShowAsync();
