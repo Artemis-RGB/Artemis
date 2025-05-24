@@ -5,66 +5,66 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AsyncImageLoader.Avalonia" Version="3.3.0" />
-    <PackageVersion Include="Avalonia" Version="11.2.3" />
-    <PackageVersion Include="Avalonia.AvaloniaEdit" Version="11.1.0" />
+    <PackageVersion Include="Avalonia" Version="11.3.0" />
+    <PackageVersion Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
     <PackageVersion Include="Avalonia.Controls.ItemsRepeater" Version="11.1.5" />
-    <PackageVersion Include="Avalonia.Controls.PanAndZoom" Version="11.2.0" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.2.3" />
+    <PackageVersion Include="Avalonia.Controls.PanAndZoom" Version="11.3.0" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.3.0" />
     <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.9" />
-    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.2.3" />
+    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.0" />
     <PackageVersion Include="Avalonia.Skia.Lottie" Version="11.0.0" />
-    <PackageVersion Include="Avalonia.Win32" Version="11.2.3" />
-    <PackageVersion Include="GenHTTP.Core" Version="9.6.2" />
-    <PackageVersion Include="GenHTTP.Modules.Webservices" Version="9.6.2" />
+    <PackageVersion Include="Avalonia.Win32" Version="11.3.0" />
+    <PackageVersion Include="GenHTTP.Core" Version="9.7.0" />
+    <PackageVersion Include="GenHTTP.Modules.Webservices" Version="9.7.0" />
     <PackageVersion Include="HPPH.SkiaSharp" Version="1.0.0" />
-    <PackageVersion Include="Microsoft.Win32.SystemEvents" Version="9.0.1" />
-    <PackageVersion Include="Avalonia.Xaml.Behaviors" Version="11.2.0.8" />
-    <PackageVersion Include="AvaloniaEdit.TextMate" Version="11.1.0" />
+    <PackageVersion Include="Microsoft.Win32.SystemEvents" Version="9.0.5" />
+    <PackageVersion Include="Avalonia.Xaml.Behaviors" Version="11.3.0.6" />
+    <PackageVersion Include="AvaloniaEdit.TextMate" Version="11.3.0" />
     <PackageVersion Include="DryIoc.Microsoft.DependencyInjection" Version="6.2.0" />
     <PackageVersion Include="DryIoc.dll" Version="5.4.3" />
-    <PackageVersion Include="DynamicData" Version="9.1.1" />
+    <PackageVersion Include="DynamicData" Version="9.3.2" />
     <PackageVersion Include="FluentAvalonia.ProgressRing" Version="1.69.2" />
-    <PackageVersion Include="FluentAvaloniaUI" Version="2.2.0" />
+    <PackageVersion Include="FluentAvaloniaUI" Version="2.3.0" />
     <PackageVersion Include="HidSharp" Version="2.1.0" />
     <PackageVersion Include="Humanizer.Core" Version="2.14.1" />
     <PackageVersion Include="IdentityModel" Version="7.0.0" />
     <PackageVersion Include="JetBrains.Annotations" Version="2024.3.0" />
     <PackageVersion Include="LiteDB" Version="5.0.21" />
     <PackageVersion Include="Markdown.Avalonia.Tight" Version="11.0.2" />
-    <PackageVersion Include="Material.Icons.Avalonia" Version="2.2.0" />
+    <PackageVersion Include="Material.Icons.Avalonia" Version="2.4.1" />
     <PackageVersion Include="McMaster.NETCore.Plugins" Version="2.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.1" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.1">
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.Http" Version="9.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="9.0.5" />
     <PackageVersion Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
     <PackageVersion Include="Microsoft.Win32" Version="2.0.1" />
-    <PackageVersion Include="Microsoft.Windows.Compatibility" Version="9.0.1" />
+    <PackageVersion Include="Microsoft.Windows.Compatibility" Version="9.0.5" />
     <PackageVersion Include="NoStringEvaluating" Version="2.5.2" />
-    <PackageVersion Include="Octopus.Octodiff" Version="2.0.548" />
+    <PackageVersion Include="Octopus.Octodiff" Version="2.0.549" />
     <PackageVersion Include="PropertyChanged.SourceGenerator" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="RGB.NET.Core" Version="3.0.0-prerelease.3" />
-    <PackageVersion Include="RGB.NET.Layout" Version="3.0.0-prerelease.3" />
-    <PackageVersion Include="RGB.NET.Presets" Version="3.0.0-prerelease.3" />
+    <PackageVersion Include="RGB.NET.Core" Version="3.0.0" />
+    <PackageVersion Include="RGB.NET.Layout" Version="3.0.0" />
+    <PackageVersion Include="RGB.NET.Presets" Version="3.0.0" />
     <PackageVersion Include="RawInput.Sharp" Version="0.1.3" />
-    <PackageVersion Include="ReactiveUI" Version="20.1.63" />
+    <PackageVersion Include="ReactiveUI" Version="20.2.45" />
     <PackageVersion Include="ReactiveUI.Validation" Version="4.1.1" />
-    <PackageVersion Include="Serilog" Version="4.2.0" />
+    <PackageVersion Include="Serilog" Version="4.3.0" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageVersion Include="Serilog.Sinks.Debug" Version="3.0.0" />
-    <PackageVersion Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageVersion Include="SkiaSharp" Version="2.88.9" />
     <PackageVersion Include="SkiaSharp.Vulkan.SharpVk" Version="2.88.9" />
     <PackageVersion Include="Splat.DryIoc" Version="15.3.1" />
-    <PackageVersion Include="StrawberryShake.Server" Version="15.0.0" />
-    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.3.1" />
-    <PackageVersion Include="System.Text.Json" Version="9.0.1" />
-    <PackageVersion Include="TextMateSharp.Grammars" Version="1.0.66" />
+    <PackageVersion Include="StrawberryShake.Server" Version="15.1.5" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.11.0" />
+    <PackageVersion Include="System.Text.Json" Version="9.0.5" />
+    <PackageVersion Include="TextMateSharp.Grammars" Version="1.0.68" />
   </ItemGroup>
 </Project>
