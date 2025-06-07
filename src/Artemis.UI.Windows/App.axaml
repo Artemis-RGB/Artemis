@@ -14,7 +14,7 @@
 
     <TrayIcon.Icons>
         <TrayIcons>
-            <TrayIcon Icon="avares://Artemis.UI/Assets/Images/Logo/application.ico" ToolTipText="Artemis" Command="{CompiledBinding OpenScreen}">
+            <TrayIcon Icon="{CompiledBinding TrayIcon}" ToolTipText="Artemis" Command="{CompiledBinding OpenScreen}">
                 <TrayIcon.Menu>
                     <NativeMenu>
                         <NativeMenuItem Header="Home" Command="{CompiledBinding OpenScreen}" CommandParameter="home" />
