@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Models;
+using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Services.Updating;
@@ -17,6 +18,7 @@ using Artemis.WebClient.Workshop.Services;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using ReactiveUI;
 using Serilog;
@@ -35,6 +37,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
     private readonly IUpdateService _updateService;
     private readonly IWindowService _windowService;
     private readonly ObservableAsPropertyHelper<ViewModelBase?> _titleBarViewModel;
+    private readonly PluginSetting<TrayIconEnum> trayIconSetting;
 
     public RootViewModel(ILogger logger,
         IRouter router,
@@ -50,6 +53,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         DefaultTitleBarViewModel defaultTitleBarViewModel)
     {
         Shared.UI.SetMicaEnabled(settingsService.GetSetting("UI.EnableMica", true).Value);
+        trayIconSetting = settingsService.GetSetting("UI.TrayIcon", TrayIconEnum.Default);
         WindowSizeSetting = settingsService.GetSetting<WindowSize?>("WindowSize");
         SidebarViewModel = sidebarViewModel;
 
@@ -82,6 +86,8 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
             ShowSplashScreen();
             _coreService.Initialized += (_, _) => Dispatcher.UIThread.InvokeAsync(OpenMainWindow);
         }
+
+        trayIconSetting.SettingChanged += (_, _) => this.RaisePropertyChanged(nameof(TrayIcon));
 
         Task.Run(() =>
         {
@@ -194,6 +200,30 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
 
     /// <inheritdoc />
     public bool IsMainWindowFocused { get; private set; }
+
+    public WindowIcon TrayIcon
+    {
+        get
+        {
+            string uri = "avares://Artemis.UI/Assets/Images/Logo/application.ico";
+            switch (trayIconSetting.Value)
+            {
+                case TrayIconEnum.Default:
+                    break;
+                case TrayIconEnum.Monochrome:
+                    uri = "avares://Artemis.UI/Assets/Images/Logo/application-monochrome.ico";
+                    break;
+                case TrayIconEnum.MonochromeDark:
+                    uri = "avares://Artemis.UI/Assets/Images/Logo/application-monochrome-dark.ico";
+                    break;
+                default:
+                    _logger.Error("{icon} is not a valid Icon, fall-backing to default icon", trayIconSetting.Value);
+                    break;
+            }
+
+            return new WindowIcon(AssetLoader.Open(new Uri(uri)));
+        }
+    }
 
     /// <inheritdoc />
     public void OpenMainWindow()

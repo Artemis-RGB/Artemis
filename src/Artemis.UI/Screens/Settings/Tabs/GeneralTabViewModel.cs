@@ -161,6 +161,7 @@ public class GeneralTabViewModel : RoutableScreen
     public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.Updating.AutoCheck", true);
     public PluginSetting<bool> WorkshopShowNotifications => _settingsService.GetSetting("Workshop.ShowNotifications", true);
     public PluginSetting<bool> UIAutoUpdate => _settingsService.GetSetting("UI.Updating.AutoInstall", true);
+    public PluginSetting<TrayIconEnum> UITrayIcon => _settingsService.GetSetting("UI.TrayIcon", TrayIconEnum.Default);
     public PluginSetting<bool> ProfileEditorShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
     public PluginSetting<LogEventLevel> CoreLoggingLevel => _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information);
     public PluginSetting<string> CorePreferredGraphicsContext => _settingsService.GetSetting("Core.PreferredGraphicsContext", "Software");
