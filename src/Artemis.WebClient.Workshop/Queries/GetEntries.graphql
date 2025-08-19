@@ -19,3 +19,19 @@ query GetPopularEntries {
         ...entrySummary
     }
 }
+
+query GetDefaultEntries($first: Int $after: String) {
+    entriesV2(where: {isDefault: {eq: true}} first: $first after: $after) {
+        totalCount
+        pageInfo {
+            hasNextPage
+            endCursor
+        }
+        edges {
+            cursor
+            node {
+                ...entrySummary
+            }
+        }
+    }
+}

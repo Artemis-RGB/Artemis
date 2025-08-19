@@ -22,7 +22,7 @@ public class DevicesStepViewModel : WizardStepViewModel
         Continue = ReactiveCommand.Create(() =>
         {
             if (deviceService.EnabledDevices.Count == 0)
-                Wizard.ChangeScreen<SettingsStepViewModel>();
+                Wizard.ChangeScreen<DefaultEntriesStepViewModel>();
             else
                 Wizard.ChangeScreen<LayoutsStepViewModel>();
         });
