@@ -3,16 +3,13 @@ using Artemis.Core.Providers;
 using Artemis.Core.Services.Models;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 using RGB.NET.Core;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using ZstdSharp.Unsafe;
 
 namespace Artemis.Core.Services;
 
