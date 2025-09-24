@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Artemis.Core.DeviceProviders;
+﻿using Artemis.Core.DeviceProviders;
 using Artemis.Core.Providers;
 using Artemis.Core.Services.Models;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
 using RGB.NET.Core;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Artemis.Core.Services;
 
@@ -256,8 +255,10 @@ internal class DeviceService : IDeviceService
             try
             {
                 _renderService.Value.IsPaused = true;
-                foreach (DeviceProvider deviceProvider in _pluginManagementService.GetFeaturesOfType<DeviceProvider>().Where(d => d.SuspendSupported))
-                    SuspendDeviceProvider(deviceProvider);
+                foreach (DeviceProvider deviceProvider in _pluginManagementService.GetFeaturesOfType<DeviceProvider>())
+                {
+                    SuspendDeviceProvider(deviceProvider, deviceProvider.SuspendSupported);
+                }
             }
             finally
             {
@@ -278,7 +279,9 @@ internal class DeviceService : IDeviceService
             {
                 _renderService.Value.IsPaused = true;
                 foreach (DeviceProvider deviceProvider in _suspendedDeviceProviders.ToList())
+                {
                     ResumeDeviceProvider(deviceProvider);
+                }
             }
             finally
             {
@@ -287,7 +290,7 @@ internal class DeviceService : IDeviceService
         }
     }
 
-    private void SuspendDeviceProvider(DeviceProvider deviceProvider)
+    private void SuspendDeviceProvider(DeviceProvider deviceProvider, bool callSuspend)
     {
         if (_suspendedDeviceProviders.Contains(deviceProvider))
         {
@@ -298,7 +301,10 @@ internal class DeviceService : IDeviceService
         try
         {
             _pluginManagementService.DisablePluginFeature(deviceProvider, false);
-            deviceProvider.Suspend();
+            if (callSuspend)
+            {
+                deviceProvider.Suspend();
+            }
             _suspendedDeviceProviders.Add(deviceProvider);
             _logger.Information("Device provider {DeviceProvider} suspended", deviceProvider.Info.Name);
         }
