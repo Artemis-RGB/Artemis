@@ -66,6 +66,8 @@ public partial class SpecificationsStepViewModel : SubmissionViewModel
         viewModel.Summary = State.Summary;
         viewModel.Description = State.Description;
         viewModel.IsDefault = State.IsDefault;
+        viewModel.IsEssential = State.IsEssential;
+        viewModel.IsDeviceProvider = State.IsDeviceProvider;
 
         // Tags
         viewModel.Tags.Clear();
@@ -95,6 +97,8 @@ public partial class SpecificationsStepViewModel : SubmissionViewModel
         State.Summary = EntrySpecificationsViewModel.Summary;
         State.Description = EntrySpecificationsViewModel.Description;
         State.IsDefault = EntrySpecificationsViewModel.IsDefault;
+        State.IsEssential = EntrySpecificationsViewModel.IsEssential;
+        State.IsDeviceProvider = EntrySpecificationsViewModel.IsDeviceProvider;
 
         // Categories and tasks
         State.Categories = EntrySpecificationsViewModel.Categories.Where(c => c.IsSelected).Select(c => c.Id).ToList();

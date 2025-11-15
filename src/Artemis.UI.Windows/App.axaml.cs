@@ -16,6 +16,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using DryIoc;
+using HotAvalonia;
 using ReactiveUI;
 
 namespace Artemis.UI.Windows;
@@ -27,6 +28,8 @@ public class App : Application
 
     public override void Initialize()
     {
+        this.EnableHotReload();
+        
         // If Artemis is already running, bring it to foreground and stop this process
         if (FocusExistingInstance())
         {
@@ -89,7 +92,7 @@ public class App : Application
         try
         {
             CancellationTokenSource cts = new();
-            cts.CancelAfter(2000);
+            cts.CancelAfter(5000);
 
             HttpResponseMessage httpResponseMessage = client.Send(new HttpRequestMessage(HttpMethod.Post, url + "remote/bring-to-foreground") {Content = new StringContent(route ?? "")}, cts.Token);
             httpResponseMessage.EnsureSuccessStatusCode();

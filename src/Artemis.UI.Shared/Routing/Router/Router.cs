@@ -251,7 +251,13 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
         if (_previousWindowRoute != null && _currentRouteSubject.Value == "blank")
             Dispatcher.UIThread.InvokeAsync(async () => await Navigate(_previousWindowRoute, new RouterNavigationOptions {AddToHistory = false, EnableLogging = false}));
         else if (_currentRouteSubject.Value == null || _currentRouteSubject.Value == "blank")
-            Dispatcher.UIThread.InvokeAsync(async () => await Navigate("home", new RouterNavigationOptions {AddToHistory = false, EnableLogging = true}));
+        {
+            string? startupRoute = Constants.GetStartupRoute();
+            if (startupRoute != null)
+                Dispatcher.UIThread.InvokeAsync(async () => await Navigate(startupRoute, new RouterNavigationOptions {AddToHistory = false, EnableLogging = true}));
+            else
+                Dispatcher.UIThread.InvokeAsync(async () => await Navigate("home", new RouterNavigationOptions {AddToHistory = false, EnableLogging = true}));
+        }
     }
 
     private void MainWindowServiceOnMainWindowClosed(object? sender, EventArgs e)

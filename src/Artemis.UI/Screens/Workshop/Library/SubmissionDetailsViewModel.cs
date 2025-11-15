@@ -105,7 +105,9 @@ public partial class SubmissionDetailsViewModel : RoutableScreen
         specificationsViewModel.Name = Entry.Name;
         specificationsViewModel.Summary = Entry.Summary;
         specificationsViewModel.Description = Entry.Description;
-        specificationsViewModel.IsDefault = Entry.IsDefault;
+        specificationsViewModel.IsDefault = Entry.DefaultEntryInfo != null;
+        specificationsViewModel.IsEssential = Entry.DefaultEntryInfo?.IsEssential ?? false;
+        specificationsViewModel.IsDeviceProvider = Entry.DefaultEntryInfo?.IsDeviceProvider ?? false;
         specificationsViewModel.PreselectedCategories = Entry.Categories.Select(c => c.Id).ToList();
 
         specificationsViewModel.Tags.Clear();
@@ -170,12 +172,27 @@ public partial class SubmissionDetailsViewModel : RoutableScreen
         HasChanges = EntrySpecificationsViewModel.Name != Entry.Name ||
                      EntrySpecificationsViewModel.Description != Entry.Description ||
                      EntrySpecificationsViewModel.Summary != Entry.Summary ||
-                     EntrySpecificationsViewModel.IsDefault != Entry.IsDefault ||
                      EntrySpecificationsViewModel.IconChanged ||
+                     HasAdminChanges() || 
                      !tags.SequenceEqual(Entry.Tags.Select(t => t.Name).OrderBy(t => t)) ||
                      !categories.SequenceEqual(Entry.Categories.Select(c => c.Id).OrderBy(c => c)) ||
                      Images.Any(i => i.HasChanges) ||
                      _removedImages.Any();
+    }
+
+    private bool HasAdminChanges()
+    {
+        if (EntrySpecificationsViewModel == null || Entry == null)
+            return false;
+
+        bool isDefault = Entry.DefaultEntryInfo != null;
+        bool isEssential = Entry.DefaultEntryInfo?.IsEssential ?? false;
+        bool isDeviceProvider = Entry.DefaultEntryInfo?.IsDeviceProvider ?? false;
+
+        return EntrySpecificationsViewModel.IsDefault != isDefault ||
+               (EntrySpecificationsViewModel.IsDefault && (
+                   EntrySpecificationsViewModel.IsEssential != isEssential ||
+                   EntrySpecificationsViewModel.IsDeviceProvider != isDeviceProvider));
     }
 
     private async Task ExecuteDiscardChanges()
@@ -194,9 +211,15 @@ public partial class SubmissionDetailsViewModel : RoutableScreen
             Name = EntrySpecificationsViewModel.Name,
             Summary = EntrySpecificationsViewModel.Summary,
             Description = EntrySpecificationsViewModel.Description,
-            IsDefault = EntrySpecificationsViewModel.IsDefault,
             Categories = EntrySpecificationsViewModel.SelectedCategories,
-            Tags = EntrySpecificationsViewModel.Tags
+            Tags = EntrySpecificationsViewModel.Tags,
+            DefaultEntryInfo = EntrySpecificationsViewModel.IsDefault
+                ? new DefaultEntryInfoInput
+                {
+                    IsEssential = EntrySpecificationsViewModel.IsEssential,
+                    IsDeviceProvider = EntrySpecificationsViewModel.IsDeviceProvider
+                }
+                : null
         };
 
         IOperationResult<IUpdateEntryResult> result = await _client.UpdateEntry.ExecuteAsync(input, cancellationToken);

@@ -63,8 +63,12 @@
 
                     <Label Target="Summary" Margin="0 5 0 0">Summary</Label>
                     <TextBox Name="Summary" Text="{CompiledBinding Summary}"></TextBox>
-                    
-                    <CheckBox IsVisible="{CompiledBinding IsAdministrator}" IsChecked="{CompiledBinding IsDefault}">Download by default (admin only)</CheckBox>
+
+                    <StackPanel IsVisible="{CompiledBinding IsAdministrator}" Orientation="Horizontal">
+                        <CheckBox IsChecked="{CompiledBinding IsDefault}">Download by default (admin only)</CheckBox>
+                        <CheckBox IsEnabled="{CompiledBinding IsDefault}" IsChecked="{CompiledBinding IsEssential}">Essential</CheckBox>
+                        <CheckBox IsEnabled="{CompiledBinding IsDefault}" IsChecked="{CompiledBinding IsDeviceProvider}">Device provider</CheckBox>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
 
@@ -93,10 +97,10 @@
             <Label>Tags</Label>
             <tagsInput:TagsInput Tags="{CompiledBinding Tags}" />
         </StackPanel>
-        
-        <controls:SplitMarkdownEditor Grid.Row="1" Title="Description" Markdown="{CompiledBinding Description}"/>
-        
-        <TextBlock Grid.Row="2" 
+
+        <controls:SplitMarkdownEditor Grid.Row="1" Title="Description" Markdown="{CompiledBinding Description}" />
+
+        <TextBlock Grid.Row="2"
                    Foreground="{DynamicResource SystemFillColorCriticalBrush}"
                    Margin="2 8 0 0"
                    IsVisible="{CompiledBinding !DescriptionValid}">

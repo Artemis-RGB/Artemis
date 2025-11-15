@@ -105,7 +105,14 @@ public partial class UploadStepViewModel : SubmissionViewModel
             Summary = State.Summary,
             Description = State.Description,
             Categories = State.Categories,
-            Tags = State.Tags
+            Tags = State.Tags,
+            DefaultEntryInfo = State.IsDefault
+                ? new DefaultEntryInfoInput
+                {
+                    IsEssential = State.IsEssential,
+                    IsDeviceProvider = State.IsDeviceProvider
+                }
+                : null
         }, cancellationToken);
 
         result.EnsureNoErrors();

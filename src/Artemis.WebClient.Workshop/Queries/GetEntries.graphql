@@ -20,8 +20,12 @@ query GetPopularEntries {
     }
 }
 
-query GetDefaultEntries($first: Int $after: String) {
-    entriesV2(where: {isDefault: {eq: true}} first: $first after: $after) {
+query GetDefaultEntries($first: Int, $after: String) {
+    entriesV2(
+        where: { defaultEntryInfo: { entryId: { gt: 0 } } }
+        first: $first
+        after: $after
+    ) {
         totalCount
         pageInfo {
             hasNextPage

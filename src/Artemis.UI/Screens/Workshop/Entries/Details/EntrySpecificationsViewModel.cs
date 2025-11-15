@@ -36,6 +36,8 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
     [Notify] private string _summary = string.Empty;
     [Notify] private string _description = string.Empty;
     [Notify] private bool _isDefault;
+    [Notify] private bool _isEssential;
+    [Notify] private bool _isDeviceProvider;
     [Notify] private Bitmap? _iconBitmap;
     [Notify(Setter.Private)] private bool _iconChanged;
 
