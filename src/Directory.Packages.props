@@ -68,7 +68,7 @@
     <PackageVersion Include="TextMateSharp.Grammars" Version="1.0.68" />
     
     <PackageVersion Include="Avalonia.Markup.Xaml.Loader" Version="11.3.0" />
-    <PackageVersion Include="HotAvalonia" Version="2.1.0" />
-    <PackageVersion Include="HotAvalonia.Extensions" Version="2.1.0" />
+    <PackageVersion Include="HotAvalonia" Version="3.0.0" />
+    <PackageVersion Include="HotAvalonia.Extensions" Version="3.0.0" />
   </ItemGroup>
 </Project>
