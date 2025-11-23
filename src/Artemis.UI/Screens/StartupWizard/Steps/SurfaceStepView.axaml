@@ -8,18 +8,15 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.StartupWizard.Steps.SurfaceStepView"
              x:DataType="steps:SurfaceStepViewModel">
-
     <Grid RowDefinitions="Auto,*,Auto,Auto" ColumnDefinitions="*,*">
-        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Classes="card">
-            <StackPanel>
-                <TextBlock TextWrapping="Wrap">
-                    Artemis uses "spatial awareness" to create realistic effects across multiple devices.
-                </TextBlock>
-                <TextBlock TextWrapping="Wrap">
-                    In order to do this correctly, we need to know where your devices are located on your desk. Select one of the two presets below, after the setup wizard finishes you can tweak this in detail in the surface editor.
-                </TextBlock>
-            </StackPanel>
-        </Border>
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Spacing="10">
+            <TextBlock TextWrapping="Wrap">
+                Artemis uses "spatial awareness" to create realistic effects across multiple devices.
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap">
+                In order to do this correctly, we need to know where your devices are located on your desk. Select one of the two presets below, after the setup wizard finishes you can tweak this in detail in the surface editor.
+            </TextBlock>
+        </StackPanel>
         
         <Button Grid.Row="1"
                 Grid.Column="0"

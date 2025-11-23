@@ -49,8 +49,8 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
         if (IsInstalled || !ShouldInstall || Entry.LatestRelease == null)
             return true;
 
-        // Most entries install so quick it looks broken without a small delay
-        Task minimumDelay = Task.Delay(100, cancellationToken);
+        // Most entries install so fast it looks broken without a small delay
+        Task minimumDelay = Task.Delay(200, cancellationToken);
         EntryInstallResult result = await _workshopService.InstallEntry(Entry, Entry.LatestRelease, _progress, cancellationToken);
         await minimumDelay;
 

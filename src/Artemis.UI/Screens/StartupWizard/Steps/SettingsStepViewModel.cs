@@ -37,8 +37,9 @@ public class SettingsStepViewModel : WizardStepViewModel
         Continue = ReactiveCommand.Create(() => Wizard.ChangeScreen<FinishStepViewModel>());
         GoBack = ReactiveCommand.Create(() =>
         {
+            // Without devices, skip to the default entries screen
             if (deviceService.EnabledDevices.Count == 0)
-                Wizard.ChangeScreen<DevicesStepViewModel>();
+                Wizard.ChangeScreen<DefaultEntriesStepViewModel>();
             else
                 Wizard.ChangeScreen<SurfaceStepViewModel>();
         });

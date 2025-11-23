@@ -20,10 +20,11 @@ public partial class DefaultEntriesStepViewModel : WizardStepViewModel
 {
     [Notify] private bool _workshopReachable;
     [Notify] private bool _fetchingDefaultEntries;
-    [Notify] private bool _installed;
-    [Notify] private int _currentEntries;
+    [Notify] private int _installedEntries;
     [Notify] private int _totalEntries = 1;
+    [Notify] private DefaultEntryItemViewModel? _currentEntry;
 
+    private readonly IDeviceService _deviceService;
     private readonly IWorkshopClient _client;
     private readonly Func<IEntrySummary, DefaultEntryItemViewModel> _getDefaultEntryItemViewModel;
 
@@ -34,24 +35,17 @@ public partial class DefaultEntriesStepViewModel : WizardStepViewModel
     public DefaultEntriesStepViewModel(IWorkshopService workshopService, IDeviceService deviceService, IWorkshopClient client,
         Func<IEntrySummary, DefaultEntryItemViewModel> getDefaultEntryItemViewModel)
     {
+        _deviceService = deviceService;
         _client = client;
         _getDefaultEntryItemViewModel = getDefaultEntryItemViewModel;
 
         ContinueText = "Install selected entries";
         Continue = ReactiveCommand.CreateFromTask(async ct =>
-        {
-            if (Installed)
-                Wizard.ChangeScreen<SettingsStepViewModel>();
-            else
-                await Install(ct);
+        { 
+            await Install(ct);
+            ExecuteContinue();
         });
-        GoBack = ReactiveCommand.Create(() =>
-        {
-            if (deviceService.EnabledDevices.Count == 0)
-                Wizard.ChangeScreen<DevicesStepViewModel>();
-            else
-                Wizard.ChangeScreen<SurfaceStepViewModel>();
-        });
+        GoBack = ReactiveCommand.Create(() => Wizard.ChangeScreen<WelcomeStepViewModel>());
 
         this.WhenActivatedAsync(async d =>
         {
@@ -63,41 +57,40 @@ public partial class DefaultEntriesStepViewModel : WizardStepViewModel
         });
     }
 
-    private async Task Install(CancellationToken cancellationToken)
+    private void ExecuteContinue()
     {
-        // Remove entries that aren't to be installed
-        RemoveUnselectedEntries(DeviceProviderEntryViewModels);
-        RemoveUnselectedEntries(EssentialEntryViewModels);
-        RemoveUnselectedEntries(OtherEntryViewModels);
-        
-        TotalEntries = DeviceProviderEntryViewModels.Count + EssentialEntryViewModels.Count + OtherEntryViewModels.Count;
-        CurrentEntries = 0;
-
-        // Install entries one by one, removing them from the list as we go
-        List<DefaultEntryItemViewModel> entries = [..DeviceProviderEntryViewModels, ..EssentialEntryViewModels, ..OtherEntryViewModels];
-            foreach (DefaultEntryItemViewModel defaultEntryItemViewModel in entries)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            bool removeFromList = await defaultEntryItemViewModel.InstallEntry(cancellationToken);
-            if (!removeFromList)
-                break;
-
-            DeviceProviderEntryViewModels.Remove(defaultEntryItemViewModel);
-            EssentialEntryViewModels.Remove(defaultEntryItemViewModel);
-            OtherEntryViewModels.Remove(defaultEntryItemViewModel);
-            CurrentEntries++;
-        }
-
-        Installed = true;
-        ContinueText = "Continue";
+        // Without devices skip to the last step
+        if (_deviceService.EnabledDevices.Count == 0)
+            Wizard.ChangeScreen<SettingsStepViewModel>();
+        else
+            Wizard.ChangeScreen<LayoutsStepViewModel>();
     }
 
-    private void RemoveUnselectedEntries(ObservableCollection<DefaultEntryItemViewModel> entryViewModels)
+    private async Task Install(CancellationToken cancellationToken)
     {
-        List<DefaultEntryItemViewModel> toRemove = entryViewModels.Where(e => !e.ShouldInstall).ToList();
-        foreach (DefaultEntryItemViewModel defaultEntryItemViewModel in toRemove)
-            entryViewModels.Remove(defaultEntryItemViewModel);
+        List<DefaultEntryItemViewModel> entries =
+        [
+            ..DeviceProviderEntryViewModels.Where(e => e.ShouldInstall && !e.IsInstalled),
+            ..EssentialEntryViewModels.Where(e => e.ShouldInstall && !e.IsInstalled),
+            ..OtherEntryViewModels.Where(e => e.ShouldInstall && !e.IsInstalled)
+        ];
+        InstalledEntries = 0;
+        TotalEntries = entries.Count;
 
+        // Continue to the next screen if there are no entries to install
+        if (TotalEntries == 0)
+            return;
+
+        foreach (DefaultEntryItemViewModel defaultEntryItemViewModel in entries)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            CurrentEntry = defaultEntryItemViewModel;
+            await defaultEntryItemViewModel.InstallEntry(cancellationToken);
+            InstalledEntries++;
+        }
+
+        await Task.Delay(1000, cancellationToken);
+        CurrentEntry = null;
     }
 
     private async Task GetDefaultEntries(CancellationToken cancellationToken)
@@ -126,7 +119,7 @@ public partial class DefaultEntriesStepViewModel : WizardStepViewModel
 
             DefaultEntryItemViewModel viewModel = _getDefaultEntryItemViewModel(entry);
             viewModel.ShouldInstall = entry.DefaultEntryInfo.IsEssential;
-            
+
             if (entry.DefaultEntryInfo.IsDeviceProvider)
                 DeviceProviderEntryViewModels.Add(viewModel);
             else if (entry.DefaultEntryInfo.IsEssential)

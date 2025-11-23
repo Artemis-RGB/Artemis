@@ -6,53 +6,61 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.StartupWizard.Steps.DefaultEntriesStepView"
              x:DataType="steps:DefaultEntriesStepViewModel">
-    <Border Classes="card">
-    <Grid RowDefinitions="*,Auto">
-        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-            <StackPanel>
-                <TextBlock TextWrapping="Wrap">
-                    Below is a list of default features that can be installed to get you started with Artemis. You can always install or uninstall features later via the Workshop.
-                </TextBlock>
+    <Panel>
+        <!-- Selection stage -->
+        <Grid RowDefinitions="Auto,*,Auto" IsVisible="{CompiledBinding CurrentEntry, Converter={x:Static ObjectConverters.IsNull}}">
+            <TextBlock Grid.Row="0" TextWrapping="Wrap">
+                Below is a list of default features that can be installed to get you started with Artemis. You can always install or uninstall features later via the Workshop.
+            </TextBlock>
 
-                <TextBlock Classes="card-title" IsVisible="{CompiledBinding DeviceProviderEntryViewModels.Count}">
-                    Device providers
-                </TextBlock>
-                <ItemsControl ItemsSource="{CompiledBinding DeviceProviderEntryViewModels}" Margin="0,0,5,0">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Columns="2" ColumnSpacing="5" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
+            <ProgressBar Grid.Row="1" IsVisible="{CompiledBinding FetchingDefaultEntries}" IsIndeterminate="True" />
 
-                <TextBlock Classes="card-title" IsVisible="{CompiledBinding EssentialEntryViewModels.Count}">
-                    Essentials
-                </TextBlock>
-                <ItemsControl ItemsSource="{CompiledBinding EssentialEntryViewModels}" Margin="0,0,5,0">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Columns="2" ColumnSpacing="5"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
+            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock Classes="card-title" IsVisible="{CompiledBinding DeviceProviderEntryViewModels.Count}">
+                        Device providers
+                    </TextBlock>
+                    <ItemsControl ItemsSource="{CompiledBinding DeviceProviderEntryViewModels}" Margin="0,0,5,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2" ColumnSpacing="5" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
 
-                <TextBlock Classes="card-title" IsVisible="{CompiledBinding OtherEntryViewModels.Count}">
-                    Other features
-                </TextBlock>
-                <ItemsControl ItemsSource="{CompiledBinding OtherEntryViewModels}" Margin="0,0,5,0">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Columns="2" ColumnSpacing="5"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-            </StackPanel>
-        </ScrollViewer>
-        <ProgressBar Grid.Row="1"
-                     Minimum="0"
-                     Maximum="{CompiledBinding TotalEntries}"
-                     IsIndeterminate="{CompiledBinding FetchingDefaultEntries}"
-                     Value="{CompiledBinding CurrentEntries}" />
-    </Grid>
-        </Border>
+                    <TextBlock Classes="card-title" IsVisible="{CompiledBinding EssentialEntryViewModels.Count}">
+                        Essentials
+                    </TextBlock>
+                    <ItemsControl ItemsSource="{CompiledBinding EssentialEntryViewModels}" Margin="0,0,5,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2" ColumnSpacing="5" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+
+                    <TextBlock Classes="card-title" IsVisible="{CompiledBinding OtherEntryViewModels.Count}">
+                        Other features
+                    </TextBlock>
+                    <ItemsControl ItemsSource="{CompiledBinding OtherEntryViewModels}" Margin="0,0,5,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2" ColumnSpacing="5" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- Installation stage -->
+        <StackPanel IsVisible="{CompiledBinding CurrentEntry, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <TextBlock Classes="card-title">
+                Currently installing
+            </TextBlock>
+            <ContentControl Content="{CompiledBinding CurrentEntry}"/>
+            
+            <ProgressBar ShowProgressText="True" ProgressTextFormat="{}{0}/{3} Features Installed ({1:0}%)" Minimum="0" Maximum="{CompiledBinding TotalEntries}" Value="{CompiledBinding InstalledEntries}"/>
+        </StackPanel>
+    </Panel>
 </UserControl>

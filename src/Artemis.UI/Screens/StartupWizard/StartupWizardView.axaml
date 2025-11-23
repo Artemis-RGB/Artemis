@@ -11,7 +11,7 @@
         x:DataType="startupWizard:StartupWizardViewModel"
         Icon="/Assets/Images/Logo/application.ico"
         Title="Artemis | Startup wizard"
-        Width="1000"
+        Width="1050"
         Height="735"
         WindowStartupLocation="CenterOwner">
     <Grid Margin="15" RowDefinitions="Auto,*,Auto" ColumnDefinitions="Auto,*">
