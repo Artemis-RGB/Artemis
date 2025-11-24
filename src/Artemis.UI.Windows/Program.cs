@@ -5,7 +5,6 @@ using Avalonia;
 using Avalonia.Logging;
 using Avalonia.ReactiveUI;
 using DryIoc;
-using HotAvalonia;
 using Serilog;
 
 namespace Artemis.UI.Windows;
@@ -38,8 +37,7 @@ internal class Program
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .LogToTrace()
-            .UseReactiveUI()
-            .UseHotReload();
+            .UseReactiveUI();
     }
 
     public static void CreateLogger(IContainer container)
