@@ -16,6 +16,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using DryIoc;
+using HotAvalonia;
 using ReactiveUI;
 
 namespace Artemis.UI.Windows;
@@ -40,6 +41,7 @@ public class App : Application
         LegacyMigrationService.MigrateToSqlite(_container);
 
         RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
+        this.EnableHotReload();
         AvaloniaXamlLoader.Load(this);
     }
 
