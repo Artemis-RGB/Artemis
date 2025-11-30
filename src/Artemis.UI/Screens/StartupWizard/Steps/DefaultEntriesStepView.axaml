@@ -13,8 +13,10 @@
                 Below is a list of default features that can be installed to get you started with Artemis. You can always install or uninstall features later via the Workshop.
             </TextBlock>
 
-            <ProgressBar Grid.Row="1" IsVisible="{CompiledBinding FetchingDefaultEntries}" IsIndeterminate="True" />
-
+            <StackPanel Grid.Row="1" IsVisible="{CompiledBinding FetchingDefaultEntries}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+                <ProgressBar IsIndeterminate="True" Width="400" />
+                <TextBlock TextAlignment="Center">Fetching default features from the Artemis workshop...</TextBlock>
+            </StackPanel>
             <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                 <StackPanel>
                     <TextBlock Classes="card-title" IsVisible="{CompiledBinding DeviceProviderEntryViewModels.Count}">
@@ -58,9 +60,10 @@
             <TextBlock Classes="card-title">
                 Currently installing
             </TextBlock>
-            <ContentControl Content="{CompiledBinding CurrentEntry}"/>
-            
-            <ProgressBar ShowProgressText="True" ProgressTextFormat="{}{0}/{3} Features Installed ({1:0}%)" Minimum="0" Maximum="{CompiledBinding TotalEntries}" Value="{CompiledBinding InstalledEntries}"/>
+            <ContentControl Content="{CompiledBinding CurrentEntry}" />
+
+            <ProgressBar ShowProgressText="True" ProgressTextFormat="{}{0}/{3} Features Installed ({1:0}%)" Minimum="0" Maximum="{CompiledBinding TotalEntries}"
+                         Value="{CompiledBinding InstalledEntries}" />
         </StackPanel>
     </Panel>
 </UserControl>

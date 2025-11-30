@@ -63,7 +63,7 @@ public partial class SubmissionsTabViewModel : RoutableScreen
 
         this.WhenActivatedAsync(async d =>
         {
-            WorkshopReachable = await workshopService.ValidateWorkshopStatus(d.AsCancellationToken());
+            WorkshopReachable = await workshopService.ValidateWorkshopStatus(true, d.AsCancellationToken());
             if (WorkshopReachable)
                 await GetEntries(d.AsCancellationToken());
         });

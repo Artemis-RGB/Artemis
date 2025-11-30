@@ -41,7 +41,7 @@ public partial class WorkshopHomeViewModel : RoutableScreen
 
         this.WhenActivatedAsync(async d =>
         {
-            WorkshopReachable = await workshopService.ValidateWorkshopStatus(d.AsCancellationToken());
+            WorkshopReachable = await workshopService.ValidateWorkshopStatus(true, d.AsCancellationToken());
 
             IOperationResult<IGetPopularEntriesResult> popularResult = await client.GetPopularEntries.ExecuteAsync();
             popular.Edit(p =>

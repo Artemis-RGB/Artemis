@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core.Services;
@@ -18,8 +19,7 @@ namespace Artemis.UI.Screens.StartupWizard.Steps;
 
 public partial class DefaultEntriesStepViewModel : WizardStepViewModel
 {
-    [Notify] private bool _workshopReachable;
-    [Notify] private bool _fetchingDefaultEntries;
+    [Notify] private bool _fetchingDefaultEntries = true;
     [Notify] private int _installedEntries;
     [Notify] private int _totalEntries = 1;
     [Notify] private DefaultEntryItemViewModel? _currentEntry;
@@ -44,16 +44,16 @@ public partial class DefaultEntriesStepViewModel : WizardStepViewModel
         { 
             await Install(ct);
             ExecuteContinue();
-        });
+        }, this.WhenAnyValue(vm => vm.FetchingDefaultEntries).Select(b => !b));
         GoBack = ReactiveCommand.Create(() => Wizard.ChangeScreen<WelcomeStepViewModel>());
 
         this.WhenActivatedAsync(async d =>
         {
-            WorkshopReachable = await workshopService.ValidateWorkshopStatus(d.AsCancellationToken());
-            if (WorkshopReachable)
-            {
+            CancellationToken ct = d.AsCancellationToken();
+            if (await workshopService.ValidateWorkshopStatus(false, ct))
                 await GetDefaultEntries(d.AsCancellationToken());
-            }
+            else if (!ct.IsCancellationRequested)
+                Wizard.ChangeScreen<WorkshopUnreachableStepViewModel>();
         });
     }
 
@@ -95,9 +95,6 @@ public partial class DefaultEntriesStepViewModel : WizardStepViewModel
 
     private async Task GetDefaultEntries(CancellationToken cancellationToken)
     {
-        if (!WorkshopReachable)
-            return;
-
         FetchingDefaultEntries = true;
 
         IOperationResult<IGetDefaultEntriesResult> result = await _client.GetDefaultEntries.ExecuteAsync(100, null, cancellationToken);

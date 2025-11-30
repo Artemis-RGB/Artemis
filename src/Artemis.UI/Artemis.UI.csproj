@@ -35,4 +35,11 @@
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Screens\StartupWizard\Steps\WorkshopUnreachableStepView.axaml.cs">
+        <DependentUpon>WorkshopUnreachableStepView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
 </Project>
