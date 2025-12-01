@@ -28,8 +28,6 @@ public class App : Application
 
     public override void Initialize()
     {
-        this.EnableHotReload();
-        
         // If Artemis is already running, bring it to foreground and stop this process
         if (FocusExistingInstance())
         {
@@ -43,6 +41,7 @@ public class App : Application
         LegacyMigrationService.MigrateToSqlite(_container);
 
         RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
+        this.EnableHotReload();
         AvaloniaXamlLoader.Load(this);
     }
 

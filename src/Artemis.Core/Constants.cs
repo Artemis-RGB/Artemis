@@ -40,7 +40,7 @@ public static class Constants
     /// <summary>
     ///     The full path to the Artemis data folder
     /// </summary>
-    public static readonly string DataFolder = Path.Combine(BaseFolder, "Artemis");
+    public static readonly string DataFolder = Path.Combine(BaseFolder, "Artemis-dev");
 
     /// <summary>
     ///     The full path to the Artemis logs folder

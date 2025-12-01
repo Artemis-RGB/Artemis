@@ -1,12 +1,5 @@
 <Project>
-    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-        <!-- If you're a .vbproj user, replace ';' with ',' -->
-        <DefineConstants>$(DefineConstants);ENABLE_XAML_HOT_RELOAD</DefineConstants>
-    </PropertyGroup>
-
     <ItemGroup>
-        <PackageReference Condition="$(DefineConstants.Contains(ENABLE_XAML_HOT_RELOAD))" Include="Avalonia.Markup.Xaml.Loader" />
-        <PackageReference Condition="$(DefineConstants.Contains(ENABLE_XAML_HOT_RELOAD))" Include="HotAvalonia" />
-        <PackageReference Include="HotAvalonia.Extensions" PrivateAssets="All" />
+        <PackageReference Include="HotAvalonia" PrivateAssets="All" />
     </ItemGroup>
 </Project>

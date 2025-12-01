@@ -2,6 +2,7 @@ using System;
 using Artemis.Core;
 using Artemis.Storage;
 using Avalonia;
+using Avalonia.Logging;
 using Avalonia.ReactiveUI;
 using DryIoc;
 using Serilog;
