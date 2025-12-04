@@ -8,6 +8,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using DryIoc;
 using FluentAvalonia.UI.Controls;
+using ContentDialogButton = Artemis.UI.Shared.Services.Builders.ContentDialogButton;
 
 namespace Artemis.UI.Shared.Services;
 
@@ -94,6 +95,7 @@ internal class WindowService : IWindowService
             .WithTitle(title)
             .WithContent(message)
             .HavingPrimaryButton(b => b.WithText(confirm))
+            .WithDefaultButton(ContentDialogButton.Primary)
             .WithCloseButtonText(cancel)
             .ShowAsync();
 

@@ -27,17 +27,22 @@ public partial class DefaultEntriesStepViewModel : WizardStepViewModel
     private readonly IDeviceService _deviceService;
     private readonly IWorkshopClient _client;
     private readonly Func<IEntrySummary, DefaultEntryItemViewModel> _getDefaultEntryItemViewModel;
+    private readonly ObservableAsPropertyHelper<int> _remainingEntries;
 
     public ObservableCollection<DefaultEntryItemViewModel> DeviceProviderEntryViewModels { get; } = [];
     public ObservableCollection<DefaultEntryItemViewModel> EssentialEntryViewModels { get; } = [];
     public ObservableCollection<DefaultEntryItemViewModel> OtherEntryViewModels { get; } = [];
-
+    public int RemainingEntries => _remainingEntries.Value;
+    
     public DefaultEntriesStepViewModel(IWorkshopService workshopService, IDeviceService deviceService, IWorkshopClient client,
         Func<IEntrySummary, DefaultEntryItemViewModel> getDefaultEntryItemViewModel)
     {
         _deviceService = deviceService;
         _client = client;
         _getDefaultEntryItemViewModel = getDefaultEntryItemViewModel;
+        _remainingEntries = this.WhenAnyValue(vm => vm.InstalledEntries, vm => vm.TotalEntries)
+            .Select(t => t.Item2 - t.Item1)
+            .ToProperty(this, vm => vm.RemainingEntries);
 
         ContinueText = "Install selected entries";
         Continue = ReactiveCommand.CreateFromTask(async ct =>

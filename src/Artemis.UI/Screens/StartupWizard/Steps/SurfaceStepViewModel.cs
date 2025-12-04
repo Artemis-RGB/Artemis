@@ -19,7 +19,7 @@ public class SurfaceStepViewModel : WizardStepViewModel
         _deviceService = deviceService;
         SelectLayout = ReactiveCommand.Create<string>(ExecuteSelectLayout);
         
-        Continue = ReactiveCommand.Create(() => Wizard.ChangeScreen<DefaultEntriesStepViewModel>());
+        Continue = ReactiveCommand.Create(() => Wizard.ChangeScreen<SettingsStepViewModel>());
         GoBack = ReactiveCommand.Create(() => Wizard.ChangeScreen<LayoutsStepViewModel>());
     }
 
@@ -30,6 +30,6 @@ public class SurfaceStepViewModel : WizardStepViewModel
         // TODO: Implement the layout
         _deviceService.AutoArrangeDevices();
 
-        Wizard.ChangeScreen<DefaultEntriesStepViewModel>();
+        Wizard.ChangeScreen<SettingsStepViewModel>();
     }
 }

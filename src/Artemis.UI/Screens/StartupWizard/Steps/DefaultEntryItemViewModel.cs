@@ -16,12 +16,13 @@ using Artemis.WebClient.Workshop.Models;
 using Artemis.WebClient.Workshop.Services;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
-using StrawberryShake;
+using Serilog;
 
 namespace Artemis.UI.Screens.StartupWizard.Steps;
 
 public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
 {
+    private readonly ILogger _logger;
     private readonly IWorkshopService _workshopService;
     private readonly IWindowService _windowService;
     private readonly IPluginManagementService _pluginManagementService;
@@ -30,15 +31,20 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
 
     [Notify] private bool _isInstalled;
     [Notify] private bool _shouldInstall;
-
-    public DefaultEntryItemViewModel(IEntrySummary entry, IWorkshopService workshopService, IWindowService windowService, IPluginManagementService pluginManagementService, ISettingsVmFactory settingsVmFactory)
+    [Notify] private bool _enabling;
+    [Notify] private float _installProgress;
+    
+    public DefaultEntryItemViewModel(ILogger logger, IEntrySummary entry, IWorkshopService workshopService, IWindowService windowService, IPluginManagementService pluginManagementService,
+        ISettingsVmFactory settingsVmFactory)
     {
+        _logger = logger;
         _workshopService = workshopService;
         _windowService = windowService;
         _pluginManagementService = pluginManagementService;
         _settingsVmFactory = settingsVmFactory;
         Entry = entry;
 
+        _progress.ProgressChanged += (_, f) => InstallProgress = f.ProgressPercentage;
         this.WhenActivated((CompositeDisposable _) => { IsInstalled = workshopService.GetInstalledEntry(entry.Id) != null; });
     }
 
@@ -61,26 +67,44 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
                 .WithCloseButtonText("Skip and continue")
                 .ShowAsync();
         }
-        // If the entry is a plugin, enable the plugin
+        // If the entry is a plugin, enable the plugin and all features
         else if (result.Entry?.EntryType == EntryType.Plugin)
         {
-            await EnablePlugin(result.Entry);
+            Enabling = true;
+            await EnablePluginAndFeatures(result.Entry);
+            Enabling = false;
         }
 
         return result.IsSuccess;
     }
 
-    private async Task EnablePlugin(InstalledEntry entry)
+    private async Task EnablePluginAndFeatures(InstalledEntry entry)
     {
         if (!entry.TryGetMetadata("PluginId", out Guid pluginId))
             throw new InvalidOperationException("Plugin entry does not contain a PluginId metadata value.");
-        
+
         Plugin? plugin = _pluginManagementService.GetAllPlugins().FirstOrDefault(p => p.Guid == pluginId);
         if (plugin == null)
             throw new InvalidOperationException($"Plugin with id '{pluginId}' does not exist.");
-        
+
         // There's quite a bit of UI involved in enabling a plugin, borrowing the PluginSettingsViewModel for this
         PluginViewModel pluginViewModel = _settingsVmFactory.PluginViewModel(plugin, ReactiveCommand.Create(() => { }));
         await pluginViewModel.UpdateEnabled(true);
+
+        // Find features without prerequisites to enable
+        foreach (PluginFeatureInfo pluginFeatureInfo in plugin.Features)
+        {
+            if (pluginFeatureInfo.Instance == null || pluginFeatureInfo.Instance.IsEnabled || pluginFeatureInfo.Prerequisites.Count != 0)
+                continue;
+
+            try
+            {
+                _pluginManagementService.EnablePluginFeature(pluginFeatureInfo.Instance, true);
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "Failed to enable plugin feature '{FeatureName}', skipping", pluginFeatureInfo.Name);
+            }
+        }
     }
 }

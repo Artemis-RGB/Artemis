@@ -54,8 +54,8 @@
         <DockPanel Grid.Row="2" LastChildFill="False" IsVisible="{CompiledBinding !Screen.HideAllButtons}" HorizontalSpacing="10">
             <Button Command="{CompiledBinding SkipOrFinishWizard}" IsVisible="{CompiledBinding !Screen.ShowFinish}" DockPanel.Dock="Left">Skip &amp; close</Button>
             <Button Command="{CompiledBinding Screen.Continue}" IsVisible="{CompiledBinding !Screen.ShowFinish}" Width="80" DockPanel.Dock="Right">Continue</Button>
-            <Button Command="{CompiledBinding Screen.GoBack}" IsEnabled="{CompiledBinding Screen.ShowGoBack}" DockPanel.Dock="Right">Back</Button>
             <Button Command="{CompiledBinding SkipOrFinishWizard}" IsVisible="{CompiledBinding Screen.ShowFinish}" Width="80" DockPanel.Dock="Right">Finish</Button>
+            <Button Command="{CompiledBinding Screen.GoBack}" IsEnabled="{CompiledBinding Screen.ShowGoBack}" DockPanel.Dock="Right">Back</Button>
         </DockPanel>
     </Grid>
 
