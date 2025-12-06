@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:list="clr-namespace:Artemis.UI.Screens.Workshop.Entries.List"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.Entries.List.EntryListView"
              x:DataType="list:EntryListViewModel">
@@ -26,6 +27,20 @@
                     HorizontalAlignment="Right" 
                     Width="300"
                     IsVisible="{CompiledBinding ShowCategoryFilter}">
+            <Border Classes="card" VerticalAlignment="Stretch">
+                <StackPanel>
+                    <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Categories</TextBlock>
+                    <Border Classes="card-separator" />
+                    <ContentControl Content="{CompiledBinding CategoriesViewModel}"></ContentControl>
+                    <CheckBox IsChecked="{CompiledBinding IncludeDefaultEntries}">
+                        <StackPanel Orientation="Horizontal" Spacing="2">
+                            <Image Source="/Assets/Images/Logo/bow.png" RenderOptions.BitmapInterpolationMode="HighQuality" Width="18" Height="18"/>
+                            <TextBlock>Default entries</TextBlock>
+                        </StackPanel>
+                    </CheckBox>
+                </StackPanel>
+            </Border>
+            
             <Border Classes="card" VerticalAlignment="Stretch">
                 <StackPanel>
                     <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Categories</TextBlock>
@@ -59,7 +74,7 @@
                 <TextBlock>
                     <Run>Modify or clear your filters to view other entries</Run>
                 </TextBlock>
-                <Lottie Path="/Assets/Animations/empty.json" RepeatCount="1" Width="350" Height="350"></Lottie>
+                <!-- <Lottie Path="/Assets/Animations/empty.json" RepeatCount="1" Width="350" Height="350"></Lottie> -->
             </StackPanel>
         </Panel>
     </Grid>

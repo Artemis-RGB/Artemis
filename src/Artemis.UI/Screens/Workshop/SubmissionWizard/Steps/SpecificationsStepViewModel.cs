@@ -80,7 +80,7 @@ public partial class SpecificationsStepViewModel : SubmissionViewModel
         if (State.Icon != null)
         {
             State.Icon.Seek(0, SeekOrigin.Begin);
-            viewModel.IconBitmap = BitmapExtensions.LoadAndResize(State.Icon, 128);
+            viewModel.IconBitmap = BitmapExtensions.LoadAndResize(State.Icon, 128, false);
         }
 
         EntrySpecificationsViewModel = viewModel;

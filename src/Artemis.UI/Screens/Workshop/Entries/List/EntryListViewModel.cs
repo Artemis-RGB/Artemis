@@ -30,6 +30,7 @@ public partial class EntryListViewModel : RoutableScreen
     [Notify] private bool _initializing = true;
     [Notify] private bool _fetchingMore;
     [Notify] private int _entriesPerFetch;
+    [Notify] private bool _includeDefaultEntries;
     [Notify] private Vector _scrollOffset;
 
     protected EntryListViewModel(IWorkshopClient workshopClient,
@@ -51,13 +52,14 @@ public partial class EntryListViewModel : RoutableScreen
         Entries = entries;
 
         // Respond to filter query input changes
+        this.WhenAnyValue(vm => vm.IncludeDefaultEntries).Skip(1).Throttle(TimeSpan.FromMilliseconds(200)).Subscribe(_ => Reset());
         this.WhenActivated(d =>
         {
             InputViewModel.WhenAnyValue(vm => vm.Search).Skip(1).Throttle(TimeSpan.FromMilliseconds(200)).Subscribe(_ => Reset()).DisposeWith(d);
             InputViewModel.WhenAnyValue(vm => vm.SortBy).Skip(1).Throttle(TimeSpan.FromMilliseconds(200)).Subscribe(_ => Reset()).DisposeWith(d);
             CategoriesViewModel.WhenAnyValue(vm => vm.CategoryFilters).Skip(1).Subscribe(_ => Reset()).DisposeWith(d);
         });
-        
+
         // Load entries when the view model is first activated
         this.WhenActivatedAsync(async _ =>
         {
@@ -76,7 +78,7 @@ public partial class EntryListViewModel : RoutableScreen
     public EntryType? EntryType { get; set; }
 
     public ReadOnlyObservableCollection<EntryListItemViewModel> Entries { get; }
-    
+
     public async Task FetchMore(CancellationToken cancellationToken)
     {
         if (FetchingMore || _currentPageInfo != null && !_currentPageInfo.HasNextPage)
@@ -122,6 +124,7 @@ public partial class EntryListViewModel : RoutableScreen
             And =
             [
                 new EntryFilterInput {EntryType = new EntryTypeOperationFilterInput {Eq = EntryType}},
+                new EntryFilterInput {DefaultEntryInfo = IncludeDefaultEntries ? new DefaultEntryInfoFilterInput {EntryId = new LongOperationFilterInput {Ngt = 0}} : null},
                 ..CategoriesViewModel.CategoryFilters ?? []
             ]
         };

@@ -38,15 +38,18 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
     [Notify] private bool _isDefault;
     [Notify] private bool _isEssential;
     [Notify] private bool _isDeviceProvider;
+    [Notify] private bool _fit;
     [Notify] private Bitmap? _iconBitmap;
     [Notify(Setter.Private)] private bool _iconChanged;
+
+    private string? _lastIconPath;
 
     public EntrySpecificationsViewModel(IWorkshopClient workshopClient, IWindowService windowService, IAuthenticationService authenticationService)
     {
         _workshopClient = workshopClient;
         _windowService = windowService;
         SelectIcon = ReactiveCommand.CreateFromTask(ExecuteSelectIcon);
-        
+
         Categories.ToObservableChangeSet()
             .AutoRefresh(c => c.IsSelected)
             .Filter(c => c.IsSelected)
@@ -68,23 +71,24 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
         _categoriesValid = categoriesRule.ValidationChanged.Select(c => c.IsValid).ToProperty(this, vm => vm.CategoriesValid);
         _descriptionValid = descriptionRule.ValidationChanged.Select(c => c.IsValid).ToProperty(this, vm => vm.DescriptionValid);
 
-        this.WhenActivatedAsync(async _ => await PopulateCategories());
         IsAdministrator = authenticationService.GetRoles().Contains("Administrator");
+        this.WhenActivatedAsync(async _ => await PopulateCategories());
+        this.WhenAnyValue(vm => vm.Fit).Subscribe(_ => UpdateIcon());
     }
-    
+
     public ReactiveCommand<Unit, Unit> SelectIcon { get; }
 
     public ObservableCollection<CategoryViewModel> Categories { get; } = new();
     public ObservableCollection<string> Tags { get; } = new();
     public ReadOnlyObservableCollection<long> SelectedCategories { get; }
-    
-    public bool CategoriesValid => _categoriesValid.Value ;
+
+    public bool CategoriesValid => _categoriesValid.Value;
     public bool IconValid => _iconValid.Value;
     public bool DescriptionValid => _descriptionValid.Value;
     public bool IsAdministrator { get; }
-    
+
     public List<long> PreselectedCategories { get; set; } = new();
-    
+
     private async Task ExecuteSelectIcon()
     {
         string[]? result = await _windowService.CreateOpenFileDialog()
@@ -94,8 +98,17 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
         if (result == null)
             return;
 
+        _lastIconPath = result[0];
+        UpdateIcon();
+    }
+
+    private void UpdateIcon()
+    {
+        if (_lastIconPath == null)
+            return;
+
         IconBitmap?.Dispose();
-        IconBitmap = BitmapExtensions.LoadAndResize(result[0], 128);
+        IconBitmap = BitmapExtensions.LoadAndResize(_lastIconPath, 128, Fit);
         IconChanged = true;
     }
 

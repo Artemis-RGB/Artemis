@@ -32,6 +32,7 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <TextBox Classes="search-box" Text="{CompiledBinding SearchEntryInput}" Watermark="Search submissions" Margin="0 0 10 0" />
+                <Button Grid.Column="1" HorizontalAlignment="Right" Classes="accent" Command="{CompiledBinding AddSubmission}">Add submission</Button>
             </Grid>
 
             <StackPanel Grid.Row="1" Grid.Column="0" IsVisible="{CompiledBinding Empty}" Margin="0 50 0 0" Classes="empty-state">
