@@ -18,10 +18,10 @@ public class CategoriesViewModel : ActivatableViewModelBase
 {
     private ObservableAsPropertyHelper<IReadOnlyList<EntryFilterInput>?>? _categoryFilters;
 
-    public CategoriesViewModel(IWorkshopClient client)
+    public CategoriesViewModel(EntryType entryType, IWorkshopClient client)
     {
         client.GetCategories
-            .Watch(ExecutionStrategy.CacheFirst)
+            .Watch(entryType, ExecutionStrategy.CacheFirst)
             .SelectOperationResult(c => c.Categories)
             .ToObservableChangeSet(c => c.Id)
             .Transform(c => new CategoryViewModel(c))

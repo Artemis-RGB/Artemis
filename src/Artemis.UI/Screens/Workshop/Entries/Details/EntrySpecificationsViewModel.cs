@@ -88,6 +88,7 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
     public bool IsAdministrator { get; }
 
     public List<long> PreselectedCategories { get; set; } = new();
+    public EntryType EntryType { get; set; }
 
     private async Task ExecuteSelectIcon()
     {
@@ -114,7 +115,7 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
 
     private async Task PopulateCategories()
     {
-        IOperationResult<IGetCategoriesResult> categories = await _workshopClient.GetCategories.ExecuteAsync();
+        IOperationResult<IGetCategoriesResult> categories = await _workshopClient.GetCategories.ExecuteAsync(EntryType);
         Categories.Clear();
         if (categories.Data != null)
             Categories.AddRange(categories.Data.Categories.Select(c => new CategoryViewModel(c) {IsSelected = PreselectedCategories.Contains(c.Id)}));

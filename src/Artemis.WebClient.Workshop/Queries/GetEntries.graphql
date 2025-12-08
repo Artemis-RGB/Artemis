@@ -1,5 +1,5 @@
-query GetEntriesv2($search: String $filter: EntryFilterInput $order: [EntrySortInput!] $first: Int $after: String) {
-    entriesV2(search: $search where: $filter order: $order first: $first after: $after) {
+query GetEntries($search: String $includeDefaults: Boolean $filter: EntryFilterInput $order: [EntrySortInput!] $first: Int $after: String) {
+    entriesV2(search: $search includeDefaults: $includeDefaults where: $filter order: $order first: $first after: $after) {
         totalCount
         pageInfo {
             hasNextPage
@@ -22,6 +22,7 @@ query GetPopularEntries {
 
 query GetDefaultEntries($first: Int, $after: String) {
     entriesV2(
+        includeDefaults: true
         where: { defaultEntryInfo: { entryId: { gt: 0 } } }
         first: $first
         after: $after

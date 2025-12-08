@@ -31,7 +31,6 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
 
     [Notify] private bool _isInstalled;
     [Notify] private bool _shouldInstall;
-    [Notify] private bool _enabling;
     [Notify] private float _installProgress;
     
     public DefaultEntryItemViewModel(ILogger logger, IEntrySummary entry, IWorkshopService workshopService, IWindowService windowService, IPluginManagementService pluginManagementService,
@@ -70,9 +69,7 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
         // If the entry is a plugin, enable the plugin and all features
         else if (result.Entry?.EntryType == EntryType.Plugin)
         {
-            Enabling = true;
             await EnablePluginAndFeatures(result.Entry);
-            Enabling = false;
         }
 
         return result.IsSuccess;

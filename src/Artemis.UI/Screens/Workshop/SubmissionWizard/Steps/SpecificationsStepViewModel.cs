@@ -75,6 +75,7 @@ public partial class SpecificationsStepViewModel : SubmissionViewModel
 
         // Categories
         viewModel.PreselectedCategories = State.Categories;
+        viewModel.EntryType = State.EntryType;
 
         // Icon
         if (State.Icon != null)

@@ -41,7 +41,7 @@ public partial class DefaultEntriesStepViewModel : WizardStepViewModel
         _client = client;
         _getDefaultEntryItemViewModel = getDefaultEntryItemViewModel;
         _remainingEntries = this.WhenAnyValue(vm => vm.InstalledEntries, vm => vm.TotalEntries)
-            .Select(t => t.Item2 - t.Item1)
+            .Select(t => t.Item2 - t.Item1 + 1)
             .ToProperty(this, vm => vm.RemainingEntries);
 
         ContinueText = "Install selected entries";

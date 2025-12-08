@@ -119,7 +119,7 @@ public partial class PluginViewModel : ActivatableViewModelBase
             Enabling = true;
             if (Plugin.Info.RequiresAdmin && !_coreService.IsElevated)
             {
-                bool confirmed = await _windowService.ShowConfirmContentDialog("Enable plugin", "This plugin requires admin rights, are you sure you want to enable it?");
+                bool confirmed = await _windowService.ShowConfirmContentDialog("Enable plugin", "This plugin requires admin rights, are you sure you want to enable it? Artemis will need to restart.", "Confirm and restart");
                 if (!confirmed)
                     return;
             }

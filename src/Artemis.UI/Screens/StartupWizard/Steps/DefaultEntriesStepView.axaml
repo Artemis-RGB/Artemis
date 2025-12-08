@@ -62,7 +62,6 @@
             <ProgressBar Minimum="0" 
                          Maximum="{CompiledBinding TotalEntries}" 
                          Value="{CompiledBinding CurrentEntry.InstallProgress, FallbackValue=0}" 
-                         IsIndeterminate="{CompiledBinding CurrentEntry.Enabling, FallbackValue=true}" 
                          Margin="0 0 0 5" />
             <TextBlock>
                 <Run>Currently installing: </Run>

@@ -109,6 +109,7 @@ public partial class SubmissionDetailsViewModel : RoutableScreen
         specificationsViewModel.IsEssential = Entry.DefaultEntryInfo?.IsEssential ?? false;
         specificationsViewModel.IsDeviceProvider = Entry.DefaultEntryInfo?.IsDeviceProvider ?? false;
         specificationsViewModel.PreselectedCategories = Entry.Categories.Select(c => c.Id).ToList();
+        specificationsViewModel.EntryType = Entry.EntryType;
 
         specificationsViewModel.Tags.Clear();
         foreach (string tag in Entry.Tags.Select(c => c.Name))
