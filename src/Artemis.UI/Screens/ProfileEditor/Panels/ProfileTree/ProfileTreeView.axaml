@@ -1,0 +1,183 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:profileTree="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree"
+             xmlns:profileBehaviors="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree.Behaviors"
+             xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.ProfileTreeView"
+             x:DataType="profileTree:ProfileTreeViewModel">
+    <!-- These cause binding errors, not my fault - https://github.com/AvaloniaUI/Avalonia/issues/5762 -->
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="Escape" Command="{CompiledBinding ClearSelection}" />
+        <KeyBinding Gesture="F2" Command="{CompiledBinding RenameSelected}" />
+        <KeyBinding Gesture="Delete" Command="{CompiledBinding DeleteSelected}" />
+        <KeyBinding Gesture="Ctrl+D" Command="{CompiledBinding DuplicateSelected}" />
+        <KeyBinding Gesture="Ctrl+C" Command="{CompiledBinding CopySelected}" />
+        <KeyBinding Gesture="Ctrl+V" Command="{CompiledBinding PasteSelected}" />
+    </UserControl.KeyBindings>
+    <UserControl.Resources>
+        <converters:ColorOpacityConverter x:Key="ColorOpacityConverter" />
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <StyleInclude Source="avares://Avalonia.Xaml.Interactions.Draggable/Styles.axaml" />
+        <Style Selector="TreeView#Profile">
+            <Style.Resources>
+                <profileBehaviors:ProfileTreeViewDropHandler x:Key="ProfileTreeViewDropHandler" />
+            </Style.Resources>
+            <Setter Property="(Interaction.Behaviors)">
+                <BehaviorCollectionTemplate>
+                    <BehaviorCollection>
+                        <ContextDropBehavior Handler="{StaticResource ProfileTreeViewDropHandler}" />
+                    </BehaviorCollection>
+                </BehaviorCollectionTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="TreeView#Profile TreeViewItem">
+            <Setter Property="IsExpanded" Value="True" />
+            <Setter Property="(Interaction.Behaviors)">
+                <BehaviorCollectionTemplate>
+                    <BehaviorCollection>
+                        <behaviors:SimpleContextDragBehavior />
+                    </BehaviorCollection>
+                </BehaviorCollectionTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="TreeView#Profile TreeViewItem:dragging-before">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,28">
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.0" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.05" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.05" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.25" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style Selector="TreeView#Profile TreeViewItem:dragging-into">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,28">
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.0" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.05" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.05" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.25" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.75" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.95" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.95" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="1" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style Selector="TreeView#Profile TreeViewItem:dragging-after">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,28">
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0}" Offset="0.75" />
+                        <GradientStop Color="{CompiledBinding Source={StaticResource SystemAccentColorLight3}, Converter={StaticResource ColorOpacityConverter}, ConverterParameter=0.25}" Offset="0.95" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="0.95" />
+                        <GradientStop Color="{StaticResource SystemAccentColorLight3}" Offset="1" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+    <Grid RowDefinitions="*,Auto">
+        <TreeView Name="Profile" Classes="no-right-margin draggable"
+                  ItemsSource="{CompiledBinding Children}"
+                  SelectedItem="{CompiledBinding SelectedChild}"
+                  SelectionChanged="ProfileTreeView_OnSelectionChanged">
+            <TreeView.Styles>
+                <Style Selector="TreeViewItem">
+                    <Setter Property="IsExpanded" Value="{CompiledBinding IsExpanded, Mode=TwoWay}" />
+                </Style>
+            </TreeView.Styles>
+            <TreeView.ItemTemplate>
+                <TreeDataTemplate ItemsSource="{CompiledBinding Children}">
+                    <ContentControl Content="{CompiledBinding}" x:DataType="profileTree:TreeItemViewModel" Background="Transparent">
+                        <ContentControl.ContextFlyout>
+                            <MenuFlyout IsOpen="{CompiledBinding IsFlyoutOpen, Mode=OneWayToSource}">
+                                <MenuItem Header="Add new folder" Command="{CompiledBinding AddFolder}">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="CreateNewFolder" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Add new layer" Command="{CompiledBinding AddLayer}">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="LayersPlus" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Open adaption hints" Command="{CompiledBinding OpenAdaptionHints}">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="Magic" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Apply adaption hints" Command="{CompiledBinding ApplyAdaptionHints}">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="CogPlay" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="-" />
+                                <MenuItem Header="Duplicate" Command="{CompiledBinding Duplicate}" InputGesture="Ctrl+D">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="ContentDuplicate" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Copy" Command="{CompiledBinding Copy}" InputGesture="Ctrl+C">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="ContentCopy" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Paste" Command="{CompiledBinding Paste}" InputGesture="Ctrl+V">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="ContentPaste" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="-" />
+                                <MenuItem Header="Rename" Command="{CompiledBinding Rename}" InputGesture="F2">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="RenameBox" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Delete" Command="{CompiledBinding Delete}" InputGesture="Delete">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="TrashCan" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </MenuFlyout>
+                        </ContentControl.ContextFlyout>
+                    </ContentControl>
+                </TreeDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+        <Grid Grid.Row="1" ColumnDefinitions="*,*">
+            <StackPanel Grid.Column="0" 
+                        Orientation="Horizontal" 
+                        VerticalAlignment="Center" 
+                        Spacing="5" 
+                        Background="Transparent"
+                        ToolTip.Tip="Focus Mode - Use to disable parts of the profile you're not working on (F to change)">
+                <avalonia:MaterialIcon Kind="EyeOff" IsVisible="{CompiledBinding FocusNone}" />
+                <avalonia:MaterialIcon Kind="Eye" IsVisible="{CompiledBinding !FocusNone}" />
+                <TextBlock Text="Focus disabled" IsVisible="{CompiledBinding FocusNone}" />
+                <TextBlock Text="Focus on folder" IsVisible="{CompiledBinding FocusFolder}" />
+                <TextBlock Text="Focus on selection" IsVisible="{CompiledBinding FocusSelection}" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <Button Classes="icon-button" ToolTip.Tip="Add new folder to root" Command="{CompiledBinding AddFolder}">
+                    <avalonia:MaterialIcon Kind="FolderAdd" />
+                </Button>
+                <Button Classes="icon-button" ToolTip.Tip="Add new layer to root" Command="{CompiledBinding AddLayer}" Margin="2 0 0 0">
+                    <avalonia:MaterialIcon Kind="LayersPlus" />
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

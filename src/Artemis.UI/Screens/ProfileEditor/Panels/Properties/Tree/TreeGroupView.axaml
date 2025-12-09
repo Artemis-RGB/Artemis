@@ -1,0 +1,187 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:sharedConverters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:viewModel="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties.Tree"
+             xmlns:properties="clr-namespace:Artemis.UI.Screens.ProfileEditor.Properties"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.Properties.Tree.TreeGroupView"
+             x:DataType="viewModel:TreeGroupViewModel">
+    <UserControl.Resources>
+        <converters:PropertyTreeMarginConverter x:Key="PropertyTreeMarginConverter" Length="20" />
+        <sharedConverters:EnumToBooleanConverter x:Key="EnumBoolConverter" />
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="avalonia|MaterialIcon.chevron-collapsed">
+            <Setter Property="RenderTransform" Value="rotate(-90deg)" />
+        </Style>
+    </UserControl.Styles>
+    <StackPanel>
+        <Border Name="Bd"
+                BorderBrush="{DynamicResource ButtonBorderBrush}"
+                BorderThickness="0,0,0,1"
+                Height="29">
+            <Grid Margin="{CompiledBinding Converter={StaticResource PropertyTreeMarginConverter}}" ColumnDefinitions="19,*">
+
+                <avalonia:MaterialIcon Classes.chevron-collapsed="{CompiledBinding !PropertyGroupViewModel.IsExpanded}"
+                                       IsVisible="{CompiledBinding PropertyGroupViewModel.HasChildren}"
+                                       Kind="ChevronDown"
+                                       Grid.Column="0"
+                                       Margin="5 0"
+                                       PointerPressed="InputElement_OnPointerPressed"
+                                       Background="Transparent">
+                    <avalonia:MaterialIcon.Transitions>
+                        <Transitions>
+                            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" />
+                        </Transitions>
+                    </avalonia:MaterialIcon.Transitions>
+                </avalonia:MaterialIcon>
+
+                <StackPanel Grid.Column="1">
+                    <!-- Type: None -->
+                    <TextBlock Text="{CompiledBinding LayerPropertyGroup.GroupDescription.Name}"
+                               ToolTip.Tip="{CompiledBinding LayerPropertyGroup.GroupDescription.Description}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Margin="3 5 0 5"
+                               IsVisible="{CompiledBinding GroupType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModel:LayerPropertyGroupType.None}}" />
+
+                    <!-- Type: General -->
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0 5"
+                                IsVisible="{CompiledBinding GroupType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModel:LayerPropertyGroupType.General}}">
+                        <avalonia:MaterialIcon Kind="HammerWrench" Margin="0 0 5 0" />
+                        <TextBlock ToolTip.Tip="{CompiledBinding LayerPropertyGroup.GroupDescription.Description}">General</TextBlock>
+                    </StackPanel>
+
+                    <!-- Type: Transform -->
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0 5"
+                                IsVisible="{CompiledBinding GroupType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModel:LayerPropertyGroupType.Transform}}">
+                        <avalonia:MaterialIcon Kind="TransitConnectionVariant" Margin="0 0 5 0" />
+                        <TextBlock ToolTip.Tip="{CompiledBinding LayerPropertyGroup.GroupDescription.Description}">Transform</TextBlock>
+                    </StackPanel>
+
+                    <!-- Type: LayerBrushRoot -->
+                    <Grid IsVisible="{CompiledBinding GroupType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModel:LayerPropertyGroupType.LayerBrushRoot}}"
+                          Height="29"
+                          ColumnDefinitions="Auto,Auto,Auto,*">
+                        <shared:ArtemisIcon Grid.Column="0"
+                                            Icon="{CompiledBinding LayerBrush.Descriptor.Icon}"
+                                            Width="16"
+                                            Height="16"
+                                            Margin="0 0 5 0" />
+                        <TextBlock Grid.Column="1"
+                                   ToolTip.Tip="{CompiledBinding LayerBrush.Descriptor.Description}"
+                                   Margin="0 5 5 0">
+                            Brush -
+                        </TextBlock>
+                        <TextBlock Grid.Column="2"
+                                   Text="{CompiledBinding LayerBrush.Descriptor.DisplayName}"
+                                   ToolTip.Tip="{CompiledBinding LayerBrush.Descriptor.Description}"
+                                   Margin="0 5 0 0" />
+
+                        <StackPanel Grid.Column="3"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    IsVisible="{CompiledBinding LayerBrush.ConfigurationDialog, Converter={x:Static ObjectConverters.IsNotNull}}">
+                            <TextBlock VerticalAlignment="Center">Extra options available!</TextBlock>
+                            <avalonia:MaterialIcon Kind="ChevronRight" VerticalAlignment="Center">
+                                <avalonia:MaterialIcon.RenderTransform>
+                                    <TranslateTransform X="0" />
+                                </avalonia:MaterialIcon.RenderTransform>
+                            </avalonia:MaterialIcon>
+                            <Button Classes="icon-button" ToolTip.Tip="Open brush settings" Width="24" Height="24" HorizontalAlignment="Right" Command="{CompiledBinding OpenBrushSettings}">
+                                <avalonia:MaterialIcon Kind="Settings" Height="16" Width="16" />
+                            </Button>
+                        </StackPanel>
+
+                    </Grid>
+
+                    <!-- Type: LayerEffectRoot -->
+                    <Grid IsVisible="{CompiledBinding GroupType, Converter={StaticResource EnumBoolConverter}, ConverterParameter={x:Static viewModel:LayerPropertyGroupType.LayerEffectRoot}}"
+                          Height="29"
+                          ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+                        <shared:ArtemisIcon
+                            Grid.Column="0"
+                            Cursor="SizeNorthSouth"
+                            Icon="{CompiledBinding LayerEffect.Descriptor.Icon}"
+                            Width="16"
+                            Height="16"
+                            Margin="0 0 5 0"
+                            Background="Transparent" />
+                        <TextBlock Grid.Column="1" ToolTip.Tip="{CompiledBinding LayerEffect.Descriptor.Description}" Margin="0 5 0 0">
+                            Effect
+                        </TextBlock>
+                        <TextBlock Grid.Column="2"
+                                   ToolTip.Tip="{CompiledBinding LayerEffect.Descriptor.Description}"
+                                   Margin="3 5">
+                            -
+                        </TextBlock>
+
+                        <!-- Show either the descriptors display name or, if set, the effect name -->
+                        <TextBlock Grid.Column="3"
+                                   Text="{CompiledBinding LayerEffect.Descriptor.DisplayName}"
+                                   ToolTip.Tip="{CompiledBinding LayerEffect.Descriptor.Description}"
+                                   Margin="0 5"
+                                   IsVisible="{CompiledBinding !LayerEffect.HasBeenRenamed}" />
+                        <TextBlock Grid.Column="4"
+                                   Text="{CompiledBinding LayerEffect.Name}"
+                                   ToolTip.Tip="{CompiledBinding LayerEffect.Descriptor.Description}"
+                                   Margin="0 5"
+                                   IsVisible="{CompiledBinding LayerEffect.HasBeenRenamed}" />
+
+                        <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="2">
+                            <Button Classes="icon-button"
+                                    ToolTip.Tip="Rename"
+                                    Width="24"
+                                    Height="24"
+                                    VerticalAlignment="Center"
+                                    Command="{CompiledBinding RenameEffect}">
+                                <avalonia:MaterialIcon Kind="RenameBox" Height="16" Width="16" />
+                            </Button>
+                            <Button Classes="icon-button"
+                                    ToolTip.Tip="Open effect settings"
+                                    Width="24"
+                                    Height="24"
+                                    VerticalAlignment="Center"
+                                    Command="{CompiledBinding OpenEffectSettings}"
+                                    IsVisible="{CompiledBinding LayerEffect.ConfigurationDialog, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                <avalonia:MaterialIcon Kind="Settings" Height="16" Width="16" />
+                            </Button>
+                            <Button Classes="icon-button"
+                                    ToolTip.Tip="Remove"
+                                    Width="24"
+                                    Height="24"
+                                    VerticalAlignment="Center"
+                                    Command="{CompiledBinding DeleteEffect}">
+                                <avalonia:MaterialIcon Kind="TrashCan" Height="16" Width="16" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 
+        Do not bind directly to the PropertyGroupViewModel.Children collection
+        Instead use a reference provided by the VM that is null when collapsed, virtualization for noobs 
+        -->
+        <ItemsControl ItemsSource="{CompiledBinding Children}"
+                      IsVisible="{CompiledBinding PropertyGroupViewModel.IsExpanded}"
+                      HorizontalAlignment="Stretch">
+            <ItemsControl.DataTemplates>
+                <DataTemplate DataType="properties:PropertyGroupViewModel">
+                    <ContentControl Content="{CompiledBinding TreeGroupViewModel}" IsVisible="{CompiledBinding IsVisible}" />
+                </DataTemplate>
+                <DataTemplate DataType="properties:PropertyViewModel">
+                    <ContentControl Content="{CompiledBinding TreePropertyViewModel}" IsVisible="{CompiledBinding IsVisible}" />
+                </DataTemplate>
+            </ItemsControl.DataTemplates>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>
