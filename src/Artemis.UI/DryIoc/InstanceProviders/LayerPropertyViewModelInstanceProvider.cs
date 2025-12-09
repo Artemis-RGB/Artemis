@@ -2,13 +2,10 @@
 using Artemis.Core;
 using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Exceptions;
-using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
-using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using Artemis.UI.Screens.ProfileEditor.Properties;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
 using DryIoc;
-using PropertyViewModel = Artemis.UI.Screens.ProfileEditor.Properties.PropertyViewModel;
 
 namespace Artemis.UI.DryIoc.InstanceProviders;
 
