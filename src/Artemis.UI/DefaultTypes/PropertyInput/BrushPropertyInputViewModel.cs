@@ -14,6 +14,7 @@ using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Artemis.UI.Shared.Services.PropertyInput;
 using Avalonia.Threading;
 using ReactiveUI;
+using LayerBrushPresetViewModel = Artemis.UI.Screens.Profile.ProfileEditor.Properties.Tree.Dialogs.LayerBrushPresetViewModel;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
 

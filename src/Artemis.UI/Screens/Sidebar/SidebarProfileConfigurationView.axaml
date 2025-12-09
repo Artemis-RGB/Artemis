@@ -72,19 +72,15 @@
           Background="Transparent" 
           ContextFlyout="{StaticResource ProfileMenuFlyout}"
           Classes.flyout-open="{CompiledBinding IsOpen, Source={StaticResource ProfileMenuFlyout}}">
-        <shared:ProfileConfigurationIcon Grid.Column="0"
-                                         x:Name="ProfileIcon"
-                                         VerticalAlignment="Center"
-                                         ConfigurationIcon="{CompiledBinding ProfileConfiguration.Icon}"
-                                         Width="22"
-                                         Height="22" 
-                                         Margin="0 0 5 0">
-            <shared:ProfileConfigurationIcon.Transitions>
-                <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
-                </Transitions>
-            </shared:ProfileConfigurationIcon.Transitions>
-        </shared:ProfileConfigurationIcon>
+        <Border CornerRadius="4" ClipToBounds="True" Grid.Column="0" Width="22" Height="22" Margin="0 0 5 0" VerticalAlignment="Center">
+            <shared:ProfileConfigurationIcon x:Name="ProfileIcon" ConfigurationIcon="{CompiledBinding ProfileConfiguration.Icon}">
+                <shared:ProfileConfigurationIcon.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
+                    </Transitions>
+                </shared:ProfileConfigurationIcon.Transitions>
+            </shared:ProfileConfigurationIcon>
+        </Border>
 
         <Panel Grid.Column="1" HorizontalAlignment="Left">
             <TextBlock Classes="fadable"

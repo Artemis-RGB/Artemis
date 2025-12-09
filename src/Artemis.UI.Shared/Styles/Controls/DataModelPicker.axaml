@@ -2,7 +2,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dataModel="clr-namespace:Artemis.UI.Shared.DataModelVisualization.Shared"
         xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         xmlns:dataModelPicker="clr-namespace:Artemis.UI.Shared.DataModelPicker">
     <Design.PreviewWith>
         <dataModelPicker:DataModelPicker />

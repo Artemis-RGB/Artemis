@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
+using Artemis.UI.Exceptions;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
@@ -55,7 +56,7 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
             return true;
 
         // Most entries install so fast it looks broken without a small delay
-        Task minimumDelay = Task.Delay(200, cancellationToken);
+        Task minimumDelay = Task.Delay(100, cancellationToken);
         EntryInstallResult result = await _workshopService.InstallEntry(Entry, Entry.LatestRelease, _progress, cancellationToken);
         await minimumDelay;
 
@@ -102,6 +103,15 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
             {
                 _logger.Warning(e, "Failed to enable plugin feature '{FeatureName}', skipping", pluginFeatureInfo.Name);
             }
+        }
+        
+        // If the plugin has a mandatory settings window, open it and wait
+        if (plugin.ConfigurationDialog != null && plugin.ConfigurationDialog.IsMandatory)
+        {
+            if (plugin.Resolve(plugin.ConfigurationDialog.Type) is not PluginConfigurationViewModel viewModel)
+                throw new ArtemisUIException($"The type of a plugin configuration dialog must inherit {nameof(PluginConfigurationViewModel)}");
+            
+            await _windowService.ShowDialogAsync(new PluginSettingsWindowViewModel(viewModel));
         }
     }
 }

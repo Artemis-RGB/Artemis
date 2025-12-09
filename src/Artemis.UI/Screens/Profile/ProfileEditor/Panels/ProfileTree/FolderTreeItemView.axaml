@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:profileTree1="clr-namespace:Artemis.UI.Screens.Profile.ProfileEditor.ProfileTree"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Profile.ProfileEditor.ProfileTree.FolderTreeItemView"
+             x:DataType="profileTree1:FolderTreeItemViewModel">
+    <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto">
+        <HyperlinkButton Grid.Column="0" 
+                                  Classes="icon-button icon-button-small broken-state-button"
+                                  Margin="0 0 5 0"
+                                  Command="{CompiledBinding ShowBrokenStateExceptions}"
+                                  IsVisible="{CompiledBinding ProfileElement.BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                  ToolTip.Tip="{CompiledBinding ProfileElement.BrokenState, FallbackValue=''}">
+            <avalonia:MaterialIcon Kind="AlertCircle" />
+        </HyperlinkButton>
+        <avalonia:MaterialIcon Grid.Column="1"
+                               Kind="Folder"
+                               Margin="0 0 5 0"
+                               IsVisible="{CompiledBinding !IsExpanded, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" />
+        <avalonia:MaterialIcon Grid.Column="1"
+                               Kind="FolderOpen"
+                               Margin="0 0 5 0"
+                               IsVisible="{CompiledBinding IsExpanded, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" />
+      
+        <TextBlock Grid.Column="2" Text="{CompiledBinding Folder.Name}" VerticalAlignment="Center" />
+        
+        <avalonia:MaterialIcon Grid.Column="3" Kind="Eye" IsVisible="{CompiledBinding IsFocused}" ToolTip.Tip="This element is visible because of the current focus mode" Margin="0 0 5 0"/>
+        <ToggleButton Grid.Column="4"
+                      Classes="icon-button icon-button-small"
+                      ToolTip.Tip="Toggle suspended state"
+                      IsChecked="{CompiledBinding Folder.Suspended}"
+                      Focusable="False"
+                      VerticalAlignment="Center"
+                      Margin="4 0">
+            <avalonia:MaterialIcon Kind="Pause" />
+        </ToggleButton>
+    </Grid>
+</UserControl>

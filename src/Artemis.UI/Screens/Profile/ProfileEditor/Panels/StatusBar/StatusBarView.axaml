@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="23"
+             xmlns:statusBar="clr-namespace:Artemis.UI.Screens.Profile.ProfileEditor.StatusBar"
+             x:DataType="statusBar:StatusBarViewModel"
+    x:Class="Artemis.UI.Screens.Profile.ProfileEditor.StatusBar.StatusBarView">
+    <UserControl.Styles>
+        <Style Selector="Border.status-message-border">
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1 0 0 0" />
+            <Setter Property="Margin" Value="5 2 0 2" />
+            <Setter Property="Transitions">
+                <Setter.Value>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0.2" />
+                    </Transitions>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style Selector="Border.status-message-border.hidden">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+    </UserControl.Styles>
+    <Grid ColumnDefinitions="Auto, Auto,*,*" Height="23" Margin="5 0">
+        <ContentControl Grid.Column="0" Content="{CompiledBinding ProfileElement}">
+            <ContentControl.DataTemplates>
+                <DataTemplate DataType="core:Folder">
+                    <avalonia:MaterialIcon Kind="Folder" Margin="0 0 5 0" />
+                </DataTemplate>
+                <DataTemplate DataType="core:Layer">
+                    <avalonia:MaterialIcon Kind="{CompiledBinding LayerBrush.Descriptor.Icon}" Margin="0 0 5 0" />
+                </DataTemplate>
+            </ContentControl.DataTemplates>
+        </ContentControl>
+
+        <TextBlock Grid.Column="1" Text="{CompiledBinding ProfileElement.Name, FallbackValue=Select a layer to get started}" VerticalAlignment="Center" />
+
+        <Border Grid.Column="2" Classes="status-message-border" Classes.hidden="{CompiledBinding !ShowStatusMessage}">
+            <TextBlock Margin="5 0 0 0" Text="{CompiledBinding StatusMessage}" />
+        </Border>
+
+        <Slider Grid.Column="3"
+                Margin="0 -11 0 0"
+                Minimum="31"
+                Maximum="350"
+                Width="319"
+                Value="{CompiledBinding PixelsPerSecond}"
+                HorizontalAlignment="Right" />
+    </Grid>
+</UserControl>

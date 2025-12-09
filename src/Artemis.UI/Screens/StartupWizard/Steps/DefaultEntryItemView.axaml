@@ -11,9 +11,8 @@
              x:DataType="steps:DefaultEntryItemViewModel">
     <UserControl.Resources>
         <converters:EntryIconUriConverter x:Key="EntryIconUriConverter" />
-        <converters:DateTimeConverter x:Key="DateTimeConverter" />
     </UserControl.Resources>
-    <Border Classes="card" Padding="15" Margin="0 5">
+    <Border Classes="card" Padding="15" Margin="0 5" PointerPressed="HandlePointerPressed">
         <Grid ColumnDefinitions="Auto,*,Auto,Auto" RowDefinitions="*, Auto">
             <!-- Icon -->
             <Border Grid.Column="0"

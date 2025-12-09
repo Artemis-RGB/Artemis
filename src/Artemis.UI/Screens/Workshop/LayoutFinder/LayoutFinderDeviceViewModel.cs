@@ -25,6 +25,8 @@ public partial class LayoutFinderDeviceViewModel : ViewModelBase
 
     [Notify] private bool _searching;
     [Notify] private bool _hasLayout;
+    [Notify] private bool _searchPending = true;
+    [Notify] private bool _noLayoutFound;
 
     [Notify] private IEntrySummary? _entry;
     [Notify] private IRelease? _release;
@@ -50,7 +52,7 @@ public partial class LayoutFinderDeviceViewModel : ViewModelBase
     {
         if (HasLayout)
             return;
-        
+
         try
         {
             Searching = true;
@@ -64,6 +66,8 @@ public partial class LayoutFinderDeviceViewModel : ViewModelBase
             if (Entry != null && Release != null)
                 await InstallAndApplyEntry(Entry, Release);
 
+            SearchPending = false;
+            NoLayoutFound = Entry == null || Release == null;
             await delayTask;
         }
         finally

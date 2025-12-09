@@ -16,6 +16,7 @@ using Artemis.UI.Screens.Workshop.Plugins;
 using Artemis.UI.Screens.Workshop.Profile;
 using Artemis.UI.Shared.Routing;
 using PluginDetailsViewModel = Artemis.UI.Screens.Workshop.Plugins.PluginDetailsViewModel;
+using ProfileEditorViewModel = Artemis.UI.Screens.Profile.ProfileEditor.ProfileEditorViewModel;
 
 namespace Artemis.UI.Routing
 {
