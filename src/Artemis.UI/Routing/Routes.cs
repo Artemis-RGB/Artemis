@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Artemis.UI.Screens.Home;
-using Artemis.UI.Screens.ProfileEditor;
+using Artemis.UI.Screens.Profiles.ProfileEditor;
 using Artemis.UI.Screens.Root;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Settings.Updating;
@@ -16,7 +16,7 @@ using Artemis.UI.Screens.Workshop.Plugins;
 using Artemis.UI.Screens.Workshop.Profile;
 using Artemis.UI.Shared.Routing;
 using PluginDetailsViewModel = Artemis.UI.Screens.Workshop.Plugins.PluginDetailsViewModel;
-using ProfileEditorViewModel = Artemis.UI.Screens.Profile.ProfileEditor.ProfileEditorViewModel;
+using ProfileEditorViewModel = Artemis.UI.Screens.Profiles.ProfileEditor.ProfileEditorViewModel;
 
 namespace Artemis.UI.Routing
 {

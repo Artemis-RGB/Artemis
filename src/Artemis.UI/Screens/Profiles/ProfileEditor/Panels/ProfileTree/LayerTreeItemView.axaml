@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:profileTree1="clr-namespace:Artemis.UI.Screens.Profiles.ProfileEditor.ProfileTree"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Profiles.ProfileEditor.ProfileTree.LayerTreeItemView"
+             x:DataType="profileTree1:LayerTreeItemViewModel">
+    <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto">
+        <HyperlinkButton Grid.Column="0" 
+                                  Classes="icon-button icon-button-small broken-state-button"
+                                  Margin="0 0 5 0"
+                                  Command="{CompiledBinding ShowBrokenStateExceptions}"
+                                  IsVisible="{CompiledBinding ProfileElement.BrokenState, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                  ToolTip.Tip="{CompiledBinding ProfileElement.BrokenState, FallbackValue=''}">
+            <avalonia:MaterialIcon Kind="AlertCircle" />
+        </HyperlinkButton>
+        <avalonia:MaterialIcon Grid.Column="1" Kind="{CompiledBinding Layer.LayerBrush.Descriptor.Icon, FallbackValue=Layers}" Margin="0 0 5 0" />
+      
+        <TextBlock Grid.Column="2" Text="{CompiledBinding Layer.Name}" VerticalAlignment="Center" />
+        
+        <avalonia:MaterialIcon Grid.Column="3" Kind="Eye" IsVisible="{CompiledBinding IsFocused}" ToolTip.Tip="This element is visible because of the current focus mode" Margin="0 0 5 0"/>
+        <ToggleButton Grid.Column="4"
+                      Classes="icon-button icon-button-small"
+                      ToolTip.Tip="Toggle suspended state"
+                      IsChecked="{CompiledBinding Layer.Suspended}"
+                      Focusable="False"
+                      VerticalAlignment="Center"
+                      Margin="4 0">
+            <avalonia:MaterialIcon Kind="Pause" />
+        </ToggleButton>
+    </Grid>
+</UserControl>

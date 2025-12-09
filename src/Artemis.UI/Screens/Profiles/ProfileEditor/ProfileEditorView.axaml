@@ -1,0 +1,134 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared.Services.ProfileEditor;assembly=Artemis.UI.Shared"
+             xmlns:profileEditor1="clr-namespace:Artemis.UI.Screens.Profiles.ProfileEditor"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Profiles.ProfileEditor.ProfileEditorView"
+             x:DataType="profileEditor1:ProfileEditorViewModel"
+             Focusable="True">
+    <UserControl.Resources>
+        <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter" />
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="Border.suspended-editing">
+            <Setter Property="Margin" Value="-10" />
+            <Setter Property="Background" Value="{DynamicResource SmokeFillColorDefault}" />
+            <Setter Property="IsVisible" Value="{CompiledBinding SuspendedEditing}" />
+            <Setter Property="CornerRadius" Value="{DynamicResource CardCornerRadius}" />
+        </Style>
+        <Style Selector="GridSplitter.editor-grid-splitter-vertical">
+            <Setter Property="MinWidth" Value="4" />
+            <Setter Property="Margin" Value="1 1 1 5" />
+        </Style>
+        <Style Selector="GridSplitter.editor-grid-splitter-horizontal">
+            <Setter Property="MinHeight" Value="4" />
+            <Setter Property="Margin" Value="5 1" />
+        </Style>
+        <Style Selector=":is(Button).editor-sidebar-button">
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Margin" Value="4" />
+        </Style>
+        <Style Selector=":is(Button).editor-sidebar-button avalonia|MaterialIcon">
+            <Setter Property="Width" Value="18" />
+            <Setter Property="Height" Value="18" />
+        </Style>
+        <Style Selector="Grid.editor-grid">
+            <Setter Property="Margin" Value="0 0 6 6" />
+        </Style>
+    </UserControl.Styles>
+    <Grid Classes="editor-grid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="{CompiledBinding TreeWidth.Value, Mode=TwoWay, Converter={StaticResource DoubleToGridLengthConverter}}" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="{CompiledBinding PropertiesHeight.Value, Mode=TwoWay, Converter={StaticResource DoubleToGridLengthConverter}}" />
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Classes="card" Padding="0" Margin="4 0 4 4" ClipToBounds="True">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0">
+                        <ItemsControl ItemsSource="{CompiledBinding Tools}" IsVisible="{CompiledBinding ProfileConfiguration, Converter={x:Static ObjectConverters.IsNotNull}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="shared:IToolViewModel">
+                                    <ToggleButton Classes="icon-button editor-sidebar-button"
+                                                  ToolTip.Tip="{CompiledBinding ToolTip}"
+                                                  IsEnabled="{CompiledBinding IsEnabled}"
+                                                  IsChecked="{CompiledBinding IsSelected}">
+                                        <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" />
+                                    </ToggleButton>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                    <ContentControl Grid.Column="1" Content="{CompiledBinding VisualEditorViewModel}" 
+                                    IsVisible="{CompiledBinding ProfileConfiguration, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                </Grid>
+            </Border>
+
+            <GridSplitter Grid.Row="1" Classes="editor-grid-splitter-horizontal" />
+
+            <Border Grid.Row="2" Classes="card card-condensed" Margin="4" Padding="0" ClipToBounds="True">
+                <Panel IsVisible="{CompiledBinding ProfileConfiguration, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <ContentControl Content="{CompiledBinding PropertiesViewModel}" />
+                    <Border Classes="suspended-editing">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16">
+                            <avalonia:MaterialIcon Kind="TimerOffOutline" Width="125" Height="125" HorizontalAlignment="Center" />
+                            <TextBlock Classes="h4" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0 10">
+                                Timeline suspended
+                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center">
+                                The profile is currently running in normal mode and the timeline cannot be edited.
+                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center">
+                                Press F5 to switch between editor mode and normal mode. Auto-switching can be disabled in the run menu.
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                </Panel>
+            </Border>
+        </Grid>
+
+        <GridSplitter Grid.Row="0" Grid.Column="1" Classes="editor-grid-splitter-vertical" />
+
+        <Grid Grid.Row="0" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="{CompiledBinding ConditionsHeight.Value, Mode=TwoWay, Converter={StaticResource DoubleToGridLengthConverter}}" />
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Classes="card card-condensed" Margin="4 0 4 4">
+                <Panel IsVisible="{CompiledBinding ProfileConfiguration, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <ContentControl Content="{CompiledBinding ProfileTreeViewModel}" />
+                    <Border Classes="suspended-editing" />
+                </Panel>
+            </Border>
+
+            <GridSplitter Grid.Row="1" Classes="editor-grid-splitter-horizontal" />
+
+            <Border Grid.Row="2" Classes="card card-condensed" Margin="4">
+                <Panel IsVisible="{CompiledBinding ProfileConfiguration, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <ContentControl Content="{CompiledBinding DisplayConditionScriptViewModel}" />
+                    <Border Classes="suspended-editing" />
+                </Panel>
+            </Border>
+        </Grid>
+
+        <Panel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="23">
+            <ContentControl Content="{CompiledBinding StatusBarViewModel}"  IsVisible="{CompiledBinding ProfileConfiguration, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+        </Panel>
+      
+    </Grid>
+</UserControl>

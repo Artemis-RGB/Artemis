@@ -1,0 +1,31 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:adaptionHints1="clr-namespace:Artemis.UI.Screens.Profiles.ProfileEditor.ProfileTree.Dialogs.AdaptionHints"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.Profiles.ProfileEditor.ProfileTree.Dialogs.AdaptionHints.KeyboardSectionAdaptionHintView"
+             x:DataType="adaptionHints1:KeyboardSectionAdaptionHintViewModel">
+    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+        <StackPanel Grid.ColumnSpan="2" Margin="0 0 0 5">
+            <TextBlock Classes="h5">Keyboard section hint</TextBlock>
+            <TextBlock Classes="subtitle">Applies the layer to a section of all keyboards</TextBlock>
+        </StackPanel>
+
+        <Button Grid.Row="0"
+                Grid.Column="1"
+                Classes="icon-button"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Right"
+                ToolTip.Tip="Remove hint"
+                Command="{CompiledBinding Remove}">
+            <avalonia:MaterialIcon Kind="Delete" />
+        </Button>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Spacing="5">
+            <shared:EnumComboBox Value="{CompiledBinding KeyboardSectionAdaptionHint.Section}" Width="200" Margin="0 0 10 0" />
+        </StackPanel>
+    </Grid>
+</UserControl>
