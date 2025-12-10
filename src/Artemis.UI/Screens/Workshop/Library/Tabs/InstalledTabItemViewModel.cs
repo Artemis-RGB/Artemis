@@ -35,6 +35,7 @@ public partial class InstalledTabItemViewModel : ActivatableViewModelBase
 
     [Notify] private bool _updateAvailable;
     [Notify] private bool _autoUpdate;
+    [Notify] private bool _displayManagement = true;
 
     public InstalledTabItemViewModel(InstalledEntry entry,
         IWorkshopClient client,
@@ -87,7 +88,7 @@ public partial class InstalledTabItemViewModel : ActivatableViewModelBase
     public async Task ViewLocal()
     {
         if (Entry.EntryType == EntryType.Profile && Entry.TryGetMetadata("ProfileId", out Guid profileId))
-            await _router.Navigate($"profile-editor/{profileId}");
+            await _router.Navigate($"profile/{profileId}/editor");
         else if (Entry.EntryType == EntryType.Plugin)
             await _router.Navigate($"workshop/entries/plugins/details/{Entry.Id}/manage");
         else if (Entry.EntryType == EntryType.Layout)

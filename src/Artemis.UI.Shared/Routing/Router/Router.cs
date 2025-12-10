@@ -103,7 +103,9 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
     {
         if (_root == null)
             throw new ArtemisRoutingException("Cannot navigate without a root having been set");
-        if (PathEquals(path, options) || (_currentNavigation != null && _currentNavigation.PathEquals(path, options)))
+
+        // If navigating to the same path, don't do anything
+        if ((_currentNavigation == null && PathEquals(path, options)) || (_currentNavigation != null && _currentNavigation.PathEquals(path, options)))
             return;
 
         string? previousPath = _currentRouteSubject.Value;
@@ -128,12 +130,8 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
         await navigation.Navigate(args);
 
         // If it was cancelled before completion, don't add it to history or update the current path
-        // Do reload the current path because it may have been partially navigated away from
         if (navigation.Cancelled)
-        {
-            await Reload();
             return;
-        }
 
         if (options.AddToHistory && previousPath != null)
         {

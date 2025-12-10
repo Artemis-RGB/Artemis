@@ -1,0 +1,23 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:profileEditor="clr-namespace:Artemis.UI.Screens.ProfileEditor"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.WorkshopProfileView"
+             x:DataType="profileEditor:WorkshopProfileViewModel">
+    <Border Classes="router-container">
+
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Spacing="10" MaxWidth="800">
+            <ContentControl Content="{CompiledBinding EntryViewModel}"></ContentControl>
+            <TextBlock TextWrapping="Wrap">
+                The profile you're opening is a workshop profile.
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap">
+                You cannot make change to it without disabling auto-update, as any updates to the profile on the workshop would override your own modifications.
+            </TextBlock>
+            <Button Command="{CompiledBinding DisableAutoUpdate}" Classes="accent">Disable auto-update</Button>
+        </StackPanel>
+
+    </Border>
+</UserControl>

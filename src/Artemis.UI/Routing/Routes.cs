@@ -64,7 +64,10 @@ namespace Artemis.UI.Routing
                 new RouteRegistration<AccountTabViewModel>("account"),
                 new RouteRegistration<AboutTabViewModel>("about")
             ]),
-            new RouteRegistration<ProfileEditorViewModel>("profile-editor/{profileConfigurationId:guid}")
+            new RouteRegistration<ProfileViewModel>("profile/{profileConfigurationId:guid}", [
+                new RouteRegistration<ProfileEditorViewModel>("editor"),
+                new RouteRegistration<WorkshopProfileViewModel>("workshop")
+            ]),
         ];
     }
 }

@@ -71,6 +71,9 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
         else if (result.Entry?.EntryType == EntryType.Plugin)
         {
             await EnablePluginAndFeatures(result.Entry);
+        } else if (result.Entry?.EntryType == EntryType.Profile)
+        {
+            
         }
 
         return result.IsSuccess;

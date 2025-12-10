@@ -132,6 +132,6 @@ public class SidebarProfileConfigurationViewModel : ActivatableViewModelBase
 
     public bool Matches(string s)
     {
-        return s.StartsWith("profile-editor") && s.EndsWith(ProfileConfiguration.ProfileId.ToString());
+        return s == $"profile/{ProfileConfiguration.ProfileId}/editor";
     }
 }
