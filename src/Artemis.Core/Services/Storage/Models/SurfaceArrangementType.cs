@@ -28,18 +28,18 @@ internal class SurfaceArrangementType
 
     public void Arrange(List<ArtemisDevice> devices)
     {
-        devices = devices.Where(d => d.DeviceType == DeviceType).ToList();
-        if (!devices.Any())
+        List<ArtemisDevice> devicesToArrange = devices.Where(d => d.DeviceType == DeviceType).ToList();
+        if (!devicesToArrange.Any())
             return;
 
         AppliedConfiguration = null;
         foreach (SurfaceArrangementConfiguration configuration in Configurations)
         {
-            bool applied = configuration.Apply(devices);
+            bool applied = configuration.Apply(devicesToArrange, devices);
             if (applied)
             {
                 AppliedConfiguration = configuration;
-                foreach (ArtemisDevice artemisDevice in devices)
+                foreach (ArtemisDevice artemisDevice in devicesToArrange)
                     artemisDevice.ZIndex = ZIndex;
                 return;
             }
@@ -52,7 +52,7 @@ internal class SurfaceArrangementType
             VerticalArrangementPosition.Equal,
             10
         ) {SurfaceArrangement = SurfaceArrangement};
-        fallback.Apply(devices);
+        fallback.Apply(devicesToArrange, devices);
         AppliedConfiguration = fallback;
     }
 

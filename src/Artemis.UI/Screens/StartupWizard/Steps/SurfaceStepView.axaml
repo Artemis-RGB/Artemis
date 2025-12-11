@@ -24,15 +24,14 @@
                 HorizontalAlignment="Right"
                 Margin="0 0 10 0"
                 Width="280"
-                Height="280"
-                IsEnabled="False">
+                Height="280">
             <StackPanel>
                 <avalonia:MaterialIcon Kind="HandBackLeft" Width="150" Height="150" HorizontalAlignment="Center" />
                 <TextBlock TextAlignment="Center" Classes="h4" Margin="0 10 0 0">
-                    Left-handed preset (NYI)
+                    Left-handed preset
                 </TextBlock>
                 <TextBlock TextAlignment="Center" Classes="subtitle" TextWrapping="Wrap">
-                    A preset with the mouse on the left side of the keyboard
+                    A preset with the mouse on the left side of the keyboard (are you the 10%?)
                 </TextBlock>
             </StackPanel>
         </Button>

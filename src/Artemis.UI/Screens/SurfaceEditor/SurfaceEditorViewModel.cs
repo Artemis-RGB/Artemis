@@ -13,6 +13,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Avalonia;
+using FluentAvalonia.UI.Controls;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using SkiaSharp;
@@ -180,11 +181,18 @@ public partial class SurfaceEditorViewModel : RoutableScreen, IMainScreenViewMod
 
     private async Task ExecuteAutoArrange()
     {
-        bool confirmed = await _windowService.ShowConfirmContentDialog("Auto-arrange layout", "Are you sure you want to auto-arrange your layout? Your current settings will be overwritten.");
-        if (!confirmed)
-            return;
-
-        _deviceService.AutoArrangeDevices();
+        ContentDialogResult contentDialogResult = await _windowService.CreateContentDialog()
+            .WithTitle("Auto-arrange layout")
+            .WithContent("Which preset would you like to apply? Your current settings will be overwritten.")
+            .HavingPrimaryButton(b => b.WithText("Left-handed preset"))
+            .HavingSecondaryButton(b => b.WithText("Right-handed preset"))
+            .WithCloseButtonText("Cancel")
+            .ShowAsync();
+       
+        if (contentDialogResult == ContentDialogResult.Primary)
+            _deviceService.AutoArrangeDevices(true);
+        else if (contentDialogResult == ContentDialogResult.Secondary)
+            _deviceService.AutoArrangeDevices(false);
     }
 
     private void RenderServiceOnFrameRendering(object? sender, FrameRenderingEventArgs e)

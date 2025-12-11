@@ -27,20 +27,27 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
     private readonly IWorkshopService _workshopService;
     private readonly IWindowService _windowService;
     private readonly IPluginManagementService _pluginManagementService;
+    private readonly IProfileService _profileService;
     private readonly ISettingsVmFactory _settingsVmFactory;
     private readonly Progress<StreamProgress> _progress = new();
 
     [Notify] private bool _isInstalled;
     [Notify] private bool _shouldInstall;
     [Notify] private float _installProgress;
-    
-    public DefaultEntryItemViewModel(ILogger logger, IEntrySummary entry, IWorkshopService workshopService, IWindowService windowService, IPluginManagementService pluginManagementService,
+
+    public DefaultEntryItemViewModel(ILogger logger,
+        IEntrySummary entry,
+        IWorkshopService workshopService,
+        IWindowService windowService,
+        IPluginManagementService pluginManagementService,
+        IProfileService profileService,
         ISettingsVmFactory settingsVmFactory)
     {
         _logger = logger;
         _workshopService = workshopService;
         _windowService = windowService;
         _pluginManagementService = pluginManagementService;
+        _profileService = profileService;
         _settingsVmFactory = settingsVmFactory;
         Entry = entry;
 
@@ -62,19 +69,18 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
 
         if (!result.IsSuccess)
         {
-            await _windowService.CreateContentDialog().WithTitle("Failed to install entry")
+            await _windowService.CreateContentDialog()
+                .WithTitle("Failed to install entry")
                 .WithContent($"Failed to install entry '{Entry.Name}' ({Entry.Id}): {result.Message}")
                 .WithCloseButtonText("Skip and continue")
                 .ShowAsync();
         }
         // If the entry is a plugin, enable the plugin and all features
         else if (result.Entry?.EntryType == EntryType.Plugin)
-        {
             await EnablePluginAndFeatures(result.Entry);
-        } else if (result.Entry?.EntryType == EntryType.Profile)
-        {
-            
-        }
+        // If the entry is a profile, move it to the General profile category
+        else if (result.Entry?.EntryType == EntryType.Profile)
+            MoveProfileToGeneral(result.Entry);
 
         return result.IsSuccess;
     }
@@ -107,14 +113,31 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
                 _logger.Warning(e, "Failed to enable plugin feature '{FeatureName}', skipping", pluginFeatureInfo.Name);
             }
         }
-        
+
         // If the plugin has a mandatory settings window, open it and wait
         if (plugin.ConfigurationDialog != null && plugin.ConfigurationDialog.IsMandatory)
         {
             if (plugin.Resolve(plugin.ConfigurationDialog.Type) is not PluginConfigurationViewModel viewModel)
                 throw new ArtemisUIException($"The type of a plugin configuration dialog must inherit {nameof(PluginConfigurationViewModel)}");
-            
+
             await _windowService.ShowDialogAsync(new PluginSettingsWindowViewModel(viewModel));
         }
+    }
+
+    private void MoveProfileToGeneral(InstalledEntry entry)
+    {
+        if (!entry.TryGetMetadata("ProfileId", out Guid profileId))
+            return;
+
+        ProfileConfiguration? profile = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(c => c.ProfileId == profileId);
+        if (profile == null)
+            return;
+        
+        ProfileCategory category = _profileService.ProfileCategories.FirstOrDefault(c => c.Name == "General") ?? _profileService.CreateProfileCategory("General", true);
+        if (category.ProfileConfigurations.Contains(profile))
+            return;
+        
+        category.AddProfileConfiguration(profile, null);
+        _profileService.SaveProfileCategory(category);
     }
 }
