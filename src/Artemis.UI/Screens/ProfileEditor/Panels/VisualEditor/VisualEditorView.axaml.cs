@@ -27,8 +27,9 @@ public partial class VisualEditorView : ReactiveUserControl<VisualEditorViewMode
 
         this.WhenActivated(d =>
         {
-            ViewModel!.AutoFitRequested += ViewModelOnAutoFitRequested;
-            Disposable.Create(() => ViewModel.AutoFitRequested -= ViewModelOnAutoFitRequested).DisposeWith(d);
+            VisualEditorViewModel? viewModel = ViewModel;
+            viewModel!.AutoFitRequested += ViewModelOnAutoFitRequested;
+            Disposable.Create(() => viewModel.AutoFitRequested -= ViewModelOnAutoFitRequested).DisposeWith(d);
         });
 
         this.WhenAnyValue(v => v.Bounds).Where(_ => !_movedByUser).Subscribe(_ => AutoFit(true));

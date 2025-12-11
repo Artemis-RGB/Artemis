@@ -80,7 +80,7 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
             await EnablePluginAndFeatures(result.Entry);
         // If the entry is a profile, move it to the General profile category
         else if (result.Entry?.EntryType == EntryType.Profile)
-            MoveProfileToGeneral(result.Entry);
+            PrepareProfile(result.Entry);
 
         return result.IsSuccess;
     }
@@ -124,7 +124,7 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
         }
     }
 
-    private void MoveProfileToGeneral(InstalledEntry entry)
+    private void PrepareProfile(InstalledEntry entry)
     {
         if (!entry.TryGetMetadata("ProfileId", out Guid profileId))
             return;
@@ -132,12 +132,18 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
         ProfileConfiguration? profile = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(c => c.ProfileId == profileId);
         if (profile == null)
             return;
-        
+
         ProfileCategory category = _profileService.ProfileCategories.FirstOrDefault(c => c.Name == "General") ?? _profileService.CreateProfileCategory("General", true);
         if (category.ProfileConfigurations.Contains(profile))
             return;
-        
+
+
+        // Add the profile to the category
         category.AddProfileConfiguration(profile, null);
+        
+        // Suspend all but the first profile in the category
+        profile.IsSuspended = category.ProfileConfigurations.Count > 1;
+        
         _profileService.SaveProfileCategory(category);
     }
 }

@@ -180,13 +180,15 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
     {
         await _authLock.WaitAsync(cancellationToken);
 
+        // Start a HTTP listener, this port could be in use but chances are very slim
+        // IdentityServer only accepts these two redirect URLs
+        string redirectUri = Constants.StartupArguments.Contains("--alt-login-callback") ? "http://localhost:56789" : "http://localhost:57461";
+        
         try
         {
             if (_isLoggedInSubject.Value)
                 return;
-
-            // Start a HTTP listener, this port could be in use but chances are very slim
-            string redirectUri = "http://localhost:57461";
+            
             using HttpListener listener = new();
             listener.Prefixes.Add(redirectUri + "/");
             listener.Start();
@@ -249,7 +251,11 @@ internal class AuthenticationService : CorePropertyChanged, IAuthenticationServi
         }
         catch (HttpListenerException e)
         {
-            throw new ArtemisWebClientException($"HTTP listener for login callback failed with error code {e.ErrorCode}", e);
+            // I've seen the Nvidia app do this after a login. What are the odds...
+            if (e.ErrorCode == 32)
+                throw new ArtemisWebClientException($"HTTP listener for login callback failed because another application is already listening on '{redirectUri}', please close that application and try again", e);
+            else
+                throw new ArtemisWebClientException($"HTTP listener for login callback failed with error code {e.ErrorCode}", e);
         }
         finally
         {
