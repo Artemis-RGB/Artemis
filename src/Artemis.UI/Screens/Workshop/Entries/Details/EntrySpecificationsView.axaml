@@ -51,11 +51,11 @@
                                     ToolTip.Tip="Click to browse">
                             </Button>
                         </Panel>
-
                     </Border>
                     <TextBlock Foreground="{DynamicResource SystemFillColorCriticalBrush}" Margin="2 0" IsVisible="{CompiledBinding !IconValid}" TextWrapping="Wrap">
                         Icon required
                     </TextBlock>
+                    <CheckBox IsChecked="{CompiledBinding Fit}">Shrink</CheckBox>
                 </StackPanel>
                 <StackPanel Grid.Column="1">
                     <Label Target="Name" Margin="0">Name</Label>
@@ -63,6 +63,12 @@
 
                     <Label Target="Summary" Margin="0 5 0 0">Summary</Label>
                     <TextBox Name="Summary" Text="{CompiledBinding Summary}"></TextBox>
+
+                    <StackPanel IsVisible="{CompiledBinding IsAdministrator}" Orientation="Horizontal">
+                        <CheckBox IsChecked="{CompiledBinding IsDefault}">Download by default (admin only)</CheckBox>
+                        <CheckBox IsEnabled="{CompiledBinding IsDefault}" IsChecked="{CompiledBinding IsEssential}">Essential</CheckBox>
+                        <CheckBox IsEnabled="{CompiledBinding IsDefault}" IsChecked="{CompiledBinding IsDeviceProvider}">Device provider</CheckBox>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
 
@@ -91,10 +97,10 @@
             <Label>Tags</Label>
             <tagsInput:TagsInput Tags="{CompiledBinding Tags}" />
         </StackPanel>
-        
-        <controls:SplitMarkdownEditor Grid.Row="1" Title="Description" Markdown="{CompiledBinding Description}"/>
-        
-        <TextBlock Grid.Row="2" 
+
+        <controls:SplitMarkdownEditor Grid.Row="1" Title="Description" Markdown="{CompiledBinding Description}" />
+
+        <TextBlock Grid.Row="2"
                    Foreground="{DynamicResource SystemFillColorCriticalBrush}"
                    Margin="2 8 0 0"
                    IsVisible="{CompiledBinding !DescriptionValid}">

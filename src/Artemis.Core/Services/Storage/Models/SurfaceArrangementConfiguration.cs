@@ -32,7 +32,7 @@ internal class SurfaceArrangementConfiguration
     public int MarginBottom { get; }
     public SurfaceArrangement SurfaceArrangement { get; set; }
 
-    public bool Apply(List<ArtemisDevice> devices)
+    public bool Apply(List<ArtemisDevice> devicesToArrange, List<ArtemisDevice> devices)
     {
         if (Anchor != null && !Anchor.HasDevices(devices))
             return false;
@@ -42,10 +42,10 @@ internal class SurfaceArrangementConfiguration
                            new SurfaceArrangementType(SurfaceArrangement, RGBDeviceType.All, 1).GetEdge(HorizontalPosition, VerticalPosition);
 
         // Stack multiple devices of the same type vertically if they are wider than they are tall
-        bool stackVertically = devices.Average(d => d.RgbDevice.Size.Width) >= devices.Average(d => d.RgbDevice.Size.Height);
+        bool stackVertically = devicesToArrange.Average(d => d.RgbDevice.Size.Width) >= devicesToArrange.Average(d => d.RgbDevice.Size.Height);
 
         ArtemisDevice? previous = null;
-        foreach (ArtemisDevice artemisDevice in devices)
+        foreach (ArtemisDevice artemisDevice in devicesToArrange)
         {
             if (previous != null)
             {

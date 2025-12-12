@@ -79,11 +79,6 @@ public partial class ProfileTreeViewModel : TreeItemViewModel
 
     public override bool SupportsChildren => true;
 
-    public void UpdateCanPaste()
-    {
-        throw new NotImplementedException();
-    }
-
     protected override Task ExecuteDuplicate()
     {
         throw new NotSupportedException();

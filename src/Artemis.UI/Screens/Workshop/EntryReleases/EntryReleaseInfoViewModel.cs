@@ -6,9 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.DryIoc.Factories;
-using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.Workshop.EntryReleases.Dialogs;
+using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
@@ -30,7 +29,7 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
     private readonly IWindowService _windowService;
     private readonly IWorkshopService _workshopService;
     private readonly IPluginManagementService _pluginManagementService;
-    private readonly ISettingsVmFactory _settingsVmFactory;
+    private readonly IPluginInteractionService _pluginInteractionService;
     private readonly Progress<StreamProgress> _progress = new();
 
     [Notify] private IReleaseDetails? _release;
@@ -46,14 +45,14 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
         IWindowService windowService,
         IWorkshopService workshopService,
         IPluginManagementService pluginManagementService,
-        ISettingsVmFactory settingsVmFactory)
+        IPluginInteractionService pluginInteractionService)
     {
         _router = router;
         _notificationService = notificationService;
         _windowService = windowService;
         _workshopService = workshopService;
         _pluginManagementService = pluginManagementService;
-        _settingsVmFactory = settingsVmFactory;
+        _pluginInteractionService = pluginInteractionService;
         _progress.ProgressChanged += (_, f) => InstallProgress = f.ProgressPercentage;
 
         this.WhenActivated(d =>
@@ -124,7 +123,10 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
                 _workshopService.SetAutoUpdate(result.Entry, !disableAutoUpdates);
                 _notificationService.CreateNotification().WithTitle("Installation succeeded").WithSeverity(NotificationSeverity.Success).Show();
                 InstallationInProgress = false;
-                await Manage();
+
+                // Auto-enable plugins as the installation handler won't deal with the required UI interactions
+                if (result.Installed is Plugin installedPlugin)
+                    await AutoEnablePlugin(installedPlugin);
             }
             else if (!_cts.IsCancellationRequested)
             {
@@ -139,12 +141,6 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
         {
             InstallationInProgress = false;
         }
-    }
-
-    public async Task Manage()
-    {
-        if (Release?.Entry.EntryType != EntryType.Profile)
-            await _router.Navigate("../../manage", new RouterNavigationOptions {AdditionalArguments = true});
     }
 
     public async Task Reinstall()
@@ -193,7 +189,28 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
         if (plugin == null)
             return;
 
-        PluginViewModel pluginViewModel = _settingsVmFactory.PluginViewModel(plugin, ReactiveCommand.Create(() => { }));
-        await pluginViewModel.ExecuteRemovePrerequisites(true);
+        await _pluginInteractionService.RemovePluginPrerequisites(plugin, true);
+    }
+
+    private async Task AutoEnablePlugin(Plugin plugin)
+    {
+        // There's quite a bit of UI involved in enabling a plugin, borrowing the PluginSettingsViewModel for this
+        await _pluginInteractionService.EnablePlugin(plugin, true);
+
+        // Find features without prerequisites to enable
+        foreach (PluginFeatureInfo pluginFeatureInfo in plugin.Features)
+        {
+            if (pluginFeatureInfo.Instance == null || pluginFeatureInfo.Instance.IsEnabled || pluginFeatureInfo.Prerequisites.Count != 0)
+                continue;
+
+            try
+            {
+                _pluginManagementService.EnablePluginFeature(pluginFeatureInfo.Instance, true);
+            }
+            catch (Exception e)
+            {
+                _notificationService.CreateNotification().WithTitle("Failed to enable plugin feature").WithMessage(e.Message).WithSeverity(NotificationSeverity.Error).Show();
+            }
+        }
     }
 }

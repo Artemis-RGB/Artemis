@@ -1,0 +1,137 @@
+using System;
+using System.Linq;
+using System.Reactive.Disposables;
+using System.Threading;
+using System.Threading.Tasks;
+using Artemis.Core;
+using Artemis.Core.Services;
+using Artemis.UI.Exceptions;
+using Artemis.UI.Screens.Plugins;
+using Artemis.UI.Services;
+using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Utilities;
+using Artemis.WebClient.Workshop;
+using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
+using Artemis.WebClient.Workshop.Models;
+using Artemis.WebClient.Workshop.Services;
+using PropertyChanged.SourceGenerator;
+using ReactiveUI;
+using Serilog;
+
+namespace Artemis.UI.Screens.StartupWizard.Steps;
+
+public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
+{
+    private readonly ILogger _logger;
+    private readonly IWorkshopService _workshopService;
+    private readonly IWindowService _windowService;
+    private readonly IPluginManagementService _pluginManagementService;
+    private readonly IProfileService _profileService;
+    private readonly IPluginInteractionService _pluginInteractionService;
+    private readonly Progress<StreamProgress> _progress = new();
+
+    [Notify] private bool _isInstalled;
+    [Notify] private bool _shouldInstall;
+    [Notify] private float _installProgress;
+
+    public DefaultEntryItemViewModel(ILogger logger,
+        IEntrySummary entry,
+        IWorkshopService workshopService,
+        IWindowService windowService,
+        IPluginManagementService pluginManagementService,
+        IProfileService profileService,
+        IPluginInteractionService pluginInteractionService)
+    {
+        _logger = logger;
+        _workshopService = workshopService;
+        _windowService = windowService;
+        _pluginManagementService = pluginManagementService;
+        _profileService = profileService;
+        _pluginInteractionService = pluginInteractionService;
+        Entry = entry;
+
+        _progress.ProgressChanged += (_, f) => InstallProgress = f.ProgressPercentage;
+        this.WhenActivated((CompositeDisposable _) => { IsInstalled = workshopService.GetInstalledEntry(entry.Id) != null; });
+    }
+
+    public IEntrySummary Entry { get; }
+
+    public async Task<bool> InstallEntry(CancellationToken cancellationToken)
+    {
+        if (IsInstalled || !ShouldInstall || Entry.LatestRelease == null)
+            return true;
+
+        EntryInstallResult result = await _workshopService.InstallEntry(Entry, Entry.LatestRelease, _progress, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            await _windowService.CreateContentDialog()
+                .WithTitle("Failed to install entry")
+                .WithContent($"Failed to install entry '{Entry.Name}' ({Entry.Id}): {result.Message}")
+                .WithCloseButtonText("Skip and continue")
+                .ShowAsync();
+        }
+        // If the entry is a plugin, enable the plugin and all features
+        else if (result.Entry?.EntryType == EntryType.Plugin)
+            await EnablePluginAndFeatures(result.Entry);
+        // If the entry is a profile, move it to the General profile category
+        else if (result.Entry?.EntryType == EntryType.Profile)
+            PrepareProfile(result.Entry);
+
+        return result.IsSuccess;
+    }
+
+    private async Task EnablePluginAndFeatures(InstalledEntry entry)
+    {
+        if (!entry.TryGetMetadata("PluginId", out Guid pluginId))
+            throw new InvalidOperationException("Plugin entry does not contain a PluginId metadata value.");
+
+        Plugin? plugin = _pluginManagementService.GetAllPlugins().FirstOrDefault(p => p.Guid == pluginId);
+        if (plugin == null)
+            throw new InvalidOperationException($"Plugin with id '{pluginId}' does not exist.");
+
+        // There's quite a bit of UI involved in enabling a plugin, borrowing the PluginSettingsViewModel for this
+        await _pluginInteractionService.EnablePlugin(plugin, true);
+
+        // Find features without prerequisites to enable
+        foreach (PluginFeatureInfo pluginFeatureInfo in plugin.Features)
+        {
+            if (pluginFeatureInfo.Instance == null || pluginFeatureInfo.Instance.IsEnabled || pluginFeatureInfo.Prerequisites.Count != 0)
+                continue;
+
+            try
+            {
+                _pluginManagementService.EnablePluginFeature(pluginFeatureInfo.Instance, true);
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "Failed to enable plugin feature '{FeatureName}', skipping", pluginFeatureInfo.Name);
+            }
+        }
+    }
+
+    private void PrepareProfile(InstalledEntry entry)
+    {
+        if (!entry.TryGetMetadata("ProfileId", out Guid profileId))
+            return;
+
+        ProfileConfiguration? profile = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(c => c.ProfileId == profileId);
+        if (profile == null)
+            return;
+
+        ProfileCategory category = _profileService.ProfileCategories.FirstOrDefault(c => c.Name == "General") ?? _profileService.CreateProfileCategory("General", true);
+        if (category.ProfileConfigurations.Contains(profile))
+            return;
+
+
+        // Add the profile to the category
+        category.AddProfileConfiguration(profile, null);
+        
+        // Suspend all but the first profile in the category
+        profile.IsSuspended = category.ProfileConfigurations.Count > 1;
+        
+        _profileService.SaveProfileCategory(category);
+    }
+}

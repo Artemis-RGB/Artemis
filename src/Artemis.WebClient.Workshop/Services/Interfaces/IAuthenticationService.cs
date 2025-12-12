@@ -15,4 +15,5 @@ public interface IAuthenticationService : IProtectedArtemisService
     Task Login(CancellationToken cancellationToken);
     Task Logout();
     bool GetIsEmailVerified();
+    List<string> GetRoles();
 }

@@ -83,7 +83,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
             _coreService.Initialized += (_, _) => Dispatcher.UIThread.InvokeAsync(OpenMainWindow);
         }
 
-        Task.Run(() =>
+        Task.Run(async () =>
         {
             try
             {
@@ -93,7 +93,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
                     return;
 
                 // Workshop service goes first so it has a chance to clean up old workshop entries and introduce new ones
-                workshopService.Initialize();
+                await workshopService.Initialize();
                 // Core is initialized now that everything is ready to go
                 coreService.Initialize();
 

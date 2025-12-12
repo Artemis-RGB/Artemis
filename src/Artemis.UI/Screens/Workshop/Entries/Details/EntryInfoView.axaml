@@ -15,7 +15,7 @@
     </UserControl.Resources>
     <Panel>
         <StackPanel IsVisible="{CompiledBinding Entry, Converter={x:Static ObjectConverters.IsNull}}">
-            <Border Classes="skeleton-text" 
+            <Border Classes="skeleton-text"
                     HorizontalAlignment="Center"
                     Margin="30 30 30 0"
                     Width="80"
@@ -43,13 +43,20 @@
                         ClipToBounds="True">
                     <Image Stretch="UniformToFill" il:ImageLoader.Source="{CompiledBinding Entry.Id, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
                 </Border>
-                <Button Classes="icon-button"
-                        VerticalAlignment="Top"
-                        HorizontalAlignment="Right"
-                        Command="{CompiledBinding CopyShareLink}"
-                        ToolTip.Tip="Copy share link">
-                    <avalonia:MaterialIcon Kind="ShareVariant" />
-                </Button>
+                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Right" Orientation="Horizontal" Spacing="5">
+                    <Button IsVisible="{CompiledBinding IsAdministrator}"
+                            Classes="icon-button"
+                            Command="{CompiledBinding GoToEdit}"
+                            ToolTip.Tip="Edit submission">
+                        <avalonia:MaterialIcon Kind="Edit" />
+                    </Button>
+                    <Button Classes="icon-button"
+                            Command="{CompiledBinding CopyShareLink}"
+                            ToolTip.Tip="Copy share link">
+                        <avalonia:MaterialIcon Kind="ShareVariant" />
+                    </Button>
+                </StackPanel>
+
             </Panel>
 
             <TextBlock Theme="{StaticResource TitleTextBlockStyle}"
@@ -62,15 +69,15 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Classes="subtitle" TextTrimming="CharacterEllipsis" Text="{CompiledBinding Entry.Author, FallbackValue=Author}" />
                 <avalonia:MaterialIcon IsVisible="{CompiledBinding Entry.IsOfficial}"
-                                       Kind="ShieldStar" 
+                                       Kind="ShieldStar"
                                        Foreground="{DynamicResource SystemAccentColorLight1}"
                                        Margin="2 0 0 0"
                                        Width="18"
-                                       Height="18" 
+                                       Height="18"
                                        HorizontalAlignment="Left"
                                        ToolTip.Tip="Official entry by the Artemis team" />
             </StackPanel>
-            
+
             <TextBlock Margin="0 8" TextWrapping="Wrap" Text="{CompiledBinding Entry.Summary, FallbackValue=Summary}" />
 
             <!-- Categories -->

@@ -1,0 +1,5 @@
+<Project>
+    <ItemGroup>
+        <PackageReference Include="HotAvalonia" PrivateAssets="All" />
+    </ItemGroup>
+</Project>

@@ -30,7 +30,7 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
         {
             // If the folder already exists, we're not going to reinstall the plugin since files may be in use, consider our job done
             if (installedEntry.GetReleaseDirectory(release).Exists)
-                return ApplyAndSave(installedEntry, release);
+                return ApplyAndSave(null, installedEntry, release);
         }
         else
         {
@@ -64,7 +64,12 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
         archive.ExtractToDirectory(releaseDirectory.FullName);
 
         PluginInfo pluginInfo = CoreJson.Deserialize<PluginInfo>(await File.ReadAllTextAsync(Path.Combine(releaseDirectory.FullName, "plugin.json"), cancellationToken))!;
+        installedEntry.SetMetadata("PluginId", pluginInfo.Guid);
 
+        // If the plugin management service isn't loaded yet (happens while migrating from built-in plugins) we're done here
+        if (!_pluginManagementService.LoadedPlugins)
+            return ApplyAndSave(null, installedEntry, release);
+        
         // If there is already a version of the plugin installed, remove it
         Plugin? currentVersion = _pluginManagementService.GetAllPlugins().FirstOrDefault(p => p.Guid == pluginInfo.Guid);
         if (currentVersion != null)
@@ -78,13 +83,12 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
         }
 
         // Load the plugin, next time during startup this will happen automatically
+        Plugin? plugin = null;
         try
         {
-            Plugin? plugin = _pluginManagementService.LoadPlugin(releaseDirectory);
+            plugin = _pluginManagementService.LoadPlugin(releaseDirectory);
             if (plugin == null)
                 throw new ArtemisWorkshopException("Failed to load plugin, it may be incompatible");
-
-            installedEntry.SetMetadata("PluginId", plugin.Guid);
         }
         catch (Exception e)
         {
@@ -102,7 +106,7 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
             return EntryInstallResult.FromFailure(e.Message);
         }
 
-        return ApplyAndSave(installedEntry, release);
+        return ApplyAndSave(plugin, installedEntry, release);
     }
 
     public Task<EntryUninstallResult> UninstallAsync(InstalledEntry installedEntry, CancellationToken cancellationToken)
@@ -133,10 +137,10 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
         return Task.FromResult(EntryUninstallResult.FromSuccess(message));
     }
 
-    private EntryInstallResult ApplyAndSave(InstalledEntry installedEntry, IRelease release)
+    private EntryInstallResult ApplyAndSave(Plugin? plugin, InstalledEntry installedEntry, IRelease release)
     {
         installedEntry.ApplyRelease(release);
         _workshopService.SaveInstalledEntry(installedEntry);
-        return EntryInstallResult.FromSuccess(installedEntry);
+        return EntryInstallResult.FromSuccess(installedEntry, plugin);
     }
 }

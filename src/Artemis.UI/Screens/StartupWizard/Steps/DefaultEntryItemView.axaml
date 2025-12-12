@@ -1,0 +1,71 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:il="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:steps="clr-namespace:Artemis.UI.Screens.StartupWizard.Steps"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.StartupWizard.Steps.DefaultEntryItemView"
+             x:DataType="steps:DefaultEntryItemViewModel">
+    <UserControl.Resources>
+        <converters:EntryIconUriConverter x:Key="EntryIconUriConverter" />
+    </UserControl.Resources>
+    <Border Classes="card" Padding="15" Margin="0 5" PointerPressed="HandlePointerPressed">
+        <Grid ColumnDefinitions="Auto,*,Auto,Auto" RowDefinitions="*, Auto">
+            <!-- Icon -->
+            <Border Grid.Column="0"
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    CornerRadius="6"
+                    VerticalAlignment="Center"
+                    Margin="0 0 10 0"
+                    Width="80"
+                    Height="80"
+                    ClipToBounds="True">
+                <Image Stretch="UniformToFill" il:ImageLoader.Source="{CompiledBinding Entry.Id, Converter={StaticResource EntryIconUriConverter}, Mode=OneWay}" />
+            </Border>
+
+            <!-- Body -->
+            <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <TextBlock Classes="h5" Margin="0 0 0 5" TextTrimming="CharacterEllipsis" Text="{CompiledBinding Entry.Name, FallbackValue=Title}" />
+                </StackPanel>
+                <TextBlock Grid.Row="1"
+                           Classes="subtitle"
+                           TextWrapping="Wrap"
+                           TextTrimming="CharacterEllipsis"
+                           Text="{CompiledBinding Entry.Summary, FallbackValue=Summary}" />
+
+                <ItemsControl Grid.Row="2" ItemsSource="{CompiledBinding Entry.Categories}" Margin="0 8 0 0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="8" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <avalonia:MaterialIcon Kind="{CompiledBinding Icon}" Margin="0 0 3 0" />
+                                <TextBlock Text="{CompiledBinding Name}" TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+            
+            <!-- Management -->
+            <Border Grid.Column="3" Grid.Row="0" Grid.RowSpan="2" BorderBrush="{DynamicResource ButtonBorderBrush}" BorderThickness="1 0 0 0" Margin="10 0 0 0" Padding="10 0 0 0"  IsVisible="{CompiledBinding !IsInstalled}">
+                <StackPanel VerticalAlignment="Center">
+                    <CheckBox MinHeight="26" Margin="0 4 0 0" IsChecked="{CompiledBinding ShouldInstall}">Install</CheckBox>
+                </StackPanel>
+            </Border>
+            <Border Grid.Column="3" Grid.Row="0" Grid.RowSpan="2" BorderBrush="{DynamicResource ButtonBorderBrush}" BorderThickness="1 0 0 0" Margin="10 0 0 0" Padding="10 0 0 0"  IsVisible="{CompiledBinding IsInstalled}">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock>Already installed</TextBlock>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

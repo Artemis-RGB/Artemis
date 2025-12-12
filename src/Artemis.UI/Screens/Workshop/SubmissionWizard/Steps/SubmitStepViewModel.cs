@@ -38,7 +38,7 @@ public partial class SubmitStepViewModel : SubmissionViewModel
                 IconBitmap.DisposeWith(d);
             }
 
-            Observable.FromAsync(workshopClient.GetCategories.ExecuteAsync).Subscribe(PopulateCategories).DisposeWith(d);
+            Observable.FromAsync(() => workshopClient.GetCategories.ExecuteAsync(State.EntryType)).Subscribe(PopulateCategories).DisposeWith(d);
         });
     }
     

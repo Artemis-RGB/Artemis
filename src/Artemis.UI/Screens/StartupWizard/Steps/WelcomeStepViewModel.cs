@@ -6,7 +6,7 @@ public class WelcomeStepViewModel : WizardStepViewModel
 {
     public WelcomeStepViewModel()
     {
-        Continue = ReactiveCommand.Create(() => Wizard.ChangeScreen<DevicesStepViewModel>());
+        Continue = ReactiveCommand.Create(() => Wizard.ChangeScreen<DefaultEntriesStepViewModel>());
         ShowGoBack = false;
     }
 }

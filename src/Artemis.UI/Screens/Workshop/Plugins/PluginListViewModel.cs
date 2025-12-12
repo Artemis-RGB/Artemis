@@ -1,3 +1,4 @@
+using System;
 using Artemis.UI.Screens.Workshop.Entries.List;
 using Artemis.UI.Shared.Routing;
 using Artemis.WebClient.Workshop;
@@ -9,9 +10,8 @@ public class PluginListViewModel : RoutableHostScreen<RoutableScreen>
     private readonly EntryListViewModel _entryListViewModel;
     public override RoutableScreen DefaultScreen => _entryListViewModel;
 
-    public PluginListViewModel(EntryListViewModel entryListViewModel)
+    public PluginListViewModel(Func<EntryType, EntryListViewModel> getEntryListViewModel)
     {
-        _entryListViewModel = entryListViewModel;
-        _entryListViewModel.EntryType = EntryType.Plugin;
+        _entryListViewModel = getEntryListViewModel(EntryType.Plugin);
     }
 }

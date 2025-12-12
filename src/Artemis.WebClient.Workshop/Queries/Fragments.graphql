@@ -6,7 +6,7 @@ fragment category on Category {
 fragment image on Image {
     id
     name
-    description    
+    description
 }
 
 fragment layoutInfo on LayoutInfo {
@@ -26,6 +26,12 @@ fragment submittedEntry on Entry {
     entryType
     downloads
     createdAt
+    defaultEntryInfo {
+        ...defaultEntryInfo
+    }
+    latestRelease {
+        ...release
+    }
 }
 
 fragment entrySummary on Entry {
@@ -38,8 +44,14 @@ fragment entrySummary on Entry {
     downloads
     createdAt
     latestReleaseId
+    latestRelease {
+        ...release
+    }
     categories {
         ...category
+    }
+    defaultEntryInfo {
+        ...defaultEntryInfo
     }
 }
 
@@ -70,7 +82,7 @@ fragment release on Release {
     downloadSize
     md5Hash
     createdAt
-} 
+}
 
 fragment releaseDetails on Release {
     ...release
@@ -88,4 +100,9 @@ fragment pluginInfo on PluginInfo {
     supportsWindows
     supportsLinux
     supportsOSX
+}
+
+fragment defaultEntryInfo on DefaultEntryInfo {
+    isEssential
+    isDeviceProvider
 }

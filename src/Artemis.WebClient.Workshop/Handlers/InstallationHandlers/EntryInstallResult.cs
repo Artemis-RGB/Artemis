@@ -1,13 +1,31 @@
-﻿using Artemis.WebClient.Workshop.Models;
+﻿using Artemis.Core;
+using Artemis.WebClient.Workshop.Models;
 using Artemis.WebClient.Workshop.Services;
 
 namespace Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
 
 public class EntryInstallResult
 {
-    public bool IsSuccess { get; set; }
-    public string? Message { get; set; }
-    public InstalledEntry? Entry { get; set; }
+    /// <summary>
+    /// Gets a value indicating whether the installation was successful.
+    /// </summary>
+    public bool IsSuccess { get; private set; }
+
+    /// <summary>
+    /// Gets a message describing the result of the installation.
+    /// </summary>
+    public string? Message { get; private set; }
+
+    /// <summary>
+    /// Gets the entry that was installed, if any.
+    /// </summary>
+    public InstalledEntry? Entry { get; private set; }
+
+    /// <summary>
+    /// Gets the result object returned by the installation handler, if any.
+    /// <remarks>This'll be a <see cref="ProfileConfiguration"/>, <see cref="ArtemisLayout"/> or <see cref="Plugin"/> depending on the entry type.</remarks>
+    /// </summary>
+    public object? Installed { get; private set; }
 
     public static EntryInstallResult FromFailure(string? message)
     {
@@ -18,12 +36,13 @@ public class EntryInstallResult
         };
     }
 
-    public static EntryInstallResult FromSuccess(InstalledEntry installedEntry)
+    public static EntryInstallResult FromSuccess(InstalledEntry installedEntry, object? result)
     {
         return new EntryInstallResult
         {
             IsSuccess = true,
-            Entry = installedEntry
+            Entry = installedEntry,
+            Installed = result
         };
     }
 

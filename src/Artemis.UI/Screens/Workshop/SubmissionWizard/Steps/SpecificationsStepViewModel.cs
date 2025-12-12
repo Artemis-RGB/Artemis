@@ -65,6 +65,9 @@ public partial class SpecificationsStepViewModel : SubmissionViewModel
         viewModel.Name = State.Name;
         viewModel.Summary = State.Summary;
         viewModel.Description = State.Description;
+        viewModel.IsDefault = State.IsDefault;
+        viewModel.IsEssential = State.IsEssential;
+        viewModel.IsDeviceProvider = State.IsDeviceProvider;
 
         // Tags
         viewModel.Tags.Clear();
@@ -72,12 +75,13 @@ public partial class SpecificationsStepViewModel : SubmissionViewModel
 
         // Categories
         viewModel.PreselectedCategories = State.Categories;
+        viewModel.EntryType = State.EntryType;
 
         // Icon
         if (State.Icon != null)
         {
             State.Icon.Seek(0, SeekOrigin.Begin);
-            viewModel.IconBitmap = BitmapExtensions.LoadAndResize(State.Icon, 128);
+            viewModel.IconBitmap = BitmapExtensions.LoadAndResize(State.Icon, 128, false);
         }
 
         EntrySpecificationsViewModel = viewModel;
@@ -93,6 +97,9 @@ public partial class SpecificationsStepViewModel : SubmissionViewModel
         State.Name = EntrySpecificationsViewModel.Name;
         State.Summary = EntrySpecificationsViewModel.Summary;
         State.Description = EntrySpecificationsViewModel.Description;
+        State.IsDefault = EntrySpecificationsViewModel.IsDefault;
+        State.IsEssential = EntrySpecificationsViewModel.IsEssential;
+        State.IsDeviceProvider = EntrySpecificationsViewModel.IsDeviceProvider;
 
         // Categories and tasks
         State.Categories = EntrySpecificationsViewModel.Categories.Where(c => c.IsSelected).Select(c => c.Id).ToList();

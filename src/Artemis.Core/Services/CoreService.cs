@@ -63,7 +63,6 @@ internal class CoreService : ICoreService
         _logger.Debug("Forcing plugins to use HidSharp {HidSharpVersion}", hidSharpVersion);
 
         // Initialize the services
-        _pluginManagementService.CopyBuiltInPlugins();
         _pluginManagementService.LoadPlugins(IsElevated);
         _pluginManagementService.StartHotReload();
         _renderService.Initialize();

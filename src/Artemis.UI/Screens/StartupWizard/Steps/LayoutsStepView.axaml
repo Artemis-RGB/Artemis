@@ -2,31 +2,29 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:startupWizard="clr-namespace:Artemis.UI.Screens.StartupWizard"
              xmlns:steps="clr-namespace:Artemis.UI.Screens.StartupWizard.Steps"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.StartupWizard.Steps.LayoutsStepView"
              x:DataType="steps:LayoutsStepViewModel">
-    <Border Classes="card">
-        <Grid RowDefinitions="Auto,Auto,*">
-            <StackPanel Grid.Row="0">
-                <TextBlock TextWrapping="Wrap">
-                    Device layouts provide Artemis with an image of your devices and exact LED positions. <LineBreak />
-                    While not strictly necessary, this helps to create effects that are perfectly aligned with your hardware.
-                </TextBlock>
-                <TextBlock TextWrapping="Wrap" Margin="0 10">
-                    Below you can automatically search the Artemis Workshop for device layouts of your devices.
-                </TextBlock>
+    <StackPanel Spacing="10">
+        <TextBlock TextWrapping="Wrap">
+            Device layouts provide Artemis with an image of your devices and exact LED positions. <LineBreak />
+            While not strictly necessary, this helps to create effects that are perfectly aligned with your hardware.
+        </TextBlock>
+        <TextBlock TextWrapping="Wrap" Margin="0 10 0 0">
+            We've searched for layouts for your connected devices, you can see the results below. If one or more are missing consider creating your own for the best experience.
+        </TextBlock>
+        <Border Classes="card">
+            <StackPanel>
+                <ScrollViewer>
+                    <ContentControl Content="{CompiledBinding LayoutFinderViewModel}"></ContentControl>
+                </ScrollViewer>
             </StackPanel>
-
-            <Button Grid.Row="1"
-                    Content="Auto-install layouts"
-                    Command="{CompiledBinding LayoutFinderViewModel.SearchAll}"
-                    ToolTip.Tip="Search layouts and if found install them automatically" 
-                    HorizontalAlignment="Right"/>
-            <ScrollViewer Grid.Row="2" Margin="0 15">
-                <ContentControl Content="{CompiledBinding LayoutFinderViewModel}"></ContentControl>
-            </ScrollViewer>
-        </Grid>
-    </Border>
+        </Border>
+        <HyperlinkButton
+            Content="Learn more about layouts on the wiki"
+            NavigateUri="https://wiki.artemis-rgb.com/en/guides/developer/layouts?mtm_campaign=artemis&amp;mtm_kwd=wizard"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom" />
+    </StackPanel>
 </UserControl>

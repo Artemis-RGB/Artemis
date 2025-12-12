@@ -27,9 +27,7 @@ public class SurfaceStepViewModel : WizardStepViewModel
 
     private void ExecuteSelectLayout(string layout)
     {
-        // TODO: Implement the layout
-        _deviceService.AutoArrangeDevices();
-
+        _deviceService.AutoArrangeDevices(layout == "left");
         Wizard.ChangeScreen<SettingsStepViewModel>();
     }
 }

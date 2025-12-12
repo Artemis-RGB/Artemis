@@ -59,7 +59,7 @@ public class LayoutEntryInstallationHandler : IEntryInstallationHandler
         {
             installedEntry.ApplyRelease(release);
             _workshopService.SaveInstalledEntry(installedEntry);
-            return EntryInstallResult.FromSuccess(installedEntry);
+            return EntryInstallResult.FromSuccess(installedEntry, layout);
         }
 
         // If the layout ended up being invalid yoink it out again, shoooo

@@ -2,7 +2,7 @@ schema: schema.graphql
 extensions:
   endpoints:
     Default GraphQL Endpoint:
-      url: https://workshop.artemis-rgb.com/graphql
+      url: https://workshop.artemis-rgb.com/graphql/
       headers:
         user-agent: JS GraphQL
       introspect: true

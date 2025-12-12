@@ -32,6 +32,9 @@ public class SubmissionWizardState : IDisposable
     public Stream? Icon { get; set; }
     public string Summary { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public bool IsDefault { get; set; }
+    public bool IsEssential { get; set; }
+    public bool IsDeviceProvider { get; set; }
 
     public List<long> Categories { get; set; } = new();
     public List<string> Tags { get; set; } = new();

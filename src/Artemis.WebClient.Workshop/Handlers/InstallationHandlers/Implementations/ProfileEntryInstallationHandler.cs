@@ -52,7 +52,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
                 // With everything updated, remove the old profile
                 _profileService.RemoveProfileConfiguration(existing);
                 
-                return EntryInstallResult.FromSuccess(installedEntry);
+                return EntryInstallResult.FromSuccess(installedEntry, overwritten);
             }
         }
 
@@ -66,7 +66,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
 
         // Update the release and return the profile configuration
         UpdateRelease(installedEntry, release);
-        return EntryInstallResult.FromSuccess(installedEntry);
+        return EntryInstallResult.FromSuccess(installedEntry, imported);
     }
 
     public async Task<EntryUninstallResult> UninstallAsync(InstalledEntry installedEntry, CancellationToken cancellationToken)

@@ -21,6 +21,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0" Grid.RowSpan="3"
+                    Spacing="10"
                     Margin="0 0 10 0" 
                     VerticalAlignment="Top" 
                     HorizontalAlignment="Right" 
@@ -31,6 +32,16 @@
                     <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Categories</TextBlock>
                     <Border Classes="card-separator" />
                     <ContentControl Content="{CompiledBinding CategoriesViewModel}"></ContentControl>
+                </StackPanel>
+            </Border>
+            
+            <Border Classes="card" VerticalAlignment="Stretch">
+                <StackPanel>
+                    <CheckBox IsChecked="{CompiledBinding IncludeDefaultEntries}">
+                        <StackPanel Orientation="Horizontal" Spacing="2">
+                            <TextBlock>Include default entries</TextBlock>
+                        </StackPanel>
+                    </CheckBox>
                 </StackPanel>
             </Border>
         </StackPanel>
@@ -59,7 +70,7 @@
                 <TextBlock>
                     <Run>Modify or clear your filters to view other entries</Run>
                 </TextBlock>
-                <Lottie Path="/Assets/Animations/empty.json" RepeatCount="1" Width="350" Height="350"></Lottie>
+                <!-- <Lottie Path="/Assets/Animations/empty.json" RepeatCount="1" Width="350" Height="350"></Lottie> -->
             </StackPanel>
         </Panel>
     </Grid>

@@ -38,6 +38,7 @@
                                                              Grid.Column="0"
                                                              ConfigurationIcon="{CompiledBinding Icon}"
                                                              VerticalAlignment="Center"
+                                                             CornerRadius="4"
                                                              Width="22"
                                                              Height="22"
                                                              Margin="0 0 10 0" />

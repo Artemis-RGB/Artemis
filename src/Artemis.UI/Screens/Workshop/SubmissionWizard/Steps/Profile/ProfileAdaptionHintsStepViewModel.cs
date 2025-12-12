@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs;
-using Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using DynamicData;

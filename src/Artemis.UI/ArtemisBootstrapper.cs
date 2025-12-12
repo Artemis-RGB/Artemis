@@ -20,6 +20,7 @@ using Avalonia.Styling;
 using DryIoc;
 using ReactiveUI;
 using Splat.DryIoc;
+using Container = DryIoc.Container;
 
 namespace Artemis.UI;
 

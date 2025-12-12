@@ -1,0 +1,77 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:steps="clr-namespace:Artemis.UI.Screens.StartupWizard.Steps"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.StartupWizard.Steps.DefaultEntriesStepView"
+             x:DataType="steps:DefaultEntriesStepViewModel">
+    <Panel>
+        <!-- Selection stage -->
+        <Grid RowDefinitions="Auto,*,Auto" IsVisible="{CompiledBinding CurrentEntry, Converter={x:Static ObjectConverters.IsNull}}">
+            <TextBlock Grid.Row="0" TextWrapping="Wrap" IsVisible="{CompiledBinding !FetchingDefaultEntries}">
+                Below is a list of default features that can be installed to get you started with Artemis. You can always install or uninstall features later via the Workshop.
+            </TextBlock>
+        
+            <StackPanel Grid.Row="1" IsVisible="{CompiledBinding FetchingDefaultEntries}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+                <ProgressBar IsIndeterminate="True" Width="400" />
+                <TextBlock TextAlignment="Center">Fetching default features from the Artemis workshop...</TextBlock>
+            </StackPanel>
+            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock Classes="card-title" IsVisible="{CompiledBinding DeviceProviderEntryViewModels.Count}">
+                        Device providers
+                    </TextBlock>
+                    <ItemsControl ItemsSource="{CompiledBinding DeviceProviderEntryViewModels}" Margin="0,0,5,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2" ColumnSpacing="5" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+        
+                    <TextBlock Classes="card-title" IsVisible="{CompiledBinding EssentialEntryViewModels.Count}">
+                        Essentials
+                    </TextBlock>
+                    <ItemsControl ItemsSource="{CompiledBinding EssentialEntryViewModels}" Margin="0,0,5,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2" ColumnSpacing="5" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+        
+                    <TextBlock Classes="card-title" IsVisible="{CompiledBinding OtherEntryViewModels.Count}">
+                        Other features
+                    </TextBlock>
+                    <ItemsControl ItemsSource="{CompiledBinding OtherEntryViewModels}" Margin="0,0,5,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2" ColumnSpacing="5" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- Installation stage -->
+        <StackPanel Width="400" Margin="100 0 0 0" IsVisible="{CompiledBinding CurrentEntry, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <Lottie Path="/Assets/Animations/nyan.json" RepeatCount="-1" Width="300" Height="300"></Lottie>
+
+            <ProgressBar Minimum="0" 
+                         Maximum="{CompiledBinding TotalEntries}" 
+                         Value="{CompiledBinding CurrentEntry.InstallProgress, FallbackValue=0}" 
+                         Margin="0 0 0 5" />
+            <TextBlock>
+                <Run>Currently installing: </Run>
+                <Run Text="{CompiledBinding CurrentEntry.Entry.Name}" FontWeight="Bold" />
+            </TextBlock>
+            <ProgressBar Minimum="0" Maximum="{CompiledBinding TotalEntries}" Value="{CompiledBinding InstalledEntries}" Margin="0 20 0 5" />
+            <TextBlock>
+                <Run Text="{CompiledBinding RemainingEntries}" FontWeight="Bold" />
+                <Run>feature(s) remaining, hold on tight!</Run>
+            </TextBlock>
+        </StackPanel>
+    </Panel>
+</UserControl>

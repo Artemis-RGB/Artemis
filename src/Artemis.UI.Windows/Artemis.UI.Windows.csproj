@@ -9,6 +9,7 @@
         <AssemblyTitle>Artemis</AssemblyTitle>
         <ApplicationIcon>..\Artemis.UI\Assets\Images\Logo\application.ico</ApplicationIcon>
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+        <HotAvaloniaAutoEnable>false</HotAvaloniaAutoEnable>
     </PropertyGroup>
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />

@@ -21,11 +21,14 @@ public partial class DebugView : ReactiveAppWindow<DebugViewModel>
 
         this.WhenActivated(d =>
         {
-            Observable.FromEventPattern(x => ViewModel!.ActivationRequested += x, x => ViewModel!.ActivationRequested -= x).Subscribe(_ =>
-            {
-                WindowState = WindowState.Normal;
-                Activate();
-            }).DisposeWith(d);
+            DebugViewModel vm = ViewModel!;
+            Observable.FromEventPattern(x => vm.ActivationRequested += x, x => vm.ActivationRequested -= x)
+                .Subscribe(_ =>
+                {
+                    WindowState = WindowState.Normal;
+                    Activate();
+                })
+                .DisposeWith(d);
         });
     }
 
