@@ -52,26 +52,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: Artemis
-      - name: Checkout Plugins
-        uses: actions/checkout@v4
-        with:
-          repository: Artemis-RGB/Artemis.Plugins
-          path: Artemis.Plugins
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
       - name: Publish Artemis
         run: dotnet publish --configuration Release -p:Version=${{ needs.version.outputs.version-number }} --runtime ${{ matrix.rid }} --output build/${{ matrix.rid }} --self-contained Artemis/src/Artemis.UI.${{ matrix.csproj }}/Artemis.UI.${{ matrix.csproj }}.csproj
-      - name: Publish Plugins
-        run: |
-          New-Item -ItemType "Directory" -Path build/${{ matrix.rid }}/Plugins/
-          Get-ChildItem -File -Recurse -Filter *.csproj Artemis.Plugins/src/ | 
-          Foreach-Object -Parallel {
-              dotnet publish --configuration Release --runtime ${{ matrix.rid }} --output build-plugins/$($_.BaseName) --no-self-contained $($_.FullName);
-              Compress-Archive -Path "build-plugins/$($_.BaseName)" -DestinationPath "build/${{ matrix.rid }}/Plugins/$($_.BaseName).zip";
-          }
-        shell: pwsh
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
