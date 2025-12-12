@@ -21,13 +21,12 @@ public interface IPluginManagementService : IArtemisService, IDisposable
     ///     Indicates whether or not plugins are currently being loaded
     /// </summary>
     bool LoadingPlugins { get; }
-
+    
     /// <summary>
-    ///     Copy built-in plugins from the executable directory to the plugins directory if the version is higher
-    ///     (higher or equal if compiled as debug)
+    ///     Indicates whether or not plugins are currently loaded
     /// </summary>
-    void CopyBuiltInPlugins();
-
+    bool LoadedPlugins { get; }
+    
     /// <summary>
     ///     Loads all installed plugins. If plugins already loaded this will reload them all
     /// </summary>
@@ -150,12 +149,7 @@ public interface IPluginManagementService : IArtemisService, IDisposable
     /// <param name="device"></param>
     /// <returns></returns>
     DeviceProvider GetDeviceProviderByDevice(IRGBDevice device);
-
-    /// <summary>
-    ///     Occurs when built-in plugins are being loaded
-    /// </summary>
-    event EventHandler CopyingBuildInPlugins;
-
+    
     /// <summary>
     ///     Occurs when a plugin has started loading
     /// </summary>

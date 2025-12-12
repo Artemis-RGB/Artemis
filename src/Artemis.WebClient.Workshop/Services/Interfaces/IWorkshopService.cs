@@ -124,7 +124,7 @@ public interface IWorkshopService
     /// <summary>
     /// Initializes the workshop service.
     /// </summary>
-    void Initialize();
+    Task Initialize();
     
     /// <summary>
     /// Represents the status of the workshop.
@@ -134,6 +134,7 @@ public interface IWorkshopService
     public event EventHandler<InstalledEntry>? OnInstalledEntrySaved;
     public event EventHandler<InstalledEntry>? OnEntryUninstalled;
     public event EventHandler<InstalledEntry>? OnEntryInstalled;
+    public event EventHandler? MigratingBuildInPlugins;
 
     void SetAutoUpdate(InstalledEntry installedEntry, bool autoUpdate);
 }

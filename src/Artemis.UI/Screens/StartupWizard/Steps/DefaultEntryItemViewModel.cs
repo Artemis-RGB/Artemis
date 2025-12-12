@@ -5,9 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Screens.Plugins;
+using Artemis.UI.Services;
+using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Utilities;
@@ -28,7 +29,7 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
     private readonly IWindowService _windowService;
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IProfileService _profileService;
-    private readonly ISettingsVmFactory _settingsVmFactory;
+    private readonly IPluginInteractionService _pluginInteractionService;
     private readonly Progress<StreamProgress> _progress = new();
 
     [Notify] private bool _isInstalled;
@@ -41,14 +42,14 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
         IWindowService windowService,
         IPluginManagementService pluginManagementService,
         IProfileService profileService,
-        ISettingsVmFactory settingsVmFactory)
+        IPluginInteractionService pluginInteractionService)
     {
         _logger = logger;
         _workshopService = workshopService;
         _windowService = windowService;
         _pluginManagementService = pluginManagementService;
         _profileService = profileService;
-        _settingsVmFactory = settingsVmFactory;
+        _pluginInteractionService = pluginInteractionService;
         Entry = entry;
 
         _progress.ProgressChanged += (_, f) => InstallProgress = f.ProgressPercentage;
@@ -62,10 +63,7 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
         if (IsInstalled || !ShouldInstall || Entry.LatestRelease == null)
             return true;
 
-        // Most entries install so fast it looks broken without a small delay
-        Task minimumDelay = Task.Delay(100, cancellationToken);
         EntryInstallResult result = await _workshopService.InstallEntry(Entry, Entry.LatestRelease, _progress, cancellationToken);
-        await minimumDelay;
 
         if (!result.IsSuccess)
         {
@@ -95,8 +93,7 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
             throw new InvalidOperationException($"Plugin with id '{pluginId}' does not exist.");
 
         // There's quite a bit of UI involved in enabling a plugin, borrowing the PluginSettingsViewModel for this
-        PluginViewModel pluginViewModel = _settingsVmFactory.PluginViewModel(plugin, ReactiveCommand.Create(() => { }));
-        await pluginViewModel.UpdateEnabled(true);
+        await _pluginInteractionService.EnablePlugin(plugin, true);
 
         // Find features without prerequisites to enable
         foreach (PluginFeatureInfo pluginFeatureInfo in plugin.Features)
@@ -112,15 +109,6 @@ public partial class DefaultEntryItemViewModel : ActivatableViewModelBase
             {
                 _logger.Warning(e, "Failed to enable plugin feature '{FeatureName}', skipping", pluginFeatureInfo.Name);
             }
-        }
-
-        // If the plugin has a mandatory settings window, open it and wait
-        if (plugin.ConfigurationDialog != null && plugin.ConfigurationDialog.IsMandatory)
-        {
-            if (plugin.Resolve(plugin.ConfigurationDialog.Type) is not PluginConfigurationViewModel viewModel)
-                throw new ArtemisUIException($"The type of a plugin configuration dialog must inherit {nameof(PluginConfigurationViewModel)}");
-
-            await _windowService.ShowDialogAsync(new PluginSettingsWindowViewModel(viewModel));
         }
     }
 

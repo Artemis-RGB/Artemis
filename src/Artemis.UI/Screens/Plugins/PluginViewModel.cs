@@ -6,11 +6,11 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
+using Artemis.UI.Services;
+using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Builders;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using Material.Icons;
@@ -21,9 +21,7 @@ namespace Artemis.UI.Screens.Plugins;
 
 public partial class PluginViewModel : ActivatableViewModelBase
 {
-    private readonly ICoreService _coreService;
-    private readonly INotificationService _notificationService;
-    private readonly IPluginManagementService _pluginManagementService;
+    private readonly IPluginInteractionService _pluginInteractionService;
     private readonly IWindowService _windowService;
     private Window? _settingsWindow;
     [Notify] private bool _canInstallPrerequisites;
@@ -31,18 +29,11 @@ public partial class PluginViewModel : ActivatableViewModelBase
     [Notify] private bool _enabling;
     [Notify] private Plugin _plugin;
 
-    public PluginViewModel(Plugin plugin,
-        ReactiveCommand<Unit, Unit>? reload,
-        ICoreService coreService,
-        IWindowService windowService,
-        INotificationService notificationService,
-        IPluginManagementService pluginManagementService)
+    public PluginViewModel(Plugin plugin, ReactiveCommand<Unit, Unit>? reload, IWindowService windowService, IPluginInteractionService pluginInteractionService)
     {
         _plugin = plugin;
-        _coreService = coreService;
         _windowService = windowService;
-        _notificationService = notificationService;
-        _pluginManagementService = pluginManagementService;
+        _pluginInteractionService = pluginInteractionService;
 
         Platforms = new ObservableCollection<PluginPlatformViewModel>();
         if (Plugin.Info.Platforms != null)
@@ -88,7 +79,6 @@ public partial class PluginViewModel : ActivatableViewModelBase
     public ReactiveCommand<Unit, Unit> OpenPluginDirectory { get; }
 
     public ObservableCollection<PluginPlatformViewModel> Platforms { get; }
-    public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
     public bool IsEnabled => Plugin.IsEnabled;
 
     public async Task UpdateEnabled(bool enable)
@@ -97,55 +87,15 @@ public partial class PluginViewModel : ActivatableViewModelBase
             return;
 
         if (!enable)
-        {
-            try
-            {
-                await Task.Run(() => _pluginManagementService.DisablePlugin(Plugin, true));
-            }
-            catch (Exception e)
-            {
-                await ShowUpdateEnableFailure(enable, e);
-            }
-            finally
-            {
-                this.RaisePropertyChanged(nameof(IsEnabled));
-            }
-
-            return;
-        }
-
-        try
+            await _pluginInteractionService.DisablePlugin(Plugin);
+        else
         {
             Enabling = true;
-            if (Plugin.Info.RequiresAdmin && !_coreService.IsElevated)
-            {
-                bool confirmed = await _windowService.ShowConfirmContentDialog("Enable plugin", "This plugin requires admin rights, are you sure you want to enable it? Artemis will need to restart.", "Confirm and restart");
-                if (!confirmed)
-                    return;
-            }
-
-            // Check if all prerequisites are met async
-            List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
-            subjects.AddRange(Plugin.Features.Where(f => f.AlwaysEnabled || f.EnabledInStorage));
-
-            if (subjects.Any(s => !s.ArePrerequisitesMet()))
-            {
-                await PluginPrerequisitesInstallDialogViewModel.Show(_windowService, subjects);
-                if (!subjects.All(s => s.ArePrerequisitesMet()))
-                    return;
-            }
-
-            await Task.Run(() => _pluginManagementService.EnablePlugin(Plugin, true, true));
-        }
-        catch (Exception e)
-        {
-            await ShowUpdateEnableFailure(enable, e);
-        }
-        finally
-        {
+            await _pluginInteractionService.EnablePlugin(Plugin, false);
             Enabling = false;
-            this.RaisePropertyChanged(nameof(IsEnabled));
         }
+
+        this.RaisePropertyChanged(nameof(IsEnabled));
     }
 
     public void CheckPrerequisites()
@@ -220,43 +170,12 @@ public partial class PluginViewModel : ActivatableViewModelBase
 
     private async Task ExecuteRemoveSettings()
     {
-        bool confirmed = await _windowService.ShowConfirmContentDialog("Clear plugin settings", "Are you sure you want to clear the settings of this plugin?");
-        if (!confirmed)
-            return;
-
-        bool wasEnabled = IsEnabled;
-
-        if (IsEnabled)
-            await UpdateEnabled(false);
-
-        _pluginManagementService.RemovePluginSettings(Plugin);
-
-        if (wasEnabled)
-            await UpdateEnabled(true);
-
-        _notificationService.CreateNotification().WithTitle("Cleared plugin settings.").Show();
+        await _pluginInteractionService.RemovePluginSettings(Plugin);
     }
 
     private async Task ExecuteRemove()
     {
-        bool confirmed = await _windowService.ShowConfirmContentDialog("Remove plugin", "Are you sure you want to remove this plugin?");
-        if (!confirmed)
-            return;
-
-        // If the plugin or any of its features has uninstall actions, offer to run these
-        await ExecuteRemovePrerequisites(true);
-
-        try
-        {
-            _pluginManagementService.RemovePlugin(Plugin, false);
-        }
-        catch (Exception e)
-        {
-            _windowService.ShowExceptionDialog("Failed to remove plugin", e);
-            throw;
-        }
-        
-        _notificationService.CreateNotification().WithTitle("Removed plugin.").Show();
+        await _pluginInteractionService.RemovePlugin(Plugin);
     }
 
     private void ExecuteShowLogsFolder()
@@ -269,20 +188,6 @@ public partial class PluginViewModel : ActivatableViewModelBase
         {
             _windowService.ShowExceptionDialog("Welp, we couldn\'t open the logs folder for you", e);
         }
-    }
-
-    private async Task ShowUpdateEnableFailure(bool enable, Exception e)
-    {
-        string action = enable ? "enable" : "disable";
-        ContentDialogBuilder builder = _windowService.CreateContentDialog()
-            .WithTitle($"Failed to {action} plugin {Plugin.Info.Name}")
-            .WithContent(e.Message)
-            .HavingPrimaryButton(b => b.WithText("View logs").WithCommand(ShowLogsFolder));
-        // If available, add a secondary button pointing to the support page
-        if (Plugin.Info.HelpPage != null)
-            builder = builder.HavingSecondaryButton(b => b.WithText("Open support page").WithAction(() => Utilities.OpenUrl(Plugin.Info.HelpPage.ToString())));
-
-        await builder.ShowAsync();
     }
 
     private void OnPluginToggled(object? sender, EventArgs e)
@@ -299,9 +204,9 @@ public partial class PluginViewModel : ActivatableViewModelBase
     {
         if (IsEnabled)
             return;
-        
+
         await UpdateEnabled(true);
-        
+
         // If enabling failed, don't offer to show the settings
         if (!IsEnabled || Plugin.ConfigurationDialog == null)
             return;

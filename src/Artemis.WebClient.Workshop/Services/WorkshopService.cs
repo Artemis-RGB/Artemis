@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Entities.Workshop;
 using Artemis.Storage.Repositories.Interfaces;
 using Artemis.UI.Shared.Routing;
@@ -10,6 +11,7 @@ using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using Artemis.WebClient.Workshop.Models;
 using Serilog;
+using StrawberryShake;
 
 namespace Artemis.WebClient.Workshop.Services;
 
@@ -22,15 +24,24 @@ public class WorkshopService : IWorkshopService
     private readonly Lazy<IPluginManagementService> _pluginManagementService;
     private readonly Lazy<IProfileService> _profileService;
     private readonly EntryInstallationHandlerFactory _factory;
+    private readonly IPluginRepository _pluginRepository;
+    private readonly IWorkshopClient _workshopClient;
+    private readonly PluginSetting<bool> _migratedBuiltInPlugins;
+
+
+
     private bool _initialized;
 
     public WorkshopService(ILogger logger,
         IHttpClientFactory httpClientFactory,
         IRouter router,
         IEntryRepository entryRepository,
+        ISettingsService settingsService,
         Lazy<IPluginManagementService> pluginManagementService,
         Lazy<IProfileService> profileService,
-        EntryInstallationHandlerFactory factory)
+        EntryInstallationHandlerFactory factory,
+        IPluginRepository pluginRepository,
+        IWorkshopClient workshopClient)
     {
         _logger = logger;
         _httpClientFactory = httpClientFactory;
@@ -39,6 +50,10 @@ public class WorkshopService : IWorkshopService
         _pluginManagementService = pluginManagementService;
         _profileService = profileService;
         _factory = factory;
+        _pluginRepository = pluginRepository;
+        _workshopClient = workshopClient;
+
+        _migratedBuiltInPlugins = settingsService.GetSetting("Workshop.MigratedBuiltInPlugins", false);
     }
 
     public async Task<Stream?> GetEntryIcon(long entryId, CancellationToken cancellationToken)
@@ -166,7 +181,7 @@ public class WorkshopService : IWorkshopService
             OnEntryInstalled?.Invoke(this, result.Entry);
         else
             _logger.Warning("Failed to install entry {Entry}: {Message}", entry, result.Message);
-        
+
         return result;
     }
 
@@ -227,7 +242,7 @@ public class WorkshopService : IWorkshopService
     }
 
     /// <inheritdoc />
-    public void Initialize()
+    public async Task Initialize()
     {
         if (_initialized)
             throw new ArtemisWorkshopException("Workshop service is already initialized");
@@ -238,6 +253,7 @@ public class WorkshopService : IWorkshopService
                 Directory.CreateDirectory(Constants.WorkshopFolder);
 
             RemoveOrphanedFiles();
+            await MigrateBuiltInPlugins();
 
             _pluginManagementService.Value.AdditionalPluginDirectories.AddRange(GetInstalledEntries()
                 .Where(e => e.EntryType == EntryType.Plugin)
@@ -259,7 +275,7 @@ public class WorkshopService : IWorkshopService
     {
         if (installedEntry.AutoUpdate == autoUpdate)
             return;
-        
+
         installedEntry.AutoUpdate = autoUpdate;
         SaveInstalledEntry(installedEntry);
     }
@@ -297,6 +313,19 @@ public class WorkshopService : IWorkshopService
         }
     }
 
+    private async Task MigrateBuiltInPlugins()
+    {
+        // If already migrated, do nothing
+        if (_migratedBuiltInPlugins.Value)
+            return;
+        
+        MigratingBuildInPlugins?.Invoke(this, EventArgs.Empty);
+
+        bool migrated = await BuiltInPluginsMigrator.Migrate(this, _workshopClient, _logger, _pluginRepository);
+        _migratedBuiltInPlugins.Value = migrated;
+        _migratedBuiltInPlugins.Save();
+    }
+
     private void ProfileServiceOnProfileRemoved(object? sender, ProfileConfigurationEventArgs e)
     {
         InstalledEntry? entry = GetInstalledEntryByProfile(e.ProfileConfiguration);
@@ -322,4 +351,6 @@ public class WorkshopService : IWorkshopService
     public event EventHandler<InstalledEntry>? OnEntryUninstalled;
 
     public event EventHandler<InstalledEntry>? OnEntryInstalled;
+    
+    public event EventHandler? MigratingBuildInPlugins;
 }
