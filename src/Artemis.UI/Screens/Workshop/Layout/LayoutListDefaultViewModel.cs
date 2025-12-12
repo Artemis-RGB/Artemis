@@ -1,3 +1,4 @@
+using System;
 using Artemis.UI.Screens.Workshop.Entries.List;
 using Artemis.UI.Screens.Workshop.LayoutFinder;
 using Artemis.UI.Shared.Routing;
@@ -7,11 +8,10 @@ namespace Artemis.UI.Screens.Workshop.Layout;
 
 public class LayoutListDefaultViewModel : RoutableScreen
 {
-    public LayoutListDefaultViewModel(LayoutFinderViewModel layoutFinderViewModel, EntryListViewModel entryListViewModel)
+    public LayoutListDefaultViewModel(LayoutFinderViewModel layoutFinderViewModel, Func<EntryType, EntryListViewModel> getEntryListViewModel)
     {
         LayoutFinderViewModel = layoutFinderViewModel;
-        EntryListViewModel = entryListViewModel;
-        EntryListViewModel.EntryType = EntryType.Layout;
+        EntryListViewModel = getEntryListViewModel(EntryType.Layout);
         EntryListViewModel.ShowCategoryFilter = false;
     }
 

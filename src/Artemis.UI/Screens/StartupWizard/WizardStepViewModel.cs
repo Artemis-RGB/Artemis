@@ -15,6 +15,7 @@ public abstract partial class WizardStepViewModel : ValidatableViewModelBase
     [Notify] private bool _showFinish;
     [Notify] private bool _showGoBack = true;
     [Notify] private bool _showHeader = true;
+    [Notify] private bool _hideAllButtons;
 
     public StartupWizardViewModel Wizard { get; set; } = null!;
 }

@@ -1,631 +1,753 @@
-﻿# This file was generated. Do not edit manually.
-
-schema {
-    query: Query
-    mutation: Mutation
+﻿schema {
+  query: Query
+  mutation: Mutation
 }
 
 type Category {
-    icon: String!
-    id: Long!
-    name: String!
+  id: Long!
+  name: String!
+  icon: String!
+  entryType: EntryType
 }
 
 "Information about the offset pagination."
 type CollectionSegmentInfo {
-    "Indicates whether more items exist following the set defined by the clients arguments."
-    hasNextPage: Boolean!
-    "Indicates whether more items exist prior the set defined by the clients arguments."
-    hasPreviousPage: Boolean!
+  "Indicates whether more items exist following the set defined by the clients arguments."
+  hasNextPage: Boolean!
+  "Indicates whether more items exist prior the set defined by the clients arguments."
+  hasPreviousPage: Boolean!
+}
+
+type DefaultEntryInfo {
+  entryId: Long!
+  isEssential: Boolean!
+  isDeviceProvider: Boolean!
 }
 
 "A segment of a collection."
 type EntriesCollectionSegment {
-    "A flattened list of the items."
-    items: [Entry!]
-    "Information to aid in pagination."
-    pageInfo: CollectionSegmentInfo!
-    totalCount: Int!
+  "Information to aid in pagination."
+  pageInfo: CollectionSegmentInfo!
+  "A flattened list of the items."
+  items: [Entry!]
+  totalCount: Int! @cost(weight: "10")
 }
 
 "A connection to a list of items."
 type EntriesV2Connection {
-    "A list of edges."
-    edges: [EntriesV2Edge!]
-    "A flattened list of the nodes."
-    nodes: [Entry!]
-    "Information to aid in pagination."
-    pageInfo: PageInfo!
-    "Identifies the total count of items in the connection."
-    totalCount: Int!
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of edges."
+  edges: [EntriesV2Edge!]
+  "A flattened list of the nodes."
+  nodes: [Entry!]
+  "Identifies the total count of items in the connection."
+  totalCount: Int! @cost(weight: "10")
 }
 
 "An edge in a connection."
 type EntriesV2Edge {
-    "A cursor for use in pagination."
-    cursor: String!
-    "The item at the end of the edge."
-    node: Entry!
+  "A cursor for use in pagination."
+  cursor: String!
+  "The item at the end of the edge."
+  node: Entry!
 }
 
 type Entry {
-    author: String!
-    authorId: UUID!
-    categories: [Category!]!
-    createdAt: DateTime!
-    dependantReleases: [Release!]!
-    description: String!
-    downloads: Long!
-    entryType: EntryType!
-    icon: Image
-    iconId: UUID
-    id: Long!
-    images: [Image!]!
-    isDefault: Boolean!
-    isOfficial: Boolean!
-    latestRelease: Release
-    latestReleaseId: Long
-    layoutInfo: [LayoutInfo!]!
-    name: String!
-    pluginInfo: PluginInfo
-    popularityScore: Float!
-    releases: [Release!]!
-    summary: String!
-    tags: [Tag!]!
+  id: Long!
+  entryType: EntryType!
+  createdAt: DateTime!
+  authorId: UUID!
+  author: String!
+  isOfficial: Boolean!
+  name: String!
+  summary: String!
+  description: String!
+  downloads: Long!
+  iconId: UUID
+  icon: Image
+  latestReleaseId: Long
+  latestRelease: Release
+  pluginInfo: PluginInfo
+  layoutInfo: [LayoutInfo!]!
+  defaultEntryInfo: DefaultEntryInfo
+  categories: [Category!]!
+  tags: [Tag!]!
+  images: [Image!]!
+  releases: [Release!]!
+  dependantReleases: [Release!]!
 }
 
 type Image {
-    description: String
-    entry: Entry
-    entryId: Long
-    height: Int!
-    id: UUID!
-    mimeType: String!
-    name: String!
-    size: Long!
-    width: Int!
+  id: UUID!
+  name: String!
+  description: String
+  width: Int!
+  height: Int!
+  size: Long!
+  mimeType: String!
+  entry: Entry
+  entryId: Long
 }
 
 type LayoutInfo {
-    deviceProvider: UUID!
-    deviceType: RGBDeviceType!
-    entry: Entry!
-    entryId: Long!
-    id: Long!
-    logicalLayout: String
-    model: String!
-    physicalLayout: KeyboardLayoutType
-    vendor: String!
+  id: Long!
+  deviceProvider: UUID!
+  deviceType: RGBDeviceType!
+  vendor: String!
+  model: String!
+  physicalLayout: KeyboardLayoutType
+  logicalLayout: String
+  entryId: Long!
+  entry: Entry!
 }
 
 type Mutation {
-    addEntry(input: CreateEntryInput!): Entry
-    addLayoutInfo(input: CreateLayoutInfoInput!): LayoutInfo
-    removeEntry(id: Long!): Entry
-    removeLayoutInfo(id: Long!): LayoutInfo!
-    removeRelease(id: Long!): Release!
-    setLayoutInfo(input: SetLayoutInfoInput!): [LayoutInfo!]!
-    updateEntry(input: UpdateEntryInput!): Entry
-    updateEntryImage(input: UpdateEntryImageInput!): Image
-    updateRelease(input: UpdateReleaseInput!): Release
+  addEntry(input: CreateEntryInput!): Entry @authorize @cost(weight: "10")
+  updateEntry(input: UpdateEntryInput!): Entry @authorize @cost(weight: "10")
+  removeEntry(id: Long!): Entry @authorize @cost(weight: "10")
+  updateEntryImage(input: UpdateEntryImageInput!): Image
+  @authorize
+  @cost(weight: "10")
+  setLayoutInfo(input: SetLayoutInfoInput!): [LayoutInfo!]!
+  @authorize
+  @cost(weight: "10")
+  addLayoutInfo(input: CreateLayoutInfoInput!): LayoutInfo
+  @authorize
+  @cost(weight: "10")
+  removeLayoutInfo(id: Long!): LayoutInfo! @authorize @cost(weight: "10")
+  updateRelease(input: UpdateReleaseInput!): Release
+  @authorize
+  @cost(weight: "10")
+  removeRelease(id: Long!): Release! @authorize @cost(weight: "10")
 }
 
 "Information about pagination in a connection."
 type PageInfo {
-    "When paginating forwards, the cursor to continue."
-    endCursor: String
-    "Indicates whether more edges exist following the set defined by the clients arguments."
-    hasNextPage: Boolean!
-    "Indicates whether more edges exist prior the set defined by the clients arguments."
-    hasPreviousPage: Boolean!
-    "When paginating backwards, the cursor to continue."
-    startCursor: String
+  "Indicates whether more edges exist following the set defined by the clients arguments."
+  hasNextPage: Boolean!
+  "Indicates whether more edges exist prior the set defined by the clients arguments."
+  hasPreviousPage: Boolean!
+  "When paginating backwards, the cursor to continue."
+  startCursor: String
+  "When paginating forwards, the cursor to continue."
+  endCursor: String
 }
 
 type PluginInfo {
-    api: Int
-    entry: Entry!
-    entryId: Long!
-    helpPage: String
-    minmumVersion: String
-    pluginGuid: UUID!
-    repository: String
-    requiresAdmin: Boolean!
-    supportsLinux: Boolean!
-    supportsOSX: Boolean!
-    supportsWindows: Boolean!
-    website: String
+  entryId: Long!
+  entry: Entry!
+  pluginGuid: UUID!
+  api: Int
+  minmumVersion: String
+  website: String
+  helpPage: String
+  repository: String
+  requiresAdmin: Boolean!
+  supportsWindows: Boolean!
+  supportsLinux: Boolean!
+  supportsOSX: Boolean!
 }
 
 "A segment of a collection."
 type PluginInfosCollectionSegment {
-    "A flattened list of the items."
-    items: [PluginInfo!]
-    "Information to aid in pagination."
-    pageInfo: CollectionSegmentInfo!
-    totalCount: Int!
+  "Information to aid in pagination."
+  pageInfo: CollectionSegmentInfo!
+  "A flattened list of the items."
+  items: [PluginInfo!]
+  totalCount: Int! @cost(weight: "10")
 }
 
 type Query {
-    categories(order: [CategorySortInput!], where: CategoryFilterInput): [Category!]!
-    entries(order: [EntrySortInput!], popular: Boolean, search: String, skip: Int, take: Int, where: EntryFilterInput): EntriesCollectionSegment
-    entriesV2(
-        "Returns the elements in the list that come after the specified cursor."
-        after: String,
-        "Returns the elements in the list that come before the specified cursor."
-        before: String,
-        "Returns the first _n_ elements from the list."
-        first: Int,
-        "Returns the last _n_ elements from the list."
-        last: Int,
-        order: [EntrySortInput!],
-        popular: Boolean,
-        search: String,
-        where: EntryFilterInput
-    ): EntriesV2Connection
-    entry(id: Long!): Entry
-    pluginInfo(pluginGuid: UUID!): PluginInfo
-    pluginInfos(order: [PluginInfoSortInput!], skip: Int, take: Int, where: PluginInfoFilterInput): PluginInfosCollectionSegment
-    popularEntries(where: EntryFilterInput): [Entry!]!
-    release(id: Long!): Release
-    searchEntries(input: String!, order: [EntrySortInput!], type: EntryType, where: EntryFilterInput): [Entry!]!
-    searchKeyboardLayout(deviceProvider: UUID!, logicalLayout: String, model: String!, physicalLayout: KeyboardLayoutType!, vendor: String!): LayoutInfo
-    searchLayout(deviceProvider: UUID!, deviceType: RGBDeviceType!, model: String!, vendor: String!): LayoutInfo
-    submittedEntries(order: [EntrySortInput!], where: EntryFilterInput): [Entry!]!
+  categories(
+    order: [CategorySortInput!] @cost(weight: "10")
+    where: CategoryFilterInput @cost(weight: "10")
+  ): [Category!]! @cost(weight: "10")
+  entries(
+    skip: Int
+    take: Int
+    search: String
+    includeDefaults: Boolean
+    order: [EntrySortInput!] @cost(weight: "10")
+    where: EntryFilterInput @cost(weight: "10")
+  ): EntriesCollectionSegment
+  @listSize(
+    assumedSize: 100
+    slicingArguments: ["take"]
+    slicingArgumentDefaultValue: 10
+    sizedFields: ["items"]
+    requireOneSlicingArgument: false
+  )
+  @cost(weight: "10")
+  entriesV2(
+    search: String
+    includeDefaults: Boolean
+    "Returns the first _n_ elements from the list."
+    first: Int
+    "Returns the elements in the list that come after the specified cursor."
+    after: String
+    "Returns the last _n_ elements from the list."
+    last: Int
+    "Returns the elements in the list that come before the specified cursor."
+    before: String
+    order: [EntrySortInput!] @cost(weight: "10")
+    where: EntryFilterInput @cost(weight: "10")
+  ): EntriesV2Connection
+  @listSize(
+    assumedSize: 100
+    slicingArguments: ["first", "last"]
+    slicingArgumentDefaultValue: 10
+    sizedFields: ["edges", "nodes"]
+    requireOneSlicingArgument: false
+  )
+  @cost(weight: "10")
+  entry(id: Long!): Entry @cost(weight: "10")
+  submittedEntries(
+    order: [EntrySortInput!] @cost(weight: "10")
+    where: EntryFilterInput @cost(weight: "10")
+  ): [Entry!]! @authorize @cost(weight: "10")
+  popularEntries(where: EntryFilterInput @cost(weight: "10")): [Entry!]!
+  @cost(weight: "10")
+  searchEntries(
+    input: String!
+    type: EntryType
+    order: [EntrySortInput!] @cost(weight: "10")
+    where: EntryFilterInput @cost(weight: "10")
+  ): [Entry!]! @cost(weight: "10")
+  searchLayout(
+    deviceProvider: UUID!
+    deviceType: RGBDeviceType!
+    vendor: String!
+    model: String!
+  ): LayoutInfo @cost(weight: "10")
+  searchKeyboardLayout(
+    deviceProvider: UUID!
+    vendor: String!
+    model: String!
+    physicalLayout: KeyboardLayoutType!
+    logicalLayout: String
+  ): LayoutInfo @cost(weight: "10")
+  pluginInfos(
+    skip: Int
+    take: Int
+    order: [PluginInfoSortInput!] @cost(weight: "10")
+    where: PluginInfoFilterInput @cost(weight: "10")
+  ): PluginInfosCollectionSegment
+  @listSize(
+    assumedSize: 100
+    slicingArguments: ["take"]
+    slicingArgumentDefaultValue: 10
+    sizedFields: ["items"]
+    requireOneSlicingArgument: false
+  )
+  @cost(weight: "10")
+  pluginInfo(pluginGuid: UUID!): PluginInfo @cost(weight: "10")
+  release(id: Long!): Release @cost(weight: "10")
 }
 
 type Release {
-    changelog: String
-    createdAt: DateTime!
-    dependencies: [Entry!]!
-    downloadSize: Long!
-    downloads: Long!
-    entry: Entry!
-    entryId: Long!
-    id: Long!
-    md5Hash: String
-    version: String!
+  id: Long!
+  version: String!
+  changelog: String
+  createdAt: DateTime!
+  downloads: Long!
+  downloadSize: Long!
+  md5Hash: String
+  entry: Entry!
+  entryId: Long!
+  dependencies: [Entry!]!
 }
 
 type Tag {
-    id: Long!
-    name: String!
+  id: Long!
+  name: String!
 }
 
+input BooleanOperationFilterInput {
+  eq: Boolean @cost(weight: "10")
+  neq: Boolean @cost(weight: "10")
+}
+
+input CategoryFilterInput {
+  and: [CategoryFilterInput!]
+  or: [CategoryFilterInput!]
+  id: LongOperationFilterInput
+  name: StringOperationFilterInput
+  icon: StringOperationFilterInput
+  entryType: NullableOfEntryTypeOperationFilterInput
+}
+
+input CategorySortInput {
+  id: SortEnumType @cost(weight: "10")
+  name: SortEnumType @cost(weight: "10")
+  icon: SortEnumType @cost(weight: "10")
+  entryType: SortEnumType @cost(weight: "10")
+}
+
+input CreateEntryInput {
+  entryType: EntryType!
+  name: String!
+  summary: String!
+  description: String!
+  categories: [Long!]!
+  tags: [String!]!
+  defaultEntryInfo: DefaultEntryInfoInput
+}
+
+input CreateLayoutInfoInput {
+  entryId: Long!
+  deviceProvider: UUID!
+  deviceType: RGBDeviceType!
+  vendor: String!
+  model: String!
+  physicalLayout: KeyboardLayoutType
+  logicalLayout: String
+}
+
+input DateTimeOperationFilterInput {
+  eq: DateTime @cost(weight: "10")
+  neq: DateTime @cost(weight: "10")
+  in: [DateTime] @cost(weight: "10")
+  nin: [DateTime] @cost(weight: "10")
+  gt: DateTime @cost(weight: "10")
+  ngt: DateTime @cost(weight: "10")
+  gte: DateTime @cost(weight: "10")
+  ngte: DateTime @cost(weight: "10")
+  lt: DateTime @cost(weight: "10")
+  nlt: DateTime @cost(weight: "10")
+  lte: DateTime @cost(weight: "10")
+  nlte: DateTime @cost(weight: "10")
+}
+
+input DefaultEntryInfoFilterInput {
+  and: [DefaultEntryInfoFilterInput!]
+  or: [DefaultEntryInfoFilterInput!]
+  entryId: LongOperationFilterInput
+  isEssential: BooleanOperationFilterInput
+  isDeviceProvider: BooleanOperationFilterInput
+}
+
+input DefaultEntryInfoInput {
+  isEssential: Boolean!
+  isDeviceProvider: Boolean!
+}
+
+input DefaultEntryInfoSortInput {
+  entryId: SortEnumType @cost(weight: "10")
+  isEssential: SortEnumType @cost(weight: "10")
+  isDeviceProvider: SortEnumType @cost(weight: "10")
+}
+
+input EntryFilterInput {
+  and: [EntryFilterInput!]
+  or: [EntryFilterInput!]
+  id: LongOperationFilterInput
+  entryType: EntryTypeOperationFilterInput
+  createdAt: DateTimeOperationFilterInput
+  authorId: UuidOperationFilterInput
+  author: StringOperationFilterInput
+  isOfficial: BooleanOperationFilterInput
+  name: StringOperationFilterInput
+  summary: StringOperationFilterInput
+  description: StringOperationFilterInput
+  downloads: LongOperationFilterInput
+  iconId: UuidOperationFilterInput
+  icon: ImageFilterInput
+  latestReleaseId: LongOperationFilterInput
+  latestRelease: ReleaseFilterInput
+  pluginInfo: PluginInfoFilterInput
+  layoutInfo: ListFilterInputTypeOfLayoutInfoFilterInput
+  defaultEntryInfo: DefaultEntryInfoFilterInput
+  categories: ListFilterInputTypeOfCategoryFilterInput
+  tags: ListFilterInputTypeOfTagFilterInput
+  images: ListFilterInputTypeOfImageFilterInput
+  releases: ListFilterInputTypeOfReleaseFilterInput
+  dependantReleases: ListFilterInputTypeOfReleaseFilterInput
+}
+
+input EntrySortInput {
+  id: SortEnumType @cost(weight: "10")
+  entryType: SortEnumType @cost(weight: "10")
+  createdAt: SortEnumType @cost(weight: "10")
+  authorId: SortEnumType @cost(weight: "10")
+  author: SortEnumType @cost(weight: "10")
+  isOfficial: SortEnumType @cost(weight: "10")
+  name: SortEnumType @cost(weight: "10")
+  summary: SortEnumType @cost(weight: "10")
+  description: SortEnumType @cost(weight: "10")
+  downloads: SortEnumType @cost(weight: "10")
+  iconId: SortEnumType @cost(weight: "10")
+  icon: ImageSortInput @cost(weight: "10")
+  latestReleaseId: SortEnumType @cost(weight: "10")
+  latestRelease: ReleaseSortInput @cost(weight: "10")
+  pluginInfo: PluginInfoSortInput @cost(weight: "10")
+  defaultEntryInfo: DefaultEntryInfoSortInput @cost(weight: "10")
+}
+
+input EntryTypeOperationFilterInput {
+  eq: EntryType @cost(weight: "10")
+  neq: EntryType @cost(weight: "10")
+  in: [EntryType!] @cost(weight: "10")
+  nin: [EntryType!] @cost(weight: "10")
+}
+
+input ImageFilterInput {
+  and: [ImageFilterInput!]
+  or: [ImageFilterInput!]
+  id: UuidOperationFilterInput
+  name: StringOperationFilterInput
+  description: StringOperationFilterInput
+  width: IntOperationFilterInput
+  height: IntOperationFilterInput
+  size: LongOperationFilterInput
+  mimeType: StringOperationFilterInput
+  entry: EntryFilterInput
+  entryId: LongOperationFilterInput
+}
+
+input ImageSortInput {
+  id: SortEnumType @cost(weight: "10")
+  name: SortEnumType @cost(weight: "10")
+  description: SortEnumType @cost(weight: "10")
+  width: SortEnumType @cost(weight: "10")
+  height: SortEnumType @cost(weight: "10")
+  size: SortEnumType @cost(weight: "10")
+  mimeType: SortEnumType @cost(weight: "10")
+  entry: EntrySortInput @cost(weight: "10")
+  entryId: SortEnumType @cost(weight: "10")
+}
+
+input IntOperationFilterInput {
+  eq: Int @cost(weight: "10")
+  neq: Int @cost(weight: "10")
+  in: [Int] @cost(weight: "10")
+  nin: [Int] @cost(weight: "10")
+  gt: Int @cost(weight: "10")
+  ngt: Int @cost(weight: "10")
+  gte: Int @cost(weight: "10")
+  ngte: Int @cost(weight: "10")
+  lt: Int @cost(weight: "10")
+  nlt: Int @cost(weight: "10")
+  lte: Int @cost(weight: "10")
+  nlte: Int @cost(weight: "10")
+}
+
+input LayoutInfoFilterInput {
+  and: [LayoutInfoFilterInput!]
+  or: [LayoutInfoFilterInput!]
+  id: LongOperationFilterInput
+  deviceProvider: UuidOperationFilterInput
+  deviceType: RGBDeviceTypeOperationFilterInput
+  vendor: StringOperationFilterInput
+  model: StringOperationFilterInput
+  physicalLayout: NullableOfKeyboardLayoutTypeOperationFilterInput
+  logicalLayout: StringOperationFilterInput
+  entryId: LongOperationFilterInput
+  entry: EntryFilterInput
+}
+
+input LayoutInfoInput {
+  deviceProvider: UUID!
+  deviceType: RGBDeviceType!
+  vendor: String!
+  model: String!
+  physicalLayout: KeyboardLayoutType
+  logicalLayout: String
+}
+
+input ListFilterInputTypeOfCategoryFilterInput {
+  all: CategoryFilterInput @cost(weight: "10")
+  none: CategoryFilterInput @cost(weight: "10")
+  some: CategoryFilterInput @cost(weight: "10")
+  any: Boolean @cost(weight: "10")
+}
+
+input ListFilterInputTypeOfEntryFilterInput {
+  all: EntryFilterInput @cost(weight: "10")
+  none: EntryFilterInput @cost(weight: "10")
+  some: EntryFilterInput @cost(weight: "10")
+  any: Boolean @cost(weight: "10")
+}
+
+input ListFilterInputTypeOfImageFilterInput {
+  all: ImageFilterInput @cost(weight: "10")
+  none: ImageFilterInput @cost(weight: "10")
+  some: ImageFilterInput @cost(weight: "10")
+  any: Boolean @cost(weight: "10")
+}
+
+input ListFilterInputTypeOfLayoutInfoFilterInput {
+  all: LayoutInfoFilterInput @cost(weight: "10")
+  none: LayoutInfoFilterInput @cost(weight: "10")
+  some: LayoutInfoFilterInput @cost(weight: "10")
+  any: Boolean @cost(weight: "10")
+}
+
+input ListFilterInputTypeOfReleaseFilterInput {
+  all: ReleaseFilterInput @cost(weight: "10")
+  none: ReleaseFilterInput @cost(weight: "10")
+  some: ReleaseFilterInput @cost(weight: "10")
+  any: Boolean @cost(weight: "10")
+}
+
+input ListFilterInputTypeOfTagFilterInput {
+  all: TagFilterInput @cost(weight: "10")
+  none: TagFilterInput @cost(weight: "10")
+  some: TagFilterInput @cost(weight: "10")
+  any: Boolean @cost(weight: "10")
+}
+
+input LongOperationFilterInput {
+  eq: Long @cost(weight: "10")
+  neq: Long @cost(weight: "10")
+  in: [Long] @cost(weight: "10")
+  nin: [Long] @cost(weight: "10")
+  gt: Long @cost(weight: "10")
+  ngt: Long @cost(weight: "10")
+  gte: Long @cost(weight: "10")
+  ngte: Long @cost(weight: "10")
+  lt: Long @cost(weight: "10")
+  nlt: Long @cost(weight: "10")
+  lte: Long @cost(weight: "10")
+  nlte: Long @cost(weight: "10")
+}
+
+input NullableOfEntryTypeOperationFilterInput {
+  eq: EntryType @cost(weight: "10")
+  neq: EntryType @cost(weight: "10")
+  in: [EntryType] @cost(weight: "10")
+  nin: [EntryType] @cost(weight: "10")
+}
+
+input NullableOfKeyboardLayoutTypeOperationFilterInput {
+  eq: KeyboardLayoutType @cost(weight: "10")
+  neq: KeyboardLayoutType @cost(weight: "10")
+  in: [KeyboardLayoutType] @cost(weight: "10")
+  nin: [KeyboardLayoutType] @cost(weight: "10")
+}
+
+input PluginInfoFilterInput {
+  and: [PluginInfoFilterInput!]
+  or: [PluginInfoFilterInput!]
+  entryId: LongOperationFilterInput
+  entry: EntryFilterInput
+  pluginGuid: UuidOperationFilterInput
+  api: IntOperationFilterInput
+  minmumVersion: StringOperationFilterInput
+  website: StringOperationFilterInput
+  helpPage: StringOperationFilterInput
+  repository: StringOperationFilterInput
+  requiresAdmin: BooleanOperationFilterInput
+  supportsWindows: BooleanOperationFilterInput
+  supportsLinux: BooleanOperationFilterInput
+  supportsOSX: BooleanOperationFilterInput
+}
+
+input PluginInfoSortInput {
+  entryId: SortEnumType @cost(weight: "10")
+  entry: EntrySortInput @cost(weight: "10")
+  pluginGuid: SortEnumType @cost(weight: "10")
+  api: SortEnumType @cost(weight: "10")
+  minmumVersion: SortEnumType @cost(weight: "10")
+  website: SortEnumType @cost(weight: "10")
+  helpPage: SortEnumType @cost(weight: "10")
+  repository: SortEnumType @cost(weight: "10")
+  requiresAdmin: SortEnumType @cost(weight: "10")
+  supportsWindows: SortEnumType @cost(weight: "10")
+  supportsLinux: SortEnumType @cost(weight: "10")
+  supportsOSX: SortEnumType @cost(weight: "10")
+}
+
+input RGBDeviceTypeOperationFilterInput {
+  eq: RGBDeviceType @cost(weight: "10")
+  neq: RGBDeviceType @cost(weight: "10")
+  in: [RGBDeviceType!] @cost(weight: "10")
+  nin: [RGBDeviceType!] @cost(weight: "10")
+}
+
+input ReleaseFilterInput {
+  and: [ReleaseFilterInput!]
+  or: [ReleaseFilterInput!]
+  id: LongOperationFilterInput
+  version: StringOperationFilterInput
+  changelog: StringOperationFilterInput
+  createdAt: DateTimeOperationFilterInput
+  downloads: LongOperationFilterInput
+  downloadSize: LongOperationFilterInput
+  md5Hash: StringOperationFilterInput
+  entry: EntryFilterInput
+  entryId: LongOperationFilterInput
+  dependencies: ListFilterInputTypeOfEntryFilterInput
+}
+
+input ReleaseSortInput {
+  id: SortEnumType @cost(weight: "10")
+  version: SortEnumType @cost(weight: "10")
+  changelog: SortEnumType @cost(weight: "10")
+  createdAt: SortEnumType @cost(weight: "10")
+  downloads: SortEnumType @cost(weight: "10")
+  downloadSize: SortEnumType @cost(weight: "10")
+  md5Hash: SortEnumType @cost(weight: "10")
+  entry: EntrySortInput @cost(weight: "10")
+  entryId: SortEnumType @cost(weight: "10")
+}
+
+input SetLayoutInfoInput {
+  entryId: Long!
+  layoutInfo: [LayoutInfoInput!]!
+}
+
+input StringOperationFilterInput {
+  and: [StringOperationFilterInput!]
+  or: [StringOperationFilterInput!]
+  eq: String @cost(weight: "10")
+  neq: String @cost(weight: "10")
+  contains: String @cost(weight: "20")
+  ncontains: String @cost(weight: "20")
+  in: [String] @cost(weight: "10")
+  nin: [String] @cost(weight: "10")
+  startsWith: String @cost(weight: "20")
+  nstartsWith: String @cost(weight: "20")
+  endsWith: String @cost(weight: "20")
+  nendsWith: String @cost(weight: "20")
+}
+
+input TagFilterInput {
+  and: [TagFilterInput!]
+  or: [TagFilterInput!]
+  id: LongOperationFilterInput
+  name: StringOperationFilterInput
+}
+
+input UpdateEntryImageInput {
+  id: UUID!
+  name: String!
+  description: String
+}
+
+input UpdateEntryInput {
+  id: Long!
+  name: String!
+  summary: String!
+  description: String!
+  categories: [Long!]!
+  tags: [String!]!
+  defaultEntryInfo: DefaultEntryInfoInput
+}
+
+input UpdateReleaseInput {
+  id: Long!
+  changelog: String
+}
+
+input UuidOperationFilterInput {
+  eq: UUID @cost(weight: "10")
+  neq: UUID @cost(weight: "10")
+  in: [UUID] @cost(weight: "10")
+  nin: [UUID] @cost(weight: "10")
+  gt: UUID @cost(weight: "10")
+  ngt: UUID @cost(weight: "10")
+  gte: UUID @cost(weight: "10")
+  ngte: UUID @cost(weight: "10")
+  lt: UUID @cost(weight: "10")
+  nlt: UUID @cost(weight: "10")
+  lte: UUID @cost(weight: "10")
+  nlte: UUID @cost(weight: "10")
+}
+
+"Defines when a policy shall be executed."
 enum ApplyPolicy {
-    AFTER_RESOLVER
-    BEFORE_RESOLVER
-    VALIDATION
+  "Before the resolver was executed."
+  BEFORE_RESOLVER
+  "After the resolver was executed."
+  AFTER_RESOLVER
+  "The policy is applied in the validation step before the execution."
+  VALIDATION
 }
 
 enum EntryType {
-    LAYOUT
-    PLUGIN
-    PROFILE
+  PLUGIN
+  PROFILE
+  LAYOUT
 }
 
 enum KeyboardLayoutType {
-    ABNT
-    ANSI
-    ISO
-    JIS
-    KS
-    UNKNOWN
+  UNKNOWN
+  ANSI
+  ISO
+  JIS
+  ABNT
+  KS
 }
 
 enum RGBDeviceType {
-    ALL
-    COOLER
-    DRAM
-    FAN
-    GAME_CONTROLLER
-    GRAPHICS_CARD
-    HEADSET
-    HEADSET_STAND
-    KEYBOARD
-    KEYPAD
-    LED_CONTROLLER
-    LED_MATRIX
-    LED_STRIPE
-    MAINBOARD
-    MONITOR
-    MOUSE
-    MOUSEPAD
-    NONE
-    SPEAKER
-    UNKNOWN
+  NONE
+  KEYBOARD
+  MOUSE
+  HEADSET
+  MOUSEPAD
+  LED_STRIPE
+  LED_MATRIX
+  MAINBOARD
+  GRAPHICS_CARD
+  DRAM
+  HEADSET_STAND
+  KEYPAD
+  FAN
+  SPEAKER
+  COOLER
+  MONITOR
+  LED_CONTROLLER
+  GAME_CONTROLLER
+  UNKNOWN
+  ALL
 }
 
 enum SortEnumType {
-    ASC
-    DESC
+  ASC
+  DESC
 }
 
+"The authorize directive."
+directive @authorize(
+  "The name of the authorization policy that determines access to the annotated resource."
+  policy: String
+  "Roles that are allowed to access the annotated resource."
+  roles: [String!]
+  "Defines when when the authorize directive shall be applied.By default the authorize directives are applied during the validation phase."
+  apply: ApplyPolicy! = BEFORE_RESOLVER
+) repeatable on OBJECT | FIELD_DEFINITION
+
+"The purpose of the `cost` directive is to define a `weight` for GraphQL types, fields, and arguments. Static analysis can use these weights when calculating the overall cost of a query or response."
+directive @cost(
+  "The `weight` argument defines what value to add to the overall cost for every appearance, or possible appearance, of a type, field, argument, etc."
+  weight: String!
+) on SCALAR | OBJECT | FIELD_DEFINITION | ARGUMENT_DEFINITION | ENUM | INPUT_FIELD_DEFINITION
+
+"The purpose of the `@listSize` directive is to either inform the static analysis about the size of returned lists (if that information is statically available), or to point the analysis to where to find that information."
+directive @listSize(
+  "The `assumedSize` argument can be used to statically define the maximum length of a list returned by a field."
+  assumedSize: Int
+  "The `slicingArguments` argument can be used to define which of the field's arguments with numeric type are slicing arguments, so that their value determines the size of the list returned by that field. It may specify a list of multiple slicing arguments."
+  slicingArguments: [String!]
+  "The `slicingArgumentDefaultValue` argument can be used to define a default value for a slicing argument, which is used if the argument is not present in a query."
+  slicingArgumentDefaultValue: Int
+  "The `sizedFields` argument can be used to define that the value of the `assumedSize` argument or of a slicing argument does not affect the size of a list returned by a field itself, but that of a list returned by one of its sub-fields."
+  sizedFields: [String!]
+  "The `requireOneSlicingArgument` argument can be used to inform the static analysis that it should expect that exactly one of the defined slicing arguments is present in a query. If that is not the case (i.e., if none or multiple slicing arguments are present), the static analysis may throw an error."
+  requireOneSlicingArgument: Boolean! = true
+) on FIELD_DEFINITION
+
+"The `@specifiedBy` directive is used within the type system definition language to provide a URL for specifying the behavior of custom scalar definitions."
+directive @specifiedBy(
+  "The specifiedBy URL points to a human-readable specification. This field will only read a result for scalar types."
+  url: String!
+) on SCALAR
+
 "The `DateTime` scalar represents an ISO-8601 compliant date time type."
-scalar DateTime
+scalar DateTime @specifiedBy(url: "https://www.graphql-scalars.com/date-time")
 
 "The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1."
 scalar Long
 
-scalar UUID
-
-input BooleanOperationFilterInput {
-    eq: Boolean
-    neq: Boolean
-}
-
-input CategoryFilterInput {
-    and: [CategoryFilterInput!]
-    icon: StringOperationFilterInput
-    id: LongOperationFilterInput
-    name: StringOperationFilterInput
-    or: [CategoryFilterInput!]
-}
-
-input CategorySortInput {
-    icon: SortEnumType
-    id: SortEnumType
-    name: SortEnumType
-}
-
-input CreateEntryInput {
-    categories: [Long!]!
-    description: String!
-    entryType: EntryType!
-    isDefault: Boolean!
-    name: String!
-    summary: String!
-    tags: [String!]!
-}
-
-input CreateLayoutInfoInput {
-    deviceProvider: UUID!
-    deviceType: RGBDeviceType!
-    entryId: Long!
-    logicalLayout: String
-    model: String!
-    physicalLayout: KeyboardLayoutType
-    vendor: String!
-}
-
-input DateTimeOperationFilterInput {
-    eq: DateTime
-    gt: DateTime
-    gte: DateTime
-    in: [DateTime]
-    lt: DateTime
-    lte: DateTime
-    neq: DateTime
-    ngt: DateTime
-    ngte: DateTime
-    nin: [DateTime]
-    nlt: DateTime
-    nlte: DateTime
-}
-
-input EntryFilterInput {
-    and: [EntryFilterInput!]
-    author: StringOperationFilterInput
-    authorId: UuidOperationFilterInput
-    categories: ListFilterInputTypeOfCategoryFilterInput
-    createdAt: DateTimeOperationFilterInput
-    dependantReleases: ListFilterInputTypeOfReleaseFilterInput
-    description: StringOperationFilterInput
-    downloads: LongOperationFilterInput
-    entryType: EntryTypeOperationFilterInput
-    icon: ImageFilterInput
-    iconId: UuidOperationFilterInput
-    id: LongOperationFilterInput
-    images: ListFilterInputTypeOfImageFilterInput
-    isDefault: BooleanOperationFilterInput
-    isOfficial: BooleanOperationFilterInput
-    latestRelease: ReleaseFilterInput
-    latestReleaseId: LongOperationFilterInput
-    layoutInfo: ListFilterInputTypeOfLayoutInfoFilterInput
-    name: StringOperationFilterInput
-    or: [EntryFilterInput!]
-    pluginInfo: PluginInfoFilterInput
-    popularityScore: FloatOperationFilterInput
-    releases: ListFilterInputTypeOfReleaseFilterInput
-    summary: StringOperationFilterInput
-    tags: ListFilterInputTypeOfTagFilterInput
-}
-
-input EntrySortInput {
-    author: SortEnumType
-    authorId: SortEnumType
-    createdAt: SortEnumType
-    description: SortEnumType
-    downloads: SortEnumType
-    entryType: SortEnumType
-    icon: ImageSortInput
-    iconId: SortEnumType
-    id: SortEnumType
-    isDefault: SortEnumType
-    isOfficial: SortEnumType
-    latestRelease: ReleaseSortInput
-    latestReleaseId: SortEnumType
-    name: SortEnumType
-    pluginInfo: PluginInfoSortInput
-    popularityScore: SortEnumType
-    summary: SortEnumType
-}
-
-input EntryTypeOperationFilterInput {
-    eq: EntryType
-    in: [EntryType!]
-    neq: EntryType
-    nin: [EntryType!]
-}
-
-input FloatOperationFilterInput {
-    eq: Float
-    gt: Float
-    gte: Float
-    in: [Float]
-    lt: Float
-    lte: Float
-    neq: Float
-    ngt: Float
-    ngte: Float
-    nin: [Float]
-    nlt: Float
-    nlte: Float
-}
-
-input ImageFilterInput {
-    and: [ImageFilterInput!]
-    description: StringOperationFilterInput
-    entry: EntryFilterInput
-    entryId: LongOperationFilterInput
-    height: IntOperationFilterInput
-    id: UuidOperationFilterInput
-    mimeType: StringOperationFilterInput
-    name: StringOperationFilterInput
-    or: [ImageFilterInput!]
-    size: LongOperationFilterInput
-    width: IntOperationFilterInput
-}
-
-input ImageSortInput {
-    description: SortEnumType
-    entry: EntrySortInput
-    entryId: SortEnumType
-    height: SortEnumType
-    id: SortEnumType
-    mimeType: SortEnumType
-    name: SortEnumType
-    size: SortEnumType
-    width: SortEnumType
-}
-
-input IntOperationFilterInput {
-    eq: Int
-    gt: Int
-    gte: Int
-    in: [Int]
-    lt: Int
-    lte: Int
-    neq: Int
-    ngt: Int
-    ngte: Int
-    nin: [Int]
-    nlt: Int
-    nlte: Int
-}
-
-input LayoutInfoFilterInput {
-    and: [LayoutInfoFilterInput!]
-    deviceProvider: UuidOperationFilterInput
-    deviceType: RGBDeviceTypeOperationFilterInput
-    entry: EntryFilterInput
-    entryId: LongOperationFilterInput
-    id: LongOperationFilterInput
-    logicalLayout: StringOperationFilterInput
-    model: StringOperationFilterInput
-    or: [LayoutInfoFilterInput!]
-    physicalLayout: NullableOfKeyboardLayoutTypeOperationFilterInput
-    vendor: StringOperationFilterInput
-}
-
-input LayoutInfoInput {
-    deviceProvider: UUID!
-    deviceType: RGBDeviceType!
-    logicalLayout: String
-    model: String!
-    physicalLayout: KeyboardLayoutType
-    vendor: String!
-}
-
-input ListFilterInputTypeOfCategoryFilterInput {
-    all: CategoryFilterInput
-    any: Boolean
-    none: CategoryFilterInput
-    some: CategoryFilterInput
-}
-
-input ListFilterInputTypeOfEntryFilterInput {
-    all: EntryFilterInput
-    any: Boolean
-    none: EntryFilterInput
-    some: EntryFilterInput
-}
-
-input ListFilterInputTypeOfImageFilterInput {
-    all: ImageFilterInput
-    any: Boolean
-    none: ImageFilterInput
-    some: ImageFilterInput
-}
-
-input ListFilterInputTypeOfLayoutInfoFilterInput {
-    all: LayoutInfoFilterInput
-    any: Boolean
-    none: LayoutInfoFilterInput
-    some: LayoutInfoFilterInput
-}
-
-input ListFilterInputTypeOfReleaseFilterInput {
-    all: ReleaseFilterInput
-    any: Boolean
-    none: ReleaseFilterInput
-    some: ReleaseFilterInput
-}
-
-input ListFilterInputTypeOfTagFilterInput {
-    all: TagFilterInput
-    any: Boolean
-    none: TagFilterInput
-    some: TagFilterInput
-}
-
-input LongOperationFilterInput {
-    eq: Long
-    gt: Long
-    gte: Long
-    in: [Long]
-    lt: Long
-    lte: Long
-    neq: Long
-    ngt: Long
-    ngte: Long
-    nin: [Long]
-    nlt: Long
-    nlte: Long
-}
-
-input NullableOfKeyboardLayoutTypeOperationFilterInput {
-    eq: KeyboardLayoutType
-    in: [KeyboardLayoutType]
-    neq: KeyboardLayoutType
-    nin: [KeyboardLayoutType]
-}
-
-input PluginInfoFilterInput {
-    and: [PluginInfoFilterInput!]
-    api: IntOperationFilterInput
-    entry: EntryFilterInput
-    entryId: LongOperationFilterInput
-    helpPage: StringOperationFilterInput
-    minmumVersion: StringOperationFilterInput
-    or: [PluginInfoFilterInput!]
-    pluginGuid: UuidOperationFilterInput
-    repository: StringOperationFilterInput
-    requiresAdmin: BooleanOperationFilterInput
-    supportsLinux: BooleanOperationFilterInput
-    supportsOSX: BooleanOperationFilterInput
-    supportsWindows: BooleanOperationFilterInput
-    website: StringOperationFilterInput
-}
-
-input PluginInfoSortInput {
-    api: SortEnumType
-    entry: EntrySortInput
-    entryId: SortEnumType
-    helpPage: SortEnumType
-    minmumVersion: SortEnumType
-    pluginGuid: SortEnumType
-    repository: SortEnumType
-    requiresAdmin: SortEnumType
-    supportsLinux: SortEnumType
-    supportsOSX: SortEnumType
-    supportsWindows: SortEnumType
-    website: SortEnumType
-}
-
-input RGBDeviceTypeOperationFilterInput {
-    eq: RGBDeviceType
-    in: [RGBDeviceType!]
-    neq: RGBDeviceType
-    nin: [RGBDeviceType!]
-}
-
-input ReleaseFilterInput {
-    and: [ReleaseFilterInput!]
-    changelog: StringOperationFilterInput
-    createdAt: DateTimeOperationFilterInput
-    dependencies: ListFilterInputTypeOfEntryFilterInput
-    downloadSize: LongOperationFilterInput
-    downloads: LongOperationFilterInput
-    entry: EntryFilterInput
-    entryId: LongOperationFilterInput
-    id: LongOperationFilterInput
-    md5Hash: StringOperationFilterInput
-    or: [ReleaseFilterInput!]
-    version: StringOperationFilterInput
-}
-
-input ReleaseSortInput {
-    changelog: SortEnumType
-    createdAt: SortEnumType
-    downloadSize: SortEnumType
-    downloads: SortEnumType
-    entry: EntrySortInput
-    entryId: SortEnumType
-    id: SortEnumType
-    md5Hash: SortEnumType
-    version: SortEnumType
-}
-
-input SetLayoutInfoInput {
-    entryId: Long!
-    layoutInfo: [LayoutInfoInput!]!
-}
-
-input StringOperationFilterInput {
-    and: [StringOperationFilterInput!]
-    contains: String
-    endsWith: String
-    eq: String
-    in: [String]
-    ncontains: String
-    nendsWith: String
-    neq: String
-    nin: [String]
-    nstartsWith: String
-    or: [StringOperationFilterInput!]
-    startsWith: String
-}
-
-input TagFilterInput {
-    and: [TagFilterInput!]
-    id: LongOperationFilterInput
-    name: StringOperationFilterInput
-    or: [TagFilterInput!]
-}
-
-input UpdateEntryImageInput {
-    description: String
-    id: UUID!
-    name: String!
-}
-
-input UpdateEntryInput {
-    categories: [Long!]!
-    description: String!
-    id: Long!
-    isDefault: Boolean!
-    name: String!
-    summary: String!
-    tags: [String!]!
-}
-
-input UpdateReleaseInput {
-    changelog: String
-    id: Long!
-}
-
-input UuidOperationFilterInput {
-    eq: UUID
-    gt: UUID
-    gte: UUID
-    in: [UUID]
-    lt: UUID
-    lte: UUID
-    neq: UUID
-    ngt: UUID
-    ngte: UUID
-    nin: [UUID]
-    nlt: UUID
-    nlte: UUID
-}
+scalar UUID @specifiedBy(url: "https://tools.ietf.org/html/rfc4122")

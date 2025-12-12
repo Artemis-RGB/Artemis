@@ -89,7 +89,7 @@
                 Background="{DynamicResource ControlFillColorDefaultBrush}" 
                 IsVisible="{CompiledBinding ProfileConfiguration, Converter={x:Static ObjectConverters.IsNotNull}}">
             <StackPanel Orientation="Horizontal" Margin="8">
-                <shared:ProfileConfigurationIcon ConfigurationIcon="{CompiledBinding ProfileConfiguration.Icon}" Width="18" Height="18" Margin="0 0 5 0" />
+                <shared:ProfileConfigurationIcon ConfigurationIcon="{CompiledBinding ProfileConfiguration.Icon}" Width="18" Height="18" CornerRadius="3" Margin="0 0 5 0" />
                 <TextBlock Text="{CompiledBinding ProfileConfiguration.Name}" />
             </StackPanel>
         </Border>

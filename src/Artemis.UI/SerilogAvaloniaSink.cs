@@ -24,11 +24,11 @@ public class SerilogAvaloniaSink : ILogSink
         
         #if DEBUG
         // Except with binding errors, ignore anything that is information or lower
-        return (area == "Binding" || logLevel > SerilogLogLevel.Information) && _logger.IsEnabled(logLevel);
-        #else
+        return true;
+#else
         // Ignore binding errors in release builds, shoo
         return area != "Binding" && logLevel > SerilogLogLevel.Information && _logger.IsEnabled(logLevel);
-        #endif
+#endif
     }
 
     /// <inheritdoc />

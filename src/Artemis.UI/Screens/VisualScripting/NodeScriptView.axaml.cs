@@ -33,16 +33,17 @@ public partial class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
         
         this.WhenActivated(d =>
         {
-            ViewModel!.AutoFitRequested += ViewModelOnAutoFitRequested;
-            ViewModel.PickerPositionSubject.Subscribe(ShowPickerAt).DisposeWith(d);
-            if (ViewModel.IsPreview)
+            NodeScriptViewModel vm = ViewModel!;
+            vm.AutoFitRequested += ViewModelOnAutoFitRequested;
+            vm.PickerPositionSubject.Subscribe(ShowPickerAt).DisposeWith(d);
+            if (vm.IsPreview)
             {
                 BoundsProperty.Changed.Subscribe(BoundsPropertyChanged).DisposeWith(d);
-                ViewModel.NodeViewModels.ToObservableChangeSet().Subscribe(_ => AutoFitIfPreview()).DisposeWith(d);
+                vm.NodeViewModels.ToObservableChangeSet().Subscribe(_ => AutoFitIfPreview()).DisposeWith(d);
             }
         
             Dispatcher.UIThread.InvokeAsync(() => AutoFit(true), DispatcherPriority.ContextIdle);
-            Disposable.Create(() => ViewModel.AutoFitRequested -= ViewModelOnAutoFitRequested).DisposeWith(d);
+            Disposable.Create(() => vm.AutoFitRequested -= ViewModelOnAutoFitRequested).DisposeWith(d);
         });
     }
 

@@ -19,7 +19,8 @@ public partial class SplashView : ReactiveWindow<SplashViewModel>
 #endif
         this.WhenActivated(disposables =>
         {
-            Observable.FromEventPattern(x => ViewModel!.CoreService.Initialized += x, x => ViewModel!.CoreService.Initialized -= x)
+            SplashViewModel vm = ViewModel!;
+            Observable.FromEventPattern(x => vm.CoreService.Initialized += x, x => vm.CoreService.Initialized -= x)
                 .Subscribe(_ => Dispatcher.UIThread.Post(Close))
                 .DisposeWith(disposables);
         });

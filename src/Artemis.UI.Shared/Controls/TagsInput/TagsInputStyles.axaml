@@ -1,6 +1,5 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:ui="using:FluentAvalonia.UI.Controls"
                     xmlns:tagsInput="clr-namespace:Artemis.UI.Shared.TagsInput"
                     xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
                     x:CompileBindings="True">

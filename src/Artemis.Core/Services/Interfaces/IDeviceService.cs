@@ -46,7 +46,8 @@ public interface IDeviceService : IArtemisService
     /// <summary>
     ///     Applies auto-arranging logic to the surface
     /// </summary>
-    void AutoArrangeDevices();
+    /// <param name="leftHanded"></param>
+    void AutoArrangeDevices(bool leftHanded);
 
     /// <summary>
     ///     Apples the best available to the provided <see cref="ArtemisDevice" />

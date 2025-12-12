@@ -92,7 +92,7 @@
             </StackPanel>
 
             <!-- Management -->
-            <Border Grid.Column="3" Grid.Row="0" Grid.RowSpan="2" BorderBrush="{DynamicResource ButtonBorderBrush}" BorderThickness="1 0 0 0" Margin="10 0 0 0" Padding="10 0 0 0">
+            <Border Grid.Column="3" Grid.Row="0" Grid.RowSpan="2" BorderBrush="{DynamicResource ButtonBorderBrush}" BorderThickness="1 0 0 0" Margin="10 0 0 0" Padding="10 0 0 0" IsVisible="{CompiledBinding DisplayManagement}">
                 <StackPanel VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal" Spacing="5">
                         <Button Command="{CompiledBinding ViewLocal}" HorizontalAlignment="Stretch" >Open</Button>

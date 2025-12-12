@@ -22,7 +22,7 @@
 			           Foreground="White"
 			           FontSize="32"
 			           Margin="30"
-			           Text=" Welcome to Artemis, the unified RGB platform.">
+			           Text="Welcome to Artemis, the unified RGB platform.">
 				<TextBlock.Effect>
 					<DropShadowEffect Color="Black" OffsetX="2" OffsetY="2" BlurRadius="5"></DropShadowEffect>
 				</TextBlock.Effect>

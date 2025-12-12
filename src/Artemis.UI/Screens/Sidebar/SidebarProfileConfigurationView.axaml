@@ -77,7 +77,8 @@
                                          VerticalAlignment="Center"
                                          ConfigurationIcon="{CompiledBinding ProfileConfiguration.Icon}"
                                          Width="22"
-                                         Height="22" 
+                                         Height="22"
+                                         CornerRadius="4"
                                          Margin="0 0 5 0">
             <shared:ProfileConfigurationIcon.Transitions>
                 <Transitions>

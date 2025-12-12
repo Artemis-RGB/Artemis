@@ -1,5 +1,5 @@
-query GetCategories {
-    categories(order: {name: ASC}) {
+query GetCategories($entryType: EntryType) {
+    categories(where: {entryType: {in: [$entryType, null]}} order: {name: ASC}) {
         id
         name
         icon

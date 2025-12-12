@@ -185,12 +185,15 @@ internal class ProfileEditorService : IProfileEditorService
         {
             // Activate the profile if one was provided
             if (profileConfiguration != null)
+            {
+                _profileService.FocusProfile = profileConfiguration;
                 _profileService.ActivateProfile(profileConfiguration);
+            }
+
             // If there is no profile configuration or module, deliberately set the override to null
             _moduleService.SetActivationOverride(profileConfiguration?.Module);
         });
-
-        _profileService.FocusProfile = profileConfiguration;
+        
         _profileConfigurationSubject.OnNext(profileConfiguration);
 
         ChangeTime(TimeSpan.Zero);

@@ -66,5 +66,6 @@
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.11.0" />
     <PackageVersion Include="System.Text.Json" Version="9.0.5" />
     <PackageVersion Include="TextMateSharp.Grammars" Version="1.0.68" />
+    <PackageVersion Include="HotAvalonia" Version="3.0.0" />
   </ItemGroup>
 </Project>

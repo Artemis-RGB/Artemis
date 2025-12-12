@@ -41,7 +41,7 @@ public partial class WorkshopHomeViewModel : RoutableScreen
 
         this.WhenActivatedAsync(async d =>
         {
-            WorkshopReachable = await workshopService.ValidateWorkshopStatus(d.AsCancellationToken());
+            WorkshopReachable = await workshopService.ValidateWorkshopStatus(true, d.AsCancellationToken());
 
             IOperationResult<IGetPopularEntriesResult> popularResult = await client.GetPopularEntries.ExecuteAsync();
             popular.Edit(p =>
@@ -51,7 +51,7 @@ public partial class WorkshopHomeViewModel : RoutableScreen
                     p.AddRange(popularResult.Data.PopularEntries.Take(8));
             });
 
-            IOperationResult<IGetEntriesv2Result> latestResult = await client.GetEntriesv2.ExecuteAsync(null, null, [new EntrySortInput {CreatedAt = SortEnumType.Desc}], 8, null);
+            IOperationResult<IGetEntriesResult> latestResult = await client.GetEntries.ExecuteAsync(null, null, null, [new EntrySortInput {CreatedAt = SortEnumType.Desc}], 8, null);
             latest.Edit(l =>
             {
                 l.Clear();

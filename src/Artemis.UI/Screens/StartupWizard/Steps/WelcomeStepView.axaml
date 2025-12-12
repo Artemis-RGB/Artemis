@@ -6,19 +6,17 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.StartupWizard.Steps.WelcomeStepView"
              x:DataType="steps:WelcomeStepViewModel">
-    <Border Classes="card">
-        <StackPanel>
-            <TextBlock Classes="h4">Welcome to the Artemis startup wizard!</TextBlock>
+        <StackPanel Margin="0 50 0 0">
+            <TextBlock Classes="h4" TextAlignment="Center">Welcome to the Artemis startup wizard!</TextBlock>
 
-            <TextBlock TextWrapping="Wrap">
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center">
                 In this wizard we'll walk you through the initial configuration of Artemis.
             </TextBlock>
-            <TextBlock TextWrapping="Wrap">
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center">
                 Before you can start you need to tell Artemis which devices you want to use and where they are placed on your desk.
             </TextBlock>
-            <TextBlock Classes="subtitle" TextWrapping="Wrap" Margin="0 15 0 0">
+            <TextBlock Classes="subtitle" TextWrapping="Wrap" Margin="0 15 0 0" TextAlignment="Center">
                 PS: You can also skip the wizard and set things up yourself.
             </TextBlock>
         </StackPanel>
-    </Border>
 </UserControl>

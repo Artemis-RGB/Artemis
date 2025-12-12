@@ -54,9 +54,10 @@ public interface IWorkshopService
     /// <summary>
     /// Validates the status of the workshop.
     /// </summary>
+    /// <param name="navigateIfUnreachable">Whether to navigate to the offline page if the workshop is unreachable.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A boolean indicating whether the workshop is reachable.</returns>
-    Task<bool> ValidateWorkshopStatus(CancellationToken cancellationToken);
+    Task<bool> ValidateWorkshopStatus(bool navigateIfUnreachable, CancellationToken cancellationToken);
 
     /// <summary>
     /// Navigates to a specific entry.
@@ -123,7 +124,7 @@ public interface IWorkshopService
     /// <summary>
     /// Initializes the workshop service.
     /// </summary>
-    void Initialize();
+    Task Initialize();
     
     /// <summary>
     /// Represents the status of the workshop.
@@ -133,6 +134,7 @@ public interface IWorkshopService
     public event EventHandler<InstalledEntry>? OnInstalledEntrySaved;
     public event EventHandler<InstalledEntry>? OnEntryUninstalled;
     public event EventHandler<InstalledEntry>? OnEntryInstalled;
+    public event EventHandler? MigratingBuildInPlugins;
 
     void SetAutoUpdate(InstalledEntry installedEntry, bool autoUpdate);
 }

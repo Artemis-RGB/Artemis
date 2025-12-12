@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:steps="clr-namespace:Artemis.UI.Screens.StartupWizard.Steps"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.StartupWizard.Steps.WorkshopUnreachableStepView"
+             x:DataType="steps:WorkshopUnreachableStepViewModel">
+    <StackPanel>
+        <StackPanel.Styles>
+            <Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="TextAlignment" Value="Center"></Setter>
+                    <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                </Style>
+            </Styles>
+        </StackPanel.Styles>
+
+        <TextBlock Theme="{StaticResource TitleTextBlockStyle}">Could not reach the workshop</TextBlock>
+        <TextBlock MaxWidth="600" Classes="subtitle">This unfortunately means the setup wizard cannot continue.</TextBlock>
+        <avalonia:MaterialIcon Kind="LanDisconnect" Width="120" Height="120" Margin="0 60"></avalonia:MaterialIcon>
+
+        <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">Please ensure you are connected to the internet.</TextBlock>
+        <TextBlock Margin="0 5" Classes="subtitle">If this keeps occuring, hit us up on Discord</TextBlock>
+
+        <Button HorizontalAlignment="Center" Margin="0 20" Command="{CompiledBinding Retry}">Retry</Button>
+        <Button HorizontalAlignment="Center" Command="{CompiledBinding Skip}">Try again on next launch</Button>
+    </StackPanel>
+</UserControl>

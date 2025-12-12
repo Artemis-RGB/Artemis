@@ -187,7 +187,7 @@ public partial class ProfileConfigurationEditViewModel : DialogViewModelBase<Pro
         if (result == null)
             return;
 
-        SelectedBitmapSource = BitmapExtensions.LoadAndResize(result[0], 128);
+        SelectedBitmapSource = BitmapExtensions.LoadAndResize(result[0], 128, false);
         _selectedIconPath = result[0];
     }
 

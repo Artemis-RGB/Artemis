@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:layout="clr-namespace:Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
-             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout.LayoutInfoStepView"
              x:DataType="layout:LayoutInfoStepViewModel">

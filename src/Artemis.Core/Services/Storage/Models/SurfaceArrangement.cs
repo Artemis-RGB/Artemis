@@ -48,22 +48,42 @@ internal class SurfaceArrangement
         }
     }
 
-    internal static SurfaceArrangement GetDefaultArrangement()
+    internal static SurfaceArrangement GetDefaultArrangement(bool leftHanded)
     {
         SurfaceArrangement arrangement = new();
 
-        SurfaceArrangementType keypad = arrangement.AddType(RGBDeviceType.Keypad, 1);
-        keypad.AddConfiguration(new SurfaceArrangementConfiguration(null, HorizontalArrangementPosition.Equal, VerticalArrangementPosition.Equal, 20));
+        SurfaceArrangementType keyboard, keypad, mousepad, mouse;
+        if (leftHanded)
+        {
+            mousepad = arrangement.AddType(RGBDeviceType.Mousepad, 1);
+            mousepad.AddConfiguration(new SurfaceArrangementConfiguration(null, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Equal, 10));
 
-        SurfaceArrangementType keyboard = arrangement.AddType(RGBDeviceType.Keyboard, 1);
-        keyboard.AddConfiguration(new SurfaceArrangementConfiguration(keypad, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Equal, 20));
+            mouse = arrangement.AddType(RGBDeviceType.Mouse, 2);
+            mouse.AddConfiguration(new SurfaceArrangementConfiguration(mousepad, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Center, 0));
+            mouse.AddConfiguration(new SurfaceArrangementConfiguration(null, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Center, 10));
 
-        SurfaceArrangementType mousepad = arrangement.AddType(RGBDeviceType.Mousepad, 1);
-        mousepad.AddConfiguration(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Equal, 10));
+            keyboard = arrangement.AddType(RGBDeviceType.Keyboard, 1);
+            keyboard.AddConfiguration(new SurfaceArrangementConfiguration(mousepad, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Equal, 10));
+            keyboard.AddConfiguration(new SurfaceArrangementConfiguration(mouse, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Equal, 100));
 
-        SurfaceArrangementType mouse = arrangement.AddType(RGBDeviceType.Mouse, 2);
-        mouse.AddConfiguration(new SurfaceArrangementConfiguration(mousepad, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Center, 0));
-        mouse.AddConfiguration(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Center, 100));
+            keypad = arrangement.AddType(RGBDeviceType.Keypad, 1);
+            keypad.AddConfiguration(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Equal, VerticalArrangementPosition.Equal, 20));
+        }
+        else
+        {
+            keypad = arrangement.AddType(RGBDeviceType.Keypad, 1);
+            keypad.AddConfiguration(new SurfaceArrangementConfiguration(null, HorizontalArrangementPosition.Equal, VerticalArrangementPosition.Equal, 20));
+
+            keyboard = arrangement.AddType(RGBDeviceType.Keyboard, 1);
+            keyboard.AddConfiguration(new SurfaceArrangementConfiguration(keypad, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Equal, 20));
+
+            mousepad = arrangement.AddType(RGBDeviceType.Mousepad, 1);
+            mousepad.AddConfiguration(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Equal, 10));
+
+            mouse = arrangement.AddType(RGBDeviceType.Mouse, 2);
+            mouse.AddConfiguration(new SurfaceArrangementConfiguration(mousepad, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Center, 0));
+            mouse.AddConfiguration(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Center, 100));
+        }
 
         SurfaceArrangementType headset = arrangement.AddType(RGBDeviceType.Headset, 1);
         headset.AddConfiguration(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Bottom, 100));
