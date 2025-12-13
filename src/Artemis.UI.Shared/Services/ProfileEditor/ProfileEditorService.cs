@@ -183,12 +183,11 @@ internal class ProfileEditorService : IProfileEditorService
         // Activate the profile and it's mode off of the UI thread
         await Task.Run(() =>
         {
+            _profileService.FocusProfile = profileConfiguration;
+            
             // Activate the profile if one was provided
             if (profileConfiguration != null)
-            {
-                _profileService.FocusProfile = profileConfiguration;
                 _profileService.ActivateProfile(profileConfiguration);
-            }
 
             // If there is no profile configuration or module, deliberately set the override to null
             _moduleService.SetActivationOverride(profileConfiguration?.Module);

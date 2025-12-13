@@ -203,7 +203,7 @@ public partial class ProfileEditorViewModel : RoutableScreen<ProfileViewModelPar
     /// <inheritdoc />
     public override async Task OnClosing(NavigationArguments args)
     {
-        if (!args.Path.StartsWith("profile-editor"))
+        if (!args.Path.StartsWith("profile"))
         {
             ProfileConfiguration = null;
             await _profileEditorService.ChangeCurrentProfileConfiguration(null);

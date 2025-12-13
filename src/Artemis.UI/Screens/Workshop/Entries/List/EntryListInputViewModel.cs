@@ -17,7 +17,7 @@ public partial class EntryListInputViewModel : ViewModelBase
     public EntryListInputViewModel(ISettingsService settingsService)
     {
         _search = _lastSearch;
-        _sortBy = settingsService.GetSetting("Workshop.SortBy", 10);
+        _sortBy = settingsService.GetSetting("Workshop.SortBy", 0);
         _sortBy.AutoSave = true;
     }
     
