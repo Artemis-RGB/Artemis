@@ -71,6 +71,7 @@
           ColumnDefinitions="Auto,*,Auto,Auto" 
           Background="Transparent" 
           ContextFlyout="{StaticResource ProfileMenuFlyout}"
+          PointerPressed="ProfileContainerGrid_OnPointerPressed"
           Classes.flyout-open="{CompiledBinding IsOpen, Source={StaticResource ProfileMenuFlyout}}">
         <shared:ProfileConfigurationIcon Grid.Column="0"
                                          x:Name="ProfileIcon"
