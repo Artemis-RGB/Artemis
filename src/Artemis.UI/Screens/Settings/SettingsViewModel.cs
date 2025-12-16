@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
+using System.Reactive.Disposables.Fluent;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Routing;

@@ -1,9 +1,8 @@
 using System;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using Artemis.UI.Shared;
 using Avalonia;
-using Avalonia.Threading;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.SubmissionWizard;

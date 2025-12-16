@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using GenHTTP.Api.Protocol;
-using GenHTTP.Modules.Basics;
+using GenHTTP.Modules.IO;
 using GenHTTP.Modules.IO.Strings;
 
 namespace Artemis.Core.Services;

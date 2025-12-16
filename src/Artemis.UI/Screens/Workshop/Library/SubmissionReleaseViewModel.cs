@@ -1,6 +1,5 @@
 using System;
 using System.Reactive;
-using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Screens.Workshop.Parameters;
@@ -9,7 +8,6 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.WebClient.Workshop;
 using Avalonia.Layout;
-using AvaloniaEdit.Document;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using StrawberryShake;

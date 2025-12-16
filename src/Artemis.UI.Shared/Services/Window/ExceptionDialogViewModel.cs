@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Artemis.UI.Shared.Services.Builders;
-using Avalonia;
 using Avalonia.Layout;
 
 namespace Artemis.UI.Shared.Services;

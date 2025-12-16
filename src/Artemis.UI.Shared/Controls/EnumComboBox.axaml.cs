@@ -6,7 +6,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.LogicalTree;
-using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Shared;
 

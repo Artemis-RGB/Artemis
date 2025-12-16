@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -14,7 +14,6 @@ using Artemis.UI.Services.ProfileEditor.Commands;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Services.ProfileEditor;
-using Avalonia;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;

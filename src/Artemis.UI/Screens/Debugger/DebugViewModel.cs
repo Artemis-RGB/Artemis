@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Artemis.UI.Screens.Debugger.DataModel;
 using Artemis.UI.Screens.Debugger.Logs;
 using Artemis.UI.Screens.Debugger.Performance;

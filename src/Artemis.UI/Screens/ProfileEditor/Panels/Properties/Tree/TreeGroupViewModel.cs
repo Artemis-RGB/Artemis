@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reflection;
 using System.Threading.Tasks;
 using Artemis.Core;

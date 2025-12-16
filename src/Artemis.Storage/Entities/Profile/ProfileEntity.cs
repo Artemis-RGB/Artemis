@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Storage.Entities.General;
 
 namespace Artemis.Storage.Entities.Profile;
 

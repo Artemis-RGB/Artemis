@@ -1,6 +1,6 @@
 using System;
-using System.Reactive.Disposables;
-using Avalonia.ReactiveUI;
+using System.Reactive.Disposables.Fluent;
+using ReactiveUI.Avalonia;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Workshop.Plugins;

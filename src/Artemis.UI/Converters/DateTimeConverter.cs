@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using Artemis.WebClient.Workshop;
 using Avalonia.Data.Converters;
 using Humanizer;
 

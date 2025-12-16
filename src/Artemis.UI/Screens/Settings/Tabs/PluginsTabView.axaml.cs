@@ -1,6 +1,4 @@
-using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 
 namespace Artemis.UI.Screens.Settings;
 

@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Reactive;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Security.Claims;
 using System.Threading;

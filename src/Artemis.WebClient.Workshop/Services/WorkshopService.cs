@@ -1,7 +1,6 @@
 using System.Net.Http.Headers;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Entities.Workshop;
 using Artemis.Storage.Repositories.Interfaces;
 using Artemis.UI.Shared.Routing;
@@ -11,7 +10,6 @@ using Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using Artemis.WebClient.Workshop.Models;
 using Serilog;
-using StrawberryShake;
 
 namespace Artemis.WebClient.Workshop.Services;
 

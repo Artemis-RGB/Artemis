@@ -8,7 +8,6 @@ using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Screens.Workshop.Image;
-using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;

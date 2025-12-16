@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Artemis.UI.Shared;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Models;

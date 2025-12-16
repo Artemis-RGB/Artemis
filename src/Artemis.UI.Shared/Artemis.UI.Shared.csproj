@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Library</OutputType>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <OutputPath>bin\</OutputPath>
         <Platforms>x64</Platforms>
@@ -14,12 +14,12 @@
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" />
         <PackageReference Include="Avalonia.Controls.ItemsRepeater" />
-        <PackageReference Include="Avalonia.ReactiveUI" />
         <PackageReference Include="Avalonia.Xaml.Behaviors" />
         <PackageReference Include="DynamicData" />
         <PackageReference Include="FluentAvaloniaUI" />
         <PackageReference Include="Material.Icons.Avalonia" />
         <PackageReference Include="ReactiveUI" />
+        <PackageReference Include="ReactiveUI.Avalonia" />
         <PackageReference Include="ReactiveUI.Validation" />
         <PackageReference Include="JetBrains.Annotations" PrivateAssets="All"/>
     </ItemGroup>

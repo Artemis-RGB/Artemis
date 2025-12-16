@@ -1,13 +1,12 @@
 using System;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Avalonia;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
 using Avalonia.LogicalTree;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;

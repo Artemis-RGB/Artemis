@@ -1,6 +1,5 @@
 using Artemis.UI.Shared.Events;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using Avalonia.Skia;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools;

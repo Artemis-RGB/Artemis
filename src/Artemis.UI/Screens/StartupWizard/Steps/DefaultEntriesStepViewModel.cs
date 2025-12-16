@@ -7,8 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core.Services;
 using Artemis.UI.Extensions;
-using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Services;
 using PropertyChanged.SourceGenerator;

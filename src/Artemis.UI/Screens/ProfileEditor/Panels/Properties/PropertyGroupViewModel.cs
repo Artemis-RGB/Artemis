@@ -10,7 +10,6 @@ using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
-using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.PropertyInput;
 using DynamicData;
 using DynamicData.Binding;

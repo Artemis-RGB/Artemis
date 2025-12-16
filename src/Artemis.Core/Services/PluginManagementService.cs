@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.DryIoc;
-using Artemis.Storage.Entities.General;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;

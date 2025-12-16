@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Screens.Workshop.Parameters;

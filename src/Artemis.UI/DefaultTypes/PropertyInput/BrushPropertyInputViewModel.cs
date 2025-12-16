@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
@@ -14,7 +14,6 @@ using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Artemis.UI.Shared.Services.PropertyInput;
 using Avalonia.Threading;
 using ReactiveUI;
-using LayerBrushPresetViewModel = Artemis.UI.Screens.ProfileEditor.Properties.Tree.Dialogs.LayerBrushPresetViewModel;
 
 namespace Artemis.UI.DefaultTypes.PropertyInput;
 

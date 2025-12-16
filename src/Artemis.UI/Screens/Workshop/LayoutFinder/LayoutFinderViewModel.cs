@@ -8,10 +8,8 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
-using DynamicData;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
-using RGB.NET.Core;
 using Serilog;
 
 namespace Artemis.UI.Screens.Workshop.LayoutFinder;

@@ -1,8 +1,5 @@
 using Artemis.UI.Shared.Extensions;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Settings.Account;

@@ -1,7 +1,6 @@
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 
 namespace Artemis.UI.Screens.Device.Layout.LayoutProviders;
 

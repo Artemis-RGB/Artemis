@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Reactive.Disposables;
-using Artemis.UI.Shared.Routing;
-using Avalonia.ReactiveUI;
-using Avalonia.Threading;
+using System.Reactive.Disposables.Fluent;
+using ReactiveUI.Avalonia;
 using ReactiveUI;
+
 namespace Artemis.UI.Screens.ProfileEditor;
 
 public partial class ProfileView : ReactiveUserControl<ProfileViewModel>

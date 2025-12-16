@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Artemis.Core;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Plugin;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;

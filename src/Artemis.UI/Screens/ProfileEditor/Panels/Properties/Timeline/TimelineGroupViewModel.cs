@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using DynamicData;

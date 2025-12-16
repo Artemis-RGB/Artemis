@@ -1,10 +1,7 @@
 using System;
-using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Threading;
 using DryIoc;
-using ReactiveUI;
 using Serilog;
 
 namespace Artemis.UI.Shared.Routing;

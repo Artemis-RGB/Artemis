@@ -7,7 +7,7 @@ using Artemis.UI.Shared;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using ReactiveUI;
 
 namespace Artemis.UI;

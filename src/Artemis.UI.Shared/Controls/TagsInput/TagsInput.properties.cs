@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls.Primitives;
-using Avalonia.Data;
 
 namespace Artemis.UI.Shared.TagsInput;
 

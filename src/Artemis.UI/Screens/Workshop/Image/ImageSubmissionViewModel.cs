@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Net.Http;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Artemis.UI.Shared;

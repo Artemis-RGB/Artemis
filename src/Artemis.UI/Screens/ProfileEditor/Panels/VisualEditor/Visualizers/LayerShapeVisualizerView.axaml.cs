@@ -1,12 +1,11 @@
 using System;
 using System.Linq;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.LogicalTree;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;

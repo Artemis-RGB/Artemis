@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -11,7 +10,6 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
-using Artemis.Storage.Migrations;
 using Artemis.Storage.Repositories.Interfaces;
 using Serilog;
 using SkiaSharp;

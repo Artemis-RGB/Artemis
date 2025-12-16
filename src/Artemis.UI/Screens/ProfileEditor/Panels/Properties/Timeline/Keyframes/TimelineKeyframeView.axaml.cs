@@ -1,8 +1,7 @@
 using System;
 using Avalonia.Input;
 using Avalonia.LogicalTree;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 

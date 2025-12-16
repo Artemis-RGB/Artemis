@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
-using Avalonia.Media.Immutable;
-using Avalonia.Styling;
-using FluentAvalonia.UI.Media;
 using FluentAvalonia.UI.Windowing;
 using ReactiveUI;
 

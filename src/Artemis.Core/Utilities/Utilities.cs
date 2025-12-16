@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using SkiaSharp;
 
 namespace Artemis.Core;
 

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using Avalonia.VisualTree;
 
 namespace Artemis.UI.Screens.VisualScripting;

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reactive;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -9,7 +9,6 @@ using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
 using Avalonia;
-using Avalonia.Input;
 using Material.Icons;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;

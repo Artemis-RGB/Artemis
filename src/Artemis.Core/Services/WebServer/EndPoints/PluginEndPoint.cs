@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Net.Http;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using GenHTTP.Api.Protocol;
-using GenHTTP.Modules.Basics;
 using GenHTTP.Modules.IO;
 using StringContent = GenHTTP.Modules.IO.Strings.StringContent;
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using Artemis.Core;
-using Avalonia.Input;
 using Material.Icons;
 
 namespace Artemis.UI.Shared.Services.ProfileEditor;

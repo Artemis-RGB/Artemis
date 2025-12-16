@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;

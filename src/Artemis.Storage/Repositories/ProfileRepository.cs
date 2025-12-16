@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.Json.Nodes;
 using Artemis.Storage.Entities;
 using Artemis.Storage.Entities.Profile;
-using Artemis.Storage.Exceptions;
 using Artemis.Storage.Migrations;
 using Artemis.Storage.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;

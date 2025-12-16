@@ -10,7 +10,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.UI.Exceptions;
-using Artemis.UI.Screens.Workshop.SubmissionWizard.Models;
 using Artemis.UI.Shared.Extensions;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;

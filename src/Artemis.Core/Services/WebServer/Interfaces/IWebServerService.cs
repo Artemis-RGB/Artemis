@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Artemis.Core.Modules;
 using GenHTTP.Api.Infrastructure;
 using GenHTTP.Api.Protocol;
 

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Screens.Root;
-using Artemis.UI.Screens.Workshop.CurrentUser;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Artemis.WebClient.Workshop;

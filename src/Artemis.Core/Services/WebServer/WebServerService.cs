@@ -12,7 +12,6 @@ using GenHTTP.Api.Protocol;
 using GenHTTP.Engine.Internal;
 using GenHTTP.Modules.Conversion;
 using GenHTTP.Modules.Conversion.Serializers;
-using GenHTTP.Modules.ErrorHandling;
 using GenHTTP.Modules.Layouting;
 using GenHTTP.Modules.Layouting.Provider;
 using GenHTTP.Modules.Practices;
