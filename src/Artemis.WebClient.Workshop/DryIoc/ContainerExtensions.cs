@@ -25,7 +25,7 @@ public static class ContainerExtensions
     /// <param name="container">The builder building the current container</param>
     public static void RegisterWorkshopClient(this IContainer container)
     {
-        Assembly[] workshopAssembly = {typeof(WorkshopConstants).Assembly};
+        Assembly[] workshopAssembly = [typeof(WorkshopConstants).Assembly];
         
         ServiceCollection serviceCollection = new();
         serviceCollection

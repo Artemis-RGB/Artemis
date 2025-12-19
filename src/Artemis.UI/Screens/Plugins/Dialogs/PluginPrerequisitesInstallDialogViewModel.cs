@@ -33,7 +33,7 @@ public partial class PluginPrerequisitesInstallDialogViewModel : ContentDialogVi
 
     public PluginPrerequisitesInstallDialogViewModel(List<IPrerequisitesSubject> subjects, IPrerequisitesVmFactory prerequisitesVmFactory)
     {
-        Prerequisites = new ObservableCollection<PluginPrerequisiteViewModel>();
+        Prerequisites = [];
         foreach (PluginPrerequisite prerequisite in subjects.SelectMany(prerequisitesSubject => prerequisitesSubject.PlatformPrerequisites))
             Prerequisites.Add(prerequisitesVmFactory.PluginPrerequisiteViewModel(prerequisite, false));
         Install = ReactiveCommand.Create(ExecuteInstall, this.WhenAnyValue(vm => vm.CanInstall));

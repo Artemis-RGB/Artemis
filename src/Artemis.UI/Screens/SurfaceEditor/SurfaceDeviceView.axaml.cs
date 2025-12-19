@@ -28,7 +28,7 @@ public partial class SurfaceDeviceView : ReactiveUserControl<SurfaceDeviceViewMo
 
             if (!ViewModel.IsSelected)
             {
-                ViewModel.SurfaceEditorViewModel.UpdateSelection(new List<SurfaceDeviceViewModel> {ViewModel}, false, false);
+                ViewModel.SurfaceEditorViewModel.UpdateSelection([ViewModel], false, false);
                 ViewModel.SurfaceEditorViewModel.FinishSelection();
             }
 
@@ -54,7 +54,7 @@ public partial class SurfaceDeviceView : ReactiveUserControl<SurfaceDeviceViewMo
         }
         else
         {
-            ViewModel.SurfaceEditorViewModel.UpdateSelection(new List<SurfaceDeviceViewModel> {ViewModel}, e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
+            ViewModel.SurfaceEditorViewModel.UpdateSelection([ViewModel], e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
             ViewModel.SurfaceEditorViewModel.FinishSelection();
         }
 

@@ -40,7 +40,7 @@ public partial class PluginPrerequisitesUninstallDialogViewModel : ContentDialog
         _windowService = windowService;
         _pluginManagementService = pluginManagementService;
 
-        Prerequisites = new ObservableCollection<PluginPrerequisiteViewModel>();
+        Prerequisites = [];
         foreach (PluginPrerequisite prerequisite in subjects.SelectMany(prerequisitesSubject => prerequisitesSubject.PlatformPrerequisites))
             Prerequisites.Add(prerequisitesVmFactory.PluginPrerequisiteViewModel(prerequisite, true));
         Uninstall = ReactiveCommand.CreateFromTask(ExecuteUninstall, this.WhenAnyValue(vm => vm.CanUninstall));
@@ -85,7 +85,7 @@ public partial class PluginPrerequisitesUninstallDialogViewModel : ContentDialog
         // Disable all subjects that are plugins, this will disable their features too
         foreach (IPrerequisitesSubject prerequisitesSubject in _subjects)
         {
-            if (prerequisitesSubject is PluginInfo pluginInfo)
+            if (prerequisitesSubject is PluginInfo pluginInfo && pluginInfo.Plugin != null)
                 _pluginManagementService.DisablePlugin(pluginInfo.Plugin, true);
         }
 

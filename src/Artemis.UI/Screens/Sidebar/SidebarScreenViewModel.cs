@@ -17,7 +17,7 @@ public partial class SidebarScreenViewModel : ViewModelBase
         Path = path;
         RootPath = rootPath ?? path;
         DisplayName = displayName;
-        Screens = screens ?? new ObservableCollection<SidebarScreenViewModel>();
+        Screens = screens ?? [];
     }
 
     public MaterialIconKind Icon { get; }

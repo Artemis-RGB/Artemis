@@ -23,9 +23,9 @@ internal class ProfileService : IProfileService
     private readonly IProfileRepository _profileRepository;
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IDeviceService _deviceService;
-    private readonly List<ArtemisKeyboardKeyEventArgs> _pendingKeyboardEvents = new();
-    private readonly List<Exception> _renderExceptions = new();
-    private readonly List<Exception> _updateExceptions = new();
+    private readonly List<ArtemisKeyboardKeyEventArgs> _pendingKeyboardEvents = [];
+    private readonly List<Exception> _renderExceptions = [];
+    private readonly List<Exception> _updateExceptions = [];
 
     private DateTime _lastRenderExceptionLog;
     private DateTime _lastUpdateExceptionLog;

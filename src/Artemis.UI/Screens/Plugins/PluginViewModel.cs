@@ -27,27 +27,30 @@ public partial class PluginViewModel : ActivatableViewModelBase
     [Notify] private bool _canInstallPrerequisites;
     [Notify] private bool _canRemovePrerequisites;
     [Notify] private bool _enabling;
-    [Notify] private Plugin _plugin;
 
-    public PluginViewModel(Plugin plugin, ReactiveCommand<Unit, Unit>? reload, IWindowService windowService, IPluginInteractionService pluginInteractionService)
+    public PluginInfo PluginInfo { get; }
+    public Plugin? Plugin { get; }
+
+    public PluginViewModel(PluginInfo pluginInfo, ReactiveCommand<Unit, Unit>? reload, IWindowService windowService, IPluginInteractionService pluginInteractionService)
     {
-        _plugin = plugin;
+        PluginInfo = pluginInfo;
+        Plugin = pluginInfo?.Plugin;
         _windowService = windowService;
         _pluginInteractionService = pluginInteractionService;
 
-        Platforms = new ObservableCollection<PluginPlatformViewModel>();
-        if (Plugin.Info.Platforms != null)
+        Platforms = [];
+        if (PluginInfo.Platforms != null)
         {
-            if (Plugin.Info.Platforms.Value.HasFlag(PluginPlatform.Windows))
+            if (PluginInfo.Platforms.Value.HasFlag(PluginPlatform.Windows))
                 Platforms.Add(new PluginPlatformViewModel("Windows", MaterialIconKind.MicrosoftWindows));
-            if (Plugin.Info.Platforms.Value.HasFlag(PluginPlatform.Linux))
+            if (PluginInfo.Platforms.Value.HasFlag(PluginPlatform.Linux))
                 Platforms.Add(new PluginPlatformViewModel("Linux", MaterialIconKind.Linux));
-            if (Plugin.Info.Platforms.Value.HasFlag(PluginPlatform.OSX))
+            if (PluginInfo.Platforms.Value.HasFlag(PluginPlatform.OSX))
                 Platforms.Add(new PluginPlatformViewModel("OSX", MaterialIconKind.Apple));
         }
 
         Reload = reload;
-        OpenSettings = ReactiveCommand.Create(ExecuteOpenSettings, this.WhenAnyValue(vm => vm.IsEnabled, e => e && Plugin.ConfigurationDialog != null));
+        OpenSettings = ReactiveCommand.Create(ExecuteOpenSettings, this.WhenAnyValue(vm => vm.IsEnabled, e => e && Plugin?.ConfigurationDialog != null));
         RemoveSettings = ReactiveCommand.CreateFromTask(ExecuteRemoveSettings);
         Remove = ReactiveCommand.CreateFromTask(ExecuteRemove);
         InstallPrerequisites = ReactiveCommand.CreateFromTask(ExecuteInstallPrerequisites, this.WhenAnyValue(x => x.CanInstallPrerequisites));
@@ -57,6 +60,9 @@ public partial class PluginViewModel : ActivatableViewModelBase
 
         this.WhenActivated(d =>
         {
+            if (Plugin == null)
+                return;
+
             Plugin.Enabled += OnPluginToggled;
             Plugin.Disabled += OnPluginToggled;
 
@@ -79,11 +85,12 @@ public partial class PluginViewModel : ActivatableViewModelBase
     public ReactiveCommand<Unit, Unit> OpenPluginDirectory { get; }
 
     public ObservableCollection<PluginPlatformViewModel> Platforms { get; }
-    public bool IsEnabled => Plugin.IsEnabled;
+    public bool IsEnabled => Plugin != null && Plugin.IsEnabled;
+    public bool CanEnablePlugin => PluginInfo.IsCompatible && PluginInfo.LoadException == null;
 
     public async Task UpdateEnabled(bool enable)
     {
-        if (Enabling)
+        if (Enabling || Plugin == null)
             return;
 
         if (!enable)
@@ -105,15 +112,18 @@ public partial class PluginViewModel : ActivatableViewModelBase
 
         Dispatcher.UIThread.Post(() =>
         {
-            CanInstallPrerequisites = !Plugin.Info.ArePrerequisitesMet() || Plugin.Features.Where(f => f.AlwaysEnabled).Any(f => !f.ArePrerequisitesMet());
-            CanRemovePrerequisites = Plugin.Info.PlatformPrerequisites.Any(p => p.IsMet() && p.UninstallActions.Any()) ||
+            if (Plugin == null)
+                return;
+
+            CanInstallPrerequisites = !PluginInfo.ArePrerequisitesMet() || Plugin.Features.Where(f => f.AlwaysEnabled).Any(f => !f.ArePrerequisitesMet());
+            CanRemovePrerequisites = PluginInfo.PlatformPrerequisites.Any(p => p.IsMet() && p.UninstallActions.Any()) ||
                                      Plugin.Features.Where(f => f.AlwaysEnabled).Any(f => f.PlatformPrerequisites.Any(p => p.IsMet() && p.UninstallActions.Any()));
         });
     }
 
     private void ExecuteOpenSettings()
     {
-        if (Plugin.ConfigurationDialog == null)
+        if (Plugin?.ConfigurationDialog == null)
             return;
 
         if (_settingsWindow != null)
@@ -133,7 +143,7 @@ public partial class PluginViewModel : ActivatableViewModelBase
         }
         catch (Exception e)
         {
-            _windowService.ShowExceptionDialog("An exception occured while trying to show the plugin's settings window", e);
+            _windowService.ShowExceptionDialog("An error occured while trying to show the plugin's settings window", e);
             throw;
         }
     }
@@ -142,7 +152,8 @@ public partial class PluginViewModel : ActivatableViewModelBase
     {
         try
         {
-            Utilities.OpenFolder(Plugin.Directory.FullName);
+            if (Plugin != null)
+                Utilities.OpenFolder(Plugin.Directory.FullName);
         }
         catch (Exception e)
         {
@@ -152,7 +163,10 @@ public partial class PluginViewModel : ActivatableViewModelBase
 
     private async Task ExecuteInstallPrerequisites()
     {
-        List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
+        if (Plugin == null)
+            return;
+
+        List<IPrerequisitesSubject> subjects = [PluginInfo];
         subjects.AddRange(Plugin.Features.Where(f => f.AlwaysEnabled));
 
         if (subjects.Any(s => s.PlatformPrerequisites.Any()))
@@ -161,7 +175,10 @@ public partial class PluginViewModel : ActivatableViewModelBase
 
     public async Task ExecuteRemovePrerequisites(bool forPluginRemoval = false)
     {
-        List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
+        if (Plugin == null)
+            return;
+
+        List<IPrerequisitesSubject> subjects = [PluginInfo];
         subjects.AddRange(!forPluginRemoval ? Plugin.Features.Where(f => f.AlwaysEnabled) : Plugin.Features);
 
         if (subjects.Any(s => s.PlatformPrerequisites.Any(p => p.UninstallActions.Any())))
@@ -170,11 +187,17 @@ public partial class PluginViewModel : ActivatableViewModelBase
 
     private async Task ExecuteRemoveSettings()
     {
+        if (Plugin == null)
+            return;
+
         await _pluginInteractionService.RemovePluginSettings(Plugin);
     }
 
     private async Task ExecuteRemove()
     {
+        if (Plugin == null)
+            return;
+
         await _pluginInteractionService.RemovePlugin(Plugin);
     }
 
@@ -208,7 +231,7 @@ public partial class PluginViewModel : ActivatableViewModelBase
         await UpdateEnabled(true);
 
         // If enabling failed, don't offer to show the settings
-        if (!IsEnabled || Plugin.ConfigurationDialog == null)
+        if (!IsEnabled || Plugin?.ConfigurationDialog == null)
             return;
 
         if (await _windowService.ShowConfirmContentDialog("Open plugin settings", "This plugin has settings, would you like to view them?", "Yes", "No"))

@@ -55,7 +55,7 @@ public abstract class PluginEndPoint
     public FlexibleContentType Returns { get; protected set; }
 
     /// <summary>
-    ///     Occurs whenever a request threw an unhandled exception
+    ///     Occurs whenever a request threw an Unhandled error
     /// </summary>
     public event EventHandler<EndpointExceptionEventArgs>? RequestException;
 

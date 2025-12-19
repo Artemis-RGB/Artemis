@@ -60,7 +60,7 @@ public class SaveFileDialogBuilder
         FileDialogFilterBuilder builder = new();
         configure(builder);
 
-        _fileTypeFilters ??= new List<FilePickerFileType>();
+        _fileTypeFilters ??= [];
         _fileTypeFilters.Add(builder.Build());
         _options.FileTypeChoices = _fileTypeFilters;
 

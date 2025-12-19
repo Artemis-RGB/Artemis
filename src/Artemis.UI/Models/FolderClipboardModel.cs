@@ -13,8 +13,8 @@ public class FolderClipboardModel: IClipboardModel
     public FolderClipboardModel(Folder folder)
     {
         FolderEntity = folder.FolderEntity;
-        Folders = new List<FolderEntity>();
-        Layers = new List<LayerEntity>();
+        Folders = [];
+        Layers = [];
         foreach (Folder allFolder in folder.GetAllFolders())
             Folders.Add(allFolder.FolderEntity);
         foreach (Layer allLayer in folder.GetAllLayers())
@@ -25,8 +25,8 @@ public class FolderClipboardModel: IClipboardModel
     public FolderClipboardModel()
     {
         FolderEntity = null;
-        Folders = new List<FolderEntity>();
-        Layers = new List<LayerEntity>();
+        Folders = [];
+        Layers = [];
     }
 
     public FolderEntity? FolderEntity { get; set; }

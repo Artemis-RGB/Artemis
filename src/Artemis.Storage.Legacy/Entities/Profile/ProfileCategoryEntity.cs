@@ -14,7 +14,7 @@ internal class ProfileCategoryEntity
     public bool IsSuspended { get; set; }
     public int Order { get; set; }
 
-    public List<ProfileConfigurationEntity> ProfileConfigurations { get; set; } = new();
+    public List<ProfileConfigurationEntity> ProfileConfigurations { get; set; } = [];
 
     public Storage.Entities.Profile.ProfileCategoryEntity Migrate(ILogger logger, List<ProfileEntity> legacyProfiles, ILiteStorage<Guid> profileIcons)
     {

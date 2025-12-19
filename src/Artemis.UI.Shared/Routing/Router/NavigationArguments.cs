@@ -13,7 +13,7 @@ public class NavigationArguments
         Options = options;
         Path = path;
         RouteParameters = routeParameters;
-        SegmentParameters = Array.Empty<object>();
+        SegmentParameters = [];
     }
 
     /// <summary>

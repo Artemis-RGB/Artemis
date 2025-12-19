@@ -135,19 +135,19 @@ public partial class EntryListViewModel : RoutableScreen
     {
         // Sort by created at
         if (InputViewModel.SortBy == 1)
-            return new[] {new EntrySortInput {CreatedAt = SortEnumType.Desc}};
+            return [new EntrySortInput {CreatedAt = SortEnumType.Desc}];
 
         // Sort by downloads
         if (InputViewModel.SortBy == 2)
-            return new[] {new EntrySortInput {Downloads = SortEnumType.Desc}};
+            return [new EntrySortInput {Downloads = SortEnumType.Desc}];
 
 
         // Sort by latest release, then by created at
-        return new[]
-        {
+        return
+        [
             new EntrySortInput {LatestRelease = new ReleaseSortInput {CreatedAt = SortEnumType.Desc}},
             new EntrySortInput {CreatedAt = SortEnumType.Desc}
-        };
+        ];
     }
 
     private void Reset()

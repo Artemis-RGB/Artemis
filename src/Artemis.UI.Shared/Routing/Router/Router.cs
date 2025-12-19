@@ -68,7 +68,7 @@ internal class Router : CorePropertyChanged, IRouter, IDisposable
     public IObservable<string?> CurrentPath => _currentRouteSubject;
 
     /// <inheritdoc />
-    public List<IRouterRegistration> Routes { get; } = new();
+    public List<IRouterRegistration> Routes { get; } = [];
 
     /// <inheritdoc />
     public async Task Navigate(string path, RouterNavigationOptions? options = null)

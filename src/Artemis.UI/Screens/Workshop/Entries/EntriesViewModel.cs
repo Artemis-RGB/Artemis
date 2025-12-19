@@ -22,12 +22,12 @@ public partial class EntriesViewModel : RoutableHostScreen<RoutableScreen>
     {
         _router = router;
 
-        Tabs = new ObservableCollection<RouteViewModel>
-        {
-            new("Profiles", "workshop/entries/profiles", "workshop/entries/profiles"),
-            new("Layouts", "workshop/entries/layouts", "workshop/entries/layouts"),
-            new("Plugins", "workshop/entries/plugins", "workshop/entries/plugins"),
-        };
+        Tabs =
+        [
+            new RouteViewModel("Profiles", "workshop/entries/profiles", "workshop/entries/profiles"),
+            new RouteViewModel("Layouts", "workshop/entries/layouts", "workshop/entries/layouts"),
+            new RouteViewModel("Plugins", "workshop/entries/plugins", "workshop/entries/plugins")
+        ];
 
         this.WhenActivated(d =>
         {

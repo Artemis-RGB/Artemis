@@ -46,7 +46,7 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
     /// <inheritdoc />
     public string Description { get; }
 
-    private readonly List<INode> _nodes = new();
+    private readonly List<INode> _nodes = [];
 
     /// <inheritdoc />
     public IEnumerable<INode> Nodes => new ReadOnlyCollection<INode>(_nodes);

@@ -116,7 +116,7 @@ public partial class ProfileTreeViewModel : TreeItemViewModel
 
     private List<TreeItemViewModel> GetAllTreeItems(ObservableCollection<TreeItemViewModel> treeItems)
     {
-        List<TreeItemViewModel> result = new();
+        List<TreeItemViewModel> result = [];
         foreach (TreeItemViewModel treeItemViewModel in treeItems)
         {
             result.Add(treeItemViewModel);

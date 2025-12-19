@@ -169,7 +169,7 @@ public class GradientPickerButton : TemplatedControl
     private void UpdateGradient()
     {
         // Update the display gradient
-        GradientStops collection = new();
+        GradientStops collection = [];
         if (ColorGradient != null)
             foreach (ColorGradientStop c in ColorGradient.OrderBy(s => s.Position))
                 collection.Add(new GradientStop(Color.FromArgb(c.Color.Alpha, c.Color.Red, c.Color.Green, c.Color.Blue), c.Position));

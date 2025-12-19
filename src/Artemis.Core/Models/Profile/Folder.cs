@@ -77,7 +77,7 @@ public sealed class Folder : RenderProfileElement
     /// <inheritdoc />
     public override List<ILayerProperty> GetAllLayerProperties()
     {
-        List<ILayerProperty> result = new();
+        List<ILayerProperty> result = [];
         foreach (BaseLayerEffect layerEffect in LayerEffects)
         {
             if (layerEffect.BaseProperties != null)

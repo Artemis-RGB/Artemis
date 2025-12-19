@@ -225,7 +225,7 @@ public partial class TransformToolViewModel : ToolViewModel
         // Add the current position to the start anchor to determine the new position
         SKPoint current = start + (position - _dragOffset);
         // In order to keep the mouse movement unrotated, counter-act the active rotation
-        SKPoint[] countered = UnTransformPoints(new[] {start, current}, Layer, start, true);
+        SKPoint[] countered = UnTransformPoints([start, current], Layer, start, true);
 
         // If shift is held down, round down to 1 decimal to allow moving the anchor in big increments
         int decimals = round ? 1 : 3;

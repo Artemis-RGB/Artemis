@@ -86,7 +86,7 @@ internal class Navigation
             return;
         
         // Navigate on the screen
-        args.SegmentParameters = resolution.Parameters ?? Array.Empty<object>();
+        args.SegmentParameters = resolution.Parameters ?? [];
         try
         {
             await screen.InternalOnNavigating(args, _cts.Token);

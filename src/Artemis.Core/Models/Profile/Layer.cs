@@ -19,13 +19,13 @@ public sealed class Layer : RenderProfileElement
     private const string BROKEN_STATE_BRUSH_NOT_FOUND = "Failed to load layer brush, ensure the plugin is enabled";
     private const string BROKEN_STATE_INIT_FAILED = "Failed to initialize layer brush";
 
-    private readonly List<Layer> _renderCopies = new();
+    private readonly List<Layer> _renderCopies = [];
     private LayerGeneralProperties _general = new();
     private LayerTransformProperties _transform = new();
     private BaseLayerBrush? _layerBrush;
     private LayerShape? _layerShape;
-    private List<ArtemisLed> _leds = new();
-    private List<LedEntity> _missingLeds = new();
+    private List<ArtemisLed> _leds = [];
+    private List<LedEntity> _missingLeds = [];
 
     /// <summary>
     ///     Creates a new instance of the <see cref="Layer" /> class and adds itself to the child collection of the provided
@@ -82,11 +82,11 @@ public sealed class Layer : RenderProfileElement
         Parent = source;
 
         // TODO: move to top
-        _renderCopies = new List<Layer>();
+        _renderCopies = [];
         _general = new LayerGeneralProperties();
         _transform = new LayerTransformProperties();
 
-        _leds = new List<ArtemisLed>();
+        _leds = [];
         Leds = new ReadOnlyCollection<ArtemisLed>(_leds);
 
         Adapter = new LayerAdapter(this);
@@ -169,7 +169,7 @@ public sealed class Layer : RenderProfileElement
     /// <inheritdoc />
     public override List<ILayerProperty> GetAllLayerProperties()
     {
-        List<ILayerProperty> result = new();
+        List<ILayerProperty> result = [];
         result.AddRange(General.GetAllLayerProperties());
         result.AddRange(Transform.GetAllLayerProperties());
         if (LayerBrush?.BaseProperties != null)
@@ -801,7 +801,7 @@ public sealed class Layer : RenderProfileElement
         if (Disposed)
             throw new ObjectDisposedException("Layer");
 
-        List<ArtemisLed> leds = new();
+        List<ArtemisLed> leds = [];
 
         // Get the surface LEDs for this layer
         List<ArtemisLed> availableLeds = devices.SelectMany(d => d.Leds).ToList();

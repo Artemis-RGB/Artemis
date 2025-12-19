@@ -22,8 +22,8 @@ public class NodesClipboardModel: IClipboardModel
     [JsonConstructor]
     public NodesClipboardModel()
     {
-        Nodes = new List<NodeEntity>();
-        Connections = new List<NodeConnectionEntity>();
+        Nodes = [];
+        Connections = [];
     }
 
     public List<NodeEntity> Nodes { get; set; }
@@ -32,7 +32,7 @@ public class NodesClipboardModel: IClipboardModel
     public List<INode> Paste(NodeScript nodeScript, double x, double y)
     {
         if (!Nodes.Any())
-            return new List<INode>();
+            return [];
         
         nodeScript.Save();
 

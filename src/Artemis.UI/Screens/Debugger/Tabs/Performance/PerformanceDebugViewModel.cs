@@ -60,7 +60,7 @@ public partial class PerformanceDebugViewModel : ActivatableViewModelBase
         });
     }
 
-    public ObservableCollection<PerformanceDebugPluginViewModel> Items { get; } = new();
+    public ObservableCollection<PerformanceDebugPluginViewModel> Items { get; } = [];
     
     private void HandleActivation()
     {

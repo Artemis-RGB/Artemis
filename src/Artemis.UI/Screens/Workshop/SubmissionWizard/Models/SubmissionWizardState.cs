@@ -35,9 +35,9 @@ public class SubmissionWizardState : IDisposable
     public bool IsEssential { get; set; }
     public bool IsDeviceProvider { get; set; }
 
-    public List<long> Categories { get; set; } = new();
-    public List<string> Tags { get; set; } = new();
-    public List<ImageUploadRequest> Images { get; set; } = new();
+    public List<long> Categories { get; set; } = [];
+    public List<string> Tags { get; set; } = [];
+    public List<ImageUploadRequest> Images { get; set; } = [];
 
     public IEntrySource? EntrySource { get; set; }
     public string? Changelog { get; set; }

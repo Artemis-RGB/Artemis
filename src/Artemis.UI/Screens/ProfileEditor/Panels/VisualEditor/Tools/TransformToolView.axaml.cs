@@ -22,7 +22,7 @@ namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Tools;
 
 public partial class TransformToolView : ReactiveUserControl<TransformToolViewModel>
 {
-    private readonly List<Control> _handles = new();
+    private readonly List<Control> _handles = [];
     private SKPoint _dragOffset;
     private ZoomBorder? _zoomBorder;
 

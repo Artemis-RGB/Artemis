@@ -125,11 +125,11 @@ public static class ArtemisLayoutExtensions
             Geometry geometry = Geometry.Parse(led.RgbLayout.ShapeData);
             geometry.Transform = new TransformGroup
             {
-                Children = new Transforms
-                {
+                Children =
+                [
                     new ScaleTransform(width, height),
                     new TranslateTransform(led.RgbLayout.X + deflateAmount / 2, led.RgbLayout.Y + deflateAmount / 2)
-                }
+                ]
             };
             return geometry;
         }

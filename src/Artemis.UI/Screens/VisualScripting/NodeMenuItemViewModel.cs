@@ -19,7 +19,7 @@ public class NodeMenuItemViewModel
     {
         Header = nodeData.Name;
         Subtitle = nodeData.Description;
-        Items = new List<NodeMenuItemViewModel>();
+        Items = [];
         CreateNode = ReactiveCommand.Create(() => { createNode.Execute(nodeData).Subscribe(); });
     }
 

@@ -34,7 +34,7 @@ public class App : Application
         if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop || Design.IsDesignMode)
             return;
 
-        _applicationStateManager = new ApplicationStateManager(_container!, desktop.Args ?? Array.Empty<string>());
+        _applicationStateManager = new ApplicationStateManager(_container!, desktop.Args ?? []);
         ArtemisBootstrapper.Initialize();
         RegisterProviders();
     }

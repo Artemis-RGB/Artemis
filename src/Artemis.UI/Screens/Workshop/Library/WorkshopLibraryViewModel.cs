@@ -23,11 +23,11 @@ public partial class WorkshopLibraryViewModel : RoutableHostScreen<RoutableScree
     {
         _router = router;
 
-        Tabs = new ObservableCollection<RouteViewModel>
-        {
-            new("Installed", "workshop/library/installed"),
-            new("Submissions", "workshop/library/submissions")
-        };
+        Tabs =
+        [
+            new RouteViewModel("Installed", "workshop/library/installed"),
+            new RouteViewModel("Submissions", "workshop/library/submissions")
+        ];
 
         this.WhenActivated(d =>
         {

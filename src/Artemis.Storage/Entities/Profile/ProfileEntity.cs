@@ -8,8 +8,8 @@ public class ProfileEntity
 {
     public ProfileEntity()
     {
-        Folders = new List<FolderEntity>();
-        Layers = new List<LayerEntity>();
+        Folders = [];
+        Layers = [];
     }
 
     public Guid Id { get; set; }

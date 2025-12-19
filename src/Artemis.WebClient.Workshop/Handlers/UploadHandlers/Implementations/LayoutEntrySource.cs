@@ -10,7 +10,7 @@ public class LayoutEntrySource : IEntrySource
     }
 
     public ArtemisLayout Layout { get; set; }
-    public List<LayoutInfo> LayoutInfo { get; set; } = new();
+    public List<LayoutInfo> LayoutInfo { get; set; } = [];
     public Core.KeyboardLayoutType PhysicalLayout { get; set; }
 
     private List<LayoutCustomLedDataLogicalLayout> GetLogicalLayouts()

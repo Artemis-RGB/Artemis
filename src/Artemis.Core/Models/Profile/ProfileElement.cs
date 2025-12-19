@@ -22,7 +22,7 @@ public abstract class ProfileElement : BreakableModel, IDisposable, IPluginFeatu
     internal ProfileElement(Profile profile)
     {
         _profile = profile;
-        ChildrenList = new List<ProfileElement>();
+        ChildrenList = [];
         Children = new ReadOnlyCollection<ProfileElement>(ChildrenList);
     }
 
@@ -280,7 +280,7 @@ public abstract class ProfileElement : BreakableModel, IDisposable, IPluginFeatu
         if (Disposed)
             throw new ObjectDisposedException(GetType().Name);
 
-        List<RenderProfileElement> elements = new();
+        List<RenderProfileElement> elements = [];
         foreach (RenderProfileElement childElement in Children.Where(c => c is RenderProfileElement).Cast<RenderProfileElement>())
         {
             // Add all folders in this element
@@ -301,7 +301,7 @@ public abstract class ProfileElement : BreakableModel, IDisposable, IPluginFeatu
         if (Disposed)
             throw new ObjectDisposedException(GetType().Name);
 
-        List<Folder> folders = new();
+        List<Folder> folders = [];
         foreach (Folder childFolder in Children.Where(c => c is Folder).Cast<Folder>())
         {
             // Add all folders in this element
@@ -322,7 +322,7 @@ public abstract class ProfileElement : BreakableModel, IDisposable, IPluginFeatu
         if (Disposed)
             throw new ObjectDisposedException(GetType().Name);
 
-        List<Layer> layers = new();
+        List<Layer> layers = [];
 
         // Add all layers in this element
         layers.AddRange(Children.Where(c => c is Layer).Cast<Layer>());

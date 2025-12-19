@@ -70,13 +70,7 @@ public static class Constants
     ///     The full path to the Artemis user layouts folder
     /// </summary>
     public static readonly string WorkshopFolder = Path.Combine(DataFolder, "workshop");
-
-    /// <summary>
-    ///     The current API version for plugins
-    /// </summary>
-    public static readonly int PluginApiVersion = int.Parse(CoreAssembly.GetCustomAttributes<AssemblyMetadataAttribute>().FirstOrDefault(a => a.Key == "PluginApiVersion")?.Value ??
-                                                            throw new InvalidOperationException("Cannot find PluginApiVersion metadata in assembly"));
-
+    
     /// <summary>
     ///     The current version of the application
     /// </summary>

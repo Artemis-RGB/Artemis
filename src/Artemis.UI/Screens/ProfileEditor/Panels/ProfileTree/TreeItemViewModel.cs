@@ -87,7 +87,7 @@ public abstract partial class TreeItemViewModel : ActivatableViewModelBase
     public bool IsFocused => _isFocused?.Value ?? false;
 
     public TreeItemViewModel? Parent { get; set; }
-    public ObservableCollection<TreeItemViewModel> Children { get; } = new();
+    public ObservableCollection<TreeItemViewModel> Children { get; } = [];
 
     public ReactiveCommand<Unit, Unit> AddLayer { get; }
     public ReactiveCommand<Unit, Unit> AddFolder { get; }

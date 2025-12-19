@@ -27,7 +27,7 @@ public class DeviceLayoutService : IDeviceLayoutService
         _deviceService = deviceService;
         _mainWindowService = mainWindowService;
         _windowService = windowService;
-        _ignoredDevices = new List<ArtemisDevice>();
+        _ignoredDevices = [];
 
         deviceService.DeviceAdded += RgbServiceOnDeviceAdded;
         mainWindowService.MainWindowOpened += WindowServiceOnMainWindowOpened;

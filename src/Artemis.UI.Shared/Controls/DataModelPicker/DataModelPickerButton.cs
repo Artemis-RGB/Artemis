@@ -65,13 +65,13 @@ public class DataModelPickerButton : TemplatedControl
     ///     A list of extra modules to show data models of.
     /// </summary>
     public static readonly StyledProperty<ObservableCollection<Module>?> ModulesProperty =
-        AvaloniaProperty.Register<DataModelPicker, ObservableCollection<Module>?>(nameof(Modules), new ObservableCollection<Module>());
+        AvaloniaProperty.Register<DataModelPicker, ObservableCollection<Module>?>(nameof(Modules), []);
 
     /// <summary>
     ///     A list of types to filter the selectable paths on.
     /// </summary>
     public static readonly StyledProperty<ObservableCollection<Type>?> FilterTypesProperty =
-        AvaloniaProperty.Register<DataModelPicker, ObservableCollection<Type>?>(nameof(FilterTypes), new ObservableCollection<Type>());
+        AvaloniaProperty.Register<DataModelPicker, ObservableCollection<Type>?>(nameof(FilterTypes), []);
 
     /// <summary>
     ///     Gets or sets a boolean indicating whether the picker is in event picker mode.

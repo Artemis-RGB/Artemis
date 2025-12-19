@@ -10,7 +10,7 @@ public partial class TagsInput : TemplatedControl
     ///     Defines the <see cref="Tags" /> property
     /// </summary>
     public static readonly StyledProperty<ObservableCollection<string>> TagsProperty =
-        AvaloniaProperty.Register<TagsInput, ObservableCollection<string>>(nameof(Tags), new ObservableCollection<string>());
+        AvaloniaProperty.Register<TagsInput, ObservableCollection<string>>(nameof(Tags), []);
 
     /// <summary>
     ///     Gets or sets the selected tags.

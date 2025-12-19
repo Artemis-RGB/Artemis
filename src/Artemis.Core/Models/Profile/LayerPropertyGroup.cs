@@ -32,8 +32,8 @@ public abstract class LayerPropertyGroup : IDisposable, IPluginFeatureDependent
         GroupDescription = null!;
         Path = "";
 
-        _layerProperties = new List<ILayerProperty>();
-        _layerPropertyGroups = new List<LayerPropertyGroup>();
+        _layerProperties = [];
+        _layerPropertyGroups = [];
 
         LayerProperties = new ReadOnlyCollection<ILayerProperty>(_layerProperties);
         LayerPropertyGroups = new ReadOnlyCollection<LayerPropertyGroup>(_layerPropertyGroups);

@@ -59,7 +59,7 @@ public class GeneralTabViewModel : RoutableScreen
         List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
         List<IGraphicsContextProvider> graphicsContextProviders = container.Resolve<List<IGraphicsContextProvider>>();
         LayerBrushDescriptors = new ObservableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
-        GraphicsContexts = new ObservableCollection<string> {"Software"};
+        GraphicsContexts = ["Software"];
         GraphicsContexts.AddRange(graphicsContextProviders.Select(p => p.GraphicsContextName));
 
         _defaultLayerBrushDescriptor = _settingsService.GetSetting("ProfileEditor.DefaultLayerBrushDescriptor", new LayerBrushReference
@@ -108,22 +108,22 @@ public class GeneralTabViewModel : RoutableScreen
     public ObservableCollection<LayerBrushDescriptor> LayerBrushDescriptors { get; }
     public ObservableCollection<string> GraphicsContexts { get; }
 
-    public ObservableCollection<RenderSettingViewModel> RenderScales { get; } = new()
-    {
+    public ObservableCollection<RenderSettingViewModel> RenderScales { get; } =
+    [
         new RenderSettingViewModel("25%", 0.25),
         new RenderSettingViewModel("50%", 0.5),
         new RenderSettingViewModel("100%", 1)
-    };
+    ];
 
-    public ObservableCollection<RenderSettingViewModel> TargetFrameRates { get; } = new()
-    {
+    public ObservableCollection<RenderSettingViewModel> TargetFrameRates { get; } =
+    [
         new RenderSettingViewModel("10 FPS", 10),
         new RenderSettingViewModel("20 FPS", 20),
         new RenderSettingViewModel("30 FPS", 30),
         new RenderSettingViewModel("45 FPS", 45),
         new RenderSettingViewModel("60 FPS (lol)", 60),
         new RenderSettingViewModel("144 FPS (omegalol)", 144)
-    };
+    ];
 
     public LayerBrushDescriptor? SelectedLayerBrushDescriptor
     {

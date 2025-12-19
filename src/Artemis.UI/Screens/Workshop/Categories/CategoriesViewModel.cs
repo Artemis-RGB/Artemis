@@ -50,7 +50,7 @@ public class CategoriesViewModel : ActivatableViewModelBase
         if (!categories.Any())
             return null;
 
-        List<EntryFilterInput> categoryFilters = new();
+        List<EntryFilterInput> categoryFilters = [];
         foreach (long? category in categories)
         {
             categoryFilters.Add(new EntryFilterInput

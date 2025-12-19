@@ -100,7 +100,7 @@ internal class InputService : IInputService
 
     #region Providers
 
-    private readonly List<InputProvider> _inputProviders = new();
+    private readonly List<InputProvider> _inputProviders = [];
 
     public KeyboardToggleStatus KeyboardToggleStatus { get; private set; } = new(false, false, false);
 
@@ -137,7 +137,7 @@ internal class InputService : IInputService
     #region Identification
 
     private readonly Dictionary<Tuple<InputProvider, object>, ArtemisDevice> _deviceCache = new();
-    private List<ArtemisDevice> _devices = new();
+    private List<ArtemisDevice> _devices = [];
     private ArtemisDevice? _identifyingDevice;
 
     public void IdentifyDevice(ArtemisDevice device)
@@ -308,7 +308,7 @@ internal class InputService : IInputService
         if (device != null)
         {
             // Ensure the device is in the dictionary
-            _pressedKeys.TryAdd(device, new HashSet<KeyboardKey>());
+            _pressedKeys.TryAdd(device, []);
             // Get the hash set of the device
             HashSet<KeyboardKey> pressedDeviceKeys = _pressedKeys[device];
             // See if the key is already pressed
@@ -389,7 +389,7 @@ internal class InputService : IInputService
 
     #region Mouse
 
-    private readonly HashSet<MouseButton> _pressedButtons = new();
+    private readonly HashSet<MouseButton> _pressedButtons = [];
 
 
     private void InputProviderOnMouseButtonDataReceived(object? sender, InputProviderMouseButtonEventArgs e)

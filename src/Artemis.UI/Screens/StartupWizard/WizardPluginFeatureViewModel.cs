@@ -40,7 +40,7 @@ public partial class WizardPluginFeatureViewModel : ActivatableViewModelBase
         _windowService = windowService;
         _pluginManagementService = pluginManagementService;
 
-        Platforms = new ObservableCollection<PluginPlatformViewModel>();
+        Platforms = [];
         if (Plugin.Info.Platforms != null)
         {
             if (Plugin.Info.Platforms.Value.HasFlag(PluginPlatform.Windows))
@@ -112,7 +112,7 @@ public partial class WizardPluginFeatureViewModel : ActivatableViewModelBase
             }
 
             // Check if all prerequisites are met async
-            List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
+            List<IPrerequisitesSubject> subjects = [Plugin.Info];
             subjects.AddRange(Plugin.Features.Where(f => f.AlwaysEnabled || f.EnabledInStorage));
 
             if (subjects.Any(s => !s.ArePrerequisitesMet()))
@@ -163,7 +163,7 @@ public partial class WizardPluginFeatureViewModel : ActivatableViewModelBase
         }
         catch (Exception e)
         {
-            _windowService.ShowExceptionDialog("An exception occured while trying to show the plugin's settings window", e);
+            _windowService.ShowExceptionDialog("An error occured while trying to show the plugin's settings window", e);
             throw;
         }
     }

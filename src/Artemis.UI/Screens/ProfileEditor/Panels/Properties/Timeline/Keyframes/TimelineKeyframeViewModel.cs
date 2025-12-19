@@ -35,7 +35,7 @@ public partial class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, IT
         _profileEditorService = profileEditorService;
         _timestamp = "0.000";
         LayerPropertyKeyframe = layerPropertyKeyframe;
-        EasingViewModels = new ObservableCollection<TimelineEasingViewModel>();
+        EasingViewModels = [];
 
         this.WhenActivated(d =>
         {
@@ -128,7 +128,7 @@ public partial class TimelineKeyframeViewModel<T> : ActivatableViewModelBase, IT
 
     private async Task ExecuteCopy()
     {
-        List<KeyframeClipboardModel> keyframes = new();
+        List<KeyframeClipboardModel> keyframes = [];
         if (!IsSelected)
             keyframes.Add(new KeyframeClipboardModel(Keyframe));
         else

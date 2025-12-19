@@ -31,7 +31,7 @@ public class DevicesTabViewModel : RoutableScreen
         _windowService = windowService;
         _deviceVmFactory = deviceVmFactory;
 
-        Devices = new ObservableCollection<DeviceSettingsViewModel>();
+        Devices = [];
         this.WhenActivated(disposables =>
         {
             GetDevices();

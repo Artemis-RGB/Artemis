@@ -5,16 +5,16 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AsyncImageLoader.Avalonia" Version="3.4.3" />
-    <PackageVersion Include="Avalonia" Version="11.3.9" />
+    <PackageVersion Include="Avalonia" Version="11.3.10" />
     <PackageVersion Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
     <PackageVersion Include="Avalonia.Controls.ItemsRepeater" Version="11.1.5" />
     <PackageVersion Include="Avalonia.Controls.PanAndZoom" Version="11.3.0" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.3.9" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.3.10" />
     <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.9" />
     <PackageVersion Include="Avalonia.Skia.Lottie" Version="11.0.0" />
-    <PackageVersion Include="Avalonia.Win32" Version="11.3.9" />
-    <PackageVersion Include="GenHTTP.Core" Version="10.2.0" />
-    <PackageVersion Include="GenHTTP.Modules.Webservices" Version="10.2.0" />
+    <PackageVersion Include="Avalonia.Win32" Version="11.3.10" />
+    <PackageVersion Include="GenHTTP.Core" Version="10.3.0" />
+    <PackageVersion Include="GenHTTP.Modules.Webservices" Version="10.3.0" />
     <PackageVersion Include="HPPH.SkiaSharp" Version="1.0.0" />
     <PackageVersion Include="Microsoft.Win32.SystemEvents" Version="10.0.1" />
     <PackageVersion Include="Avalonia.Xaml.Behaviors" Version="11.3.0.6" />

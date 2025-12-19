@@ -28,8 +28,8 @@ public abstract class Node : BreakableModel, INode
 
     #region Properties & Fields
 
-    private readonly List<OutputPin> _outputPinBucket = new();
-    private readonly List<InputPin> _inputPinBucket = new();
+    private readonly List<OutputPin> _outputPinBucket = [];
+    private readonly List<InputPin> _inputPinBucket = [];
 
     private Guid _id;
 
@@ -95,12 +95,12 @@ public abstract class Node : BreakableModel, INode
     /// <inheritdoc />
     public bool IsLoading { get; set; }
 
-    private readonly List<IPin> _pins = new();
+    private readonly List<IPin> _pins = [];
 
     /// <inheritdoc />
     public IReadOnlyCollection<IPin> Pins => new ReadOnlyCollection<IPin>(_pins);
 
-    private readonly List<IPinCollection> _pinCollections = new();
+    private readonly List<IPinCollection> _pinCollections = [];
     private string _helpUrl;
 
     /// <inheritdoc />

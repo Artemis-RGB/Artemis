@@ -4,8 +4,8 @@ internal class NodeScriptEntity
 {
     public NodeScriptEntity()
     {
-        Nodes = new List<NodeEntity>();
-        Connections = new List<NodeConnectionEntity>();
+        Nodes = [];
+        Connections = [];
     }
 
     public string Name { get; set; } = string.Empty;

@@ -34,9 +34,9 @@ public class NodeConnectionStore
 
         // Iterate to save
         foreach (IPin nodePin in Node.Pins.ToList())
-            _pinConnections.Add(nodePin, new List<IPin>(nodePin.ConnectedTo));
+            _pinConnections.Add(nodePin, [..nodePin.ConnectedTo]);
         foreach (IPin nodePin in Node.PinCollections.ToList().SelectMany(nodePinCollection => nodePinCollection))
-            _pinConnections.Add(nodePin, new List<IPin>(nodePin.ConnectedTo));
+            _pinConnections.Add(nodePin, [..nodePin.ConnectedTo]);
 
         // Iterate to disconnect
         foreach (IPin nodePin in Node.Pins.ToList())

@@ -32,7 +32,7 @@ public partial class SubmissionDetailsViewModel : RoutableScreen
     private readonly Func<EntrySpecificationsViewModel> _getGetSpecificationsViewModel;
     private readonly Func<IImage, ImageSubmissionViewModel> _getExistingImageSubmissionViewModel;
     private readonly Func<ImageUploadRequest, ImageSubmissionViewModel> _getImageSubmissionViewModel;
-    private readonly List<ImageSubmissionViewModel> _removedImages = new();
+    private readonly List<ImageSubmissionViewModel> _removedImages = [];
 
     [Notify] private IGetSubmittedEntryById_Entry? _entry;
     [Notify] private EntrySpecificationsViewModel? _entrySpecificationsViewModel;
@@ -59,7 +59,7 @@ public partial class SubmissionDetailsViewModel : RoutableScreen
         SaveChanges = ReactiveCommand.CreateFromTask(ExecuteSaveChanges, this.WhenAnyValue(vm => vm.HasChanges));
     }
 
-    public ObservableCollection<ImageSubmissionViewModel> Images { get; } = new();
+    public ObservableCollection<ImageSubmissionViewModel> Images { get; } = [];
     public ReactiveCommand<Unit, Unit> AddImage { get; }
     public ReactiveCommand<Unit, Unit> SaveChanges { get; }
     public ReactiveCommand<Unit, Unit> DiscardChanges { get; }

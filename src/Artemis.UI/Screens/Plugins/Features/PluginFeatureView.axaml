@@ -35,7 +35,7 @@
                 Classes="AppBarButton icon-button"
                 IsVisible="{CompiledBinding LoadException, Converter={x:Static ObjectConverters.IsNotNull}}"
                 Foreground="#E74C4C"
-                ToolTip.Tip="An exception occurred while enabling this feature, click to view"
+                ToolTip.Tip="An error occurred while enabling this feature, click to view"
                 Command="{CompiledBinding ViewLoadException}">
             <avalonia:MaterialIcon Kind="AlertCircle" />
         </Button>

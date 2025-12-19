@@ -17,7 +17,7 @@ public class ColorGradientToGradientStopsConverter : IValueConverter
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         ColorGradient? colorGradient = value as ColorGradient;
-        GradientStops collection = new();
+        GradientStops collection = [];
         if (colorGradient == null)
             return collection;
 
@@ -30,7 +30,7 @@ public class ColorGradientToGradientStopsConverter : IValueConverter
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         GradientStops? collection = value as GradientStops;
-        ColorGradient colorGradients = new();
+        ColorGradient colorGradients = [];
         if (collection == null)
             return colorGradients;
 

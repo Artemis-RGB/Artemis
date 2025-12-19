@@ -12,7 +12,7 @@ public class ModuleActivationRequirementsViewModel : ViewModelBase
         ActivationType = module.ActivationRequirementMode == ActivationRequirementType.All ? "all requirements are met" : "any requirements are met";
         ActivationRequirements = module.ActivationRequirements != null
             ? new ObservableCollection<ModuleActivationRequirementViewModel>(module.ActivationRequirements.Select(r => new ModuleActivationRequirementViewModel(r)))
-            : new ObservableCollection<ModuleActivationRequirementViewModel>();
+            : [];
     }
 
     public string ActivationType { get; }

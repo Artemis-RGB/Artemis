@@ -11,7 +11,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints;
 
 public partial class SingleLedAdaptionHintViewModel : AdaptionHintViewModelBase
 {
-    [Notify] private List<AdaptionLed> _adaptionLeds = new();
+    [Notify] private List<AdaptionLed> _adaptionLeds = [];
     [Notify] private AdaptionLed? _selectedLed;
 
     public SingleLedAdaptionHintViewModel(Layer layer, SingleLedAdaptionHint adaptionHint) : base(layer, adaptionHint)

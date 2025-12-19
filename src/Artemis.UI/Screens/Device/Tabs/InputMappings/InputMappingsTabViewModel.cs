@@ -32,7 +32,7 @@ public partial class InputMappingsTabViewModel : ActivatableViewModelBase
 
         Device = device;
         DisplayName = "Input Mappings";
-        InputMappings = new ObservableCollection<ArtemisInputMapping>();
+        InputMappings = [];
         DeleteMapping = ReactiveCommand.Create<ArtemisInputMapping>(ExecuteDeleteMapping);
         
         this.WhenActivated(d =>

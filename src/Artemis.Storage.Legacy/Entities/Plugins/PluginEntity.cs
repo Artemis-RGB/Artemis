@@ -7,7 +7,7 @@ internal class PluginEntity
 {
     public PluginEntity()
     {
-        Features = new List<PluginFeatureEntity>();
+        Features = [];
     }
 
     public Guid Id { get; set; }

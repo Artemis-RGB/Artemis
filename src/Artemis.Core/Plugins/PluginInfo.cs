@@ -109,13 +109,7 @@ public class PluginInfo : IPrerequisitesSubject
     /// </summary>
     [JsonInclude]
     public PluginPlatform? Platforms { get; internal init; }
-
-    /// <summary>
-    /// Gets the API version the plugin was built for
-    /// </summary>
-    [JsonInclude]
-    public Version? Api { get; internal init; } = new(1, 0, 0);
-
+    
     /// <summary>
     /// Gets the minimum version of Artemis required by this plugin
     /// </summary>
@@ -125,27 +119,33 @@ public class PluginInfo : IPrerequisitesSubject
     /// Gets the plugin this info is associated with
     /// </summary>
     [JsonIgnore]
-    public Plugin Plugin { get; internal set; } = null!;
+    public Plugin? Plugin { get; internal set; }
 
     /// <summary>
     /// Gets a string representing either a full path pointing to an svg or the markdown icon
     /// </summary>
     [JsonIgnore]
-    public string? ResolvedIcon => Icon == null ? null : Icon.Contains('.') ? Plugin.ResolveRelativePath(Icon) : Icon;
+    public string? ResolvedIcon => Icon == null ? null : Icon.Contains('.') ? Plugin?.ResolveRelativePath(Icon) : Icon;
 
     /// <summary>
     /// Gets a boolean indicating whether this plugin is compatible with the current operating system and API version
     /// </summary>
     [JsonIgnore]
-    public bool IsCompatible => Platforms.MatchesCurrentOperatingSystem() && Api != null && Api.Major >= Constants.PluginApiVersion && MatchesMinimumVersion();
+    public bool IsCompatible => Platforms.MatchesCurrentOperatingSystem()  && MatchesMinimumVersion();
 
     /// <inheritdoc />
     [JsonIgnore]
-    public List<PluginPrerequisite> Prerequisites { get; } = new();
+    public List<PluginPrerequisite> Prerequisites { get; } = [];
 
     /// <inheritdoc />
     [JsonIgnore]
     public IEnumerable<PluginPrerequisite> PlatformPrerequisites => Prerequisites.Where(p => p.AppliesToPlatform());
+    
+    /// <summary>
+    ///     Gets the exception thrown while loading
+    /// </summary>
+    [JsonIgnore]
+    public Exception? LoadException { get; internal set; }
 
     [JsonIgnore]
     internal string PreferredPluginDirectory => $"{Main.Split(".dll")[0].Replace("/", "").Replace("\\", "")}-{Guid.ToString().Substring(0, 8)}";

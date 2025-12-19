@@ -25,8 +25,8 @@ internal class DataModelUIService : IDataModelUIService
     {
         _dataModelService = dataModelService;
         _container = container;
-        _registeredDataModelEditors = new List<DataModelVisualizationRegistration>();
-        _registeredDataModelDisplays = new List<DataModelVisualizationRegistration>();
+        _registeredDataModelEditors = [];
+        _registeredDataModelDisplays = [];
         
         RegisteredDataModelEditors = new ReadOnlyCollection<DataModelVisualizationRegistration>(_registeredDataModelEditors);
         RegisteredDataModelDisplays = new ReadOnlyCollection<DataModelVisualizationRegistration>(_registeredDataModelDisplays);

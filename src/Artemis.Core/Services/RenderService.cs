@@ -15,7 +15,7 @@ namespace Artemis.Core.Services;
 internal class RenderService : IRenderService, IRenderer, IDisposable
 {
     private readonly Stopwatch _frameStopWatch;
-    private readonly List<Exception> _updateExceptions = new();
+    private readonly List<Exception> _updateExceptions = [];
     
     private readonly ILogger _logger;
     private readonly IDeviceService _deviceService;

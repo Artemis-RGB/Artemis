@@ -42,7 +42,7 @@ internal class WebServerService : IWebServerService, IDisposable
     {
         _logger = logger;
         _coreService = coreService;
-        _controllers = new List<WebApiControllerRegistration>();
+        _controllers = [];
 
         _webServerEnabledSetting = settingsService.GetSetting("WebServer.Enabled", true);
         _webServerRemoteAccessSetting = settingsService.GetSetting("WebServer.RemoteAccess", false);

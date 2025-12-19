@@ -149,36 +149,36 @@ public class TimelineHeader : Control
     {
         double[] subds;
         if (PixelsPerSecond > 350)
-            subds = new[] {12d, 12d, 60d};
+            subds = [12d, 12d, 60d];
         else if (PixelsPerSecond > 250)
-            subds = new[] {6d, 12d, 60d};
+            subds = [6d, 12d, 60d];
         else if (PixelsPerSecond > 200)
-            subds = new[] {6d, 6d, 30d};
+            subds = [6d, 6d, 30d];
         else if (PixelsPerSecond > 150)
-            subds = new[] {4d, 4d, 20d};
+            subds = [4d, 4d, 20d];
         else if (PixelsPerSecond > 140)
-            subds = new[] {4d, 4d, 20d};
+            subds = [4d, 4d, 20d];
         else if (PixelsPerSecond > 90)
-            subds = new[] {2d, 4d, 20d};
+            subds = [2d, 4d, 20d];
         else if (PixelsPerSecond > 60)
-            subds = new[] {2d, 4d, 8d};
+            subds = [2d, 4d, 8d];
         else if (PixelsPerSecond > 40)
-            subds = new[] {1d, 2d, 10d};
+            subds = [1d, 2d, 10d];
         else if (PixelsPerSecond > 30)
-            subds = new[] {1d, 2d, 10d};
+            subds = [1d, 2d, 10d];
         else if (PixelsPerSecond > 10)
-            subds = new[] {1d / 2d, 1d / 2d, 1d / 2d};
+            subds = [1d / 2d, 1d / 2d, 1d / 2d];
         else if (PixelsPerSecond > 4)
-            subds = new[] {1d / 5d, 1d / 5d, 1d / 5d};
+            subds = [1d / 5d, 1d / 5d, 1d / 5d];
         else if (PixelsPerSecond > 3)
-            subds = new[] {1d / 10d, 1d / 10d, 1d / 5d};
+            subds = [1d / 10d, 1d / 10d, 1d / 5d];
         else if (PixelsPerSecond > 1)
-            subds = new[] {1d / 20d, 1d / 20d, 1d / 10d};
+            subds = [1d / 20d, 1d / 20d, 1d / 10d];
         else if (PixelsPerSecond >= 1)
-            subds = new[] {1d / 30d, 1d / 30d, 1d / 15d};
+            subds = [1d / 30d, 1d / 30d, 1d / 15d];
         else
             // 1s per pixel
-            subds = new[] {1d / 60d, 1d / 60d, 1d / 15d};
+            subds = [1d / 60d, 1d / 60d, 1d / 15d];
 
         _subd1 = (double) subds[0]; // big ticks / labels
         _subd2 = (double) subds[1]; // medium ticks

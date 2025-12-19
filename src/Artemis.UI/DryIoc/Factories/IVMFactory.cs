@@ -58,44 +58,44 @@ public class DeviceFactory : IDeviceVmFactory
 
     public DevicePropertiesViewModel DevicePropertiesViewModel(ArtemisDevice device)
     {
-        return _container.Resolve<DevicePropertiesViewModel>(new object[] {device});
+        return _container.Resolve<DevicePropertiesViewModel>([device]);
     }
 
     public DeviceSettingsViewModel DeviceSettingsViewModel(ArtemisDevice device, DevicesTabViewModel devicesTabViewModel)
     {
-        return _container.Resolve<DeviceSettingsViewModel>(new object[] {device, devicesTabViewModel});
+        return _container.Resolve<DeviceSettingsViewModel>([device, devicesTabViewModel]);
     }
 
     public DeviceDetectInputViewModel DeviceDetectInputViewModel(ArtemisDevice device)
     {
-        return _container.Resolve<DeviceDetectInputViewModel>(new object[] {device});
+        return _container.Resolve<DeviceDetectInputViewModel>([device]);
     }
 
     public DeviceLayoutTabViewModel DeviceLayoutTabViewModel(ArtemisDevice device)
     {
-        return _container.Resolve<DeviceLayoutTabViewModel>(new object[] {device});
+        return _container.Resolve<DeviceLayoutTabViewModel>([device]);
     }
 
     public DeviceLedsTabViewModel DeviceLedsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds)
     {
-        return _container.Resolve<DeviceLedsTabViewModel>(new object[] {device, selectedLeds});
+        return _container.Resolve<DeviceLedsTabViewModel>([device, selectedLeds]);
     }
 
     public InputMappingsTabViewModel InputMappingsTabViewModel(ArtemisDevice device, ObservableCollection<ArtemisLed> selectedLeds)
     {
-        return _container.Resolve<InputMappingsTabViewModel>(new object[] {device, selectedLeds});
+        return _container.Resolve<InputMappingsTabViewModel>([device, selectedLeds]);
     }
 
     public DeviceGeneralTabViewModel DeviceGeneralTabViewModel(ArtemisDevice device)
     {
-        return _container.Resolve<DeviceGeneralTabViewModel>(new object[] {device});
+        return _container.Resolve<DeviceGeneralTabViewModel>([device]);
     }
 }
 
 public interface ISettingsVmFactory : IVmFactory
 {
-    PluginSettingsViewModel PluginSettingsViewModel(Plugin plugin);
-    PluginViewModel PluginViewModel(Plugin plugin, ReactiveCommand<Unit, Unit>? reload);
+    PluginSettingsViewModel PluginSettingsViewModel(PluginInfo pluginInfo);
+    PluginViewModel PluginViewModel(PluginInfo pluginInfo, ReactiveCommand<Unit, Unit>? reload);
     PluginFeatureViewModel PluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo, bool showShield);
 }
 
@@ -108,19 +108,19 @@ public class SettingsVmFactory : ISettingsVmFactory
         _container = container;
     }
 
-    public PluginSettingsViewModel PluginSettingsViewModel(Plugin plugin)
+    public PluginSettingsViewModel PluginSettingsViewModel(PluginInfo pluginInfo)
     {
-        return _container.Resolve<PluginSettingsViewModel>(new object[] {plugin});
+        return _container.Resolve<PluginSettingsViewModel>([pluginInfo]);
     }
 
-    public PluginViewModel PluginViewModel(Plugin plugin, ReactiveCommand<Unit, Unit>? reload)
+    public PluginViewModel PluginViewModel(PluginInfo pluginInfo, ReactiveCommand<Unit, Unit>? reload)
     {
-        return _container.Resolve<PluginViewModel>(new object?[] {plugin, reload});
+        return _container.Resolve<PluginViewModel>([pluginInfo, reload]);
     }
 
     public PluginFeatureViewModel PluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo, bool showShield)
     {
-        return _container.Resolve<PluginFeatureViewModel>(new object[] {pluginFeatureInfo, showShield});
+        return _container.Resolve<PluginFeatureViewModel>([pluginFeatureInfo, showShield]);
     }
 }
 
@@ -141,12 +141,12 @@ public class SidebarVmFactory : ISidebarVmFactory
 
     public SidebarCategoryViewModel SidebarCategoryViewModel(ProfileCategory profileCategory)
     {
-        return _container.Resolve<SidebarCategoryViewModel>(new object[] {profileCategory});
+        return _container.Resolve<SidebarCategoryViewModel>([profileCategory]);
     }
 
     public SidebarProfileConfigurationViewModel SidebarProfileConfigurationViewModel(ProfileConfiguration profileConfiguration)
     {
-        return _container.Resolve<SidebarProfileConfigurationViewModel>(new object[] {profileConfiguration});
+        return _container.Resolve<SidebarProfileConfigurationViewModel>([profileConfiguration]);
     }
 }
 
@@ -167,12 +167,12 @@ public class SurfaceVmFactory : ISurfaceVmFactory
 
     public SurfaceDeviceViewModel SurfaceDeviceViewModel(ArtemisDevice device, SurfaceEditorViewModel surfaceEditorViewModel)
     {
-        return _container.Resolve<SurfaceDeviceViewModel>(new object[] {device, surfaceEditorViewModel});
+        return _container.Resolve<SurfaceDeviceViewModel>([device, surfaceEditorViewModel]);
     }
 
     public ListDeviceViewModel ListDeviceViewModel(ArtemisDevice device)
     {
-        return _container.Resolve<ListDeviceViewModel>(new object[] {device});
+        return _container.Resolve<ListDeviceViewModel>([device]);
     }
 }
 
@@ -192,7 +192,7 @@ public class PrerequisitesVmFactory : IPrerequisitesVmFactory
 
     public PluginPrerequisiteViewModel PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall)
     {
-        return _container.Resolve<PluginPrerequisiteViewModel>(new object[] {pluginPrerequisite, uninstall});
+        return _container.Resolve<PluginPrerequisiteViewModel>([pluginPrerequisite, uninstall]);
     }
 }
 
@@ -216,27 +216,27 @@ public class ProfileEditorVmFactory : IProfileEditorVmFactory
 
     public FolderTreeItemViewModel FolderTreeItemViewModel(TreeItemViewModel? parent, Folder folder)
     {
-        return _container.Resolve<FolderTreeItemViewModel>(new object?[] {parent, folder});
+        return _container.Resolve<FolderTreeItemViewModel>([parent, folder]);
     }
 
     public LayerShapeVisualizerViewModel LayerShapeVisualizerViewModel(Layer layer)
     {
-        return _container.Resolve<LayerShapeVisualizerViewModel>(new object[] {layer});
+        return _container.Resolve<LayerShapeVisualizerViewModel>([layer]);
     }
 
     public LayerTreeItemViewModel LayerTreeItemViewModel(TreeItemViewModel? parent, Layer layer)
     {
-        return _container.Resolve<LayerTreeItemViewModel>(new object?[] {parent, layer});
+        return _container.Resolve<LayerTreeItemViewModel>([parent, layer]);
     }
 
     public LayerVisualizerViewModel LayerVisualizerViewModel(Layer layer)
     {
-        return _container.Resolve<LayerVisualizerViewModel>(new object[] {layer});
+        return _container.Resolve<LayerVisualizerViewModel>([layer]);
     }
 
     public ProfileEditorViewModel ProfileEditorViewModel(IScreen hostScreen)
     {
-        return _container.Resolve<ProfileEditorViewModel>(new object[] {hostScreen});
+        return _container.Resolve<ProfileEditorViewModel>([hostScreen]);
     }
 }
 
@@ -264,37 +264,37 @@ public class LayerPropertyVmFactory : ILayerPropertyVmFactory
 
     public PropertyViewModel PropertyViewModel(ILayerProperty layerProperty)
     {
-        return _container.Resolve<PropertyViewModel>(new object[] {layerProperty});
+        return _container.Resolve<PropertyViewModel>([layerProperty]);
     }
 
     public PropertyGroupViewModel PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup)
     {
-        return _container.Resolve<PropertyGroupViewModel>(new object[] {layerPropertyGroup});
+        return _container.Resolve<PropertyGroupViewModel>([layerPropertyGroup]);
     }
 
     public PropertyGroupViewModel PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, BaseLayerBrush layerBrush)
     {
-        return _container.Resolve<PropertyGroupViewModel>(new object[] {layerPropertyGroup, layerBrush});
+        return _container.Resolve<PropertyGroupViewModel>([layerPropertyGroup, layerBrush]);
     }
 
     public PropertyGroupViewModel PropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, BaseLayerEffect layerEffect)
     {
-        return _container.Resolve<PropertyGroupViewModel>(new object[] {layerPropertyGroup, layerEffect});
+        return _container.Resolve<PropertyGroupViewModel>([layerPropertyGroup, layerEffect]);
     }
 
     public TreeGroupViewModel TreeGroupViewModel(PropertyGroupViewModel propertyGroupViewModel)
     {
-        return _container.Resolve<TreeGroupViewModel>(new object[] {propertyGroupViewModel});
+        return _container.Resolve<TreeGroupViewModel>([propertyGroupViewModel]);
     }
 
     public TimelineViewModel TimelineViewModel(ObservableCollection<PropertyGroupViewModel> propertyGroupViewModels)
     {
-        return _container.Resolve<TimelineViewModel>(new object[] {propertyGroupViewModels});
+        return _container.Resolve<TimelineViewModel>([propertyGroupViewModels]);
     }
 
     public TimelineGroupViewModel TimelineGroupViewModel(PropertyGroupViewModel propertyGroupViewModel)
     {
-        return _container.Resolve<TimelineGroupViewModel>(new object[] {propertyGroupViewModel});
+        return _container.Resolve<TimelineGroupViewModel>([propertyGroupViewModel]);
     }
 }
 
@@ -348,47 +348,47 @@ public class NodeVmFactory : INodeVmFactory
 
     public NodeScriptViewModel NodeScriptViewModel(NodeScript nodeScript, bool isPreview)
     {
-        return _container.Resolve<NodeScriptViewModel>(new object[] {nodeScript, isPreview});
+        return _container.Resolve<NodeScriptViewModel>([nodeScript, isPreview]);
     }
 
     public NodePickerViewModel NodePickerViewModel(NodeScript nodeScript)
     {
-        return _container.Resolve<NodePickerViewModel>(new object[] {nodeScript});
+        return _container.Resolve<NodePickerViewModel>([nodeScript]);
     }
 
     public NodeViewModel NodeViewModel(NodeScriptViewModel nodeScriptViewModel, INode node)
     {
-        return _container.Resolve<NodeViewModel>(new object[] {nodeScriptViewModel, node});
+        return _container.Resolve<NodeViewModel>([nodeScriptViewModel, node]);
     }
 
     public CableViewModel CableViewModel(NodeScriptViewModel nodeScriptViewModel, IPin from, IPin to)
     {
-        return _container.Resolve<CableViewModel>(new object[] {nodeScriptViewModel, from, to});
+        return _container.Resolve<CableViewModel>([nodeScriptViewModel, from, to]);
     }
 
     public DragCableViewModel DragCableViewModel(PinViewModel pinViewModel)
     {
-        return _container.Resolve<DragCableViewModel>(new object[] {pinViewModel});
+        return _container.Resolve<DragCableViewModel>([pinViewModel]);
     }
 
     public InputPinViewModel InputPinViewModel(IPin inputPin, NodeScriptViewModel nodeScriptViewModel)
     {
-        return _container.Resolve<InputPinViewModel>(new object[] {inputPin, nodeScriptViewModel});
+        return _container.Resolve<InputPinViewModel>([inputPin, nodeScriptViewModel]);
     }
 
     public OutputPinViewModel OutputPinViewModel(IPin outputPin, NodeScriptViewModel nodeScriptViewModel)
     {
-        return _container.Resolve<OutputPinViewModel>(new object[] {outputPin, nodeScriptViewModel});
+        return _container.Resolve<OutputPinViewModel>([outputPin, nodeScriptViewModel]);
     }
 
     public InputPinCollectionViewModel InputPinCollectionViewModel(IPinCollection inputPinCollection, NodeScriptViewModel nodeScriptViewModel)
     {
-        return _container.Resolve<InputPinCollectionViewModel>(new object[] {inputPinCollection, nodeScriptViewModel});
+        return _container.Resolve<InputPinCollectionViewModel>([inputPinCollection, nodeScriptViewModel]);
     }
 
     public OutputPinCollectionViewModel OutputPinCollectionViewModel(IPinCollection outputPinCollection, NodeScriptViewModel nodeScriptViewModel)
     {
-        return _container.Resolve<OutputPinCollectionViewModel>(new object[] {outputPinCollection, nodeScriptViewModel});
+        return _container.Resolve<OutputPinCollectionViewModel>([outputPinCollection, nodeScriptViewModel]);
     }
 }
 
@@ -411,22 +411,22 @@ public class ConditionVmFactory : IConditionVmFactory
 
     public AlwaysOnConditionViewModel AlwaysOnConditionViewModel(AlwaysOnCondition alwaysOnCondition)
     {
-        return _container.Resolve<AlwaysOnConditionViewModel>(new object[] {alwaysOnCondition});
+        return _container.Resolve<AlwaysOnConditionViewModel>([alwaysOnCondition]);
     }
 
     public PlayOnceConditionViewModel PlayOnceConditionViewModel(PlayOnceCondition playOnceCondition)
     {
-        return _container.Resolve<PlayOnceConditionViewModel>(new object[] {playOnceCondition});
+        return _container.Resolve<PlayOnceConditionViewModel>([playOnceCondition]);
     }
 
     public StaticConditionViewModel StaticConditionViewModel(StaticCondition staticCondition)
     {
-        return _container.Resolve<StaticConditionViewModel>(new object[] {staticCondition});
+        return _container.Resolve<StaticConditionViewModel>([staticCondition]);
     }
 
     public EventConditionViewModel EventConditionViewModel(EventCondition eventCondition)
     {
-        return _container.Resolve<EventConditionViewModel>(new object[] {eventCondition});
+        return _container.Resolve<EventConditionViewModel>([eventCondition]);
     }
 }
 
@@ -449,22 +449,22 @@ public class LayerHintVmFactory : ILayerHintVmFactory
 
     public CategoryAdaptionHintViewModel CategoryAdaptionHintViewModel(Layer layer, CategoryAdaptionHint adaptionHint)
     {
-        return _container.Resolve<CategoryAdaptionHintViewModel>(new object[] {layer, adaptionHint});
+        return _container.Resolve<CategoryAdaptionHintViewModel>([layer, adaptionHint]);
     }
 
     public DeviceAdaptionHintViewModel DeviceAdaptionHintViewModel(Layer layer, DeviceAdaptionHint adaptionHint)
     {
-        return _container.Resolve<DeviceAdaptionHintViewModel>(new object[] {layer, adaptionHint});
+        return _container.Resolve<DeviceAdaptionHintViewModel>([layer, adaptionHint]);
     }
 
     public KeyboardSectionAdaptionHintViewModel KeyboardSectionAdaptionHintViewModel(Layer layer, KeyboardSectionAdaptionHint adaptionHint)
     {
-        return _container.Resolve<KeyboardSectionAdaptionHintViewModel>(new object[] {layer, adaptionHint});
+        return _container.Resolve<KeyboardSectionAdaptionHintViewModel>([layer, adaptionHint]);
     }
 
     public SingleLedAdaptionHintViewModel SingleLedAdaptionHintViewModel(Layer layer, SingleLedAdaptionHint adaptionHint)
     {
-        return _container.Resolve<SingleLedAdaptionHintViewModel>(new object[] {layer, adaptionHint});
+        return _container.Resolve<SingleLedAdaptionHintViewModel>([layer, adaptionHint]);
     }
 }
 
@@ -484,6 +484,6 @@ public class ReleaseVmFactory : IReleaseVmFactory
 
     public ReleaseViewModel ReleaseListViewModel(IGetReleases_PublishedReleases_Nodes release)
     {
-        return _container.Resolve<ReleaseViewModel>(new object[] {release});
+        return _container.Resolve<ReleaseViewModel>([release]);
     }
 }

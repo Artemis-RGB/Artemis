@@ -111,13 +111,13 @@ public abstract class Module<T> : Module where T : DataModel, new()
 /// </summary>
 public abstract class Module : PluginFeature
 {
-    private readonly List<(DefaultCategoryName, string)> _defaultProfilePaths = new();
-    private readonly List<(DefaultCategoryName, string)> _pendingDefaultProfilePaths = new();
+    private readonly List<(DefaultCategoryName, string)> _defaultProfilePaths = [];
+    private readonly List<(DefaultCategoryName, string)> _pendingDefaultProfilePaths = [];
 
     /// <summary>
     ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
     /// </summary>
-    protected internal readonly List<PropertyInfo> HiddenPropertiesList = new();
+    protected internal readonly List<PropertyInfo> HiddenPropertiesList = [];
 
     /// <summary>
     ///     The base constructor of the <see cref="Module" /> class.

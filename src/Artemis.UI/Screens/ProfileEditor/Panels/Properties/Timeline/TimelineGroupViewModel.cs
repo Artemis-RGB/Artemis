@@ -18,7 +18,7 @@ public partial class TimelineGroupViewModel : ActivatableViewModelBase
     public TimelineGroupViewModel(PropertyGroupViewModel propertyGroupViewModel, IProfileEditorService profileEditorService)
     {
         PropertyGroupViewModel = propertyGroupViewModel;
-        _keyframePositions = new ReadOnlyObservableCollection<double>(new ObservableCollection<double>());
+        _keyframePositions = new ReadOnlyObservableCollection<double>([]);
 
         this.WhenActivated(d =>
         {

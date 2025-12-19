@@ -20,7 +20,7 @@ public class NodeEditorCommandScope : IDisposable
         Name = name;
         _nodeEditorService = nodeEditorService;
         _nodeScript = nodeScript;
-        _commands = new List<INodeEditorCommand>();
+        _commands = [];
     }
 
     /// <summary>

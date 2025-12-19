@@ -45,7 +45,7 @@ public abstract class PinCollection : CorePropertyChanged, IPinCollection
     /// <inheritdoc />
     public abstract Type Type { get; }
 
-    private readonly List<IPin> _pins = new();
+    private readonly List<IPin> _pins = [];
 
     /// <summary>
     ///     Gets a read only observable collection of the pins

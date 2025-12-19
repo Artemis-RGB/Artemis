@@ -44,5 +44,5 @@ public class RouteRegistration<TViewModel> : IRouterRegistration where TViewMode
     public Type ViewModel => typeof(TViewModel);
 
     /// <inheritdoc />
-    public List<IRouterRegistration> Children { get; set; } = new();
+    public List<IRouterRegistration> Children { get; set; } = [];
 }

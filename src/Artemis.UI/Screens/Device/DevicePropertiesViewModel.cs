@@ -24,8 +24,8 @@ public partial class DevicePropertiesViewModel : DialogViewModelBase<object>
         _deviceVmFactory = deviceVmFactory;
         _device = device;
 
-        SelectedLeds = new ObservableCollection<ArtemisLed>();
-        Tabs = new ObservableCollection<ActivatableViewModelBase>();
+        SelectedLeds = [];
+        Tabs = [];
 
         AddTabs();
         this.WhenActivated(d =>

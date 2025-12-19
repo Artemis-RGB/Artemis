@@ -140,14 +140,14 @@ public partial class PluginFeatureViewModel : ActivatableViewModelBase
     private async Task ExecuteInstallPrerequisites()
     {
         if (FeatureInfo.PlatformPrerequisites.Any())
-            await PluginPrerequisitesInstallDialogViewModel.Show(_windowService, new List<IPrerequisitesSubject> {FeatureInfo});
+            await PluginPrerequisitesInstallDialogViewModel.Show(_windowService, [FeatureInfo]);
     }
 
     private async Task ExecuteRemovePrerequisites()
     {
         if (FeatureInfo.PlatformPrerequisites.Any(p => p.UninstallActions.Any()))
         {
-            await PluginPrerequisitesUninstallDialogViewModel.Show(_windowService, new List<IPrerequisitesSubject> {FeatureInfo});
+            await PluginPrerequisitesUninstallDialogViewModel.Show(_windowService, [FeatureInfo]);
             this.RaisePropertyChanged(nameof(IsEnabled));
         }
     }
@@ -186,7 +186,7 @@ public partial class PluginFeatureViewModel : ActivatableViewModelBase
                 // Check if all prerequisites are met async
                 if (!FeatureInfo.ArePrerequisitesMet())
                 {
-                    await PluginPrerequisitesInstallDialogViewModel.Show(_windowService, new List<IPrerequisitesSubject> {FeatureInfo});
+                    await PluginPrerequisitesInstallDialogViewModel.Show(_windowService, [FeatureInfo]);
                     if (!FeatureInfo.ArePrerequisitesMet())
                     {
                         this.RaisePropertyChanged(nameof(IsEnabled));

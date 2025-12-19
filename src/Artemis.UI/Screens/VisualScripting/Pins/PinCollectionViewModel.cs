@@ -19,7 +19,7 @@ public abstract class PinCollectionViewModel : ActivatableViewModelBase
     protected PinCollectionViewModel(IPinCollection pinCollection, NodeScriptViewModel nodeScriptViewModel, INodeEditorService nodeEditorService)
     {
         PinCollection = pinCollection;
-        PinViewModels = new ObservableCollection<PinViewModel>();
+        PinViewModels = [];
 
         this.WhenActivated(d =>
         {

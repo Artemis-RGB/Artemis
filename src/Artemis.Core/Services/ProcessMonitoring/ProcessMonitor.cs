@@ -28,7 +28,7 @@ public static partial class ProcessMonitor
         get
         {
             lock (LOCK)
-                return _processes.Values.ToImmutableArray();
+                return [.._processes.Values];
         }
     }
 

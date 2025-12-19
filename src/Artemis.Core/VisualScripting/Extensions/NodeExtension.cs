@@ -48,7 +48,7 @@ public static class NodeExtension
     /// <returns><see langword="true" /> if there would be a loop; otherwise <see langword="false" />.</returns>
     public static bool IsInLoop(this INode node, INode pendingConnection)
     {
-        HashSet<INode> checkedNodes = new();
+        HashSet<INode> checkedNodes = [];
 
         bool CheckNode(INode checkNode, INode? pending)
         {

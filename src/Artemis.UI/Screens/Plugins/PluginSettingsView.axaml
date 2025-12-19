@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:plugins="clr-namespace:Artemis.UI.Screens.Plugins"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.Plugins.PluginSettingsView"
              x:DataType="plugins:PluginSettingsViewModel">
@@ -11,10 +12,18 @@
             <ContentControl Grid.Column="0" Content="{CompiledBinding PluginViewModel}" />
 
             <Border Grid.Column="1" BorderBrush="{DynamicResource ButtonBorderBrush}" BorderThickness="1 0 0 0" Margin="10 0 0 0" Padding="10 0 0 0">
-                <Grid RowDefinitions="Auto,*">
-                    <TextBlock Classes="h5">Plugin features</TextBlock>
-                    <ListBox Grid.Row="1" ItemsSource="{CompiledBinding PluginFeatures}" />
-                </Grid>
+                <Panel>
+                    <Grid RowDefinitions="Auto,*" IsVisible="{CompiledBinding PluginInfo.LoadException, Converter={x:Static ObjectConverters.IsNull}}">
+                        <TextBlock Classes="h5">Plugin features</TextBlock>
+                        <ListBox Grid.Row="1" ItemsSource="{CompiledBinding PluginFeatures}" />
+                    </Grid>
+
+                    <StackPanel IsVisible="{CompiledBinding PluginInfo.LoadException, Converter={x:Static ObjectConverters.IsNotNull}}" VerticalAlignment="Center">
+                        <avalonia:MaterialIcon Kind="AlertCircle" Foreground="#FF5C5C" Width="50" Height="50" Margin="0 0 0 10"/>
+                        <TextBlock TextAlignment="Center" TextWrapping="Wrap">Plugin failed to load, make sure it is compatible with this version of Artemis.</TextBlock>
+                        <HyperlinkButton HorizontalAlignment="Center" Command="{CompiledBinding ViewLoadException}">View error details</HyperlinkButton>
+                    </StackPanel>
+                </Panel>
             </Border>
         </Grid>
     </Border>

@@ -68,7 +68,7 @@ public class TimelinePropertyViewModel<T> : ActivatableViewModelBase, ITimelineP
 
     public List<ILayerPropertyKeyframe> GetAllKeyframes()
     {
-        return LayerProperty.KeyframesEnabled ? new List<ILayerPropertyKeyframe>(LayerProperty.Keyframes) : new List<ILayerPropertyKeyframe>();
+        return LayerProperty.KeyframesEnabled ? [..LayerProperty.Keyframes] : [];
     }
 
     public List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels()

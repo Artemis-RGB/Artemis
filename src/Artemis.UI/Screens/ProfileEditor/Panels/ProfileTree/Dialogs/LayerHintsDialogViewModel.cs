@@ -24,7 +24,7 @@ public class LayerHintsDialogViewModel : DialogViewModelBase<bool>
         _vmFactory = vmFactory;
 
         Layer = layer;
-        AdaptionHints = new ObservableCollection<AdaptionHintViewModelBase>();
+        AdaptionHints = [];
 
         this.WhenActivated(d =>
         {

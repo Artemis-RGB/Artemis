@@ -57,7 +57,7 @@ public partial class PropertiesViewModel : ActivatableViewModelBase
         _layerEffectService = layerEffectService;
         _cachedPropertyViewModels = new Dictionary<LayerPropertyGroup, PropertyGroupViewModel>();
 
-        PropertyGroupViewModels = new ObservableCollection<PropertyGroupViewModel>();
+        PropertyGroupViewModels = [];
         PlaybackViewModel = playbackViewModel;
         TimelineViewModel = layerPropertyVmFactory.TimelineViewModel(PropertyGroupViewModels);
         AddEffect = ReactiveCommand.CreateFromTask(ExecuteAddEffect);
@@ -135,7 +135,7 @@ public partial class PropertiesViewModel : ActivatableViewModelBase
             return;
         }
 
-        ObservableCollection<PropertyGroupViewModel> viewModels = new();
+        ObservableCollection<PropertyGroupViewModel> viewModels = [];
         if (profileElement is Layer layer)
         {
             // Add base VMs

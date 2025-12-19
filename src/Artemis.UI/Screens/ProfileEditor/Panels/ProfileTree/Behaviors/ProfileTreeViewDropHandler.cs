@@ -126,7 +126,7 @@ public class ProfileTreeViewDropHandler : DropHandlerBase
 
     private List<TreeViewItem> GetFlattenedTreeView(ItemsControl currentNode)
     {
-        List<TreeViewItem> result = new();
+        List<TreeViewItem> result = [];
 
         foreach (Control containerControl in currentNode.GetRealizedContainers())
         {

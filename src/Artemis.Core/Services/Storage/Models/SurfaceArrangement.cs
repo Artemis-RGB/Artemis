@@ -8,8 +8,8 @@ internal class SurfaceArrangement
 {
     public SurfaceArrangement()
     {
-        Types = new List<SurfaceArrangementType>();
-        ArrangedDevices = new List<ArtemisDevice>();
+        Types = [];
+        ArrangedDevices = [];
     }
 
     public List<SurfaceArrangementType> Types { get; }

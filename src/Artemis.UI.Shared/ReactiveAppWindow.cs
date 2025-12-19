@@ -49,7 +49,7 @@ public class ReactiveAppWindow<TViewModel> : AppWindow, IViewFor<TViewModel> whe
                 return;
 
             // TransparencyBackgroundFallback = Brushes.Transparent;
-            TransparencyLevelHint = new[] {WindowTransparencyLevel.Mica};
+            TransparencyLevelHint = [WindowTransparencyLevel.Mica];
             Background = new SolidColorBrush(new Color(80, 0,0,0));
 
         }
