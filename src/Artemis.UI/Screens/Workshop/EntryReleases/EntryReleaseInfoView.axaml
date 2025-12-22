@@ -37,13 +37,17 @@
         </Style>
     </UserControl.Styles>
     <StackPanel>
-        <Grid ColumnDefinitions="Auto,*,Auto">
+        <Grid ColumnDefinitions="Auto,*,Auto,Auto">
             <Button Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Classes="icon-button" Margin="0 0 5 0" Command="{CompiledBinding Close}" IsVisible="{CompiledBinding InDetailsScreen}">
                 <avalonia:MaterialIcon Kind="ArrowBack" />
             </Button>
             <TextBlock Grid.Row="0" Grid.Column="1" Theme="{StaticResource SubtitleTextBlockStyle}" IsVisible="{CompiledBinding InDetailsScreen}">Release info</TextBlock>
             <TextBlock Grid.Row="0" Grid.Column="1" Theme="{StaticResource SubtitleTextBlockStyle}" IsVisible="{CompiledBinding !InDetailsScreen}">Latest release</TextBlock>
-            <StackPanel Grid.Column="2">
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="5" Margin="0 0 15 0" IsVisible="{CompiledBinding IncompatibilityReason, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <avalonia:MaterialIcon Kind="Alert" Width="20" Height="20" Foreground="#DAA520" />
+                <TextBlock VerticalAlignment="Center" Text="{CompiledBinding IncompatibilityReason}"/>
+            </StackPanel>
+            <StackPanel Grid.Column="3">
                 <!-- Install progress -->
                 <StackPanel Orientation="Horizontal"
                             Spacing="5"
@@ -64,11 +68,15 @@
 
                 <!-- Install button -->
                 <Panel IsVisible="{CompiledBinding !InstallationInProgress}" HorizontalAlignment="Right">
-                    <Button IsVisible="{CompiledBinding !IsCurrentVersion}" Classes="accent" Width="80" Command="{CompiledBinding Install}">
+                    <Button IsVisible="{CompiledBinding !IsCurrentVersion}" 
+                            Classes="accent" 
+                            Width="80" 
+                            Command="{CompiledBinding Install}" 
+                            IsEnabled="{CompiledBinding IncompatibilityReason, Converter={x:Static ObjectConverters.IsNull}}">
                         Install
                     </Button>
                     <StackPanel IsVisible="{CompiledBinding IsCurrentVersion}" Orientation="Horizontal" Spacing="10">
-                        <Button  Classes="accent" Width="80" Command="{CompiledBinding Reinstall}">
+                        <Button Classes="accent" Width="80" Command="{CompiledBinding Reinstall}">
                             Re-install
                         </Button>
                         <Button Width="80" Command="{CompiledBinding Uninstall}">Uninstall</Button>

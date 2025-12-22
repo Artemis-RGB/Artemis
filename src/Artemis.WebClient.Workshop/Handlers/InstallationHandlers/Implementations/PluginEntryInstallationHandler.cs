@@ -51,7 +51,7 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
         }
         catch (Exception e)
         {
-            return EntryInstallResult.FromFailure(e.Message);
+            return EntryInstallResult.FromException(e);
         }
 
         // Create the release directory
@@ -102,8 +102,9 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
                 // ignored, will get cleaned up as an orphaned file
             }
 
-            _workshopService.RemoveInstalledEntry(installedEntry);
-            return EntryInstallResult.FromFailure(e.Message);
+            if (installedEntry.Entity.Id != Guid.Empty)
+                _workshopService.RemoveInstalledEntry(installedEntry);
+            return EntryInstallResult.FromException(e);
         }
 
         return ApplyAndSave(plugin, installedEntry, release);

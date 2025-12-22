@@ -22,9 +22,7 @@
 
         <StackPanel Grid.Row="2" Margin="20">
             <TextBlock Classes="h3">Awww :(</TextBlock>
-            <TextBlock>
-                It looks like Artemis ran into an unexpected error. If this keeps happening feel free to hit us up on Discord.
-            </TextBlock>
+            <TextBlock Text="{CompiledBinding Message}"/>
         </StackPanel>
 
         <Grid Grid.Row="3" ColumnDefinitions="*,Auto" RowDefinitions="*,Auto">

@@ -32,7 +32,7 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         }
         catch (Exception e)
         {
-            return EntryInstallResult.FromFailure(e.Message);
+            return EntryInstallResult.FromException(e);
         }
 
         // Find existing installation to potentially replace the profile

@@ -30,7 +30,7 @@ public partial class EntryListViewModel : RoutableScreen
     [Notify] private bool _initializing = true;
     [Notify] private bool _fetchingMore;
     [Notify] private int _entriesPerFetch;
-    [Notify] private bool _includeDefaultEntries;
+    [Notify] private bool _includeDefaultEntries = true;
     [Notify] private Vector _scrollOffset;
 
     protected EntryListViewModel(EntryType entryType,

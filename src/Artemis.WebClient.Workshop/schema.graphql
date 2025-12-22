@@ -138,8 +138,6 @@ type PluginInfo {
   entryId: Long!
   entry: Entry!
   pluginGuid: UUID!
-  api: Int
-  minmumVersion: String
   website: String
   helpPage: String
   repository: String
@@ -253,6 +251,7 @@ type Release {
   downloads: Long!
   downloadSize: Long!
   md5Hash: String
+  minimumVersion: Long
   entry: Entry!
   entryId: Long!
   dependencies: [Entry!]!
@@ -532,8 +531,6 @@ input PluginInfoFilterInput {
   entryId: LongOperationFilterInput
   entry: EntryFilterInput
   pluginGuid: UuidOperationFilterInput
-  api: IntOperationFilterInput
-  minmumVersion: StringOperationFilterInput
   website: StringOperationFilterInput
   helpPage: StringOperationFilterInput
   repository: StringOperationFilterInput
@@ -547,8 +544,6 @@ input PluginInfoSortInput {
   entryId: SortEnumType @cost(weight: "10")
   entry: EntrySortInput @cost(weight: "10")
   pluginGuid: SortEnumType @cost(weight: "10")
-  api: SortEnumType @cost(weight: "10")
-  minmumVersion: SortEnumType @cost(weight: "10")
   website: SortEnumType @cost(weight: "10")
   helpPage: SortEnumType @cost(weight: "10")
   repository: SortEnumType @cost(weight: "10")
@@ -575,6 +570,7 @@ input ReleaseFilterInput {
   downloads: LongOperationFilterInput
   downloadSize: LongOperationFilterInput
   md5Hash: StringOperationFilterInput
+  minimumVersion: LongOperationFilterInput
   entry: EntryFilterInput
   entryId: LongOperationFilterInput
   dependencies: ListFilterInputTypeOfEntryFilterInput
@@ -588,6 +584,7 @@ input ReleaseSortInput {
   downloads: SortEnumType @cost(weight: "10")
   downloadSize: SortEnumType @cost(weight: "10")
   md5Hash: SortEnumType @cost(weight: "10")
+  minimumVersion: SortEnumType @cost(weight: "10")
   entry: EntrySortInput @cost(weight: "10")
   entryId: SortEnumType @cost(weight: "10")
 }

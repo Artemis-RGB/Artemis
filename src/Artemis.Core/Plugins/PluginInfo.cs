@@ -113,7 +113,8 @@ public class PluginInfo : IPrerequisitesSubject
     /// <summary>
     /// Gets the minimum version of Artemis required by this plugin
     /// </summary>
-    public Version? MinimumVersion { get; internal init; } = new(1, 0, 0);
+    [JsonInclude]
+    public Version? MinimumVersion { get; internal init; }
 
     /// <summary>
     /// Gets the plugin this info is associated with
